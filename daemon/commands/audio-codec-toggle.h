@@ -1,6 +1,6 @@
 /*
 audio-codec-toggle.h
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -25,7 +25,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 class AudioCodecToggleCommand: public DaemonCommand {
 public:
 	AudioCodecToggleCommand(const char *name, const char *proto, const char *help, bool enable);
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec(Daemon *app, const std::string &args) override;
+
 protected:
 	bool mEnable;
 };

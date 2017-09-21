@@ -1,6 +1,6 @@
 /*
 daemon-pipetest.c
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
 	SetConsoleMode(hin, fdwOldMode);
 #else
 	struct pollfd pfds[2] = { { 0 } };
-	int bytes;
+	ssize_t bytes;
 	pfds[0].fd=fd;
 	pfds[0].events=POLLIN;
 	pfds[1].fd=1;
@@ -91,11 +91,11 @@ int main(int argc, char *argv[]){
 			/*splice to stdout*/
 			if (pfds[0].revents & POLLIN){
 				if ((bytes=read(pfds[0].fd,buf,sizeof(buf)))>0){
-					if (write(0,buf,bytes)==-1){
+					if (write(0,buf,(size_t)bytes)==-1){
 						ortp_error("Fail to write to stdout?");
 						break;
 					}
-					fprintf(stdout,"\n");		
+					fprintf(stdout,"\n");
 				}else if (bytes==0){
 					break;
 				}
@@ -103,10 +103,10 @@ int main(int argc, char *argv[]){
 			/*splice from stdin to pipe */
 			if (pfds[1].revents & POLLIN){
 				if ((bytes=read(pfds[1].fd,buf,sizeof(buf)))>0){
-					if (write(pfds[0].fd,buf,bytes)==-1){
+					if (write(pfds[0].fd,buf,(size_t)bytes)==-1){
 						ortp_error("Fail to write to unix socket");
 						break;
-					}		
+					}
 				}else if (bytes==0){
 					break;
 				}
@@ -117,4 +117,3 @@ int main(int argc, char *argv[]){
 
 	return 0;
 }
-
