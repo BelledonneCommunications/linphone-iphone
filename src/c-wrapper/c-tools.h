@@ -28,6 +28,8 @@
 #include "variant/variant.h"
 
 // =============================================================================
+// Internal.
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -257,87 +259,89 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-// -----------------------------------------------------------------------------
-
-#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_STRUCT, C_NAME, CONSTRUCTOR, DESTRUCTOR, ...) \
-	struct _Linphone ## C_STRUCT { \
-		belle_sip_object_t base; \
-		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
-		__VA_ARGS__ \
-	}; \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
-	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
-		Linphone ## C_STRUCT * object = belle_sip_object_new(Linphone ## C_STRUCT); \
+#define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR) \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
+	Linphone ## C_TYPE *_linphone_ ## C_NAME ## _init() { \
+		Linphone ## C_TYPE * object = belle_sip_object_new(Linphone ## C_TYPE); \
 		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
 		CONSTRUCTOR(object); \
 		return object; \
 	} \
-	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
+	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_TYPE * object) { \
 		DESTRUCTOR(object); \
 		object->cppPtr.~shared_ptr (); \
 	} \
-	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_STRUCT); \
-	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_STRUCT, belle_sip_object_t, \
-	_linphone_ ## C_NAME ## _uninit, \
-	NULL, \
-	NULL, \
-	FALSE \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
+	BELLE_SIP_INSTANCIATE_VPTR( \
+		Linphone ## C_TYPE, \
+		belle_sip_object_t, \
+		_linphone_ ## C_NAME ## _uninit, \
+		NULL, \
+		NULL, \
+		FALSE \
 	);
 
-#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME, ...) \
-	struct _Linphone ## C_STRUCT { \
+// =============================================================================
+// Public Wrapper API.
+// =============================================================================
+
+// -----------------------------------------------------------------------------
+// C object declaration.
+// -----------------------------------------------------------------------------
+
+#define L_C_STRUCT_NO_XTOR(OBJECT)
+
+#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR, ...) \
+	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
-	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
-		Linphone ## C_STRUCT * object = belle_sip_object_new(Linphone ## C_STRUCT); \
-		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
-		return object; \
-	} \
-	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
-		object->cppPtr.~shared_ptr (); \
-	} \
-	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_STRUCT); \
-	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_STRUCT, belle_sip_object_t, \
-	_linphone_ ## C_NAME ## _uninit, \
-	NULL, \
-	NULL, \
-	FALSE \
-	);
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, CONSTRUCTOR, DESTRUCTOR)
 
-#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_STRUCT, C_NAME, ...) \
-	struct _Linphone ## C_STRUCT { \
+#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
+	struct _Linphone ## C_TYPE { \
+		belle_sip_object_t base; \
+		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
+		__VA_ARGS__ \
+	}; \
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, C_NAME, L_C_STRUCT_NO_XTOR, L_C_STRUCT_NO_XTOR)
+
+#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_TYPE, C_NAME, ...) \
+	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		LINPHONE_NAMESPACE::CPP_CLASS *cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_STRUCT); \
-	Linphone ## C_STRUCT *_linphone_ ## C_NAME ## _init() { \
-		return belle_sip_object_new(Linphone ## C_STRUCT); \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
+	Linphone ## C_TYPE *_linphone_ ## C_NAME ## _init() { \
+		return belle_sip_object_new(Linphone ## C_TYPE); \
 	} \
-	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_STRUCT * object) { \
+	void _linphone_ ## C_NAME ## _uninit(Linphone ## C_TYPE * object) { \
 		delete object->cppPtr; \
 	} \
-	void _linphone_ ## C_NAME ## _clone(Linphone ## C_STRUCT * dest, const Linphone ## C_STRUCT * src) { \
+	void _linphone_ ## C_NAME ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
 		L_ASSERT(src->cppPtr); \
 		dest->cppPtr = new LINPHONE_NAMESPACE::CPP_CLASS(*src->cppPtr); \
 	} \
-	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_STRUCT); \
-	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_STRUCT, belle_sip_object_t, \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
+	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_TYPE, belle_sip_object_t, \
 	_linphone_ ## C_NAME ## _uninit, \
 	_linphone_ ## C_NAME ## _clone, \
 	NULL, \
 	FALSE \
 	);
 
-#define L_DECLARE_C_STRUCT_NEW_DEFAULT(STRUCT, C_NAME) \
-	Linphone ## STRUCT * linphone_ ## C_NAME ## _new() { \
-		Linphone ## STRUCT * object = _linphone_ ## C_NAME ## _init(); \
-		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::STRUCT>(); \
+#define L_DECLARE_C_STRUCT_NEW_DEFAULT(C_TYPE, C_NAME) \
+	Linphone ## C_TYPE * linphone_ ## C_NAME ## _new() { \
+		Linphone ## C_TYPE * object = _linphone_ ## C_NAME ## _init(); \
+		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::C_TYPE>(); \
 		return object; \
 	}
+
+// -----------------------------------------------------------------------------
+// Helpers.
+// -----------------------------------------------------------------------------
 
 // String conversions between C/C++.
 #define L_STRING_TO_C(STR) ((STR).empty() ? NULL : (STR).c_str())
