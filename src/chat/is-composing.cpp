@@ -105,7 +105,7 @@ void IsComposing::parse (const string &text) {
 }
 
 void IsComposing::startIdleTimer () {
-	int duration = getIdleTimerDuration();
+	unsigned int duration = getIdleTimerDuration();
 	if (!idleTimer) {
 		idleTimer = sal_create_timer(core->sal, idleTimerExpired, this,
 			duration * 1000, "composing idle timeout");
@@ -115,7 +115,7 @@ void IsComposing::startIdleTimer () {
 }
 
 void IsComposing::startRefreshTimer () {
-	int duration = getRefreshTimerDuration();
+	unsigned int duration = getRefreshTimerDuration();
 	if (!refreshTimer) {
 		refreshTimer = sal_create_timer(core->sal, refreshTimerExpired, this,
 			duration * 1000, "composing refresh timeout");
@@ -125,9 +125,9 @@ void IsComposing::startRefreshTimer () {
 }
 
 void IsComposing::startRemoteRefreshTimer (const char *refreshStr) {
-	int duration = getRemoteRefreshTimerDuration();
+	unsigned int duration = getRemoteRefreshTimerDuration();
 	if (refreshStr)
-		duration = atoi(refreshStr);
+		duration = static_cast<unsigned int>(stoi(refreshStr));
 	if (!remoteRefreshTimer) {
 		remoteRefreshTimer = sal_create_timer(core->sal, remoteRefreshTimerExpired, this,
 			duration * 1000, "composing remote refresh timeout");
@@ -180,16 +180,19 @@ void IsComposing::stopRemoteRefreshTimer () {
 
 // -----------------------------------------------------------------------------
 
-int IsComposing::getIdleTimerDuration () {
-	return lp_config_get_int(core->config, "sip", "composing_idle_timeout", defaultIdleTimeout);
+unsigned int IsComposing::getIdleTimerDuration () {
+	int idleTimerDuration = lp_config_get_int(core->config, "sip", "composing_idle_timeout", defaultIdleTimeout);
+	return idleTimerDuration < 0 ? 0 : static_cast<unsigned int>(idleTimerDuration);
 }
 
-int IsComposing::getRefreshTimerDuration () {
-	return lp_config_get_int(core->config, "sip", "composing_refresh_timeout", defaultRefreshTimeout);
+unsigned int IsComposing::getRefreshTimerDuration () {
+	int refreshTimerDuration = lp_config_get_int(core->config, "sip", "composing_refresh_timeout", defaultRefreshTimeout);
+	return refreshTimerDuration < 0 ? 0 : static_cast<unsigned int>(refreshTimerDuration);
 }
 
-int IsComposing::getRemoteRefreshTimerDuration () {
-	return lp_config_get_int(core->config, "sip", "composing_remote_refresh_timeout", defaultRemoteRefreshTimeout);
+unsigned int IsComposing::getRemoteRefreshTimerDuration () {
+	int remoteRefreshTimerDuration = lp_config_get_int(core->config, "sip", "composing_remote_refresh_timeout", defaultRemoteRefreshTimeout);
+	return remoteRefreshTimerDuration < 0 ? 0 : static_cast<unsigned int>(remoteRefreshTimerDuration); 
 }
 
 void IsComposing::parse (xmlparsing_context_t *xmlCtx) {

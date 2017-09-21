@@ -182,7 +182,7 @@ ortp_socket_t StunClient::createStunSocket (int localPort) {
 	laddr.sin_family = AF_INET;
 	laddr.sin_addr.s_addr = INADDR_ANY;
 	laddr.sin_port = htons(static_cast<uint16_t>(localPort));
-	if (bind(sock, (struct sockaddr *)&laddr, sizeof(laddr)) < 0) {
+	if (::bind(sock, (struct sockaddr *)&laddr, sizeof(laddr)) < 0) {
 		lError() << "Bind socket to 0.0.0.0:" << localPort << " failed: " << getSocketError();
 		close_socket(sock);
 		return -1;
@@ -198,7 +198,7 @@ int StunClient::recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &
 	char buf[MS_STUN_MAX_MESSAGE_SIZE];
 	int len = MS_STUN_MAX_MESSAGE_SIZE;
 
-	len = static_cast<int>(recv(sock, buf, len, 0));
+	len = static_cast<int>(recv(sock, buf, static_cast<size_t>(len), 0));
 	if (len > 0) {
 		struct in_addr ia;
 		MSStunMessage *resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, (ssize_t)len);

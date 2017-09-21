@@ -320,7 +320,7 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 	if (ret==AUDIO_STREAM_FEATURE_ALL){
 		/*since call recording is specified before creation of the stream in linphonecore,
 		* it will be requested on demand. It is not necessary to include it all the time*/
-		ret&=~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+		ret&=(unsigned int) ~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
 	}
 	return ret;
 }
@@ -640,7 +640,7 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	char *pos;
 	char *nextpos;
 	char *params;
-	int found=0;
+	unsigned long found=0;
 	MSCryptoSuite *result=NULL;
 	pos=tmp;
 	do{

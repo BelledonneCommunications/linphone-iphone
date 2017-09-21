@@ -373,7 +373,7 @@ static void presence_model_get_activity(const LinphonePresencePerson *person, st
 	if (st->current_idx != (unsigned)-1) {
 		unsigned int size = (unsigned int)bctbx_list_size(person->activities);
 		if (st->requested_idx < (st->current_idx + size)) {
-			st->activity = (LinphonePresenceActivity *)bctbx_list_nth_data(person->activities, st->requested_idx - st->current_idx);
+			st->activity = (LinphonePresenceActivity *)bctbx_list_nth_data(person->activities, (int)(st->requested_idx - st->current_idx));
 			st->current_idx = (unsigned)-1;
 		} else {
 			st->current_idx += size;
@@ -621,7 +621,7 @@ LinphonePresenceService * linphone_presence_model_get_nth_service(const Linphone
 	if ((model == NULL) || (idx >= linphone_presence_model_get_nb_services(model)))
 		return NULL;
 
-	return (LinphonePresenceService *)bctbx_list_nth_data(model->services, idx);
+	return (LinphonePresenceService *)bctbx_list_nth_data(model->services, (int)idx);
 }
 
 LinphoneStatus linphone_presence_model_add_service(LinphonePresenceModel *model, LinphonePresenceService *service) {
@@ -647,7 +647,7 @@ LinphonePresencePerson * linphone_presence_model_get_nth_person(const LinphonePr
 	if ((model == NULL) || (idx >= linphone_presence_model_get_nb_persons(model)))
 		return NULL;
 
-	return (LinphonePresencePerson *)bctbx_list_nth_data(model->persons, idx);
+	return (LinphonePresencePerson *)bctbx_list_nth_data(model->persons, (int)idx);
 }
 
 LinphoneStatus linphone_presence_model_add_person(LinphonePresenceModel *model, LinphonePresencePerson *person) {
@@ -783,7 +783,7 @@ LinphonePresenceNote * linphone_presence_service_get_nth_note(const LinphonePres
 	if ((service == NULL) || (idx >= linphone_presence_service_get_nb_notes(service)))
 		return NULL;
 
-	return (LinphonePresenceNote *)bctbx_list_nth_data(service->notes, idx);
+	return (LinphonePresenceNote *)bctbx_list_nth_data(service->notes, (int)idx);
 }
 
 LinphoneStatus linphone_presence_service_add_note(LinphonePresenceService *service, LinphonePresenceNote *note) {
@@ -844,7 +844,7 @@ unsigned int linphone_presence_person_get_nb_activities(const LinphonePresencePe
 LinphonePresenceActivity * linphone_presence_person_get_nth_activity(const LinphonePresencePerson *person, unsigned int idx) {
 	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_activities(person)))
 		return NULL;
-	return (LinphonePresenceActivity *)bctbx_list_nth_data(person->activities, idx);
+	return (LinphonePresenceActivity *)bctbx_list_nth_data(person->activities, (int)idx);
 }
 
 LinphoneStatus linphone_presence_person_add_activity(LinphonePresencePerson *person, LinphonePresenceActivity *activity) {
@@ -870,7 +870,7 @@ unsigned int linphone_presence_person_get_nb_notes(const LinphonePresencePerson 
 LinphonePresenceNote * linphone_presence_person_get_nth_note(const LinphonePresencePerson *person, unsigned int idx) {
 	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_notes(person)))
 		return NULL;
-	return (LinphonePresenceNote *)bctbx_list_nth_data(person->notes, idx);
+	return (LinphonePresenceNote *)bctbx_list_nth_data(person->notes, (int)idx);
 }
 
 LinphoneStatus linphone_presence_person_add_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
@@ -895,7 +895,7 @@ unsigned int linphone_presence_person_get_nb_activities_notes(const LinphonePres
 LinphonePresenceNote * linphone_presence_person_get_nth_activities_note(const LinphonePresencePerson *person, unsigned int idx) {
 	if ((person == NULL) || (idx >= linphone_presence_person_get_nb_activities_notes(person)))
 		return NULL;
-	return (LinphonePresenceNote *)bctbx_list_nth_data(person->activities_notes, idx);
+	return (LinphonePresenceNote *)bctbx_list_nth_data(person->activities_notes, (int)idx);
 }
 
 LinphoneStatus linphone_presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
@@ -1275,7 +1275,7 @@ static int process_pidf_xml_presence_services(xmlparsing_context_t *xml_ctx, Lin
 			if (service != NULL) {
 				if (timestamp_str != NULL) presence_service_set_timestamp(service, parse_timestamp(timestamp_str));
 				if (contact_str != NULL) linphone_presence_service_set_contact(service, contact_str);
-				process_pidf_xml_presence_service_notes(xml_ctx, service, i);
+				process_pidf_xml_presence_service_notes(xml_ctx, service, (unsigned int)i);
 				linphone_presence_model_add_service(model, service);
 				linphone_presence_service_unref(service);
 			}
@@ -1415,9 +1415,9 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 			person = presence_person_new(person_id_str, timestamp);
 
 			if (person != NULL) {
-				err = process_pidf_xml_presence_person_activities(xml_ctx, person, i);
+				err = process_pidf_xml_presence_person_activities(xml_ctx, person, (unsigned int)i);
 				if (err == 0) {
-					err = process_pidf_xml_presence_person_notes(xml_ctx, person, i);
+					err = process_pidf_xml_presence_person_notes(xml_ctx, person, (unsigned int)i);
 				}
 				if (err == 0) {
 					presence_model_add_person(model, person);

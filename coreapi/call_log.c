@@ -137,7 +137,7 @@ bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc){
 				continue;
 			cl=linphone_call_log_new(static_cast<LinphoneCallDir>(lp_config_get_int(cfg,logsection,"dir",0)),from,to);
 			cl->status=static_cast<LinphoneCallStatus>(lp_config_get_int(cfg,logsection,"status",0));
-			sec=lp_config_get_int64(cfg,logsection,"start_date_time",0);
+			sec=(uint64_t)lp_config_get_int64(cfg,logsection,"start_date_time",0);
 			if (sec) {
 				/*new call log format with date expressed in seconds */
 				cl->start_date_time=(time_t)sec;

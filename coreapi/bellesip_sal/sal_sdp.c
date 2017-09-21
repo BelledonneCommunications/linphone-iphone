@@ -42,7 +42,7 @@ static void add_ice_candidates(belle_sdp_media_description_t *md, const SalStrea
 			return;
 		}
 		if (candidate->raddr[0] != '\0') {
-			nb = snprintf(buffer + nb, sizeof(buffer) - nb, " raddr %s rport %d", candidate->raddr, candidate->rport);
+			nb = snprintf(buffer + nb, sizeof(buffer) - (size_t)nb, " raddr %s rport %d", candidate->raddr, candidate->rport);
 			if (nb < 0) {
 				ms_error("Cannot add ICE candidate attribute!");
 				return;
@@ -63,7 +63,7 @@ static void add_ice_remote_candidates(belle_sdp_media_description_t *md, const S
 	for (i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; i++) {
 		candidate = &desc->ice_remote_candidates[i];
 		if ((candidate->addr[0] != '\0') && (candidate->port != 0)) {
-			offset = snprintf(ptr, buffer + sizeof(buffer) - ptr, "%s%d %s %d", (i > 0) ? " " : "", i + 1, candidate->addr, candidate->port);
+			offset = snprintf(ptr, (size_t)(buffer + sizeof(buffer) - ptr), "%s%d %s %d", (i > 0) ? " " : "", i + 1, candidate->addr, candidate->port);
 			if (offset < 0) {
 				ms_error("Cannot add ICE remote-candidates attribute!");
 				return;

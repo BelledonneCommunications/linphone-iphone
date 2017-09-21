@@ -93,21 +93,21 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		/* retrieve values : peerZid, sndKey, sndSId, sndIndex, valid from columns 1,2,3,4,5 */
 		length = sqlite3_column_bytes(sqlStmt, 1);
 		if (length==12) { /* peerZID */
-			memcpy(currentPeerKey->peerZID, sqlite3_column_blob(sqlStmt, 1), length);
+			memcpy(currentPeerKey->peerZID, sqlite3_column_blob(sqlStmt, 1), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 2);
 		if (length==32) { /* sndKey */
-			memcpy(currentPeerKey->key, sqlite3_column_blob(sqlStmt, 2), length);
+			memcpy(currentPeerKey->key, sqlite3_column_blob(sqlStmt, 2), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 3);
 		if (length==32) { /* sndSId */
-			memcpy(currentPeerKey->sessionId, sqlite3_column_blob(sqlStmt, 3), length);
+			memcpy(currentPeerKey->sessionId, sqlite3_column_blob(sqlStmt, 3), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
@@ -126,14 +126,14 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		length = sqlite3_column_bytes(sqlStmt, 5);
 		if (length==8) { /* sndIndex : 8 bytes of a int64_t, stored as a blob in big endian */
 			uint8_t *validity = (uint8_t *)sqlite3_column_blob(sqlStmt, 5);
-			validityTimeSpec.tv_sec = ((uint64_t)(validity[0]))<<56 |
+			validityTimeSpec.tv_sec = (int64_t)(((uint64_t)(validity[0]))<<56 |
 							((uint64_t)(validity[1]))<<48 |
 							((uint64_t)(validity[2]))<<40 |
 							((uint64_t)(validity[3]))<<32 |
 							((uint64_t)(validity[4]))<<24 |
 							((uint64_t)(validity[5]))<<16 |
 							((uint64_t)(validity[6]))<<8 |
-							((uint64_t)(validity[7]));
+							((uint64_t)(validity[7])));
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
@@ -210,7 +210,7 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 		/* retrieve values : rcvKey, rcvSId, rcvIndex from columns 1,2,3 */
 		length = sqlite3_column_bytes(sqlStmt, 1);
 		if (length==32) { /* rcvKey */
-			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), length);
+			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), (size_t)length);
 		} else { /* something wrong */
 			sqlite3_finalize(sqlStmt);
 			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
@@ -218,7 +218,7 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 
 		length = sqlite3_column_bytes(sqlStmt, 2);
 		if (length==32) { /* rcvSId */
-			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), length);
+			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), (size_t)length);
 		} else { /* something wrong */
 			sqlite3_finalize(sqlStmt);
 			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
@@ -275,7 +275,7 @@ int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uin
 	/* shall we update valid column? Enforce only when receiver, if timeSpan is 0, just ignore */
 	if (validityTimeSpan > 0 && role == LIME_RECEIVER) {
 		bctbx_get_utc_cur_time(&currentTime);
-		bctbx_timespec_add(&currentTime, validityTimeSpan);
+		bctbx_timespec_add(&currentTime, (int64_t)validityTimeSpan);
 		/* store the int64_t in big endian in the cache(cache is not typed, all data seen as blob) */
 		colValues[3][0] = (uint8_t)((currentTime.tv_sec>>56)&0xFF);
 		colValues[3][1] = (uint8_t)((currentTime.tv_sec>>48)&0xFF);
@@ -566,8 +566,8 @@ int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t 
 	/* dump the whole message doc into the output */
 	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, &local_output, &xmlStringLength, "UTF-8", 0);
 
-	*output = (uint8_t *)ms_malloc(xmlStringLength + 1);
-	memcpy(*output, local_output, xmlStringLength);
+	*output = (uint8_t *)ms_malloc((size_t)xmlStringLength + 1);
+	memcpy(*output, local_output, (size_t)xmlStringLength);
 	(*output)[xmlStringLength] = '\0';
 
 	xmlFree(local_output);

@@ -48,7 +48,7 @@ static xmlChar* convert_iso_to_utf8(const char *in) {
 			ms_free(out);
 			return NULL;
 		} else {
-			out = reinterpret_cast<xmlChar *>(ms_realloc(out, out_size + 1));
+			out = reinterpret_cast<xmlChar *>(ms_realloc(out, (size_t)out_size + 1));
 			out[out_size] = '\0';
 		}
 	}

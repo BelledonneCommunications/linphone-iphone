@@ -942,7 +942,7 @@ int MediaSessionPrivate::selectFixedPort (int streamIndex, pair<int, int> portRa
 int MediaSessionPrivate::selectRandomPort (int streamIndex, pair<int, int> portRange) {
 	for (int nbTries = 0; nbTries < 100; nbTries++) {
 		bool alreadyUsed = false;
-		int triedPort = (ortp_random() % (portRange.second - portRange.first) + portRange.first) & ~0x1;
+		int triedPort = (static_cast<int>(ortp_random()) % (portRange.second - portRange.first) + portRange.first) & ~0x1;
 		if (triedPort < portRange.first) triedPort = portRange.first + 2;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
@@ -1516,7 +1516,7 @@ void MediaSessionPrivate::setupEncryptionKeys (SalMediaDescription *md) {
 			} else {
 				const MSCryptoSuite *suites = linphone_core_get_srtp_crypto_suites(core);
 				for (int j = 0; (suites != nullptr) && (suites[j] != MS_CRYPTO_SUITE_INVALID) && (j < SAL_CRYPTO_ALGO_MAX); j++) {
-					setupEncryptionKey(&md->streams[i].crypto[j], suites[j], j + 1);
+					setupEncryptionKey(&md->streams[i].crypto[j], suites[j], static_cast<unsigned int>(j) + 1);
 				}
 			}
 		}
@@ -2850,8 +2850,8 @@ void MediaSessionPrivate::startVideoStream (LinphoneCallState targetState) {
 				videoStream->staticimage_webcam_fps_optimization = false;
 			const LinphoneVideoDefinition *vdef = linphone_core_get_preferred_video_definition(core);
 			MSVideoSize vsize;
-			vsize.width = linphone_video_definition_get_width(vdef);
-			vsize.height = linphone_video_definition_get_height(vdef);
+			vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
+			vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
 			video_stream_set_sent_video_size(videoStream, vsize);
 			video_stream_enable_self_view(videoStream, core->video_conf.selfview);
 			if (videoWindowId)
@@ -3326,7 +3326,7 @@ uint16_t MediaSessionPrivate::getAvpfRrInterval () const {
 	return rrInterval;
 }
 
-int MediaSessionPrivate::getNbActiveStreams () const {
+unsigned int MediaSessionPrivate::getNbActiveStreams () const {
 	SalMediaDescription *md = nullptr;
 	if (op)
 		md = sal_call_get_remote_media_description(op);
@@ -3776,11 +3776,11 @@ void MediaSessionPrivate::updateCurrentParams () const {
 #ifdef VIDEO_ENABLED
 	if (videoStream) {
 		MSVideoSize vsize = video_stream_get_sent_video_size(videoStream);
-		vdef = linphone_video_definition_new(vsize.width, vsize.height, nullptr);
+		vdef = linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr);
 		currentParams->getPrivate()->setSentVideoDefinition(vdef);
 		linphone_video_definition_unref(vdef);
 		vsize = video_stream_get_received_video_size(videoStream);
-		vdef = linphone_video_definition_new(vsize.width, vsize.height, nullptr);
+		vdef = linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr);
 		currentParams->getPrivate()->setReceivedVideoDefinition(vdef);
 		linphone_video_definition_unref(vdef);
 		currentParams->getPrivate()->setSentFps(video_stream_get_sent_framerate(videoStream));
@@ -4350,8 +4350,8 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp) {
 		if (d->videoStream && (d->state == LinphoneCallStreamsRunning)) {
 			const LinphoneVideoDefinition *vdef = linphone_core_get_preferred_video_definition(d->core);
 			MSVideoSize vsize;
-			vsize.width = linphone_video_definition_get_width(vdef);
-			vsize.height = linphone_video_definition_get_height(vdef);
+			vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
+			vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
 			video_stream_set_sent_video_size(d->videoStream, vsize);
 			video_stream_set_fps(d->videoStream, linphone_core_get_preferred_framerate(d->core));
 			if (d->cameraEnabled && (d->videoStream->cam != d->core->video_conf.device))

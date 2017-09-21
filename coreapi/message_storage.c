@@ -209,14 +209,14 @@ static int linphone_chat_message_store_content(LinphoneChatMessage *msg) {
 					);
 		linphone_sql_request(lc->db, buf);
 		sqlite3_free(buf);
-		id = (unsigned int) sqlite3_last_insert_rowid (lc->db);
+		id = (int) sqlite3_last_insert_rowid (lc->db);
 	}
 	return id;
 }
 
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg){
 	LinphoneCore *lc=linphone_chat_room_get_core(linphone_chat_message_get_chat_room(msg));
-	int id = 0;
+	unsigned int id = 0;
 
 	if (lc->db){
 		int content_id = -1;

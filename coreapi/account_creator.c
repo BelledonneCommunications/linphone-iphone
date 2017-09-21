@@ -45,7 +45,7 @@ static const char* ha1_for_passwd(const char* username, const char* realm, const
 
 static unsigned int validate_uri(const char* username, const char* domain, const char* display_name) {
 	LinphoneAddress* addr;
-	int status = 0;
+	unsigned int status = 0;
 	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 	linphone_proxy_config_set_identity(proxy, "sip:?@domain.com");
 

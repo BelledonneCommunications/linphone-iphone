@@ -162,7 +162,7 @@ void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChat
 					while (cur != NULL) {
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
 							xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-							linphone_content_set_size(content, strtol((const char *)fileSizeString, NULL, 10));
+							linphone_content_set_size(content, (size_t)strtol((const char *)fileSizeString, NULL, 10));
 							xmlFree(fileSizeString);
 						}
 

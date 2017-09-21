@@ -46,9 +46,9 @@ public:
 	void stopTimers ();
 
 private:
-	int getIdleTimerDuration ();
-	int getRefreshTimerDuration ();
-	int getRemoteRefreshTimerDuration ();
+	unsigned int getIdleTimerDuration ();
+	unsigned int getRefreshTimerDuration ();
+	unsigned int getRemoteRefreshTimerDuration ();
 	void parse (xmlparsing_context_t *xmlCtx);
 	int idleTimerExpired (unsigned int revents);
 	int refreshTimerExpired (unsigned int revents);

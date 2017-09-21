@@ -193,7 +193,7 @@ private:
 	void audioStreamAuthTokenReady (const std::string &authToken, bool verified);
 	void audioStreamEncryptionChanged (bool encrypted);
 	uint16_t getAvpfRrInterval () const;
-	int getNbActiveStreams () const;
+	unsigned int getNbActiveStreams () const;
 	bool isEncryptionMandatory () const;
 	int mediaParametersChanged (SalMediaDescription *oldMd, SalMediaDescription *newMd);
 	void propagateEncryptionChanged ();

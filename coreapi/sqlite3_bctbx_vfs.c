@@ -77,13 +77,13 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 	int ret;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile){
-		ret = (int)bctbx_file_read(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_read(pFile->pbctbx_file, buf, (size_t)count, (off_t)offset);
 		if( ret==count ){
 			return SQLITE_OK;
 		}
 		else if( ret >= 0 ){
 			/*fill in unread portion of buffer, as requested by sqlite3 documentation*/
-			memset(((uint8_t*)buf) + ret, 0, count-ret);
+			memset(((uint8_t*)buf) + ret, 0, (size_t)(count-ret));
 			return SQLITE_IOERR_SHORT_READ;
 		}else {
 
@@ -106,7 +106,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	int ret;
 	if (pFile ){
-		ret = (int)bctbx_file_write(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_write(pFile->pbctbx_file, buf, (size_t)count, (off_t)offset);
 		if(ret > 0 ) return SQLITE_OK;
 		else {
 			return SQLITE_IOERR_WRITE;

@@ -510,8 +510,8 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 
 void linphone_core_set_log_level_mask(unsigned int loglevel) {
 	//we only have 2 domain for now ortp and belle-sip
-	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, loglevel);
-	bctbx_set_log_level_mask("bzrtp", loglevel); /*need something to set log lvel for all domains*/
+	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, (int)loglevel);
+	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log lvel for all domains*/
 	sal_set_log_level((OrtpLogLevel)loglevel);
 }
 unsigned int linphone_core_get_log_level_mask(void) {
@@ -535,7 +535,7 @@ static int _open_log_collection_file_with_idx(int idx) {
 		return -1;
 	}
 
-	liblinphone_log_collection_file_size = statbuf.st_size;
+	liblinphone_log_collection_file_size = (size_t)statbuf.st_size;
 	return 0;
 }
 
@@ -623,7 +623,7 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
 		fflush(liblinphone_log_collection_file);
 		if (ret > 0) {
-			liblinphone_log_collection_file_size += ret;
+			liblinphone_log_collection_file_size += (size_t)ret;
 			if (liblinphone_log_collection_file_size > liblinphone_log_collection_max_file_size) {
 				_close_log_collection_file();
 				_open_log_collection_file();
@@ -945,7 +945,7 @@ static size_t get_size_of_file_to_upload(const char *filename) {
 	fstat(fileno(output_file), &statbuf);
 	fclose(output_file);
 	ms_free(output_filename);
-	return statbuf.st_size;
+	return (size_t)statbuf.st_size;
 }
 
 void linphone_core_upload_log_collection(LinphoneCore *core) {
@@ -1382,7 +1382,7 @@ static void sip_config_read(LinphoneCore *lc) {
 		!!lp_config_get_int(lc->config,"sip","register_only_when_upnp_is_ok",1);
 	lc->sip_conf.ping_with_options= !!lp_config_get_int(lc->config,"sip","ping_with_options",0);
 	lc->sip_conf.auto_net_state_mon = !!lp_config_get_int(lc->config,"sip","auto_net_state_mon",1);
-	lc->sip_conf.keepalive_period = lp_config_get_int(lc->config,"sip","keepalive_period",10000);
+	lc->sip_conf.keepalive_period = (unsigned int)lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	lc->sip_conf.tcp_tls_keepalive = !!lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
 	sal_use_one_matching_codec_policy(lc->sal, !!lp_config_get_int(lc->config,"sip","only_one_codec",0));
@@ -3161,7 +3161,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	if (lc->prevtime_ms == 0){
 		lc->prevtime_ms = curtime_ms;
 	}
-	if ((diff_time=curtime_ms-lc->prevtime_ms) >= 1000){
+	if ((diff_time=(int64_t)(curtime_ms-lc->prevtime_ms)) >= 1000){
 		one_second_elapsed=TRUE;
 		if (diff_time>3000){
 			/*since monotonic time doesn't increment while machine is sleeping, we don't want to catchup too much*/
@@ -3199,7 +3199,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	}
 
 	if (lc->ringstream && lc->ringstream_autorelease && lc->dmfs_playing_start_time!=0
-		&& (curtime_ms/1000 - lc->dmfs_playing_start_time)>5){
+		&& (curtime_ms/1000 - (uint64_t)lc->dmfs_playing_start_time)>5){
 		MSPlayerState state;
 		bool_t stop=TRUE;
 		if (lc->ringstream->source && ms_filter_call_method(lc->ringstream->source,MS_PLAYER_GET_STATE,&state)==0){
@@ -4762,8 +4762,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 			if (!vdef || linphone_video_definition_is_undefined(vdef)) {
 				vdef = linphone_core_get_preferred_video_definition(lc);
 			}
-			vsize.width = linphone_video_definition_get_width(vdef);
-			vsize.height = linphone_video_definition_get_height(vdef);
+			vsize.width = (int)linphone_video_definition_get_width(vdef);
+			vsize.height = (int)linphone_video_definition_get_height(vdef);
 			lc->previewstream=video_preview_new(lc->factory);
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
@@ -5325,7 +5325,7 @@ void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVide
 
 void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize) {
 	linphone_core_set_preferred_video_definition(lc,
-		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), (unsigned int)vsize.width, (unsigned int)vsize.height));
 }
 
 void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef) {
@@ -5354,7 +5354,7 @@ void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoD
 
 void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize) {
 	linphone_core_set_preview_video_definition(lc,
-		linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height));
+		linphone_factory_find_supported_video_definition(linphone_factory_get(), (unsigned int)vsize.width, (unsigned int)vsize.height));
 }
 
 const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc) {
@@ -5363,8 +5363,8 @@ const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const
 
 MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc) {
 	MSVideoSize vsize = { 0 };
-	vsize.width = linphone_video_definition_get_width(lc->video_conf.preview_vdef);
-	vsize.height = linphone_video_definition_get_height(lc->video_conf.preview_vdef);
+	vsize.width = (int)linphone_video_definition_get_width(lc->video_conf.preview_vdef);
+	vsize.height = (int)linphone_video_definition_get_height(lc->video_conf.preview_vdef);
 	return vsize;
 }
 
@@ -5386,7 +5386,7 @@ LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(con
 	if (lc->previewstream) {
 		vsize = video_preview_get_current_size(lc->previewstream);
 	}
-	return linphone_factory_find_supported_video_definition(linphone_factory_get(), vsize.width, vsize.height);
+	return linphone_factory_find_supported_video_definition(linphone_factory_get(), (unsigned int)vsize.width, (unsigned int)vsize.height);
 #else
 	ms_error("Video support is disabled");
 	return NULL;
@@ -5429,8 +5429,8 @@ const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(con
 
 MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc) {
 	MSVideoSize vsize = { 0 };
-	vsize.width = linphone_video_definition_get_width(lc->video_conf.vdef);
-	vsize.height = linphone_video_definition_get_height(lc->video_conf.vdef);
+	vsize.width = (int)linphone_video_definition_get_width(lc->video_conf.vdef);
+	vsize.height = (int)linphone_video_definition_get_height(lc->video_conf.vdef);
 	return vsize;
 }
 

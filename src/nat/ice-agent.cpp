@@ -152,7 +152,7 @@ void IceAgent::prepareIceForStream (MediaStream *ms, bool createChecklist) {
 	IceCheckList *cl = ice_session_check_list(iceSession, streamIndex);
 	if (!cl && createChecklist) {
 		cl = ice_check_list_new();
-		ice_session_add_check_list(iceSession, cl, streamIndex);
+		ice_session_add_check_list(iceSession, cl, static_cast<unsigned int>(streamIndex));
 		lInfo() << "Created new ICE check list for stream [" << streamIndex << "]";
 	}
 	if (cl)
@@ -206,7 +206,7 @@ void IceAgent::updateFromRemoteMediaDescription (const SalMediaDescription *loca
 		IceCheckList *cl = ice_session_check_list(iceSession, i);
 		if (!cl) continue;
 		if (!sal_stream_description_active(stream)) {
-			ice_session_remove_check_list_from_idx(iceSession, i);
+			ice_session_remove_check_list_from_idx(iceSession, static_cast<unsigned int>(i));
 			mediaSession.getPrivate()->clearIceCheckList(cl);
 		}
 	}

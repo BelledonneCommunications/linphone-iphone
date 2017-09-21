@@ -89,7 +89,7 @@ int Utils::stoi (const string &str, size_t *idx, int base) {
 	int v = static_cast<int>(strtol(str.c_str(), &p, base));
 
 	if (idx)
-		*idx = p - str.c_str();
+		*idx = static_cast<size_t>(p - str.c_str());
 
 	return v;
 }
@@ -99,7 +99,7 @@ double Utils::stod (const string &str, size_t *idx) {
 	double v = strtod(str.c_str(), &p);
 
 	if (idx)
-		*idx = p - str.c_str();
+		*idx = static_cast<size_t>(p - str.c_str());
 
 	return v;
 }
@@ -109,7 +109,7 @@ float Utils::stof (const string &str, size_t *idx) {
 	float v = strtof(str.c_str(), &p);
 
 	if (idx)
-		*idx = p - str.c_str();
+		*idx = static_cast<size_t>(p - str.c_str());
 
 	return v;
 }
@@ -117,6 +117,36 @@ float Utils::stof (const string &str, size_t *idx) {
 bool Utils::stob (const string &str) {
 	const string lowerStr = stringToLower(str);
 	return !lowerStr.empty() && (lowerStr == "true" || lowerStr == "1");
+}
+
+int Utils::stoi (const char *str, size_t *idx, int base) {
+	char *p;
+	int v = static_cast<int>(strtol(str, &p, base));
+
+	if (idx)
+		*idx = static_cast<size_t>(p - str);
+
+	return v;
+}
+
+double Utils::stod (const char *str, size_t *idx) {
+	char *p;
+	double v = strtod(str, &p);
+
+	if (idx)
+		*idx = static_cast<size_t>(p - str);
+
+	return v;
+}
+
+float Utils::stof (const char *str, size_t *idx) {
+	char *p;
+	float v = strtof(str, &p);
+
+	if (idx)
+		*idx = static_cast<size_t>(p - str);
+
+	return v;
 }
 
 string Utils::stringToLower (const string &str) {

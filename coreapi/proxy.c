@@ -119,7 +119,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->reg_sendregister = lc ? !!lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
 	cfg->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
 	cfg->dial_escape_plus = lc ? !!lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
-	cfg->privacy = lc ? lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;
+	cfg->privacy = lc ? (LinphonePrivacyMask)lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;
 	cfg->identity_address = identity ? linphone_address_new(identity) : NULL;
 	cfg->reg_identity = cfg->identity_address ? linphone_address_as_string(cfg->identity_address) : NULL;
 	cfg->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
@@ -1146,7 +1146,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config, key, "avpf_rr_interval", cfg->avpf_rr_interval);
 	lp_config_set_int(config,key,"dial_escape_plus",cfg->dial_escape_plus);
 	lp_config_set_string(config,key,"dial_prefix",cfg->dial_prefix);
-	lp_config_set_int(config,key,"privacy",cfg->privacy);
+	lp_config_set_int(config,key,"privacy",(int)cfg->privacy);
 	if (cfg->refkey) lp_config_set_string(config,key,"refkey",cfg->refkey);
 	lp_config_set_int(config, key, "publish_expires", cfg->publish_expires);
 
@@ -1167,8 +1167,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 #define CONFIGURE_BOOL_VALUE(cfg,config,key,param,param_name) \
 	linphone_proxy_config_enable_##param(cfg, !!lp_config_get_int(config,key,param_name,linphone_proxy_config_##param##_enabled(cfg)));
 
-#define CONFIGURE_INT_VALUE(cfg,config,key,param,param_name) \
-		linphone_proxy_config_set_##param(cfg, !!lp_config_get_int(config,key,param_name,linphone_proxy_config_get_##param(cfg)));
+#define CONFIGURE_INT_VALUE(cfg,config,key,param,param_name, param_type) \
+		linphone_proxy_config_set_##param(cfg, (param_type)lp_config_get_int(config,key,param_name,(int)linphone_proxy_config_get_##param(cfg)));
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc, int index)
 {
@@ -1194,26 +1194,26 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	CONFIGURE_BOOL_VALUE(cfg,config,key,quality_reporting,"quality_reporting_enabled")
 	CONFIGURE_STRING_VALUE(cfg,config,key,quality_reporting_collector,"quality_reporting_collector")
-	CONFIGURE_INT_VALUE(cfg,config,key,quality_reporting_interval,"quality_reporting_interval")
+	CONFIGURE_INT_VALUE(cfg,config,key,quality_reporting_interval,"quality_reporting_interval",int)
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,contact_parameters,"contact_parameters")
 	CONFIGURE_STRING_VALUE(cfg,config,key,contact_uri_parameters,"contact_uri_parameters")
 
-	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires")
+	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires", int)
 	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
 	linphone_proxy_config_set_avpf_mode(cfg,static_cast<LinphoneAVPFMode>(lp_config_get_int(config,key,"avpf",linphone_proxy_config_get_avpf_mode(cfg))));
-	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval")
-	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus")
+	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval",uint8_t)
+	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus",bool_t)
 	CONFIGURE_STRING_VALUE(cfg,config,key,dial_prefix,"dial_prefix")
 
 	tmp=lp_config_get_string(config,key,"type",NULL);
 	if (tmp!=NULL && strlen(tmp)>0)
 		linphone_proxy_config_set_sip_setup(cfg,tmp);
-	CONFIGURE_INT_VALUE(cfg,config,key,privacy,"privacy")
+	CONFIGURE_INT_VALUE(cfg,config,key,privacy,"privacy",LinphonePrivacyMask)
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,ref_key,"refkey")
-	CONFIGURE_INT_VALUE(cfg,config,key,publish_expires,"publish_expires")
+	CONFIGURE_INT_VALUE(cfg,config,key,publish_expires,"publish_expires",int)
 
 	nat_policy_ref = lp_config_get_string(config, key, "nat_policy_ref", NULL);
 	if (nat_policy_ref != NULL) {
@@ -1235,7 +1235,7 @@ static void linphone_proxy_config_activate_sip_setup(LinphoneProxyConfig *cfg){
 		ms_error("Invalid identity for this proxy configuration.");
 		return;
 	}
-	caps=sip_setup_context_get_capabilities(ssc);
+	caps=(unsigned int)sip_setup_context_get_capabilities(ssc);
 	if (caps & SIP_SETUP_CAP_ACCOUNT_MANAGER){
 		if (sip_setup_context_login_account(ssc,cfg->reg_identity,NULL,NULL)!=0){
 			{

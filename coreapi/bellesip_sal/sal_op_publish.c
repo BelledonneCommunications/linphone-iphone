@@ -36,7 +36,7 @@ static void publish_refresher_listener (belle_sip_refresher_t* refresher
 			sip_etag_string = belle_sip_header_get_unparsed_value(sip_etag);
 		}
 		sal_op_set_entity_tag(op, sip_etag_string);
-		sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", status_code,reason_phrase,NULL);
+		sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", (int)status_code,reason_phrase,NULL);
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 		op->base.root->callbacks.on_publish_response(op);
 	}

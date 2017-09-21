@@ -176,8 +176,8 @@ MSVideoSize linphone_call_params_get_received_video_size (const LinphoneCallPara
 	MSVideoSize vsize;
 	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getReceivedVideoDefinition();
 	if (vdef) {
-		vsize.width = linphone_video_definition_get_width(vdef);
-		vsize.height = linphone_video_definition_get_height(vdef);
+		vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
+		vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
 	} else {
 		vsize.width = MS_VIDEO_SIZE_UNKNOWN_W;
 		vsize.height = MS_VIDEO_SIZE_UNKNOWN_H;
@@ -206,8 +206,8 @@ MSVideoSize linphone_call_params_get_sent_video_size (const LinphoneCallParams *
 	MSVideoSize vsize;
 	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getSentVideoDefinition();
 	if (vdef) {
-		vsize.width = linphone_video_definition_get_width(vdef);
-		vsize.height = linphone_video_definition_get_height(vdef);
+		vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
+		vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
 	} else {
 		vsize.width = MS_VIDEO_SIZE_UNKNOWN_W;
 		vsize.height = MS_VIDEO_SIZE_UNKNOWN_H;
@@ -457,11 +457,11 @@ void linphone_call_params_set_update_call_when_ice_completed (LinphoneCallParams
 }
 
 void linphone_call_params_set_sent_vsize (LinphoneCallParams *params, MSVideoSize vsize) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
 }
 
 void linphone_call_params_set_recv_vsize (LinphoneCallParams *params, MSVideoSize vsize) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(linphone_video_definition_new(vsize.width, vsize.height, nullptr));
+	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
 }
 
 void linphone_call_params_set_sent_video_definition (LinphoneCallParams *params, LinphoneVideoDefinition *vdef) {

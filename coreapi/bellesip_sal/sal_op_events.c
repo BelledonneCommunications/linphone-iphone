@@ -52,7 +52,7 @@ static void subscribe_refresher_listener (belle_sip_refresher_t* refresher
 		if (status_code == 503) { /*refresher returns 503 for IO error*/
 			reason = SalReasonIOError;
 		}
-		sal_error_info_set(&op->error_info, reason, "SIP", status_code,reason_phrase,NULL);
+		sal_error_info_set(&op->error_info, reason, "SIP", (int)status_code,reason_phrase,NULL);
 		op->base.root->callbacks.subscribe_response(op,sss, will_retry);
 	}else if (status_code==0){
 		op->base.root->callbacks.on_expire(op);

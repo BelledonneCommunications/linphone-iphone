@@ -32,7 +32,7 @@ static void register_refresher_listener (belle_sip_refresher_t* refresher
 		/*only take first one for now*/
 		op->auth_info=sal_auth_info_create((belle_sip_auth_event_t*)(belle_sip_refresher_get_auth_events(refresher)->data));
 	}
-	sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", status_code,reason_phrase,NULL);
+	sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", (int)status_code,reason_phrase,NULL);
 	if (status_code>=200){
 		sal_op_assign_recv_headers(op,(belle_sip_message_t*)response);
 	}
