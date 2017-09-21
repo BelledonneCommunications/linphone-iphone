@@ -319,19 +319,6 @@ typedef enum _LinphoneCallStatus {
 } LinphoneCallStatus;
 
 /**
- * A chat room message to hold content to be sent.
- * Can be created by linphone_chat_room_create_message().
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatMessage LinphoneChatMessage;
-
-/**
- * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
-
-/**
  * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  * @ingroup chatroom
  */
