@@ -215,7 +215,7 @@ float linphone_call_stats_get_sender_loss_rate (const LinphoneCallStats *stats) 
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->sent_rtcp->b_cont != NULL)
-		msgpullup(stats->sent_rtcp, -1);
+		msgpullup(stats->sent_rtcp, (size_t)-1);
 
 	do{
 		if (rtcp_is_SR(stats->sent_rtcp))
@@ -237,7 +237,7 @@ float linphone_call_stats_get_receiver_loss_rate (const LinphoneCallStats *stats
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->received_rtcp->b_cont != NULL)
-		msgpullup(stats->received_rtcp, -1);
+		msgpullup(stats->received_rtcp, (size_t)-1);
 
 	do{
 		if (rtcp_is_RR(stats->received_rtcp))
@@ -267,7 +267,7 @@ float linphone_call_stats_get_sender_interarrival_jitter (const LinphoneCallStat
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->sent_rtcp->b_cont != NULL)
-		msgpullup(stats->sent_rtcp, -1);
+		msgpullup(stats->sent_rtcp, (size_t)-1);
 	if (rtcp_is_SR(stats->sent_rtcp))
 		srb = rtcp_SR_get_report_block(stats->sent_rtcp, 0);
 	else if (rtcp_is_RR(stats->sent_rtcp))
@@ -286,7 +286,7 @@ float linphone_call_stats_get_receiver_interarrival_jitter (const LinphoneCallSt
 		return 0.0;
 	/* Perform msgpullup() to prevent crashes in rtcp_is_SR() or rtcp_is_RR() if the RTCP packet is composed of several mblk_t structure */
 	if (stats->received_rtcp->b_cont != NULL)
-		msgpullup(stats->received_rtcp, -1);
+		msgpullup(stats->received_rtcp, (size_t)-1);
 	if (rtcp_is_SR(stats->received_rtcp))
 		rrb = rtcp_SR_get_report_block(stats->received_rtcp, 0);
 	else if (rtcp_is_RR(stats->received_rtcp))
