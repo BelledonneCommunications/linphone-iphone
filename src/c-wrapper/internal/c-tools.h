@@ -350,6 +350,9 @@ LINPHONE_END_NAMESPACE
 #define L_STRING_TO_C(STR) ((STR).empty() ? NULL : (STR).c_str())
 #define L_C_TO_STRING(STR) ((STR) == NULL ? std::string() : (STR))
 
+// Call the init function of wrapped C object.
+#define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init ()
+
 // Get the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC< \

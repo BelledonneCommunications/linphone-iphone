@@ -105,7 +105,7 @@ typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
  * An chat message is the object that is sent and received through LinphoneChatRooms.
  * @ingroup chatroom
  */
-typedef struct _LinphoneMessage LinphoneMessage;
+typedef struct _LinphoneChatMessage LinphoneChatMessage;
 
 /**
  * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
