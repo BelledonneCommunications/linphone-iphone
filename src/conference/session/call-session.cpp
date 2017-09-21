@@ -18,7 +18,7 @@
 
 #include <bctoolbox/defs.h>
 
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 
 #include "address/address-p.h"
 #include "conference/session/call-session-p.h"

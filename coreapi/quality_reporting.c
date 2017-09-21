@@ -34,7 +34,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // For migration purpose.
 #include "address/address-p.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 
 #define STR_REASSIGN(dest, src) {\
 	if (dest != NULL) \

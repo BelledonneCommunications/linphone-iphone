@@ -18,8 +18,7 @@
 
 #include "linphone/api/c-chat-room-cbs.h"
 
-// TODO: Remove me later.
-#include "private.h"
+#include "c-wrapper/c-wrapper.h"
 
 // =============================================================================
 

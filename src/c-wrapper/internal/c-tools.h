@@ -1,5 +1,5 @@
 /*
- * c-tools.h
+ * c-wrapper.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify

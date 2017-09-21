@@ -16,10 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/api/c-address.h"
-
 #include "address/address.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 
 // =============================================================================
 

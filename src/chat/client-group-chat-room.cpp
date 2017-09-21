@@ -17,14 +17,11 @@
  */
 
 #include "client-group-chat-room-p.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "conference/participant-p.h"
 #include "logger/logger.h"
 
 // =============================================================================
-
-extern LinphoneChatRoom * _linphone_ChatRoom_init();
-extern LinphoneParticipant * _linphone_Participant_init();
 
 using namespace std;
 

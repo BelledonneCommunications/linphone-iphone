@@ -18,7 +18,7 @@
 
 #include "linphone/api/c-participant.h"
 
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "conference/participant.h"
 
 // =============================================================================

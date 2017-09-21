@@ -16,15 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/call_params.h"
-
-// TODO: Remove me later.
-#include "private.h"
-
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "conference/params/call-session-params-p.h"
 #include "conference/params/media-session-params-p.h"
-#include "conference/params/media-session-params.h"
 
 // =============================================================================
 

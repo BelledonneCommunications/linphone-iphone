@@ -25,7 +25,7 @@
 #include "linphone/core.h"
 #include "private.h"
 
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "chat/chat-room.h"
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {

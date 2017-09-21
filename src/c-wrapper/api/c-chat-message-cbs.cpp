@@ -18,8 +18,7 @@
 
 #include "linphone/api/c-chat-message-cbs.h"
 
-// TODO: Remove me later.
-#include "private.h"
+#include "c-wrapper/c-wrapper.h"
 
 // =============================================================================
 
@@ -66,7 +65,7 @@ void linphone_chat_message_cbs_set_user_data (LinphoneChatMessageCbs *cbs, void 
 	cbs->userData = ud;
 }
 
-LinphoneChatMessageCbsMsgStateChangedCb 
+LinphoneChatMessageCbsMsgStateChangedCb
 linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
 	return cbs->msg_state_changed;
 }

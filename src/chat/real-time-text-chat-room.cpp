@@ -21,10 +21,9 @@
 #include "linphone/utils/utils.h"
 
 #include "real-time-text-chat-room-p.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
 
-extern LinphoneChatRoom * _linphone_ChatRoom_init();
 #define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom)
 
 // =============================================================================

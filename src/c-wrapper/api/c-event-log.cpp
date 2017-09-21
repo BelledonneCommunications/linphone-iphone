@@ -19,7 +19,7 @@
 #include "linphone/api/c-chat-message.h"
 #include "linphone/api/c-event-log.h"
 
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "call/call.h"
 #include "chat/chat-message.h"
 #include "event-log/call-event.h"
@@ -72,9 +72,6 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneC
 	);
 	return call_event;
 }
-
-// TODO: REMOVE ME.
-extern LinphoneCall *_linphone_Call_init ();
 
 LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event) {
 	return L_GET_C_BACK_PTR(
@@ -136,9 +133,6 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 	);
 	return chat_message_event;
 }
-
-// TODO: REMOVE ME.
-extern LinphoneChatMessage *_linphone_ChatMessage_init ();
 
 LinphoneChatMessage *linphone_chat_message_event_get_chat_message (const LinphoneChatMessageEvent *chat_message_event) {
 	return L_GET_C_BACK_PTR(

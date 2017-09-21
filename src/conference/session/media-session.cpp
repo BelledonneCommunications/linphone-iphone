@@ -20,7 +20,7 @@
 #include <math.h>
 
 #include "address/address-p.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "conference/session/media-session-p.h"
 #include "call/call-p.h"
 #include "conference/participant-p.h"

@@ -35,7 +35,7 @@
 #include "ortp/b64.h"
 #include "linphone/wrapper_utils.h"
 
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "chat/basic-chat-room.h"
 #include "chat/client-group-chat-room.h"
 #include "chat/real-time-text-chat-room.h"

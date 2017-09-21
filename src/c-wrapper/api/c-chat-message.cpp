@@ -16,21 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/chat.h"
-#include "linphone/wrapper_utils.h"
+#include "linphone/api/c-chat-message.h"
 #include "linphone/utils/utils.h"
+#include "linphone/wrapper_utils.h"
+
 #include "ortp/b64.h"
 
-// TODO: Remove me later.
-#include "private.h"
-
-#include "chat/chat-room.h"
+#include "c-wrapper/c-wrapper.h"
+#include "chat/chat-message-p.h"
 #include "chat/chat-room-p.h"
 #include "chat/real-time-text-chat-room-p.h"
 #include "content/content-type.h"
-#include "c-wrapper/c-tools.h"
-#include "chat/chat-message.h"
-#include "chat/chat-message-p.h"
 
 // =============================================================================
 
@@ -626,9 +622,9 @@ LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMe
 }
 
 static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
-	return (linphone_chat_message_get_chat_room(msg) && 
-		linphone_chat_room_get_core(linphone_chat_message_get_chat_room(msg)) && 
-		linphone_chat_message_get_http_request(msg) && 
+	return (linphone_chat_message_get_chat_room(msg) &&
+		linphone_chat_room_get_core(linphone_chat_message_get_chat_room(msg)) &&
+		linphone_chat_message_get_http_request(msg) &&
 		!belle_http_request_is_cancelled(linphone_chat_message_get_http_request(msg)));
 }
 

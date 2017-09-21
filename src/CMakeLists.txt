@@ -23,7 +23,8 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
-	c-wrapper/c-tools.h
+	c-wrapper/c-wrapper.h
+	c-wrapper/internal/c-tools.h
 	call/call-listener.h
 	call/call-p.h
 	call/call.h

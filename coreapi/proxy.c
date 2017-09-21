@@ -31,7 +31,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 // For migration purpose.
 #include "address/address-p.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {

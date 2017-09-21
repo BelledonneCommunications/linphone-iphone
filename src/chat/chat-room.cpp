@@ -18,10 +18,10 @@
 
 #include <algorithm>
 
+#include "linphone/api/c-chat-message.h"
 #include "linphone/utils/utils.h"
 
-#include "linphone/api/c-chat-message.h"
-#include "c-wrapper/c-tools.h"
+#include "c-wrapper/c-wrapper.h"
 #include "chat-room-p.h"
 #include "content/content-type.h"
 #include "imdn.h"
@@ -29,7 +29,6 @@
 
 #include "chat-room.h"
 
-extern LinphoneChatRoom * _linphone_ChatRoom_init();
 #define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom)
 
 // =============================================================================

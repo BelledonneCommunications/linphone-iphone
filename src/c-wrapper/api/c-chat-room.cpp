@@ -16,19 +16,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/chat.h"
-#include "linphone/wrapper_utils.h"
-
 // TODO: Remove me later.
-#include "private.h"
+#include "linphone/chat.h"
 
-#include "c-wrapper/c-tools.h"
+#include "linphone/api/c-chat-room.h"
+
+#include "c-wrapper/c-wrapper.h"
 #include "chat/basic-chat-room.h"
-#include "chat/chat-room-p.h"
-#include "chat/chat-room.h"
 #include "chat/client-group-chat-room.h"
 #include "chat/real-time-text-chat-room-p.h"
-#include "chat/real-time-text-chat-room.h"
 
 // =============================================================================
 
@@ -36,8 +32,6 @@
 #define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, ChatRoom)
 
 using namespace std;
-
-extern LinphoneParticipant *_linphone_Participant_init ();
 
 static void _linphone_chat_room_constructor (LinphoneChatRoom *cr);
 static void _linphone_chat_room_destructor (LinphoneChatRoom *cr);
