@@ -605,11 +605,11 @@ static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status){
 		return;
 	}
 	// check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
-	if (chat_msg->chat_room != NULL) {
+	if (linphone_chat_message_get_chat_room(chat_msg) != NULL) {
 		linphone_chat_message_update_state(chat_msg, chatStatusSal2Linphone(status));
 	}
 	if (status != SalMessageDeliveryInProgress) { /*only release op if not in progress*/
-		linphone_chat_message_destroy(chat_msg);
+		linphone_chat_message_unref(chat_msg);
 	}
 }
 

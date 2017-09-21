@@ -129,11 +129,6 @@ extern "C" {
 #define STRING_TRANSFER(field, newvalue)	do{ if (field){bctbx_free(field);field=NULL;}; field=newvalue; }while(0)
 
 
-typedef enum _ImdnType {
-	ImdnTypeDelivery,
-	ImdnTypeDisplay
-} ImdnType;
-
 
 struct _LinphoneQualityReporting{
 	reporting_session_report_t * reports[3]; /**Store information on audio and video media streams (RFC 6035) */
@@ -174,14 +169,9 @@ typedef struct _CallCallbackObj
 	void * _user_data;
 }CallCallbackObj;
 
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessageCbs);
+//BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessageCbs);
 
-typedef enum _LinphoneChatMessageDir{
-	LinphoneChatMessageIncoming,
-	LinphoneChatMessageOutgoing
-} LinphoneChatMessageDir;
-
-struct _LinphoneChatMessage {
+/*struct _LinphoneChatMessage {
 	belle_sip_object_t base;
 	LinphoneChatRoom* chat_room;
 	LinphoneChatMessageCbs *callbacks;
@@ -201,11 +191,11 @@ struct _LinphoneChatMessage {
 	unsigned int storage_id;
 	char *message_id;
 	SalOp *op;
-	LinphoneContent *file_transfer_information; /**< used to store file transfer information when the message is of file transfer type */
-	char *content_type; /**< is used to specified the type of message to be sent, used only for file transfer message */
+	LinphoneContent *file_transfer_information; //< used to store file transfer information when the message is of file transfer type
+	char *content_type; //< is used to specified the type of message to be sent, used only for file transfer message
 	bool_t to_be_stored;
-	belle_http_request_t *http_request; /**< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer */
-	belle_http_request_listener_t *http_listener; /* our listener, only owned by us*/
+	belle_http_request_t *http_request; //< keep a reference to the http_request in case of file transfer in order to be able to cancel the transfer
+	belle_http_request_listener_t *http_listener; // our listener, only owned by us
 	char *file_transfer_filepath;
 	unsigned long bg_task_id;
 	bool_t is_secured;
@@ -223,9 +213,7 @@ struct _LinphoneChatMessage {
 #if defined(__clang__) || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic pop
 #endif
-};
-
-BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessage);
+};*/
 
 typedef struct StunCandidate{
 	char addr[64];
@@ -500,22 +488,6 @@ void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
 LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void);
-void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
-void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
-void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);
-void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
-void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
-void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref);
-int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
-LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
-LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
-void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
-void linphone_chat_message_release(LinphoneChatMessage *msg);
-void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg);
-void linphone_chat_message_fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id);
-void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
 /**/
 
 struct _LinphoneProxyConfig

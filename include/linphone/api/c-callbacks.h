@@ -33,6 +33,50 @@
  * @addtogroup chatroom
  * @{
  */
+ 
+ /**
+ * Call back used to notify message delivery status
+ * @param msg #LinphoneChatMessage object
+ * @param status LinphoneChatMessageState
+ * @param ud application user data
+ * @deprecated Use LinphoneChatMessageCbsMsgStateChangedCb instead.
+ * @donotwrap
+ */
+typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
+
+/**
+ * Call back used to notify message delivery status
+ * @param msg #LinphoneChatMessage object
+ * @param status LinphoneChatMessageState
+ */
+typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg, LinphoneChatMessageState state);
+
+/**
+ * File transfer receive callback prototype. This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
+ * @param message #LinphoneChatMessage message from which the body is received.
+ * @param content #LinphoneContent incoming content information
+ * @param buffer #LinphoneBuffer holding the received data. Empty buffer means end of file.
+ */
+typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *message, const LinphoneContent* content, const LinphoneBuffer *buffer);
+
+/**
+ * File transfer send callback prototype. This function is called by the core when an outgoing file transfer is started. This function is called until size is set to 0.
+ * @param message #LinphoneChatMessage message from which the body is received.
+ * @param content #LinphoneContent outgoing content
+ * @param offset the offset in the file from where to get the data to be sent
+ * @param size the number of bytes expected by the framework
+ * @return A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
+ */
+typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size);
+
+/**
+ * File transfer progress indication callback prototype.
+ * @param message #LinphoneChatMessage message from which the body is received.
+ * @param content #LinphoneContent incoming content information
+ * @param offset The number of bytes sent/received since the beginning of the transfer.
+ * @param total The total number of bytes to be sent/received.
+ */
+typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneChatMessage *message, const LinphoneContent* content, size_t offset, size_t total);
 
 /**
  * Is composing notification callback prototype.

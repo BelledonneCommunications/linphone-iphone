@@ -32,6 +32,8 @@
  * @addtogroup chatroom
  * @{
  */
+ 
+LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 
 /**
  * Acquire a reference to the chat room callbacks object.

@@ -113,18 +113,18 @@ LinphoneChatMessage *linphone_chat_room_create_message_2 (
 ) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, message);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	msg->external_body_url = external_body_url ? ms_strdup(external_body_url) : NULL;
-	msg->time = time;
-	msg->is_secured = FALSE;
+	linphone_chat_message_set_external_body_url(msg, external_body_url ? ms_strdup(external_body_url) : NULL);
+	linphone_chat_message_set_time(msg, time);
+	linphone_chat_message_set_is_secured(msg, FALSE);
 	linphone_chat_message_set_state(msg, state);
 	if (is_incoming) {
-		msg->dir = LinphoneChatMessageIncoming;
-		linphone_chat_message_set_from(msg, linphone_chat_room_get_peer_address(cr));
-		msg->to = linphone_address_new(linphone_core_get_identity(lc)); /*direct assignment*/
+		linphone_chat_message_set_incoming(msg);
+		linphone_chat_message_set_from_address(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_to_address(msg, linphone_address_new(linphone_core_get_identity(lc)));
 	} else {
-		msg->dir = LinphoneChatMessageOutgoing;
-		linphone_chat_message_set_to(msg, linphone_chat_room_get_peer_address(cr));
-		msg->from = linphone_address_new(linphone_core_get_identity(lc)); /*direct assignment*/
+		linphone_chat_message_set_outgoing(msg);
+		linphone_chat_message_set_to_address(msg, linphone_chat_room_get_peer_address(cr));
+		linphone_chat_message_set_from_address(msg, linphone_address_new(linphone_core_get_identity(lc)));
 	}
 	return msg;
 }
@@ -135,8 +135,8 @@ void linphone_chat_room_send_message2 (
 	LinphoneChatMessageStateChangedCb status_cb,
 	void *ud
 ) {
-	msg->message_state_changed_cb = status_cb;
-	msg->message_state_changed_user_data = ud;
+	linphone_chat_message_set_message_state_changed_cb(msg, status_cb);
+	linphone_chat_message_set_message_state_changed_cb_user_data(msg, ud);
 	GET_CPP_PTR(cr)->sendMessage(msg);
 }
 
