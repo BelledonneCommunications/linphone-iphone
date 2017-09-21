@@ -409,6 +409,7 @@ void _linphone_call_stats_uninit(LinphoneCallStats *stats);
 void _linphone_call_stats_clone(LinphoneCallStats *dst, const LinphoneCallStats *src);
 void _linphone_call_stats_set_ice_state (LinphoneCallStats *stats, LinphoneIceState state);
 void _linphone_call_stats_set_type (LinphoneCallStats *stats, LinphoneStreamType type);
+mblk_t *_linphone_call_stats_get_received_rtcp (const LinphoneCallStats *stats);
 void _linphone_call_stats_set_received_rtcp (LinphoneCallStats *stats, mblk_t *m);
 void _linphone_call_stats_set_sent_rtcp (LinphoneCallStats *stats, mblk_t *m);
 int _linphone_call_stats_get_updated (const LinphoneCallStats *stats);
@@ -419,6 +420,7 @@ void _linphone_call_stats_set_upload_bandwidth (LinphoneCallStats *stats, float 
 void _linphone_call_stats_set_rtcp_download_bandwidth (LinphoneCallStats *stats, float bandwidth);
 void _linphone_call_stats_set_rtcp_upload_bandwidth (LinphoneCallStats *stats, float bandwidth);
 void _linphone_call_stats_set_ip_family_of_remote (LinphoneCallStats *stats, LinphoneAddressFamily family);
+bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stats);
 void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer);
 void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md);

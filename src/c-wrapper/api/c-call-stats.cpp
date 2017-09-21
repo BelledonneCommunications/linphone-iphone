@@ -106,6 +106,10 @@ void _linphone_call_stats_set_type (LinphoneCallStats *stats, LinphoneStreamType
 	stats->type = type;
 }
 
+mblk_t *_linphone_call_stats_get_received_rtcp (const LinphoneCallStats *stats) {
+	return stats->received_rtcp;
+}
+
 void _linphone_call_stats_set_received_rtcp (LinphoneCallStats *stats, mblk_t *m) {
 	stats->received_rtcp = m;
 }
@@ -144,6 +148,10 @@ void _linphone_call_stats_set_rtcp_upload_bandwidth (LinphoneCallStats *stats, f
 
 void _linphone_call_stats_set_ip_family_of_remote (LinphoneCallStats *stats, LinphoneAddressFamily family) {
 	stats->rtp_remote_family = family;
+}
+
+bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stats) {
+	return stats->rtcp_received_via_mux;
 }
 
 // =============================================================================

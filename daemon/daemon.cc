@@ -166,19 +166,19 @@ CallStatsResponse::CallStatsResponse(Daemon *daemon, LinphoneCall *call, const L
 		ostr << "Event-type: call-stats\n";
 		ostr << "Id: " << daemon->updateCallId(call) << "\n";
 		ostr << "Type: ";
-		if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+		if (linphone_call_stats_get_type(stats) == LINPHONE_CALL_STATS_AUDIO) {
 			ostr << "Audio";
 		} else {
 			ostr << "Video";
 		}
 		ostr << "\n";
 	} else {
-		prefix = ((stats->type == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
+		prefix = ((linphone_call_stats_get_type(stats) == LINPHONE_CALL_STATS_AUDIO) ? "Audio-" : "Video-");
 	}
 
 	printCallStatsHelper(ostr, stats, prefix);
 
-	if (stats->type == LINPHONE_CALL_STATS_AUDIO) {
+	if (linphone_call_stats_get_type(stats) == LINPHONE_CALL_STATS_AUDIO) {
 		const PayloadType *audioCodec = linphone_call_params_get_used_audio_codec(callParams);
 		ostr << PayloadTypeResponse(linphone_call_get_core(call), audioCodec, -1, prefix, false).getBody() << "\n";
 	} else {
@@ -353,9 +353,9 @@ LinphoneSoundDaemon *Daemon::getLSD() {
 }
 
 int Daemon::updateCallId(LinphoneCall *call) {
-	int val = VOIDPTR_TO_INT(linphone_call_get_user_pointer(call));
+	int val = VOIDPTR_TO_INT(linphone_call_get_user_data(call));
 	if (val == 0) {
-		linphone_call_set_user_pointer(call, INT_TO_VOIDPTR(++mCallIds));
+		linphone_call_set_user_data(call, INT_TO_VOIDPTR(++mCallIds));
 		return mCallIds;
 	}
 	return val;
@@ -365,7 +365,7 @@ LinphoneCall *Daemon::findCall(int id) {
 	const bctbx_list_t *elem = linphone_core_get_calls(mLc);
 	for (; elem != NULL; elem = elem->next) {
 		LinphoneCall *call = (LinphoneCall *) elem->data;
-		if (VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)) == id)
+		if (VOIDPTR_TO_INT(linphone_call_get_user_data(call)) == id)
 			return call;
 	}
 	return NULL;
@@ -518,7 +518,7 @@ void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
 	if (mUseStatsEvents) {
 		/* don't queue periodical updates (3 per seconds for just bandwidth updates) */
-		if (!(stats->updated & LINPHONE_CALL_STATS_PERIODICAL_UPDATE)){
+		if (!(_linphone_call_stats_get_updated(stats) & LINPHONE_CALL_STATS_PERIODICAL_UPDATE)){
 			mEventQueue.push(new CallStatsResponse(this, call, stats, true));
 		}
 	}

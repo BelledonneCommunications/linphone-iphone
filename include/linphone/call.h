@@ -21,5 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define LINPHONE_CALL_H
 
 #include "linphone/api/c-call.h"
+#include "linphone/api/c-call-cbs.h"
+#include "linphone/api/c-call-stats.h"
 
 #endif /* LINPHONE_CALL_H */

@@ -2492,7 +2492,7 @@ static void lpc_display_call_states(LinphoneCore *lc){
 			tmp=linphone_call_get_remote_address_as_string (call);
 			flag=in_conference ? "conferencing" : "";
 			flag=linphone_call_has_transfer_pending(call) ? "transfer pending" : flag;
-			linphonec_out("%-2i | %-35s | %-15s | %s\n",VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)),
+			linphonec_out("%-2i | %-35s | %-15s | %s\n",VOIDPTR_TO_INT(linphone_call_get_user_data(call)),
 						  tmp,linphone_call_state_to_string(linphone_call_get_state(call))+strlen("LinphoneCall"),flag);
 			ms_free(tmp);
 		}

@@ -699,7 +699,7 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 	}
 
 	stats = linphone_call_get_audio_stats(c1);
-	if (stats->ice_state == LinphoneIceStateHostConnection && media_stream_started(ms)) {
+	if (linphone_call_stats_get_ice_state(stats) == LinphoneIceStateHostConnection && media_stream_started(ms)) {
 		struct sockaddr_storage remaddr;
 		socklen_t remaddrlen = sizeof(remaddr);
 		char ip[NI_MAXHOST] = { 0 };
@@ -758,8 +758,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			if ((c1 != NULL) && (c2 != NULL)) {
 				LinphoneCallStats *stats1 = linphone_call_get_audio_stats(c1);
 				LinphoneCallStats *stats2 = linphone_call_get_audio_stats(c2);
-				if (stats1->ice_state==state &&
-					stats2->ice_state==state){
+				if (linphone_call_stats_get_ice_state(stats1)==state &&
+					linphone_call_stats_get_ice_state(stats2)==state){
 					audio_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeAudio);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeAudio);
@@ -780,8 +780,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			if ((c1 != NULL) && (c2 != NULL)) {
 				LinphoneCallStats *stats1 = linphone_call_get_video_stats(c1);
 				LinphoneCallStats *stats2 = linphone_call_get_video_stats(c2);
-				if (stats1->ice_state==state &&
-					stats2->ice_state==state){
+				if (linphone_call_stats_get_ice_state(stats1)==state &&
+					linphone_call_stats_get_ice_state(stats2)==state){
 					video_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeVideo);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeVideo);
@@ -802,8 +802,8 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 			if ((c1 != NULL) && (c2 != NULL)) {
 				LinphoneCallStats *stats1 = linphone_call_get_text_stats(c1);
 				LinphoneCallStats *stats2 = linphone_call_get_text_stats(c2);
-				if (stats1->ice_state==state &&
-					stats2->ice_state==state){
+				if (linphone_call_stats_get_ice_state(stats1)==state &&
+					linphone_call_stats_get_ice_state(stats2)==state){
 					text_success=TRUE;
 					check_ice_from_rtp(c1,c2,LinphoneStreamTypeText);
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeText);

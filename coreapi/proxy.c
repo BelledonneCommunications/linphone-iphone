@@ -119,7 +119,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->reg_sendregister = lc ? !!lp_config_get_default_int(lc->config, "proxy", "reg_sendregister", 1) : 1;
 	cfg->dial_prefix = dial_prefix ? ms_strdup(dial_prefix) : NULL;
 	cfg->dial_escape_plus = lc ? !!lp_config_get_default_int(lc->config, "proxy", "dial_escape_plus", 0) : 0;
-	cfg->privacy = lc ? (LinphonePrivacyMask)lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : LinphonePrivacyDefault;
+	cfg->privacy = lc ? (LinphonePrivacyMask)lp_config_get_default_int(lc->config, "proxy", "privacy", LinphonePrivacyDefault) : (LinphonePrivacyMask)LinphonePrivacyDefault;
 	cfg->identity_address = identity ? linphone_address_new(identity) : NULL;
 	cfg->reg_identity = cfg->identity_address ? linphone_address_as_string(cfg->identity_address) : NULL;
 	cfg->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
