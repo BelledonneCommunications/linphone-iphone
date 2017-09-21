@@ -4887,7 +4887,7 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			ms_message("Video bandwidth estimation is %i kbit/s", (int)evd->info.video_bandwidth_available / 1000);
 			/* If this event happens then it should be a video stream */
 			if (stream_index == call->main_video_stream_index)
-				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*1e-3;
+				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*(float)1e-3;
 		}
 		ortp_event_destroy(ev);
 	}
