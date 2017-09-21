@@ -19,7 +19,6 @@
 #ifndef _C_CHAT_MESSAGE_H_
 #define _C_CHAT_MESSAGE_H_
  
-#include "sal/sal.h"
 #include "linphone/api/c-types.h"
 #include "linphone/api/c-chat-message-cbs.h"
 
@@ -189,46 +188,6 @@ LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(const Linp
  * @return The path to the file to use for the file transfer.
  */
 LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg);
-
-// =============================================================================
-
-void linphone_chat_message_set_time(LinphoneChatMessage* msg, time_t time);
-
-void linphone_chat_message_set_incoming(LinphoneChatMessage *msg);
-
-void linphone_chat_message_set_outgoing(LinphoneChatMessage *msg);
-
-void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb);
-
-void linphone_chat_message_set_message_state_changed_cb_user_data(LinphoneChatMessage* msg, void *user_data);
-
-void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChatMessage* msg);
-
-void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
-
-void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id);
-
-void linphone_chat_message_set_is_read(LinphoneChatMessage *msg, bool_t is_read);
-
-void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int id);
-
-SalCustomHeader * linphone_chat_message_get_sal_custom_headers(const LinphoneChatMessage *msg);
-
-void linphone_chat_message_set_sal_custom_headers(LinphoneChatMessage *msg, SalCustomHeader *header);
-
-belle_http_request_t * linphone_chat_message_get_http_request(const LinphoneChatMessage *msg);
-
-void linphone_chat_message_set_http_request(LinphoneChatMessage *msg, belle_http_request_t *request);
-
-void linphone_chat_message_set_file_transfer_information(LinphoneChatMessage *msg, LinphoneContent *content);
-
-LinphoneChatMessageDir linphone_chat_message_get_direction(const LinphoneChatMessage *msg);
-
-SalOp * linphone_chat_message_get_sal_op(const LinphoneChatMessage *msg);
-
-void linphone_chat_message_set_sal_op(LinphoneChatMessage *msg, SalOp *op);
-
-void linphone_chat_message_set_chat_room(LinphoneChatMessage *msg, LinphoneChatRoom *room);
 
 // =============================================================================
 
@@ -405,23 +364,6 @@ LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessag
  * @return The LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg);
-
-// =============================================================================
-
-void linphone_chat_message_destroy(LinphoneChatMessage* msg);
-void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
-void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);
-void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *cm, LinphoneReason reason);
-void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm);
-void _linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg, bool_t unref);
-int linphone_chat_room_upload_file(LinphoneChatMessage *msg);
-LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
-void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
-void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
-void linphone_chat_message_release(LinphoneChatMessage *msg);
-void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg);
-void linphone_chat_message_fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id);
-void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
 
 /**
  * @}
