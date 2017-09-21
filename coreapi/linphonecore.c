@@ -580,7 +580,7 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 #else
 		/* This works on 32 bits, luckily. */
 		/* TODO: va_copy is available in Visual Studio 2013. */
-		liblinphone_log_func(domain, level, fmt, args);
+		liblinphone_user_log_func(domain, level, fmt, args);
 #endif
 	}
 
@@ -2157,11 +2157,11 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
 	const char *msplugins_dir;
 	const char *image_resources_dir;
-	
+
 	bctbx_init_logger(FALSE);
 	if (liblinphone_user_log_func && liblinphone_current_log_func == NULL)
 		bctbx_set_log_handler(liblinphone_current_log_func=liblinphone_user_log_func); /*default value*/
-	
+
 	ms_message("Initializing LinphoneCore %s", linphone_core_get_version());
 
 	lc->config=lp_config_ref(config);
@@ -2191,7 +2191,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_set_log_handler(NULL); /*remove ortp default log handler*/
 	ortp_init();
-	
+
 	linphone_core_activate_log_serialization_if_needed();
 
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
@@ -3571,7 +3571,7 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE) lc->current_call=call;
 	linphone_call_set_state (call,LinphoneCallOutgoingInit,"Starting outgoing call");
 	call->log->start_date_time=ms_time(NULL);
-	
+
 	if (linphone_nat_policy_ice_enabled(call->nat_policy)) {
 		if (lc->sip_conf.sdp_200_ack){
 			ms_warning("ICE is not supported when sending INVITE without SDP");
