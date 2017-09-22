@@ -25,7 +25,7 @@
 // TODO: From coreapi. Remove me later.
 #include "private.h"
 
-#include "variant/variant.h"
+#include "object/property-container.h"
 
 // =============================================================================
 // Internal.
@@ -215,28 +215,24 @@ public:
 	// Get/set user data.
 	// ---------------------------------------------------------------------------
 
-	template<typename T>
-	static void *getUserData (const std::shared_ptr<T> &cppPtr) {
-		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
-		return v.getValue<void *>();
+	static inline void *getUserData (const std::shared_ptr<const PropertyContainer> &propertyContainer) {
+		L_ASSERT(propertyContainer);
+		return propertyContainer->getProperty("LinphonePrivate::Wrapper::userData").getValue<void *>();
 	}
 
-	template<typename T>
-	static void *getUserData (T *cppPtr) {
-		Variant v = cppPtr->getProperty("LinphonePrivate::Wrapper::userData");
-		return v.getValue<void *>();
+	static inline void *getUserData (const PropertyContainer *propertyContainer) {
+		L_ASSERT(propertyContainer);
+		return propertyContainer->getProperty("LinphonePrivate::Wrapper::userData").getValue<void *>();
 	}
 
-	template<typename T>
-	static inline void setUserData (const std::shared_ptr<T> &object, void *value) {
-		L_ASSERT(object);
-		object->setProperty("LinphonePrivate::Wrapper::userData", value);
+	static inline void setUserData (const std::shared_ptr<PropertyContainer> &propertyContainer, void *value) {
+		L_ASSERT(propertyContainer);
+		propertyContainer->setProperty("LinphonePrivate::Wrapper::userData", value);
 	}
 
-	template<typename T>
-	static inline void setUserData (T *object, void *value) {
-		L_ASSERT(object);
-		object->setProperty("LinphonePrivate::Wrapper::userData", value);
+	static inline void setUserData (PropertyContainer *propertyContainer, void *value) {
+		L_ASSERT(propertyContainer);
+		propertyContainer->setProperty("LinphonePrivate::Wrapper::userData", value);
 	}
 
 	// ---------------------------------------------------------------------------
