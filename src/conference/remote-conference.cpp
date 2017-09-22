@@ -60,13 +60,13 @@ void RemoteConference::removeParticipant (const shared_ptr<const Participant> &p
 }
 
 
-string RemoteConference::getResourceLists(const list<shared_ptr<const Participant>> &participants) {
+string RemoteConference::getResourceLists(const list<shared_ptr<const Address>> &addresses) {
 	ResourceLists rl = ResourceLists();
 	ListType l = ListType();
-	for(const auto &p : participants) {
-		EntryType entry = EntryType(p->getAddress().asStringUriOnly());
-		if(p->getAddress().getDisplayName() != "") {
-			entry.setDisplayName(DisplayName(p->getAddress().getDisplayName()));
+	for(const auto &addr : addresses) {
+		EntryType entry = EntryType(addr->asStringUriOnly());
+		if(addr->getDisplayName() != "") {
+			entry.setDisplayName(DisplayName(addr->getDisplayName()));
 		}
 		l.getEntry().push_back(entry);
 	}
