@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 class RemoteConference : public Conference, public ConferenceListener {
 public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
-	virtual ~RemoteConference() = default;
+	virtual ~RemoteConference();
 
 protected:
 	std::shared_ptr<Participant> focus = nullptr;

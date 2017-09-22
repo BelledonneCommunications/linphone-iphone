@@ -30,6 +30,10 @@ RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress
 	eventHandler = new RemoteConferenceEventHandler(core, this);
 }
 
+RemoteConference::~RemoteConference () {
+	delete eventHandler;
+}
+
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> RemoteConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {

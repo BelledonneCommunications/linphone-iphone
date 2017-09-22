@@ -72,11 +72,11 @@ MediaSessionPrivate::MediaSessionPrivate (const Conference &conference, const Ca
 		params = new MediaSessionParams(*(reinterpret_cast<const MediaSessionParams *>(csp)));
 	currentParams = new MediaSessionParams();
 
-	audioStats = linphone_call_stats_ref(_linphone_call_stats_new());
+	audioStats = _linphone_call_stats_new();
 	initStats(audioStats, LinphoneStreamTypeAudio);
-	videoStats = linphone_call_stats_ref(_linphone_call_stats_new());
+	videoStats = _linphone_call_stats_new();
 	initStats(videoStats, LinphoneStreamTypeVideo);
-	textStats = linphone_call_stats_ref(_linphone_call_stats_new());
+	textStats = _linphone_call_stats_new();
 	initStats(textStats, LinphoneStreamTypeText);
 
 	int minPort, maxPort;
