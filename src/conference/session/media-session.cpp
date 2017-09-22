@@ -913,7 +913,7 @@ int MediaSessionPrivate::selectFixedPort (int streamIndex, pair<int, int> portRa
 		bool alreadyUsed = false;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
-			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_OBJECT(lcall, Call)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
+			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_OBJECT(lcall)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
 			int existingPort = session->getPrivate()->mediaPorts[streamIndex].rtpPort;
 			if (existingPort == triedPort) {
 				alreadyUsed = true;
@@ -935,7 +935,7 @@ int MediaSessionPrivate::selectRandomPort (int streamIndex, pair<int, int> portR
 		if (triedPort < portRange.first) triedPort = portRange.first + 2;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
-			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_OBJECT(lcall, Call)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
+			MediaSession *session = dynamic_cast<MediaSession *>(L_GET_PRIVATE_FROM_C_OBJECT(lcall)->getConference()->getActiveParticipant()->getPrivate()->getSession().get());
 			int existingPort = session->getPrivate()->mediaPorts[streamIndex].rtpPort;
 			if (existingPort == triedPort) {
 				alreadyUsed = true;
@@ -1107,7 +1107,7 @@ void MediaSessionPrivate::selectOutgoingIpVersion () {
 	}
 
 	const LinphoneAddress *to = linphone_call_log_get_to_address(log);
-	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_OBJECT(to, Address)->getInternalAddress()))
+	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_OBJECT(to)->getInternalAddress()))
 		af = AF_INET6;
 	else if (destProxy && destProxy->op)
 		af = sal_op_get_address_family(destProxy->op);

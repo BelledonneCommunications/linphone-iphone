@@ -169,7 +169,7 @@ static void call_received(SalOp *h) {
 	LinphoneCall *call = linphone_call_new_incoming(lc, fromAddr, toAddr, h);
 	linphone_address_unref(fromAddr);
 	linphone_address_unref(toAddr);
-	L_GET_PRIVATE_FROM_C_OBJECT(call, Call)->startIncomingNotification();
+	L_GET_PRIVATE_FROM_C_OBJECT(call)->startIncomingNotification();
 }
 
 static void call_rejected(SalOp *h){

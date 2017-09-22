@@ -23,7 +23,7 @@
 // =============================================================================
 
 #define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj, MediaSessionParams)
+#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
 
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallParams)
 

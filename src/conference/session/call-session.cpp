@@ -454,7 +454,7 @@ LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
 	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
 		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
-		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_OBJECT(call, Call)->getActiveSession();
+		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession();
 		if (session.get() == q) continue;
 		switch (session->getState()) {
 			case LinphoneCallOutgoingInit:
@@ -616,7 +616,7 @@ void CallSessionPrivate::setContactOp () {
 	SalAddress *salAddress = nullptr;
 	LinphoneAddress *contact = getFixedContact();
 	if (contact) {
-		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact, Address)->getInternalAddress());
+		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress());
 		sal_address_ref(salAddress);
 		linphone_address_unref(contact);
 	}

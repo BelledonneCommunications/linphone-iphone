@@ -31,7 +31,7 @@
 // =============================================================================
 
 #define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj, ChatMessage, ChatMessage)
+#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
 
 using namespace std;
 
@@ -309,7 +309,7 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 	linphone_chat_message_store_state(msg);
 
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
-		L_GET_PRIVATE_FROM_C_OBJECT(msg->chat_room, ChatRoom)->moveTransientMessageToWeakMessages(msg);
+		L_GET_PRIVATE_FROM_C_OBJECT(msg->chat_room)->moveTransientMessageToWeakMessages(msg);
 	}
 }
 
@@ -440,7 +440,7 @@ static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, Imdn
 void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason) {
 	char *content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
 	if (content) {
-		L_GET_PRIVATE_FROM_C_OBJECT(linphone_chat_message_get_chat_room(cm), ChatRoom)->sendImdn(content, reason);
+		L_GET_PRIVATE_FROM_C_OBJECT(linphone_chat_message_get_chat_room(cm))->sendImdn(content, reason);
 		ms_free(content);
 	}
 }

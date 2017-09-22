@@ -30,7 +30,7 @@
 // =============================================================================
 
 #define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj, ChatRoom)
+#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
 
 using namespace std;
 
@@ -276,8 +276,8 @@ LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddr
 	else
 		L_SET_CPP_PTR_FROM_C_OBJECT(cr, std::make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
 	linphone_core_notify_chat_room_instantiated(core, cr);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::Created);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Created);
 	return cr;
 }
 
@@ -298,8 +298,8 @@ LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core, const
 	LinphoneChatRoom *cr = _linphone_ChatRoom_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, l));
 	linphone_core_notify_chat_room_instantiated(core, cr);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::CreationPending);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::CreationPending);
 	return cr;
 }
 

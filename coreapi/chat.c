@@ -225,7 +225,7 @@ int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage
 	LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
-	LinphoneReason reason = L_GET_PRIVATE_FROM_C_OBJECT(cr, ChatRoom)->messageReceived(op, sal_msg);
+	LinphoneReason reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
 	linphone_address_unref(addr);
 	return reason;
 }
