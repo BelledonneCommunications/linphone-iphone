@@ -1174,7 +1174,7 @@ void linphone_call_unref (LinphoneCall *call) {
 }
 
 void *linphone_call_get_user_data (const LinphoneCall *call) {
-	return L_GET_USER_DATA_FROM_C_OBJECT(call, Call);
+	return L_GET_USER_DATA_FROM_C_OBJECT(call);
 }
 
 void linphone_call_set_user_data (LinphoneCall *call, void *ud) {

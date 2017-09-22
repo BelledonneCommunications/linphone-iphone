@@ -39,7 +39,7 @@ void linphone_participant_unref (LinphoneParticipant *participant) {
 }
 
 void *linphone_participant_get_user_data(const LinphoneParticipant *participant) {
-	return L_GET_USER_DATA_FROM_C_OBJECT(participant, Participant);
+	return L_GET_USER_DATA_FROM_C_OBJECT(participant);
 }
 
 void linphone_participant_set_user_data(LinphoneParticipant *participant, void *ud) {

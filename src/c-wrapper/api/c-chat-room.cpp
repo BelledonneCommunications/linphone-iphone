@@ -258,7 +258,7 @@ void linphone_chat_room_unref (LinphoneChatRoom *cr) {
 }
 
 void *linphone_chat_room_get_user_data (const LinphoneChatRoom *cr) {
-	return L_GET_USER_DATA_FROM_C_OBJECT(cr, ChatRoom);
+	return L_GET_USER_DATA_FROM_C_OBJECT(cr);
 }
 
 void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {

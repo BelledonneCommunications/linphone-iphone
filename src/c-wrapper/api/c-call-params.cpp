@@ -485,7 +485,7 @@ void linphone_call_params_set_no_user_consent (LinphoneCallParams *params, bool_
 // =============================================================================
 
 void *linphone_call_params_get_user_data (const LinphoneCallParams *cp) {
-	return L_GET_USER_DATA_FROM_C_OBJECT(cp, MediaSessionParams);
+	return L_GET_USER_DATA_FROM_C_OBJECT(cp);
 }
 
 void linphone_call_params_set_user_data (LinphoneCallParams *cp, void *ud) {

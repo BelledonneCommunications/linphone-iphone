@@ -422,7 +422,7 @@ LINPHONE_END_NAMESPACE
 	)
 
 // Get/set user data on a wrapped C object.
-#define L_GET_USER_DATA_FROM_C_OBJECT(OBJECT, CPP_TYPE) \
+#define L_GET_USER_DATA_FROM_C_OBJECT(OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getUserData( \
 		L_GET_CPP_PTR_FROM_C_OBJECT(OBJECT) \
 	)
