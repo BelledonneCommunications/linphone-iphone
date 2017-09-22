@@ -123,8 +123,8 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 	return ret;
 }
 
-LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const bctbx_list_t *addresses) {
-	return linphone_client_group_chat_room_new(lc, addresses);
+LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc) {
+	return linphone_client_group_chat_room_new(lc);
 }
 
 void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {

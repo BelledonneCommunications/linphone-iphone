@@ -4823,6 +4823,15 @@ LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, cons
 LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
 
 /**
+ * Create a client-side group chat room. When calling this function the chat room is only created
+ * at the client-side and is empty. Pou need to call linphone_chat_room_add_participants() to
+ * create at the server side and add participants to it.
+ * @param[in] lc A #LinphoneCore object
+ * @return The newly created client-side group chat room.
+ */
+LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc);
+
+/**
  * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc the linphone core

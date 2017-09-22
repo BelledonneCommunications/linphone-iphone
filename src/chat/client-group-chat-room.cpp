@@ -31,15 +31,13 @@ ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : Ch
 
 // =============================================================================
 
-ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, list<Address> &addresses)
+ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me)
 	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
 	string factoryUri = linphone_core_get_chat_conference_factory_uri(core);
 	focus = make_shared<Participant>(factoryUri);
 	CallSessionParams csp;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
 	session->configure(LinphoneCallOutgoing, nullptr, nullptr, me, focus->getAddress());
-	session->initiateOutgoing();
-	session->startInvite(nullptr);
 	// TODO
 }
 
@@ -52,24 +50,30 @@ shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr
 }
 
 void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
+	L_D(ClientGroupChatRoom);
+	if (d->state == ChatRoom::State::Instantiated) {
+		shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+		session->initiateOutgoing();
+		session->startInvite(nullptr);
+		d->setState(ChatRoom::State::CreationPending);
+	} 
 	// TODO
 }
 
 bool ClientGroupChatRoom::canHandleParticipants () const {
-	return true;
+	return RemoteConference::canHandleParticipants();
 }
 
 const string& ClientGroupChatRoom::getId () const {
-	return id;
+	return RemoteConference::getId();
 }
 
 int ClientGroupChatRoom::getNbParticipants () const {
-	// TODO
-	return 1;
+	return RemoteConference::getNbParticipants();
 }
 
 list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
-	return participants;
+	return RemoteConference::getParticipants();
 }
 
 void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {

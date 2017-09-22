@@ -281,7 +281,7 @@ LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddr
 	return cr;
 }
 
-LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core, const bctbx_list_t *addresses) {
+LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core) {
 	const char *factoryUri = linphone_core_get_chat_conference_factory_uri(core);
 	if (!factoryUri)
 		return nullptr;
@@ -294,12 +294,10 @@ LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core, const
 	if (from.empty())
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
-	std::list<LinphonePrivate::Address> l = L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address);
 	LinphoneChatRoom *cr = _linphone_ChatRoom_init();
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, l));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me));
 	linphone_core_notify_chat_room_instantiated(core, cr);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::CreationPending);
 	return cr;
 }
 

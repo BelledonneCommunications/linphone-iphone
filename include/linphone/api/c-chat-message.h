@@ -294,8 +294,6 @@ LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMess
  */
 LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
 
-LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const bctbx_list_t *addresses);
-
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 
 /**
