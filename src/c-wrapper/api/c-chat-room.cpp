@@ -166,7 +166,7 @@ void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 }
 
 bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PRIVATE_PTR(cr)->getTransientMessages(), LinphoneChatMessage);
+	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PRIVATE_PTR(cr)->getTransientMessages());
 }
 
 void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {
@@ -190,11 +190,11 @@ void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
 }
 
 bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int startm, int endm) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistoryRange(startm, endm), LinphoneChatMessage);
+	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistoryRange(startm, endm));
 }
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistory(nb_message), LinphoneChatMessage);
+	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistory(nb_message));
 }
 
 LinphoneChatMessage *linphone_chat_room_find_message (LinphoneChatRoom *cr, const char *message_id) {

@@ -155,6 +155,10 @@ public:
 		return cppPtr;
 	}
 
+	// ---------------------------------------------------------------------------
+	// Get c back ptr helpers.
+	// ---------------------------------------------------------------------------
+
 	template<typename CType, typename CppType>
 	static inline CType *getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
 		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
@@ -177,6 +181,8 @@ public:
 		return reinterpret_cast<CType *>(value);
 	}
 
+	// ---------------------------------------------------------------------------
+	// Get/set user data.
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
@@ -204,12 +210,22 @@ public:
 	}
 
 	// ---------------------------------------------------------------------------
+	// List helpers.
+	// ---------------------------------------------------------------------------
 
 	template<typename T>
-	static inline bctbx_list_t *getCListFromCppList (const std::list<T> cppList) {
+	static inline bctbx_list_t *getCListFromCppList (const std::list<T*> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, value);
+		return result;
+	}
+
+	template<typename T>
+	static inline std::list<T*> getCppListFromCList (const bctbx_list_t *cList) {
+		std::list<T> result;
+		for (auto it = cList; it; it = bctbx_list_next(it))
+			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
 		return result;
 	}
 
@@ -226,14 +242,6 @@ public:
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, getCBackPtr(value, cTypeAllocator));
-		return result;
-	}
-
-	template<typename T>
-	static inline std::list<T> getCppListFromCList (const bctbx_list_t *cList) {
-		std::list<T> result;
-		for (auto it = cList; it; it = bctbx_list_next(it))
-			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
 		return result;
 	}
 
@@ -432,10 +440,11 @@ LINPHONE_END_NAMESPACE
 		VALUE \
 	)
 
-#define L_GET_C_LIST_FROM_CPP_LIST(LIST, TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList<TYPE *>(LIST)
+#define L_GET_C_LIST_FROM_CPP_LIST(LIST) \
+	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList(LIST)
 #define L_GET_CPP_LIST_FROM_C_LIST(LIST, TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE *>(LIST)
+	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE>(LIST)
+
 #define L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(LIST, CPP_TYPE, C_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCListOfStructPtrFromCppListOfCppObj<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST, _linphone_ ## C_TYPE ## _init)
 #define L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(LIST, CPP_TYPE, C_TYPE) \
