@@ -153,22 +153,22 @@ public:
 
 	// Macro helpers.
 	template<typename T>
-	static T *getCppPtr (const std::shared_ptr<T> &cppObject) {
+	static inline T *getCppPtr (const std::shared_ptr<T> &cppObject) {
 		return cppObject.get();
 	}
 
 	template<typename T>
-	static T *getCppPtr (T *cppObject) {
+	static inline T *getCppPtr (T *cppObject) {
 		return cppObject;
 	}
 
 	template<typename T>
-	static const T *getCppPtr (const std::shared_ptr<const T> &cppObject) {
+	static inline const T *getCppPtr (const std::shared_ptr<const T> &cppObject) {
 		return cppObject.get();
 	}
 
 	template<typename T>
-	static const T *getCppPtr (const T *cppObject) {
+	static inline const T *getCppPtr (const T *cppObject) {
 		return cppObject;
 	}
 
@@ -183,14 +183,14 @@ public:
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
 		typedef typename CppTypeToCType<CppType>::type RetType;
 
-		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
-		void *value = v.getValue<void *>();
-		if (!value) {
-			RetType *cObject = CObjectInitializer<CppType>::init();
-			setCppPtrFromC(cObject, cppObject);
-		}
+		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+		void *value = variant.getValue<void *>();
+		if (value)
+			return reinterpret_cast<RetType *>(value);
 
-		return reinterpret_cast<RetType *>(value);
+		RetType *cObject = CObjectInitializer<CppType>::init();
+		setCppPtrFromC(cObject, cppObject);
+		return cObject;
 	}
 
 	template<
@@ -202,12 +202,12 @@ public:
 
 		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
-		if (!value) {
-			RetType *cObject = CObjectInitializer<CppType>::init();
-			setCppPtrFromC(cObject, cppObject);
-		}
+		if (value)
+			return reinterpret_cast<RetType *>(value);
 
-		return reinterpret_cast<RetType *>(value);
+		RetType *cObject = CObjectInitializer<CppType>::init();
+		setCppPtrFromC(cObject, cppObject);
+		return cObject;
 	}
 
 	// ---------------------------------------------------------------------------
