@@ -36,7 +36,7 @@ using namespace std;
 static void _linphone_call_constructor (LinphoneCall *call);
 static void _linphone_call_destructor (LinphoneCall *call);
 
-L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(Call, Call,
+L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(Call,
 	_linphone_call_constructor, _linphone_call_destructor,
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *currentCbs; /* The current LinphoneCallCbs object used to call a callback */

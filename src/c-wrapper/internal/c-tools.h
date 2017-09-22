@@ -271,11 +271,11 @@ LINPHONE_END_NAMESPACE
 
 #define L_INTERNAL_C_STRUCT_NO_XTOR(OBJECT)
 
-#define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
+#define L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
 	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init() { \
 		Linphone ## C_TYPE * object = belle_sip_object_new(Linphone ## C_TYPE); \
-		new(&object->cppPtr) std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS>(); \
+		new(&object->cppPtr) std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)>(); \
 		CONSTRUCTOR(object); \
 		return object; \
 	} \
@@ -328,22 +328,22 @@ LINPHONE_END_NAMESPACE
 // -----------------------------------------------------------------------------
 
 // Declare wrapped C object with constructor/destructor.
-#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
+#define L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
-		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
+		std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, CONSTRUCTOR, DESTRUCTOR)
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR)
 
 // Declare wrapped C object.
-#define L_DECLARE_C_STRUCT_IMPL(CPP_CLASS, C_TYPE, ...) \
+#define L_DECLARE_C_STRUCT_IMPL(C_TYPE, ...) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
-		std::shared_ptr<LINPHONE_NAMESPACE::CPP_CLASS> cppPtr; \
+		std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> cppPtr; \
 		__VA_ARGS__ \
 	}; \
-	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
+	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(C_TYPE, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
 
 // Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_STRUCT_IMPL(C_TYPE, ...) \
