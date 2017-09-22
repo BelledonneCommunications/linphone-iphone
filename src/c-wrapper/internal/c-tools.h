@@ -123,21 +123,27 @@ public:
 		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
-	template<typename T>
-	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<T> &cppObject) {
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+	>
+	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<CppType> &cppObject) {
 		L_ASSERT(cObject);
-		static_cast<WrappedObject<T> *>(cObject)->cppPtr = cppObject;
+		static_cast<WrappedObject<CppType> *>(cObject)->cppPtr = cppObject;
 		cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
-	template<typename T>
-	static inline void setCppPtrFromC (void *cObject, const T *cppObject) {
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+	>
+	static inline void setCppPtrFromC (void *cObject, const CppType *cppObject) {
 		L_ASSERT(cObject);
-		T *oldPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(cObject)->cppPtr);
+		CppType *oldPtr = reinterpret_cast<CppType *>(static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr);
 		if (oldPtr != cppObject) {
 			delete oldPtr;
-			T **cppPtr = &static_cast<WrappedClonableObject<T> *>(cObject)->cppPtr;
-			*cppPtr = new T(*cppObject);
+			CppType **cppPtr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+			*cppPtr = new CppType(*cppObject);
 			(*cppPtr)->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 		}
 	}
@@ -429,8 +435,8 @@ LINPHONE_END_NAMESPACE
 	>(C_OBJECT)
 
 // Set the cpp-ptr of a wrapped C object.
-#define L_SET_CPP_PTR_FROM_C_OBJECT(C_OBJECT, CPP_PTR) \
-	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(C_OBJECT, CPP_PTR)
+#define L_SET_CPP_PTR_FROM_C_OBJECT(C_OBJECT, CPP_OBJECT) \
+	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(C_OBJECT, CPP_OBJECT)
 
 // Get the private data of a shared or simple cpp-ptr.
 #define L_GET_PRIVATE(CPP_OBJECT) \
