@@ -18,8 +18,10 @@
 
 #include "local-conference.h"
 #include "participant-p.h"
+#include "xml/resource-lists.h"
 
 using namespace std;
+using namespace LinphonePrivate::Xsd::ResourceLists;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -55,6 +57,24 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 			return;
 		}
 	}
+}
+
+list<shared_ptr<Address>> LocalConference::parseResourceLists(string xmlBody) {
+	istringstream data(xmlBody);
+	unique_ptr<ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(data, Xsd::XmlSchema::Flags::dont_validate);
+	list<shared_ptr<Address>> addresses = list<shared_ptr<Address>>();
+	for(const auto &l : rl->getList()) {
+		for(const auto &entry : l.getEntry()) {
+			shared_ptr<Address> addr = make_shared<Address>(Address(entry.getUri()));
+			// TODO : set display name when possible
+			/*if(!entry.getDisplayName()->present()) {
+				addr->setDisplayName(entry.getDisplayName()->get());
+			}*/
+			addresses.push_back(addr);
+		}
+	}
+
+	return addresses;
 }
 
 LINPHONE_END_NAMESPACE

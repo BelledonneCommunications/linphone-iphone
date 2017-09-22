@@ -65,7 +65,7 @@ string RemoteConference::getResourceLists(const list<shared_ptr<const Address>> 
 	ListType l = ListType();
 	for(const auto &addr : addresses) {
 		EntryType entry = EntryType(addr->asStringUriOnly());
-		if(addr->getDisplayName() != "") {
+		if(!addr->getDisplayName().empty()) {
 			entry.setDisplayName(DisplayName(addr->getDisplayName()));
 		}
 		l.getEntry().push_back(entry);
