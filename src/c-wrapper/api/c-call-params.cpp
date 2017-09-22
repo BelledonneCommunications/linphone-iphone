@@ -22,9 +22,6 @@
 
 // =============================================================================
 
-#define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
-
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallParams)
 
 using namespace std;
@@ -34,7 +31,7 @@ using namespace std;
 // =============================================================================
 
 SalMediaProto get_proto_from_call_params (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getMediaProto();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getMediaProto();
 }
 
 SalStreamDir sal_dir_from_call_params_dir (LinphoneMediaDirection cpdir) {
@@ -77,15 +74,15 @@ SalStreamDir get_video_dir_from_call_params (const LinphoneCallParams *params) {
 }
 
 void linphone_call_params_set_custom_headers (LinphoneCallParams *params, const SalCustomHeader *ch) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setCustomHeaders(ch);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setCustomHeaders(ch);
 }
 
 void linphone_call_params_set_custom_sdp_attributes (LinphoneCallParams *params, const SalCustomSdpAttribute *csa) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setCustomSdpAttributes(csa);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setCustomSdpAttributes(csa);
 }
 
 void linphone_call_params_set_custom_sdp_media_attributes (LinphoneCallParams *params, LinphoneStreamType type, const SalCustomSdpAttribute *csa) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setCustomSdpMediaAttributes(type, csa);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setCustomSdpMediaAttributes(type, csa);
 }
 
 // =============================================================================
@@ -93,23 +90,23 @@ void linphone_call_params_set_custom_sdp_media_attributes (LinphoneCallParams *p
 // =============================================================================
 
 void linphone_call_params_add_custom_header (LinphoneCallParams *params, const char *header_name, const char *header_value) {
-	GET_MEDIA_CPP_PTR(params)->addCustomHeader(header_name, header_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomHeader(header_name, header_value);
 }
 
 void linphone_call_params_add_custom_sdp_attribute (LinphoneCallParams *params, const char *attribute_name, const char *attribute_value) {
-	GET_MEDIA_CPP_PTR(params)->addCustomSdpAttribute(attribute_name, attribute_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpAttribute(attribute_name, attribute_value);
 }
 
 void linphone_call_params_add_custom_sdp_media_attribute (LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name, const char *attribute_value) {
-	GET_MEDIA_CPP_PTR(params)->addCustomSdpMediaAttribute(type, attribute_name, attribute_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpMediaAttribute(type, attribute_name, attribute_value);
 }
 
 void linphone_call_params_clear_custom_sdp_attributes (LinphoneCallParams *params) {
-	GET_MEDIA_CPP_PTR(params)->clearCustomSdpAttributes();
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->clearCustomSdpAttributes();
 }
 
 void linphone_call_params_clear_custom_sdp_media_attributes (LinphoneCallParams *params, LinphoneStreamType type) {
-	GET_MEDIA_CPP_PTR(params)->clearCustomSdpMediaAttributes(type);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->clearCustomSdpMediaAttributes(type);
 }
 
 LinphoneCallParams *linphone_call_params_copy (const LinphoneCallParams *params) {
@@ -117,42 +114,42 @@ LinphoneCallParams *linphone_call_params_copy (const LinphoneCallParams *params)
 }
 
 bool_t linphone_call_params_early_media_sending_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->earlyMediaSendingEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->earlyMediaSendingEnabled();
 }
 
 void linphone_call_params_enable_early_media_sending (LinphoneCallParams *params, bool_t enabled) {
-	GET_MEDIA_CPP_PTR(params)->enableEarlyMediaSending(enabled);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableEarlyMediaSending(enabled);
 }
 
 void linphone_call_params_enable_low_bandwidth (LinphoneCallParams *params, bool_t enabled) {
-	GET_MEDIA_CPP_PTR(params)->enableLowBandwidth(enabled);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableLowBandwidth(enabled);
 }
 
 void linphone_call_params_enable_audio (LinphoneCallParams *params, bool_t enabled) {
-	GET_MEDIA_CPP_PTR(params)->enableAudio(enabled);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableAudio(enabled);
 }
 
 LinphoneStatus linphone_call_params_enable_realtime_text (LinphoneCallParams *params, bool_t yesno) {
-	GET_MEDIA_CPP_PTR(params)->enableRealtimeText(yesno);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableRealtimeText(yesno);
 	return 0;
 }
 
 void linphone_call_params_enable_video (LinphoneCallParams *params, bool_t enabled) {
-	GET_MEDIA_CPP_PTR(params)->enableVideo(enabled);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableVideo(enabled);
 }
 
 const char *linphone_call_params_get_custom_header (const LinphoneCallParams *params, const char *header_name) {
-	string value = GET_MEDIA_CPP_PTR(params)->getCustomHeader(header_name);
+	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomHeader(header_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char *linphone_call_params_get_custom_sdp_attribute (const LinphoneCallParams *params, const char *attribute_name) {
-	string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpAttribute(attribute_name);
+	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpAttribute(attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char *linphone_call_params_get_custom_sdp_media_attribute (const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name) {
-	string value = GET_MEDIA_CPP_PTR(params)->getCustomSdpMediaAttribute(type, attribute_name);
+	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpMediaAttribute(type, attribute_name);
 	return value.empty() ? nullptr : value.c_str();
 }
 
@@ -161,20 +158,20 @@ bool_t linphone_call_params_get_local_conference_mode (const LinphoneCallParams 
 }
 
 LinphoneMediaEncryption linphone_call_params_get_media_encryption (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getMediaEncryption();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getMediaEncryption();
 }
 
 LinphonePrivacyMask linphone_call_params_get_privacy (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getPrivacy();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getPrivacy();
 }
 
 float linphone_call_params_get_received_framerate (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getReceivedFps();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getReceivedFps();
 }
 
 MSVideoSize linphone_call_params_get_received_video_size (const LinphoneCallParams *params) {
 	MSVideoSize vsize;
-	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getReceivedVideoDefinition();
+	LinphoneVideoDefinition *vdef = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getReceivedVideoDefinition();
 	if (vdef) {
 		vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
 		vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
@@ -186,25 +183,25 @@ MSVideoSize linphone_call_params_get_received_video_size (const LinphoneCallPara
 }
 
 const LinphoneVideoDefinition *linphone_call_params_get_received_video_definition (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getReceivedVideoDefinition();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getReceivedVideoDefinition();
 }
 
 const char *linphone_call_params_get_record_file (const LinphoneCallParams *params) {
-	const string &value = GET_MEDIA_CPP_PTR(params)->getRecordFilePath();
+	const string &value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getRecordFilePath();
 	return value.empty() ? nullptr : value.c_str();
 }
 
 const char *linphone_call_params_get_rtp_profile (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getRtpProfile();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getRtpProfile();
 }
 
 float linphone_call_params_get_sent_framerate (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getSentFps();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSentFps();
 }
 
 MSVideoSize linphone_call_params_get_sent_video_size (const LinphoneCallParams *params) {
 	MSVideoSize vsize;
-	LinphoneVideoDefinition *vdef = GET_MEDIA_CPP_PTR(params)->getSentVideoDefinition();
+	LinphoneVideoDefinition *vdef = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSentVideoDefinition();
 	if (vdef) {
 		vsize.width = static_cast<int>(linphone_video_definition_get_width(vdef));
 		vsize.height = static_cast<int>(linphone_video_definition_get_height(vdef));
@@ -216,156 +213,156 @@ MSVideoSize linphone_call_params_get_sent_video_size (const LinphoneCallParams *
 }
 
 const LinphoneVideoDefinition *linphone_call_params_get_sent_video_definition (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getSentVideoDefinition();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSentVideoDefinition();
 }
 
 const char *linphone_call_params_get_session_name (const LinphoneCallParams *params) {
-	const string &value = GET_MEDIA_CPP_PTR(params)->getSessionName();
+	const string &value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSessionName();
 	return value.empty() ? nullptr : value.c_str();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_audio_payload_type (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedAudioPayloadType();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedAudioPayloadType();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_video_payload_type (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedVideoPayloadType();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedVideoPayloadType();
 }
 
 LinphonePayloadType *linphone_call_params_get_used_text_payload_type (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedRealtimeTextPayloadType();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedRealtimeTextPayloadType();
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_audio_codec (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedAudioCodec();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedAudioCodec();
 }
 
 void linphone_call_params_set_used_audio_codec (LinphoneCallParams *params, OrtpPayloadType *codec) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedAudioCodec(codec);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUsedAudioCodec(codec);
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_video_codec (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedVideoCodec();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedVideoCodec();
 }
 
 void linphone_call_params_set_used_video_codec (LinphoneCallParams *params, OrtpPayloadType *codec) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedVideoCodec(codec);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUsedVideoCodec(codec);
 }
 
 const OrtpPayloadType *linphone_call_params_get_used_text_codec (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getUsedRealtimeTextCodec();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getUsedRealtimeTextCodec();
 }
 
 void linphone_call_params_set_used_text_codec (LinphoneCallParams *params, OrtpPayloadType *codec) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUsedRealtimeTextCodec(codec);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUsedRealtimeTextCodec(codec);
 }
 
 bool_t linphone_call_params_low_bandwidth_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->lowBandwidthEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->lowBandwidthEnabled();
 }
 
 int linphone_call_params_get_audio_bandwidth_limit (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getAudioBandwidthLimit();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getAudioBandwidthLimit();
 }
 
 void linphone_call_params_set_audio_bandwidth_limit (LinphoneCallParams *params, int bandwidth) {
-	GET_MEDIA_CPP_PTR(params)->setAudioBandwidthLimit(bandwidth);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setAudioBandwidthLimit(bandwidth);
 }
 
 void linphone_call_params_set_media_encryption (LinphoneCallParams *params, LinphoneMediaEncryption encryption) {
-	GET_MEDIA_CPP_PTR(params)->setMediaEncryption(encryption);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setMediaEncryption(encryption);
 }
 
 void linphone_call_params_set_privacy (LinphoneCallParams *params, LinphonePrivacyMask privacy) {
-	GET_MEDIA_CPP_PTR(params)->setPrivacy(privacy);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setPrivacy(privacy);
 }
 
 void linphone_call_params_set_record_file (LinphoneCallParams *params, const char *path) {
-	GET_MEDIA_CPP_PTR(params)->setRecordFilePath(path ? path : "");
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setRecordFilePath(path ? path : "");
 }
 
 void linphone_call_params_set_session_name (LinphoneCallParams *params, const char *name) {
-	GET_MEDIA_CPP_PTR(params)->setSessionName(name ? name : "");
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setSessionName(name ? name : "");
 }
 
 bool_t linphone_call_params_audio_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->audioEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->audioEnabled();
 }
 
 bool_t linphone_call_params_realtime_text_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->realtimeTextEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->realtimeTextEnabled();
 }
 
 bool_t linphone_call_params_video_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->videoEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->videoEnabled();
 }
 
 LinphoneMediaDirection linphone_call_params_get_audio_direction (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getAudioDirection();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getAudioDirection();
 }
 
 LinphoneMediaDirection linphone_call_params_get_video_direction (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getVideoDirection();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getVideoDirection();
 }
 
 void linphone_call_params_set_audio_direction (LinphoneCallParams *params, LinphoneMediaDirection dir) {
-	GET_MEDIA_CPP_PTR(params)->setAudioDirection(dir);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setAudioDirection(dir);
 }
 
 void linphone_call_params_set_video_direction (LinphoneCallParams *params, LinphoneMediaDirection dir) {
-	GET_MEDIA_CPP_PTR(params)->setVideoDirection(dir);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setVideoDirection(dir);
 }
 
 void linphone_call_params_enable_audio_multicast (LinphoneCallParams *params, bool_t yesno) {
-	GET_MEDIA_CPP_PTR(params)->enableAudioMulticast(yesno);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableAudioMulticast(yesno);
 }
 
 bool_t linphone_call_params_audio_multicast_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->audioMulticastEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->audioMulticastEnabled();
 }
 
 void linphone_call_params_enable_video_multicast (LinphoneCallParams *params, bool_t yesno) {
-	GET_MEDIA_CPP_PTR(params)->enableVideoMulticast(yesno);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableVideoMulticast(yesno);
 }
 
 bool_t linphone_call_params_video_multicast_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->videoMulticastEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->videoMulticastEnabled();
 }
 
 bool_t linphone_call_params_real_early_media_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->earlyMediaSendingEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->earlyMediaSendingEnabled();
 }
 
 bool_t linphone_call_params_avpf_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->avpfEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->avpfEnabled();
 }
 
 void linphone_call_params_enable_avpf (LinphoneCallParams *params, bool_t enable) {
-	GET_MEDIA_CPP_PTR(params)->enableAvpf(enable);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableAvpf(enable);
 }
 
 bool_t linphone_call_params_mandatory_media_encryption_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->mandatoryMediaEncryptionEnabled();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->mandatoryMediaEncryptionEnabled();
 }
 
 void linphone_call_params_enable_mandatory_media_encryption (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PTR(params)->enableMandatoryMediaEncryption(value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->enableMandatoryMediaEncryption(value);
 }
 
 uint16_t linphone_call_params_get_avpf_rr_interval (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PTR(params)->getAvpfRrInterval();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getAvpfRrInterval();
 }
 
 void linphone_call_params_set_avpf_rr_interval (LinphoneCallParams *params, uint16_t value) {
-	GET_MEDIA_CPP_PTR(params)->setAvpfRrInterval(value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setAvpfRrInterval(value);
 }
 
 void linphone_call_params_set_sent_fps (LinphoneCallParams *params, float value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentFps(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setSentFps(value);
 }
 
 void linphone_call_params_set_received_fps (LinphoneCallParams *params, float value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedFps(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReceivedFps(value);
 }
 
 // =============================================================================
@@ -373,111 +370,111 @@ void linphone_call_params_set_received_fps (LinphoneCallParams *params, float va
 // =============================================================================
 
 bool_t linphone_call_params_get_in_conference (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getInConference();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getInConference();
 }
 
 void linphone_call_params_set_in_conference (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setInConference(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setInConference(value);
 }
 
 bool_t linphone_call_params_get_internal_call_update (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getInternalCallUpdate();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getInternalCallUpdate();
 }
 
 void linphone_call_params_set_internal_call_update (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setInternalCallUpdate(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setInternalCallUpdate(value);
 }
 
 bool_t linphone_call_params_implicit_rtcp_fb_enabled (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->implicitRtcpFbEnabled();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->implicitRtcpFbEnabled();
 }
 
 void linphone_call_params_enable_implicit_rtcp_fb (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->enableImplicitRtcpFb(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->enableImplicitRtcpFb(value);
 }
 
 int linphone_call_params_get_down_bandwidth (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getDownBandwidth();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getDownBandwidth();
 }
 
 void linphone_call_params_set_down_bandwidth (LinphoneCallParams *params, int value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setDownBandwidth(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setDownBandwidth(value);
 }
 
 int linphone_call_params_get_up_bandwidth (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpBandwidth();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getUpBandwidth();
 }
 
 void linphone_call_params_set_up_bandwidth (LinphoneCallParams *params, int value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpBandwidth(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUpBandwidth(value);
 }
 
 int linphone_call_params_get_down_ptime (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getDownPtime();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getDownPtime();
 }
 
 void linphone_call_params_set_down_ptime (LinphoneCallParams *params, int value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setDownPtime(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setDownPtime(value);
 }
 
 int linphone_call_params_get_up_ptime (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpPtime();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getUpPtime();
 }
 
 void linphone_call_params_set_up_ptime (LinphoneCallParams *params, int value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpPtime(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUpPtime(value);
 }
 
 SalCustomHeader *linphone_call_params_get_custom_headers (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getCustomHeaders();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getCustomHeaders();
 }
 
 SalCustomSdpAttribute *linphone_call_params_get_custom_sdp_attributes (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getCustomSdpAttributes();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getCustomSdpAttributes();
 }
 
 SalCustomSdpAttribute *linphone_call_params_get_custom_sdp_media_attributes (const LinphoneCallParams *params, LinphoneStreamType type) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getCustomSdpMediaAttributes(type);
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getCustomSdpMediaAttributes(type);
 }
 
 LinphoneCall *linphone_call_params_get_referer (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getReferer();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getReferer();
 }
 
 void linphone_call_params_set_referer (LinphoneCallParams *params, LinphoneCall *referer) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReferer(referer);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReferer(referer);
 }
 
 bool_t linphone_call_params_get_update_call_when_ice_completed (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getUpdateCallWhenIceCompleted();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getUpdateCallWhenIceCompleted();
 }
 
 void linphone_call_params_set_update_call_when_ice_completed (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setUpdateCallWhenIceCompleted(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setUpdateCallWhenIceCompleted(value);
 }
 
 void linphone_call_params_set_sent_vsize (LinphoneCallParams *params, MSVideoSize vsize) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setSentVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
 }
 
 void linphone_call_params_set_recv_vsize (LinphoneCallParams *params, MSVideoSize vsize) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReceivedVideoDefinition(linphone_video_definition_new(static_cast<unsigned int>(vsize.width), static_cast<unsigned int>(vsize.height), nullptr));
 }
 
 void linphone_call_params_set_sent_video_definition (LinphoneCallParams *params, LinphoneVideoDefinition *vdef) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setSentVideoDefinition(vdef);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setSentVideoDefinition(vdef);
 }
 
 void linphone_call_params_set_received_video_definition (LinphoneCallParams *params, LinphoneVideoDefinition *vdef) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setReceivedVideoDefinition(vdef);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReceivedVideoDefinition(vdef);
 }
 
 bool_t linphone_call_params_get_no_user_consent (const LinphoneCallParams *params) {
-	return GET_MEDIA_CPP_PRIVATE_PTR(params)->getNoUserConsent();
+	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getNoUserConsent();
 }
 
 void linphone_call_params_set_no_user_consent (LinphoneCallParams *params, bool_t value) {
-	GET_MEDIA_CPP_PRIVATE_PTR(params)->setNoUserConsent(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setNoUserConsent(value);
 }
 
 // =============================================================================
@@ -508,7 +505,7 @@ void linphone_call_params_unref (LinphoneCallParams *cp) {
 LinphoneCallParams *linphone_call_params_new (LinphoneCore *core) {
 	LinphoneCallParams *params = _linphone_CallParams_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(params, new LinphonePrivate::MediaSessionParams());
-	GET_MEDIA_CPP_PTR(params)->initDefault(core);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->initDefault(core);
 	return params;
 }
 

@@ -29,9 +29,6 @@
 
 // =============================================================================
 
-#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
-
 using namespace std;
 
 static void _linphone_chat_room_constructor (LinphoneChatRoom *cr);
@@ -62,19 +59,19 @@ static void _linphone_chat_room_destructor (LinphoneChatRoom *cr) {
 // =============================================================================
 
 void linphone_chat_room_release (LinphoneChatRoom *cr) {
-	GET_CPP_PRIVATE_PTR(cr)->release();
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->release();
 }
 
 void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	GET_CPP_PRIVATE_PTR(cr)->removeTransientMessage(msg);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->removeTransientMessage(msg);
 }
 
 void linphone_chat_room_send_message (LinphoneChatRoom *cr, const char *msg) {
-	GET_CPP_PTR(cr)->sendMessage(GET_CPP_PTR(cr)->createMessage(msg));
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg));
 }
 
 bool_t linphone_chat_room_is_remote_composing (const LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->isRemoteComposing();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->isRemoteComposing();
 }
 
 LinphoneCore *linphone_chat_room_get_lc (const LinphoneChatRoom *cr) {
@@ -82,19 +79,19 @@ LinphoneCore *linphone_chat_room_get_lc (const LinphoneChatRoom *cr) {
 }
 
 LinphoneCore *linphone_chat_room_get_core (const LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->getCore();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore();
 }
 
 const LinphoneAddress *linphone_chat_room_get_peer_address (LinphoneChatRoom *cr) {
 	if (cr->peerAddressCache) {
 		linphone_address_unref(cr->peerAddressCache);
 	}
-	cr->peerAddressCache = linphone_address_new(GET_CPP_PTR(cr)->getPeerAddress().asString().c_str());
+	cr->peerAddressCache = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asString().c_str());
 	return cr->peerAddressCache;
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message (LinphoneChatRoom *cr, const char *message) {
-	return GET_CPP_PTR(cr)->createMessage(message ? message : "");
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(message ? message : "");
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message_2 (
@@ -132,73 +129,73 @@ void linphone_chat_room_send_message2 (
 ) {
 	linphone_chat_message_set_message_state_changed_cb(msg, status_cb);
 	linphone_chat_message_set_message_state_changed_cb_user_data(msg, ud);
-	GET_CPP_PTR(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
 }
 
 void linphone_chat_room_send_chat_message_2 (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	linphone_chat_message_ref(msg);
-	GET_CPP_PTR(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
 }
 
 void linphone_chat_room_send_chat_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	GET_CPP_PTR(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
 }
 
 uint32_t linphone_chat_room_get_char (const LinphoneChatRoom *cr) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(GET_CPP_PTR(cr).get())->getChar();
+		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(L_GET_CPP_PTR_FROM_C_OBJECT(cr).get())->getChar();
 	return 0;
 }
 
 void linphone_chat_room_compose (LinphoneChatRoom *cr) {
-	GET_CPP_PTR(cr)->compose();
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->compose();
 }
 
 LinphoneCall *linphone_chat_room_get_call (const LinphoneChatRoom *cr) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(GET_CPP_PTR(cr).get())->getCall();
+		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(L_GET_CPP_PTR_FROM_C_OBJECT(cr).get())->getCall();
 	return nullptr;
 }
 
 void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		static_cast<LinphonePrivate::RealTimeTextChatRoomPrivate *>(GET_CPP_PRIVATE_PTR(cr))->setCall(call);
+		static_cast<LinphonePrivate::RealTimeTextChatRoomPrivate *>(L_GET_PRIVATE_FROM_C_OBJECT(cr))->setCall(call);
 }
 
 bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PRIVATE_PTR(cr)->getTransientMessages());
+	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE_FROM_C_OBJECT(cr)->getTransientMessages());
 }
 
 void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {
-	GET_CPP_PTR(cr)->markAsRead();
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->markAsRead();
 }
 
 int linphone_chat_room_get_unread_messages_count (LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->getUnreadMessagesCount();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getUnreadMessagesCount();
 }
 
 int linphone_chat_room_get_history_size (LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->getHistorySize();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistorySize();
 }
 
 void linphone_chat_room_delete_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	GET_CPP_PTR(cr)->deleteMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteMessage(msg);
 }
 
 void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
-	GET_CPP_PTR(cr)->deleteHistory();
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteHistory();
 }
 
 bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int startm, int endm) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistoryRange(startm, endm));
+	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm));
 }
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
-	return L_GET_C_LIST_FROM_CPP_LIST(GET_CPP_PTR(cr)->getHistory(nb_message));
+	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_message));
 }
 
 LinphoneChatMessage *linphone_chat_room_find_message (LinphoneChatRoom *cr, const char *message_id) {
-	return GET_CPP_PTR(cr)->findMessage(message_id);
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findMessage(message_id);
 }
 
 LinphoneChatRoomCbs *linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr) {
@@ -206,42 +203,42 @@ LinphoneChatRoomCbs *linphone_chat_room_get_callbacks (const LinphoneChatRoom *c
 }
 
 LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) {
-	return (LinphoneChatRoomState)GET_CPP_PTR(cr)->getState();
+	return (LinphoneChatRoomState)L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getState();
 }
 
 LinphoneParticipant *linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
-	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipant(
 		*L_GET_CPP_PTR_FROM_C_OBJECT(addr), nullptr, false)
 	);
 }
 
 void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses) {
-	GET_CPP_PTR(cr)->addParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address), nullptr, false);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address), nullptr, false);
 }
 
 bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->canHandleParticipants();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->canHandleParticipants();
 }
 
 const char *linphone_chat_room_get_id (const LinphoneChatRoom *cr) {
-	string id = GET_CPP_PTR(cr)->getId();
+	string id = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getId();
 	return id.empty() ? nullptr : id.c_str();
 }
 
 int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
-	return GET_CPP_PTR(cr)->getNbParticipants();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getNbParticipants();
 }
 
 bctbx_list_t *linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {
-	return L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(GET_CPP_PTR(cr)->getParticipants(), Participant, Participant);
+	return L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getParticipants(), Participant, Participant);
 }
 
 void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
-	GET_CPP_PTR(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_OBJECT(participant));
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_OBJECT(participant));
 }
 
 void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
-	GET_CPP_PTR(cr)->removeParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(participants, Participant, Participant));
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(participants, Participant, Participant));
 }
 
 // =============================================================================

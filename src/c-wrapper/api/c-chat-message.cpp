@@ -30,9 +30,6 @@
 
 // =============================================================================
 
-#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
-#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj)
-
 using namespace std;
 
 static void _linphone_chat_message_constructor (LinphoneChatMessage *msg);
