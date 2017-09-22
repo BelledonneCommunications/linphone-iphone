@@ -29,7 +29,7 @@
 
 // =============================================================================
 
-#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, ChatRoom)
+#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj)
 #define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, ChatRoom)
 
 using namespace std;
@@ -211,7 +211,7 @@ LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) 
 
 LinphoneParticipant *linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
 	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
-			*L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address), nullptr, false),
+			*L_GET_CPP_PTR_FROM_C_STRUCT(addr), nullptr, false),
 		Participant);
 }
 
@@ -237,7 +237,7 @@ bctbx_list_t *linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
-	GET_CPP_PTR(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_STRUCT(participant, Participant));
+	GET_CPP_PTR(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_STRUCT(participant));
 }
 
 void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
@@ -272,9 +272,9 @@ void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
 LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = _linphone_ChatRoom_init();
 	if (linphone_core_realtime_text_enabled(core))
-		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address)));
+		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr)));
 	else
-		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr, Address)));
+		L_SET_CPP_PTR_FROM_C_STRUCT(cr, std::make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_STRUCT(addr)));
 	linphone_core_notify_chat_room_instantiated(core, cr);
 	L_GET_PRIVATE_FROM_C_STRUCT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	L_GET_PRIVATE_FROM_C_STRUCT(cr, ChatRoom)->setState(LinphonePrivate::ChatRoom::State::Created);
@@ -290,7 +290,7 @@ LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core, const
 	linphone_address_unref(factoryAddr);
 	std::string from;
 	if (proxy)
-		from = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy), Address)->asString();
+		from = L_GET_CPP_PTR_FROM_C_STRUCT(linphone_proxy_config_get_identity_address(proxy))->asString();
 	if (from.empty())
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);

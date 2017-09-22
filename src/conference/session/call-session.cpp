@@ -963,8 +963,7 @@ LinphoneReason CallSession::getReason () const {
 const Address& CallSession::getRemoteAddress () const {
 	L_D(const CallSession);
 	return *L_GET_CPP_PTR_FROM_C_STRUCT((d->direction == LinphoneCallIncoming)
-		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log),
-		Address);
+		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log));
 }
 
 string CallSession::getRemoteAddressAsString () const {

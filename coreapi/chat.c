@@ -80,7 +80,7 @@ static LinphoneChatRoom *_linphone_core_create_chat_room_from_url(LinphoneCore *
 }
 
 static bool_t linphone_chat_room_matches(LinphoneChatRoom *cr, const LinphoneAddress *from) {
-	LinphoneAddress *addr = linphone_address_new(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom)->getPeerAddress().asString().c_str());
+	LinphoneAddress *addr = linphone_address_new(L_GET_CPP_PTR_FROM_C_STRUCT(cr)->getPeerAddress().asString().c_str());
 	bool_t result = linphone_address_weak_equal(addr, from);
 	linphone_address_unref(addr);
 	return result;
@@ -235,8 +235,8 @@ int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(lc)) {
 		std::shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom));
+			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr));
 		L_GET_PRIVATE(rttcr)->realtimeTextReceived(character, call);
-		//L_GET_PRIVATE(std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom, ChatRoom)))->realtimeTextReceived(character, call);
+		//L_GET_PRIVATE(std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_STRUCT(cr)))->realtimeTextReceived(character, call);
 	}
 }

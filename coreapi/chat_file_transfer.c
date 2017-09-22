@@ -29,5 +29,5 @@
 #include "chat/chat-room.h"
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
-	return L_GET_CPP_PTR_FROM_C_STRUCT(cr, ChatRoom)->createFileTransferMessage(initial_content);
+	return L_GET_CPP_PTR_FROM_C_STRUCT(cr)->createFileTransferMessage(initial_content);
 }

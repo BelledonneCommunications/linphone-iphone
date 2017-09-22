@@ -1221,7 +1221,7 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 	/* Re-check local ip address each time we make a new offer, because it may change in case of network reconnection */
 	{
 		LinphoneAddress *address = (direction == LinphoneCallOutgoing ? log->to : log->from);
-		getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT(address, Address));
+		getLocalIp(*L_GET_CPP_PTR_FROM_C_STRUCT(address));
 	}
 
 	strncpy(md->addr, mediaLocalIp.c_str(), sizeof(md->addr));

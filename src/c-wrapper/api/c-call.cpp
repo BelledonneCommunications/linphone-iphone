@@ -28,7 +28,7 @@
 
 // =============================================================================
 
-#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, Call)
+#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj)
 #define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, Call)
 
 using namespace std;
@@ -936,7 +936,7 @@ LinphoneStatus linphone_call_accept (LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_accept_with_params (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->accept(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
+	return GET_CPP_PTR(call)->accept(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_accept_early_media (LinphoneCall* call) {
@@ -944,11 +944,11 @@ LinphoneStatus linphone_call_accept_early_media (LinphoneCall* call) {
 }
 
 LinphoneStatus linphone_call_accept_early_media_with_params (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
+	return GET_CPP_PTR(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_update (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->update(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
+	return GET_CPP_PTR(call)->update(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_defer_update (LinphoneCall *call) {
@@ -971,7 +971,7 @@ LinphoneStatus linphone_call_defer_update (LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_accept_update (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams) : nullptr);
+	return GET_CPP_PTR(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_transfer (LinphoneCall *call, const char *refer_to) {
@@ -1188,8 +1188,8 @@ void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
 LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg) {
 	LinphoneCall *call = L_INIT(Call);
 	L_SET_CPP_PTR_FROM_C_STRUCT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address),
-		cfg, nullptr, L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams)));
+		*L_GET_CPP_PTR_FROM_C_STRUCT(from), *L_GET_CPP_PTR_FROM_C_STRUCT(to),
+		cfg, nullptr, L_GET_CPP_PTR_FROM_C_STRUCT(params)));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
 	call->paramsCache = linphone_call_params_new_for_wrapper();
 	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
@@ -1200,7 +1200,7 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, SalOp *op) {
 	LinphoneCall *call = L_INIT(Call);
 	L_SET_CPP_PTR_FROM_C_STRUCT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from, Address), *L_GET_CPP_PTR_FROM_C_STRUCT(to, Address),
+		*L_GET_CPP_PTR_FROM_C_STRUCT(from), *L_GET_CPP_PTR_FROM_C_STRUCT(to),
 		nullptr, op, nullptr));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
 	call->paramsCache = linphone_call_params_new_for_wrapper();

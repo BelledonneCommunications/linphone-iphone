@@ -53,7 +53,7 @@ LinphoneEventLog *linphone_event_log_ref (LinphoneEventLog *event_log) {
 
 LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log) {
 	return static_cast<LinphoneEventLogType>(
-		L_GET_CPP_PTR_FROM_C_STRUCT(event_log, EventLog)->getType()
+		L_GET_CPP_PTR_FROM_C_STRUCT(event_log)->getType()
 	);
 }
 
@@ -67,7 +67,7 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneC
 		call_event,
 		new LINPHONE_NAMESPACE::CallEvent(
 			static_cast<LINPHONE_NAMESPACE::EventLog::Type>(type),
-			L_GET_CPP_PTR_FROM_C_STRUCT(call, Call)
+			L_GET_CPP_PTR_FROM_C_STRUCT(call)
 		)
 	);
 	return call_event;
@@ -75,10 +75,7 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneC
 
 LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event) {
 	return L_GET_C_BACK_PTR(
-		L_GET_CPP_PTR_FROM_C_STRUCT(
-			call_event, CallEvent
-		)->getCall(),
-		Call
+		L_GET_CPP_PTR_FROM_C_STRUCT(call_event)->getCall(), Call
 	);
 }
 
@@ -128,7 +125,7 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 	L_SET_CPP_PTR_FROM_C_STRUCT(
 		chat_message_event,
 		new LINPHONE_NAMESPACE::ChatMessageEvent(
-			L_GET_CPP_PTR_FROM_C_STRUCT(chat_message, ChatMessage)
+			L_GET_CPP_PTR_FROM_C_STRUCT(chat_message)
 		)
 	);
 	return chat_message_event;
@@ -136,9 +133,7 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 
 LinphoneChatMessage *linphone_chat_message_event_get_chat_message (const LinphoneChatMessageEvent *chat_message_event) {
 	return L_GET_C_BACK_PTR(
-		L_GET_CPP_PTR_FROM_C_STRUCT(
-			chat_message_event, ChatMessageEvent
-		)->getChatMessage(),
+		L_GET_CPP_PTR_FROM_C_STRUCT(chat_message_event)->getChatMessage(),
 		ChatMessage
 	);
 }

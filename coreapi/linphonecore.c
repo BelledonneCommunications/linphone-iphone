@@ -6653,7 +6653,7 @@ void linphone_core_set_media_encryption_mandatory(LinphoneCore *lc, bool_t m) {
 }
 
 void linphone_core_init_default_params(LinphoneCore*lc, LinphoneCallParams *params) {
-	L_GET_CPP_PTR_FROM_C_STRUCT(params, MediaSessionParams)->initDefault(lc);
+	L_GET_CPP_PTR_FROM_C_STRUCT(params)->initDefault(lc);
 }
 
 void linphone_core_set_device_identifier(LinphoneCore *lc,const char* device_id) {

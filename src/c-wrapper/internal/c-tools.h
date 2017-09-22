@@ -323,6 +323,9 @@ LINPHONE_END_NAMESPACE
 #define L_CPP_TYPE_OF_C_TYPE(C_TYPE) \
 	LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::type
 
+#define L_CPP_TYPE_OF_C_OBJECT(C_OBJECT) \
+	LINPHONE_NAMESPACE::CTypeToCppType<std::remove_const<std::remove_pointer<decltype(C_OBJECT)>::type>::type>::type
+
 // -----------------------------------------------------------------------------
 // C object declaration.
 // -----------------------------------------------------------------------------
@@ -392,9 +395,9 @@ LINPHONE_END_NAMESPACE
 #define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init ()
 
 // Get the cpp-ptr of a wrapped C object.
-#define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
+#define L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC< \
-		LINPHONE_NAMESPACE::CPP_TYPE, \
+		L_CPP_TYPE_OF_C_OBJECT(OBJECT), \
 		std::remove_pointer<decltype(OBJECT)>::type \
 	>(OBJECT)
 
@@ -409,7 +412,7 @@ LINPHONE_END_NAMESPACE
 // Get the private data of a shared or simple cpp-ptr of a wrapped C object.
 #define L_GET_PRIVATE_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
 	L_GET_PRIVATE(LINPHONE_NAMESPACE::Wrapper::getCppPtr( \
-		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT) \
 	))
 
 // Get the wrapped C object of a C++ object.
@@ -421,11 +424,11 @@ LINPHONE_END_NAMESPACE
 // Get/set user data on a wrapped C object.
 #define L_GET_USER_DATA_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getUserData( \
-		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE) \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT) \
 	)
 #define L_SET_USER_DATA_FROM_C_STRUCT(OBJECT, VALUE, CPP_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::setUserData( \
-		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT, CPP_TYPE), \
+		L_GET_CPP_PTR_FROM_C_STRUCT(OBJECT), \
 		VALUE \
 	)
 
