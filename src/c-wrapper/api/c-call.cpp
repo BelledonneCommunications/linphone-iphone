@@ -28,15 +28,15 @@
 
 // =============================================================================
 
-#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj)
-#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, Call)
+#define GET_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_OBJECT(obj)
+#define GET_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_OBJECT(obj, Call)
 
 using namespace std;
 
 static void _linphone_call_constructor (LinphoneCall *call);
 static void _linphone_call_destructor (LinphoneCall *call);
 
-L_DECLARE_C_STRUCT_IMPL_WITH_XTORS(Call,
+L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	_linphone_call_constructor, _linphone_call_destructor,
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *currentCbs; /* The current LinphoneCallCbs object used to call a callback */
@@ -601,7 +601,7 @@ bool_t linphone_call_asked_to_autoanswer (LinphoneCall *call) {
 }
 
 const LinphoneAddress *linphone_call_get_remote_address (const LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_STRUCT(call->remoteAddressCache, &GET_CPP_PTR(call)->getRemoteAddress());
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->remoteAddressCache, &GET_CPP_PTR(call)->getRemoteAddress());
 	return call->remoteAddressCache;
 }
 
@@ -690,7 +690,7 @@ int linphone_call_get_duration (const LinphoneCall *call) {
 }
 
 const LinphoneCallParams *linphone_call_get_current_params(LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_STRUCT(call->currentParamsCache, GET_CPP_PTR(call)->getCurrentParams());
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->currentParamsCache, GET_CPP_PTR(call)->getCurrentParams());
 	return call->currentParamsCache;
 }
 
@@ -698,7 +698,7 @@ const LinphoneCallParams *linphone_call_get_remote_params(LinphoneCall *call) {
 	const LinphonePrivate::MediaSessionParams *remoteParams = GET_CPP_PTR(call)->getRemoteParams();
 	if (!remoteParams)
 		return nullptr;
-	L_SET_CPP_PTR_FROM_C_STRUCT(call->remoteParamsCache, remoteParams);
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->remoteParamsCache, remoteParams);
 	return call->remoteParamsCache;
 }
 
@@ -936,7 +936,7 @@ LinphoneStatus linphone_call_accept (LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_accept_with_params (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->accept(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
+	return GET_CPP_PTR(call)->accept(params ? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_accept_early_media (LinphoneCall* call) {
@@ -944,11 +944,11 @@ LinphoneStatus linphone_call_accept_early_media (LinphoneCall* call) {
 }
 
 LinphoneStatus linphone_call_accept_early_media_with_params (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
+	return GET_CPP_PTR(call)->acceptEarlyMedia(params ? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_update (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->update(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
+	return GET_CPP_PTR(call)->update(params ? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_defer_update (LinphoneCall *call) {
@@ -971,7 +971,7 @@ LinphoneStatus linphone_call_defer_update (LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_accept_update (LinphoneCall *call, const LinphoneCallParams *params) {
-	return GET_CPP_PTR(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_STRUCT(params) : nullptr);
+	return GET_CPP_PTR(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
 }
 
 LinphoneStatus linphone_call_transfer (LinphoneCall *call, const char *refer_to) {
@@ -1156,7 +1156,7 @@ void linphone_call_set_params (LinphoneCall *call, const LinphoneCallParams *par
 }
 
 const LinphoneCallParams *linphone_call_get_params (LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_STRUCT(call->paramsCache, GET_CPP_PTR(call)->getParams());
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->paramsCache, GET_CPP_PTR(call)->getParams());
 	return call->paramsCache;
 }
 
@@ -1174,11 +1174,11 @@ void linphone_call_unref (LinphoneCall *call) {
 }
 
 void *linphone_call_get_user_data (const LinphoneCall *call) {
-	return L_GET_USER_DATA_FROM_C_STRUCT(call, Call);
+	return L_GET_USER_DATA_FROM_C_OBJECT(call, Call);
 }
 
 void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
-	L_SET_USER_DATA_FROM_C_STRUCT(call, ud, Call);
+	L_SET_USER_DATA_FROM_C_OBJECT(call, ud, Call);
 }
 
 // =============================================================================
@@ -1187,9 +1187,9 @@ void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
 
 LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_STRUCT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from), *L_GET_CPP_PTR_FROM_C_STRUCT(to),
-		cfg, nullptr, L_GET_CPP_PTR_FROM_C_STRUCT(params)));
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
+		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
+		cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params)));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
 	call->paramsCache = linphone_call_params_new_for_wrapper();
 	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
@@ -1199,8 +1199,8 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 
 LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, SalOp *op) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_STRUCT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
-		*L_GET_CPP_PTR_FROM_C_STRUCT(from), *L_GET_CPP_PTR_FROM_C_STRUCT(to),
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
+		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 		nullptr, op, nullptr));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
 	call->paramsCache = linphone_call_params_new_for_wrapper();

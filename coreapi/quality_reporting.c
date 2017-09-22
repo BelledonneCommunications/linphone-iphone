@@ -380,7 +380,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 	 * (port, transport, maddr), then it is sent directly.
 	 * Otherwise it is routed as any LinphoneEvent publish, following proxy config policy.
 	 **/
-	salAddress = L_GET_PRIVATE_FROM_C_STRUCT(request_uri, Address)->getInternalAddress();
+	salAddress = L_GET_PRIVATE_FROM_C_OBJECT(request_uri, Address)->getInternalAddress();
 	if (sal_address_has_uri_param(salAddress, "transport") ||
 		sal_address_has_uri_param(salAddress, "maddr") ||
 		linphone_address_get_port(request_uri) != 0) {

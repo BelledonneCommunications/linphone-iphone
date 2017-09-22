@@ -25,7 +25,7 @@
 
 using namespace std;
 
-L_DECLARE_C_STRUCT_IMPL(Participant,
+L_DECLARE_C_OBJECT_IMPL(Participant,
 	mutable LinphoneAddress *addressCache;
 );
 
@@ -39,15 +39,15 @@ void linphone_participant_unref (LinphoneParticipant *participant) {
 }
 
 void *linphone_participant_get_user_data(const LinphoneParticipant *participant) {
-	return L_GET_USER_DATA_FROM_C_STRUCT(participant, Participant);
+	return L_GET_USER_DATA_FROM_C_OBJECT(participant, Participant);
 }
 
 void linphone_participant_set_user_data(LinphoneParticipant *participant, void *ud) {
-	L_SET_USER_DATA_FROM_C_STRUCT(participant, ud, Participant);
+	L_SET_USER_DATA_FROM_C_OBJECT(participant, ud, Participant);
 }
 
 const LinphoneAddress *linphone_participant_get_address (const LinphoneParticipant *participant) {
-	LinphonePrivate::Address addr = L_GET_CPP_PTR_FROM_C_STRUCT(participant)->getAddress();
+	LinphonePrivate::Address addr = L_GET_CPP_PTR_FROM_C_OBJECT(participant)->getAddress();
 	if (participant->addressCache)
 		linphone_address_unref(participant->addressCache);
 	participant->addressCache = linphone_address_new(addr.asString().c_str());
@@ -55,9 +55,9 @@ const LinphoneAddress *linphone_participant_get_address (const LinphoneParticipa
 }
 
 bool_t linphone_participant_is_admin (const LinphoneParticipant *participant) {
-	return L_GET_CPP_PTR_FROM_C_STRUCT(participant)->isAdmin();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(participant)->isAdmin();
 }
 
 void linphone_participant_set_admin (LinphoneParticipant *participant, bool_t value) {
-	L_GET_CPP_PTR_FROM_C_STRUCT(participant)->setAdmin(value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(participant)->setAdmin(value);
 }

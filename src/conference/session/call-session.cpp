@@ -454,7 +454,7 @@ LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
 	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
 		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
-		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_STRUCT(call, Call)->getActiveSession();
+		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_OBJECT(call, Call)->getActiveSession();
 		if (session.get() == q) continue;
 		switch (session->getState()) {
 			case LinphoneCallOutgoingInit:
@@ -616,7 +616,7 @@ void CallSessionPrivate::setContactOp () {
 	SalAddress *salAddress = nullptr;
 	LinphoneAddress *contact = getFixedContact();
 	if (contact) {
-		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_STRUCT(contact, Address)->getInternalAddress());
+		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact, Address)->getInternalAddress());
 		sal_address_ref(salAddress);
 		linphone_address_unref(contact);
 	}
@@ -962,7 +962,7 @@ LinphoneReason CallSession::getReason () const {
 
 const Address& CallSession::getRemoteAddress () const {
 	L_D(const CallSession);
-	return *L_GET_CPP_PTR_FROM_C_STRUCT((d->direction == LinphoneCallIncoming)
+	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
 		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log));
 }
 
