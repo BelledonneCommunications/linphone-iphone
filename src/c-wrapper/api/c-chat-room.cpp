@@ -211,8 +211,8 @@ LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) 
 
 LinphoneParticipant *linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
 	return L_GET_C_BACK_PTR(GET_CPP_PTR(cr)->addParticipant(
-			*L_GET_CPP_PTR_FROM_C_OBJECT(addr), nullptr, false),
-		Participant);
+		*L_GET_CPP_PTR_FROM_C_OBJECT(addr), nullptr, false)
+	);
 }
 
 void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses) {

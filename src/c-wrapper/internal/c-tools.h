@@ -43,6 +43,9 @@ struct CTypeToCppType {
 	enum { defined = false };
 };
 
+template<typename CppType>
+struct CObjectInitializer {};
+
 class Wrapper {
 private:
 	template<typename T>
@@ -58,18 +61,22 @@ private:
 	};
 
 public:
+	// ---------------------------------------------------------------------------
+	// Get private data of cpp Object.
+	// ---------------------------------------------------------------------------
+
 	template<typename T>
-	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *object) {
-		if (!object)
+	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *cppObject) {
+		if (!cppObject)
 			return nullptr;
-		return object->getPrivate();
+		return cppObject->getPrivate();
 	}
 
 	template<typename T>
-	static inline decltype (std::declval<T>().getPrivate()) getPrivate (const std::shared_ptr<T> &object) {
-		if (!object)
+	static inline decltype (std::declval<T>().getPrivate()) getPrivate (const std::shared_ptr<T> &cppObject) {
+		if (!cppObject)
 			return nullptr;
-		return object->getPrivate();
+		return cppObject->getPrivate();
 	}
 
 	// ---------------------------------------------------------------------------
@@ -81,9 +88,9 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
-	static inline std::shared_ptr<CppType> getCppPtrFromC (CType *object) {
-		L_ASSERT(object);
-		return reinterpret_cast<WrappedObject<CppType> *>(object)->cppPtr;
+	static inline std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
+		L_ASSERT(cObject);
+		return reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
 	template<
@@ -91,9 +98,9 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
-	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *object) {
-		L_ASSERT(object);
-		return reinterpret_cast<const WrappedObject<CppType> *>(object)->cppPtr;
+	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
+		L_ASSERT(cObject);
+		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
 	template<
@@ -101,9 +108,9 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
-	static inline CppType *getCppPtrFromC (CType *object) {
-		L_ASSERT(object);
-		return reinterpret_cast<WrappedClonableObject<CppType> *>(object)->cppPtr;
+	static inline CppType *getCppPtrFromC (CType *cObject) {
+		L_ASSERT(cObject);
+		return reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
 	template<
@@ -111,74 +118,80 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
-	static inline const CppType *getCppPtrFromC (const CType *object) {
-		L_ASSERT(object);
-		return reinterpret_cast<const WrappedClonableObject<CppType> *>(object)->cppPtr;
+	static inline const CppType *getCppPtrFromC (const CType *cObject) {
+		L_ASSERT(cObject);
+		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
 	template<typename T>
-	static inline void setCppPtrFromC (void *object, const std::shared_ptr<T> &cppPtr) {
-		L_ASSERT(object);
-		static_cast<WrappedObject<T> *>(object)->cppPtr = cppPtr;
-		cppPtr->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
+	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<T> &cppObject) {
+		L_ASSERT(cObject);
+		static_cast<WrappedObject<T> *>(cObject)->cppPtr = cppObject;
+		cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
 	template<typename T>
-	static inline void setCppPtrFromC (void *object, const T *cppPtr) {
-		L_ASSERT(object);
-		T *oldPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(object)->cppPtr);
-		if (oldPtr != cppPtr) {
+	static inline void setCppPtrFromC (void *cObject, const T *cppObject) {
+		L_ASSERT(cObject);
+		T *oldPtr = reinterpret_cast<T *>(static_cast<WrappedClonableObject<T> *>(cObject)->cppPtr);
+		if (oldPtr != cppObject) {
 			delete oldPtr;
-			T **cppObject = &static_cast<WrappedClonableObject<T> *>(object)->cppPtr;
-			*cppObject = new T(*cppPtr);
-			(*cppObject)->setProperty("LinphonePrivate::Wrapper::cBackPtr", object);
+			T **cppPtr = &static_cast<WrappedClonableObject<T> *>(cObject)->cppPtr;
+			*cppPtr = new T(*cppObject);
+			(*cppPtr)->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 		}
 	}
 
 	template<typename T>
-	static T *getCppPtr (const std::shared_ptr<T> &cppPtr) {
-		return cppPtr.get();
+	static T *getCppPtr (const std::shared_ptr<T> &cppObject) {
+		return cppObject.get();
 	}
 
 	template<typename T>
-	static T *getCppPtr (T *cppPtr) {
-		return cppPtr;
+	static T *getCppPtr (T *cppObject) {
+		return cppObject;
 	}
 
 	template<typename T>
-	static const T *getCppPtr (const std::shared_ptr<const T> &cppPtr) {
-		return cppPtr.get();
+	static const T *getCppPtr (const std::shared_ptr<const T> &cppObject) {
+		return cppObject.get();
 	}
 
 	template<typename T>
-	static const T *getCppPtr (const T *cppPtr) {
-		return cppPtr;
+	static const T *getCppPtr (const T *cppObject) {
+		return cppObject;
 	}
 
 	// ---------------------------------------------------------------------------
 	// Get c back ptr helpers.
 	// ---------------------------------------------------------------------------
 
-	template<typename CType, typename CppType>
-	static inline CType *getCBackPtr (const std::shared_ptr<CppType> &object, CType *(*cTypeAllocator)()) {
-		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+	template<typename CppType>
+	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
+		typedef typename CppTypeToCType<CppType>::type RetType;
+
+		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
 		if (!value) {
-			CType *cObject = cTypeAllocator();
-			setCppPtrFromC(cObject, object);
+			RetType *cObject = CObjectInitializer<CppType>::init();
+			setCppPtrFromC(cObject, cppObject);
 		}
-		return reinterpret_cast<CType *>(value);
+
+		return reinterpret_cast<RetType *>(value);
 	}
 
-	template<typename CType, typename CppType>
-	static inline CType *getCBackPtr (const CppType *object, CType *(*cTypeAllocator)()) {
-		Variant v = object->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+	template<typename CppType>
+	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const CppType *cppObject) {
+		typedef typename CppTypeToCType<CppType>::type RetType;
+
+		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
 		if (!value) {
-			CType *cObject = cTypeAllocator();
-			setCppPtrFromC(cObject, object);
+			RetType *cObject = CObjectInitializer<CppType>::init();
+			setCppPtrFromC(cObject, cppObject);
 		}
-		return reinterpret_cast<CType *>(value);
+
+		return reinterpret_cast<RetType *>(value);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -233,7 +246,7 @@ public:
 	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<std::shared_ptr<CppType>> cppList, CType *(*cTypeAllocator)()) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
-			result = bctbx_list_append(result, getCBackPtr(value, cTypeAllocator));
+			result = bctbx_list_append(result, getCBackPtr(value));
 		return result;
 	}
 
@@ -241,7 +254,7 @@ public:
 	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<CppType> cppList, CType *(*cTypeAllocator)()) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
-			result = bctbx_list_append(result, getCBackPtr(value, cTypeAllocator));
+			result = bctbx_list_append(result, getCBackPtr(value));
 		return result;
 	}
 
@@ -322,6 +335,12 @@ LINPHONE_END_NAMESPACE
 	struct CTypeToCppType<Linphone ## C_TYPE> { \
 		enum { defined = true }; \
 		typedef CPP_TYPE type; \
+	}; \
+	template<> \
+	struct CObjectInitializer<CPP_TYPE> { \
+		static Linphone ## C_TYPE *init () { \
+			return _linphone_ ## C_TYPE ## _init(); \
+		} \
 	}; \
 	LINPHONE_END_NAMESPACE
 
@@ -424,10 +443,8 @@ LINPHONE_END_NAMESPACE
 	))
 
 // Get the wrapped C object of a C++ object.
-#define L_GET_C_BACK_PTR(C_OBJECT, C_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCBackPtr<Linphone ## C_TYPE>( \
-		C_OBJECT, _linphone_ ## C_TYPE ## _init \
-	)
+#define L_GET_C_BACK_PTR(C_OBJECT) \
+	LINPHONE_NAMESPACE::Wrapper::getCBackPtr(C_OBJECT)
 
 // Get/set user data on a wrapped C object.
 #define L_GET_USER_DATA_FROM_C_OBJECT(C_OBJECT) \
@@ -440,10 +457,11 @@ LINPHONE_END_NAMESPACE
 		VALUE \
 	)
 
-#define L_GET_C_LIST_FROM_CPP_LIST(LIST) \
-	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList(LIST)
-#define L_GET_CPP_LIST_FROM_C_LIST(LIST, TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE>(LIST)
+// Transforms cpp list and c list.
+#define L_GET_C_LIST_FROM_CPP_LIST(CPP_LIST) \
+	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList(CPP_LIST)
+#define L_GET_CPP_LIST_FROM_C_LIST(C_LIST, TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE>(C_LIST)
 
 #define L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(LIST, CPP_TYPE, C_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCListOfStructPtrFromCppListOfCppObj<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST, _linphone_ ## C_TYPE ## _init)
