@@ -48,16 +48,21 @@ struct CObjectInitializer {};
 
 class Wrapper {
 private:
-	template<typename T>
-	struct WrappedObject {
-		belle_sip_object_t base;
-		std::shared_ptr<T> cppPtr;
+	template<typename CppType>
+	struct IsCppObject {
+		enum { value = std::is_base_of<Object, CppType>::value || std::is_base_of<ClonableObject, CppType>::value };
 	};
 
-	template<typename T>
+	template<typename CType>
+	struct WrappedObject {
+		belle_sip_object_t base;
+		std::shared_ptr<CType> cppPtr;
+	};
+
+	template<typename CType>
 	struct WrappedClonableObject {
 		belle_sip_object_t base;
-		T *cppPtr;
+		CType *cppPtr;
 	};
 
 public:
@@ -65,14 +70,20 @@ public:
 	// Get private data of cpp Object.
 	// ---------------------------------------------------------------------------
 
-	template<typename T>
-	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *cppObject) {
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+	>
+	static inline decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
 		L_ASSERT(cppObject);
 		return cppObject->getPrivate();
 	}
 
-	template<typename T>
-	static inline decltype (std::declval<T>().getPrivate()) getPrivate (const std::shared_ptr<T> &cppObject) {
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+	>
+	static inline decltype (std::declval<CppType>().getPrivate()) getPrivate (const std::shared_ptr<CppType> &cppObject) {
 		L_ASSERT(cppObject);
 		return cppObject->getPrivate();
 	}
