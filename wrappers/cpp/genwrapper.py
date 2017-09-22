@@ -591,15 +591,12 @@ class ClassHeader(object):
 		self.includes = {'internal': [], 'external': []}
 		includes = self.needed_includes(_class)
 		for include in includes['internal']:
-			if _class.name.to_camel_case(fullName=True) == 'LinphoneCore' or (isinstance(_class, AbsApi.Interface) and _class.listenedClass is not None and include == _class.listenedClass.name.to_snake_case()):
-				if include == 'enums':
-					self.includes['internal'].append({'name': include})
-				else:
-					className = AbsApi.ClassName()
-					className.from_snake_case(include)
-					self.priorDeclarations.append({'name': className.to_camel_case()})
-			else:
+			if include == 'enums':
 				self.includes['internal'].append({'name': include})
+			else:
+				className = AbsApi.ClassName()
+				className.from_snake_case(include)
+				self.priorDeclarations.append({'name': className.to_camel_case()})
 		
 		for include in includes['external']:
 			self.includes['external'].append({'name': include})
