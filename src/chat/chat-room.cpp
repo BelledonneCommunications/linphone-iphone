@@ -27,6 +27,7 @@
 #include "imdn.h"
 #include "logger/logger.h"
 
+#include "chat-message.h"
 #include "chat-room.h"
 
 #define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatRoom)
@@ -609,7 +610,8 @@ LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent 
 }
 
 LinphoneChatMessage *ChatRoom::createMessage (const string &message) {
-	LinphoneChatMessage *msg = createMessage("");
+	ChatMessage chatMessage(static_pointer_cast<ChatRoom>(shared_from_this()));
+	LinphoneChatMessage *msg = chatMessage.getBackPtr();
 	linphone_chat_message_set_chat_room(msg, GET_BACK_PTR(this));
 	linphone_chat_message_set_state(msg, LinphoneChatMessageStateIdle);
 	linphone_chat_message_set_text(msg, message.empty() ? nullptr : ms_strdup(message.c_str()));

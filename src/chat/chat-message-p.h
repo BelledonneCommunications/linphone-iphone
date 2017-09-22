@@ -31,8 +31,12 @@ class ChatMessagePrivate : public ObjectPrivate {
 	friend class CpimChatMessageModifier;
 	friend class MultipartChatMessageModifier;
 
+public:
+	ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room);
+	virtual ~ChatMessagePrivate ();
+
 private:
-	std::weak_ptr<ChatRoom> chatRoom;
+	std::shared_ptr<ChatRoom> chatRoom;
 	ChatMessage::Direction direction = ChatMessage::Incoming;
 	// LinphoneAddress *from;
 	// LinphoneAddress *to;

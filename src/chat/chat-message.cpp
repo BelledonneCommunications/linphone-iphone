@@ -22,6 +22,7 @@
 #include "linphone/types.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
+#include "c-wrapper/c-wrapper.h"
 
 #include "chat-message-p.h"
 #include "chat-message.h"
@@ -29,6 +30,8 @@
 #include "modifier/multipart-chat-message-modifier.h"
 #include "modifier/cpim-chat-message-modifier.h"
 #include "chat-room.h"
+
+#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(object->shared_from_this(), ChatMessage)
 
 // =============================================================================
 
@@ -38,15 +41,24 @@ using namespace std;
 
 // -----------------------------------------------------------------------------
 
+ChatMessagePrivate::ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room)
+: chatRoom(room) {}
+
+ChatMessagePrivate::~ChatMessagePrivate () {}
+	
+// -----------------------------------------------------------------------------
+
+ChatMessage::ChatMessage (const std::shared_ptr<ChatRoom> &room) : Object(*new ChatMessagePrivate(room)) {}
+
 ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p) {}
+
+LinphoneChatMessage * ChatMessage::getBackPtr() {
+	return GET_BACK_PTR(this);
+}
 
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	L_D(const ChatMessage);
-	shared_ptr<ChatRoom> chatRoom = d->chatRoom.lock();
-	if (!chatRoom) {
-		// TODO.
-	}
-	return chatRoom;
+	return d->chatRoom;
 }
 
 ChatMessage::Direction ChatMessage::getDirection () const {

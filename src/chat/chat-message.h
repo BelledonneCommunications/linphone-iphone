@@ -22,6 +22,8 @@
 #include <list>
 #include <memory>
 
+#include "linphone/api/c-chat-message.h"
+
 #include "object/object.h"
 
 // =============================================================================
@@ -53,6 +55,11 @@ public:
 		DeliveredToUser,
 		Displayed
 	};
+
+	ChatMessage (const std::shared_ptr<ChatRoom> &room);
+	virtual ~ChatMessage () = default;
+
+	LinphoneChatMessage * getBackPtr();
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;
 
@@ -89,9 +96,10 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-private:
-	ChatMessage (ChatMessagePrivate &p);
+protected:
+	explicit ChatMessage (ChatMessagePrivate &p);
 
+private:
 	L_DECLARE_PRIVATE(ChatMessage);
 	L_DISABLE_COPY(ChatMessage);
 };
