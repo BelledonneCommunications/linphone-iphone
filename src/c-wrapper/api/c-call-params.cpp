@@ -489,7 +489,7 @@ void *linphone_call_params_get_user_data (const LinphoneCallParams *cp) {
 }
 
 void linphone_call_params_set_user_data (LinphoneCallParams *cp, void *ud) {
-	L_SET_USER_DATA_FROM_C_OBJECT(cp, ud, MediaSessionParams);
+	L_SET_USER_DATA_FROM_C_OBJECT(cp, ud);
 }
 
 LinphoneCallParams *linphone_call_params_ref (LinphoneCallParams *cp) {

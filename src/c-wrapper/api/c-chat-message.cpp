@@ -96,7 +96,7 @@ void * linphone_chat_message_get_user_data (const LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_message_set_user_data (LinphoneChatMessage *msg, void *ud) {
-	L_SET_USER_DATA_FROM_C_OBJECT(msg, ud, ChatMessage);
+	L_SET_USER_DATA_FROM_C_OBJECT(msg, ud);
 }
 
 

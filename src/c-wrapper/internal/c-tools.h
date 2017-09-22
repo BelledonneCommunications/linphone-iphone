@@ -394,7 +394,7 @@ LINPHONE_END_NAMESPACE
 // Call the init function of wrapped C object.
 #define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init ()
 
-// Get the cpp-ptr of a wrapped C object.
+// Get/set the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC< \
 		L_CPP_TYPE_OF_C_OBJECT(C_OBJECT), \
@@ -416,19 +416,19 @@ LINPHONE_END_NAMESPACE
 	))
 
 // Get the wrapped C object of a C++ object.
-#define L_GET_C_BACK_PTR(OBJECT, C_TYPE) \
+#define L_GET_C_BACK_PTR(C_OBJECT, C_TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCBackPtr<Linphone ## C_TYPE>( \
-		OBJECT, _linphone_ ## C_TYPE ## _init \
+		C_OBJECT, _linphone_ ## C_TYPE ## _init \
 	)
 
 // Get/set user data on a wrapped C object.
-#define L_GET_USER_DATA_FROM_C_OBJECT(OBJECT) \
+#define L_GET_USER_DATA_FROM_C_OBJECT(C_OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getUserData( \
-		L_GET_CPP_PTR_FROM_C_OBJECT(OBJECT) \
+		L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT) \
 	)
-#define L_SET_USER_DATA_FROM_C_OBJECT(OBJECT, VALUE, CPP_TYPE) \
+#define L_SET_USER_DATA_FROM_C_OBJECT(C_OBJECT, VALUE) \
 	LINPHONE_NAMESPACE::Wrapper::setUserData( \
-		L_GET_CPP_PTR_FROM_C_OBJECT(OBJECT), \
+		L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT), \
 		VALUE \
 	)
 

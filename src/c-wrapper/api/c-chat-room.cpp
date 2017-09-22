@@ -262,7 +262,7 @@ void *linphone_chat_room_get_user_data (const LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
-	L_SET_USER_DATA_FROM_C_OBJECT(cr, ud, ChatRoom);
+	L_SET_USER_DATA_FROM_C_OBJECT(cr, ud);
 }
 
 // =============================================================================

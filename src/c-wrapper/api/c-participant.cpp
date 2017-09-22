@@ -43,7 +43,7 @@ void *linphone_participant_get_user_data(const LinphoneParticipant *participant)
 }
 
 void linphone_participant_set_user_data(LinphoneParticipant *participant, void *ud) {
-	L_SET_USER_DATA_FROM_C_OBJECT(participant, ud, Participant);
+	L_SET_USER_DATA_FROM_C_OBJECT(participant, ud);
 }
 
 const LinphoneAddress *linphone_participant_get_address (const LinphoneParticipant *participant) {
