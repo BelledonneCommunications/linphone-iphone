@@ -303,19 +303,19 @@ LINPHONE_END_NAMESPACE
 
 #define L_REGISTER_TYPE(CPP_TYPE, C_TYPE) \
 	extern Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init (); \
-	namespace LINPHONE_NAMESPACE { \
-		class CPP_TYPE; \
-	}; \
+	LINPHONE_BEGIN_NAMESPACE \
+	class CPP_TYPE; \
 	template<> \
-	struct LINPHONE_NAMESPACE::CppTypeToCType<LINPHONE_NAMESPACE::CPP_TYPE> { \
+	struct CppTypeToCType<CPP_TYPE> { \
 		enum { defined = true }; \
 		typedef Linphone ## C_TYPE type; \
 	}; \
 	template<> \
-	struct LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE> { \
+	struct CTypeToCppType<Linphone ## C_TYPE> { \
 		enum { defined = true }; \
-		typedef LINPHONE_NAMESPACE::CPP_TYPE type; \
-	};
+		typedef CPP_TYPE type; \
+	}; \
+	LINPHONE_END_NAMESPACE
 
 #define L_ASSERT_C_TYPE(C_TYPE) \
 	static_assert(LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::defined, "Type is not defined."); \
