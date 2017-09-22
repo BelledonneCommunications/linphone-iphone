@@ -67,15 +67,13 @@ public:
 
 	template<typename T>
 	static inline decltype (std::declval<T>().getPrivate()) getPrivate (T *cppObject) {
-		if (!cppObject)
-			return nullptr;
+		L_ASSERT(cppObject);
 		return cppObject->getPrivate();
 	}
 
 	template<typename T>
 	static inline decltype (std::declval<T>().getPrivate()) getPrivate (const std::shared_ptr<T> &cppObject) {
-		if (!cppObject)
-			return nullptr;
+		L_ASSERT(cppObject);
 		return cppObject->getPrivate();
 	}
 
@@ -143,13 +141,14 @@ public:
 	>
 	static inline void setCppPtrFromC (void *cObject, const CppType *cppObject) {
 		L_ASSERT(cObject);
-		CppType *oldPtr = reinterpret_cast<CppType *>(static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr);
-		if (oldPtr != cppObject) {
-			delete oldPtr;
-			CppType **cppPtr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
-			*cppPtr = new CppType(*cppObject);
-			(*cppPtr)->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
-		}
+
+		CppType **cppObjectAddr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+		if (*cppObjectAddr == cppObject)
+			return;
+		delete *cppObjectAddr;
+
+		*cppObjectAddr = new CppType(*cppObject);
+		(*cppObjectAddr)->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
 	// Macro helpers.
