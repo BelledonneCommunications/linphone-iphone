@@ -83,6 +83,7 @@ public:
 	// Get c/cpp ptr helpers.
 	// ---------------------------------------------------------------------------
 
+	// Get Object.
 	template<
 		typename CppType,
 		typename CType,
@@ -103,6 +104,7 @@ public:
 		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
+	// Get ClonableObject.
 	template<
 		typename CppType,
 		typename CType,
@@ -123,6 +125,7 @@ public:
 		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
+	// Set Object.
 	template<
 		typename CppType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
@@ -133,6 +136,7 @@ public:
 		cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
+	// Set ClonableObject.
 	template<
 		typename CppType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
@@ -148,6 +152,7 @@ public:
 		}
 	}
 
+	// Macro helpers.
 	template<typename T>
 	static T *getCppPtr (const std::shared_ptr<T> &cppObject) {
 		return cppObject.get();
@@ -172,7 +177,10 @@ public:
 	// Get c back ptr helpers.
 	// ---------------------------------------------------------------------------
 
-	template<typename CppType>
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+	>
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
 		typedef typename CppTypeToCType<CppType>::type RetType;
 
@@ -186,7 +194,10 @@ public:
 		return reinterpret_cast<RetType *>(value);
 	}
 
-	template<typename CppType>
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+	>
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const CppType *cppObject) {
 		typedef typename CppTypeToCType<CppType>::type RetType;
 
