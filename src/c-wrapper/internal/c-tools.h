@@ -33,6 +33,16 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+template<typename CppType>
+struct CppTypeToCType {
+	enum { defined = false };
+};
+
+template<typename CType>
+struct CTypeToCppType {
+	enum { defined = false };
+};
+
 class Wrapper {
 private:
 	template<typename T>
@@ -288,6 +298,32 @@ LINPHONE_END_NAMESPACE
 // =============================================================================
 
 // -----------------------------------------------------------------------------
+// Register type.
+// -----------------------------------------------------------------------------
+
+#define L_REGISTER_TYPE(CPP_TYPE, C_TYPE) \
+	extern Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init (); \
+	namespace LINPHONE_NAMESPACE { \
+		class CPP_TYPE; \
+	}; \
+	template<> \
+	struct LINPHONE_NAMESPACE::CppTypeToCType<LINPHONE_NAMESPACE::CPP_TYPE> { \
+		enum { defined = true }; \
+		typedef Linphone ## C_TYPE type; \
+	}; \
+	template<> \
+	struct LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE> { \
+		enum { defined = true }; \
+		typedef LINPHONE_NAMESPACE::CPP_TYPE type; \
+	};
+
+#define L_ASSERT_C_TYPE(C_TYPE) \
+	static_assert(LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::defined, "Type is not defined."); \
+
+#define L_CPP_TYPE_OF_C_TYPE(C_TYPE) \
+	LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::type
+
+// -----------------------------------------------------------------------------
 // C object declaration.
 // -----------------------------------------------------------------------------
 
@@ -310,10 +346,11 @@ LINPHONE_END_NAMESPACE
 	L_INTERNAL_DECLARE_C_STRUCT_FUNCTIONS(CPP_CLASS, C_TYPE, L_INTERNAL_C_STRUCT_NO_XTOR, L_INTERNAL_C_STRUCT_NO_XTOR)
 
 // Declare clonable wrapped C object.
-#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(CPP_CLASS, C_TYPE, ...) \
+#define L_DECLARE_C_CLONABLE_STRUCT_IMPL(C_TYPE, ...) \
+	L_ASSERT_C_TYPE(C_TYPE) \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
-		LINPHONE_NAMESPACE::CPP_CLASS *cppPtr; \
+		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
 		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
@@ -325,14 +362,15 @@ LINPHONE_END_NAMESPACE
 	} \
 	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
 		L_ASSERT(src->cppPtr); \
-		dest->cppPtr = new LINPHONE_NAMESPACE::CPP_CLASS(*src->cppPtr); \
+		dest->cppPtr = new L_CPP_TYPE_OF_C_TYPE(C_TYPE)(*src->cppPtr); \
 	} \
 	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
-	BELLE_SIP_INSTANCIATE_VPTR(Linphone ## C_TYPE, belle_sip_object_t, \
-	_linphone_ ## C_TYPE ## _uninit, \
-	_linphone_ ## C_TYPE ## _clone, \
-	NULL, \
-	FALSE \
+	BELLE_SIP_INSTANCIATE_VPTR( \
+		Linphone ## C_TYPE, belle_sip_object_t, \
+		_linphone_ ## C_TYPE ## _uninit, \
+		_linphone_ ## C_TYPE ## _clone, \
+		NULL, \
+		FALSE \
 	);
 
 #define L_DECLARE_C_STRUCT_NEW_DEFAULT(C_TYPE, C_NAME) \

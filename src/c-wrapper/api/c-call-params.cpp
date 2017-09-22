@@ -25,7 +25,7 @@
 #define GET_MEDIA_CPP_PTR(obj) L_GET_CPP_PTR_FROM_C_STRUCT(obj, MediaSessionParams)
 #define GET_MEDIA_CPP_PRIVATE_PTR(obj) L_GET_PRIVATE_FROM_C_STRUCT(obj, MediaSessionParams)
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(MediaSessionParams, CallParams)
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallParams)
 
 using namespace std;
 

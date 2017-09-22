@@ -21,7 +21,7 @@
 
 // =============================================================================
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address, Address);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(Address);
 
 using namespace std;
 
