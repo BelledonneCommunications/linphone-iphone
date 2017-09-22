@@ -18,8 +18,10 @@
 
 #include "remote-conference.h"
 #include "participant-p.h"
+#include "xml/resource-lists.h"
 
 using namespace std;
+using namespace LinphonePrivate::Xsd::ResourceLists;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -55,6 +57,25 @@ void RemoteConference::removeParticipant (const shared_ptr<const Participant> &p
 			return;
 		}
 	}
+}
+
+
+string RemoteConference::getResourceLists(const list<shared_ptr<const Participant>> &participants) {
+	ResourceLists rl = ResourceLists();
+	ListType l = ListType();
+	for(const auto &p : participants) {
+		EntryType entry = EntryType(p->getAddress().asStringUriOnly());
+		if(p->getAddress().getDisplayName() != "") {
+			entry.setDisplayName(DisplayName(p->getAddress().getDisplayName()));
+		}
+		l.getEntry().push_back(entry);
+	}
+	rl.getList().push_back(l);
+
+	Xsd::XmlSchema::NamespaceInfomap map;
+	stringstream xmlBody;
+	serializeResourceLists(xmlBody, rl, map);
+	return xmlBody.str();
 }
 
 // -----------------------------------------------------------------------------
