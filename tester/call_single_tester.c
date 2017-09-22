@@ -1163,6 +1163,8 @@ static void cancel_other_device_after_accept(void) {
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallEnd,1));
 		BC_ASSERT_TRUE(wait_for(caller_mgr->lc,callee_mgr_2->lc,&callee_mgr_2->stat.number_of_LinphoneCallReleased,1));
 
+		wait_for_until(caller_mgr->lc,callee_mgr_2->lc,NULL,0,500);
+
 		rei = linphone_call_get_error_info(call_callee_2);
 		BC_ASSERT_PTR_NOT_NULL(rei);
 		if (rei){
@@ -1353,9 +1355,10 @@ static void cancelled_ringing_call(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1, int, "%d");
 
 	call_history = linphone_core_get_call_history(marie->lc);
-	BC_ASSERT_PTR_NOT_NULL(call_history);
-	BC_ASSERT_EQUAL((int)bctbx_list_size(call_history),1, int,"%i");
-	BC_ASSERT_EQUAL(linphone_call_log_get_status((LinphoneCallLog*)bctbx_list_get_data(call_history)), LinphoneCallMissed, LinphoneCallStatus, "%i");
+	if (BC_ASSERT_PTR_NOT_NULL(call_history)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(call_history),1, int,"%i");
+		BC_ASSERT_EQUAL(linphone_call_log_get_status((LinphoneCallLog*)bctbx_list_get_data(call_history)), LinphoneCallMissed, LinphoneCallStatus, "%i");
+	}
 
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
@@ -5082,6 +5085,7 @@ static void recovered_call_on_network_switch_during_reinvite_1(void) {
 	wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
 
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+	wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
 	linphone_call_terminate(incoming_call);
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1));
 	BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallReleased, 1));
