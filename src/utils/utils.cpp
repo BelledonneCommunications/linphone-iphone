@@ -43,6 +43,8 @@ bool Utils::iequals (const string &a, const string &b) {
 	return true;
 }
 
+// -----------------------------------------------------------------------------
+
 vector<string> Utils::split (const string &str, const string &delimiter) {
 	vector<string> out;
 
@@ -53,6 +55,8 @@ vector<string> Utils::split (const string &str, const string &delimiter) {
 
 	return out;
 }
+
+// -----------------------------------------------------------------------------
 
 #ifndef __ANDROID__
 #define TO_STRING_IMPL(TYPE) \
@@ -78,92 +82,67 @@ TO_STRING_IMPL(float)
 TO_STRING_IMPL(double)
 TO_STRING_IMPL(long double)
 
+#undef TO_STRING_IMPL
+
 string Utils::toString (const void *val) {
 	ostringstream ss;
 	ss << val;
 	return ss.str();
 }
 
-int Utils::stoi (const string &str, size_t *idx, int base) {
-	return stoi(str.c_str(), idx, base);
-}
+// -----------------------------------------------------------------------------
 
-long long Utils::stoll (const string &str, size_t *idx, int base) {
-	return stoll(str.c_str(), idx, base);
-}
+#define STRING_TO_NUMBER_IMPL(TYPE, SUFFIX) \
+	TYPE Utils::sto ## SUFFIX (const string &str, size_t *idx, int base) { \
+		return sto ## SUFFIX(str.c_str(), idx, base); \
+	} \
+	TYPE Utils::sto ## SUFFIX (const char *str, size_t *idx, int base) { \
+		char *p; \
+		TYPE v = strto ## SUFFIX(str, &p, base); \
+		if (idx) \
+			*idx = static_cast<size_t>(p - str); \
+		return v; \
+	} \
 
-unsigned long long Utils::stoull (const string &str, size_t *idx, int base) {
-	return stoull(str.c_str(), idx, base);
-}
+#define STRING_TO_NUMBER_IMPL_BASE_LESS(TYPE, SUFFIX) \
+	TYPE Utils::sto ## SUFFIX (const string &str, size_t *idx) { \
+		return sto ## SUFFIX(str.c_str(), idx); \
+	} \
+	TYPE Utils::sto ## SUFFIX (const char *str, size_t *idx) { \
+		char *p; \
+		TYPE v = strto ## SUFFIX(str, &p); \
+		if (idx) \
+			*idx = static_cast<size_t>(p - str); \
+		return v; \
+	} \
 
-double Utils::stod (const string &str, size_t *idx) {
-	return stod(str.c_str(), idx);
-}
+#define strtoi(STR, IDX, BASE) static_cast<int>(strtol(STR, IDX, BASE))
+STRING_TO_NUMBER_IMPL(int, i)
+#undef strtoi
 
-float Utils::stof (const string &str, size_t *idx) {
-	return stof(str.c_str(), idx);
-}
+STRING_TO_NUMBER_IMPL(long long, ll)
+STRING_TO_NUMBER_IMPL(unsigned long long, ull)
+
+STRING_TO_NUMBER_IMPL_BASE_LESS(double, d)
+STRING_TO_NUMBER_IMPL_BASE_LESS(float, f)
+
+#undef STRING_TO_NUMBER_IMPL
+#undef STRING_TO_NUMBER_IMPL_BASE_LESS
 
 bool Utils::stob (const string &str) {
 	const string lowerStr = stringToLower(str);
 	return !lowerStr.empty() && (lowerStr == "true" || lowerStr == "1");
 }
 
-int Utils::stoi (const char *str, size_t *idx, int base) {
-	char *p;
-	int v = static_cast<int>(strtol(str, &p, base));
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str);
-
-	return v;
-}
-
-long long Utils::stoll (const char *str, size_t *idx, int base) {
-	char *p;
-	long long v = static_cast<int>(strtoll(str, &p, base));
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str);
-
-	return v;
-}
-
-unsigned long long Utils::stoull (const char *str, size_t *idx, int base) {
-	char *p;
-	unsigned long long v = static_cast<int>(strtoull(str, &p, base));
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str);
-
-	return v;
-}
-
-double Utils::stod (const char *str, size_t *idx) {
-	char *p;
-	double v = strtod(str, &p);
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str);
-
-	return v;
-}
-
-float Utils::stof (const char *str, size_t *idx) {
-	char *p;
-	float v = strtof(str, &p);
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str);
-
-	return v;
-}
+// -----------------------------------------------------------------------------
 
 string Utils::stringToLower (const string &str) {
 	string result(str.size(), ' ');
 	transform(str.cbegin(), str.cend(), result.begin(), ::tolower);
 	return result;
 }
+
+// -----------------------------------------------------------------------------
 
 char *Utils::utf8ToChar (uint32_t ic) {
 	char *result = new char[5];
