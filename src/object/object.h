@@ -21,16 +21,15 @@
 
 #include <memory>
 
-#include "linphone/utils/general.h"
-
 #include "property-container.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class LINPHONE_PUBLIC Object : public std::enable_shared_from_this<Object>, public PropertyContainer {
-
+class LINPHONE_PUBLIC Object :
+	public std::enable_shared_from_this<Object>,
+	public PropertyContainer {
 public:
 	virtual ~Object ();
 

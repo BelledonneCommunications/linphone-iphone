@@ -19,10 +19,6 @@
 #ifndef _CLONABLE_OBJECT_H_
 #define _CLONABLE_OBJECT_H_
 
-#include <string>
-
-#include "linphone/utils/general.h"
-
 #include "property-container.h"
 
 // =============================================================================

@@ -81,7 +81,7 @@ public:
 	Variant (const std::string &value);
 
 	// void* constructor. Must be explicitly called.
-	template<typename T, typename = typename std::enable_if<std::is_same<T, void *>::value> >
+	template<typename T, typename = typename std::enable_if<std::is_same<T, void *>::value>>
 	Variant (T value) : Variant (Variant::createGeneric(value)) {}
 
 	~Variant ();
@@ -98,7 +98,7 @@ public:
 	template<typename T>
 	void setValue (const T &value) {
 		// Yeah, I'm crazy but it's useful to avoid code duplication.
-		new (this) Variant(value);
+		new(this) Variant(value);
 	}
 
 	template<typename T>

@@ -19,10 +19,6 @@
 #ifndef _PROPERTY_CONTAINER_H_
 #define _PROPERTY_CONTAINER_H_
 
-#include <string>
-
-#include "linphone/utils/general.h"
-
 #include "variant/variant.h"
 
 // =============================================================================

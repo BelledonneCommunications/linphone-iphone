@@ -26,7 +26,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 template<class T>
-class Singleton : public Object {
+class LINPHONE_PUBLIC Singleton : public Object {
 public:
 	virtual ~Singleton () = default;
 

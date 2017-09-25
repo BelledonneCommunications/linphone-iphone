@@ -21,8 +21,6 @@
 
 #include <unordered_map>
 
-#include "linphone/utils/general.h"
-
 #include "variant/variant.h"
 
 // =============================================================================
