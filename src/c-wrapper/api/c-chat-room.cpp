@@ -213,7 +213,7 @@ LinphoneParticipant *linphone_chat_room_add_participant (LinphoneChatRoom *cr, c
 }
 
 void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(addresses, Address, Address), nullptr, false);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipants(L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(addresses, Address), nullptr, false);
 }
 
 bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
@@ -230,7 +230,7 @@ int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
 }
 
 bctbx_list_t *linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {
-	return L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getParticipants(), Participant, Participant);
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getParticipants());
 }
 
 void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
@@ -238,7 +238,7 @@ void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphonePartic
 }
 
 void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipants(L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(participants, Participant, Participant));
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipants(L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(participants, Participant));
 }
 
 // =============================================================================

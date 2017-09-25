@@ -207,7 +207,7 @@ public:
 	}
 
 	// ---------------------------------------------------------------------------
-	// List helpers.
+	// List conversions.
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
@@ -226,16 +226,23 @@ public:
 		return result;
 	}
 
-	template<typename CppType, typename CType>
-	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<std::shared_ptr<CppType>> cppList, CType *(*cTypeAllocator)()) {
+	// ---------------------------------------------------------------------------
+	// Resolved list conversions.
+	// ---------------------------------------------------------------------------
+
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+	>
+	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<std::shared_ptr<CppType>> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, getCBackPtr(value));
 		return result;
 	}
 
-	template<typename CppType, typename CType>
-	static inline bctbx_list_t *getCListOfStructPtrFromCppListOfCppObj (const std::list<CppType> cppList, CType *(*cTypeAllocator)()) {
+	template<typename CppType>
+	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<CppType> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, getCBackPtr(value));
@@ -243,11 +250,11 @@ public:
 	}
 
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
-	static inline std::list<std::shared_ptr<CppType>> getCppListOfCppObjFromCListOfStructPtr (const bctbx_list_t *cList) {
+	static inline std::list<std::shared_ptr<CppType>> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<std::shared_ptr<CppType>> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
@@ -255,11 +262,11 @@ public:
 	}
 
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
-	static inline std::list<CppType> getCppListOfCppObjFromCListOfStructPtr (const bctbx_list_t *cList) {
+	static inline std::list<CppType> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<CppType> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(*getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
@@ -458,9 +465,10 @@ LINPHONE_END_NAMESPACE
 #define L_GET_CPP_LIST_FROM_C_LIST(C_LIST, TYPE) \
 	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE>(C_LIST)
 
-#define L_GET_C_LIST_OF_STRUCT_PTR_FROM_CPP_LIST_OF_CPP_OBJ(LIST, CPP_TYPE, C_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCListOfStructPtrFromCppListOfCppObj<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST, _linphone_ ## C_TYPE ## _init)
-#define L_GET_CPP_LIST_OF_CPP_OBJ_FROM_C_LIST_OF_STRUCT_PTR(LIST, CPP_TYPE, C_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppListOfCppObjFromCListOfStructPtr<LINPHONE_NAMESPACE::CPP_TYPE, Linphone ## C_TYPE>(LIST)
+// Transforms cpp list and c list and convert cpp object to c object.
+#define L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(CPP_LIST) \
+	LINPHONE_NAMESPACE::Wrapper::getResolvedCListFromCppList(CPP_LIST)
+#define L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(C_LIST, C_TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::getResolvedCppListFromCList<Linphone ## C_TYPE>(C_LIST)
 
 #endif // ifndef _C_TOOLS_H_
