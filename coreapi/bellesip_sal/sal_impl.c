@@ -349,11 +349,13 @@ static void process_request_event(void *ud, const belle_sip_request_event_t *eve
 	if (!op->base.call_id) {
 		op->base.call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_call_id_t))));
 	}
-	/*It is worth noting that proxies can (and
-   will) remove this header field*/
+	/*It is worth noting that proxies can (and will) remove this header field*/
 	sal_op_set_privacy_from_message(op,(belle_sip_message_t*)req);
 
-	sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
+	if (strcmp("ACK",method) != 0){
+		/*The ACK custom header is processed specifically later on*/
+		sal_op_assign_recv_headers(op,(belle_sip_message_t*)req);
+	}
 	if (op->callbacks && op->callbacks->process_request_event) {
 		op->callbacks->process_request_event(op,event);
 	} else {
