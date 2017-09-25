@@ -198,6 +198,7 @@ set(SOURCE_FILES_C
 set(SOURCE_FILES_CXX
 	clonable-object-tester.cpp
 	conference-event-tester.cpp
+	conference-tester.cpp
 	cpim-tester.cpp
 	events-db-tester.cpp
 	property-container-tester.cpp
@@ -211,7 +212,7 @@ if(APPLE)
 endif()
 
 # TODO: Remove me later!
-list(REMOVE_ITEM STRICT_OPTIONS_CPP "-Wconversion" "-Werror=conversion")
+list(REMOVE_ITEM STRICT_OPTIONS_CPP "-Wconversion" "-Werror=conversion" "-Wcast-align" "-Werror=cast-align")
 
 bc_apply_compile_flags(SOURCE_FILES_C STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 bc_apply_compile_flags(SOURCE_FILES_CXX STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
