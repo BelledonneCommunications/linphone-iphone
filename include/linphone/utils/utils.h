@@ -31,22 +31,22 @@ LINPHONE_BEGIN_NAMESPACE
 
 namespace Utils {
 	template<typename T>
-	static constexpr T *getPtr (const std::shared_ptr<T> &object) {
+	LINPHONE_PUBLIC constexpr T *getPtr (const std::shared_ptr<T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	static constexpr T *getPtr (T *object) {
+	LINPHONE_PUBLIC constexpr T *getPtr (T *object) {
 		return object;
 	}
 
 	template<typename T>
-	static constexpr const T *getPtr (const std::shared_ptr<const T> &object) {
+	LINPHONE_PUBLIC constexpr const T *getPtr (const std::shared_ptr<const T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	static constexpr const T *getPtr (const T *object) {
+	LINPHONE_PUBLIC constexpr const T *getPtr (const T *object) {
 		return object;
 	}
 

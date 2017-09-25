@@ -37,4 +37,6 @@ L_REGISTER_TYPE(EventLog, EventLog);
 L_REGISTER_TYPE(MediaSessionParams, CallParams);
 L_REGISTER_TYPE(Participant, Participant);
 
+L_REGISTER_SUBTYPE(ChatRoom, ClientGroupChatRoom);
+
 #endif // ifndef _C_WRAPPER_H_

@@ -31,8 +31,6 @@
 #include "modifier/cpim-chat-message-modifier.h"
 #include "chat-room.h"
 
-#define GET_BACK_PTR(object) L_GET_C_BACK_PTR(static_pointer_cast<ChatMessage>(object->shared_from_this()))
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
@@ -53,7 +51,7 @@ ChatMessage::ChatMessage (const std::shared_ptr<ChatRoom> &room) : Object(*new C
 ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p) {}
 
 LinphoneChatMessage * ChatMessage::getBackPtr() {
-	return GET_BACK_PTR(this);
+	return L_GET_C_BACK_PTR(this);
 }
 
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {

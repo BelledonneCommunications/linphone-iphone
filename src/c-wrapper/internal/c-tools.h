@@ -83,7 +83,6 @@ public:
 	// Get c/cpp ptr helpers.
 	// ---------------------------------------------------------------------------
 
-	// Get Object.
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
@@ -102,7 +101,6 @@ public:
 		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
-	// Get ClonableObject.
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
@@ -121,25 +119,24 @@ public:
 		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
-	// Set Object.
+	// ---------------------------------------------------------------------------
+	// Set c/cpp ptr helpers.
+	// ---------------------------------------------------------------------------
+
 	template<
 		typename CppType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
 	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<CppType> &cppObject) {
-		L_ASSERT(cObject);
 		static_cast<WrappedObject<CppType> *>(cObject)->cppPtr = cppObject;
 		cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
-	// Set ClonableObject.
 	template<
 		typename CppType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
 	static inline void setCppPtrFromC (void *cObject, const CppType *cppObject) {
-		L_ASSERT(cObject);
-
 		CppType **cppObjectAddr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 		if (*cppObjectAddr == cppObject)
 			return;
@@ -168,6 +165,14 @@ public:
 		RetType *cObject = CObjectInitializer<CppType>::init();
 		setCppPtrFromC(cObject, cppObject);
 		return cObject;
+	}
+
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+	>
+	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (CppType *cppObject) {
+		return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
 	}
 
 	template<
@@ -317,8 +322,24 @@ LINPHONE_END_NAMESPACE
 	}; \
 	template<> \
 	struct CObjectInitializer<CPP_TYPE> { \
-		static Linphone ## C_TYPE *init () { \
+		static inline Linphone ## C_TYPE *init () { \
 			return _linphone_ ## C_TYPE ## _init(); \
+		} \
+	}; \
+	LINPHONE_END_NAMESPACE
+
+#define L_REGISTER_SUBTYPE(CPP_TYPE, CPP_SUBTYPE) \
+	LINPHONE_BEGIN_NAMESPACE \
+	class CPP_SUBTYPE; \
+	template<> \
+	struct CppTypeToCType<CPP_SUBTYPE> { \
+		enum { defined = true }; \
+		typedef CppTypeToCType<CPP_TYPE>::type type; \
+	}; \
+	template<> \
+	struct CObjectInitializer<CPP_SUBTYPE> { \
+		static inline typename CppTypeToCType<CPP_TYPE>::type *init () { \
+			return CObjectInitializer<CPP_TYPE>::init(); \
 		} \
 	}; \
 	LINPHONE_END_NAMESPACE

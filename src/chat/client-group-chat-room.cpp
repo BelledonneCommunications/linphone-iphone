@@ -102,7 +102,7 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 	}
 	participant = make_shared<Participant>(addr);
 	participants.push_back(participant);
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(static_pointer_cast<ChatRoom>(this->shared_from_this()));
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
 	if (cb)
@@ -115,7 +115,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 		lWarning() << "Participant " << participant << " removed but not in the list of participants!";
 		return;
 	}
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(static_pointer_cast<ChatRoom>(this->shared_from_this()));
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
 	if (cb)
@@ -130,7 +130,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 		return;
 	}
 	participant->setAdmin(isAdmin);
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(static_pointer_cast<ChatRoom>(this->shared_from_this()));
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
 	if (cb)
