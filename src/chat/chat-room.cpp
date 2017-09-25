@@ -182,8 +182,11 @@ int ChatRoomPrivate::getMessagesCount (bool unreadOnly) {
 }
 
 void ChatRoomPrivate::setState (ChatRoom::State newState) {
+	L_Q(ChatRoom);
 	if (newState != state) {
 		state = newState;
+		if (state == ChatRoom::State::Instantiated)
+			linphone_core_notify_chat_room_instantiated(core, L_GET_C_BACK_PTR(q));
 		notifyStateChanged();
 	}
 }
