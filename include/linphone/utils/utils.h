@@ -19,6 +19,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -29,6 +30,26 @@
 LINPHONE_BEGIN_NAMESPACE
 
 namespace Utils {
+	template<typename T>
+	static constexpr T *getPtr (const std::shared_ptr<T> &object) {
+		return object.get();
+	}
+
+	template<typename T>
+	static constexpr T *getPtr (T *object) {
+		return object;
+	}
+
+	template<typename T>
+	static constexpr const T *getPtr (const std::shared_ptr<const T> &object) {
+		return object.get();
+	}
+
+	template<typename T>
+	static constexpr const T *getPtr (const T *object) {
+		return object;
+	}
+
 	LINPHONE_PUBLIC bool iequals (const std::string &a, const std::string &b);
 
 	LINPHONE_PUBLIC std::vector<std::string> split (const std::string &str, const std::string &delimiter);

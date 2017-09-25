@@ -20,7 +20,8 @@
 #define _C_TOOLS_H_
 
 #include <list>
-#include <memory>
+
+#include "linphone/utils/utils.h"
 
 // TODO: From coreapi. Remove me later.
 #include "private.h"
@@ -74,17 +75,7 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
 	>
-	static inline decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
-		L_ASSERT(cppObject);
-		return cppObject->getPrivate();
-	}
-
-	template<
-		typename CppType,
-		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
-	>
-	static inline decltype (std::declval<CppType>().getPrivate()) getPrivate (const std::shared_ptr<CppType> &cppObject) {
-		L_ASSERT(cppObject);
+	static constexpr inline decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
 		return cppObject->getPrivate();
 	}
 
@@ -160,27 +151,6 @@ public:
 
 		*cppObjectAddr = new CppType(*cppObject);
 		(*cppObjectAddr)->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
-	}
-
-	// Macro helpers.
-	template<typename T>
-	static inline T *getCppPtr (const std::shared_ptr<T> &cppObject) {
-		return cppObject.get();
-	}
-
-	template<typename T>
-	static inline T *getCppPtr (T *cppObject) {
-		return cppObject;
-	}
-
-	template<typename T>
-	static inline const T *getCppPtr (const std::shared_ptr<const T> &cppObject) {
-		return cppObject.get();
-	}
-
-	template<typename T>
-	static inline const T *getCppPtr (const T *cppObject) {
-		return cppObject;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -457,13 +427,11 @@ LINPHONE_END_NAMESPACE
 
 // Get the private data of a shared or simple cpp-ptr.
 #define L_GET_PRIVATE(CPP_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getPrivate(CPP_OBJECT)
+	LINPHONE_NAMESPACE::Wrapper::getPrivate(LINPHONE_NAMESPACE::Utils::getPtr(CPP_OBJECT))
 
 // Get the private data of a shared or simple cpp-ptr of a wrapped C object.
 #define L_GET_PRIVATE_FROM_C_OBJECT(C_OBJECT) \
-	L_GET_PRIVATE(LINPHONE_NAMESPACE::Wrapper::getCppPtr( \
-		L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT) \
-	))
+	L_GET_PRIVATE(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)))
 
 // Get the wrapped C object of a C++ object.
 #define L_GET_C_BACK_PTR(C_OBJECT) \
