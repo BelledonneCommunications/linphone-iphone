@@ -103,8 +103,6 @@ void first_invite_serializing() {
 
 	xmlBody = remoteConf.getResourceLists(addresses);
 	check_first_invite(marie->lc, marieIdentity, xmlBody);
-
-end:
 	linphone_core_manager_destroy(marie);
 }
 
