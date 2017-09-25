@@ -36,10 +36,6 @@
 // Misc.
 // =============================================================================
 
-typedef int LinphoneStatus;
-
-typedef unsigned char bool_t;
-
 #ifdef TRUE
 	#undef TRUE
 #endif
