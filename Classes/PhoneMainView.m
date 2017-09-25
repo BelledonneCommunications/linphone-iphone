@@ -20,6 +20,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AudioToolbox/AudioServices.h>
 #import "LinphoneAppDelegate.h"
+#import "Log.h"
 #import "PhoneMainView.h"
 
 static RootViewManager *rootViewManagerInstance = nil;
@@ -779,7 +780,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call && linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
-		LinphoneCallAppData *callData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
+		LinphoneCallAppData *callData = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
 		if (callData != nil) {
 			if (state == UIDeviceBatteryStateUnplugged) {
 				if (level <= 0.2f && !callData->batteryWarningShown) {

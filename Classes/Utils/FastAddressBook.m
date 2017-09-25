@@ -123,33 +123,12 @@ static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info
 		CNEntityType entityType = CNEntityTypeContacts;
 		if([CNContactStore authorizationStatusForEntityType:entityType] == CNAuthorizationStatusNotDetermined) {
 			CNContactStore * contactStore = [[CNContactStore alloc] init];
+			LOGD(@"CNContactStore requesting authorization");
 			[contactStore requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError * _Nullable error) {
-				if(granted){
-					NSError* contactError;
-					store = [[CNContactStore alloc]init];
-					[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[store.defaultContainerIdentifier]] error:&contactError];
-					NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
-					CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
-					BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){}];
-					if(success) {
-						LOGD(@"CNContactStore successfully synchronized");
-					}
-				}
+				LOGD(@"CNContactStore authorization granted");
 			}];
 		} else if([CNContactStore authorizationStatusForEntityType:entityType]== CNAuthorizationStatusAuthorized) {
-			NSError* contactError;
-			store = [[CNContactStore alloc]init];
-			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers: @[store.defaultContainerIdentifier]] error:&contactError];
-			NSArray * keysToFetch =@[CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey];
-			CNContactFetchRequest * request = [[CNContactFetchRequest alloc]initWithKeysToFetch:keysToFetch];
-			__block int number_of_contact=0;
-			LOGD(@"CNContactStore synchronizing");
-			BOOL success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact * __nonnull contact, BOOL * __nonnull stop){
-				number_of_contact++;
-			}];
-			if(success) {
-				LOGD(@"CNContactStore [%i] contacts successfully synchronized",number_of_contact);
-			}
+			LOGD(@"CNContactStore authorization granted");
 		}
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateAddressBook:) name:CNContactStoreDidChangeNotification object:nil];
 	}

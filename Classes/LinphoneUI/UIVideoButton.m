@@ -19,7 +19,7 @@
 
 #import "UIVideoButton.h"
 #include "LinphoneManager.h"
-#import "Utils.h"
+#import "Log.h"
 
 @implementation UIVideoButton {
 	BOOL last_update_state;
@@ -42,7 +42,7 @@ INIT_WITH_COMMON_CF {
 
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 	if (call) {
-		LinphoneCallAppData *callAppData = (__bridge LinphoneCallAppData *)linphone_call_get_user_pointer(call);
+		LinphoneCallAppData *callAppData = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
 		callAppData->videoRequested =
 			TRUE; /* will be used later to notify user if video was not activated because of the linphone core*/
 		LinphoneCallParams *call_params = linphone_core_create_call_params(LC,call);
