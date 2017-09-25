@@ -92,6 +92,10 @@ long long Utils::stoll (const string &str, size_t *idx, int base) {
 	return stoll(str.c_str(), idx, base);
 }
 
+unsigned long long Utils::stoull (const string &str, size_t *idx, int base) {
+	return stoull(str.c_str(), idx, base);
+}
+
 double Utils::stod (const string &str, size_t *idx) {
 	return stod(str.c_str(), idx);
 }
@@ -118,6 +122,16 @@ int Utils::stoi (const char *str, size_t *idx, int base) {
 long long Utils::stoll (const char *str, size_t *idx, int base) {
 	char *p;
 	long long v = static_cast<int>(strtoll(str, &p, base));
+
+	if (idx)
+		*idx = static_cast<size_t>(p - str);
+
+	return v;
+}
+
+unsigned long long Utils::stoull (const char *str, size_t *idx, int base) {
+	char *p;
+	unsigned long long v = static_cast<int>(strtoull(str, &p, base));
 
 	if (idx)
 		*idx = static_cast<size_t>(p - str);

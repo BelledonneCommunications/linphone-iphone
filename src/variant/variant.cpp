@@ -351,7 +351,38 @@ static inline long long getValueAsNumber (const VariantPrivate &p, bool *soFarSo
 }
 
 static inline unsigned long long getValueAsUnsignedNumber (const VariantPrivate &p, bool *soFarSoGood) {
-	// TODO.
+	const int type = p.getType();
+	L_ASSERT(type > Variant::Invalid && type < Variant::MaxDefaultTypes);
+
+	switch (static_cast<Variant::Type>(type)) {
+		case Variant::Int:
+		case Variant::Short:
+		case Variant::Long:
+		case Variant::LongLong:
+		case Variant::Char:
+		case Variant::Double:
+		case Variant::Float:
+			return static_cast<unsigned long long>(getAssumedNumber(p));
+
+		case Variant::UnsignedInt:
+		case Variant::UnsignedShort:
+		case Variant::UnsignedLong:
+		case Variant::UnsignedLongLong:
+			return getAssumedUnsignedNumber(p);
+
+		case Variant::Bool:
+			return static_cast<unsigned long long>(p.value.b);
+
+		case Variant::String:
+			return Utils::stoull(*p.value.str);
+
+		case Variant::Generic:
+			return static_cast<unsigned long long>(!!p.value.g);
+
+		default:
+			*soFarSoGood = false;
+	}
+
 	return 0;
 }
 
