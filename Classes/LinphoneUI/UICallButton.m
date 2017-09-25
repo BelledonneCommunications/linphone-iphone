@@ -63,7 +63,7 @@
 	if (address.length == 0) {
 		LinphoneCallLog *log = linphone_core_get_last_outgoing_call_log(LC);
 		if (log) {
-			LinphoneAddress *to = linphone_call_log_get_to(log);
+			const LinphoneAddress *to = linphone_call_log_get_to_address(log);
 			const char *domain = linphone_address_get_domain(to);
 			char *bis_address = NULL;
 			LinphoneProxyConfig *def_proxy = linphone_core_get_default_proxy_config(LC);

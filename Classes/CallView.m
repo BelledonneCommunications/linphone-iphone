@@ -538,7 +538,7 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 			if (!linphone_call_params_video_enabled(linphone_call_get_current_params(call))) {
 				const LinphoneCallParams *param = linphone_call_get_current_params(call);
 				const LinphoneCallAppData *callAppData =
-					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_pointer(call));
+					(__bridge const LinphoneCallAppData *)(linphone_call_get_user_data(call));
 				if (state == LinphoneCallStreamsRunning && callAppData->videoRequested &&
 					linphone_call_params_low_bandwidth_enabled(param)) {
 					// too bad video was not enabled because low bandwidth
