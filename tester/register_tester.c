@@ -1186,7 +1186,10 @@ static void tls_auth_info_client_cert_cb_2(void) {
 }
 
 static void register_get_gruu(void) {
-	LinphoneCoreManager *marie=linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie,TRUE);
 	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
@@ -1195,6 +1198,36 @@ static void register_get_gruu(void) {
 	}
 	linphone_core_manager_destroy(marie);
 }
+
+static void multi_devices_register_with_gruu(void) {
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie,TRUE);
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
+	
+	if(cfg) {
+		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
+		BC_ASSERT_PTR_NOT_NULL(addr);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(addr),linphone_proxy_config_get_domain(cfg));
+		BC_ASSERT_TRUE(linphone_address_has_uri_param(addr,"gr"));
+	}
+	
+	linphone_core_set_network_reachable(marie->lc,FALSE); /*to make sure first instance is not unregistered*/
+	linphone_core_manager_destroy(marie);
+
+	marie=linphone_core_manager_new("marie_rc");
+	cfg=linphone_core_get_default_proxy_config(marie->lc);
+	if(cfg) {
+		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
+		BC_ASSERT_PTR_NOT_NULL(addr);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(addr),linphone_proxy_config_get_domain(cfg));
+		BC_ASSERT_TRUE(linphone_address_has_uri_param(addr,"gr"));
+	}
+	
+	linphone_core_manager_destroy(marie);
+}
+
 
 test_t register_tests[] = {
 	TEST_NO_TAG("Simple register", simple_register),
@@ -1241,7 +1274,8 @@ test_t register_tests[] = {
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication using API 2", tls_auth_info_client_cert_api_path),
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback", tls_auth_info_client_cert_cb),
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback 2", tls_auth_info_client_cert_cb_2),
-	TEST_NO_TAG("Register get GRUU", register_get_gruu)
+	TEST_NO_TAG("Register get GRUU", register_get_gruu),
+	TEST_NO_TAG("Register get GRUU for multi device", multi_devices_register_with_gruu)
 };
 
 test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

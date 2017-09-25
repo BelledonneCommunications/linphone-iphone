@@ -135,5 +135,3 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol
 		else ei->full_string=ms_strdup(ei->status_string);
 	}
 }
-
-

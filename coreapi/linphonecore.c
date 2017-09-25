@@ -3454,6 +3454,7 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
 	const char *identity;
+	
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
@@ -3465,12 +3466,24 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		routes=make_routes_for_proxy(proxy,dest);
 		linphone_transfer_routes_to_op(routes,op);
 	}
-	char *addr = linphone_address_as_string(dest);
-	op->set_to(addr);
-	ms_free(addr);
+
+	const SalAddress *sal_dest = L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress();
+	if (sal_address_has_uri_param(sal_dest,"gr")) {
+		/*in case of gruu destination remove gruu parram from to*/
+		SalAddress *dest_copy = sal_address_clone(sal_dest);
+		sal_address_remove_uri_param(dest_copy,"gr");
+		op->set_to_address(dest_copy);
+		sal_address_unref(dest_copy);
+	} else {
+		char *addr = linphone_address_as_string(dest);
+		op->set_to(addr);
+		ms_free(addr);
+	}
+	
 	op->set_from(identity);
 	op->set_sent_custom_header(headers);
 	op->set_realm(linphone_proxy_config_get_realm(proxy));
+
 	if (with_contact && proxy && proxy->op){
 		const LinphoneAddress *contact = linphone_proxy_config_get_contact(proxy);
 		SalAddress *salAddress = nullptr;
