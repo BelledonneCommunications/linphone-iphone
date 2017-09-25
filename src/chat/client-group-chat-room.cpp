@@ -87,11 +87,13 @@ void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
-	// TODO
+	L_D(ClientGroupChatRoom);
+	d->setState(ChatRoom::State::Created);
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
-	// TODO
+	L_D(ClientGroupChatRoom);
+	d->setState(ChatRoom::State::Terminated);
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
@@ -135,6 +137,15 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant), isAdmin);
+}
+
+// -----------------------------------------------------------------------------
+
+void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) {
+	if (state == LinphoneCallConnected) {
+		// TODO: Get the conference ID instead of the remote address
+		onConferenceCreated(session.getRemoteAddress());
+	}
 }
 
 LINPHONE_END_NAMESPACE

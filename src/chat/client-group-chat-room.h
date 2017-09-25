@@ -24,6 +24,7 @@
 
 #include "chat/chat-room.h"
 #include "conference/remote-conference.h"
+#include "conference/session/call-session.h"
 
 #include "linphone/types.h"
 
@@ -56,6 +57,10 @@ private:
 	void onParticipantAdded (const Address &addr) override;
 	void onParticipantRemoved (const Address &addr) override;
 	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
+
+private:
+	/* CallSessionListener */
+	void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
 
 private:
 	L_DECLARE_PRIVATE(ClientGroupChatRoom);
