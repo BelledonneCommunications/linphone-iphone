@@ -278,8 +278,8 @@ LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddr
 	return cr;
 }
 
-LinphoneChatRoom *linphone_client_group_chat_room_new (LinphoneCore *core) {
-	const char *factoryUri = linphone_core_get_chat_conference_factory_uri(core);
+LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core) {
+	const char *factoryUri = linphone_core_get_conference_factory_uri(core);
 	if (!factoryUri)
 		return nullptr;
 	LinphoneAddress *factoryAddr = linphone_address_new(factoryUri);

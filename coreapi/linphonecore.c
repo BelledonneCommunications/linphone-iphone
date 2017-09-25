@@ -7067,12 +7067,12 @@ LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
 	return lc->conf_ctx;
 }
 
-void linphone_core_set_chat_conference_factory_uri(LinphoneCore *lc, const char *uri) {
-	lp_config_set_string(linphone_core_get_config(lc), "misc", "chat_conference_factory_uri", uri);
+void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri) {
+	lp_config_set_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", uri);
 }
 
-const char * linphone_core_get_chat_conference_factory_uri(const LinphoneCore *lc) {
-	return lp_config_get_string(linphone_core_get_config(lc), "misc", "chat_conference_factory_uri", nullptr);
+const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
+	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

@@ -124,7 +124,9 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 }
 
 LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc) {
-	return linphone_client_group_chat_room_new(lc);
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc);
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	return cr;
 }
 
 void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {

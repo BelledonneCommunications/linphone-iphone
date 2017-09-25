@@ -4169,9 +4169,19 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_conference_recording(LinphoneC
  */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
 
-void linphone_core_set_chat_conference_factory_uri(LinphoneCore *lc, const char *uri);
+/**
+ * Set the conference factory uri.
+ * @param[in] lc A #LinphoneCore object
+ * @param[in] uri The uri of the conference factory
+ */
+void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri);
 
-const char * linphone_core_get_chat_conference_factory_uri(const LinphoneCore *lc);
+/**
+ * Get the conference factory uri.
+ * @param[in] lc A #LinphoneCore object
+ * @return The uri of the conference factory
+ */
+const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc);
 
 /**
  * @}

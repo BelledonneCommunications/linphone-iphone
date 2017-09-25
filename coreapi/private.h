@@ -460,7 +460,7 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 LinphoneChatRoom * linphone_chat_room_new(LinphoneCore *core, const LinphoneAddress *addr);
-LinphoneChatRoom * linphone_client_group_chat_room_new(LinphoneCore *lc);
+LinphoneChatRoom *_linphone_client_group_chat_room_new(LinphoneCore *core);
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);

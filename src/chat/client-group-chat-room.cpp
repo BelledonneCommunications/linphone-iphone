@@ -33,7 +33,7 @@ ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : Ch
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me)
 	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
-	string factoryUri = linphone_core_get_chat_conference_factory_uri(core);
+	string factoryUri = linphone_core_get_conference_factory_uri(core);
 	focus = make_shared<Participant>(factoryUri);
 	CallSessionParams csp;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
