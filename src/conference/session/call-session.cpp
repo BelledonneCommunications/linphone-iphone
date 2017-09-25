@@ -451,25 +451,8 @@ LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 			lError() << "checkForAcceptation() CallSession [" << q << "] is in state [" << linphone_call_state_to_string(state) << "], operation not permitted";
 			return -1;
 	}
-	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
-	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
-		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
-		shared_ptr<CallSession> session = L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession();
-		if (session.get() == q) continue;
-		switch (session->getState()) {
-			case LinphoneCallOutgoingInit:
-			case LinphoneCallOutgoingProgress:
-			case LinphoneCallOutgoingRinging:
-			case LinphoneCallOutgoingEarlyMedia:
-				lInfo() << "Already existing CallSession [" << session << "] in state [" << linphone_call_state_to_string(session->getState())
-					<< "], canceling it before accepting new CallSession [" << q << "]";
-				session->terminate();
-				break;
-			default:
-				break; /* Nothing to do */
-		}
-	}
-	bctbx_list_free(copy);
+	if (listener)
+		listener->onCheckForAcceptation(*q);
 
 	/* Check if this call is supposed to replace an already running one */
 	SalOp *replaced = sal_call_get_replaces(op);
@@ -822,14 +805,14 @@ void CallSession::startIncomingNotification () {
 	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
 #endif
 	if (d->deferIncomingNotification) {
-		lInfo() << "Defer ringing";
+		lInfo() << "Defer incoming notification";
 		return;
 	}
 
 	if (d->listener)
 		d->listener->onIncomingCallSessionStarted(*this);
 
-	d->setState(LinphoneCallIncomingReceived, "Incoming call");
+	d->setState(LinphoneCallIncomingReceived, "Incoming CallSession");
 
 	/* From now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
 	 * We can then drop our background task. */

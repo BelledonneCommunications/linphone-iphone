@@ -60,6 +60,7 @@ private:
 	void onCallSetReleased () override;
 	void onCallSetTerminated () override;
 	void onCallStateChanged (LinphoneCallState state, const std::string &message) override;
+	void onCheckForAcceptation () override;
 	void onIncomingCallStarted () override;
 	void onIncomingCallToBeAdded () override;
 	void onEncryptionChanged (bool activated, const std::string &authToken) override;

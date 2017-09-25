@@ -142,6 +142,27 @@ void CallPrivate::onCallStateChanged (LinphoneCallState state, const string &mes
 		linphone_call_notify_state_changed(lcall, state, message.c_str());
 }
 
+void CallPrivate::onCheckForAcceptation () {
+	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
+	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
+		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
+		if (call == lcall) continue;
+		switch (linphone_call_get_state(call)) {
+			case LinphoneCallOutgoingInit:
+			case LinphoneCallOutgoingProgress:
+			case LinphoneCallOutgoingRinging:
+			case LinphoneCallOutgoingEarlyMedia:
+				lInfo() << "Already existing call [" << call << "] in state [" << linphone_call_state_to_string(linphone_call_get_state(call))
+					<< "], canceling it before accepting new call [" << lcall << "]";
+				linphone_call_terminate(call);
+				break;
+			default:
+				break; /* Nothing to do */
+		}
+	}
+	bctbx_list_free(copy);
+}
+
 void CallPrivate::onIncomingCallStarted () {
 	if (lcall)
 		linphone_core_notify_incoming_call(core, lcall);

@@ -34,6 +34,7 @@ public:
 	virtual void onCallSetReleased () = 0;
 	virtual void onCallSetTerminated () = 0;
 	virtual void onCallStateChanged (LinphoneCallState state, const std::string &message) = 0;
+	virtual void onCheckForAcceptation () = 0;
 	virtual void onIncomingCallStarted () = 0;
 	virtual void onIncomingCallToBeAdded () = 0;
 

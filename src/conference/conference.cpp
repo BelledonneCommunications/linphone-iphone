@@ -107,6 +107,11 @@ void Conference::onCallSessionStateChanged (const CallSession &session, Linphone
 		callListener->onCallStateChanged(state, message);
 }
 
+void Conference::onCheckForAcceptation (const CallSession &session) {
+	if (callListener)
+		callListener->onCheckForAcceptation();
+}
+
 void Conference::onIncomingCallSessionStarted (const CallSession &session) {
 	if (callListener)
 		callListener->onIncomingCallStarted();

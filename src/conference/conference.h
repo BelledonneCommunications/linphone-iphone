@@ -64,6 +64,7 @@ private:
 	void onCallSessionSetReleased (const CallSession &session) override;
 	void onCallSessionSetTerminated (const CallSession &session) override;
 	void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
+	void onCheckForAcceptation (const CallSession &session) override;
 	void onIncomingCallSessionStarted (const CallSession &session) override;
 	void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) override;
 	void onStatsUpdated (const LinphoneCallStats *stats) override;

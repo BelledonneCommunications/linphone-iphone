@@ -33,6 +33,7 @@ public:
 	virtual void onCallSessionSetReleased (const CallSession &session) = 0;
 	virtual void onCallSessionSetTerminated (const CallSession &session) = 0;
 	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) = 0;
+	virtual void onCheckForAcceptation (const CallSession &session) = 0;
 	virtual void onIncomingCallSessionStarted (const CallSession &session) = 0;
 
 	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) = 0;
