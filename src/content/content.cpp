@@ -31,6 +31,7 @@ class ContentPrivate : public ClonableObjectPrivate {
 public:
 	vector<char> body;
 	ContentType contentType;
+	string contentDisposition;
 };
 
 // -----------------------------------------------------------------------------
@@ -74,6 +75,21 @@ const ContentType &Content::getContentType () const {
 void Content::setContentType (const ContentType &contentType) {
 	L_D(Content);
 	d->contentType = contentType;
+}
+
+void Content::setContentType (const string &contentType) {
+	L_D(Content);
+	d->contentType = ContentType(contentType);
+}
+
+const string &Content::getContentDisposition () const {
+	L_D(const Content);
+	return d->contentDisposition;
+}
+
+void Content::setContentDisposition (const string &contentDisposition) {
+	L_D(Content);
+	d->contentDisposition = contentDisposition;
 }
 
 const std::vector<char> &Content::getBody () const {

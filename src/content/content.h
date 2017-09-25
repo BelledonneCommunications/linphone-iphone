@@ -43,6 +43,10 @@ public:
 
 	const ContentType &getContentType () const;
 	void setContentType (const ContentType &contentType);
+	void setContentType (const std::string &contentType);
+
+	const std::string &getContentDisposition () const;
+	void setContentDisposition (const std::string &contentDisposition);
 
 	const std::vector<char> &getBody () const;
 	std::string getBodyAsString () const;
