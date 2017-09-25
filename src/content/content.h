@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "content-type.h"
+
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -29,7 +31,6 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ContentPrivate;
-class ContentType;
 
 class LINPHONE_PUBLIC Content : public ClonableObject {
 public:
@@ -44,6 +45,7 @@ public:
 	void setContentType (const ContentType &contentType);
 
 	const std::vector<char> &getBody () const;
+	std::string getBodyAsString () const;
 	void setBody (const std::vector<char> &body);
 	void setBody (const std::string &body);
 	void setBody (const void *buffer, size_t size);

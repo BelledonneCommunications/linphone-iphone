@@ -24,6 +24,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message-p.h"
+#include "chat/chat-message.h"
 #include "chat/chat-room-p.h"
 #include "chat/real-time-text-chat-room-p.h"
 #include "content/content-type.h"
@@ -102,43 +103,88 @@ void linphone_chat_message_set_user_data (LinphoneChatMessage *msg, void *ud) {
 // =============================================================================
 
 const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
-	return msg->external_body_url;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getExternalBodyUrl().c_str();
 }
 
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const char *url) {
-	if (msg->external_body_url) {
-		ms_free(msg->external_body_url);
-	}
-	msg->external_body_url = url ? ms_strdup(url) : NULL;
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setExternalBodyUrl(string(url));
 }
 
 time_t linphone_chat_message_get_time(const LinphoneChatMessage *msg) {
-	return msg->time;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getTime();
 }
 
 void linphone_chat_message_set_time(LinphoneChatMessage *msg, time_t time) {
-	msg->time = time;
-}
-
-void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured) {
-	msg->is_secured = secured;
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setTime(time);
 }
 
 bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg) {
-	return msg->is_secured;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isSecured();
+}
+
+void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsSecured(secured);
 }
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
-	return msg->dir == LinphoneChatMessageOutgoing;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isOutgoing();
 }
 
 void linphone_chat_message_set_incoming(LinphoneChatMessage *msg) {
-	msg->dir = LinphoneChatMessageIncoming;
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Incoming);
 }
 
 void linphone_chat_message_set_outgoing(LinphoneChatMessage *msg) {
-	msg->dir = LinphoneChatMessageOutgoing;
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Outgoing);
 }
+
+const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getContentType().c_str();
+}
+
+const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getText().c_str();
+}
+
+unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getStorageId();
+}
+
+LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage *msg) {
+	return ((LinphoneChatMessageState)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getState());
+}
+
+void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setState((LinphonePrivate::ChatMessage::State)state);
+}
+
+const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getId().c_str();
+}
+
+void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setId(id);
+}
+
+void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int id) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setStorageId(id);
+}
+
+void linphone_chat_message_set_is_read(LinphoneChatMessage *msg, bool_t is_read) {
+	if (is_read) {
+		L_GET_CPP_PTR_FROM_C_OBJECT(msg)->markAsRead();
+	}
+}
+
+const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getAppdata().c_str();
+}
+
+void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *data) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setAppdata(data);
+}
+
+// =============================================================================
 
 void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
 	if (msg->from)
@@ -165,6 +211,8 @@ const LinphoneAddress *linphone_chat_message_get_to_address(const LinphoneChatMe
 	return NULL;
 }
 
+// =============================================================================
+
 void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb) {
 	msg->message_state_changed_cb = cb;
 }
@@ -177,19 +225,11 @@ void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChat
 	return msg->message_state_changed_user_data;
 }
 
-const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg) {
-	return msg->content_type;
-}
-
 void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type) {
 	if (msg->content_type) {
 		ms_free(msg->content_type);
 	}
 	msg->content_type = content_type ? ms_strdup(content_type) : NULL;
-}
-
-const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
-	return msg->message;
 }
 
 int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
@@ -201,58 +241,6 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 		msg->message = NULL;
 
 	return 0;
-}
-
-unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
-	return msg->storage_id;
-}
-
-void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	/* do not invoke callbacks on orphan messages */
-	if (state != msg->state && msg->chat_room != NULL) {
-		if (((msg->state == LinphoneChatMessageStateDisplayed) || (msg->state == LinphoneChatMessageStateDeliveredToUser))
-			&& ((state == LinphoneChatMessageStateDeliveredToUser) || (state == LinphoneChatMessageStateDelivered) || (state == LinphoneChatMessageStateNotDelivered))) {
-			/* If the message has been displayed or delivered to user we must not go back to the delivered or not delivered state. */
-			return;
-		}
-		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state),
-				   linphone_chat_message_state_to_string(state));
-		msg->state = state;
-		if (msg->message_state_changed_cb) {
-			msg->message_state_changed_cb(msg, msg->state, msg->message_state_changed_user_data);
-		}
-		if (linphone_chat_message_cbs_get_msg_state_changed(msg->cbs)) {
-			linphone_chat_message_cbs_get_msg_state_changed(msg->cbs)(msg, msg->state);
-		}
-	}
-}
-
-const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg) {
-	return msg->message_id;
-}
-
-void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id) {
-	msg->message_id = id;
-}
-
-void linphone_chat_message_set_is_read(LinphoneChatMessage *msg, bool_t is_read) {
-	msg->is_read = is_read;
-}
-
-void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int id) {
-	msg->storage_id = id;
-}
-
-const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
-	return msg->appdata;
-}
-
-void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *data) {
-	if (msg->appdata) {
-		ms_free(msg->appdata);
-	}
-	msg->appdata = data ? ms_strdup(data) : NULL;
-	linphone_chat_message_store_appdata(msg);
 }
 
 SalCustomHeader * linphone_chat_message_get_sal_custom_headers(const LinphoneChatMessage *msg) {
@@ -542,10 +530,6 @@ void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_
 
 LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage *msg) {
 	return msg->dir == LinphoneChatMessageOutgoing ? msg->from : msg->to;
-}
-
-LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage *msg) {
-	return msg->state;
 }
 
 void linphone_chat_message_add_custom_header(LinphoneChatMessage *msg, const char *header_name,

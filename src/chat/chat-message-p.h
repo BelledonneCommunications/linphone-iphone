@@ -37,22 +37,23 @@ public:
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
+	std::string externalBodyUrl;
 	ChatMessage::Direction direction = ChatMessage::Incoming;
+	ChatMessage::State state = ChatMessage::Idle;
+	unsigned int storageId;
 	// LinphoneAddress *from;
 	// LinphoneAddress *to;
-	std::shared_ptr<ErrorInfo> errorInfo;
-	std::string text;
-	bool isSecured = false;
-	bool isReadOnly = false;
 	time_t time = 0;
 	std::string id;
 	std::string appData;
+	bool isRead = false;
+	bool isSecured = false;
+	bool isReadOnly = false;
 	std::list<std::shared_ptr<Content> > contents;
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
-	ChatMessage::State state = ChatMessage::Idle;
 	std::shared_ptr<EventsDb> eventsDb;
-
+	std::shared_ptr<ErrorInfo> errorInfo;
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 

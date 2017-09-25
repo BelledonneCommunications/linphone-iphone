@@ -63,14 +63,52 @@ public:
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;
 
+	// -----------------------------------------------------------------------------
+
 	Direction getDirection () const;
+	void setDirection (Direction dir);
+	bool isOutgoing () const;
+	bool isIncoming () const;
+
+	std::string getExternalBodyUrl() const;
+	void setExternalBodyUrl(const std::string &url);
+	
+	time_t getTime () const;
+
+	bool isSecured () const;
+	void setIsSecured(bool isSecured);
+
+	State getState() const;
+	void setState(State state);
+	
+	std::string getId () const;
+	void setId (std::string);
+
+	bool isRead() const;
+	void markAsRead();
+	
+	std::string getAppdata () const;
+	void setAppdata (const std::string &appData);
+	
+	// -----------------------------------------------------------------------------
+	// Deprecated methods, only used for C wrapper
+	// -----------------------------------------------------------------------------
+
+	std::string getContentType() const;
+
+	std::string getText() const;
+
+	unsigned int getStorageId() const;
+	void setStorageId(unsigned int id);
+
+	void setTime(time_t time);
+	
+	// -----------------------------------------------------------------------------
 
 	std::shared_ptr<const Address> getFromAddress () const;
 	std::shared_ptr<const Address> getToAddress () const;
 	std::shared_ptr<const Address> getLocalAddress () const;
 	std::shared_ptr<const Address> getRemoteAddress () const;
-
-	State getState () const;
 
 	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 
@@ -78,15 +116,7 @@ public:
 
 	bool containsReadableText () const;
 
-	bool isSecured () const;
 	bool isReadOnly () const;
-
-	time_t getTime () const;
-
-	std::string getId () const;
-
-	std::string getAppdata () const;
-	void setAppdata (const std::string &appData);
 
 	std::list<std::shared_ptr<const Content> > getContents () const;
 	void addContent (const std::shared_ptr<Content> &content);

@@ -81,6 +81,11 @@ const std::vector<char> &Content::getBody () const {
 	return d->body;
 }
 
+string Content::getBodyAsString () const {
+	L_D(const Content);
+	return string(d->body.begin(), d->body.end());
+}
+
 void Content::setBody (const std::vector<char> &body) {
 	L_D(Content);
 	d->body = body;

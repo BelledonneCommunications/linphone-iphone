@@ -26,6 +26,7 @@
 
 #include "chat-message-p.h"
 #include "chat-message.h"
+#include "content/content.h"
 
 #include "modifier/multipart-chat-message-modifier.h"
 #include "modifier/cpim-chat-message-modifier.h"
@@ -59,10 +60,153 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	return d->chatRoom;
 }
 
+// -----------------------------------------------------------------------------
+
+std::string ChatMessage::getExternalBodyUrl() const {
+	L_D(const ChatMessage);
+	return d->externalBodyUrl;
+}
+
+void ChatMessage::setExternalBodyUrl(const string &url) {
+	L_D(ChatMessage);
+	d->externalBodyUrl = url;
+}
+
+time_t ChatMessage::getTime () const {
+	L_D(const ChatMessage);
+	return d->time;
+}
+void ChatMessage::setTime(time_t time) {
+	L_D(ChatMessage);
+	d->time = time;
+}
+
+bool ChatMessage::isSecured () const {
+	L_D(const ChatMessage);
+	return d->isSecured;
+}
+
+void ChatMessage::setIsSecured(bool isSecured) {
+	L_D(ChatMessage);
+	d->isSecured = isSecured;
+}
+
 ChatMessage::Direction ChatMessage::getDirection () const {
 	L_D(const ChatMessage);
 	return d->direction;
 }
+
+void ChatMessage::setDirection (ChatMessage::Direction dir) {
+	L_D(ChatMessage);
+	d->direction = dir;
+}
+
+bool ChatMessage::isOutgoing () const {
+	L_D(const ChatMessage);
+	return d->direction == Outgoing;
+}
+
+bool ChatMessage::isIncoming () const {
+	L_D(const ChatMessage);
+	return d->direction == Incoming;
+}
+
+ChatMessage::State ChatMessage::getState() const {
+	L_D(const ChatMessage);
+	return d->state;
+}
+
+void ChatMessage::setState(State state) {
+	L_D(ChatMessage);
+	if (state != d->state && d->chatRoom) {
+		if (((d->state == Displayed) || (d->state == DeliveredToUser))
+			&& ((state == DeliveredToUser) || (state == Delivered) || (state == NotDelivered))) {
+			return;
+		}
+		/* TODO
+		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state), linphone_chat_message_state_to_string(state));
+		*/
+		d->state = state;
+		
+		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(this);
+		/* TODO
+		if (msg->message_state_changed_cb) {
+			msg->message_state_changed_cb(msg, msg->state, msg->message_state_changed_user_data);
+		}*/
+		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+		if (linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
+			linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
+		}
+	}
+}
+
+string ChatMessage::getId () const {
+	L_D(const ChatMessage);
+	return d->id;
+}
+
+void ChatMessage::setId (string id) {
+	L_D(ChatMessage);
+	d->id = id;
+}
+
+bool ChatMessage::isRead() const {
+	L_D(const ChatMessage);
+	return d->isRead;
+}
+
+void ChatMessage::markAsRead() {
+	L_D(ChatMessage);
+	d->isRead = true;
+}
+
+// -----------------------------------------------------------------------------
+
+string ChatMessage::getContentType() const {
+	L_D(const ChatMessage);
+	if (d->internalContent) {
+		return d->internalContent->getContentType().asString();
+	}
+	if (d->contents.size() > 0) {
+		return d->contents.front()->getContentType().asString();
+	}
+	return "";
+}
+
+string ChatMessage::getText() const {
+	L_D(const ChatMessage);
+	if (d->internalContent) {
+		return d->internalContent->getBodyAsString();
+	}
+	if (d->contents.size() > 0) {
+		return d->contents.front()->getBodyAsString();
+	}
+	return "";
+}
+
+unsigned int ChatMessage::getStorageId() const {
+	L_D(const ChatMessage);
+	return d->storageId;
+}
+
+void ChatMessage::setStorageId(unsigned int id) {
+	L_D(ChatMessage);
+	d->storageId = id;
+}
+
+string ChatMessage::getAppdata () const {
+	L_D(const ChatMessage);
+	return d->appData;
+}
+
+void ChatMessage::setAppdata (const string &appData) {
+	L_D(ChatMessage);
+	d->appData = appData;
+	// TODO: store app data in db !
+	// linphone_chat_message_store_appdata(msg);
+}
+
+// -----------------------------------------------------------------------------
 
 shared_ptr<const Address> ChatMessage::getFromAddress () const {
 	// TODO.
@@ -82,11 +226,6 @@ shared_ptr<const Address> ChatMessage::getLocalAddress () const {
 shared_ptr<const Address> ChatMessage::getRemoteAddress () const {
 	// TODO.
 	return nullptr;
-}
-
-ChatMessage::State ChatMessage::getState () const {
-	L_D(const ChatMessage);
-	return d->state;
 }
 
 shared_ptr<const ErrorInfo> ChatMessage::getErrorInfo () const {
@@ -119,34 +258,9 @@ bool ChatMessage::containsReadableText () const {
 	return true;
 }
 
-bool ChatMessage::isSecured () const {
-	L_D(const ChatMessage);
-	return d->isSecured;
-}
-
 bool ChatMessage::isReadOnly () const {
 	L_D(const ChatMessage);
 	return d->isReadOnly;
-}
-
-time_t ChatMessage::getTime () const {
-	L_D(const ChatMessage);
-	return d->time;
-}
-
-string ChatMessage::getId () const {
-	L_D(const ChatMessage);
-	return d->id;
-}
-
-string ChatMessage::getAppdata () const {
-	L_D(const ChatMessage);
-	return d->appData;
-}
-
-void ChatMessage::setAppdata (const string &appData) {
-	L_D(ChatMessage);
-	d->appData = appData;
 }
 
 list<shared_ptr<const Content> > ChatMessage::getContents () const {
