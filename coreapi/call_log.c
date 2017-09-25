@@ -20,22 +20,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define _XOPEN_SOURCE 700 /*required for strptime of GNU libc*/
 
 #include <time.h>
-#include "private.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
-#ifndef _WIN32
-#if !defined(__ANDROID__) && !defined(__QNXNTO__)
-#	include <langinfo.h>
-#	include <iconv.h>
-#	include <string.h>
-#endif
+	#ifndef _WIN32
+		#if !defined(__ANDROID__) && !defined(__QNXNTO__)
+			#include <langinfo.h>
+			#include <iconv.h>
+			#include <string.h>
+	#endif
 #else
-#include <Windows.h>
+	#include <Windows.h>
 #endif
 
 #define MAX_PATH_SIZE 1024
-#include "sqlite3.h"
+	#include "sqlite3.h"
 #endif
+
+#include "c-wrapper/c-wrapper.h"
 
 typedef struct _CallLogStorageResult {
 	LinphoneCore *core;
@@ -316,7 +317,7 @@ LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *fr
 	set_call_log_date(cl,cl->start_date_time);
 	cl->from=from;
 
-  cl->to=to;
+	cl->to=to;
 
 	cl->status=LinphoneCallAborted; /*default status*/
 	cl->quality=-1;
@@ -561,7 +562,7 @@ const bctbx_list_t *linphone_core_get_call_history(LinphoneCore *lc) {
 	CallLogStorageResult clsres;
 
 	if (!lc || lc->logs_db == NULL) return NULL;
-    if (lc->call_logs != NULL) return lc->call_logs;
+		if (lc->call_logs != NULL) return lc->call_logs;
 
 	if (lc->max_call_logs != LINPHONE_MAX_CALL_HISTORY_UNLIMITED){
 		buf = sqlite3_mprintf("SELECT * FROM call_history ORDER BY id DESC LIMIT %i", lc->max_call_logs);

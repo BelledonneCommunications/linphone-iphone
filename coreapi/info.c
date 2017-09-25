@@ -22,11 +22,11 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 struct _LinphoneInfoMessage{
 	belle_sip_object_t base;

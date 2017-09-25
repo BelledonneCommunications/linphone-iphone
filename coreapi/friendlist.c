@@ -17,10 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "linphone/core.h"
-#include "private.h"
-
 #include <bctoolbox/crypto.h>
+
+#include "linphone/core.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendListCbs);
 
@@ -461,14 +462,14 @@ const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFrie
 		const char* rls_uri = lp_config_get_string(list->lc->config, "sip", "rls_uri", NULL);
 		if (list->lc->default_rls_addr)
 			linphone_address_unref(list->lc->default_rls_addr);
-		
+
 		list->lc->default_rls_addr=NULL;
-		
+
 		if (rls_uri) {
 			/*to make sure changes in config are used if any*/
 			list->lc->default_rls_addr = linphone_address_new(rls_uri);
 		}
-		
+
 		return list->lc->default_rls_addr;
 	}
 	else
@@ -476,7 +477,7 @@ const LinphoneAddress * _linphone_friend_list_get_rls_address(const LinphoneFrie
 }
 void linphone_friend_list_set_rls_address(LinphoneFriendList *list, const LinphoneAddress *rls_addr){
 	LinphoneAddress *new_rls_addr = rls_addr ? linphone_address_clone(rls_addr) : NULL;
-	
+
 	if (list->rls_addr){
 		linphone_address_unref(list->rls_addr);
 	}
@@ -874,14 +875,14 @@ void linphone_friend_list_update_subscriptions(LinphoneFriendList *list){
 	const LinphoneAddress *address = _linphone_friend_list_get_rls_address(list);
 	bool_t only_when_registered = FALSE;
 	bool_t should_send_list_subscribe = FALSE;
-	
+
 	if (list->lc){
 		if (address)
 			cfg = linphone_core_lookup_known_proxy(list->lc, address);
 		only_when_registered = linphone_core_should_subscribe_friends_only_when_registered(list->lc);
 		should_send_list_subscribe = (!only_when_registered || !cfg || cfg->state == LinphoneRegistrationOk);
 	}
-	
+
 	if (address != NULL) {
 		if (list->enable_subscriptions) {
 			if (should_send_list_subscribe){
@@ -1008,7 +1009,7 @@ LinphoneCore* linphone_friend_list_get_core(const LinphoneFriendList *list) {
 static LinphoneStatus linphone_friend_list_import_friends_from_vcard4(LinphoneFriendList *list, bctbx_list_t *vcards)  {
 	bctbx_list_t *vcards_iterator = NULL;
 	int count = 0;
-	
+
 	if (!linphone_core_vcard_supported()) {
 		ms_error("vCard support wasn't enabled at compilation time");
 		return -1;
@@ -1017,9 +1018,9 @@ static LinphoneStatus linphone_friend_list_import_friends_from_vcard4(LinphoneFr
 		ms_error("Can't import into a NULL list");
 		return -1;
 	}
-	
+
 	vcards_iterator = vcards;
-	
+
 	while (vcards_iterator != NULL && bctbx_list_get_data(vcards_iterator) != NULL) {
 		LinphoneVcard *vcard = (LinphoneVcard *)bctbx_list_get_data(vcards_iterator);
 		LinphoneFriend *lf = linphone_friend_new_from_vcard(vcard);
@@ -1036,7 +1037,7 @@ static LinphoneStatus linphone_friend_list_import_friends_from_vcard4(LinphoneFr
 	bctbx_list_free(vcards);
 	linphone_core_store_friends_list_in_db(list->lc, list);
 	return count;
-	
+
 }
 LinphoneStatus linphone_friend_list_import_friends_from_vcard4_file(LinphoneFriendList *list, const char *vcard_file) {
 	bctbx_list_t *vcards = NULL;
@@ -1115,7 +1116,7 @@ void linphone_friend_list_enable_subscriptions(LinphoneFriendList *list, bool_t 
 		} else {
 			linphone_friend_list_close_subscriptions(list);
 		}
-		
+
 	}
 }
 

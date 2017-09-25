@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "private.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 static LinphoneNatPolicy * _linphone_nat_policy_new_with_ref(LinphoneCore *lc, const char *ref) {
 	LinphoneNatPolicy *policy = belle_sip_object_new(LinphoneNatPolicy);
@@ -274,7 +274,7 @@ LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const Linphon
 		policy = _linphone_nat_policy_new_with_ref(NULL, config_ref);
 	else
 		policy = linphone_nat_policy_new(NULL);
-	
+
 	if (server != NULL) linphone_nat_policy_set_stun_server(policy, server);
 	if (username != NULL) linphone_nat_policy_set_stun_server_username(policy, username);
 	if (l != NULL) {
@@ -298,7 +298,7 @@ LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc
 	char *section;
 	int index;
 	bool_t finished = FALSE;
-	
+
 	for (index = 0; finished != TRUE; index++) {
 		section = belle_sip_strdup_printf("nat_policy_%i", index);
 		if (lp_config_has_section(config, section)) {

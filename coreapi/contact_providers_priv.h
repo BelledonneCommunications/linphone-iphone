@@ -17,8 +17,9 @@
 #ifndef CONTACT_PROVIDERS_PRIV_H
 #define CONTACT_PROVIDERS_PRIV_H
 
-#include "private.h"
 #include "linphone/core.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 /* Base for contact search and contact provider */
 

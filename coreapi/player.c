@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "private.h"
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePlayer);
 
@@ -181,7 +181,7 @@ static void call_player_close(LinphonePlayer *player){
 	if (!call_player_check_state(player,TRUE)) return;
 	AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
 	audio_stream_close_remote_play(astream);
-	
+
 }
 
 static void on_call_destroy(void *obj, belle_sip_object_t *call_being_destroyed){

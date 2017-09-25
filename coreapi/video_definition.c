@@ -20,8 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/factory.h"
 #include "linphone/video_definition.h"
 
-#include "private.h"
-
+#include "c-wrapper/c-wrapper.h"
 
 static void linphone_video_definition_destroy(LinphoneVideoDefinition *vdef) {
 	if (vdef->name) bctbx_free(vdef->name);

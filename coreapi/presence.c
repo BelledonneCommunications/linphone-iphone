@@ -18,15 +18,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 #include "linphone/presence.h"
 
-
+#include "c-wrapper/c-wrapper.h"
 
 extern const char *__policy_enum_to_str(LinphoneSubscribePolicy pol);
-
-
 
 struct _LinphonePresenceNote {
 	belle_sip_object_t base;

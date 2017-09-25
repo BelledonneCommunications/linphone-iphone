@@ -18,11 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "private.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneErrorInfo);
-
-
 
 static void linphone_error_info_reset(LinphoneErrorInfo *ei);
 
@@ -182,7 +181,7 @@ void linphone_error_info_from_sal_reason_ei(LinphoneErrorInfo *ei, const SalErro
 		linphone_error_info_from_sal(ei, reason_ei);
 		return;
 	}
-	
+
 	if (ei->sub_ei){
 		if (reason_ei->reason == SalReasonNone){
 			linphone_error_info_unref(ei->sub_ei);
@@ -220,12 +219,12 @@ void linphone_error_info_fields_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo
 	sei->protocol_code = ei->protocol_code;
 	sei->protocol = bctbx_strdup(ei->protocol);
 }
-	
+
 void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei){
-	
+
 	linphone_error_info_fields_to_sal(ei, sei);
 	if (ei->sub_ei !=NULL) {
-		
+
 		linphone_error_info_to_sal(ei->sub_ei, sei->sub_sei);
 	}
 }

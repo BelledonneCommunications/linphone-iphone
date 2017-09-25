@@ -18,17 +18,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/factory.h"
-#include "private.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 #ifndef PACKAGE_SOUND_DIR
-#define PACKAGE_SOUND_DIR "."
+	#define PACKAGE_SOUND_DIR "."
 #endif
 #ifndef PACKAGE_RING_DIR
-#define PACKAGE_RING_DIR "."
+	#define PACKAGE_RING_DIR "."
 #endif
 
 #ifndef PACKAGE_DATA_DIR
-#define PACKAGE_DATA_DIR "."
+	#define PACKAGE_DATA_DIR "."
 #endif
 
 extern LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata);

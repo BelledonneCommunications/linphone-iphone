@@ -18,9 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "private.h"
 
-
+#include "c-wrapper/c-wrapper.h"
 
 static void linphone_content_set_sal_body_handler(LinphoneContent *content, SalBodyHandler *body_handler) {
 	if (content->body_handler != NULL) {

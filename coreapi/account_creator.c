@@ -20,9 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/account_creator.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
+
+#include "c-wrapper/c-wrapper.h"
+
 #if !_WIN32
-#include "regex.h"
+	#include "regex.h"
 #endif
 
 #include <bctoolbox/crypto.h>

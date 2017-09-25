@@ -19,9 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <string.h>
 #include <ortp/payloadtype.h>
-#include "linphone/payload_type.h"
-#include "private.h"
 
+#include "linphone/payload_type.h"
+
+#include "c-wrapper/c-wrapper.h"
 #include "utils/payload-type-handler.h"
 
 struct _LinphonePayloadType {

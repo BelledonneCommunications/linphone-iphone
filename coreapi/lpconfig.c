@@ -24,7 +24,6 @@
 
 #define MAX_LEN 16384
 
-#include "private.h"
 #include "bctoolbox/vfs.h"
 #include "belle-sip/object.h"
 #include "xml2lpc.h"
@@ -60,6 +59,8 @@
 
 #include "linphone/lpconfig.h"
 #include "lpc2xml.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 typedef struct _LpItem{
 	char *key;

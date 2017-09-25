@@ -17,14 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "linphone/core.h"
-#include "private.h"
-
 #include <string.h>
 #include <libxml/tree.h>
 #include <libxml/xmlwriter.h>
 
+#include "linphone/core.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneXmlRpcRequestCbs);
 
@@ -423,4 +422,3 @@ void linphone_xml_rpc_session_release(LinphoneXmlRpcSession *session){
 	session->released = TRUE;
 	belle_sip_object_unref(session);
 }
-

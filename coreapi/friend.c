@@ -23,23 +23,24 @@
  */
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
-#ifndef _WIN32
-#if !defined(__ANDROID__) && !defined(__QNXNTO__)
-#	include <langinfo.h>
-#	include <iconv.h>
-#	include <string.h>
-#endif
+	#ifndef _WIN32
+		#if !defined(__ANDROID__) && !defined(__QNXNTO__)
+			#include <langinfo.h>
+			#include <iconv.h>
+			#include <string.h>
+	#endif
 #else
-#include <Windows.h>
+	#include <Windows.h>
 #endif
 
 #define MAX_PATH_SIZE 1024
-#include "sqlite3.h"
+	#include "sqlite3.h"
 #endif
+
+#include "c-wrapper/c-wrapper.h"
 
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	const char *str=NULL;
@@ -1258,13 +1259,13 @@ static bool_t linphone_update_friends_table(sqlite3* db) {
 	int database_user_version = -1;
 	char *errmsg = NULL;
 
-    if (sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt_version, NULL) == SQLITE_OK) {
-        while(sqlite3_step(stmt_version) == SQLITE_ROW) {
-            database_user_version = sqlite3_column_int(stmt_version, 0);
+		if (sqlite3_prepare_v2(db, "PRAGMA user_version;", -1, &stmt_version, NULL) == SQLITE_OK) {
+				while(sqlite3_step(stmt_version) == SQLITE_ROW) {
+						database_user_version = sqlite3_column_int(stmt_version, 0);
 			ms_debug("friends database user version = %i", database_user_version);
 		}
 	}
-    sqlite3_finalize(stmt_version);
+		sqlite3_finalize(stmt_version);
 
 	if (database_user_version != 3100) { // Linphone 3.10.0
 		int ret = sqlite3_exec(db,

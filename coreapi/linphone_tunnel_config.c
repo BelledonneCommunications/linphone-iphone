@@ -21,8 +21,8 @@
  */
 
 #include "linphone/tunnel.h"
-#include "private.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 struct _LinphoneTunnelConfig {
 	belle_sip_object_t base;
@@ -139,6 +139,3 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneTunnelConfig, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
-
-
-

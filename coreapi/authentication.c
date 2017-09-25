@@ -23,8 +23,9 @@
  */
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);

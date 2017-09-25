@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "private.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneImNotifPolicy);
 
@@ -29,7 +29,6 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneImNotifPolicy, belle_sip_object_t,
 	NULL, // marshal
 	FALSE
 );
-
 
 static void load_im_notif_policy_from_config(LinphoneImNotifPolicy *policy) {
 	bctbx_list_t *default_list = bctbx_list_append(NULL, (void *)"all");
