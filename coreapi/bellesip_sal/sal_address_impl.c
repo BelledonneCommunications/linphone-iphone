@@ -232,6 +232,11 @@ const char * sal_address_get_uri_param(const SalAddress *addr, const char *name)
 	return belle_sip_parameters_get_parameter(parameters, name);
 }
 
+void sal_address_remove_uri_param(const SalAddress *addr, const char *name) {
+	belle_sip_parameters_t* parameters = BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)));
+	belle_sip_parameters_remove_parameter(parameters, name);
+}
+
 void sal_address_set_header(SalAddress *addr, const char *header_name, const char *header_value){
 	belle_sip_uri_set_header(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(addr)),header_name, header_value);
 }

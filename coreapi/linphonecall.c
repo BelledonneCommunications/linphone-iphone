@@ -5044,8 +5044,9 @@ static LinphoneAddress *get_fixed_contact(LinphoneCore *lc, LinphoneCall *call ,
 
 void linphone_call_set_contact_op(LinphoneCall* call) {
 	LinphoneAddress *contact;
-	contact=get_fixed_contact(call->core,call,call->dest_proxy);
-	sal_op_set_and_clean_contact_address(call->op, (SalAddress *)contact);
+	if ((contact=get_fixed_contact(call->core,call,call->dest_proxy)))
+		sal_op_set_and_clean_contact_address(call->op, (SalAddress *)contact);
+	/*else, we already have a contact so keep it "as is"*/
 }
 
 LinphonePlayer *linphone_call_get_player(LinphoneCall *call){

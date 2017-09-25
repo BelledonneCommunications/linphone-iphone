@@ -116,12 +116,16 @@ belle_sip_header_contact_t* sal_op_create_contact(SalOp *op){
 	if (op->privacy!=SalPrivacyNone){
 		belle_sip_uri_set_user(contact_uri,NULL);
 	}
-	belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
-	if (op->base.root->uuid){
-		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
-			char *instance_id=belle_sip_strdup_printf("\"<urn:uuid:%s>\"",op->base.root->uuid);
-			belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance",instance_id);
-			belle_sip_free(instance_id);
+	
+	/*don't touch contact in case of gruu*/
+	if (!belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header))),"gr")) {
+		belle_sip_header_contact_set_automatic(contact_header,op->base.root->auto_contacts);
+		if (op->base.root->uuid){
+			if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
+				char *instance_id=belle_sip_strdup_printf("\"<urn:uuid:%s>\"",op->base.root->uuid);
+				belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance",instance_id);
+				belle_sip_free(instance_id);
+			}
 		}
 	}
 	return contact_header;
@@ -190,6 +194,7 @@ belle_sip_request_t* sal_op_build_request(SalOp *op,const char* method) {
 	belle_sip_uri_set_secure(req_uri,sal_op_is_secure(op));
 
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(to_address),NULL);
+	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to_header))), "gr"); /*remove gruu in any case*/
 	call_id_header = belle_sip_provider_create_call_id(prov);
 	if (sal_op_get_call_id(op)) {
 		belle_sip_header_call_id_set_call_id(call_id_header, sal_op_get_call_id(op));

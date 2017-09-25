@@ -141,9 +141,11 @@ static void sip_update_within_icoming_reinvite_with_no_sdp(void) {
 
 	if (sipp_out) {
 		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
-		linphone_call_accept(linphone_core_get_current_call(mgr->lc));
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 2));
-		BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
+		if (linphone_core_get_current_call(mgr->lc)) {
+			linphone_call_accept(linphone_core_get_current_call(mgr->lc));
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallStreamsRunning, 2));
+			BC_ASSERT_TRUE(wait_for(mgr->lc, mgr->lc, &mgr->stat.number_of_LinphoneCallEnd, 1));
+		}
 		pclose(sipp_out);
 	}
 	linphone_core_manager_destroy(mgr);

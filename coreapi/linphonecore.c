@@ -1383,7 +1383,7 @@ static void sip_config_read(LinphoneCore *lc) {
 	sal_enable_sip_update_method(lc->sal,lp_config_get_int(lc->config,"sip","sip_update",1));
 	lc->sip_conf.vfu_with_info=lp_config_get_int(lc->config,"sip","vfu_with_info",1);
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
-	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound, gruu"));
+	sal_set_supported_tags(lc->sal,lp_config_get_string(lc->config,"sip","supported","replaces, outbound"/*, gruu" not yet enabled by default*/));
 	lc->sip_conf.save_auth_info = lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
 	linphone_core_create_im_notif_policy(lc);
 }
@@ -3488,6 +3488,7 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
 	const char *identity;
+	
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
@@ -3499,7 +3500,16 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		routes=make_routes_for_proxy(proxy,dest);
 		linphone_transfer_routes_to_op(routes,op);
 	}
-	sal_op_set_to_address(op,dest);
+	if (sal_address_has_uri_param((const SalAddress *)dest,"gr")) {
+		/*in case of gruu destination remove gruu parram from to*/
+		SalAddress *dest_copy = sal_address_clone(dest);
+		sal_address_remove_uri_param(dest_copy,"gr");
+		sal_op_set_to_address(op,dest_copy);
+		sal_address_unref(dest_copy);
+	} else {
+		sal_op_set_to_address(op,dest);
+	}
+	
 	sal_op_set_from(op,identity);
 	sal_op_set_sent_custom_header(op,headers);
 	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
