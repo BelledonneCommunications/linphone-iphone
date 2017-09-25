@@ -75,7 +75,7 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr inline decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
+	static constexpr decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
 		return cppObject->getPrivate();
 	}
 
@@ -89,8 +89,7 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
-	static inline std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
-		L_ASSERT(cObject);
+	static constexpr std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
 		return reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
@@ -99,8 +98,7 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
-	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
-		L_ASSERT(cObject);
+	static constexpr std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
 		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
 	}
 
@@ -110,8 +108,7 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
-	static inline CppType *getCppPtrFromC (CType *cObject) {
-		L_ASSERT(cObject);
+	static constexpr CppType *getCppPtrFromC (CType *cObject) {
 		return reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
@@ -120,8 +117,7 @@ public:
 		typename CType,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
-	static inline const CppType *getCppPtrFromC (const CType *cObject) {
-		L_ASSERT(cObject);
+	static constexpr const CppType *getCppPtrFromC (const CType *cObject) {
 		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
@@ -195,19 +191,9 @@ public:
 	// Get/set user data.
 	// ---------------------------------------------------------------------------
 
-	static inline void *getUserData (const std::shared_ptr<const PropertyContainer> &propertyContainer) {
-		L_ASSERT(propertyContainer);
-		return propertyContainer->getProperty("LinphonePrivate::Wrapper::userData").getValue<void *>();
-	}
-
 	static inline void *getUserData (const PropertyContainer *propertyContainer) {
 		L_ASSERT(propertyContainer);
 		return propertyContainer->getProperty("LinphonePrivate::Wrapper::userData").getValue<void *>();
-	}
-
-	static inline void setUserData (const std::shared_ptr<PropertyContainer> &propertyContainer, void *value) {
-		L_ASSERT(propertyContainer);
-		propertyContainer->setProperty("LinphonePrivate::Wrapper::userData", value);
 	}
 
 	static inline void setUserData (PropertyContainer *propertyContainer, void *value) {
@@ -440,11 +426,11 @@ LINPHONE_END_NAMESPACE
 // Get/set user data on a wrapped C object.
 #define L_GET_USER_DATA_FROM_C_OBJECT(C_OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getUserData( \
-		L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT) \
+		LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)) \
 	)
 #define L_SET_USER_DATA_FROM_C_OBJECT(C_OBJECT, VALUE) \
 	LINPHONE_NAMESPACE::Wrapper::setUserData( \
-		L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT), \
+		LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)), \
 		VALUE \
 	)
 
