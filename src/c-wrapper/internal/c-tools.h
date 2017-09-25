@@ -445,8 +445,8 @@ LINPHONE_END_NAMESPACE
 	L_GET_PRIVATE(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)))
 
 // Get the wrapped C object of a C++ object.
-#define L_GET_C_BACK_PTR(C_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getCBackPtr(C_OBJECT)
+#define L_GET_C_BACK_PTR(CPP_OBJECT) \
+	LINPHONE_NAMESPACE::Wrapper::getCBackPtr(CPP_OBJECT)
 
 // Get/set user data on a wrapped C object.
 #define L_GET_USER_DATA_FROM_C_OBJECT(C_OBJECT) \
