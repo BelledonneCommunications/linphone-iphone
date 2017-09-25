@@ -19,7 +19,6 @@
 #include "linphone/core.h"
 #include "private.h"
 #include "liblinphone_tester.h"
-#include "conference/conference-listener.h"
 #include "conference/local-conference.h"
 #include "conference/remote-conference.h"
 
@@ -46,15 +45,14 @@ static const string sarahAddr = "sip:sarah-bache@sip.linphone.org";
 static const string bobName = "Le Bricoleur";
 static const string sarahName = "Sarah";
 
-void first_invite_parsing () {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	Address marieIdentity(linphone_address_as_string_uri_only(marie->identity));
-	LocalConference localConf(marie->lc, marieIdentity);
-	list<Address> addresses = localConf.parseResourceLists(firstInvite);
+static void check_first_invite(LinphoneCore *core, const Address &address, string invite) {
+	LocalConference localConf(core, address);
+	list<Address> addresses = localConf.parseResourceLists(invite);
 	BC_ASSERT_EQUAL(addresses.size(), 5, int, "%d");
 	if (addresses.size() != 5)
-		goto end;
+		return;
 	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == aliceAddr);
+	BC_ASSERT_TRUE(addresses.front().getDisplayName().empty());
 	addresses.pop_front();
 
 	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == bobAddr);
@@ -62,21 +60,57 @@ void first_invite_parsing () {
 	addresses.pop_front();
 
 	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == johnAddr);
+	BC_ASSERT_TRUE(addresses.front().getDisplayName().empty());
 	addresses.pop_front();
 
 	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == anneAddr);
+	BC_ASSERT_TRUE(addresses.front().getDisplayName().empty());
 	addresses.pop_front();
 
 	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == sarahAddr);
 	BC_ASSERT_TRUE(addresses.front().getDisplayName() == sarahName);
 	addresses.pop_front();
-	
+}
+
+void first_invite_parsing () {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	const Address marieIdentity(linphone_address_as_string_uri_only(marie->identity));
+	check_first_invite(marie->lc, marieIdentity, firstInvite);
+	linphone_core_manager_destroy(marie);
+}
+
+void first_invite_serializing() {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	const Address marieIdentity(linphone_address_as_string_uri_only(marie->identity));
+	RemoteConference remoteConf(marie->lc, marieIdentity);
+	list<Address> addresses = list<Address>();
+	string xmlBody;
+
+	Address aliceIdentity(aliceAddr);
+	Address bobIdentity(bobAddr);
+	Address johnIdentity(johnAddr);
+	Address anneIdentity(anneAddr);
+	Address sarahIdentity(sarahAddr);
+
+	bobIdentity.setDisplayName(bobName);
+	sarahIdentity.setDisplayName(sarahName);
+
+	addresses.push_back(aliceIdentity);
+	addresses.push_back(bobIdentity);
+	addresses.push_back(johnIdentity);
+	addresses.push_back(anneIdentity);
+	addresses.push_back(sarahIdentity);
+
+	xmlBody = remoteConf.getResourceLists(addresses);
+	check_first_invite(marie->lc, marieIdentity, xmlBody);
+
 end:
 	linphone_core_manager_destroy(marie);
 }
 
 test_t conference_tests[] = {
-	TEST_NO_TAG("First invite parsing", first_invite_parsing)
+	TEST_NO_TAG("First invite parsing", first_invite_parsing),
+	TEST_NO_TAG("First invite serializing", first_invite_serializing)
 };
 
 test_suite_t conference_test_suite = {
