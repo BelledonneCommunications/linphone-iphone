@@ -26,50 +26,49 @@
 using namespace LinphonePrivate;
 using namespace std;
 
-static string first_invite = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+static const string firstInvite = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
 "<resource-lists xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:ietf:params:xml:ns:resource-lists\">"
 "<list>"
 " <entry uri=\"sip:alice@sip.linphone.org\"/>"
-" <entry uri=\"sip:bob@sip.linphone.org\" display-name=\"Le Bricoleur\"/>"
+" <entry uri=\"sip:bob@sip.linphone.org\"><display-name>Le Bricoleur</display-name></entry>"
 " <entry uri=\"sip:john-doe@sip.linphone.org\"/>"
 " <entry uri=\"sip:anne-onyme@sip.linphone.org\"/>"
-" <entry uri=\"sip:sarah-bache@sip.linphone.org\" display-name=\"Sarah\"/>"
+" <entry uri=\"sip:sarah-bache@sip.linphone.org\"><display-name>Sarah</display-name></entry>"
 "</list>"
 "</resource-lists>";
 
-static string alice_addr = "sip:alice@sip.linphone.org";
-static string bob_addr = "sip:bob@sip.linphone.org";
-static string john_addr = "sip:john-doe@sip.linphone.org";
-static string anne_addr = "sip:anne-onyme@sip.linphone.org";
-static string sarah_addr = "sip:sarah-bache@sip.linphone.org";
+static const string aliceAddr = "sip:alice@sip.linphone.org";
+static const string bobAddr = "sip:bob@sip.linphone.org";
+static const string johnAddr = "sip:john-doe@sip.linphone.org";
+static const string anneAddr = "sip:anne-onyme@sip.linphone.org";
+static const string sarahAddr = "sip:sarah-bache@sip.linphone.org";
 
-static string bob_name = "Le Bricoleur";
-static string sarah_name = "Sarah";
+static const string bobName = "Le Bricoleur";
+static const string sarahName = "Sarah";
 
-void first_invite_parsing() {
+void first_invite_parsing () {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	Address marie_identity(linphone_address_as_string_uri_only(marie->identity));
-	LocalConference localConf(marie->lc, marie_identity);
-	list<shared_ptr<Address>> addresses = localConf.parseResourceLists(first_invite);
+	Address marieIdentity(linphone_address_as_string_uri_only(marie->identity));
+	LocalConference localConf(marie->lc, marieIdentity);
+	list<Address> addresses = localConf.parseResourceLists(firstInvite);
 	BC_ASSERT_EQUAL(addresses.size(), 5, int, "%d");
-	if(addresses.size() != 5) {
+	if (addresses.size() != 5)
 		goto end;
-	}
-	BC_ASSERT_TRUE(addresses.front()->asStringUriOnly() == alice_addr);
+	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == aliceAddr);
 	addresses.pop_front();
 
-	BC_ASSERT_TRUE(addresses.front()->asStringUriOnly() == bob_addr);
-	BC_ASSERT_TRUE(addresses.front()->getDisplayName() == bob_name);
+	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == bobAddr);
+	BC_ASSERT_TRUE(addresses.front().getDisplayName() == bobName);
 	addresses.pop_front();
 
-	BC_ASSERT_TRUE(addresses.front()->asStringUriOnly() == john_addr);
+	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == johnAddr);
 	addresses.pop_front();
 
-	BC_ASSERT_TRUE(addresses.front()->asStringUriOnly() == anne_addr);
+	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == anneAddr);
 	addresses.pop_front();
 
-	BC_ASSERT_TRUE(addresses.front()->asStringUriOnly() == sarah_addr);
-	BC_ASSERT_TRUE(addresses.front()->getDisplayName() == sarah_name);
+	BC_ASSERT_TRUE(addresses.front().asStringUriOnly() == sarahAddr);
+	BC_ASSERT_TRUE(addresses.front().getDisplayName() == sarahName);
 	addresses.pop_front();
 	
 end:

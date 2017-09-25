@@ -59,20 +59,18 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 	}
 }
 
-list<shared_ptr<Address>> LocalConference::parseResourceLists(string xmlBody) {
+list<Address> LocalConference::parseResourceLists (string xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(data, Xsd::XmlSchema::Flags::dont_validate);
-	list<shared_ptr<Address>> addresses = list<shared_ptr<Address>>();
-	for(const auto &l : rl->getList()) {
-		for(const auto &entry : l.getEntry()) {
-			shared_ptr<Address> addr = make_shared<Address>(Address(entry.getUri()));
-			if(!entry.getDisplayName().present()) {
-				addr->setDisplayName(entry.getDisplayName().get());
-			}
+	list<Address> addresses = list<Address>();
+	for (const auto &l : rl->getList()) {
+		for (const auto &entry : l.getEntry()) {
+			Address addr(entry.getUri());
+			if (entry.getDisplayName().present())
+				addr.setDisplayName(entry.getDisplayName().get());
 			addresses.push_back(addr);
 		}
 	}
-
 	return addresses;
 }
 

@@ -38,7 +38,7 @@ public:
 	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 
-	std::list<std::shared_ptr<Address>> parseResourceLists(std::string xmlBody);
+	std::list<Address> parseResourceLists (std::string xmlBody);
 
 private:
 	L_DISABLE_COPY(LocalConference);
