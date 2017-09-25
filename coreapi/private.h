@@ -1090,7 +1090,6 @@ void linphone_chat_message_set_message_state_changed_cb_user_data(LinphoneChatMe
 void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChatMessage* msg);
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state);
 void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id);
-void linphone_chat_message_set_is_read(LinphoneChatMessage *msg, bool_t is_read);
 void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int id);
 SalCustomHeader * linphone_chat_message_get_sal_custom_headers(const LinphoneChatMessage *msg);
 void linphone_chat_message_set_sal_custom_headers(LinphoneChatMessage *msg, SalCustomHeader *header);

@@ -286,7 +286,6 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		linphone_address_unref(peer);
 
 		linphone_chat_message_set_time(newMessage, (time_t)atol(argv[9]));
-		linphone_chat_message_set_is_read(newMessage, !!atoi(argv[6]));
 		linphone_chat_message_set_state(newMessage, static_cast<LinphoneChatMessageState>(atoi(argv[7])));
 		linphone_chat_message_set_storage_id(newMessage, storageId);
 		linphone_chat_message_set_external_body_url(newMessage, ms_strdup(argv[8]));

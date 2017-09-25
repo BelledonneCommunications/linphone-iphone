@@ -151,13 +151,12 @@ void ChatMessage::setId (string id) {
 }
 
 bool ChatMessage::isRead() const {
-	L_D(const ChatMessage);
-	return d->isRead;
-}
-
-void ChatMessage::markAsRead() {
-	L_D(ChatMessage);
-	d->isRead = true;
+	//L_D(const ChatMessage);
+	return false;
+	/*shared_ptr<ImNotifyPolicy> policy =d->chatRoom->core->getImNotifPolicy();
+	if (policy->getRecvImdnDisplayed() && d->state == Displayed) return true;
+	if (policy->getRecvImdnDelivered() && (d->state == DeliveredToUser || d->state == Displayed)) return true;
+	return d->state == Delivered || d->state == Displayed || d->state == DeliveredToUser;*/
 }
 
 // -----------------------------------------------------------------------------

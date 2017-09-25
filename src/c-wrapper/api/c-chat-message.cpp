@@ -97,10 +97,17 @@ void linphone_chat_message_set_user_data (LinphoneChatMessage *msg, void *ud) {
 	L_SET_USER_DATA_FROM_C_OBJECT(msg, ud);
 }
 
+LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
+	return msg->cbs;
+}
 
 // =============================================================================
 // Getter and setters
 // =============================================================================
+
+LinphoneChatRoom *linphone_chat_message_get_chat_room(const LinphoneChatMessage *msg) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getChatRoom());
+}
 
 const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getExternalBodyUrl().c_str();
@@ -128,6 +135,10 @@ void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secur
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isOutgoing();
+}
+
+LinphoneChatMessageDir linphone_chat_message_get_direction(const LinphoneChatMessage *msg) {
+	return ((LinphoneChatMessageDir)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getDirection());
 }
 
 void linphone_chat_message_set_incoming(LinphoneChatMessage *msg) {
@@ -170,10 +181,8 @@ void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setStorageId(id);
 }
 
-void linphone_chat_message_set_is_read(LinphoneChatMessage *msg, bool_t is_read) {
-	if (is_read) {
-		L_GET_CPP_PTR_FROM_C_OBJECT(msg)->markAsRead();
-	}
+bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isRead();
 }
 
 const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
@@ -211,8 +220,6 @@ const LinphoneAddress *linphone_chat_message_get_to_address(const LinphoneChatMe
 	return NULL;
 }
 
-// =============================================================================
-
 void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb) {
 	msg->message_state_changed_cb = cb;
 }
@@ -243,6 +250,10 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 	return 0;
 }
 
+LinphoneContent *linphone_chat_message_get_file_transfer_information(LinphoneChatMessage *msg) {
+	return msg->file_transfer_information;
+}
+
 SalCustomHeader * linphone_chat_message_get_sal_custom_headers(const LinphoneChatMessage *msg) {
 	return msg->sal_custom_headers;
 }
@@ -263,14 +274,6 @@ void linphone_chat_message_set_file_transfer_information(LinphoneChatMessage *ms
 	msg->file_transfer_information = content;
 }
 
-LinphoneChatMessageDir linphone_chat_message_get_direction(const LinphoneChatMessage *msg) {
-	return msg->dir;
-}
-
-LinphoneChatRoom *linphone_chat_message_get_chat_room(const LinphoneChatMessage *msg) {
-	return msg->chat_room;
-}
-
 SalOp * linphone_chat_message_get_sal_op(const LinphoneChatMessage *msg) {
 	return msg->op;
 }
@@ -287,6 +290,52 @@ const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage
 	return msg->file_transfer_filepath;
 }
 
+const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
+	if (!msg->ei) ((LinphoneChatMessage*)msg)->ei = linphone_error_info_new(); /*let's do it mutable*/
+	linphone_error_info_from_sal_op(msg->ei, msg->op);
+	return msg->ei;
+}
+
+LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
+	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
+}const LinphoneAddress *linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
+	return linphone_chat_room_get_peer_address(msg->chat_room);
+}
+
+bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *msg) {
+	return LinphonePrivate::ContentType::isFileTransfer(msg->content_type);
+}
+
+bool_t linphone_chat_message_is_text(const LinphoneChatMessage *msg) {
+	return LinphonePrivate::ContentType::isText(msg->content_type);
+}
+
+bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *msg) {
+	return msg->to_be_stored;
+}
+
+void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_be_stored) {
+	msg->to_be_stored = to_be_stored;
+}
+
+LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage *msg) {
+	return msg->dir == LinphoneChatMessageOutgoing ? msg->from : msg->to;
+}
+
+void linphone_chat_message_add_custom_header(LinphoneChatMessage *msg, const char *header_name,
+											 const char *header_value) {
+	msg->sal_custom_headers = sal_custom_header_append(msg->sal_custom_headers, header_name, header_value);
+}
+
+const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, const char *header_name) {
+	return sal_custom_header_find(msg->sal_custom_headers, header_name);
+}
+
+void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name) {
+	msg->sal_custom_headers = sal_custom_header_remove(msg->sal_custom_headers, header_name);
+}
+
+// =============================================================================
 // =============================================================================
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
@@ -508,52 +557,6 @@ const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState
 	return NULL;
 }
 
-const LinphoneAddress *linphone_chat_message_get_peer_address(LinphoneChatMessage *msg) {
-	return linphone_chat_room_get_peer_address(msg->chat_room);
-}
-
-bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType::isFileTransfer(msg->content_type);
-}
-
-bool_t linphone_chat_message_is_text(const LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType::isText(msg->content_type);
-}
-
-bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *msg) {
-	return msg->to_be_stored;
-}
-
-void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_be_stored) {
-	msg->to_be_stored = to_be_stored;
-}
-
-LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage *msg) {
-	return msg->dir == LinphoneChatMessageOutgoing ? msg->from : msg->to;
-}
-
-void linphone_chat_message_add_custom_header(LinphoneChatMessage *msg, const char *header_name,
-											 const char *header_value) {
-	msg->sal_custom_headers = sal_custom_header_append(msg->sal_custom_headers, header_name, header_value);
-}
-
-const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, const char *header_name) {
-	return sal_custom_header_find(msg->sal_custom_headers, header_name);
-}
-
-void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const char *header_name) {
-	msg->sal_custom_headers = sal_custom_header_remove(msg->sal_custom_headers, header_name);
-}
-
-bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
-	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
-	if ((linphone_im_notif_policy_get_recv_imdn_displayed(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDisplayed)) return TRUE;
-	if ((linphone_im_notif_policy_get_recv_imdn_delivered(policy) == TRUE) && (msg->state == LinphoneChatMessageStateDeliveredToUser || msg->state == LinphoneChatMessageStateDisplayed)) return TRUE;
-	return (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateDisplayed || msg->state == LinphoneChatMessageStateDeliveredToUser);
-}
-
 LinphoneChatMessage *linphone_chat_message_clone(const LinphoneChatMessage *msg) {
 	LinphoneChatMessage *new_message = linphone_chat_room_create_message(msg->chat_room, msg->message);
 	if (msg->external_body_url)
@@ -586,20 +589,6 @@ void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
 void linphone_chat_message_release(LinphoneChatMessage *msg) {
 	linphone_chat_message_deactivate(msg);
 	linphone_chat_message_unref(msg);
-}
-
-const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
-	if (!msg->ei) ((LinphoneChatMessage*)msg)->ei = linphone_error_info_new(); /*let's do it mutable*/
-	linphone_error_info_from_sal_op(msg->ei, msg->op);
-	return msg->ei;
-}
-
-LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
-	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
-}
-
-LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg) {
-	return msg->cbs;
 }
 
 static bool_t file_transfer_in_progress_and_valid(LinphoneChatMessage* msg) {
@@ -935,10 +924,6 @@ static void linphone_chat_message_process_response_from_post_file(void *data, co
 			linphone_chat_message_unref(msg);
 		}
 	}
-}
-
-LinphoneContent *linphone_chat_message_get_file_transfer_information(LinphoneChatMessage *msg) {
-	return msg->file_transfer_information;
 }
 
 static void on_recv_body(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, void *data, size_t offset, uint8_t *buffer, size_t size) {

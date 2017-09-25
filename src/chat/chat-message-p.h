@@ -46,7 +46,6 @@ private:
 	time_t time = 0;
 	std::string id;
 	std::string appData;
-	bool isRead = false;
 	bool isSecured = false;
 	bool isReadOnly = false;
 	std::list<std::shared_ptr<Content> > contents;

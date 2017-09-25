@@ -85,7 +85,6 @@ public:
 	void setId (std::string);
 
 	bool isRead() const;
-	void markAsRead();
 	
 	std::string getAppdata () const;
 	void setAppdata (const std::string &appData);
