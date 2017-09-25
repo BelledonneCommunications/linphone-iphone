@@ -85,8 +85,8 @@ public:
 
 	// Get Object.
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
@@ -94,8 +94,8 @@ public:
 	}
 
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
@@ -104,8 +104,8 @@ public:
 
 	// Get ClonableObject.
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
 	static constexpr CppType *getCppPtrFromC (CType *cObject) {
@@ -113,8 +113,8 @@ public:
 	}
 
 	template<
-		typename CppType,
 		typename CType,
+		typename CppType = typename CTypeToCppType<CType>::type,
 		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
 	>
 	static constexpr const CppType *getCppPtrFromC (const CType *cObject) {
@@ -245,7 +245,7 @@ public:
 	static inline std::list<std::shared_ptr<CppType>> getCppListOfCppObjFromCListOfStructPtr (const bctbx_list_t *cList) {
 		std::list<std::shared_ptr<CppType>> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
-			result.push_back(getCppPtrFromC<CppType>(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
+			result.push_back(getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
 		return result;
 	}
 
@@ -257,7 +257,7 @@ public:
 	static inline std::list<CppType> getCppListOfCppObjFromCListOfStructPtr (const bctbx_list_t *cList) {
 		std::list<CppType> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
-			result.push_back(*getCppPtrFromC<CppType>(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
+			result.push_back(*getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
 		return result;
 	}
 
@@ -402,10 +402,7 @@ LINPHONE_END_NAMESPACE
 
 // Get/set the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC< \
-		L_CPP_TYPE_OF_C_OBJECT(C_OBJECT), \
-		std::remove_pointer<decltype(C_OBJECT)>::type \
-	>(C_OBJECT)
+	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC(C_OBJECT)
 
 // Set the cpp-ptr of a wrapped C object.
 #define L_SET_CPP_PTR_FROM_C_OBJECT(C_OBJECT, CPP_OBJECT) \
