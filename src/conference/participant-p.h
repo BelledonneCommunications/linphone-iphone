@@ -41,6 +41,7 @@ public:
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	std::shared_ptr<CallSession> getSession () const;
 
+private:
 	Address addr;
 	bool isAdmin = false;
 	std::shared_ptr<CallSession> session = nullptr;

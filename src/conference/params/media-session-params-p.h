@@ -114,7 +114,6 @@ private:
 	SalCustomSdpAttribute *customSdpAttributes = nullptr;
 	SalCustomSdpAttribute *customSdpMediaAttributes[LinphoneStreamTypeUnknown];
 
-public:
 	L_DECLARE_PUBLIC(MediaSessionParams);
 };
 

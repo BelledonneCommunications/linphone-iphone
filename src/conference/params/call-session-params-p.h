@@ -58,7 +58,6 @@ private:
 	SalCustomHeader *customHeaders = nullptr;
 	LinphoneCall *referer = nullptr; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
 
-public:
 	L_DECLARE_PUBLIC(CallSessionParams);
 };
 

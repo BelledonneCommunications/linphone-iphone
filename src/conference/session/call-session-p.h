@@ -104,6 +104,7 @@ protected:
 	bool deferUpdate = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
 
+private:
 	L_DECLARE_PUBLIC(CallSession);
 };
 
