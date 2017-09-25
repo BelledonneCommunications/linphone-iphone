@@ -85,33 +85,19 @@ string Utils::toString (const void *val) {
 }
 
 int Utils::stoi (const string &str, size_t *idx, int base) {
-	char *p;
-	int v = static_cast<int>(strtol(str.c_str(), &p, base));
+	return stoi(str.c_str(), idx, base);
+}
 
-	if (idx)
-		*idx = static_cast<size_t>(p - str.c_str());
-
-	return v;
+long long Utils::stoll (const string &str, size_t *idx, int base) {
+	return stoll(str.c_str(), idx, base);
 }
 
 double Utils::stod (const string &str, size_t *idx) {
-	char *p;
-	double v = strtod(str.c_str(), &p);
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str.c_str());
-
-	return v;
+	return stod(str.c_str(), idx);
 }
 
 float Utils::stof (const string &str, size_t *idx) {
-	char *p;
-	float v = strtof(str.c_str(), &p);
-
-	if (idx)
-		*idx = static_cast<size_t>(p - str.c_str());
-
-	return v;
+	return stof(str.c_str(), idx);
 }
 
 bool Utils::stob (const string &str) {
@@ -122,6 +108,16 @@ bool Utils::stob (const string &str) {
 int Utils::stoi (const char *str, size_t *idx, int base) {
 	char *p;
 	int v = static_cast<int>(strtol(str, &p, base));
+
+	if (idx)
+		*idx = static_cast<size_t>(p - str);
+
+	return v;
+}
+
+long long Utils::stoll (const char *str, size_t *idx, int base) {
+	char *p;
+	long long v = static_cast<int>(strtoll(str, &p, base));
 
 	if (idx)
 		*idx = static_cast<size_t>(p - str);
