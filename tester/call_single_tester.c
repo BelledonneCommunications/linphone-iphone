@@ -427,9 +427,6 @@ bool_t call_with_params2(LinphoneCoreManager* caller_mgr
 		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&caller_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_caller.number_of_LinphoneCallStreamsRunning+2,2000));
 		BC_ASSERT_FALSE(wait_for_until(callee_mgr->lc,caller_mgr->lc,&callee_mgr->stat.number_of_LinphoneCallStreamsRunning,initial_callee.number_of_LinphoneCallStreamsRunning+2,2000));
 
-	}else{
-		/*wait a bit for streams to start flowing*/
-		wait_for_until(callee_mgr->lc,caller_mgr->lc, NULL, 0, 500);
 	}
 	if (linphone_core_get_media_encryption(caller_mgr->lc) == LinphoneMediaEncryptionDTLS ) {
 		if (linphone_core_get_current_call(caller_mgr->lc)->audiostream)
