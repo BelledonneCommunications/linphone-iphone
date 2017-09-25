@@ -19,25 +19,20 @@
 #ifndef _PAYLOAD_TYPE_HANDLER_H_
 #define _PAYLOAD_TYPE_HANDLER_H_
 
-#include "logger/logger.h"
-
 #include "linphone/core.h"
-#include "linphone/payload_type.h"
 #include "linphone/utils/general.h"
-#include "sal/sal.h"
+
+#include "sal/sal.h" /* SalStreamType. */
 
 // =============================================================================
 
-#define PAYLOAD_TYPE_ENABLED	PAYLOAD_TYPE_USER_FLAG_0
+#define PAYLOAD_TYPE_ENABLED PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
-#define PAYLOAD_TYPE_FROZEN_NUMBER	PAYLOAD_TYPE_USER_FLAG_4
-
-// =============================================================================
+#define PAYLOAD_TYPE_FROZEN_NUMBER PAYLOAD_TYPE_USER_FLAG_4
 
 LINPHONE_BEGIN_NAMESPACE
 
 struct VbrCodecBitrate {
-public:
 	int maxAvailableBitrate;
 	int minClockRate;
 	int recommendedBitrate;
@@ -46,20 +41,9 @@ public:
 class PayloadTypeHandler {
 public:
 	PayloadTypeHandler (LinphoneCore *core) : core(core) {}
-	~PayloadTypeHandler () = default;
 
-private:
-	static int findPayloadTypeNumber (const bctbx_list_t *assigned, const OrtpPayloadType *pt);
-	static bool hasTelephoneEventPayloadType (const bctbx_list_t *tev, int rate);
-	static bool isPayloadTypeUsableForBandwidth (const OrtpPayloadType *pt, int bandwidthLimit);
-	static int lookupTypicalVbrBitrate (int maxBandwidth, int clockRate);
+	bctbx_list_t *makeCodecsList (SalStreamType type, int bandwidthLimit, int maxCodecs, const bctbx_list_t *previousList);
 
-	void assignPayloadTypeNumbers (const bctbx_list_t *codecs);
-	bctbx_list_t * createSpecialPayloadTypes (const bctbx_list_t *codecs);
-	bctbx_list_t * createTelephoneEventPayloadTypes (const bctbx_list_t *codecs);
-	bool isPayloadTypeUsable (const OrtpPayloadType *pt);
-
-public:
 	static bool bandwidthIsGreater (int bandwidth1, int bandwidth2);
 	static int getAudioPayloadTypeBandwidth (const OrtpPayloadType *pt, int maxBandwidth);
 	static double getAudioPayloadTypeBandwidthFromCodecBitrate (const OrtpPayloadType *pt);
@@ -68,9 +52,17 @@ public:
 	static int getRemainingBandwidthForVideo (int total, int audio);
 	static bool isPayloadTypeNumberAvailable (const bctbx_list_t *codecs, int number, const OrtpPayloadType *ignore);
 
-	bctbx_list_t * makeCodecsList (SalStreamType type, int bandwidthLimit, int maxCodecs, const bctbx_list_t *previousList);
-
 private:
+	static int findPayloadTypeNumber (const bctbx_list_t *assigned, const OrtpPayloadType *pt);
+	static bool hasTelephoneEventPayloadType (const bctbx_list_t *tev, int rate);
+	static bool isPayloadTypeUsableForBandwidth (const OrtpPayloadType *pt, int bandwidthLimit);
+	static int lookupTypicalVbrBitrate (int maxBandwidth, int clockRate);
+
+	void assignPayloadTypeNumbers (const bctbx_list_t *codecs);
+	bctbx_list_t *createSpecialPayloadTypes (const bctbx_list_t *codecs);
+	bctbx_list_t *createTelephoneEventPayloadTypes (const bctbx_list_t *codecs);
+	bool isPayloadTypeUsable (const OrtpPayloadType *pt);
+
 	static const int udpHeaderSize;
 	static const int rtpHeaderSize;
 	static const int ipv4HeaderSize;
