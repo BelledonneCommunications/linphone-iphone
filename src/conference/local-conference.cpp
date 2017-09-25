@@ -66,10 +66,9 @@ list<shared_ptr<Address>> LocalConference::parseResourceLists(string xmlBody) {
 	for(const auto &l : rl->getList()) {
 		for(const auto &entry : l.getEntry()) {
 			shared_ptr<Address> addr = make_shared<Address>(Address(entry.getUri()));
-			// TODO : set display name when possible
-			/*if(!entry.getDisplayName()->present()) {
-				addr->setDisplayName(entry.getDisplayName()->get());
-			}*/
+			if(!entry.getDisplayName().present()) {
+				addr->setDisplayName(entry.getDisplayName().get());
+			}
 			addresses.push_back(addr);
 		}
 	}
