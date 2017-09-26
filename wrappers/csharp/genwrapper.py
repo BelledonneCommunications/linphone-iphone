@@ -87,7 +87,7 @@ class CsharpTranslator(object):
 				return 'void'
 		elif _type.name == 'boolean':
 			if dllImport:
-				res = 'int' # In C the bool_t is an integer
+				res = 'char'
 			else:
 				res = 'bool'
 		elif _type.name == 'integer':
@@ -223,7 +223,7 @@ class CsharpTranslator(object):
 					else:
 						methodDict['impl']['c_args'] += '(int)' + self.translate_argument_name(arg.name)
 				elif self.translate_type(arg.type, False, False) == "bool":
-					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name) + " ? 1 : 0"
+					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name) + " ? '1' : '0'"
 				elif self.get_class_array_type(self.translate_type(arg.type, False, False)) is not None:
 					listtype = self.get_class_array_type(self.translate_type(arg.type, False, False))
 					if listtype == 'string':
