@@ -36,7 +36,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 template<typename CppType>
 struct CppTypeToCType {
-	enum { defined = false };
+	enum {
+		defined = false,
+		isSubtype = false
+	};
 	typedef void type;
 };
 
@@ -59,16 +62,26 @@ private:
 	};
 
 	template<typename CppType>
+	struct IsDefinedCppObject {
+		enum {
+			value = CppTypeToCType<CppType>::defined && (
+				!CppTypeToCType<CppType>::isSubtype ||
+				std::is_base_of<typename CTypeToCppType<typename CppTypeToCType<CppType>::type>::type, CppType>::value
+			)
+		};
+	};
+
+	template<typename CppType>
 	struct IsDefinedNotClonableCppObject {
 		enum {
-			value = CppTypeToCType<CppType>::defined && std::is_base_of<Object, CppType>::value
+			value = IsDefinedCppObject<CppType>::value && std::is_base_of<Object, CppType>::value
 		};
 	};
 
 	template<typename CppType>
 	struct IsDefinedClonableCppObject {
 		enum {
-			value = CppTypeToCType<CppType>::defined && std::is_base_of<ClonableObject, CppType>::value
+			value = IsDefinedCppObject<CppType>::value && std::is_base_of<ClonableObject, CppType>::value
 		};
 	};
 
@@ -340,7 +353,10 @@ LINPHONE_END_NAMESPACE
 	class CPP_TYPE; \
 	template<> \
 	struct CppTypeToCType<CPP_TYPE> { \
-		enum { defined = true }; \
+		enum { \
+			defined = true, \
+			isSubtype = false \
+		}; \
 		typedef Linphone ## C_TYPE type; \
 	}; \
 	template<> \
@@ -359,9 +375,13 @@ LINPHONE_END_NAMESPACE
 #define L_REGISTER_SUBTYPE(CPP_TYPE, CPP_SUBTYPE) \
 	LINPHONE_BEGIN_NAMESPACE \
 	class CPP_SUBTYPE; \
+	static_assert(CppTypeToCType<CPP_TYPE>::defined, "Type base is not defined"); \
 	template<> \
 	struct CppTypeToCType<CPP_SUBTYPE> { \
-		enum { defined = true }; \
+		enum { \
+			defined = true, \
+			isSubtype = true \
+		}; \
 		typedef CppTypeToCType<CPP_TYPE>::type type; \
 	}; \
 	template<> \
