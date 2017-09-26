@@ -4742,7 +4742,7 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	}
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
-	jobject jmessage = getChatMessage(env, msg);
+	jobject jmessage = (jobject)linphone_chat_message_get_user_data(msg); /*this returns a global ref that was taken in setListener*/
 	env->DeleteLocalRef(clazz);
 
 	LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
@@ -4756,6 +4756,10 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 	}
 	if (jmessage) {
 		env->DeleteLocalRef(jmessage);
+		//We are going to drop our global ref, as the listener is no longer needed.
+		//Before, replace it by a weak ref, as other messages.
+		linphone_chat_message_set_user_data(msg, env->NewWeakGlobalRef(jmessage));
+		env->DeleteGlobalRef(jmessage);
 	}
 }
 
@@ -4840,11 +4844,17 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 	return buffer;
 }
 
+/*
+ * When the listener is set, we must take a global reference to the listener and the message, so that
+ * we are able to notify the state changes of the message, until it reaches its final state
+ */
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
 	jobject listener = env->NewGlobalRef(jlistener);
 	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
 	LinphoneChatMessageCbs *cbs;
 
+	jobject jmessage = env->NewGlobalRef(thiz);
+	linphone_chat_message_set_user_data(message, jmessage);
 	linphone_chat_message_set_message_state_changed_cb_user_data(message, listener);
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
@@ -4961,8 +4971,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIE
 																		,jlong chatroom_ptr
 																		,jobject message
 																		,jlong messagePtr) {
-	message = env->NewGlobalRef(message);
-	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
+	
 	linphone_chat_room_send_chat_message_2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
 }
 
