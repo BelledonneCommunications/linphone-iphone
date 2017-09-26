@@ -125,8 +125,8 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 	return ret;
 }
 
-LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc) {
-	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc);
+LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject) {
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, subject);
 	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
 	return cr;
 }

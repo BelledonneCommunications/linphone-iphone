@@ -36,7 +36,7 @@ class ClientGroupChatRoomPrivate;
 
 class ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
-	ClientGroupChatRoom (LinphoneCore *core, const Address &me);
+	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &subject);
 	virtual ~ClientGroupChatRoom () = default;
 
 public:

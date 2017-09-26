@@ -773,7 +773,7 @@ static void sal_op_fill_invite(SalOp *op, belle_sip_request_t* invite) {
 	return;
 }
 
-int sal_call(SalOp *op, const char *from, const char *to){
+int sal_call(SalOp *op, const char *from, const char *to, const char *subject){
 	belle_sip_request_t* invite;
 	op->dir=SalOpDirOutgoing;
 
@@ -789,6 +789,8 @@ int sal_call(SalOp *op, const char *from, const char *to){
 	}
 
 	sal_op_fill_invite(op,invite);
+	if (subject)
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite), belle_sip_header_create("Subject", subject));
 
 	sal_op_call_fill_cbs(op);
 	if (op->replaces){
@@ -1036,7 +1038,7 @@ int sal_call_update(SalOp *op, const char *subject, bool_t no_user_consent){
 			during a very early state of outgoing call initiation (the dialog has not been created yet). */
 		const char *from = sal_op_get_from(op);
 		const char *to = sal_op_get_to(op);
-		return sal_call(op, from, to);
+		return sal_call(op, from, to, subject);
 	}
 
 	state = belle_sip_dialog_get_state(op->dialog);

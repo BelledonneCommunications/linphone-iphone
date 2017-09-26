@@ -277,7 +277,7 @@ LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddr
 	return cr;
 }
 
-LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core) {
+LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *subject) {
 	const char *factoryUri = linphone_core_get_conference_factory_uri(core);
 	if (!factoryUri)
 		return nullptr;
@@ -291,7 +291,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core) {
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, subject ? subject : ""));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;
 }

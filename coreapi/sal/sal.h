@@ -742,7 +742,7 @@ void sal_op_set_event(SalOp *op, const char *event);
 
 /*Call API*/
 int sal_call_set_local_media_description(SalOp *h, SalMediaDescription *desc);
-int sal_call(SalOp *h, const char *from, const char *to);
+int sal_call(SalOp *h, const char *from, const char *to, const char *subject);
 int sal_call_notify_ringing(SalOp *h, bool_t early_media);
 /*accept an incoming call or, during a call accept a reINVITE*/
 int sal_call_accept(SalOp*h);

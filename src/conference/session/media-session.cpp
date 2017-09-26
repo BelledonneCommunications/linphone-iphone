@@ -2090,7 +2090,7 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 			case LinphoneCallOutgoingInit:
 				stopStreamsForIceGathering();
 				if (isReadyForInvite())
-					q->startInvite(nullptr);
+					q->startInvite(nullptr, "");
 				break;
 			case LinphoneCallIdle:
 				stopStreamsForIceGathering();
@@ -4249,7 +4249,7 @@ void MediaSession::startIncomingNotification () {
 	CallSession::startIncomingNotification();
 }
 
-int MediaSession::startInvite (const Address *destination) {
+int MediaSession::startInvite (const Address *destination, const string &subject) {
 	L_D(MediaSession);
 	linphone_core_stop_dtmf_stream(d->core);
 	d->makeLocalMediaDescription();
@@ -4265,7 +4265,7 @@ int MediaSession::startInvite (const Address *destination) {
 		sal_call_set_local_media_description(d->op, d->localDesc);
 	}
 
-	int result = CallSession::startInvite(destination);
+	int result = CallSession::startInvite(destination, subject);
 	if (result < 0) {
 		if (d->state == LinphoneCallError)
 			d->stopStreams();

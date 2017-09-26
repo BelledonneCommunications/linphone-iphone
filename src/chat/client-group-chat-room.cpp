@@ -19,6 +19,7 @@
 #include "client-group-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "conference/participant-p.h"
+#include "content/content.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -27,18 +28,15 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
+ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core, const string &subject)
+	: ChatRoomPrivate(core), subject(subject) {}
 
 // =============================================================================
 
-ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me)
-	: ChatRoom(*new ChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
+ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
+	: ChatRoom(*new ClientGroupChatRoomPrivate(core, subject)), RemoteConference(core, me, nullptr) {
 	string factoryUri = linphone_core_get_conference_factory_uri(core);
 	focus = make_shared<Participant>(factoryUri);
-	CallSessionParams csp;
-	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
-	session->configure(LinphoneCallOutgoing, nullptr, nullptr, me, focus->getAddress());
-	// TODO
 }
 
 // -----------------------------------------------------------------------------
@@ -51,10 +49,25 @@ shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr
 
 void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
 	L_D(ClientGroupChatRoom);
+	if (addresses.empty())
+		return;
+	list<Address> sortedAddresses(addresses);
+	sortedAddresses.sort();
+	sortedAddresses.unique();
 	if (d->state == ChatRoom::State::Instantiated) {
-		shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+		Content content;
+		content.setBody(getResourceLists(sortedAddresses));
+		content.setContentType("application/resource-lists+xml");
+		content.setContentDisposition("recipient-list");
+		lInfo() << "Body size: " << content.getSize() << endl << "Body:" << endl << content.getBodyAsString();
+		CallSessionParams csp;
+		if (params)
+			csp = *params;
+		csp.addCustomHeader("Require", "recipient-list-invite");
+		shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
+		session->configure(LinphoneCallOutgoing, nullptr, nullptr, me->getAddress(), focus->getAddress());
 		session->initiateOutgoing();
-		session->startInvite(nullptr);
+		session->startInvite(nullptr, d->subject);
 		d->setState(ChatRoom::State::CreationPending);
 	}
 	// TODO

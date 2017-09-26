@@ -97,7 +97,7 @@ void CallPrivate::startIncomingNotification () {
 }
 
 int CallPrivate::startInvite (const Address *destination) {
-	return getActiveSession()->startInvite(destination);
+	return getActiveSession()->startInvite(destination, "");
 }
 
 // -----------------------------------------------------------------------------

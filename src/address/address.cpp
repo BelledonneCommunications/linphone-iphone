@@ -67,6 +67,10 @@ bool Address::operator== (const Address &address) const {
 	return equal(address);
 }
 
+bool Address::operator< (const Address &address) const {
+	return asString() < address.asString();
+}
+
 bool Address::isValid () const {
 	L_D(const Address);
 	return static_cast<bool>(d->internalAddress);

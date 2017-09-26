@@ -31,10 +31,12 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	ClientGroupChatRoomPrivate (LinphoneCore *core);
+	ClientGroupChatRoomPrivate (LinphoneCore *core, const std::string &subject);
 	virtual ~ClientGroupChatRoomPrivate () = default;
 
 private:
+	std::string subject;
+
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

@@ -311,7 +311,7 @@ void CallSessionPrivate::pingReply () {
 	if (state == LinphoneCallOutgoingInit) {
 		pingReplied = true;
 		if (isReadyForInvite())
-			q->startInvite(nullptr);
+			q->startInvite(nullptr, "");
 	}
 }
 
@@ -770,7 +770,7 @@ void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 	int elapsed = (int)(currentRealTime - d->log->start_date_time);
 	if ((d->state == LinphoneCallOutgoingInit) && (elapsed >= d->core->sip_conf.delayed_timeout)) {
 		/* Start the call even if the OPTIONS reply did not arrive */
-		startInvite(nullptr);
+		startInvite(nullptr, "");
 	}
 	if ((d->state == LinphoneCallIncomingReceived) || (d->state == LinphoneCallIncomingEarlyMedia)) {
 		if (oneSecondElapsed)
@@ -828,7 +828,7 @@ void CallSession::startIncomingNotification () {
 	}
 }
 
-int CallSession::startInvite (const Address *destination) {
+int CallSession::startInvite (const Address *destination, const string &subject) {
 	L_D(CallSession);
 	/* Try to be best-effort in giving real local or routable contact address */
 	d->setContactOp();
@@ -844,7 +844,7 @@ int CallSession::startInvite (const Address *destination) {
 	char *from = linphone_address_as_string(d->log->from);
 	/* Take a ref because sal_call() may destroy the CallSession if no SIP transport is available */
 	shared_ptr<CallSession> ref = static_pointer_cast<CallSession>(shared_from_this());
-	int result = sal_call(d->op, from, destinationStr.c_str());
+	int result = sal_call(d->op, from, destinationStr.c_str(), subject.empty() ? nullptr : subject.c_str());
 	ms_free(from);
 	if (result < 0) {
 		if ((d->state != LinphoneCallError) && (d->state != LinphoneCallReleased)) {
