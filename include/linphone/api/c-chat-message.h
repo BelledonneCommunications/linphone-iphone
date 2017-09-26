@@ -201,11 +201,6 @@ LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *ms
 LINPHONE_PUBLIC LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage* message);
 
 /**
- * Duplicate a LinphoneChatMessage
-**/
-LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_message_clone(const LinphoneChatMessage* message);
-
-/**
  * Get if the message was encrypted when transfered
  * @param[in] message #LinphoneChatMessage obj
  * @return whether the message was encrypted when transfered or not
