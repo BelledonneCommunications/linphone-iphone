@@ -927,7 +927,7 @@ int sal_call_accept(SalOp*h){
 }
 
 static belle_sip_header_reason_t *sal_call_make_reason_header( const SalErrorInfo *info){
-	if (info != NULL){
+	if (info != NULL && info->reason != SalReasonNone){
 		belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
 		belle_sip_header_reason_set_text(reason, info->status_string);
 		belle_sip_header_reason_set_protocol(reason,info->protocol);

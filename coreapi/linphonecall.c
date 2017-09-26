@@ -1862,19 +1862,19 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 #ifdef __ANDROID__
 			ms_message("Call [%p] acquires both wifi and multicast lock",call);
 			linphone_core_wifi_lock_acquire(call->core);
-			linphone_core_multicast_lock_acquire(call->core); /*does no affect battery more than regular rtp traffic*/
+			linphone_core_multicast_lock_acquire(call->core); //does no affect battery more than regular rtp traffic*/
 #endif
 			break;
 		case LinphoneCallEnd:
 		case LinphoneCallError:
 			switch(linphone_error_info_get_reason(linphone_call_get_error_info(call))) {
 			case LinphoneReasonDeclined:
-				call->log->status=LinphoneCallDeclined;
+				if(call->log->status == LinphoneCallSuccess) // Do not re-change the status of a call if it's already set
+					call->log->status = LinphoneCallDeclined;
 				break;
 			case LinphoneReasonNotAnswered:
-				if (call->log->dir == LinphoneCallIncoming){
-					call->log->status=LinphoneCallMissed;
-				}
+				if (call->log->dir == LinphoneCallIncoming)
+					call->log->status = LinphoneCallMissed;
 				break;
 			case LinphoneReasonNone:
 				if (call->log->dir == LinphoneCallIncoming){
