@@ -170,7 +170,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
 		typedef typename CppTypeToCType<CppType>::type RetType;
@@ -187,7 +187,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (CppType *cppObject) {
 		return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
@@ -195,7 +195,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const CppType *cppObject) {
 		typedef typename CppTypeToCType<CppType>::type RetType;
@@ -250,7 +250,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<std::shared_ptr<CppType>> &cppList) {
 		bctbx_list_t *result = nullptr;
@@ -259,7 +259,10 @@ public:
 		return result;
 	}
 
-	template<typename CppType>
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
+	>
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<CppType> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
@@ -270,7 +273,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::list<std::shared_ptr<CppType>> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<std::shared_ptr<CppType>> result;
@@ -282,7 +285,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::list<CppType> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<CppType> result;
