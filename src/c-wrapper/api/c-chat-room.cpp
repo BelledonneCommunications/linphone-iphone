@@ -159,7 +159,7 @@ LinphoneCall *linphone_chat_room_get_call (const LinphoneChatRoom *cr) {
 
 void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		static_cast<LinphonePrivate::RealTimeTextChatRoomPrivate *>(L_GET_PRIVATE_FROM_C_OBJECT(cr))->setCall(call);
+		L_GET_PRIVATE_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->setCall(call);
 }
 
 bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
