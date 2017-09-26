@@ -19,12 +19,9 @@
 #ifndef _CALL_P_H_
 #define _CALL_P_H_
 
-#include <memory>
-
-#include "object/object-p.h"
-
 #include "call.h"
 #include "conference/conference.h"
+#include "object/object-p.h"
 
 #include "private.h"
 
@@ -70,7 +67,6 @@ private:
 	void onFirstVideoFrameDecoded () override;
 	void onResetFirstVideoFrameDecoded () override;
 
-private:
 	LinphoneCall *lcall = nullptr;
 
 	LinphoneCore *core = nullptr;

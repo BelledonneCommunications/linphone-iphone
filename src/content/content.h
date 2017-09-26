@@ -19,11 +19,9 @@
 #ifndef _CONTENT_H_
 #define _CONTENT_H_
 
-#include <string>
 #include <vector>
 
 #include "content-type.h"
-
 #include "object/clonable-object.h"
 
 // =============================================================================

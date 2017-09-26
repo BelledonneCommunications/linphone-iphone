@@ -16,8 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "linphone/core.h"
-
 #include "private.h"
 
 #include "logger/logger.h"
@@ -113,31 +111,28 @@ int StunClient::run (int audioPort, int videoPort, int textPort) {
 			break;
 		}
 		loops++;
-	} while (!(gotAudio && (gotVideo || (sockVideo == -1)) && (gotText || (sockText == -1))));
+	} while (!(gotAudio && (gotVideo || sockVideo == -1) && (gotText || sockText == -1)));
 
 	if (ret == 0)
 		ret = (int)elapsed;
+
 	if (!gotAudio)
 		lError() << "No STUN server response for audio port";
-	else {
-		if (!coneAudio)
-			lInfo() << "NAT is symmetric for audio port";
-	}
+	else if (!coneAudio)
+		lInfo() << "NAT is symmetric for audio port";
+
 	if (sockVideo != -1) {
 		if (!gotVideo)
 			lError() << "No STUN server response for video port";
-		else {
-			if (!coneVideo)
-				lInfo() << "NAT is symmetric for video port";
-		}
+		else if (!coneVideo)
+			lInfo() << "NAT is symmetric for video port";
 	}
+
 	if (sockText != -1) {
 		if (!gotText)
 			lError() << "No STUN server response for text port";
-		else {
-			if (!coneText)
-				lInfo() << "NAT is symmetric for text port";
-		}
+		else if (!coneText)
+			lInfo() << "NAT is symmetric for text port";
 	}
 
 	close_socket(sockAudio);
@@ -150,16 +145,22 @@ void StunClient::updateMediaDescription (SalMediaDescription *md) const {
 	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i]))
 			continue;
-		if ((md->streams[i].type == SalAudio) && (audioCandidate.port != 0)) {
+		if (md->streams[i].type == SalAudio && audioCandidate.port != 0) {
 			strncpy(md->streams[i].rtp_addr, audioCandidate.address.c_str(), sizeof(md->streams[i].rtp_addr));
 			md->streams[i].rtp_port = audioCandidate.port;
-			if ((!audioCandidate.address.empty() && !videoCandidate.address.empty() && (audioCandidate.address == videoCandidate.address))
-				|| (sal_media_description_get_nb_active_streams(md) == 1))
+			if (
+				(
+					!audioCandidate.address.empty() &&
+					!videoCandidate.address.empty() &&
+					audioCandidate.address == videoCandidate.address
+				) ||
+				sal_media_description_get_nb_active_streams(md) == 1
+			)
 				strncpy(md->addr, audioCandidate.address.c_str(), sizeof(md->addr));
-		} else if ((md->streams[i].type == SalVideo) && (videoCandidate.port != 0)) {
+		} else if (md->streams[i].type == SalVideo && videoCandidate.port != 0) {
 			strncpy(md->streams[i].rtp_addr, videoCandidate.address.c_str(), sizeof(md->streams[i].rtp_addr));
 			md->streams[i].rtp_port = videoCandidate.port;
-		} else if ((md->streams[i].type == SalText) && (textCandidate.port != 0)) {
+		} else if (md->streams[i].type == SalText && textCandidate.port != 0) {
 			strncpy(md->streams[i].rtp_addr, textCandidate.address.c_str(), sizeof(md->streams[i].rtp_addr));
 			md->streams[i].rtp_port = textCandidate.port;
 		}
@@ -187,13 +188,13 @@ ortp_socket_t StunClient::createStunSocket (int localPort) {
 		return -1;
 	}
 	int optval = 1;
-	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (SOCKET_OPTION_VALUE)&optval, sizeof (optval)) < 0)
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (SOCKET_OPTION_VALUE)&optval, sizeof(optval)) < 0)
 		lWarning() << "Fail to set SO_REUSEADDR";
 	set_non_blocking_socket(sock);
 	return sock;
 }
 
-int StunClient::recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &id) {
+int StunClient::recvStunResponse (ortp_socket_t sock, Candidate &candidate, int &id) {
 	char buf[MS_STUN_MAX_MESSAGE_SIZE];
 	int len = MS_STUN_MAX_MESSAGE_SIZE;
 
@@ -223,7 +224,13 @@ int StunClient::recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &
 	return len;
 }
 
-int StunClient::sendStunRequest(ortp_socket_t sock, const struct sockaddr *server, socklen_t addrlen, int id, bool changeAddr) {
+int StunClient::sendStunRequest (
+	ortp_socket_t sock,
+	const struct sockaddr *server,
+	socklen_t addrlen,
+	int id,
+	bool changeAddr
+) {
 	MSStunMessage *req = ms_stun_binding_request_create();
 	UInt96 trId = ms_stun_message_get_tr_id(req);
 	trId.octet[0] = static_cast<unsigned char>(id);

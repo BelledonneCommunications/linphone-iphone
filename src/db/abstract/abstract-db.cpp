@@ -20,8 +20,6 @@
 #include "db/provider/db-session-provider.h"
 #include "logger/logger.h"
 
-#include "abstract-db.h"
-
 // =============================================================================
 
 using namespace std;

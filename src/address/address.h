@@ -19,8 +19,6 @@
 #ifndef _ADDRESS_H_
 #define _ADDRESS_H_
 
-#include <string>
-
 #include "enums.h"
 #include "object/clonable-object.h"
 

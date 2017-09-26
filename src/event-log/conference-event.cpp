@@ -19,8 +19,6 @@
 #include "address/address.h"
 #include "conference-event-p.h"
 
-#include "conference-event.h"
-
 // =============================================================================
 
 using namespace std;

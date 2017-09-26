@@ -171,7 +171,7 @@ Variant::Variant (float value) : Variant(Float) {
 	d->value.f = value;
 }
 
-Variant::Variant (const std::string &value) : Variant(String) {
+Variant::Variant (const string &value) : Variant(String) {
 	L_D(Variant);
 	*d->value.str = value;
 }

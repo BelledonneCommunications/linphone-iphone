@@ -29,9 +29,6 @@
 #include "nat/stun-client.h"
 
 #include "linphone/call_stats.h"
-#include "sal/sal.h"
-
-#include "private.h"
 
 // =============================================================================
 
@@ -63,30 +60,53 @@ public:
 	void prepareStreamsForIceGathering (bool hasVideo);
 	void stopStreamsForIceGathering ();
 
-	int getAf () const { return af; }
-	bool getAudioMuted () const { return audioMuted; }
-	LinphoneCore * getCore () const { return core; }
-	IceSession * getIceSession () const { return iceAgent->getIceSession(); }
-	SalMediaDescription * getLocalDesc () const { return localDesc; }
-	MediaStream * getMediaStream (LinphoneStreamType type) const;
-	LinphoneNatPolicy * getNatPolicy () const { return natPolicy; }
+	int getAf () const {
+		return af;
+	}
+
+	bool getAudioMuted () const {
+		return audioMuted;
+	}
+
+	LinphoneCore *getCore () const {
+		return core;
+	}
+
+	IceSession *getIceSession () const {
+		return iceAgent->getIceSession();
+	}
+
+	SalMediaDescription *getLocalDesc () const {
+		return localDesc;
+	}
+
+	MediaStream *getMediaStream (LinphoneStreamType type) const;
+	LinphoneNatPolicy *getNatPolicy () const {
+		return natPolicy;
+	}
+
 	int getRtcpPort (LinphoneStreamType type) const;
 	int getRtpPort (LinphoneStreamType type) const;
-	LinphoneCallStats * getStats (LinphoneStreamType type) const;
+	LinphoneCallStats *getStats (LinphoneStreamType type) const;
 	int getStreamIndex (LinphoneStreamType type) const;
 	int getStreamIndex (MediaStream *ms) const;
-	SalOp * getOp () const { return op; }
-	void setAudioMuted (bool value) { audioMuted = value; }
+	SalOp *getOp () const {
+		return op;
+	}
+
+	void setAudioMuted (bool value) {
+		audioMuted = value;
+	}
 
 private:
 	static OrtpJitterBufferAlgorithm jitterBufferNameToAlgo (const std::string &name);
 
-#ifdef VIDEO_ENABLED
-	static void videoStreamEventCb (void *userData, const MSFilter *f, const unsigned int eventId, const void *args);
-#endif
-#ifdef TEST_EXT_RENDERER
-	static void extRendererCb (void *userData, const MSPicture *local, const MSPicture *remote);
-#endif
+	#ifdef VIDEO_ENABLED
+		static void videoStreamEventCb (void *userData, const MSFilter *f, const unsigned int eventId, const void *args);
+	#endif // ifdef VIDEO_ENABLED
+	#ifdef TEST_EXT_RENDERER
+		static void extRendererCb (void *userData, const MSPicture *local, const MSPicture *remote);
+	#endif // ifdef TEST_EXT_RENDERER
 	static void realTimeTextCharacterReceived (void *userData, MSFilter *f, unsigned int id, void *arg);
 
 	static float aggregateQualityRatings (float audioRating, float videoRating);
@@ -103,9 +123,9 @@ private:
 	void initStats (LinphoneCallStats *stats, LinphoneStreamType type);
 	void notifyStatsUpdated (int streamIndex) const;
 
-	OrtpEvQueue * getEventQueue (int streamIndex) const;
-	MediaStream * getMediaStream (int streamIndex) const;
-	MSWebCam * getVideoDevice () const;
+	OrtpEvQueue *getEventQueue (int streamIndex) const;
+	MediaStream *getMediaStream (int streamIndex) const;
+	MSWebCam *getVideoDevice () const;
 
 	void fillMulticastMediaAddresses ();
 	int selectFixedPort (int streamIndex, std::pair<int, int> portRange);
@@ -149,7 +169,7 @@ private:
 
 	int getIdealAudioBandwidth (const SalMediaDescription *md, const SalStreamDescription *desc);
 	int getVideoBandwidth (const SalMediaDescription *md, const SalStreamDescription *desc);
-	RtpProfile * makeProfile (const SalMediaDescription *md, const SalStreamDescription *desc, int *usedPt);
+	RtpProfile *makeProfile (const SalMediaDescription *md, const SalStreamDescription *desc, int *usedPt);
 	void unsetRtpProfile (int streamIndex);
 	void updateAllocatedAudioBandwidth (const PayloadType *pt, int maxbw);
 
@@ -159,8 +179,8 @@ private:
 	void configureAdaptiveRateControl (MediaStream *ms, const OrtpPayloadType *pt, bool videoWillBeUsed);
 	void configureRtpSessionForRtcpFb (const SalStreamDescription *stream);
 	void configureRtpSessionForRtcpXr (SalStreamType type);
-	RtpSession * createAudioRtpIoSession ();
-	RtpSession * createVideoRtpIoSession ();
+	RtpSession *createAudioRtpIoSession ();
+	RtpSession *createVideoRtpIoSession ();
 	void freeResources ();
 	void handleIceEvents (OrtpEvent *ev);
 	void handleStreamEvents (int streamIndex);
@@ -224,9 +244,9 @@ private:
 	void accept (const MediaSessionParams *params);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
 
-#ifdef VIDEO_ENABLED
-	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);
-#endif
+	#ifdef VIDEO_ENABLED
+		void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);
+	#endif // ifdef VIDEO_ENABLED
 	void realTimeTextCharacterReceived (MSFilter *f, unsigned int id, void *arg);
 
 	void stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
@@ -265,11 +285,16 @@ private:
 	StunClient *stunClient = nullptr;
 	IceAgent *iceAgent = nullptr;
 
-	int af; /* The address family to prefer for RTP path, guessed from signaling path */
+	// The address family to prefer for RTP path, guessed from signaling path.
+	int af;
+
 	std::string mediaLocalIp;
 	PortConfig mediaPorts[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
 	bool needMediaLocalIpRefresh = false;
-	MSMediaStreamSessions sessions[SAL_MEDIA_DESCRIPTION_MAX_STREAMS]; /* The rtp, srtp, zrtp contexts for each stream */
+
+	// The rtp, srtp, zrtp contexts for each stream.
+	MSMediaStreamSessions sessions[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];
+
 	SalMediaDescription *localDesc = nullptr;
 	int localDescChanged = 0;
 	SalMediaDescription *biggestDesc = nullptr;
@@ -283,8 +308,12 @@ private:
 	std::string dtlsCertificateFingerprint;
 
 	unsigned int nbMediaStarts = 0;
-	int upBandwidth = 0; /* Upload bandwidth setting at the time the call is started. Used to detect if it changes during a call */
-	int audioBandwidth = 0; /* Upload bandwidth used by audio */
+
+	// Upload bandwidth setting at the time the call is started. Used to detect if it changes during a call.
+	int upBandwidth = 0;
+
+	// Upload bandwidth used by audio.
+	int audioBandwidth = 0;
 
 	bool allMuted = false;
 	bool audioMuted = false;

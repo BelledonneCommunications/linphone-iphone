@@ -18,8 +18,6 @@
 
 #include "db-session-p.h"
 
-#include "db-session.h"
-
 // =============================================================================
 
 using namespace std;

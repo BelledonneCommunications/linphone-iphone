@@ -19,18 +19,20 @@
 #ifndef _STUN_CLIENT_H_
 #define _STUN_CLIENT_H_
 
+#include <string>
+
 #include <ortp/port.h>
 
-#include "linphone/types.h"
 #include "linphone/utils/general.h"
-#include "sal/sal.h"
 
 // =============================================================================
+
+L_DECL_C_STRUCT_PREFIX_LESS(SalMediaDescription);
+L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
 class StunClient {
-
 	struct Candidate {
 		std::string address;
 		int port;
@@ -42,14 +44,21 @@ public:
 	int run (int audioPort, int videoPort, int textPort);
 	void updateMediaDescription (SalMediaDescription *md) const;
 
-	const Candidate & getAudioCandidate () const { return audioCandidate; }
-	const Candidate & getVideoCandidate () const { return videoCandidate; }
-	const Candidate & getTextCandidate () const { return textCandidate; }
+	const Candidate &getAudioCandidate () const {
+		return audioCandidate;
+	}
 
-private:
+	const Candidate &getVideoCandidate () const {
+		return videoCandidate;
+	}
+
+	const Candidate &getTextCandidate () const {
+		return textCandidate;
+	}
+
 	ortp_socket_t createStunSocket (int localPort);
-	int recvStunResponse(ortp_socket_t sock, Candidate &candidate, int &id);
-	int sendStunRequest(ortp_socket_t sock, const struct sockaddr *server, socklen_t addrlen, int id, bool changeAddr);
+	int recvStunResponse (ortp_socket_t sock, Candidate &candidate, int &id);
+	int sendStunRequest (ortp_socket_t sock, const struct sockaddr *server, socklen_t addrlen, int id, bool changeAddr);
 
 private:
 	LinphoneCore *core = nullptr;

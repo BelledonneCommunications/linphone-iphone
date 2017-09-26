@@ -20,7 +20,6 @@
 #define _EVENTS_DB_H_
 
 #include <list>
-#include <memory>
 
 #include "abstract/abstract-db.h"
 
@@ -53,8 +52,17 @@ public:
 	// Messages, calls and conferences.
 	int getMessagesCount (const std::string &remoteAddress = "") const;
 	int getUnreadMessagesCount (const std::string &remoteAddress = "") const;
-	std::list<std::shared_ptr<EventLog> > getHistory (const std::string &remoteAddress, int nLast, FilterMask mask = NoFilter) const;
-	std::list<std::shared_ptr<EventLog> > getHistory (const std::string &remoteAddress, int begin, int end, FilterMask mask = NoFilter) const;
+	std::list<std::shared_ptr<EventLog>> getHistory (
+		const std::string &remoteAddress,
+		int nLast,
+		FilterMask mask = NoFilter
+	) const;
+	std::list<std::shared_ptr<EventLog>> getHistory (
+		const std::string &remoteAddress,
+		int begin,
+		int end,
+		FilterMask mask = NoFilter
+	) const;
 	void cleanHistory (const std::string &remoteAddress = "");
 
 protected:

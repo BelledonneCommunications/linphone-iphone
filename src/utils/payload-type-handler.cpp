@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
+#include <cmath>
 
 #include "private.h"
 
@@ -294,7 +294,7 @@ bctbx_list_t *PayloadTypeHandler::makeCodecsList (SalStreamType type, int bandwi
 
 		if (bandwidthLimit > 0 && !isPayloadTypeUsableForBandwidth(pt, bandwidthLimit)) {
 			lInfo() << "Codec " << pt->mime_type << "/" << pt->clock_rate << " eliminated because of audio bandwidth constraint of " <<
-			  bandwidthLimit << " kbit/s";
+				bandwidthLimit << " kbit/s";
 			continue;
 		}
 

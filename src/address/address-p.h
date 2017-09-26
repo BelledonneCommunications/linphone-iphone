@@ -56,4 +56,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif
+#endif // ifndef _ADDRESS_P_H_

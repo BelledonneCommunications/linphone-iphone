@@ -22,13 +22,17 @@
 #include <mediastreamer2/ice.h>
 #include <ortp/event.h>
 
-#include "linphone/types.h"
 #include "linphone/utils/general.h"
-#include "sal/sal.h"
-
-#include "conference/session/media-session.h"
 
 // =============================================================================
+
+L_DECL_C_STRUCT_PREFIX_LESS(SalMediaDescription);
+L_DECL_C_STRUCT_PREFIX_LESS(SalStreamDescription);
+L_DECL_C_STRUCT(LinphoneCallStats);
+L_DECL_C_STRUCT(LinphoneCore);
+L_DECL_C_STRUCT(MediaStream);
+
+class MediaSession;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -41,10 +45,16 @@ public:
 	void deleteSession ();
 	void gatheringFinished ();
 	int getNbLosingPairs () const;
-	IceSession * getIceSession () const { return iceSession; }
+	IceSession *getIceSession () const {
+		return iceSession;
+	}
+
 	bool hasCompleted () const;
 	bool hasCompletedCheckList () const;
-	bool hasSession () const { return iceSession; }
+	bool hasSession () const {
+		return iceSession;
+	}
+
 	bool isControlling () const;
 	bool prepare (const SalMediaDescription *localDesc, bool incomingOffer);
 	void prepareIceForStream (MediaStream *ms, bool createChecklist);
@@ -62,7 +72,7 @@ private:
 	void createIceCheckListsAndParseIceAttributes (const SalMediaDescription *md, bool iceRestarted);
 	int gatherIceCandidates ();
 	void getIceDefaultAddrAndPort (uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port);
-	const struct addrinfo * getIcePreferredStunServerAddrinfo (const struct addrinfo *ai);
+	const struct addrinfo *getIcePreferredStunServerAddrinfo (const struct addrinfo *ai);
 	bool iceParamsFoundInRemoteMediaDescription (const SalMediaDescription *md);
 	void updateIceStateInCallStatsForStream (LinphoneCallStats *stats, IceCheckList *cl);
 

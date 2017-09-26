@@ -21,7 +21,6 @@
 
 #include "address/address.h"
 #include "conference-event.h"
-
 #include "event-log-p.h"
 
 // =============================================================================

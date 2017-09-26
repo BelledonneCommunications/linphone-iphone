@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-log-p.h"
-
 #include "chat-message-event.h"
+#include "event-log-p.h"
 
 // =============================================================================
 
@@ -45,7 +44,7 @@ ChatMessageEvent::ChatMessageEvent (const ChatMessageEvent &src) : ChatMessageEv
 ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
 	L_D(ChatMessageEvent);
 	if (this != &src) {
-		EventLog::operator= (src);
+		EventLog::operator=(src);
 		d->chatMessage = src.getPrivate()->chatMessage;
 	}
 

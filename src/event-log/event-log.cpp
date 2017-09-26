@@ -18,13 +18,9 @@
 
 #include "event-log-p.h"
 
-#include "event-log.h"
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
-
-// -----------------------------------------------------------------------------
 
 EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
 

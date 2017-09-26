@@ -17,22 +17,19 @@
  */
 
 #include "call-p.h"
-#include "conference/participant-p.h"
-#include "conference/session/media-session-p.h"
-
-#include "call.h"
 #include "conference/local-conference.h"
+#include "conference/participant-p.h"
 #include "conference/remote-conference.h"
-#include "conference/session/media-session.h"
+#include "conference/session/media-session-p.h"
 #include "logger/logger.h"
 
-#include "private.h"
+#include "call.h"
+
+// =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// =============================================================================
 
 CallPrivate::CallPrivate (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
 	LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp) : lcall(call), core(core) {

@@ -19,16 +19,17 @@
 #ifndef _PAYLOAD_TYPE_HANDLER_H_
 #define _PAYLOAD_TYPE_HANDLER_H_
 
-#include "linphone/core.h"
 #include "linphone/utils/general.h"
 
-#include "sal/sal.h" /* SalStreamType. */
-
-// =============================================================================
+#include "sal/sal.h"
 
 #define PAYLOAD_TYPE_ENABLED PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
 #define PAYLOAD_TYPE_FROZEN_NUMBER PAYLOAD_TYPE_USER_FLAG_4
+
+// =============================================================================
+
+L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 

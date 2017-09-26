@@ -16,9 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "event-log-p.h"
-
 #include "call-event.h"
+#include "event-log-p.h"
 
 // =============================================================================
 

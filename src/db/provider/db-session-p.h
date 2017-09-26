@@ -28,8 +28,6 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-// -----------------------------------------------------------------------------
-
 class DbSessionPrivate : public ClonableObjectPrivate {
 	friend class DbSessionProvider;
 

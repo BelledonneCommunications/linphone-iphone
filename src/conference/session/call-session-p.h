@@ -19,8 +19,6 @@
 #ifndef _CALL_SESSION_P_H_
 #define _CALL_SESSION_P_H_
 
-#include <memory>
-
 #include "object/object-p.h"
 
 #include "call-session.h"

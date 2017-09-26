@@ -19,8 +19,6 @@
 #ifndef _CONTENT_TYPE_H_
 #define _CONTENT_TYPE_H_
 
-#include <string>
-
 #include "object/clonable-object.h"
 
 // =============================================================================

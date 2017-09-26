@@ -136,6 +136,13 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 		return *this; \
 	}
 
+// -----------------------------------------------------------------------------
+// Wrapper public.
+// -----------------------------------------------------------------------------
+
+#define L_DECL_C_STRUCT(STRUCT) typedef struct _ ## STRUCT STRUCT;
+#define L_DECL_C_STRUCT_PREFIX_LESS(STRUCT) typedef struct STRUCT STRUCT;
+
 #endif
 
 LINPHONE_END_NAMESPACE
