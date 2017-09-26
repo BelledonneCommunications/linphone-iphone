@@ -223,7 +223,7 @@ class CsharpTranslator(object):
 					else:
 						methodDict['impl']['c_args'] += '(int)' + self.translate_argument_name(arg.name)
 				elif self.translate_type(arg.type, False, False) == "bool":
-					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name) + " ? '1' : '0'"
+					methodDict['impl']['c_args'] += self.translate_argument_name(arg.name) + " ? (char)1 : (char)0"
 				elif self.get_class_array_type(self.translate_type(arg.type, False, False)) is not None:
 					listtype = self.get_class_array_type(self.translate_type(arg.type, False, False))
 					if listtype == 'string':
