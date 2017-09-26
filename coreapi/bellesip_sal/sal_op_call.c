@@ -948,7 +948,7 @@ int sal_call_cancel_invite_with_info(SalOp* op, const SalErrorInfo *info) {
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",sal_op_get_from(op), sal_op_get_to(op));
 	cancel = belle_sip_client_transaction_create_cancel(op->pending_client_trans);
 	if (cancel){
-		if (info != NULL){
+		if (info != NULL && info->reason != SalReasonNone){
 			belle_sip_header_reason_t* reason = sal_call_make_reason_header(info);
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(cancel),BELLE_SIP_HEADER(reason));
 		}
@@ -1127,7 +1127,7 @@ int sal_call_terminate_with_error(SalOp *op, const SalErrorInfo *info){
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			belle_sip_request_t * req = belle_sip_dialog_create_request(op->dialog,"BYE");
-			if (info != NULL){
+			if (info != NULL && info->reason != SalReasonNone){
 				belle_sip_header_reason_t* reason = sal_call_make_reason_header(info);
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(reason));
 			}
