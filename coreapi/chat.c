@@ -42,6 +42,8 @@
 #include "chat/real-time-text-chat-room-p.h"
 #include "content/content-type.h"
 
+using namespace std;
+
 void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason) {
 	lc->chat_deny_code = deny_reason;
 }
@@ -236,9 +238,9 @@ int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage
 
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(lc)) {
-		std::shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
+			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 		L_GET_PRIVATE(rttcr)->realtimeTextReceived(character, call);
-		//L_GET_PRIVATE(std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr)))->realtimeTextReceived(character, call);
+		//L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr)))->realtimeTextReceived(character, call);
 	}
 }

@@ -269,9 +269,9 @@ void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
 LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	if (linphone_core_realtime_text_enabled(core))
-		L_SET_CPP_PTR_FROM_C_OBJECT(cr, std::make_shared<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
+		L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
 	else
-		L_SET_CPP_PTR_FROM_C_OBJECT(cr, std::make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
+		L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Created);
 	return cr;
@@ -284,7 +284,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core) {
 	LinphoneAddress *factoryAddr = linphone_address_new(factoryUri);
 	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, factoryAddr);
 	linphone_address_unref(factoryAddr);
-	std::string from;
+	string from;
 	if (proxy)
 		from = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
 	if (from.empty())

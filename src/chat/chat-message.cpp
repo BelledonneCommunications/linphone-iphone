@@ -40,14 +40,14 @@ using namespace std;
 
 // -----------------------------------------------------------------------------
 
-ChatMessagePrivate::ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room)
+ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 : chatRoom(room) {}
 
 ChatMessagePrivate::~ChatMessagePrivate () {}
 
 // -----------------------------------------------------------------------------
 
-ChatMessage::ChatMessage (const std::shared_ptr<ChatRoom> &room) : Object(*new ChatMessagePrivate(room)) {}
+ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &room) : Object(*new ChatMessagePrivate(room)) {}
 
 ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p) {}
 
@@ -62,7 +62,7 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 
 // -----------------------------------------------------------------------------
 
-std::string ChatMessage::getExternalBodyUrl() const {
+string ChatMessage::getExternalBodyUrl() const {
 	L_D(const ChatMessage);
 	return d->externalBodyUrl;
 }
@@ -127,7 +127,7 @@ void ChatMessage::setState(State state) {
 		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state), linphone_chat_message_state_to_string(state));
 		*/
 		d->state = state;
-		
+
 		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(this);
 		/* TODO
 		if (msg->message_state_changed_cb) {

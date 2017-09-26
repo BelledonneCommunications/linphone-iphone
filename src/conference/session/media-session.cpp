@@ -4348,7 +4348,7 @@ void MediaSession::resetFirstVideoFrameDecoded () {
 		ms_filter_call_method_noarg(d->videoStream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
 }
 
-LinphoneStatus MediaSession::takePreviewSnapshot (const std::string& file) {
+LinphoneStatus MediaSession::takePreviewSnapshot (const string& file) {
 #ifdef VIDEO_ENABLED
 	L_D(MediaSession);
 	if (d->videoStream && d->videoStream->local_jpegwriter) {
@@ -4360,7 +4360,7 @@ LinphoneStatus MediaSession::takePreviewSnapshot (const std::string& file) {
 	return -1;
 }
 
-LinphoneStatus MediaSession::takeVideoSnapshot (const std::string& file) {
+LinphoneStatus MediaSession::takeVideoSnapshot (const string& file) {
 #ifdef VIDEO_ENABLED
 	L_D(MediaSession);
 	if (d->videoStream && d->videoStream->jpegwriter) {

@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class PropertyContainerPrivate {
 public:
-	unordered_map<std::string, Variant> properties;
+	unordered_map<string, Variant> properties;
 };
 
 // -----------------------------------------------------------------------------

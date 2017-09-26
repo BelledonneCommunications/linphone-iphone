@@ -558,7 +558,7 @@ void CallSessionPrivate::setTerminated() {
 		listener->onCallSessionSetTerminated(*q);
 }
 
-LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) {
+LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextState, const string &stateInfo) {
 	sal_call_accept(op);
 	setState(nextState, stateInfo);
 	return 0;

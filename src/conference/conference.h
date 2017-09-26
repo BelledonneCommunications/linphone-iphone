@@ -82,10 +82,10 @@ protected:
 	LinphoneCore *core = nullptr;
 	CallListener *callListener = nullptr;
 
-	std::shared_ptr<Participant> activeParticipant = nullptr;
-	std::string id;
-	std::shared_ptr<Participant> me = nullptr;
+	std::shared_ptr<Participant> activeParticipant;
+	std::shared_ptr<Participant> me;
 	std::list<std::shared_ptr<Participant>> participants;
+	std::string id;
 
 private:
 	L_DISABLE_COPY(Conference);

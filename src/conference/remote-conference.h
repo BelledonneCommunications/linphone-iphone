@@ -32,7 +32,7 @@ public:
 	virtual ~RemoteConference();
 
 protected:
-	std::shared_ptr<Participant> focus = nullptr;
+	std::shared_ptr<Participant> focus;
 
 public:
 	/* ConferenceInterface */

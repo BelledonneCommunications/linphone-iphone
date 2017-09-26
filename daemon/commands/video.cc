@@ -1,6 +1,6 @@
 /*
 video.cc
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -162,7 +162,7 @@ AutoVideo::AutoVideo():
 										"Auto video OFF"));
 }
 
-void AutoVideo::exec(Daemon* app, const std::string& args)
+void AutoVideo::exec(Daemon* app, const string& args)
 {
 
 	bool enable = (args.compare("on") == 0);

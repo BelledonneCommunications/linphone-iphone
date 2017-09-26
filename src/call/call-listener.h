@@ -27,7 +27,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallListener {
 public:
-	virtual ~CallListener() = default;
+	virtual ~CallListener () = default;
 
 	virtual void onAckBeingSent (LinphoneHeaders *headers) = 0;
 	virtual void onAckReceived (LinphoneHeaders *headers) = 0;

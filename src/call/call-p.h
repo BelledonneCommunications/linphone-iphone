@@ -29,25 +29,39 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallPrivate : public ObjectPrivate, CallListener {
+class CallPrivate :
+	public ObjectPrivate,
+	CallListener {
 public:
-	CallPrivate (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-		LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp);
+	CallPrivate (
+		LinphoneCall *call,
+		LinphoneCore *core,
+		LinphoneCallDir direction,
+		const Address &from,
+		const Address &to,
+		LinphoneProxyConfig *cfg,
+		SalOp *op,
+		const MediaSessionParams *msp
+	);
 	virtual ~CallPrivate ();
 
 	void initiateIncoming ();
 	bool initiateOutgoing ();
 	void iterate (time_t currentRealTime, bool oneSecondElapsed);
 	void startIncomingNotification ();
-	int startInvite (const Address *destination); /* If destination is nullptr, it is taken from the call log */
+
+	int startInvite (const Address *destination);
 
 	std::shared_ptr<CallSession> getActiveSession () const;
 	bool getAudioMuted () const;
-	Conference * getConference () const { return conference; }
-	LinphoneProxyConfig * getDestProxy () const;
-	IceSession * getIceSession () const;
-	MediaStream * getMediaStream (LinphoneStreamType type) const;
-	SalOp * getOp () const;
+	Conference *getConference () const {
+		return conference;
+	}
+
+	LinphoneProxyConfig *getDestProxy () const;
+	IceSession *getIceSession () const;
+	MediaStream *getMediaStream (LinphoneStreamType type) const;
+	SalOp *getOp () const;
 	void setAudioMuted (bool value);
 
 private:

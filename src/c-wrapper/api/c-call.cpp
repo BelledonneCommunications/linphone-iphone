@@ -735,7 +735,7 @@ const char *linphone_call_get_remote_user_agent (LinphoneCall *call) {
 }
 
 const char * linphone_call_get_remote_contact (LinphoneCall *call) {
-	std::string contact = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteContact();
+	string contact = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteContact();
 	if (contact.empty())
 		return nullptr;
 	if (call->remoteContactCache)
@@ -745,7 +745,7 @@ const char * linphone_call_get_remote_contact (LinphoneCall *call) {
 }
 
 const char *linphone_call_get_authentication_token (LinphoneCall *call) {
-	std::string token = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken();
+	string token = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken();
 	return token.empty() ? nullptr : token.c_str();
 }
 
@@ -1184,7 +1184,7 @@ void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
 
 LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 		cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params)));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
@@ -1196,7 +1196,7 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 
 LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, SalOp *op) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, std::make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 		nullptr, op, nullptr));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();

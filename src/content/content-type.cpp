@@ -79,7 +79,7 @@ const string &ContentType::getType () const {
 	return d->type;
 }
 
-bool ContentType::setType (const std::string &type) {
+bool ContentType::setType (const string &type) {
 	L_D(ContentType);
 	if (type.find('/') == string::npos) {
 		d->type = type;
@@ -93,7 +93,7 @@ const string &ContentType::getSubType () const {
 	return d->subType;
 }
 
-bool ContentType::setSubType (const std::string &subType) {
+bool ContentType::setSubType (const string &subType) {
 	L_D(ContentType);
 	if (subType.find('/') == string::npos) {
 		d->subType = subType;

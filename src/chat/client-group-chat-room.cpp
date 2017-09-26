@@ -141,7 +141,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 
 // -----------------------------------------------------------------------------
 
-void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) {
+void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
 	if (state == LinphoneCallConnected) {
 		// TODO: Get the conference ID instead of the remote address
 		onConferenceCreated(session.getRemoteAddress());

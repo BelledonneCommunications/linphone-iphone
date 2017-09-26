@@ -44,7 +44,7 @@ public:
 private:
 	Address addr;
 	bool isAdmin = false;
-	std::shared_ptr<CallSession> session = nullptr;
+	std::shared_ptr<CallSession> session;
 
 	L_DECLARE_PUBLIC(Participant);
 };

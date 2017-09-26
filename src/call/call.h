@@ -19,7 +19,6 @@
 #ifndef _CALL_CALL_H_
 #define _CALL_CALL_H_
 
-#include "address/address.h"
 #include "conference/params/media-session-params.h"
 #include "object/object.h"
 
@@ -27,6 +26,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Address;
 class CallPrivate;
 class CallSessionPrivate;
 class MediaSessionPrivate;

@@ -149,7 +149,7 @@ void Conference::onResetFirstVideoFrameDecoded (const CallSession &session) {
 
 // -----------------------------------------------------------------------------
 
-std::shared_ptr<Participant> Conference::findParticipant (const Address &addr) {
+shared_ptr<Participant> Conference::findParticipant (const Address &addr) {
 	for (const auto &participant : participants) {
 		if (addr.equal(participant->getAddress()))
 			return participant;

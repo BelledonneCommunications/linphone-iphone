@@ -42,7 +42,7 @@ IsComposing::~IsComposing () {
 
 // -----------------------------------------------------------------------------
 
-std::string IsComposing::marshal (bool isComposing) {
+string IsComposing::marshal (bool isComposing) {
 	string content;
 
 	xmlBufferPtr buf = xmlBufferCreate();
@@ -192,7 +192,7 @@ unsigned int IsComposing::getRefreshTimerDuration () {
 
 unsigned int IsComposing::getRemoteRefreshTimerDuration () {
 	int remoteRefreshTimerDuration = lp_config_get_int(core->config, "sip", "composing_remote_refresh_timeout", defaultRemoteRefreshTimeout);
-	return remoteRefreshTimerDuration < 0 ? 0 : static_cast<unsigned int>(remoteRefreshTimerDuration); 
+	return remoteRefreshTimerDuration < 0 ? 0 : static_cast<unsigned int>(remoteRefreshTimerDuration);
 }
 
 void IsComposing::parse (xmlparsing_context_t *xmlCtx) {

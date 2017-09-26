@@ -1,6 +1,6 @@
 /*
 register-info.cc
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +21,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include <string>
 #include "register-info.h"
 
+using namespace std;
+
 class RegisterInfoResponse: public Response {
 public:
 	RegisterInfoResponse(): Response() {}
@@ -28,19 +30,19 @@ public:
 		append(id, cfg);
 	}
 	void append(int id, const ::LinphoneProxyConfig *cfg) {
-		std::ostringstream ost;
+		ostringstream ost;
 		ost << getBody();
-		if (ost.tellp() > 0) ost << std::endl;
-		ost << "Id: " << id << std::endl;
-		ost << "Identity: " << linphone_proxy_config_get_identity(cfg) << std::endl;
-		ost << "Proxy: " << linphone_proxy_config_get_server_addr(cfg) << std::endl;
-		
+		if (ost.tellp() > 0) ost << endl;
+		ost << "Id: " << id << endl;
+		ost << "Identity: " << linphone_proxy_config_get_identity(cfg) << endl;
+		ost << "Proxy: " << linphone_proxy_config_get_server_addr(cfg) << endl;
+
 		const char *route = linphone_proxy_config_get_route(cfg);
 		if (route != NULL) {
-			ost << "Route: " << route << std::endl;
+			ost << "Route: " << route << endl;
 		}
-		
-		ost << "State: " << linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)) << std::endl;
+
+		ost << "State: " << linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)) << endl;
 		setBody(ost.str());
 	}
 };
@@ -72,9 +74,9 @@ RegisterInfoCommand::RegisterInfoCommand():
 						"Reason: No register with such id."));
 }
 
-void RegisterInfoCommand::exec(Daemon *app, const std::string& args) {
-	std::string param;
-	std::istringstream ist(args);
+void RegisterInfoCommand::exec(Daemon *app, const string& args) {
+	string param;
+	istringstream ist(args);
 	ist >> param;
 	if (ist.fail()) {
 		app->sendResponse(Response("Missing parameter.", Response::Error));
@@ -93,10 +95,10 @@ void RegisterInfoCommand::exec(Daemon *app, const std::string& args) {
 		int id;
 		try {
 			id = atoi(param.c_str());
-		} catch (std::invalid_argument) {
+		} catch (invalid_argument) {
 			app->sendResponse(Response("Invalid ID.", Response::Error));
 			return;
-		} catch (std::out_of_range) {
+		} catch (out_of_range) {
 			app->sendResponse(Response("Out of range ID.", Response::Error));
 			return;
 		}

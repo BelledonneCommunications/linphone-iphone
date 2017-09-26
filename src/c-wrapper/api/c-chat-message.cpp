@@ -498,8 +498,8 @@ void linphone_chat_message_send_display_notification(LinphoneChatMessage *cm) {
 }LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character) {
 	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr))) {
-		std::shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			std::static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
+			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 		LinphoneCall *call = rttcr->getCall();
 		LinphoneCore *lc = rttcr->getCore();
 		const uint32_t new_line = 0x2028;

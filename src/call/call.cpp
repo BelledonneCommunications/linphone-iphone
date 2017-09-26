@@ -23,16 +23,22 @@
 #include "conference/session/media-session-p.h"
 #include "logger/logger.h"
 
-#include "call.h"
-
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-CallPrivate::CallPrivate (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-	LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp) : lcall(call), core(core) {
+CallPrivate::CallPrivate (
+	LinphoneCall *call,
+	LinphoneCore *core,
+	LinphoneCallDir direction,
+	const Address &from,
+	const Address &to,
+	LinphoneProxyConfig *cfg,
+	SalOp *op,
+	const MediaSessionParams *msp
+) : lcall(call), core(core) {
 	nextVideoFrameDecoded._func = nullptr;
 	nextVideoFrameDecoded._user_data = nullptr;
 }
@@ -52,19 +58,19 @@ bool CallPrivate::getAudioMuted () const {
 	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getAudioMuted();
 }
 
-LinphoneProxyConfig * CallPrivate::getDestProxy () const {
+LinphoneProxyConfig *CallPrivate::getDestProxy () const {
 	return getActiveSession()->getPrivate()->getDestProxy();
 }
 
-IceSession * CallPrivate::getIceSession () const {
+IceSession *CallPrivate::getIceSession () const {
 	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getIceSession();
 }
 
-MediaStream * CallPrivate::getMediaStream (LinphoneStreamType type) const {
+MediaStream *CallPrivate::getMediaStream (LinphoneStreamType type) const {
 	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getMediaStream(type);
 }
 
-SalOp * CallPrivate::getOp () const {
+SalOp *CallPrivate::getOp () const {
 	return getActiveSession()->getPrivate()->getOp();
 }
 
@@ -119,16 +125,16 @@ void CallPrivate::onCallSetTerminated () {
 		}
 		if (linphone_core_del_call(core, lcall) != 0)
 			lError() << "Could not remove the call from the list!!!";
-#if 0
-		if (core->conf_ctx)
-			linphone_conference_on_call_terminating(core->conf_ctx, lcall);
-		if (lcall->ringing_beep){
-			linphone_core_stop_dtmf(core);
-			lcall->ringing_beep = false;
-		}
-		if (lcall->chat_room)
-			linphone_chat_room_set_call(lcall->chat_room, nullptr);
-#endif
+		#if 0
+			if (core->conf_ctx)
+				linphone_conference_on_call_terminating(core->conf_ctx, lcall);
+			if (lcall->ringing_beep) {
+				linphone_core_stop_dtmf(core);
+				lcall->ringing_beep = false;
+			}
+			if (lcall->chat_room)
+				linphone_chat_room_set_call(lcall->chat_room, nullptr);
+		#endif // if 0
 		if (!core->calls)
 			ms_bandwidth_controller_reset_state(core->bw_controller);
 	}
@@ -149,8 +155,8 @@ void CallPrivate::onCheckForAcceptation () {
 			case LinphoneCallOutgoingProgress:
 			case LinphoneCallOutgoingRinging:
 			case LinphoneCallOutgoingEarlyMedia:
-				lInfo() << "Already existing call [" << call << "] in state [" << linphone_call_state_to_string(linphone_call_get_state(call))
-					<< "], canceling it before accepting new call [" << lcall << "]";
+				lInfo() << "Already existing call [" << call << "] in state [" << linphone_call_state_to_string(linphone_call_get_state(call)) <<
+					"], canceling it before accepting new call [" << lcall << "]";
 				linphone_call_terminate(call);
 				break;
 			default:
@@ -198,16 +204,24 @@ void CallPrivate::onFirstVideoFrameDecoded () {
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded () {
-#ifdef VIDEO_ENABLED
-	if (lcall && nextVideoFrameDecoded._func)
-		static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
-#endif
+	#ifdef VIDEO_ENABLED
+		if (lcall && nextVideoFrameDecoded._func)
+			static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
+	#endif // ifdef VIDEO_ENABLED
 }
 
 // =============================================================================
 
-Call::Call (LinphoneCall *call, LinphoneCore *core, LinphoneCallDir direction, const Address &from, const Address &to,
-	LinphoneProxyConfig *cfg, SalOp *op, const MediaSessionParams *msp) : Object(*new CallPrivate(call, core, direction, from, to, cfg, op, msp)) {
+Call::Call (
+	LinphoneCall *call,
+	LinphoneCore *core,
+	LinphoneCallDir direction,
+	const Address &from,
+	const Address &to,
+	LinphoneProxyConfig *cfg,
+	SalOp *op,
+	const MediaSessionParams *msp
+) : Object(*new CallPrivate(call, core, direction, from, to, cfg, op, msp)) {
 	L_D(Call);
 	const Address *myAddress = (direction == LinphoneCallIncoming) ? &to : &from;
 	string confType = lp_config_get_string(linphone_core_get_config(core), "misc", "conference_type", "local");
@@ -273,12 +287,12 @@ void Call::stopRecording () {
 	static_cast<MediaSession *>(d->getActiveSession().get())->stopRecording();
 }
 
-LinphoneStatus Call::takePreviewSnapshot (const string& file) {
+LinphoneStatus Call::takePreviewSnapshot (const string &file) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->takePreviewSnapshot(file);
 }
 
-LinphoneStatus Call::takeVideoSnapshot (const string& file) {
+LinphoneStatus Call::takeVideoSnapshot (const string &file) {
 	L_D(Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->takeVideoSnapshot(file);
 }
@@ -335,7 +349,7 @@ bool Call::getAllMuted () const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getAllMuted();
 }
 
-LinphoneCallStats * Call::getAudioStats () const {
+LinphoneCallStats *Call::getAudioStats () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getAudioStats();
 }
@@ -355,12 +369,12 @@ float Call::getAverageQuality () const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getAverageQuality();
 }
 
-LinphoneCore * Call::getCore () const {
+LinphoneCore *Call::getCore () const {
 	L_D(const Call);
 	return d->core;
 }
 
-const MediaSessionParams * Call::getCurrentParams () const {
+const MediaSessionParams *Call::getCurrentParams () const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getCurrentParams();
 }
@@ -380,22 +394,22 @@ int Call::getDuration () const {
 	return d->getActiveSession()->getDuration();
 }
 
-const LinphoneErrorInfo * Call::getErrorInfo () const {
+const LinphoneErrorInfo *Call::getErrorInfo () const {
 	L_D(const Call);
 	return d->getActiveSession()->getErrorInfo();
 }
 
-LinphoneCallLog * Call::getLog () const {
+LinphoneCallLog *Call::getLog () const {
 	L_D(const Call);
 	return d->getActiveSession()->getLog();
 }
 
-RtpTransport * Call::getMetaRtcpTransport (int streamIndex) const {
+RtpTransport *Call::getMetaRtcpTransport (int streamIndex) const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getMetaRtcpTransport(streamIndex);
 }
 
-RtpTransport * Call::getMetaRtpTransport (int streamIndex) const {
+RtpTransport *Call::getMetaRtpTransport (int streamIndex) const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getMetaRtpTransport(streamIndex);
 }
@@ -405,12 +419,12 @@ float Call::getMicrophoneVolumeGain () const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getMicrophoneVolumeGain();
 }
 
-void * Call::getNativeVideoWindowId () const {
+void *Call::getNativeVideoWindowId () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getNativeVideoWindowId();
 }
 
-const MediaSessionParams * Call::getParams () const {
+const MediaSessionParams *Call::getParams () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getMediaParams();
 }
@@ -430,7 +444,7 @@ float Call::getRecordVolume () const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getRecordVolume();
 }
 
-const Address& Call::getRemoteAddress () const {
+const Address &Call::getRemoteAddress () const {
 	L_D(const Call);
 	return d->getActiveSession()->getRemoteAddress();
 }
@@ -445,7 +459,7 @@ string Call::getRemoteContact () const {
 	return d->getActiveSession()->getRemoteContact();
 }
 
-const MediaSessionParams * Call::getRemoteParams () const {
+const MediaSessionParams *Call::getRemoteParams () const {
 	L_D(const Call);
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getRemoteParams();
 }
@@ -460,7 +474,7 @@ LinphoneCallState Call::getState () const {
 	return d->getActiveSession()->getState();
 }
 
-LinphoneCallStats * Call::getStats (LinphoneStreamType type) const {
+LinphoneCallStats *Call::getStats (LinphoneStreamType type) const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getStats(type);
 }
@@ -475,12 +489,12 @@ MSFormatType Call::getStreamType (int streamIndex) const {
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getStreamType(streamIndex);
 }
 
-LinphoneCallStats * Call::getTextStats () const {
+LinphoneCallStats *Call::getTextStats () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getTextStats();
 }
 
-LinphoneCallStats * Call::getVideoStats () const {
+LinphoneCallStats *Call::getVideoStats () const {
 	L_D(const Call);
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getVideoStats();
 }

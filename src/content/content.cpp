@@ -92,7 +92,7 @@ void Content::setContentDisposition (const string &contentDisposition) {
 	d->contentDisposition = contentDisposition;
 }
 
-const std::vector<char> &Content::getBody () const {
+const vector<char> &Content::getBody () const {
 	L_D(const Content);
 	return d->body;
 }
@@ -102,12 +102,12 @@ string Content::getBodyAsString () const {
 	return string(d->body.begin(), d->body.end());
 }
 
-void Content::setBody (const std::vector<char> &body) {
+void Content::setBody (const vector<char> &body) {
 	L_D(Content);
 	d->body = body;
 }
 
-void Content::setBody (const std::string &body) {
+void Content::setBody (const string &body) {
 	L_D(Content);
 	d->body = vector<char>(body.cbegin(), body.cend());
 }
