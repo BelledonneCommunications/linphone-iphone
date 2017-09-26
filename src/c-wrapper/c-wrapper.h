@@ -41,7 +41,8 @@
 	F(Participant, Participant)
 
 #define L_REGISTER_SUBTYPES(F) \
-	F(ChatRoom, ClientGroupChatRoom)
+	F(ChatRoom, ClientGroupChatRoom) \
+	F(ChatRoom, RealTimeTextChatRoom)
 
 // =============================================================================
 // Register belle-sip ID.

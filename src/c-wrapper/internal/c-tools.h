@@ -37,11 +37,13 @@ LINPHONE_BEGIN_NAMESPACE
 template<typename CppType>
 struct CppTypeToCType {
 	enum { defined = false };
+	typedef void type;
 };
 
 template<typename CType>
 struct CTypeToCppType {
 	enum { defined = false };
+	typedef void type;
 };
 
 template<typename CppType>
@@ -51,7 +53,23 @@ class Wrapper {
 private:
 	template<typename CppType>
 	struct IsCppObject {
-		enum { value = std::is_base_of<Object, CppType>::value || std::is_base_of<ClonableObject, CppType>::value };
+		enum {
+			value = std::is_base_of<Object, CppType>::value || std::is_base_of<ClonableObject, CppType>::value
+		};
+	};
+
+	template<typename CppType>
+	struct IsDefinedNotClonableCppObject {
+		enum {
+			value = CppTypeToCType<CppType>::defined && std::is_base_of<Object, CppType>::value
+		};
+	};
+
+	template<typename CppType>
+	struct IsDefinedClonableCppObject {
+		enum {
+			value = CppTypeToCType<CppType>::defined && std::is_base_of<ClonableObject, CppType>::value
+		};
 	};
 
 	template<typename CType>
@@ -86,7 +104,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
 		return reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr;
@@ -95,7 +113,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
 		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
@@ -104,7 +122,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr CppType *getCppPtrFromC (CType *cObject) {
 		return reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
@@ -113,7 +131,7 @@ public:
 	template<
 		typename CType,
 		typename CppType = typename CTypeToCppType<CType>::type,
-		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr const CppType *getCppPtrFromC (const CType *cObject) {
 		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;

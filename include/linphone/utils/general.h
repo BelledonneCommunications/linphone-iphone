@@ -74,7 +74,7 @@ void l_assert (const char *condition, const char *file, int line);
 // Allows access to private internal data.
 // Gives a control to C Wrapper.
 #define L_DECLARE_PRIVATE(CLASS) \
-	inline CLASS ## Private * getPrivate() { \
+	inline CLASS ## Private *getPrivate() { \
 		return reinterpret_cast<CLASS ## Private *>(mPrivate); \
 	} \
 	inline const CLASS ## Private *getPrivate() const { \
