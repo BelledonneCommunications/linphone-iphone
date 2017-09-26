@@ -1869,7 +1869,7 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 		case LinphoneCallError:
 			switch(linphone_error_info_get_reason(linphone_call_get_error_info(call))) {
 			case LinphoneReasonDeclined:
-				if(call->log->status == LinphoneCallSuccess) // Do not re-change the status of a call if it's already set
+				if(call->log->status != LinphoneCallMissed) // Do not re-change the status of a call if it's already set
 					call->log->status = LinphoneCallDeclined;
 				break;
 			case LinphoneReasonNotAnswered:

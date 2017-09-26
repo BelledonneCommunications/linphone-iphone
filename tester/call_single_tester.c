@@ -1013,7 +1013,7 @@ static void terminate_call_with_error(void) {
 
 	linphone_call_ref(out_call);
 	ei = linphone_error_info_new();
-	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 200, "Call refused for security reason", NULL);
+	linphone_error_info_set(ei, NULL, LinphoneReasonUnknown, 200, "Call refused for security reason", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -1069,7 +1069,7 @@ static void cancel_call_with_error(void) {
 
 	linphone_call_ref(out_call);
 	ei = linphone_error_info_new();
-	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 600, "Call has been cancelled", NULL);
+	linphone_error_info_set(ei, NULL, LinphoneReasonUnknown, 600, "Call has been cancelled", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -1397,8 +1397,8 @@ static void call_declined_with_error(void) {
 	LinphoneErrorInfo *ei = linphone_factory_create_error_info(factory);
 	LinphoneErrorInfo *reason_ei = linphone_factory_create_error_info(factory);
 
-	linphone_error_info_set(ei, "SIP", LinphoneReasonUnknown,  603, "Decline", NULL); //ordre des arguments à vérifier
-	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonUnknown,  66, "J'ai plus de batterie", NULL);
+	linphone_error_info_set(ei, "SIP", LinphoneReasonDeclined,  603, "Decline", NULL); //ordre des arguments à vérifier
+	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonDeclined,  66, "J'ai plus de batterie", NULL);
 
 	linphone_error_info_set_sub_error_info(ei, reason_ei);
 
