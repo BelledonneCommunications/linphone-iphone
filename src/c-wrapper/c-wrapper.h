@@ -41,6 +41,7 @@
 	F(Participant, Participant)
 
 #define L_REGISTER_SUBTYPES(F) \
+	F(ChatRoom, BasicChatRoom) \
 	F(ChatRoom, ClientGroupChatRoom) \
 	F(ChatRoom, RealTimeTextChatRoom)
 

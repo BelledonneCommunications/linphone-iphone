@@ -143,7 +143,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<std::is_base_of<Object, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<CppType> &cppObject) {
 		static_cast<WrappedObject<CppType> *>(cObject)->cppPtr = cppObject;
@@ -152,7 +152,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline void setCppPtrFromC (void *cObject, const CppType *cppObject) {
 		CppType **cppObjectAddr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
