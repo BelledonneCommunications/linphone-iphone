@@ -33,6 +33,10 @@ public:
 	CallSessionParamsPrivate (const CallSessionParamsPrivate &src);
 	virtual ~CallSessionParamsPrivate ();
 
+	CallSessionParamsPrivate &operator= (const CallSessionParamsPrivate &src);
+
+	static void clone (const CallSessionParamsPrivate &src, CallSessionParamsPrivate &dst);
+
 	bool getInConference () const { return inConference; }
 	void setInConference (bool value) { inConference = value; }
 	bool getInternalCallUpdate () const { return internalCallUpdate; }

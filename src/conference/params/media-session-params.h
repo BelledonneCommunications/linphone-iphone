@@ -40,6 +40,8 @@ public:
 	MediaSessionParams (const MediaSessionParams &src);
 	virtual ~MediaSessionParams () = default;
 
+	MediaSessionParams &operator= (const MediaSessionParams &src);
+
 	void initDefault (LinphoneCore *core) override;
 
 	bool audioEnabled () const;

@@ -27,20 +27,33 @@ LINPHONE_BEGIN_NAMESPACE
 // =============================================================================
 
 CallSessionParamsPrivate::CallSessionParamsPrivate (const CallSessionParamsPrivate &src) : ClonableObjectPrivate () {
-	sessionName = src.sessionName;
-	privacy = src.privacy;
-	inConference = src.inConference;
-	internalCallUpdate = src.internalCallUpdate;
-	noUserConsent = src.noUserConsent;
-	/* The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient. */
-	if (src.customHeaders)
-		customHeaders = sal_custom_header_clone(src.customHeaders);
-	referer = src.referer;
+	clone(src, *this);
 }
 
 CallSessionParamsPrivate::~CallSessionParamsPrivate () {
 	if (customHeaders)
 		sal_custom_header_free(customHeaders);
+}
+
+CallSessionParamsPrivate &CallSessionParamsPrivate::operator= (const CallSessionParamsPrivate &src) {
+	if (this != &src) {
+		if (customHeaders)
+			sal_custom_header_free(customHeaders);
+		clone(src, *this);
+	}
+	return *this;
+}
+
+void CallSessionParamsPrivate::clone (const CallSessionParamsPrivate &src, CallSessionParamsPrivate &dst) {
+	dst.sessionName = src.sessionName;
+	dst.privacy = src.privacy;
+	dst.inConference = src.inConference;
+	dst.internalCallUpdate = src.internalCallUpdate;
+	dst.noUserConsent = src.noUserConsent;
+	/* The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient. */
+	if (src.customHeaders)
+		dst.customHeaders = sal_custom_header_clone(src.customHeaders);
+	dst.referer = src.referer;
 }
 
 // -----------------------------------------------------------------------------
@@ -66,6 +79,13 @@ CallSessionParams::CallSessionParams (CallSessionParamsPrivate &p) : ClonableObj
 
 CallSessionParams::CallSessionParams (const CallSessionParams &src)
 	: ClonableObject(*new CallSessionParamsPrivate(*src.getPrivate())) {}
+
+CallSessionParams &CallSessionParams::operator= (const CallSessionParams &src) {
+	L_D(CallSessionParams);
+	if (this != &src)
+		*d = *src.getPrivate();
+	return *this;
+}
 
 // -----------------------------------------------------------------------------
 

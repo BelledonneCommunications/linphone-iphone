@@ -36,44 +36,60 @@ MediaSessionParamsPrivate::MediaSessionParamsPrivate () {
 }
 
 MediaSessionParamsPrivate::MediaSessionParamsPrivate (const MediaSessionParamsPrivate &src) : CallSessionParamsPrivate(src) {
-	audioEnabled = src.audioEnabled;
-	audioBandwidthLimit = src.audioBandwidthLimit;
-	audioDirection = src.audioDirection;
-	audioMulticastEnabled = src.audioMulticastEnabled;
-	usedAudioCodec = src.usedAudioCodec;
-	videoEnabled = src.videoEnabled;
-	videoDirection = src.videoDirection;
-	videoMulticastEnabled = src.videoMulticastEnabled;
-	usedVideoCodec = src.usedVideoCodec;
-	receivedFps = src.receivedFps;
-	receivedVideoDefinition = src.receivedVideoDefinition ? linphone_video_definition_ref(src.receivedVideoDefinition) : nullptr;
-	sentFps = src.sentFps;
-	sentVideoDefinition = src.sentVideoDefinition ? linphone_video_definition_ref(src.sentVideoDefinition) : nullptr;
-	realtimeTextEnabled = src.realtimeTextEnabled;
-	usedRealtimeTextCodec = src.usedRealtimeTextCodec;
-	avpfEnabled = src.avpfEnabled;
-	avpfRrInterval = src.avpfRrInterval;
-	lowBandwidthEnabled = src.lowBandwidthEnabled;
-	recordFilePath = src.recordFilePath;
-	earlyMediaSendingEnabled = src.earlyMediaSendingEnabled;
-	encryption = src.encryption;
-	mandatoryMediaEncryptionEnabled = src.mandatoryMediaEncryptionEnabled;
-	_implicitRtcpFbEnabled = src._implicitRtcpFbEnabled;
-	downBandwidth = src.downBandwidth;
-	upBandwidth = src.upBandwidth;
-	downPtime = src.downPtime;
-	upPtime = src.upPtime;
-	updateCallWhenIceCompleted = src.updateCallWhenIceCompleted;
-	if (src.customSdpAttributes)
-		customSdpAttributes = sal_custom_sdp_attribute_clone(src.customSdpAttributes);
-	memset(customSdpMediaAttributes, 0, sizeof(customSdpMediaAttributes));
-	for (unsigned int i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
-		if (src.customSdpMediaAttributes[i])
-			customSdpMediaAttributes[i] = sal_custom_sdp_attribute_clone(src.customSdpMediaAttributes[i]);
-	}
+	clone(src, *this);
 }
 
 MediaSessionParamsPrivate::~MediaSessionParamsPrivate () {
+	this->clean();
+}
+
+MediaSessionParamsPrivate &MediaSessionParamsPrivate::operator= (const MediaSessionParamsPrivate &src) {
+	if (this != &src) {
+		this->clean();
+		clone(src, *this);
+	}
+	return *this;
+}
+
+void MediaSessionParamsPrivate::clone (const MediaSessionParamsPrivate &src, MediaSessionParamsPrivate &dst) {
+	dst.audioEnabled = src.audioEnabled;
+	dst.audioBandwidthLimit = src.audioBandwidthLimit;
+	dst.audioDirection = src.audioDirection;
+	dst.audioMulticastEnabled = src.audioMulticastEnabled;
+	dst.usedAudioCodec = src.usedAudioCodec;
+	dst.videoEnabled = src.videoEnabled;
+	dst.videoDirection = src.videoDirection;
+	dst.videoMulticastEnabled = src.videoMulticastEnabled;
+	dst.usedVideoCodec = src.usedVideoCodec;
+	dst.receivedFps = src.receivedFps;
+	dst.receivedVideoDefinition = src.receivedVideoDefinition ? linphone_video_definition_ref(src.receivedVideoDefinition) : nullptr;
+	dst.sentFps = src.sentFps;
+	dst.sentVideoDefinition = src.sentVideoDefinition ? linphone_video_definition_ref(src.sentVideoDefinition) : nullptr;
+	dst.realtimeTextEnabled = src.realtimeTextEnabled;
+	dst.usedRealtimeTextCodec = src.usedRealtimeTextCodec;
+	dst.avpfEnabled = src.avpfEnabled;
+	dst.avpfRrInterval = src.avpfRrInterval;
+	dst.lowBandwidthEnabled = src.lowBandwidthEnabled;
+	dst.recordFilePath = src.recordFilePath;
+	dst.earlyMediaSendingEnabled = src.earlyMediaSendingEnabled;
+	dst.encryption = src.encryption;
+	dst.mandatoryMediaEncryptionEnabled = src.mandatoryMediaEncryptionEnabled;
+	dst._implicitRtcpFbEnabled = src._implicitRtcpFbEnabled;
+	dst.downBandwidth = src.downBandwidth;
+	dst.upBandwidth = src.upBandwidth;
+	dst.downPtime = src.downPtime;
+	dst.upPtime = src.upPtime;
+	dst.updateCallWhenIceCompleted = src.updateCallWhenIceCompleted;
+	if (src.customSdpAttributes)
+		dst.customSdpAttributes = sal_custom_sdp_attribute_clone(src.customSdpAttributes);
+	memset(dst.customSdpMediaAttributes, 0, sizeof(dst.customSdpMediaAttributes));
+	for (unsigned int i = 0; i < (unsigned int)LinphoneStreamTypeUnknown; i++) {
+		if (src.customSdpMediaAttributes[i])
+			dst.customSdpMediaAttributes[i] = sal_custom_sdp_attribute_clone(src.customSdpMediaAttributes[i]);
+	}
+}
+
+void MediaSessionParamsPrivate::clean () {
 	if (receivedVideoDefinition)
 		linphone_video_definition_unref(receivedVideoDefinition);
 	if (sentVideoDefinition)
@@ -202,6 +218,15 @@ MediaSessionParams::MediaSessionParams () : CallSessionParams(*new MediaSessionP
 
 MediaSessionParams::MediaSessionParams (const MediaSessionParams &src)
 	: CallSessionParams(*new MediaSessionParamsPrivate(*src.getPrivate())) {}
+
+MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &src) {
+	L_D(MediaSessionParams);
+	if (this != &src) {
+		CallSessionParams::operator=(src);
+		*d = *src.getPrivate();
+	}
+	return *this;
+}
 
 // -----------------------------------------------------------------------------
 

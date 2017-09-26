@@ -41,6 +41,8 @@ public:
 	CallSessionParams (const CallSessionParams &src);
 	virtual ~CallSessionParams () = default;
 
+	CallSessionParams &operator= (const CallSessionParams &src);
+
 	virtual void initDefault (LinphoneCore *core);
 
 	const std::string& getSessionName () const;

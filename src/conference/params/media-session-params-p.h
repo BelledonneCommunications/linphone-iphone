@@ -39,6 +39,11 @@ public:
 	MediaSessionParamsPrivate (const MediaSessionParamsPrivate &src);
 	virtual ~MediaSessionParamsPrivate ();
 
+	MediaSessionParamsPrivate &operator= (const MediaSessionParamsPrivate &src);
+
+	static void clone (const MediaSessionParamsPrivate &src, MediaSessionParamsPrivate &dst);
+	void clean ();
+
 	static SalStreamDir mediaDirectionToSalStreamDir (LinphoneMediaDirection direction);
 	static LinphoneMediaDirection salStreamDirToMediaDirection (SalStreamDir dir);
 
