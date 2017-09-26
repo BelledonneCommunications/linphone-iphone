@@ -22,6 +22,8 @@
 #include <list>
 #include <memory>
 
+#include "imdn.h"
+#include "linphone/api/c-types.h"
 #include "linphone/api/c-chat-message.h"
 
 #include "object/object.h"
@@ -62,7 +64,24 @@ public:
 	LinphoneChatMessage * getBackPtr();
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;
+	void setChatRoom (std::shared_ptr<ChatRoom> cr);
 
+	// -----------------------------------------------------------------------------
+	// Methods
+	// -----------------------------------------------------------------------------
+
+	void updateState(State state);
+	void reSend();
+	void sendImdn();
+	void sendDeliveryNotification();
+	void sendDisplayNotification();
+	int uploadFile();
+	int downloadFile();
+	void cancelFileTransfer();
+	int putCharacter(uint32_t character);
+
+	// -----------------------------------------------------------------------------
+	// Getters & setters
 	// -----------------------------------------------------------------------------
 
 	Direction getDirection () const;
@@ -89,25 +108,50 @@ public:
 	std::string getAppdata () const;
 	void setAppdata (const std::string &appData);
 	
+	std::shared_ptr<Address> getFromAddress () const;
+	void setFromAddress(std::shared_ptr<Address> from);
+
+	std::shared_ptr<Address> getToAddress () const;
+	void setToAddress(std::shared_ptr<Address> to);
+
+	std::string getFileTransferFilepath() const;
+	void setFileTransferFilepath(const std::string &path);
+
+	bool isToBeStored() const;
+	void setIsToBeStored(bool store);
+	
 	// -----------------------------------------------------------------------------
 	// Deprecated methods, only used for C wrapper
 	// -----------------------------------------------------------------------------
 
 	std::string getContentType() const;
+	void setContentType(std::string contentType);
 
 	std::string getText() const;
+	void setText(std::string text);
+	
+	std::shared_ptr<Content> getFileTransferInformation() const;
+	void setFileTransferInformation(std::shared_ptr<Content> content);
 
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
 
 	void setTime(time_t time);
 	
-	// -----------------------------------------------------------------------------
+	belle_http_request_t *getHttpRequest() const;
+	void setHttpRequest(belle_http_request_t *request);
 
-	std::shared_ptr<const Address> getFromAddress () const;
-	std::shared_ptr<const Address> getToAddress () const;
-	std::shared_ptr<const Address> getLocalAddress () const;
-	std::shared_ptr<const Address> getRemoteAddress () const;
+	SalOp *getSalOp() const;
+	void setSalOp(SalOp *op);
+
+	SalCustomHeader *getSalCustomHeaders() const;
+	void setSalCustomHeaders(SalCustomHeader *headers);
+
+	void addSalCustomHeader(std::string name, std::string value);
+	void removeSalCustomHeader(std::string name);
+	std::string getSalCustomHeaderValue(std::string name);
+	
+	// -----------------------------------------------------------------------------
 
 	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
 

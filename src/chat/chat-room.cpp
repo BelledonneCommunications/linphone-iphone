@@ -593,7 +593,6 @@ void ChatRoom::compose () {
 LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	L_D(ChatRoom);
 	LinphoneChatMessage *msg = createMessage("");
-	linphone_chat_message_set_chat_room(msg, L_GET_C_BACK_PTR(this));
 	linphone_chat_message_set_text(msg, NULL);
 	linphone_chat_message_set_file_transfer_information(msg, linphone_content_copy(initialContent));
 	linphone_chat_message_set_outgoing(msg);
@@ -612,7 +611,6 @@ LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent 
 LinphoneChatMessage *ChatRoom::createMessage (const string &message) {
 	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
 	LinphoneChatMessage *msg = chatMessage->getBackPtr();
-	linphone_chat_message_set_chat_room(msg, L_GET_C_BACK_PTR(this));
 	linphone_chat_message_set_state(msg, LinphoneChatMessageStateIdle);
 	linphone_chat_message_set_text(msg, message.empty() ? nullptr : ms_strdup(message.c_str()));
 	linphone_chat_message_set_content_type(msg, ms_strdup("text/plain"));

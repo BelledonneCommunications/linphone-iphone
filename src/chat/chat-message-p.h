@@ -41,18 +41,23 @@ private:
 	ChatMessage::Direction direction = ChatMessage::Incoming;
 	ChatMessage::State state = ChatMessage::Idle;
 	unsigned int storageId;
-	// LinphoneAddress *from;
-	// LinphoneAddress *to;
+	std::shared_ptr<Address> from;
+	std::shared_ptr<Address> to;
 	time_t time = 0;
 	std::string id;
 	std::string appData;
+	std::string fileTransferFilePath;
 	bool isSecured = false;
 	bool isReadOnly = false;
+	bool isToBeStored = false;
 	std::list<std::shared_ptr<Content> > contents;
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	std::shared_ptr<EventsDb> eventsDb;
 	std::shared_ptr<ErrorInfo> errorInfo;
+	belle_http_request_t *httpRequest;
+	SalOp *salOp;
+	SalCustomHeader *salCustomHeaders;
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 

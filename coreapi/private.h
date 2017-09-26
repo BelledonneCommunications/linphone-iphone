@@ -1099,7 +1099,6 @@ void linphone_chat_message_set_file_transfer_information(LinphoneChatMessage *ms
 LinphoneChatMessageDir linphone_chat_message_get_direction(const LinphoneChatMessage *msg);
 SalOp * linphone_chat_message_get_sal_op(const LinphoneChatMessage *msg);
 void linphone_chat_message_set_sal_op(LinphoneChatMessage *msg, SalOp *op);
-void linphone_chat_message_set_chat_room(LinphoneChatMessage *msg, LinphoneChatRoom *room);
 void linphone_chat_message_destroy(LinphoneChatMessage* msg);
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured);

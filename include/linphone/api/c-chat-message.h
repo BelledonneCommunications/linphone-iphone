@@ -105,7 +105,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_from_address(LinphoneChatMessage*
  * @param[in] message #LinphoneChatMessage obj
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_from_address(const LinphoneChatMessage* msg);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_from_address(LinphoneChatMessage* msg);
 
 /**
  * Set destination of the message
@@ -119,7 +119,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_to_address(LinphoneChatMessage* m
  * @param[in] message #LinphoneChatMessage obj
  * @return #LinphoneAddress
  */
-LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(const LinphoneChatMessage* msg);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(LinphoneChatMessage* msg);
 
 /**
  * Get the content type of a chat message.
@@ -301,7 +301,7 @@ LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_peer_address(Li
  *@param message #LinphoneChatMessage obj
  *@return #LinphoneAddress
  */
-LINPHONE_PUBLIC LinphoneAddress *linphone_chat_message_get_local_address(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_chat_message_get_local_address(LinphoneChatMessage* message);
 
 /**
  * Add custom headers to the message.

@@ -741,7 +741,7 @@ static void file_transfer_2_messages_simultaneously(void) {
 			linphone_chat_room_send_chat_message(pauline_room,msg);
 			linphone_chat_room_send_chat_message(pauline_room,msg2);
 			if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000))) {
-				msg = linphone_chat_message_clone(marie->stat.last_received_chat_message);
+				msg = linphone_chat_message_ref(marie->stat.last_received_chat_message);
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2, 60000));
 				msg2 = marie->stat.last_received_chat_message;
 				BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, unsigned int, "%u");
