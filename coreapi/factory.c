@@ -48,7 +48,7 @@ struct _LinphoneFactory {
 	char *ring_resources_dir;
 	char *image_resources_dir;
 	char *msplugins_dir;
-	
+
 	/*these are the cached result computed from directories set by the application*/
 	char *cached_data_resources_dir;
 	char *cached_sound_resources_dir;
@@ -67,7 +67,7 @@ static void linphone_factory_uninit(LinphoneFactory *obj){
 	STRING_RESET(obj->ring_resources_dir);
 	STRING_RESET(obj->image_resources_dir);
 	STRING_RESET(obj->msplugins_dir);
-	
+
 	STRING_RESET(obj->cached_data_resources_dir);
 	STRING_RESET(obj->cached_sound_resources_dir);
 	STRING_RESET(obj->cached_ring_resources_dir);
@@ -148,9 +148,11 @@ void linphone_factory_clean(void){
 
 LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
 		const char *config_path, const char *factory_config_path) {
+	bctbx_init_logger(FALSE);
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
 	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, NULL);
 	lp_config_unref(config);
+	bctbx_uninit_logger();
 	return lc;
 }
 
@@ -303,9 +305,9 @@ void linphone_factory_set_msplugins_dir(LinphoneFactory *factory, const char *pa
 }
 
 LinphoneErrorInfo *linphone_factory_create_error_info(LinphoneFactory *factory){
-	
+
 	return linphone_error_info_new();
-	
+
 }
 
 LinphoneRange *linphone_factory_create_range(LinphoneFactory *factory) {
