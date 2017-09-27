@@ -244,7 +244,7 @@ const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, co
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getSalCustomHeaderValue(header_name).c_str();
 }
 
-const LinphoneErrorInfo *linphone_chat_message_get_error_info(LinphoneChatMessage *msg) {
+const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getErrorInfo();
 }
 

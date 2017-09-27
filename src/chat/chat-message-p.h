@@ -54,7 +54,7 @@ private:
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	std::shared_ptr<EventsDb> eventsDb;
-	LinphoneErrorInfo * errorInfo;
+	mutable LinphoneErrorInfo * errorInfo;
 	belle_http_request_t *httpRequest;
 	SalOp *salOp;
 	SalCustomHeader *salCustomHeaders;

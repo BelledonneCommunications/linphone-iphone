@@ -307,8 +307,8 @@ string ChatMessage::getSalCustomHeaderValue(string name) {
 	return sal_custom_header_find(d->salCustomHeaders, name.c_str());
 }
 
-const LinphoneErrorInfo * ChatMessage::getErrorInfo() {
-	L_D(ChatMessage);
+const LinphoneErrorInfo * ChatMessage::getErrorInfo() const {
+	L_D(const ChatMessage);
 	if (!d->errorInfo) d->errorInfo = linphone_error_info_new(); //let's do it mutable
 	linphone_error_info_from_sal_op(d->errorInfo, d->salOp);
 	return d->errorInfo;

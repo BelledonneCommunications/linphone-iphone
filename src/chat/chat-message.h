@@ -120,7 +120,7 @@ public:
 	bool isToBeStored() const;
 	void setIsToBeStored(bool store);
 
-	const LinphoneErrorInfo * getErrorInfo ();
+	const LinphoneErrorInfo * getErrorInfo () const;
 	
 	bool isReadOnly () const;
 	
