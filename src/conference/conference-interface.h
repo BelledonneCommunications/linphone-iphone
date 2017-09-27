@@ -37,7 +37,7 @@ public:
 	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual bool canHandleParticipants () const = 0;
-	virtual const std::string& getId () const = 0;
+	virtual const Address *getConferenceAddress () const = 0;
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;
 	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) = 0;

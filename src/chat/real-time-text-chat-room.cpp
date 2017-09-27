@@ -152,10 +152,9 @@ bool RealTimeTextChatRoom::canHandleParticipants () const {
 	return false;
 }
 
-const string& RealTimeTextChatRoom::getId () const {
-	L_D(const RealTimeTextChatRoom);
-	lError() << "a RealTimeTextChatRoom does not have a conference id";
-	return d->dummyConferenceId;
+const Address *RealTimeTextChatRoom::getConferenceAddress () const {
+	lError() << "a RealTimeTextChatRoom does not have a conference address";
+	return nullptr;
 }
 
 int RealTimeTextChatRoom::getNbParticipants () const {

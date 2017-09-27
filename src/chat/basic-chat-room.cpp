@@ -48,10 +48,9 @@ bool BasicChatRoom::canHandleParticipants () const {
 	return false;
 }
 
-const string& BasicChatRoom::getId () const {
-	L_D(const BasicChatRoom);
-	lError() << "a BasicChatRoom does not have a conference id";
-	return d->dummyConferenceId;
+const Address *BasicChatRoom::getConferenceAddress () const {
+	lError() << "a BasicChatRoom does not have a conference address";
+	return nullptr;
 }
 
 int BasicChatRoom::getNbParticipants () const {

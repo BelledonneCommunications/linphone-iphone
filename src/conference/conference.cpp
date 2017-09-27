@@ -54,8 +54,8 @@ bool Conference::canHandleParticipants () const {
 	return true;
 }
 
-const string& Conference::getId () const {
-	return id;
+const Address *Conference::getConferenceAddress () const {
+	return &conferenceAddress;
 }
 
 int Conference::getNbParticipants () const {

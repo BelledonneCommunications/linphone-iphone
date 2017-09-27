@@ -77,8 +77,8 @@ bool ClientGroupChatRoom::canHandleParticipants () const {
 	return RemoteConference::canHandleParticipants();
 }
 
-const string& ClientGroupChatRoom::getId () const {
-	return RemoteConference::getId();
+const Address *ClientGroupChatRoom::getConferenceAddress () const {
+	return RemoteConference::getConferenceAddress();
 }
 
 int ClientGroupChatRoom::getNbParticipants () const {
@@ -101,6 +101,7 @@ void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>
 
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D(ClientGroupChatRoom);
+	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
 }
 
@@ -156,8 +157,8 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 
 void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
 	if (state == LinphoneCallConnected) {
-		// TODO: Get the conference ID instead of the remote address
-		onConferenceCreated(session.getRemoteAddress());
+		Address addr(session.getRemoteContact());
+		onConferenceCreated(addr);
 	}
 }
 

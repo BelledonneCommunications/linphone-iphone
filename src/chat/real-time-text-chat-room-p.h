@@ -46,8 +46,6 @@ public:
 	LinphoneChatMessage *pendingMessage = nullptr;
 
 private:
-	std::string dummyConferenceId;
-
 	L_DECLARE_PUBLIC(RealTimeTextChatRoom);
 };
 

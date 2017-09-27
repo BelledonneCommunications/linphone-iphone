@@ -35,8 +35,6 @@ public:
 	virtual ~BasicChatRoomPrivate () = default;
 
 private:
-	std::string dummyConferenceId;
-
 	L_DECLARE_PUBLIC(BasicChatRoom);
 };
 

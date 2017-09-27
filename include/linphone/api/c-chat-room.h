@@ -262,11 +262,11 @@ LINPHONE_PUBLIC void linphone_chat_room_add_participants (LinphoneChatRoom *cr, 
 LINPHONE_PUBLIC bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr);
 
 /**
- * Get the conference ID of the chat room.
+ * Get the conference address of the chat room.
  * @param[in] cr A LinphoneChatRoom object
- * @return The conference ID of the chat room or NULL if this type of chat room is not conference based
+ * @return The conference address of the chat room or NULL if this type of chat room is not conference based
  */
-LINPHONE_PUBLIC const char * linphone_chat_room_get_id (const LinphoneChatRoom *cr);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr);
 
 /**
  * Get the number of participants in the chat room (that is without ourselves).

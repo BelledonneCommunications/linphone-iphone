@@ -38,6 +38,7 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
 	ChatRoom,
 	_linphone_chat_room_constructor, _linphone_chat_room_destructor,
 	LinphoneChatRoomCbs *cbs;
+	mutable LinphoneAddress *conferenceAddressCache;
 	LinphoneAddress *peerAddressCache;
 )
 
@@ -48,6 +49,10 @@ static void _linphone_chat_room_constructor (LinphoneChatRoom *cr) {
 static void _linphone_chat_room_destructor (LinphoneChatRoom *cr) {
 	linphone_chat_room_cbs_unref(cr->cbs);
 	cr->cbs = nullptr;
+	if (cr->conferenceAddressCache) {
+		linphone_address_unref(cr->conferenceAddressCache);
+		cr->conferenceAddressCache = nullptr;
+	}
 	if (cr->peerAddressCache) {
 		linphone_address_unref(cr->peerAddressCache);
 		cr->peerAddressCache = nullptr;
@@ -220,9 +225,16 @@ bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->canHandleParticipants();
 }
 
-const char *linphone_chat_room_get_id (const LinphoneChatRoom *cr) {
-	string id = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getId();
-	return id.empty() ? nullptr : id.c_str();
+const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr) {
+	if (cr->conferenceAddressCache) {
+		linphone_address_unref(cr->conferenceAddressCache);
+	}
+	auto addr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress();
+	if (addr)
+		cr->conferenceAddressCache = linphone_address_new(addr->asString().c_str());
+	else
+		cr->conferenceAddressCache = nullptr;
+	return cr->conferenceAddressCache;
 }
 
 int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
