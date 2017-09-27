@@ -35,22 +35,19 @@
 LINPHONE_BEGIN_NAMESPACE
 
 template<typename CppType>
-struct CppTypeToCType {
+struct CppTypeMetaInfo {
 	enum {
 		defined = false,
 		isSubtype = false
 	};
-	typedef void type;
+	typedef void cType;
 };
 
 template<typename CType>
-struct CTypeToCppType {
+struct CTypeMetaInfo {
 	enum { defined = false };
-	typedef void type;
+	typedef void cppType;
 };
-
-template<typename CppType>
-struct CObjectInitializer {};
 
 class Wrapper {
 private:
@@ -64,9 +61,9 @@ private:
 	template<typename CppType>
 	struct IsDefinedCppObject {
 		enum {
-			value = CppTypeToCType<CppType>::defined && (
-				!CppTypeToCType<CppType>::isSubtype ||
-				std::is_base_of<typename CTypeToCppType<typename CppTypeToCType<CppType>::type>::type, CppType>::value
+			value = CppTypeMetaInfo<CppType>::defined && (
+				!CppTypeMetaInfo<CppType>::isSubtype ||
+				std::is_base_of<typename CTypeMetaInfo<typename CppTypeMetaInfo<CppType>::cType>::cppType, CppType>::value
 			)
 		};
 	};
@@ -116,7 +113,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
@@ -125,7 +122,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
@@ -134,7 +131,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr CppType *getCppPtrFromC (CType *cObject) {
@@ -143,7 +140,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static constexpr const CppType *getCppPtrFromC (const CType *cObject) {
@@ -185,15 +182,15 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
-		typedef typename CppTypeToCType<CppType>::type RetType;
+	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
+		typedef typename CppTypeMetaInfo<CppType>::cType RetType;
 
 		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = variant.getValue<void *>();
 		if (value)
 			return reinterpret_cast<RetType *>(value);
 
-		RetType *cObject = CObjectInitializer<CppType>::init();
+		RetType *cObject = CppTypeMetaInfo<CppType>::init();
 		setCppPtrFromC(cObject, cppObject);
 		return cObject;
 	}
@@ -202,7 +199,7 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (CppType *cppObject) {
+	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (CppType *cppObject) {
 		return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
 	}
 
@@ -210,15 +207,15 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline typename CppTypeToCType<CppType>::type *getCBackPtr (const CppType *cppObject) {
-		typedef typename CppTypeToCType<CppType>::type RetType;
+	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (const CppType *cppObject) {
+		typedef typename CppTypeMetaInfo<CppType>::cType RetType;
 
 		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = v.getValue<void *>();
 		if (value)
 			return reinterpret_cast<RetType *>(value);
 
-		RetType *cObject = CObjectInitializer<CppType>::init();
+		RetType *cObject = CppTypeMetaInfo<CppType>::init();
 		setCppPtrFromC(cObject, cppObject);
 		return cObject;
 	}
@@ -285,7 +282,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::list<std::shared_ptr<CppType>> getResolvedCppListFromCList (const bctbx_list_t *cList) {
@@ -297,7 +294,7 @@ public:
 
 	template<
 		typename CType,
-		typename CppType = typename CTypeToCppType<CType>::type,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::list<CppType> getResolvedCppListFromCList (const bctbx_list_t *cList) {
@@ -352,54 +349,45 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_BEGIN_NAMESPACE \
 	class CPP_TYPE; \
 	template<> \
-	struct CppTypeToCType<CPP_TYPE> { \
+	struct CppTypeMetaInfo<CPP_TYPE> { \
 		enum { \
 			defined = true, \
 			isSubtype = false \
 		}; \
-		typedef Linphone ## C_TYPE type; \
-	}; \
-	template<> \
-	struct CTypeToCppType<Linphone ## C_TYPE> { \
-		enum { defined = true }; \
-		typedef CPP_TYPE type; \
-	}; \
-	template<> \
-	struct CObjectInitializer<CPP_TYPE> { \
+		typedef Linphone ## C_TYPE cType; \
 		static inline Linphone ## C_TYPE *init () { \
 			return _linphone_ ## C_TYPE ## _init(); \
 		} \
+	}; \
+	template<> \
+	struct CTypeMetaInfo<Linphone ## C_TYPE> { \
+		enum { defined = true }; \
+		typedef CPP_TYPE cppType; \
 	}; \
 	LINPHONE_END_NAMESPACE
 
 #define L_REGISTER_SUBTYPE(CPP_TYPE, CPP_SUBTYPE) \
 	LINPHONE_BEGIN_NAMESPACE \
 	class CPP_SUBTYPE; \
-	static_assert(CppTypeToCType<CPP_TYPE>::defined, "Type base is not defined"); \
+	static_assert(CppTypeMetaInfo<CPP_TYPE>::defined, "Base type is not defined"); \
 	template<> \
-	struct CppTypeToCType<CPP_SUBTYPE> { \
+	struct CppTypeMetaInfo<CPP_SUBTYPE> { \
 		enum { \
 			defined = true, \
 			isSubtype = true \
 		}; \
-		typedef CppTypeToCType<CPP_TYPE>::type type; \
-	}; \
-	template<> \
-	struct CObjectInitializer<CPP_SUBTYPE> { \
-		static inline typename CppTypeToCType<CPP_TYPE>::type *init () { \
-			return CObjectInitializer<CPP_TYPE>::init(); \
+		typedef CppTypeMetaInfo<CPP_TYPE>::cType cType; \
+		static inline typename CppTypeMetaInfo<CPP_TYPE>::cType *init () { \
+			return CppTypeMetaInfo<CPP_TYPE>::init(); \
 		} \
 	}; \
 	LINPHONE_END_NAMESPACE
 
-#define L_ASSERT_C_TYPE(C_TYPE) \
-	static_assert(LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::defined, "Type is not defined."); \
-
 #define L_CPP_TYPE_OF_C_TYPE(C_TYPE) \
-	LINPHONE_NAMESPACE::CTypeToCppType<Linphone ## C_TYPE>::type
+	LINPHONE_NAMESPACE::CTypeMetaInfo<Linphone ## C_TYPE>::cppType
 
 #define L_CPP_TYPE_OF_C_OBJECT(C_OBJECT) \
-	LINPHONE_NAMESPACE::CTypeToCppType<std::remove_const<std::remove_pointer<decltype(C_OBJECT)>::type>::type>::type
+	LINPHONE_NAMESPACE::CTypeMetaInfo<std::remove_const<std::remove_pointer<decltype(C_OBJECT)>::type>::type>::cppType
 
 // -----------------------------------------------------------------------------
 // C object declaration.
@@ -425,7 +413,7 @@ LINPHONE_END_NAMESPACE
 
 // Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_STRUCT_IMPL(C_TYPE, ...) \
-	L_ASSERT_C_TYPE(C_TYPE) \
+	static_assert(LINPHONE_NAMESPACE::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
