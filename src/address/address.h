@@ -29,6 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 class AddressPrivate;
 
 class LINPHONE_PUBLIC Address : public ClonableObject {
+	friend class ClientGroupChatRoom;
+
 public:
 	Address (const std::string &address = "");
 	Address (const Address &src);

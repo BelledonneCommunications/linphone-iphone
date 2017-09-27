@@ -34,6 +34,7 @@ class CallSessionPrivate;
 
 class CallSession : public Object {
 	friend class CallPrivate;
+	friend class ClientGroupChatRoom;
 
 public:
 	CallSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);

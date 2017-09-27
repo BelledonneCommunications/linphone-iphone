@@ -16,8 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "address/address-p.h"
 #include "client-group-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
+#include "conference/session/call-session-p.h"
 #include "conference/participant-p.h"
 #include "content/content.h"
 #include "logger/logger.h"
@@ -67,6 +69,9 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 		shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
 		session->configure(LinphoneCallOutgoing, nullptr, nullptr, me->getAddress(), focus->getAddress());
 		session->initiateOutgoing();
+		Address addr = me->getAddress();
+		addr.setParam("text", "");
+		sal_op_set_contact_address(session->getPrivate()->getOp(), addr.getPrivate()->getInternalAddress());
 		session->startInvite(nullptr, d->subject);
 		d->setState(ChatRoom::State::CreationPending);
 	}
