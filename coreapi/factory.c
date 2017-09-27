@@ -167,6 +167,7 @@ static LinphoneCore *_linphone_factory_create_core (
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
 	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context, automatically_start);
 	lp_config_unref(config);
+	bctbx_uninit_logger();
 	return lc;
 }
 
