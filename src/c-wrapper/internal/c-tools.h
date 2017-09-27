@@ -152,20 +152,22 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<
-		typename CppType,
+		typename CType,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline void setCppPtrFromC (void *cObject, const std::shared_ptr<CppType> &cppObject) {
-		static_cast<WrappedObject<CppType> *>(cObject)->cppPtr = cppObject;
+	static inline void setCppPtrFromC (CType *cObject, const std::shared_ptr<CppType> &cppObject) {
+		reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr = cppObject;
 		cppObject->setProperty("LinphonePrivate::Wrapper::cBackPtr", cObject);
 	}
 
 	template<
-		typename CppType,
+		typename CType,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline void setCppPtrFromC (void *cObject, const CppType *cppObject) {
-		CppType **cppObjectAddr = &static_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+	static inline void setCppPtrFromC (CType *cObject, const CppType *cppObject) {
+		CppType **cppObjectAddr = &reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 		if (*cppObjectAddr == cppObject)
 			return;
 		delete *cppObjectAddr;
