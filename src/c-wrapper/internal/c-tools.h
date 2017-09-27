@@ -32,6 +32,12 @@
 // Internal.
 // =============================================================================
 
+#ifdef DEBUG
+	#define CHECK_CPP_OBJECT_AT_RUNTIME(CPP_OBJECT) checkCppObjectAtRuntime(CPP_OBJECT)
+#else
+	#define CHECK_CPP_OBJECT_AT_RUNTIME(CPP_OBJECT)
+#endif
+
 LINPHONE_BEGIN_NAMESPACE
 
 template<typename CppType>
@@ -45,7 +51,9 @@ struct CppTypeMetaInfo {
 
 template<typename CType>
 struct CTypeMetaInfo {
-	enum { defined = false };
+	enum {
+		defined = false
+	};
 	typedef void cppType;
 };
 
@@ -94,6 +102,15 @@ private:
 		CType *cppPtr;
 	};
 
+	// ---------------------------------------------------------------------------
+	// Runtime checker.
+	// ---------------------------------------------------------------------------
+
+	static inline void fatal (const char *message) {
+		std::cout << "[FATAL C-WRAPPER]" << message << std::endl;
+		exit(1);
+	}
+
 public:
 	// ---------------------------------------------------------------------------
 	// Get private data of cpp Object.
@@ -103,7 +120,7 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr decltype (std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
+	static constexpr decltype(std::declval<CppType>().getPrivate()) getPrivate (CppType *cppObject) {
 		return cppObject->getPrivate();
 	}
 
@@ -190,7 +207,7 @@ public:
 		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = variant.getValue<void *>();
 		if (value)
-			return reinterpret_cast<RetType *>(value);
+			return static_cast<RetType *>(value);
 
 		RetType *cObject = CppTypeMetaInfo<CppType>::init();
 		setCppPtrFromC(cObject, cppObject);
@@ -202,7 +219,14 @@ public:
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (CppType *cppObject) {
-		return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
+		try {
+			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
+		} catch (const std::bad_weak_ptr &e) {
+			fatal(e.what());
+		}
+
+		L_ASSERT(false);
+		return nullptr;
 	}
 
 	template<
@@ -212,10 +236,10 @@ public:
 	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (const CppType *cppObject) {
 		typedef typename CppTypeMetaInfo<CppType>::cType RetType;
 
-		Variant v = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
-		void *value = v.getValue<void *>();
+		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
+		void *value = variant.getValue<void *>();
 		if (value)
-			return reinterpret_cast<RetType *>(value);
+			return static_cast<RetType *>(value);
 
 		RetType *cObject = CppTypeMetaInfo<CppType>::init();
 		setCppPtrFromC(cObject, cppObject);
@@ -241,7 +265,7 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<typename T>
-	static inline bctbx_list_t *getCListFromCppList (const std::list<T*> &cppList) {
+	static inline bctbx_list_t *getCListFromCppList (const std::list<T *> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
 			result = bctbx_list_append(result, value);
@@ -249,7 +273,7 @@ public:
 	}
 
 	template<typename T>
-	static inline std::list<T*> getCppListFromCList (const bctbx_list_t *cList) {
+	static inline std::list<T *> getCppListFromCList (const bctbx_list_t *cList) {
 		std::list<T> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
 			result.push_back(static_cast<T>(bctbx_list_get_data(it)));
@@ -290,7 +314,7 @@ public:
 	static inline std::list<std::shared_ptr<CppType>> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<std::shared_ptr<CppType>> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
-			result.push_back(getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
+			result.push_back(getCppPtrFromC(static_cast<CType *>(bctbx_list_get_data(it))));
 		return result;
 	}
 
@@ -302,7 +326,7 @@ public:
 	static inline std::list<CppType> getResolvedCppListFromCList (const bctbx_list_t *cList) {
 		std::list<CppType> result;
 		for (auto it = cList; it; it = bctbx_list_next(it))
-			result.push_back(*getCppPtrFromC(reinterpret_cast<CType *>(bctbx_list_get_data(it))));
+			result.push_back(*getCppPtrFromC(static_cast<CType *>(bctbx_list_get_data(it))));
 		return result;
 	}
 
@@ -318,7 +342,7 @@ LINPHONE_END_NAMESPACE
 
 #define L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
-	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init() { \
+	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init () { \
 		Linphone ## C_TYPE * object = belle_sip_object_new(Linphone ## C_TYPE); \
 		new(&object->cppPtr) std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)>(); \
 		CONSTRUCTOR(object); \
@@ -443,7 +467,7 @@ LINPHONE_END_NAMESPACE
 
 #define L_DECLARE_C_OBJECT_NEW_DEFAULT(C_TYPE, C_NAME) \
 	Linphone ## C_TYPE * linphone_ ## C_NAME ## _new() { \
-		Linphone ## C_TYPE * object = _linphone_ ## C_TYPE ## _init(); \
+		Linphone ## C_TYPE *object = _linphone_ ## C_TYPE ## _init(); \
 		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::C_TYPE>(); \
 		return object; \
 	}
@@ -457,7 +481,7 @@ LINPHONE_END_NAMESPACE
 #define L_C_TO_STRING(STR) ((STR) == NULL ? std::string() : (STR))
 
 // Call the init function of wrapped C object.
-#define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init ()
+#define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init()
 
 // Get/set the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT) \
