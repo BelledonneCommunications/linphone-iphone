@@ -61,73 +61,73 @@ LinphoneChatMessage * ChatMessage::getBackPtr() {
 }
 
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->chatRoom;
 }
 
 void ChatMessage::setChatRoom (shared_ptr<ChatRoom> chatRoom) {
-	L_D(ChatMessage);
+	L_D();
 	d->chatRoom = chatRoom;
 }
 
 // -----------------------------------------------------------------------------
 
 string ChatMessage::getExternalBodyUrl() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->externalBodyUrl;
 }
 
 void ChatMessage::setExternalBodyUrl(const string &url) {
-	L_D(ChatMessage);
+	L_D();
 	d->externalBodyUrl = url;
 }
 
 time_t ChatMessage::getTime () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->time;
 }
 void ChatMessage::setTime(time_t time) {
-	L_D(ChatMessage);
+	L_D();
 	d->time = time;
 }
 
 bool ChatMessage::isSecured () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->isSecured;
 }
 
 void ChatMessage::setIsSecured(bool isSecured) {
-	L_D(ChatMessage);
+	L_D();
 	d->isSecured = isSecured;
 }
 
 ChatMessage::Direction ChatMessage::getDirection () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->direction;
 }
 
 void ChatMessage::setDirection (ChatMessage::Direction dir) {
-	L_D(ChatMessage);
+	L_D();
 	d->direction = dir;
 }
 
 bool ChatMessage::isOutgoing () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->direction == Outgoing;
 }
 
 bool ChatMessage::isIncoming () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->direction == Incoming;
 }
 
 ChatMessage::State ChatMessage::getState() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->state;
 }
 
 void ChatMessage::setState(State state) {
-	L_D(ChatMessage);
+	L_D();
 	if (state != d->state && d->chatRoom) {
 		if (((d->state == Displayed) || (d->state == DeliveredToUser))
 			&& ((state == DeliveredToUser) || (state == Delivered) || (state == NotDelivered))) {
@@ -150,18 +150,18 @@ void ChatMessage::setState(State state) {
 }
 
 string ChatMessage::getId () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->id;
 }
 
 void ChatMessage::setId (string id) {
-	L_D(ChatMessage);
+	L_D();
 	d->id = id;
 }
 
 bool ChatMessage::isRead() const {
 	return false;
-	L_D(const ChatMessage);
+	L_D();
 	LinphoneCore *lc = d->chatRoom->getCore();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) && d->state == Displayed) return true;
@@ -170,158 +170,158 @@ bool ChatMessage::isRead() const {
 }
 
 string ChatMessage::getAppdata () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->appData;
 }
 
 void ChatMessage::setAppdata (const string &appData) {
-	L_D(ChatMessage);
+	L_D();
 	d->appData = appData;
 	// TODO: store app data in db !
 	// linphone_chat_message_store_appdata(msg);
 }
 
 shared_ptr<Address> ChatMessage::getFromAddress () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->from;
 }
 
 void ChatMessage::setFromAddress(shared_ptr<Address> from) {
-	L_D(ChatMessage);
+	L_D();
 	d->from = from;
 }
 
 shared_ptr<Address> ChatMessage::getToAddress () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->to;
 }
 
 void ChatMessage::setToAddress(shared_ptr<Address> to) {
-	L_D(ChatMessage);
+	L_D();
 	d->to = to;
 }
 
 string ChatMessage::getFileTransferFilepath() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->fileTransferFilePath;
 }
 
 void ChatMessage::setFileTransferFilepath(const string &path) {
-	L_D(ChatMessage);
+	L_D();
 	d->fileTransferFilePath = path;
 }
 
 bool ChatMessage::isToBeStored() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->isToBeStored;
 }
 
 void ChatMessage::setIsToBeStored(bool store) {
-	L_D(ChatMessage);
+	L_D();
 	d->isToBeStored = store;
 }
 
 // -----------------------------------------------------------------------------
 
 string ChatMessage::getContentType() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->cContentType;
 }
 
 void ChatMessage::setContentType(string contentType) {
-	L_D(ChatMessage);
+	L_D();
 	d->cContentType = contentType;
 }
 
 string ChatMessage::getText() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->cText;
 }
 
 void ChatMessage::setText(string text) {
-	L_D(ChatMessage);
+	L_D();
 	d->cText = text;
 }
 
 LinphoneContent * ChatMessage::getFileTransferInformation() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->cFileTransferInformation;
 }
 
 void ChatMessage::setFileTransferInformation(LinphoneContent *content) {
-	L_D(ChatMessage);
+	L_D();
 	d->cFileTransferInformation = content;
 }
 
 unsigned int ChatMessage::getStorageId() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->storageId;
 }
 
 void ChatMessage::setStorageId(unsigned int id) {
-	L_D(ChatMessage);
+	L_D();
 	d->storageId = id;
 }
 
 belle_http_request_t *ChatMessage::getHttpRequest() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->httpRequest;
 }
 
 void ChatMessage::setHttpRequest(belle_http_request_t *request) {
-	L_D(ChatMessage);
+	L_D();
 	d->httpRequest = request;
 }
 
 SalOp *ChatMessage::getSalOp() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->salOp;
 }
 
 void ChatMessage::setSalOp(SalOp *op) {
-	L_D(ChatMessage);
+	L_D();
 	d->salOp = op;
 }
 
 SalCustomHeader *ChatMessage::getSalCustomHeaders() const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->salCustomHeaders;
 }
 
 void ChatMessage::setSalCustomHeaders(SalCustomHeader *headers) {
-	L_D(ChatMessage);
+	L_D();
 	d->salCustomHeaders = headers;
 }
 
 void ChatMessage::addSalCustomHeader(string name, string value) {
-	L_D(ChatMessage);
+	L_D();
 	d->salCustomHeaders = sal_custom_header_append(d->salCustomHeaders, name.c_str(), value.c_str());
 }
 
 void ChatMessage::removeSalCustomHeader(string name) {
-	L_D(ChatMessage);
+	L_D();
 	d->salCustomHeaders = sal_custom_header_remove(d->salCustomHeaders, name.c_str());
 }
 
 string ChatMessage::getSalCustomHeaderValue(string name) {
-	L_D(ChatMessage);
+	L_D();
 	return sal_custom_header_find(d->salCustomHeaders, name.c_str());
 }
 
 const LinphoneErrorInfo * ChatMessage::getErrorInfo() const {
-	L_D(const ChatMessage);
+	L_D();
 	if (!d->errorInfo) d->errorInfo = linphone_error_info_new(); //let's do it mutable
 	linphone_error_info_from_sal_op(d->errorInfo, d->salOp);
 	return d->errorInfo;
 }
 
 bool ChatMessage::isReadOnly () const {
-	L_D(const ChatMessage);
+	L_D();
 	return d->isReadOnly;
 }
 
 list<shared_ptr<const Content> > ChatMessage::getContents () const {
-	L_D(const ChatMessage);
+	L_D();
 	list<shared_ptr<const Content> > contents;
 	for (const auto &content : d->contents)
 		contents.push_back(content);
@@ -329,21 +329,21 @@ list<shared_ptr<const Content> > ChatMessage::getContents () const {
 }
 
 void ChatMessage::addContent (const shared_ptr<Content> &content) {
-	L_D(ChatMessage);
+	L_D();
 	if (d->isReadOnly) return;
 
 	d->contents.push_back(content);
 }
 
 void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
-	L_D(ChatMessage);
+	L_D();
 	if (d->isReadOnly) return;
 
 	d->contents.remove(const_pointer_cast<Content>(content));
 }
 
 string ChatMessage::getCustomHeaderValue (const string &headerName) const {
-	L_D(const ChatMessage);
+	L_D();
 	try {
 		return d->customHeaders.at(headerName);
 	} catch (const exception &) {
@@ -353,14 +353,14 @@ string ChatMessage::getCustomHeaderValue (const string &headerName) const {
 }
 
 void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
-	L_D(ChatMessage);
+	L_D();
 	if (d->isReadOnly) return;
 
 	d->customHeaders[headerName] = headerValue;
 }
 
 void ChatMessage::removeCustomHeader (const string &headerName) {
-	L_D(ChatMessage);
+	L_D();
 	if (d->isReadOnly) return;
 
 	d->customHeaders.erase(headerName);
@@ -379,7 +379,7 @@ void ChatMessage::updateState(State state) {
 }
 
 void ChatMessage::send () {
-	L_D(ChatMessage);
+	L_D();
 
 	if (d->contents.size() > 1) {
 		MultipartChatMessageModifier mcmm;
@@ -622,17 +622,17 @@ static void linphone_chat_process_response_headers_from_get_file(void *data, con
 		 belle_sip_message_t *response = BELLE_SIP_MESSAGE(event->response);
 		 belle_sip_body_handler_t *body_handler = NULL;
 		 size_t body_size = 0;
- 
+
 		 if (msg->file_transfer_information == NULL) {
 			 ms_warning("No file transfer information for msg %p: creating...", msg);
 			 msg->file_transfer_information = linphone_chat_create_file_transfer_information_from_headers(response);
 		 }
- 
+
 		 if (msg->file_transfer_information) {
 			 body_size = linphone_content_get_size(msg->file_transfer_information);
 		 }
- 
- 
+
+
 		 body_handler = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(body_size, linphone_chat_message_file_transfer_on_progress, NULL, on_recv_body, NULL, on_recv_end, msg);
 		 if (msg->file_transfer_filepath != NULL) {
 			 belle_sip_user_body_handler_t *bh = (belle_sip_user_body_handler_t *)body_handler;
@@ -1072,7 +1072,7 @@ static int _linphone_chat_room_start_http_transfer(LinphoneChatMessage *msg, con
 	}
 	// keep a reference to the http request to be able to cancel it during upload
 	belle_sip_object_ref(msg->http_request);
-	
+
 		// give msg to listener to be able to start the actual file upload when server answer a 204 No content
 		msg->http_listener = belle_http_request_listener_create_from_callbacks(cbs, linphone_chat_message_ref(msg));
 		belle_http_provider_send_request(linphone_chat_room_get_core(msg->chat_room)->http_provider, msg->http_request, msg->http_listener);

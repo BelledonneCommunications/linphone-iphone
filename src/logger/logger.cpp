@@ -37,12 +37,12 @@ public:
 // -----------------------------------------------------------------------------
 
 Logger::Logger (Level level) : Object(*new LoggerPrivate) {
-	L_D(Logger);
+	L_D();
 	d->level = level;
 }
 
 Logger::~Logger () {
-	L_D(Logger);
+	L_D();
 
 	const string str = d->os.str();
 
@@ -68,7 +68,7 @@ Logger::~Logger () {
 }
 
 ostringstream &Logger::getOutput () {
-	L_D(Logger);
+	L_D();
 	return d->os;
 }
 

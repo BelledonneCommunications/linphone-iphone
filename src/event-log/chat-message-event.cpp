@@ -34,7 +34,7 @@ public:
 
 ChatMessageEvent::ChatMessageEvent (const shared_ptr<ChatMessage> &chatMessage) :
 	EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage) {
-	L_D(ChatMessageEvent);
+	L_D();
 	L_ASSERT(chatMessage);
 	d->chatMessage = chatMessage;
 }
@@ -42,7 +42,7 @@ ChatMessageEvent::ChatMessageEvent (const shared_ptr<ChatMessage> &chatMessage) 
 ChatMessageEvent::ChatMessageEvent (const ChatMessageEvent &src) : ChatMessageEvent(src.getChatMessage()) {}
 
 ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
-	L_D(ChatMessageEvent);
+	L_D();
 	if (this != &src) {
 		EventLog::operator=(src);
 		d->chatMessage = src.getPrivate()->chatMessage;
@@ -52,7 +52,7 @@ ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
 }
 
 shared_ptr<ChatMessage> ChatMessageEvent::getChatMessage () const {
-	L_D(const ChatMessageEvent);
+	L_D();
 	return d->chatMessage;
 }
 

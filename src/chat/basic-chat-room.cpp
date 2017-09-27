@@ -58,7 +58,7 @@ int BasicChatRoom::getNbParticipants () const {
 }
 
 list<shared_ptr<Participant>> BasicChatRoom::getParticipants () const {
-	L_D(const BasicChatRoom);
+	L_D();
 	list<shared_ptr<Participant>> l;
 	l.push_back(make_shared<Participant>(d->peerAddress));
 	return l;

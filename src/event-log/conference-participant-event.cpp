@@ -38,7 +38,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	const Address &conferenceAddress,
 	const Address &participantAddress
 ) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, conferenceAddress) {
-	L_D(ConferenceParticipantEvent);
+	L_D();
 	L_ASSERT(
 		type == Type::ConferenceParticipantAdded ||
 		type == Type::ConferenceParticipantRemoved ||
@@ -52,7 +52,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticip
 	ConferenceParticipantEvent(src.getType(), src.getAddress(), src.getParticipantAddress()) {}
 
 ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const ConferenceParticipantEvent &src) {
-	L_D(ConferenceParticipantEvent);
+	L_D();
 	if (this != &src) {
 		ConferenceEvent::operator=(src);
 		d->participantAddress = src.getPrivate()->participantAddress;
@@ -62,7 +62,7 @@ ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const Confere
 }
 
 const Address &ConferenceParticipantEvent::getParticipantAddress () const {
-	L_D(const ConferenceParticipantEvent);
+	L_D();
 	return d->participantAddress;
 }
 

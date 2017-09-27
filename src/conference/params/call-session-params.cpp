@@ -81,7 +81,7 @@ CallSessionParams::CallSessionParams (const CallSessionParams &src)
 	: ClonableObject(*new CallSessionParamsPrivate(*src.getPrivate())) {}
 
 CallSessionParams &CallSessionParams::operator= (const CallSessionParams &src) {
-	L_D(CallSessionParams);
+	L_D();
 	if (this != &src)
 		*d = *src.getPrivate();
 	return *this;
@@ -90,7 +90,7 @@ CallSessionParams &CallSessionParams::operator= (const CallSessionParams &src) {
 // -----------------------------------------------------------------------------
 
 void CallSessionParams::initDefault (LinphoneCore *core) {
-	L_D(CallSessionParams);
+	L_D();
 	d->inConference = false;
 	d->privacy = LinphonePrivacyDefault;
 }
@@ -98,41 +98,41 @@ void CallSessionParams::initDefault (LinphoneCore *core) {
 // -----------------------------------------------------------------------------
 
 const string& CallSessionParams::getSessionName () const {
-	L_D(const CallSessionParams);
+	L_D();
 	return d->sessionName;
 }
 
 void CallSessionParams::setSessionName (const string &sessionName) {
-	L_D(CallSessionParams);
+	L_D();
 	d->sessionName = sessionName;
 }
 
 // -----------------------------------------------------------------------------
 
 LinphonePrivacyMask CallSessionParams::getPrivacy () const {
-	L_D(const CallSessionParams);
+	L_D();
 	return d->privacy;
 }
 
 void CallSessionParams::setPrivacy (LinphonePrivacyMask privacy) {
-	L_D(CallSessionParams);
+	L_D();
 	d->privacy = privacy;
 }
 
 // -----------------------------------------------------------------------------
 
 void CallSessionParams::addCustomHeader (const string &headerName, const string &headerValue) {
-	L_D(CallSessionParams);
+	L_D();
 	d->customHeaders = sal_custom_header_append(d->customHeaders, headerName.c_str(), headerValue.c_str());
 }
 
 void CallSessionParams::clearCustomHeaders () {
-	L_D(CallSessionParams);
+	L_D();
 	d->setCustomHeaders(nullptr);
 }
 
 const char * CallSessionParams::getCustomHeader (const string &headerName) const {
-	L_D(const CallSessionParams);
+	L_D();
 	return sal_custom_header_find(d->customHeaders, headerName.c_str());
 }
 

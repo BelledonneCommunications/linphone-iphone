@@ -29,18 +29,18 @@ LINPHONE_BEGIN_NAMESPACE
 Cpim::Header::Header (HeaderPrivate &p) : Object(p) {}
 
 string Cpim::Header::getValue () const {
-	L_D(const Header);
+	L_D();
 	return d->value;
 }
 
 bool Cpim::Header::setValue (const string &value) {
-	L_D(Header);
+	L_D();
 	d->value = value;
 	return true;
 }
 
 string Cpim::Header::asString () const {
-	L_D(const Header);
+	L_D();
 	return getName() + ": " + d->value + "\r\n";
 }
 

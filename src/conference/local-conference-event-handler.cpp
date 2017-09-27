@@ -70,7 +70,7 @@ void LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, const Ad
 // =============================================================================
 
 LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf) : Object(*new LocalConferenceEventHandlerPrivate) {
-	L_D(LocalConferenceEventHandler);
+	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConf;
 	d->core = core; // conf->getCore() ?
@@ -83,7 +83,7 @@ LocalConferenceEventHandler::~LocalConferenceEventHandler() {
 // -----------------------------------------------------------------------------
 
 string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
-	L_D(LocalConferenceEventHandler);
+	L_D();
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -108,7 +108,7 @@ string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 }
 
 string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) {
-	L_D(LocalConferenceEventHandler);
+	L_D();
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -130,7 +130,7 @@ string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) 
 }
 
 string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr) {
-	L_D(LocalConferenceEventHandler);
+	L_D();
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -149,7 +149,7 @@ string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr
 }
 
 string LocalConferenceEventHandler::notifyParticipantSetAdmin(const Address &addr, bool isAdmin) {
-	L_D(LocalConferenceEventHandler);
+	L_D();
 	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;

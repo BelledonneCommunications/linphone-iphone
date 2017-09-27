@@ -74,7 +74,7 @@ bool Cpim::SubjectHeader::setValue (const string &value) {
 }
 
 string Cpim::SubjectHeader::getLanguage () const {
-	L_D(const SubjectHeader);
+	L_D();
 	return d->language;
 }
 
@@ -82,14 +82,14 @@ bool Cpim::SubjectHeader::setLanguage (const string &language) {
 	if (!language.empty() && !Parser::getInstance()->subjectHeaderLanguageIsValid(language))
 		return false;
 
-	L_D(SubjectHeader);
+	L_D();
 	d->language = language;
 
 	return true;
 }
 
 string Cpim::SubjectHeader::asString () const {
-	L_D(const SubjectHeader);
+	L_D();
 
 	string languageParam;
 	if (!d->language.empty())
@@ -99,7 +99,7 @@ string Cpim::SubjectHeader::asString () const {
 }
 
 void Cpim::SubjectHeader::force (const string &value, const string &language) {
-	L_D(SubjectHeader);
+	L_D();
 	CoreHeader::force(value);
 	d->language = language;
 }

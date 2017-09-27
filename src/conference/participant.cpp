@@ -45,26 +45,26 @@ shared_ptr<CallSession> ParticipantPrivate::getSession () const {
 // =============================================================================
 
 Participant::Participant (const Address &addr) : Object(*new ParticipantPrivate) {
-	L_D(Participant);
+	L_D();
 	d->addr = addr;
 }
 
 // -----------------------------------------------------------------------------
 
 const Address& Participant::getAddress () const {
-	L_D(const Participant);
+	L_D();
 	return d->addr;
 }
 
 // -----------------------------------------------------------------------------
 
 bool Participant::isAdmin () const {
-	L_D(const Participant);
+	L_D();
 	return d->isAdmin;
 }
 
 void Participant::setAdmin (bool isAdmin) {
-	L_D(Participant);
+	L_D();
 	d->isAdmin = isAdmin;
 }
 

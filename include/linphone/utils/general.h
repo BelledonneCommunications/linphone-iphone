@@ -125,8 +125,8 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 	CLASS(const CLASS &) = delete; \
 	CLASS &operator= (const CLASS &) = delete;
 
-#define L_D(CLASS) CLASS ## Private * const d = getPrivate();
-#define L_Q(CLASS) CLASS * const q = getPublic();
+#define L_D() decltype(std::declval<decltype(*this)>().getPrivate()) const d = getPrivate();
+#define L_Q() decltype(std::declval<decltype(*this)>().getPublic()) const q = getPublic();
 
 #define L_USE_DEFAULT_SHARE_IMPL(CLASS, PARENT_CLASS) \
 	CLASS::CLASS (const CLASS &src) : PARENT_CLASS(*src.getPrivate()) {} \

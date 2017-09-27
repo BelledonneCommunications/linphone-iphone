@@ -47,7 +47,7 @@ RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
 // -----------------------------------------------------------------------------
 
 void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, LinphoneCall *call) {
-	L_Q(ChatRoom);
+	L_Q();
 	const uint32_t new_line = 0x2028;
 	const uint32_t crlf = 0x0D0A;
 	const uint32_t lf = 0x0A;
@@ -107,7 +107,7 @@ RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &p
 // -----------------------------------------------------------------------------
 
 void RealTimeTextChatRoom::sendMessage (LinphoneChatMessage *msg) {
-	L_D(ChatRoom);
+	L_D();
 	if (d->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(d->call))) {
 		uint32_t new_line = 0x2028;
 		linphone_chat_message_put_char(msg, new_line);
@@ -118,7 +118,7 @@ void RealTimeTextChatRoom::sendMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 uint32_t RealTimeTextChatRoom::getChar () const {
-	L_D(const ChatRoom);
+	L_D();
 	if (!d->receivedRttCharacters.empty()) {
 		for (auto &cmc : d->receivedRttCharacters) {
 			if (!cmc->has_been_read) {
@@ -133,7 +133,7 @@ uint32_t RealTimeTextChatRoom::getChar () const {
 // -----------------------------------------------------------------------------
 
 LinphoneCall *RealTimeTextChatRoom::getCall () const {
-	L_D(const ChatRoom);
+	L_D();
 	return d->call;
 }
 
@@ -162,7 +162,7 @@ int RealTimeTextChatRoom::getNbParticipants () const {
 }
 
 list<shared_ptr<Participant>> RealTimeTextChatRoom::getParticipants () const {
-	L_D(const RealTimeTextChatRoom);
+	L_D();
 	list<shared_ptr<Participant>> l;
 	l.push_back(make_shared<Participant>(d->peerAddress));
 	return l;

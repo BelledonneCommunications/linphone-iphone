@@ -27,19 +27,19 @@ EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
 EventLog::EventLog (const EventLog &) : ClonableObject(*new EventLogPrivate) {}
 
 EventLog::EventLog (EventLogPrivate &p, Type type) : ClonableObject(*new EventLogPrivate) {
-	L_D(EventLog);
+	L_D();
 	d->type = type;
 }
 
 EventLog &EventLog::operator= (const EventLog &src) {
-	L_D(EventLog);
+	L_D();
 	if (this != &src)
 		d->type = src.getPrivate()->type;
 	return *this;
 }
 
 EventLog::Type EventLog::getType () const {
-	L_D(const EventLog);
+	L_D();
 	return d->type;
 }
 

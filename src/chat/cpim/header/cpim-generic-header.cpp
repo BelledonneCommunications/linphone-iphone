@@ -42,12 +42,12 @@ public:
 Cpim::GenericHeader::GenericHeader () : Header(*new GenericHeaderPrivate) {}
 
 string Cpim::GenericHeader::getName () const {
-	L_D(const GenericHeader);
+	L_D();
 	return d->name;
 }
 
 bool Cpim::GenericHeader::setName (const string &name) {
-	L_D(GenericHeader);
+	L_D();
 
 	static const set<string> reserved = {
 		"From", "To", "cc", "DateTime", "Subject", "NS", "Require"
@@ -68,12 +68,12 @@ bool Cpim::GenericHeader::setValue (const string &value) {
 }
 
 Cpim::GenericHeader::ParameterList Cpim::GenericHeader::getParameters () const {
-	L_D(const GenericHeader);
+	L_D();
 	return d->parameters;
 }
 
 bool Cpim::GenericHeader::addParameter (const string &key, const string &value) {
-	L_D(GenericHeader);
+	L_D();
 
 	if (!Parser::getInstance()->headerParameterIsValid(key + "=" + value))
 		return false;
@@ -83,17 +83,17 @@ bool Cpim::GenericHeader::addParameter (const string &key, const string &value) 
 }
 
 void Cpim::GenericHeader::removeParameter (const string &key, const string &value) {
-	L_D(GenericHeader);
+	L_D();
 	d->parameters->remove(make_pair(key, value));
 }
 
 bool Cpim::GenericHeader::isValid () const {
-	L_D(const GenericHeader);
+	L_D();
 	return !d->name.empty() && !getValue().empty();
 }
 
 string Cpim::GenericHeader::asString () const {
-	L_D(const GenericHeader);
+	L_D();
 
 	string parameters;
 	for (const auto &parameter : *d->parameters)
@@ -105,7 +105,7 @@ string Cpim::GenericHeader::asString () const {
 // -----------------------------------------------------------------------------
 
 void Cpim::GenericHeader::force (const string &name, const string &value, const string &parameters) {
-	L_D(GenericHeader);
+	L_D();
 
 	// Set name/value.
 	d->name = name;

@@ -49,18 +49,18 @@ PropertyContainer &PropertyContainer::operator= (const PropertyContainer &) {
 }
 
 Variant PropertyContainer::getProperty (const string &name) const {
-	L_D(const PropertyContainer);
+	L_D();
 	auto it = d->properties.find(name);
 	return it == d->properties.cend() ? Variant() : it->second;
 }
 
 void PropertyContainer::setProperty (const string &name, const Variant &value) {
-	L_D(PropertyContainer);
+	L_D();
 	d->properties[name] = value;
 }
 
 void PropertyContainer::setProperty (const string &name, Variant &&value) {
-	L_D(PropertyContainer);
+	L_D();
 	d->properties[name] = move(value);
 }
 

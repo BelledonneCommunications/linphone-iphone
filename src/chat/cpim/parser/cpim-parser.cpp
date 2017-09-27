@@ -219,7 +219,7 @@ public:
 };
 
 Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
-	L_D(Parser);
+	L_D();
 
 	belr::ABNFGrammarBuilder builder;
 
@@ -231,7 +231,7 @@ Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 // -----------------------------------------------------------------------------
 
 shared_ptr<Cpim::Message> Cpim::Parser::parseMessage (const string &input) {
-	L_D(Parser);
+	L_D();
 
 	typedef void (list<shared_ptr<HeaderNode> >::*pushPtr)(const shared_ptr<HeaderNode> &value);
 
@@ -300,17 +300,17 @@ static bool headerIsValid (const shared_ptr<belr::Grammar> &grammar, const strin
 }
 
 bool Cpim::Parser::headerNameIsValid (const string &headerName) const {
-	L_D(const Parser);
+	L_D();
 	return headerIsValid(d->grammar, headerName + ": value\r\n");
 }
 
 bool Cpim::Parser::headerValueIsValid (const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return headerIsValid(d->grammar, "key: " + headerValue + "\r\n");
 }
 
 bool Cpim::Parser::headerParameterIsValid (const string &headerParameter) const {
-	L_D(const Parser);
+	L_D();
 	return headerIsValid(d->grammar, "key:;" + headerParameter + " value\r\n");
 }
 
@@ -338,19 +338,19 @@ static bool coreHeaderIsValid (
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::FromHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "From", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::ToHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "To", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::CcHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "cc", headerValue);
 }
 
@@ -358,7 +358,7 @@ template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerValue) const {
 	static const int daysInMonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-	L_D(const Parser);
+	L_D();
 	if (!LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "DateTime", headerValue))
 		return false;
 
@@ -397,26 +397,26 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::SubjectHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::NsHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "NS", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::RequireHeader>(const string &headerValue) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Require", headerValue);
 }
 
 // -----------------------------------------------------------------------------
 
 bool Cpim::Parser::subjectHeaderLanguageIsValid (const string &language) const {
-	L_D(const Parser);
+	L_D();
 	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", "SubjectValue", ";lang=" + language);
 }
 

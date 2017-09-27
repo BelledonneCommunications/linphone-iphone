@@ -27,7 +27,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 ConferenceEvent::ConferenceEvent (Type type, const Address &address) :
 	EventLog(*new ConferenceEventPrivate, type) {
-	L_D(ConferenceEvent);
+	L_D();
 	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
 	d->address = address;
 }
@@ -36,12 +36,12 @@ ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) : ConferenceEvent(
 
 ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &address) :
 	EventLog(p, type) {
-	L_D(ConferenceEvent);
+	L_D();
 	d->address = address;
 }
 
 ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
-	L_D(ConferenceEvent);
+	L_D();
 	if (this != &src) {
 		EventLog::operator=(src);
 		d->address = src.getPrivate()->address;
@@ -51,7 +51,7 @@ ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 }
 
 const Address &ConferenceEvent::getAddress () const {
-	L_D(const ConferenceEvent);
+	L_D();
 	return d->address;
 }
 

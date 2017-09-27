@@ -129,7 +129,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 // -----------------------------------------------------------------------------
 
 	void EventsDb::init () {
-		L_D(EventsDb);
+		L_D();
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
 		*session <<
@@ -344,7 +344,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	int EventsDb::getEventsCount (FilterMask mask) const {
-		L_D(const EventsDb);
+		L_D();
 
 		if (!isConnected()) {
 			lWarning() << "Unable to get events count. Not connected.";
@@ -366,7 +366,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	int EventsDb::getMessagesCount (const string &remoteAddress) const {
-		L_D(const EventsDb);
+		L_D();
 
 		if (!isConnected()) {
 			lWarning() << "Unable to get messages count. Not connected.";
@@ -393,7 +393,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
-		L_D(const EventsDb);
+		L_D();
 
 		if (!isConnected()) {
 			lWarning() << "Unable to get unread messages count. Not connected.";

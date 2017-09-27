@@ -44,14 +44,14 @@ public:
 
 RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener)
 	: Object(*new RemoteConferenceEventHandlerPrivate) {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->core = core;
 	d->listener = listener;
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	xercesc::XMLPlatformUtils::Terminate();
 	if (d->lev)
 		linphone_event_unref(d->lev);
@@ -60,7 +60,7 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
 // -----------------------------------------------------------------------------
 
 void RemoteConferenceEventHandler::subscribe(string confId) {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	d->confId = confId;
 	LinphoneAddress *addr = linphone_address_new(d->confAddr.asString().c_str());
 	d->lev = linphone_core_create_subscribe(d->core, addr, "Conference", 600);
@@ -73,12 +73,12 @@ void RemoteConferenceEventHandler::subscribe(string confId) {
 }
 
 void RemoteConferenceEventHandler::unsubscribe() {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	linphone_event_terminate(d->lev);
 }
 
 void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
 	if (confInfo->getEntity() == d->confAddr.asString()) {
@@ -109,12 +109,12 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 // -----------------------------------------------------------------------------
 
 string RemoteConferenceEventHandler::getConfId() {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	return d->confId;
 }
 
 void RemoteConferenceEventHandler::setConferenceAddress (const Address &addr) {
-	L_D(RemoteConferenceEventHandler);
+	L_D();
 	d->confAddr = addr;
 }
 

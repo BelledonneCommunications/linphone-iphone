@@ -34,7 +34,7 @@ public:
 // -----------------------------------------------------------------------------
 
 ContentType::ContentType (const string &contentType) : ClonableObject(*new ContentTypePrivate) {
-	L_D(ContentType);
+	L_D();
 
 	size_t pos = contentType.find('/');
 	if (pos == string::npos)
@@ -47,7 +47,7 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 }
 
 ContentType::ContentType (const string &type, const string &subType) : ClonableObject(*new ContentTypePrivate) {
-	L_D(ContentType);
+	L_D();
 
 	if (setType(type)) {
 		if (!setSubType(subType))
@@ -75,12 +75,12 @@ bool ContentType::operator== (const string &contentType) {
 }
 
 const string &ContentType::getType () const {
-	L_D(const ContentType);
+	L_D();
 	return d->type;
 }
 
 bool ContentType::setType (const string &type) {
-	L_D(ContentType);
+	L_D();
 	if (type.find('/') == string::npos) {
 		d->type = type;
 		return true;
@@ -89,12 +89,12 @@ bool ContentType::setType (const string &type) {
 }
 
 const string &ContentType::getSubType () const {
-	L_D(const ContentType);
+	L_D();
 	return d->subType;
 }
 
 bool ContentType::setSubType (const string &subType) {
-	L_D(ContentType);
+	L_D();
 	if (subType.find('/') == string::npos) {
 		d->subType = subType;
 		return true;
@@ -103,12 +103,12 @@ bool ContentType::setSubType (const string &subType) {
 }
 
 bool ContentType::isValid () const {
-	L_D(const ContentType);
+	L_D();
 	return !d->type.empty() && !d->subType.empty();
 }
 
 string ContentType::asString () const {
-	L_D(const ContentType);
+	L_D();
 	return isValid() ? d->type + "/" + d->subType : "";
 }
 

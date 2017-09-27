@@ -47,12 +47,12 @@ Cpim::Message::Message () : Object(*new MessagePrivate) {}
 // -----------------------------------------------------------------------------
 
 Cpim::Message::HeaderList Cpim::Message::getCpimHeaders () const {
-	L_D(const Message);
+	L_D();
 	return d->cpimHeaders;
 }
 
 bool Cpim::Message::addCpimHeader (const Header &cpimHeader) {
-	L_D(Message);
+	L_D();
 
 	if (!cpimHeader.isValid())
 		return false;
@@ -62,7 +62,7 @@ bool Cpim::Message::addCpimHeader (const Header &cpimHeader) {
 }
 
 void Cpim::Message::removeCpimHeader (const Header &cpimHeader) {
-	L_D(Message);
+	L_D();
 	d->cpimHeaders->remove_if([&cpimHeader](const shared_ptr<const Header> &header) {
 			return cpimHeader.getName() == header->getName() && cpimHeader.getValue() == header->getValue();
 		});
@@ -71,12 +71,12 @@ void Cpim::Message::removeCpimHeader (const Header &cpimHeader) {
 // -----------------------------------------------------------------------------
 
 Cpim::Message::HeaderList Cpim::Message::getMessageHeaders () const {
-	L_D(const Message);
+	L_D();
 	return d->messageHeaders;
 }
 
 bool Cpim::Message::addMessageHeader (const Header &messageHeader) {
-	L_D(Message);
+	L_D();
 
 	if (!messageHeader.isValid())
 		return false;
@@ -86,7 +86,7 @@ bool Cpim::Message::addMessageHeader (const Header &messageHeader) {
 }
 
 void Cpim::Message::removeMessageHeader (const Header &messageHeader) {
-	L_D(Message);
+	L_D();
 	d->messageHeaders->remove_if([&messageHeader](const shared_ptr<const Header> &header) {
 			return messageHeader.getName() == header->getName() && messageHeader.getValue() == header->getValue();
 		});
@@ -95,12 +95,12 @@ void Cpim::Message::removeMessageHeader (const Header &messageHeader) {
 // -----------------------------------------------------------------------------
 
 Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
-	L_D(const Message);
+	L_D();
 	return d->contentHeaders;
 }
 
 bool Cpim::Message::addContentHeader (const Header &contentHeader) {
-	L_D(Message);
+	L_D();
 
 	if (!contentHeader.isValid())
 		return false;
@@ -110,7 +110,7 @@ bool Cpim::Message::addContentHeader (const Header &contentHeader) {
 }
 
 void Cpim::Message::removeContentHeader (const Header &contentHeader) {
-	L_D(Message);
+	L_D();
 	d->contentHeaders->remove_if([&contentHeader](const shared_ptr<const Header> &header) {
 			return contentHeader.getName() == header->getName() && contentHeader.getValue() == header->getValue();
 		});
@@ -119,12 +119,12 @@ void Cpim::Message::removeContentHeader (const Header &contentHeader) {
 // -----------------------------------------------------------------------------
 
 string Cpim::Message::getContent () const {
-	L_D(const Message);
+	L_D();
 	return d->content;
 }
 
 bool Cpim::Message::setContent (const string &content) {
-	L_D(Message);
+	L_D();
 	d->content = content;
 	return true;
 }
@@ -132,7 +132,7 @@ bool Cpim::Message::setContent (const string &content) {
 // -----------------------------------------------------------------------------
 
 bool Cpim::Message::isValid () const {
-	L_D(const Message);
+	L_D();
 
 	return find_if(d->cpimHeaders->cbegin(), d->cpimHeaders->cend(),
 		[](const shared_ptr<const Header> &header) {
@@ -143,7 +143,7 @@ bool Cpim::Message::isValid () const {
 // -----------------------------------------------------------------------------
 
 string Cpim::Message::asString () const {
-	L_D(const Message);
+	L_D();
 
 	string output;
 	for (const auto &cpimHeader : *d->cpimHeaders)

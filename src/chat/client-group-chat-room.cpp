@@ -50,7 +50,7 @@ shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr
 }
 
 void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	L_D(ClientGroupChatRoom);
+	L_D();
 	if (addresses.empty())
 		return;
 	list<Address> sortedAddresses(addresses);
@@ -105,13 +105,13 @@ void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
-	L_D(ClientGroupChatRoom);
+	L_D();
 	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
-	L_D(ClientGroupChatRoom);
+	L_D();
 	d->setState(ChatRoom::State::Terminated);
 }
 

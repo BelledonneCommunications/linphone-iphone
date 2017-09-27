@@ -138,7 +138,7 @@ LinphoneMediaDirection MediaSessionParamsPrivate::salStreamDirToMediaDirection (
 // -----------------------------------------------------------------------------
 
 void MediaSessionParamsPrivate::adaptToNetwork (LinphoneCore *core, int pingTimeMs) {
-	L_Q(MediaSessionParams);
+	L_Q();
 	if ((pingTimeMs > 0) && lp_config_get_int(linphone_core_get_config(core), "net", "activate_edge_workarounds", 0)) {
 		lInfo() << "STUN server ping time is " << pingTimeMs << " ms";
 		int threshold = lp_config_get_int(linphone_core_get_config(core), "net", "edge_ping_time", 500);
@@ -159,12 +159,12 @@ void MediaSessionParamsPrivate::adaptToNetwork (LinphoneCore *core, int pingTime
 // -----------------------------------------------------------------------------
 
 SalStreamDir MediaSessionParamsPrivate::getSalAudioDirection () const {
-	L_Q(const MediaSessionParams);
+	L_Q();
 	return mediaDirectionToSalStreamDir(q->getAudioDirection());
 }
 
 SalStreamDir MediaSessionParamsPrivate::getSalVideoDirection () const {
-	L_Q(const MediaSessionParams);
+	L_Q();
 	return mediaDirectionToSalStreamDir(q->getVideoDirection());
 }
 
@@ -220,7 +220,7 @@ MediaSessionParams::MediaSessionParams (const MediaSessionParams &src)
 	: CallSessionParams(*new MediaSessionParamsPrivate(*src.getPrivate())) {}
 
 MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &src) {
-	L_D(MediaSessionParams);
+	L_D();
 	if (this != &src) {
 		CallSessionParams::operator=(src);
 		*d = *src.getPrivate();
@@ -231,7 +231,7 @@ MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &src
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::initDefault (LinphoneCore *core) {
-	L_D(MediaSessionParams);
+	L_D();
 	CallSessionParams::initDefault(core);
 	d->audioEnabled = true;
 	d->videoEnabled = linphone_core_video_enabled(core) && core->video_policy.automatically_initiate;
@@ -256,220 +256,220 @@ void MediaSessionParams::initDefault (LinphoneCore *core) {
 // -----------------------------------------------------------------------------
 
 bool MediaSessionParams::audioEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->audioEnabled;
 }
 
 bool MediaSessionParams::audioMulticastEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->audioMulticastEnabled;
 }
 
 void MediaSessionParams::enableAudio (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->audioEnabled = value;
 	if (d->audioEnabled && (getAudioDirection() == LinphoneMediaDirectionInactive))
 		setAudioDirection(LinphoneMediaDirectionSendRecv);
 }
 
 void MediaSessionParams::enableAudioMulticast (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->audioMulticastEnabled = value;
 }
 
 int MediaSessionParams::getAudioBandwidthLimit () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->audioBandwidthLimit;
 }
 
 LinphoneMediaDirection MediaSessionParams::getAudioDirection () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->audioDirection;
 }
 
 const OrtpPayloadType * MediaSessionParams::getUsedAudioCodec () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedAudioCodec;
 }
 
 LinphonePayloadType * MediaSessionParams::getUsedAudioPayloadType () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedAudioCodec ? linphone_payload_type_new(nullptr, d->usedAudioCodec) : nullptr;
 }
 
 void MediaSessionParams::setAudioBandwidthLimit (int value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->audioBandwidthLimit = value;
 }
 
 void MediaSessionParams::setAudioDirection (LinphoneMediaDirection direction) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->audioDirection = direction;
 }
 
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::enableVideo (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->videoEnabled = value;
 	if (d->videoEnabled && (getVideoDirection() == LinphoneMediaDirectionInactive))
 		setVideoDirection(LinphoneMediaDirectionSendRecv);
 }
 
 void MediaSessionParams::enableVideoMulticast (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->videoMulticastEnabled = value;
 }
 
 float MediaSessionParams::getReceivedFps () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->receivedFps;
 }
 
 LinphoneVideoDefinition * MediaSessionParams::getReceivedVideoDefinition () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->receivedVideoDefinition;
 }
 
 float MediaSessionParams::getSentFps () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->sentFps;
 }
 
 LinphoneVideoDefinition * MediaSessionParams::getSentVideoDefinition () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->sentVideoDefinition;
 }
 
 const OrtpPayloadType * MediaSessionParams::getUsedVideoCodec () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedVideoCodec;
 }
 
 LinphonePayloadType * MediaSessionParams::getUsedVideoPayloadType () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedVideoCodec ? linphone_payload_type_new(nullptr, d->usedVideoCodec) : nullptr;
 }
 
 LinphoneMediaDirection MediaSessionParams::getVideoDirection () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->videoDirection;
 }
 
 void MediaSessionParams::setVideoDirection (LinphoneMediaDirection direction) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->videoDirection = direction;
 }
 
 bool MediaSessionParams::videoEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->videoEnabled;
 }
 
 bool MediaSessionParams::videoMulticastEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->videoMulticastEnabled;
 }
 
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::enableRealtimeText (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->realtimeTextEnabled = value;
 }
 
 const OrtpPayloadType * MediaSessionParams::getUsedRealtimeTextCodec () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedRealtimeTextCodec;
 }
 
 LinphonePayloadType * MediaSessionParams::getUsedRealtimeTextPayloadType () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->usedRealtimeTextCodec ? linphone_payload_type_new(nullptr, d->usedRealtimeTextCodec) : nullptr;
 }
 
 bool MediaSessionParams::realtimeTextEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->realtimeTextEnabled;
 }
 
 // -----------------------------------------------------------------------------
 
 bool MediaSessionParams::avpfEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->avpfEnabled;
 }
 
 void MediaSessionParams::enableAvpf (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->avpfEnabled = value;
 }
 
 uint16_t MediaSessionParams::getAvpfRrInterval () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->avpfRrInterval;
 }
 
 void MediaSessionParams::setAvpfRrInterval (uint16_t value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->avpfRrInterval = value;
 }
 
 // -----------------------------------------------------------------------------
 
 bool MediaSessionParams::lowBandwidthEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->lowBandwidthEnabled;
 }
 
 void MediaSessionParams::enableLowBandwidth (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->lowBandwidthEnabled = value;
 }
 
 // -----------------------------------------------------------------------------
 
 const string& MediaSessionParams::getRecordFilePath () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->recordFilePath;
 }
 
 void MediaSessionParams::setRecordFilePath (const string &path) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->recordFilePath = path;
 }
 
 // -----------------------------------------------------------------------------
 
 bool MediaSessionParams::earlyMediaSendingEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->earlyMediaSendingEnabled;
 }
 
 void MediaSessionParams::enableEarlyMediaSending (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->earlyMediaSendingEnabled = value;
 }
 
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::enableMandatoryMediaEncryption (bool value) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->mandatoryMediaEncryptionEnabled = value;
 }
 
 LinphoneMediaEncryption MediaSessionParams::getMediaEncryption () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->encryption;
 }
 
 bool MediaSessionParams::mandatoryMediaEncryptionEnabled () const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return d->mandatoryMediaEncryptionEnabled;
 }
 
 void MediaSessionParams::setMediaEncryption (LinphoneMediaEncryption encryption) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->encryption = encryption;
 }
 
@@ -491,34 +491,34 @@ const char * MediaSessionParams::getRtpProfile () const {
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::addCustomSdpAttribute (const string &attributeName, const string &attributeValue) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->customSdpAttributes = sal_custom_sdp_attribute_append(d->customSdpAttributes, attributeName.c_str(), attributeValue.c_str());
 }
 
 void MediaSessionParams::clearCustomSdpAttributes () {
-	L_D(MediaSessionParams);
+	L_D();
 	d->setCustomSdpAttributes(nullptr);
 }
 
 const char * MediaSessionParams::getCustomSdpAttribute (const string &attributeName) const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return sal_custom_sdp_attribute_find(d->customSdpAttributes, attributeName.c_str());
 }
 
 // -----------------------------------------------------------------------------
 
 void MediaSessionParams::addCustomSdpMediaAttribute (LinphoneStreamType lst, const string &attributeName, const string &attributeValue) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->customSdpMediaAttributes[lst] = sal_custom_sdp_attribute_append(d->customSdpMediaAttributes[lst], attributeName.c_str(), attributeValue.c_str());
 }
 
 void MediaSessionParams::clearCustomSdpMediaAttributes (LinphoneStreamType lst) {
-	L_D(MediaSessionParams);
+	L_D();
 	d->setCustomSdpMediaAttributes(lst, nullptr);
 }
 
 const char * MediaSessionParams::getCustomSdpMediaAttribute (LinphoneStreamType lst, const string &attributeName) const {
-	L_D(const MediaSessionParams);
+	L_D();
 	return sal_custom_sdp_attribute_find(d->customSdpMediaAttributes[lst], attributeName.c_str());
 }
 

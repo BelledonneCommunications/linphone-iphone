@@ -39,19 +39,19 @@ public:
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
 Content::Content (const Content &src) : ClonableObject(*new ContentPrivate) {
-	L_D(Content);
+	L_D();
 	d->body = src.getBody();
 	d->contentType = src.getContentType();
 }
 
 Content::Content (Content &&src) : ClonableObject(*new ContentPrivate) {
-	L_D(Content);
+	L_D();
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
 }
 
 Content &Content::operator= (const Content &src) {
-	L_D(Content);
+	L_D();
 	if (this != &src) {
 		d->body = src.getBody();
 		d->contentType = src.getContentType();
@@ -61,65 +61,65 @@ Content &Content::operator= (const Content &src) {
 }
 
 Content &Content::operator= (Content &&src) {
-	L_D(Content);
+	L_D();
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
 	return *this;
 }
 
 const ContentType &Content::getContentType () const {
-	L_D(const Content);
+	L_D();
 	return d->contentType;
 }
 
 void Content::setContentType (const ContentType &contentType) {
-	L_D(Content);
+	L_D();
 	d->contentType = contentType;
 }
 
 void Content::setContentType (const string &contentType) {
-	L_D(Content);
+	L_D();
 	d->contentType = ContentType(contentType);
 }
 
 const string &Content::getContentDisposition () const {
-	L_D(const Content);
+	L_D();
 	return d->contentDisposition;
 }
 
 void Content::setContentDisposition (const string &contentDisposition) {
-	L_D(Content);
+	L_D();
 	d->contentDisposition = contentDisposition;
 }
 
 const vector<char> &Content::getBody () const {
-	L_D(const Content);
+	L_D();
 	return d->body;
 }
 
 string Content::getBodyAsString () const {
-	L_D(const Content);
+	L_D();
 	return string(d->body.begin(), d->body.end());
 }
 
 void Content::setBody (const vector<char> &body) {
-	L_D(Content);
+	L_D();
 	d->body = body;
 }
 
 void Content::setBody (const string &body) {
-	L_D(Content);
+	L_D();
 	d->body = vector<char>(body.cbegin(), body.cend());
 }
 
 void Content::setBody (const void *buffer, size_t size) {
-	L_D(Content);
+	L_D();
 	const char *start = static_cast<const char *>(buffer);
 	d->body = vector<char>(start, start + size);
 }
 
 size_t Content::getSize () const {
-	L_D(const Content);
+	L_D();
 	return d->body.size();
 }
 

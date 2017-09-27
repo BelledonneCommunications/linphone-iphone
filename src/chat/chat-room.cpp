@@ -94,7 +94,7 @@ void ChatRoomPrivate::removeTransientMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::release () {
-	L_Q(ChatRoom);
+	L_Q();
 	isComposingHandler.stopTimers();
 
 	for (auto &message : weakMessages)
@@ -107,7 +107,7 @@ void ChatRoomPrivate::release () {
 }
 
 void ChatRoomPrivate::sendImdn (const string &content, LinphoneReason reason) {
-	L_Q(ChatRoom);
+	L_Q();
 
 	const char *identity = nullptr;
 	LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
@@ -182,7 +182,7 @@ int ChatRoomPrivate::getMessagesCount (bool unreadOnly) {
 }
 
 void ChatRoomPrivate::setState (ChatRoom::State newState) {
-	L_Q(ChatRoom);
+	L_Q();
 	if (newState != state) {
 		state = newState;
 		if (state == ChatRoom::State::Instantiated)
@@ -194,7 +194,7 @@ void ChatRoomPrivate::setState (ChatRoom::State newState) {
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::sendIsComposingNotification () {
-	L_Q(ChatRoom);
+	L_Q();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core);
 	if (linphone_im_notif_policy_get_send_is_composing(policy)) {
 		LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
@@ -261,7 +261,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
  * | 14 | secured flag
  */
 int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colName) {
-	L_Q(ChatRoom);
+	L_Q();
 	unsigned int storageId = (unsigned int)atoi(argv[0]);
 
 	/* Check if the message exists in the weak messages list, in which case we should return that one. */
@@ -388,7 +388,7 @@ void ChatRoomPrivate::storeOrUpdateMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *salMsg) {
-	L_Q(ChatRoom);
+	L_Q();
 
 	bool increaseMsgCount = true;
 	LinphoneReason reason = LinphoneReasonNone;
@@ -502,7 +502,7 @@ end:
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::chatMessageReceived (LinphoneChatMessage *msg) {
-	L_Q(ChatRoom);
+	L_Q();
 	if (!ContentType::isImdn(linphone_chat_message_get_content_type(msg)) && !ContentType::isImIsComposing(linphone_chat_message_get_content_type(msg))) {
 		notifyChatMessageReceived(msg);
 		remoteIsComposing = false;
@@ -512,7 +512,7 @@ void ChatRoomPrivate::chatMessageReceived (LinphoneChatMessage *msg) {
 }
 
 void ChatRoomPrivate::imdnReceived (const string &text) {
-	L_Q(ChatRoom);
+	L_Q();
 	Imdn::parse(*q, text);
 }
 
@@ -523,7 +523,7 @@ void ChatRoomPrivate::isComposingReceived (const string &text) {
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::notifyChatMessageReceived (LinphoneChatMessage *msg) {
-	L_Q(ChatRoom);
+	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	if (linphone_chat_message_get_text(msg)) {
 		/* Legacy API */
@@ -537,7 +537,7 @@ void ChatRoomPrivate::notifyChatMessageReceived (LinphoneChatMessage *msg) {
 }
 
 void ChatRoomPrivate::notifyStateChanged () {
-	L_Q(ChatRoom);
+	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsStateChangedCb cb = linphone_chat_room_cbs_get_state_changed(cbs);
@@ -546,7 +546,7 @@ void ChatRoomPrivate::notifyStateChanged () {
 }
 
 void ChatRoomPrivate::notifyUndecryptableMessageReceived (LinphoneChatMessage *msg) {
-	L_Q(ChatRoom);
+	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb = linphone_chat_room_cbs_get_undecryptable_message_received(cbs);
@@ -563,7 +563,7 @@ void ChatRoomPrivate::onIsComposingStateChanged (bool isComposing) {
 }
 
 void ChatRoomPrivate::onIsRemoteComposingStateChanged (bool isComposing) {
-	L_Q(ChatRoom);
+	L_Q();
 	remoteIsComposing = isComposing;
 	linphone_core_notify_is_composing_received(core, L_GET_C_BACK_PTR(q));
 }
@@ -581,7 +581,7 @@ ChatRoom::ChatRoom (ChatRoomPrivate &p) : Object(p) {}
 // -----------------------------------------------------------------------------
 
 void ChatRoom::compose () {
-	L_D(ChatRoom);
+	L_D();
 	if (!d->isComposing) {
 		d->isComposing = true;
 		d->sendIsComposingNotification();
@@ -591,7 +591,7 @@ void ChatRoom::compose () {
 }
 
 LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
-	L_D(ChatRoom);
+	L_D();
 	LinphoneChatMessage *msg = createMessage("");
 	linphone_chat_message_set_text(msg, NULL);
 	linphone_chat_message_set_file_transfer_information(msg, linphone_content_copy(initialContent));
@@ -621,7 +621,7 @@ LinphoneChatMessage *ChatRoom::createMessage (const string &message) {
 }
 
 void ChatRoom::deleteHistory () {
-	L_D(ChatRoom);
+	L_D();
 	if (!d->core->db) return;
 	string peer = d->peerAddress.asStringUriOnly();
 	char *buf = sqlite3_mprintf("DELETE FROM history WHERE remoteContact = %Q;", peer.c_str());
@@ -631,7 +631,7 @@ void ChatRoom::deleteHistory () {
 }
 
 void ChatRoom::deleteMessage (LinphoneChatMessage *msg) {
-	L_D(ChatRoom);
+	L_D();
 	if (!d->core->db) return;
 	char *buf = sqlite3_mprintf("DELETE FROM history WHERE id = %u;", linphone_chat_message_get_storage_id(msg));
 	d->sqlRequest(d->core->db, buf);
@@ -643,7 +643,7 @@ void ChatRoom::deleteMessage (LinphoneChatMessage *msg) {
 }
 
 LinphoneChatMessage *ChatRoom::findMessage (const string &messageId) {
-	L_D(ChatRoom);
+	L_D();
 	LinphoneChatMessage *cm = nullptr;
 	list<LinphoneChatMessage *> l = d->findMessages(messageId);
 	if (!l.empty()) {
@@ -656,7 +656,7 @@ LinphoneChatMessage *ChatRoom::findMessage (const string &messageId) {
 }
 
 LinphoneChatMessage * ChatRoom::findMessageWithDirection (const string &messageId, LinphoneChatMessageDir direction) {
-	L_D(ChatRoom);
+	L_D();
 	LinphoneChatMessage *ret = nullptr;
 	list<LinphoneChatMessage *> l = d->findMessages(messageId);
 	for (auto &message : l) {
@@ -678,12 +678,12 @@ list<LinphoneChatMessage *> ChatRoom::getHistory (int nbMessages) {
 }
 
 int ChatRoom::getHistorySize () {
-	L_D(ChatRoom);
+	L_D();
 	return d->getMessagesCount(false);
 }
 
 list<LinphoneChatMessage *> ChatRoom::getHistoryRange (int startm, int endm) {
-	L_D(ChatRoom);
+	L_D();
 	if (!d->core->db) return list<LinphoneChatMessage *>();
 	string peer = d->peerAddress.asStringUriOnly();
 	d->messages.clear();
@@ -739,17 +739,17 @@ list<LinphoneChatMessage *> ChatRoom::getHistoryRange (int startm, int endm) {
 }
 
 int ChatRoom::getUnreadMessagesCount () {
-	L_D(ChatRoom);
+	L_D();
 	return d->getMessagesCount(true);
 }
 
 bool ChatRoom::isRemoteComposing () const {
-	L_D(const ChatRoom);
+	L_D();
 	return d->remoteIsComposing;
 }
 
 void ChatRoom::markAsRead () {
-	L_D(ChatRoom);
+	L_D();
 
 	if (!d->core->db) return;
 
@@ -778,7 +778,7 @@ void ChatRoom::markAsRead () {
 }
 
 void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
-	L_D(ChatRoom);
+	L_D();
 
 	linphone_chat_message_set_outgoing(msg);
 
@@ -921,19 +921,19 @@ void ChatRoom::sendMessage (LinphoneChatMessage *msg) {
 // -----------------------------------------------------------------------------
 
 LinphoneCore *ChatRoom::getCore () const {
-	L_D(const ChatRoom);
+	L_D();
 	return d->core;
 }
 
 // -----------------------------------------------------------------------------
 
 const Address& ChatRoom::getPeerAddress () const {
-	L_D(const ChatRoom);
+	L_D();
 	return d->peerAddress;
 }
 
 ChatRoom::State ChatRoom::getState () const {
-	L_D(const ChatRoom);
+	L_D();
 	return d->state;
 }
 
