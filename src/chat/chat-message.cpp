@@ -37,14 +37,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 using namespace std;
 
-// -----------------------------------------------------------------------------
+// =============================================================================
+// ChatMessagePrivate
+// =============================================================================
 
 ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 : chatRoom(room) {}
 
 ChatMessagePrivate::~ChatMessagePrivate () {}
 
-// -----------------------------------------------------------------------------
+// =============================================================================
+// ChatMessage
+// =============================================================================
 
 ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &room) : Object(*new ChatMessagePrivate(room)) {}
 
@@ -57,6 +61,11 @@ LinphoneChatMessage * ChatMessage::getBackPtr() {
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	L_D(const ChatMessage);
 	return d->chatRoom;
+}
+
+void ChatMessage::setChatRoom (shared_ptr<ChatRoom> chatRoom) {
+	L_D(ChatMessage);
+	d->chatRoom = chatRoom;
 }
 
 // -----------------------------------------------------------------------------
@@ -215,41 +224,32 @@ void ChatMessage::setIsToBeStored(bool store) {
 
 string ChatMessage::getContentType() const {
 	L_D(const ChatMessage);
-	if (d->internalContent) {
-		return d->internalContent->getContentType().asString();
-	}
-	if (d->contents.size() > 0) {
-		return d->contents.front()->getContentType().asString();
-	}
-	return "";
+	return d->cContentType;
 }
 
 void ChatMessage::setContentType(string contentType) {
-	//TODO
+	L_D(ChatMessage);
+	d->cContentType = contentType;
 }
 
 string ChatMessage::getText() const {
 	L_D(const ChatMessage);
-	if (d->internalContent) {
-		return d->internalContent->getBodyAsString();
-	}
-	if (d->contents.size() > 0) {
-		return d->contents.front()->getBodyAsString();
-	}
-	return "";
+	return d->cText;
 }
 
 void ChatMessage::setText(string text) {
-	//TODO
+	L_D(ChatMessage);
+	d->cText = text;
 }
 
-shared_ptr<Content> ChatMessage::getFileTransferInformation() const {
-	//TODO
-	return nullptr;
+LinphoneContent * ChatMessage::getFileTransferInformation() const {
+	L_D(const ChatMessage);
+	return d->cFileTransferInformation;
 }
 
-void ChatMessage::setFileTransferInformation(shared_ptr<Content> content) {
-	//TODO
+void ChatMessage::setFileTransferInformation(LinphoneContent *content) {
+	L_D(ChatMessage);
+	d->cFileTransferInformation = content;
 }
 
 unsigned int ChatMessage::getStorageId() const {
@@ -307,10 +307,62 @@ string ChatMessage::getSalCustomHeaderValue(string name) {
 	return sal_custom_header_find(d->salCustomHeaders, name.c_str());
 }
 
-shared_ptr<const ErrorInfo> ChatMessage::getErrorInfo () const {
-	L_D(const ChatMessage);
-	//TODO
+const LinphoneErrorInfo * ChatMessage::getErrorInfo() {
+	L_D(ChatMessage);
+	if (!d->errorInfo) d->errorInfo = linphone_error_info_new(); //let's do it mutable
+	linphone_error_info_from_sal_op(d->errorInfo, d->salOp);
 	return d->errorInfo;
+}
+
+bool ChatMessage::isReadOnly () const {
+	L_D(const ChatMessage);
+	return d->isReadOnly;
+}
+
+list<shared_ptr<const Content> > ChatMessage::getContents () const {
+	L_D(const ChatMessage);
+	list<shared_ptr<const Content> > contents;
+	for (const auto &content : d->contents)
+		contents.push_back(content);
+	return contents;
+}
+
+void ChatMessage::addContent (const shared_ptr<Content> &content) {
+	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
+	d->contents.push_back(content);
+}
+
+void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
+	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
+	d->contents.remove(const_pointer_cast<Content>(content));
+}
+
+string ChatMessage::getCustomHeaderValue (const string &headerName) const {
+	L_D(const ChatMessage);
+	try {
+		return d->customHeaders.at(headerName);
+	} catch (const exception &) {
+		// Key doesn't exist.
+	}
+	return "";
+}
+
+void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
+	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
+	d->customHeaders[headerName] = headerValue;
+}
+
+void ChatMessage::removeCustomHeader (const string &headerName) {
+	L_D(ChatMessage);
+	if (d->isReadOnly) return;
+
+	d->customHeaders.erase(headerName);
 }
 
 // -----------------------------------------------------------------------------
@@ -323,6 +375,26 @@ void ChatMessage::updateState(State state) {
 	if (msg->state == LinphoneChatMessageStateDelivered || msg->state == LinphoneChatMessageStateNotDelivered) {
 		L_GET_PRIVATE_FROM_C_OBJECT(msg->chat_room)->moveTransientMessageToWeakMessages(msg);
 	}*/
+}
+
+void ChatMessage::send () {
+	L_D(ChatMessage);
+
+	if (d->contents.size() > 1) {
+		MultipartChatMessageModifier mcmm;
+		mcmm.encode(d);
+	}
+
+	LinphoneCore *lc = getChatRoom()->getCore();
+	LpConfig *lpc = linphone_core_get_config(lc);
+	if (lp_config_get_int(lpc, "sip", "use_cpim", 0) == 1) {
+		CpimChatMessageModifier ccmm;
+		ccmm.encode(d);
+	}
+
+	// TODO.
+
+	d->isReadOnly = true;
 }
 
 void ChatMessage::reSend() {
@@ -482,7 +554,7 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 	return content;
 }*/
 
-void ChatMessage::sendImdn() {
+void ChatMessage::sendImdn(ImdnType imdnType, LinphoneReason reason) {
 	//TODO
 	/*char *content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
 	if (content) {
@@ -491,7 +563,7 @@ void ChatMessage::sendImdn() {
 	}*/
 }
 
-void ChatMessage::sendDeliveryNotification() {
+void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
 	//TODO
 	/*LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
@@ -1120,84 +1192,6 @@ int ChatMessage::putCharacter(uint32_t character) {
 		return 0;
 	}*/
 	return -1;
-}
-
-// -----------------------------------------------------------------------------
-
-void ChatMessage::send () {
-	L_D(ChatMessage);
-
-	if (d->contents.size() > 1) {
-		MultipartChatMessageModifier mcmm;
-		mcmm.encode(d);
-	}
-
-	LinphoneCore *lc = getChatRoom()->getCore();
-	LpConfig *lpc = linphone_core_get_config(lc);
-	if (lp_config_get_int(lpc, "sip", "use_cpim", 0) == 1) {
-		CpimChatMessageModifier ccmm;
-		ccmm.encode(d);
-	}
-
-	// TODO.
-
-	d->isReadOnly = true;
-}
-
-bool ChatMessage::containsReadableText () const {
-	// TODO: Check content type.
-	return true;
-}
-
-bool ChatMessage::isReadOnly () const {
-	L_D(const ChatMessage);
-	return d->isReadOnly;
-}
-
-list<shared_ptr<const Content> > ChatMessage::getContents () const {
-	L_D(const ChatMessage);
-	list<shared_ptr<const Content> > contents;
-	for (const auto &content : d->contents)
-		contents.push_back(content);
-	return contents;
-}
-
-void ChatMessage::addContent (const shared_ptr<Content> &content) {
-	L_D(ChatMessage);
-	if (d->isReadOnly) return;
-
-	d->contents.push_back(content);
-}
-
-void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
-	L_D(ChatMessage);
-	if (d->isReadOnly) return;
-
-	d->contents.remove(const_pointer_cast<Content>(content));
-}
-
-string ChatMessage::getCustomHeaderValue (const string &headerName) const {
-	L_D(const ChatMessage);
-	try {
-		return d->customHeaders.at(headerName);
-	} catch (const exception &) {
-		// Key doesn't exist.
-	}
-	return "";
-}
-
-void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
-	L_D(ChatMessage);
-	if (d->isReadOnly) return;
-
-	d->customHeaders[headerName] = headerValue;
-}
-
-void ChatMessage::removeCustomHeader (const string &headerName) {
-	L_D(ChatMessage);
-	if (d->isReadOnly) return;
-
-	d->customHeaders.erase(headerName);
 }
 
 LINPHONE_END_NAMESPACE

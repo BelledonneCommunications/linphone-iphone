@@ -54,10 +54,14 @@ private:
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	std::shared_ptr<EventsDb> eventsDb;
-	std::shared_ptr<ErrorInfo> errorInfo;
+	LinphoneErrorInfo * errorInfo;
 	belle_http_request_t *httpRequest;
 	SalOp *salOp;
 	SalCustomHeader *salCustomHeaders;
+	// Used for compatibility with previous C API
+	std::string cContentType;
+	std::string cText;
+	LinphoneContent *cFileTransferInformation;
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 

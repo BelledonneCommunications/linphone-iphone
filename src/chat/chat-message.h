@@ -64,16 +64,16 @@ public:
 	LinphoneChatMessage * getBackPtr();
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;
-	void setChatRoom (std::shared_ptr<ChatRoom> cr);
 
 	// -----------------------------------------------------------------------------
 	// Methods
 	// -----------------------------------------------------------------------------
 
 	void updateState(State state);
+	void send();
 	void reSend();
-	void sendImdn();
-	void sendDeliveryNotification();
+	void sendImdn(ImdnType imdnType, LinphoneReason reason);
+	void sendDeliveryNotification(LinphoneReason reason);
 	void sendDisplayNotification();
 	int uploadFile();
 	int downloadFile();
@@ -119,10 +119,24 @@ public:
 
 	bool isToBeStored() const;
 	void setIsToBeStored(bool store);
+
+	const LinphoneErrorInfo * getErrorInfo ();
+	
+	bool isReadOnly () const;
+	
+	std::list<std::shared_ptr<const Content> > getContents () const;
+	void addContent (const std::shared_ptr<Content> &content);
+	void removeContent (const std::shared_ptr<const Content> &content);
+
+	std::string getCustomHeaderValue (const std::string &headerName) const;
+	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
+	void removeCustomHeader (const std::string &headerName);
 	
 	// -----------------------------------------------------------------------------
 	// Deprecated methods, only used for C wrapper
 	// -----------------------------------------------------------------------------
+	
+	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
 
 	std::string getContentType() const;
 	void setContentType(std::string contentType);
@@ -130,8 +144,8 @@ public:
 	std::string getText() const;
 	void setText(std::string text);
 	
-	std::shared_ptr<Content> getFileTransferInformation() const;
-	void setFileTransferInformation(std::shared_ptr<Content> content);
+	LinphoneContent * getFileTransferInformation() const;
+	void setFileTransferInformation(LinphoneContent *content);
 
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
@@ -150,24 +164,6 @@ public:
 	void addSalCustomHeader(std::string name, std::string value);
 	void removeSalCustomHeader(std::string name);
 	std::string getSalCustomHeaderValue(std::string name);
-	
-	// -----------------------------------------------------------------------------
-
-	std::shared_ptr<const ErrorInfo> getErrorInfo () const;
-
-	void send ();
-
-	bool containsReadableText () const;
-
-	bool isReadOnly () const;
-
-	std::list<std::shared_ptr<const Content> > getContents () const;
-	void addContent (const std::shared_ptr<Content> &content);
-	void removeContent (const std::shared_ptr<const Content> &content);
-
-	std::string getCustomHeaderValue (const std::string &headerName) const;
-	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
-	void removeCustomHeader (const std::string &headerName);
 
 protected:
 	explicit ChatMessage (ChatMessagePrivate &p);
