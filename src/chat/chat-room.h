@@ -19,10 +19,10 @@
 #ifndef _CHAT_ROOM_H_
 #define _CHAT_ROOM_H_
 
+#include <list>
+
 // From coreapi
 #include "private.h"
-
-#include <list>
 
 #include "address/address.h"
 #include "object/object.h"
@@ -36,9 +36,9 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate;
 
-class ChatRoom : public Object, public ConferenceInterface {
+class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
 	friend class ChatMessagePrivate;
-	
+
 public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
@@ -76,4 +76,3 @@ private:
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CHAT_ROOM_H_
-

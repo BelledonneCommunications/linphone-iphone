@@ -27,7 +27,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class BasicChatRoomPrivate;
 
-class BasicChatRoom : public ChatRoom {
+class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
 public:
 	BasicChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~BasicChatRoom () = default;

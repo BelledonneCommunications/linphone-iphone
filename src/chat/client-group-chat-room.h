@@ -34,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate;
 
-class ClientGroupChatRoom : public ChatRoom, public RemoteConference {
+class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
 	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &subject);
 	virtual ~ClientGroupChatRoom () = default;

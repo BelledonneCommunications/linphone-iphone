@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RealTimeTextChatRoomPrivate;
 
-class RealTimeTextChatRoom : public ChatRoom {
+class LINPHONE_PUBLIC RealTimeTextChatRoom : public ChatRoom {
 public:
 	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~RealTimeTextChatRoom () = default;

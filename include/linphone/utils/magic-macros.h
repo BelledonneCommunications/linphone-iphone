@@ -36,13 +36,13 @@ LINPHONE_BEGIN_NAMESPACE
 	A11, A12, A13, A14, A15, A16, N, ... \
 ) N
 
-#define L_GET_N_ARGS_HELPER(...) L_ARG_N(__VA_ARGS__)
+#define L_EXPAND(X) X
 
-#define L_GET_N_ARGS(...) L_GET_N_ARGS_HELPER( \
+#define L_GET_N_ARGS(...) L_EXPAND(L_ARG_N( \
 	__VA_ARGS__, \
 	16, 15, 14, 13, 12, 11, 10, \
 	9, 8, 7, 6, 5, 4, 3, 2, 1, 0 \
-)
+))
 
 // Get argument numbers - 1 from variadic.
 #define L_GET_N_ARGS_SUB(X, ...) L_GET_N_ARGS(__VA_ARGS__)
@@ -83,8 +83,9 @@ LINPHONE_BEGIN_NAMESPACE
 #define L_GET_HEAP_15(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, ...) A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15
 #define L_GET_HEAP_16(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16, ...) A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16
 
-#define L_GET_HEAP(...) \
-	L_CONCAT(L_GET_HEAP_, L_GET_N_ARGS_SUB(__VA_ARGS__)) (__VA_ARGS__)
+#define L_GET_HEAP(...) L_EXPAND( \
+	L_CONCAT(L_GET_HEAP_, L_GET_N_ARGS_SUB(__VA_ARGS__)) (__VA_ARGS__) \
+)
 
 // Call a macro on args.
 #define L_CALL(MACRO, ARGS) MACRO ARGS
