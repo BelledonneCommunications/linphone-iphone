@@ -438,35 +438,30 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	}
 }
 
-LinphoneAddress *guess_contact_for_register(LinphoneProxyConfig *cfg){
-	LinphoneAddress *ret=NULL;
-	LinphoneAddress *proxy=linphone_address_new(cfg->reg_proxy);
-	const char *host;
-
-	if (proxy==NULL) return NULL;
-	host=linphone_address_get_domain(proxy);
-	if (host!=NULL){
-		int localport = -1;
-		const char *localip = NULL;
-		LinphoneAddress *contact=linphone_address_clone(cfg->identity_address);
-
-		linphone_address_clean(contact);
-
+static void guess_contact_for_register (LinphoneProxyConfig *cfg) {
+	linphone_address_unref(cfg->contact_address);
+	cfg->contact_address = nullptr;
+	linphone_address_unref(cfg->contact_address_without_params);
+	cfg->contact_address_without_params = nullptr;
+	LinphoneAddress *proxy = linphone_address_new(cfg->reg_proxy);
+	if (!proxy)
+		return;
+	const char *host = linphone_address_get_domain(proxy);
+	if (host) {
+		cfg->contact_address_without_params = linphone_address_clone(cfg->identity_address);
+		linphone_address_clean(cfg->contact_address_without_params);
+		linphone_address_set_port(cfg->contact_address_without_params, -1);
+		linphone_address_set_domain(cfg->contact_address_without_params, nullptr);
+		linphone_address_set_display_name(cfg->contact_address_without_params, nullptr);
+		cfg->contact_address = linphone_address_clone(cfg->contact_address_without_params);
 		if (cfg->contact_params) {
 			// We want to add a list of contacts params to the linphone address
-			linphone_address_set_params(contact,cfg->contact_params);
+			linphone_address_set_params(cfg->contact_address, cfg->contact_params);
 		}
-		if (cfg->contact_uri_params){
-			linphone_address_set_uri_params(contact,cfg->contact_uri_params);
-		}
-		linphone_address_set_port(contact,localport);
-		linphone_address_set_domain(contact,localip);
-		linphone_address_set_display_name(contact,NULL);
-
-		ret=contact;
+		if (cfg->contact_uri_params)
+			linphone_address_set_uri_params(cfg->contact_address, cfg->contact_uri_params);
 	}
 	linphone_address_unref(proxy);
-	return ret;
 }
 
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
@@ -481,7 +476,6 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 		LinphoneAddress* proxy=linphone_address_new(cfg->reg_proxy);
 		char* proxy_string;
 		char * from = linphone_address_as_string(cfg->identity_address);
-		LinphoneAddress *contact;
 		ms_message("LinphoneProxyConfig [%p] about to register (LinphoneCore version: %s)",cfg,linphone_core_get_version());
 		proxy_string=linphone_address_as_string_uri_only(proxy);
 		linphone_address_unref(proxy);
@@ -491,12 +485,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 		linphone_configure_op(cfg->lc, cfg->op, cfg->identity_address, cfg->sent_headers, FALSE);
 
-		if ((contact=guess_contact_for_register(cfg))) {
-			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress());
-			linphone_address_unref(contact);
-		}
-
-		sal_op_set_user_pointer(cfg->op,cfg);
+		guess_contact_for_register(cfg);
+		if (cfg->contact_address)
+			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
+		sal_op_set_user_pointer(cfg->op, cfg);
 
 		if (sal_register(
 			cfg->op,
@@ -1431,16 +1423,12 @@ uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cf
 	return cfg->avpf_rr_interval;
 }
 
-const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg) {
-	// Workaround for wrapping.
-	if (cfg->contact_address)
-		linphone_address_unref(cfg->contact_address);
-
-	char *buf = sal_address_as_string(sal_op_get_contact_address(cfg->op));
-	const_cast<LinphoneProxyConfig *>(cfg)->contact_address = linphone_address_new(buf);
-	ms_free(buf);
-
+const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyConfig *cfg) {
 	return cfg->contact_address;
+}
+
+const LinphoneAddress *_linphone_proxy_config_get_contact_without_params (const LinphoneProxyConfig *cfg) {
+	return cfg->contact_address_without_params;
 }
 
 const struct _LinphoneAuthInfo* linphone_proxy_config_find_auth_info(const LinphoneProxyConfig *cfg) {

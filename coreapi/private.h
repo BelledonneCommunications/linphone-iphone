@@ -296,6 +296,7 @@ LinphoneEvent *linphone_proxy_config_create_publish(LinphoneProxyConfig *cfg, co
  * Can be NULL
  * */
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg);
+const LinphoneAddress *_linphone_proxy_config_get_contact_without_params (const LinphoneProxyConfig *cfg);
 
 void linphone_friend_list_invalidate_subscriptions(LinphoneFriendList *list);
 void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, LinphoneEvent *lev, const LinphoneContent *body);
@@ -476,6 +477,8 @@ struct _LinphoneProxyConfig
 	char *reg_proxy;
 	char *reg_identity;
 	LinphoneAddress* identity_address;
+	LinphoneAddress *contact_address;
+	LinphoneAddress *contact_address_without_params;
 	char *reg_route;
 	char *quality_reporting_collector;
 	char *realm;
@@ -517,10 +520,6 @@ struct _LinphoneProxyConfig
 
 	char *refkey;
 	char *sip_etag; /*publish context*/
-
-	// For migration purpose. (Do not use directly!)
-	// Cache.
-	LinphoneAddress *contact_address;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneProxyConfig);

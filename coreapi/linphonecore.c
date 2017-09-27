@@ -3467,10 +3467,11 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 	sal_op_set_sent_custom_header(op,headers);
 	sal_op_set_realm(op,linphone_proxy_config_get_realm(proxy));
 	if (with_contact && proxy && proxy->op){
-		const SalAddress *contact;
-		contact=sal_op_get_contact_address(proxy->op);
-		SalAddress *new_contact = contact ? sal_address_clone(contact) : NULL;
-		sal_op_set_and_clean_contact_address(proxy->op, new_contact);
+		const LinphoneAddress *contact = linphone_proxy_config_get_contact(proxy);
+		SalAddress *salAddress = nullptr;
+		if (contact)
+			salAddress = sal_address_clone(const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress()));
+		sal_op_set_contact_address(op, salAddress);
 	}
 	sal_op_cnx_ip_to_0000_if_sendonly_enable(op, !!lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }

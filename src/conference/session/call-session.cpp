@@ -602,8 +602,8 @@ void CallSessionPrivate::setContactOp () {
 		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress());
 		sal_address_ref(salAddress);
 		linphone_address_unref(contact);
+		sal_op_set_contact_address(op, salAddress);
 	}
-	sal_op_set_and_clean_contact_address(op, salAddress);
 }
 
 // -----------------------------------------------------------------------------
@@ -645,12 +645,10 @@ LinphoneAddress * CallSessionPrivate::getFixedContact () const {
 		char *addr = sal_address_as_string(sal_op_get_contact_address(pingOp));
 		result = linphone_address_new(addr);
 		ms_free(addr);
-	} else if (destProxy && destProxy->op && sal_op_get_contact_address(destProxy->op)) {
+	} else if (destProxy && destProxy->op && _linphone_proxy_config_get_contact_without_params(destProxy)) {
 		/* If using a proxy, use the contact address as guessed with the REGISTERs */
 		lInfo() << "Contact has been fixed using proxy";
-		char *addr = sal_address_as_string(sal_op_get_contact_address(destProxy->op));
-		result = linphone_address_new(addr);
-		ms_free(addr);
+		result = linphone_address_clone(_linphone_proxy_config_get_contact_without_params(destProxy));
 	} else {
 		result = linphone_core_get_primary_contact_parsed(core);
 		if (result) {
