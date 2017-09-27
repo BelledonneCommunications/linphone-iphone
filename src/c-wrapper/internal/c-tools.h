@@ -32,12 +32,6 @@
 // Internal.
 // =============================================================================
 
-#ifdef DEBUG
-	#define CHECK_CPP_OBJECT_AT_RUNTIME(CPP_OBJECT) checkCppObjectAtRuntime(CPP_OBJECT)
-#else
-	#define CHECK_CPP_OBJECT_AT_RUNTIME(CPP_OBJECT)
-#endif
-
 LINPHONE_BEGIN_NAMESPACE
 
 template<typename CppType>
@@ -128,13 +122,34 @@ public:
 	// Get c/cpp ptr helpers.
 	// ---------------------------------------------------------------------------
 
+	#ifdef DEBUG
+		#define L_INTERNAL_WRAPPER_CONSTEXPR
+	#else
+		#define L_INTERNAL_WRAPPER_CONSTEXPR constexpr
+	#endif
+
 	template<
 		typename CType,
 		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
-		return reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr;
+	static L_INTERNAL_WRAPPER_CONSTEXPR std::shared_ptr<CppType> getCppPtrFromC (CType *cObject) {
+		#ifdef DEBUG
+			typedef typename CTypeMetaInfo<CType>::cppType BaseType;
+			typedef CppType DerivedType;
+
+			std::shared_ptr<BaseType> cppObject = reinterpret_cast<WrappedObject<BaseType> *>(cObject)->cppPtr;
+			if (!cppObject)
+				fatal("Cpp Object is null.");
+
+			std::shared_ptr<DerivedType> derivedCppObject = std::static_pointer_cast<DerivedType>(cppObject);
+			if (!derivedCppObject)
+				fatal("Invalid derived cpp object.");
+
+			return derivedCppObject;
+		#else
+			return reinterpret_cast<WrappedObject<CppType> *>(cObject)->cppPtr;
+		#endif
 	}
 
 	template<
@@ -142,8 +157,12 @@ public:
 		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
-		return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
+	static L_INTERNAL_WRAPPER_CONSTEXPR std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
+		#ifdef DEBUG
+			return getCppPtrFromC(const_cast<CType *>(cObject));
+		#else
+			return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
+		#endif
 	}
 
 	template<
@@ -151,8 +170,23 @@ public:
 		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr CppType *getCppPtrFromC (CType *cObject) {
-		return reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+	static L_INTERNAL_WRAPPER_CONSTEXPR CppType *getCppPtrFromC (CType *cObject) {
+		#ifdef DEBUG
+			typedef typename CTypeMetaInfo<CType>::cppType BaseType;
+			typedef CppType DerivedType;
+
+			BaseType *cppObject = reinterpret_cast<WrappedClonableObject<BaseType> *>(cObject)->cppPtr;
+			if (!cppObject)
+				fatal("Cpp Object is null.");
+
+			DerivedType *derivedCppObject = dynamic_cast<DerivedType *>(cppObject);
+			if (!derivedCppObject)
+				fatal("Invalid derived cpp object.");
+
+			return derivedCppObject;
+		#else
+			return reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+		#endif
 	}
 
 	template<
@@ -160,9 +194,15 @@ public:
 		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
-	static constexpr const CppType *getCppPtrFromC (const CType *cObject) {
-		return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+	static L_INTERNAL_WRAPPER_CONSTEXPR const CppType *getCppPtrFromC (const CType *cObject) {
+		#ifdef DEBUG
+			return getCppPtrFromC(const_cast<CType *>(cObject));
+		#else
+			return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+		#endif
 	}
+
+	#undef L_INTERNAL_WRAPPER_CONSTEXPR
 
 	// ---------------------------------------------------------------------------
 	// Set c/cpp ptr helpers.
