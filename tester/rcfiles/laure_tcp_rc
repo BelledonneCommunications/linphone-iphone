@@ -1,7 +1,7 @@
 [sip]
-sip_port=5092
-sip_tcp_port=5092
-sip_tls_port=5093
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
 

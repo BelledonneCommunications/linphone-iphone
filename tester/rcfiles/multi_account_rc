@@ -1,7 +1,7 @@
 [sip]
-sip_port=5072
-sip_tcp_port=5072
-sip_tls_port=5073
+sip_port=-1
+sip_tcp_port=-1
+sip_tls_port=-1
 default_proxy=0
 
 [auth_info_0]
