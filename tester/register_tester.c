@@ -1187,8 +1187,10 @@ static void tls_auth_info_client_cert_cb_2(void) {
 }
 
 static void register_get_gruu(void) {
-	LinphoneCoreManager *marie=linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
 	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie,TRUE);
 	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
@@ -1199,11 +1201,12 @@ static void register_get_gruu(void) {
 }
 
 static void multi_devices_register_with_gruu(void) {
-	LinphoneCoreManager *marie=linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie,TRUE);
 	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
 	
-	linphone_core_add_supported_tag(marie->lc,"gruu");
-
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
 		BC_ASSERT_PTR_NOT_NULL(addr);
