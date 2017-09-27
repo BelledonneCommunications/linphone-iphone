@@ -29,7 +29,7 @@
 
 #include "modifier/multipart-chat-message-modifier.h"
 #include "modifier/cpim-chat-message-modifier.h"
-#include "chat-room.h"
+#include "chat-room-p.h"
 
 // =============================================================================
 
@@ -45,6 +45,196 @@ ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 : chatRoom(room) {}
 
 ChatMessagePrivate::~ChatMessagePrivate () {}
+
+// -----------------------------------------------------------------------------
+
+void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
+	chatRoom = cr;
+}
+
+void ChatMessagePrivate::setTime(time_t t) {
+	time = t;
+}
+
+unsigned int ChatMessagePrivate::getStorageId() const {
+	return storageId;
+}
+
+void ChatMessagePrivate::setStorageId(unsigned int id) {
+	storageId = id;
+}
+
+belle_http_request_t *ChatMessagePrivate::getHttpRequest() const {
+	return httpRequest;
+}
+
+void ChatMessagePrivate::setHttpRequest(belle_http_request_t *request) {
+	httpRequest = request;
+}
+
+SalOp *ChatMessagePrivate::getSalOp() const {
+	return salOp;
+}
+
+void ChatMessagePrivate::setSalOp(SalOp *op) {
+	salOp = op;
+}
+
+SalCustomHeader *ChatMessagePrivate::getSalCustomHeaders() const {
+	return salCustomHeaders;
+}
+
+void ChatMessagePrivate::setSalCustomHeaders(SalCustomHeader *headers) {
+	salCustomHeaders = headers;
+}
+
+void ChatMessagePrivate::addSalCustomHeader(string name, string value) {
+	salCustomHeaders = sal_custom_header_append(salCustomHeaders, name.c_str(), value.c_str());
+}
+
+void ChatMessagePrivate::removeSalCustomHeader(string name) {
+	salCustomHeaders = sal_custom_header_remove(salCustomHeaders, name.c_str());
+}
+
+string ChatMessagePrivate::getSalCustomHeaderValue(string name) {
+	return sal_custom_header_find(salCustomHeaders, name.c_str());
+}
+
+// -----------------------------------------------------------------------------
+
+string ChatMessagePrivate::getContentType() const {
+	return cContentType;
+}
+
+void ChatMessagePrivate::setContentType(string contentType) {
+	cContentType = contentType;
+}
+
+string ChatMessagePrivate::getText() const {
+	return cText;
+}
+
+void ChatMessagePrivate::setText(string text) {
+	cText = text;
+}
+
+LinphoneContent * ChatMessagePrivate::getFileTransferInformation() const {
+	return cFileTransferInformation;
+}
+
+void ChatMessagePrivate::setFileTransferInformation(LinphoneContent *content) {
+	cFileTransferInformation = content;
+}
+
+// -----------------------------------------------------------------------------
+
+string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reason) {
+	/*xmlBufferPtr buf;
+	xmlTextWriterPtr writer;
+	int err;
+	char *content = NULL;
+	char *datetime = NULL;
+	const char *message_id;
+
+	// Check that the chat message has a message id
+	message_id = linphone_chat_message_get_message_id(cm);
+	if (message_id == NULL) return NULL;
+
+	buf = xmlBufferCreate();
+	if (buf == NULL) {
+		ms_error("Error creating the XML buffer");
+		return content;
+	}
+	writer = xmlNewTextWriterMemory(buf, 0);
+	if (writer == NULL) {
+		ms_error("Error creating the XML writer");
+		return content;
+	}
+
+	datetime = linphone_timestamp_to_rfc3339_string(linphone_chat_message_get_time(cm));
+	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
+	if (err >= 0) {
+		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"imdn",
+										  (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
+	}
+	if ((err >= 0) && (reason != LinphoneReasonNone)) {
+		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"linphoneimdn", NULL, (const xmlChar *)"http://www.linphone.org/xsds/imdn.xsd");
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)message_id);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
+	}
+	if (err >= 0) {
+		if (imdn_type == ImdnTypeDelivery) {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivery-notification");
+		} else {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"display-notification");
+		}
+	}
+	if (err >= 0) {
+		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
+	}
+	if (err >= 0) {
+		if (reason == LinphoneReasonNone) {
+			if (imdn_type == ImdnTypeDelivery) {
+				err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
+			} else {
+				err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
+			}
+		} else {
+			err = xmlTextWriterStartElement(writer, (const xmlChar *)"error");
+		}
+	}
+	if (err >= 0) {
+		// Close the "delivered", "displayed" or "error" element.
+		err = xmlTextWriterEndElement(writer);
+	}
+	if ((err >= 0) && (reason != LinphoneReasonNone)) {
+		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"linphoneimdn", (const xmlChar *)"reason", NULL);
+		if (err >= 0) {
+			char codestr[16];
+			snprintf(codestr, 16, "%d", linphone_reason_to_error_code(reason));
+			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"code", (const xmlChar *)codestr);
+		}
+		if (err >= 0) {
+			err = xmlTextWriterWriteString(writer, (const xmlChar *)linphone_reason_to_string(reason));
+		}
+		if (err >= 0) {
+			err = xmlTextWriterEndElement(writer);
+		}
+	}
+	if (err >= 0) {
+		// Close the "status" element.
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		// Close the "delivery-notification" or "display-notification" element.
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		// Close the "imdn" element.
+		err = xmlTextWriterEndElement(writer);
+	}
+	if (err >= 0) {
+		err = xmlTextWriterEndDocument(writer);
+	}
+	if (err > 0) {
+		// xmlTextWriterEndDocument returns the size of the content.
+		content = ms_strdup((char *)buf->content);
+	}
+	xmlFreeTextWriter(writer);
+	xmlBufferFree(buf);
+	ms_free(datetime);
+	return content;*/
+	return "";
+}
+
+void ChatMessagePrivate::sendImdn(ImdnType imdnType, LinphoneReason reason) {
+	string content = createImdnXml(imdnType, reason);
+	chatRoom->getPrivate()->sendImdn(content, reason);
+}
 
 // -----------------------------------------------------------------------------
 
@@ -65,11 +255,6 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	return d->chatRoom;
 }
 
-void ChatMessage::setChatRoom (shared_ptr<ChatRoom> chatRoom) {
-	L_D();
-	d->chatRoom = chatRoom;
-}
-
 // -----------------------------------------------------------------------------
 
 string ChatMessage::getExternalBodyUrl() const {
@@ -85,10 +270,6 @@ void ChatMessage::setExternalBodyUrl(const string &url) {
 time_t ChatMessage::getTime () const {
 	L_D();
 	return d->time;
-}
-void ChatMessage::setTime(time_t time) {
-	L_D();
-	d->time = time;
 }
 
 bool ChatMessage::isSecured () const {
@@ -223,90 +404,9 @@ void ChatMessage::setIsToBeStored(bool store) {
 
 // -----------------------------------------------------------------------------
 
-string ChatMessage::getContentType() const {
-	L_D();
-	return d->cContentType;
-}
 
-void ChatMessage::setContentType(string contentType) {
-	L_D();
-	d->cContentType = contentType;
-}
 
-string ChatMessage::getText() const {
-	L_D();
-	return d->cText;
-}
 
-void ChatMessage::setText(string text) {
-	L_D();
-	d->cText = text;
-}
-
-LinphoneContent * ChatMessage::getFileTransferInformation() const {
-	L_D();
-	return d->cFileTransferInformation;
-}
-
-void ChatMessage::setFileTransferInformation(LinphoneContent *content) {
-	L_D();
-	d->cFileTransferInformation = content;
-}
-
-unsigned int ChatMessage::getStorageId() const {
-	L_D();
-	return d->storageId;
-}
-
-void ChatMessage::setStorageId(unsigned int id) {
-	L_D();
-	d->storageId = id;
-}
-
-belle_http_request_t *ChatMessage::getHttpRequest() const {
-	L_D();
-	return d->httpRequest;
-}
-
-void ChatMessage::setHttpRequest(belle_http_request_t *request) {
-	L_D();
-	d->httpRequest = request;
-}
-
-SalOp *ChatMessage::getSalOp() const {
-	L_D();
-	return d->salOp;
-}
-
-void ChatMessage::setSalOp(SalOp *op) {
-	L_D();
-	d->salOp = op;
-}
-
-SalCustomHeader *ChatMessage::getSalCustomHeaders() const {
-	L_D();
-	return d->salCustomHeaders;
-}
-
-void ChatMessage::setSalCustomHeaders(SalCustomHeader *headers) {
-	L_D();
-	d->salCustomHeaders = headers;
-}
-
-void ChatMessage::addSalCustomHeader(string name, string value) {
-	L_D();
-	d->salCustomHeaders = sal_custom_header_append(d->salCustomHeaders, name.c_str(), value.c_str());
-}
-
-void ChatMessage::removeSalCustomHeader(string name) {
-	L_D();
-	d->salCustomHeaders = sal_custom_header_remove(d->salCustomHeaders, name.c_str());
-}
-
-string ChatMessage::getSalCustomHeaderValue(string name) {
-	L_D();
-	return sal_custom_header_find(d->salCustomHeaders, name.c_str());
-}
 
 const LinphoneErrorInfo * ChatMessage::getErrorInfo() const {
 	L_D();
@@ -399,18 +499,14 @@ void ChatMessage::send () {
 }
 
 void ChatMessage::reSend() {
-	//TODO
-	/*LinphoneChatMessageState state = linphone_chat_message_get_state(msg);
-	LinphoneChatRoom *cr;
+	L_D();
 
-	if (state != LinphoneChatMessageStateNotDelivered) {
-		ms_warning("Cannot resend chat message in state %s", linphone_chat_message_state_to_string(state));
+	if (d->state != NotDelivered) {
+		// ms_warning("Cannot resend chat message in state %s", linphone_chat_message_state_to_string(state));
 		return;
 	}
 
-	cr = linphone_chat_message_get_chat_room(msg);
-	if (ref_msg) linphone_chat_message_ref(msg);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);*/
+	d->chatRoom->sendMessage(L_GET_C_BACK_PTR(this));
 }
 
 /*static void linphone_chat_message_process_io_error_upload(void *data, const belle_sip_io_error_event_t *event) {
@@ -453,125 +549,16 @@ static void linphone_chat_process_response_from_get_file(void *data, const belle
 	}
 }*/
 
-/*static char *linphone_chat_message_create_imdn_xml(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason) {
-	xmlBufferPtr buf;
-	xmlTextWriterPtr writer;
-	int err;
-	char *content = NULL;
-	char *datetime = NULL;
-	const char *message_id;
-
-	// Check that the chat message has a message id
-	message_id = linphone_chat_message_get_message_id(cm);
-	if (message_id == NULL) return NULL;
-
-	buf = xmlBufferCreate();
-	if (buf == NULL) {
-		ms_error("Error creating the XML buffer");
-		return content;
-	}
-	writer = xmlNewTextWriterMemory(buf, 0);
-	if (writer == NULL) {
-		ms_error("Error creating the XML writer");
-		return content;
-	}
-
-	datetime = linphone_timestamp_to_rfc3339_string(linphone_chat_message_get_time(cm));
-	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", NULL);
-	if (err >= 0) {
-		err = xmlTextWriterStartElementNS(writer, NULL, (const xmlChar *)"imdn",
-										  (const xmlChar *)"urn:ietf:params:xml:ns:imdn");
-	}
-	if ((err >= 0) && (reason != LinphoneReasonNone)) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"linphoneimdn", NULL, (const xmlChar *)"http://www.linphone.org/xsds/imdn.xsd");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)message_id);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
-	}
-	if (err >= 0) {
-		if (imdn_type == ImdnTypeDelivery) {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivery-notification");
-		} else {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"display-notification");
-		}
-	}
-	if (err >= 0) {
-		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
-	}
-	if (err >= 0) {
-		if (reason == LinphoneReasonNone) {
-			if (imdn_type == ImdnTypeDelivery) {
-				err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
-			} else {
-				err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
-			}
-		} else {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"error");
-		}
-	}
-	if (err >= 0) {
-		// Close the "delivered", "displayed" or "error" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if ((err >= 0) && (reason != LinphoneReasonNone)) {
-		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"linphoneimdn", (const xmlChar *)"reason", NULL);
-		if (err >= 0) {
-			char codestr[16];
-			snprintf(codestr, 16, "%d", linphone_reason_to_error_code(reason));
-			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"code", (const xmlChar *)codestr);
-		}
-		if (err >= 0) {
-			err = xmlTextWriterWriteString(writer, (const xmlChar *)linphone_reason_to_string(reason));
-		}
-		if (err >= 0) {
-			err = xmlTextWriterEndElement(writer);
-		}
-	}
-	if (err >= 0) {
-		// Close the "status" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		// Close the "delivery-notification" or "display-notification" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		// Close the "imdn" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterEndDocument(writer);
-	}
-	if (err > 0) {
-		// xmlTextWriterEndDocument returns the size of the content.
-		content = ms_strdup((char *)buf->content);
-	}
-	xmlFreeTextWriter(writer);
-	xmlBufferFree(buf);
-	ms_free(datetime);
-	return content;
-}*/
-
-void ChatMessage::sendImdn(ImdnType imdnType, LinphoneReason reason) {
-	//TODO
-	/*char *content = linphone_chat_message_create_imdn_xml(cm, imdn_type, reason);
-	if (content) {
-		L_GET_PRIVATE_FROM_C_OBJECT(linphone_chat_message_get_chat_room(cm))->sendImdn(content, reason);
-		ms_free(content);
-	}*/
-}
-
 void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
-	//TODO
+	L_D();
+	LinphoneCore *lc = d->chatRoom->getCore();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
+	if (linphone_im_notif_policy_get_send_imdn_delivered(policy)) {
+		d->sendImdn(ImdnTypeDelivery, reason);
+	}
 	/*LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
 	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
-	if (linphone_im_notif_policy_get_send_imdn_delivered(policy) == TRUE) {
-		linphone_chat_message_send_imdn(cm, ImdnTypeDelivery, reason);
-	}*/
+	*/
 }
 
 void ChatMessage::sendDisplayNotification() {

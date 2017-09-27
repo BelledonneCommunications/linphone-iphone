@@ -72,7 +72,6 @@ public:
 	void updateState(State state);
 	void send();
 	void reSend();
-	void sendImdn(ImdnType imdnType, LinphoneReason reason);
 	void sendDeliveryNotification(LinphoneReason reason);
 	void sendDisplayNotification();
 	int uploadFile();
@@ -131,39 +130,6 @@ public:
 	std::string getCustomHeaderValue (const std::string &headerName) const;
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
-	
-	// -----------------------------------------------------------------------------
-	// Deprecated methods, only used for C wrapper
-	// -----------------------------------------------------------------------------
-	
-	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
-
-	std::string getContentType() const;
-	void setContentType(std::string contentType);
-
-	std::string getText() const;
-	void setText(std::string text);
-	
-	LinphoneContent * getFileTransferInformation() const;
-	void setFileTransferInformation(LinphoneContent *content);
-
-	unsigned int getStorageId() const;
-	void setStorageId(unsigned int id);
-
-	void setTime(time_t time);
-	
-	belle_http_request_t *getHttpRequest() const;
-	void setHttpRequest(belle_http_request_t *request);
-
-	SalOp *getSalOp() const;
-	void setSalOp(SalOp *op);
-
-	SalCustomHeader *getSalCustomHeaders() const;
-	void setSalCustomHeaders(SalCustomHeader *headers);
-
-	void addSalCustomHeader(std::string name, std::string value);
-	void removeSalCustomHeader(std::string name);
-	std::string getSalCustomHeaderValue(std::string name);
 
 protected:
 	explicit ChatMessage (ChatMessagePrivate &p);

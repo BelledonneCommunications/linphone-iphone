@@ -35,6 +35,45 @@ public:
 	ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room);
 	virtual ~ChatMessagePrivate ();
 
+	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
+	
+	// -----------------------------------------------------------------------------
+	
+	void setTime(time_t time);
+	
+	unsigned int getStorageId() const;
+	void setStorageId(unsigned int id);
+	
+	belle_http_request_t *getHttpRequest() const;
+	void setHttpRequest(belle_http_request_t *request);
+
+	SalOp *getSalOp() const;
+	void setSalOp(SalOp *op);
+
+	SalCustomHeader *getSalCustomHeaders() const;
+	void setSalCustomHeaders(SalCustomHeader *headers);
+
+	void addSalCustomHeader(std::string name, std::string value);
+	void removeSalCustomHeader(std::string name);
+	std::string getSalCustomHeaderValue(std::string name);
+
+	// -----------------------------------------------------------------------------
+	// Methods only used for C wrapper
+	// -----------------------------------------------------------------------------
+	
+	std::string getContentType() const;
+	void setContentType(std::string contentType);
+
+	std::string getText() const;
+	void setText(std::string text);
+	
+	LinphoneContent * getFileTransferInformation() const;
+	void setFileTransferInformation(LinphoneContent *content);
+	
+	// -----------------------------------------------------------------------------
+	
+	void sendImdn(ImdnType imdnType, LinphoneReason reason);
+
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
 	std::string externalBodyUrl;
@@ -62,6 +101,9 @@ private:
 	std::string cContentType;
 	std::string cText;
 	LinphoneContent *cFileTransferInformation;
+
+	std::string createImdnXml(ImdnType imdnType, LinphoneReason reason);
+
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 

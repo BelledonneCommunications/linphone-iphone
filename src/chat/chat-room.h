@@ -37,6 +37,8 @@ LINPHONE_BEGIN_NAMESPACE
 class ChatRoomPrivate;
 
 class ChatRoom : public Object, public ConferenceInterface {
+	friend class ChatMessagePrivate;
+	
 public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
