@@ -46,6 +46,8 @@ ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 
 ChatMessagePrivate::~ChatMessagePrivate () {}
 
+// -----------------------------------------------------------------------------
+
 // =============================================================================
 // ChatMessage
 // =============================================================================
@@ -137,10 +139,9 @@ void ChatMessage::setState(State state) {
 		d->state = state;
 
 		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(this);
-		/* TODO
-		if (msg->message_state_changed_cb) {
-			msg->message_state_changed_cb(msg, msg->state, msg->message_state_changed_user_data);
-		}*/
+		if (linphone_chat_message_get_message_state_changed_cb(msg)) {
+			linphone_chat_message_get_message_state_changed_cb(msg)(msg, (LinphoneChatMessageState)state, linphone_chat_message_get_message_state_changed_cb_user_data(msg));
+		}
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 		if (linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
 			linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
@@ -160,12 +161,12 @@ void ChatMessage::setId (string id) {
 
 bool ChatMessage::isRead() const {
 	return false;
-	/* TODO
 	L_D(const ChatMessage);
-	shared_ptr<ImNotifyPolicy> policy =d->chatRoom->core->getImNotifPolicy();
-	if (policy->getRecvImdnDisplayed() && d->state == Displayed) return true;
-	if (policy->getRecvImdnDelivered() && (d->state == DeliveredToUser || d->state == Displayed)) return true;
-	return d->state == Delivered || d->state == Displayed || d->state == DeliveredToUser;*/
+	LinphoneCore *lc = d->chatRoom->getCore();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
+	if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) && d->state == Displayed) return true;
+	if (linphone_im_notif_policy_get_recv_imdn_delivered(policy) && (d->state == DeliveredToUser || d->state == Displayed)) return true;
+	return d->state == Delivered || d->state == Displayed || d->state == DeliveredToUser;
 }
 
 string ChatMessage::getAppdata () const {

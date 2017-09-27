@@ -300,6 +300,10 @@ LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t
 // Old listener
 // =============================================================================
 
+LinphoneChatMessageStateChangedCb linphone_chat_message_get_message_state_changed_cb(LinphoneChatMessage* msg) {
+	return msg->message_state_changed_cb;
+}
+
 void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb) {
 	msg->message_state_changed_cb = cb;
 }

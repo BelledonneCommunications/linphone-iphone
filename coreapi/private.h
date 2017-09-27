@@ -1084,6 +1084,7 @@ void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
 void linphone_chat_message_set_time(LinphoneChatMessage* msg, time_t time);
 void linphone_chat_message_set_incoming(LinphoneChatMessage *msg);
 void linphone_chat_message_set_outgoing(LinphoneChatMessage *msg);
+LinphoneChatMessageStateChangedCb linphone_chat_message_get_message_state_changed_cb(LinphoneChatMessage* msg);
 void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb);
 void linphone_chat_message_set_message_state_changed_cb_user_data(LinphoneChatMessage* msg, void *user_data);
 void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChatMessage* msg);
