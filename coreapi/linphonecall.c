@@ -3956,15 +3956,14 @@ void linphone_call_start_media_streams(LinphoneCall *call, LinphoneCallState nex
 }
 
 void linphone_call_stop_media_streams_for_ice_gathering(LinphoneCall *call){
-	if(call->audiostream && call->audiostream->ms.state==MSStreamPreparing) audio_stream_unprepare_sound(call->audiostream);
+	if(call->audiostream && call->audiostream->ms.state==MSStreamPreparing)
+		audio_stream_unprepare_sound(call->audiostream);
 #ifdef VIDEO_ENABLED
-	if (call->videostream && call->videostream->ms.state==MSStreamPreparing) {
+	if (call->videostream && call->videostream->ms.state==MSStreamPreparing)
 		video_stream_unprepare_video(call->videostream);
-	}
 #endif
-	if (call->textstream && call->textstream->ms.state == MSStreamPreparing) {
+	if (call->textstream && call->textstream->ms.state == MSStreamPreparing)
 		text_stream_unprepare_text(call->textstream);
-	}
 }
 
 static bool_t update_stream_crypto_params(LinphoneCall *call, const SalStreamDescription *local_st_desc, SalStreamDescription *old_stream, SalStreamDescription *new_stream, MediaStream *ms){
@@ -6031,6 +6030,7 @@ end:
 int linphone_call_restart_invite(LinphoneCall *call) {
 	linphone_call_create_op(call);
 	linphone_call_stop_media_streams(call);
+	linphone_call_init_media_streams(call);
 	return linphone_call_start_invite(call, NULL);
 }
 
