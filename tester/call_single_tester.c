@@ -3153,22 +3153,25 @@ static void early_media_call_with_ringing_base(bool_t network_change){
 			_linphone_call_add_local_desc_changed_flag(marie_call, SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED);
 		}
 
-		linphone_call_accept(linphone_core_get_current_call(pauline->lc));
-
-		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
-		connected_time=ms_get_cur_time_ms();
-		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
-
-		BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
-		BC_ASSERT_FALSE(linphone_call_get_all_muted(marie_call));
-
-		liblinphone_tester_check_rtcp(marie, pauline);
-		/*just to have a call duration !=0*/
-		wait_for_list(lcs,&dummy,1,2000);
-
-		end_call(pauline, marie);
-		ended_time=ms_get_cur_time_ms();
-		BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
+		if (linphone_core_get_current_call(pauline->lc)
+			&& linphone_call_get_state(linphone_core_get_current_call(pauline->lc)) ==  LinphoneCallIncomingEarlyMedia) {
+				linphone_call_accept(linphone_core_get_current_call(pauline->lc));
+				
+				BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
+				connected_time=ms_get_cur_time_ms();
+				BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
+				
+				BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+				BC_ASSERT_FALSE(linphone_call_get_all_muted(marie_call));
+				
+				liblinphone_tester_check_rtcp(marie, pauline);
+				/*just to have a call duration !=0*/
+				wait_for_list(lcs,&dummy,1,2000);
+				
+				end_call(pauline, marie);
+				ended_time=ms_get_cur_time_ms();
+				BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
+			}
 		bctbx_list_free(lcs);
 	}
 
