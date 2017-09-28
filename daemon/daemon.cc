@@ -635,7 +635,7 @@ string Daemon::readPipe() {
 		pfd[1].fd = mChildFd;
 		nfds++;
 	}
-	int err = poll(pfd, nfds, 50);
+	int err = poll(pfd, (nfds_t)nfds, 50);
 	if (err > 0) {
 		if (mServerFd != (ortp_pipe_t)-1 && (pfd[0].revents & POLLIN)) {
 			struct sockaddr_storage addr;
