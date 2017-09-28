@@ -73,7 +73,6 @@ void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, Linphone
 
 void linphone_chat_room_send_message (LinphoneChatRoom *cr, const char *msg) {
 	LinphoneChatMessage *message = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg);
-	ms_error("%s / %s", linphone_chat_message_get_text(message), linphone_chat_message_get_content_type(message));
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(message);
 }
 
