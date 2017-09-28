@@ -410,6 +410,20 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_message_received(LinphoneCoreCbs *cbs
 LINPHONE_PUBLIC LinphoneCoreCbsMessageReceivedCb linphone_core_cbs_get_message_received(LinphoneCoreCbs *cbs);
 
 /**
+ * Set the #LinphoneCoreCbsMessageReceivedUnableDecryptCb callback.
+ * @param[in] cbs A #LinphoneCoreCbs.
+ * @param[in] cb The callback.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_message_received_unable_decrypt(LinphoneCoreCbs *cbs, LinphoneCoreCbsMessageReceivedUnableDecryptCb cb);
+
+/**
+ * Get the #LinphoneCoreCbsMessageReceivedUnableDecryptCb callback.
+ * @param[in] cbs A #LinphoneCoreCbs.
+ * @return The callback.
+ */
+LINPHONE_PUBLIC LinphoneCoreCbsMessageReceivedUnableDecryptCb linphone_core_cbs_get_message_received_unable_decrypt(LinphoneCoreCbs *cbs);
+
+/**
  * Set the #LinphoneCoreCbsIsComposingReceivedCb callback.
  * @param[in] cbs A #LinphoneCoreCbs.
  * @param[in] cb The callback.
