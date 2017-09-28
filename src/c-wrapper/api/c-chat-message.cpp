@@ -168,11 +168,12 @@ const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *data) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setAppdata(data);
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setAppdata(L_C_TO_STRING(data));
 }
 
 void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(from)));
+	if (!from) L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(nullptr);
+	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(from)));
 }
 
 const LinphoneAddress *linphone_chat_message_get_from_address(LinphoneChatMessage *msg) {
@@ -183,7 +184,8 @@ const LinphoneAddress *linphone_chat_message_get_from_address(LinphoneChatMessag
 }
 
 void linphone_chat_message_set_to_address(LinphoneChatMessage *msg, const LinphoneAddress *to) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(to)));
+	if (!to) L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(nullptr);
+	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(to)));
 }
 
 const LinphoneAddress *linphone_chat_message_get_to_address(LinphoneChatMessage *msg) {

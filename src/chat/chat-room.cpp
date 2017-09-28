@@ -277,10 +277,8 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		if (atoi(argv[3]) == LinphoneChatMessageIncoming) {
 			linphone_chat_message_set_incoming(newMessage);
 			linphone_chat_message_set_from_address(newMessage, peer);
-			linphone_chat_message_set_to_address(newMessage, NULL);
 		} else {
 			linphone_chat_message_set_outgoing(newMessage);
-			linphone_chat_message_set_from_address(newMessage, NULL);
 			linphone_chat_message_set_to_address(newMessage, peer);
 		}
 		linphone_address_unref(peer);
