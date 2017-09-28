@@ -244,6 +244,8 @@ public:
 	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (const std::shared_ptr<CppType> &cppObject) {
 		typedef typename CppTypeMetaInfo<CppType>::cType RetType;
 
+		if (!cppObject) return nullptr;
+
 		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = variant.getValue<void *>();
 		if (value)
@@ -259,6 +261,7 @@ public:
 		typename = typename std::enable_if<IsDefinedNotClonableCppObject<CppType>::value, CppType>::type
 	>
 	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (CppType *cppObject) {
+		if (!cppObject) return nullptr;
 		try {
 			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
 		} catch (const std::bad_weak_ptr &e) {
@@ -275,6 +278,7 @@ public:
 	>
 	static inline typename CppTypeMetaInfo<CppType>::cType *getCBackPtr (const CppType *cppObject) {
 		typedef typename CppTypeMetaInfo<CppType>::cType RetType;
+		if (!cppObject) return nullptr;
 
 		Variant variant = cppObject->getProperty("LinphonePrivate::Wrapper::cBackPtr");
 		void *value = variant.getValue<void *>();
