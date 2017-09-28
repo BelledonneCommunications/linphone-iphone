@@ -57,9 +57,9 @@ public:
 	SalCustomHeader *getSalCustomHeaders() const;
 	void setSalCustomHeaders(SalCustomHeader *headers);
 
-	void addSalCustomHeader(std::string name, std::string value);
-	void removeSalCustomHeader(std::string name);
-	std::string getSalCustomHeaderValue(std::string name);
+	void addSalCustomHeader(const std::string& name, const std::string& value);
+	void removeSalCustomHeader(const std::string& name);
+	std::string getSalCustomHeaderValue(const std::string& name);
 
 	// -----------------------------------------------------------------------------
 	// Methods only used for C wrapper

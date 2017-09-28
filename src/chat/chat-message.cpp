@@ -119,16 +119,16 @@ void ChatMessagePrivate::setSalCustomHeaders(SalCustomHeader *headers) {
 	salCustomHeaders = headers;
 }
 
-void ChatMessagePrivate::addSalCustomHeader(string name, string value) {
+void ChatMessagePrivate::addSalCustomHeader(const string& name, const string& value) {
 	salCustomHeaders = sal_custom_header_append(salCustomHeaders, name.c_str(), value.c_str());
 }
 
-void ChatMessagePrivate::removeSalCustomHeader(string name) {
+void ChatMessagePrivate::removeSalCustomHeader(const string& name) {
 	salCustomHeaders = sal_custom_header_remove(salCustomHeaders, name.c_str());
 }
 
-string ChatMessagePrivate::getSalCustomHeaderValue(string name) {
-	return sal_custom_header_find(salCustomHeaders, name.c_str());
+string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
+	return L_C_TO_STRING(sal_custom_header_find(salCustomHeaders, name.c_str()));
 }
 
 // -----------------------------------------------------------------------------
