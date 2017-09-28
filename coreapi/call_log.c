@@ -21,15 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <time.h>
 
-#ifdef SQLITE_STORAGE_ENABLED
-	#ifndef _WIN32
-		#if !defined(__ANDROID__) && !defined(__QNXNTO__)
-			#include <langinfo.h>
-			#include <iconv.h>
-			#include <string.h>
-	#endif
-#else
-	#include <Windows.h>
+#if defined(SQLITE_STORAGE_ENABLED) && !defined(_WIN32) && !defined(__ANDROID__) && !defined(__QNXNTO__)
+	#include <langinfo.h>
+	#include <iconv.h>
+	#include <string.h>
 #endif
 
 #define MAX_PATH_SIZE 1024
