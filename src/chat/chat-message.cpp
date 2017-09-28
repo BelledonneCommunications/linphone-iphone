@@ -750,8 +750,10 @@ static void _chat_message_process_auth_requested_download(void *data, belle_sip_
 }
 
 void ChatMessagePrivate::processAuthRequestedDownload(const belle_sip_auth_event *event) {
+	L_Q();
+
 	ms_error("Error during file download : auth requested for msg [%p]", this);
-	setState(ChatMessage::FileTransferError);
+	q->updateState(ChatMessage::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -763,7 +765,7 @@ static void _chat_message_process_io_error_upload(void *data, const belle_sip_io
 void ChatMessagePrivate::processIoErrorUpload(const belle_sip_io_error_event_t *event) {
 	L_Q();
 	ms_error("I/O Error during file upload of msg [%p]", this);
-	setState(ChatMessage::NotDelivered);
+	q->updateState(ChatMessage::NotDelivered);
 	releaseHttpRequest();
 	chatRoom->getPrivate()->removeTransientMessage(L_GET_C_BACK_PTR(q));
 }
@@ -776,7 +778,7 @@ static void _chat_message_process_auth_requested_upload(void *data, belle_sip_au
 void ChatMessagePrivate::processAuthRequestedUpload(const belle_sip_auth_event *event) {
 	L_Q();
 	ms_error("Error during file upload: auth requested for msg [%p]", this);
-	setState(ChatMessage::NotDelivered);
+	q->updateState(ChatMessage::NotDelivered);
 	releaseHttpRequest();
 	chatRoom->getPrivate()->removeTransientMessage(L_GET_C_BACK_PTR(q));
 }
@@ -787,8 +789,10 @@ static void _chat_message_process_io_error_download(void *data, const belle_sip_
 }
 
 void ChatMessagePrivate::processIoErrorDownload(const belle_sip_io_error_event_t *event) {
+	L_Q();
+
 	ms_error("I/O Error during file download msg [%p]", this);
-	setState(ChatMessage::FileTransferError);
+	q->updateState(ChatMessage::FileTransferError);
 	releaseHttpRequest();
 }
 
