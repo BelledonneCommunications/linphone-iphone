@@ -100,7 +100,7 @@ private:
 	std::shared_ptr<ChatRoom> chatRoom;
 	ChatMessage::Direction direction = ChatMessage::Incoming;
 	ChatMessage::State state = ChatMessage::Idle;
-	unsigned int storageId;
+	unsigned int storageId = 0;
 	std::shared_ptr<Address> from;
 	std::shared_ptr<Address> to;
 	time_t time = 0;
