@@ -2115,10 +2115,8 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 	} else if (strcmp(notified_event, "Conference") == 0) {
 		LinphonePrivate::RemoteConferenceEventHandler *handler =
 			reinterpret_cast<LinphonePrivate::RemoteConferenceEventHandler *>(linphone_event_get_user_data(lev));
-		if (handler) {
-			ms_message("Notify event for conference %s", handler->getConfId().c_str());
-			handler->notifyReceived((char *)linphone_content_get_buffer(body));
-		}
+		if (handler)
+			handler->notifyReceived(reinterpret_cast<char *>(linphone_content_get_buffer(body)));
 	}
 }
 

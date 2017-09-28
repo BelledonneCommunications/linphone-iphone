@@ -40,10 +40,11 @@ public:
 
 	std::list<Address> parseResourceLists (std::string xmlBody);
 
+protected:
+	LocalConferenceEventHandler *eventHandler = nullptr;
+
 private:
 	L_DISABLE_COPY(LocalConference);
-
-	LocalConferenceEventHandler *eventHandler = nullptr;
 };
 
 LINPHONE_END_NAMESPACE

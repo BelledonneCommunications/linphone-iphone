@@ -108,6 +108,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
+	eventHandler->subscribe(conferenceAddress);
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
@@ -116,6 +117,8 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
+	if (isMe(addr))
+		return;
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant) {
 		lWarning() << "Participant " << participant << " added but already in the list of participants!";
@@ -145,7 +148,11 @@ void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdmin) {
-	shared_ptr<Participant> participant = findParticipant(addr);
+	shared_ptr<Participant> participant = nullptr;
+	if (isMe(addr))
+		participant = me;
+	else
+		participant = findParticipant(addr);
 	if (!participant) {
 		lWarning() << "Participant " << participant << " admin status has been changed but is not in the list of participants!";
 		return;
@@ -163,6 +170,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
 	if (state == LinphoneCallConnected) {
 		Address addr(session.getRemoteContact());
+		addr.clean();
 		onConferenceCreated(addr);
 	}
 }

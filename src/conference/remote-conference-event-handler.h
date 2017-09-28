@@ -35,12 +35,11 @@ class RemoteConferenceEventHandler : public Object {
 		RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener);
 		~RemoteConferenceEventHandler();
 
-		void subscribe(std::string confId);
+		void subscribe(const Address &confAddress);
 		void notifyReceived(std::string xmlBody);
 		void unsubscribe();
 
-		std::string getConfId();
-		void setConferenceAddress (const Address &addr);
+		const Address &getConfAddress();
 
 	private:
 		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);

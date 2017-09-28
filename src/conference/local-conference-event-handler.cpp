@@ -84,7 +84,7 @@ LocalConferenceEventHandler::~LocalConferenceEventHandler() {
 
 string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 	L_D();
-	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
+	string entity = d->conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -103,13 +103,13 @@ string LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
 
 	stringstream notify;
 	serializeConferenceInfo(notify, confInfo, map);
-	//d->notifyFullState(notify.str(), lev);
+	d->notifyFullState(notify.str(), lev);
 	return notify.str();
 }
 
 string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) {
 	L_D();
-	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
+	string entity = d->conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -131,7 +131,7 @@ string LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) 
 
 string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr) {
 	L_D();
-	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
+	string entity = d->conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -150,7 +150,7 @@ string LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr
 
 string LocalConferenceEventHandler::notifyParticipantSetAdmin(const Address &addr, bool isAdmin) {
 	L_D();
-	string entity = d->conf->getMe()->getAddress().asStringUriOnly();
+	string entity = d->conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);

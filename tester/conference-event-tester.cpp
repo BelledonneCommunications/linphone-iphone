@@ -438,7 +438,6 @@ public:
 
 ConferenceEventTester::ConferenceEventTester (LinphoneCore *core, const Address &confAddr) {
 	handler = new RemoteConferenceEventHandler(core, this);
-	handler->setConferenceAddress(confAddr);
 }
 
 ConferenceEventTester::~ConferenceEventTester () {

@@ -49,10 +49,11 @@ protected:
 	void onParticipantRemoved (const Address &addr) override;
 	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
 
+protected:
+	RemoteConferenceEventHandler *eventHandler = nullptr;
+
 private:
 	L_DISABLE_COPY(RemoteConference);
-
-	RemoteConferenceEventHandler *eventHandler = nullptr;
 };
 
 LINPHONE_END_NAMESPACE
