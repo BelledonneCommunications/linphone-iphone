@@ -84,6 +84,8 @@ static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscri
 	lev->dir=dir;
 	lev->op=op;
 	lev->name=ms_strdup(name);
+	if (strcmp(lev->name, "Conference") == 0)
+		lev->internal = TRUE;
 	sal_op_set_user_pointer(lev->op,lev);
 	return lev;
 }
