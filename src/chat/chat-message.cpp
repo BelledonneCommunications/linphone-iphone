@@ -73,7 +73,7 @@ void ChatMessagePrivate::setState(ChatMessage::State s) {
 			&& ((s == ChatMessage::State::DeliveredToUser) || (s == ChatMessage::State::Delivered) || (s == ChatMessage::State::NotDelivered))) {
 			return;
 		}
-		ms_message("Chat message %p: moving from state %s to %s", this, linphone_chat_message_state_to_string((LinphoneChatMessageState)s), linphone_chat_message_state_to_string((LinphoneChatMessageState)state));
+		ms_message("Chat message %p: moving from state %s to %s", this, linphone_chat_message_state_to_string((LinphoneChatMessageState)state), linphone_chat_message_state_to_string((LinphoneChatMessageState)s));
 		state = s;
 
 		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
