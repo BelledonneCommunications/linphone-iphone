@@ -79,9 +79,12 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_UNLIKELY(EXPRESSION) EXPRESSION
 #endif
 
-// Allows access to private internal data.
-// Gives a control to C Wrapper.
-#define L_DECLARE_PRIVATE(CLASS) \
+class ClonableObject;
+class ClonableObjectPrivate;
+class Object;
+class ObjectPrivate;
+
+#define L_INTERNAL_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private *getPrivate() { \
 		return reinterpret_cast<CLASS ## Private *>(mPrivate); \
 	} \
@@ -91,10 +94,15 @@ void l_assert (const char *condition, const char *file, int line);
 	friend class CLASS ## Private; \
 	friend class Wrapper;
 
-class ClonableObject;
-class ClonableObjectPrivate;
-class Object;
-class ObjectPrivate;
+// Allows access to private internal data.
+// Gives a control to C Wrapper.
+#ifndef LINPHONE_TESTER
+	#define L_DECLARE_PRIVATE(CLASS) L_INTERNAL_DECLARE_PRIVATE(CLASS)
+#else
+	#define L_DECLARE_PRIVATE(CLASS) \
+		L_INTERNAL_DECLARE_PRIVATE(CLASS) \
+		friend class Tester;
+#endif
 
 template<typename T>
 inline ClonableObject *getPublicHelper (T *object, ClonableObjectPrivate *context) {
