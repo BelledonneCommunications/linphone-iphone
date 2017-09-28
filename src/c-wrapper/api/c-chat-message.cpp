@@ -94,7 +94,9 @@ LinphoneChatRoom *linphone_chat_message_get_chat_room(const LinphoneChatMessage 
 }
 
 const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getExternalBodyUrl().c_str();
+	const string& external_body_url = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getExternalBodyUrl();
+	if (external_body_url.empty()) return NULL;
+	return external_body_url.c_str();
 }
 
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const char *url) {
@@ -162,7 +164,9 @@ bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {
 }
 
 const char *linphone_chat_message_get_appdata(const LinphoneChatMessage *msg) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getAppdata().c_str();
+	const string& appData = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getAppdata();
+	if (appData.empty()) return NULL;
+	return appData.c_str();
 }
 
 void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *data) {
@@ -192,7 +196,9 @@ const LinphoneAddress *linphone_chat_message_get_to_address(LinphoneChatMessage 
 }
 
 const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getFileTransferFilepath().c_str();
+	const string& path = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getFileTransferFilepath();
+	if (path.empty()) return NULL;
+	return path.c_str();
 }
 
 void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath) {
@@ -241,7 +247,9 @@ void linphone_chat_message_remove_custom_header(LinphoneChatMessage *msg, const 
 }
 
 const char *linphone_chat_message_get_custom_header(LinphoneChatMessage *msg, const char *header_name) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getSalCustomHeaderValue(header_name).c_str();
+	const string& header = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getSalCustomHeaderValue(header_name);
+	if (header.empty()) return NULL;
+	return header.c_str();
 }
 
 const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg) {
@@ -321,7 +329,9 @@ void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChat
 // =============================================================================
 
 const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType().c_str();
+	const string& contentType = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType();
+	if (contentType.empty()) return NULL;
+	return contentType.c_str();
 }
 
 void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type) {
@@ -329,7 +339,9 @@ void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char
 }
 
 const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getText().c_str();
+	const string& text = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getText();
+	if (text.empty()) return NULL;
+	return text.c_str();
 }
 
 int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {

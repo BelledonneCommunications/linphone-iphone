@@ -27,7 +27,7 @@
 #include "imdn.h"
 #include "logger/logger.h"
 
-#include "chat-message.h"
+#include "chat-message-p.h"
 #include "chat-room.h"
 
 // =============================================================================
@@ -592,31 +592,28 @@ void ChatRoom::compose () {
 
 LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	L_D();
-	LinphoneChatMessage *msg = createMessage("");
-	linphone_chat_message_set_text(msg, NULL);
-	linphone_chat_message_set_file_transfer_information(msg, linphone_content_copy(initialContent));
-	linphone_chat_message_set_outgoing(msg);
-	LinphoneAddress *peer = linphone_address_new(d->peerAddress.asString().c_str());
-	linphone_chat_message_set_to_address(msg, peer);
-	linphone_address_unref(peer);
-	linphone_chat_message_set_from_address(msg, linphone_address_new(linphone_core_get_identity(d->core)));
-	/* This will be set to application/vnd.gsma.rcs-ft-http+xml when we will transfer the xml reply from server to the peers */
-	linphone_chat_message_set_content_type(msg, NULL);
-	/* This will store the http request during file upload to the server */
-	linphone_chat_message_set_http_request(msg, NULL);
-	linphone_chat_message_set_time(msg, ms_time(0));
+
+	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
+	
+	chatMessage->getPrivate()->setTime(ms_time(0));
+	chatMessage->getPrivate()->setContentType("text/plain");
+	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
+	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
+	chatMessage->setToAddress(make_shared<Address>(d->peerAddress.asString().c_str()));
+	chatMessage->setFromAddress(make_shared<Address>(linphone_core_get_identity(d->core)));
+
+	LinphoneChatMessage *msg = chatMessage->getBackPtr();
 	return msg;
 }
 
 LinphoneChatMessage *ChatRoom::createMessage (const string &message) {
 	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
+
+	chatMessage->getPrivate()->setTime(ms_time(0));
+	chatMessage->getPrivate()->setContentType("text/plain");
+	chatMessage->getPrivate()->setText(message);
+
 	LinphoneChatMessage *msg = chatMessage->getBackPtr();
-	linphone_chat_message_set_state(msg, LinphoneChatMessageStateIdle);
-	linphone_chat_message_set_text(msg, message.empty() ? nullptr : ms_strdup(message.c_str()));
-	linphone_chat_message_set_content_type(msg, ms_strdup("text/plain"));
-	linphone_chat_message_set_file_transfer_information(msg, nullptr);
-	linphone_chat_message_set_http_request(msg, NULL);
-	linphone_chat_message_set_time(msg, ms_time(0));
 	return msg;
 }
 

@@ -87,7 +87,7 @@ public:
 	bool isOutgoing () const;
 	bool isIncoming () const;
 
-	std::string getExternalBodyUrl() const;
+	const std::string& getExternalBodyUrl() const;
 	void setExternalBodyUrl(const std::string &url);
 	
 	time_t getTime () const;
@@ -97,12 +97,12 @@ public:
 
 	State getState() const;
 	
-	std::string getId () const;
-	void setId (std::string);
+	const std::string& getId () const;
+	void setId (const std::string&);
 
 	bool isRead() const;
 	
-	std::string getAppdata () const;
+	const std::string& getAppdata () const;
 	void setAppdata (const std::string &appData);
 	
 	std::shared_ptr<Address> getFromAddress () const;
@@ -111,7 +111,7 @@ public:
 	std::shared_ptr<Address> getToAddress () const;
 	void setToAddress(std::shared_ptr<Address> to);
 
-	std::string getFileTransferFilepath() const;
+	const std::string& getFileTransferFilepath() const;
 	void setFileTransferFilepath(const std::string &path);
 
 	bool isToBeStored() const;

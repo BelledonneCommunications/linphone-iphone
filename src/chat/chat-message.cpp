@@ -46,7 +46,8 @@ using namespace std;
 // =============================================================================
 
 ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
-: chatRoom(room) {}
+: chatRoom(room) {
+}
 
 ChatMessagePrivate::~ChatMessagePrivate () {}
 
@@ -132,19 +133,19 @@ string ChatMessagePrivate::getSalCustomHeaderValue(string name) {
 
 // -----------------------------------------------------------------------------
 
-string ChatMessagePrivate::getContentType() const {
+const string& ChatMessagePrivate::getContentType() const {
 	return cContentType;
 }
 
-void ChatMessagePrivate::setContentType(string contentType) {
+void ChatMessagePrivate::setContentType(const string& contentType) {
 	cContentType = contentType;
 }
 
-string ChatMessagePrivate::getText() const {
+const string& ChatMessagePrivate::getText() const {
 	return cText;
 }
 
-void ChatMessagePrivate::setText(string text) {
+void ChatMessagePrivate::setText(const string& text) {
 	cText = text;
 }
 
@@ -876,7 +877,7 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 
 // -----------------------------------------------------------------------------
 
-string ChatMessage::getExternalBodyUrl() const {
+const string& ChatMessage::getExternalBodyUrl() const {
 	L_D();
 	return d->externalBodyUrl;
 }
@@ -921,12 +922,12 @@ ChatMessage::State ChatMessage::getState() const {
 	return d->state;
 }
 
-string ChatMessage::getId () const {
+const string& ChatMessage::getId () const {
 	L_D();
 	return d->id;
 }
 
-void ChatMessage::setId (string id) {
+void ChatMessage::setId (const string& id) {
 	L_D();
 	d->id = id;
 }
@@ -941,7 +942,7 @@ bool ChatMessage::isRead() const {
 	return d->state == Delivered || d->state == Displayed || d->state == DeliveredToUser;
 }
 
-string ChatMessage::getAppdata () const {
+const string& ChatMessage::getAppdata () const {
 	L_D();
 	return d->appData;
 }
@@ -972,7 +973,7 @@ void ChatMessage::setToAddress(shared_ptr<Address> to) {
 	d->to = to;
 }
 
-string ChatMessage::getFileTransferFilepath() const {
+const string& ChatMessage::getFileTransferFilepath() const {
 	L_D();
 	return d->fileTransferFilePath;
 }
@@ -1035,7 +1036,7 @@ string ChatMessage::getCustomHeaderValue (const string &headerName) const {
 	} catch (const exception &) {
 		// Key doesn't exist.
 	}
-	return "";
+	return nullptr;
 }
 
 void ChatMessage::addCustomHeader (const string &headerName, const string &headerValue) {
@@ -1079,8 +1080,6 @@ void ChatMessage::send () {
 		CpimChatMessageModifier ccmm;
 		ccmm.encode(d);
 	}
-
-	// TODO.
 
 	d->isReadOnly = true;
 }

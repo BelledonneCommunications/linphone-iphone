@@ -65,11 +65,11 @@ public:
 	// Methods only used for C wrapper
 	// -----------------------------------------------------------------------------
 	
-	std::string getContentType() const;
-	void setContentType(std::string contentType);
+	const std::string& getContentType() const;
+	void setContentType(const std::string& contentType);
 
-	std::string getText() const;
-	void setText(std::string text);
+	const std::string& getText() const;
+	void setText(const std::string& text);
 	
 	LinphoneContent * getFileTransferInformation() const;
 	void setFileTransferInformation(LinphoneContent *content);
@@ -104,11 +104,11 @@ private:
 	std::shared_ptr<Address> from;
 	std::shared_ptr<Address> to;
 	time_t time = 0;
-	std::string id;
-	std::string appData;
-	std::string fileTransferFilePath;
-	std::string externalBodyUrl;
-	std::string rttMessage;
+	std::string id = "";
+	std::string appData = "";
+	std::string fileTransferFilePath = "";
+	std::string externalBodyUrl = "";
+	std::string rttMessage = "";
 	bool isSecured = false;
 	bool isReadOnly = false;
 	bool isToBeStored = false;
@@ -116,16 +116,16 @@ private:
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	std::shared_ptr<EventsDb> eventsDb;
-	mutable LinphoneErrorInfo * errorInfo;
-	belle_http_request_t *httpRequest;
-	belle_http_request_listener_t *httpListener;
-	SalOp *salOp;
-	SalCustomHeader *salCustomHeaders;
+	mutable LinphoneErrorInfo * errorInfo = NULL;
+	belle_http_request_t *httpRequest = NULL;
+	belle_http_request_listener_t *httpListener = NULL;
+	SalOp *salOp = NULL;
+	SalCustomHeader *salCustomHeaders = NULL;
 	unsigned long backgroundTaskId;
 	// Used for compatibility with previous C API
-	std::string cContentType;
-	std::string cText;
-	LinphoneContent *cFileTransferInformation;
+	std::string cContentType = "";
+	std::string cText = "";
+	LinphoneContent *cFileTransferInformation = NULL;
 	
 	// -----------------------------------------------------------------------------
 
