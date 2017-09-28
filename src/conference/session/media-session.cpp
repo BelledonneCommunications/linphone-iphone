@@ -790,7 +790,7 @@ void MediaSessionPrivate::initializeParamsAccordingToIncomingCallParams () {
  */
 void MediaSessionPrivate::setCompatibleIncomingCallParams (SalMediaDescription *md) {
 	/* Handle AVPF, SRTP and DTLS */
-	params->enableAvpf(sal_media_description_has_avpf(md));
+	params->enableAvpf(!!sal_media_description_has_avpf(md));
 	if (destProxy)
 		params->setAvpfRrInterval(static_cast<uint16_t>(linphone_proxy_config_get_avpf_rr_interval(destProxy) * 1000));
 	else
@@ -1193,7 +1193,7 @@ bool MediaSessionPrivate::generateB64CryptoKey (size_t keyLength, char *keyOut, 
 void MediaSessionPrivate::makeLocalMediaDescription () {
 	L_Q();
 	int maxIndex = 0;
-	bool rtcpMux = lp_config_get_int(linphone_core_get_config(core), "rtp", "rtcp_mux", 0);
+	bool rtcpMux = !!lp_config_get_int(linphone_core_get_config(core), "rtp", "rtcp_mux", 0);
 	SalMediaDescription *md = sal_media_description_new();
 	SalMediaDescription *oldMd = localDesc;
 
@@ -1492,7 +1492,7 @@ void MediaSessionPrivate::setupZrtpHash (SalMediaDescription *md) {
 
 void MediaSessionPrivate::setupEncryptionKeys (SalMediaDescription *md) {
 	SalMediaDescription *oldMd = localDesc;
-	bool keepSrtpKeys = lp_config_get_int(linphone_core_get_config(core), "sip", "keep_srtp_keys", 1);
+	bool keepSrtpKeys = !!lp_config_get_int(linphone_core_get_config(core), "sip", "keep_srtp_keys", 1);
 	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i]))
 			continue;
@@ -1906,7 +1906,7 @@ void MediaSessionPrivate::clearEarlyMediaDestinations () {
 
 void MediaSessionPrivate::configureAdaptiveRateControl (MediaStream *ms, const OrtpPayloadType *pt, bool videoWillBeUsed) {
 	L_Q();
-	bool enabled = linphone_core_adaptive_rate_control_enabled(core);
+	bool enabled = !!linphone_core_adaptive_rate_control_enabled(core);
 	if (!enabled) {
 		media_stream_enable_adaptive_bitrate_control(ms, false);
 		return;
@@ -2010,7 +2010,7 @@ RtpSession * MediaSessionPrivate::createAudioRtpIoSession () {
 	int jittcomp = lp_config_get_int(config, "sound", "rtp_jittcomp", 0); /* 0 means no jitter buffer */
 	rtp_session_set_jitter_compensation(rtpSession, jittcomp);
 	rtp_session_enable_jitter_buffer(rtpSession, (jittcomp > 0));
-	bool symmetric = lp_config_get_int(config, "sound", "rtp_symmetric", 0);
+	bool symmetric = !!lp_config_get_int(config, "sound", "rtp_symmetric", 0);
 	rtp_session_set_symmetric_rtp(rtpSession, symmetric);
 	return rtpSession;
 }
@@ -2158,15 +2158,15 @@ void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
 		OrtpEventData *evd = ortp_event_get_data(ev);
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED) {
 			if (streamIndex == mainAudioStreamIndex)
-				audioStreamEncryptionChanged(evd->info.zrtp_stream_encrypted);
+				audioStreamEncryptionChanged(!!evd->info.zrtp_stream_encrypted);
 			else if (streamIndex == mainVideoStreamIndex)
 				propagateEncryptionChanged();
 		} else if (evt == ORTP_EVENT_ZRTP_SAS_READY) {
 			if (streamIndex == mainAudioStreamIndex)
-				audioStreamAuthTokenReady(evd->info.zrtp_info.sas, evd->info.zrtp_info.verified);
+				audioStreamAuthTokenReady(evd->info.zrtp_info.sas, !!evd->info.zrtp_info.verified);
 		} else if (evt == ORTP_EVENT_DTLS_ENCRYPTION_CHANGED) {
 			if (streamIndex == mainAudioStreamIndex)
-				audioStreamEncryptionChanged(evd->info.dtls_stream_encrypted);
+				audioStreamEncryptionChanged(!!evd->info.dtls_stream_encrypted);
 			else if (streamIndex == mainVideoStreamIndex)
 				propagateEncryptionChanged();
 		} else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
@@ -2420,7 +2420,7 @@ void MediaSessionPrivate::parameterizeEqualizer (AudioStream *stream) {
 		lWarning() << "'eq_gains' linphonerc parameter has no effect anymore. Please use 'mic_eq_gains' or 'spk_eq_gains' instead";
 	if (stream->mic_equalizer) {
 		MSFilter *f = stream->mic_equalizer;
-		bool enabled = lp_config_get_int(config, "sound", "mic_eq_active", 0);
+		bool enabled = !!lp_config_get_int(config, "sound", "mic_eq_active", 0);
 		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
 		const char *gains = lp_config_get_string(config, "sound", "mic_eq_gains", nullptr);
 		if (enabled && gains) {
@@ -2436,7 +2436,7 @@ void MediaSessionPrivate::parameterizeEqualizer (AudioStream *stream) {
 	}
 	if (stream->spk_equalizer) {
 		MSFilter *f = stream->spk_equalizer;
-		bool enabled = lp_config_get_int(config, "sound", "spk_eq_active", 0);
+		bool enabled = !!lp_config_get_int(config, "sound", "spk_eq_active", 0);
 		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
 		const char *gains = lp_config_get_string(config, "sound", "spk_eq_gains", nullptr);
 		if (enabled && gains) {
@@ -2542,7 +2542,7 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 			lWarning() << "No audio stream accepted?";
 		else {
 			const char *rtpAddr = (stream->rtp_addr[0] != '\0') ? stream->rtp_addr : resultDesc->addr;
-			bool isMulticast = ms_is_multicast(rtpAddr);
+			bool isMulticast = !!ms_is_multicast(rtpAddr);
 			bool ok = true;
 			currentParams->getPrivate()->setUsedAudioCodec(rtp_profile_get_payload(audioProfile, usedPt));
 			currentParams->enableAudio(true);
@@ -2574,8 +2574,8 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				}
 			}
 			/* If playfile are supplied don't use soundcards */
-			bool useRtpIo = lp_config_get_int(linphone_core_get_config(core), "sound", "rtp_io", false);
-			bool useRtpIoEnableLocalOutput = lp_config_get_int(linphone_core_get_config(core), "sound", "rtp_io_enable_local_output", false);
+			bool useRtpIo = !!lp_config_get_int(linphone_core_get_config(core), "sound", "rtp_io", false);
+			bool useRtpIoEnableLocalOutput = !!lp_config_get_int(linphone_core_get_config(core), "sound", "rtp_io_enable_local_output", false);
 			if (core->use_files || (useRtpIo && !useRtpIoEnableLocalOutput)) {
 				captcard = playcard = nullptr;
 			}
@@ -2589,7 +2589,7 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				captcard = playcard = nullptr;
 			}
 #endif
-			bool useEc = (captcard == nullptr) ? false : linphone_core_echo_cancellation_enabled(core);
+			bool useEc = captcard && linphone_core_echo_cancellation_enabled(core);
 			audio_stream_enable_echo_canceller(audioStream, useEc);
 			if (playcard && (stream->max_rate > 0))
 				ms_snd_card_set_preferred_sample_rate(playcard, stream->max_rate);
@@ -3634,12 +3634,12 @@ void MediaSessionPrivate::handleIncomingReceivedStateInIncomingNotification () {
 	L_Q();
 	/* Try to be best-effort in giving real local or routable contact address for 100Rel case */
 	setContactOp();
-	bool proposeEarlyMedia = lp_config_get_int(linphone_core_get_config(core), "sip", "incoming_calls_early_media", false);
+	bool proposeEarlyMedia = !!lp_config_get_int(linphone_core_get_config(core), "sip", "incoming_calls_early_media", false);
 	if (proposeEarlyMedia)
 		q->acceptEarlyMedia();
 	else
 		sal_call_notify_ringing(op, false);
-	if (sal_call_get_replaces(op) && lp_config_get_int(linphone_core_get_config(core), "sip", "auto_answer_replacing_calls", 1))
+	if (sal_call_get_replaces(op) && !!lp_config_get_int(linphone_core_get_config(core), "sip", "auto_answer_replacing_calls", 1))
 		q->accept();
 }
 
@@ -3821,15 +3821,15 @@ void MediaSessionPrivate::updateCurrentParams () const {
 		currentParams->setAudioDirection(sd ? MediaSessionParamsPrivate::salStreamDirToMediaDirection(sd->dir) : LinphoneMediaDirectionInactive);
 		if (currentParams->getAudioDirection() != LinphoneMediaDirectionInactive) {
 			const char *rtpAddr = (sd->rtp_addr[0] != '\0') ? sd->rtp_addr : md->addr;
-			currentParams->enableAudioMulticast(ms_is_multicast(rtpAddr));
+			currentParams->enableAudioMulticast(!!ms_is_multicast(rtpAddr));
 		} else
 			currentParams->enableAudioMulticast(false);
 		sd = sal_media_description_find_best_stream(md, SalVideo);
-		currentParams->getPrivate()->enableImplicitRtcpFb(sd ? sal_stream_description_has_implicit_avpf(sd): false);
+		currentParams->getPrivate()->enableImplicitRtcpFb(sd && sal_stream_description_has_implicit_avpf(sd));
 		currentParams->setVideoDirection(sd ? MediaSessionParamsPrivate::salStreamDirToMediaDirection(sd->dir) : LinphoneMediaDirectionInactive);
 		if (currentParams->getVideoDirection() != LinphoneMediaDirectionInactive) {
 			const char *rtpAddr = (sd->rtp_addr[0] != '\0') ? sd->rtp_addr : md->addr;
-			currentParams->enableVideoMulticast(ms_is_multicast(rtpAddr));
+			currentParams->enableVideoMulticast(!!ms_is_multicast(rtpAddr));
 		} else
 			currentParams->enableVideoMulticast(false);
 	}
@@ -3876,7 +3876,7 @@ void MediaSessionPrivate::accept (const MediaSessionParams *csp) {
 LinphoneStatus MediaSessionPrivate::acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const string &stateInfo) {
 	L_Q();
 	SalMediaDescription *desc = sal_call_get_remote_media_description(op);
-	bool keepSdpVersion = lp_config_get_int(linphone_core_get_config(core), "sip", "keep_sdp_version", 0);
+	bool keepSdpVersion = !!lp_config_get_int(linphone_core_get_config(core), "sip", "keep_sdp_version", 0);
 	if (keepSdpVersion && (desc->session_id == remoteSessionId) && (desc->session_ver == remoteSessionVer)) {
 		/* Remote has sent an INVITE with the same SDP as before, so send a 200 OK with the same SDP as before. */
 		lWarning() << "SDP version has not changed, send same SDP as before";
@@ -4401,20 +4401,19 @@ bool MediaSession::cameraEnabled () const {
 
 bool MediaSession::echoCancellationEnabled () const {
 	L_D();
-	if (d->audioStream && d->audioStream->ec) {
-		bool val;
-		ms_filter_call_method(d->audioStream->ec, MS_ECHO_CANCELLER_GET_BYPASS_MODE, &val);
-		return !val;
-	} else
-		return linphone_core_echo_cancellation_enabled(d->core);
+	if (!d->audioStream || !d->audioStream->ec)
+		return !!linphone_core_echo_cancellation_enabled(d->core);
+
+	bool val;
+	ms_filter_call_method(d->audioStream->ec, MS_ECHO_CANCELLER_GET_BYPASS_MODE, &val);
+	return !val;
 }
 
 bool MediaSession::echoLimiterEnabled () const {
 	L_D();
 	if (d->audioStream)
 		return d->audioStream->el_type !=ELInactive;
-	else
-		return linphone_core_echo_limiter_enabled(d->core);
+	return !!linphone_core_echo_limiter_enabled(d->core);
 }
 
 void MediaSession::enableCamera (bool value) {

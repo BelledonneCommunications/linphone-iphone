@@ -354,7 +354,7 @@ void CallSessionPrivate::terminated () {
 }
 
 void CallSessionPrivate::updated (bool isUpdate) {
-	deferUpdate = lp_config_get_int(linphone_core_get_config(core), "sip", "defer_update_default", FALSE);
+	deferUpdate = !!lp_config_get_int(linphone_core_get_config(core), "sip", "defer_update_default", FALSE);
 	SalErrorInfo sei;
 	memset(&sei, 0, sizeof(sei));
 	switch (state) {

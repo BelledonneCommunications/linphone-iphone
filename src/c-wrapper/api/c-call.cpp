@@ -528,7 +528,7 @@ bool_t linphone_call_get_audio_muted (const LinphoneCall *call) {
 }
 
 void linphone_call_set_audio_muted (LinphoneCall *call, bool_t value) {
-	L_GET_PRIVATE_FROM_C_OBJECT(call)->setAudioMuted(value);
+	L_GET_PRIVATE_FROM_C_OBJECT(call)->setAudioMuted(!!value);
 }
 
 bool_t linphone_call_get_all_muted (const LinphoneCall *call) {
@@ -700,7 +700,7 @@ const LinphoneCallParams *linphone_call_get_remote_params(LinphoneCall *call) {
 }
 
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableCamera(enable);
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableCamera(!!enable);
 }
 
 bool_t linphone_call_camera_enabled (const LinphoneCall *call) {
@@ -753,7 +753,7 @@ bool_t linphone_call_get_authentication_token_verified (const LinphoneCall *call
 }
 
 void linphone_call_set_authentication_token_verified (LinphoneCall *call, bool_t verified) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(call)->setAuthenticationTokenVerified(verified);
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->setAuthenticationTokenVerified(!!verified);
 }
 
 void linphone_call_send_vfu_request (LinphoneCall *call) {
@@ -1011,7 +1011,7 @@ void linphone_call_set_native_video_window_id (LinphoneCall *call, void *id) {
 }
 
 void linphone_call_enable_echo_cancellation (LinphoneCall *call, bool_t enable) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableEchoCancellation(enable);
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableEchoCancellation(!!enable);
 }
 
 bool_t linphone_call_echo_cancellation_enabled (const LinphoneCall *call) {
@@ -1019,7 +1019,7 @@ bool_t linphone_call_echo_cancellation_enabled (const LinphoneCall *call) {
 }
 
 void linphone_call_enable_echo_limiter (LinphoneCall *call, bool_t val) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableEchoLimiter(val);
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->enableEchoLimiter(!!val);
 }
 
 bool_t linphone_call_echo_limiter_enabled (const LinphoneCall *call) {

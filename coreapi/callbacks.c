@@ -227,7 +227,7 @@ static void call_updating(SalOp *op, bool_t is_update) {
 		ms_warning("call_updating: CallSession no longer exists");
 		return;
 	}
-	L_GET_PRIVATE(session)->updating(is_update);
+	L_GET_PRIVATE(session)->updating(!!is_update);
 }
 
 

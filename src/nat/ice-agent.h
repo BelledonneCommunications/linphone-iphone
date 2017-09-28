@@ -52,7 +52,7 @@ public:
 	bool hasCompleted () const;
 	bool hasCompletedCheckList () const;
 	bool hasSession () const {
-		return iceSession;
+		return !!iceSession;
 	}
 
 	bool isControlling () const;

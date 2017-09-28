@@ -73,7 +73,7 @@ bool Address::operator< (const Address &address) const {
 
 bool Address::isValid () const {
 	L_D();
-	return static_cast<bool>(d->internalAddress);
+	d->internalAddress;
 }
 
 const string &Address::getScheme () const {
@@ -162,7 +162,7 @@ bool Address::setTransport (Transport transport) {
 
 bool Address::getSecure () const {
 	L_D();
-	return d->internalAddress ? sal_address_is_secure(d->internalAddress) : false;
+	return d->internalAddress && sal_address_is_secure(d->internalAddress);
 }
 
 bool Address::setSecure (bool enabled) {
@@ -177,7 +177,7 @@ bool Address::setSecure (bool enabled) {
 
 bool Address::isSip () const {
 	L_D();
-	return d->internalAddress ? sal_address_is_sip(d->internalAddress) : false;
+	return d->internalAddress && sal_address_is_sip(d->internalAddress);
 }
 
 const string &Address::getMethodParam () const {
@@ -280,7 +280,7 @@ bool Address::setHeader (const string &headerName, const string &headerValue) {
 
 bool Address::hasParam (const string &paramName) const {
 	L_D();
-	return sal_address_has_param(d->internalAddress, L_STRING_TO_C(paramName));
+	return !!sal_address_has_param(d->internalAddress, L_STRING_TO_C(paramName));
 }
 
 const string &Address::getParamValue (const string &paramName) const {
@@ -317,7 +317,7 @@ bool Address::setParams (const string &params) {
 
 bool Address::hasUriParam (const string &uriParamName) const {
 	L_D();
-	return sal_address_has_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
+	return !!sal_address_has_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
 }
 
 const string &Address::getUriParamValue (const string &uriParamName) const {

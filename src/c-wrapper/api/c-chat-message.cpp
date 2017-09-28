@@ -116,7 +116,7 @@ bool_t linphone_chat_message_is_secured(LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_message_set_is_secured(LinphoneChatMessage *msg, bool_t secured) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsSecured(secured);
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsSecured(!!secured);
 }
 
 bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage *msg) {
@@ -206,7 +206,7 @@ bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_be_stored) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsToBeStored(to_be_stored);
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsToBeStored(!!to_be_stored);
 }
 
 belle_http_request_t * linphone_chat_message_get_http_request(LinphoneChatMessage *msg) {

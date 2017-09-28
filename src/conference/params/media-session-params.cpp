@@ -239,18 +239,18 @@ void MediaSessionParams::initDefault (LinphoneCore *core) {
 		lError() << "LinphoneCore has video disabled for both capture and display, but video policy is to start the call with video. "
 			"This is a possible mis-use of the API. In this case, video is disabled in default LinphoneCallParams";
 	}
-	d->realtimeTextEnabled = linphone_core_realtime_text_enabled(core);
+	d->realtimeTextEnabled = !!linphone_core_realtime_text_enabled(core);
 	d->encryption = linphone_core_get_media_encryption(core);
 	d->avpfEnabled = (linphone_core_get_avpf_mode(core) == LinphoneAVPFEnabled);
-	d->_implicitRtcpFbEnabled = lp_config_get_int(linphone_core_get_config(core), "rtp", "rtcp_fb_implicit_rtcp_fb", true);
+	d->_implicitRtcpFbEnabled = !!lp_config_get_int(linphone_core_get_config(core), "rtp", "rtcp_fb_implicit_rtcp_fb", true);
 	d->avpfRrInterval = static_cast<uint16_t>(linphone_core_get_avpf_rr_interval(core));
 	d->audioDirection = LinphoneMediaDirectionSendRecv;
 	d->videoDirection = LinphoneMediaDirectionSendRecv;
-	d->earlyMediaSendingEnabled = lp_config_get_int(linphone_core_get_config(core), "misc", "real_early_media", false);
-	d->audioMulticastEnabled = linphone_core_audio_multicast_enabled(core);
-	d->videoMulticastEnabled = linphone_core_video_multicast_enabled(core);
-	d->updateCallWhenIceCompleted = lp_config_get_int(linphone_core_get_config(core), "sip", "update_call_when_ice_completed", true);
-	d->mandatoryMediaEncryptionEnabled = linphone_core_is_media_encryption_mandatory(core);
+	d->earlyMediaSendingEnabled = !!lp_config_get_int(linphone_core_get_config(core), "misc", "real_early_media", false);
+	d->audioMulticastEnabled = !!linphone_core_audio_multicast_enabled(core);
+	d->videoMulticastEnabled = !!linphone_core_video_multicast_enabled(core);
+	d->updateCallWhenIceCompleted = !!lp_config_get_int(linphone_core_get_config(core), "sip", "update_call_when_ice_completed", true);
+	d->mandatoryMediaEncryptionEnabled = !!linphone_core_is_media_encryption_mandatory(core);
 }
 
 // -----------------------------------------------------------------------------

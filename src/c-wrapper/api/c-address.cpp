@@ -102,7 +102,7 @@ bool_t linphone_address_get_secure (const LinphoneAddress *address) {
 }
 
 void linphone_address_set_secure (LinphoneAddress *address, bool_t enabled) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(address)->setSecure(enabled);
+	L_GET_CPP_PTR_FROM_C_OBJECT(address)->setSecure(!!enabled);
 }
 
 bool_t linphone_address_is_sip (const LinphoneAddress *address) {

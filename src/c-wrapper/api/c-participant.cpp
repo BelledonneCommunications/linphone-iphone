@@ -59,5 +59,5 @@ bool_t linphone_participant_is_admin (const LinphoneParticipant *participant) {
 }
 
 void linphone_participant_set_admin (LinphoneParticipant *participant, bool_t value) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(participant)->setAdmin(value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(participant)->setAdmin(!!value);
 }

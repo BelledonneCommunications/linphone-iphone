@@ -34,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
 bool IceAgent::candidatesGathered () const {
 	if (!iceSession)
 		return false;
-	return ice_session_candidates_gathered(iceSession);
+	return !!ice_session_candidates_gathered(iceSession);
 }
 
 void IceAgent::checkSession (IceRole role, bool isReinvite) {
@@ -107,7 +107,7 @@ bool IceAgent::hasCompletedCheckList () const {
 	switch (ice_session_state(iceSession)) {
 		case IS_Completed:
 		case IS_Failed:
-			return ice_session_has_completed_check_list(iceSession);
+			return !!ice_session_has_completed_check_list(iceSession);
 		default:
 			return false;
 	}
@@ -213,7 +213,7 @@ void IceAgent::updateFromRemoteMediaDescription (
 	if (!iceParamsFoundInRemoteMediaDescription(remoteDesc)) {
 		// Response from remote does not contain mandatory ICE attributes, delete the session.
 		deleteSession();
-		mediaSession.getPrivate()->enableSymmetricRtp(linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
+		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
 		return;
 	}
 
@@ -236,7 +236,7 @@ void IceAgent::updateFromRemoteMediaDescription (
 
 	if (ice_session_nb_check_lists(iceSession) == 0) {
 		deleteSession();
-		mediaSession.getPrivate()->enableSymmetricRtp(linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
+		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
 	}
 }
 
@@ -302,7 +302,7 @@ void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
 			}
 		}
 		if (firstCl)
-			result = ice_check_list_selected_valid_local_candidate(firstCl, &rtpCandidate, nullptr);
+			result = !!ice_check_list_selected_valid_local_candidate(firstCl, &rtpCandidate, nullptr);
 		if (result)
 			strncpy(desc->addr, rtpCandidate->taddr.ip, sizeof(desc->addr));
 		else
@@ -320,13 +320,13 @@ void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
 		if (ice_check_list_state(cl) == ICL_Completed) {
 			LinphoneConfig *config = linphone_core_get_config(mediaSession.getPrivate()->getCore());
 			// TODO: Remove `ice_uses_nortpproxy` option, let's say in December 2018.
-			bool useNoRtpProxy = lp_config_get_int(config, "sip", "ice_uses_nortpproxy", false);
+			bool useNoRtpProxy = !!lp_config_get_int(config, "sip", "ice_uses_nortpproxy", false);
 			if (useNoRtpProxy)
 				stream->set_nortpproxy = true;
-			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(iceSession, i), &rtpCandidate, &rtcpCandidate);
+			result = !!ice_check_list_selected_valid_local_candidate(ice_session_check_list(iceSession, i), &rtpCandidate, &rtcpCandidate);
 		} else {
 			stream->set_nortpproxy = false;
-			result = ice_check_list_default_local_candidate(ice_session_check_list(iceSession, i), &rtpCandidate, &rtcpCandidate);
+			result = !!ice_check_list_default_local_candidate(ice_session_check_list(iceSession, i), &rtpCandidate, &rtcpCandidate);
 		}
 		if (result) {
 			strncpy(stream->rtp_addr, rtpCandidate->taddr.ip, sizeof(stream->rtp_addr));
