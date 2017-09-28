@@ -642,7 +642,9 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 									}
 
 									// dump the xml into msg->message
-									xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&cText, &xmlStringLength, "UTF-8", 0);
+									char *buffer;
+									xmlDocDumpFormatMemoryEnc(xmlMessageBody, (xmlChar **)&buffer, &xmlStringLength, "UTF-8", 0);
+									setText(buffer);
 									break;
 								}
 								xmlFree(typeAttribute);
