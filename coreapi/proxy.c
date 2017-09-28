@@ -248,6 +248,8 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	}
 
 	if (cfg->contact_address) linphone_address_unref(cfg->contact_address);
+	if (cfg->contact_address_without_params)
+		linphone_address_unref(cfg->contact_address_without_params);
 
 	_linphone_proxy_config_release_ops(cfg);
 }

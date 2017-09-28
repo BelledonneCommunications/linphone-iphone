@@ -36,6 +36,7 @@ LinphoneAddress *linphone_address_new (const char *address) {
 
 	LinphoneAddress *object = L_INIT(Address);
 	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
+	delete cppPtr;
 	return object;
 }
 
