@@ -1675,9 +1675,8 @@ void v_table_reference_destroy(VTableReference *ref);
 
 LINPHONE_PUBLIC void _linphone_core_add_callbacks(LinphoneCore *lc, LinphoneCoreCbs *vtable, bool_t internal);
 
-#ifdef VIDEO_ENABLED
 MSWebCam *get_nowebcam_device(MSFactory *f);
-#endif
+
 LinphoneLimeState linphone_core_lime_for_file_sharing_enabled(const LinphoneCore *lc);
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTunnelConfig);
