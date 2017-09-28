@@ -71,6 +71,9 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LINPHONE_NAMESPACE::l_assert(#CONDITION, __FILE__, __LINE__))
 #endif
 
+#define L_LIKELY(EXPRESSION) __builtin_expect(static_cast<bool>(EXPRESSION), true)
+#define L_UNLIKELY(EXPRESSION)  __builtin_expect(static_cast<bool>(EXPRESSION), false)
+
 // Allows access to private internal data.
 // Gives a control to C Wrapper.
 #define L_DECLARE_PRIVATE(CLASS) \
