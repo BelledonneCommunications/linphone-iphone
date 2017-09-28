@@ -38,10 +38,6 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (const Conference &con
 	return session;
 }
 
-shared_ptr<CallSession> ParticipantPrivate::getSession () const {
-	return session;
-}
-
 // =============================================================================
 
 Participant::Participant (const Address &addr) : Object(*new ParticipantPrivate) {
