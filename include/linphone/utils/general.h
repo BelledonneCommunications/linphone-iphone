@@ -55,7 +55,7 @@ LINPHONE_BEGIN_NAMESPACE
 	#if defined(_MSC_VER)
 		#define LINPHONE_DEPRECATED __declspec(deprecated)
 	#else
-		#define LINPHONE_DEPRECATED __attribute__ ((deprecated))
+		#define LINPHONE_DEPRECATED __attribute__((deprecated))
 	#endif
 #endif
 

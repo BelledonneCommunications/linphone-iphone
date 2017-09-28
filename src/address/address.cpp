@@ -73,7 +73,7 @@ bool Address::operator< (const Address &address) const {
 
 bool Address::isValid () const {
 	L_D();
-	d->internalAddress;
+	return !!d->internalAddress;
 }
 
 const string &Address::getScheme () const {
