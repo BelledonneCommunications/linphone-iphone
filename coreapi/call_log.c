@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <time.h>
 
 #ifdef SQLITE_STORAGE_ENABLED
-	#if defined(_WIN32) && !defined(__ANDROID__) && !defined(__QNXNTO__)
+	#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(__QNXNTO__)
 		#include <langinfo.h>
 		#include <iconv.h>
 		#include <string.h>
