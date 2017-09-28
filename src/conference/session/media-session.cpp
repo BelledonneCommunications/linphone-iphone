@@ -2552,8 +2552,8 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 			MSSndCard *captcard = core->sound_conf.capt_sndcard;
 			if (!captcard)
 				lWarning() << "No card defined for capture!";
-			string playfile = core->play_file ? core->play_file : "";
-			string recfile = core->rec_file ? core->rec_file : "";
+			string playfile = L_C_TO_STRING(core->play_file);
+			string recfile = L_C_TO_STRING(core->rec_file);
 			/* Don't use file or soundcard capture when placed in recv-only mode */
 			if ((stream->rtp_port == 0) || (stream->dir == SalStreamRecvOnly) || ((stream->multicast_role == SalMulticastReceiver) && isMulticast)) {
 				captcard = nullptr;
@@ -3106,7 +3106,7 @@ void MediaSessionPrivate::updateFrozenPayloads (SalMediaDescription *result) {
 				/* New codec, needs to be added to the list */
 				localDesc->streams[i].already_assigned_payloads = bctbx_list_append(localDesc->streams[i].already_assigned_payloads, payload_type_clone(pt));
 				lInfo() << "CallSession[" << q << "] : payload type " << payload_type_get_number(pt) << " " << pt->mime_type << "/" << pt->clock_rate
-					<< " fmtp=" << (pt->recv_fmtp ? pt->recv_fmtp : "") << " added to frozen list";
+					<< " fmtp=" << L_C_TO_STRING(pt->recv_fmtp) << " added to frozen list";
 			}
 		}
 	}

@@ -97,7 +97,7 @@ const LinphoneAddress *linphone_chat_room_get_peer_address (LinphoneChatRoom *cr
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message (LinphoneChatRoom *cr, const char *message) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(message ? message : "");
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(L_C_TO_STRING(message));
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message_2 (
@@ -304,7 +304,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, subject ? subject : ""));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(core, me, L_C_TO_STRING(subject)));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;
 }

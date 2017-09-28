@@ -90,15 +90,15 @@ void linphone_call_params_set_custom_sdp_media_attributes (LinphoneCallParams *p
 // =============================================================================
 
 void linphone_call_params_add_custom_header (LinphoneCallParams *params, const char *header_name, const char *header_value) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomHeader(header_name, header_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomHeader(header_name, L_C_TO_STRING(header_value));
 }
 
 void linphone_call_params_add_custom_sdp_attribute (LinphoneCallParams *params, const char *attribute_name, const char *attribute_value) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpAttribute(attribute_name, attribute_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpAttribute(attribute_name, L_C_TO_STRING(attribute_value));
 }
 
 void linphone_call_params_add_custom_sdp_media_attribute (LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name, const char *attribute_value) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpMediaAttribute(type, attribute_name, attribute_value);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->addCustomSdpMediaAttribute(type, attribute_name, L_C_TO_STRING(attribute_value));
 }
 
 void linphone_call_params_clear_custom_sdp_attributes (LinphoneCallParams *params) {
@@ -139,18 +139,15 @@ void linphone_call_params_enable_video (LinphoneCallParams *params, bool_t enabl
 }
 
 const char *linphone_call_params_get_custom_header (const LinphoneCallParams *params, const char *header_name) {
-	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomHeader(header_name);
-	return value.empty() ? nullptr : value.c_str();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomHeader(header_name);
 }
 
 const char *linphone_call_params_get_custom_sdp_attribute (const LinphoneCallParams *params, const char *attribute_name) {
-	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpAttribute(attribute_name);
-	return value.empty() ? nullptr : value.c_str();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpAttribute(attribute_name);
 }
 
 const char *linphone_call_params_get_custom_sdp_media_attribute (const LinphoneCallParams *params, LinphoneStreamType type, const char *attribute_name) {
-	string value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpMediaAttribute(type, attribute_name);
-	return value.empty() ? nullptr : value.c_str();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(params)->getCustomSdpMediaAttribute(type, attribute_name);
 }
 
 bool_t linphone_call_params_get_local_conference_mode (const LinphoneCallParams *params) {
@@ -187,8 +184,7 @@ const LinphoneVideoDefinition *linphone_call_params_get_received_video_definitio
 }
 
 const char *linphone_call_params_get_record_file (const LinphoneCallParams *params) {
-	const string &value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getRecordFilePath();
-	return value.empty() ? nullptr : value.c_str();
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(params)->getRecordFilePath());
 }
 
 const char *linphone_call_params_get_rtp_profile (const LinphoneCallParams *params) {
@@ -217,8 +213,7 @@ const LinphoneVideoDefinition *linphone_call_params_get_sent_video_definition (c
 }
 
 const char *linphone_call_params_get_session_name (const LinphoneCallParams *params) {
-	const string &value = L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSessionName();
-	return value.empty() ? nullptr : value.c_str();
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(params)->getSessionName());
 }
 
 LinphonePayloadType *linphone_call_params_get_used_audio_payload_type (const LinphoneCallParams *params) {
@@ -278,11 +273,11 @@ void linphone_call_params_set_privacy (LinphoneCallParams *params, LinphonePriva
 }
 
 void linphone_call_params_set_record_file (LinphoneCallParams *params, const char *path) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setRecordFilePath(path ? path : "");
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setRecordFilePath(L_C_TO_STRING(path));
 }
 
 void linphone_call_params_set_session_name (LinphoneCallParams *params, const char *name) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setSessionName(name ? name : "");
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->setSessionName(L_C_TO_STRING(name));
 }
 
 bool_t linphone_call_params_audio_enabled (const LinphoneCallParams *params) {

@@ -708,11 +708,11 @@ bool_t linphone_call_camera_enabled (const LinphoneCall *call) {
 }
 
 LinphoneStatus linphone_call_take_video_snapshot (LinphoneCall *call, const char *file) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->takeVideoSnapshot(file ? file : "");
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->takeVideoSnapshot(L_C_TO_STRING(file));
 }
 
 LinphoneStatus linphone_call_take_preview_snapshot (LinphoneCall *call, const char *file) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->takePreviewSnapshot(file ? file : "");
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->takePreviewSnapshot(L_C_TO_STRING(file));
 }
 
 LinphoneReason linphone_call_get_reason (const LinphoneCall *call) {
@@ -745,8 +745,7 @@ const char * linphone_call_get_remote_contact (LinphoneCall *call) {
 }
 
 const char *linphone_call_get_authentication_token (LinphoneCall *call) {
-	string token = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken();
-	return token.empty() ? nullptr : token.c_str();
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken());
 }
 
 bool_t linphone_call_get_authentication_token_verified (const LinphoneCall *call) {
