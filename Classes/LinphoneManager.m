@@ -36,6 +36,7 @@
 #import "Utils/AudioHelper.h"
 #import "Utils/FileTransferDelegate.h"
 
+#include "linphone/factory.h"
 #include "linphone/linphonecore_utils.h"
 #include "linphone/lpconfig.h"
 #include "mediastreamer2/mscommon.h"
@@ -610,7 +611,7 @@ static void linphone_iphone_log_user_warning(struct _LinphoneCore *lc, const cha
 
 static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char *message) {
 	NSString *status = [[NSString alloc] initWithCString:message encoding:[NSString defaultCStringEncoding]];
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) displayStatus:status];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) displayStatus:status];
 }
 
 #pragma mark - Call State Functions
@@ -985,7 +986,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 static void linphone_iphone_call_state(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState state,
 									   const char *message) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onCall:call StateChanged:state withMessage:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onCall:call StateChanged:state withMessage:message];
 }
 
 #pragma mark - Transfert State Functions
@@ -996,7 +997,7 @@ static void linphone_iphone_transfer_state_changed(LinphoneCore *lc, LinphoneCal
 #pragma mark - Global state change
 
 static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onGlobalStateChanged:gstate withMessage:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onGlobalStateChanged:gstate withMessage:message];
 }
 
 - (void)onGlobalStateChanged:(LinphoneGlobalState)state withMessage:(const char *)message {
@@ -1022,7 +1023,7 @@ static void linphone_iphone_global_state_changed(LinphoneCore *lc, LinphoneGloba
 
 static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, LinphoneConfiguringState status,
 													   const char *message) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onConfiguringStatusChanged:status withMessage:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onConfiguringStatusChanged:status withMessage:message];
 }
 
 - (void)onConfiguringStatusChanged:(LinphoneConfiguringState)status withMessage:(const char *)message {
@@ -1127,15 +1128,17 @@ static void linphone_iphone_configuring_status_changed(LinphoneCore *lc, Linphon
 
 static void linphone_iphone_registration_state(LinphoneCore *lc, LinphoneProxyConfig *cfg,
 											   LinphoneRegistrationState state, const char *message) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onRegister:lc cfg:cfg state:state message:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onRegister:lc cfg:cfg state:state message:message];
 }
 
 #pragma mark - Auth info Function
 
-static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char *realmC, const char *usernameC,
-												   const char *domainC) {
+static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
 	// let the wizard handle its own errors
 	if ([PhoneMainView.instance currentView] != AssistantView.compositeViewDescription) {
+		const char * realmC = linphone_auth_info_get_realm(auth_info);
+		const char * usernameC = linphone_auth_info_get_username(auth_info);
+		const char * domainC = linphone_auth_info_get_domain(auth_info);
 		static UIAlertController *alertView = nil;
 
 		// avoid having multiple popups
@@ -1370,7 +1373,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, const char 
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onMessageReceived:lc room:room message:message];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onMessageReceived:lc room:room message:message];
 }
 
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
@@ -1465,7 +1468,7 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 
 static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event,
 											const LinphoneContent *body) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onNotifyReceived:lc
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onNotifyReceived:lc
 																			event:lev
 																	  notifyEvent:notified_event
 																		  content:body];
@@ -1488,7 +1491,7 @@ static void linphone_iphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev
 static void linphone_iphone_notify_presence_received_for_uri_or_tel(LinphoneCore *lc, LinphoneFriend *lf,
 																	const char *uri_or_tel,
 																	const LinphonePresenceModel *presence_model) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onNotifyPresenceReceivedForUriOrTel:lc
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onNotifyPresenceReceivedForUriOrTel:lc
 																							  friend:lf
 																								 uri:uri_or_tel
 																					   presenceModel:presence_model];
@@ -1496,7 +1499,7 @@ static void linphone_iphone_notify_presence_received_for_uri_or_tel(LinphoneCore
 
 static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCall *call, bool_t on,
 													const char *authentication_token) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onCallEncryptionChanged:lc
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onCallEncryptionChanged:lc
 																					call:call
 																					  on:on
 																				   token:authentication_token];
@@ -1580,7 +1583,7 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 }
 
 static void linphone_iphone_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
-	[(__bridge LinphoneManager *)linphone_core_get_user_data(lc) onMessageComposeReceived:lc forRoom:room];
+	[(__bridge LinphoneManager *)linphone_core_cbs_get_user_data(linphone_core_get_current_callbacks(lc)) onMessageComposeReceived:lc forRoom:room];
 }
 
 #pragma mark - Network Functions
@@ -1834,23 +1837,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	}
 }
 
-#pragma mark - VTable
-
-static LinphoneCoreVTable linphonec_vtable = {
-	.call_state_changed = (LinphoneCoreCallStateChangedCb)linphone_iphone_call_state,
-	.registration_state_changed = linphone_iphone_registration_state,
-	.notify_presence_received_for_uri_or_tel = linphone_iphone_notify_presence_received_for_uri_or_tel,
-	.auth_info_requested = linphone_iphone_popup_password_request,
-	.message_received = linphone_iphone_message_received,
-	.message_received_unable_decrypt = linphone_iphone_message_received_unable_decrypt,
-	.transfer_state_changed = linphone_iphone_transfer_state_changed,
-	.is_composing_received = linphone_iphone_is_composing_received,
-	.configuring_status = linphone_iphone_configuring_status_changed,
-	.global_state_changed = linphone_iphone_global_state_changed,
-	.notify_received = linphone_iphone_notify_received,
-	.call_encryption_changed = linphone_iphone_call_encryption_changed,
-};
-
 #pragma mark -
 
 // scheduling loop
@@ -2082,7 +2068,26 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[self lpConfigSetString:[LinphoneManager bundleFile:ringback] forKey:@"remote_ring" inSection:@"sound"];
 	[self lpConfigSetString:[LinphoneManager bundleFile:hold] forKey:@"hold_music" inSection:@"sound"];
 
-	theLinphoneCore = linphone_core_new_with_config(&linphonec_vtable, _configDb, (__bridge void *)(self));
+	LinphoneFactory *factory = linphone_factory_get();
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(factory);
+	linphone_core_cbs_set_call_state_changed(cbs, linphone_iphone_call_state);
+	linphone_core_cbs_set_registration_state_changed(cbs,linphone_iphone_registration_state);
+	linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(cbs, linphone_iphone_notify_presence_received_for_uri_or_tel);
+	linphone_core_cbs_set_authentication_requested(cbs, linphone_iphone_popup_password_request);
+	linphone_core_cbs_set_message_received(cbs, linphone_iphone_message_received);
+	linphone_core_cbs_set_message_received_unable_decrypt(cbs, linphone_iphone_message_received_unable_decrypt);
+	linphone_core_cbs_set_transfer_state_changed(cbs, linphone_iphone_transfer_state_changed);
+	linphone_core_cbs_set_is_composing_received(cbs, linphone_iphone_is_composing_received);
+	linphone_core_cbs_set_configuring_status(cbs, linphone_iphone_configuring_status_changed);
+	linphone_core_cbs_set_global_state_changed(cbs, linphone_iphone_global_state_changed);
+	linphone_core_cbs_set_notify_received(cbs, linphone_iphone_notify_received);
+	linphone_core_cbs_set_call_encryption_changed(cbs, linphone_iphone_call_encryption_changed);
+	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
+
+	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
+	// Let the core handle cbs
+	linphone_core_cbs_unref(cbs);
+
 	LOGI(@"Create linphonecore %p", theLinphoneCore);
 
 	// Load plugins if available in the linphone SDK - otherwise these calls will do nothing
