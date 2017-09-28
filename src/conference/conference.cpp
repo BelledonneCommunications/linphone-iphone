@@ -149,12 +149,18 @@ void Conference::onResetFirstVideoFrameDecoded (const CallSession &session) {
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> Conference::findParticipant (const Address &addr) {
+shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
 	for (const auto &participant : participants) {
 		if (addr.equal(participant->getAddress()))
 			return participant;
 	}
 	return nullptr;
+}
+
+bool Conference::isMe (const Address &addr) const {
+	Address cleanedAddress = me->getAddress();
+	cleanedAddress.setPort(0);
+	return addr.equal(cleanedAddress);
 }
 
 LINPHONE_END_NAMESPACE
