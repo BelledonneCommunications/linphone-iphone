@@ -692,7 +692,7 @@ void participant_unadmined_parsing() {
 	size_t size = strlen(first_notify) + strlen(confUri);
 	char *notify = new char[size];
 	size_t size2 = strlen(participant_unadmined_notify) + strlen(confUri);
-	char notify_unadmined[size2];
+	char *notify_unadmined = new char[size2];
 
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
@@ -708,7 +708,7 @@ void participant_unadmined_parsing() {
 	snprintf(notify_unadmined, size2, participant_unadmined_notify, confUri);
 	tester.handler->notifyReceived(notify_unadmined);
 
-	delete[] participant_unadmined_notify;
+	delete[] notify_unadmined;
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(aliceAddr)) != tester.participants.end());
