@@ -589,7 +589,7 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 #else
 		/* This works on 32 bits, luckily. */
 		/* TODO: va_copy is available in Visual Studio 2013. */
-		liblinphone_log_func(domain, level, fmt, args);
+		liblinphone_user_log_func(domain, level, fmt, args);
 #endif
 	}
 
