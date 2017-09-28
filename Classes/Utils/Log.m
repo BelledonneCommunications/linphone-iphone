@@ -61,7 +61,7 @@
 		stderrInUse = YES;
 	}
 	linphone_core_set_log_collection_path([self cacheDirectory].UTF8String);
-	linphone_core_enable_logs_with_cb(linphone_iphone_log_handler);
+	linphone_core_set_log_handler(linphone_iphone_log_handler);
 	linphone_core_enable_log_collection(enabled);
 	if (level == 0) {
 		linphone_core_set_log_level(ORTP_FATAL);
