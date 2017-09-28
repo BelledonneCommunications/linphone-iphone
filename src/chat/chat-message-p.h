@@ -75,12 +75,29 @@ public:
 	void setFileTransferInformation(LinphoneContent *content);
 	
 	// -----------------------------------------------------------------------------
+	// Need to be public to be called from static C callbacks
+	// -----------------------------------------------------------------------------
+
+	void fileTransferOnProgress(belle_sip_body_handler_t *bh, belle_sip_message_t *m, size_t offset, size_t total);
+	int onSendBody(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t *size);
+	void onSendEnd(belle_sip_user_body_handler_t *bh);
+	void onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t size);
+	void onRecvEnd(belle_sip_user_body_handler_t *bh);
+	void fileUploadBackgroundTaskEnded();
+	void processResponseFromPostFile(const belle_http_response_event_t *event);
+	void processResponseHeadersFromGetFile(const belle_http_response_event_t *event);
+	void processAuthRequestedDownload(const belle_sip_auth_event *event);
+	void processIoErrorUpload(const belle_sip_io_error_event_t *event);
+	void processAuthRequestedUpload(const belle_sip_auth_event *event);
+	void processIoErrorDownload(const belle_sip_io_error_event_t *event);
+	void processResponseFromGetFile(const belle_http_response_event_t *event);
+	
+	// -----------------------------------------------------------------------------
 	
 	void sendImdn(ImdnType imdnType, LinphoneReason reason);
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
-	std::string externalBodyUrl;
 	ChatMessage::Direction direction = ChatMessage::Incoming;
 	ChatMessage::State state = ChatMessage::Idle;
 	unsigned int storageId;
@@ -90,6 +107,8 @@ private:
 	std::string id;
 	std::string appData;
 	std::string fileTransferFilePath;
+	std::string externalBodyUrl;
+	std::string rttMessage;
 	bool isSecured = false;
 	bool isReadOnly = false;
 	bool isToBeStored = false;
@@ -99,14 +118,28 @@ private:
 	std::shared_ptr<EventsDb> eventsDb;
 	mutable LinphoneErrorInfo * errorInfo;
 	belle_http_request_t *httpRequest;
+	belle_http_request_listener_t *httpListener;
 	SalOp *salOp;
 	SalCustomHeader *salCustomHeaders;
+	unsigned long backgroundTaskId;
 	// Used for compatibility with previous C API
 	std::string cContentType;
 	std::string cText;
 	LinphoneContent *cFileTransferInformation;
+	
+	// -----------------------------------------------------------------------------
 
 	std::string createImdnXml(ImdnType imdnType, LinphoneReason reason);
+
+	void fileUploadEndBackgroundTask();
+	void fileUploadBeginBackgroundTask();
+	bool isFileTransferInProgressAndValid();
+
+	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
+
+	void releaseHttpRequest();
+	
+	// -----------------------------------------------------------------------------
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };
