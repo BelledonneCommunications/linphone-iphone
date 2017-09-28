@@ -511,7 +511,7 @@ void ChatMessagePrivate::onRecvEnd(belle_sip_user_body_handler_t *bh) {
 }
 
 bool ChatMessagePrivate::isFileTransferInProgressAndValid() {
-	return (chatRoom && chatRoom->getCore() && httpRequest && !!belle_http_request_is_cancelled(httpRequest));
+	return (chatRoom && chatRoom->getCore() && httpRequest && !belle_http_request_is_cancelled(httpRequest));
 }
 
 static void _chat_message_process_response_from_post_file(void *data, const belle_http_response_event_t *event) {
@@ -835,7 +835,7 @@ int ChatMessagePrivate::startHttpTransfer(std::string url, std::string action, b
 	belle_sip_object_ref(httpRequest);
 
 	// give msg to listener to be able to start the actual file upload when server answer a 204 No content
-	httpListener = belle_http_request_listener_create_from_callbacks(cbs, NULL);
+	httpListener = belle_http_request_listener_create_from_callbacks(cbs, this);
 	belle_http_provider_send_request(chatRoom->getCore()->http_provider, httpRequest, httpListener);
 	return 0;
 error:

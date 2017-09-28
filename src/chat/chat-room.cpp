@@ -596,7 +596,6 @@ LinphoneChatMessage *ChatRoom::createFileTransferMessage (const LinphoneContent 
 	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
 	
 	chatMessage->getPrivate()->setTime(ms_time(0));
-	chatMessage->getPrivate()->setContentType("text/plain");
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
 	chatMessage->setToAddress(make_shared<Address>(d->peerAddress.asString().c_str()));
