@@ -126,11 +126,11 @@ LinphoneChatMessageDir linphone_chat_message_get_direction(const LinphoneChatMes
 }
 
 void linphone_chat_message_set_incoming(LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Incoming);
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Incoming);
 }
 
 void linphone_chat_message_set_outgoing(LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Outgoing);
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Outgoing);
 }
 
 unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
@@ -142,7 +142,7 @@ LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessa
 }
 
 void linphone_chat_message_set_state(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setState((LinphonePrivate::ChatMessage::State)state);
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setState((LinphonePrivate::ChatMessage::State)state);
 }
 
 const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg) {

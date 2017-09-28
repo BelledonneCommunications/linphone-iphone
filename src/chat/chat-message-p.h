@@ -38,6 +38,10 @@ public:
 	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
 	
 	// -----------------------------------------------------------------------------
+
+	void setDirection (ChatMessage::Direction dir);
+
+	void setState(ChatMessage::State state);
 	
 	void setTime(time_t time);
 	

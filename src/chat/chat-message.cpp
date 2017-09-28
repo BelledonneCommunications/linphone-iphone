@@ -52,8 +52,36 @@ void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
 	chatRoom = cr;
 }
 
+void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
+	direction = dir;
+}
+
 void ChatMessagePrivate::setTime(time_t t) {
 	time = t;
+}
+
+void ChatMessagePrivate::setState(ChatMessage::State s) {
+	L_Q();
+
+	if (s != state && chatRoom) {
+		if (((state == ChatMessage::State::Displayed) || (state == ChatMessage::State::DeliveredToUser))
+			&& ((s == ChatMessage::State::DeliveredToUser) || (s == ChatMessage::State::Delivered) || (s == ChatMessage::State::NotDelivered))) {
+			return;
+		}
+		/* TODO
+		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state), linphone_chat_message_state_to_string(state));
+		*/
+		state = s;
+
+		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
+		if (linphone_chat_message_get_message_state_changed_cb(msg)) {
+			linphone_chat_message_get_message_state_changed_cb(msg)(msg, (LinphoneChatMessageState)state, linphone_chat_message_get_message_state_changed_cb_user_data(msg));
+		}
+		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+		if (linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
+			linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
+		}
+	}
 }
 
 unsigned int ChatMessagePrivate::getStorageId() const {
@@ -287,11 +315,6 @@ ChatMessage::Direction ChatMessage::getDirection () const {
 	return d->direction;
 }
 
-void ChatMessage::setDirection (ChatMessage::Direction dir) {
-	L_D();
-	d->direction = dir;
-}
-
 bool ChatMessage::isOutgoing () const {
 	L_D();
 	return d->direction == Outgoing;
@@ -305,29 +328,6 @@ bool ChatMessage::isIncoming () const {
 ChatMessage::State ChatMessage::getState() const {
 	L_D();
 	return d->state;
-}
-
-void ChatMessage::setState(State state) {
-	L_D();
-	if (state != d->state && d->chatRoom) {
-		if (((d->state == Displayed) || (d->state == DeliveredToUser))
-			&& ((state == DeliveredToUser) || (state == Delivered) || (state == NotDelivered))) {
-			return;
-		}
-		/* TODO
-		ms_message("Chat message %p: moving from state %s to %s", msg, linphone_chat_message_state_to_string(msg->state), linphone_chat_message_state_to_string(state));
-		*/
-		d->state = state;
-
-		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(this);
-		if (linphone_chat_message_get_message_state_changed_cb(msg)) {
-			linphone_chat_message_get_message_state_changed_cb(msg)(msg, (LinphoneChatMessageState)state, linphone_chat_message_get_message_state_changed_cb_user_data(msg));
-		}
-		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-		if (linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
-			linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
-		}
-	}
 }
 
 string ChatMessage::getId () const {
@@ -556,19 +556,15 @@ void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
 	if (linphone_im_notif_policy_get_send_imdn_delivered(policy)) {
 		d->sendImdn(ImdnTypeDelivery, reason);
 	}
-	/*LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	*/
 }
 
 void ChatMessage::sendDisplayNotification() {
-	//TODO
-	/*LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(cm);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
+	L_D();
+	LinphoneCore *lc = d->chatRoom->getCore();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
-	if (linphone_im_notif_policy_get_send_imdn_displayed(policy) == TRUE) {
-		linphone_chat_message_send_imdn(cm, ImdnTypeDisplay, LinphoneReasonNone);
-	}*/
+	if (linphone_im_notif_policy_get_send_imdn_displayed(policy)) {
+		d->sendImdn(ImdnTypeDisplay, LinphoneReasonNone);
+	}
 }
 
 /*

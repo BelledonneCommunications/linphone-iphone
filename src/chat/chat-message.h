@@ -84,7 +84,6 @@ public:
 	// -----------------------------------------------------------------------------
 
 	Direction getDirection () const;
-	void setDirection (Direction dir);
 	bool isOutgoing () const;
 	bool isIncoming () const;
 
@@ -97,7 +96,6 @@ public:
 	void setIsSecured(bool isSecured);
 
 	State getState() const;
-	void setState(State state);
 	
 	std::string getId () const;
 	void setId (std::string);
