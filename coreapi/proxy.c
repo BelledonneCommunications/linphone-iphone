@@ -439,10 +439,14 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 }
 
 static void guess_contact_for_register (LinphoneProxyConfig *cfg) {
-	linphone_address_unref(cfg->contact_address);
+	if (cfg->contact_address)
+		linphone_address_unref(cfg->contact_address);
 	cfg->contact_address = nullptr;
-	linphone_address_unref(cfg->contact_address_without_params);
+
+	if (cfg->contact_address_without_params)
+		linphone_address_unref(cfg->contact_address_without_params);
 	cfg->contact_address_without_params = nullptr;
+
 	LinphoneAddress *proxy = linphone_address_new(cfg->reg_proxy);
 	if (!proxy)
 		return;
