@@ -814,6 +814,8 @@ didInvalidatePushTokenForType:(NSString *)type {
 }
 
 #pragma mark - NSUser notifications
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstrict-prototypes"
 
 - (void)application:(UIApplication *)application
 	handleActionWithIdentifier:(NSString *)identifier
@@ -894,7 +896,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 	}
 	completionHandler();
 }
-
+#pragma clang diagnostic pop
 #pragma deploymate pop
 
 #pragma mark - Remote configuration Functions (URL Handler)
