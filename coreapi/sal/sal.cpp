@@ -973,4 +973,8 @@ SalMediaDescription * sal_call_get_final_media_description(SalOp *h) {
 	return callOp->get_final_media_description();
 }
 
+belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
+	return sal->resolve_a(name, port, family, cb, data);
+}
+
 }

@@ -100,7 +100,7 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	int port = linphone_address_get_port(source);
 	LinphoneAddress * dest;
 	
-	sal_resolve_a(	mgr->lc->sal
+	sal_resolve_a(linphone_core_get_sal(mgr->lc)
 	 ,linphone_address_get_domain(source)
 	 ,linphone_address_get_port(source)
 	 ,AF_INET

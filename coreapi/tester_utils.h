@@ -143,6 +143,8 @@ LINPHONE_PUBLIC const SalErrorInfo *sal_op_get_error_info(const SalOp *op);
 LINPHONE_PUBLIC bool_t sal_call_dialog_request_pending(const SalOp *op);
 LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling);
 LINPHONE_PUBLIC SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
+
+LINPHONE_PUBLIC belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data);
 #endif
 
 #ifdef __cplusplus
