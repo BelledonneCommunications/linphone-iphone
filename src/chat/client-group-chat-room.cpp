@@ -22,6 +22,7 @@
 #include "conference/session/call-session-p.h"
 #include "conference/participant-p.h"
 #include "content/content.h"
+#include "hacks/hacks.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -108,7 +109,6 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
-	eventHandler->subscribe(conferenceAddress);
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
@@ -172,6 +172,8 @@ void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session,
 		Address addr(session.getRemoteContact());
 		addr.clean();
 		onConferenceCreated(addr);
+		if (Hacks::contactHasParam(session.getRemoteContact(), "isfocus"))
+			eventHandler->subscribe(conferenceAddress);
 	}
 }
 
