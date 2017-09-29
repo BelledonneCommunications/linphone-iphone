@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "c-wrapper/c-wrapper.h"
 #include "call-p.h"
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
@@ -51,11 +52,11 @@ CallPrivate::~CallPrivate () {
 // -----------------------------------------------------------------------------
 
 shared_ptr<CallSession> CallPrivate::getActiveSession () const {
-	return conference->getActiveParticipant()->getPrivate()->getSession();
+	return L_GET_PRIVATE(conference->getActiveParticipant())->getSession();
 }
 
 bool CallPrivate::getAudioMuted () const {
-	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getAudioMuted();
+	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getAudioMuted();
 }
 
 LinphoneProxyConfig *CallPrivate::getDestProxy () const {
@@ -63,11 +64,11 @@ LinphoneProxyConfig *CallPrivate::getDestProxy () const {
 }
 
 IceSession *CallPrivate::getIceSession () const {
-	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getIceSession();
+	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getIceSession();
 }
 
 MediaStream *CallPrivate::getMediaStream (LinphoneStreamType type) const {
-	return static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->getMediaStream(type);
+	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getMediaStream(type);
 }
 
 SalOp *CallPrivate::getOp () const {
@@ -75,7 +76,7 @@ SalOp *CallPrivate::getOp () const {
 }
 
 void CallPrivate::setAudioMuted (bool value) {
-	static_cast<MediaSession *>(getActiveSession().get())->getPrivate()->setAudioMuted(value);
+	L_GET_PRIVATE(getActiveSession(), MediaSession)->setAudioMuted(value);
 }
 
 // -----------------------------------------------------------------------------

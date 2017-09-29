@@ -32,6 +32,12 @@
 // Internal.
 // =============================================================================
 
+#ifdef DEBUG
+	#define L_INTERNAL_WRAPPER_CONSTEXPR
+#else
+	#define L_INTERNAL_WRAPPER_CONSTEXPR constexpr
+#endif
+
 LINPHONE_BEGIN_NAMESPACE
 
 template<typename CppType>
@@ -57,6 +63,13 @@ private:
 	struct IsCppObject {
 		enum {
 			value = std::is_base_of<Object, CppType>::value || std::is_base_of<ClonableObject, CppType>::value
+		};
+	};
+
+	template<typename CppPrivateType>
+	struct IsPrivateCppObject {
+		enum {
+			value = std::is_base_of<ObjectPrivate, CppPrivateType>::value || std::is_base_of<ClonableObjectPrivate, CppPrivateType>::value
 		};
 	};
 
@@ -107,6 +120,29 @@ private:
 
 public:
 	// ---------------------------------------------------------------------------
+	// Casts.
+	// ---------------------------------------------------------------------------
+
+	template<
+		typename CppDerivedPrivateType,
+		typename CppBasePrivateType,
+		typename = typename std::enable_if<IsPrivateCppObject<CppDerivedPrivateType>::value, CppDerivedPrivateType>::type
+	>
+	static L_INTERNAL_WRAPPER_CONSTEXPR CppDerivedPrivateType *cast (CppBasePrivateType *base) {
+		#ifdef DEBUG
+			if (!base)
+				return static_cast<CppDerivedPrivateType *>(base);
+
+			CppDerivedPrivateType *derived = dynamic_cast<CppDerivedPrivateType *>(base);
+			if (!derived)
+				fatal("Invalid cast.");
+			return derived;
+		#else
+			return static_cast<CppDerivedPrivateType *>(base);
+		#endif
+	}
+
+	// ---------------------------------------------------------------------------
 	// Get private data of cpp Object.
 	// ---------------------------------------------------------------------------
 
@@ -121,12 +157,6 @@ public:
 	// ---------------------------------------------------------------------------
 	// Get c/cpp ptr helpers.
 	// ---------------------------------------------------------------------------
-
-	#ifdef DEBUG
-		#define L_INTERNAL_WRAPPER_CONSTEXPR
-	#else
-		#define L_INTERNAL_WRAPPER_CONSTEXPR constexpr
-	#endif
 
 	template<
 		typename CType,
@@ -159,7 +189,7 @@ public:
 	>
 	static L_INTERNAL_WRAPPER_CONSTEXPR std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
 		#ifdef DEBUG
-			return getCppPtrFromC(const_cast<CType *>(cObject));
+			return getCppPtrFromC<CType, CppType>(const_cast<CType *>(cObject));
 		#else
 			return reinterpret_cast<const WrappedObject<CppType> *>(cObject)->cppPtr;
 		#endif
@@ -201,8 +231,6 @@ public:
 			return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 		#endif
 	}
-
-	#undef L_INTERNAL_WRAPPER_CONSTEXPR
 
 	// ---------------------------------------------------------------------------
 	// Set c/cpp ptr helpers.
@@ -387,6 +415,8 @@ private:
 
 LINPHONE_END_NAMESPACE
 
+#undef L_INTERNAL_WRAPPER_CONSTEXPR
+
 #define L_INTERNAL_C_OBJECT_NO_XTOR(C_OBJECT)
 
 #define L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
@@ -552,14 +582,22 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(C_OBJECT, CPP_OBJECT)
 
 // Get the private data of a shared or simple cpp-ptr.
-#define L_GET_PRIVATE(CPP_OBJECT) \
+#define L_GET_PRIVATE_1_ARGS(CPP_OBJECT) \
 	LINPHONE_NAMESPACE::Wrapper::getPrivate(LINPHONE_NAMESPACE::Utils::getPtr(CPP_OBJECT))
+#define L_GET_PRIVATE_2_ARGS(CPP_OBJECT, CPP_TYPE) \
+	LINPHONE_NAMESPACE::Wrapper::cast<CPP_TYPE ## Private>(L_GET_PRIVATE_1_ARGS(CPP_OBJECT))
+
+#define L_GET_PRIVATE_MACRO_CHOOSER(...) \
+	L_EXPAND(L_GET_ARG_3(__VA_ARGS__, L_GET_PRIVATE_2_ARGS, L_GET_PRIVATE_1_ARGS))
+
+#define L_GET_PRIVATE(...) \
+	L_EXPAND(L_GET_PRIVATE_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__))
 
 // Get the private data of a shared or simple cpp-ptr of a wrapped C object.
 #define L_GET_PRIVATE_FROM_C_OBJECT_1_ARGS(C_OBJECT) \
-	L_GET_PRIVATE(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT)))
+	L_GET_PRIVATE_1_ARGS(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT)))
 #define L_GET_PRIVATE_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE) \
-	L_GET_PRIVATE(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE)))
+	L_GET_PRIVATE_1_ARGS(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE)))
 
 #define L_GET_PRIVATE_FROM_C_OBJECT_MACRO_CHOOSER(...) \
 	L_EXPAND(L_GET_ARG_3(__VA_ARGS__, L_GET_PRIVATE_FROM_C_OBJECT_2_ARGS, L_GET_PRIVATE_FROM_C_OBJECT_1_ARGS))

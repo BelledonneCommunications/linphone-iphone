@@ -149,7 +149,7 @@ void linphone_chat_room_send_chat_message (LinphoneChatRoom *cr, LinphoneChatMes
 
 uint32_t linphone_chat_room_get_char (const LinphoneChatRoom *cr) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(L_GET_CPP_PTR_FROM_C_OBJECT(cr).get())->getChar();
+		return L_GET_CPP_PTR_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->getChar();
 	return 0;
 }
 
@@ -159,7 +159,7 @@ void linphone_chat_room_compose (LinphoneChatRoom *cr) {
 
 LinphoneCall *linphone_chat_room_get_call (const LinphoneChatRoom *cr) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		return static_cast<const LinphonePrivate::RealTimeTextChatRoom *>(L_GET_CPP_PTR_FROM_C_OBJECT(cr).get())->getCall();
+		return L_GET_CPP_PTR_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->getCall();
 	return nullptr;
 }
 
