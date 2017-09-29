@@ -35,8 +35,10 @@ public:
 
 	ContentType &operator= (const ContentType &src);
 
-	bool operator== (const ContentType &contentType);
-	bool operator== (const std::string &contentType);
+	bool operator== (const ContentType &contentType) const;
+	bool operator== (const std::string &contentType) const;
+	bool operator!= (const ContentType &contentType) const;
+	bool operator!= (const std::string &contentType) const;
 
 	bool isValid () const;
 

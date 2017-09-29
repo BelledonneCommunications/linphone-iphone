@@ -30,7 +30,8 @@ public:
 	SalCallOp(Sal *sal): SalOp(sal) {}
 	
 	int set_local_media_description(SalMediaDescription *desc);
-	int set_local_custom_body(SalCustomBody *body);
+	int set_local_custom_body(const Content &body);
+	int set_local_custom_body(const Content &&bdoy);
 	
 	SalMediaDescription *get_remote_media_description() {return this->remote_media;}
 	SalMediaDescription *get_final_media_description();
@@ -67,13 +68,13 @@ public:
 
 private:
 	static belle_sip_header_allow_t *create_allow(bool_t enable_update);
-	static int set_custom_body(belle_sip_message_t *msg, const SalCustomBody *body);
+	static int set_custom_body(belle_sip_message_t *msg, const Content &body);
 	static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc);
 	static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription *desc);
 	void set_released();
 	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
 	void cancelling_invite(const SalErrorInfo *info);
-	static SalCustomBody *extract_body(belle_sip_message_t *message);
+	static Content extract_body(belle_sip_message_t *message);
 	int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
 	static void set_addr_to_0000(char value[], size_t sz);
 	void sdp_process();

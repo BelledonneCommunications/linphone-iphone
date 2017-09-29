@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <belle-sip/types.h>
 #include "sal.h"
 #include "sal.hpp"
+#include "content/content.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -208,7 +209,7 @@ protected:
 	char *remote_contact = NULL;
 	SalMediaDescription *local_media = NULL;
 	SalMediaDescription *remote_media = NULL;
-	SalCustomBody *custom_body = NULL;
+	Content custom_body;
 	void *user_pointer = NULL;
 	const char* call_id = NULL;
 	char* realm = NULL;

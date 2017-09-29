@@ -3,6 +3,7 @@
 #include "offeranswer.h"
 #include <bctoolbox/defs.h>
 #include <belle-sip/provider.h>
+#include <stdexcept>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
-	if (this->custom_body) {
+	if (this->custom_body.getBody().size() > 0) {
 		bctbx_error("cannot set local media description on SalOp [%p] because a custom body is already set", this);
 		return -1;
 	}
@@ -32,13 +33,21 @@ int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
 	return 0;
 }
 
-int SalCallOp::set_local_custom_body(SalCustomBody *body) {
+int SalCallOp::set_local_custom_body(const Content &body) {
 	if (this->local_media) {
 		bctbx_error("cannot set custom body on SalOp [%p] because a local media description is already set", this);
 		return -1;
 	}
-	if (this->custom_body) sal_custom_body_unref(this->custom_body);
-	this->custom_body = sal_custom_body_ref(body ? body : NULL);
+	this->custom_body = body;
+	return 0;
+}
+
+int SalCallOp::set_local_custom_body(const Content &&body) {
+	if (this->local_media) {
+		bctbx_error("cannot set custom body on SalOp [%p] because a local media description is already set", this);
+		return -1;
+	}
+	this->custom_body = body;
 	return 0;
 }
 
@@ -50,24 +59,31 @@ belle_sip_header_allow_t *SalCallOp::create_allow(bool_t enable_update) {
 	return header_allow;
 }
 
-int SalCallOp::set_custom_body(belle_sip_message_t *msg, const SalCustomBody *body) {
-	if (body->data_length > SIP_MESSAGE_BODY_LIMIT) {
+int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
+	ContentType contentType = body.getContentType();
+	size_t bodySize = body.getBody().size();
+	
+	if (bodySize > SIP_MESSAGE_BODY_LIMIT) {
 		bctbx_error("trying to add a body greater than %dkB to message [%p]", SIP_MESSAGE_BODY_LIMIT/1024, msg);
 		return -1;
 	}
-	if (body->data_length == 0 || body->raw_data == NULL) {
+	if (bodySize == 0) {
 		bctbx_error("trying to add an empty custom body to message [%p]", msg);
 		return -1;
 	}
+	if (!contentType.isValid()) {
+		bctbx_error("trying to add a custom body with an invalid content type to message [%p]", msg);
+		return -1;
+	}
 	
-	belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(body->type->type, body->type->subtype);
-	belle_sip_header_content_length_t *content_length = belle_sip_header_content_length_create(body->data_length);
+	belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(contentType.getType().c_str(), contentType.getSubType().c_str());
+	belle_sip_header_content_length_t *content_length = belle_sip_header_content_length_create(bodySize);
 	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_type));
 	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_length));
 	
-	char *buffer = bctbx_new(char, body->data_length);
-	memcpy(buffer, body->raw_data, body->data_length);
-	belle_sip_message_assign_body(msg, buffer, body->data_length);
+	char *buffer = bctbx_new(char, bodySize);
+	memcpy(buffer, body.getBody().data(), bodySize);
+	belle_sip_message_assign_body(msg, buffer, bodySize);
 	
 	return 0;
 }
@@ -75,31 +91,32 @@ int SalCallOp::set_custom_body(belle_sip_message_t *msg, const SalCustomBody *bo
 int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_error_code error = BELLE_SIP_BUFFER_OVERFLOW;
 	size_t length = 0;
+	size_t bufLen = 2048;
 	
 	if (session_desc == NULL) return -1;
 
-	size_t bufLen = 2048;
-	char *buff = reinterpret_cast<char *>(belle_sip_malloc(bufLen));
+	vector<char> buff(bufLen);
 
 	/* try to marshal the description. This could go higher than 2k so we iterate */
-	while( error != BELLE_SIP_OK && bufLen <= SIP_MESSAGE_BODY_LIMIT && buff != NULL){
-		error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff,bufLen,&length);
+	while( error != BELLE_SIP_OK && bufLen <= SIP_MESSAGE_BODY_LIMIT) {
+		error = belle_sip_object_marshal(BELLE_SIP_OBJECT(session_desc),buff.data(),bufLen,&length);
 		if( error != BELLE_SIP_OK ){
 			bufLen *= 2;
 			length  = 0;
-			buff = reinterpret_cast<char *>(belle_sip_realloc(buff,bufLen));
+			buff.resize(bufLen);
 		}
 	}
 	/* give up if hard limit reached */
-	if (error != BELLE_SIP_OK || buff == NULL) {
+	if (error != BELLE_SIP_OK) {
 		ms_error("Buffer too small (%d) or not enough memory, giving up SDP", (int)bufLen);
 		return -1;
 	}
+	buff.resize(length);
 	
-	SalMimeType *mimetype = sal_mime_type_new("application", "sdp");
-	SalCustomBody *body = sal_custom_body_new_with_buffer_moving(mimetype, buff, length);
+	Content body;
+	body.setContentType("application/sdp");
+	body.setBody(move(buff));
 	set_custom_body(msg, body);
-	sal_custom_body_unref(body);
 
 	return 0;
 }
@@ -124,7 +141,7 @@ void SalCallOp::fill_invite(belle_sip_request_t* invite) {
 		this->sdp_offering=TRUE;
 		set_sdp_from_desc(BELLE_SIP_MESSAGE(invite),this->local_media);
 	} else this->sdp_offering=FALSE;
-	if (this->custom_body) {
+	if (this->custom_body.getBody().size() > 0) {
 		set_custom_body(BELLE_SIP_MESSAGE(invite), this->custom_body);
 	}
 }
@@ -165,16 +182,17 @@ void SalCallOp::cancelling_invite(const SalErrorInfo *info) {
 	this->state=State::Terminating;
 }
 
-SalCustomBody *SalCallOp::extract_body(belle_sip_message_t *message) {
-	const char *body_str = belle_sip_message_get_body(message);
+Content SalCallOp::extract_body(belle_sip_message_t *message) {
+	Content body;
 	belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(message, belle_sip_header_content_type_t);
 	belle_sip_header_content_length_t *content_length = belle_sip_message_get_header_by_type(message, belle_sip_header_content_length_t);
-	if (!(body_str && content_type && content_length)) return NULL;
-	const char *type_str = belle_sip_header_content_type_get_type(content_type);
-	const char *subtype_str = belle_sip_header_content_type_get_subtype(content_type);
-	size_t length = belle_sip_header_content_length_get_content_length(content_length);
-	SalMimeType *mime_type = sal_mime_type_new(type_str, subtype_str);
-	SalCustomBody *body = sal_custom_body_new_with_buffer_copy(mime_type, body_str, length);
+	const char *type_str = content_type ? belle_sip_header_content_type_get_type(content_type) : NULL;
+	const char *subtype_str = content_type ? belle_sip_header_content_type_get_subtype(content_type) : NULL;
+	size_t length = content_length ? belle_sip_header_content_length_get_content_length(content_length) : 0;
+	const char *body_str = belle_sip_message_get_body(message);
+	
+	if (type_str && subtype_str) body.setContentType(ContentType(type_str, subtype_str));
+	if (length > 0 && body_str) body.setBody(body_str, length);
 	return body;
 }
 
@@ -193,18 +211,13 @@ int SalCallOp::extract_sdp(belle_sip_message_t* message,belle_sdp_session_descri
 		return 0;
 	}
 
-	SalCustomBody *body = extract_body(message);
-	if (body == NULL) return 0;
-
-	if (strcmp("application", body->type->type) != 0 || strcmp("sdp", body->type->subtype) != 0) {
-		sal_custom_body_unref(body);
+	Content body = extract_body(message);
+	if (body.getContentType() != "application/sdp") {
 		*error = SalReasonUnsupportedContent;
 		return -1;
 	}
 	
-	*session_desc = belle_sdp_session_description_parse(string(body->raw_data, body->data_length).c_str());
-	sal_custom_body_unref(body);
-	
+	*session_desc = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
 	if (*session_desc == NULL) {
 		ms_error("Failed to parse SDP message.");
 		*error = SalReasonNotAcceptable;

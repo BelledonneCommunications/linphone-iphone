@@ -95,9 +95,6 @@ SalOp::~SalOp() {
 		sal_media_description_unref(this->local_media);
 	if (this->remote_media)
 		sal_media_description_unref(this->remote_media);
-	if (this->custom_body) {
-		sal_custom_body_unref(this->custom_body);
-	}
 	if (this->call_id)
 		ms_free((void *)this->call_id);
 	if (this->service_route) {

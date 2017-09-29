@@ -362,40 +362,6 @@ int sal_media_description_get_nb_active_streams(const SalMediaDescription *md);
 }
 #endif
 
-typedef struct _SalMimeType {
-	int ref;
-	char *type;
-	char *subtype;
-} SalMimeType;
-
-typedef struct _SalCustomBody {
-	int ref;
-	SalMimeType *type;
-	size_t data_length;
-	char *raw_data;
-} SalCustomBody;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-SalMimeType *sal_mime_type_new(const char *type, const char *subtype);
-SalMimeType *sal_mime_type_copy(const SalMimeType *mime_type);
-SalMimeType *sal_mime_type_ref(SalMimeType *mime_type);
-void sal_mime_type_unref(SalMimeType *mime_type);
-
-SalCustomBody *sal_custom_body_new(SalMimeType *type);
-SalCustomBody *sal_custom_body_new_with_buffer_copy(SalMimeType *type, const char *raw_data, size_t data_length);
-SalCustomBody *sal_custom_body_new_with_buffer_moving(SalMimeType *type, char *raw_data, size_t data_length);
-SalCustomBody *sal_custom_body_ref(SalCustomBody *body);
-void sal_custom_body_unref(SalCustomBody *body);
-void sal_custom_body_set_buffer_by_copy(SalCustomBody *body, const char *buffer, size_t length);
-void sal_custom_body_set_buffer_by_moving(SalCustomBody *body, char *buffer, size_t length);
-
-#ifdef __cplusplus
-}
-#endif
-
 
 typedef enum SalReason{
 	SalReasonNone, /*no error, please leave first so that it takes 0 value*/

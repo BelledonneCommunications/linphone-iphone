@@ -49,6 +49,7 @@ public:
 	const std::vector<char> &getBody () const;
 	std::string getBodyAsString () const;
 	void setBody (const std::vector<char> &body);
+	void setBody (const std::vector<char> &&body);
 	void setBody (const std::string &body);
 	void setBody (const void *buffer, size_t size);
 	size_t getSize () const;

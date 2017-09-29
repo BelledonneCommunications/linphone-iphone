@@ -66,12 +66,20 @@ ContentType &ContentType::operator= (const ContentType &src) {
 	return *this;
 }
 
-bool ContentType::operator== (const ContentType &contentType) {
+bool ContentType::operator== (const ContentType &contentType) const {
 	return getType() == contentType.getType() && getSubType() == contentType.getSubType();
 }
 
-bool ContentType::operator== (const string &contentType) {
+bool ContentType::operator== (const string &contentType) const {
 	return *this == ContentType(contentType);
+}
+
+bool ContentType::operator!= (const ContentType &contentType) const {
+	return !(*this == contentType);
+}
+
+bool ContentType::operator!= (const std::string &contentType) const {
+	return !(*this == contentType);
 }
 
 const string &ContentType::getType () const {

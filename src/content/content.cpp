@@ -107,6 +107,11 @@ void Content::setBody (const vector<char> &body) {
 	d->body = body;
 }
 
+void Content::setBody (const std::vector<char> &&body) {
+	L_D();
+	d->body = body;
+}
+
 void Content::setBody (const string &body) {
 	L_D();
 	d->body = vector<char>(body.cbegin(), body.cend());
