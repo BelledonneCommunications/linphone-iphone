@@ -2120,7 +2120,7 @@ static void video_call_expected_fps_for_specified_bandwidth(int bandwidth, int f
 **/
 static void video_call_expected_fps_for_low_bandwidth(void) {
 #if defined(__ANDROID__) || (TARGET_OS_IPHONE == 1) || defined(__arm__) || defined(_M_ARM)
-	video_call_expected_fps_for_specified_bandwidth(50000, 10, "qvga");
+	video_call_expected_fps_for_specified_bandwidth(80000, 10, "qvga");
 #else
 	video_call_expected_fps_for_specified_bandwidth(250000, 15, "vga");
 #endif
@@ -2135,7 +2135,7 @@ static void video_call_expected_fps_for_low_bandwidth(void) {
 **/
 static void video_call_expected_fps_for_regular_bandwidth(void) {
 #if defined(__ANDROID__) || (TARGET_OS_IPHONE == 1) || defined(__arm__) || defined(_M_ARM)
-	video_call_expected_fps_for_specified_bandwidth(250000, 18, "qvga");
+	video_call_expected_fps_for_specified_bandwidth(400000, 12, "vga");
 #else
 	video_call_expected_fps_for_specified_bandwidth(450000, 25, "vga");
 #endif
@@ -2150,7 +2150,7 @@ static void video_call_expected_fps_for_regular_bandwidth(void) {
 **/
 static void video_call_expected_fps_for_high_bandwidth(void) {
 #if defined(__ANDROID__) || (TARGET_OS_IPHONE == 1) || defined(__arm__) || defined(_M_ARM)
-	video_call_expected_fps_for_specified_bandwidth(500000, 18, "qvga");
+	video_call_expected_fps_for_specified_bandwidth(400000, 12, "qcif");
 #else
 	video_call_expected_fps_for_specified_bandwidth(5000000, 30, "vga");
 #endif
