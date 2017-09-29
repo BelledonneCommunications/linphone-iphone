@@ -51,11 +51,11 @@ CallPrivate::~CallPrivate () {
 // -----------------------------------------------------------------------------
 
 shared_ptr<CallSession> CallPrivate::getActiveSession () const {
-	return L_GET_PRIVATE(conference->getActiveParticipant())->getSession();
+	return conference->getActiveParticipant()->getPrivate()->getSession();
 }
 
 bool CallPrivate::getAudioMuted () const {
-	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getAudioMuted();
+	return static_pointer_cast<MediaSession>(getActiveSession())->getAudioMuted();
 }
 
 LinphoneProxyConfig *CallPrivate::getDestProxy () const {
@@ -63,7 +63,7 @@ LinphoneProxyConfig *CallPrivate::getDestProxy () const {
 }
 
 IceSession *CallPrivate::getIceSession () const {
-	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getIceSession();
+	return static_pointer_cast<MediaSession>(getActiveSession())->getIceSession();
 }
 
 MediaStream *CallPrivate::getMediaStream (LinphoneStreamType type) const {
