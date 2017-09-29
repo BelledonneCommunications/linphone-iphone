@@ -95,10 +95,6 @@ SalOp::~SalOp() {
 	if (this->remote_contact_address){
 		sal_address_destroy(this->remote_contact_address);
 	}
-	if (this->local_media)
-		sal_media_description_unref(this->local_media);
-	if (this->remote_media)
-		sal_media_description_unref(this->remote_media);
 	if (this->call_id)
 		ms_free((void *)this->call_id);
 	if (this->service_route) {

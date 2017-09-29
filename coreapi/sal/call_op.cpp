@@ -3,21 +3,27 @@
 #include "offeranswer.h"
 #include <bctoolbox/defs.h>
 #include <belle-sip/provider.h>
-#include <stdexcept>
 
 using namespace std;
 
-#define SIP_MESSAGE_BODY_LIMIT 16*1024 // 16kB
-
 LINPHONE_BEGIN_NAMESPACE
 
+SalCallOp::~SalCallOp() {
+	if (this->local_media) sal_media_description_unref(this->local_media);
+	if (this->remote_media) sal_media_description_unref(this->remote_media);
+}
+
 int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
-	if (this->custom_body.getBody().size() > 0) {
-		bctbx_error("cannot set local media description on SalOp [%p] because a custom body is already set", this);
-		return -1;
-	}
-	
 	if (desc) sal_media_description_ref(desc);
+	
+	belle_sip_error_code error;
+	belle_sdp_session_description_t *sdp = media_description_to_sdp(desc);
+	vector<char> buffer = marshal_media_description(sdp, error);
+	if (error != BELLE_SIP_OK) return -1;
+	
+	this->local_body.setContentType("application/sdp");
+	this->local_body.setBody(move(buffer));
+	
 	if (this->local_media) sal_media_description_unref(this->local_media);
 	this->local_media=desc;
 
@@ -33,21 +39,30 @@ int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
 	return 0;
 }
 
-int SalCallOp::set_local_custom_body(const Content &body) {
-	if (this->local_media) {
-		bctbx_error("cannot set custom body on SalOp [%p] because a local media description is already set", this);
-		return -1;
-	}
-	this->custom_body = body;
-	return 0;
+int SalCallOp::set_local_body(const Content &body) {
+	Content bodyCopy = body;
+	return set_local_body(move(bodyCopy));
 }
 
-int SalCallOp::set_local_custom_body(const Content &&body) {
-	if (this->local_media) {
-		bctbx_error("cannot set custom body on SalOp [%p] because a local media description is already set", this);
-		return -1;
+int SalCallOp::set_local_body(const Content &&body) {
+	if (!body.isValid()) return -1;
+	
+	if (body.getContentType() == "application/sdp") {
+		SalMediaDescription *desc = NULL;
+		if (body.getSize() > 0) {
+			belle_sdp_session_description_t *sdp = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
+			if (sdp == NULL) return -1;
+			desc = sal_media_description_new();
+			if (sdp_to_media_description(sdp, desc) != 0) {
+				sal_media_description_unref(desc);
+				return -1;
+			}
+		}
+		if (this->local_media) sal_media_description_unref(this->local_media);
+		this->local_media = desc;
 	}
-	this->custom_body = body;
+	
+	this->local_body = body;
 	return 0;
 }
 
@@ -64,38 +79,31 @@ int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
 	size_t bodySize = body.getBody().size();
 	
 	if (bodySize > SIP_MESSAGE_BODY_LIMIT) {
-		bctbx_error("trying to add a body greater than %dkB to message [%p]", SIP_MESSAGE_BODY_LIMIT/1024, msg);
-		return -1;
-	}
-	if (bodySize == 0) {
-		bctbx_error("trying to add an empty custom body to message [%p]", msg);
-		return -1;
-	}
-	if (!contentType.isValid()) {
-		bctbx_error("trying to add a custom body with an invalid content type to message [%p]", msg);
+		bctbx_error("trying to add a body greater than %lukB to message [%p]", (unsigned long)SIP_MESSAGE_BODY_LIMIT/1024, msg);
 		return -1;
 	}
 	
-	belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(contentType.getType().c_str(), contentType.getSubType().c_str());
+	if (contentType.isValid()) {
+		belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(contentType.getType().c_str(), contentType.getSubType().c_str());
+		belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_type));
+	}
 	belle_sip_header_content_length_t *content_length = belle_sip_header_content_length_create(bodySize);
-	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_type));
 	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_length));
 	
-	char *buffer = bctbx_new(char, bodySize);
-	memcpy(buffer, body.getBody().data(), bodySize);
-	belle_sip_message_assign_body(msg, buffer, bodySize);
+	if (bodySize > 0) {
+		char *buffer = bctbx_new(char, bodySize);
+		memcpy(buffer, body.getBody().data(), bodySize);
+		belle_sip_message_assign_body(msg, buffer, bodySize);
+	}
 	
 	return 0;
 }
 
-int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
-	belle_sip_error_code error = BELLE_SIP_BUFFER_OVERFLOW;
+std::vector<char> SalCallOp::marshal_media_description(belle_sdp_session_description_t *session_desc, belle_sip_error_code &error) {
 	size_t length = 0;
 	size_t bufLen = 2048;
-	
-	if (session_desc == NULL) return -1;
-
 	vector<char> buff(bufLen);
+	error = BELLE_SIP_BUFFER_OVERFLOW;
 
 	/* try to marshal the description. This could go higher than 2k so we iterate */
 	while( error != BELLE_SIP_OK && bufLen <= SIP_MESSAGE_BODY_LIMIT) {
@@ -106,12 +114,24 @@ int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t*
 			buff.resize(bufLen);
 		}
 	}
+	
 	/* give up if hard limit reached */
 	if (error != BELLE_SIP_OK) {
 		ms_error("Buffer too small (%d) or not enough memory, giving up SDP", (int)bufLen);
-		return -1;
+		return std::vector<char>(); // return a new vector in order to free the buffer held by 'buff' vector
 	}
+	
 	buff.resize(length);
+	return buff;
+}
+
+int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
+	belle_sip_error_code error;
+	
+	if (session_desc == NULL) return -1;
+
+	vector<char> buff = marshal_media_description(session_desc, error);
+	if (error != BELLE_SIP_OK) return -1;
 	
 	Content body;
 	body.setContentType("application/sdp");
@@ -132,18 +152,12 @@ int SalCallOp::set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescrip
 
 void SalCallOp::fill_invite(belle_sip_request_t* invite) {
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),BELLE_SIP_HEADER(create_allow(this->root->enable_sip_update)));
-
 	if (this->root->session_expires!=0){
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "600;refresher=uas"));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Supported", "timer"));
 	}
-	if (this->local_media){
-		this->sdp_offering=TRUE;
-		set_sdp_from_desc(BELLE_SIP_MESSAGE(invite),this->local_media);
-	} else this->sdp_offering=FALSE;
-	if (this->custom_body.getBody().size() > 0) {
-		set_custom_body(BELLE_SIP_MESSAGE(invite), this->custom_body);
-	}
+	this->sdp_offering = (this->local_body.getContentType() == "application/sdp");
+	set_custom_body(BELLE_SIP_MESSAGE(invite), this->local_body);
 }
 
 void SalCallOp::set_released() {
@@ -196,7 +210,7 @@ Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	return body;
 }
 
-int SalCallOp::extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error) {
+int SalCallOp::parse_sdp_body(const Content &body,belle_sdp_session_description_t** session_desc, SalReason *error) {
 	*session_desc = NULL;
 	*error = SalReasonNone;
 	
@@ -209,12 +223,6 @@ int SalCallOp::extract_sdp(belle_sip_message_t* message,belle_sdp_session_descri
 	if (this->sdp_handling == SalOpSDPSimulateRemove) {
 		ms_error("Simulating no SDP for op %p", this);
 		return 0;
-	}
-
-	Content body = extract_body(message);
-	if (body.getContentType() != "application/sdp") {
-		*error = SalReasonUnsupportedContent;
-		return -1;
 	}
 	
 	*session_desc = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
@@ -290,21 +298,27 @@ void SalCallOp::sdp_process(){
 	}
 }
 
-void SalCallOp::handle_sdp_from_response(belle_sip_response_t* response) {
-	belle_sdp_session_description_t* sdp;
+void SalCallOp::handle_body_from_response(belle_sip_response_t* response) {
 	SalReason reason;
+	belle_sdp_session_description_t* sdp;
+	Content body = extract_body(BELLE_SIP_MESSAGE(response));
 	if (this->remote_media){
 		sal_media_description_unref(this->remote_media);
 		this->remote_media=NULL;
 	}
-	if (extract_sdp(BELLE_SIP_MESSAGE(response),&sdp,&reason)==0) {
-		if (sdp){
-			this->remote_media=sal_media_description_new();
-			sdp_to_media_description(sdp,this->remote_media);
-		}/*if no sdp in response, what can we do ?*/
+	if (body.getContentType() == "application/sdp") {
+		if (parse_sdp_body(body, &sdp, &reason) == 0) {
+			if (sdp) {
+				this->remote_media = sal_media_description_new();
+				sdp_to_media_description(sdp, this->remote_media);
+				this->remote_body = move(body);
+			}/*if no sdp in response, what can we do ?*/
+		}
+		/* process sdp in any case to reset result media description*/
+		if (this->local_media) sdp_process();
+	} else {
+		this->remote_body = move(body);
 	}
-	/* process sdp in any case to reset result media description*/
-	if (this->local_media) sdp_process();
 }
 
 void SalCallOp::set_error(belle_sip_response_t* response, bool_t fatal){
@@ -366,7 +380,7 @@ void SalCallOp::process_response_cb(void *op_base, const belle_sip_response_even
 				} else if (code >= 180 && code<200) {
 					belle_sip_response_t *prev_response=reinterpret_cast<belle_sip_response_t *>(belle_sip_object_data_get(BELLE_SIP_OBJECT(dialog),"early_response"));
 					if (!prev_response || code>belle_sip_response_get_status_code(prev_response)){
-						op->handle_sdp_from_response(response);
+						op->handle_body_from_response(response);
 						op->root->callbacks.call_ringing(op);
 					}
 					belle_sip_object_data_set(BELLE_SIP_OBJECT(dialog),"early_response",belle_sip_object_ref(response),belle_sip_object_unref);
@@ -376,7 +390,7 @@ void SalCallOp::process_response_cb(void *op_base, const belle_sip_response_even
 				}
 			} else if (code >=200 && code<300) {
 				if (strcmp("UPDATE",method)==0) {
-					op->handle_sdp_from_response(response);
+					op->handle_body_from_response(response);
 					op->root->callbacks.call_accepted(op);
 				} else if (strcmp("CANCEL", method) == 0) {
 					op->root->callbacks.call_cancel_done(op);
@@ -390,7 +404,7 @@ void SalCallOp::process_response_cb(void *op_base, const belle_sip_response_even
 				case State::Active: /*re-invite, INFO, UPDATE case*/
 					if (strcmp("INVITE",method)==0){
 						if (code >=200 && code<300) {
-							op->handle_sdp_from_response(response);
+							op->handle_body_from_response(response);
 							ack=belle_sip_dialog_create_ack(op->dialog,belle_sip_dialog_get_local_seq_number(op->dialog));
 							if (ack == NULL) {
 								ms_error("This call has been already terminated.");
@@ -518,30 +532,58 @@ int SalCallOp::is_media_description_acceptable(SalMediaDescription *md) {
 	return TRUE;
 }
 
-SalReason SalCallOp::process_sdp_for_invite(belle_sip_request_t* invite) {
-	belle_sdp_session_description_t* sdp;
+SalReason SalCallOp::process_body_for_invite(belle_sip_request_t* invite) {
 	SalReason reason = SalReasonNone;
-	SalErrorInfo sei;
+	
+	Content body = extract_body(BELLE_SIP_MESSAGE(invite));
+	if (!body.isValid()) return SalReasonUnsupportedContent;
+	
+	if (body.getContentType() == "application/sdp") {
+		belle_sdp_session_description_t* sdp;
+		if (parse_sdp_body(body, &sdp, &reason) == 0) {
+			if (sdp) {
+				this->sdp_offering = FALSE;
+				if (this->remote_media) sal_media_description_unref(this->remote_media);
+				this->remote_media = sal_media_description_new();
+				sdp_to_media_description(sdp, this->remote_media);
+				/*make some sanity check about the SDP received*/
+				if (!is_media_description_acceptable(this->remote_media)) {
+					reason = SalReasonNotAcceptable;
+				}
+				belle_sip_object_unref(sdp);
+			} else this->sdp_offering = TRUE; /*INVITE without SDP*/
+		}
+		if (reason != SalReasonNone) {
+			SalErrorInfo sei;
+			memset(&sei, 0, sizeof(sei));
+			sal_error_info_set(&sei, reason, "SIP", 0, NULL, NULL);
+			decline_with_error_info(&sei, NULL);
+			sal_error_info_reset(&sei);
+		}
+	}
+	this->remote_body = move(body);
+	return reason;
+}
 
-	memset(&sei, 0, sizeof(sei));
-	if (extract_sdp(BELLE_SIP_MESSAGE(invite),&sdp,&reason)==0) {
-		if (sdp){
-			this->sdp_offering=FALSE;
-			this->remote_media=sal_media_description_new();
-			sdp_to_media_description(sdp,this->remote_media);
-			/*make some sanity check about the SDP received*/
-			if (!is_media_description_acceptable(this->remote_media)){
-				reason=SalReasonNotAcceptable;
+SalReason SalCallOp::process_body_for_ack(belle_sip_request_t *ack) {
+	SalReason reason = SalReasonNone;
+	Content body = extract_body(BELLE_SIP_MESSAGE(ack));
+	if (!body.isValid()) return SalReasonUnsupportedContent;
+	if (body.getContentType() == "application/sdp") {
+		belle_sdp_session_description_t *sdp;
+		if (parse_sdp_body(body, &sdp, &reason) == 0) {
+			if (sdp) {
+				if (this->remote_media) sal_media_description_unref(this->remote_media);
+				this->remote_media = sal_media_description_new();
+				sdp_to_media_description(sdp, this->remote_media);
+				this->sdp_process();
+				belle_sip_object_unref(sdp);
+			} else {
+				ms_warning("SDP expected in ACK but not found.");
 			}
-			belle_sip_object_unref(sdp);
-		}else this->sdp_offering=TRUE; /*INVITE without SDP*/
+		}
 	}
-
-	if (reason != SalReasonNone){
-		sal_error_info_set(&sei, reason,"SIP", 0, NULL, NULL);
-		decline_with_error_info(&sei,NULL);
-		sal_error_info_reset(&sei);
-	}
+	this->remote_body = move(body);
 	return reason;
 }
 
@@ -581,7 +623,6 @@ void SalCallOp::process_request_event_cb(void *op_base, const belle_sip_request_
 	SalCallOp * op = (SalCallOp *)op_base;
 	SalReason reason;
 	belle_sip_server_transaction_t* server_transaction=NULL;
-	belle_sdp_session_description_t* sdp;
 	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
 	belle_sip_dialog_state_t dialog_state;
 	belle_sip_response_t* resp;
@@ -624,7 +665,7 @@ void SalCallOp::process_request_event_cb(void *op_base, const belle_sip_request_
 				ms_warning("replace header already set");
 			}
 
-			if ( (reason = op->process_sdp_for_invite(req)) == SalReasonNone) {
+			if ( (reason = op->process_body_for_invite(req)) == SalReasonNone) {
 				if ((call_info=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Call-Info"))) {
 					if( strstr(belle_sip_header_get_unparsed_value(call_info),"answer-after=") != NULL) {
 						op->auto_answer_asked=TRUE;
@@ -659,7 +700,7 @@ void SalCallOp::process_request_event_cb(void *op_base, const belle_sip_request_
 			belle_sip_server_transaction_send_response(server_transaction,resp);
 		} else if (strcmp("UPDATE",method)==0) {
 			op->reset_descriptions();
-			if (op->process_sdp_for_invite(req)==SalReasonNone)
+			if (op->process_body_for_invite(req)==SalReasonNone)
 				op->root->callbacks.call_updating(op,TRUE);
 		} else {
 			belle_sip_error("Unexpected method [%s] for dialog state BELLE_SIP_DIALOG_EARLY",belle_sip_request_get_method(req));
@@ -673,19 +714,7 @@ void SalCallOp::process_request_event_cb(void *op_base, const belle_sip_request_
 			if (!op->pending_client_trans ||
 				!belle_sip_transaction_state_is_transient(belle_sip_transaction_get_state((belle_sip_transaction_t*)op->pending_client_trans))){
 				if (op->sdp_offering){
-					SalReason reason;
-					if (op->extract_sdp(BELLE_SIP_MESSAGE(req),&sdp,&reason)==0) {
-						if (sdp){
-							if (op->remote_media)
-								sal_media_description_unref(op->remote_media);
-							op->remote_media=sal_media_description_new();
-							sdp_to_media_description(sdp,op->remote_media);
-							op->sdp_process();
-							belle_sip_object_unref(sdp);
-						}else{
-							ms_warning("SDP expected in ACK but not found.");
-						}
-					}
+					op->process_body_for_ack(req);
 				}
 				op->root->callbacks.call_ack_received(op, (SalCustomHeader*)req);
 			}else{
@@ -705,7 +734,7 @@ void SalCallOp::process_request_event_cb(void *op_base, const belle_sip_request_
 			} else {
 				/*re-invite*/
 				op->reset_descriptions();
-				if (op->process_sdp_for_invite(req)==SalReasonNone)
+				if (op->process_body_for_invite(req)==SalReasonNone)
 					op->root->callbacks.call_updating(op,is_update);
 			}
 		} else if (strcmp("INFO",method)==0){

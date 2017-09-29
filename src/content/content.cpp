@@ -132,4 +132,9 @@ bool Content::isEmpty () const {
 	return getSize() == 0;
 }
 
+bool Content::isValid() const {
+	L_D();
+	return d->contentType.isValid() || d->body.empty();
+}
+
 LINPHONE_END_NAMESPACE

@@ -217,12 +217,17 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 			break;
 
 		}
-		linphone_call_stats_unref(audio_stats1);
-		linphone_call_stats_unref(audio_stats2);
+		if (audio_stats1) linphone_call_stats_unref(audio_stats1);
+		if (audio_stats2) linphone_call_stats_unref(audio_stats2);
 		if (video_stats1) linphone_call_stats_unref(video_stats1);
 		if (video_stats2) linphone_call_stats_unref(video_stats2);
 		wait_for_until(caller->lc,callee->lc,NULL,0,20); /*just to sleep while iterating*/
 	}while (!liblinphone_tester_clock_elapsed(&ts,max_time_to_wait));
+	
+	if (audio_stats1) linphone_call_stats_unref(audio_stats1);
+	if (audio_stats2) linphone_call_stats_unref(audio_stats2);
+	if (video_stats1) linphone_call_stats_unref(video_stats1);
+	if (video_stats2) linphone_call_stats_unref(video_stats2);
 
 	audio_stats1 = linphone_call_get_audio_stats(c1);
 	video_stats1 = linphone_call_get_video_stats(c1);
@@ -262,6 +267,12 @@ void liblinphone_tester_check_rtcp(LinphoneCoreManager* caller, LinphoneCoreMana
 		}
 
 	}
+	
+	if (audio_stats1) linphone_call_stats_unref(audio_stats1);
+	if (audio_stats2) linphone_call_stats_unref(audio_stats2);
+	if (video_stats1) linphone_call_stats_unref(video_stats1);
+	if (video_stats2) linphone_call_stats_unref(video_stats2);
+	
 	linphone_call_unref(c1);
 	linphone_call_unref(c2);
 }

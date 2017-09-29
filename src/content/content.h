@@ -55,6 +55,8 @@ public:
 	void setBody (const void *buffer, size_t size);
 
 	size_t getSize () const;
+	
+	bool isValid() const;
 
 	bool isEmpty () const;
 

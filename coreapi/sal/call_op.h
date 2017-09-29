@@ -28,12 +28,14 @@ LINPHONE_BEGIN_NAMESPACE
 class SalCallOp: public SalOp, public SalMessageOpInterface {
 public:
 	SalCallOp(Sal *sal): SalOp(sal) {}
+	~SalCallOp() override;
 	
 	int set_local_media_description(SalMediaDescription *desc);
-	int set_local_custom_body(const Content &body);
-	int set_local_custom_body(const Content &&bdoy);
+	int set_local_body(const Content &body);
+	int set_local_body(const Content &&body);
 	
 	SalMediaDescription *get_remote_media_description() {return this->remote_media;}
+	const Content &get_remote_body() const {return this->remote_body;}
 	SalMediaDescription *get_final_media_description();
 	
 	int call(const char *from, const char *to, const char *subject);
@@ -47,7 +49,7 @@ public:
 	int refer(const char *refer_to_);
 	int refer_with_replaces(SalCallOp *other_call_op);
 	int set_referer(SalCallOp *refered_call);
-		SalCallOp *get_replaces();
+	SalCallOp *get_replaces();
 	int send_dtmf(char dtmf);
 	int terminate() {return terminate_with_error(NULL);}
 	int terminate_with_error(const SalErrorInfo *info);
@@ -62,46 +64,65 @@ public:
 	void set_replaces(const char *call_id, const char *from_tag, const char *to_tag);
 	void set_sdp_handling(SalOpSDPHandling handling);
 	
-// 	int send_message(const char *from, const char *to, const char *msg) override {return MessageOpInterface::send_message(from, to, msg);}
+	// Implementation of SalMessageOpInterface
 	int send_message(const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri) override;
 	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
 
 private:
+	virtual void fill_cbs() override;
+	void set_released();
+	
+	void set_error(belle_sip_response_t* response, bool_t fatal);
+	void call_terminated(belle_sip_server_transaction_t* server_transaction, int status_code, belle_sip_request_t* cancel_request);
+	void reset_descriptions();
+	
+	int parse_sdp_body(const Content &body,belle_sdp_session_description_t** session_desc, SalReason *error);
+	void sdp_process();
+	void handle_body_from_response(belle_sip_response_t* response);
+	SalReason process_body_for_invite(belle_sip_request_t* invite);
+	SalReason process_body_for_ack(belle_sip_request_t *ack);
+	void handle_offer_answer_response(belle_sip_response_t* response);
+	
+	void fill_invite(belle_sip_request_t* invite);
+	void cancelling_invite(const SalErrorInfo *info);
+	int refer_to(belle_sip_header_refer_to_t* refer_to, belle_sip_header_referred_by_t* referred_by);
+	int send_notify_for_refer(int code, const char *reason);
+	void notify_last_response(SalCallOp *newcall);
+	void process_refer(const belle_sip_request_event_t *event, belle_sip_server_transaction_t *server_transaction);
+	void process_notify(const belle_sip_request_event_t *event, belle_sip_server_transaction_t* server_transaction);
+	
+	static void set_addr_to_0000(char value[], size_t sz);
+	static int is_media_description_acceptable(SalMediaDescription *md);
+	static bool_t is_a_pending_invite_incoming_transaction(belle_sip_transaction_t *tr);
+	static void set_call_as_released(SalCallOp *op);
+	static void unsupported_method(belle_sip_server_transaction_t* server_transaction,belle_sip_request_t* request);
+	static belle_sip_header_reason_t *make_reason_header( const SalErrorInfo *info);
 	static belle_sip_header_allow_t *create_allow(bool_t enable_update);
+	static std::vector<char> marshal_media_description(belle_sdp_session_description_t *session_desc, belle_sip_error_code &error);
+	
+	// belle_sip_message handlers
 	static int set_custom_body(belle_sip_message_t *msg, const Content &body);
 	static int set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc);
 	static int set_sdp_from_desc(belle_sip_message_t *msg, const SalMediaDescription *desc);
-	void set_released();
 	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	void cancelling_invite(const SalErrorInfo *info);
 	static Content extract_body(belle_sip_message_t *message);
-	int extract_sdp(belle_sip_message_t* message,belle_sdp_session_description_t** session_desc, SalReason *error);
-	static void set_addr_to_0000(char value[], size_t sz);
-	void sdp_process();
-	void handle_sdp_from_response(belle_sip_response_t* response);
-	void set_error(belle_sip_response_t* response, bool_t fatal);
+	
+	// Callbacks
 	static int vfu_retry_cb (void *user_data, unsigned int events);
 	static void process_response_cb(void *op_base, const belle_sip_response_event_t *event);
 	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
 	static void process_transaction_terminated_cb(void *user_ctx, const belle_sip_transaction_terminated_event_t *event);
-	static int is_media_description_acceptable(SalMediaDescription *md);
-	SalReason process_sdp_for_invite(belle_sip_request_t* invite);
-	void call_terminated(belle_sip_server_transaction_t* server_transaction, int status_code, belle_sip_request_t* cancel_request);
-	void reset_descriptions();
-	static void unsupported_method(belle_sip_server_transaction_t* server_transaction,belle_sip_request_t* request);
-	static bool_t is_a_pending_invite_incoming_transaction(belle_sip_transaction_t *tr);
 	static void process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
-	static void set_call_as_released(SalCallOp *op);
 	static void process_dialog_terminated_cb(void *ctx, const belle_sip_dialog_terminated_event_t *event);
-	virtual void fill_cbs() override;
-	void fill_invite(belle_sip_request_t* invite);
-	static belle_sip_header_reason_t *make_reason_header( const SalErrorInfo *info);
-	int refer_to(belle_sip_header_refer_to_t* refer_to, belle_sip_header_referred_by_t* referred_by);
-	void notify_last_response(SalCallOp *newcall);
-	int send_notify_for_refer(int code, const char *reason);
-	void process_refer(const belle_sip_request_event_t *event, belle_sip_server_transaction_t *server_transaction);
-	void process_notify(const belle_sip_request_event_t *event, belle_sip_server_transaction_t* server_transaction);
-	void handle_offer_answer_response(belle_sip_response_t* response);
+	
+	// Private constants
+	static const size_t SIP_MESSAGE_BODY_LIMIT = 16*1024; // 16kB
+	
+	// Attributes
+	SalMediaDescription *local_media = NULL;
+	SalMediaDescription *remote_media = NULL;
+	Content local_body;
+	Content remote_body;
 };
 
 LINPHONE_END_NAMESPACE

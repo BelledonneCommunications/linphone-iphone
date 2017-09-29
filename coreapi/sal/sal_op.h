@@ -211,9 +211,6 @@ protected:
 	char *remote_ua = NULL;
 	SalAddress* remote_contact_address = NULL;
 	char *remote_contact = NULL;
-	SalMediaDescription *local_media = NULL;
-	SalMediaDescription *remote_media = NULL;
-	Content custom_body;
 	void *user_pointer = NULL;
 	const char* call_id = NULL;
 	char* realm = NULL;
