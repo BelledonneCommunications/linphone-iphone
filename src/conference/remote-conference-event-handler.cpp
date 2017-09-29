@@ -60,7 +60,7 @@ void RemoteConferenceEventHandler::subscribe(const Address &addr) {
 	L_D();
 	d->confAddress = addr;
 	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
-	d->lev = linphone_core_create_subscribe(d->core, lAddr, "Conference", 600);
+	d->lev = linphone_core_create_subscribe(d->core, lAddr, "conference", 600);
 	linphone_address_unref(lAddr);
 	linphone_event_set_internal(d->lev, TRUE);
 	linphone_event_set_user_data(d->lev, this);

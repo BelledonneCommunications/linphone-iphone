@@ -2123,7 +2123,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
-	} else if (strcmp(linphone_event_get_name(lev), "Conference") == 0) {
+	} else if (strcmp(linphone_event_get_name(lev), "conference") == 0) {
 
 	}
 }

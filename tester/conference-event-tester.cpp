@@ -742,7 +742,7 @@ void send_first_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 	string notify = localConf.getEventHandler()->subscribeReceived(lev);
 	tester.handler->notifyReceived(notify);
 	linphone_event_unref(lev);
@@ -780,7 +780,7 @@ void send_added_notify() {
 	Address frankAddr(frankAddrStr);
 	bctbx_free(frankAddrStr);
 	linphone_address_unref(cFrankAddr);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
@@ -834,7 +834,7 @@ void send_removed_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 	string notify = localConf.getEventHandler()->subscribeReceived(lev);
 	tester.handler->notifyReceived(notify);
 	linphone_event_unref(lev);
@@ -880,7 +880,7 @@ void send_admined_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 	string notify = localConf.getEventHandler()->subscribeReceived(lev);
 	tester.handler->notifyReceived(notify);
 	linphone_event_unref(lev);
@@ -927,7 +927,7 @@ void send_unadmined_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 	string notify = localConf.getEventHandler()->subscribeReceived(lev);
 	tester.handler->notifyReceived(notify);
 	linphone_event_unref(lev);

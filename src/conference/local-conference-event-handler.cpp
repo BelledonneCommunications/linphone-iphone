@@ -157,7 +157,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined(const 
 
 void LocalConferenceEventHandlerPrivate::sendNotify(string notify, const Address &addr) {	
 	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
-	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "Conference");
+	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
 	linphone_address_unref(cAddr);
 	doNotify(notify, lev);
 }
