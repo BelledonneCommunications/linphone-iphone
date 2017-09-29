@@ -81,8 +81,18 @@
 #pragma mark - Event Functions
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
-	// Invalid all pointers
-	[self loadData];
+	@try {
+		// Invalid all pointers
+		[self loadData];
+	}
+	@catch (NSException *exception) {
+		if ([exception.name isEqualToString:@"LinphoneCoreException"]) {
+			LOGE(@"Core already destroyed");
+			return;
+		}
+		LOGE(@"Uncaught exception : %@", exception.description);
+		abort();
+	}
 }
 
 #pragma mark - Property Functions
