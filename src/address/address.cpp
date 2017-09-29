@@ -67,6 +67,10 @@ bool Address::operator== (const Address &address) const {
 	return equal(address);
 }
 
+bool Address::operator!= (const Address &address) const {
+	return !(*this == address);
+}
+
 bool Address::operator< (const Address &address) const {
 	return asString() < address.asString();
 }

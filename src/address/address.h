@@ -39,6 +39,7 @@ public:
 	Address &operator= (const Address &src);
 
 	bool operator== (const Address &address) const;
+	bool operator!= (const Address &address) const;
 
 	bool operator< (const Address &address) const;
 
