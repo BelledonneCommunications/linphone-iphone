@@ -18,7 +18,6 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
@@ -89,11 +88,11 @@ static void remote_provisioning_default_values(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new2("marie_remote_default_values_rc", FALSE);
 	BC_ASSERT_TRUE(wait_for(marie->lc,NULL,&marie->stat.number_of_LinphoneConfiguringSuccessful,1));
 	lpc = linphone_core_create_proxy_config(marie->lc);
-	BC_ASSERT_TRUE(lpc->reg_sendregister);
-	BC_ASSERT_EQUAL(lpc->expires, 604800, int, "%d");
-	BC_ASSERT_STRING_EQUAL(lpc->reg_proxy, "<sip:sip.linphone.org:5223;transport=tls>");
-	BC_ASSERT_STRING_EQUAL(lpc->reg_route, "<sip:sip.linphone.org:5223;transport=tls>");
-	BC_ASSERT_STRING_EQUAL(lpc->reg_identity, "sip:?@sip.linphone.org");
+	BC_ASSERT_TRUE(linphone_proxy_config_register_enabled(lpc));
+	BC_ASSERT_EQUAL(linphone_proxy_config_get_expires(lpc), 604800, int, "%d");
+	BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_server_addr(lpc), "<sip:sip.linphone.org:5223;transport=tls>");
+	BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_route(lpc), "<sip:sip.linphone.org:5223;transport=tls>");
+	BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_identity(lpc), "sip:?@sip.linphone.org");
 	{
 		LpConfig* lp = linphone_core_get_config(marie->lc);
 		BC_ASSERT_STRING_EQUAL(lp_config_get_string(lp,"app","toto","empty"),"titi");
@@ -119,7 +118,7 @@ static void remote_provisioning_file(void) {
 	{
 		char* path = bc_tester_res("rcfiles/marie_remote_localfile2_rc");
 		char* abspath = ms_strdup_printf("file://%s", path);
-		lp_config_set_string(marie->lc->config, "misc", "config-uri", abspath);
+		lp_config_set_string(linphone_core_get_config(marie->lc), "misc", "config-uri", abspath);
 		linphone_core_manager_start(marie, 1);
 		ms_free(path);
 		ms_free(abspath);

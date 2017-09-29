@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+using namespace LINPHONE_NAMESPACE;
+
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneFriendListCbs);
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneFriendListCbs, belle_sip_object_t,
@@ -807,7 +809,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_out_subscribe(const Linphon
 	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
-		if (lf->outsub && ((lf->outsub == op) || sal_op_is_forked_of(lf->outsub, op))) return lf;
+		if (lf->outsub && ((lf->outsub == op) || lf->outsub->is_forked_of(op))) return lf;
 	}
 	return NULL;
 }

@@ -230,7 +230,7 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 			int family = AF_INET;
 			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
 			ms_message("Starting stun server resolution [%s]", host);
-			policy->stun_resolver_context = sal_resolve(policy->lc->sal, service, "udp", host, port, family, stun_server_resolved, policy);
+			policy->stun_resolver_context = policy->lc->sal->resolve(service, "udp", host, port, family, stun_server_resolved, policy);
 			if (policy->stun_resolver_context) belle_sip_object_ref(policy->stun_resolver_context);
 		}
 	}
@@ -252,7 +252,7 @@ const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNat
 		int wait_limit = 1000;
 		linphone_nat_policy_resolve_stun_server(policy);
 		while ((policy->stun_addrinfo == NULL) && (policy->stun_resolver_context != NULL) && (wait_ms < wait_limit)) {
-			sal_iterate(policy->lc->sal);
+			policy->lc->sal->iterate();
 			ms_usleep(50000);
 			wait_ms += 50;
 		}

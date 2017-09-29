@@ -17,7 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
-#include "private.h"
+#include <ctype.h>
 
 static const char XMLRPC_URL[] = "https://sip2.linphone.org:446/xmlrpc.php";
 
@@ -336,6 +336,20 @@ static void account_creator_cb(LinphoneAccountCreator *creator, LinphoneAccountC
 		LinphoneAccountCreatorStatus,
 		"%i");
 	account_creator_set_cb_done(cbs);
+}
+
+static void set_string(char **dest, const char *src, bool_t lowercase) {
+	if (*dest) {
+		ms_free(*dest);
+		*dest = NULL;
+	}
+	if (src) {
+		*dest = ms_strdup(src);
+		if (lowercase) {
+			char *cur = *dest;
+			for (; *cur; cur++) *cur = tolower(*cur);
+		}
+	}
 }
 
 static void _get_activation_code_cb(LinphoneXmlRpcRequest *request) {

@@ -22,6 +22,7 @@
 #include "object/object-p.h"
 
 #include "call-session.h"
+#include "sal/call_op.h"
 
 // =============================================================================
 
@@ -39,7 +40,7 @@ public:
 	void setPingTime (int value) { pingTime = value; }
 
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
-	SalOp * getOp () const { return op; }
+	SalCallOp * getOp () const { return op; }
 
 	virtual void abort (const std::string &errorMsg);
 	virtual void accepted ();
@@ -92,7 +93,7 @@ protected:
 	LinphoneErrorInfo *ei = nullptr;
 	LinphoneCallLog *log = nullptr;
 
-	SalOp *op = nullptr;
+	SalCallOp *op = nullptr;
 
 	SalOp *pingOp = nullptr;
 	bool pingReplied = false;

@@ -174,6 +174,98 @@ int sal_media_description_get_nb_active_streams(const SalMediaDescription *md) {
 	return nb;
 }
 
+SalMimeType *sal_mime_type_new(const char *type, const char *subtype) {
+	SalMimeType *mime_type = bctbx_new0(SalMimeType, 1);
+	if (type) mime_type->type = bctbx_strdup(type);
+	if (subtype) mime_type->subtype = bctbx_strdup(subtype);
+	return mime_type;
+}
+
+SalMimeType *sal_mime_type_copy(const SalMimeType *mime_type) {
+	SalMimeType *new_mime_type = bctbx_new0(SalMimeType, 1);
+	if (mime_type->type) new_mime_type->type = bctbx_strdup(mime_type->type);
+	if (mime_type->subtype) new_mime_type->subtype = bctbx_strdup(mime_type->subtype);
+	return new_mime_type;
+}
+
+SalMimeType *sal_mime_type_ref(SalMimeType *mime_type) {
+	if (!mime_type)  return NULL;
+	mime_type->ref++;
+	return mime_type;
+}
+
+void sal_mime_type_unref(SalMimeType *mime_type) {
+	mime_type->ref--;
+	if (mime_type->ref <= 0) {
+		if (mime_type->type) bctbx_free(mime_type->type);
+		if (mime_type->subtype) bctbx_free(mime_type->subtype);
+	}
+	bctbx_free(mime_type);
+}
+
+SalCustomBody *sal_custom_body_new(SalMimeType *type) {
+	if (type == NULL) {
+		bctbx_error("creating a SalCustomBody from NULL SalMimeType");
+		return NULL;
+	}
+	SalCustomBody *body = bctbx_new0(SalCustomBody, 1);
+	body->type = sal_mime_type_ref(type);
+	return body;
+}
+
+SalCustomBody *sal_custom_body_new_with_buffer_copy(SalMimeType *type, const char *raw_data, size_t data_length) {
+	SalCustomBody *body = sal_custom_body_new(type);
+	if (body == NULL) return NULL;
+	body->data_length = data_length;
+	if (data_length > 0 && raw_data) {
+		body->raw_data = bctbx_new(char, data_length);
+		memcpy(body->raw_data, raw_data, data_length);
+	}
+	return body;
+}
+
+SalCustomBody *sal_custom_body_new_with_buffer_moving(SalMimeType *type, char *raw_data, size_t data_length) {
+	SalCustomBody *body = sal_custom_body_new(type);
+	if (body == NULL) return NULL;
+	sal_custom_body_set_buffer_by_moving(body, raw_data, data_length);
+	return body;
+}
+
+SalCustomBody *sal_custom_body_ref(SalCustomBody *body) {
+	if (!body) return NULL;
+	body->ref++;
+	return body;
+}
+
+void sal_custom_body_unref(SalCustomBody *body) {
+	body->ref--;
+	if (body->ref <= 0) {
+		if (body->type) sal_mime_type_unref(body->type);
+		if (body->raw_data) bctbx_free(body->raw_data);
+	}
+	bctbx_free(body);
+}
+
+void sal_custom_body_set_buffer_by_copy(SalCustomBody *body, const char *buffer, size_t length) {
+	char *buff_copy = NULL;
+	if (buffer && length > 0) {
+		buff_copy = bctbx_new(char, length);
+		memcpy(buff_copy, buffer, length);
+	} else length = 0;
+	sal_custom_body_set_buffer_by_moving(body, buff_copy, length);
+}
+
+void sal_custom_body_set_buffer_by_moving(SalCustomBody *body, char *buffer, size_t length) {
+	if (body->raw_data) bctbx_free(body->raw_data);
+	if (length > 0 && buffer) {
+		body->raw_data = buffer;
+		body->data_length = length;
+	} else {
+		body->raw_data = NULL;
+		body->data_length = length;
+	}
+}
+
 static bool_t is_null_address(const char *addr){
 	return strcmp(addr,"0.0.0.0")==0 || strcmp(addr,"::0")==0;
 }
@@ -495,6 +587,7 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	return result;
 }
 
+#if 0
 static void assign_address(SalAddress** address, const char *value){
 	if (*address){
 		sal_address_destroy(*address);
@@ -552,9 +645,11 @@ void sal_op_set_route(SalOp *op, const char *route){
 	assign_string(&op_base->route,route_string); \
 	if(route_string) ms_free(route_string);
 }
+
 const bctbx_list_t* sal_op_get_route_addresses(const SalOp *op) {
 	return ((SalOpBase*)op)->route_addresses;
 }
+
 void sal_op_set_route_address(SalOp *op, const SalAddress *address){
 	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
 	sal_op_set_route(op,address_string);
@@ -606,6 +701,7 @@ Sal *sal_op_get_sal(const SalOp *op){
 const char *sal_op_get_from(const SalOp *op){
 	return ((SalOpBase*)op)->from;
 }
+
 const SalAddress *sal_op_get_from_address(const SalOp *op){
 	return ((SalOpBase*)op)->from_address;
 }
@@ -637,6 +733,7 @@ const char *sal_op_get_proxy(const SalOp *op){
 const char *sal_op_get_network_origin(const SalOp *op){
 	return ((SalOpBase*)op)->origin;
 }
+
 const char* sal_op_get_call_id(const SalOp *op) {
 	return  ((SalOpBase*)op)->call_id;
 }
@@ -721,6 +818,9 @@ void __sal_op_free(SalOp *op){
 		sal_media_description_unref(b->local_media);
 	if (b->remote_media)
 		sal_media_description_unref(b->remote_media);
+	if (b->custom_body) {
+		sal_custom_body_unref(b->custom_body);
+	}
 	if (b->call_id)
 		ms_free((void*)b->call_id);
 	if (b->service_route) {
@@ -741,6 +841,7 @@ void __sal_op_free(SalOp *op){
 	}
 	ms_free(op);
 }
+#endif
 
 SalAuthInfo* sal_auth_info_new() {
 	return ms_new0(SalAuthInfo,1);
@@ -829,15 +930,18 @@ const char* sal_reason_to_string(const SalReason reason) {
 	default: return "Unkown reason";
 	}
 }
+#if 0
 const SalAddress* sal_op_get_service_route(const SalOp *op) {
 	return ((SalOpBase*)op)->service_route;
 }
+
 void sal_op_set_service_route(SalOp *op,const SalAddress* service_route) {
 	if (((SalOpBase*)op)->service_route)
 		sal_address_destroy(((SalOpBase*)op)->service_route);
 
 	((SalOpBase*)op)->service_route=service_route?sal_address_clone(service_route):NULL;
 }
+#endif
 
 const char* sal_presence_status_to_string(const SalPresenceStatus status) {
 	switch (status) {
@@ -911,6 +1015,7 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 	return FALSE;
 }
 
+#if 0
 const char *sal_op_get_entity_tag(const SalOp* op) {
 	SalOpBase* op_base = (SalOpBase*)op;
 	return op_base->entity_tag;
@@ -927,3 +1032,4 @@ void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
 	else
 		op_base->entity_tag = NULL;
 }
+#endif

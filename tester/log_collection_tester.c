@@ -21,7 +21,6 @@
 #endif
 #include <time.h>
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 
 #ifdef HAVE_ZLIB

@@ -197,16 +197,16 @@ void linphone_error_info_from_sal_reason_ei(LinphoneErrorInfo *ei, const SalErro
 	}
 }
 
-void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const SalOp *op){
+void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const LINPHONE_NAMESPACE::SalOp *op){
 	if (op==NULL) {
 		/*leave previous values in LinphoneErrorInfo, the op may have been released already.*/
 		return;
 	}else{
 		const SalErrorInfo *sei;
 		linphone_error_info_reset(ei);
-		sei = sal_op_get_error_info(op);
+		sei = op->get_error_info();
 		linphone_error_info_from_sal(ei, sei);
-		sei = sal_op_get_reason_error_info(op);
+		sei = op->get_reason_error_info();
 		linphone_error_info_from_sal_reason_ei(ei, sei);
 	}
 }

@@ -40,7 +40,7 @@ public:
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
-	void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalOp *op, const Address &from, const Address &to) override;
+	void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to) override;
 	void initiateIncoming () override;
 	bool initiateOutgoing () override;
 	void iterate (time_t currentRealTime, bool oneSecondElapsed) override;

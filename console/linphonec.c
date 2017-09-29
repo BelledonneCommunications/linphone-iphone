@@ -28,7 +28,6 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <signal.h>
-#include "private.h" /*coreapi/private.h, needed for LINPHONE_VERSION */
 #endif /*_WIN32_WCE*/
 #include <limits.h>
 #include <ctype.h>
@@ -790,7 +789,7 @@ linphonec_prompt_for_auth_final(LinphoneCore *lc)
 	pending_auth=auth_stack.elem[auth_stack.nitems-1];
 
 	snprintf(auth_prompt, 256, "Password for %s on %s: ",
-		pending_auth->username, pending_auth->realm);
+		linphone_auth_info_get_username(pending_auth), linphone_auth_info_get_realm(pending_auth));
 
 	printf("\n");
 #ifdef HAVE_READLINE

@@ -48,8 +48,8 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	struct _LinphoneCallLog *log;
-	SalOp *op;
-	SalOp *ping_op;
+	LINPHONE_NAMESPACE::SalOp *op;
+	LINPHONE_NAMESPACE::SalOp *ping_op;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
@@ -113,7 +113,7 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		call->text_stats = nullptr;
 	}
 	if (call->op) {
-		sal_op_release(call->op);
+		call->op->release();
 		call->op=nullptr;
 	}
 	if (call->resultdesc) {
@@ -125,7 +125,7 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		call->localdesc=nullptr;
 	}
 	if (call->ping_op) {
-		sal_op_release(call->ping_op);
+		call->ping_op->release();
 		call->ping_op=nullptr;
 	}
 	if (call->refer_to){
@@ -325,7 +325,7 @@ int linphone_call_start_invite (LinphoneCall *call, const LinphoneAddress *desti
 	return 0;
 }
 
-void linphone_call_replace_op (LinphoneCall *call, SalOp *op) {
+void linphone_call_replace_op (LinphoneCall *call, LINPHONE_NAMESPACE::SalOp *op) {
 #if 0
 	SalOp *oldop = call->op;
 	LinphoneCallState oldstate = linphone_call_get_state(call);
@@ -507,7 +507,7 @@ void linphone_call_refresh_sockets (LinphoneCall *call) {
 #endif
 }
 
-SalOp * linphone_call_get_op (const LinphoneCall *call) {
+LINPHONE_NAMESPACE::SalCallOp * linphone_call_get_op (const LinphoneCall *call) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp();
 }
 
@@ -593,7 +593,7 @@ LinphoneCallState linphone_call_get_state (const LinphoneCall *call) {
 bool_t linphone_call_asked_to_autoanswer (LinphoneCall *call) {
 	//return TRUE if the unique(for the moment) incoming call asked to be autoanswered
 	if (call)
-		return sal_call_autoanswer_asked(linphone_call_get_op(call));
+		return linphone_call_get_op(call)->autoanswer_asked();
 	return FALSE;
 }
 
@@ -1107,8 +1107,8 @@ void linphone_call_ogl_render (const LinphoneCall *call) {
 
 LinphoneStatus linphone_call_send_info_message (LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(linphone_info_message_get_content(info));
-	sal_op_set_sent_custom_header(linphone_call_get_op(call), linphone_info_message_get_headers(info));
-	return sal_send_info(linphone_call_get_op(call), nullptr, nullptr, body_handler);
+	linphone_call_get_op(call)->set_sent_custom_header(linphone_info_message_get_headers(info));
+	return linphone_call_get_op(call)->send_info(nullptr, nullptr, body_handler);
 }
 
 LinphoneCallStats *linphone_call_get_stats (LinphoneCall *call, LinphoneStreamType type) {
@@ -1193,7 +1193,7 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 	return call;
 }
 
-LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, SalOp *op) {
+LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LINPHONE_NAMESPACE::SalCallOp *op) {
 	LinphoneCall *call = L_INIT(Call);
 	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),

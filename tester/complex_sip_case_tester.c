@@ -20,7 +20,6 @@
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 
 
 #if HAVE_SIPP

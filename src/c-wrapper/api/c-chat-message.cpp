@@ -34,6 +34,7 @@
 // =============================================================================
 
 using namespace std;
+using namespace LINPHONE_NAMESPACE;
 
 static void _linphone_chat_message_constructor (LinphoneChatMessage *msg);
 static void _linphone_chat_message_destructor (LinphoneChatMessage *msg);

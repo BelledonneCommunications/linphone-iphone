@@ -20,7 +20,6 @@
 #include <sys/stat.h>
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 
 /* Retrieve the public IP from a given hostname */

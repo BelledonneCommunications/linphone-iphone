@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VCARD_MD5_HASH_SIZE 16
 
 using namespace std;
+using namespace LINPHONE_NAMESPACE;
 
 struct _LinphoneVcardContext {
 	shared_ptr<belcard::BelCardParser> parser;
@@ -367,7 +368,7 @@ bool_t linphone_vcard_generate_unique_id(LinphoneVcard *vCard) {
 		if (linphone_vcard_get_uid(vCard)) {
 			return FALSE;
 		}
-		if (sal_generate_uuid(uuid, sizeof(uuid)) == 0) {
+		if (Sal::generate_uuid(uuid, sizeof(uuid)) == 0) {
 			char vcard_uuid[sizeof(uuid)+4];
 			snprintf(vcard_uuid, sizeof(vcard_uuid), "urn:%s", uuid);
 			linphone_vcard_set_uid(vCard, vcard_uuid);

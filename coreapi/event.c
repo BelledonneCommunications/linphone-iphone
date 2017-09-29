@@ -19,8 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/event.h"
 #include "linphone/lpconfig.h"
+#include "sal/event_op.h"
 
 #include "c-wrapper/c-wrapper.h"
+
+using namespace LINPHONE_NAMESPACE;
 
 const char * linphone_subscription_dir_to_string(LinphoneSubscriptionDir dir){
 	switch(dir){
@@ -73,12 +76,12 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 static void linphone_event_release(LinphoneEvent *lev){
 	if (lev->op) {
 		/*this will stop the refresher*/
-		sal_op_stop_refreshing(lev->op);
+		lev->op->stop_refreshing();
 	}
 	linphone_event_unref(lev);
 }
 
-static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, SalOp *op){
+static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, LINPHONE_NAMESPACE::SalEventOp *op){
 	LinphoneEvent *lev=belle_sip_object_new(LinphoneEvent);
 	lev->lc=lc;
 	lev->dir=dir;
@@ -86,27 +89,27 @@ static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscri
 	lev->name=ms_strdup(name);
 	if (strcmp(lev->name, "conference") == 0)
 		lev->internal = TRUE;
-	sal_op_set_user_pointer(lev->op,lev);
+	lev->op->set_user_pointer(lev);
 	return lev;
 }
 
 LinphoneEvent *linphone_event_new(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, int expires){
-	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, sal_op_new(lc->sal));
+	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, new SalSubscribeOp(lc->sal));
 	lev->expires=expires;
 	return lev;
 }
 
-static LinphoneEvent *linphone_event_new_with_op_base(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name, bool_t is_out_of_dialog){
+static LinphoneEvent *linphone_event_new_with_op_base(LinphoneCore *lc, SalEventOp *op, LinphoneSubscriptionDir dir, const char *name, bool_t is_out_of_dialog){
 	LinphoneEvent *lev=linphone_event_new_base(lc, dir, name, op);
 	lev->is_out_of_dialog_op=is_out_of_dialog;
 	return lev;
 }
 
-LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
+LinphoneEvent *linphone_event_new_with_op(LinphoneCore *lc, SalEventOp *op, LinphoneSubscriptionDir dir, const char *name) {
 	return linphone_event_new_with_op_base(lc,op,dir,name,FALSE);
 }
 
-LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalOp *op, LinphoneSubscriptionDir dir, const char *name) {
+LinphoneEvent *linphone_event_new_with_out_of_dialog_op(LinphoneCore *lc, SalEventOp *op, LinphoneSubscriptionDir dir, const char *name) {
 	return linphone_event_new_with_op_base(lc,op,dir,name,TRUE);
 }
 
@@ -174,7 +177,7 @@ LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
 LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event, expires);
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
-	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
+	lev->op->set_manual_refresher_mode(!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
 	return lev;
 }
 
@@ -182,7 +185,7 @@ LinphoneEvent *linphone_core_create_notify(LinphoneCore *lc, const LinphoneAddre
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionIncoming, event, -1);
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
 	lev->subscription_state = LinphoneSubscriptionIncomingReceived;
-	sal_op_set_event(lev->op, event);
+	lev->op->set_event(event);
 	lev->is_out_of_dialog_op = TRUE;
 	return lev;
 }
@@ -218,13 +221,14 @@ LinphoneStatus linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneC
 	}
 
 	if (lev->send_custom_headers){
-		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
+		lev->op->set_sent_custom_header(lev->send_custom_headers);
 		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
-	}else sal_op_set_sent_custom_header(lev->op,NULL);
+	}else lev->op->set_sent_custom_header(NULL);
 
 	body_handler = sal_body_handler_from_content(body);
-	err=sal_subscribe(lev->op,NULL,NULL,lev->name,lev->expires,body_handler);
+    auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
+	err=subscribeOp->subscribe(NULL,NULL,lev->name,lev->expires,body_handler);
 	if (err==0){
 		if (lev->subscription_state==LinphoneSubscriptionNone)
 			linphone_event_set_state(lev,LinphoneSubscriptionOutgoingProgress);
@@ -237,7 +241,7 @@ LinphoneStatus linphone_event_update_subscribe(LinphoneEvent *lev, const Linphon
 }
 
 LinphoneStatus linphone_event_refresh_subscribe(LinphoneEvent *lev) {
-	return sal_op_refresh(lev->op);
+	return lev->op->refresh();
 }
 
 LinphoneStatus linphone_event_accept_subscription(LinphoneEvent *lev){
@@ -246,7 +250,8 @@ LinphoneStatus linphone_event_accept_subscription(LinphoneEvent *lev){
 		ms_error("linphone_event_accept_subscription(): cannot accept subscription if subscription wasn't just received.");
 		return -1;
 	}
-	err=sal_subscribe_accept(lev->op);
+	auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
+	err=subscribeOp->accept();
 	if (err==0){
 		linphone_event_set_state(lev,LinphoneSubscriptionActive);
 	}
@@ -259,7 +264,8 @@ LinphoneStatus linphone_event_deny_subscription(LinphoneEvent *lev, LinphoneReas
 		ms_error("linphone_event_deny_subscription(): cannot deny subscription if subscription wasn't just received.");
 		return -1;
 	}
-	err=sal_subscribe_decline(lev->op,linphone_reason_to_sal(reason));
+    auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
+	err=subscribeOp->decline(linphone_reason_to_sal(reason));
 	linphone_event_set_state(lev,LinphoneSubscriptionTerminated);
 	return err;
 }
@@ -275,7 +281,8 @@ LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *
 		return -1;
 	}
 	body_handler = sal_body_handler_from_content(body);
-	return sal_notify(lev->op, body_handler);
+    auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
+	return subscribeOp->notify(body_handler);
 }
 
 static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, LinphoneProxyConfig *cfg, const LinphoneAddress *resource, const char *event, int expires){
@@ -295,7 +302,7 @@ static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, Linphone
 
 	lev = linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
 	linphone_configure_op_with_proxy(lc,lev->op,resource,NULL, !!lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0),cfg);
-	sal_op_set_manual_refresher_mode(lev->op,!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
+	lev->op->set_manual_refresher_mode(!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	return lev;
 }
 LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
@@ -322,12 +329,13 @@ static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneConten
 		return -1;
 	}
 	if (lev->send_custom_headers){
-		sal_op_set_sent_custom_header(lev->op,lev->send_custom_headers);
+		lev->op->set_sent_custom_header(lev->send_custom_headers);
 		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
-	}else sal_op_set_sent_custom_header(lev->op,NULL);
+	}else lev->op->set_sent_custom_header(NULL);
 	body_handler = sal_body_handler_from_content(body);
-	err=sal_publish(lev->op,NULL,NULL,lev->name,lev->expires,body_handler);
+    auto publishOp = dynamic_cast<SalPublishOp *>(lev->op);
+	err=publishOp->publish(NULL,NULL,lev->name,lev->expires,body_handler);
 	if (err==0){
 		linphone_event_set_publish_state(lev,LinphonePublishProgress);
 	}else if (notify_err){
@@ -357,14 +365,17 @@ LinphoneStatus linphone_event_update_publish(LinphoneEvent* lev, const LinphoneC
 }
 
 LinphoneStatus linphone_event_refresh_publish(LinphoneEvent *lev) {
-	return sal_op_refresh(lev->op);
+	return lev->op->refresh();
 }
 void linphone_event_pause_publish(LinphoneEvent *lev) {
-	if (lev->op) sal_op_stop_refreshing(lev->op);
+	if (lev->op) lev->op->stop_refreshing();
 }
 void linphone_event_unpublish(LinphoneEvent *lev) {
 	lev->terminating = TRUE; /* needed to get clear event*/
-	if (lev->op) sal_op_unpublish(lev->op);
+	if (lev->op) {
+        auto op = dynamic_cast<SalPublishOp *>(lev->op);
+        op->unpublish();
+    }
 }
 void linphone_event_set_user_data(LinphoneEvent *ev, void *up){
 	ev->userdata=up;
@@ -379,7 +390,7 @@ void linphone_event_add_custom_header(LinphoneEvent *ev, const char *name, const
 }
 
 const char* linphone_event_get_custom_header(LinphoneEvent* ev, const char* name){
-	const SalCustomHeader *ch=sal_op_get_recv_custom_header(ev->op);
+	const SalCustomHeader *ch=ev->op->get_recv_custom_header();
 	return sal_custom_header_find(ch,name);
 }
 
@@ -395,16 +406,18 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	}
 
 	lev->terminating=TRUE;
-
 	if (lev->dir==LinphoneSubscriptionIncoming){
-		sal_notify_close(lev->op);
+        auto op = dynamic_cast<SalSubscribeOp *>(lev->op);
+		op->close_notify();
 	}else if (lev->dir==LinphoneSubscriptionOutgoing){
-		sal_unsubscribe(lev->op);
+        auto op = dynamic_cast<SalSubscribeOp *>(lev->op);
+		op->unsubscribe();
 	}
 
 	if (lev->publish_state!=LinphonePublishNone){
 		if (lev->publish_state==LinphonePublishOk && lev->expires!=-1){
-			sal_op_unpublish(lev->op);
+            auto op = dynamic_cast<SalPublishOp *>(lev->op);
+			op->unpublish();
 		}
 		linphone_event_set_publish_state(lev,LinphonePublishCleared);
 		return;
@@ -424,7 +437,7 @@ LinphoneEvent *linphone_event_ref(LinphoneEvent *lev){
 
 static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->ei) linphone_error_info_unref(lev->ei);
-	if (lev->op) sal_op_release(lev->op);
+	if (lev->op) lev->op->release();
 	if (lev->send_custom_headers) sal_custom_header_free(lev->send_custom_headers);
 	if (lev->to_address) linphone_address_unref(lev->to_address);
 	if (lev->from_address) linphone_address_unref(lev->from_address);
@@ -451,7 +464,7 @@ const char *linphone_event_get_name(const LinphoneEvent *lev){
 static const LinphoneAddress *_linphone_event_cache_to (const LinphoneEvent *lev) {
 	if (lev->to_address)
 		linphone_address_unref(lev->to_address);
-	char *buf = sal_address_as_string(sal_op_get_to_address(lev->op));
+	char *buf = sal_address_as_string(lev->op->get_to_address());
 	((LinphoneEvent *)lev)->to_address = linphone_address_new(buf);
 	ms_free(buf);
 	return lev->to_address;
@@ -460,7 +473,7 @@ static const LinphoneAddress *_linphone_event_cache_to (const LinphoneEvent *lev
 static const LinphoneAddress *_linphone_event_cache_from (const LinphoneEvent *lev) {
 	if (lev->from_address)
 		linphone_address_unref(lev->from_address);
-	char *buf = sal_address_as_string(sal_op_get_from_address(lev->op));
+	char *buf = sal_address_as_string(lev->op->get_from_address());
 	((LinphoneEvent *)lev)->from_address = linphone_address_new(buf);
 	ms_free(buf);
 	return lev->from_address;

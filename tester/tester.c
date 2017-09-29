@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 #include <bctoolbox/tester.h>
 
@@ -164,8 +163,8 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	linphone_core_enable_ipv6(lc, liblinphonetester_ipv6);
 	linphone_core_set_sip_transport_timeout(lc, liblinphonetester_transport_timeout);
 
-	sal_enable_test_features(lc->sal,TRUE);
-	sal_set_dns_user_hosts_file(lc->sal, dnsuserhostspath);
+	sal_enable_test_features(linphone_core_get_sal(lc),TRUE);
+	sal_set_dns_user_hosts_file(linphone_core_get_sal(lc), dnsuserhostspath);
 #ifdef VIDEO_ENABLED
 	linphone_core_set_static_picture(lc,nowebcampath);
 #endif
@@ -343,13 +342,13 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	{
 		MSWebCam *cam;
 
-		cam = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(mgr->lc->factory), "Mire: Mire (synthetic moving picture)");
+		cam = ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(linphone_core_get_ms_factory(mgr->lc)), "Mire: Mire (synthetic moving picture)");
 
 		if (cam == NULL) {
 			MSWebCamDesc *desc = ms_mire_webcam_desc_get();
 			if (desc){
 				cam=ms_web_cam_new(desc);
-				ms_web_cam_manager_add_cam(ms_factory_get_web_cam_manager(mgr->lc->factory), cam);
+				ms_web_cam_manager_add_cam(ms_factory_get_web_cam_manager(linphone_core_get_ms_factory(mgr->lc)), cam);
 			}
 		}
 	}
@@ -369,7 +368,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 	/*for now, we need the periodical updates facility to compute bandwidth measurements correctly during tests*/
-	mgr->lc->send_call_stats_periodical_updates = TRUE;
+	linphone_core_enable_send_call_stats_periodical_updates(mgr->lc, TRUE);
 
 	if (rc_path) ms_free(rc_path);
 }
@@ -713,7 +712,7 @@ static void check_ice_from_rtp(LinphoneCall *c1, LinphoneCall *c2, LinphoneStrea
 		const LinphoneCallParams *cp2 = linphone_call_get_current_params(c2);
 		if (linphone_call_params_get_update_call_when_ice_completed(cp1) && linphone_call_params_get_update_call_when_ice_completed(cp2)) {
 			memset(&remaddr, 0, remaddrlen);
-			result_desc = sal_call_get_final_media_description(linphone_call_get_op(c2));
+			result_desc = sal_call_get_final_media_description(linphone_call_get_op_as_sal_op(c2));
 			expected_addr = result_desc->streams[0].rtp_addr;
 			if (expected_addr[0] == '\0') expected_addr = result_desc->addr;
 			astream = (AudioStream *)linphone_call_get_stream(c1, LinphoneStreamTypeAudio);

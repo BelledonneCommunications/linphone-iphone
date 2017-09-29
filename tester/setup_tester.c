@@ -20,7 +20,6 @@
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
@@ -187,7 +186,7 @@ static void linphone_lpconfig_from_xml_zerolen_value(void){
 
 	BC_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0, int, "%d");
 
-	conf = mgr->lc->config;
+	conf = linphone_core_get_config(mgr->lc);
 
 	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","zero_len","LOL"),"LOL");
 	BC_ASSERT_STRING_EQUAL(lp_config_get_string(conf,"test","non_zero_len",""),"test");

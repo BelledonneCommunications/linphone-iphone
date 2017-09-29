@@ -33,6 +33,8 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "address/address-p.h"
 #include "c-wrapper/c-wrapper.h"
 
+using namespace LINPHONE_NAMESPACE;
+
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {
 	if (cfg->saved_identity) linphone_address_unref(cfg->saved_identity);
@@ -213,7 +215,7 @@ LinphoneProxyConfig * linphone_core_create_proxy_config(LinphoneCore *lc) {
 
 void _linphone_proxy_config_release_ops(LinphoneProxyConfig *cfg){
 	if (cfg->op) {
-		sal_op_release(cfg->op);
+		cfg->op->release();
 		cfg->op=NULL;
 	}
 	if (cfg->presence_publish_event){
@@ -387,7 +389,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val){
 }
 
 void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg){
-	if (cfg->op) sal_op_stop_refreshing(cfg->op);
+	if (cfg->op) cfg->op->stop_refreshing();
 }
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
@@ -410,7 +412,7 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	LinphoneAddress *contact_addr = NULL;
 	{
 		const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk
-			? sal_op_get_contact_address(cfg->op)
+			? cfg->op->get_contact_address()
 			: NULL;
 		if (sal_addr) {
 			char *buf = sal_address_as_string(sal_addr);
@@ -435,7 +437,7 @@ void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	}
 
 	if (cfg->op){
-		sal_op_release(cfg->op);
+		cfg->op->release();
 		cfg->op=NULL;
 	}
 }
@@ -473,7 +475,7 @@ static void guess_contact_for_register (LinphoneProxyConfig *cfg) {
 void _linphone_proxy_config_unregister(LinphoneProxyConfig *obj) {
 	if (obj->op && (obj->state == LinphoneRegistrationOk ||
 					(obj->state == LinphoneRegistrationProgress && obj->expires != 0))) {
-		sal_unregister(obj->op);
+		obj->op->unregister();
 	}
 }
 
@@ -486,18 +488,17 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 		proxy_string=linphone_address_as_string_uri_only(proxy);
 		linphone_address_unref(proxy);
 		if (cfg->op)
-			sal_op_release(cfg->op);
-		cfg->op=sal_op_new(cfg->lc->sal);
+			cfg->op->release();
+		cfg->op=new SalRegisterOp(cfg->lc->sal);
 
 		linphone_configure_op(cfg->lc, cfg->op, cfg->identity_address, cfg->sent_headers, FALSE);
 
 		guess_contact_for_register(cfg);
 		if (cfg->contact_address)
-			sal_op_set_contact_address(cfg->op, L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
-		sal_op_set_user_pointer(cfg->op, cfg);
+			cfg->op->set_contact_address(L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
+		cfg->op->set_user_pointer(cfg);
 
-		if (sal_register(
-			cfg->op,
+		if (cfg->op->register_(
 			proxy_string,
 			cfg->reg_identity,
 			cfg->expires,
@@ -524,7 +525,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *cfg){
 	if (cfg->reg_sendregister && cfg->op && cfg->state!=LinphoneRegistrationProgress){
-		if (sal_register_refresh(cfg->op,cfg->expires) == 0) {
+		if (cfg->op->register_refresh(cfg->expires) == 0) {
 			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress, "Refresh registration");
 		}
 	}
@@ -795,8 +796,8 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unregister(cfg);
 			}
-			sal_op_set_user_pointer(cfg->op,NULL); /*we don't want to receive status for this un register*/
-			sal_op_unref(cfg->op); /*but we keep refresher to handle authentication if needed*/
+			cfg->op->set_user_pointer(NULL); /*we don't want to receive status for this un register*/
+			cfg->op->unref(); /*but we keep refresher to handle authentication if needed*/
 			cfg->op=NULL;
 		}
 		if (cfg->presence_publish_event) {
@@ -989,7 +990,7 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name){
 	const SalCustomHeader *ch;
 	if (!cfg->op) return NULL;
-	ch = sal_op_get_recv_custom_header(cfg->op);
+	ch = cfg->op->get_recv_custom_header();
 	return sal_custom_header_find(ch, header_name);
 }
 
@@ -1353,7 +1354,7 @@ const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProx
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
-	return cfg->op?(const LinphoneAddress*) sal_op_get_service_route(cfg->op):NULL;
+	return cfg->op?(const LinphoneAddress*) cfg->op->get_service_route():NULL;
 }
 const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
 	const char* addr=NULL;

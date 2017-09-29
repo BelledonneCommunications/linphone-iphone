@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
@@ -259,7 +258,7 @@ static void simple_conference_base(LinphoneCoreManager* marie, LinphoneCoreManag
 	lcs=bctbx_list_append(lcs,laure->lc);
 	if (focus) lcs=bctbx_list_append(lcs,focus->lc);
 
-	is_remote_conf = (strcmp(lp_config_get_string(marie->lc->config, "misc", "conference_type", "local"), "remote") == 0);
+	is_remote_conf = (strcmp(lp_config_get_string(linphone_core_get_config(marie->lc), "misc", "conference_type", "local"), "remote") == 0);
 	if(is_remote_conf) BC_ASSERT_PTR_NOT_NULL(focus);
 
 	if (!BC_ASSERT_TRUE(call(marie,pauline))) goto end;
@@ -836,7 +835,7 @@ static void eject_from_3_participants_conference(LinphoneCoreManager *marie, Lin
 	lcs=bctbx_list_append(lcs,laure->lc);
 	if(focus) lcs=bctbx_list_append(lcs,focus->lc);
 
-	is_remote_conf = (strcmp(lp_config_get_string(marie->lc->config, "misc", "conference_type", "local"), "remote") == 0);
+	is_remote_conf = (strcmp(lp_config_get_string(linphone_core_get_config(marie->lc), "misc", "conference_type", "local"), "remote") == 0);
 	if(is_remote_conf) BC_ASSERT_PTR_NOT_NULL(focus);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
@@ -1130,7 +1129,7 @@ void do_not_stop_ringing_when_declining_one_of_two_incoming_calls(void) {
 	linphone_call_decline(pauline_called_by_laure, LinphoneReasonDeclined);
 	BC_ASSERT_TRUE(wait_for(laure->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
 
-	BC_ASSERT_TRUE(linphone_ringtoneplayer_is_started(pauline->lc->ringtoneplayer));
+	BC_ASSERT_TRUE(linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(pauline->lc)));
 	linphone_call_terminate(pauline_called_by_marie);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,2));
 

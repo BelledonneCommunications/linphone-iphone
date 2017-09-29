@@ -18,7 +18,6 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
-#include "private.h"
 
 #ifdef VIDEO_ENABLED
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
@@ -235,7 +234,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&caller->stat.number_of_LinphoneCallStreamsRunning,initial_caller_stat.number_of_LinphoneCallStreamsRunning+1));
 
 		video_policy = linphone_core_get_video_activation_policy(caller->lc);
-		if (video_policy->automatically_accept || accept_with_params) {
+		if (linphone_video_activation_policy_get_automatically_accept(video_policy) || accept_with_params) {
 			video_added = BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
 			video_added =
 			BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(caller->lc))))
@@ -567,13 +566,13 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
 		char *path = bc_tester_file("certificates-marie");
-		callee->lc->user_certificates_path = ms_strdup(path);
+		linphone_core_set_user_certificates_path(callee->lc, path);
 		bc_free(path);
 		path = bc_tester_file("certificates-pauline");
-		caller->lc->user_certificates_path = ms_strdup(path);
+		linphone_core_set_user_certificates_path(caller->lc, path);
 		bc_free(path);
-		belle_sip_mkdir(callee->lc->user_certificates_path);
-		belle_sip_mkdir(caller->lc->user_certificates_path);
+		belle_sip_mkdir(linphone_core_get_user_certificates_path(callee->lc));
+		belle_sip_mkdir(linphone_core_get_user_certificates_path(caller->lc));
 	}
 
 	linphone_core_set_media_encryption(callee->lc,mode);
@@ -682,13 +681,13 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 
 	if (mode==LinphoneMediaEncryptionDTLS) { /* for DTLS we must access certificates or at least have a directory to store them */
 		char *path = bc_tester_file("certificates-marie");
-		callee->lc->user_certificates_path = ms_strdup(path);
+		linphone_core_set_user_certificates_path(callee->lc, path);
 		bc_free(path);
 		path = bc_tester_file("certificates-pauline");
-		caller->lc->user_certificates_path = ms_strdup(path);
+		linphone_core_set_user_certificates_path(caller->lc, path);
 		bc_free(path);
-		belle_sip_mkdir(callee->lc->user_certificates_path);
-		belle_sip_mkdir(caller->lc->user_certificates_path);
+		belle_sip_mkdir(linphone_core_get_user_certificates_path(callee->lc));
+		belle_sip_mkdir(linphone_core_get_user_certificates_path(caller->lc));
 	}
 
 	linphone_core_set_media_encryption(callee->lc,mode);
@@ -1331,7 +1330,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	linphone_core_set_video_device(marie->lc,liblinphone_tester_mire_id);
 
 	/*The send-only client shall set rtp symmetric in absence of media relay for this test.*/
-	lp_config_set_int(marie->lc->config,"rtp","symmetric",1);
+	lp_config_set_int(linphone_core_get_config(marie->lc),"rtp","symmetric",1);
 
 	linphone_call_set_next_video_frame_decoded_callback(linphone_core_invite_address(pauline->lc,marie->identity)
 														,linphone_call_iframe_decoded_cb
@@ -1842,7 +1841,7 @@ static void incoming_reinvite_with_invalid_ack_sdp(void){
 		const LinphoneCallParams *caller_params;
 		stats initial_caller_stat=caller->stat;
 		stats initial_callee_stat=callee->stat;
-		sal_call_set_sdp_handling(linphone_call_get_op(inc_call), SalOpSDPSimulateError); /* will force a parse error for the ACK SDP*/
+		sal_call_set_sdp_handling(linphone_call_get_op_as_sal_op(inc_call), SalOpSDPSimulateError); /* will force a parse error for the ACK SDP*/
 		BC_ASSERT_PTR_NOT_NULL(_request_video(caller, callee, TRUE));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallUpdating,initial_callee_stat.number_of_LinphoneCallUpdating+1));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,initial_callee_stat.number_of_LinphoneCallStreamsRunning+1));
@@ -1858,7 +1857,7 @@ static void incoming_reinvite_with_invalid_ack_sdp(void){
 		caller_params = linphone_call_get_current_params(linphone_core_get_current_call(caller->lc));
 		// TODO [refactoring]: BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,(int*)&caller_params->has_video,FALSE));
 		(void)caller_params;
-		sal_call_set_sdp_handling(linphone_call_get_op(inc_call), SalOpSDPNormal);
+		sal_call_set_sdp_handling(linphone_call_get_op_as_sal_op(inc_call), SalOpSDPNormal);
 	}
 	end_call(caller, callee);
 
@@ -1877,7 +1876,7 @@ static void outgoing_reinvite_with_invalid_ack_sdp(void)  {
 	if (out_call) {
 		stats initial_caller_stat=caller->stat;
 		stats initial_callee_stat=callee->stat;
-		sal_call_set_sdp_handling(linphone_call_get_op(out_call), SalOpSDPSimulateError); /* will force a parse error for the ACK SDP*/
+		sal_call_set_sdp_handling(linphone_call_get_op_as_sal_op(out_call), SalOpSDPSimulateError); /* will force a parse error for the ACK SDP*/
 		BC_ASSERT_PTR_NOT_NULL(_request_video(caller, callee, TRUE));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallUpdating,initial_callee_stat.number_of_LinphoneCallUpdating+1));
 		BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_LinphoneCallStreamsRunning,initial_callee_stat.number_of_LinphoneCallStreamsRunning+1));
@@ -1891,7 +1890,7 @@ static void outgoing_reinvite_with_invalid_ack_sdp(void)  {
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(callee->lc))));
 		BC_ASSERT_FALSE(linphone_call_params_video_enabled(linphone_call_get_current_params(linphone_core_get_current_call(caller->lc))));
 
-		sal_call_set_sdp_handling(linphone_call_get_op(out_call), SalOpSDPNormal);
+		sal_call_set_sdp_handling(linphone_call_get_op_as_sal_op(out_call), SalOpSDPNormal);
 	}
 	end_call(caller, callee);
 

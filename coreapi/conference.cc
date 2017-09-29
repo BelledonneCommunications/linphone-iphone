@@ -795,7 +795,7 @@ int RemoteConference::removeParticipant(const LinphoneAddress *uri) {
 			linphone_address_set_method_param(refer_to_addr, "BYE");
 			refer_to = linphone_address_as_string(refer_to_addr);
 			linphone_address_unref(refer_to_addr);
-			res = sal_call_refer(linphone_call_get_op(m_focusCall), refer_to);
+			res = linphone_call_get_op(m_focusCall)->refer(refer_to);
 			ms_free(refer_to);
 
 			if(res == 0) {

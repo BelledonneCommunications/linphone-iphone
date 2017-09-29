@@ -23,6 +23,7 @@
 
 #include "linphone/types.h"
 #include "sal/sal.h"
+#include "sal/sal.hpp"
 
 // =============================================================================
 

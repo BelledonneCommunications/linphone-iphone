@@ -19,7 +19,6 @@
 
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 
 static void setPublish(LinphoneProxyConfig * proxy_config, bool_t enable) {
@@ -793,12 +792,12 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_core_set_network_reachable(marie->lc, FALSE);
 		linphone_core_set_network_reachable(pauline->lc, FALSE);
 
-		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(marie->lc), "Accept", "application/sdp");
 		linphone_core_set_network_reachable(marie->lc, TRUE);
 		linphone_core_manager_start(marie, TRUE);
 
 
-		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(pauline->lc), "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 		linphone_core_set_network_reachable(pauline->lc, TRUE);
 		linphone_core_manager_start(pauline, TRUE);
 
@@ -891,10 +890,10 @@ static void file_transfer_message_external_body_to_external_body_client(void) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(marie->lc), "Accept", "application/sdp");
 		linphone_core_manager_start(marie, TRUE);
 
-		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(pauline->lc), "Accept", "application/sdp");
 		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
@@ -915,10 +914,10 @@ static void file_transfer_message_external_body_to_rcs_client(void) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
 
-		linphone_proxy_config_set_custom_header(marie->lc->default_proxy, "Accept", "application/sdp");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(marie->lc), "Accept", "application/sdp");
 		linphone_core_manager_start(marie, TRUE);
 
-		linphone_proxy_config_set_custom_header(pauline->lc->default_proxy, "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
+		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(pauline->lc), "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
 		linphone_core_manager_start(pauline, TRUE);
 
 		reset_counters(&marie->stat);
@@ -1368,7 +1367,7 @@ void test_removing_old_tport(void) {
 
 	marie2 = ms_new0(LinphoneCoreManager, 1);
 	linphone_core_manager_init(marie2, "marie_rc", NULL);
-	sal_set_uuid(marie2->lc->sal, linphone_config_get_string(linphone_core_get_config(marie1->lc),"misc", "uuid", "0"));
+	sal_set_uuid(linphone_core_get_sal(marie2->lc), linphone_config_get_string(linphone_core_get_config(marie1->lc),"misc", "uuid", "0"));
 	linphone_core_manager_start(marie2, TRUE);
 	lcs=bctbx_list_append(lcs, marie2->lc);
 	linphone_core_refresh_registers(marie2->lc);

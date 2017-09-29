@@ -24,8 +24,11 @@
 
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
+#include "sal/sal.hpp"
 
 #include "c-wrapper/c-wrapper.h"
+
+using namespace LINPHONE_NAMESPACE;
 
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
@@ -434,10 +437,10 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	lc->auth_info=bctbx_list_append(lc->auth_info,linphone_auth_info_clone(info));
 
 	/* retry pending authentication operations */
-	for(l=elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
+	for(l=elem=lc->sal->get_pending_auths();elem!=NULL;elem=elem->next){
 		SalOp *op=(SalOp*)elem->data;
 		LinphoneAuthInfo *ai;
-		const SalAuthInfo *req_sai=sal_op_get_auth_requested(op);
+		const SalAuthInfo *req_sai=op->get_auth_requested();
 		ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain, FALSE);
 		if (ai){
 			SalAuthInfo sai;
@@ -456,12 +459,12 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			}
 			/*proxy case*/
 			for (proxy=(bctbx_list_t*)linphone_core_get_proxy_config_list(lc);proxy!=NULL;proxy=proxy->next) {
-				if (proxy->data == sal_op_get_user_pointer(op)) {
+				if (proxy->data == op->get_user_pointer()) {
 					linphone_proxy_config_set_state((LinphoneProxyConfig*)(proxy->data),LinphoneRegistrationProgress,"Authentication...");
 					break;
 				}
 			}
-			sal_op_authenticate(op,&sai);
+			op->authenticate(&sai);
 			restarted_op_count++;
 		}
 	}

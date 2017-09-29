@@ -19,7 +19,6 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 #include <linphone/event.h>
 #include "liblinphone_tester.h"
@@ -181,7 +180,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	if (refresh_type==ManualRefresh){
-		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+		lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_subscribe",0);
 	}
 
 	content = linphone_core_create_content(marie->lc);
@@ -239,7 +238,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	if (refresh_type==ManualRefresh){
-		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+		lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_subscribe",0);
 	}
 
 	content = linphone_core_create_content(marie->lc);
@@ -414,11 +413,11 @@ static void subscribe_with_io_error(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 
 	/* now marie gets network errors when refreshing*/
-	sal_set_send_error(marie->lc->sal, -1);
+	sal_set_send_error(linphone_core_get_sal(marie->lc), -1);
 	
 	/*marie will retry the subscription*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,2,8000));
-	sal_set_send_error(marie->lc->sal, 0);
+	sal_set_send_error(linphone_core_get_sal(marie->lc), 0);
 	
 	/*and get it accepted again*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,10000));
@@ -498,7 +497,7 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	linphone_content_set_subtype(content,"somexml");
 	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
 
-	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
+	lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_publish",refresh);
 
 	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");

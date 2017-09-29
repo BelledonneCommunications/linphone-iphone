@@ -73,7 +73,7 @@ void IceAgent::deleteSession () {
 }
 
 void IceAgent::gatheringFinished () {
-	const SalMediaDescription *rmd = sal_call_get_remote_media_description(mediaSession.getPrivate()->getOp());
+	const SalMediaDescription *rmd = mediaSession.getPrivate()->getOp()->get_remote_media_description();
 	if (rmd)
 		clearUnusedIceCandidates(mediaSession.getPrivate()->getLocalDesc(), rmd);
 	if (!iceSession)
@@ -126,7 +126,7 @@ bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer
 	SalMediaDescription *remoteDesc = nullptr;
 	bool hasVideo = false;
 	if (incomingOffer) {
-		remoteDesc = sal_call_get_remote_media_description(mediaSession.getPrivate()->getOp());
+		remoteDesc = mediaSession.getPrivate()->getOp()->get_remote_media_description();
 		hasVideo = linphone_core_video_enabled(mediaSession.getPrivate()->getCore()) &&
 			linphone_core_media_description_contains_video_stream(remoteDesc);
 	} else

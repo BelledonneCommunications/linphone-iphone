@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "sal/sal.h"
+#include "sal/sal.hpp"
 #include "offeranswer.h"
 #include "private.h"
 

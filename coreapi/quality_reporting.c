@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "private.h"
 #include "sal/sal.h"
+#include "sal/sal.hpp"
 #include "ortp/rtpsession.h"
 
 #include <math.h>

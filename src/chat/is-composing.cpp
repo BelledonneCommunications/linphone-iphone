@@ -107,7 +107,7 @@ void IsComposing::parse (const string &text) {
 void IsComposing::startIdleTimer () {
 	unsigned int duration = getIdleTimerDuration();
 	if (!idleTimer) {
-		idleTimer = sal_create_timer(core->sal, idleTimerExpired, this,
+		idleTimer = core->sal->create_timer(idleTimerExpired, this,
 			duration * 1000, "composing idle timeout");
 	} else {
 		belle_sip_source_set_timeout(idleTimer, duration * 1000);
@@ -117,7 +117,7 @@ void IsComposing::startIdleTimer () {
 void IsComposing::startRefreshTimer () {
 	unsigned int duration = getRefreshTimerDuration();
 	if (!refreshTimer) {
-		refreshTimer = sal_create_timer(core->sal, refreshTimerExpired, this,
+		refreshTimer = core->sal->create_timer(refreshTimerExpired, this,
 			duration * 1000, "composing refresh timeout");
 	} else {
 		belle_sip_source_set_timeout(refreshTimer, duration * 1000);
@@ -129,7 +129,7 @@ void IsComposing::startRemoteRefreshTimer (const char *refreshStr) {
 	if (refreshStr)
 		duration = static_cast<unsigned int>(stoi(refreshStr));
 	if (!remoteRefreshTimer) {
-		remoteRefreshTimer = sal_create_timer(core->sal, remoteRefreshTimerExpired, this,
+		remoteRefreshTimer = core->sal->create_timer(remoteRefreshTimerExpired, this,
 			duration * 1000, "composing remote refresh timeout");
 	} else {
 		belle_sip_source_set_timeout(remoteRefreshTimer, duration * 1000);
@@ -154,7 +154,7 @@ void IsComposing::stopTimers () {
 void IsComposing::stopIdleTimer () {
 	if (idleTimer) {
 		if (core && core->sal)
-			sal_cancel_timer(core->sal, idleTimer);
+			core->sal->cancel_timer(idleTimer);
 		belle_sip_object_unref(idleTimer);
 		idleTimer = nullptr;
 	}
@@ -163,7 +163,7 @@ void IsComposing::stopIdleTimer () {
 void IsComposing::stopRefreshTimer () {
 	if (refreshTimer) {
 		if (core && core->sal)
-			sal_cancel_timer(core->sal, refreshTimer);
+			core->sal->cancel_timer(refreshTimer);
 		belle_sip_object_unref(refreshTimer);
 		refreshTimer = nullptr;
 	}
@@ -172,7 +172,7 @@ void IsComposing::stopRefreshTimer () {
 void IsComposing::stopRemoteRefreshTimer () {
 	if (remoteRefreshTimer) {
 		if (core && core->sal)
-			sal_cancel_timer(core->sal, remoteRefreshTimer);
+			core->sal->cancel_timer(remoteRefreshTimer);
 		belle_sip_object_unref(remoteRefreshTimer);
 		remoteRefreshTimer = nullptr;
 	}

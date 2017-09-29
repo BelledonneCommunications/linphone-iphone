@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "private.h"
 
+using namespace LINPHONE_NAMESPACE;
+
 LinphoneCardDavContext* linphone_carddav_context_new(LinphoneFriendList *lfl) {
 	LinphoneCardDavContext *carddav_context = NULL;
 
@@ -573,7 +575,7 @@ static char* generate_url_from_server_address_and_uid(const char *server_url) {
 	char *result = NULL;
 	if (server_url) {
 		char *uuid = reinterpret_cast<char *>(ms_malloc(64));
-		if (sal_generate_uuid(uuid, 64) == 0) {
+		if (Sal::generate_uuid(uuid, 64) == 0) {
 			char *url = reinterpret_cast<char *>(ms_malloc(300));
 			snprintf(url, 300, "%s/linphone-%s.vcf", server_url, uuid);
 			ms_debug("Generated url is %s", url);

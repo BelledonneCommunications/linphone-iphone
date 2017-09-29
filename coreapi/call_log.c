@@ -114,7 +114,7 @@ void call_logs_write_to_config_file(LinphoneCore *lc){
 	}
 }
 
-bctbx_list_t * call_logs_read_from_config_file(LinphoneCore *lc){
+bctbx_list_t * linphone_core_read_call_logs_from_config_file(LinphoneCore *lc){
 	char logsection[32];
 	int i;
 	const char *tmp;

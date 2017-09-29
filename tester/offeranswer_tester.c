@@ -20,7 +20,6 @@
 #include <sys/stat.h>
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 
 static int get_codec_position(const MSList *l, const char *mime_type, int rate){

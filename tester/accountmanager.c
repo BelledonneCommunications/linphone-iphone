@@ -16,8 +16,9 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <belle-sip/belle-sip.h>
 #include "liblinphone_tester.h"
-#include "private.h"
+#include "tester_utils.h"
 
 struct _Account{
 	LinphoneAddress *identity;
@@ -100,7 +101,7 @@ static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *
 	Account *account=(Account*)linphone_core_get_user_data(lc);
 	switch(state){
 		case LinphoneRegistrationOk: {
-			char * phrase = sal_op_get_error_info((SalOp*)cfg->op)->full_string;
+			char * phrase = sal_op_get_error_info(linphone_proxy_config_get_sal_op(cfg))->full_string;
 			if (phrase && strcasecmp("Test account created", phrase) == 0) {
 				account->created=1;
 			} else {
@@ -236,10 +237,10 @@ static LinphoneAddress *account_manager_check_account(AccountManager *m, Linphon
 		/* create and/or set uuid */
 		if (account->uuid == NULL) {
 			char tmp[64];
-			sal_create_uuid(cm->lc->sal, tmp, sizeof(tmp));
+			sal_create_uuid(linphone_core_get_sal(cm->lc), tmp, sizeof(tmp));
 			account->uuid = bctbx_strdup(tmp);
 		}
-		sal_set_uuid(cm->lc->sal, account->uuid);
+		sal_set_uuid(linphone_core_get_sal(cm->lc), account->uuid);
 	}
 
 	/*remove previous auth info to avoid mismatching*/

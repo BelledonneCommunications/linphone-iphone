@@ -19,10 +19,11 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
 #include "lime.h"
 #include "bctoolbox/crypto.h"
+#include <belle-sip/object.h>
+#include <bctoolbox/vfs.h>
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include <sqlite3.h>
@@ -237,7 +238,7 @@ LinphoneChatMessage* create_message_from_sintel_trailer(LinphoneChatRoom *chat_r
 	fseek(file_to_send, 0, SEEK_SET);
 
 	content = linphone_core_create_content(linphone_chat_room_get_core(chat_room));
-	belle_sip_object_set_name(&content->base, "sintel trailer content");
+	belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
 	linphone_content_set_type(content,"video");
 	linphone_content_set_subtype(content,"mkv");
 	linphone_content_set_size(content,file_size); /*total size to be transfered*/
@@ -263,7 +264,7 @@ LinphoneChatMessage* create_file_transfer_message_from_sintel_trailer(LinphoneCh
 	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 
 	content = linphone_core_create_content(linphone_chat_room_get_core(chat_room));
-	belle_sip_object_set_name(&content->base, "sintel trailer content");
+	belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
 	linphone_content_set_type(content,"video");
 	linphone_content_set_subtype(content,"mkv");
 	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
@@ -312,7 +313,7 @@ static void text_message(void) {
 static void text_message_within_call_dialog(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	lp_config_set_int(pauline->lc->config,"sip","chat_use_call_dialogs",1);
+	lp_config_set_int(linphone_core_get_config(pauline->lc),"sip","chat_use_call_dialogs",1);
 
 	BC_ASSERT_TRUE(call(marie,pauline));
 	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc, marie->identity),"Bla bla bla bla");
@@ -408,7 +409,7 @@ static void text_message_with_send_error(void) {
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 
 	/*simulate a network error*/
-	sal_set_send_error(marie->lc->sal, -1);
+	sal_set_send_error(linphone_core_get_sal(marie->lc), -1);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
@@ -423,7 +424,7 @@ static void text_message_with_send_error(void) {
 	/* the msg should have been discarded from transient list after an error */
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 0, unsigned int, "%u");
 
-	sal_set_send_error(marie->lc->sal, 0);
+	sal_set_send_error(linphone_core_get_sal(marie->lc), 0);
 
 	/*give a chance to register again to allow linphone_core_manager_destroy to properly unregister*/
 	linphone_core_refresh_registers(marie->lc);
@@ -503,14 +504,14 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 			BC_ASSERT_EQUAL((int)linphone_chat_message_get_state(sent_msg), (int)LinphoneChatMessageStateInProgress, int, "%d");
 			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
 		}
-		sal_set_send_error(pauline->lc->sal, -1);
+		sal_set_send_error(linphone_core_get_sal(pauline->lc), -1);
 
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageNotDelivered,1));
 
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
 
-		sal_set_send_error(pauline->lc->sal, 0);
+		sal_set_send_error(linphone_core_get_sal(pauline->lc), 0);
 
 		linphone_core_refresh_registers(pauline->lc); /*to make sure registration is back in registered and so it can be later unregistered*/
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneRegistrationOk,pauline->stat.number_of_LinphoneRegistrationOk+1));
@@ -550,9 +551,9 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 				/* wait for file to be 50% downloaded */
 				BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.progress_of_LinphoneFileTransfer, 50));
 				/* and simulate network error */
-				belle_http_provider_set_recv_error(marie->lc->http_provider, -1);
+				belle_http_provider_set_recv_error(linphone_core_get_http_provider(marie->lc), -1);
 				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
-				belle_http_provider_set_recv_error(marie->lc->http_provider, 0);
+				belle_http_provider_set_recv_error(linphone_core_get_http_provider(marie->lc), 0);
 			} else {
 				/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
 				if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1,55000))) {
@@ -892,8 +893,8 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 	linphone_core_enable_lime(pauline->lc, LinphoneLimeMandatory);
 
 	/* make sure to not trigger the cache migration function */
-	lp_config_set_int(marie->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
-	lp_config_set_int(pauline->lc->config, "sip", "zrtp_cache_migration_done", TRUE);
+	lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "zrtp_cache_migration_done", TRUE);
+	lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "zrtp_cache_migration_done", TRUE);
 
 	/* create temporary cache files: setting the database_path will create and initialise the files */
 	tmp = bc_tester_file("tmpZIDCacheMarie.sqlite");
@@ -1157,8 +1158,8 @@ static void _im_error_delivery_notification(bool_t online) {
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc, pauline->identity));
 
 	/* Temporary disabling receiver cache and enable all IM notifications */
-	zrtp_cache_db_holder = marie->lc->zrtp_cache_db;
-	marie->lc->zrtp_cache_db = NULL;
+	zrtp_cache_db_holder = linphone_core_get_zrtp_cache_db(marie->lc);
+	linphone_core_set_zrtp_cache_db(marie->lc, NULL);
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 
@@ -1179,7 +1180,7 @@ static void _im_error_delivery_notification(bool_t online) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageNotDelivered, 1));
 
 	/* Restore the ZID cache of the receiver and resend the chat message */
-	marie->lc->zrtp_cache_db = zrtp_cache_db_holder;
+	linphone_core_set_zrtp_cache_db(marie->lc, zrtp_cache_db_holder);
 	linphone_chat_message_ref(msg);
 	linphone_chat_message_resend(msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 2)); /* Check the new message is now received */
@@ -1249,8 +1250,8 @@ static void lime_text_message_to_non_lime(bool_t sender_policy_mandatory, bool_t
 		/* enable lime for both parts */
 		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 		/* but then disable marie */
-		sqlite3_close(marie->lc->zrtp_cache_db);
-		marie->lc->zrtp_cache_db = NULL;
+		sqlite3_close(linphone_core_get_zrtp_cache_db(marie->lc));
+		linphone_core_set_zrtp_cache_db(marie->lc, NULL);
 	}
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -1479,7 +1480,7 @@ static void lime_cache_migration(void) {
 		linphone_core_enable_lime(marie->lc, LinphoneLimeMandatory);
 
 		/* make sure to trigger the cache migration function */
-		lp_config_set_int(marie->lc->config, "sip", "zrtp_cache_migration_done", FALSE);
+		lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "zrtp_cache_migration_done", FALSE);
 
 		/* set the cache path, it will trigger the migration function */
 		linphone_core_set_zrtp_secrets_file(marie->lc, xmlCache_filepath);
@@ -1490,7 +1491,7 @@ static void lime_cache_migration(void) {
 		linphone_address_unref(new_identity);
 		bctbx_str_to_uint8(associatedKey.peerZID, (const uint8_t *)"0987654321fedcba5a5a5a5a", (uint16_t)strlen("0987654321fedcba5a5a5a5a"));
 		/* 0987654321fedcba5a5a5a5a is the only one with pvs=1*/
-		BC_ASSERT_FALSE(lime_getCachedRcvKeyByZid(marie->lc->zrtp_cache_db, &associatedKey, selfURI, "sip:bob@sip.linphone.org"));
+		BC_ASSERT_FALSE(lime_getCachedRcvKeyByZid(linphone_core_get_zrtp_cache_db(marie->lc), &associatedKey, selfURI, "sip:bob@sip.linphone.org"));
 		ms_free(selfURI);
 		/* perform checks on the new cache, simple check is ok as deeper ones are performed in the bzrtp migration tester */
 		/* TODO */
@@ -1588,14 +1589,14 @@ static void database_migration(void) {
 	// the messages.db has 10000 dummy messages with the very first DB scheme.
 	// This will test the migration procedure
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
-	if (!marie->lc->db) goto end;
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
+	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
 
 	chatrooms = linphone_core_get_chat_rooms(marie->lc);
 	BC_ASSERT(bctbx_list_size(chatrooms) > 0);
 
 	// check that all messages have been migrated to the UTC time storage
-	BC_ASSERT(sqlite3_exec(marie->lc->db, "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK);
+	BC_ASSERT(sqlite3_exec(linphone_core_get_sqlite_database(marie->lc), "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK);
 
 	// check that the read messages (field read=1) has been migrated to the LinphoneChatMessageStateDisplayed state
 	cr = linphone_core_get_chat_room_from_uri(marie->lc, "sip:Marielle@sip.linphone.org");
@@ -1618,8 +1619,8 @@ static void history_range(void){
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
-	if (!marie->lc->db) goto end;
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
+	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
@@ -1663,8 +1664,8 @@ static void history_count(void) {
 	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
 
 	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
-	if (!marie->lc->db) goto end;
+	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
+	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
 
 	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
 	BC_ASSERT_PTR_NOT_NULL(chatroom);
@@ -1846,19 +1847,19 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
 		linphone_core_set_chat_database_path(pauline->lc, pauline_db);
 #ifdef SQLITE_STORAGE_ENABLED
-		BC_ASSERT_PTR_NOT_NULL(marie->lc->db);
-		BC_ASSERT_PTR_NOT_NULL(pauline->lc->db);
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
+		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(pauline->lc));
 #endif
 
 		if (do_not_store_rtt_messages_in_sql_storage) {
-			lp_config_set_int(marie->lc->config, "misc", "store_rtt_messages", 0);
-			lp_config_set_int(pauline->lc->config, "misc", "store_rtt_messages", 0);
+			lp_config_set_int(linphone_core_get_config(marie->lc), "misc", "store_rtt_messages", 0);
+			lp_config_set_int(linphone_core_get_config(pauline->lc), "misc", "store_rtt_messages", 0);
 		}
 	}
 
 	if (mess_with_marie_payload_number) {
-		bctbx_list_t *elem;
-		for (elem = marie->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
+		const bctbx_list_t *elem;
+		for (elem = linphone_core_get_text_codecs(marie->lc); elem != NULL; elem = elem->next) {
 			PayloadType *pt = (PayloadType*)elem->data;
 			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
 				payload_type_set_number(pt, 99);
@@ -1866,8 +1867,8 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 		}
 	} else if (mess_with_pauline_payload_number) {
-		bctbx_list_t *elem;
-		for (elem = pauline->lc->codecs_conf.text_codecs; elem != NULL; elem = elem->next) {
+		const bctbx_list_t *elem;
+		for (elem = linphone_core_get_text_codecs(pauline->lc); elem != NULL; elem = elem->next) {
 			PayloadType *pt = (PayloadType*)elem->data;
 			if (strcasecmp(pt->mime_type, payload_type_t140.mime_type) == 0) {
 				payload_type_set_number(pt, 99);
