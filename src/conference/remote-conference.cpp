@@ -33,6 +33,7 @@ RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress
 }
 
 RemoteConference::~RemoteConference () {
+	eventHandler->unsubscribe();
 	delete eventHandler;
 }
 
@@ -81,7 +82,9 @@ string RemoteConference::getResourceLists (const list<Address> &addresses) {
 
 void RemoteConference::onConferenceCreated (const Address &addr) {}
 
-void RemoteConference::onConferenceTerminated (const Address &addr) {}
+void RemoteConference::onConferenceTerminated (const Address &addr) {
+	eventHandler->unsubscribe();
+}
 
 void RemoteConference::onParticipantAdded (const Address &addr) {}
 

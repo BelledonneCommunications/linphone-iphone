@@ -51,10 +51,7 @@ RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, C
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
-	L_D();
 	xercesc::XMLPlatformUtils::Terminate();
-	if (d->lev)
-		linphone_event_unref(d->lev);
 }
 
 // -----------------------------------------------------------------------------
@@ -65,16 +62,17 @@ void RemoteConferenceEventHandler::subscribe(const Address &addr) {
 	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
 	d->lev = linphone_core_create_subscribe(d->core, lAddr, "Conference", 600);
 	linphone_address_unref(lAddr);
-	linphone_event_ref(d->lev);
 	linphone_event_set_internal(d->lev, TRUE);
 	linphone_event_set_user_data(d->lev, this);
-	linphone_event_add_custom_header(d->lev, "Conf-id", d->confAddress.getUsername().c_str()); // TODO : ???
 	linphone_event_send_subscribe(d->lev, nullptr);
 }
 
 void RemoteConferenceEventHandler::unsubscribe() {
 	L_D();
-	linphone_event_terminate(d->lev);
+	if (d->lev) {
+		linphone_event_terminate(d->lev);
+		d->lev = nullptr;
+	}
 }
 
 void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
@@ -87,7 +85,9 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
 		for (const auto &user : confInfo->getUsers()->getUser()) {
 			LinphoneAddress *cAddr = linphone_core_interpret_url(d->core, user.getEntity()->c_str());
-			Address addr(linphone_address_as_string(cAddr));
+			char *cAddrStr = linphone_address_as_string(cAddr);
+			Address addr(cAddrStr);
+			bctbx_free(cAddrStr);
 			if (user.getState() == "deleted")
 				d->listener->onParticipantRemoved(addr);
 			else {

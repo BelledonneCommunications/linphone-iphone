@@ -49,7 +49,7 @@ void LocalConferenceEventHandlerPrivate::notifyFullState(string notify, Linphone
 	linphone_content_set_buffer(content, notify.c_str(), strlen(notify.c_str()));
 	linphone_event_notify(lev, content);
 	linphone_content_unref(content);
-	// linphone_event_unref(lev); ??
+	linphone_event_unref(lev);
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, const Address &addr) {

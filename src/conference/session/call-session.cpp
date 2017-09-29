@@ -600,9 +600,8 @@ void CallSessionPrivate::setContactOp () {
 	LinphoneAddress *contact = getFixedContact();
 	if (contact) {
 		salAddress = const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress());
-		sal_address_ref(salAddress);
-		linphone_address_unref(contact);
 		sal_op_set_contact_address(op, salAddress);
+		linphone_address_unref(contact);
 	}
 }
 
