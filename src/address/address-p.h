@@ -36,20 +36,20 @@ public:
 
 private:
 	struct AddressCache {
-		mutable std::string scheme;
-		mutable std::string displayName;
-		mutable std::string username;
-		mutable std::string domain;
-		mutable std::string methodParam;
-		mutable std::string password;
+		std::string scheme;
+		std::string displayName;
+		std::string username;
+		std::string domain;
+		std::string methodParam;
+		std::string password;
 
-		mutable std::unordered_map<std::string, std::string> headers;
-		mutable std::unordered_map<std::string, std::string> params;
-		mutable std::unordered_map<std::string, std::string> uriParams;
+		std::unordered_map<std::string, std::string> headers;
+		std::unordered_map<std::string, std::string> params;
+		std::unordered_map<std::string, std::string> uriParams;
 	};
 
 	SalAddress *internalAddress = nullptr;
-	AddressCache cache;
+	mutable AddressCache cache;
 
 	L_DECLARE_PUBLIC(Address);
 };
