@@ -55,7 +55,7 @@ shared_ptr<CallSession> CallPrivate::getActiveSession () const {
 }
 
 bool CallPrivate::getAudioMuted () const {
-	return static_pointer_cast<MediaSession>(getActiveSession())->getAudioMuted();
+	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getAudioMuted();
 }
 
 LinphoneProxyConfig *CallPrivate::getDestProxy () const {
@@ -63,11 +63,11 @@ LinphoneProxyConfig *CallPrivate::getDestProxy () const {
 }
 
 IceSession *CallPrivate::getIceSession () const {
-	return static_pointer_cast<MediaSession>(getActiveSession())->getIceSession();
+	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getIceSession();
 }
 
 MediaStream *CallPrivate::getMediaStream (LinphoneStreamType type) const {
-	return L_GET_PRIVATE(getActiveSession(), MediaSession)->getMediaStream(type);
+	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getMediaStream(type);
 }
 
 SalOp *CallPrivate::getOp () const {
@@ -75,7 +75,7 @@ SalOp *CallPrivate::getOp () const {
 }
 
 void CallPrivate::setAudioMuted (bool value) {
-	L_GET_PRIVATE(getActiveSession(), MediaSession)->setAudioMuted(value);
+	static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->setAudioMuted(value);
 }
 
 // -----------------------------------------------------------------------------
