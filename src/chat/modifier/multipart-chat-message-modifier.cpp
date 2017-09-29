@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chat/chat-message-p.h"
 #include "multipart-chat-message-modifier.h"
+#include "address/address.h"
+#include "chat/chat-message-p.h"
 
 // =============================================================================
 

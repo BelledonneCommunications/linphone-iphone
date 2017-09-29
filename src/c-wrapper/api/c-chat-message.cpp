@@ -173,26 +173,28 @@ void linphone_chat_message_set_appdata(LinphoneChatMessage *msg, const char *dat
 }
 
 void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
-	if (!from) L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(nullptr);
-	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(from)));
+	LinphonePrivate::Address addr;
+	if (from) addr = LinphonePrivate::Address(linphone_address_as_string(from));
+	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(addr);
 }
 
 const LinphoneAddress *linphone_chat_message_get_from_address(LinphoneChatMessage *msg) {
 	if (msg->from)
 		linphone_address_unref(msg->from);
-	msg->from = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getFromAddress()->asString().c_str());
+	msg->from = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getFromAddress().asString().c_str());
 	return msg->from;
 }
 
 void linphone_chat_message_set_to_address(LinphoneChatMessage *msg, const LinphoneAddress *to) {
-	if (!to) L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(nullptr);
-	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(to)));
+	LinphonePrivate::Address addr;
+	if (to) addr = LinphonePrivate::Address(linphone_address_as_string(to));
+	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(addr);
 }
 
 const LinphoneAddress *linphone_chat_message_get_to_address(LinphoneChatMessage *msg) {
 	if (msg->to)
 		linphone_address_unref(msg->to);
-	msg->to = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getToAddress()->asString().c_str());
+	msg->to = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getToAddress().asString().c_str());
 	return msg->to;
 }
 
@@ -325,7 +327,7 @@ void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChat
 // Structure has changed, hard to keep the behavior
 // =============================================================================
 
-const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg) {
+const char * linphone_chat_message_get_content_type(LinphoneChatMessage *msg) {
 	return L_STRING_TO_C(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType());
 }
 
@@ -333,7 +335,7 @@ void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char
 	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setContentType(L_C_TO_STRING(content_type));
 }
 
-const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
+const char *linphone_chat_message_get_text(LinphoneChatMessage *msg) {
 	return L_STRING_TO_C(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getText());
 }
 
@@ -369,11 +371,11 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 	return linphone_error_info_get_reason(linphone_chat_message_get_error_info(msg));
 }
 
-bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *msg) {
+bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *msg) {
 	return LinphonePrivate::ContentType::isFileTransfer(linphone_chat_message_get_content_type(msg));
 }
 
-bool_t linphone_chat_message_is_text(const LinphoneChatMessage *msg) {
+bool_t linphone_chat_message_is_text(LinphoneChatMessage *msg) {
 	return LinphonePrivate::ContentType::isText(linphone_chat_message_get_content_type(msg));
 }
 

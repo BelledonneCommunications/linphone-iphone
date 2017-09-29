@@ -21,6 +21,8 @@
 
 #include "linphone/utils/general.h"
 
+#include "private.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE

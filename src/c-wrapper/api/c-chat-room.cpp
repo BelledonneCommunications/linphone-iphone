@@ -68,12 +68,11 @@ void linphone_chat_room_release (LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_PRIVATE_FROM_C_OBJECT(cr)->removeTransientMessage(msg);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->removeTransientMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_send_message (LinphoneChatRoom *cr, const char *msg) {
-	LinphoneChatMessage *message = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(message);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg));
 }
 
 bool_t linphone_chat_room_is_remote_composing (const LinphoneChatRoom *cr) {
@@ -97,7 +96,7 @@ const LinphoneAddress *linphone_chat_room_get_peer_address (LinphoneChatRoom *cr
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message (LinphoneChatRoom *cr, const char *message) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(L_C_TO_STRING(message));
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(L_C_TO_STRING(message)));
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message_2 (
@@ -135,16 +134,16 @@ void linphone_chat_room_send_message2 (
 ) {
 	linphone_chat_message_set_message_state_changed_cb(msg, status_cb);
 	linphone_chat_message_set_message_state_changed_cb_user_data(msg, ud);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_send_chat_message_2 (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	linphone_chat_message_ref(msg);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_send_chat_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 uint32_t linphone_chat_room_get_char (const LinphoneChatRoom *cr) {
@@ -169,7 +168,7 @@ void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 }
 
 bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
-	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE_FROM_C_OBJECT(cr)->getTransientMessages());
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE_FROM_C_OBJECT(cr)->getTransientMessages());
 }
 
 void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {
@@ -185,7 +184,7 @@ int linphone_chat_room_get_history_size (LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_delete_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteMessage(msg);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
@@ -193,15 +192,15 @@ void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
 }
 
 bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int startm, int endm) {
-	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm));
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm));
 }
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
-	return L_GET_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_message));
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_message));
 }
 
 LinphoneChatMessage *linphone_chat_room_find_message (LinphoneChatRoom *cr, const char *message_id) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findMessage(message_id);
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findMessage(message_id));
 }
 
 LinphoneChatRoomCbs *linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr) {

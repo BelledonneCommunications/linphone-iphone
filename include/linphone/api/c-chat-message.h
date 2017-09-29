@@ -126,7 +126,7 @@ LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(Linp
  * @param[in] message LinphoneChatMessage object
  * @return The content type of the chat message
  */
-LINPHONE_PUBLIC const char * linphone_chat_message_get_content_type(const LinphoneChatMessage *msg);
+LINPHONE_PUBLIC const char * linphone_chat_message_get_content_type(LinphoneChatMessage *msg);
 
 /**
  * Set the content type of a chat message.
@@ -140,7 +140,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage 
  * Get text part of this message
  * @return text or NULL if no text.
  */
-LINPHONE_PUBLIC const char* linphone_chat_message_get_text(const LinphoneChatMessage* msg);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_text(LinphoneChatMessage* msg);
 
 /**
  * Returns the id used to identify this message in the storage database
@@ -235,14 +235,14 @@ LINPHONE_PUBLIC LinphoneContent* linphone_chat_message_get_file_transfer_informa
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a file tranfer
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(const LinphoneChatMessage *message);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *message);
 
 /**
  * Return whether or not a chat message is a text.
  * @param[in] message LinphoneChatMessage object
  * @return Whether or not the message is a text
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(const LinphoneChatMessage *message);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(LinphoneChatMessage *message);
 
 /**
  * Get if a chat message is to be stored.

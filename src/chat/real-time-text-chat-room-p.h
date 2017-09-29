@@ -43,7 +43,7 @@ public:
 public:
 	LinphoneCall *call = nullptr;
 	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
-	LinphoneChatMessage *pendingMessage = nullptr;
+	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 
 private:
 	L_DECLARE_PUBLIC(RealTimeTextChatRoom);

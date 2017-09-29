@@ -28,6 +28,8 @@
 #include "object/object.h"
 #include "conference/conference-interface.h"
 
+#include "chat-message.h"
+
 #include "linphone/types.h"
 
 // =============================================================================
@@ -47,19 +49,20 @@ public:
 	virtual ~ChatRoom () = default;
 
 	void compose ();
-	LinphoneChatMessage *createFileTransferMessage (const LinphoneContent *initialContent);
-	LinphoneChatMessage *createMessage (const std::string &msg);
+	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);
+	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
+	std::shared_ptr<ChatMessage> createMessage ();
 	void deleteHistory ();
-	void deleteMessage (LinphoneChatMessage *msg);
-	LinphoneChatMessage * findMessage (const std::string& messageId);
-	LinphoneChatMessage * findMessageWithDirection (const std::string &messageId, LinphoneChatMessageDir direction);
-	std::list<LinphoneChatMessage *> getHistory (int nbMessages);
+	void deleteMessage (std::shared_ptr<ChatMessage> msg);
+	std::shared_ptr<ChatMessage> findMessage (const std::string& messageId);
+	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
+	std::list<std::shared_ptr<ChatMessage> > getHistory (int nbMessages);
 	int getHistorySize ();
-	std::list<LinphoneChatMessage *> getHistoryRange (int startm, int endm);
+	std::list<std::shared_ptr<ChatMessage> > getHistoryRange (int startm, int endm);
 	int getUnreadMessagesCount ();
 	bool isRemoteComposing () const;
 	void markAsRead ();
-	virtual void sendMessage (LinphoneChatMessage *msg);
+	virtual void sendMessage (std::shared_ptr<ChatMessage> msg);
 
 	LinphoneCore *getCore () const;
 

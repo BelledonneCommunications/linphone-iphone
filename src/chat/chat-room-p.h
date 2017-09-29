@@ -41,16 +41,15 @@ public:
 
 private:
 	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
-	static void onWeakMessageDestroyed (void *obj, belle_sip_object_t *messageBeingDestroyed);
 
 public:
-	void addTransientMessage (LinphoneChatMessage *msg);
-	void addWeakMessage (LinphoneChatMessage *msg);
-	std::list<LinphoneChatMessage *> getTransientMessages () const {
+	void addTransientMessage (std::shared_ptr<ChatMessage> msg);
+	void addWeakMessage (std::shared_ptr<ChatMessage> msg);
+	std::list<std::shared_ptr<ChatMessage> > getTransientMessages () const {
 		return transientMessages;
 	}
-	void moveTransientMessageToWeakMessages (LinphoneChatMessage *msg);
-	void removeTransientMessage (LinphoneChatMessage *msg);
+	void moveTransientMessageToWeakMessages (std::shared_ptr<ChatMessage> msg);
+	void removeTransientMessage (std::shared_ptr<ChatMessage> msg);
 
 	void release ();
 	void sendImdn (const std::string &content, LinphoneReason reason);
@@ -62,27 +61,26 @@ protected:
 	void sendIsComposingNotification ();
 
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
-	void onWeakMessageDestroyed (LinphoneChatMessage *messageBeingDestroyed);
-	LinphoneChatMessage *getTransientMessage (unsigned int storageId) const;
-	LinphoneChatMessage *getWeakMessage (unsigned int storageId) const;
+	std::shared_ptr<ChatMessage> getTransientMessage (unsigned int storageId) const;
+	std::shared_ptr<ChatMessage> getWeakMessage (unsigned int storageId) const;
 	int sqlRequest (sqlite3 *db, const std::string &stmt);
 	void sqlRequestMessage (sqlite3 *db, const std::string &stmt);
-	std::list<LinphoneChatMessage *> findMessages (const std::string &messageId);
-	void storeOrUpdateMessage (LinphoneChatMessage *msg);
+	std::list<std::shared_ptr<ChatMessage> > findMessages (const std::string &messageId);
+	void storeOrUpdateMessage (std::shared_ptr<ChatMessage> msg);
 
 public:
 	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
 protected:
-	void chatMessageReceived (LinphoneChatMessage *msg);
+	void chatMessageReceived (std::shared_ptr<ChatMessage> msg);
 	void imdnReceived (const std::string &text);
 	void isComposingReceived (const std::string &text);
 
 private:
-	void notifyChatMessageReceived (LinphoneChatMessage *msg);
+	void notifyChatMessageReceived (std::shared_ptr<ChatMessage> msg);
 	void notifyStateChanged ();
-	void notifyUndecryptableMessageReceived (LinphoneChatMessage *msg);
+	void notifyUndecryptableMessageReceived (std::shared_ptr<ChatMessage> msg);
 
 private:
 	/* IsComposingListener */
@@ -98,11 +96,11 @@ public:
 	int unreadCount = -1;
 	bool isComposing = false;
 	bool remoteIsComposing = false;
-	std::list<LinphoneChatMessage *> messages;
-	std::list<LinphoneChatMessage *> transientMessages;
-	std::list<LinphoneChatMessage *> weakMessages;
+	std::list<std::shared_ptr<ChatMessage> > messages;
+	std::list<std::shared_ptr<ChatMessage> > transientMessages;
+	std::list<std::weak_ptr<ChatMessage> > weakMessages;
 	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
-	LinphoneChatMessage *pendingMessage = nullptr;
+	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 	IsComposing isComposingHandler;
 
 private:

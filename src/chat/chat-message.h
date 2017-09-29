@@ -22,7 +22,7 @@
 #include <list>
 #include <memory>
 
-#include "imdn.h"
+#include "enums.h"
 #include "linphone/api/c-types.h"
 #include "linphone/api/c-chat-message.h"
 
@@ -34,19 +34,22 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Address;
 class ChatRoom;
+class ChatRoomPrivate;
 class Content;
 class ErrorInfo;
 class ChatMessagePrivate;
 
 class LINPHONE_PUBLIC ChatMessage : public Object {
 	friend class ChatRoom;
+	friend class ChatRoomPrivate;
+	friend class RealTimeTextChatRoomPrivate;
 
-public:
+public:	
 	enum Direction {
 		Incoming,
 		Outgoing
 	};
-
+	
 	enum State {
 		Idle,
 		InProgress,
@@ -69,6 +72,7 @@ public:
 	// Methods
 	// -----------------------------------------------------------------------------
 
+	void store();
 	void updateState(State state);
 	void send();
 	void reSend();
@@ -105,11 +109,13 @@ public:
 	const std::string& getAppdata () const;
 	void setAppdata (const std::string &appData);
 	
-	std::shared_ptr<Address> getFromAddress () const;
-	void setFromAddress(std::shared_ptr<Address> from);
+	const Address& getFromAddress () const;
+	void setFromAddress(Address from);
+	void setFromAddress(const std::string& from);
 
-	std::shared_ptr<Address> getToAddress () const;
-	void setToAddress(std::shared_ptr<Address> to);
+	const Address& getToAddress () const;
+	void setToAddress(Address to);
+	void setToAddress(const std::string& to);
 
 	const std::string& getFileTransferFilepath() const;
 	void setFileTransferFilepath(const std::string &path);

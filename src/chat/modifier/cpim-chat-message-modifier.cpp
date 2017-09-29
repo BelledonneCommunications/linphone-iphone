@@ -16,12 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chat/chat-message-p.h"
+#include "cpim-chat-message-modifier.h"
+
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
 #include "content/content.h"
-
-#include "cpim-chat-message-modifier.h"
+#include "address/address.h"
+#include "chat/chat-message-p.h"
 
 // =============================================================================
 

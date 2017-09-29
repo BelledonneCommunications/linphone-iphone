@@ -65,10 +65,10 @@ public:
 	// Methods only used for C wrapper
 	// -----------------------------------------------------------------------------
 	
-	const std::string& getContentType() const;
+	const std::string& getContentType();
 	void setContentType(const std::string& contentType);
 
-	const std::string& getText() const;
+	const std::string& getText();
 	void setText(const std::string& text);
 	
 	LinphoneContent * getFileTransferInformation() const;
@@ -98,11 +98,11 @@ public:
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
-	ChatMessage::Direction direction = ChatMessage::Incoming;
-	ChatMessage::State state = ChatMessage::Idle;
+	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
+	ChatMessage::State state = ChatMessage::State::Idle;
 	unsigned int storageId = 0;
-	std::shared_ptr<Address> from;
-	std::shared_ptr<Address> to;
+	Address from;
+	Address to;
 	time_t time = 0;
 	std::string id = "";
 	std::string appData = "";
@@ -122,9 +122,10 @@ private:
 	SalOp *salOp = NULL;
 	SalCustomHeader *salCustomHeaders = NULL;
 	unsigned long backgroundTaskId;
-	// Used for compatibility with previous C API
+	// Cache for returned values, used for compatibility with previous C API
 	std::string cContentType = "";
 	std::string cText = "";
+	// Used for compatibility with previous C API
 	LinphoneContent *cFileTransferInformation = NULL;
 	
 	// -----------------------------------------------------------------------------

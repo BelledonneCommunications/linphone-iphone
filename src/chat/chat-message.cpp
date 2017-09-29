@@ -22,11 +22,11 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "c-wrapper/c-wrapper.h"
+#include "address/address.h"
 
 #include "chat-message-p.h"
-#include "chat-message.h"
-#include "content/content.h"
 
+#include "content/content.h"
 #include "modifier/multipart-chat-message-modifier.h"
 #include "modifier/cpim-chat-message-modifier.h"
 #include "chat-room-p.h"
@@ -133,20 +133,33 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 
 // -----------------------------------------------------------------------------
 
-const string& ChatMessagePrivate::getContentType() const {
+const string& ChatMessagePrivate::getContentType() {
+	if (internalContent) {
+		ContentType contentType = internalContent->getContentType();
+		cContentType = contentType.asString();
+	}
 	return cContentType;
 }
 
 void ChatMessagePrivate::setContentType(const string& contentType) {
-	cContentType = contentType;
+	if (!internalContent) {
+		internalContent = make_shared<Content>();
+	}
+	internalContent->setContentType(contentType);
 }
 
-const string& ChatMessagePrivate::getText() const {
+const string& ChatMessagePrivate::getText() {
+	if (internalContent) {
+		cText = internalContent->getBodyAsString();
+	}
 	return cText;
 }
 
 void ChatMessagePrivate::setText(const string& text) {
-	cText = text;
+	if (!internalContent) {
+		internalContent = make_shared<Content>();
+	}
+	internalContent->setBody(text);
 }
 
 LinphoneContent * ChatMessagePrivate::getFileTransferInformation() const {
@@ -464,7 +477,7 @@ void ChatMessagePrivate::onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip
 		}
 	} else {
 		ms_warning("File transfer decrypt failed with code %d", (int)retval);
-		setState(ChatMessage::FileTransferError);
+		setState(ChatMessage::State::FileTransferError);
 	}
 
 	return;
@@ -654,22 +667,22 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 					}
 					xmlFreeDoc(xmlMessageBody);
 				} else { // no encryption key, transfer in plain, just copy the msg sent by server
-					cText = ms_strdup(body);
+					setText(body);
 				}
-				cContentType = "application/vnd.gsma.rcs-ft-http+xml";
-				q->updateState(ChatMessage::FileTransferDone);
+				setContentType("application/vnd.gsma.rcs-ft-http+xml");
+				q->updateState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
-				chatRoom->sendMessage(L_GET_C_BACK_PTR(q));
+				//TODO chatRoom->sendMessage(q);
 				fileUploadEndBackgroundTask();
 			} else {
 				ms_warning("Received empty response from server, file transfer failed");
-				q->updateState(ChatMessage::NotDelivered);
+				q->updateState(ChatMessage::State::NotDelivered);
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
-			q->updateState(ChatMessage::NotDelivered);
+			q->updateState(ChatMessage::State::NotDelivered);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		}
@@ -755,7 +768,7 @@ void ChatMessagePrivate::processAuthRequestedDownload(const belle_sip_auth_event
 	L_Q();
 
 	ms_error("Error during file download : auth requested for msg [%p]", this);
-	q->updateState(ChatMessage::FileTransferError);
+	q->updateState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -767,9 +780,9 @@ static void _chat_message_process_io_error_upload(void *data, const belle_sip_io
 void ChatMessagePrivate::processIoErrorUpload(const belle_sip_io_error_event_t *event) {
 	L_Q();
 	ms_error("I/O Error during file upload of msg [%p]", this);
-	q->updateState(ChatMessage::NotDelivered);
+	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	chatRoom->getPrivate()->removeTransientMessage(L_GET_C_BACK_PTR(q));
+	//TODO chatRoom->getPrivate()->removeTransientMessage(q);
 }
 
 static void _chat_message_process_auth_requested_upload(void *data, belle_sip_auth_event *event) {
@@ -780,9 +793,9 @@ static void _chat_message_process_auth_requested_upload(void *data, belle_sip_au
 void ChatMessagePrivate::processAuthRequestedUpload(const belle_sip_auth_event *event) {
 	L_Q();
 	ms_error("Error during file upload: auth requested for msg [%p]", this);
-	q->updateState(ChatMessage::NotDelivered);
+	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	chatRoom->getPrivate()->removeTransientMessage(L_GET_C_BACK_PTR(q));
+	//TODO chatRoom->getPrivate()->removeTransientMessage(q);
 }
 
 static void _chat_message_process_io_error_download(void *data, const belle_sip_io_error_event_t *event) {
@@ -794,7 +807,7 @@ void ChatMessagePrivate::processIoErrorDownload(const belle_sip_io_error_event_t
 	L_Q();
 
 	ms_error("I/O Error during file download msg [%p]", this);
-	q->updateState(ChatMessage::FileTransferError);
+	q->updateState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -809,7 +822,7 @@ void ChatMessagePrivate::processResponseFromGetFile(const belle_http_response_ev
 		int code = belle_http_response_get_status_code(event->response);
 		if (code >= 400 && code < 500) {
 			ms_warning("File transfer failed with code %d", code);
-			setState(ChatMessage::FileTransferError);
+			setState(ChatMessage::State::FileTransferError);
 		} else if (code != 200) {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 		}
@@ -959,24 +972,34 @@ void ChatMessage::setAppdata (const string &appData) {
 	linphone_chat_message_store_appdata(L_GET_C_BACK_PTR(this));
 }
 
-shared_ptr<Address> ChatMessage::getFromAddress () const {
+const Address& ChatMessage::getFromAddress () const {
 	L_D();
 	return d->from;
 }
 
-void ChatMessage::setFromAddress(shared_ptr<Address> from) {
+void ChatMessage::setFromAddress(Address from) {
 	L_D();
 	d->from = from;
 }
 
-shared_ptr<Address> ChatMessage::getToAddress () const {
+void ChatMessage::setFromAddress(const string& from) {
+	L_D();
+	d->from = Address(from);
+}
+
+const Address& ChatMessage::getToAddress () const {
 	L_D();
 	return d->to;
 }
 
-void ChatMessage::setToAddress(shared_ptr<Address> to) {
+void ChatMessage::setToAddress(Address to) {
 	L_D();
 	d->to = to;
+}
+
+void ChatMessage::setToAddress(const string& to) {
+	L_D();
+	d->to = Address(to);
 }
 
 const string& ChatMessage::getFileTransferFilepath() const {
@@ -1061,6 +1084,18 @@ void ChatMessage::removeCustomHeader (const string &headerName) {
 
 // -----------------------------------------------------------------------------
 
+void ChatMessage::store() {
+	L_D();
+
+	if (d->storageId != 0) {
+		/* The message has already been stored (probably because of file transfer), update it */
+		linphone_chat_message_store_update(L_GET_C_BACK_PTR(this));
+	} else {
+		/* Store the new message */
+		linphone_chat_message_store(L_GET_C_BACK_PTR(this));
+	}
+}
+
 void ChatMessage::updateState(State state) {
 	L_D();
 
@@ -1068,7 +1103,7 @@ void ChatMessage::updateState(State state) {
 	linphone_chat_message_store_state(L_GET_C_BACK_PTR(this));
 
 	if (state == Delivered || state == NotDelivered) {
-		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(L_GET_C_BACK_PTR(this));
+		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(static_pointer_cast<ChatMessage>(shared_from_this()));
 	}
 }
 
@@ -1098,7 +1133,7 @@ void ChatMessage::reSend() {
 		return;
 	}
 
-	d->chatRoom->sendMessage(L_GET_C_BACK_PTR(this));
+	d->chatRoom->sendMessage(static_pointer_cast<ChatMessage>(shared_from_this()));
 }
 
 void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
@@ -1201,7 +1236,7 @@ int ChatMessage::putCharacter(uint32_t character) {
 				d->setTime(ms_time(0));
 				d->state = Displayed;
 				d->direction = Outgoing;
-				setFromAddress(make_shared<LinphonePrivate::Address>(linphone_address_as_string(linphone_address_new(linphone_core_get_identity(lc)))));
+				setFromAddress(LinphonePrivate::Address(linphone_address_as_string(linphone_address_new(linphone_core_get_identity(lc)))));
 				linphone_chat_message_store(L_GET_C_BACK_PTR(this));
 				d->rttMessage = "";
 			}

@@ -19,6 +19,8 @@
 #include "logger/logger.h"
 
 #include "imdn.h"
+#include "chat/chat-room.h"
+#include "chat/chat-message.h"
 
 // =============================================================================
 
@@ -59,7 +61,7 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 	}
 
 	if (messageIdStr && datetimeStr) {
-		LinphoneChatMessage *cm = cr.findMessageWithDirection(messageIdStr, LinphoneChatMessageOutgoing);
+		shared_ptr<ChatMessage> cm = cr.findMessageWithDirection(messageIdStr, ChatMessage::Direction::Outgoing);
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
 		} else {
@@ -73,9 +75,9 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 					xmlNodePtr node = deliveryStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "delivered") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDeliveredToUser);
+							cm->updateState(ChatMessage::State::DeliveredToUser);
 						} else if (strcmp((const char *)node->children->name, "error") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateNotDelivered);
+							cm->updateState(ChatMessage::State::NotDelivered);
 						}
 					}
 				}
@@ -86,13 +88,12 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 					xmlNodePtr node = displayStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "displayed") == 0) {
-							linphone_chat_message_update_state(cm, LinphoneChatMessageStateDisplayed);
+							cm->updateState(ChatMessage::State::Displayed);
 						}
 					}
 				}
 				xmlXPathFreeObject(displayStatusObject);
 			}
-			linphone_chat_message_unref(cm);
 		}
 	}
 	if (messageIdStr)

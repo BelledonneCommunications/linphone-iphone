@@ -21,6 +21,7 @@
 #include "linphone/utils/utils.h"
 
 #include "real-time-text-chat-room-p.h"
+#include "chat-message-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
 
@@ -40,8 +41,6 @@ RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
 		for (auto &rttChars : receivedRttCharacters)
 			bctbx_free(rttChars);
 	}
-	if (pendingMessage)
-		linphone_chat_message_unref(pendingMessage);
 }
 
 // -----------------------------------------------------------------------------
@@ -67,16 +66,11 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
 			/* End of message */
-			lDebug() << "New line received, forge a message with content " << linphone_chat_message_get_text(pendingMessage);
-			LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
-			linphone_chat_message_set_from_address(pendingMessage, peer);
-			linphone_address_unref(peer);
-			linphone_chat_message_set_to_address(pendingMessage, linphone_call_get_dest_proxy(call)
-				? linphone_address_clone(linphone_call_get_dest_proxy(call)->identity_address)
-				: linphone_address_new(linphone_core_get_identity(core)));
-			linphone_chat_message_set_time(pendingMessage, ms_time(0));
-			linphone_chat_message_set_state(pendingMessage, LinphoneChatMessageStateDelivered);
-			linphone_chat_message_set_incoming(pendingMessage);
+			lDebug() << "New line received, forge a message with content " << pendingMessage->getPrivate()->getText().c_str();
+			pendingMessage->setFromAddress(peerAddress);
+			pendingMessage->setToAddress(linphone_call_get_dest_proxy(call) ? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address) : linphone_core_get_identity(core));
+			pendingMessage->getPrivate()->setState(ChatMessage::State::Delivered);
+			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 
 			if (lp_config_get_int(core->config, "misc", "store_rtt_messages", 1) == 1)
 				storeOrUpdateMessage(pendingMessage);
@@ -85,16 +79,15 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			else unreadCount++;
 
 			chatMessageReceived(pendingMessage);
-			linphone_chat_message_unref(pendingMessage);
 			pendingMessage = nullptr;
 			for (auto &rttChars : receivedRttCharacters)
 				ms_free(rttChars);
 			receivedRttCharacters.clear();
 		} else {
 			char *value = Utils::utf8ToChar(character);
-			char *text = (char *)linphone_chat_message_get_text(pendingMessage);
-			linphone_chat_message_set_text(pendingMessage, ms_strcat_printf(text, value));
-			lDebug() << "Received RTT character: " << value << " (" << character << "), pending text is " << linphone_chat_message_get_text(pendingMessage);
+			char *text = (char *)pendingMessage->getPrivate()->getText().c_str();
+			pendingMessage->getPrivate()->setText(ms_strcat_printf(text, value));
+			lDebug() << "Received RTT character: " << value << " (" << character << "), pending text is " << pendingMessage->getPrivate()->getText();
 			delete value;
 		}
 	}
@@ -106,12 +99,11 @@ RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &p
 
 // -----------------------------------------------------------------------------
 
-void RealTimeTextChatRoom::sendMessage (LinphoneChatMessage *msg) {
+void RealTimeTextChatRoom::sendMessage (std::shared_ptr<ChatMessage> msg) {
 	L_D();
 	if (d->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(d->call))) {
 		uint32_t new_line = 0x2028;
-		linphone_chat_message_put_char(msg, new_line);
-		linphone_chat_message_unref(msg);
+		msg->putCharacter(new_line);
 	}
 }
 

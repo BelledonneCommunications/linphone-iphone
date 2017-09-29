@@ -21,13 +21,13 @@
 
 #include "linphone/utils/general.h"
 
-#include "chat-room.h"
-
 #include "private.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
+
+class ChatRoom;
 
 class Imdn {
 public:
