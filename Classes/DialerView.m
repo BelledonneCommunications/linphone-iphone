@@ -192,16 +192,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
-	if (IPAD) {
-		if (linphone_core_video_display_enabled(LC) && linphone_core_video_preview_enabled(LC)) {
-			linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
-			[_backgroundView setHidden:FALSE];
-			[_videoCameraSwitch setHidden:FALSE];
-		} else {
-			linphone_core_set_native_preview_window_id(LC, NULL);
-			[_backgroundView setHidden:TRUE];
-			[_videoCameraSwitch setHidden:TRUE];
+	@try {
+		if (IPAD) {
+			if (linphone_core_video_display_enabled(LC) && linphone_core_video_preview_enabled(LC)) {
+				linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));
+				[_backgroundView setHidden:FALSE];
+				[_videoCameraSwitch setHidden:FALSE];
+			} else {
+				linphone_core_set_native_preview_window_id(LC, NULL);
+				[_backgroundView setHidden:TRUE];
+				[_videoCameraSwitch setHidden:TRUE];
+			}
 		}
+	}
+	@catch (NSException *exception) {
+		if ([exception.name isEqualToString:@"LinphoneCoreException"]) {
+			LOGE(@"Core already destroyed");
+			return;
+		}
+		LOGE(@"Uncaught exception : %@", exception.description);
+		abort();
 	}
 }
 
