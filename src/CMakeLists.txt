@@ -85,6 +85,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/conference-participant-event.h
 	event-log/event-log-p.h
 	event-log/event-log.h
+	hacks/hacks.h
 	logger/logger.h
 	nat/ice-agent.h
 	nat/stun-client.h
@@ -152,6 +153,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	event-log/conference-event.cpp
 	event-log/conference-participant-event.cpp
 	event-log/event-log.cpp
+	hacks/hacks.cpp
 	logger/logger.cpp
 	nat/ice-agent.cpp
 	nat/stun-client.cpp
