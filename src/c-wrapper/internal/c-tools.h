@@ -115,7 +115,7 @@ private:
 
 	static inline void fatal (const char *message) {
 		std::cout << "[FATAL C-WRAPPER]" << message << std::endl;
-		exit(1);
+		//exit(1);
 	}
 
 public:
