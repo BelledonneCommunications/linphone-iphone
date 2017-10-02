@@ -459,7 +459,7 @@ int Sal::add_listen_port(SalAddress* addr, bool_t is_tunneled) {
 									sal_transport_to_string(sal_address_get_transport(addr)));
 	}
 	if (lp) {
-		belle_sip_listening_point_set_keep_alive(lp,this->keep_alive);
+		belle_sip_listening_point_set_keep_alive(lp,(int)this->keep_alive);
 		result = belle_sip_provider_add_listening_point(this->prov,lp);
 		if (sal_address_get_transport(addr)==SalTransportTLS) {
 			set_tls_properties();
@@ -526,7 +526,7 @@ void Sal::make_supported_header(){
 		const char *tag=(const char*)it->data;
 		size_t taglen=strlen(tag);
 		if (alltags==NULL || (written+taglen+1>=buflen)) alltags=reinterpret_cast<char *>(ms_realloc(alltags,(buflen=buflen*2)));
-		written+=snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
+		written+=(size_t)snprintf(alltags+written,buflen-written,it->next ? "%s, " : "%s",tag);
 	}
 	if (alltags){
 		this->supported=belle_sip_header_create("Supported",alltags);
@@ -606,7 +606,7 @@ void Sal::set_keepalive_period(unsigned int value) {
 	for (iterator=belle_sip_provider_get_listening_points(this->prov);iterator!=NULL;iterator=iterator->next) {
 		lp=(belle_sip_listening_point_t*)iterator->data;
 		if (this->use_tcp_tls_keep_alive || strcasecmp(belle_sip_listening_point_get_transport(lp),"udp")==0) {
-			belle_sip_listening_point_set_keep_alive(lp,this->keep_alive);
+			belle_sip_listening_point_set_keep_alive(lp,(int)this->keep_alive);
 		}
 	}
 }
@@ -713,7 +713,7 @@ int Sal::generate_uuid(char *uuid, size_t len) {
 		return -1;
 	}
 	for (i = 0; i < 6; i++)
-		written+=snprintf(uuid+written,len-written,"%2.2x", uuid_struct.node[i]);
+		written+=snprintf(uuid+written,len-(unsigned long)written,"%2.2x", uuid_struct.node[i]);
 	uuid[len-1]='\0';
 	return 0;
 }

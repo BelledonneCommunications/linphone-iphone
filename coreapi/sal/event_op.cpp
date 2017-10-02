@@ -226,7 +226,7 @@ void SalSubscribeOp::subscribe_refresher_listener_cb (belle_sip_refresher_t* ref
 		if (status_code == 503) { /*refresher returns 503 for IO error*/
 			reason = SalReasonIOError;
 		}
-		sal_error_info_set(&op->error_info, reason, "SIP", status_code,reason_phrase,NULL);
+		sal_error_info_set(&op->error_info, reason, "SIP", (int)status_code, reason_phrase, NULL);
 		op->root->callbacks.subscribe_response(op,sss, will_retry);
 	}else if (status_code==0){
 		op->root->callbacks.on_expire(op);
@@ -365,7 +365,7 @@ void SalPublishOp::publish_refresher_listener_cb (belle_sip_refresher_t* refresh
 			sip_etag_string = belle_sip_header_get_unparsed_value(sip_etag);
 		}
 		op->set_entity_tag(sip_etag_string);
-		sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", status_code,reason_phrase,NULL);
+		sal_error_info_set(&op->error_info,SalReasonUnknown, "SIP", (int)status_code, reason_phrase, NULL);
 		op->assign_recv_headers((belle_sip_message_t*)response);
 		op->root->callbacks.on_publish_response(op);
 	}
