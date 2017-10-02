@@ -143,6 +143,7 @@ public:
 	void removeCustomHeader(const std::string &headerName);
 
 protected:
+	std::shared_ptr<ChatMessage> getSharedPtr();
 	explicit ChatMessage(ChatMessagePrivate &p);
 
 private:

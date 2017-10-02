@@ -97,6 +97,8 @@ public:
 	// -----------------------------------------------------------------------------
 	
 	void sendImdn(ImdnType imdnType, LinphoneReason reason);
+	
+	void send();
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;

@@ -23,8 +23,6 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat-room-p.h"
-#include "modifier/multipart-chat-message-modifier.h"
-#include "modifier/cpim-chat-message-modifier.h"
 #include "imdn.h"
 #include "content/content.h"
 #include "chat-message-p.h"
@@ -770,150 +768,24 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 			d->addTransientMessage(msg);
 			/* Store the message so that even if the upload is stopped, it can be done again */
 			d->storeOrUpdateMessage(msg);
+			
+			msg->getPrivate()->setState(ChatMessage::State::InProgress);
 		} else {
 			return;
 		}
 	} else {
-		SalOp *op = msg->getPrivate()->getSalOp();
-		LinphoneCall *call = nullptr;
-		string identity;
-		char *clearTextMessage = nullptr;
-		char *clearTextContentType = nullptr;
-		LinphoneAddress *peer = linphone_address_new(d->peerAddress.asString().c_str());
-
-		if (!msg->getPrivate()->getText().empty()) {
-			clearTextMessage = ms_strdup(msg->getPrivate()->getText().c_str());
-		}
-		if (!msg->getPrivate()->getContentType().empty()) {
-			clearTextContentType = ms_strdup(msg->getPrivate()->getContentType().c_str());
-		}
-
 		/* Add to transient list */
 		d->addTransientMessage(msg);
+
 		msg->getPrivate()->setTime(ms_time(0));
+		msg->getPrivate()->send();
 
-		if (lp_config_get_int(d->core->config, "sip", "chat_use_call_dialogs", 0) != 0) {
-			call = linphone_core_get_call_by_remote_address(d->core, d->peerAddress.asString().c_str());
-			if (call) {
-				if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
-					linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
-					linphone_call_get_state(call) == LinphoneCallPausedByRemote) {
-					ms_message("send SIP msg through the existing call.");
-					op = linphone_call_get_op(call);
-					identity = linphone_core_find_best_identity(d->core, linphone_call_get_remote_address(call));
-				}
-			}
-		}
-
-		if (identity.empty()) {
-			LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(d->core, peer);
-			if (proxy) {
-				identity = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
-			} else {
-				identity = linphone_core_get_primary_contact(d->core);
-			}
-		}
-		msg->setFromAddress(identity);
-		
-		// ---------------------------------------
-		// Start of message modification
-		// ---------------------------------------
-
-		int retval = -1;
-		LinphoneImEncryptionEngine *imee = d->core->im_encryption_engine;
-		if (imee) {
-			LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-			LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
-			if (cbProcessOutgoingMessage) {
-				retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(this), L_GET_C_BACK_PTR(msg));
-				if (retval == 0) {
-					msg->setIsSecured(true);
-				}
-			}
-		}
-
-		if (msg->getContents().size() > 1) {
-			MultipartChatMessageModifier mcmm;
-			mcmm.encode(msg->getPrivate());
-		}
-
-		if (lp_config_get_int(d->core->config, "sip", "use_cpim", 0) == 1) {
-			CpimChatMessageModifier ccmm;
-			ccmm.encode(msg->getPrivate());
-		}
-		
-		// ---------------------------------------
-		// End of message modification
-		// ---------------------------------------
-
-		if (!op) {
-			/* Sending out of call */
-			msg->getPrivate()->setSalOp(op = new SalMessageOp(d->core->sal));
-			linphone_configure_op(
-				d->core, op, peer, msg->getPrivate()->getSalCustomHeaders(),
-				!!lp_config_get_int(d->core->config, "sip", "chat_msg_with_contact", 0)
-			);
-			op->set_user_pointer(L_GET_C_BACK_PTR(msg)); /* If out of call, directly store msg */
-		}
-
-		if (retval > 0) {
-			sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
-			d->storeOrUpdateMessage(msg);
-			msg->updateState(ChatMessage::State::NotDelivered);
-			linphone_address_unref(peer);
-			return;
-		}
-
-		if (!msg->getExternalBodyUrl().empty()) {
-			char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->getExternalBodyUrl().c_str());
-			auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-			msgOp->send_message(identity.c_str(), d->peerAddress.asString().c_str(), content_type, nullptr, nullptr);
-			ms_free(content_type);
-		} else {
-			auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-			if (!msg->getPrivate()->getContentType().empty()) {
-				msgOp->send_message(identity.c_str(), d->peerAddress.asString().c_str(), msg->getPrivate()->getContentType().c_str(), msg->getPrivate()->getText().c_str(), d->peerAddress.asStringUriOnly().c_str());
-			} else {
-				msgOp->send_message(identity.c_str(), d->peerAddress.asString().c_str(), msg->getPrivate()->getText().c_str());
-			}
-		}
-
-		if (!msg->getPrivate()->getText().empty() && clearTextMessage && strcmp(msg->getPrivate()->getText().c_str(), clearTextMessage) != 0) {
-			/* We replace the encrypted message by the original one so it can be correctly stored and displayed by the application */
-			msg->getPrivate()->setText(clearTextMessage);
-		}
-		if (!msg->getPrivate()->getContentType().empty() && clearTextContentType && (strcmp(msg->getPrivate()->getContentType().c_str(), clearTextContentType) != 0)) {
-			/* We replace the encrypted content type by the original one */
-			msg->getPrivate()->setContentType(clearTextContentType);
-		}
-		msg->setId(op->get_call_id()); /* must be known at that time */
 		d->storeOrUpdateMessage(msg);
 
 		if (d->isComposing)
 			d->isComposing = false;
 		d->isComposingHandler.stopIdleTimer();
 		d->isComposingHandler.stopRefreshTimer();
-
-		if (clearTextMessage) {
-			ms_free(clearTextMessage);
-		}
-		if (clearTextContentType) {
-			ms_free(clearTextContentType);
-		}
-		linphone_address_unref(peer);
-
-		if (call && linphone_call_get_op(call) == op) {
-			/* In this case, chat delivery status is not notified, so unrefing chat message right now */
-			/* Might be better fixed by delivering status, but too costly for now */
-			d->removeTransientMessage(msg);
-			return;
-		}
-	}
-
-	/* If operation failed, we should not change message state */
-	if (msg->isOutgoing()) {
-		msg->getPrivate()->setIsReadOnly(true);
-		msg->getPrivate()->setState(ChatMessage::State::InProgress);
 	}
 }
 

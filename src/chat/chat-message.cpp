@@ -29,6 +29,8 @@
 #include "content/content.h"
 #include "chat-room-p.h"
 #include "real-time-text-chat-room.h"
+#include "modifier/multipart-chat-message-modifier.h"
+#include "modifier/cpim-chat-message-modifier.h"
 
 #include "ortp/b64.h"
 
@@ -83,7 +85,7 @@ void ChatMessagePrivate::setState(ChatMessage::State s) {
 			linphone_chat_message_get_message_state_changed_cb(msg)(msg, (LinphoneChatMessageState)state, linphone_chat_message_get_message_state_changed_cb_user_data(msg));
 		}
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-		if (linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
+		if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs)) {
 			linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
 		}
 	}
@@ -585,8 +587,7 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 				first_part_header = "form-data; name=\"File\"; filename=\"filename.txt\"";
 			} else {
 				// temporary storage for the Content-disposition header value
-				first_part_header = "form-data; name=\"File\"; filename=\"%s\"";
-				first_part_header = first_part_header + linphone_content_get_name(cFileTransferInformation);
+				first_part_header = "form-data; name=\"File\"; filename=\"" +string(linphone_content_get_name(cFileTransferInformation)) + "\"";
 			}
 
 			// create a user body handler to take care of the file and add the content disposition and content-type headers
@@ -683,7 +684,7 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 				setContentType("application/vnd.gsma.rcs-ft-http+xml");
 				q->updateState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
-				//TODO chatRoom->sendMessage(q);
+				send();
 				fileUploadEndBackgroundTask();
 			} else {
 				ms_warning("Received empty response from server, file transfer failed");
@@ -793,7 +794,7 @@ void ChatMessagePrivate::processIoErrorUpload(const belle_sip_io_error_event_t *
 	ms_error("I/O Error during file upload of msg [%p]", this);
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	//TODO chatRoom->getPrivate()->removeTransientMessage(q);
+	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
 }
 
 static void _chat_message_process_auth_requested_upload(void *data, belle_sip_auth_event *event) {
@@ -806,7 +807,7 @@ void ChatMessagePrivate::processAuthRequestedUpload(const belle_sip_auth_event *
 	ms_error("Error during file upload: auth requested for msg [%p]", this);
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	//TODO chatRoom->getPrivate()->removeTransientMessage(q);
+	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
 }
 
 static void _chat_message_process_io_error_download(void *data, const belle_sip_io_error_event_t *event) {
@@ -883,6 +884,132 @@ void ChatMessagePrivate::releaseHttpRequest() {
 			belle_sip_object_unref(httpListener);
 			httpListener = NULL;
 		}
+	}
+}
+
+void ChatMessagePrivate::send() {
+	L_Q();
+	SalOp *op = salOp;
+	LinphoneCall *call = NULL;
+	
+	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
+		call = linphone_core_get_call_by_remote_address(chatRoom->getCore(), chatRoom->getPeerAddress().asString().c_str());
+		if (call) {
+			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
+				linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
+				linphone_call_get_state(call) == LinphoneCallPausedByRemote) {
+				ms_message("send SIP msg through the existing call.");
+				op = linphone_call_get_op(call);
+				string identity = linphone_core_find_best_identity(chatRoom->getCore(), linphone_call_get_remote_address(call));
+				if (identity.empty()) {
+					LinphoneAddress *addr = linphone_address_new(chatRoom->getPeerAddress().asString().c_str());
+					LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(chatRoom->getCore(), addr);
+					if (proxy) {
+						identity = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
+					} else {
+						identity = linphone_core_get_primary_contact(chatRoom->getCore());
+					}
+					linphone_address_unref(addr);
+				}
+				q->setFromAddress(identity);
+			}
+		}
+	}
+
+	if (!op) {
+		LinphoneAddress *peer = linphone_address_new(chatRoom->getPeerAddress().asString().c_str());
+		/* Sending out of call */
+		salOp = op = new SalMessageOp(chatRoom->getCore()->sal);
+		linphone_configure_op(
+			chatRoom->getCore(), op, peer, getSalCustomHeaders(),
+			!!lp_config_get_int(chatRoom->getCore()->config, "sip", "chat_msg_with_contact", 0)
+		);
+		op->set_user_pointer(L_GET_C_BACK_PTR(q)); /* If out of call, directly store msg */
+		linphone_address_unref(peer);
+	}
+	
+	// ---------------------------------------
+	// Start of message modification
+	// ---------------------------------------
+
+	string clearTextMessage;
+	string clearTextContentType;
+
+	if (!getText().empty()) {
+		clearTextMessage = getText().c_str();
+	}
+	if (!getContentType().empty()) {
+		clearTextContentType = getContentType();
+	}
+
+	int retval = -1;
+	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
+	if (imee) {
+		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
+		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
+		if (cbProcessOutgoingMessage) {
+			//TODO retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(this));
+			if (retval == 0) {
+				isSecured = true;
+			}
+		}
+	}
+	
+	if (retval > 0) {
+		sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
+		q->updateState(ChatMessage::State::NotDelivered);
+		q->store();
+		return;
+	}
+
+	if (contents.size() > 1) {
+		MultipartChatMessageModifier mcmm;
+		mcmm.encode(this);
+	}
+
+	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
+		CpimChatMessageModifier ccmm;
+		ccmm.encode(this);
+	}
+	
+	// ---------------------------------------
+	// End of message modification
+	// ---------------------------------------
+
+	if (!externalBodyUrl.empty()) {
+		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
+		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
+		msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), content_type, nullptr, nullptr);
+		ms_free(content_type);
+	} else {
+		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
+		if (!getContentType().empty()) {
+			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getContentType().c_str(), getText().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
+		} else {
+			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getText().c_str());
+		}
+	}
+
+	if (!getText().empty() && getText() == clearTextMessage) {
+		/* We replace the encrypted message by the original one so it can be correctly stored and displayed by the application */
+		setText(clearTextMessage);
+	}
+	if (!getContentType().empty() && getContentType() == clearTextContentType) {
+		/* We replace the encrypted content type by the original one */
+		setContentType(clearTextContentType);
+	}
+	q->setId(op->get_call_id()); /* must be known at that time */
+
+	if (call && linphone_call_get_op(call) == op) {
+		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
+		/* Might be better fixed by delivering status, but too costly for now */
+		return;
+	}
+	
+	/* If operation failed, we should not change message state */
+	if (q->isOutgoing()) {
+		setIsReadOnly(true);
+		setState(ChatMessage::State::InProgress);
 	}
 }
 
@@ -1150,7 +1277,7 @@ void ChatMessage::sendDisplayNotification() {
 int ChatMessage::uploadFile() {
 	L_D();
 
-	if (d->httpRequest){
+	if (d->httpRequest) {
 		ms_error("linphone_chat_room_upload_file(): there is already an upload in progress.");
 		return -1;
 	}
@@ -1244,6 +1371,10 @@ int ChatMessage::putCharacter(uint32_t character) {
 		return 0;
 	}
 	return -1;
+}
+
+shared_ptr<ChatMessage> ChatMessage::getSharedPtr() {
+	return static_pointer_cast<ChatMessage>(shared_from_this());
 }
 
 LINPHONE_END_NAMESPACE

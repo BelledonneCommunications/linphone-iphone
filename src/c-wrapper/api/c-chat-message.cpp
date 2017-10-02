@@ -91,9 +91,7 @@ LinphoneChatMessageCbs *linphone_chat_message_get_callbacks(const LinphoneChatMe
 // =============================================================================
 
 LinphoneChatRoom *linphone_chat_message_get_chat_room(const LinphoneChatMessage *msg) {
-	shared_ptr<const LinphonePrivate::ChatMessage> message = L_GET_CPP_PTR_FROM_C_OBJECT(msg);
-	shared_ptr<LinphonePrivate::ChatRoom> room = message->getChatRoom();
-	return L_GET_C_BACK_PTR(room);
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getChatRoom());
 }
 
 const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessage *msg) {
