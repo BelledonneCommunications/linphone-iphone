@@ -580,14 +580,10 @@ void ChatRoom::compose () {
 }
 
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
-	L_D();
-
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 	
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
-	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
 
 	return chatMessage;
 }
@@ -604,8 +600,11 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 }
 
 shared_ptr<ChatMessage> ChatRoom::createMessage () {
+	L_D();
 	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
 	chatMessage->getPrivate()->setTime(ms_time(0));
+	chatMessage->setToAddress(d->peerAddress);
+	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
 	return chatMessage;
 }
 

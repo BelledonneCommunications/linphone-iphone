@@ -137,8 +137,12 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 
 const string& ChatMessagePrivate::getContentType() {
 	if (internalContent) {
-		ContentType contentType = internalContent->getContentType();
-		cContentType = contentType.asString();
+		cContentType = internalContent->getContentType().asString();
+	} else {
+		if (contents.size() > 0) {
+			shared_ptr<Content> content = contents.front();
+			cContentType = content->getContentType().asString();
+		}
 	}
 	return cContentType;
 }
@@ -153,6 +157,11 @@ void ChatMessagePrivate::setContentType(const string& contentType) {
 const string& ChatMessagePrivate::getText() {
 	if (internalContent) {
 		cText = internalContent->getBodyAsString();
+	} else {
+		if (contents.size() > 0) {
+			shared_ptr<Content> content = contents.front();
+			cText = content->getBodyAsString();
+		}
 	}
 	return cText;
 }
