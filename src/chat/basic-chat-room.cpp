@@ -64,12 +64,22 @@ list<shared_ptr<Participant>> BasicChatRoom::getParticipants () const {
 	return l;
 }
 
+const string &BasicChatRoom::getSubject () const {
+	L_D();
+	return d->subject;
+}
+
 void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
 }
 
 void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
+}
+
+void BasicChatRoom::setSubject (const string &subject) {
+	L_D();
+	d->subject = subject;
 }
 
 LINPHONE_END_NAMESPACE

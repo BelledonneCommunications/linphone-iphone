@@ -245,12 +245,20 @@ bctbx_list_t *linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getParticipants());
 }
 
+const char * linphone_chat_room_get_subject (const LinphoneChatRoom *cr) {
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getSubject());
+}
+
 void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_OBJECT(participant));
 }
 
 void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipants(L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(participants, Participant));
+}
+
+void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setSubject(L_C_TO_STRING(subject));
 }
 
 // =============================================================================

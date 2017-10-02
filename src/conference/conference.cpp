@@ -66,6 +66,10 @@ list<shared_ptr<Participant>> Conference::getParticipants () const {
 	return participants;
 }
 
+const string &Conference::getSubject () const {
+	return subject;
+}
+
 void Conference::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "Conference class does not handle removeParticipant() generically";
 }
@@ -73,6 +77,10 @@ void Conference::removeParticipant (const shared_ptr<const Participant> &partici
 void Conference::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	for (const auto &p : participants)
 		removeParticipant(p);
+}
+
+void Conference::setSubject (const string &subject) {
+	this->subject = subject;
 }
 
 // -----------------------------------------------------------------------------

@@ -49,9 +49,9 @@ public:
 	virtual bool initiateOutgoing ();
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
 	virtual void startIncomingNotification ();
-	virtual int startInvite (const Address *destination, const std::string &subject);
+	virtual int startInvite (const Address *destination, const std::string &subject = "");
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
-	LinphoneStatus update (const CallSessionParams *csp);
+	LinphoneStatus update (const CallSessionParams *csp, const std::string &subject = "");
 
 	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;

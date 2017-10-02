@@ -31,15 +31,16 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core, const string &subject)
-	: ChatRoomPrivate(core), subject(subject) {}
+ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core)
+	: ChatRoomPrivate(core) {}
 
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
-	: ChatRoom(*new ClientGroupChatRoomPrivate(core, subject)), RemoteConference(core, me, nullptr) {
+	: ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
 	string factoryUri = linphone_core_get_conference_factory_uri(core);
 	focus = make_shared<Participant>(factoryUri);
+	this->subject = subject;
 }
 
 // -----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 		Address addr = me->getAddress();
 		addr.setParam("text", "");
 		session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
-		session->startInvite(nullptr, d->subject);
+		session->startInvite(nullptr, subject);
 		d->setState(ChatRoom::State::CreationPending);
 	}
 	// TODO
@@ -95,12 +96,30 @@ list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
 	return RemoteConference::getParticipants();
 }
 
+const string &ClientGroupChatRoom::getSubject () const {
+	return RemoteConference::getSubject();
+}
+
 void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	// TODO
 }
 
 void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	// TODO
+}
+
+void ClientGroupChatRoom::setSubject (const string &subject) {
+	L_D();
+	if (d->state != ChatRoom::State::Created) {
+		lError() << "Cannot change the ClientGroupChatRoom subject in a state other than Created";
+		return;
+	}
+	if (!me->isAdmin()) {
+		lError() << "Cannot change the ClientGroupChatRoom subject because I am not admin";
+		return;
+	}
+	shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+	session->update(nullptr, subject);
 }
 
 // -----------------------------------------------------------------------------

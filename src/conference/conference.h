@@ -53,8 +53,10 @@ public:
 	const Address *getConferenceAddress () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	const std::string &getSubject () const override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
+	void setSubject (const std::string &subject) override;
 
 private:
 	/* CallSessionListener */
@@ -87,6 +89,7 @@ protected:
 	std::shared_ptr<Participant> me;
 	std::list<std::shared_ptr<Participant>> participants;
 	Address conferenceAddress;
+	std::string subject;
 
 private:
 	L_DISABLE_COPY(Conference);

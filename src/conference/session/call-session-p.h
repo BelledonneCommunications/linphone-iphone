@@ -64,7 +64,7 @@ protected:
 	virtual void setReleased ();
 	virtual void setTerminated ();
 	virtual LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
-	virtual LinphoneStatus startUpdate ();
+	virtual LinphoneStatus startUpdate (const std::string &subject);
 	virtual void terminate ();
 	virtual void updateCurrentParams () const;
 
@@ -85,6 +85,7 @@ protected:
 	mutable CallSessionParams *currentParams = nullptr;
 	CallSessionParams *remoteParams = nullptr;
 
+	std::string subject;
 	LinphoneCallDir direction = LinphoneCallOutgoing;
 	LinphoneCallState state = LinphoneCallIdle;
 	LinphoneCallState prevState = LinphoneCallIdle;

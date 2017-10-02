@@ -41,8 +41,11 @@ public:
 	
 	void set_user_pointer(void *up) {this->user_pointer=up;}
 	void *get_user_pointer() const {return this->user_pointer;}
-	
-	
+
+
+	void set_subject (const char *subject);
+	const char *get_subject () const { return this->subject; }
+
 	void set_from(const char *from);
 	void set_from_address(const SalAddress *from);
 	const char *get_from() const {return this->from;}
@@ -197,6 +200,7 @@ protected:
 	char *route = NULL; /*or request-uri for REGISTER*/
 	MSList* route_addresses = NULL; /*list of SalAddress* */
 	SalAddress* contact_address = NULL;
+	char *subject = NULL;
 	char *from = NULL;
 	SalAddress* from_address = NULL;
 	char *to = NULL;

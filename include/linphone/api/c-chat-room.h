@@ -283,6 +283,13 @@ LINPHONE_PUBLIC int linphone_chat_room_get_nb_participants (const LinphoneChatRo
 LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_participants (const LinphoneChatRoom *cr);
 
 /**
+ * Get the subject of a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return The subject of the chat room
+ */
+LINPHONE_PUBLIC const char * linphone_chat_room_get_subject (const LinphoneChatRoom *cr);
+
+/**
  * Remove a participant of a chat room.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] participant The participant to remove from the chat room
@@ -295,6 +302,13 @@ LINPHONE_PUBLIC void linphone_chat_room_remove_participant (LinphoneChatRoom *cr
  * @param[in] participants \bctbx_list{LinphoneParticipant}
  */
 LINPHONE_PUBLIC void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants);
+
+/**
+ * Set the subject of a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] subject The new subject to set for the chat room
+ */
+LINPHONE_PUBLIC void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject);
 
 /**
  * Returns back pointer to #LinphoneCore object.

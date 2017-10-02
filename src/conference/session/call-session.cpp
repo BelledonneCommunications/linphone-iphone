@@ -564,23 +564,25 @@ LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextStat
 	return 0;
 }
 
-LinphoneStatus CallSessionPrivate::startUpdate () {
+LinphoneStatus CallSessionPrivate::startUpdate (const string &subject) {
 	L_Q();
-	string subject;
-	if (q->getParams()->getPrivate()->getInConference())
-		subject = "Conference";
-	else if (q->getParams()->getPrivate()->getInternalCallUpdate())
-		subject = "ICE processing concluded";
-	else if (q->getParams()->getPrivate()->getNoUserConsent())
-		subject = "Refreshing";
-	else
-		subject = "Media change";
+	string newSubject(subject);
+	if (newSubject.empty()) {
+		if (q->getParams()->getPrivate()->getInConference())
+			newSubject = "Conference";
+		else if (q->getParams()->getPrivate()->getInternalCallUpdate())
+			newSubject = "ICE processing concluded";
+		else if (q->getParams()->getPrivate()->getNoUserConsent())
+			newSubject = "Refreshing";
+		else
+			newSubject = "Media change";
+	}
 	if (destProxy && destProxy->op) {
 		/* Give a chance to update the contact address if connectivity has changed */
 		op->set_contact_address(destProxy->op->get_contact_address());
 	} else
 		op->set_contact_address(nullptr);
-	return op->update(subject.c_str(), q->getParams()->getPrivate()->getNoUserConsent());
+	return op->update(newSubject.c_str(), q->getParams()->getPrivate()->getNoUserConsent());
 }
 
 void CallSessionPrivate::terminate () {
@@ -827,6 +829,7 @@ void CallSession::startIncomingNotification () {
 
 int CallSession::startInvite (const Address *destination, const string &subject) {
 	L_D();
+	d->subject = subject;
 	/* Try to be best-effort in giving real local or routable contact address */
 	d->setContactOp();
 	string destinationStr;
@@ -889,7 +892,7 @@ LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 	return 0;
 }
 
-LinphoneStatus CallSession::update (const CallSessionParams *csp) {
+LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &subject) {
 	L_D();
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
@@ -897,7 +900,7 @@ LinphoneStatus CallSession::update (const CallSessionParams *csp) {
 		return -1;
 	if (d->currentParams == csp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
-	LinphoneStatus result = d->startUpdate();
+	LinphoneStatus result = d->startUpdate(subject);
 	if (result && (d->state != initialState)) {
 		/* Restore initial state */
 		d->setState(initialState, "Restore initial state");

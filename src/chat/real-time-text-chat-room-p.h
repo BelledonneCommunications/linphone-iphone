@@ -46,6 +46,8 @@ public:
 	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 
 private:
+	std::string subject;
+
 	L_DECLARE_PUBLIC(RealTimeTextChatRoom);
 };
 

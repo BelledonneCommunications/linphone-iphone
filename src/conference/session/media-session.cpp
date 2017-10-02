@@ -3706,7 +3706,7 @@ LinphoneStatus MediaSessionPrivate::startAcceptUpdate (LinphoneCallState nextSta
 	return 0;
 }
 
-LinphoneStatus MediaSessionPrivate::startUpdate () {
+LinphoneStatus MediaSessionPrivate::startUpdate (const string &subject) {
 	fillMulticastMediaAddresses();
 	if (!params->getPrivate()->getNoUserConsent())
 		makeLocalMediaDescription();
@@ -3714,7 +3714,7 @@ LinphoneStatus MediaSessionPrivate::startUpdate () {
 		op->set_local_media_description(localDesc);
 	else
 		op->set_local_media_description(nullptr);
-	LinphoneStatus result = CallSessionPrivate::startUpdate();
+	LinphoneStatus result = CallSessionPrivate::startUpdate(subject);
 	if (core->sip_conf.sdp_200_ack) {
 		/* We are NOT offering, set local media description after sending the call so that we are ready to
 		 * process the remote offer when it will arrive. */
@@ -4297,7 +4297,7 @@ void MediaSession::stopRecording () {
 	d->recordActive = false;
 }
 
-LinphoneStatus MediaSession::update (const MediaSessionParams *msp) {
+LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string &subject) {
 	L_D();
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
@@ -4316,7 +4316,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp) {
 			lInfo() << "Defer CallSession update to gather ICE candidates";
 			return 0;
 		}
-		LinphoneStatus result = d->startUpdate();
+		LinphoneStatus result = d->startUpdate(subject);
 		if (result && (d->state != initialState)) {
 			/* Restore initial state */
 			d->setState(initialState, "Restore initial state");

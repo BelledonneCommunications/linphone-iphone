@@ -48,10 +48,10 @@ public:
 	LinphoneStatus resume ();
 	void sendVfuRequest ();
 	void startIncomingNotification () override;
-	int startInvite (const Address *destination, const std::string &subject) override;
+	int startInvite (const Address *destination, const std::string &subject = "") override;
 	void startRecording ();
 	void stopRecording ();
-	LinphoneStatus update (const MediaSessionParams *msp);
+	LinphoneStatus update (const MediaSessionParams *msp, const std::string &subject = "");
 
 	void resetFirstVideoFrameDecoded ();
 	LinphoneStatus takePreviewSnapshot (const std::string& file);

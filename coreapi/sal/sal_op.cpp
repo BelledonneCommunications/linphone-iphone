@@ -65,6 +65,10 @@ SalOp::~SalOp() {
 		ms_free(this->to);
 		this->to=NULL;
 	}
+	if (this->subject) {
+		ms_free(this->subject);
+		this->subject = NULL;
+	}
 	if (this->route) {
 		ms_free(this->route);
 		this->route=NULL;
@@ -197,6 +201,10 @@ void SalOp::set_realm(const char *realm) {
 		}\
 		assign_string(&this->name,name##_string); \
 		if(name##_string) ms_free(name##_string);
+
+void SalOp::set_subject (const char *subject) {
+	assign_string(&this->subject, subject);
+}
 
 void SalOp::set_from(const char *from){
 	SET_PARAM(from);

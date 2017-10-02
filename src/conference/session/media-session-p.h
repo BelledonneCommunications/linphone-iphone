@@ -232,7 +232,7 @@ private:
 	LinphoneStatus pause ();
 	void setTerminated () override;
 	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) override;
-	LinphoneStatus startUpdate () override;
+	LinphoneStatus startUpdate (const std::string &subject = "") override;
 	void terminate () override;
 	void updateCurrentParams () const override;
 

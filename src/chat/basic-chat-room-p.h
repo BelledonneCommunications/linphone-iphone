@@ -35,6 +35,8 @@ public:
 	virtual ~BasicChatRoomPrivate () = default;
 
 private:
+	std::string subject;
+
 	L_DECLARE_PUBLIC(BasicChatRoom);
 };
 

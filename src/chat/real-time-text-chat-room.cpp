@@ -160,12 +160,22 @@ list<shared_ptr<Participant>> RealTimeTextChatRoom::getParticipants () const {
 	return l;
 }
 
+const string &RealTimeTextChatRoom::getSubject () const {
+	L_D();
+	return d->subject;
+}
+
 void RealTimeTextChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a RealTimeTextChatRoom";
 }
 
 void RealTimeTextChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a RealTimeTextChatRoom";
+}
+
+void RealTimeTextChatRoom::setSubject (const string &subject) {
+	L_D();
+	d->subject = subject;
 }
 
 LINPHONE_END_NAMESPACE

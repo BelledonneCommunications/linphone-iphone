@@ -52,6 +52,7 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 	belle_sip_header_t *evh;
 	const char *method=belle_sip_request_get_method(req);
 	belle_sip_header_contact_t* remote_contact = belle_sip_message_get_header_by_type(req, belle_sip_header_contact_t);
+	belle_sip_header_t *subjectHeader = belle_sip_message_get_header(BELLE_SIP_MESSAGE(req), "Subject");
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 
@@ -159,6 +160,11 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 
 		op->set_to_address((SalAddress*)address);
 		belle_sip_object_unref(address);
+	}
+
+	if (subjectHeader) {
+		const char *subject = belle_sip_header_get_unparsed_value(subjectHeader);
+		op->set_subject(subject);
 	}
 
 	if(!op->diversion_address){
