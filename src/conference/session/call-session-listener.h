@@ -23,7 +23,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallSessionListener {
+class LINPHONE_PUBLIC CallSessionListener {
 public:
 	virtual ~CallSessionListener() = default;
 

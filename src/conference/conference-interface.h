@@ -30,7 +30,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceInterface {
+class LINPHONE_PUBLIC ConferenceInterface {
 public:
 	virtual ~ConferenceInterface() = default;
 

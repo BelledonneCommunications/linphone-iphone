@@ -26,7 +26,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RemoteConference : public Conference, public ConferenceListener {
+class LINPHONE_PUBLIC RemoteConference : public Conference, public ConferenceListener {
 public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 	virtual ~RemoteConference();

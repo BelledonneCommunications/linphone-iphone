@@ -33,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 class CallPrivate;
 class CallSessionPrivate;
 
-class CallSession : public Object {
+class LINPHONE_PUBLIC CallSession : public Object {
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
 

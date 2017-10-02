@@ -34,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionPrivate;
 
-class Conference : public ConferenceInterface, public CallSessionListener {
+class LINPHONE_PUBLIC Conference : public ConferenceInterface, public CallSessionListener {
 	friend class CallSessionPrivate;
 
 public:

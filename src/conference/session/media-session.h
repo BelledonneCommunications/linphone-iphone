@@ -30,7 +30,7 @@ class CallPrivate;
 class IceAgent;
 class MediaSessionPrivate;
 
-class MediaSession : public CallSession {
+class LINPHONE_PUBLIC MediaSession : public CallSession {
 	friend class CallPrivate;
 	friend class IceAgent;
 
