@@ -61,6 +61,7 @@ protected:
 	virtual void handleIncomingReceivedStateInIncomingNotification ();
 	virtual bool isReadyForInvite () const;
 	bool isUpdateAllowed (LinphoneCallState &nextState) const;
+	virtual int restartInvite ();
 	virtual void setReleased ();
 	virtual void setTerminated ();
 	virtual LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo);
@@ -72,6 +73,7 @@ protected:
 
 private:
 	void completeLog ();
+	void createOp ();
 	void createOpTo (const LinphoneAddress *to);
 
 	LinphoneAddress * getFixedContact () const;

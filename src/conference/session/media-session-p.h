@@ -230,6 +230,7 @@ private:
 	void handleIncomingReceivedStateInIncomingNotification () override;
 	bool isReadyForInvite () const override;
 	LinphoneStatus pause ();
+	int restartInvite () override;
 	void setTerminated () override;
 	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) override;
 	LinphoneStatus startUpdate (const std::string &subject = "") override;

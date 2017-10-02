@@ -438,7 +438,6 @@ void linphone_core_stop_waiting(LinphoneCore *lc);
 
 int linphone_call_proceed_with_invite_if_ready(LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
 int linphone_call_start_invite(LinphoneCall *call, const LinphoneAddress *destination/* = NULL if to be taken from the call log */);
-int linphone_call_restart_invite(LinphoneCall *call);
 /*
  * param automatic_offering aims is to take into account previous answer for video in case of automatic re-invite.
  *  Purpose is to avoid to re-ask video previously declined */

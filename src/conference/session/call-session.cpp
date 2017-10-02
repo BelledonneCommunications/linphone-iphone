@@ -255,9 +255,7 @@ bool CallSessionPrivate::failure () {
 						linphone_address_unref(log->to);
 					log->to = linphone_address_new(url);
 					ms_free(url);
-#if 0
-					linphone_call_restart_invite(call);
-#endif
+					restartInvite();
 					return true;
 				}
 			}
@@ -514,6 +512,12 @@ bool CallSessionPrivate::isUpdateAllowed (LinphoneCallState &nextState) const {
 	return true;
 }
 
+int CallSessionPrivate::restartInvite () {
+	L_Q();
+	createOp();
+	return q->startInvite(nullptr, subject);
+}
+
 /*
  * Called internally when reaching the Released state, to perform cleanups to break circular references.
 **/
@@ -615,6 +619,10 @@ void CallSessionPrivate::completeLog () {
 	if (log->status == LinphoneCallMissed)
 		core->missed_calls++;
 	linphone_core_report_call_log(core, log);
+}
+
+void CallSessionPrivate::createOp () {
+	createOpTo(log->to);
 }
 
 void CallSessionPrivate::createOpTo (const LinphoneAddress *to) {
@@ -792,6 +800,38 @@ void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 		lInfo() << "In call timeout (" << d->core->sip_conf.in_call_timeout << ")";
 		terminate();
 	}
+}
+
+LinphoneStatus CallSession::redirect (const string &redirectUri) {
+	L_D();
+	LinphoneAddress *realParsedAddr = linphone_core_interpret_url(d->core, redirectUri.c_str());
+	if (!realParsedAddr) {
+		/* Bad url */
+		lError() << "Bad redirect URI: " << redirectUri;
+		return -1;
+	}
+	char *realParsedUri = linphone_address_as_string(realParsedAddr);
+	Address redirectAddr(realParsedUri);
+	bctbx_free(realParsedUri);
+	linphone_address_unref(realParsedAddr);
+	return redirect(redirectAddr);
+}
+
+LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
+	L_D();
+	if (d->state != LinphoneCallIncomingReceived) {
+		lError() << "Bad state for CallSession redirection";
+		return -1;
+	}
+	SalErrorInfo sei;
+	memset(&sei, 0, sizeof(sei));
+	sal_error_info_set(&sei, SalReasonRedirect, "SIP", 0, nullptr, nullptr);
+	d->op->decline_with_error_info(&sei, redirectAddr.getPrivate()->getInternalAddress());
+	linphone_error_info_set(d->ei, nullptr, LinphoneReasonMovedPermanently, 302, "Call redirected", nullptr);
+	d->nonOpError = true;
+	d->terminate();
+	sal_error_info_reset(&sei);
+	return 0;
 }
 
 void CallSession::startIncomingNotification () {

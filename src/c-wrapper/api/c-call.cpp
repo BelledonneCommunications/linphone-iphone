@@ -179,19 +179,7 @@ void linphone_call_update_local_media_description_from_ice_or_upnp (LinphoneCall
 
 void linphone_call_make_local_media_description (LinphoneCall *call) {}
 
-void linphone_call_create_op (LinphoneCall *call) {
-#if 0
-	if (call->op) sal_op_release(call->op);
-	call->op=sal_op_new(call->core->sal);
-	sal_op_set_user_pointer(call->op,call);
-	if (linphone_call_params_get_referer(call->params))
-		sal_call_set_referer(call->op,linphone_call_params_get_referer(call->params)->op);
-	linphone_configure_op(call->core,call->op,call->log->to,linphone_call_params_get_custom_headers(call->params),FALSE);
-	if (linphone_call_params_get_privacy(call->params) != LinphonePrivacyDefault)
-		sal_op_set_privacy(call->op,(SalPrivacyMask)linphone_call_params_get_privacy(call->params));
-  /*else privacy might be set by proxy */
-#endif
-}
+void linphone_call_create_op (LinphoneCall *call) {}
 
 void linphone_call_set_state (LinphoneCall *call, LinphoneCallState cstate, const char *message) {}
 
@@ -884,39 +872,7 @@ LinphoneStatus linphone_call_terminate_with_error_info (LinphoneCall *call , con
 }
 
 LinphoneStatus linphone_call_redirect (LinphoneCall *call, const char *redirect_uri) {
-#if 0
-	char *real_url = nullptr;
-	LinphoneCore *lc;
-	LinphoneAddress *real_parsed_url;
-	SalErrorInfo sei;
-
-	if (call->state != LinphoneCallIncomingReceived) {
-		ms_error("Bad state for call redirection.");
-		return -1;
-	}
-
-	lc = linphone_call_get_core(call);
-	real_parsed_url = linphone_core_interpret_url(lc, redirect_uri);
-	if (!real_parsed_url) {
-		/* Bad url */
-		ms_error("Bad redirect URI: %s", redirect_uri ? redirect_uri : "NULL");
-		return -1;
-	}
-
-	memset(&sei, 0, sizeof(sei));
-	real_url = linphone_address_as_string(real_parsed_url);
-	sal_error_info_set(&sei,SalReasonRedirect, "SIP", 0, nullptr, nullptr);
-	sal_call_decline_with_error_info(call->op, &sei, real_url);
-	ms_free(real_url);
-	linphone_error_info_set(call->ei, nullptr, LinphoneReasonMovedPermanently, 302, "Call redirected", nullptr);
-	call->non_op_error = TRUE;
-	terminate_call(call);
-	linphone_address_unref(real_parsed_url);
-	sal_error_info_reset(&sei);
-	return 0;
-#else
-	return 0;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->redirect(redirect_uri);
 }
 
 LinphoneStatus linphone_call_decline (LinphoneCall *call, LinphoneReason reason) {

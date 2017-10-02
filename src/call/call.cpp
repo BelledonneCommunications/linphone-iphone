@@ -267,6 +267,11 @@ LinphoneStatus Call::pause () {
 	return static_cast<MediaSession *>(d->getActiveSession().get())->pause();
 }
 
+LinphoneStatus Call::redirect (const std::string &redirectUri) {
+	L_D();
+	return d->getActiveSession()->redirect(redirectUri);
+}
+
 LinphoneStatus Call::resume () {
 	L_D();
 	return static_cast<MediaSession *>(d->getActiveSession().get())->resume();

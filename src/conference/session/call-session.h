@@ -48,6 +48,8 @@ public:
 	virtual void initiateIncoming ();
 	virtual bool initiateOutgoing ();
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
+	LinphoneStatus redirect (const std::string &redirectUri);
+	LinphoneStatus redirect (const Address &redirectAddr);
 	virtual void startIncomingNotification ();
 	virtual int startInvite (const Address *destination, const std::string &subject = "");
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);

@@ -264,27 +264,21 @@ bool MediaSessionPrivate::failure () {
 							if (i == 0)
 								lInfo() << "Retrying CallSession [" << q << "] with SAVP";
 							params->enableAvpf(false);
-#if 0
-							linphone_call_restart_invite(call);
-#endif
+							restartInvite();
 							return true;
 						} else if (!linphone_core_is_media_encryption_mandatory(core)) {
 							if (i == 0)
 								lInfo() << "Retrying CallSession [" << q << "] with AVP";
 							params->setMediaEncryption(LinphoneMediaEncryptionNone);
 							memset(localDesc->streams[i].crypto, 0, sizeof(localDesc->streams[i].crypto));
-#if 0
-							linphone_call_restart_invite(call);
-#endif
+							restartInvite();
 							return true;
 						}
 					} else if (params->avpfEnabled()) {
 						if (i == 0)
 							lInfo() << "Retrying CallSession [" << q << "] with AVP";
 						params->enableAvpf(false);
-#if 0
-						linphone_call_restart_invite(call);
-#endif
+						restartInvite();
 						return true;
 					}
 				}
@@ -3682,6 +3676,12 @@ LinphoneStatus MediaSessionPrivate::pause () {
 		stopStreams();
 	pausedByApp = false;
 	return 0;
+}
+
+int MediaSessionPrivate::restartInvite () {
+	stopStreams();
+	initializeStreams();
+	return CallSessionPrivate::restartInvite();
 }
 
 void MediaSessionPrivate::setTerminated () {

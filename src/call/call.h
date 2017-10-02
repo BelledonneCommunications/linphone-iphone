@@ -53,6 +53,7 @@ public:
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
 	LinphoneStatus pause ();
+	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus resume ();
 	void sendVfuRequest ();
 	void startRecording ();
