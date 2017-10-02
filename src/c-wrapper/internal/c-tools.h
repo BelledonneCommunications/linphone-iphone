@@ -113,9 +113,9 @@ private:
 	// Runtime checker.
 	// ---------------------------------------------------------------------------
 
-	static inline void fatal (const char *message) {
-		std::cout << "[FATAL C-WRAPPER]" << message << std::endl;
-		//exit(1);
+	static inline void abort (const char *message) {
+		std::cerr << "[FATAL C-WRAPPER]" << message << std::endl;
+		std::abort();
 	}
 
 public:
@@ -135,7 +135,7 @@ public:
 
 			CppDerivedPrivateType *derived = dynamic_cast<CppDerivedPrivateType *>(base);
 			if (!derived)
-				fatal("Invalid cast.");
+				abort("Invalid cast.");
 			return derived;
 		#else
 			return static_cast<CppDerivedPrivateType *>(base);
@@ -170,11 +170,11 @@ public:
 
 			std::shared_ptr<BaseType> cppObject = reinterpret_cast<WrappedObject<BaseType> *>(cObject)->cppPtr;
 			if (!cppObject)
-				fatal("Cpp Object is null.");
+				abort("Cpp Object is null.");
 
 			std::shared_ptr<DerivedType> derivedCppObject = std::static_pointer_cast<DerivedType>(cppObject);
 			if (!derivedCppObject)
-				fatal("Invalid derived cpp object.");
+				abort("Invalid derived cpp object.");
 
 			return derivedCppObject;
 		#else
@@ -207,11 +207,11 @@ public:
 
 			BaseType *cppObject = reinterpret_cast<WrappedClonableObject<BaseType> *>(cObject)->cppPtr;
 			if (!cppObject)
-				fatal("Cpp Object is null.");
+				abort("Cpp Object is null.");
 
 			DerivedType *derivedCppObject = dynamic_cast<DerivedType *>(cppObject);
 			if (!derivedCppObject)
-				fatal("Invalid derived cpp object.");
+				abort("Invalid derived cpp object.");
 
 			return derivedCppObject;
 		#else
@@ -294,9 +294,9 @@ public:
 			return nullptr;
 
 		try {
-			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
+			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->sharedFromThis()));
 		} catch (const std::bad_weak_ptr &e) {
-			fatal(e.what());
+			abort(e.what());
 		}
 
 		L_ASSERT(false);
