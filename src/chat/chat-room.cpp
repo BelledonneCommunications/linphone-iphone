@@ -297,7 +297,9 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		if (argv[10]) {
 			message->setAppdata(argv[10]);
 		}
-		message->setId(argv[12]);
+		if (argv[12]) {
+			message->setId(argv[12]);
+		}
 		message->setIsSecured((bool)atoi(argv[14]));
 
 		if (argv[11]) {
