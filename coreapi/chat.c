@@ -43,7 +43,7 @@
 #include "content/content-type.h"
 
 using namespace std;
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason) {
 	lc->chat_deny_code = deny_reason;

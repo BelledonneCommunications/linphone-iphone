@@ -28,7 +28,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 struct _LinphoneInfoMessage{
 	belle_sip_object_t base;

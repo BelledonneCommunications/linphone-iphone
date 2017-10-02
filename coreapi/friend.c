@@ -43,7 +43,7 @@
 #include "c-wrapper/c-wrapper.h"
 
 using namespace std;
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 const char *linphone_online_status_to_string(LinphoneOnlineStatus ss){
 	const char *str=NULL;

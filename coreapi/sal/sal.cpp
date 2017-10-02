@@ -870,7 +870,7 @@ LINPHONE_END_NAMESPACE
 /* C++ to C wrapping functions */
 /*******************************/
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 extern "C" {
 

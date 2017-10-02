@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define VCARD_MD5_HASH_SIZE 16
 
 using namespace std;
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 struct _LinphoneVcardContext {
 	shared_ptr<belcard::BelCardParser> parser;

@@ -197,7 +197,7 @@ void linphone_error_info_from_sal_reason_ei(LinphoneErrorInfo *ei, const SalErro
 	}
 }
 
-void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const LINPHONE_NAMESPACE::SalOp *op){
+void linphone_error_info_from_sal_op(LinphoneErrorInfo *ei, const LinphonePrivate::SalOp *op){
 	if (op==NULL) {
 		/*leave previous values in LinphoneErrorInfo, the op may have been released already.*/
 		return;

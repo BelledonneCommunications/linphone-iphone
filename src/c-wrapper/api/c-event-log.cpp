@@ -42,7 +42,7 @@ using namespace std;
 
 LinphoneEventLog *linphone_event_log_new () {
 	LinphoneEventLog *event_log = _linphone_EventLog_init();
-	L_SET_CPP_PTR_FROM_C_OBJECT(event_log, new LINPHONE_NAMESPACE::EventLog());
+	L_SET_CPP_PTR_FROM_C_OBJECT(event_log, new LinphonePrivate::EventLog());
 	return event_log;
 }
 
@@ -65,8 +65,8 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneC
 	LinphoneCallEvent *call_event = _linphone_CallEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		call_event,
-		new LINPHONE_NAMESPACE::CallEvent(
-			static_cast<LINPHONE_NAMESPACE::EventLog::Type>(type),
+		new LinphonePrivate::CallEvent(
+			static_cast<LinphonePrivate::EventLog::Type>(type),
 			L_GET_CPP_PTR_FROM_C_OBJECT(call)
 		)
 	);
@@ -124,7 +124,7 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 	LinphoneChatMessageEvent *chat_message_event = _linphone_ChatMessageEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		chat_message_event,
-		new LINPHONE_NAMESPACE::ChatMessageEvent(
+		new LinphonePrivate::ChatMessageEvent(
 			L_GET_CPP_PTR_FROM_C_OBJECT(chat_message)
 		)
 	);

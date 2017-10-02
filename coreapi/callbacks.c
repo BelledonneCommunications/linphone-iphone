@@ -42,7 +42,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "conference/session/media-session.h"
 #include "conference/session/media-session-p.h"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 static void register_failure(SalOp *op);
 
@@ -62,7 +62,7 @@ static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const L
 }
 
 
-static LinphoneCall * look_for_broken_call_to_replace(LINPHONE_NAMESPACE::SalOp *h, LinphoneCore *lc) {
+static LinphoneCall * look_for_broken_call_to_replace(LinphonePrivate::SalOp *h, LinphoneCore *lc) {
 	const bctbx_list_t *calls = linphone_core_get_calls(lc);
 	const bctbx_list_t *it = calls;
 	while (it != NULL) {

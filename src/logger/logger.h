@@ -51,11 +51,11 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#define lDebug() LINPHONE_NAMESPACE::Logger(LINPHONE_NAMESPACE::Logger::Debug).getOutput()
-#define lInfo() LINPHONE_NAMESPACE::Logger(LINPHONE_NAMESPACE::Logger::Info).getOutput()
-#define lWarning() LINPHONE_NAMESPACE::Logger(LINPHONE_NAMESPACE::Logger::Warning).getOutput()
-#define lError() LINPHONE_NAMESPACE::Logger(LINPHONE_NAMESPACE::Logger::Error).getOutput()
-#define lFatal() LINPHONE_NAMESPACE::Logger(LINPHONE_NAMESPACE::Logger::Fatal).getOutput()
+#define lDebug() LinphonePrivate::Logger(LinphonePrivate::Logger::Debug).getOutput()
+#define lInfo() LinphonePrivate::Logger(LinphonePrivate::Logger::Info).getOutput()
+#define lWarning() LinphonePrivate::Logger(LinphonePrivate::Logger::Warning).getOutput()
+#define lError() LinphonePrivate::Logger(LinphonePrivate::Logger::Error).getOutput()
+#define lFatal() LinphonePrivate::Logger(LinphonePrivate::Logger::Fatal).getOutput()
 
 #define L_BEGIN_LOG_EXCEPTION try {
 	#define L_END_LOG_EXCEPTION \

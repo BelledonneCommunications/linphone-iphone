@@ -28,7 +28,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);

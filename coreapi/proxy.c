@@ -33,7 +33,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "address/address-p.h"
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 /*store current config related to server location*/
 static void linphone_proxy_config_store_server_config(LinphoneProxyConfig* cfg) {

@@ -339,19 +339,19 @@ static bool coreHeaderIsValid (
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::FromHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "From", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "From", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::ToHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "To", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "To", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::CcHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "cc", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "cc", headerValue);
 }
 
 template<>
@@ -359,7 +359,7 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 	static const int daysInMonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	L_D();
-	if (!LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "DateTime", headerValue))
+	if (!LinphonePrivate::coreHeaderIsValid(d->grammar, "DateTime", headerValue))
 		return false;
 
 	// Check date.
@@ -398,26 +398,26 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::SubjectHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Subject", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::NsHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "NS", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "NS", headerValue);
 }
 
 template<>
 bool Cpim::Parser::coreHeaderIsValid<Cpim::RequireHeader>(const string &headerValue) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Require", headerValue);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Require", headerValue);
 }
 
 // -----------------------------------------------------------------------------
 
 bool Cpim::Parser::subjectHeaderLanguageIsValid (const string &language) const {
 	L_D();
-	return LINPHONE_NAMESPACE::coreHeaderIsValid(d->grammar, "Subject", "SubjectValue", ";lang=" + language);
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Subject", "SubjectValue", ";lang=" + language);
 }
 
 LINPHONE_END_NAMESPACE

@@ -21,10 +21,8 @@
 
 // =============================================================================
 
-#define LINPHONE_NAMESPACE LinphonePrivate
-
 #ifdef __cplusplus
-	#define LINPHONE_BEGIN_NAMESPACE namespace LINPHONE_NAMESPACE {
+	#define LINPHONE_BEGIN_NAMESPACE namespace LinphonePrivate {
 	#define LINPHONE_END_NAMESPACE }
 #else
 	#define LINPHONE_BEGIN_NAMESPACE
@@ -68,7 +66,7 @@ void l_assert (const char *condition, const char *file, int line);
 #ifndef DEBUG
 	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #else
-	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LINPHONE_NAMESPACE::l_assert(#CONDITION, __FILE__, __LINE__))
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::l_assert(#CONDITION, __FILE__, __LINE__))
 #endif
 
 #ifndef _MSC_VER

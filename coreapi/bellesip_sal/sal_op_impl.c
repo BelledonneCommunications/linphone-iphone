@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal_impl.h"
 #include "sal/sal.hpp"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 SalReason _sal_reason_from_sip_code(int code) {
 	if (code>=100 && code<300) return SalReasonNone;

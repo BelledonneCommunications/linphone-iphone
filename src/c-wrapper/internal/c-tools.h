@@ -489,10 +489,10 @@ LINPHONE_END_NAMESPACE
 	LINPHONE_END_NAMESPACE
 
 #define L_CPP_TYPE_OF_C_TYPE(C_TYPE) \
-	LINPHONE_NAMESPACE::CTypeMetaInfo<Linphone ## C_TYPE>::cppType
+	LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::cppType
 
 #define L_CPP_TYPE_OF_C_OBJECT(C_OBJECT) \
-	LINPHONE_NAMESPACE::CTypeMetaInfo<std::remove_const<std::remove_pointer<decltype(C_OBJECT)>::type>::type>::cppType
+	LinphonePrivate::CTypeMetaInfo<std::remove_const<std::remove_pointer<decltype(C_OBJECT)>::type>::type>::cppType
 
 // -----------------------------------------------------------------------------
 // C object declaration.
@@ -518,7 +518,7 @@ LINPHONE_END_NAMESPACE
 
 // Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_STRUCT_IMPL(C_TYPE, ...) \
-	static_assert(LINPHONE_NAMESPACE::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
+	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
@@ -547,7 +547,7 @@ LINPHONE_END_NAMESPACE
 #define L_DECLARE_C_OBJECT_NEW_DEFAULT(C_TYPE, C_NAME) \
 	Linphone ## C_TYPE * linphone_ ## C_NAME ## _new() { \
 		Linphone ## C_TYPE *object = _linphone_ ## C_TYPE ## _init(); \
-		object->cppPtr = std::make_shared<LINPHONE_NAMESPACE::C_TYPE>(); \
+		object->cppPtr = std::make_shared<LinphonePrivate::C_TYPE>(); \
 		return object; \
 	}
 
@@ -564,11 +564,11 @@ LINPHONE_END_NAMESPACE
 
 // Get/set the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC(C_OBJECT)
+	LinphonePrivate::Wrapper::getCppPtrFromC(C_OBJECT)
 #define L_GET_CPP_PTR_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppPtrFromC< \
+	LinphonePrivate::Wrapper::getCppPtrFromC< \
 		std::remove_pointer<decltype(C_OBJECT)>::type, \
-		LINPHONE_NAMESPACE::CPP_TYPE \
+		LinphonePrivate::CPP_TYPE \
 	>(C_OBJECT)
 
 #define L_GET_CPP_PTR_FROM_C_OBJECT_MACRO_CHOOSER(...) \
@@ -579,13 +579,13 @@ LINPHONE_END_NAMESPACE
 
 // Set the cpp-ptr of a wrapped C object.
 #define L_SET_CPP_PTR_FROM_C_OBJECT(C_OBJECT, CPP_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::setCppPtrFromC(C_OBJECT, CPP_OBJECT)
+	LinphonePrivate::Wrapper::setCppPtrFromC(C_OBJECT, CPP_OBJECT)
 
 // Get the private data of a shared or simple cpp-ptr.
 #define L_GET_PRIVATE_1_ARGS(CPP_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getPrivate(LINPHONE_NAMESPACE::Utils::getPtr(CPP_OBJECT))
+	LinphonePrivate::Wrapper::getPrivate(LinphonePrivate::Utils::getPtr(CPP_OBJECT))
 #define L_GET_PRIVATE_2_ARGS(CPP_OBJECT, CPP_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::cast<CPP_TYPE ## Private>(L_GET_PRIVATE_1_ARGS(CPP_OBJECT))
+	LinphonePrivate::Wrapper::cast<CPP_TYPE ## Private>(L_GET_PRIVATE_1_ARGS(CPP_OBJECT))
 
 #define L_GET_PRIVATE_MACRO_CHOOSER(...) \
 	L_EXPAND(L_GET_ARG_3(__VA_ARGS__, L_GET_PRIVATE_2_ARGS, L_GET_PRIVATE_1_ARGS))
@@ -595,9 +595,9 @@ LINPHONE_END_NAMESPACE
 
 // Get the private data of a shared or simple cpp-ptr of a wrapped C object.
 #define L_GET_PRIVATE_FROM_C_OBJECT_1_ARGS(C_OBJECT) \
-	L_GET_PRIVATE_1_ARGS(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT)))
+	L_GET_PRIVATE_1_ARGS(LinphonePrivate::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT)))
 #define L_GET_PRIVATE_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE) \
-	L_GET_PRIVATE_1_ARGS(LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE)))
+	L_GET_PRIVATE_1_ARGS(LinphonePrivate::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT_2_ARGS(C_OBJECT, CPP_TYPE)))
 
 #define L_GET_PRIVATE_FROM_C_OBJECT_MACRO_CHOOSER(...) \
 	L_EXPAND(L_GET_ARG_3(__VA_ARGS__, L_GET_PRIVATE_FROM_C_OBJECT_2_ARGS, L_GET_PRIVATE_FROM_C_OBJECT_1_ARGS))
@@ -607,29 +607,29 @@ LINPHONE_END_NAMESPACE
 
 // Get the wrapped C object of a C++ object.
 #define L_GET_C_BACK_PTR(CPP_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getCBackPtr(CPP_OBJECT)
+	LinphonePrivate::Wrapper::getCBackPtr(CPP_OBJECT)
 
 // Get/set user data on a wrapped C object.
 #define L_GET_USER_DATA_FROM_C_OBJECT(C_OBJECT) \
-	LINPHONE_NAMESPACE::Wrapper::getUserData( \
-		LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)) \
+	LinphonePrivate::Wrapper::getUserData( \
+		LinphonePrivate::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)) \
 	)
 #define L_SET_USER_DATA_FROM_C_OBJECT(C_OBJECT, VALUE) \
-	LINPHONE_NAMESPACE::Wrapper::setUserData( \
-		LINPHONE_NAMESPACE::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)), \
+	LinphonePrivate::Wrapper::setUserData( \
+		LinphonePrivate::Utils::getPtr(L_GET_CPP_PTR_FROM_C_OBJECT(C_OBJECT)), \
 		VALUE \
 	)
 
 // Transforms cpp list and c list.
 #define L_GET_C_LIST_FROM_CPP_LIST(CPP_LIST) \
-	LINPHONE_NAMESPACE::Wrapper::getCListFromCppList(CPP_LIST)
+	LinphonePrivate::Wrapper::getCListFromCppList(CPP_LIST)
 #define L_GET_CPP_LIST_FROM_C_LIST(C_LIST, TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getCppListFromCList<TYPE>(C_LIST)
+	LinphonePrivate::Wrapper::getCppListFromCList<TYPE>(C_LIST)
 
 // Transforms cpp list and c list and convert cpp object to c object.
 #define L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(CPP_LIST) \
-	LINPHONE_NAMESPACE::Wrapper::getResolvedCListFromCppList(CPP_LIST)
+	LinphonePrivate::Wrapper::getResolvedCListFromCppList(CPP_LIST)
 #define L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(C_LIST, C_TYPE) \
-	LINPHONE_NAMESPACE::Wrapper::getResolvedCppListFromCList<Linphone ## C_TYPE>(C_LIST)
+	LinphonePrivate::Wrapper::getResolvedCppListFromCList<Linphone ## C_TYPE>(C_LIST)
 
 #endif // ifndef _C_TOOLS_H_

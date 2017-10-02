@@ -48,8 +48,8 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	SalMediaDescription *localdesc;
 	SalMediaDescription *resultdesc;
 	struct _LinphoneCallLog *log;
-	LINPHONE_NAMESPACE::SalOp *op;
-	LINPHONE_NAMESPACE::SalOp *ping_op;
+	LinphonePrivate::SalOp *op;
+	LinphonePrivate::SalOp *ping_op;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	struct _AudioStream *audiostream;  /**/
 	struct _VideoStream *videostream;
@@ -325,7 +325,7 @@ int linphone_call_start_invite (LinphoneCall *call, const LinphoneAddress *desti
 	return 0;
 }
 
-void linphone_call_replace_op (LinphoneCall *call, LINPHONE_NAMESPACE::SalOp *op) {
+void linphone_call_replace_op (LinphoneCall *call, LinphonePrivate::SalOp *op) {
 #if 0
 	SalOp *oldop = call->op;
 	LinphoneCallState oldstate = linphone_call_get_state(call);
@@ -507,7 +507,7 @@ void linphone_call_refresh_sockets (LinphoneCall *call) {
 #endif
 }
 
-LINPHONE_NAMESPACE::SalCallOp * linphone_call_get_op (const LinphoneCall *call) {
+LinphonePrivate::SalCallOp * linphone_call_get_op (const LinphoneCall *call) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp();
 }
 
@@ -1193,7 +1193,7 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 	return call;
 }
 
-LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LINPHONE_NAMESPACE::SalCallOp *op) {
+LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op) {
 	LinphoneCall *call = L_INIT(Call);
 	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),

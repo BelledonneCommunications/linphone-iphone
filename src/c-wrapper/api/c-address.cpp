@@ -28,7 +28,7 @@ using namespace std;
 // =============================================================================
 
 LinphoneAddress *linphone_address_new (const char *address) {
-	LINPHONE_NAMESPACE::Address *cppPtr = new LINPHONE_NAMESPACE::Address(L_C_TO_STRING(address));
+	LinphonePrivate::Address *cppPtr = new LinphonePrivate::Address(L_C_TO_STRING(address));
 	if (!cppPtr->isValid()) {
 		delete cppPtr;
 		return nullptr;
@@ -94,7 +94,7 @@ LinphoneTransportType linphone_address_get_transport (const LinphoneAddress *add
 }
 
 LinphoneStatus linphone_address_set_transport (LinphoneAddress *address, LinphoneTransportType transport) {
-	return !L_GET_CPP_PTR_FROM_C_OBJECT(address)->setTransport(static_cast<LINPHONE_NAMESPACE::Transport>(transport));
+	return !L_GET_CPP_PTR_FROM_C_OBJECT(address)->setTransport(static_cast<LinphonePrivate::Transport>(transport));
 }
 
 bool_t linphone_address_get_secure (const LinphoneAddress *address) {

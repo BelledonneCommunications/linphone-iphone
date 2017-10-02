@@ -24,7 +24,7 @@
 
 using namespace std;
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 static void parse_minimal_message () {
 	const string str = "Content-type: Message/CPIM\r\n"

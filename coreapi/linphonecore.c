@@ -130,7 +130,7 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName);
 #include "contact_providers_priv.h"
 
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);

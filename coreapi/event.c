@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LINPHONE_NAMESPACE;
+using namespace LinphonePrivate;
 
 const char * linphone_subscription_dir_to_string(LinphoneSubscriptionDir dir){
 	switch(dir){
@@ -81,7 +81,7 @@ static void linphone_event_release(LinphoneEvent *lev){
 	linphone_event_unref(lev);
 }
 
-static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, LINPHONE_NAMESPACE::SalEventOp *op){
+static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, LinphonePrivate::SalEventOp *op){
 	LinphoneEvent *lev=belle_sip_object_new(LinphoneEvent);
 	lev->lc=lc;
 	lev->dir=dir;
