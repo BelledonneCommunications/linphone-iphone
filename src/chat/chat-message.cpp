@@ -27,8 +27,6 @@
 #include "chat-message-p.h"
 
 #include "content/content.h"
-#include "modifier/multipart-chat-message-modifier.h"
-#include "modifier/cpim-chat-message-modifier.h"
 #include "chat-room-p.h"
 #include "real-time-text-chat-room.h"
 
@@ -63,6 +61,10 @@ void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
 
 void ChatMessagePrivate::setTime(time_t t) {
 	time = t;
+}
+
+void ChatMessagePrivate::setIsReadOnly(bool readOnly) {
+	isReadOnly = readOnly;
 }
 
 void ChatMessagePrivate::setState(ChatMessage::State s) {
@@ -1105,24 +1107,6 @@ void ChatMessage::updateState(State state) {
 	if (state == Delivered || state == NotDelivered) {
 		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(static_pointer_cast<ChatMessage>(shared_from_this()));
 	}
-}
-
-void ChatMessage::send () {
-	L_D();
-
-	if (d->contents.size() > 1) {
-		MultipartChatMessageModifier mcmm;
-		mcmm.encode(d);
-	}
-
-	LinphoneCore *lc = getChatRoom()->getCore();
-	LpConfig *lpc = linphone_core_get_config(lc);
-	if (lp_config_get_int(lpc, "sip", "use_cpim", 0) == 1) {
-		CpimChatMessageModifier ccmm;
-		ccmm.encode(d);
-	}
-
-	d->isReadOnly = true;
 }
 
 void ChatMessage::reSend() {

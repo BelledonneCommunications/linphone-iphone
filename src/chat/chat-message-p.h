@@ -45,6 +45,8 @@ public:
 	
 	void setTime(time_t time);
 	
+	void setIsReadOnly(bool readOnly);
+	
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
 	

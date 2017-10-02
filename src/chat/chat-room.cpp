@@ -23,6 +23,8 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat-room-p.h"
+#include "modifier/multipart-chat-message-modifier.h"
+#include "modifier/cpim-chat-message-modifier.h"
 #include "imdn.h"
 #include "content/content.h"
 #include "chat-message-p.h"
@@ -810,6 +812,10 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 			}
 		}
 		msg->setFromAddress(identity);
+		
+		// ---------------------------------------
+		// Start of message modification
+		// ---------------------------------------
 
 		int retval = -1;
 		LinphoneImEncryptionEngine *imee = d->core->im_encryption_engine;
@@ -823,6 +829,20 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 				}
 			}
 		}
+
+		if (msg->getContents().size() > 1) {
+			MultipartChatMessageModifier mcmm;
+			mcmm.encode(msg->getPrivate());
+		}
+
+		if (lp_config_get_int(d->core->config, "sip", "use_cpim", 0) == 1) {
+			CpimChatMessageModifier ccmm;
+			ccmm.encode(msg->getPrivate());
+		}
+		
+		// ---------------------------------------
+		// End of message modification
+		// ---------------------------------------
 
 		if (!op) {
 			/* Sending out of call */
@@ -843,7 +863,7 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 		}
 
 		if (!msg->getExternalBodyUrl().empty()) {
-			char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"",msg->getExternalBodyUrl().empty());
+			char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", msg->getExternalBodyUrl().c_str());
 			auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 			msgOp->send_message(identity.c_str(), d->peerAddress.asString().c_str(), content_type, nullptr, nullptr);
 			ms_free(content_type);
@@ -864,7 +884,7 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 			/* We replace the encrypted content type by the original one */
 			msg->getPrivate()->setContentType(clearTextContentType);
 		}
-		msg->setId(op->get_call_id());     /* must be known at that time */
+		msg->setId(op->get_call_id()); /* must be known at that time */
 		d->storeOrUpdateMessage(msg);
 
 		if (d->isComposing)
@@ -890,6 +910,7 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 
 	/* If operation failed, we should not change message state */
 	if (msg->isOutgoing()) {
+		msg->getPrivate()->setIsReadOnly(true);
 		msg->getPrivate()->setState(ChatMessage::State::InProgress);
 	}
 }
