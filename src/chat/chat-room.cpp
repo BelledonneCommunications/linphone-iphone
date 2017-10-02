@@ -91,7 +91,6 @@ void ChatRoomPrivate::release () {
 			msg->cancelFileTransfer();
 			msg->getPrivate()->setChatRoom(nullptr);
 		} catch(const std::bad_weak_ptr& e) {}
-		
 	}
 	for (auto &message : transientMessages) {
 		message->cancelFileTransfer();
@@ -336,9 +335,11 @@ shared_ptr<ChatMessage> ChatRoomPrivate::getTransientMessage (unsigned int stora
 
 std::shared_ptr<ChatMessage> ChatRoomPrivate::getWeakMessage (unsigned int storageId) const {
 	for (auto &message : weakMessages) {
-		shared_ptr<ChatMessage> msg(message);
-		if (msg->getPrivate()->getStorageId() == storageId)
-			return msg;
+		try {
+			shared_ptr<ChatMessage> msg(message);
+			if (msg->getPrivate()->getStorageId() == storageId)
+				return msg;
+		} catch(const std::bad_weak_ptr& e) {}
 	}
 	return nullptr;
 }
