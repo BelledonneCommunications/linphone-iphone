@@ -41,12 +41,7 @@ LINPHONE_BEGIN_NAMESPACE
 ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
 	: core(core), isComposingHandler(core, this) {}
 
-ChatRoomPrivate::~ChatRoomPrivate () {
-	/*for (auto &message : transientMessages)
-		linphone_chat_message_release(message);
-	if (pendingMessage)
-		linphone_chat_message_unref(pendingMessage);*/
-}
+ChatRoomPrivate::~ChatRoomPrivate () {}
 
 // -----------------------------------------------------------------------------
 
@@ -92,10 +87,15 @@ void ChatRoomPrivate::release () {
 	L_Q();
 	isComposingHandler.stopTimers();
 
-	/*for (auto &message : weakMessages)
-		linphone_chat_message_deactivate(message);
-	for (auto &message : transientMessages)
-		linphone_chat_message_deactivate(message);*/
+	for (auto &message : weakMessages) {
+		shared_ptr<ChatMessage> msg(message);
+		msg->cancelFileTransfer();
+		msg->getPrivate()->setChatRoom(nullptr);
+	}
+	for (auto &message : transientMessages) {
+		message->cancelFileTransfer();
+		message->getPrivate()->setChatRoom(nullptr);
+	}
 
 	core = nullptr;
 	linphone_chat_room_unref(L_GET_C_BACK_PTR(q));
