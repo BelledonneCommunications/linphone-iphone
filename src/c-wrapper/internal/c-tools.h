@@ -294,7 +294,7 @@ public:
 			return nullptr;
 
 		try {
-			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->sharedFromThis()));
+			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
 		} catch (const std::bad_weak_ptr &e) {
 			abort(e.what());
 		}
