@@ -128,4 +128,8 @@ size_t Content::getSize () const {
 	return d->body.size();
 }
 
+bool Content::isEmpty () const {
+	return getSize() == 0;
+}
+
 LINPHONE_END_NAMESPACE
