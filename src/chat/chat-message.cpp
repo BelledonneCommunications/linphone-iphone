@@ -948,7 +948,7 @@ void ChatMessagePrivate::send() {
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 		if (cbProcessOutgoingMessage) {
-			//TODO retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(this));
+			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(q->getSharedPtr()));
 			if (retval == 0) {
 				isSecured = true;
 			}
