@@ -40,7 +40,7 @@ public:
 	int notify_ringing(bool_t early_media);
 	int accept();
 	int decline(SalReason reason, const char *redirection /*optional*/);
-	int decline_with_error_info(const SalErrorInfo *info, const char *redirection /*optional*/);
+	int decline_with_error_info(const SalErrorInfo *info, const SalAddress *redirectionAddr /*optional*/);
 	int update(const char *subject, bool_t no_user_consent);
 	void cancel_invite() {cancel_invite_with_info(NULL);}
 	void cancel_invite_with_info(const SalErrorInfo *info);

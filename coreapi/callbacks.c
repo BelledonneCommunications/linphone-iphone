@@ -122,8 +122,10 @@ static void call_received(SalCallOp *h) {
 					SalErrorInfo sei;
 					memset(&sei, 0, sizeof(sei));
 					sal_error_info_set(&sei, SalReasonRedirect, "SIP", 0, nullptr, nullptr);
-					h->decline_with_error_info(&sei, altContact);
+					SalAddress *altAddr = sal_address_new(altContact);
+					h->decline_with_error_info(&sei, altAddr);
 					ms_free(altContact);
+					sal_address_unref(altAddr);
 					LinphoneErrorInfo *ei = linphone_error_info_new();
 					linphone_error_info_set(ei, nullptr, LinphoneReasonMovedPermanently, 302, "Moved permanently", nullptr);
 					linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, fromAddr, toAddr, ei);

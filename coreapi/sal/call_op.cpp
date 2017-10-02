@@ -972,18 +972,16 @@ belle_sip_header_reason_t *SalCallOp::make_reason_header( const SalErrorInfo *in
 	return NULL;
 }
 
-int SalCallOp::decline_with_error_info(const SalErrorInfo *info, const char *redirection /*optional*/){
+int SalCallOp::decline_with_error_info(const SalErrorInfo *info, const SalAddress *redirectionAddr /*optional*/){
 	belle_sip_response_t* response;
 	belle_sip_header_contact_t* contact=NULL;
 	int status = info->protocol_code;
 	belle_sip_transaction_t *trans;
 
 	if (info->reason==SalReasonRedirect){
-		if (redirection!=NULL) {
-			if (strstr(redirection,"sip:")!=0) status=302;
-			else status=380;
-			contact= belle_sip_header_contact_new();
-			belle_sip_header_address_set_uri(BELLE_SIP_HEADER_ADDRESS(contact),belle_sip_uri_parse(redirection));
+		if (redirectionAddr) {
+			status = 302;
+			contact = belle_sip_header_contact_create(BELLE_SIP_HEADER_ADDRESS(redirectionAddr));
 		} else {
 			ms_error("Cannot redirect to null");
 		}
