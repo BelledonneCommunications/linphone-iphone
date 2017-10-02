@@ -88,9 +88,12 @@ void ChatRoomPrivate::release () {
 	isComposingHandler.stopTimers();
 
 	for (auto &message : weakMessages) {
-		shared_ptr<ChatMessage> msg(message);
-		msg->cancelFileTransfer();
-		msg->getPrivate()->setChatRoom(nullptr);
+		try {
+			shared_ptr<ChatMessage> msg(message);
+			msg->cancelFileTransfer();
+			msg->getPrivate()->setChatRoom(nullptr);
+		} catch(const std::bad_weak_ptr& e) {}
+		
 	}
 	for (auto &message : transientMessages) {
 		message->cancelFileTransfer();
