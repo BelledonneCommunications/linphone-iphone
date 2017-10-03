@@ -1221,9 +1221,9 @@ bool ChatMessage::isRead() const {
 	L_D();
 	LinphoneCore *lc = d->chatRoom->getCore();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
-	if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) && d->state == Displayed) return true;
-	if (linphone_im_notif_policy_get_recv_imdn_delivered(policy) && (d->state == DeliveredToUser || d->state == Displayed)) return true;
-	return d->state == Delivered || d->state == Displayed || d->state == DeliveredToUser;
+	if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) && d->state == State::Displayed) return true;
+	if (linphone_im_notif_policy_get_recv_imdn_delivered(policy) && (d->state == State::DeliveredToUser || d->state == State::Displayed)) return true;
+	return d->state == State::Delivered || d->state == State::Displayed || d->state == State::DeliveredToUser;
 }
 
 const string& ChatMessage::getAppdata () const {
@@ -1354,14 +1354,14 @@ void ChatMessage::updateState(State state) {
 	d->setState(state);
 	linphone_chat_message_store_state(L_GET_C_BACK_PTR(this));
 
-	if (state == Delivered || state == NotDelivered)
+	if (state == State::Delivered || state == State::NotDelivered)
 		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(getSharedFromThis());
 }
 
 void ChatMessage::reSend() {
 	L_D();
 
-	if (d->state != NotDelivered) {
+	if (d->state != State::NotDelivered) {
 		lWarning() << "Cannot resend chat message in state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state);
 		return;
 	}
@@ -1402,7 +1402,7 @@ int ChatMessage::uploadFile() {
 	int err = d->startHttpTransfer(linphone_core_get_file_transfer_server(d->chatRoom->getCore()), "POST", &cbs);
 
 	if (err == -1) {
-		d->setState(NotDelivered);
+		d->setState(State::NotDelivered);
 	}
 	return err;
 }
@@ -1424,15 +1424,15 @@ int ChatMessage::downloadFile() {
 
 	if (err == -1) return -1;
 	// start the download, status is In Progress
-	d->setState(InProgress);
+	d->setState(State::InProgress);
 	return 0;
 }
 
 void ChatMessage::cancelFileTransfer() {
 	L_D();
 	if (d->httpRequest) {
-		if (d->state == InProgress) {
-			d->setState(NotDelivered);
+		if (d->state == State::InProgress) {
+			d->setState(State::NotDelivered);
 		}
 		if (!belle_http_request_is_cancelled(d->httpRequest)) {
 			if (d->chatRoom) {
@@ -1467,7 +1467,7 @@ int ChatMessage::putCharacter(uint32_t character) {
 			if (lc && lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
 				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
 				d->setTime(ms_time(0));
-				d->state = Displayed;
+				d->state = State::Displayed;
 				d->direction = Outgoing;
 				setFromAddress(LinphonePrivate::Address(linphone_address_as_string(linphone_address_new(linphone_core_get_identity(lc)))));
 				linphone_chat_message_store(L_GET_C_BACK_PTR(this));

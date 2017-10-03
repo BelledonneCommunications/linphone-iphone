@@ -20,11 +20,9 @@
 #define _CHAT_MESSAGE_H_
 
 #include <list>
-#include <memory>
 
-#include "enums.h"
 #include "linphone/api/c-types.h"
-#include "linphone/api/c-chat-message.h"
+#include "linphone/enums/chat-message-enums.h"
 
 #include "object/object.h"
 
@@ -52,16 +50,7 @@ public:
 		Outgoing
 	};
 
-	enum State {
-		Idle,
-		InProgress,
-		Delivered,
-		NotDelivered,
-		FileTransferError,
-		FileTransferDone,
-		DeliveredToUser,
-		Displayed
-	};
+	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 
 	ChatMessage(const std::shared_ptr<ChatRoom> &room);
 	virtual ~ChatMessage() = default;
