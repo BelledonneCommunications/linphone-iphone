@@ -86,6 +86,7 @@ protected:
 	CallSessionParams *params = nullptr;
 	mutable CallSessionParams *currentParams = nullptr;
 	CallSessionParams *remoteParams = nullptr;
+	mutable Address remoteContactAddress;
 
 	std::string subject;
 	LinphoneCallDir direction = LinphoneCallOutgoing;

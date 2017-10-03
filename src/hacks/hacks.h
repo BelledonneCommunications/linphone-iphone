@@ -31,7 +31,6 @@ LINPHONE_BEGIN_NAMESPACE
 // can be located more easily.
 class Hacks {
 public:
-	static bool contactHasParam(const std::string &contact, const std::string &paramName);
 
 private:
 	Hacks () = default;

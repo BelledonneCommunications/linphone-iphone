@@ -30,16 +30,4 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-bool Hacks::contactHasParam(const string &contact, const string &paramName) {
-	// This is very ugly!!! The handling of Contact headers and addresses is a real
-	// crap that really needs to be reworked. Meanwhile, we cannot get the params on the
-	// remote contact address and need to forge and parse a contact header.
-	ostringstream os;
-	os << "Contact: " << contact;
-	belle_sip_header_contact_t *contactHeader = belle_sip_header_contact_parse(os.str().c_str());
-	bool result = belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contactHeader), paramName.c_str());
-	belle_sip_object_unref(contactHeader);
-	return result;
-}
-
 LINPHONE_END_NAMESPACE

@@ -200,7 +200,7 @@ void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session,
 		Address addr(session.getRemoteContact());
 		addr.clean();
 		onConferenceCreated(addr);
-		if (Hacks::contactHasParam(session.getRemoteContact(), "isfocus"))
+		if (session.getRemoteContactAddress()->hasParam("isfocus"))
 			eventHandler->subscribe(conferenceAddress);
 	}
 }

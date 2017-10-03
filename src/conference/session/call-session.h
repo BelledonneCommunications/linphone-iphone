@@ -67,6 +67,7 @@ public:
 	const Address& getRemoteAddress () const;
 	std::string getRemoteAddressAsString () const;
 	std::string getRemoteContact () const;
+	const Address *getRemoteContactAddress () const;
 	const CallSessionParams *getRemoteParams ();
 	LinphoneCallState getState () const;
 

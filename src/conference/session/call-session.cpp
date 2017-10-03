@@ -1002,6 +1002,17 @@ string CallSession::getRemoteContact () const {
 	return string();
 }
 
+const Address *CallSession::getRemoteContactAddress () const {
+	L_D();
+	if (!d->op) {
+		return nullptr;
+	}
+	char *addrStr = sal_address_as_string(d->op->get_remote_contact_address());
+	d->remoteContactAddress = Address(addrStr);
+	bctbx_free(addrStr);
+	return &d->remoteContactAddress;
+}
+
 const CallSessionParams * CallSession::getRemoteParams () {
 	L_D();
 	if (d->op){
