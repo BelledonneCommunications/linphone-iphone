@@ -129,9 +129,6 @@ public:
 	const std::string& getFileTransferFilepath() const;
 	void setFileTransferFilepath(const std::string &path);
 
-	bool isToBeStored() const;
-	void setIsToBeStored(bool store);
-
 	const LinphoneErrorInfo * getErrorInfo() const;
 
 	bool isReadOnly() const;

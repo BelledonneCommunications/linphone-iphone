@@ -117,7 +117,6 @@ private:
 	std::string rttMessage = "";
 	bool isSecured = false;
 	bool isReadOnly = false;
-	bool isToBeStored = false;
 	std::list<std::shared_ptr<Content> > contents;
 	std::shared_ptr<Content> internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;

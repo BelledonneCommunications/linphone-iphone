@@ -1283,16 +1283,6 @@ void ChatMessage::setFileTransferFilepath(const string &path) {
 	d->fileTransferFilePath = path;
 }
 
-bool ChatMessage::isToBeStored() const {
-	L_D();
-	return d->isToBeStored;
-}
-
-void ChatMessage::setIsToBeStored(bool store) {
-	L_D();
-	d->isToBeStored = store;
-}
-
 // -----------------------------------------------------------------------------
 
 const LinphoneErrorInfo * ChatMessage::getErrorInfo() const {

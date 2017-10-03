@@ -204,14 +204,6 @@ void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, 
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFileTransferFilepath(L_C_TO_STRING(filepath));
 }
 
-bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *msg) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isToBeStored();
-}
-
-void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *msg, bool_t to_be_stored) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setIsToBeStored(!!to_be_stored);
-}
-
 belle_http_request_t * linphone_chat_message_get_http_request(LinphoneChatMessage *msg) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getHttpRequest();
 }
