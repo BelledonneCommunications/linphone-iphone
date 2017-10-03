@@ -102,36 +102,24 @@ class ObjectPrivate;
 		friend class Tester;
 #endif
 
-template<typename T>
-inline ClonableObject *getPublicHelper (T *object, const ClonableObjectPrivate *context) {
-	auto it = object->find(context);
-	L_ASSERT(it != object->end());
-	return it->second;
+template<typename T, typename U>
+inline T *getPublicHelper (U *map, const ClonableObjectPrivate *context) {
+	auto it = map->find(context);
+	L_ASSERT(it != map->end());
+	return static_cast<T *>(it->second);
 }
 
 template<typename T>
-inline const ClonableObject *getPublicHelper (const T *object, const ClonableObjectPrivate *context) {
-	auto it = object->find(context);
-	L_ASSERT(it != object->cend());
-	return it->second;
-}
-
-template<typename T>
-inline Object *getPublicHelper (T *object, const ObjectPrivate *) {
-	return object;
-}
-
-template<typename T>
-inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
-	return object;
+constexpr T *getPublicHelper (Object *object, const ObjectPrivate *) {
+	return static_cast<T *>(object);
 }
 
 #define L_DECLARE_PUBLIC(CLASS) \
 	inline CLASS *getPublic () { \
-		return static_cast<CLASS *>(getPublicHelper(mPublic, this)); \
+		return getPublicHelper<CLASS>(mPublic, this); \
 	} \
 	inline const CLASS *getPublic () const { \
-		return static_cast<const CLASS *>(getPublicHelper(mPublic, this)); \
+		return getPublicHelper<const CLASS>(mPublic, this); \
 	} \
 	friend class CLASS;
 
