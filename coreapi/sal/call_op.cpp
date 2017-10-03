@@ -76,6 +76,7 @@ belle_sip_header_allow_t *SalCallOp::create_allow(bool_t enable_update) {
 
 int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
 	ContentType contentType = body.getContentType();
+	string contentDisposition = body.getContentDisposition();
 	size_t bodySize = body.getBody().size();
 	
 	if (bodySize > SIP_MESSAGE_BODY_LIMIT) {
@@ -86,6 +87,10 @@ int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
 	if (contentType.isValid()) {
 		belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(contentType.getType().c_str(), contentType.getSubType().c_str());
 		belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_type));
+	}
+	if (!contentDisposition.empty()) {
+		belle_sip_header_content_disposition_t *contentDispositionHeader = belle_sip_header_content_disposition_create(contentDisposition.c_str());
+		belle_sip_message_add_header(msg, BELLE_SIP_HEADER(contentDispositionHeader));
 	}
 	belle_sip_header_content_length_t *content_length = belle_sip_header_content_length_create(bodySize);
 	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_length));

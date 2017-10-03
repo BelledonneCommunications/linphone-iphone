@@ -63,7 +63,6 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 		content.setBody(getResourceLists(sortedAddresses));
 		content.setContentType("application/resource-lists+xml");
 		content.setContentDisposition("recipient-list");
-		lInfo() << "Body size: " << content.getSize() << endl << "Body:" << endl << content.getBodyAsString();
 		CallSessionParams csp;
 		if (params)
 			csp = *params;
@@ -74,7 +73,7 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 		Address addr = me->getAddress();
 		addr.setParam("text");
 		session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
-		session->startInvite(nullptr, subject);
+		session->startInvite(nullptr, subject, &content);
 		d->setState(ChatRoom::State::CreationPending);
 	}
 	// TODO

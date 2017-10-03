@@ -4249,7 +4249,7 @@ void MediaSession::startIncomingNotification () {
 	CallSession::startIncomingNotification();
 }
 
-int MediaSession::startInvite (const Address *destination, const string &subject) {
+int MediaSession::startInvite (const Address *destination, const string &subject, const Content *content) {
 	L_D();
 	linphone_core_stop_dtmf_stream(d->core);
 	d->makeLocalMediaDescription();
@@ -4265,7 +4265,7 @@ int MediaSession::startInvite (const Address *destination, const string &subject
 		d->op->set_local_media_description(d->localDesc);
 	}
 
-	int result = CallSession::startInvite(destination, subject);
+	int result = CallSession::startInvite(destination, subject, content);
 	if (result < 0) {
 		if (d->state == LinphoneCallError)
 			d->stopStreams();

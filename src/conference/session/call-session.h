@@ -32,6 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallPrivate;
 class CallSessionPrivate;
+class Content;
 
 class LINPHONE_PUBLIC CallSession : public Object {
 	friend class CallPrivate;
@@ -53,7 +54,7 @@ public:
 	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus redirect (const Address &redirectAddr);
 	virtual void startIncomingNotification ();
-	virtual int startInvite (const Address *destination, const std::string &subject = "");
+	virtual int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
 	LinphoneStatus update (const CallSessionParams *csp, const std::string &subject = "");
 

@@ -867,7 +867,7 @@ void CallSession::startIncomingNotification () {
 	}
 }
 
-int CallSession::startInvite (const Address *destination, const string &subject) {
+int CallSession::startInvite (const Address *destination, const string &subject, const Content *content) {
 	L_D();
 	d->subject = subject;
 	/* Try to be best-effort in giving real local or routable contact address */
@@ -884,6 +884,8 @@ int CallSession::startInvite (const Address *destination, const string &subject)
 	char *from = linphone_address_as_string(d->log->from);
 	/* Take a ref because sal_call() may destroy the CallSession if no SIP transport is available */
 	shared_ptr<CallSession> ref = getSharedFromThis();
+	if (content)
+		d->op->set_local_body(*content);
 	int result = d->op->call(from, destinationStr.c_str(), subject.empty() ? nullptr : subject.c_str());
 	ms_free(from);
 	if (result < 0) {
