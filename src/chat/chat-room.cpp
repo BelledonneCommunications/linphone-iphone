@@ -648,7 +648,7 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) 
 		ms_free(buf);
 		buf = buf2;
 	} else if (startm > 0) {
-		ms_message("%s(): end is lower than start (%d < %d). Assuming no end limit.", __FUNCTION__, endm, startm);
+		lInfo() << __FUNCTION__ << "(): end is lower than start (" << endm << " < " << startm << "). Assuming no end limit.";
 		char *buf2 = ms_strdup_printf("%s LIMIT -1", buf);
 		ms_free(buf);
 		buf = buf2;
@@ -665,7 +665,7 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) 
 
 	if ((endm + 1 - startm) > 1) {
 		/* Display message only if at least 2 messages are loaded */
-		ms_message("%s(): completed in %i ms", __FUNCTION__, (int)(end - begin));
+		lInfo() << __FUNCTION__ << "(): completed in " << (int)(end - begin) << " ms";
 	}
 	ms_free(buf);
 

@@ -84,7 +84,7 @@ void ChatMessagePrivate::setState(ChatMessage::State s) {
 			&& ((s == ChatMessage::State::DeliveredToUser) || (s == ChatMessage::State::Delivered) || (s == ChatMessage::State::NotDelivered))) {
 			return;
 		}
-		ms_message("Chat message %p: moving from state %s to %s", this, linphone_chat_message_state_to_string((LinphoneChatMessageState)state), linphone_chat_message_state_to_string((LinphoneChatMessageState)s));
+		lInfo() << "Chat message " << this << ": moving from state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)state) << " to " << linphone_chat_message_state_to_string((LinphoneChatMessageState)s);
 		state = s;
 
 		LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
@@ -204,12 +204,12 @@ string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reaso
 
 	buf = xmlBufferCreate();
 	if (buf == NULL) {
-		ms_error("Error creating the XML buffer");
+		lError() << "Error creating the XML buffer";
 		return content;
 	}
 	writer = xmlNewTextWriterMemory(buf, 0);
 	if (writer == NULL) {
-		ms_error("Error creating the XML writer");
+		lError() << "Error creating the XML writer";
 		return content;
 	}
 
@@ -308,7 +308,7 @@ void ChatMessagePrivate::fileTransferOnProgress(belle_sip_body_handler_t *bh, be
 	L_Q();
 
 	if (!isFileTransferInProgressAndValid()) {
-		ms_warning("Cancelled request for %s msg [%p], ignoring %s", chatRoom ? "" : "ORPHAN", this, __FUNCTION__);
+		lWarning() << "Cancelled request for " << (chatRoom ? "" : "ORPHAN") << " msg [" << this << "], ignoring " << __FUNCTION__;
 		releaseHttpRequest();
 		return;
 	}
@@ -340,7 +340,7 @@ int ChatMessagePrivate::onSendBody(belle_sip_user_body_handler_t *bh, belle_sip_
 
 	if (!isFileTransferInProgressAndValid()) {
 		if (httpRequest) {
-			ms_warning("Cancelled request for %s msg [%p], ignoring %s", chatRoom ? "" : "ORPHAN", this, __FUNCTION__);
+			lWarning() << "Cancelled request for " << (chatRoom ? "" : "ORPHAN") << " msg [" << this << "], ignoring " << __FUNCTION__;
 			releaseHttpRequest();
 		}
 		return BELLE_SIP_STOP;
@@ -378,7 +378,7 @@ int ChatMessagePrivate::onSendBody(belle_sip_user_body_handler_t *bh, belle_sip_
 			retval = cb_process_uploading_file(imee, msg, offset, (const uint8_t *)buffer, size, encrypted_buffer);
 			if (retval == 0) {
 				if (*size > max_size) {
-					ms_error("IM encryption engine process upload file callback returned a size bigger than the size of the buffer, so it will be truncated !");
+					lError() << "IM encryption engine process upload file callback returned a size bigger than the size of the buffer, so it will be truncated !";
 					*size = max_size;
 				}
 				memcpy(buffer, encrypted_buffer, *size);
@@ -412,7 +412,7 @@ void ChatMessagePrivate::onSendEnd(belle_sip_user_body_handler_t *bh) {
 
 void ChatMessagePrivate::fileUploadEndBackgroundTask() {
 	if (backgroundTaskId) {
-		ms_message("channel [%p]: ending file upload background task with id=[%lx].", this, backgroundTaskId);
+		lInfo() << "channel [" << this << "]: ending file upload background task with id=[" << backgroundTaskId << "].";
 		sal_end_background_task(backgroundTaskId);
 		backgroundTaskId = 0;
 	}
@@ -424,14 +424,14 @@ static void _chat_message_file_upload_background_task_ended(void *data) {
 }
 
 void ChatMessagePrivate::fileUploadBackgroundTaskEnded() {
-	ms_warning("channel [%p]: file upload background task has to be ended now, but work isn't finished.", this);
+	lWarning() << "channel [" << this << "]: file upload background task has to be ended now, but work isn't finished.";
 	fileUploadEndBackgroundTask();
 }
 
 void ChatMessagePrivate::fileUploadBeginBackgroundTask() {
 	if (backgroundTaskId == 0) {
 		backgroundTaskId = sal_begin_background_task("file transfer upload", _chat_message_file_upload_background_task_ended, this);
-		if (backgroundTaskId) ms_message("channel [%p]: starting file upload background task with id=[%lx].", this, backgroundTaskId);
+		if (backgroundTaskId) lInfo() << "channel [" << this << "]: starting file upload background task with id=[" << backgroundTaskId << "].";
 	}
 }
 
@@ -459,7 +459,7 @@ void ChatMessagePrivate::onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip
 	}
 
 	if (!httpRequest || belle_http_request_is_cancelled(httpRequest)) {
-		ms_warning("Cancelled request for msg [%p], ignoring %s", this, __FUNCTION__);
+		lWarning() << "Cancelled request for msg [" << this << "], ignoring " << __FUNCTION__;
 		return;
 	}
 
@@ -496,7 +496,7 @@ void ChatMessagePrivate::onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip
 			}
 		}
 	} else {
-		ms_warning("File transfer decrypt failed with code %d", (int)retval);
+		lWarning() << "File transfer decrypt failed with code " << (int)retval;
 		setState(ChatMessage::State::FileTransferError);
 	}
 
@@ -556,7 +556,7 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 	L_Q();
 
 	if (httpRequest && !isFileTransferInProgressAndValid()) {
-		ms_warning("Cancelled request for %s msg [%p], ignoring %s", chatRoom ? "" : "ORPHAN", this, __FUNCTION__);
+		lWarning() << "Cancelled request for " << (chatRoom ? "" : "ORPHAN") << " msg [" << this << "], ignoring " << __FUNCTION__;
 		releaseHttpRequest();
 		return;
 	}
@@ -694,13 +694,13 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 				send();
 				fileUploadEndBackgroundTask();
 			} else {
-				ms_warning("Received empty response from server, file transfer failed");
+				lWarning() << "Received empty response from server, file transfer failed";
 				q->updateState(ChatMessage::State::NotDelivered);
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
 		} else {
-			ms_warning("Unhandled HTTP code response %d for file transfer", code);
+			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
 			q->updateState(ChatMessage::State::NotDelivered);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
@@ -727,7 +727,7 @@ static LinphoneContent *createFileTransferInformationFromHeaders(const belle_sip
 	if (content_type_hdr) {
 		type = belle_sip_header_content_type_get_type(content_type_hdr);
 		subtype = belle_sip_header_content_type_get_subtype(content_type_hdr);
-		ms_message("Extracted content type %s / %s from header", type ? type : "", subtype ? subtype : "");
+		lInfo() << "Extracted content type " << type << " / " << subtype << " from header";
 		if (type) {
 			linphone_content_set_type(content, type);
 		}
@@ -738,7 +738,7 @@ static LinphoneContent *createFileTransferInformationFromHeaders(const belle_sip
 
 	if (content_length_hdr) {
 		linphone_content_set_size(content, belle_sip_header_content_length_get_content_length(content_length_hdr));
-		ms_message("Extracted content length %i from header", (int)linphone_content_get_size(content));
+		lInfo() << "Extracted content length " << linphone_content_get_size(content) << " from header";
 	}
 
 	return content;
@@ -753,7 +753,7 @@ void ChatMessagePrivate::processResponseHeadersFromGetFile(const belle_http_resp
 		size_t body_size = 0;
 
 		if (cFileTransferInformation == NULL) {
-			ms_warning("No file transfer information for msg [%p]: creating...", this);
+			lWarning() << "No file transfer information for msg [" << this << "]: creating...";
 			cFileTransferInformation = createFileTransferInformationFromHeaders(response);
 		}
 
@@ -786,7 +786,7 @@ static void _chat_message_process_auth_requested_download(void *data, belle_sip_
 void ChatMessagePrivate::processAuthRequestedDownload(const belle_sip_auth_event *event) {
 	L_Q();
 
-	ms_error("Error during file download : auth requested for msg [%p]", this);
+	lError() << "Error during file download : auth requested for msg [" << this << "]";
 	q->updateState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
@@ -798,7 +798,7 @@ static void _chat_message_process_io_error_upload(void *data, const belle_sip_io
 
 void ChatMessagePrivate::processIoErrorUpload(const belle_sip_io_error_event_t *event) {
 	L_Q();
-	ms_error("I/O Error during file upload of msg [%p]", this);
+	lError() << "I/O Error during file upload of msg [" << this << "]";
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
@@ -811,7 +811,7 @@ static void _chat_message_process_auth_requested_upload(void *data, belle_sip_au
 
 void ChatMessagePrivate::processAuthRequestedUpload(const belle_sip_auth_event *event) {
 	L_Q();
-	ms_error("Error during file upload: auth requested for msg [%p]", this);
+	lError() << "Error during file upload: auth requested for msg [" << this << "]";
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
@@ -825,7 +825,7 @@ static void _chat_message_process_io_error_download(void *data, const belle_sip_
 void ChatMessagePrivate::processIoErrorDownload(const belle_sip_io_error_event_t *event) {
 	L_Q();
 
-	ms_error("I/O Error during file download msg [%p]", this);
+	lError() << "I/O Error during file download msg [" << this << "]";
 	q->updateState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
@@ -840,10 +840,10 @@ void ChatMessagePrivate::processResponseFromGetFile(const belle_http_response_ev
 	if (event->response) {
 		int code = belle_http_response_get_status_code(event->response);
 		if (code >= 400 && code < 500) {
-			ms_warning("File transfer failed with code %d", code);
+			lWarning() << "File transfer failed with code " << code;
 			setState(ChatMessage::State::FileTransferError);
 		} else if (code != 200) {
-			ms_warning("Unhandled HTTP code response %d for file transfer", code);
+			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
 		}
 		releaseHttpRequest();
 	}
@@ -854,19 +854,19 @@ int ChatMessagePrivate::startHttpTransfer(std::string url, std::string action, b
 	const char* ua = linphone_core_get_user_agent(chatRoom->getCore());
 
 	if (url.empty()) {
-		ms_warning("Cannot process file transfer msg [%p]: no file remote URI configured.", this);
+		lWarning() << "Cannot process file transfer msg [" << this << "]: no file remote URI configured.";
 		goto error;
 	}
 	uri = belle_generic_uri_parse(url.c_str());
 	if (uri == NULL || belle_generic_uri_get_host(uri) == NULL) {
-		ms_warning("Cannot process file transfer msg [%p]: incorrect file remote URI configured '%s'.", this, url.c_str());
+		lWarning() << "Cannot process file transfer msg [" << this << "]: incorrect file remote URI configured '" << url << "'.";
 		goto error;
 	}
 
 	httpRequest = belle_http_request_create(action.c_str(), uri, belle_sip_header_create("User-Agent", ua), NULL);
 
 	if (httpRequest == NULL) {
-		ms_warning("Could not create http request for uri %s", url.c_str());
+		lWarning() << "Could not create http request for uri " << url;
 		goto error;
 	}
 	// keep a reference to the http request to be able to cancel it during upload
@@ -965,7 +965,7 @@ void ChatMessagePrivate::send() {
 			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
 				linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
 				linphone_call_get_state(call) == LinphoneCallPausedByRemote) {
-				ms_message("send SIP msg through the existing call.");
+				lInfo() << "send SIP msg through the existing call.";
 				op = linphone_call_get_op(call);
 				string identity = linphone_core_find_best_identity(chatRoom->getCore(), linphone_call_get_remote_address(call));
 				if (identity.empty()) {
@@ -1306,7 +1306,7 @@ void ChatMessage::reSend() {
 	L_D();
 
 	if (d->state != NotDelivered) {
-		ms_warning("Cannot resend chat message in state %s", linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state));
+		lWarning() << "Cannot resend chat message in state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state);
 		return;
 	}
 
@@ -1335,7 +1335,7 @@ int ChatMessage::uploadFile() {
 	L_D();
 
 	if (d->httpRequest) {
-		ms_error("linphone_chat_room_upload_file(): there is already an upload in progress.");
+		lError() << "linphone_chat_room_upload_file(): there is already an upload in progress.";
 		return -1;
 	}
 
@@ -1355,7 +1355,7 @@ int ChatMessage::downloadFile() {
 	L_D();
 
 	if (d->httpRequest) {
-		ms_error("linphone_chat_message_download_file(): there is already a download in progress");
+		lError() << "linphone_chat_message_download_file(): there is already a download in progress";
 		return -1;
 	}
 
@@ -1380,15 +1380,15 @@ void ChatMessage::cancelFileTransfer() {
 		}
 		if (!belle_http_request_is_cancelled(d->httpRequest)) {
 			if (d->chatRoom) {
-				ms_message("Canceling file transfer %s", (d->externalBodyUrl.empty()) ? linphone_core_get_file_transfer_server(d->chatRoom->getCore()) : d->externalBodyUrl.c_str());
+				lInfo() << "Canceling file transfer " << (d->externalBodyUrl.empty()) ? linphone_core_get_file_transfer_server(d->chatRoom->getCore()) : d->externalBodyUrl.c_str();
 				belle_http_provider_cancel_request(d->chatRoom->getCore()->http_provider, d->httpRequest);
 			} else {
-				ms_message("Warning: http request still running for ORPHAN msg: this is a memory leak");
+				lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";
 			}
 		}
 		d->releaseHttpRequest();
 	} else {
-		ms_message("No existing file transfer - nothing to cancel");
+		lInfo() << "No existing file transfer - nothing to cancel";
 	}
 }
 
@@ -1409,7 +1409,7 @@ int ChatMessage::putCharacter(uint32_t character) {
 
 		if (character == new_line || character == crlf || character == lf) {
 			if (lc && lp_config_get_int(lc->config, "misc", "store_rtt_messages", 1) == 1) {
-				ms_debug("New line sent, forge a message with content %s", d->rttMessage.c_str());
+				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
 				d->setTime(ms_time(0));
 				d->state = Displayed;
 				d->direction = Outgoing;
@@ -1420,7 +1420,7 @@ int ChatMessage::putCharacter(uint32_t character) {
 		} else {
 			char *value = LinphonePrivate::Utils::utf8ToChar(character);
 			d->rttMessage = d->rttMessage + string(value);
-			ms_debug("Sent RTT character: %s (%lu), pending text is %s", value, (unsigned long)character, d->rttMessage.c_str());
+			lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character << "), pending text is " << d->rttMessage.c_str();
 			delete value;
 		}
 
