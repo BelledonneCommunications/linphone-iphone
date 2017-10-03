@@ -16,8 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "content-type.h"
 #include "object/clonable-object-p.h"
+
+#include "content-type.h"
 
 // =============================================================================
 

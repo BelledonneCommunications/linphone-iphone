@@ -29,6 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 class AddressPrivate;
 
 class LINPHONE_PUBLIC Address : public ClonableObject {
+	// TODO: Remove me later.
 	friend class CallSession;
 	friend class ClientGroupChatRoom;
 
