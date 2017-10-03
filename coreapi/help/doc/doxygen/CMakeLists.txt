@@ -21,29 +21,28 @@
 ############################################################################
 
 if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER)
-        find_package(Doxygen)
-        if(DOXYGEN_FOUND)
-                if(DOXYGEN_DOT_FOUND)
-                        set(top_srcdir "${PROJECT_SOURCE_DIR}")
-                        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-                        set(DOC_INPUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                                ${CMAKE_CURRENT_SOURCE_DIR}/doxygen.dox
-                                ${LINPHONE_HEADER_FILES}
-                        )
-                        add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/xml/index.xml"
-                                COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-                                DEPENDS ${DOC_INPUT_FILES}
-                        )
-                        add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/xml/index.xml")
-                        install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" "${CMAKE_CURRENT_BINARY_DIR}/xml"
-                                DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
-                else()
-                        if (ENABLE_CXX_WRAPPER) 
-                                message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
-                        else()
-                                message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
-                        endif()
-                endif()
-        endif()
+		find_package(Doxygen)
+		if(DOXYGEN_FOUND)
+				if(DOXYGEN_DOT_FOUND)
+						set(top_srcdir "${PROJECT_SOURCE_DIR}")
+						configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+						set(DOC_INPUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+								${CMAKE_CURRENT_SOURCE_DIR}/doxygen.dox
+								${LINPHONE_HEADER_FILES}
+						)
+						add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/xml/index.xml"
+								COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+								DEPENDS ${DOC_INPUT_FILES}
+						)
+						add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${CMAKE_CURRENT_BINARY_DIR}/xml/index.xml")
+						install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" "${CMAKE_CURRENT_BINARY_DIR}/xml"
+								DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
+				else()
+						if (ENABLE_CXX_WRAPPER) 
+								message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
+						else()
+								message(WARNING "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
+						endif()
+				endif()
+		endif()
 endif()
-
