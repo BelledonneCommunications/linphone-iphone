@@ -72,7 +72,7 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 		session->configure(LinphoneCallOutgoing, nullptr, nullptr, me->getAddress(), focus->getAddress());
 		session->initiateOutgoing();
 		Address addr = me->getAddress();
-		addr.setParam("text", "");
+		addr.setParam("text");
 		session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
 		session->startInvite(nullptr, subject);
 		d->setState(ChatRoom::State::CreationPending);

@@ -88,12 +88,12 @@ public:
 
 	bool hasParam (const std::string &paramName) const;
 	const std::string &getParamValue (const std::string &paramName) const;
-	bool setParam (const std::string &paramName, const std::string &paramValue);
+	bool setParam (const std::string &paramName, const std::string &paramValue = "");
 	bool setParams (const std::string &params);
 
 	bool hasUriParam (const std::string &uriParamName) const;
 	const std::string &getUriParamValue (const std::string &uriParamName) const;
-	bool setUriParam (const std::string &uriParamName, const std::string &uriParamValue);
+	bool setUriParam (const std::string &uriParamName, const std::string &uriParamValue = "");
 	bool setUriParams (const std::string &uriParams);
 
 private:
