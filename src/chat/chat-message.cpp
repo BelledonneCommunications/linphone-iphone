@@ -140,7 +140,7 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 // -----------------------------------------------------------------------------
 
 const string& ChatMessagePrivate::getContentType() {
-	if (!internalContent.isEmpty()) {
+	if (!internalContent.getContentType().asString().empty()) {
 		cContentType = internalContent.getContentType().asString();
 	} else {
 		if (contents.size() > 0) {
