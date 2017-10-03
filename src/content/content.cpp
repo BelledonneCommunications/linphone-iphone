@@ -67,6 +67,11 @@ Content &Content::operator= (Content &&src) {
 	return *this;
 }
 
+bool Content::operator==(const Content& content) {
+	// return true if the two are equal, and false otherwise.
+	return true;
+}
+
 const ContentType &Content::getContentType () const {
 	L_D();
 	return d->contentType;

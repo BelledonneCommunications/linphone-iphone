@@ -37,8 +37,8 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	cpimContentTypeHeader.setValue("Message/CPIM");
 	message.addCpimHeader(cpimContentTypeHeader);
 
-	shared_ptr<Content> content;
-	if (messagePrivate->internalContent) {
+	Content content;
+	if (!messagePrivate->internalContent.isEmpty()) {
 		// Another ChatMessageModifier was called before this one, we apply our changes on the private content
 		content = messagePrivate->internalContent;
 	} else {
@@ -48,8 +48,8 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 		content = messagePrivate->contents.front();
 	}
 
-	string contentType = content->getContentType().asString();
-	const vector<char> body = content->getBody();
+	string contentType = content.getContentType().asString();
+	const vector<char> body = content.getBody();
 	string contentBody(body.begin(), body.end());
 
 	Cpim::GenericHeader contentTypeHeader;
@@ -62,33 +62,33 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	if (!message.isValid()) {
 		//TODO
 	} else {
-		shared_ptr<Content> newContent = make_shared<Content>();
+		Content newContent;
 		ContentType newContentType("Message/CPIM");
-		newContent->setContentType(newContentType);
-		newContent->setBody(message.asString());
+		newContent.setContentType(newContentType);
+		newContent.setBody(message.asString());
 		messagePrivate->internalContent = newContent;
 	}
 	return 0;
 }
 
 int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
-	shared_ptr<Content> content;
-	if (messagePrivate->internalContent) {
+	Content content;
+	if (!messagePrivate->internalContent.isEmpty()) {
 		content = messagePrivate->internalContent;
 	} else {
 		content = messagePrivate->contents.front();
 	}
 
-	ContentType contentType = content->getContentType();
+	ContentType contentType = content.getContentType();
 	if (contentType.asString() == "Message/CPIM") {
-		const vector<char> body = content->getBody();
+		const vector<char> body = content.getBody();
 		string contentBody(body.begin(), body.end());
 		shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
 		if (message && message->isValid()) {
-			shared_ptr<Content> newContent = make_shared<Content>();
+			Content newContent;
 			ContentType newContentType(message->getContentHeaders()->front()->getValue());
-			newContent->setContentType(newContentType);
-			newContent->setBody(message->getContent());
+			newContent.setContentType(newContentType);
+			newContent.setBody(message->getContent());
 		} else {
 			//TODO
 		}

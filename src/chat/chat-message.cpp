@@ -140,41 +140,35 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 // -----------------------------------------------------------------------------
 
 const string& ChatMessagePrivate::getContentType() {
-	if (internalContent) {
-		cContentType = internalContent->getContentType().asString();
+	if (!internalContent.isEmpty()) {
+		cContentType = internalContent.getContentType().asString();
 	} else {
 		if (contents.size() > 0) {
-			shared_ptr<Content> content = contents.front();
-			cContentType = content->getContentType().asString();
+			Content content = contents.front();
+			cContentType = content.getContentType().asString();
 		}
 	}
 	return cContentType;
 }
 
 void ChatMessagePrivate::setContentType(const string& contentType) {
-	if (!internalContent) {
-		internalContent = make_shared<Content>();
-	}
-	internalContent->setContentType(contentType);
+	internalContent.setContentType(contentType);
 }
 
 const string& ChatMessagePrivate::getText() {
-	if (internalContent) {
-		cText = internalContent->getBodyAsString();
+	if (!internalContent.isEmpty()) {
+		cText = internalContent.getBodyAsString();
 	} else {
 		if (contents.size() > 0) {
-			shared_ptr<Content> content = contents.front();
-			cText = content->getBodyAsString();
+			Content content = contents.front();
+			cText = content.getBodyAsString();
 		}
 	}
 	return cText;
 }
 
 void ChatMessagePrivate::setText(const string& text) {
-	if (!internalContent) {
-		internalContent = make_shared<Content>();
-	}
-	internalContent->setBody(text);
+	internalContent.setBody(text);
 }
 
 LinphoneContent * ChatMessagePrivate::getFileTransferInformation() const {
@@ -1297,26 +1291,23 @@ bool ChatMessage::isReadOnly () const {
 	return d->isReadOnly;
 }
 
-list<shared_ptr<const Content> > ChatMessage::getContents () const {
+const list<Content >& ChatMessage::getContents () const {
 	L_D();
-	list<shared_ptr<const Content> > contents;
-	for (const auto &content : d->contents)
-		contents.push_back(content);
-	return contents;
+	return d->contents;
 }
 
-void ChatMessage::addContent (const shared_ptr<Content> &content) {
+void ChatMessage::addContent (const Content &content) {
 	L_D();
 	if (d->isReadOnly) return;
 
 	d->contents.push_back(content);
 }
 
-void ChatMessage::removeContent (const shared_ptr<const Content> &content) {
+void ChatMessage::removeContent (const Content& content) {
 	L_D();
 	if (d->isReadOnly) return;
 
-	d->contents.remove(const_pointer_cast<Content>(content));
+	d->contents.remove(content);
 }
 
 string ChatMessage::getCustomHeaderValue (const string &headerName) const {

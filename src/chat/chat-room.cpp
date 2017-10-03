@@ -120,9 +120,9 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 	msg->setFromAddress(identity);
 	msg->setToAddress(peerAddress.asString());
 
-	shared_ptr<Content> content = make_shared<Content>();
-	content->setContentType("message/imdn+xml");
-	content->setBody(payload);
+	Content content;
+	content.setContentType("message/imdn+xml");
+	content.setBody(payload);
 	msg->addContent(content);
 
 	/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
@@ -212,9 +212,9 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			msg->setFromAddress(identity);
 			msg->setToAddress(peerAddress.asString());
 
-			shared_ptr<Content> content = make_shared<Content>();
-			content->setContentType("application/im-iscomposing+xml");
-			content->setBody(payload);
+			Content content;
+			content.setContentType("application/im-iscomposing+xml");
+			content.setBody(payload);
 			msg->addContent(content);
 
 			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(core);
@@ -269,14 +269,14 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 	if (!message) {
 		message = q->createMessage();
 
-		shared_ptr<Content> content = make_shared<Content>();
+		Content content;
 		message->addContent(content);
 
 		if (argv[4]) {
-			content->setBody(argv[4]);
+			content.setBody(argv[4]);
 		}
 		if (argv[13]) {
-			content->setContentType(argv[13]);
+			content.setContentType(argv[13]);
 		}
 
 		Address peer(peerAddress.asString());
@@ -399,9 +399,9 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 
 	msg = q->createMessage();
 
-	shared_ptr<Content> content = make_shared<Content>();
-	content->setContentType(salMsg->content_type);
-	content->setBody(salMsg->text ? salMsg->text : "");
+	Content content;
+	content.setContentType(salMsg->content_type);
+	content.setBody(salMsg->text ? salMsg->text : "");
 	msg->addContent(content);
 
 	msg->setToAddress(op->get_to() ? op->get_to() : linphone_core_get_identity(core));
@@ -565,9 +565,9 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 	L_D();
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 
-	shared_ptr<Content> content = make_shared<Content>();
-	content->setContentType("text/plain");
-	content->setBody(message);
+	Content content;
+	content.setContentType("text/plain");
+	content.setBody(message);
 	chatMessage->addContent(content);
 
 	chatMessage->setToAddress(d->peerAddress);

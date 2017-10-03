@@ -117,8 +117,8 @@ private:
 	std::string rttMessage = "";
 	bool isSecured = false;
 	bool isReadOnly = false;
-	std::list<std::shared_ptr<Content> > contents;
-	std::shared_ptr<Content> internalContent;
+	std::list<Content > contents;
+	Content internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	std::shared_ptr<EventsDb> eventsDb;
 	mutable LinphoneErrorInfo * errorInfo = NULL;
