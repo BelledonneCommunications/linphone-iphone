@@ -319,21 +319,6 @@ typedef enum _LinphoneCallStatus {
 } LinphoneCallStatus;
 
 /**
- * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
- * @ingroup chatroom
- */
-typedef enum _LinphoneChatMessageState {
-	LinphoneChatMessageStateIdle, /**< Initial state */
-	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
-	LinphoneChatMessageStateDelivered, /**< Message successfully delivered and acknowledged by server */
-	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
-	LinphoneChatMessageStateFileTransferError, /**< Message was received(and acknowledged) but cannot get file from server */
-	LinphoneChatMessageStateFileTransferDone, /**< File transfer has been completed successfully */
-	LinphoneChatMessageStateDeliveredToUser, /**< Message successfully delivered and acknowledged to destination */
-	LinphoneChatMessageStateDisplayed /**< Message displayed to the remote user */
-} LinphoneChatMessageState;
-
-/**
  * LinphoneConference class
  * The _LinphoneConference struct does not exists, it's the Conference C++ class that is used behind
  * @ingroup call_control

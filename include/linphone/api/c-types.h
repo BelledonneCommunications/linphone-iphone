@@ -22,9 +22,10 @@
 // TODO: Remove me in the future.
 #include "linphone/types.h"
 
-#include "linphone/utils/enum-generator.h"
+#include "linphone/enums/chat-message-enums.h"
 #include "linphone/enums/chat-room-enums.h"
 #include "linphone/enums/event-log-enums.h"
+#include "linphone/utils/enum-generator.h"
 
 // =============================================================================
 
@@ -128,6 +129,12 @@ typedef struct _LinphoneChatMessageEvent LinphoneChatMessageEvent;
 // =============================================================================
 // C Enums.
 // =============================================================================
+
+/**
+ * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
+ * @ingroup chatroom
+ */
+L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 
 L_DECLARE_C_ENUM(ChatRoomState, L_ENUM_VALUES_CHAT_ROOM_STATE);
 L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);

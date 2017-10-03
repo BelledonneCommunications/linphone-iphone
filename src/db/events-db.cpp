@@ -75,15 +75,16 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
+
 	static constexpr EnumToSql<ChatMessage::State> messageStateToSql[] = {
-		{ ChatMessage::Idle, "1" },
-		{ ChatMessage::InProgress, "2" },
-		{ ChatMessage::Delivered, "3" },
-		{ ChatMessage::NotDelivered, "4" },
-		{ ChatMessage::FileTransferError, "5" },
-		{ ChatMessage::FileTransferDone, "6" },
-		{ ChatMessage::DeliveredToUser, "7" },
-		{ ChatMessage::Displayed, "8" }
+		{ ChatMessage::State::Idle, "1" },
+		{ ChatMessage::State::InProgress, "2" },
+		{ ChatMessage::State::Delivered, "3" },
+		{ ChatMessage::State::NotDelivered, "4" },
+		{ ChatMessage::State::FileTransferError, "5" },
+		{ ChatMessage::State::FileTransferDone, "6" },
+		{ ChatMessage::State::DeliveredToUser, "7" },
+		{ ChatMessage::State::Displayed, "8" }
 	};
 
 	static constexpr const char *mapMessageStateToSql (ChatMessage::State state) {
@@ -408,7 +409,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				"    )"
 				"  )"
 				"  AND direction_id = " + string(mapMessageDirectionToSql(ChatMessage::Incoming)) +
-				"  AND state_id = " + string(mapMessageStateToSql(ChatMessage::Displayed));
+				"  AND state_id = " + string(mapMessageStateToSql(ChatMessage::State::Displayed));
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
