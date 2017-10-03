@@ -92,4 +92,6 @@ void RemoteConference::onParticipantRemoved (const Address &addr) {}
 
 void RemoteConference::onParticipantSetAdmin (const Address &addr, bool isAdmin) {}
 
+void RemoteConference::onSubjectChanged (const std::string &subject) {}
+
 LINPHONE_END_NAMESPACE

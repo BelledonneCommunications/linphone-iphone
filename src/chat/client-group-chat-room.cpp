@@ -184,6 +184,15 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 		cb(cr, L_GET_C_BACK_PTR(participant), isAdmin);
 }
 
+void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
+	this->subject = subject;
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
+	if (cb)
+		cb(cr, subject.c_str());
+}
+
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {

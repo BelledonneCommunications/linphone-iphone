@@ -32,6 +32,7 @@ public:
 	virtual void onParticipantAdded (const Address &addr) = 0;
 	virtual void onParticipantRemoved (const Address &addr) = 0;
 	virtual void onParticipantSetAdmin (const Address &addr, bool isAdmin) = 0;
+	virtual void onSubjectChanged (const std::string &subject) = 0;
 };
 
 LINPHONE_END_NAMESPACE

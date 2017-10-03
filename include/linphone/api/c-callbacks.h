@@ -184,6 +184,13 @@ typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChat
 typedef void (*LinphoneChatRoomCbsStateChangedCb) (LinphoneChatRoom *cr, LinphoneChatRoomState newState);
 
 /**
+ * Callback used to notify that the subject of a chat room has changed.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] subject The new subject of the chat room
+ */
+typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const char *subject);
+
+/**
  * Callback used to notify a chat room that a message has been received but we were unable to decrypt it
  * @param cr #LinphoneChatRoom involved in this conversation
  * @param msg The #LinphoneChatMessage that has been received

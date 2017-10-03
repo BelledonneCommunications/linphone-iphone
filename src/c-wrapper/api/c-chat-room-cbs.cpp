@@ -31,6 +31,7 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsParticipantRemovedCb participantRemovedCb;
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb participantAdminStatusChangedCb;
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
+	LinphoneChatRoomCbsSubjectChangedCb subjectChangedCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
 };
 
@@ -114,6 +115,14 @@ LinphoneChatRoomCbsStateChangedCb linphone_chat_room_cbs_get_state_changed (cons
 
 void linphone_chat_room_cbs_set_state_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsStateChangedCb cb) {
 	cbs->stateChangedCb = cb;
+}
+
+LinphoneChatRoomCbsSubjectChangedCb linphone_chat_room_cbs_get_subject_changed (const LinphoneChatRoomCbs *cbs) {
+	return cbs->subjectChangedCb;
+}
+
+void linphone_chat_room_cbs_set_subject_changed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsSubjectChangedCb cb) {
+	cbs->subjectChangedCb = cb;
 }
 
 LinphoneChatRoomCbsUndecryptableMessageReceivedCb linphone_chat_room_cbs_get_undecryptable_message_received (const LinphoneChatRoomCbs *cbs) {
