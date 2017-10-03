@@ -103,7 +103,7 @@ class ObjectPrivate;
 #endif
 
 template<typename T, typename U>
-inline T *getPublicHelper (U *map, const ClonableObjectPrivate *context) {
+inline T *getPublicHelper (const U *map, const ClonableObjectPrivate *context) {
 	auto it = map->find(context);
 	L_ASSERT(it != map->end());
 	return static_cast<T *>(it->second);
