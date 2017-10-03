@@ -90,9 +90,13 @@ void LocalConferenceEventHandlerPrivate::notifyAll(string notify) {
 
 string LocalConferenceEventHandlerPrivate::createNotifyFullState() {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType) confDescr);
 
 	for (const auto &participant : this->conf->getParticipants()) {
 		UserType user = UserType();
@@ -109,9 +113,13 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState() {
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded(const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	UserRolesType roles;
@@ -126,9 +134,13 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded(const Ad
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved(const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	user.setEntity(addr.asStringUriOnly());
@@ -140,9 +152,13 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved(const 
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined(const Address &addr, bool isAdmin) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	UserRolesType roles;

@@ -83,6 +83,9 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.setPort(0);
 	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
+		if(confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
+			d->listener->onSubjectChanged(confInfo->getConferenceDescription().get().getSubject().get());
+
 		for (const auto &user : confInfo->getUsers()->getUser()) {
 			LinphoneAddress *cAddr = linphone_core_interpret_url(d->core, user.getEntity()->c_str());
 			char *cAddrStr = linphone_address_as_string(cAddr);
