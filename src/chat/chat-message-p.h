@@ -29,6 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatMessagePrivate : public ObjectPrivate {
 	friend class CpimChatMessageModifier;
+	friend class EncryptionChatMessageModifier;
 	friend class MultipartChatMessageModifier;
 
 public:
@@ -98,6 +99,7 @@ public:
 	
 	void sendImdn(ImdnType imdnType, LinphoneReason reason);
 	
+	LinphoneReason receive();
 	void send();
 
 private:
@@ -143,6 +145,8 @@ private:
 	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
 
 	void releaseHttpRequest();
+
+	std::shared_ptr<ChatMessage> getPublicSharedPtr();
 	
 	// -----------------------------------------------------------------------------
 

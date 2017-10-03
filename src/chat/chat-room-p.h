@@ -35,6 +35,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
+	friend class ChatMessagePrivate;
 public:
 	ChatRoomPrivate (LinphoneCore *core);
 	virtual ~ChatRoomPrivate ();

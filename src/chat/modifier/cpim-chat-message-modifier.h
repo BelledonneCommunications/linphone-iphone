@@ -29,8 +29,8 @@ class CpimChatMessageModifier : public ChatMessageModifier {
 public:
 	CpimChatMessageModifier () = default;
 
-	void encode (ChatMessagePrivate *messagePrivate) override;
-	void decode (ChatMessagePrivate *messagePrivate) override;
+	int encode (ChatMessagePrivate *messagePrivate) override;
+	int decode (ChatMessagePrivate *messagePrivate) override;
 };
 
 LINPHONE_END_NAMESPACE

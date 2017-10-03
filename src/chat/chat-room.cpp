@@ -416,57 +416,20 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	if (salMsg->url)
 		msg->setExternalBodyUrl(salMsg->url);
 
-	int retval = -1;
-	LinphoneImEncryptionEngine *imee = core->im_encryption_engine;
-	if (imee) {
-		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineCbsIncomingMessageCb cbProcessIncomingMessage = linphone_im_encryption_engine_cbs_get_process_incoming_message(imeeCbs);
-		if (cbProcessIncomingMessage) {
-			retval = cbProcessIncomingMessage(imee, L_GET_C_BACK_PTR(q), L_GET_C_BACK_PTR(msg));
-			if (retval == 0) {
-				msg->setIsSecured(true);
-			} else if (retval > 0) {
-				/* Unable to decrypt message */
-				notifyUndecryptableMessageReceived(msg);
-				reason = linphone_error_code_to_reason(retval);
-				msg->sendDeliveryNotification(reason);
-				/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
-				reason = LinphoneReasonNone;
-				goto end;
-			}
-		}
-	}
+	reason = msg->getPrivate()->receive();
 
-	if ((retval <= 0) && (linphone_core_is_content_type_supported(core, msg->getPrivate()->getContentType().c_str()) == FALSE)) {
-		retval = 415;
-		lError() << "Unsupported MESSAGE (content-type " << msg->getPrivate()->getContentType() << " not recognized)";
-	}
-
-	if (retval > 0) {
-		reason = linphone_error_code_to_reason(retval);
-		msg->sendDeliveryNotification(reason);
-		goto end;
-	}
-
-	if (ContentType::isFileTransfer(msg->getPrivate()->getContentType())) {
-		create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(L_GET_C_BACK_PTR(msg));
-		msg->setIsToBeStored(true);
-	} else if (ContentType::isImIsComposing(msg->getPrivate()->getContentType())) {
+	if (ContentType::isImIsComposing(msg->getPrivate()->getContentType())) {
 		isComposingReceived(msg->getPrivate()->getText());
-		msg->setIsToBeStored(false);
 		increaseMsgCount = FALSE;
 		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (ContentType::isImdn(msg->getPrivate()->getContentType())) {
 		imdnReceived(msg->getPrivate()->getText());
-		msg->setIsToBeStored(false);
 		increaseMsgCount = FALSE;
 		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
-	} else if (ContentType::isText(msg->getPrivate()->getContentType())) {
-		msg->setIsToBeStored(true);
 	}
 
 	if (increaseMsgCount) {
@@ -481,10 +444,6 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	}
 
 	chatMessageReceived(msg);
-
-	if (msg->isToBeStored()) {
-		msg->store();
-	}
 
 	pendingMessage = nullptr;
 
@@ -751,7 +710,7 @@ void ChatRoom::markAsRead () {
 	sqlite3_free(buf);
 
 	if (d->pendingMessage) {
-		d->pendingMessage->getPrivate()->setState(ChatMessage::State::Displayed);
+		d->pendingMessage->updateState(ChatMessage::State::Displayed);
 		d->pendingMessage->sendDisplayNotification();
 	}
 

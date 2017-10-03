@@ -26,14 +26,16 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-void MultipartChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
+int MultipartChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	if (messagePrivate->contents.size() > 1) {
 		//TODO
 	}
+	return 0;
 }
 
-void MultipartChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
+int MultipartChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	//TODO
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

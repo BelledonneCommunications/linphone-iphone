@@ -48,6 +48,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/is-composing.h
 	chat/modifier/chat-message-modifier.h
 	chat/modifier/cpim-chat-message-modifier.h
+	chat/modifier/encryption-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
 	chat/real-time-text-chat-room-p.h
 	chat/real-time-text-chat-room.h
@@ -129,6 +130,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/imdn.cpp
 	chat/is-composing.cpp
 	chat/modifier/cpim-chat-message-modifier.cpp
+	chat/modifier/encryption-chat-message-modifier.cpp
 	chat/modifier/multipart-chat-message-modifier.cpp
 	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp

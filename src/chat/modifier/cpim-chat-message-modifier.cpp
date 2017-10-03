@@ -30,7 +30,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-void CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
+int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	Cpim::Message message;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
@@ -68,9 +68,10 @@ void CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 		newContent->setBody(message.asString());
 		messagePrivate->internalContent = newContent;
 	}
+	return 0;
 }
 
-void CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
+int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	shared_ptr<Content> content;
 	if (messagePrivate->internalContent) {
 		content = messagePrivate->internalContent;
@@ -94,6 +95,7 @@ void CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	} else {
 		//TODO
 	}
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

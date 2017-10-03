@@ -29,9 +29,11 @@
 #include "content/content.h"
 #include "chat-room-p.h"
 #include "real-time-text-chat-room.h"
-#include "modifier/multipart-chat-message-modifier.h"
 #include "modifier/cpim-chat-message-modifier.h"
+#include "modifier/encryption-chat-message-modifier.h"
+#include "modifier/multipart-chat-message-modifier.h"
 
+#include "logger/logger.h"
 #include "ortp/b64.h"
 
 // =============================================================================
@@ -52,6 +54,11 @@ ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 ChatMessagePrivate::~ChatMessagePrivate () {}
 
 // -----------------------------------------------------------------------------
+
+shared_ptr<ChatMessage> ChatMessagePrivate::getPublicSharedPtr() {
+	L_Q();
+	return q->getSharedPtr();
+}
 
 void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
 	chatRoom = cr;
@@ -887,6 +894,59 @@ void ChatMessagePrivate::releaseHttpRequest() {
 	}
 }
 
+LinphoneReason ChatMessagePrivate::receive() {
+	L_Q();
+
+	LinphoneReason reason = LinphoneReasonNone;
+	bool store = false;
+	
+	// ---------------------------------------
+	// Start of message modification
+	// ---------------------------------------
+
+	EncryptionChatMessageModifier ecmm;
+	int retval = 0;
+	retval = ecmm.decode(this);
+	if (retval > 0) {
+		/* Unable to decrypt message */
+		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(getPublicSharedPtr());
+		reason = linphone_error_code_to_reason(retval);
+		q->sendDeliveryNotification(reason);
+		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
+		reason = LinphoneReasonNone;
+		goto end;
+	}
+	
+	// ---------------------------------------
+	// End of message modification
+	// ---------------------------------------
+
+	if ((retval <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().c_str()) == FALSE)) {
+		retval = 415;
+		lError() << "Unsupported MESSAGE (content-type " << getContentType() << " not recognized)";
+	}
+
+	if (retval > 0) {
+		reason = linphone_error_code_to_reason(retval);
+		q->sendDeliveryNotification(reason);
+		goto end;
+	}
+
+	if (ContentType::isFileTransfer(getContentType())) {
+		create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(L_GET_C_BACK_PTR(getPublicSharedPtr()));
+		store = true;
+	} else if (ContentType::isText(getContentType())) {
+		store = true;
+	}
+
+	if (store) {
+		q->store();
+	}
+
+end:
+	return reason;
+}
+
 void ChatMessagePrivate::send() {
 	L_Q();
 	SalOp *op = salOp;
@@ -941,30 +1001,20 @@ void ChatMessagePrivate::send() {
 	if (!getContentType().empty()) {
 		clearTextContentType = getContentType();
 	}
-
-	int retval = -1;
-	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
-	if (imee) {
-		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
-		if (cbProcessOutgoingMessage) {
-			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(q->getSharedPtr()));
-			if (retval == 0) {
-				isSecured = true;
-			}
-		}
+	
+	if (contents.size() > 1) {
+		MultipartChatMessageModifier mcmm;
+		mcmm.encode(this);
 	}
+
+	EncryptionChatMessageModifier ecmm;
+	int retval = ecmm.encode(this);
 	
 	if (retval > 0) {
 		sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
 		q->updateState(ChatMessage::State::NotDelivered);
 		q->store();
 		return;
-	}
-
-	if (contents.size() > 1) {
-		MultipartChatMessageModifier mcmm;
-		mcmm.encode(this);
 	}
 
 	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {

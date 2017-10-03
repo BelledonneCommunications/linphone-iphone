@@ -1,5 +1,5 @@
 /*
- * multipart-chat-message-modifier.h
+ * encryption-chat-message-modifier.h
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
-#define _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
+#ifndef _ENCRYPTION_CHAT_MESSAGE_MODIFIER_H_
+#define _ENCRYPTION_CHAT_MESSAGE_MODIFIER_H_
 
 #include "chat-message-modifier.h"
 
@@ -25,14 +25,14 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class MultipartChatMessageModifier : public ChatMessageModifier {
+class EncryptionChatMessageModifier : public ChatMessageModifier {
 public:
-	MultipartChatMessageModifier () = default;
+	EncryptionChatMessageModifier () = default;
 
-	int encode (ChatMessagePrivate *message) override;
-	int decode (ChatMessagePrivate *message) override;
+	int encode (ChatMessagePrivate *messagePrivate) override;
+	int decode (ChatMessagePrivate *messagePrivate) override;
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _MULTIPART_CHAT_MESSAGE_MODIFIER_H_
+#endif // ifndef _ENCRYPTION_CHAT_MESSAGE_MODIFIER_H_

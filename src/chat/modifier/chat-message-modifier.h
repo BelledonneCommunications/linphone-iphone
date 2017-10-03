@@ -20,7 +20,6 @@
 #define _CHAT_MESSAGE_MODIFIER_H_
 
 #include "linphone/utils/general.h"
-
 #include "private.h"
 
 // =============================================================================
@@ -33,8 +32,8 @@ class ChatMessageModifier {
 public:
 	virtual ~ChatMessageModifier () = default;
 
-	virtual void encode (ChatMessagePrivate *messagePrivate) = 0;
-	virtual void decode (ChatMessagePrivate *messagePrivate) = 0;
+	virtual int encode (ChatMessagePrivate *messagePrivate) = 0;
+	virtual int decode (ChatMessagePrivate *messagePrivate) = 0;
 };
 
 LINPHONE_END_NAMESPACE
