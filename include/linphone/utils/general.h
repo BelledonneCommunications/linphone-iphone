@@ -103,7 +103,7 @@ class ObjectPrivate;
 #endif
 
 template<typename T>
-inline ClonableObject *getPublicHelper (T *object, ClonableObjectPrivate *context) {
+inline ClonableObject *getPublicHelper (T *object, const ClonableObjectPrivate *context) {
 	auto it = object->find(context);
 	L_ASSERT(it != object->end());
 	return it->second;
@@ -117,7 +117,7 @@ inline const ClonableObject *getPublicHelper (const T *object, const ClonableObj
 }
 
 template<typename T>
-inline Object *getPublicHelper (T *object, ObjectPrivate *) {
+inline Object *getPublicHelper (T *object, const ObjectPrivate *) {
 	return object;
 }
 
@@ -127,7 +127,7 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 }
 
 #define L_DECLARE_PUBLIC(CLASS) \
-	inline CLASS * getPublic () { \
+	inline CLASS *getPublic () { \
 		return static_cast<CLASS *>(getPublicHelper(mPublic, this)); \
 	} \
 	inline const CLASS *getPublic () const { \
@@ -141,6 +141,14 @@ inline const Object *getPublicHelper (const T *object, const ObjectPrivate *) {
 
 #define L_D() decltype(std::declval<decltype(*this)>().getPrivate()) const d = getPrivate();
 #define L_Q() decltype(std::declval<decltype(*this)>().getPublic()) const q = getPublic();
+
+#define L_OVERRIDE_SHARED_FROM_THIS(CLASS) \
+	inline std::shared_ptr<CLASS> getSharedFromThis () { \
+		return std::static_pointer_cast<CLASS>(Object::getSharedFromThis()); \
+	} \
+	inline std::shared_ptr<const CLASS> getSharedFromThis () const { \
+		return std::static_pointer_cast<const CLASS>(Object::getSharedFromThis()); \
+	}
 
 #define L_USE_DEFAULT_SHARE_IMPL(CLASS, PARENT_CLASS) \
 	CLASS::CLASS (const CLASS &src) : PARENT_CLASS(*src.getPrivate()) {} \

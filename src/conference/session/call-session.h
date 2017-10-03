@@ -38,6 +38,8 @@ class LINPHONE_PUBLIC CallSession : public Object {
 	friend class ClientGroupChatRoom;
 
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(CallSession);
+
 	CallSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
 
 	LinphoneStatus accept (const CallSessionParams *csp = nullptr);

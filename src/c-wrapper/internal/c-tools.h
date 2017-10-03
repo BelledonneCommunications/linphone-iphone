@@ -294,7 +294,7 @@ public:
 			return nullptr;
 
 		try {
-			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->shared_from_this()));
+			return getCBackPtr(std::static_pointer_cast<CppType>(cppObject->getSharedFromThis()));
 		} catch (const std::bad_weak_ptr &e) {
 			abort(e.what());
 		}
@@ -544,13 +544,6 @@ LINPHONE_END_NAMESPACE
 		NULL, \
 		FALSE \
 	);
-
-#define L_DECLARE_C_OBJECT_NEW_DEFAULT(C_TYPE, C_NAME) \
-	Linphone ## C_TYPE * linphone_ ## C_NAME ## _new() { \
-		Linphone ## C_TYPE *object = _linphone_ ## C_TYPE ## _init(); \
-		object->cppPtr = std::make_shared<LinphonePrivate::C_TYPE>(); \
-		return object; \
-	}
 
 // -----------------------------------------------------------------------------
 // Helpers.

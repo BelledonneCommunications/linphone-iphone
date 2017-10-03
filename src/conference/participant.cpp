@@ -29,11 +29,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-shared_ptr<CallSession> ParticipantPrivate::createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener) {
+shared_ptr<CallSession> ParticipantPrivate::createSession (
+	const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener
+) {
 	if (hasMedia && (!params || dynamic_cast<const MediaSessionParams *>(params))) {
-		session = make_shared<MediaSession>(conference, params, listener);
+		session = ObjectFactory::create<MediaSession>(conference, params, listener);
 	} else {
-		session = make_shared<CallSession>(conference, params, listener);
+		session = ObjectFactory::create<CallSession>(conference, params, listener);
 	}
 	return session;
 }

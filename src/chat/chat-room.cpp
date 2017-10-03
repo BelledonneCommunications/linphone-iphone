@@ -211,7 +211,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			shared_ptr<ChatMessage> msg = q->createMessage();
 			msg->setFromAddress(identity);
 			msg->setToAddress(peerAddress.asString());
-		
+
 			shared_ptr<Content> content = make_shared<Content>();
 			content->setContentType("application/im-iscomposing+xml");
 			content->setBody(payload);
@@ -277,7 +277,7 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		}
 		if (argv[13]) {
 			content->setContentType(argv[13]);
-		}		
+		}
 
 		Address peer(peerAddress.asString());
 		if (atoi(argv[3]) == ChatMessage::Direction::Incoming) {
@@ -555,7 +555,6 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 
 	chatMessage->setToAddress(d->peerAddress);
 	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
-	
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
 
@@ -578,7 +577,7 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 }
 
 shared_ptr<ChatMessage> ChatRoom::createMessage () {
-	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(static_pointer_cast<ChatRoom>(shared_from_this()));
+	shared_ptr<ChatMessage> chatMessage = ObjectFactory::create<ChatMessage>(getSharedFromThis());
 	chatMessage->getPrivate()->setTime(ms_time(0));
 	return chatMessage;
 }
@@ -742,7 +741,7 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 			d->addTransientMessage(msg);
 			/* Store the message so that even if the upload is stopped, it can be done again */
 			d->storeOrUpdateMessage(msg);
-			
+
 			msg->getPrivate()->setState(ChatMessage::State::InProgress);
 		} else {
 			return;

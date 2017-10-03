@@ -43,7 +43,7 @@ shared_ptr<Participant> RemoteConference::addParticipant (const Address &addr, c
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
 		return participant;
-	participant = make_shared<Participant>(addr);
+	participant = ObjectFactory::create<Participant>(addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, this);
 	participants.push_back(participant);
 	if (!activeParticipant)

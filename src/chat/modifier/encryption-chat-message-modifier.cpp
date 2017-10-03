@@ -40,7 +40,7 @@ int EncryptionChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 		if (cbProcessOutgoingMessage) {
-			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublicSharedPtr()));
+			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublic()->getSharedFromThis()));
 			if (retval == 0) {
 				messagePrivate->isSecured = true;
 			}
@@ -56,7 +56,7 @@ int EncryptionChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsIncomingMessageCb cbProcessIncomingMessage = linphone_im_encryption_engine_cbs_get_process_incoming_message(imeeCbs);
 		if (cbProcessIncomingMessage) {
-			retval = cbProcessIncomingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublicSharedPtr()));
+			retval = cbProcessIncomingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublic()->getSharedFromThis()));
 			if (retval == 0) {
 				messagePrivate->isSecured = true;
 			}

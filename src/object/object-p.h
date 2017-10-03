@@ -19,6 +19,7 @@
 #ifndef _OBJECT_P_H_
 #define _OBJECT_P_H_
 
+#include <memory>
 #include <unordered_map>
 
 #include "variant/variant.h"
@@ -28,14 +29,17 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ObjectPrivate {
+	friend class ObjectFactory;
+
 public:
 	virtual ~ObjectPrivate () = default;
 
 protected:
-	Object *mPublic = nullptr;
+	Object *mPublic;
 
 private:
 	std::unordered_map<std::string, Variant> properties;
+	std::weak_ptr<Object> weak;
 
 	L_DECLARE_PUBLIC(Object);
 };

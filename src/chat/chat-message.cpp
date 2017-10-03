@@ -55,11 +55,6 @@ ChatMessagePrivate::~ChatMessagePrivate () {}
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<ChatMessage> ChatMessagePrivate::getPublicSharedPtr() {
-	L_Q();
-	return q->getSharedPtr();
-}
-
 void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
 	chatRoom = cr;
 }
@@ -607,7 +602,7 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 					_chat_message_file_transfer_on_progress, NULL, NULL,
 					_chat_message_on_send_body, _chat_message_on_send_end, this);
 			if (!fileTransferFilePath.empty()) {
-				belle_sip_user_body_handler_t *body_handler = (belle_sip_user_body_handler_t *)first_part_bh; 
+				belle_sip_user_body_handler_t *body_handler = (belle_sip_user_body_handler_t *)first_part_bh;
 				// No need to add again the callback for progression, otherwise it will be called twice
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(fileTransferFilePath.c_str(), NULL, this);
 				linphone_content_set_size(cFileTransferInformation, belle_sip_file_body_handler_get_file_size((belle_sip_file_body_handler_t *)first_part_bh));
@@ -765,8 +760,8 @@ void ChatMessagePrivate::processResponseHeadersFromGetFile(const belle_http_resp
 			body_size = linphone_content_get_size(cFileTransferInformation);
 		}
 
-		body_handler = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(body_size, _chat_message_file_transfer_on_progress, 
-																					NULL, _chat_message_on_recv_body, 
+		body_handler = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(body_size, _chat_message_file_transfer_on_progress,
+																					NULL, _chat_message_on_recv_body,
 																					NULL, _chat_message_on_recv_end, this);
 		if (!fileTransferFilePath.empty()) {
 			belle_sip_user_body_handler_t *bh = (belle_sip_user_body_handler_t *)body_handler;
@@ -805,7 +800,7 @@ void ChatMessagePrivate::processIoErrorUpload(const belle_sip_io_error_event_t *
 	lError() << "I/O Error during file upload of msg [" << this << "]";
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
+	chatRoom->getPrivate()->removeTransientMessage(q->getSharedFromThis());
 }
 
 static void _chat_message_process_auth_requested_upload(void *data, belle_sip_auth_event *event) {
@@ -818,7 +813,7 @@ void ChatMessagePrivate::processAuthRequestedUpload(const belle_sip_auth_event *
 	lError() << "Error during file upload: auth requested for msg [" << this << "]";
 	q->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-	chatRoom->getPrivate()->removeTransientMessage(q->getSharedPtr());
+	chatRoom->getPrivate()->removeTransientMessage(q->getSharedFromThis());
 }
 
 static void _chat_message_process_io_error_download(void *data, const belle_sip_io_error_event_t *event) {
@@ -983,7 +978,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	LinphoneReason reason = LinphoneReasonNone;
 	bool store = false;
-	
+
 	// ---------------------------------------
 	// Start of message modification
 	// ---------------------------------------
@@ -998,7 +993,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	retval = ecmm.decode(this);
 	if (retval > 0) {
 		/* Unable to decrypt message */
-		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(getPublicSharedPtr());
+		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
 		reason = linphone_error_code_to_reason(retval);
 		q->sendDeliveryNotification(reason);
 		return reason;
@@ -1006,7 +1001,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	MultipartChatMessageModifier mcmm;
 	mcmm.decode(this);
-	
+
 	// ---------------------------------------
 	// End of message modification
 	// ---------------------------------------
@@ -1040,7 +1035,7 @@ void ChatMessagePrivate::send() {
 	L_Q();
 	SalOp *op = salOp;
 	LinphoneCall *call = NULL;
-	
+
 	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 		call = linphone_core_get_call_by_remote_address(chatRoom->getCore(), chatRoom->getPeerAddress().asString().c_str());
 		if (call) {
@@ -1076,7 +1071,7 @@ void ChatMessagePrivate::send() {
 		op->set_user_pointer(L_GET_C_BACK_PTR(q)); /* If out of call, directly store msg */
 		linphone_address_unref(peer);
 	}
-	
+
 	// ---------------------------------------
 	// Start of message modification
 	// ---------------------------------------
@@ -1090,7 +1085,7 @@ void ChatMessagePrivate::send() {
 	if (!getContentType().empty()) {
 		clearTextContentType = getContentType();
 	}
-	
+
 	if (contents.size() > 1) {
 		MultipartChatMessageModifier mcmm;
 		mcmm.encode(this);
@@ -1098,7 +1093,6 @@ void ChatMessagePrivate::send() {
 
 	EncryptionChatMessageModifier ecmm;
 	int retval = ecmm.encode(this);
-	
 	if (retval > 0) {
 		sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
 		q->updateState(ChatMessage::State::NotDelivered);
@@ -1110,7 +1104,7 @@ void ChatMessagePrivate::send() {
 		CpimChatMessageModifier ccmm;
 		ccmm.encode(this);
 	}
-	
+
 	// ---------------------------------------
 	// End of message modification
 	// ---------------------------------------
@@ -1144,7 +1138,7 @@ void ChatMessagePrivate::send() {
 		/* Might be better fixed by delivering status, but too costly for now */
 		return;
 	}
-	
+
 	/* If operation failed, we should not change message state */
 	if (q->isOutgoing()) {
 		setIsReadOnly(true);
@@ -1379,9 +1373,8 @@ void ChatMessage::updateState(State state) {
 	d->setState(state);
 	linphone_chat_message_store_state(L_GET_C_BACK_PTR(this));
 
-	if (state == Delivered || state == NotDelivered) {
-		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(static_pointer_cast<ChatMessage>(shared_from_this()));
-	}
+	if (state == Delivered || state == NotDelivered)
+		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(getSharedFromThis());
 }
 
 void ChatMessage::reSend() {
@@ -1392,7 +1385,7 @@ void ChatMessage::reSend() {
 		return;
 	}
 
-	d->chatRoom->sendMessage(static_pointer_cast<ChatMessage>(shared_from_this()));
+	d->chatRoom->sendMessage(getSharedFromThis());
 }
 
 void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
@@ -1510,10 +1503,6 @@ int ChatMessage::putCharacter(uint32_t character) {
 		return 0;
 	}
 	return -1;
-}
-
-shared_ptr<ChatMessage> ChatMessage::getSharedPtr() {
-	return static_pointer_cast<ChatMessage>(shared_from_this());
 }
 
 LINPHONE_END_NAMESPACE

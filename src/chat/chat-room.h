@@ -44,6 +44,7 @@ class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
 
 public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
+	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
 
 	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;

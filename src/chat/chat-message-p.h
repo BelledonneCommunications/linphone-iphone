@@ -37,20 +37,20 @@ public:
 	virtual ~ChatMessagePrivate ();
 
 	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
-	
+
 	// -----------------------------------------------------------------------------
 
 	void setDirection (ChatMessage::Direction dir);
 
 	void setState(ChatMessage::State state);
-	
+
 	void setTime(time_t time);
-	
+
 	void setIsReadOnly(bool readOnly);
-	
+
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
-	
+
 	belle_http_request_t *getHttpRequest() const;
 	void setHttpRequest(belle_http_request_t *request);
 
@@ -67,16 +67,16 @@ public:
 	// -----------------------------------------------------------------------------
 	// Methods only used for C wrapper
 	// -----------------------------------------------------------------------------
-	
+
 	const std::string& getContentType();
 	void setContentType(const std::string& contentType);
 
 	const std::string& getText();
 	void setText(const std::string& text);
-	
+
 	LinphoneContent * getFileTransferInformation() const;
 	void setFileTransferInformation(LinphoneContent *content);
-	
+
 	// -----------------------------------------------------------------------------
 	// Need to be public to be called from static C callbacks
 	// -----------------------------------------------------------------------------
@@ -94,11 +94,11 @@ public:
 	void processAuthRequestedUpload(const belle_sip_auth_event *event);
 	void processIoErrorDownload(const belle_sip_io_error_event_t *event);
 	void processResponseFromGetFile(const belle_http_response_event_t *event);
-	
+
 	// -----------------------------------------------------------------------------
-	
+
 	void sendImdn(ImdnType imdnType, LinphoneReason reason);
-	
+
 	LinphoneReason receive();
 	void send();
 
@@ -133,7 +133,7 @@ private:
 	std::string cText = "";
 	// Used for compatibility with previous C API
 	LinphoneContent *cFileTransferInformation = NULL;
-	
+
 	// -----------------------------------------------------------------------------
 
 	std::string createImdnXml(ImdnType imdnType, LinphoneReason reason);
@@ -144,10 +144,6 @@ private:
 	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
 	void releaseHttpRequest();
 	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
-
-	std::shared_ptr<ChatMessage> getPublicSharedPtr();
-	
-	// -----------------------------------------------------------------------------
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

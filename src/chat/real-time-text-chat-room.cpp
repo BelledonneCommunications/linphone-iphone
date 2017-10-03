@@ -156,7 +156,7 @@ int RealTimeTextChatRoom::getNbParticipants () const {
 list<shared_ptr<Participant>> RealTimeTextChatRoom::getParticipants () const {
 	L_D();
 	list<shared_ptr<Participant>> l;
-	l.push_back(make_shared<Participant>(d->peerAddress));
+	l.push_back(ObjectFactory::create<Participant>(d->peerAddress));
 	return l;
 }
 

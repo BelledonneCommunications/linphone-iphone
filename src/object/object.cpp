@@ -30,8 +30,21 @@ Object::~Object () {
 	delete mPrivate;
 }
 
-Object::Object (ObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
+Object::Object (ObjectPrivate &p) : mPrivate(&p) {}
+
+shared_ptr<Object> Object::getSharedFromThis () {
+	return mPrivate->weak.lock();
+}
+
+shared_ptr<const Object> Object::getSharedFromThis () const {
+	return mPrivate->weak.lock();
+}
+
+void ObjectFactory::setPublic (const shared_ptr<Object> &object) {
+	L_ASSERT(object);
+	ObjectPrivate *d = object->getPrivate();
+	d->mPublic = object.get();
+	d->weak = object;
 }
 
 LINPHONE_END_NAMESPACE

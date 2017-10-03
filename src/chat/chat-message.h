@@ -44,12 +44,14 @@ class LINPHONE_PUBLIC ChatMessage : public Object {
 	friend class ChatRoomPrivate;
 	friend class RealTimeTextChatRoomPrivate;
 
-public:	
+public:
+	L_OVERRIDE_SHARED_FROM_THIS(ChatMessage);
+
 	enum Direction {
 		Incoming,
 		Outgoing
 	};
-	
+
 	enum State {
 		Idle,
 		InProgress,
@@ -100,22 +102,22 @@ public:
 
 	const std::string& getExternalBodyUrl() const;
 	void setExternalBodyUrl(const std::string &url);
-	
+
 	time_t getTime() const;
 
 	bool isSecured() const;
 	void setIsSecured(bool isSecured);
 
 	State getState() const;
-	
+
 	const std::string& getId() const;
 	void setId(const std::string&);
 
 	bool isRead() const;
-	
+
 	const std::string& getAppdata() const;
 	void setAppdata(const std::string &appData);
-	
+
 	const Address& getFromAddress() const;
 	void setFromAddress(Address from);
 	void setFromAddress(const std::string& from);
@@ -131,9 +133,9 @@ public:
 	void setIsToBeStored(bool store);
 
 	const LinphoneErrorInfo * getErrorInfo() const;
-	
+
 	bool isReadOnly() const;
-	
+
 	std::list<std::shared_ptr<const Content> > getContents() const;
 	void addContent(const std::shared_ptr<Content> &content);
 	void removeContent(const std::shared_ptr<const Content> &content);
@@ -143,7 +145,6 @@ public:
 	void removeCustomHeader(const std::string &headerName);
 
 protected:
-	std::shared_ptr<ChatMessage> getSharedPtr();
 	explicit ChatMessage(ChatMessagePrivate &p);
 
 private:

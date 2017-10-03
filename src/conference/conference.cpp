@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 Conference::Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
 	: core(core), callListener(listener) {
-	me = make_shared<Participant>(myAddress);
+	me = ObjectFactory::create<Participant>(myAddress);
 }
 
 // -----------------------------------------------------------------------------
