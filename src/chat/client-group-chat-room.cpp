@@ -39,14 +39,14 @@ ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core)
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
 	: ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
 	string factoryUri = linphone_core_get_conference_factory_uri(core);
-	focus = make_shared<Participant>(factoryUri);
+	focus = ObjectFactory::create<Participant>(factoryUri);
 	this->subject = subject;
 }
 
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	activeParticipant = make_shared<Participant>(addr);
+	activeParticipant = ObjectFactory::create<Participant>(addr);
 	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
 	return activeParticipant;
 }
@@ -143,7 +143,7 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 		lWarning() << "Participant " << participant << " added but already in the list of participants!";
 		return;
 	}
-	participant = make_shared<Participant>(addr);
+	participant = ObjectFactory::create<Participant>(addr);
 	participants.push_back(participant);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
