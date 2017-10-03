@@ -270,14 +270,13 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		message = q->createMessage();
 
 		Content content;
-		message->addContent(content);
-
 		if (argv[4]) {
 			content.setBody(argv[4]);
 		}
 		if (argv[13]) {
 			content.setContentType(argv[13]);
 		}
+		message->addContent(content);
 
 		Address peer(peerAddress.asString());
 		if (atoi(argv[3]) == ChatMessage::Direction::Incoming) {
@@ -310,13 +309,13 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 
 		/* Fix content type for old messages that were stored without it */
 		/* To keep ?
-		if (!linphone_chat_message_get_content_type(newMessage)) {
-			if (linphone_chat_message_get_file_transfer_information(newMessage)) {
-				linphone_chat_message_set_content_type(newMessage, ms_strdup("application/vnd.gsma.rcs-ft-http+xml"));
-			} else if (linphone_chat_message_get_external_body_url(newMessage)) {
-				linphone_chat_message_set_content_type(newMessage, ms_strdup("message/external-body"));
+		if (message->getPrivate()->getContentType().empty()) {
+			if (message->getPrivate()->getFileTransferInformation()) {
+				message->getPrivate()->setContentType("application/vnd.gsma.rcs-ft-http+xml");
+			} else if (!message->getExternalBodyUrl().empty()) {
+				message->getPrivate()->setContentType("message/external-body");
 			} else {
-				linphone_chat_message_set_content_type(newMessage, ms_strdup("text/plain"));
+				message->getPrivate()->setContentType("text/plain");
 			}
 		}*/
 
