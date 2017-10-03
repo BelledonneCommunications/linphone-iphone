@@ -152,4 +152,8 @@ bool ContentType::isText (const string &contentType) {
 	return contentType == "text/plain";
 }
 
+bool ContentType::isCPIM(const string &contentType) {
+	return contentType == "Message/CPIM";
+}
+
 LINPHONE_END_NAMESPACE

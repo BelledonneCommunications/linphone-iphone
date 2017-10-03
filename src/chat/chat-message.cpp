@@ -904,6 +904,11 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// Start of message modification
 	// ---------------------------------------
 
+	if (ContentType::isCPIM(getContentType())) {
+		CpimChatMessageModifier ccmm;
+		ccmm.decode(this);
+	}
+
 	EncryptionChatMessageModifier ecmm;
 	int retval = 0;
 	retval = ecmm.decode(this);
@@ -914,8 +919,11 @@ LinphoneReason ChatMessagePrivate::receive() {
 		q->sendDeliveryNotification(reason);
 		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
 		reason = LinphoneReasonNone;
-		goto end;
+		return reason;
 	}
+
+	MultipartChatMessageModifier mcmm;
+	mcmm.decode(this);
 	
 	// ---------------------------------------
 	// End of message modification
@@ -929,7 +937,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	if (retval > 0) {
 		reason = linphone_error_code_to_reason(retval);
 		q->sendDeliveryNotification(reason);
-		goto end;
+		return reason;
 	}
 
 	if (ContentType::isFileTransfer(getContentType())) {
@@ -943,7 +951,6 @@ LinphoneReason ChatMessagePrivate::receive() {
 		q->store();
 	}
 
-end:
 	return reason;
 }
 
