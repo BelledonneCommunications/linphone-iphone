@@ -983,7 +983,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (ContentType::isCPIM(getContentType())) {
+	if (ContentType::isCpim(getContentType())) {
 		CpimChatMessageModifier ccmm;
 		ccmm.decode(this);
 	}

@@ -59,7 +59,7 @@ public:
 	static bool isImIsComposing (const std::string &contentType);
 	static bool isImdn (const std::string &contentType);
 	static bool isText (const std::string &contentType);
-	static bool isCPIM (const std::string &contentType);
+	static bool isCpim (const std::string &contentType);
 
 private:
 	L_DECLARE_PRIVATE(ContentType);

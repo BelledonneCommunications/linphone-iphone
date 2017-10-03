@@ -152,7 +152,7 @@ bool ContentType::isText (const string &contentType) {
 	return contentType == "text/plain";
 }
 
-bool ContentType::isCPIM(const string &contentType) {
+bool ContentType::isCpim(const string &contentType) {
 	return contentType == "Message/CPIM";
 }
 
