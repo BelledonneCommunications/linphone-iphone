@@ -32,6 +32,11 @@ LINPHONE_BEGIN_NAMESPACE
 class Hacks {
 public:
 	static bool contactHasParam(const std::string &contact, const std::string &paramName);
+
+private:
+	Hacks () = default;
+
+	L_DISABLE_COPY(Hacks);
 };
 
 LINPHONE_END_NAMESPACE
