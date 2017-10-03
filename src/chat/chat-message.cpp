@@ -187,6 +187,10 @@ LinphoneContent * ChatMessagePrivate::getFileTransferInformation() const {
 }
 
 void ChatMessagePrivate::setFileTransferInformation(LinphoneContent *content) {
+	if (cFileTransferInformation) {
+		linphone_content_unref(cFileTransferInformation);
+		cFileTransferInformation = NULL;
+	}
 	cFileTransferInformation = content;
 }
 
@@ -894,6 +898,86 @@ void ChatMessagePrivate::releaseHttpRequest() {
 	}
 }
 
+void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml() {
+	xmlChar *file_url = NULL;
+	xmlDocPtr xmlMessageBody;
+	xmlNodePtr cur;
+	/* parse the msg body to get all informations from it */
+	xmlMessageBody = xmlParseDoc((const xmlChar *)getText().c_str());
+	LinphoneContent *content = linphone_content_new();
+	setFileTransferInformation(content);
+
+	cur = xmlDocGetRootElement(xmlMessageBody);
+	if (cur != NULL) {
+		cur = cur->xmlChildrenNode;
+		while (cur != NULL) {
+			if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) {
+				/* we found a file info node, check if it has a type="file" attribute */
+				xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+				if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) { /* this is the node we are looking for */
+					cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
+					while (cur != NULL) {
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
+							xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							linphone_content_set_size(content, (size_t)strtol((const char *)fileSizeString, NULL, 10));
+							xmlFree(fileSizeString);
+						}
+
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
+							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							linphone_content_set_name(content, (char *)filename);
+							xmlFree(filename);
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
+							xmlChar *contentType = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							int contentTypeIndex = 0;
+							char *type;
+							char *subtype;
+							while (contentType[contentTypeIndex] != '/' && contentType[contentTypeIndex] != '\0') {
+								contentTypeIndex++;
+							}
+							type = ms_strndup((char *)contentType, contentTypeIndex);
+							subtype = ms_strdup(((char *)contentType + contentTypeIndex + 1));
+							linphone_content_set_type(content, type);
+							linphone_content_set_subtype(content, subtype);
+							ms_free(subtype);
+							ms_free(type);
+							xmlFree(contentType);
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
+							file_url = xmlGetProp(cur, (const xmlChar *)"url");
+						}
+
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) {
+							/* there is a key in the msg: file has been encrypted */
+							/* convert the key from base 64 */
+							xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							size_t keyLength = b64::b64_decode((char *)keyb64, strlen((char *)keyb64), NULL, 0);
+							uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
+							/* decode the key into local key buffer */
+							b64::b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
+							linphone_content_set_key(content, (char *)keyBuffer, keyLength);
+							/* duplicate key value into the linphone content private structure */
+							xmlFree(keyb64);
+							free(keyBuffer);
+						}
+
+						cur = cur->next;
+					}
+					xmlFree(typeAttribute);
+					break;
+				}
+				xmlFree(typeAttribute);
+			}
+			cur = cur->next;
+		}
+	}
+	xmlFreeDoc(xmlMessageBody);
+
+	externalBodyUrl = string((const char *)file_url);
+	xmlFree(file_url);
+}
+
 LinphoneReason ChatMessagePrivate::receive() {
 	L_Q();
 
@@ -917,8 +1001,6 @@ LinphoneReason ChatMessagePrivate::receive() {
 		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(getPublicSharedPtr());
 		reason = linphone_error_code_to_reason(retval);
 		q->sendDeliveryNotification(reason);
-		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
-		reason = LinphoneReasonNone;
 		return reason;
 	}
 
@@ -941,7 +1023,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	}
 
 	if (ContentType::isFileTransfer(getContentType())) {
-		create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(L_GET_C_BACK_PTR(getPublicSharedPtr()));
+		createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
 		store = true;
 	} else if (ContentType::isText(getContentType())) {
 		store = true;

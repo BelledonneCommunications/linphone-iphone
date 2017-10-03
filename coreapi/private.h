@@ -1111,7 +1111,6 @@ LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
 void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
 void linphone_chat_message_release(LinphoneChatMessage *msg);
-void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(LinphoneChatMessage *msg);
 void linphone_chat_message_fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id);
 void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
 

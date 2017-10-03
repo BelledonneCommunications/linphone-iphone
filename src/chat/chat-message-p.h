@@ -141,10 +141,9 @@ private:
 	void fileUploadEndBackgroundTask();
 	void fileUploadBeginBackgroundTask();
 	bool isFileTransferInProgressAndValid();
-
 	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
-
 	void releaseHttpRequest();
+	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
 
 	std::shared_ptr<ChatMessage> getPublicSharedPtr();
 	

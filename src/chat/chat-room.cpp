@@ -419,6 +419,12 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 
 	reason = msg->getPrivate()->receive();
 
+	if (reason == LinphoneReasonNotAcceptable || reason == LinphoneReasonUnknown) {
+		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
+		reason = LinphoneReasonNone;
+		goto end;
+	}
+
 	if (ContentType::isImIsComposing(msg->getPrivate()->getContentType())) {
 		isComposingReceived(msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
