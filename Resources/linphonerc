@@ -48,13 +48,11 @@ max_calls=3
 real_early_media=1
 
 [net]
-download_bw=380
 edge_bw=10
 edge_ping_time=10
 firewall_policy=ice
 mtu=1300
 stun_server=stun.linphone.org
-upload_bw=380
 
 [rtp]
 audio_jitt_comp=60
@@ -93,5 +91,5 @@ capture=1
 display=1
 enabled=1
 show_local=0
-size=qvga
+size=vga
 
