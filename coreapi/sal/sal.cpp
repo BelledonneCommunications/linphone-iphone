@@ -271,6 +271,11 @@ void Sal::process_response_event_cb(void *user_ctx, const belle_sip_response_eve
 				case 403:
 					if (op->auth_info) op->root->callbacks.auth_failure(op,op->auth_info);
 					break;
+				case 302:
+				case 301:
+					if (op->process_redirect() == 0)
+						return;
+					break;
 			}
 			if (response_code >= 180 && response_code !=401 && response_code !=407 && response_code !=403) {
 				/*not an auth request*/

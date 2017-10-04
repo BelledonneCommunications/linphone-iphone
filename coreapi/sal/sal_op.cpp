@@ -96,7 +96,7 @@ SalOp::~SalOp() {
 		sal_address_destroy(this->remote_contact_address);
 	}
 	if (this->call_id)
-		ms_free((void *)this->call_id);
+		ms_free(this->call_id);
 	if (this->service_route) {
 		sal_address_destroy(this->service_route);
 	}
@@ -369,6 +369,44 @@ void SalOp::resend_request(belle_sip_request_t* request) {
 	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CSEQ);
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
 	send_request(request);
+}
+
+int SalOp::process_redirect(){
+	belle_sip_request_t* request = belle_sip_transaction_get_request((belle_sip_transaction_t*)this->pending_client_trans);
+	belle_sip_response_t *response = belle_sip_transaction_get_response((belle_sip_transaction_t*)this->pending_client_trans);
+	belle_sip_header_contact_t *redirect_contact = belle_sip_message_get_header_by_type((belle_sip_message_t*)response, belle_sip_header_contact_t);
+	belle_sip_uri_t *redirect_uri;
+	belle_sip_header_call_id_t *callid = belle_sip_message_get_header_by_type((belle_sip_message_t*)request, belle_sip_header_call_id_t);
+	belle_sip_header_to_t *to = belle_sip_message_get_header_by_type((belle_sip_message_t*)request, belle_sip_header_to_t);
+	
+	if (!redirect_contact){
+		ms_warning("Redirect not handled, there is no redirect contact header in response");
+		return -1;
+	}
+	
+	redirect_uri = belle_sip_header_address_get_uri((belle_sip_header_address_t*) redirect_contact);
+	
+	if (!redirect_uri){
+		ms_warning("Redirect not handled, there is no usable uri in contact.");
+		return -1;
+	}
+	
+	if (this->dialog && belle_sip_dialog_get_state(this->dialog)==BELLE_SIP_DIALOG_CONFIRMED){
+		ms_warning("Redirect not handled within established dialogs. Does it make sense ?");
+		return -1;
+	}
+	set_or_update_dialog(NULL);
+	belle_sip_message_remove_header_from_ptr((belle_sip_message_t*)request, (belle_sip_header_t*)callid);
+	belle_sip_message_add_header((belle_sip_message_t*)request, (belle_sip_header_t*)(callid = belle_sip_provider_create_call_id(this->get_sal()->prov)));
+	if (this->call_id){
+		/*reset the call-id of op, it will be set when new request will be sent*/
+		ms_free(this->call_id);
+		this->call_id = NULL;
+	}
+	belle_sip_request_set_uri(request, redirect_uri);
+	belle_sip_header_address_set_uri((belle_sip_header_address_t*)to, redirect_uri);
+	send_request(request);
+	return 0;
 }
 
 void SalOp::process_authentication() {

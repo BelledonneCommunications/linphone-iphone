@@ -150,6 +150,7 @@ protected:
 	virtual void fill_cbs() {}
 	void release_impl();
 	void process_authentication();
+	int process_redirect();
 	
 	belle_sip_request_t* build_request(const char* method);
 	int send_request(belle_sip_request_t* request);
@@ -184,7 +185,7 @@ protected:
 	bool_t is_secure() const;
 	void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg);
 	void add_custom_headers(belle_sip_message_t *msg);
-    int unsubscribe();
+	int unsubscribe();
 	
 	void process_incoming_message(const belle_sip_request_event_t *event);
 	int reply_message(SalReason reason);
@@ -212,7 +213,7 @@ protected:
 	SalAddress* remote_contact_address = NULL;
 	char *remote_contact = NULL;
 	void *user_pointer = NULL;
-	const char* call_id = NULL;
+	char* call_id = NULL;
 	char* realm = NULL;
 	SalAddress* service_route = NULL; /*as defined by rfc3608, might be a list*/
 	SalCustomHeader *sent_custom_headers = NULL;
