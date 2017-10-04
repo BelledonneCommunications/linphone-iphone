@@ -22,6 +22,7 @@
 #include "content/content-type.h"
 #include "content/content.h"
 #include "address/address.h"
+#include "logger/logger.h"
 #include "chat/chat-message-p.h"
 
 // =============================================================================
@@ -60,7 +61,8 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 	message.setContent(contentBody);
 
 	if (!message.isValid()) {
-		//TODO
+		lError() << "[CPIM] Message is invalid: " << contentBody;
+		return 500;
 	} else {
 		Content newContent;
 		ContentType newContentType("Message/CPIM");
@@ -80,7 +82,7 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	}
 
 	ContentType contentType = content.getContentType();
-	if (contentType.asString() == "Message/CPIM") {
+	if (ContentType::isCpim(contentType.asString())) {
 		const vector<char> body = content.getBody();
 		string contentBody(body.begin(), body.end());
 		shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
@@ -91,10 +93,12 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 			newContent.setBody(message->getContent());
 			messagePrivate->internalContent = newContent;
 		} else {
-			//TODO
+			lError() << "[CPIM] Message is invalid: " << contentBody;
+			return 500;
 		}
 	} else {
-		//TODO
+		lError() << "[CPIM] Message is not CPIM but " << contentType.asString();
+		return -1;
 	}
 	return 0;
 }

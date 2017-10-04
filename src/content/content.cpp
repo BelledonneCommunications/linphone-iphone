@@ -72,8 +72,8 @@ Content &Content::operator= (Content &&src) {
 }
 
 bool Content::operator==(const Content& content) {
-	// return true if the two are equal, and false otherwise.
-	return true;
+	L_D();
+	return d->contentType == content.getContentType() && d->body == content.getBody() && d->contentDisposition == content.getContentDisposition();
 }
 
 const ContentType &Content::getContentType () const {
