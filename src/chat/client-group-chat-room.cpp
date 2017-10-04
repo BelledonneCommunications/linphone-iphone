@@ -58,6 +58,11 @@ ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me,
 	this->subject = subject;
 }
 
+ClientGroupChatRoom::~ClientGroupChatRoom () {
+	shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+	session->terminate();
+}
+
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
@@ -213,12 +218,17 @@ void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
 
 // -----------------------------------------------------------------------------
 
-void ClientGroupChatRoom::onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const string &message) {
+void ClientGroupChatRoom::onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) {
+	if (session == focus->getPrivate()->getSession())
+		focus->getPrivate()->removeSession();
+}
+
+void ClientGroupChatRoom::onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const string &message) {
 	if (state == LinphoneCallConnected) {
-		Address addr(session.getRemoteContact());
+		Address addr(session->getRemoteContact());
 		addr.clean();
 		onConferenceCreated(addr);
-		if (session.getRemoteContactAddress()->hasParam("isfocus"))
+		if (session->getRemoteContactAddress()->hasParam("isfocus"))
 			eventHandler->subscribe(conferenceAddress);
 	}
 }

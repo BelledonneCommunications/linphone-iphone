@@ -174,7 +174,7 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				linphone_call_state_to_string(prevState) << " to " << linphone_call_state_to_string(state) << ")";
 		}
 		if (listener)
-			listener->onCallSessionStateChanged(*q, state, message);
+			listener->onCallSessionStateChanged(q->getSharedFromThis(), state, message);
 		if (newState == LinphoneCallReleased)
 			setReleased(); /* Shall be performed after app notification */
 	}
@@ -231,13 +231,13 @@ void CallSessionPrivate::accepted () {
 void CallSessionPrivate::ackBeingSent (LinphoneHeaders *headers) {
 	L_Q();
 	if (listener)
-		listener->onAckBeingSent(*q, headers);
+		listener->onAckBeingSent(q->getSharedFromThis(), headers);
 }
 
 void CallSessionPrivate::ackReceived (LinphoneHeaders *headers) {
 	L_Q();
 	if (listener)
-		listener->onAckReceived(*q, headers);
+		listener->onAckReceived(q->getSharedFromThis(), headers);
 }
 
 bool CallSessionPrivate::failure () {
@@ -431,7 +431,7 @@ void CallSessionPrivate::accept (const CallSessionParams *params) {
 
 	op->accept();
 	if (listener)
-		listener->onSetCurrentSession(*q);
+		listener->onSetCurrentSession(q->getSharedFromThis());
 	setState(LinphoneCallConnected, "Connected");
 }
 
@@ -450,7 +450,7 @@ LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 			return -1;
 	}
 	if (listener)
-		listener->onCheckForAcceptation(*q);
+		listener->onCheckForAcceptation(q->getSharedFromThis());
 
 	/* Check if this call is supposed to replace an already running one */
 	SalOp *replaced = op->get_replaces();
@@ -547,7 +547,7 @@ void CallSessionPrivate::setReleased () {
 	}
 #endif
 	if (listener)
-		listener->onCallSessionSetReleased(*q);
+		listener->onCallSessionSetReleased(q->getSharedFromThis());
 }
 
 /* This method is called internally to get rid of a call that was notified to the application,
@@ -559,7 +559,7 @@ void CallSessionPrivate::setTerminated() {
 	L_Q();
 	completeLog();
 	if (listener)
-		listener->onCallSessionSetTerminated(*q);
+		listener->onCallSessionSetTerminated(q->getSharedFromThis());
 }
 
 LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) {
@@ -837,7 +837,7 @@ LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
 void CallSession::startIncomingNotification () {
 	L_D();
 	if (d->listener)
-		d->listener->onCallSessionAccepted(*this);
+		d->listener->onCallSessionAccepted(getSharedFromThis());
 	/* Prevent the CallSession from being destroyed while we are notifying, if the user declines within the state callback */
 	shared_ptr<CallSession> ref = getSharedFromThis();
 #if 0
@@ -849,7 +849,7 @@ void CallSession::startIncomingNotification () {
 	}
 
 	if (d->listener)
-		d->listener->onIncomingCallSessionStarted(*this);
+		d->listener->onIncomingCallSessionStarted(getSharedFromThis());
 
 	d->setState(LinphoneCallIncomingReceived, "Incoming CallSession");
 

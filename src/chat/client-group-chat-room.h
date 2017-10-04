@@ -37,7 +37,7 @@ class ClientGroupChatRoomPrivate;
 class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
 	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &subject);
-	virtual ~ClientGroupChatRoom () = default;
+	virtual ~ClientGroupChatRoom ();
 
 public:
 	/* ConferenceInterface */
@@ -63,7 +63,8 @@ private:
 
 private:
 	/* CallSessionListener */
-	void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
+	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const std::string &message) override;
 
 private:
 	L_DECLARE_PRIVATE(ClientGroupChatRoom);

@@ -40,6 +40,7 @@ public:
 
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	std::shared_ptr<CallSession> getSession () const { return session; }
+	void removeSession () { session = nullptr; }
 	void setAddress (const Address &newAddr) { addr = newAddr; }
 
 private:

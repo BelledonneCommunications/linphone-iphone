@@ -164,7 +164,7 @@ void MediaSessionPrivate::accepted () {
 					nextStateMsg = "Call paused by remote";
 				} else {
 					if (!params->getPrivate()->getInConference() && listener)
-						listener->onSetCurrentSession(*q);
+						listener->onSetCurrentSession(q->getSharedFromThis());
 					nextState = LinphoneCallStreamsRunning;
 					nextStateMsg = "Streams running";
 				}
@@ -2921,7 +2921,7 @@ void MediaSessionPrivate::startVideoStream (LinphoneCallState targetState) {
 				}
 				ms_media_stream_sessions_set_encryption_mandatory(&videoStream->ms.sessions, isEncryptionMandatory());
 				if (listener)
-					listener->onResetFirstVideoFrameDecoded(*q);
+					listener->onResetFirstVideoFrameDecoded(q->getSharedFromThis());
 				/* Start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
 				SalMediaDescription *remote = op->get_remote_media_description();
 				const SalStreamDescription *remoteStream = sal_media_description_find_best_stream(remote, SalVideo);
@@ -3344,7 +3344,7 @@ void MediaSessionPrivate::propagateEncryptionChanged () {
 		lInfo() << "Some streams are not encrypted";
 		q->getCurrentParams()->setMediaEncryption(LinphoneMediaEncryptionNone);
 		if (listener)
-			listener->onEncryptionChanged(*q, false, authToken);
+			listener->onEncryptionChanged(q->getSharedFromThis(), false, authToken);
 	} else {
 		if (!authToken.empty()) {
 			/* ZRTP only is using auth_token */
@@ -3357,7 +3357,7 @@ void MediaSessionPrivate::propagateEncryptionChanged () {
 			<< ((q->getCurrentParams()->getMediaEncryption() == LinphoneMediaEncryptionZRTP) ? "ZRTP"
 				: (q->getCurrentParams()->getMediaEncryption() == LinphoneMediaEncryptionDTLS) ? "DTLS" : "Unknown mechanism");
 		if (listener)
-			listener->onEncryptionChanged(*q, true, authToken);
+			listener->onEncryptionChanged(q->getSharedFromThis(), true, authToken);
 #ifdef VIDEO_ENABLED
 		if (isEncryptionMandatory() && videoStream && media_stream_started(&videoStream->ms)) {
 			/* Nothing could have been sent yet so generating key frame */
@@ -3671,7 +3671,7 @@ LinphoneStatus MediaSessionPrivate::pause () {
 	op->set_local_media_description(localDesc);
 	op->update(subject.c_str(), false);
 	if (listener)
-		listener->onResetCurrentSession(*q);
+		listener->onResetCurrentSession(q->getSharedFromThis());
 	if (audioStream || videoStream || textStream)
 		stopStreams();
 	pausedByApp = false;
@@ -3932,7 +3932,7 @@ void MediaSessionPrivate::videoStreamEventCb (const MSFilter *f, const unsigned 
 		case MS_VIDEO_DECODER_FIRST_IMAGE_DECODED:
 			lInfo() << "First video frame decoded successfully";
 			if (listener)
-				listener->onFirstVideoFrameDecoded(*q);
+				listener->onFirstVideoFrameDecoded(q->getSharedFromThis());
 			break;
 		case MS_VIDEO_DECODER_SEND_PLI:
 		case MS_VIDEO_DECODER_SEND_SLI:
@@ -4200,7 +4200,7 @@ LinphoneStatus MediaSession::resume () {
 		return -1;
 	d->setState(LinphoneCallResuming,"Resuming");
 	if (!d->params->getPrivate()->getInConference() && d->listener)
-		d->listener->onSetCurrentSession(*this);
+		d->listener->onSetCurrentSession(getSharedFromThis());
 	if (d->core->sip_conf.sdp_200_ack) {
 		/* We are NOT offering, set local media description after sending the call so that we are ready to
 		 * process the remote offer when it will arrive. */

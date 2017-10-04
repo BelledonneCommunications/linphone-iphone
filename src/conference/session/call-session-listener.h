@@ -27,24 +27,24 @@ class LINPHONE_PUBLIC CallSessionListener {
 public:
 	virtual ~CallSessionListener() = default;
 
-	virtual void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) = 0;
-	virtual void onAckReceived (const CallSession &session, LinphoneHeaders *headers) = 0;
-	virtual void onCallSessionAccepted (const CallSession &session) = 0;
-	virtual void onCallSessionSetReleased (const CallSession &session) = 0;
-	virtual void onCallSessionSetTerminated (const CallSession &session) = 0;
-	virtual void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) = 0;
-	virtual void onCheckForAcceptation (const CallSession &session) = 0;
-	virtual void onIncomingCallSessionStarted (const CallSession &session) = 0;
+	virtual void onAckBeingSent (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) = 0;
+	virtual void onAckReceived (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) = 0;
+	virtual void onCallSessionAccepted (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const std::string &message) = 0;
+	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> session) = 0;
 
-	virtual void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) = 0;
+	virtual void onEncryptionChanged (const std::shared_ptr<const CallSession> session, bool activated, const std::string &authToken) = 0;
 
 	virtual void onStatsUpdated (const LinphoneCallStats *stats) = 0;
 
-	virtual void onResetCurrentSession (const CallSession &session) = 0;
-	virtual void onSetCurrentSession (const CallSession &session) = 0;
+	virtual void onResetCurrentSession (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onSetCurrentSession (const std::shared_ptr<const CallSession> session) = 0;
 
-	virtual void onFirstVideoFrameDecoded (const CallSession &session) = 0;
-	virtual void onResetFirstVideoFrameDecoded (const CallSession &session) = 0;
+	virtual void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) = 0;
+	virtual void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) = 0;
 };
 
 LINPHONE_END_NAMESPACE

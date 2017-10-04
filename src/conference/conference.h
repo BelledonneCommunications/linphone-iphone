@@ -60,20 +60,20 @@ public:
 
 private:
 	/* CallSessionListener */
-	void onAckBeingSent (const CallSession &session, LinphoneHeaders *headers) override;
-	void onAckReceived (const CallSession &session, LinphoneHeaders *headers) override;
-	void onCallSessionAccepted (const CallSession &session) override;
-	void onCallSessionSetReleased (const CallSession &session) override;
-	void onCallSessionSetTerminated (const CallSession &session) override;
-	void onCallSessionStateChanged (const CallSession &session, LinphoneCallState state, const std::string &message) override;
-	void onCheckForAcceptation (const CallSession &session) override;
-	void onIncomingCallSessionStarted (const CallSession &session) override;
-	void onEncryptionChanged (const CallSession &session, bool activated, const std::string &authToken) override;
+	void onAckBeingSent (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) override;
+	void onAckReceived (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) override;
+	void onCallSessionAccepted (const std::shared_ptr<const CallSession> session) override;
+	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> session) override;
+	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const std::string &message) override;
+	void onCheckForAcceptation (const std::shared_ptr<const CallSession> session) override;
+	void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> session) override;
+	void onEncryptionChanged (const std::shared_ptr<const CallSession> session, bool activated, const std::string &authToken) override;
 	void onStatsUpdated (const LinphoneCallStats *stats) override;
-	void onResetCurrentSession (const CallSession &session) override;
-	void onSetCurrentSession (const CallSession &session) override;
-	void onFirstVideoFrameDecoded (const CallSession &session) override;
-	void onResetFirstVideoFrameDecoded (const CallSession &session) override;
+	void onResetCurrentSession (const std::shared_ptr<const CallSession> session) override;
+	void onSetCurrentSession (const std::shared_ptr<const CallSession> session) override;
+	void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) override;
+	void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) override;
 
 protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
