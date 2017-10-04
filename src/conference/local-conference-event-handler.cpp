@@ -35,24 +35,25 @@ using namespace Xsd::ConferenceInfo;
 
 class LocalConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
-	void notifyFullState(string notify, LinphoneEvent *lev);
-	void notifyAllExcept(string notify, const Address &addr);
-	void notifyAll(string notify);
-	string createNotifyFullState();
-	string createNotifyParticipantAdded(const Address &addr);
-	string createNotifyParticipantRemoved(const Address &addr);
-	string createNotifyParticipantAdmined(const Address &addr, bool isAdmin);
+	void notifyFullState (string notify, LinphoneEvent *lev);
+	void notifyAllExcept (string notify, const Address &addr);
+	void notifyAll (string notify);
+	string createNotifyFullState ();
+	string createNotifyParticipantAdded (const Address &addr);
+	string createNotifyParticipantRemoved (const Address &addr);
+	string createNotifyParticipantAdmined (const Address &addr, bool isAdmin);
+	string createNotifySubjectChanged ();
 
 	LinphoneCore *core = nullptr;
 	LocalConference *conf = nullptr;
 
 private:
-	void sendNotify(string notify, const Address &addr);
+	void sendNotify (string notify, const Address &addr);
 };
 
 // -----------------------------------------------------------------------------
 
-static void doNotify(string notify, LinphoneEvent *lev) {
+static void doNotify (string notify, LinphoneEvent *lev) {
 	LinphoneContent *content = linphone_core_create_content(lev->lc);
 	linphone_content_set_buffer(content, notify.c_str(), strlen(notify.c_str()));
 	linphone_event_notify(lev, content);
@@ -60,7 +61,7 @@ static void doNotify(string notify, LinphoneEvent *lev) {
 	linphone_event_unref(lev);
 }
 
-static string createNotify(ConferenceType confInfo) {
+static string createNotify (ConferenceType confInfo) {
 	stringstream notify;
 	Xsd::XmlSchema::NamespaceInfomap map;
 	map[""].name = "urn:ietf:params:xml:ns:conference-info";
@@ -70,11 +71,11 @@ static string createNotify(ConferenceType confInfo) {
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceEventHandlerPrivate::notifyFullState(string notify, LinphoneEvent *lev) {
+void LocalConferenceEventHandlerPrivate::notifyFullState (string notify, LinphoneEvent *lev) {
 	doNotify(notify, lev);
 }
 
-void LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, const Address &addr) {
+void LocalConferenceEventHandlerPrivate::notifyAllExcept (string notify, const Address &addr) {
 	for (const auto &participant : conf->getParticipants()) {
 		if (addr != participant->getAddress()) {
 			this->sendNotify(notify, addr);
@@ -82,13 +83,13 @@ void LocalConferenceEventHandlerPrivate::notifyAllExcept(string notify, const Ad
 	}
 }
 
-void LocalConferenceEventHandlerPrivate::notifyAll(string notify) {	
+void LocalConferenceEventHandlerPrivate::notifyAll (string notify) {
 	for (const auto &participant : conf->getParticipants()) {
 		this->sendNotify(notify, participant->getAddress());
 	}
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyFullState() {
+string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
 	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
@@ -111,15 +112,12 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState() {
 	return(createNotify(confInfo));
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded(const Address &addr) {
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
 	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
-	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
-	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
-	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	UserRolesType roles;
@@ -132,15 +130,12 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded(const Ad
 	return(createNotify(confInfo));
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved(const Address &addr) {
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
 	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
-	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
-	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
-	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	user.setEntity(addr.asStringUriOnly());
@@ -150,15 +145,12 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved(const 
 	return(createNotify(confInfo));
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined(const Address &addr, bool isAdmin) {
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const Address &addr, bool isAdmin) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
 	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
-	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
-	confDescr.setSubject(subject);
 	confInfo.setUsers(users);
-	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
 	UserType user = UserType();
 	UserRolesType roles;
@@ -171,7 +163,18 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined(const 
 	return(createNotify(confInfo));
 }
 
-void LocalConferenceEventHandlerPrivate::sendNotify(string notify, const Address &addr) {	
+string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
+	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string subject = this->conf->getSubject();
+	ConferenceType confInfo = ConferenceType(entity);
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
+
+	return(createNotify(confInfo));
+}
+
+void LocalConferenceEventHandlerPrivate::sendNotify (string notify, const Address &addr) {
 	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
 	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
 	linphone_address_unref(cAddr);
@@ -180,37 +183,42 @@ void LocalConferenceEventHandlerPrivate::sendNotify(string notify, const Address
 
 // =============================================================================
 
-LocalConferenceEventHandler::LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf) : Object(*new LocalConferenceEventHandlerPrivate) {
+LocalConferenceEventHandler::LocalConferenceEventHandler (LinphoneCore *core, LocalConference *localConf) : Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConf;
 	d->core = core;
 }
 
-LocalConferenceEventHandler::~LocalConferenceEventHandler() {
+LocalConferenceEventHandler::~LocalConferenceEventHandler () {
 	xercesc::XMLPlatformUtils::Terminate();
 }
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceEventHandler::subscribeReceived(LinphoneEvent *lev) {
+void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	L_D();
 	d->notifyFullState(d->createNotifyFullState(), lev);
 }
 
-void LocalConferenceEventHandler::notifyParticipantAdded(const Address &addr) {
+void LocalConferenceEventHandler::notifyParticipantAdded (const Address &addr) {
 	L_D();
 	d->notifyAllExcept(d->createNotifyParticipantAdded(addr), addr);
 }
 
-void LocalConferenceEventHandler::notifyParticipantRemoved(const Address &addr) {
+void LocalConferenceEventHandler::notifyParticipantRemoved (const Address &addr) {
 	L_D();
 	d->notifyAllExcept(d->createNotifyParticipantRemoved(addr), addr);
 }
 
-void LocalConferenceEventHandler::notifyParticipantSetAdmin(const Address &addr, bool isAdmin) {
+void LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr, bool isAdmin) {
 	L_D();
 	d->notifyAll(d->createNotifyParticipantAdmined(addr, isAdmin));
+}
+
+void LocalConferenceEventHandler::notifySubjectChanged () {
+	L_D();
+	d->notifyAll(d->createNotifySubjectChanged());
 }
 
 LINPHONE_END_NAMESPACE

@@ -36,10 +36,11 @@ class LocalConferenceEventHandler : public Object {
 		LocalConferenceEventHandler(LinphoneCore *core, LocalConference *localConf);
 		~LocalConferenceEventHandler();
 
-		void subscribeReceived(LinphoneEvent *lev);
-		void notifyParticipantAdded(const Address &addr);
-		void notifyParticipantRemoved(const Address &addr);
-		void notifyParticipantSetAdmin(const Address &addr, bool isAdmin);
+		void subscribeReceived (LinphoneEvent *lev);
+		void notifyParticipantAdded (const Address &addr);
+		void notifyParticipantRemoved (const Address &addr);
+		void notifyParticipantSetAdmin (const Address &addr, bool isAdmin);
+		void notifySubjectChanged ();
 
 	private:
 		L_DECLARE_PRIVATE(LocalConferenceEventHandler);
