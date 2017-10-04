@@ -32,6 +32,7 @@ class LINPHONE_PUBLIC Address : public ClonableObject {
 	// TODO: Remove me later.
 	friend class CallSession;
 	friend class ClientGroupChatRoom;
+	friend class ClientGroupChatRoomPrivate;
 
 public:
 	Address (const std::string &address = "");

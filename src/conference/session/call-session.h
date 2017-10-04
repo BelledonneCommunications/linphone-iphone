@@ -37,6 +37,7 @@ class Content;
 class LINPHONE_PUBLIC CallSession : public Object {
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
+	friend class ClientGroupChatRoomPrivate;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(CallSession);

@@ -29,10 +29,14 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallSession;
+
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
 	ClientGroupChatRoomPrivate (LinphoneCore *core);
 	virtual ~ClientGroupChatRoomPrivate () = default;
+
+	std::shared_ptr<CallSession> createSession ();
 
 private:
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);

@@ -34,6 +34,21 @@ LINPHONE_BEGIN_NAMESPACE
 ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core)
 	: ChatRoomPrivate(core) {}
 
+// -----------------------------------------------------------------------------
+
+shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
+	L_Q();
+	CallSessionParams csp;
+	csp.addCustomHeader("Require", "recipient-list-invite");
+	shared_ptr<CallSession> session = q->focus->getPrivate()->createSession(*q, &csp, false, q);
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, q->me->getAddress(), q->focus->getAddress());
+	session->initiateOutgoing();
+	Address addr = q->me->getAddress();
+	addr.setParam("text");
+	session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
+	return session;
+}
+
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
@@ -55,28 +70,27 @@ void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const
 	L_D();
 	if (addresses.empty())
 		return;
+	if ((d->state != ChatRoom::State::Instantiated) && (d->state != ChatRoom::State::Created)) {
+		lError() << "Cannot add participants to the ClientGroupChatRoom in a state other than Instantiated or Created";
+		return;
+	}
 	list<Address> sortedAddresses(addresses);
 	sortedAddresses.sort();
 	sortedAddresses.unique();
-	if (d->state == ChatRoom::State::Instantiated) {
-		Content content;
-		content.setBody(getResourceLists(sortedAddresses));
-		content.setContentType("application/resource-lists+xml");
-		content.setContentDisposition("recipient-list");
-		CallSessionParams csp;
-		if (params)
-			csp = *params;
-		csp.addCustomHeader("Require", "recipient-list-invite");
-		shared_ptr<CallSession> session = focus->getPrivate()->createSession(*this, &csp, false, this);
-		session->configure(LinphoneCallOutgoing, nullptr, nullptr, me->getAddress(), focus->getAddress());
-		session->initiateOutgoing();
-		Address addr = me->getAddress();
-		addr.setParam("text");
-		session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
+	Content content;
+	content.setBody(getResourceLists(sortedAddresses));
+	content.setContentType("application/resource-lists+xml");
+	content.setContentDisposition("recipient-list");
+	shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+	if (session)
+		session->update(nullptr, subject, &content);
+	else {
+		session = d->createSession();
 		session->startInvite(nullptr, subject, &content);
-		d->setState(ChatRoom::State::CreationPending);
+		if (d->state == ChatRoom::State::Instantiated) {
+			d->setState(ChatRoom::State::CreationPending);
+		}
 	}
-	// TODO
 }
 
 bool ClientGroupChatRoom::canHandleParticipants () const {
@@ -118,7 +132,12 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 		return;
 	}
 	shared_ptr<CallSession> session = focus->getPrivate()->getSession();
-	session->update(nullptr, subject);
+	if (session)
+		session->update(nullptr, subject);
+	else {
+		session = d->createSession();
+		session->startInvite(nullptr, subject, nullptr);
+	}
 }
 
 // -----------------------------------------------------------------------------
