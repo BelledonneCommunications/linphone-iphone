@@ -1441,7 +1441,7 @@ void ChatMessage::cancelFileTransfer() {
 		}
 		if (!belle_http_request_is_cancelled(d->httpRequest)) {
 			if (d->chatRoom) {
-				lInfo() << "Canceling file transfer " << (d->externalBodyUrl.empty()) ? linphone_core_get_file_transfer_server(d->chatRoom->getCore()) : d->externalBodyUrl.c_str();
+				lInfo() << "Canceling file transfer " << (d->externalBodyUrl.empty() ? linphone_core_get_file_transfer_server(d->chatRoom->getCore()) : d->externalBodyUrl.c_str());
 				belle_http_provider_cancel_request(d->chatRoom->getCore()->http_provider, d->httpRequest);
 			} else {
 				lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";

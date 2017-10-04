@@ -71,7 +71,8 @@ Content &Content::operator= (Content &&src) {
 	return *this;
 }
 
-bool Content::operator==(const Content& content) {
+<<<<<<< HEAD
+bool Content::operator==(const Content& content) const {
 	L_D();
 	return d->contentType == content.getContentType() && d->body == content.getBody() && d->contentDisposition == content.getContentDisposition();
 }
