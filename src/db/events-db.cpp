@@ -75,7 +75,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-
 	static constexpr EnumToSql<ChatMessage::State> messageStateToSql[] = {
 		{ ChatMessage::State::Idle, "1" },
 		{ ChatMessage::State::InProgress, "2" },
@@ -169,23 +168,19 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS dialog ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-
-			// Sip address used to communicate.
-			"  local_sip_address_id INT UNSIGNED NOT NULL,"
-
 			// Server (for conference) or user sip address.
-			"  remote_sip_address_id INT UNSIGNED NOT NULL,"
+			"  peer_sip_address_id INT UNSIGNED PRIMARY KEY,"
 
 			// Dialog creation date.
 			"  creation_timestamp TIMESTAMP NOT NULL,"
 
+			// Chatroom subject.
+			"  subject VARCHAR(255),"
+
 			// Last event timestamp (call, message...).
 			"  last_update_timestamp TIMESTAMP NOT NULL,"
-			"  FOREIGN KEY (local_sip_address_id)"
-			"    REFERENCES sip_address(id)"
-			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (remote_sip_address_id)"
+
+			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			")";
@@ -215,7 +210,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    REFERENCES event(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (dialog_id)"
-			"    REFERENCES dialog(id)"
+			"    REFERENCES dialog(peer_sip_address_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (state_id)"
 			"    REFERENCES message_state(id)"
