@@ -17,6 +17,9 @@
  */
 
 #include "chat/cpim/cpim.h"
+#include "address/address.h"
+#include "chat/basic-chat-room.h"
+#include "chat/chat-message.h"
 
 #include "liblinphone_tester.h"
 
@@ -379,12 +382,29 @@ static void build_message () {
 	BC_ASSERT_STRING_EQUAL(strMessage.c_str(), expectedMessage.c_str());
 }
 
-static void cpim_chat_message_modifier_encoder(void) {
-	
-}
+static void cpim_chat_message_modifier(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LpConfig *config = linphone_core_get_config(marie->lc);
+	lp_config_set_int(config, "sip", "use_cpim", 1);
 
-static void cpim_chat_message_modifier_decoder(void) {
+	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
+	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc, paulineAddress);
+
+	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage("Hello CPIM");
+	marieRoom->sendMessage(marieMessage);
+
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_TRUE(ContentType::isCpim(marieMessage->getInternalContent().getContentType().asString()));
 	
+	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
+	if (pauline->stat.last_received_chat_message != NULL) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), "Hello CPIM");
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), "text/plain");
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
 }
 
 test_t cpim_tests[] = {
@@ -397,8 +417,7 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("Parse RFC example", parse_rfc_example),
 	TEST_NO_TAG("Parse Message with generic header parameters", parse_message_with_generic_header_parameters),
 	TEST_NO_TAG("Build Message", build_message),
-	TEST_NO_TAG("CPIM chat message modifier encoder", cpim_chat_message_modifier_encoder),
-	TEST_NO_TAG("CPIM chat message modifier decoder", cpim_chat_message_modifier_decoder)
+	TEST_NO_TAG("CPIM chat message modifier", cpim_chat_message_modifier)
 };
 
 test_suite_t cpim_test_suite = {

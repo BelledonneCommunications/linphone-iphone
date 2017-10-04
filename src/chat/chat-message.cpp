@@ -1310,6 +1310,11 @@ void ChatMessage::removeContent (const Content& content) {
 	d->contents.remove(content);
 }
 
+const Content& ChatMessage::getInternalContent() const {
+	L_D();
+	return d->internalContent;
+}
+
 string ChatMessage::getCustomHeaderValue (const string &headerName) const {
 	L_D();
 	try {

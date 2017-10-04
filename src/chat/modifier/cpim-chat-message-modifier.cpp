@@ -89,6 +89,7 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 			ContentType newContentType(message->getContentHeaders()->front()->getValue());
 			newContent.setContentType(newContentType);
 			newContent.setBody(message->getContent());
+			messagePrivate->internalContent = newContent;
 		} else {
 			//TODO
 		}
