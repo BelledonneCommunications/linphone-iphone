@@ -34,7 +34,7 @@ class LINPHONE_PUBLIC ConferenceInterface {
 public:
 	virtual ~ConferenceInterface() = default;
 
-	virtual std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) = 0;
+	virtual void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual bool canHandleParticipants () const = 0;
 	virtual const Address *getConferenceAddress () const = 0;

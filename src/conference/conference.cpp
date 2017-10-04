@@ -40,9 +40,8 @@ shared_ptr<Participant> Conference::getActiveParticipant () const {
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> Conference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void Conference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	lError() << "Conference class does not handle addParticipant() generically";
-	return nullptr;
 }
 
 void Conference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {

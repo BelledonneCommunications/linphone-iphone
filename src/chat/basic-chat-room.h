@@ -33,7 +33,7 @@ public:
 	virtual ~BasicChatRoom () = default;
 
 	/* ConferenceInterface. */
-	std::shared_ptr<Participant> addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
 	bool canHandleParticipants () const override;
 	const Address *getConferenceAddress () const override;

@@ -45,10 +45,10 @@ ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me,
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	activeParticipant = ObjectFactory::create<Participant>(addr);
-	activeParticipant->getPrivate()->createSession(*this, params, hasMedia, this);
-	return activeParticipant;
+void ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+	list<Address> addresses;
+	addresses.push_back(addr);
+	addParticipants(addresses, params, hasMedia);
 }
 
 void ClientGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {

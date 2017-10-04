@@ -38,16 +38,15 @@ LocalConference::~LocalConference () {
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> LocalConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void LocalConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
-		return participant;
+		return;
 	participant = ObjectFactory::create<Participant>(addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, this);
 	participants.push_back(participant);
 	if (!activeParticipant)
 		activeParticipant = participant;
-	return participant;
 }
 
 void LocalConference::removeParticipant (const shared_ptr<const Participant> &participant) {

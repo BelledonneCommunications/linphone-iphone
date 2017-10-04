@@ -231,7 +231,8 @@ Call::Call (
 		d->conference = new LocalConference(core, *myAddress, d);
 	}
 	const Address *remoteAddress = (direction == LinphoneCallIncoming) ? &from : &to;
-	shared_ptr<Participant> participant = d->conference->addParticipant(*remoteAddress, msp, true);
+	d->conference->addParticipant(*remoteAddress, msp, true);
+	shared_ptr<Participant> participant = d->conference->getParticipants().front();
 	participant->getPrivate()->getSession()->configure(direction, cfg, op, from, to);
 }
 

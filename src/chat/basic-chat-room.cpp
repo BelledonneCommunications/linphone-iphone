@@ -35,9 +35,8 @@ BasicChatRoom::BasicChatRoom (LinphoneCore *core, const Address &peerAddress) : 
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> BasicChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void BasicChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	lError() << "addParticipant() is not allowed on a BasicChatRoom";
-	return nullptr;
 }
 
 void BasicChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {

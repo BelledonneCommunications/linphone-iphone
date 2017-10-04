@@ -242,9 +242,8 @@ LINPHONE_PUBLIC LinphoneChatRoomState linphone_chat_room_get_state (const Linpho
  * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] addr The address of the participant to add to the chat room
- * @return The newly added participant or NULL in case of failure
  */
-LINPHONE_PUBLIC LinphoneParticipant * linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr);
+LINPHONE_PUBLIC void linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr);
 
 /**
  * Add several participants to a chat room at once. This may fail if this type of chat room does not handle participants.
