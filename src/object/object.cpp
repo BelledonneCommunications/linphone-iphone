@@ -16,11 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "logger/logger.h"
 #include "object-p.h"
 
 #include "object.h"
 
 // =============================================================================
+
+#define GET_SHARED_FROM_THIS_FATAL_ERROR "Object was not created with `ObjectFactory::create`."
 
 using namespace std;
 
@@ -33,11 +36,21 @@ Object::~Object () {
 Object::Object (ObjectPrivate &p) : mPrivate(&p) {}
 
 shared_ptr<Object> Object::getSharedFromThis () {
-	return mPrivate->weak.lock();
+	return const_pointer_cast<Object>(static_cast<const Object *>(this)->getSharedFromThis());
 }
 
 shared_ptr<const Object> Object::getSharedFromThis () const {
-	return mPrivate->weak.lock();
+	shared_ptr<const Object> object;
+
+	try {
+		object = mPrivate->weak.lock();
+		if (!object)
+			lFatal() << GET_SHARED_FROM_THIS_FATAL_ERROR;
+	} catch (const exception &) {
+		lFatal() << GET_SHARED_FROM_THIS_FATAL_ERROR;
+	}
+
+	return object;
 }
 
 void ObjectFactory::setPublic (const shared_ptr<Object> &object) {
