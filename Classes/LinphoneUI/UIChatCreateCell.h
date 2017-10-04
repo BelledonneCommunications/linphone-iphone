@@ -11,6 +11,8 @@
 @interface UIChatCreateCell : UITableViewCell
 @property(weak, nonatomic) IBOutlet UILabel *displayNameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *addressLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *selectedImage;
+@property (weak, nonatomic) IBOutlet UIImageView *linphoneImage;
 
 - (id)initWithIdentifier:(NSString *)identifier;
 

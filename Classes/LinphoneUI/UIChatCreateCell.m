@@ -23,6 +23,8 @@
 			[self addSubview:sub];
 		}
 	}
+	_selectedImage.hidden = TRUE;
+	_linphoneImage.hidden = TRUE;
 	return self;
 }
 

@@ -146,9 +146,9 @@
 														linphone_call_stats_get_upload_bandwidth(stats)]];
 		[result appendString:@"\n"];
         if (stream == LinphoneStreamTypeVideo) {
-            [result appendString:[NSString stringWithFormat:@"Estimated download bandwidth: %1.1f kbits/s",
+            /*[result appendString:[NSString stringWithFormat:@"Estimated download bandwidth: %1.1f kbits/s",
                                   linphone_call_stats_get_estimated_download_bandwidth(stats)]];
-            [result appendString:@"\n"];
+            [result appendString:@"\n"];*/
         }
 		[result
 			appendString:[NSString stringWithFormat:@"ICE state: %@",

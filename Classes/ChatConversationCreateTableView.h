@@ -10,5 +10,10 @@
 
 @interface ChatConversationCreateTableView : UITableViewController <UISearchBarDelegate>
 @property(weak, nonatomic) IBOutlet UISearchBar *searchBar;
+@property(nonatomic) Boolean allFilter;
+@property(nonatomic, strong) NSMutableArray *contactsGroup;
+@property(nonatomic, strong) NSMutableDictionary *contactsDict;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+- (void) loadData;
 
 @end
