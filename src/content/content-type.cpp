@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "linphone/utils/utils.h"
+
 #include "object/clonable-object-p.h"
 
 #include "content-type.h"
@@ -31,6 +33,16 @@ public:
 	string type;
 	string subType;
 };
+
+// -----------------------------------------------------------------------------
+
+const ContentType ContentType::Cpim("message/cpim");
+const ContentType ContentType::FileTransfer("application/vnd.gsma.rcs-ft-http+xml");
+const ContentType ContentType::Imdn("message/imdn+xml");
+const ContentType ContentType::ImIsComposing("application/im-iscomposing+xml");
+const ContentType ContentType::PlainText("text/plain");
+const ContentType ContentType::ResourceLists("application/resource-lists+xml");
+const ContentType ContentType::Sdp("application/sdp");
 
 // -----------------------------------------------------------------------------
 
@@ -71,16 +83,8 @@ bool ContentType::operator== (const ContentType &contentType) const {
 	return getType() == contentType.getType() && getSubType() == contentType.getSubType();
 }
 
-bool ContentType::operator== (const string &contentType) const {
-	return *this == ContentType(contentType);
-}
-
 bool ContentType::operator!= (const ContentType &contentType) const {
-	return !(*this == contentType);
-}
-
-bool ContentType::operator!= (const std::string &contentType) const {
-	return !(*this == contentType);
+	return !operator==(contentType);
 }
 
 const string &ContentType::getType () const {
@@ -91,7 +95,7 @@ const string &ContentType::getType () const {
 bool ContentType::setType (const string &type) {
 	L_D();
 	if (type.find('/') == string::npos) {
-		d->type = type;
+		d->type = Utils::stringToLower(type);
 		return true;
 	}
 	return false;
@@ -105,7 +109,7 @@ const string &ContentType::getSubType () const {
 bool ContentType::setSubType (const string &subType) {
 	L_D();
 	if (subType.find('/') == string::npos) {
-		d->subType = subType;
+		d->subType = Utils::stringToLower(subType);
 		return true;
 	}
 	return false;
@@ -119,42 +123,6 @@ bool ContentType::isValid () const {
 string ContentType::asString () const {
 	L_D();
 	return isValid() ? d->type + "/" + d->subType : "";
-}
-
-bool ContentType::isFileTransfer () const {
-	return isFileTransfer(asString());
-}
-
-bool ContentType::isImIsComposing () const {
-	return isFileTransfer(asString());
-}
-
-bool ContentType::isImdn () const {
-	return isImdn(asString());
-}
-
-bool ContentType::isText () const {
-	return isText(asString());
-}
-
-bool ContentType::isFileTransfer (const string &contentType) {
-	return contentType == "application/vnd.gsma.rcs-ft-http+xml";
-}
-
-bool ContentType::isImIsComposing (const string &contentType) {
-	return contentType == "application/im-iscomposing+xml";
-}
-
-bool ContentType::isImdn (const string &contentType) {
-	return contentType == "message/imdn+xml";
-}
-
-bool ContentType::isText (const string &contentType) {
-	return contentType == "text/plain";
-}
-
-bool ContentType::isCpim(const string &contentType) {
-	return contentType == "Message/CPIM";
 }
 
 LINPHONE_END_NAMESPACE

@@ -139,19 +139,19 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 
 // -----------------------------------------------------------------------------
 
-const string& ChatMessagePrivate::getContentType() {
-	if (!internalContent.getContentType().asString().empty()) {
-		cContentType = internalContent.getContentType().asString();
+const ContentType& ChatMessagePrivate::getContentType() {
+	if (internalContent.getContentType().isValid()) {
+		cContentType = internalContent.getContentType();
 	} else {
 		if (contents.size() > 0) {
 			Content content = contents.front();
-			cContentType = content.getContentType().asString();
+			cContentType = content.getContentType();
 		}
 	}
 	return cContentType;
 }
 
-void ChatMessagePrivate::setContentType(const string& contentType) {
+void ChatMessagePrivate::setContentType(const ContentType &contentType) {
 	internalContent.setContentType(contentType);
 }
 
@@ -681,7 +681,7 @@ void ChatMessagePrivate::processResponseFromPostFile(const belle_http_response_e
 				} else { // no encryption key, transfer in plain, just copy the msg sent by server
 					setText(body);
 				}
-				setContentType("application/vnd.gsma.rcs-ft-http+xml");
+				setContentType(ContentType::FileTransfer);
 				q->updateState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
 				send();
@@ -977,7 +977,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (ContentType::isCpim(getContentType())) {
+	if (getContentType() == ContentType::Cpim) {
 		CpimChatMessageModifier ccmm;
 		ccmm.decode(this);
 	}
@@ -1000,9 +1000,9 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// End of message modification
 	// ---------------------------------------
 
-	if ((retval <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().c_str()) == FALSE)) {
+	if ((retval <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().asString().c_str()) == FALSE)) {
 		retval = 415;
-		lError() << "Unsupported MESSAGE (content-type " << getContentType() << " not recognized)";
+		lError() << "Unsupported MESSAGE (content-type " << getContentType().asString() << " not recognized)";
 	}
 
 	if (retval > 0) {
@@ -1011,10 +1011,10 @@ LinphoneReason ChatMessagePrivate::receive() {
 		return reason;
 	}
 
-	if (ContentType::isFileTransfer(getContentType())) {
+	if (getContentType() == ContentType::FileTransfer) {
 		createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
 		store = true;
-	} else if (ContentType::isText(getContentType())) {
+	} else if (getContentType() == ContentType::PlainText) {
 		store = true;
 	}
 
@@ -1071,12 +1071,12 @@ void ChatMessagePrivate::send() {
 	// ---------------------------------------
 
 	string clearTextMessage;
-	string clearTextContentType;
+	ContentType clearTextContentType;
 
 	if (!getText().empty()) {
 		clearTextMessage = getText().c_str();
 	}
-	if (!getContentType().empty()) {
+	if (getContentType().isValid()) {
 		clearTextContentType = getContentType();
 	}
 
@@ -1110,8 +1110,8 @@ void ChatMessagePrivate::send() {
 		ms_free(content_type);
 	} else {
 		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-		if (!getContentType().empty()) {
-			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getContentType().c_str(), getText().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
+		if (getContentType().isValid()) {
+			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getContentType().asString().c_str(), getText().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
 		} else {
 			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getText().c_str());
 		}
@@ -1121,7 +1121,7 @@ void ChatMessagePrivate::send() {
 		/* We replace the encrypted message by the original one so it can be correctly stored and displayed by the application */
 		setText(clearTextMessage);
 	}
-	if (!getContentType().empty() && getContentType() == clearTextContentType) {
+	if (getContentType().isValid() && (getContentType() == clearTextContentType)) {
 		/* We replace the encrypted content type by the original one */
 		setContentType(clearTextContentType);
 	}

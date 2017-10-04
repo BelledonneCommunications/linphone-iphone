@@ -318,11 +318,11 @@ void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChat
 // =============================================================================
 
 const char * linphone_chat_message_get_content_type(LinphoneChatMessage *msg) {
-	return L_STRING_TO_C(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType());
+	return L_STRING_TO_C(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType().asString());
 }
 
 void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type) {
-	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setContentType(L_C_TO_STRING(content_type));
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setContentType(ContentType(L_C_TO_STRING(content_type)));
 }
 
 const char *linphone_chat_message_get_text(LinphoneChatMessage *msg) {
@@ -362,11 +362,11 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 }
 
 bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType::isFileTransfer(linphone_chat_message_get_content_type(msg));
+	return LinphonePrivate::ContentType(linphone_chat_message_get_content_type(msg)) == LinphonePrivate::ContentType::FileTransfer;
 }
 
 bool_t linphone_chat_message_is_text(LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType::isText(linphone_chat_message_get_content_type(msg));
+	return LinphonePrivate::ContentType(linphone_chat_message_get_content_type(msg)) == LinphonePrivate::ContentType::PlainText;
 }
 
 const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {

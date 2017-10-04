@@ -137,7 +137,7 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 	}
 
 	if (retval <= 0) {
-		op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
+		op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
 	}
 
 	linphone_address_unref(peer);
@@ -227,7 +227,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			}
 
 			if (retval <= 0) {
-				op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
+				op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
 			}
 			op->unref();
 		}
@@ -424,13 +424,13 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 		goto end;
 	}
 
-	if (ContentType::isImIsComposing(msg->getPrivate()->getContentType())) {
+	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		isComposingReceived(msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
 		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
-	} else if (ContentType::isImdn(msg->getPrivate()->getContentType())) {
+	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		imdnReceived(msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
 		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
@@ -461,7 +461,7 @@ end:
 
 void ChatRoomPrivate::chatMessageReceived (shared_ptr<ChatMessage> msg) {
 	L_Q();
-	if (!ContentType::isImdn(msg->getPrivate()->getContentType()) && !ContentType::isImIsComposing(msg->getPrivate()->getContentType())) {
+	if ((msg->getPrivate()->getContentType() != ContentType::Imdn) && (msg->getPrivate()->getContentType() != ContentType::ImIsComposing)) {
 		notifyChatMessageReceived(msg);
 		remoteIsComposing = false;
 		linphone_core_notify_is_composing_received(core, L_GET_C_BACK_PTR(q));
@@ -733,7 +733,7 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 
 	/* Check if we shall upload a file to a server */
-	if (msg->getPrivate()->getFileTransferInformation() && msg->getPrivate()->getContentType().empty()) {
+	if (msg->getPrivate()->getFileTransferInformation() && !msg->getPrivate()->getContentType().isValid()) {
 		/* Open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
 		if (msg->uploadFile() == 0) {
 			/* Add to transient list only if message is going out */

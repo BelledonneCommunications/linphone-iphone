@@ -68,13 +68,13 @@ public:
 	// Methods only used for C wrapper
 	// -----------------------------------------------------------------------------
 
-	const std::string& getContentType();
-	void setContentType(const std::string& contentType);
+	const ContentType &getContentType();
+	void setContentType(const ContentType &contentType);
 
-	const std::string& getText();
-	void setText(const std::string& text);
+	const std::string &getText();
+	void setText(const std::string &text);
 
-	LinphoneContent * getFileTransferInformation() const;
+	LinphoneContent *getFileTransferInformation() const;
 	void setFileTransferInformation(LinphoneContent *content);
 
 	// -----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ private:
 	SalCustomHeader *salCustomHeaders = NULL;
 	unsigned long backgroundTaskId;
 	// Cache for returned values, used for compatibility with previous C API
-	std::string cContentType = "";
+	ContentType cContentType;
 	std::string cText = "";
 	// Used for compatibility with previous C API
 	LinphoneContent *cFileTransferInformation = NULL;

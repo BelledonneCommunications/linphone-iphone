@@ -395,7 +395,7 @@ static void cpim_chat_message_modifier(void) {
 	marieRoom->sendMessage(marieMessage);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_TRUE(ContentType::isCpim(marieMessage->getInternalContent().getContentType().asString()));
+	BC_ASSERT_TRUE(marieMessage->getInternalContent().getContentType() == ContentType::Cpim);
 	
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	if (pauline->stat.last_received_chat_message != NULL) {

@@ -21,7 +21,7 @@ int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
 	vector<char> buffer = marshal_media_description(sdp, error);
 	if (error != BELLE_SIP_OK) return -1;
 	
-	this->local_body.setContentType("application/sdp");
+	this->local_body.setContentType(ContentType::Sdp);
 	this->local_body.setBody(move(buffer));
 	
 	if (this->local_media) sal_media_description_unref(this->local_media);
@@ -47,7 +47,7 @@ int SalCallOp::set_local_body(const Content &body) {
 int SalCallOp::set_local_body(const Content &&body) {
 	if (!body.isValid()) return -1;
 	
-	if (body.getContentType() == "application/sdp") {
+	if (body.getContentType() == ContentType::Sdp) {
 		SalMediaDescription *desc = NULL;
 		if (body.getSize() > 0) {
 			belle_sdp_session_description_t *sdp = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
@@ -139,7 +139,7 @@ int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t*
 	if (error != BELLE_SIP_OK) return -1;
 	
 	Content body;
-	body.setContentType("application/sdp");
+	body.setContentType(ContentType::Sdp);
 	body.setBody(move(buff));
 	set_custom_body(msg, body);
 
@@ -161,7 +161,7 @@ void SalCallOp::fill_invite(belle_sip_request_t* invite) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Session-expires", "600;refresher=uas"));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(invite),belle_sip_header_create( "Supported", "timer"));
 	}
-	this->sdp_offering = (this->local_body.getContentType() == "application/sdp");
+	this->sdp_offering = (this->local_body.getContentType() == ContentType::Sdp);
 	set_custom_body(BELLE_SIP_MESSAGE(invite), this->local_body);
 }
 
@@ -204,6 +204,7 @@ void SalCallOp::cancelling_invite(const SalErrorInfo *info) {
 Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	Content body;
 	belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(message, belle_sip_header_content_type_t);
+	belle_sip_header_content_disposition_t *contentDisposition = belle_sip_message_get_header_by_type(message, belle_sip_header_content_disposition_t);
 	belle_sip_header_content_length_t *content_length = belle_sip_message_get_header_by_type(message, belle_sip_header_content_length_t);
 	const char *type_str = content_type ? belle_sip_header_content_type_get_type(content_type) : NULL;
 	const char *subtype_str = content_type ? belle_sip_header_content_type_get_subtype(content_type) : NULL;
@@ -211,6 +212,8 @@ Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	const char *body_str = belle_sip_message_get_body(message);
 	
 	if (type_str && subtype_str) body.setContentType(ContentType(type_str, subtype_str));
+	if (contentDisposition)
+		body.setContentDisposition(belle_sip_header_content_disposition_get_content_disposition(contentDisposition));
 	if (length > 0 && body_str) body.setBody(body_str, length);
 	return body;
 }
@@ -311,7 +314,7 @@ void SalCallOp::handle_body_from_response(belle_sip_response_t* response) {
 		sal_media_description_unref(this->remote_media);
 		this->remote_media=NULL;
 	}
-	if (body.getContentType() == "application/sdp") {
+	if (body.getContentType() == ContentType::Sdp) {
 		if (parse_sdp_body(body, &sdp, &reason) == 0) {
 			if (sdp) {
 				this->remote_media = sal_media_description_new();
@@ -543,7 +546,7 @@ SalReason SalCallOp::process_body_for_invite(belle_sip_request_t* invite) {
 	Content body = extract_body(BELLE_SIP_MESSAGE(invite));
 	if (!body.isValid()) return SalReasonUnsupportedContent;
 	
-	if (body.getContentType() == "application/sdp") {
+	if (body.getContentType() == ContentType::Sdp) {
 		belle_sdp_session_description_t* sdp;
 		if (parse_sdp_body(body, &sdp, &reason) == 0) {
 			if (sdp) {
@@ -574,7 +577,7 @@ SalReason SalCallOp::process_body_for_ack(belle_sip_request_t *ack) {
 	SalReason reason = SalReasonNone;
 	Content body = extract_body(BELLE_SIP_MESSAGE(ack));
 	if (!body.isValid()) return SalReasonUnsupportedContent;
-	if (body.getContentType() == "application/sdp") {
+	if (body.getContentType() == ContentType::Sdp) {
 		belle_sdp_session_description_t *sdp;
 		if (parse_sdp_body(body, &sdp, &reason) == 0) {
 			if (sdp) {

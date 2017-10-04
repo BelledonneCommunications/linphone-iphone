@@ -36,9 +36,12 @@ public:
 	ContentType &operator= (const ContentType &src);
 
 	bool operator== (const ContentType &contentType) const;
-	bool operator== (const std::string &contentType) const;
 	bool operator!= (const ContentType &contentType) const;
-	bool operator!= (const std::string &contentType) const;
+
+	// Delete these operators to prevent putting complicated content-type strings
+	// in the code. Instead define static const ContentType objects below.
+	bool operator== (const std::string &contentType) const = delete;
+	bool operator!= (const std::string &contentType) const = delete;
 
 	bool isValid () const;
 
@@ -50,16 +53,13 @@ public:
 
 	std::string asString () const;
 
-	bool isFileTransfer () const;
-	bool isImIsComposing () const;
-	bool isImdn () const;
-	bool isText () const;
-
-	static bool isFileTransfer (const std::string &contentType);
-	static bool isImIsComposing (const std::string &contentType);
-	static bool isImdn (const std::string &contentType);
-	static bool isText (const std::string &contentType);
-	static bool isCpim (const std::string &contentType);
+	static const ContentType Cpim;
+	static const ContentType FileTransfer;
+	static const ContentType Imdn;
+	static const ContentType ImIsComposing;
+	static const ContentType PlainText;
+	static const ContentType ResourceLists;
+	static const ContentType Sdp;
 
 private:
 	L_DECLARE_PRIVATE(ContentType);

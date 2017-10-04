@@ -81,8 +81,7 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 		content = messagePrivate->contents.front();
 	}
 
-	ContentType contentType = content.getContentType();
-	if (ContentType::isCpim(contentType.asString())) {
+	if (content.getContentType() == ContentType::Cpim) {
 		const vector<char> body = content.getBody();
 		string contentBody(body.begin(), body.end());
 		shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
@@ -97,7 +96,7 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 			return 500;
 		}
 	} else {
-		lError() << "[CPIM] Message is not CPIM but " << contentType.asString();
+		lError() << "[CPIM] Message is not CPIM but " << content.getContentType().asString();
 		return -1;
 	}
 	return 0;
