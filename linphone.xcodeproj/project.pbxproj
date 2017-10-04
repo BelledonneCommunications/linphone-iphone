@@ -687,6 +687,10 @@
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
 		8CDC61951F84D89B0087CF7F /* check_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC618C1F84D89B0087CF7F /* check_selected.png */; };
 		8CDC61971F84D9270087CF7F /* check_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC61961F84D9270087CF7F /* check_selected@2x.png */; };
+		8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */; };
+		8CDC619C1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */; };
+		8CDC619F1F8500B90087CF7F /* next_disabled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC619D1F8500B70087CF7F /* next_disabled@2x.png */; };
+		8CDC61A01F8500B90087CF7F /* next_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC619E1F8500B80087CF7F /* next_disabled.png */; };
 		8CE24F4B1F8234A30077AC0A /* next_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F491F8234A20077AC0A /* next_default.png */; };
 		8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F4A1F8234A30077AC0A /* next_default@2x.png */; };
 		8CE24F571F8268850077AC0A /* conference_delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F551F8268840077AC0A /* conference_delete.png */; };
@@ -1692,6 +1696,11 @@
 		8CA2004B1D8158440095F859 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
+		8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmView.h; sourceTree = "<group>"; };
+		8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateConfirmView.m; sourceTree = "<group>"; };
+		8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatConversationCreateConfirmView.xib; sourceTree = "<group>"; };
+		8CDC619D1F8500B70087CF7F /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "next_disabled@2x.png"; path = "../../../next_disabled@2x.png"; sourceTree = "<group>"; };
+		8CDC619E1F8500B80087CF7F /* next_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = next_disabled.png; path = ../../../next_disabled.png; sourceTree = "<group>"; };
 		8CE24F491F8234A20077AC0A /* next_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_default.png; sourceTree = "<group>"; };
 		8CE24F4A1F8234A30077AC0A /* next_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_default@2x.png"; sourceTree = "<group>"; };
 		8CE24F551F8268840077AC0A /* conference_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = conference_delete.png; sourceTree = "<group>"; };
@@ -2024,6 +2033,9 @@
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
 				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
 				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
+				8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */,
+				8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */,
+				8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */,
 				D32B6E2715A5BC430033019F /* ChatConversationTableView.h */,
 				D32B6E2815A5BC430033019F /* ChatConversationTableView.m */,
 				D3F795D315A582800077328B /* ChatConversationView.h */,
@@ -2412,6 +2424,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8CDC619E1F8500B80087CF7F /* next_disabled.png */,
+				8CDC619D1F8500B70087CF7F /* next_disabled@2x.png */,
 				8CDC61961F84D9270087CF7F /* check_selected@2x.png */,
 				8CDC618C1F84D89B0087CF7F /* check_selected.png */,
 				8CE24F551F8268840077AC0A /* conference_delete.png */,
@@ -3306,6 +3320,7 @@
 				633FEEC61D3CD55A0014B822 /* numpad_5_over@2x.png in Resources */,
 				633FEF021D3CD55A0014B822 /* options_disabled.png in Resources */,
 				633FEDC81D3CD5590014B822 /* call_missed.png in Resources */,
+				8CDC61A01F8500B90087CF7F /* next_disabled.png in Resources */,
 				633FEF4B1D3CD55A0014B822 /* splashscreen@2x.png in Resources */,
 				8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */,
 				633FEE311D3CD5590014B822 /* color_I.png in Resources */,
@@ -3605,6 +3620,7 @@
 				633FEF4F1D3CD55A0014B822 /* valid_default@2x.png in Resources */,
 				633FEE241D3CD5590014B822 /* chat_start_body_over~ipad.png in Resources */,
 				633FEE091D3CD5590014B822 /* chat_add_disabled@2x.png in Resources */,
+				8CDC619F1F8500B90087CF7F /* next_disabled@2x.png in Resources */,
 				633FEE191D3CD5590014B822 /* chat_send_over@2x.png in Resources */,
 				633FEF181D3CD55A0014B822 /* pause_small_over_selected.png in Resources */,
 				633FEE001D3CD5590014B822 /* camera_switch_over.png in Resources */,
@@ -3646,6 +3662,7 @@
 				633FEF1D1D3CD55A0014B822 /* presence_offline@2x.png in Resources */,
 				24A3459E1D95797700881A5C /* UIShopTableCell.xib in Resources */,
 				633FEE231D3CD5590014B822 /* chat_start_body_over@2x.png in Resources */,
+				8CDC619C1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib in Resources */,
 				633FEEBE1D3CD55A0014B822 /* numpad_4_over@2x.png in Resources */,
 				633FEF471D3CD55A0014B822 /* speaker_disabled@2x.png in Resources */,
 				633FEEFE1D3CD55A0014B822 /* options_add_call_disabled.png in Resources */,
@@ -3961,6 +3978,7 @@
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
+				8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatsListView.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsView.m in Sources */,
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,

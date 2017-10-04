@@ -35,5 +35,6 @@
 	[_controller.tableController.contactsDict removeObjectForKey:_uri];
 	[_controller.collectionView reloadData];
 	[_controller.tableController.tableView reloadData];
+	_controller.tableController.controllerNextButton.enabled = (_controller.tableController.contactsGroup.count > 0);
 }
 @end

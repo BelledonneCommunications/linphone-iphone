@@ -104,13 +104,15 @@
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rBc-dQ-eIj" userLabel="nextButton" customClass="UIIconButton">
                                     <rect key="frame" x="300" y="0.0" width="75" height="66"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
-                                    <accessibility key="accessibilityConfiguration" label="Back"/>
+                                    <accessibility key="accessibilityConfiguration" label="Back">
+                                        <bool key="isElement" value="YES"/>
+                                    </accessibility>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <inset key="titleEdgeInsets" minX="0.0" minY="18" maxX="0.0" maxY="0.0"/>
                                     <state key="normal" image="next_default.png">
                                         <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
-                                    <state key="disabled" image="back_disabled.png"/>
+                                    <state key="disabled" image="next_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
                                         <action selector="onNextClick:" destination="-1" eventType="touchUpInside" id="yFF-js-mRx"/>
@@ -172,5 +174,6 @@
         <image name="contacts_sip_disabled.png" width="38" height="30"/>
         <image name="contacts_sip_selected.png" width="38" height="30"/>
         <image name="next_default.png" width="24" height="22"/>
+        <image name="next_disabled.png" width="24" height="22"/>
     </resources>
 </document>

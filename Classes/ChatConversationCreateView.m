@@ -52,6 +52,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_collectionView.dataSource = self;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
+	_tableController.controllerNextButton = _nextButton;
+	_nextButton.enabled = FALSE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -67,38 +69,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-	/*NSString *uri;
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contacts.allKeys objectAtIndex:indexPath.row]];
-	if (addr) {
-		uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
-	} else {
-		uri = [_contacts.allKeys objectAtIndex:indexPath.row];
-	}
-	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, uri.UTF8String);
-	if (!room) {
-		[PhoneMainView.instance popCurrentView];
-		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Invalid address", nil)
-																		 message:NSLocalizedString(@"Please specify the entire SIP address for the chat",
-																								   nil)
-																  preferredStyle:UIAlertControllerStyleAlert];
-
-		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction * action) {}];
-		defaultAction.accessibilityLabel = @"OK";
-		[errView addAction:defaultAction];
-		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-	} else {
-		ChatConversationView *view = VIEW(ChatConversationView);
-		[view setChatRoom:room];
-		[PhoneMainView.instance popCurrentView];
+		ChatConversationCreateConfirmView *view = VIEW(ChatConversationCreateConfirmView);
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-		// refresh list of chatrooms if we are using fragment
-		if (IPAD) {
-			ChatsListView *listView = VIEW(ChatsListView);
-			[listView.tableController loadData];
-		}
-	}*/
 }
 
 - (void)dismissKeyboards {

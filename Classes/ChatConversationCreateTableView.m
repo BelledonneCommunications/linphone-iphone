@@ -102,6 +102,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+	NSInteger index = 0;
 	if(cell.selectedImage.hidden) {
 		if(![_contactsGroup containsObject:cell.addressLabel.text]) {
 			[_contactsGroup addObject:cell.addressLabel.text];
@@ -109,11 +110,26 @@
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:cell.addressLabel.text];
 		}
 	} else if([_contactsGroup containsObject:cell.addressLabel.text]) {
+		index = (NSInteger)[_contactsGroup indexOfObject:cell.addressLabel.text];
 		[_contactsGroup removeObject:cell.addressLabel.text];
+		if(index == _contactsGroup.count) index = index-1;
 		[_contactsDict removeObjectForKey:cell.addressLabel.text];
 	}
 	cell.selectedImage.hidden = !cell.selectedImage.hidden;
 	[_collectionView reloadData];
+	if(!cell.selectedImage.hidden) {
+		index = _contactsGroup.count-1;
+	}
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		if(index > 0) {
+			NSIndexPath *path = [NSIndexPath indexPathForItem:index inSection:0];
+			[_collectionView scrollToItemAtIndexPath:path
+									atScrollPosition:(UICollectionViewScrollPositionCenteredHorizontally | UICollectionViewScrollPositionCenteredVertically)
+											animated:YES];
+		}
+	});
+	_controllerNextButton.enabled = (_contactsGroup.count > 0);
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
