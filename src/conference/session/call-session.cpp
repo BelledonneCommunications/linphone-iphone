@@ -934,7 +934,7 @@ LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 	return 0;
 }
 
-LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &subject) {
+LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &subject, const Content *content) {
 	L_D();
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
@@ -942,6 +942,8 @@ LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &
 		return -1;
 	if (d->currentParams == csp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
+	if (content)
+		d->op->set_local_body(*content);
 	LinphoneStatus result = d->startUpdate(subject);
 	if (result && (d->state != initialState)) {
 		/* Restore initial state */

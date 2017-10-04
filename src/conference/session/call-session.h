@@ -56,7 +56,7 @@ public:
 	virtual void startIncomingNotification ();
 	virtual int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
-	LinphoneStatus update (const CallSessionParams *csp, const std::string &subject = "");
+	LinphoneStatus update (const CallSessionParams *csp, const std::string &subject = "", const Content *content = nullptr);
 
 	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;
