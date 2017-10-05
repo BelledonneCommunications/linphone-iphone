@@ -140,7 +140,8 @@ protected:
 		Message,
 		Presence,
 		Publish,
-		Subscribe
+		Subscribe,
+		Refer /*for out of dialog refer only*/
 	};
 
 	static const char *to_string(const SalOp::Type type);

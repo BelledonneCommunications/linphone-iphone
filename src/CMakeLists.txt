@@ -172,6 +172,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/presence-op.cpp
 	sal/register-op.cpp
 	sal/sal.cpp
+	sal/refer-op.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp

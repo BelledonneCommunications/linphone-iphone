@@ -1438,7 +1438,6 @@ void SalCallOp::process_refer(const belle_sip_request_event_t *event, belle_sip_
 	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);
 	belle_sip_response_t* resp;
 	belle_sip_uri_t* refer_to_uri;
-	char* refer_to_uri_str;
 	
 	ms_message("Receiving REFER request on op [%p]", this);
 	if (refer_to) {
@@ -1451,13 +1450,11 @@ void SalCallOp::process_refer(const belle_sip_request_event_t *event, belle_sip_
 		if (referred_by){
 			set_referred_by(referred_by);
 		}
-		refer_to_uri_str=belle_sip_uri_to_string(refer_to_uri);
 		resp = create_response_from_request(req,202);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
-		this->root->callbacks.refer_received(this->root,this,refer_to_uri_str);
-		belle_sip_free(refer_to_uri_str);
+		this->root->callbacks.call_refer_received(this,(SalAddress*)BELLE_SIP_HEADER_ADDRESS(refer_to));
 	} else {
-		ms_warning("cannot do anything with the refer without destination\n");
+		ms_warning("cannot do anything with the refer without destination");
 		resp = create_response_from_request(req,400);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}

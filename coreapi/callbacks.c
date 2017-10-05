@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "c-wrapper/internal/c-sal.h"
 #include "sal/call-op.h"
 #include "sal/message-op.h"
+#include "sal/refer-op.h"
 
 #include "linphone/core.h"
 #include "private.h"
@@ -385,7 +386,7 @@ static void dtmf_received(SalOp *op, char dtmf){
 #endif
 }
 
-static void refer_received(Sal *sal, SalOp *op, const char *referto){
+static void call_refer_received(SalOp *op, const SalAddress *referto){
 #if 0
 	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
 	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
@@ -713,6 +714,14 @@ static void on_notify_response(SalOp *op){
 	}
 }
 
+static void refer_received(SalOp *op, const SalAddress *refer_to){
+	/*if processing is ok*/
+	dynamic_cast<SalReferOp*>(op)->reply(SalReasonNone);
+	
+	/*otherwise*/
+	//dynamic_cast<SalReferOp*>(op)->reply(SalReasonDeclined);
+}
+
 Sal::Callbacks linphone_sal_callbacks={
 	call_received,
 	call_rejected,
@@ -725,12 +734,12 @@ Sal::Callbacks linphone_sal_callbacks={
 	call_failure,
 	call_released,
 	call_cancel_done,
+	call_refer_received,
 	auth_failure,
 	register_success,
 	register_failure,
 	vfu_request,
 	dtmf_received,
-	refer_received,
 	message_received,
 	message_delivery_update,
 	notify_refer,
@@ -748,5 +757,6 @@ Sal::Callbacks linphone_sal_callbacks={
 	info_received,
 	on_publish_response,
 	on_expire,
-	on_notify_response
+	on_notify_response,
+	refer_received,
 };

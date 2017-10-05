@@ -30,6 +30,7 @@ class SalCallOp;
 class SalMessageOp;
 class SalSubscribeOp;
 class SalPresenceOp;
+class SalReferOp;
 
 class Sal{
 public:
@@ -50,7 +51,8 @@ public:
 	typedef void (*OnRegisterFailureCb)(SalOp *op);
 	typedef void (*OnVfuRequestCb)(SalOp *op);
 	typedef void (*OnDtmfReceivedCb)(SalOp *op, char dtmf);
-	typedef void (*OnReferCb)(Sal *sal, SalOp *op, const char *referto);
+	typedef void (*OnCallReferCb)(SalOp *op, const SalAddress *referto);
+	typedef void (*OnReferCb)(SalOp *op, const SalAddress *referto);
 	typedef void (*OnMessageReceivedCb)(SalOp *op, const SalMessage *msg);
 	typedef void (*OnMessageDeliveryUpdateCb)(SalOp *op, SalMessageDeliveryStatus);
 	typedef void (*OnNotifyReferCb)(SalOp *op, SalReferStatus state);
@@ -81,12 +83,13 @@ public:
 		OnCallFailureCb call_failure;
 		OnCallReleasedCb call_released;
 		OnCallCancelDoneCb call_cancel_done;
+		OnCallReferCb call_refer_received;
 		OnAuthFailureCb auth_failure;
 		OnRegisterSuccessCb register_success;
 		OnRegisterFailureCb register_failure;
 		OnVfuRequestCb vfu_request;
 		OnDtmfReceivedCb dtmf_received;
-		OnReferCb refer_received;
+		
 		OnMessageReceivedCb message_received;
 		OnMessageDeliveryUpdateCb message_delivery_update;
 		OnNotifyReferCb notify_refer;
@@ -105,6 +108,7 @@ public:
 		OnPublishResponseCb on_publish_response;
 		OnExpireCb on_expire;
 		OnNotifyResponseCb on_notify_response;
+		OnReferCb refer_received; /*for out of dialog refer*/
 	};
 
 	Sal(MSFactory *factory);
@@ -309,6 +313,7 @@ private:
 	friend class SalPresenceOp;
 	friend class SalSubscribeOp;
 	friend class SalPublishOp;
+	friend class SalReferOp;
 };
 
 int to_sip_code(SalReason r);

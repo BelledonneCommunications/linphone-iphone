@@ -20,6 +20,7 @@
 #include "sal/sal.h"
 #include "sal/call-op.h"
 #include "sal/presence-op.h"
+#include "sal/refer-op.h"
 #include "sal/event-op.h"
 #include "sal/message-op.h"
 #include "bellesip_sal/sal_impl.h"
@@ -104,7 +105,6 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 
 		if (strcmp("INVITE",method)==0) {
 			op=new SalCallOp(sal);
-			op->dir=SalOp::Dir::Incoming;
 			op->fill_cbs();
 		}else if ((strcmp("SUBSCRIBE",method)==0 || strcmp("NOTIFY",method)==0) && (evh=belle_sip_message_get_header(BELLE_SIP_MESSAGE(req),"Event"))!=NULL) {
 			if (strncmp(belle_sip_header_get_unparsed_value(evh),"presence",strlen("presence"))==0){
@@ -112,11 +112,12 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 			} else {
 				op=new SalSubscribeOp(sal);
 			}
-			op->dir=SalOp::Dir::Incoming;
 			op->fill_cbs();
 		}else if (strcmp("MESSAGE",method)==0) {
 			op=new SalMessageOp(sal);
-			op->dir=SalOp::Dir::Incoming;
+			op->fill_cbs();
+		}else if (strcmp("REFER",method)==0) {
+			op=new SalReferOp(sal);
 			op->fill_cbs();
 		}else if (strcmp("OPTIONS",method)==0) {
 			resp=belle_sip_response_create_from_request(req,200);
@@ -147,6 +148,7 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 			belle_sip_provider_send_response(sal->prov,resp);
 			return;
 		}
+		op->dir=SalOp::Dir::Incoming;
 	}
 
 	if (!op->from_address)  {
