@@ -732,33 +732,18 @@ void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
 
 	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 
-	/* Check if we shall upload a file to a server */
-	if (msg->getPrivate()->getFileTransferInformation() && !msg->getPrivate()->getContentType().isValid()) {
-		/* Open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
-		if (msg->uploadFile() == 0) {
-			/* Add to transient list only if message is going out */
-			d->addTransientMessage(msg);
-			/* Store the message so that even if the upload is stopped, it can be done again */
-			d->storeOrUpdateMessage(msg);
+	/* Add to transient list */
+	d->addTransientMessage(msg);
 
-			msg->getPrivate()->setState(ChatMessage::State::InProgress);
-		} else {
-			return;
-		}
-	} else {
-		/* Add to transient list */
-		d->addTransientMessage(msg);
+	msg->getPrivate()->setTime(ms_time(0));
+	msg->getPrivate()->send();
 
-		msg->getPrivate()->setTime(ms_time(0));
-		msg->getPrivate()->send();
+	d->storeOrUpdateMessage(msg);
 
-		d->storeOrUpdateMessage(msg);
-
-		if (d->isComposing)
-			d->isComposing = false;
-		d->isComposingHandler.stopIdleTimer();
-		d->isComposingHandler.stopRefreshTimer();
-	}
+	if (d->isComposing)
+		d->isComposing = false;
+	d->isComposingHandler.stopIdleTimer();
+	d->isComposingHandler.stopRefreshTimer();
 }
 
 // -----------------------------------------------------------------------------

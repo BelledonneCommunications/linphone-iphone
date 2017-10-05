@@ -41,7 +41,7 @@ int EncryptionChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
 		if (cbProcessOutgoingMessage) {
 			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublic()->getSharedFromThis()));
-			if (retval == 0) {
+			if (retval == 0 || retval == 1) {
 				messagePrivate->isSecured = true;
 			}
 		}

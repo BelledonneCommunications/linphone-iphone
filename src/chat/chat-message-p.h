@@ -33,6 +33,14 @@ class ChatMessagePrivate : public ObjectPrivate {
 	friend class MultipartChatMessageModifier;
 
 public:
+	enum Step {
+		None = 1 << 0,
+		FileUpload = 1 << 1,
+		Multipart = 1 << 2,
+		Encryption = 1 << 3,
+		Cpim = 1 << 4
+	};
+
 	ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room);
 	virtual ~ChatMessagePrivate ();
 
@@ -127,6 +135,7 @@ private:
 	SalOp *salOp = NULL;
 	SalCustomHeader *salCustomHeaders = NULL;
 	unsigned long backgroundTaskId;
+	unsigned char currentSendStep = Step::None;
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
 	std::string cText = "";

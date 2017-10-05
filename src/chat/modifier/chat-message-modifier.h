@@ -32,7 +32,24 @@ class ChatMessageModifier {
 public:
 	virtual ~ChatMessageModifier () = default;
 
+	/**
+	 * This method will be called when the message is about to be sent.
+	 * It should check first if the internalContent is filled. 
+	 * If so, it should apply it's changes to it, otherwise it should use the contentsList.
+	 * If it returns 0, it means everything went well. 
+	 * If it returns -1, it means it didn't change anything. 
+	 * If it returns 1, it means to abort the sending process and it will be resumed later.
+	 * If it returns any other value > 1, it's an error code.
+	 */
 	virtual int encode (ChatMessagePrivate *messagePrivate) = 0;
+
+	/**
+	 * This method will be called when the message is about to be received.
+	 * It should apply it's changes to the internal content, the last modifier will take care of filling the contentsList.
+	 * If it returns 0, it means everything went well. 
+	 * If it returns -1, it means it didn't change anything. 
+	 * If it returns any other value > 0, it's an error code.
+	 */
 	virtual int decode (ChatMessagePrivate *messagePrivate) = 0;
 };
 

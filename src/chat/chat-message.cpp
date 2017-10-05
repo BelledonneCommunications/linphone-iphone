@@ -1030,6 +1030,19 @@ void ChatMessagePrivate::send() {
 	SalOp *op = salOp;
 	LinphoneCall *call = NULL;
 
+	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
+		lInfo() << "File upload step already done, skipping";
+	} else {
+		if (getFileTransferInformation()) {
+			/* Open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
+			if (q->uploadFile() == 0) {
+				setState(ChatMessage::State::InProgress);
+				currentSendStep |= ChatMessagePrivate::Step::FileUpload;
+			}
+			return;
+		}
+	}
+
 	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 		call = linphone_core_get_call_by_remote_address(chatRoom->getCore(), chatRoom->getPeerAddress().asString().c_str());
 		if (call) {
@@ -1070,33 +1083,52 @@ void ChatMessagePrivate::send() {
 	// Start of message modification
 	// ---------------------------------------
 
+	//TODO Remove : This won't be necessary once we store the contentsList
 	string clearTextMessage;
 	ContentType clearTextContentType;
-
+	
 	if (!getText().empty()) {
 		clearTextMessage = getText().c_str();
 	}
 	if (getContentType().isValid()) {
 		clearTextContentType = getContentType();
 	}
+	//End of TODO Remove
 
-	if (contents.size() > 1) {
-		MultipartChatMessageModifier mcmm;
-		mcmm.encode(this);
+	if ((currentSendStep & ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
+		lInfo() << "Multipart step already done, skipping";
+	} else {
+		if (contents.size() > 1) {
+			MultipartChatMessageModifier mcmm;
+			mcmm.encode(this);
+		}
+		currentSendStep |= ChatMessagePrivate::Step::Multipart;
 	}
 
-	EncryptionChatMessageModifier ecmm;
-	int retval = ecmm.encode(this);
-	if (retval > 0) {
-		sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
-		q->updateState(ChatMessage::State::NotDelivered);
-		q->store();
-		return;
+	if ((currentSendStep & ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
+		lInfo() << "Encryption step already done, skipping";
+	} else {
+		EncryptionChatMessageModifier ecmm;
+		int retval = ecmm.encode(this);
+		if (retval > 0) {
+			if (retval > 1) {
+				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
+				q->updateState(ChatMessage::State::NotDelivered);
+				q->store();
+			}
+			return;
+		}
+		currentSendStep |= ChatMessagePrivate::Step::Encryption;
 	}
 
-	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
-		CpimChatMessageModifier ccmm;
-		ccmm.encode(this);
+	if ((currentSendStep & ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
+		lInfo() << "Cpim step already done, skipping";
+	} else {
+		if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
+			CpimChatMessageModifier ccmm;
+			ccmm.encode(this);
+		}
+		currentSendStep |= ChatMessagePrivate::Step::Cpim;
 	}
 
 	// ---------------------------------------
@@ -1117,6 +1149,7 @@ void ChatMessagePrivate::send() {
 		}
 	}
 
+	//TODO Remove : This won't be necessary once we store the contentsList
 	if (!getText().empty() && getText() == clearTextMessage) {
 		/* We replace the encrypted message by the original one so it can be correctly stored and displayed by the application */
 		setText(clearTextMessage);
@@ -1125,6 +1158,8 @@ void ChatMessagePrivate::send() {
 		/* We replace the encrypted content type by the original one */
 		setContentType(clearTextContentType);
 	}
+	//End of TODO Remove
+
 	q->setId(op->get_call_id()); /* must be known at that time */
 
 	if (call && linphone_call_get_op(call) == op) {

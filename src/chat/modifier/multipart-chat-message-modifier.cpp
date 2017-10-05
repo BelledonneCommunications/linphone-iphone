@@ -35,6 +35,12 @@ int MultipartChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 
 int MultipartChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 	//TODO
+	if (false) { // Multipart required
+
+	} else if (messagePrivate->contents.size() == 0) {
+		// All previous modifiers only altered the internal content, let's fill the content list because we're the last modifier to be called
+		messagePrivate->contents.push_back(messagePrivate->internalContent);
+	}
 	return 0;
 }
 
