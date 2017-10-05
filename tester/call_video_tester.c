@@ -2135,7 +2135,7 @@ static void video_call_expected_fps_for_low_bandwidth(void) {
 **/
 static void video_call_expected_fps_for_regular_bandwidth(void) {
 #if defined(__ANDROID__) || (TARGET_OS_IPHONE == 1) || defined(__arm__) || defined(_M_ARM)
-	video_call_expected_fps_for_specified_bandwidth(400000, 12, "vga");
+	video_call_expected_fps_for_specified_bandwidth(500000, 12, "vga");
 #else
 	video_call_expected_fps_for_specified_bandwidth(450000, 25, "vga");
 #endif
