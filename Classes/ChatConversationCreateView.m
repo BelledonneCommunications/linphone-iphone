@@ -71,7 +71,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsDict removeAllObjects];
 	[_tableController.contactsGroup removeAllObjects];
-	[PhoneMainView.instance popCurrentView];
+	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 }
 
 - (IBAction)onNextClick:(id)sender {

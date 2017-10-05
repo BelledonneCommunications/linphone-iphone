@@ -31,6 +31,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
+	_validateButton.enabled = FALSE;
 }
 
+- (IBAction)onBackClick:(id)sender {
+	[PhoneMainView.instance popToView:ChatConversationCreateView.compositeViewDescription];
+}
+
+- (IBAction)onValidateClick:(id)sender {
+}
 @end
