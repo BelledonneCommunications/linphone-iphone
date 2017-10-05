@@ -1116,6 +1116,7 @@ void ChatMessagePrivate::send() {
 			q->store();
 			return;
 		} else if (result == ChatMessageModifier::Result::Suspended) {
+			currentSendStep |= ChatMessagePrivate::Step::Encryption;
 			return;
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Encryption;

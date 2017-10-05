@@ -23,6 +23,7 @@
 #include "lime.h"
 #include "bctoolbox/crypto.h"
 #include <belle-sip/object.h>
+#include "linphone/core_utils.h"
 #include <bctoolbox/vfs.h>
 
 #ifdef SQLITE_STORAGE_ENABLED
@@ -2394,7 +2395,26 @@ static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryption
 	return -1;
 }
 
-void im_encryption_engine_b64(void) {
+static bool_t im_encryption_engine_process_outgoing_message_async_impl(LinphoneChatMessage** msg) {
+	if (*msg) {
+		im_encryption_engine_process_outgoing_message_cb(NULL,NULL,*msg);
+		linphone_chat_room_send_chat_message(linphone_chat_message_get_chat_room(*msg), *msg);
+		linphone_chat_message_unref(*msg);
+		*msg=NULL;
+	}
+	return TRUE;
+}
+
+static LinphoneChatMessage* pending_message=NULL; /*limited to one message at a time */
+
+static int im_encryption_engine_process_outgoing_message_async(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	pending_message=msg;
+	linphone_chat_message_ref(pending_message);
+	linphone_core_add_iterate_hook(linphone_chat_room_get_core(room), (LinphoneCoreIterateHook)im_encryption_engine_process_outgoing_message_async_impl,&pending_message);
+	return 1;/*temporaly code to defer message sending*/
+}
+
+void im_encryption_engine_b64_base(bool_t async) {
 	LinphoneChatMessage *chat_msg = NULL;
 	LinphoneChatRoom* chat_room = NULL;
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -2407,7 +2427,11 @@ void im_encryption_engine_b64(void) {
 	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);
 	linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, im_encryption_engine_process_outgoing_message_cb);
 	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, im_encryption_engine_process_incoming_message_cb);
-	linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_cb);
+	if (async) {
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_async);
+	} else {
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_cb);
+	}
 
 	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
 	linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
@@ -2426,6 +2450,14 @@ void im_encryption_engine_b64(void) {
 	linphone_im_encryption_engine_unref(pauline_imee);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+void im_encryption_engine_b64(void) {
+	im_encryption_engine_b64_base(FALSE);
+}
+
+void im_encryption_engine_b64_async(void) {
+	im_encryption_engine_b64_base(TRUE);
 }
 
 test_t message_tests[] = {
@@ -2504,7 +2536,8 @@ test_t message_tests[] = {
 #ifdef SQLITE_STORAGE_ENABLED
 	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
 #endif
-	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64)
+	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64),
+	TEST_NO_TAG("IM Encryption Engine b64 async", im_encryption_engine_b64_async)
 };
 
 static int message_tester_before_suite(void) {
