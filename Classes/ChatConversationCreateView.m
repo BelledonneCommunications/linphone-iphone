@@ -53,11 +53,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
-	_nextButton.enabled = FALSE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	_nextButton.enabled = FALSE;
+	_tableController.tableView.frame = CGRectMake(_tableController.tableView.frame.origin.x,
+												  _tableController.searchBar.frame.origin.y + _tableController.searchBar.frame.size.height,
+												  _tableController.tableView.frame.size.width,
+												  _tableController.tableView.frame.size.height + _collectionView.frame.size.height);
 	[_collectionView reloadData];
 	[self changeView:ContactsAll];
 }
@@ -65,6 +69,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - searchBar delegate
 
 - (IBAction)onBackClick:(id)sender {
+	[_tableController.contactsDict removeAllObjects];
+	[_tableController.contactsGroup removeAllObjects];
 	[PhoneMainView.instance popCurrentView];
 }
 

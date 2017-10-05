@@ -33,6 +33,18 @@
 - (void) onDelete {
 	[_controller.tableController.contactsGroup removeObject:_uri];
 	[_controller.tableController.contactsDict removeObjectForKey:_uri];
+	if (_controller.tableController.contactsGroup.count == 0) {
+		[UIView animateWithDuration:0.2
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [_controller.tableController.tableView setFrame:CGRectMake(_controller.tableController.tableView.frame.origin.x,
+															_controller.tableController.searchBar.frame.origin.y + _controller.tableController.searchBar.frame.size.height,
+															_controller.tableController.tableView.frame.size.width,
+															_controller.tableController.tableView.frame.size.height + _controller.collectionView.frame.size.height)];
+						 }
+						 completion:nil];
+	}
 	[_controller.collectionView reloadData];
 	[_controller.tableController.tableView reloadData];
 	_controller.tableController.controllerNextButton.enabled = (_controller.tableController.contactsGroup.count > 0);

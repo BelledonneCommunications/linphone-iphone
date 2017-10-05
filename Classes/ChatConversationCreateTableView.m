@@ -44,7 +44,8 @@
 		NSString *address = (NSString *)key;
 		NSString *name = [FastAddressBook displayNameForContact:value];
 		Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
-		Boolean linphoneContact = (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+		Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
+			|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 		BOOL add = _allFilter || linphoneContact;
 
 		if (((filter.length == 0)
@@ -87,7 +88,8 @@
 	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contacts.allKeys objectAtIndex:indexPath.row]];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:[_contacts.allKeys objectAtIndex:indexPath.row]];
-	Boolean linphoneContact = (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
+		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	cell.linphoneImage.hidden = !linphoneContact;
 	if (addr) {
 		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
@@ -116,6 +118,43 @@
 		[_contactsDict removeObjectForKey:cell.addressLabel.text];
 	}
 	cell.selectedImage.hidden = !cell.selectedImage.hidden;
+	_controllerNextButton.enabled = (_contactsGroup.count > 0);
+	if (_contactsGroup.count > 1 || (_contactsGroup.count == 1 && cell.selectedImage.hidden)) {
+		[UIView animateWithDuration:0.2
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [tableView setFrame:CGRectMake(tableView.frame.origin.x,
+															_collectionView.frame.origin.y + _collectionView.frame.size.height,
+															tableView.frame.size.width,
+															tableView.frame.size.height)];
+
+						 }
+						 completion:nil];
+	} else if (_contactsGroup.count == 1 && !cell.selectedImage.hidden) {
+		[UIView animateWithDuration:0.2
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [tableView setFrame:CGRectMake(tableView.frame.origin.x,
+															_collectionView.frame.origin.y + _collectionView.frame.size.height,
+															tableView.frame.size.width,
+															tableView.frame.size.height - _collectionView.frame.size.height)];
+
+						 }
+						 completion:nil];
+	} else {
+		[UIView animateWithDuration:0.2
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [tableView setFrame:CGRectMake(tableView.frame.origin.x,
+															_searchBar.frame.origin.y + _searchBar.frame.size.height,
+															tableView.frame.size.width,
+															tableView.frame.size.height + _collectionView.frame.size.height)];
+						 }
+						 completion:nil];
+	}
 	[_collectionView reloadData];
 	if(!cell.selectedImage.hidden) {
 		index = _contactsGroup.count-1;
@@ -129,7 +168,6 @@
 											animated:YES];
 		}
 	});
-	_controllerNextButton.enabled = (_contactsGroup.count > 0);
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
