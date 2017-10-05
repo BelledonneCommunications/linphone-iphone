@@ -47,6 +47,8 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::encode (ChatMessagePr
 					return ChatMessageModifier::Result::Suspended;
 				}
 				return ChatMessageModifier::Result::Done;
+			} else if (retval == -1) {
+				return ChatMessageModifier::Result::Skipped;
 			}
 			*errorCode = retval;
 			return ChatMessageModifier::Result::Error;
