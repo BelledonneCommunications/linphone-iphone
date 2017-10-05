@@ -688,6 +688,7 @@
 		8CB2B8F91F86229E0015CEE2 /* chat_secure.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F61F86229B0015CEE2 /* chat_secure.png */; };
 		8CB2B8FA1F86229E0015CEE2 /* next_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F71F86229C0015CEE2 /* next_disabled.png */; };
 		8CB2B8FB1F86229E0015CEE2 /* next_disabled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */; };
+		8CD3F5AC1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */; };
 		8CDC61951F84D89B0087CF7F /* check_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC618C1F84D89B0087CF7F /* check_selected.png */; };
 		8CDC61971F84D9270087CF7F /* check_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC61961F84D9270087CF7F /* check_selected@2x.png */; };
 		8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */; };
@@ -1698,6 +1699,8 @@
 		8CB2B8F61F86229B0015CEE2 /* chat_secure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_secure.png; sourceTree = "<group>"; };
 		8CB2B8F71F86229C0015CEE2 /* next_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_disabled.png; sourceTree = "<group>"; };
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
+		8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatCreateConfirmCollectionViewCell.h; sourceTree = "<group>"; };
+		8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateConfirmCollectionViewCell.m; sourceTree = "<group>"; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
 		8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmView.h; sourceTree = "<group>"; };
@@ -2174,6 +2177,8 @@
 				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
 				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
 				8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */,
+				8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */,
+				8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
@@ -3979,6 +3984,7 @@
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
 				63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
+				8CD3F5AC1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
