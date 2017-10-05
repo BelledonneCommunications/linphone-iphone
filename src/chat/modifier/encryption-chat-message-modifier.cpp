@@ -33,7 +33,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-int EncryptionChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
+ChatMessageModifier::Result EncryptionChatMessageModifier::encode (ChatMessagePrivate *messagePrivate, int *errorCode) {
 	int retval = -1;
 	LinphoneImEncryptionEngine *imee = messagePrivate->chatRoom->getCore()->im_encryption_engine;
 	if (imee) {
@@ -43,13 +43,19 @@ int EncryptionChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublic()->getSharedFromThis()));
 			if (retval == 0 || retval == 1) {
 				messagePrivate->isSecured = true;
+				if (retval == 1) {
+					return ChatMessageModifier::Result::Suspended;
+				}
+				return ChatMessageModifier::Result::Done;
 			}
+			*errorCode = retval;
+			return ChatMessageModifier::Result::Error;
 		}
 	}
-	return retval;
+	return ChatMessageModifier::Result::Skipped;
 }
 
-int EncryptionChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
+ChatMessageModifier::Result EncryptionChatMessageModifier::decode (ChatMessagePrivate *messagePrivate, int *errorCode) {
 	int retval = -1;
 	LinphoneImEncryptionEngine *imee = messagePrivate->chatRoom->getCore()->im_encryption_engine;
 	if (imee) {
@@ -59,10 +65,15 @@ int EncryptionChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 			retval = cbProcessIncomingMessage(imee, L_GET_C_BACK_PTR(messagePrivate->chatRoom), L_GET_C_BACK_PTR(messagePrivate->getPublic()->getSharedFromThis()));
 			if (retval == 0) {
 				messagePrivate->isSecured = true;
+				return ChatMessageModifier::Result::Done;
+			} else if (retval == -1) {
+				return ChatMessageModifier::Result::Skipped;
 			}
+			*errorCode = retval;
+			return ChatMessageModifier::Result::Error;
 		}
 	}
-	return retval;
+	return ChatMessageModifier::Result::Skipped;
 }
 
 LINPHONE_END_NAMESPACE

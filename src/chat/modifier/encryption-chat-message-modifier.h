@@ -29,8 +29,8 @@ class EncryptionChatMessageModifier : public ChatMessageModifier {
 public:
 	EncryptionChatMessageModifier () = default;
 
-	int encode (ChatMessagePrivate *messagePrivate) override;
-	int decode (ChatMessagePrivate *messagePrivate) override;
+	Result encode (ChatMessagePrivate *messagePrivate, int *errorCode) override;
+	Result decode (ChatMessagePrivate *messagePrivate, int *errorCode) override;
 };
 
 LINPHONE_END_NAMESPACE

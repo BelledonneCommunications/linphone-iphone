@@ -31,7 +31,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
+ChatMessageModifier::Result CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate, int *errorCode) {
 	Cpim::Message message;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
@@ -62,7 +62,8 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 
 	if (!message.isValid()) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
-		return 500;
+		*errorCode = 500;
+		return ChatMessageModifier::Result::Error;
 	} else {
 		Content newContent;
 		ContentType newContentType("Message/CPIM");
@@ -70,10 +71,10 @@ int CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate) {
 		newContent.setBody(message.asString());
 		messagePrivate->internalContent = newContent;
 	}
-	return 0;
+	return ChatMessageModifier::Result::Done;
 }
 
-int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
+ChatMessageModifier::Result CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate, int *errorCode) {
 	Content content;
 	if (!messagePrivate->internalContent.isEmpty()) {
 		content = messagePrivate->internalContent;
@@ -93,13 +94,14 @@ int CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate) {
 			messagePrivate->internalContent = newContent;
 		} else {
 			lError() << "[CPIM] Message is invalid: " << contentBody;
-			return 500;
+			*errorCode = 500;
+			return ChatMessageModifier::Result::Error;
 		}
 	} else {
 		lError() << "[CPIM] Message is not CPIM but " << content.getContentType().asString();
-		return -1;
+		return ChatMessageModifier::Result::Skipped;
 	}
-	return 0;
+	return ChatMessageModifier::Result::Done;
 }
 
 LINPHONE_END_NAMESPACE

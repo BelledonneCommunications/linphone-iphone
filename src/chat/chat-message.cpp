@@ -969,7 +969,7 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml()
 
 LinphoneReason ChatMessagePrivate::receive() {
 	L_Q();
-
+	int errorCode = 0;
 	LinphoneReason reason = LinphoneReasonNone;
 	bool store = false;
 
@@ -979,34 +979,33 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	if (getContentType() == ContentType::Cpim) {
 		CpimChatMessageModifier ccmm;
-		ccmm.decode(this);
+		ccmm.decode(this, &errorCode);
 	}
 
 	EncryptionChatMessageModifier ecmm;
-	int retval = 0;
-	retval = ecmm.decode(this);
-	if (retval > 0) {
+	ChatMessageModifier::Result result = ecmm.decode(this, &errorCode);
+	if (result == ChatMessageModifier::Result::Error) {
 		/* Unable to decrypt message */
 		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
-		reason = linphone_error_code_to_reason(retval);
+		reason = linphone_error_code_to_reason(errorCode);
 		q->sendDeliveryNotification(reason);
 		return reason;
 	}
 
 	MultipartChatMessageModifier mcmm;
-	mcmm.decode(this);
+	mcmm.decode(this, &errorCode);
 
 	// ---------------------------------------
 	// End of message modification
 	// ---------------------------------------
 
-	if ((retval <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().asString().c_str()) == FALSE)) {
-		retval = 415;
+	if ((errorCode <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().asString().c_str()) == FALSE)) {
+		errorCode = 415;
 		lError() << "Unsupported MESSAGE (content-type " << getContentType().asString() << " not recognized)";
 	}
 
-	if (retval > 0) {
-		reason = linphone_error_code_to_reason(retval);
+	if (errorCode > 0) {
+		reason = linphone_error_code_to_reason(errorCode);
 		q->sendDeliveryNotification(reason);
 		return reason;
 	}
@@ -1029,6 +1028,7 @@ void ChatMessagePrivate::send() {
 	L_Q();
 	SalOp *op = salOp;
 	LinphoneCall *call = NULL;
+	int errorCode = 0;
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
@@ -1100,7 +1100,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (contents.size() > 1) {
 			MultipartChatMessageModifier mcmm;
-			mcmm.encode(this);
+			mcmm.encode(this, &errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Multipart;
 	}
@@ -1109,13 +1109,13 @@ void ChatMessagePrivate::send() {
 		lInfo() << "Encryption step already done, skipping";
 	} else {
 		EncryptionChatMessageModifier ecmm;
-		int retval = ecmm.encode(this);
-		if (retval > 0) {
-			if (retval > 1) {
-				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", retval, "Unable to encrypt IM", nullptr);
-				q->updateState(ChatMessage::State::NotDelivered);
-				q->store();
-			}
+		ChatMessageModifier::Result result = ecmm.encode(this, &errorCode);
+		if (result == ChatMessageModifier::Result::Error) {
+			sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
+			q->updateState(ChatMessage::State::NotDelivered);
+			q->store();
+			return;
+		} else if (result == ChatMessageModifier::Result::Suspended) {
 			return;
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Encryption;
@@ -1126,7 +1126,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
 			CpimChatMessageModifier ccmm;
-			ccmm.encode(this);
+			ccmm.encode(this, &errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Cpim;
 	}
