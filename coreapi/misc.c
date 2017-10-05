@@ -839,6 +839,7 @@ void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSess
 			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
 		} else {
 			ms_warning("If ICE has completed successfully, rtp_candidate should be set!");
+			ice_dump_valid_list(first_cl);
 		}
 	}
 
