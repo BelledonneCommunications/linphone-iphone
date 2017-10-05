@@ -19,6 +19,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#include <ctime>
 #include <memory>
 #include <string>
 #include <vector>
@@ -92,6 +93,8 @@ namespace Utils {
 		static const T object;
 		return object;
 	}
+
+	LINPHONE_PUBLIC std::tm getLongAsTm (long time);
 }
 
 LINPHONE_END_NAMESPACE

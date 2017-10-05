@@ -43,12 +43,15 @@ public:
 
 	Backend getBackend () const;
 
+	virtual bool import (Backend backend, const std::string &parameters);
+
 protected:
 	explicit AbstractDb (AbstractDbPrivate &p);
 
 	virtual void init ();
 
 	std::string primaryKeyAutoIncrementStr (const std::string &type = "INT") const;
+	std::string insertOrIgnoreStr () const;
 
 private:
 	L_DECLARE_PRIVATE(AbstractDb);

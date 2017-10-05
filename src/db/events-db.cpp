@@ -17,13 +17,17 @@
  */
 
 #include <algorithm>
+#include <ctime>
 
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
 #endif // ifdef SOCI_ENABLED
 
+#include "linphone/utils/utils.h"
+
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
+#include "db/provider/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
 #include "logger/logger.h"
@@ -61,8 +65,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-// -----------------------------------------------------------------------------
-
 	static constexpr EnumToSql<EventsDb::Filter> eventFilterToSql[] = {
 		{ EventsDb::MessageFilter, "1" },
 		{ EventsDb::CallFilter, "2" },
@@ -75,26 +77,15 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-	static constexpr EnumToSql<ChatMessage::State> messageStateToSql[] = {
-		{ ChatMessage::State::Idle, "1" },
-		{ ChatMessage::State::InProgress, "2" },
-		{ ChatMessage::State::Delivered, "3" },
-		{ ChatMessage::State::NotDelivered, "4" },
-		{ ChatMessage::State::FileTransferError, "5" },
-		{ ChatMessage::State::FileTransferDone, "6" },
-		{ ChatMessage::State::DeliveredToUser, "7" },
-		{ ChatMessage::State::Displayed, "8" }
+// -----------------------------------------------------------------------------
+
+	struct MessageEventReferences {
+		long eventId;
+		long localSipAddressId;
+		long remoteSipAddressId;
+		long chatRoomId;
+		long contentTypeId;
 	};
-
-	static constexpr const char *mapMessageStateToSql (ChatMessage::State state) {
-		return mapEnumToSql(
-			messageStateToSql, sizeof messageStateToSql / sizeof messageStateToSql[0], state
-		);
-	}
-
-	static constexpr const char *mapMessageDirectionToSql (ChatMessage::Direction direction) {
-		return direction == ChatMessage::Direction::Incoming ? "1" : "2";
-	}
 
 // -----------------------------------------------------------------------------
 
@@ -128,6 +119,77 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
+	static inline long insertSipAddress (soci::session &session, const string &sipAddress) {
+		long id;
+		session << "SELECT id FROM sip_address WHERE value = :sipAddress", soci::use(sipAddress), soci::into(id);
+		if (session.got_data())
+			return id;
+
+		session << "INSERT INTO sip_address (value) VALUES (:sipAddress)", soci::use(sipAddress);
+		session.get_last_insert_id("sip_address", id);
+		return id;
+	}
+
+	static inline long insertContentType (soci::session &session, const string &contentType) {
+		long id;
+		session << "SELECT id FROM content_type WHERE value = :contentType", soci::use(contentType), soci::into(id);
+		if (session.got_data())
+			return id;
+
+		session << "INSERT INTO content_type (value) VALUES (:contentType)", soci::use(contentType);
+		session.get_last_insert_id("content_type", id);
+		return id;
+	}
+
+	static inline long insertEvent (soci::session &session, EventLog::Type type, const tm &date) {
+		session << "INSERT INTO event (event_type_id, date) VALUES (:eventTypeId, :date)",
+			soci::use(static_cast<int>(type)), soci::use(date);
+		long id;
+		session.get_last_insert_id("event", id);
+		return id;
+	}
+
+	static inline long insertChatRoom (soci::session &session, long sipAddressId, const tm &date) {
+		long id;
+		session << "SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = :sipAddressId",
+			soci::use(sipAddressId), soci::into(id);
+		if (!session.got_data())
+			session << "INSERT INTO chat_room (peer_sip_address_id, creation_date, last_update_date, subject) VALUES"
+				"  (:sipAddressId, :creationDate, :lastUpdateDate, '')", soci::use(sipAddressId), soci::use(date), soci::use(date);
+		else
+			session << "UPDATE chat_room SET last_update_date = :lastUpdateDate WHERE peer_sip_address_id = :sipAddressId",
+				soci::use(date), soci::use(sipAddressId);
+		return sipAddressId;
+	}
+
+	static inline long insertMessageEvent (
+		soci::session &session,
+		const MessageEventReferences &references,
+		ChatMessage::State state,
+		ChatMessage::Direction direction,
+		const string &imdnMessageId,
+		bool isSecured,
+		const string *text = nullptr
+	) {
+		soci::indicator textIndicator = text ? soci::i_ok : soci::i_null;
+
+		session << "INSERT INTO message_event ("
+			"  event_id, chat_room_id, local_sip_address_id, remote_sip_address_id, content_type_id,"
+			"  state, direction, imdn_message_id, is_secured, text"
+			") VALUES ("
+			"  :eventId, :chatRoomId, :localSipaddressId, :remoteSipaddressId, :contentTypeId,"
+			"  :state, :direction, :imdnMessageId, :isSecured, :text"
+			")", soci::use(references.eventId), soci::use(references.chatRoomId), soci::use(references.localSipAddressId),
+			soci::use(references.remoteSipAddressId), soci::use(references.contentTypeId),
+			soci::use(static_cast<int>(state)), soci::use(static_cast<int>(direction)), soci::use(imdnMessageId),
+			soci::use(isSecured ? 1 : 0), soci::use(text ? *text : string(), textIndicator);
+		long id;
+		return session.get_last_insert_id("message_event", id);
+		return id;
+	}
+
+// -----------------------------------------------------------------------------
+
 	void EventsDb::init () {
 		L_D();
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -139,8 +201,8 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			")";
 
 		*session <<
-			"CREATE TABLE IF NOT EXISTS event_type ("
-			"  id TINYINT UNSIGNED,"
+			"CREATE TABLE IF NOT EXISTS content_type ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
@@ -148,37 +210,22 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"CREATE TABLE IF NOT EXISTS event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  event_type_id TINYINT UNSIGNED NOT NULL,"
-			"  timestamp TIMESTAMP NOT NULL,"
-			"  FOREIGN KEY (event_type_id)"
-			"    REFERENCES event_type(id)"
-			"    ON DELETE CASCADE"
+			"  date DATE NOT NULL"
 			")";
 
 		*session <<
-			"CREATE TABLE IF NOT EXISTS message_state ("
-			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) UNIQUE NOT NULL"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS message_direction ("
-			"  id TINYINT UNSIGNED,"
-			"  value VARCHAR(255) UNIQUE NOT NULL"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS dialog ("
+			"CREATE TABLE IF NOT EXISTS chat_room ("
 			// Server (for conference) or user sip address.
 			"  peer_sip_address_id INT UNSIGNED PRIMARY KEY,"
 
 			// Dialog creation date.
-			"  creation_timestamp TIMESTAMP NOT NULL,"
+			"  creation_date DATE NOT NULL,"
+
+			// Last event date (call, message...).
+			"  last_update_date DATE NOT NULL,"
 
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
-
-			// Last event timestamp (call, message...).
-			"  last_update_timestamp TIMESTAMP NOT NULL,"
 
 			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -189,37 +236,47 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  event_id INT UNSIGNED NOT NULL,"
-			"  dialog_id INT UNSIGNED NOT NULL,"
-			"  state_id TINYINT UNSIGNED NOT NULL,"
-			"  direction_id TINYINT UNSIGNED NOT NULL,"
-			"  sender_sip_address_id INT UNSIGNED NOT NULL,"
+			"  chat_room_id INT UNSIGNED NOT NULL,"
+
+			"  local_sip_address_id INT UNSIGNED NOT NULL,"
+			"  remote_sip_address_id INT UNSIGNED NOT NULL,"
+
+			"  content_type_id INT UNSIGNED NOT NULL,"
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
 
+			"  state TINYINT UNSIGNED NOT NULL,"
+			"  direction TINYINT UNSIGNED NOT NULL,"
 			"  is_secured BOOLEAN NOT NULL,"
 
-			// Content type of text. (Html or text for example.)
-			"  content_type VARCHAR(255) NOT NULL,"
 			"  text TEXT,"
-
-			// App user data.
-			"  app_data VARCHAR(2048),"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (dialog_id)"
-			"    REFERENCES dialog(peer_sip_address_id)"
+			"  FOREIGN KEY (chat_room_id)"
+			"    REFERENCES chat_room(peer_sip_address_id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (state_id)"
-			"    REFERENCES message_state(id)"
-			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (direction_id)"
-			"    REFERENCES message_direction(id)"
-			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (sender_sip_address_id)"
+			"  FOREIGN KEY (local_sip_address_id)"
 			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (remote_sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (content_type_id)"
+			"    REFERENCES content_type(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_crypto_data ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  data BLOB,"
+
+			"  FOREIGN KEY (message_event_id)"
+			"    REFERENCES message_event(id)"
 			"    ON DELETE CASCADE"
 			")";
 
@@ -227,70 +284,19 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"CREATE TABLE IF NOT EXISTS message_file_info ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  message_id INT UNSIGNED NOT NULL,"
+			"  content_type_id INT UNSIGNED NOT NULL,"
 
-			// File content type.
-			"  content_type VARCHAR(255) NOT NULL,"
-
-			// File name.
 			"  name VARCHAR(255) NOT NULL,"
-
-			// File size.
 			"  size INT UNSIGNED NOT NULL,"
-
-			// File url.
 			"  url VARCHAR(255) NOT NULL,"
-			"  key VARCHAR(4096),"
-			"  key_size INT UNSIGNED,"
+
 			"  FOREIGN KEY (message_id)"
 			"    REFERENCES message(id)"
 			"    ON DELETE CASCADE"
+			"  FOREIGN KEY (content_type_id)"
+			"    REFERENCES content_type(id)"
+			"    ON DELETE CASCADE"
 			")";
-
-		{
-			string query = getBackend() == Mysql
-				? "INSERT INTO event_type (id, value)"
-				: "INSERT OR IGNORE INTO event_type (id, value)";
-			query += "VALUES"
-				"(1, \"Message\"),"
-				"(2, \"Call\"),"
-				"(3, \"Conference\")";
-			if (getBackend() == Mysql)
-				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
-
-			*session << query;
-		}
-
-		{
-			string query = getBackend() == Mysql
-				? "INSERT INTO message_direction (id, value)"
-				: "INSERT OR IGNORE INTO message_direction (id, value)";
-			query += "VALUES"
-				"(1, \"Incoming\"),"
-				"(2, \"Outgoing\")";
-			if (getBackend() == Mysql)
-				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
-
-			*session << query;
-		}
-
-		{
-			string query = getBackend() == Mysql
-				? "INSERT INTO message_state (id, value)"
-				: "INSERT OR IGNORE INTO message_state (id, value)";
-			query += "VALUES"
-				"(1, \"Idle\"),"
-				"(2, \"InProgress\"),"
-				"(3, \"Delivered\"),"
-				"(4, \"NotDelivered\"),"
-				"(5, \"FileTransferError\"),"
-				"(6, \"FileTransferDone\"),"
-				"(7, \"DeliveredToUser\"),"
-				"(8, \"Displayed\")";
-			if (getBackend() == Mysql)
-				query += "ON DUPLICATE KEY UPDATE value = VALUES(value)";
-
-			*session << query;
-		}
 	}
 
 	bool EventsDb::addEvent (const EventLog &eventLog) {
@@ -371,7 +377,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
-			query += "  WHERE dialog_id = ("
+			query += "  WHERE chat_room_id = ("
 				"    SELECT id FROM dialog WHERE remote_sip_address_id =("
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
 				"    )"
@@ -398,13 +404,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		string query = "SELECT COUNT(*) FROM message_event";
 		if (!remoteAddress.empty())
-			query += "  WHERE dialog_id = ("
+			query += "  WHERE chat_room_id = ("
 				"    SELECT id FROM dialog WHERE remote_sip_address_id = ("
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
 				"    )"
 				"  )"
-				"  AND direction_id = " + string(mapMessageDirectionToSql(ChatMessage::Incoming)) +
-				"  AND state_id = " + string(mapMessageStateToSql(ChatMessage::State::Displayed));
+				"  AND direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
+				"  AND state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
@@ -430,7 +436,12 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return list<shared_ptr<EventLog>>();
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int begin, int end, FilterMask mask) const {
+	list<shared_ptr<EventLog>> EventsDb::getHistory (
+		const string &remoteAddress,
+		int begin,
+		int end,
+		FilterMask mask
+	) const {
 		if (!isConnected()) {
 			lWarning() << "Unable to get history. Not connected.";
 			return list<shared_ptr<EventLog>>();
@@ -452,6 +463,111 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		// TODO.
 		(void)remoteAddress;
+	}
+
+// -----------------------------------------------------------------------------
+
+	template<typename T>
+	static T getValueFromLegacyMessage (const soci::row &message, int index, bool &isNull) {
+		isNull = false;
+
+		try {
+			return message.get<T>(index);
+		} catch (const exception &) {
+			isNull = true;
+		}
+
+		return T();
+	}
+
+	static void importLegacyMessages (
+		soci::session *session,
+		const string &insertOrIgnoreStr,
+		const soci::rowset<soci::row> &messages
+	) {
+		soci::transaction tr(*session);
+
+		for (const auto &message : messages) {
+			const int direction = message.get<int>(3) + 1;
+			if (direction != 1 && direction != 2) {
+				lWarning() << "Unable to import legacy message with invalid direction.";
+				return;
+			}
+
+			const int state = message.get<int>(7, static_cast<int>(ChatMessage::State::Displayed));
+
+			const tm date = Utils::getLongAsTm(message.get<int>(9, 0));
+
+			const bool noUrl = false;
+			const string url = getValueFromLegacyMessage<string>(message, 8, const_cast<bool &>(noUrl));
+
+			const string contentType = message.get<string>(
+				13,
+				message.get<int>(11, -1) != -1
+					? "application/vnd.gsma.rcs-ft-http+xml"
+					: (noUrl ? "text/plain" : "message/external-body")
+			);
+
+			const bool noText = false;
+			const string text = getValueFromLegacyMessage<string>(message, 4, const_cast<bool &>(noText));
+
+			struct MessageEventReferences references;
+			references.eventId = insertEvent(*session, EventLog::Type::ChatMessage, date);
+			references.localSipAddressId = insertSipAddress(*session, message.get<string>(1));
+			references.remoteSipAddressId = insertSipAddress(*session, message.get<string>(2));
+			references.chatRoomId = insertChatRoom(*session, references.remoteSipAddressId, date);
+			references.contentTypeId = insertContentType(*session, contentType);
+
+			insertMessageEvent (
+				*session,
+				references,
+				static_cast<ChatMessage::State>(state),
+				static_cast<ChatMessage::Direction>(direction),
+				message.get<string>(12, ""),
+				!!message.get<int>(14, 0),
+				noText ? nullptr : &text
+			);
+
+			const bool noAppData = false;
+			const string appData = getValueFromLegacyMessage<string>(message, 10, const_cast<bool &>(noAppData));
+			(void)text;
+			(void)appData;
+		}
+
+		tr.commit();
+	}
+
+	bool EventsDb::import (Backend, const string &parameters) {
+		L_D();
+
+		// Backend is useless, it's sqlite3. (Only available legacy backend.)
+		const string uri = "sqlite3://" + parameters;
+		DbSession inDbSession = DbSessionProvider::getInstance()->getSession(uri);
+
+		if (!inDbSession) {
+			lWarning() << "Unable to connect to: `" << uri << "`.";
+			return false;
+		}
+
+		soci::session *outSession = d->dbSession.getBackendSession<soci::session>();
+		soci::session *inSession = inDbSession.getBackendSession<soci::session>();
+
+		// Import messages.
+		try {
+			soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history ORDER BY id DESC");
+			try {
+				importLegacyMessages(outSession, insertOrIgnoreStr(), messages);
+			} catch (const exception &e) {
+				lInfo() << "Failed to import legacy messages from: `" << uri << "`. (" << e.what() << ")";
+				return false;
+			}
+			lInfo() << "Successful import of legacy messages from: `" << uri << "`.";
+		} catch (const exception &) {
+			// Table doesn't exist.
+			return false;
+		}
+
+		return true;
 	}
 
 // -----------------------------------------------------------------------------

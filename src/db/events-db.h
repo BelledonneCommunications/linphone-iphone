@@ -65,6 +65,8 @@ public:
 	) const;
 	void cleanHistory (const std::string &remoteAddress = "");
 
+	bool import (Backend backend, const std::string &parameters) override;
+
 protected:
 	void init () override;
 

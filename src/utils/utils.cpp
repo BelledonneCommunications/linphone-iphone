@@ -170,4 +170,11 @@ char *Utils::utf8ToChar (uint32_t ic) {
 	return result;
 }
 
+// -----------------------------------------------------------------------------
+
+tm Utils::getLongAsTm (long time) {
+	tm result;
+	return *gmtime_r(&static_cast<time_t &>(time), &result);
+}
+
 LINPHONE_END_NAMESPACE

@@ -60,6 +60,10 @@ AbstractDb::Backend AbstractDb::getBackend () const {
 	return d->backend;
 }
 
+bool AbstractDb::import (Backend, const string &) {
+	return false;
+}
+
 // -----------------------------------------------------------------------------
 
 void AbstractDb::init () {
@@ -76,6 +80,19 @@ string AbstractDb::primaryKeyAutoIncrementStr (const string &type) const {
 			return type + "UNSIGNED PRIMARY KEY AUTO_INCREMENT";
 		case Sqlite3:
 			return " INTEGER PRIMARY KEY AUTOINCREMENT";
+	}
+
+	return "";
+}
+
+string AbstractDb::insertOrIgnoreStr () const {
+	L_D();
+
+	switch (d->backend) {
+		case Mysql:
+			return "INSERT IGNORE INTO ";
+		case Sqlite3:
+			return "INSERT OR IGNORE INTO ";
 	}
 
 	return "";
