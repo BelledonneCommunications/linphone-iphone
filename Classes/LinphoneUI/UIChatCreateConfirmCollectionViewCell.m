@@ -9,4 +9,8 @@
 
 @implementation UIChatCreateConfirmCollectionViewCell
 
+- (void)onDelete {
+
+}
+
 @end

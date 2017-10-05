@@ -6,7 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UIChatCreateCollectionViewCell.h"
 
-@interface UIChatCreateConfirmCollectionViewCell : UICollectionViewCell
-
+@interface UIChatCreateConfirmCollectionViewCell : UIChatCreateCollectionViewCell
 @end
