@@ -75,8 +75,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-		ChatConversationCreateConfirmView *view = VIEW(ChatConversationCreateConfirmView);
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	ChatConversationCreateConfirmView *view = VIEW(ChatConversationCreateConfirmView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (void)dismissKeyboards {
