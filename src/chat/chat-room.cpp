@@ -551,6 +551,12 @@ void ChatRoom::compose () {
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	L_D();
 	shared_ptr<ChatMessage> chatMessage = createMessage();
+	
+	/* TODO
+	Content content;
+	content.setContentType(ContentType::FileTransfer);
+	content.setBody(linphone_content_get_string_buffer(initialContent));
+	chatMessage->addContent(content);*/
 
 	chatMessage->setToAddress(d->peerAddress);
 	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
@@ -565,7 +571,7 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 
 	Content content;
-	content.setContentType("text/plain");
+	content.setContentType(ContentType::PlainText);
 	content.setBody(message);
 	chatMessage->addContent(content);
 
