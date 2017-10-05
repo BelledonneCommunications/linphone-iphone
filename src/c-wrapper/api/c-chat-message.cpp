@@ -46,6 +46,7 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(ChatMessage,
 	LinphoneAddress *to; // cache for shared_ptr<Address>
 	LinphoneChatMessageStateChangedCb message_state_changed_cb;
 	void* message_state_changed_user_data;
+	mutable string contentTypeCache;
 )
 
 static void _linphone_chat_message_constructor (LinphoneChatMessage *msg) {
@@ -318,7 +319,8 @@ void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChat
 // =============================================================================
 
 const char * linphone_chat_message_get_content_type(LinphoneChatMessage *msg) {
-	return L_STRING_TO_C(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType().asString());
+	msg->contentTypeCache = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getContentType().asString();
+	return L_STRING_TO_C(msg->contentTypeCache);
 }
 
 void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type) {
