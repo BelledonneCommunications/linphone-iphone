@@ -45,8 +45,14 @@ void Conference::addParticipant (const Address &addr, const CallSessionParams *p
 }
 
 void Conference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	for (const auto &addr : addresses)
-		addParticipant(addr, params, hasMedia);
+	list<Address> sortedAddresses(addresses);
+	sortedAddresses.sort();
+	sortedAddresses.unique();
+	for (const auto &addr: sortedAddresses) {
+		shared_ptr<Participant> participant = findParticipant(addr);
+		if (!participant)
+			addParticipant(addr, params, hasMedia);
+	}
 }
 
 bool Conference::canHandleParticipants () const {
