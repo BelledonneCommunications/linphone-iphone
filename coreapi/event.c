@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/event.h"
 #include "linphone/lpconfig.h"
-#include "sal/event_op.h"
+#include "sal/event-op.h"
 
 #include "c-wrapper/c-wrapper.h"
 

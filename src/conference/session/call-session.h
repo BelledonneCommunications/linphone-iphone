@@ -24,7 +24,7 @@
 #include "conference/conference.h"
 #include "conference/params/call-session-params.h"
 #include "conference/session/call-session-listener.h"
-#include "sal/call_op.h"
+#include "sal/call-op.h"
 
 // =============================================================================
 

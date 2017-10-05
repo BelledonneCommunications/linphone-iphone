@@ -1,26 +1,25 @@
 /*
-sal.hpp
-Copyright (C) 2017  Belledonne Communications <info@belledonne-communications.com>
+ * sal.h
+ * Copyright (C) 2017  Belledonne Communications SARL
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+#ifndef _SAL_H_
+#define _SAL_H_
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
-
-#ifndef _SAL_HPP_
-#define _SAL_HPP_
-
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 #include "linphone/utils/general.h"
 
 LINPHONE_BEGIN_NAMESPACE
@@ -68,7 +67,7 @@ public:
 	typedef void (*OnPublishResponseCb)(SalOp *salop);
 	typedef void (*OnNotifyResponseCb)(SalOp *salop);
 	typedef void (*OnExpireCb)(SalOp *salop);
-	
+
 	struct Callbacks {
 		OnCallReceivedCb call_received;
 		OnCallReceivedCb call_rejected;
@@ -106,23 +105,23 @@ public:
 		OnExpireCb on_expire;
 		OnNotifyResponseCb on_notify_response;
 	};
-	
+
 	Sal(MSFactory *factory);
 	~Sal();
-	
+
 	void set_user_pointer(void *user_data) {this->up=user_data;}
 	void *get_user_pointer() const {return this->up;}
-	
+
 	void set_callbacks(const Callbacks *cbs);
-	
+
 	void *get_stack_impl() {return this->stack;}
-	
+
 	int iterate() {belle_sip_stack_sleep(this->stack,0); return 0;}
-	
+
 	void  set_send_error(int value) {belle_sip_stack_set_send_error(this->stack,value);}
 	void  set_recv_error(int value) {belle_sip_provider_set_recv_error(this->prov,value);}
-	
-	
+
+
 	/******************/
 	/* SIP parameters */
 	/******************/
@@ -130,30 +129,30 @@ public:
 	const char *get_supported_tags() const {return this->supported ? belle_sip_header_get_unparsed_value(this->supported) : NULL;}
 	void add_supported_tag(const char* tag);
 	void remove_supported_tag(const char* tag);
-	
+
 	void set_user_agent(const char *user_agent);
 	const char* get_user_agent() const;
 	void append_stack_string_to_user_agent();
-	
+
 	bool_t content_encoding_available(const char *content_encoding) {return (bool_t)belle_sip_stack_content_encoding_available(this->stack, content_encoding);}
 	bool_t is_content_type_supported(const char *content_type) const;
 	void add_content_type_support(const char *content_type);
-	
+
 	void set_default_sdp_handling(SalOpSDPHandling sdp_handling_method);
-	
+
 	void set_uuid(const char *uuid);
 	int create_uuid(char *uuid, size_t len);
 	static int generate_uuid(char *uuid, size_t len);
-	
+
 	void enable_nat_helper(bool_t enable);
 	bool_t nat_helper_enabled() const {return this->_nat_helper_enabled;}
-	
+
 	bool_t pending_trans_checking_enabled() const {return this->pending_trans_checking;}
 	int enable_pending_trans_checking(bool_t value) {this->pending_trans_checking = value; return 0;}
-	
+
 	void set_refresher_retry_after(int value) {this->refresher_retry_after=value;}
 	int get_refresher_retry_after() const {return this->refresher_retry_after;}
-	
+
 	void enable_sip_update_method(bool_t value) {this->enable_sip_update=value;}
 	void use_session_timers(int expires) {this->session_expires=expires;}
 	void use_dates(bool_t enabled) {this->_use_dates=enabled;}
@@ -163,42 +162,42 @@ public:
 	void enable_test_features(bool_t enabled) {this->_enable_test_features=enabled;}
 	void use_no_initial_route(bool_t enabled) {this->no_initial_route=enabled;}
 	void enable_unconditional_answer(int value) {belle_sip_provider_enable_unconditional_answer(this->prov,value);}
-	
+
 	bctbx_list_t *get_pending_auths() const {return bctbx_list_copy(this->pending_auths);}
-	
-	
+
+
 	/**********************/
 	/* Network parameters */
 	/**********************/
 	int set_listen_port(const char *addr, int port, SalTransport tr, bool_t is_tunneled);
 	int get_listening_port(SalTransport tr);
 	int transport_available(SalTransport t);
-	
+
 	void get_default_local_ip(int address_family, char *ip, size_t iplen);
-	
+
 	void set_transport_timeout(int timeout) {belle_sip_stack_set_transport_timeout(this->stack, timeout);}
 	int get_transport_timeout() const {return belle_sip_stack_get_transport_timeout(this->stack);}
-	
+
 	void set_keepalive_period(unsigned int value);
 	unsigned int get_keepalive_period() const {return this->keep_alive;}
 	void use_tcp_tls_keepalive(bool_t enabled) {this->use_tcp_tls_keep_alive=enabled;}
-	
+
 	void set_dscp(int dscp) {belle_sip_stack_set_default_dscp(this->stack,dscp);}
-	
+
 	int set_tunnel(void *tunnelclient);
-	
+
 	void set_http_proxy_host(const char *host) {belle_sip_stack_set_http_proxy_host(this->stack, host);}
 	const char *get_http_proxy_host() const {return belle_sip_stack_get_http_proxy_host(this->stack);}
-	
+
 	void set_http_proxy_port(int port) {belle_sip_stack_set_http_proxy_port(this->stack, port);}
 	int get_http_proxy_port() const {return belle_sip_stack_get_http_proxy_port(this->stack);}
-	
+
 	ortp_socket_t get_socket() const;
-	
+
 	int unlisten_ports();
 	int reset_transports();
-	
-	
+
+
 	/******************/
 	/* TLS parameters */
 	/******************/
@@ -206,41 +205,41 @@ public:
 	void set_root_ca(const char* rootCa);
 	void set_root_ca_data(const char* data);
 	const char *get_root_ca() const {return this->root_ca;}
-	
+
 	void verify_server_certificates(bool_t verify);
 	void verify_server_cn(bool_t verify);
-	
-	
+
+
 	/******************/
 	/* DNS resolution */
 	/******************/
 	void set_dns_timeout(int timeout) {belle_sip_stack_set_dns_timeout(this->stack, timeout);}
 	int get_dns_timeout() const {return belle_sip_stack_get_dns_timeout(this->stack);}
-	
+
 	void set_dns_servers(const bctbx_list_t *servers);
-	
+
 	void enable_dns_search(bool_t enable) {belle_sip_stack_enable_dns_search(this->stack, (unsigned char)enable);}
 	bool_t dns_search_enabled() const {return (bool_t)belle_sip_stack_dns_search_enabled(this->stack);}
-	
+
 	void enable_dns_srv(bool_t enable) {belle_sip_stack_enable_dns_srv(this->stack, (unsigned char)enable);}
 	bool_t dns_srv_enabled() const {return (bool_t)belle_sip_stack_dns_srv_enabled(this->stack);}
-	
+
 	void set_dns_user_hosts_file(const char *hosts_file) {belle_sip_stack_set_dns_user_hosts_file(this->stack, hosts_file);}
 	const char *get_dns_user_hosts_file() const {return belle_sip_stack_get_dns_user_hosts_file(this->stack);}
-	
+
 	belle_sip_resolver_context_t *resolve_a(const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data)
 		{return belle_sip_stack_resolve_a(this->stack,name,port,family,cb,data);}
 	belle_sip_resolver_context_t *resolve(const char *service, const char *transport, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data)
 		{return belle_sip_stack_resolve(this->stack, service, transport, name, port, family, cb, data);}
-	
-	
+
+
 	/**********/
 	/* Timers */
 	/**********/
 	belle_sip_source_t *create_timer(belle_sip_source_func_t func, void *data, unsigned int timeout_value_ms, const char* timer_name);
 	void cancel_timer(belle_sip_source_t *timer);
-	
-	
+
+
 private:
 	struct sal_uuid_t {
 		unsigned int time_low;
@@ -250,17 +249,17 @@ private:
 		unsigned char clock_seq_low;
 		unsigned char node[6];
 	};
-	
+
 	void set_tls_properties();
 	int add_listen_port(SalAddress* addr, bool_t is_tunneled);
 	void make_supported_header();
 	void add_pending_auth(SalOp *op);
 	void remove_pending_auth(SalOp *op);
 	belle_sip_response_t* create_response_from_request (belle_sip_request_t* req, int code );
-	
+
 	static void unimplemented_stub() {ms_warning("Unimplemented SAL callback");}
 	static void remove_listening_point(belle_sip_listening_point_t* lp,belle_sip_provider_t* prov) {belle_sip_provider_remove_listening_point(prov,lp);}
-	
+
 	/* Internal callbacks */
 	static void process_dialog_terminated_cb(void *sal, const belle_sip_dialog_terminated_event_t *event);
 	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
@@ -269,7 +268,7 @@ private:
 	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
 	static void process_transaction_terminated_cb(void *user_ctx, const belle_sip_transaction_terminated_event_t *event);
 	static void process_auth_requested_cb(void *sal, belle_sip_auth_event_t *event);
-	
+
 	MSFactory *factory = NULL;
 	Callbacks callbacks = {0};
 	MSList *pending_auths = NULL;/*MSList of SalOp */
@@ -301,7 +300,7 @@ private:
 	bool_t pending_trans_checking = TRUE; /*testing purpose*/
 	void *ssl_config = NULL;
 	bctbx_list_t *supported_content_types = NULL; /* list of char* */
-	
+
 	friend class SalOp;
 	friend class SalCallOp;
 	friend class SalRegisterOp;
@@ -315,5 +314,4 @@ int to_sip_code(SalReason r);
 
 LINPHONE_END_NAMESPACE
 
-
-#endif // _LINPHONE_SAL_HH
+#endif // ifndef _SAL_H_

@@ -1,8 +1,26 @@
-#include "sal.hpp"
-#include "call_op.h"
-#include "presence_op.h"
-#include "event_op.h"
-#include "message_op.h"
+/*
+ * sal.cpp
+ * Copyright (C) 2017  Belledonne Communications SARL
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include "sal/sal.h"
+#include "sal/call-op.h"
+#include "sal/presence-op.h"
+#include "sal/event-op.h"
+#include "sal/message-op.h"
 #include "bellesip_sal/sal_impl.h"
 #include "tester_utils.h"
 #include "private.h"

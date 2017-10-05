@@ -44,7 +44,6 @@ list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 	offeranswer.h
 	private.h
 	quality_reporting.h
-	sal/sal.h
 	sqlite3_bctbx_vfs.h
 	vcard_private.h
 	xml2lpc.h
@@ -99,7 +98,6 @@ set(LINPHONE_SOURCE_FILES_C
 	quality_reporting.c
 	remote_provisioning.c
 	ringtoneplayer.c
-	sal/sal.c
 	siplogin.c
 	sipsetup.c
 	sqlite3_bctbx_vfs.c
@@ -111,13 +109,6 @@ set(LINPHONE_SOURCE_FILES_C
 )
 set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
-	sal/call_op.cpp
-	sal/event_op.cpp
-	sal/message_op.cpp
-	sal/presence_op.cpp
-	sal/register_op.cpp
-	sal/sal.cpp
-	sal/sal_op.cpp
 	tester_utils.cpp
 )
 set(LINPHONE_INCLUDE_DIRS ${LINPHONE_INCLUDE_DIRS})

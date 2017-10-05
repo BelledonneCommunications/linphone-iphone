@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef SAL_IMPL_H_
 #define SAL_IMPL_H_
 
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 #include "belle-sip/belle-sip.h"
 #include "belle-sip/belle-sdp.h"
 

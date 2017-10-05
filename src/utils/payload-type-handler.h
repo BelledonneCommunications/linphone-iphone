@@ -21,7 +21,7 @@
 
 #include "linphone/utils/general.h"
 
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 
 #define PAYLOAD_TYPE_ENABLED PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3

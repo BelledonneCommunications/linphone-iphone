@@ -25,6 +25,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address.h
 	c-wrapper/c-wrapper.h
 	c-wrapper/internal/c-tools.h
+	c-wrapper/internal/c-sal.h
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
@@ -96,6 +97,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/object.h
 	object/property-container.h
 	object/singleton.h
+	sal/sal.h
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
@@ -116,6 +118,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
+	c-wrapper/internal/c-sal.cpp
 	call/call.cpp
 	chat/basic-chat-room.cpp
 	chat/chat-message.cpp
@@ -162,6 +165,13 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	object/clonable-object.cpp
 	object/object.cpp
 	object/property-container.cpp
+	sal/call-op.cpp
+	sal/event-op.cpp
+	sal/message-op.cpp
+	sal/op.cpp
+	sal/presence-op.cpp
+	sal/register-op.cpp
+	sal/sal.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp

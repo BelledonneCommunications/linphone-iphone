@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define quality_reporting_h
 
 #include "linphone/core.h"
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 
 #ifdef __cplusplus
 extern "C"{

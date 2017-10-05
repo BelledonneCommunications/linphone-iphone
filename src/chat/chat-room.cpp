@@ -27,7 +27,7 @@
 #include "content/content.h"
 #include "chat-message-p.h"
 #include "chat-room.h"
-#include "sal/message_op.h"
+#include "sal/message-op.h"
 #include "logger/logger.h"
 
 // =============================================================================

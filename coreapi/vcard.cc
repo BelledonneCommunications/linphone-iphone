@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/wrapper_utils.h"
 
 #include "c-wrapper/c-wrapper.h"
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 #include "vcard_private.h"
 
 #define VCARD_MD5_HASH_SIZE 16

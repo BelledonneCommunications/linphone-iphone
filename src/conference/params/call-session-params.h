@@ -22,8 +22,8 @@
 #include "object/clonable-object.h"
 
 #include "linphone/types.h"
+#include "c-wrapper/internal/c-sal.h"
 #include "sal/sal.h"
-#include "sal/sal.hpp"
 
 // =============================================================================
 

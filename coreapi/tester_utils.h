@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "account_creator_private.h"
 #include "linphone/core.h"
 #include "linphone/tunnel.h"
-#include "sal/sal.h"
+#include "c-wrapper/internal/c-sal.h"
 #include <sqlite3.h> 
 #include "quality_reporting.h"
 #include "vcard_private.h"
