@@ -1,11 +1,11 @@
 /*
- * c-event-log.h
- * Copyright (C) 2017  Belledonne Communications SARL
+ * c-address.h
+ * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,11 +13,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_EVENT_LOG_H_
-#define _C_EVENT_LOG_H_
+#ifndef _C_ADDRESS_H_
+#define _C_ADDRESS_H_
 
 #include "linphone/api/c-types.h"
 
@@ -239,4 +240,4 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC bool_t linphone_address_is_secure (const Lin
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_EVENT_LOG_H_
+#endif // ifndef _C_ADDRESS_H_
