@@ -611,6 +611,10 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 	void EventsDb::cleanHistory (const string &) {}
 
+	bool EventsDb::import (Backend, const string &) {
+		return false;
+	}
+
 #endif // ifdef SOCI_ENABLED
 
 LINPHONE_END_NAMESPACE
