@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatConversationCreateConfirmView">
             <connections>
+                <outlet property="collectionView" destination="vxZ-Pk-gLv" id="Tl3-qq-DIh"/>
                 <outlet property="nameField" destination="5uU-sb-Hle" id="XjS-4y-ooZ"/>
                 <outlet property="validateButton" destination="aZ4-Rl-kUQ" id="H8t-tQ-Kjg"/>
                 <outlet property="view" destination="GFA-Ly-0cJ" id="pRe-As-q8O"/>

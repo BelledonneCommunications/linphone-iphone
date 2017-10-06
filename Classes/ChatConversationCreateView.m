@@ -76,6 +76,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onNextClick:(id)sender {
 	ChatConversationCreateConfirmView *view = VIEW(ChatConversationCreateConfirmView);
+	view.contacts = _tableController.contactsDict;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
@@ -132,11 +133,11 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 }
 
 - (UIChatCreateCollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-	NSString *name = _tableController.contactsGroup[indexPath.item];
-	UIChatCreateCollectionViewCell *cell = (UIChatCreateCollectionViewCell *)[_collectionView dequeueReusableCellWithReuseIdentifier:name forIndexPath:indexPath];
+	NSString *uri = _tableController.contactsGroup[indexPath.item];
+	UIChatCreateCollectionViewCell *cell = (UIChatCreateCollectionViewCell *)[_collectionView dequeueReusableCellWithReuseIdentifier:uri forIndexPath:indexPath];
 	cell.controller = self;
-	cell.uri = name;
-	cell = [cell initWithName:_tableController.contactsDict[name]];
+	cell.uri = uri;
+	cell = [cell initWithName:_tableController.contactsDict[uri]];
 	return cell;
 }
 

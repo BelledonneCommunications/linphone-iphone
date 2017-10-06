@@ -689,6 +689,7 @@
 		8CB2B8FA1F86229E0015CEE2 /* next_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F71F86229C0015CEE2 /* next_disabled.png */; };
 		8CB2B8FB1F86229E0015CEE2 /* next_disabled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */; };
 		8CD3F5AC1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */; };
+		8CD3F5B71F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */; };
 		8CDC61951F84D89B0087CF7F /* check_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC618C1F84D89B0087CF7F /* check_selected.png */; };
 		8CDC61971F84D9270087CF7F /* check_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC61961F84D9270087CF7F /* check_selected@2x.png */; };
 		8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */; };
@@ -1701,6 +1702,8 @@
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
 		8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatCreateConfirmCollectionViewCell.h; sourceTree = "<group>"; };
 		8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateConfirmCollectionViewCell.m; sourceTree = "<group>"; };
+		8CD3F5B51F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmCollectionViewController.h; sourceTree = "<group>"; };
+		8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateConfirmCollectionViewController.m; sourceTree = "<group>"; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
 		8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmView.h; sourceTree = "<group>"; };
@@ -2038,6 +2041,8 @@
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
 				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
 				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
+				8CD3F5B51F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.h */,
+				8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */,
 				8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */,
 				8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */,
 				8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */,
@@ -4045,6 +4050,7 @@
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
+				8CD3F5B71F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
