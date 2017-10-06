@@ -69,6 +69,8 @@ const string &BasicChatRoom::getSubject () const {
 	return d->subject;
 }
 
+void BasicChatRoom::leave () {}
+
 void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
 }

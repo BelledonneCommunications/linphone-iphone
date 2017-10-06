@@ -27,6 +27,7 @@
 	F(Instantiated) \
 	F(CreationPending) \
 	F(Created) \
+	F(TerminationPending) \
 	F(Terminated) \
 	F(CreationFailed)
 

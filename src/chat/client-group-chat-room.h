@@ -38,7 +38,7 @@ class ClientGroupChatRoomPrivate;
 class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
 	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &subject);
-	virtual ~ClientGroupChatRoom ();
+	virtual ~ClientGroupChatRoom () = default;
 
 public:
 	/* ConferenceInterface */
@@ -49,6 +49,7 @@ public:
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
 	const std::string &getSubject () const override;
+	void leave () override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 	void setSubject (const std::string &subject) override;
@@ -64,7 +65,7 @@ private:
 
 private:
 	/* CallSessionListener */
-	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) override;
+	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> session) override;
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const std::string &message) override;
 
 private:

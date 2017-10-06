@@ -37,6 +37,7 @@ class Participant : public Object {
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
+	friend class Conference;
 	friend class LocalConference;
 	friend class MediaSessionPrivate;
 	friend class RemoteConference;

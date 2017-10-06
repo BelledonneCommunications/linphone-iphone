@@ -248,6 +248,10 @@ const char * linphone_chat_room_get_subject (const LinphoneChatRoom *cr) {
 	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getSubject());
 }
 
+void linphone_chat_room_leave (LinphoneChatRoom *cr) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
+}
+
 void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphoneParticipant *participant) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipant(L_GET_CPP_PTR_FROM_C_OBJECT(participant));
 }

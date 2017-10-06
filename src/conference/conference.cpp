@@ -76,6 +76,8 @@ const string &Conference::getSubject () const {
 	return subject;
 }
 
+void Conference::leave () {}
+
 void Conference::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "Conference class does not handle removeParticipant() generically";
 }
@@ -166,6 +168,14 @@ void Conference::onResetFirstVideoFrameDecoded (const std::shared_ptr<const Call
 shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
 	for (const auto &participant : participants) {
 		if (addr.equal(participant->getAddress()))
+			return participant;
+	}
+	return nullptr;
+}
+
+shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> session) {
+	for (const auto &participant : participants) {
+		if (participant->getPrivate()->getSession() == session)
 			return participant;
 	}
 	return nullptr;

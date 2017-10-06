@@ -165,6 +165,8 @@ const string &RealTimeTextChatRoom::getSubject () const {
 	return d->subject;
 }
 
+void RealTimeTextChatRoom::leave () {}
+
 void RealTimeTextChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
 	lError() << "removeParticipant() is not allowed on a RealTimeTextChatRoom";
 }

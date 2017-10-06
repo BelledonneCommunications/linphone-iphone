@@ -42,6 +42,7 @@ public:
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;
 	virtual const std::string &getSubject () const = 0;
+	virtual void leave () = 0;
 	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) = 0;
 	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) = 0;
 	virtual void setSubject (const std::string &subject) = 0;

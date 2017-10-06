@@ -290,6 +290,12 @@ LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_participants (const Linpho
 LINPHONE_PUBLIC const char * linphone_chat_room_get_subject (const LinphoneChatRoom *cr);
 
 /**
+ * Leave a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ */
+LINPHONE_PUBLIC void linphone_chat_room_leave (LinphoneChatRoom *cr);
+
+/**
  * Remove a participant of a chat room.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] participant The participant to remove from the chat room
