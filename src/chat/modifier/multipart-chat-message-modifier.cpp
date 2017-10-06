@@ -40,9 +40,6 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (shared_ptr<Cha
 	if (false) { // Multipart required
 
 		return ChatMessageModifier::Result::Done;
-	} else if (message->getContents().size() == 0) {
-		// All previous modifiers only altered the internal content, let's fill the content list because we're the last modifier to be called
-		message->addContent(message->getInternalContent());
 	}
 	return ChatMessageModifier::Result::Skipped;
 }

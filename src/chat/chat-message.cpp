@@ -996,6 +996,11 @@ LinphoneReason ChatMessagePrivate::receive() {
 	MultipartChatMessageModifier mcmm;
 	mcmm.decode(q->getSharedFromThis(), &errorCode);
 
+	if (contents.size() == 0) {
+		// All previous modifiers only altered the internal content, let's fill the content list
+		contents.push_back(internalContent);
+	}
+
 	// ---------------------------------------
 	// End of message modification
 	// ---------------------------------------
