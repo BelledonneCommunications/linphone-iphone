@@ -55,6 +55,7 @@ public:
 	std::string asString () const;
 
 	static const ContentType Cpim;
+	static const ContentType ExternalBody;
 	static const ContentType FileTransfer;
 	static const ContentType Imdn;
 	static const ContentType ImIsComposing;

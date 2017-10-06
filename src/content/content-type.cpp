@@ -38,6 +38,7 @@ public:
 // -----------------------------------------------------------------------------
 
 const ContentType ContentType::Cpim("message/cpim");
+const ContentType ContentType::ExternalBody("message/external-body");
 const ContentType ContentType::FileTransfer("application/vnd.gsma.rcs-ft-http+xml");
 const ContentType ContentType::Imdn("message/imdn+xml");
 const ContentType ContentType::ImIsComposing("application/im-iscomposing+xml");

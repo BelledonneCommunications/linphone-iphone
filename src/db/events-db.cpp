@@ -28,12 +28,16 @@
 
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
+#include "content/content.h"
 #include "db/provider/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
 #include "logger/logger.h"
 
 #include "events-db.h"
+
+#define MESSAGE_CONTENT_TYPE_TEXT 0
+#define MESSAGE_CONTENT_TYPE_FILE 1
 
 // =============================================================================
 
@@ -47,7 +51,6 @@ struct MessageEventReferences {
 	long localSipAddressId;
 	long remoteSipAddressId;
 	long chatRoomId;
-	long contentTypeId;
 #endif
 };
 
@@ -55,6 +58,7 @@ class EventsDbPrivate : public AbstractDbPrivate {
 #ifdef SOCI_ENABLED
 public:
 	long insertSipAddress (const string &sipAddress);
+	void insertContent (const Content &content, long messageEventId);
 	long insertContentType (const string &contentType);
 	long insertEvent (EventLog::Type type, const tm &date);
 	long insertChatRoom (long sipAddressId, const tm &date);
@@ -64,7 +68,7 @@ public:
 		ChatMessage::Direction direction,
 		const string &imdnMessageId,
 		bool isSecured,
-		const string *text = nullptr
+		const list<Content> &contents
 	);
 
 	void importLegacyMessages (const soci::rowset<soci::row> &messages);
@@ -154,6 +158,34 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
+	void EventsDbPrivate::insertContent (const Content &content, long messageEventId) {
+		L_Q();
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		const ContentType &contentType = content.getContentType();
+		int type;
+		if (contentType == ContentType::PlainText)
+			type = MESSAGE_CONTENT_TYPE_TEXT;
+		else if (contentType == ContentType::FileTransfer)
+			type = MESSAGE_CONTENT_TYPE_FILE;
+		else {
+			lWarning() << "Unable to insert in database unsupported content: `" << contentType.asString() << "`.";
+			return;
+		}
+
+		long contentTypeId = insertContentType(contentType.asString());
+		*session << "INSERT INTO message_content (message_event_id, content_type_id, type) VALUES"
+			"  (:messageEventId, :contentTypeId, :type)", soci::use(messageEventId), soci::use(contentTypeId), soci::use(type);
+
+		if (type == MESSAGE_CONTENT_TYPE_TEXT) {
+			*session << "INSERT INTO message_content_text (message_content_id, text) VALUES"
+				"  (:messageContentId, :text)", soci::use(q->getLastInsertId()), soci::use(content.getBodyAsString());
+			return;
+		}
+
+		// TODO: MESSAGE_CONTENT_TYPE_FILE
+	}
+
 	long EventsDbPrivate::insertContentType (const string &contentType) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -198,23 +230,27 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		ChatMessage::Direction direction,
 		const string &imdnMessageId,
 		bool isSecured,
-		const string *text
+		const list<Content> &contents
 	) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		soci::indicator textIndicator = text ? soci::i_ok : soci::i_null;
 		*session << "INSERT INTO message_event ("
 			"  event_id, chat_room_id, local_sip_address_id, remote_sip_address_id,"
-			"  state, direction, imdn_message_id, is_secured, text"
+			"  state, direction, imdn_message_id, is_secured"
 			") VALUES ("
 			"  :eventId, :chatRoomId, :localSipaddressId, :remoteSipaddressId,"
-			"  :state, :direction, :imdnMessageId, :isSecured, :text"
+			"  :state, :direction, :imdnMessageId, :isSecured"
 			")", soci::use(references.eventId), soci::use(references.chatRoomId), soci::use(references.localSipAddressId),
 			soci::use(references.remoteSipAddressId), soci::use(static_cast<int>(state)),
-			soci::use(static_cast<int>(direction)), soci::use(imdnMessageId), soci::use(isSecured ? 1 : 0),
-			soci::use(text ? *text : string(), textIndicator);
-		return q->getLastInsertId();
+			soci::use(static_cast<int>(direction)), soci::use(imdnMessageId), soci::use(isSecured ? 1 : 0);
+
+		long messageEventId = q->getLastInsertId();
+
+		for (const auto &content : contents)
+			insertContent(content, messageEventId);
+
+		return messageEventId;
 	}
 
 // -----------------------------------------------------------------------------
@@ -248,25 +284,39 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 			const tm date = Utils::getLongAsTm(message.get<int>(9, 0));
 
-			const bool noUrl = false;
-			const string url = getValueFromLegacyMessage<string>(message, 8, const_cast<bool &>(noUrl));
+			bool isNull;
+			const string url = getValueFromLegacyMessage<string>(message, 8, isNull);
 
-			const string contentType = message.get<string>(
-				13,
-				message.get<int>(11, -1) != -1
-					? "application/vnd.gsma.rcs-ft-http+xml"
-					: (noUrl ? "text/plain" : "message/external-body")
-			);
+			const int contentId = message.get<int>(11, -1);
+			ContentType contentType(message.get<string>(13, ""));
+			if (!contentType.isValid())
+				contentType = contentId != -1
+					? ContentType::FileTransfer
+					: (isNull ? ContentType::PlainText : ContentType::ExternalBody);
+			if (contentType == ContentType::ExternalBody) {
+				lInfo() << "Import of external body content is skipped.";
+				continue;
+			}
 
-			const bool noText = false;
-			const string text = getValueFromLegacyMessage<string>(message, 4, const_cast<bool &>(noText));
+			const string text = getValueFromLegacyMessage<string>(message, 4, isNull);
+
+			Content content;
+			content.setContentType(contentType);
+			if (contentType == ContentType::PlainText) {
+				if (isNull) {
+					lWarning() << "Unable to import legacy message with no text.";
+					continue;
+				}
+				content.setBody(text);
+			} else {
+				continue;
+			}
 
 			struct MessageEventReferences references;
 			references.eventId = insertEvent(EventLog::Type::ChatMessage, date);
 			references.localSipAddressId = insertSipAddress(message.get<string>(1));
 			references.remoteSipAddressId = insertSipAddress(message.get<string>(2));
 			references.chatRoomId = insertChatRoom(references.remoteSipAddressId, date);
-			references.contentTypeId = insertContentType(contentType);
 
 			insertMessageEvent (
 				references,
@@ -274,7 +324,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				static_cast<ChatMessage::Direction>(direction),
 				message.get<string>(12, ""),
 				!!message.get<int>(14, 0),
-				noText ? nullptr : &text
+				{ content }
 			);
 
 			const bool noAppData = false;
@@ -336,7 +386,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  chat_room_id INT UNSIGNED NOT NULL,"
 			"  local_sip_address_id INT UNSIGNED NOT NULL,"
 			"  remote_sip_address_id INT UNSIGNED NOT NULL,"
-			"  content_type_id INT UNSIGNED NOT NULL,"
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
@@ -344,8 +393,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  state TINYINT UNSIGNED NOT NULL,"
 			"  direction TINYINT UNSIGNED NOT NULL,"
 			"  is_secured BOOLEAN NOT NULL,"
-
-			"  text TEXT,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
@@ -358,9 +405,42 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (remote_sip_address_id)"
 			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_content ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  content_type_id INT UNSIGNED NOT NULL,"
+			"  type TINYINT UNSIGNED NOT NULL,"
+			"  FOREIGN KEY (message_event_id)"
+			"    REFERENCES message_event(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (content_type_id)"
 			"    REFERENCES content_type(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_content_text ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  message_content_id INT UNSIGNED NOT NULL,"
+			"  text TEXT NOT NULL,"
+			"  FOREIGN KEY (message_content_id)"
+			"    REFERENCES message_content(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_content_file ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  message_content_id INT UNSIGNED NOT NULL,"
+			"  name VARCHAR(255) NOT NULL,"
+			"  size INT UNSIGNED NOT NULL,"
+			"  url VARCHAR(255) NOT NULL,"
+			"  FOREIGN KEY (message_content_id)"
+			"    REFERENCES message_content(id)"
 			"    ON DELETE CASCADE"
 			")";
 
@@ -372,24 +452,6 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 			"  FOREIGN KEY (message_event_id)"
 			"    REFERENCES message_event(id)"
-			"    ON DELETE CASCADE"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS message_file_info ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  message_id INT UNSIGNED NOT NULL,"
-			"  content_type_id INT UNSIGNED NOT NULL,"
-
-			"  name VARCHAR(255) NOT NULL,"
-			"  size INT UNSIGNED NOT NULL,"
-			"  url VARCHAR(255) NOT NULL,"
-
-			"  FOREIGN KEY (message_id)"
-			"    REFERENCES message(id)"
-			"    ON DELETE CASCADE"
-			"  FOREIGN KEY (content_type_id)"
-			"    REFERENCES content_type(id)"
 			"    ON DELETE CASCADE"
 			")";
 	}
