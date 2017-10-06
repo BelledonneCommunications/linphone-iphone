@@ -63,9 +63,15 @@
 		LOGW(@"Cannot update chat cell: null chat");
 		return;
 	}
-	const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
-	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+
+	if(linphone_chat_room_get_nb_participants(chatRoom) > 1) {
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(chatRoom)];
+		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
+	} else {
+		const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);
+		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+		[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
+	}
 
 	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
 	if (last_message) {

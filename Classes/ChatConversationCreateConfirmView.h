@@ -18,5 +18,6 @@
 @property(strong, nonatomic) IBOutlet ChatConversationCreateConfirmCollectionViewController *collectionController;
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onValidateClick:(id)sender;
+- (void)deleteContact:(NSString *)uri;
 
 @end

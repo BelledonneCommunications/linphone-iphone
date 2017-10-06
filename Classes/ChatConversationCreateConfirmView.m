@@ -50,9 +50,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void) viewWillAppear:(BOOL)animated {
 	for(id uri in _contacts.allKeys) {
-		[_collectionController.collectionView registerClass:UIChatCreateConfirmCollectionViewCell.class forCellWithReuseIdentifier:uri];
-		if(![_contactsGroup containsObject:_contacts[uri]])
-			[_contactsGroup addObject:_contacts[uri]];
+		[_collectionView registerClass:UIChatCreateConfirmCollectionViewCell.class forCellWithReuseIdentifier:uri];
+		if(![_contactsGroup containsObject:uri])
+			[_contactsGroup addObject:uri];
 	}
 	[_collectionView reloadData];
 }
@@ -73,6 +73,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onValidateClick:(id)sender {
+	LinphoneChatRoom *room =  linphone_core_create_client_group_chat_room(LC, _nameField.text.UTF8String);
+	bctbx_list_t *addresses = NULL;
+	for (id object in _contactsGroup) {
+		LinphoneAddress *addr = linphone_address_new(((NSString *)object).UTF8String);
+		if(addresses)
+			bctbx_list_append(addresses, addr);
+		else
+			addresses = bctbx_list_new(addr);
+	}
+	linphone_chat_room_add_participants(room, addresses);
+}
+
+- (void)deleteContact:(NSString *)uri {
+	[_contacts removeObjectForKey:uri];
+	[_contactsGroup removeObject:uri];
 	[_collectionView reloadData];
 }
 
@@ -97,6 +112,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *uri = _contactsGroup[indexPath.item];
 	UIChatCreateConfirmCollectionViewCell *cell = (UIChatCreateConfirmCollectionViewCell *)[_collectionView dequeueReusableCellWithReuseIdentifier:uri forIndexPath:indexPath];
 	cell.uri = uri;
+	cell.confirmController = self;
 	cell = [cell initWithName:_contacts[uri]];
 	return cell;
 }

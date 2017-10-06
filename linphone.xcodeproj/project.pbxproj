@@ -626,6 +626,9 @@
 		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
 		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
 		8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2595E01DEDDC67007A6424 /* callkit_logo.png */; };
+		8C2A81921F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */; };
+		8C2A81951F87B8000012A66B /* chat_group_avatar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */; };
+		8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
 		8C300D9B1E40E0CC00728EF3 /* lime_ko@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */; };
 		8C3EA9E31EB892D600B732B6 /* msamr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EA9E01EB892D600B732B6 /* msamr.framework */; };
@@ -1672,6 +1675,9 @@
 		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
 		8C2595DE1DEDCC8E007A6424 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		8C2595E01DEDDC67007A6424 /* callkit_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = callkit_logo.png; sourceTree = "<group>"; };
+		8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatCreateConfirmCollectionViewCell.xib; sourceTree = "<group>"; };
+		8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_avatar@2x.png"; sourceTree = "<group>"; };
+		8C2A81941F87B8000012A66B /* chat_group_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_avatar.png; sourceTree = "<group>"; };
 		8C300D981E40E0CC00728EF3 /* lime_ko.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lime_ko.png; sourceTree = "<group>"; };
 		8C300D991E40E0CC00728EF3 /* lime_ko@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "lime_ko@2x.png"; sourceTree = "<group>"; };
 		8C3EA9E01EB892D600B732B6 /* msamr.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msamr.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msamr.framework"; sourceTree = "<group>"; };
@@ -2184,6 +2190,7 @@
 				8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */,
 				8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */,
 				8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */,
+				8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
@@ -2436,6 +2443,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8C2A81941F87B8000012A66B /* chat_group_avatar.png */,
+				8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */,
 				8CB2B8F61F86229B0015CEE2 /* chat_secure.png */,
 				8CB2B8F71F86229C0015CEE2 /* next_disabled.png */,
 				8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */,
@@ -3534,6 +3543,7 @@
 				633FEDA51D3CD5590014B822 /* back_default@2x.png in Resources */,
 				633FEF311D3CD55A0014B822 /* route_speaker_disabled@2x.png in Resources */,
 				633FEEE41D3CD55A0014B822 /* numpad_9_default@2x.png in Resources */,
+				8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */,
 				633FEDA31D3CD5590014B822 /* avatar~ipad@2x.png in Resources */,
 				633FEF461D3CD55A0014B822 /* speaker_disabled.png in Resources */,
 				638F1A911C21993D004B8E02 /* UICompositeView~ipad.xib in Resources */,
@@ -3632,6 +3642,7 @@
 				633FEDE11D3CD5590014B822 /* call_start_body_over~ipad@2x.png in Resources */,
 				633FEF4F1D3CD55A0014B822 /* valid_default@2x.png in Resources */,
 				633FEE241D3CD5590014B822 /* chat_start_body_over~ipad.png in Resources */,
+				8C2A81951F87B8000012A66B /* chat_group_avatar@2x.png in Resources */,
 				633FEE091D3CD5590014B822 /* chat_add_disabled@2x.png in Resources */,
 				633FEE191D3CD5590014B822 /* chat_send_over@2x.png in Resources */,
 				633FEF181D3CD55A0014B822 /* pause_small_over_selected.png in Resources */,
@@ -3682,6 +3693,7 @@
 				633FEE291D3CD5590014B822 /* checkbox_unchecked@2x.png in Resources */,
 				63AADC001B6A0FF200AA16FD /* assistant_linphone_create.rc in Resources */,
 				633FEF1C1D3CD55A0014B822 /* presence_offline.png in Resources */,
+				8C2A81921F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib in Resources */,
 				633FEE901D3CD55A0014B822 /* list_details_over.png in Resources */,
 				633FEDE31D3CD5590014B822 /* call_status_incoming@2x.png in Resources */,
 				633FEE821D3CD5590014B822 /* led_disconnected.png in Resources */,
