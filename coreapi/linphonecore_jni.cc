@@ -4474,7 +4474,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_getPeerAddress(JNIE
 																		,jlong ptr) {
 	return (jlong) linphone_chat_room_get_peer_address((LinphoneChatRoom*)ptr);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatMessage(JNIEnv*  env
+extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatMessage(JNIEnv*  env
 																		,jobject  thiz
 																		,jlong ptr
 																		,jstring jmessage) {
@@ -4482,29 +4482,10 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatM
 	LinphoneChatMessage *chatMessage = linphone_chat_room_create_message((LinphoneChatRoom *)ptr, message);
 	ReleaseStringUTFChars(env, jmessage, message);
 
-	return (jlong) chatMessage;
+	return getChatMessage(env, chatMessage);
 }
-extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createLinphoneChatMessage2(JNIEnv* env
-																		,jobject thiz
-																		,jlong ptr
-																		,jstring jmessage
-																		,jstring jurl
-																		,jint state
-																		,jlong time
-																		,jboolean read
-																		,jboolean incoming) {
-	const char* message = GetStringUTFChars(env, jmessage);
-	const char* url = GetStringUTFChars(env, jurl);
 
-	LinphoneChatMessage *chatMessage = linphone_chat_room_create_message_2(
-				(LinphoneChatRoom *)ptr, message, url, (LinphoneChatMessageState)state,
-				(time_t)time, read, incoming);
 
-	ReleaseStringUTFChars(env, jmessage, message);
-	ReleaseStringUTFChars(env, jurl, url);
-
-	return (jlong) chatMessage;
-}
 extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getHistorySize		(JNIEnv*  env
 																				  ,jobject  thiz
 																				  ,jlong ptr) {
@@ -4539,7 +4520,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_markAsRead(JNIEnv*  
 }
 
 
-extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
+extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferMessage(JNIEnv* env, jobject thiz, jlong ptr, jstring jname, jstring jtype, jstring jsubtype, jint data_size) {
 	LinphoneCore *lc = linphone_chat_room_get_core((LinphoneChatRoom*) ptr);
 	LinphoneContent * content = linphone_core_create_content(lc);
 	LinphoneChatMessage *message = NULL;
@@ -4560,7 +4541,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneChatRoomImpl_createFileTransferM
 
 	linphone_content_unref(content);
 
-	return (jlong) message;
+	return getChatMessage(env, message);
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneChatRoomImpl_islimeAvailable(JNIEnv *env, jobject thiz, jlong ptr) {
@@ -4738,6 +4719,22 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_reSend(JNIEnv*  e
 	linphone_chat_message_resend_2((LinphoneChatMessage*)ptr);
 }
 
+static jobject getMessageListener(JNIEnv *env, LinphoneChatMessage *msg){
+	jobject listener = (jobject) msg->message_state_changed_user_data;
+
+	if (listener == NULL) {
+		ms_error("message_state_changed() notification without listener");
+		return NULL;
+	}
+	listener = env->NewLocalRef(listener); //promote the weak ref into a local ref*/
+	if (listener == NULL){
+		ms_error("message_state_changed() listener is no longer valid");
+		msg->message_state_changed_user_data = NULL;
+		return NULL;
+	}
+	return listener;
+}
+
 static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageState state) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
@@ -4746,30 +4743,20 @@ static void message_state_changed(LinphoneChatMessage* msg, LinphoneChatMessageS
 		return;
 	}
 
-	jobject listener = (jobject) msg->message_state_changed_user_data;
-
-	if (listener == NULL) {
-		ms_error("message_state_changed() notification without listener");
-		return ;
-	}
+	jobject listener = getMessageListener(env, msg);
+	if (!listener) return;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
-	jobject jmessage = (jobject)linphone_chat_message_get_user_data(msg); /*this returns a global ref that was taken in setListener*/
+	jobject jmessage = getChatMessage(env, msg);
 	env->DeleteLocalRef(clazz);
 
 	LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
 	LinphoneCore *lc = linphone_chat_room_get_core(room);
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 	env->CallVoidMethod(listener, method, jmessage, env->CallStaticObjectMethod(ljb->chatMessageStateClass, ljb->chatMessageStateFromIntId, (jint)state));
+	env->DeleteLocalRef(listener);
 
-	if (state == LinphoneChatMessageStateDisplayed) {
-		env->DeleteGlobalRef(listener);
-		msg->message_state_changed_user_data = NULL;
-		//We are going to drop our global ref, as the listener is no longer needed.
-		//Before, replace it by a weak ref, as other messages.
-		linphone_chat_message_set_user_data(msg, env->NewWeakGlobalRef(jmessage));
-		env->DeleteGlobalRef(jmessage);
-	}
+	
 }
 
 static void file_transfer_progress_indication(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
@@ -4780,7 +4767,8 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 		return;
 	}
 
-	jobject listener = (jobject) msg->message_state_changed_user_data;
+	jobject listener = getMessageListener(env, msg);
+	if (!listener) return;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferProgressChanged", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;II)V");
 	env->DeleteLocalRef(clazz);
@@ -4803,7 +4791,8 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 		return;
 	}
 
-	jobject listener = (jobject) msg->message_state_changed_user_data;
+	jobject listener = getMessageListener(env, msg);
+	if (!listener) return;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferReceived", "(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;Lorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -4832,7 +4821,8 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 		return buffer;
 	}
 
-	jobject listener = (jobject) msg->message_state_changed_user_data;
+	jobject listener = getMessageListener(env, msg);
+	if (!listener) return NULL;
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageFileTransferSent","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneContent;IILorg/linphone/core/LinphoneBuffer;)V");
 	env->DeleteLocalRef(clazz);
@@ -4858,13 +4848,10 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
  * we are able to notify the state changes of the message, until it reaches its final state
  */
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setListener(JNIEnv* env, jobject  thiz, jlong ptr, jobject jlistener) {
-	jobject listener = env->NewGlobalRef(jlistener);
 	LinphoneChatMessage *message = (LinphoneChatMessage *)ptr;
 	LinphoneChatMessageCbs *cbs;
 
-	jobject jmessage = env->NewGlobalRef(thiz);
-	linphone_chat_message_set_user_data(message, jmessage);
-	message->message_state_changed_user_data = listener;
+	message->message_state_changed_user_data = env->NewWeakGlobalRef(jlistener);
 	cbs = linphone_chat_message_get_callbacks(message);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
@@ -4876,9 +4863,14 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_unref(JNIEnv*  en
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
 	jobject wref = (jobject)linphone_chat_message_get_user_data((LinphoneChatMessage*)ptr);
+	jobject listener_wref = (jobject) ((LinphoneChatMessage*)ptr)->message_state_changed_user_data;
 	linphone_chat_message_set_user_data((LinphoneChatMessage*)ptr, NULL);
 	if (wref){
 		env->DeleteWeakGlobalRef(wref);
+	}
+	if (listener_wref){
+		((LinphoneChatMessage*)ptr)->message_state_changed_user_data = NULL;
+		env->DeleteWeakGlobalRef(listener_wref);
 	}
 	linphone_chat_message_unref((LinphoneChatMessage*)ptr);
 }
@@ -4914,34 +4906,6 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage(JNIEnv* 
 	ReleaseStringUTFChars(env, jmessage, message);
 }
 
-static void chat_room_impl_callback(LinphoneChatMessage* msg, LinphoneChatMessageState state, void* ud) {
-	JNIEnv *env = 0;
-	jint result = jvm->AttachCurrentThread(&env,NULL);
-	if (result != 0) {
-		ms_error("cannot attach VM\n");
-		return;
-	}
-
-	jobject listener = (jobject) ud;
-	jclass clazz = (jclass) env->GetObjectClass(listener);
-	jmethodID method = env->GetMethodID(clazz, "onLinphoneChatMessageStateChanged","(Lorg/linphone/core/LinphoneChatMessage;Lorg/linphone/core/LinphoneChatMessage$State;)V");
-	jobject jmessage=(jobject)linphone_chat_message_get_user_data(msg);
-
-	LinphoneChatRoom *room = linphone_chat_message_get_chat_room(msg);
-	LinphoneCore *lc = linphone_chat_room_get_core(room);
-	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
-	env->CallVoidMethod(
-			listener,
-			method,
-			jmessage,
-			env->CallStaticObjectMethod(ljb->chatMessageStateClass,ljb->chatMessageStateFromIntId,(jint)state));
-
-	if (state == LinphoneChatMessageStateDisplayed ) {
-		env->DeleteGlobalRef(listener);
-		env->DeleteGlobalRef(jmessage);
-		linphone_chat_message_set_user_data(msg,NULL);
-	}
-}
 
 extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCore(JNIEnv*  env
 																		,jobject  thiz
@@ -4952,18 +4916,6 @@ extern "C" jobject Java_org_linphone_core_LinphoneChatRoomImpl_getCore(JNIEnv*  
 	return core;
 }
 
-extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*  env
-																		,jobject  thiz
-																		,jlong chatroom_ptr
-																		,jobject message
-																		,jlong messagePtr
-																		,jobject jlistener) {
-	jobject listener = env->NewGlobalRef(jlistener);
-	message = env->NewGlobalRef(message);
-	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
-	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
-	linphone_chat_room_send_message2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr, chat_room_impl_callback, (void*)listener);
-}
 
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIEnv*  env
 																		,jobject  thiz
