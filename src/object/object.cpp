@@ -30,11 +30,13 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+Object::Object (ObjectPrivate &p) : mPrivate(&p) {
+	mPrivate->mPublic = this;
+}
+
 Object::~Object () {
 	delete mPrivate;
 }
-
-Object::Object (ObjectPrivate &p) : mPrivate(&p) {}
 
 shared_ptr<Object> Object::getSharedFromThis () {
 	return const_pointer_cast<Object>(static_cast<const Object *>(this)->getSharedFromThis());

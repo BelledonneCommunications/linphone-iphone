@@ -36,7 +36,7 @@ public:
 	virtual ~ObjectPrivate () = default;
 
 protected:
-	Object *mPublic;
+	Object *mPublic = nullptr;
 
 private:
 	std::unordered_map<std::string, Variant> properties;

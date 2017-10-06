@@ -117,9 +117,11 @@ constexpr T *getPublicHelper (Object *object, const ObjectPrivate *) {
 
 #define L_DECLARE_PUBLIC(CLASS) \
 	inline CLASS *getPublic () { \
+		L_ASSERT(mPublic); \
 		return getPublicHelper<CLASS>(mPublic, this); \
 	} \
 	inline const CLASS *getPublic () const { \
+		L_ASSERT(mPublic); \
 		return getPublicHelper<const CLASS>(mPublic, this); \
 	} \
 	friend class CLASS;

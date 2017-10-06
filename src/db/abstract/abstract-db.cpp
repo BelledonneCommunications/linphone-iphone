@@ -17,6 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#ifdef SOCI_ENABLED
+	#include <soci/soci.h>
+#endif // ifdef SOCI_ENABLED
+
 #include "abstract-db-p.h"
 #include "db/provider/db-session-provider.h"
 #include "logger/logger.h"
@@ -86,17 +90,27 @@ string AbstractDb::primaryKeyAutoIncrementStr (const string &type) const {
 	return "";
 }
 
-string AbstractDb::insertOrIgnoreStr () const {
+long AbstractDb::getLastInsertId () const {
 	L_D();
 
-	switch (d->backend) {
-		case Mysql:
-			return "INSERT IGNORE INTO ";
+	string sql;
+	switch(d->backend) {
 		case Sqlite3:
-			return "INSERT OR IGNORE INTO ";
+			sql = "SELECT last_insert_rowid()";
+			break;
+		default:
+			lWarning() << "Unsupported backend.";
+			return -1;
 	}
 
-	return "";
+	long result = 0;
+
+	#ifdef SOCI_ENABLED
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << sql, soci::into(result);
+	#endif // ifdef SOCI_ENABLED
+
+	return result;
 }
 
 LINPHONE_END_NAMESPACE
