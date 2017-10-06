@@ -402,7 +402,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	Content content;
 	content.setContentType(salMsg->content_type);
 	content.setBody(salMsg->text ? salMsg->text : "");
-	msg->addContent(content);
+	msg->setInternalContent(content);
 
 	msg->setToAddress(op->get_to() ? op->get_to() : linphone_core_get_identity(core));
 	msg->setFromAddress(peerAddress);

@@ -382,7 +382,7 @@ static void build_message () {
 	BC_ASSERT_STRING_EQUAL(strMessage.c_str(), expectedMessage.c_str());
 }
 
-static void cpim_chat_message_modifier(void) {
+static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	LpConfig *config = linphone_core_get_config(marie->lc);
@@ -392,6 +392,12 @@ static void cpim_chat_message_modifier(void) {
 	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc, paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage("Hello CPIM");
+	if (use_multipart) {
+		Content content;
+		content.setContentType(ContentType::PlainText);
+		content.setBody("Hello Part 2");
+		marieMessage->addContent(content);
+	}
 	marieRoom->sendMessage(marieMessage);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
@@ -407,6 +413,14 @@ static void cpim_chat_message_modifier(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void cpim_chat_message_modifier(void) {
+	cpim_chat_message_modifier_base(FALSE);
+}
+
+static void cpim_chat_message_modifier_with_multipart_body(void) {
+	cpim_chat_message_modifier_base(TRUE);
+}
+
 test_t cpim_tests[] = {
 	TEST_NO_TAG("Parse minimal CPIM message", parse_minimal_message),
 	TEST_NO_TAG("Set generic header name", set_generic_header_name),
@@ -417,7 +431,8 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("Parse RFC example", parse_rfc_example),
 	TEST_NO_TAG("Parse Message with generic header parameters", parse_message_with_generic_header_parameters),
 	TEST_NO_TAG("Build Message", build_message),
-	TEST_NO_TAG("CPIM chat message modifier", cpim_chat_message_modifier)
+	TEST_NO_TAG("CPIM chat message modifier", cpim_chat_message_modifier),
+	TEST_NO_TAG("CPIM chat message modifier with multipart body", cpim_chat_message_modifier_with_multipart_body),
 };
 
 test_suite_t cpim_test_suite = {

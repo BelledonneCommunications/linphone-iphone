@@ -152,7 +152,7 @@ private:
 	bool isFileTransferInProgressAndValid();
 	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
 	void releaseHttpRequest();
-	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
+	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(std::string body);
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

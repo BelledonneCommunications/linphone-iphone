@@ -26,7 +26,7 @@
 #include "content/content.h"
 #include "address/address.h"
 #include "chat/chat-room.h"
-#include "chat/chat-message-p.h"
+#include "chat/chat-message.h"
 
 // =============================================================================
 

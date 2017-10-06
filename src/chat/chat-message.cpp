@@ -888,12 +888,12 @@ void ChatMessagePrivate::releaseHttpRequest() {
 	}
 }
 
-void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml() {
+void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml(string body) {
 	xmlChar *file_url = NULL;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
 	/* parse the msg body to get all informations from it */
-	xmlMessageBody = xmlParseDoc((const xmlChar *)getText().c_str());
+	xmlMessageBody = xmlParseDoc((const xmlChar *)body.c_str());
 	LinphoneContent *content = linphone_content_new();
 	setFileTransferInformation(content);
 
@@ -1005,9 +1005,21 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// End of message modification
 	// ---------------------------------------
 
-	if ((errorCode <= 0) && (linphone_core_is_content_type_supported(chatRoom->getCore(), getContentType().asString().c_str()) == FALSE)) {
-		errorCode = 415;
-		lError() << "Unsupported MESSAGE (content-type " << getContentType().asString() << " not recognized)";
+	if (errorCode <= 0) {
+		bool foundSupportContentType = false;
+		for (auto it = contents.begin(); it != contents.end(); it++) {
+			if (linphone_core_is_content_type_supported(chatRoom->getCore(), it->getContentType().asString().c_str())) {
+				foundSupportContentType = true;
+				break;
+			} else {
+				lError() << "Unsupported content-type: " << it->getContentType().asString();
+			}
+		}
+
+		if (!foundSupportContentType) {
+			errorCode = 415;
+			lError() << "No content-type in the contents list is supported...";
+		}
 	}
 
 	if (errorCode > 0) {
@@ -1016,11 +1028,13 @@ LinphoneReason ChatMessagePrivate::receive() {
 		return reason;
 	}
 
-	if (getContentType() == ContentType::FileTransfer) {
-		createFileTransferInformationsFromVndGsmaRcsFtHttpXml();
-		store = true;
-	} else if (getContentType() == ContentType::PlainText) {
-		store = true;
+	for (auto it = contents.begin(); it != contents.end(); it++) {
+		if (it->getContentType() == ContentType::FileTransfer) {
+			store = true;
+			createFileTransferInformationsFromVndGsmaRcsFtHttpXml(it->getBodyAsString());
+		} else if (it->getContentType() == ContentType::PlainText) {
+			store = true;
+		}
 	}
 
 	if (store) {

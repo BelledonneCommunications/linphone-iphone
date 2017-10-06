@@ -20,7 +20,7 @@
 #include "linphone/utils/utils.h"
 
 #include "object/clonable-object-p.h"
-
+#include "logger/logger.h"
 #include "content-type.h"
 
 // =============================================================================
@@ -33,6 +33,7 @@ class ContentTypePrivate : public ClonableObjectPrivate {
 public:
 	string type;
 	string subType;
+	string parameter;
 };
 
 // -----------------------------------------------------------------------------
@@ -52,12 +53,21 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 	L_D();
 
 	size_t pos = contentType.find('/');
+	size_t posParam = contentType.find("; ");
+	size_t end = contentType.length();
 	if (pos == string::npos)
 		return;
 
 	if (setType(contentType.substr(0, pos))) {
-		if (!setSubType(contentType.substr(pos + 1)))
+		if (posParam != string::npos) {
+			end = posParam;
+		}
+		if (!setSubType(contentType.substr(pos + 1, end - (pos + 1))))
 			d->type.clear();
+	}
+
+	if (posParam != string::npos) {
+		setParameter(contentType.substr(posParam + 2)); // We remove the blankspace after the ;
 	}
 }
 
@@ -70,19 +80,30 @@ ContentType::ContentType (const string &type, const string &subType) : ClonableO
 	}
 }
 
-ContentType::ContentType (const ContentType &src) : ContentType(src.getType(), src.getSubType()) {}
+ContentType::ContentType (const string &type, const string &subType, const string &parameter) : ClonableObject(*new ContentTypePrivate) {
+	L_D();
+
+	if (setType(type)) {
+		if (!setSubType(subType))
+			d->type.clear();
+	}
+	setParameter(parameter);
+}
+
+ContentType::ContentType (const ContentType &src) : ContentType(src.getType(), src.getSubType(), src.getParameter()) {}
 
 ContentType &ContentType::operator= (const ContentType &src) {
 	if (this != &src) {
 		setType(src.getType());
 		setSubType(src.getSubType());
+		setParameter(src.getParameter());
 	}
 
 	return *this;
 }
 
 bool ContentType::operator== (const ContentType &contentType) const {
-	return getType() == contentType.getType() && getSubType() == contentType.getSubType();
+	return getType() == contentType.getType() && getSubType() == contentType.getSubType() && getParameter() == contentType.getParameter();
 }
 
 bool ContentType::operator!= (const ContentType &contentType) const {
@@ -117,6 +138,16 @@ bool ContentType::setSubType (const string &subType) {
 	return false;
 }
 
+const string &ContentType::getParameter () const {
+	L_D();
+	return d->parameter;
+}
+
+void ContentType::setParameter (const string &parameter) {
+	L_D();
+	d->parameter = parameter;
+}
+
 bool ContentType::isValid () const {
 	L_D();
 	return !d->type.empty() && !d->subType.empty();
@@ -124,7 +155,14 @@ bool ContentType::isValid () const {
 
 string ContentType::asString () const {
 	L_D();
-	return isValid() ? d->type + "/" + d->subType : "";
+	if (isValid()) {
+		string asString = d->type + "/" + d->subType;
+		if (!d->parameter.empty()) {
+			asString += "; " + d->parameter;
+		}
+		return asString;
+	}
+	return "";
 }
 
 LINPHONE_END_NAMESPACE

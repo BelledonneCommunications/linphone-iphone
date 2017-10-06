@@ -32,6 +32,7 @@ class LINPHONE_PUBLIC ContentType : public ClonableObject {
 public:
 	ContentType (const std::string &contentType = "");
 	ContentType (const std::string &type, const std::string &subType);
+	ContentType (const std::string &type, const std::string &subType, const std::string &parameter);
 	ContentType (const ContentType &src);
 
 	ContentType &operator= (const ContentType &src);
@@ -51,6 +52,9 @@ public:
 
 	const std::string &getSubType () const;
 	bool setSubType (const std::string &subType);
+
+	const std::string &getParameter () const;
+	void setParameter (const std::string &parameter);
 
 	std::string asString () const;
 
