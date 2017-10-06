@@ -36,9 +36,6 @@
 
 #include "events-db.h"
 
-#define MESSAGE_CONTENT_TYPE_TEXT 0
-#define MESSAGE_CONTENT_TYPE_FILE 1
-
 // =============================================================================
 
 using namespace std;
@@ -159,31 +156,12 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	void EventsDbPrivate::insertContent (const Content &content, long messageEventId) {
-		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		const ContentType &contentType = content.getContentType();
-		int type;
-		if (contentType == ContentType::PlainText)
-			type = MESSAGE_CONTENT_TYPE_TEXT;
-		else if (contentType == ContentType::FileTransfer)
-			type = MESSAGE_CONTENT_TYPE_FILE;
-		else {
-			lWarning() << "Unable to insert in database unsupported content: `" << contentType.asString() << "`.";
-			return;
-		}
-
-		long contentTypeId = insertContentType(contentType.asString());
-		*session << "INSERT INTO message_content (message_event_id, content_type_id, type) VALUES"
-			"  (:messageEventId, :contentTypeId, :type)", soci::use(messageEventId), soci::use(contentTypeId), soci::use(type);
-
-		if (type == MESSAGE_CONTENT_TYPE_TEXT) {
-			*session << "INSERT INTO message_content_text (message_content_id, text) VALUES"
-				"  (:messageContentId, :text)", soci::use(q->getLastInsertId()), soci::use(content.getBodyAsString());
-			return;
-		}
-
-		// TODO: MESSAGE_CONTENT_TYPE_FILE
+		long contentTypeId = insertContentType(content.getContentType().asString());
+		*session << "INSERT INTO message_content (message_event_id, content_type_id, body) VALUES"
+			"  (:messageEventId, :contentTypeId, :body)", soci::use(messageEventId), soci::use(contentTypeId),
+			soci::use(content.getBodyAsString());
 	}
 
 	long EventsDbPrivate::insertContentType (const string &contentType) {
@@ -381,8 +359,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  event_id INT UNSIGNED NOT NULL,"
+			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  chat_room_id INT UNSIGNED NOT NULL,"
 			"  local_sip_address_id INT UNSIGNED NOT NULL,"
 			"  remote_sip_address_id INT UNSIGNED NOT NULL,"
@@ -413,34 +390,12 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  message_event_id INT UNSIGNED NOT NULL,"
 			"  content_type_id INT UNSIGNED NOT NULL,"
-			"  type TINYINT UNSIGNED NOT NULL,"
+			"  body TEXT NOT NULL,"
 			"  FOREIGN KEY (message_event_id)"
 			"    REFERENCES message_event(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (content_type_id)"
 			"    REFERENCES content_type(id)"
-			"    ON DELETE CASCADE"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS message_content_text ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  message_content_id INT UNSIGNED NOT NULL,"
-			"  text TEXT NOT NULL,"
-			"  FOREIGN KEY (message_content_id)"
-			"    REFERENCES message_content(id)"
-			"    ON DELETE CASCADE"
-			")";
-
-		*session <<
-			"CREATE TABLE IF NOT EXISTS message_content_file ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  message_content_id INT UNSIGNED NOT NULL,"
-			"  name VARCHAR(255) NOT NULL,"
-			"  size INT UNSIGNED NOT NULL,"
-			"  url VARCHAR(255) NOT NULL,"
-			"  FOREIGN KEY (message_content_id)"
-			"    REFERENCES message_content(id)"
 			"    ON DELETE CASCADE"
 			")";
 
