@@ -996,7 +996,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (getContentType() == ContentType::Cpim) {
+	if (internalContent.getContentType() == ContentType::Cpim) {
 		CpimChatMessageModifier ccmm;
 		ccmm.decode(q->getSharedFromThis(), &errorCode);
 	}
@@ -1174,6 +1174,10 @@ void ChatMessagePrivate::send() {
 	// End of message modification
 	// ---------------------------------------
 
+	if (internalContent.isEmpty()) {
+		internalContent = contents.front();
+	}
+
 	if (!externalBodyUrl.empty()) {
 		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
 		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
@@ -1181,10 +1185,10 @@ void ChatMessagePrivate::send() {
 		ms_free(content_type);
 	} else {
 		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-		if (getContentType().isValid()) {
-			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getContentType().asString().c_str(), getText().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
+		if (internalContent.getContentType().isValid()) {
+			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
 		} else {
-			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), getText().c_str());
+			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), internalContent.getBodyAsString().c_str());
 		}
 	}
 
