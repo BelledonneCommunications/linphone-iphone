@@ -21,13 +21,14 @@
 #define _CHAT_MESSAGE_MODIFIER_H_
 
 #include "linphone/utils/general.h"
+#include "object/object.h"
 #include "private.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatMessagePrivate;
+class ChatMessage;
 
 class ChatMessageModifier {
 public:
@@ -45,13 +46,13 @@ public:
 	 * It should check first if the internalContent is filled. 
 	 * If so, it should apply it's changes to it, otherwise it should use the contentsList.
 	 */
-	virtual Result encode (ChatMessagePrivate *messagePrivate, int *errorCode) = 0;
+	virtual Result encode (std::shared_ptr<ChatMessage> message, int *errorCode) = 0;
 
 	/**
 	 * This method will be called when the message is about to be received.
 	 * It should apply it's changes to the internal content, the last modifier will take care of filling the contentsList.
 	 */
-	virtual Result decode (ChatMessagePrivate *messagePrivate, int *errorCode) = 0;
+	virtual Result decode (std::shared_ptr<ChatMessage> message, int *errorCode) = 0;
 };
 
 LINPHONE_END_NAMESPACE

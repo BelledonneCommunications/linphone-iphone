@@ -126,7 +126,9 @@ public:
 	const std::list<Content>& getContents() const;
 	void addContent(const Content& content);
 	void removeContent(const Content& content);
+
 	const Content& getInternalContent() const;
+	void setInternalContent(const Content& content);
 
 	std::string getCustomHeaderValue(const std::string &headerName) const;
 	void addCustomHeader(const std::string &headerName, const std::string &headerValue);

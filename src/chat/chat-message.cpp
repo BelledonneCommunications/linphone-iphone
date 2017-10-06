@@ -980,11 +980,11 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	if (getContentType() == ContentType::Cpim) {
 		CpimChatMessageModifier ccmm;
-		ccmm.decode(this, &errorCode);
+		ccmm.decode(q->getSharedFromThis(), &errorCode);
 	}
 
 	EncryptionChatMessageModifier ecmm;
-	ChatMessageModifier::Result result = ecmm.decode(this, &errorCode);
+	ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), &errorCode);
 	if (result == ChatMessageModifier::Result::Error) {
 		/* Unable to decrypt message */
 		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
@@ -994,7 +994,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	}
 
 	MultipartChatMessageModifier mcmm;
-	mcmm.decode(this, &errorCode);
+	mcmm.decode(q->getSharedFromThis(), &errorCode);
 
 	// ---------------------------------------
 	// End of message modification
@@ -1101,7 +1101,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (contents.size() > 1) {
 			MultipartChatMessageModifier mcmm;
-			mcmm.encode(this, &errorCode);
+			mcmm.encode(q->getSharedFromThis(), &errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Multipart;
 	}
@@ -1110,7 +1110,7 @@ void ChatMessagePrivate::send() {
 		lInfo() << "Encryption step already done, skipping";
 	} else {
 		EncryptionChatMessageModifier ecmm;
-		ChatMessageModifier::Result result = ecmm.encode(this, &errorCode);
+		ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), &errorCode);
 		if (result == ChatMessageModifier::Result::Error) {
 			sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
 			q->updateState(ChatMessage::State::NotDelivered);
@@ -1128,7 +1128,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
 			CpimChatMessageModifier ccmm;
-			ccmm.encode(this, &errorCode);
+			ccmm.encode(q->getSharedFromThis(), &errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Cpim;
 	}
@@ -1350,6 +1350,11 @@ void ChatMessage::removeContent (const Content& content) {
 const Content& ChatMessage::getInternalContent() const {
 	L_D();
 	return d->internalContent;
+}
+
+void ChatMessage::setInternalContent(const Content& content) {
+	L_D();
+	d->internalContent = content;
 }
 
 string ChatMessage::getCustomHeaderValue (const string &headerName) const {

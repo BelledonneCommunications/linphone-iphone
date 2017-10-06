@@ -27,22 +27,22 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result MultipartChatMessageModifier::encode (ChatMessagePrivate *messagePrivate, int *errorCode) {
-	if (messagePrivate->contents.size() > 1) {
+ChatMessageModifier::Result MultipartChatMessageModifier::encode (shared_ptr<ChatMessage> message, int *errorCode) {
+	if (message->getContents().size() > 1) {
 		//TODO
 		return ChatMessageModifier::Result::Done;
 	}
 	return ChatMessageModifier::Result::Skipped;
 }
 
-ChatMessageModifier::Result MultipartChatMessageModifier::decode (ChatMessagePrivate *messagePrivate, int *errorCode) {
+ChatMessageModifier::Result MultipartChatMessageModifier::decode (shared_ptr<ChatMessage> message, int *errorCode) {
 	//TODO
 	if (false) { // Multipart required
 
 		return ChatMessageModifier::Result::Done;
-	} else if (messagePrivate->contents.size() == 0) {
+	} else if (message->getContents().size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list because we're the last modifier to be called
-		messagePrivate->contents.push_back(messagePrivate->internalContent);
+		message->addContent(message->getInternalContent());
 	}
 	return ChatMessageModifier::Result::Skipped;
 }

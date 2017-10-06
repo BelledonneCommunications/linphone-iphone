@@ -30,8 +30,8 @@ class MultipartChatMessageModifier : public ChatMessageModifier {
 public:
 	MultipartChatMessageModifier () = default;
 
-	Result encode (ChatMessagePrivate *message, int *errorCode) override;
-	Result decode (ChatMessagePrivate *message, int *errorCode) override;
+	Result encode (std::shared_ptr<ChatMessage> message, int *errorCode) override;
+	Result decode (std::shared_ptr<ChatMessage> message, int *errorCode) override;
 };
 
 LINPHONE_END_NAMESPACE

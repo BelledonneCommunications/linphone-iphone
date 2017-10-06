@@ -32,22 +32,22 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result CpimChatMessageModifier::encode (ChatMessagePrivate *messagePrivate, int *errorCode) {
-	Cpim::Message message;
+ChatMessageModifier::Result CpimChatMessageModifier::encode (shared_ptr<ChatMessage> message, int *errorCode) {
+	Cpim::Message cpimMessage;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
 	cpimContentTypeHeader.setValue("Message/CPIM");
-	message.addCpimHeader(cpimContentTypeHeader);
+	cpimMessage.addCpimHeader(cpimContentTypeHeader);
 
 	Content content;
-	if (!messagePrivate->internalContent.isEmpty()) {
+	if (!message->getInternalContent().isEmpty()) {
 		// Another ChatMessageModifier was called before this one, we apply our changes on the private content
-		content = messagePrivate->internalContent;
+		content = message->getInternalContent();
 	} else {
 		// We're the first ChatMessageModifier to be called, we'll create the private content from the public one
 		// We take the first one because if there is more of them, the multipart modifier should have been called first
 		// So we should not be in this block
-		content = messagePrivate->contents.front();
+		content = message->getContents().front();
 	}
 
 	string contentType = content.getContentType().asString();
@@ -57,11 +57,11 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (ChatMessagePrivate 
 	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
 	contentTypeHeader.setValue(contentType);
-	message.addContentHeader(contentTypeHeader);
+	cpimMessage.addContentHeader(contentTypeHeader);
 
-	message.setContent(contentBody);
+	cpimMessage.setContent(contentBody);
 
-	if (!message.isValid()) {
+	if (!cpimMessage.isValid()) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
 		*errorCode = 500;
 		return ChatMessageModifier::Result::Error;
@@ -69,30 +69,30 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (ChatMessagePrivate 
 		Content newContent;
 		ContentType newContentType("Message/CPIM");
 		newContent.setContentType(newContentType);
-		newContent.setBody(message.asString());
-		messagePrivate->internalContent = newContent;
+		newContent.setBody(cpimMessage.asString());
+		message->setInternalContent(newContent);
 	}
 	return ChatMessageModifier::Result::Done;
 }
 
-ChatMessageModifier::Result CpimChatMessageModifier::decode (ChatMessagePrivate *messagePrivate, int *errorCode) {
+ChatMessageModifier::Result CpimChatMessageModifier::decode (shared_ptr<ChatMessage> message, int *errorCode) {
 	Content content;
-	if (!messagePrivate->internalContent.isEmpty()) {
-		content = messagePrivate->internalContent;
+	if (!message->getInternalContent().isEmpty()) {
+		content = message->getInternalContent();
 	} else {
-		content = messagePrivate->contents.front();
+		content = message->getContents().front();
 	}
 
 	if (content.getContentType() == ContentType::Cpim) {
 		const vector<char> body = content.getBody();
 		string contentBody(body.begin(), body.end());
-		shared_ptr<const Cpim::Message> message = Cpim::Message::createFromString(contentBody);
-		if (message && message->isValid()) {
+		shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
+		if (cpimMessage && cpimMessage->isValid()) {
 			Content newContent;
-			ContentType newContentType(message->getContentHeaders()->front()->getValue());
+			ContentType newContentType(cpimMessage->getContentHeaders()->front()->getValue());
 			newContent.setContentType(newContentType);
-			newContent.setBody(message->getContent());
-			messagePrivate->internalContent = newContent;
+			newContent.setBody(cpimMessage->getContent());
+			message->setInternalContent(newContent);
 		} else {
 			lError() << "[CPIM] Message is invalid: " << contentBody;
 			*errorCode = 500;
