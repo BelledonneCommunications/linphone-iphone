@@ -141,12 +141,21 @@ string ChatMessagePrivate::getSalCustomHeaderValue(const string& name) {
 // -----------------------------------------------------------------------------
 
 const ContentType& ChatMessagePrivate::getContentType() {
-	if (internalContent.getContentType().isValid()) {
-		cContentType = internalContent.getContentType();
-	} else {
+	if (direction == ChatMessage::Direction::Incoming) {
 		if (contents.size() > 0) {
 			Content content = contents.front();
 			cContentType = content.getContentType();
+		} else {
+			cContentType = internalContent.getContentType();
+		}
+	} else {
+		if (internalContent.getContentType().isValid()) {
+			cContentType = internalContent.getContentType();
+		} else {
+			if (contents.size() > 0) {
+				Content content = contents.front();
+				cContentType = content.getContentType();
+			}
 		}
 	}
 	return cContentType;
@@ -157,12 +166,21 @@ void ChatMessagePrivate::setContentType(const ContentType &contentType) {
 }
 
 const string& ChatMessagePrivate::getText() {
-	if (!internalContent.isEmpty()) {
-		cText = internalContent.getBodyAsString();
-	} else {
+	if (direction == ChatMessage::Direction::Incoming) {
 		if (contents.size() > 0) {
 			Content content = contents.front();
 			cText = content.getBodyAsString();
+		} else {
+			cText = internalContent.getBodyAsString();
+		}
+	} else {
+		if (!internalContent.isEmpty()) {
+			cText = internalContent.getBodyAsString();
+		} else {
+			if (contents.size() > 0) {
+				Content content = contents.front();
+				cText = content.getBodyAsString();
+			}
 		}
 	}
 	return cText;
