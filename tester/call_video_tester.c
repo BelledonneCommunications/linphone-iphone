@@ -2088,8 +2088,8 @@ static void video_call_expected_fps_for_specified_bandwidth(int bandwidth, int f
 		linphone_core_set_preferred_video_size_by_name(marie->lc, resolution);
 		simparams.mode = OrtpNetworkSimulatorOutbound;
 		simparams.enabled = TRUE;
-		simparams.max_bandwidth = bandwidth;
-		simparams.max_buffer_size = (int)simparams.max_bandwidth;
+		simparams.max_bandwidth = (float)bandwidth;
+		simparams.max_buffer_size = bandwidth;
 		simparams.latency = 60;
 		
 		linphone_core_set_network_simulator_params(marie->lc, &simparams);
