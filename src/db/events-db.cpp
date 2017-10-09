@@ -498,13 +498,22 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	void EventsDb::cleanEvents (FilterMask mask) {
+		L_D();
+
 		if (!isConnected()) {
 			lWarning() << "Unable to clean events. Not connected.";
 			return;
 		}
 
-		// TODO.
-		(void)mask;
+		string query = "DELETE FROM event" +
+			buildSqlEventFilter({ MessageFilter, CallFilter, ConferenceFilter }, mask);
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << query;
+
+		L_END_LOG_EXCEPTION
 	}
 
 	int EventsDb::getEventsCount (FilterMask mask) const {
