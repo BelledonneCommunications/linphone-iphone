@@ -40,7 +40,7 @@ public:
 		Fatal
 	};
 
-	Logger (Level level);
+	explicit Logger (Level level);
 	~Logger ();
 
 	std::ostringstream &getOutput ();
