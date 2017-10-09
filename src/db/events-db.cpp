@@ -255,7 +255,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		isNull = false;
 
 		try {
-			return message.get<T>((size_t)index);
+			return message.get<T>(static_cast<size_t>(index));
 		} catch (const exception &) {
 			isNull = true;
 		}
