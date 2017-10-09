@@ -60,7 +60,7 @@ public:
 	long insertContentType (const string &contentType);
 	long insertEvent (EventLog::Type type, const tm &date);
 	long insertChatRoom (long sipAddressId, const tm &date);
-	void insertChatRoomParticipant (long chatRoomId, const shared_ptr<const Participant> &participant);
+	void insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin);
 
 	long insertMessageEvent (
 		const MessageEventReferences &references,
@@ -205,12 +205,18 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return sipAddressId;
 	}
 
-	void EventsDbPrivate::insertChatRoomParticipant (long chatRoomId, const shared_ptr<const Participant> &participant) {
+	void EventsDbPrivate::insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		long participantId = insertSipAddress(participant->getAddress().asStringUriOnly());
-
-		*session << "UPDATE chat_room_participant SET is_admin = :isAdmin WHERE sip_address_id = sipAddressId",
-			soci::use(static_cast<int>(participant->isAdmin())), soci::use(participantId);
+		soci::statement statement = (
+			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
+				"  WHERE chat_room_id = :chatRoomId AND sip_address_id = :sipAddressId",
+				soci::use(static_cast<int>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
+		);
+		statement.execute(true);
+		if (statement.get_affected_rows() == 0)
+			*session << "INSERT INTO chat_room_participant (chat_room_id, sip_address_id, is_admin)"
+				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
+				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
 	}
 
 	long EventsDbPrivate::insertMessageEvent (
@@ -306,6 +312,8 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			references.localSipAddressId = insertSipAddress(message.get<string>(1));
 			references.remoteSipAddressId = insertSipAddress(message.get<string>(2));
 			references.chatRoomId = insertChatRoom(references.remoteSipAddressId, date);
+
+			insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
 
 			insertMessageEvent (
 				references,
