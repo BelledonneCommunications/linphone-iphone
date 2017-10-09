@@ -29,6 +29,7 @@
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
 #include "content/content.h"
+#include "conference/participant.h"
 #include "db/provider/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
@@ -55,10 +56,12 @@ class EventsDbPrivate : public AbstractDbPrivate {
 #ifdef SOCI_ENABLED
 public:
 	long insertSipAddress (const string &sipAddress);
-	void insertContent (const Content &content, long messageEventId);
+	void insertContent (long messageEventId, const Content &content);
 	long insertContentType (const string &contentType);
 	long insertEvent (EventLog::Type type, const tm &date);
 	long insertChatRoom (long sipAddressId, const tm &date);
+	void insertChatRoomParticipant (long chatRoomId, const shared_ptr<const Participant> &participant);
+
 	long insertMessageEvent (
 		const MessageEventReferences &references,
 		ChatMessage::State state,
@@ -155,7 +158,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	void EventsDbPrivate::insertContent (const Content &content, long messageEventId) {
+	void EventsDbPrivate::insertContent (long messageEventId, const Content &content) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long contentTypeId = insertContentType(content.getContentType().asString());
@@ -202,6 +205,14 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return sipAddressId;
 	}
 
+	void EventsDbPrivate::insertChatRoomParticipant (long chatRoomId, const shared_ptr<const Participant> &participant) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		long participantId = insertSipAddress(participant->getAddress().asStringUriOnly());
+
+		*session << "UPDATE chat_room_participant SET is_admin = :isAdmin WHERE sip_address_id = sipAddressId",
+			soci::use(static_cast<int>(participant->isAdmin())), soci::use(participantId);
+	}
+
 	long EventsDbPrivate::insertMessageEvent (
 		const MessageEventReferences &references,
 		ChatMessage::State state,
@@ -226,7 +237,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		long messageEventId = q->getLastInsertId();
 
 		for (const auto &content : contents)
-			insertContent(content, messageEventId);
+			insertContent(messageEventId, content);
 
 		return messageEventId;
 	}
@@ -359,6 +370,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			")";
 
 		*session <<
+			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
+			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  chat_room_id INT UNSIGNED NOT NULL,"
+			"  sip_address_id INT UNSIGNED NOT NULL,"
+			"  is_admin BOOLEAN NOT NULL,"
+
+			"  FOREIGN KEY (chat_room_id)"
+			"    REFERENCES chat_room(peer_sip_address_id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  chat_room_id INT UNSIGNED NOT NULL,"
@@ -398,7 +424,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (sip_address_id)"
 			"    REFERENCES sip_address(id)"
-			"    ON DELETE CASCADE,"
+			"    ON DELETE CASCADE"
 			")";
 
 		*session <<
