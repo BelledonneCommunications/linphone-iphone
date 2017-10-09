@@ -30,6 +30,8 @@
 
 #include <type_traits>
 
+#include "linphone/utils/utils.h"
+
 #define L_INTERNAL_STRUCT_L_ATTR_GET(CLASS, ATTR_NAME) AttrGet ## _ ## CLASS ## _ ## ATTR_NAME
 #define L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME) AttrSpy ## _ ## ATTR_NAME
 
@@ -54,8 +56,8 @@
 // Warning: Allow to modify const data.
 // Returns a ref to `ATTR_NAME`.
 #define L_ATTR_GET(OBJECT, ATTR_NAME) \
-	(const_cast<std::remove_const<decltype(OBJECT)>::type &>(OBJECT)).*get( \
-		static_cast<L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<std::decay<decltype(OBJECT)>::type> *>(nullptr) \
+	(const_cast<std::remove_pointer<std::decay<decltype(OBJECT)>::type>::type *>(LinphonePrivate::Utils::getPtr(OBJECT)))->*get( \
+		static_cast<L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<std::remove_pointer<std::decay<decltype(OBJECT)>::type>::type> *>(nullptr) \
 	)
 
 #endif // ifndef _PRIVATE_ACCESS_H_

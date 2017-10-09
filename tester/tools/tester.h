@@ -22,7 +22,7 @@
 
 #include <utility>
 
-#include "utils/utils.h"
+#include "linphone/utils/utils.h"
 
 // =============================================================================
 
@@ -35,7 +35,7 @@ LINPHONE_BEGIN_NAMESPACE
 class Tester {
 public:
 	Tester () = delete;
-	
+
 	template<typename Object>
 	static constexpr decltype(std::declval<Object>().getPrivate()) getPrivate (Object *cppObject) {
 		return cppObject->getPrivate();

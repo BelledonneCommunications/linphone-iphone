@@ -176,7 +176,6 @@ set(SOURCE_FILES_C
 	eventapi_tester.c
 	flexisip_tester.c
 	liblinphone_tester.c
-	liblinphone_tester.h
 	log_collection_tester.c
 	message_tester.c
 	offeranswer_tester.c
@@ -203,6 +202,12 @@ set(SOURCE_FILES_CXX
 	multipart-tester.cpp
 	events-db-tester.cpp
 	property-container-tester.cpp
+)
+
+set(HEADER_FILES
+	liblinphone_tester.h
+	tools/private-access.h
+	tools/tester.h
 )
 
 set(SOURCE_FILES_OBJC )
@@ -241,7 +246,7 @@ endif()
 
 # on mobile platforms, we compile the tester as a library so that we can link with it directly from native applications
 if(ANDROID OR IOS)
-	add_library(linphonetester SHARED ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
+	add_library(linphonetester SHARED ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphonetester ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
 	if(IOS)
@@ -262,7 +267,7 @@ if(ANDROID OR IOS)
 		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-	add_library(linphone_tester_static STATIC ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
+	add_library(linphone_tester_static STATIC ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
 	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphone_tester_static ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
 
@@ -296,9 +301,9 @@ endif()
 if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	if(IOS)
 		set_source_files_properties(${IOS_RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-		add_executable(liblinphone_tester MACOSX_BUNDLE ${IOS_RESOURCES_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
+		add_executable(liblinphone_tester MACOSX_BUNDLE ${IOS_RESOURCES_FILES} ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
 	else()
-		add_executable(liblinphone_tester ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
+		add_executable(liblinphone_tester ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
 	endif()
 	set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
