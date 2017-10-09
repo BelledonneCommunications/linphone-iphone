@@ -127,7 +127,17 @@ LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAd
 }
 
 LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject) {
-	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, subject);
+	const char *factoryUri = linphone_core_get_conference_factory_uri(lc);
+	if (!factoryUri)
+		return nullptr;
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, factoryUri, subject);
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	return cr;
+}
+
+LinphoneChatRoom *_linphone_core_join_client_group_chat_room (LinphoneCore *lc, const LinphonePrivate::Address &addr) {
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
 	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
 	return cr;
 }

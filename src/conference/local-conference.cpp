@@ -44,7 +44,6 @@ void LocalConference::addParticipant (const Address &addr, const CallSessionPara
 	if (participant)
 		return;
 	participant = ObjectFactory::create<Participant>(addr);
-	participant->getPrivate()->createSession(*this, params, hasMedia, this);
 	participants.push_back(participant);
 	if (!activeParticipant)
 		activeParticipant = participant;

@@ -715,11 +715,18 @@ static void on_notify_response(SalOp *op){
 }
 
 static void refer_received(SalOp *op, const SalAddress *refer_to){
-	/*if processing is ok*/
-	dynamic_cast<SalReferOp*>(op)->reply(SalReasonNone);
-	
-	/*otherwise*/
-	//dynamic_cast<SalReferOp*>(op)->reply(SalReasonDeclined);
+	if (sal_address_has_param(refer_to, "text")) {
+		LinphonePrivate::Address addr(sal_address_as_string(refer_to));
+		if (addr.isValid()) {
+			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
+			LinphoneChatRoom *cr = _linphone_core_join_client_group_chat_room(lc, addr);
+			if (cr) {
+				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+				return;
+			}
+		}
+	}
+	static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 }
 
 Sal::Callbacks linphone_sal_callbacks={

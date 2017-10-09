@@ -52,9 +52,9 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 
 // =============================================================================
 
-ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
+ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &uri, const string &subject)
 	: ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
-	focus = ObjectFactory::create<Participant>(Address(linphone_core_get_conference_factory_uri(core)));
+	focus = ObjectFactory::create<Participant>(Address(uri));
 	this->subject = subject;
 }
 
@@ -111,6 +111,16 @@ list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
 
 const string &ClientGroupChatRoom::getSubject () const {
 	return RemoteConference::getSubject();
+}
+
+void ClientGroupChatRoom::join () {
+	L_D();
+	shared_ptr<CallSession> session = focus->getPrivate()->getSession();
+	if (!session && (d->state == ChatRoom::State::Instantiated)) {
+		session = d->createSession();
+		session->startInvite(nullptr, "", nullptr);
+		d->setState(ChatRoom::State::CreationPending);
+	}
 }
 
 void ClientGroupChatRoom::leave () {

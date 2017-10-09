@@ -31,6 +31,7 @@
 #include "linphone/tunnel.h"
 #include "linphone/core_utils.h"
 #include "linphone/conference.h"
+#include "address/address.h"
 #include "c-wrapper/internal/c-sal.h"
 #include "sal/call-op.h"
 #include "sal/event-op.h"
@@ -462,7 +463,8 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 
 /*chat*/
 LinphoneChatRoom * linphone_chat_room_new(LinphoneCore *core, const LinphoneAddress *addr);
-LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *subject);
+LinphoneChatRoom *_linphone_core_join_client_group_chat_room (LinphoneCore *core, const LinphonePrivate::Address &addr);
+LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject);
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
 bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);

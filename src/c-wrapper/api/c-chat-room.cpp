@@ -300,13 +300,10 @@ LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddr
 	return cr;
 }
 
-LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *subject) {
-	const char *factoryUri = linphone_core_get_conference_factory_uri(core);
-	if (!factoryUri)
-		return nullptr;
-	LinphoneAddress *factoryAddr = linphone_address_new(factoryUri);
-	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, factoryAddr);
-	linphone_address_unref(factoryAddr);
+LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject) {
+	LinphoneAddress *addr = linphone_address_new(uri);
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, addr);
+	linphone_address_unref(addr);
 	string from;
 	if (proxy)
 		from = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
@@ -314,7 +311,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ClientGroupChatRoom>(core, me, L_C_TO_STRING(subject)));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ClientGroupChatRoom>(core, me, L_C_TO_STRING(uri), L_C_TO_STRING(subject)));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;
 }

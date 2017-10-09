@@ -20,6 +20,7 @@
 #include "participant-p.h"
 
 #include "conference.h"
+#include "conference/session/call-session-p.h"
 #include "logger/logger.h"
 
 using namespace std;
@@ -75,6 +76,8 @@ list<shared_ptr<Participant>> Conference::getParticipants () const {
 const string &Conference::getSubject () const {
 	return subject;
 }
+
+void Conference::join () {}
 
 void Conference::leave () {}
 
@@ -166,14 +169,18 @@ void Conference::onResetFirstVideoFrameDecoded (const std::shared_ptr<const Call
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
+	Address testedAddr = addr;
+	testedAddr.setPort(0);
 	for (const auto &participant : participants) {
-		if (addr.equal(participant->getAddress()))
+		Address participantAddr = participant->getAddress();
+		participantAddr.setPort(0);
+		if (testedAddr.equal(participantAddr))
 			return participant;
 	}
 	return nullptr;
 }
 
-shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> &session) {
+shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> &session) const {
 	for (const auto &participant : participants) {
 		if (participant->getPrivate()->getSession() == session)
 			return participant;

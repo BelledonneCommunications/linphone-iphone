@@ -55,6 +55,7 @@ public:
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
 	const std::string &getSubject () const override;
+	void join () override;
 	void leave () override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
@@ -81,7 +82,7 @@ protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 
 	std::shared_ptr<Participant> findParticipant (const Address &addr) const;
-	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session);
+	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 	bool isMe (const Address &addr) const ;
 
 protected:
