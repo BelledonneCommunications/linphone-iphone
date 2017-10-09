@@ -489,6 +489,7 @@ void first_notify_parsing() {
 
 	delete[] notify;
 
+	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "Agenda: This month's goals");
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(bobAddr)) != tester.participants.end());
 	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(aliceAddr)) != tester.participants.end());
@@ -763,6 +764,7 @@ void send_first_notify() {
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
 	localConf.addParticipant(aliceAddr, &params, false);
+	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
@@ -773,6 +775,7 @@ void send_first_notify() {
 	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
 
+	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "A random test subject");
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString()) != tester.participants.end());
@@ -992,6 +995,61 @@ void send_unadmined_notify() {
 	linphone_core_manager_destroy(pauline);
 }
 
+void send_subject_changed_notify () {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	char *identityStr = linphone_address_as_string(pauline->identity);
+	Address addr(identityStr);
+	bctbx_free(identityStr);
+	ConferenceEventTester tester(marie->lc, addr);
+	LocalConference localConf(pauline->lc, addr);
+	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
+	char *bobAddrStr = linphone_address_as_string(cBobAddr);
+	Address bobAddr(bobAddrStr);
+	bctbx_free(bobAddrStr);
+	linphone_address_unref(cBobAddr);
+	LinphoneAddress *cAliceAddr = linphone_core_interpret_url(marie->lc, aliceUri);
+	char *aliceAddrStr = linphone_address_as_string(cAliceAddr);
+	Address aliceAddr(aliceAddrStr);
+	bctbx_free(aliceAddrStr);
+	linphone_address_unref(cAliceAddr);
+
+	CallSessionParams params;
+	localConf.addParticipant(bobAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	localConf.setSubject("A random test subject");
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
+	alice->setAdmin(true);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	tester.handler->notifyReceived(notify);
+
+	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "A random test subject");
+	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
+	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
+	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString()) != tester.participants.end());
+	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
+	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
+
+	localConf.setSubject("Another random test subject...");
+	notify = localHandlerPrivate->createNotifySubjectChanged();
+	tester.handler->notifyReceived(notify);
+
+	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "Another random test subject...");
+	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
+	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
+	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString()) != tester.participants.end());
+	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
+	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t conference_event_tests[] = {
 	TEST_NO_TAG("First notify parsing", first_notify_parsing),
 	TEST_NO_TAG("First notify parsing wrong conf", first_notify_parsing_wrong_conf),
@@ -1004,7 +1062,8 @@ test_t conference_event_tests[] = {
 	TEST_NO_TAG("Send participant added notify", send_added_notify),
 	TEST_NO_TAG("Send participant removed notify", send_removed_notify),
 	TEST_NO_TAG("Send participant admined notify", send_admined_notify),
-	TEST_NO_TAG("Send participant unadmined notify", send_unadmined_notify)
+	TEST_NO_TAG("Send participant unadmined notify", send_unadmined_notify),
+	TEST_NO_TAG("Send subject changed notify", send_subject_changed_notify)
 };
 
 test_suite_t conference_event_test_suite = {

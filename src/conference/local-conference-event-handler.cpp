@@ -97,7 +97,6 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
-	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -115,7 +114,6 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
-	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -130,7 +128,6 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const Address &addr, bool isAdmin) {
 	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
-	string subject = this->conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
