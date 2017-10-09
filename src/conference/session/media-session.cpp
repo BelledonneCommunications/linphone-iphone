@@ -3200,14 +3200,21 @@ void MediaSessionPrivate::updateStreams (SalMediaDescription *newMd, LinphoneCal
 
 void MediaSessionPrivate::updateStreamsDestinations (SalMediaDescription *oldMd, SalMediaDescription *newMd) {
 	SalStreamDescription *newAudioDesc = nullptr;
-	SalStreamDescription *newVideoDesc = nullptr;
+
+	#ifdef VIDEO_ENABLED
+		SalStreamDescription *newVideoDesc = nullptr;
+	#endif
+
 	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&newMd->streams[i]))
 			continue;
 		if (newMd->streams[i].type == SalAudio)
 			newAudioDesc = &newMd->streams[i];
-		else if (newMd->streams[i].type == SalVideo)
-			newVideoDesc = &newMd->streams[i];
+
+		#ifdef VIDEO_ENABLED
+			else if (newMd->streams[i].type == SalVideo)
+				newVideoDesc = &newMd->streams[i];
+		#endif
 	}
 	if (audioStream && newAudioDesc) {
 		const char *rtpAddr = (newAudioDesc->rtp_addr[0] != '\0') ? newAudioDesc->rtp_addr : newMd->addr;
@@ -3277,16 +3284,16 @@ void MediaSessionPrivate::audioStreamAuthTokenReady (const string &authToken, bo
 }
 
 void MediaSessionPrivate::audioStreamEncryptionChanged (bool encrypted) {
-	L_Q();
 	propagateEncryptionChanged();
 
-#ifdef VIDEO_ENABLED
-	/* Enable video encryption */
-	if ((params->getMediaEncryption() == LinphoneMediaEncryptionZRTP) && q->getCurrentParams()->videoEnabled()) {
-		lInfo() << "Trying to start ZRTP encryption on video stream";
-		video_stream_start_zrtp(videoStream);
-	}
-#endif
+	#ifdef VIDEO_ENABLED
+		L_Q();
+		/* Enable video encryption */
+		if ((params->getMediaEncryption() == LinphoneMediaEncryptionZRTP) && q->getCurrentParams()->videoEnabled()) {
+			lInfo() << "Trying to start ZRTP encryption on video stream";
+			video_stream_start_zrtp(videoStream);
+		}
+	#endif
 }
 
 uint16_t MediaSessionPrivate::getAvpfRrInterval () const {
@@ -4418,8 +4425,8 @@ bool MediaSession::echoLimiterEnabled () const {
 }
 
 void MediaSession::enableCamera (bool value) {
-	L_D();
 #ifdef VIDEO_ENABLED
+	L_D();
 	d->cameraEnabled = value;
 	switch (d->state) {
 		case LinphoneCallStreamsRunning:
