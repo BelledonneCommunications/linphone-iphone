@@ -33,6 +33,11 @@ LINPHONE_BEGIN_NAMESPACE
 
 namespace Utils {
 	template<typename T>
+	LINPHONE_PUBLIC constexpr T *getPtr (std::shared_ptr<T> &object) {
+		return object.get();
+	}
+
+	template<typename T>
 	LINPHONE_PUBLIC constexpr T *getPtr (const std::shared_ptr<T> &object) {
 		return object.get();
 	}
@@ -43,13 +48,8 @@ namespace Utils {
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr const T *getPtr (const std::shared_ptr<const T> &object) {
-		return object.get();
-	}
-
-	template<typename T>
-	LINPHONE_PUBLIC constexpr const T *getPtr (const T *object) {
-		return object;
+	LINPHONE_PUBLIC constexpr T *getPtr (T &object) {
+		return &object;
 	}
 
 	LINPHONE_PUBLIC bool iequals (const std::string &a, const std::string &b);
