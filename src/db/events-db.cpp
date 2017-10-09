@@ -545,6 +545,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			lWarning() << "Unable to get messages count. Not connected.";
 			return 0;
 		}
+
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
@@ -556,7 +557,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			*session << query, soci::into(count);
 		else {
 			query += "  WHERE chat_room_id = ("
-				"  SELECT id FROM sip_address WHERE value = :peerSipAddress"
+				"  SELECT id FROM sip_address WHERE value = :peerAddress"
 				")";
 
 			*session << query, soci::use(peerAddress), soci::into(count);
@@ -575,21 +576,25 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			return 0;
 		}
 
-		string query = "SELECT COUNT(*) FROM message_event";
-		if (!peerAddress.empty())
-			query += "  WHERE chat_room_id = ("
-				"    SELECT id FROM dialog WHERE remote_sip_address_id = ("
-				"      SELECT id FROM sip_address WHERE value = :remote_address"
-				"    )"
-				"  )"
-				"  AND direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
-				"  AND state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 		int count = 0;
+
+		string query = "SELECT COUNT(*) FROM message_event WHERE";
+		if (!peerAddress.empty())
+			query += " chat_room_id = ("
+				"  SELECT id FROM sip_address WHERE value = :peerAddress"
+				") AND ";
+
+		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
+			+ "  AND state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << query, soci::use(peerAddress), soci::into(count);
+
+		if (peerAddress.empty())
+			*session << query, soci::into(count);
+		else
+			*session << query, soci::use(peerAddress), soci::into(count);
 
 		L_END_LOG_EXCEPTION
 
