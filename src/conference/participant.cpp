@@ -43,9 +43,14 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 
 // =============================================================================
 
-Participant::Participant (const Address &addr) : Object(*new ParticipantPrivate) {
+Participant::Participant (const Address &address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->addr = addr;
+	d->addr = address;
+}
+
+Participant::Participant (Address &&address) : Object(*new ParticipantPrivate) {
+	L_D();
+	d->addr = move(address);
 }
 
 // -----------------------------------------------------------------------------

@@ -43,7 +43,8 @@ class Participant : public Object {
 	friend class RemoteConference;
 
 public:
-	Participant (const Address &addr);
+	Participant (const Address &address);
+	Participant (Address &&address);
 
 	const Address& getAddress () const;
 

@@ -54,8 +54,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &subject)
 	: ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
-	string factoryUri = linphone_core_get_conference_factory_uri(core);
-	focus = ObjectFactory::create<Participant>(factoryUri);
+	focus = ObjectFactory::create<Participant>(Address(linphone_core_get_conference_factory_uri(core)));
 	this->subject = subject;
 }
 
@@ -227,12 +226,12 @@ void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
 
 // -----------------------------------------------------------------------------
 
-void ClientGroupChatRoom::onCallSessionSetReleased (const std::shared_ptr<const CallSession> session) {
+void ClientGroupChatRoom::onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {
 	if (session == focus->getPrivate()->getSession())
 		focus->getPrivate()->removeSession();
 }
 
-void ClientGroupChatRoom::onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const string &message) {
+void ClientGroupChatRoom::onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
 	L_D();
 	if (state == LinphoneCallConnected) {
 		if (d->state == ChatRoom::State::CreationPending) {

@@ -93,47 +93,47 @@ void Conference::setSubject (const string &subject) {
 
 // -----------------------------------------------------------------------------
 
-void Conference::onAckBeingSent (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) {
+void Conference::onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
 	if (callListener)
 		callListener->onAckBeingSent(headers);
 }
 
-void Conference::onAckReceived (const std::shared_ptr<const CallSession> session, LinphoneHeaders *headers) {
+void Conference::onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
 	if (callListener)
 		callListener->onAckReceived(headers);
 }
 
-void Conference::onCallSessionAccepted (const std::shared_ptr<const CallSession> session) {
+void Conference::onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onIncomingCallToBeAdded();
 }
 
-void Conference::onCallSessionSetReleased (const std::shared_ptr<const CallSession> session) {
+void Conference::onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onCallSetReleased();
 }
 
-void Conference::onCallSessionSetTerminated (const std::shared_ptr<const CallSession> session) {
+void Conference::onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onCallSetTerminated();
 }
 
-void Conference::onCallSessionStateChanged (const std::shared_ptr<const CallSession> session, LinphoneCallState state, const string &message) {
+void Conference::onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
 	if (callListener)
 		callListener->onCallStateChanged(state, message);
 }
 
-void Conference::onCheckForAcceptation (const std::shared_ptr<const CallSession> session) {
+void Conference::onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onCheckForAcceptation();
 }
 
-void Conference::onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> session) {
+void Conference::onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onIncomingCallStarted();
 }
 
-void Conference::onEncryptionChanged (const std::shared_ptr<const CallSession> session, bool activated, const string &authToken) {
+void Conference::onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
 	if (callListener)
 		callListener->onEncryptionChanged(activated, authToken);
 }
@@ -143,22 +143,22 @@ void Conference::onStatsUpdated (const LinphoneCallStats *stats) {
 		callListener->onStatsUpdated(stats);
 }
 
-void Conference::onResetCurrentSession (const std::shared_ptr<const CallSession> session) {
+void Conference::onResetCurrentSession (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onResetCurrentCall();
 }
 
-void Conference::onSetCurrentSession (const std::shared_ptr<const CallSession> session) {
+void Conference::onSetCurrentSession (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onSetCurrentCall();
 }
 
-void Conference::onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) {
+void Conference::onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onFirstVideoFrameDecoded();
 }
 
-void Conference::onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> session) {
+void Conference::onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
 	if (callListener)
 		callListener->onResetFirstVideoFrameDecoded();
 }
@@ -173,7 +173,7 @@ shared_ptr<Participant> Conference::findParticipant (const Address &addr) const 
 	return nullptr;
 }
 
-shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> session) {
+shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> &session) {
 	for (const auto &participant : participants) {
 		if (participant->getPrivate()->getSession() == session)
 			return participant;
