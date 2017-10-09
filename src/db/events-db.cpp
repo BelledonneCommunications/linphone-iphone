@@ -529,34 +529,36 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return count;
 	}
 
-	int EventsDb::getMessagesCount (const string &remoteAddress) const {
+	int EventsDb::getMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
 			lWarning() << "Unable to get messages count. Not connected.";
 			return 0;
 		}
-
-		string query = "SELECT COUNT(*) FROM message_event";
-		if (!remoteAddress.empty())
-			query += "  WHERE chat_room_id = ("
-				"    SELECT id FROM dialog WHERE remote_sip_address_id =("
-				"      SELECT id FROM sip_address WHERE value = :remote_address"
-				"    )"
-				"  )";
 		int count = 0;
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << query, soci::use(remoteAddress), soci::into(count);
+
+		string query = "SELECT COUNT(*) FROM message_event";
+		if (peerAddress.empty())
+			*session << query, soci::into(count);
+		else {
+			query += "  WHERE chat_room_id = ("
+				"  SELECT id FROM sip_address WHERE value = :peerSipAddress"
+				")";
+
+			*session << query, soci::use(peerAddress), soci::into(count);
+		}
 
 		L_END_LOG_EXCEPTION
 
 		return count;
 	}
 
-	int EventsDb::getUnreadMessagesCount (const string &remoteAddress) const {
+	int EventsDb::getUnreadMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -565,7 +567,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		}
 
 		string query = "SELECT COUNT(*) FROM message_event";
-		if (!remoteAddress.empty())
+		if (!peerAddress.empty())
 			query += "  WHERE chat_room_id = ("
 				"    SELECT id FROM dialog WHERE remote_sip_address_id = ("
 				"      SELECT id FROM sip_address WHERE value = :remote_address"
@@ -578,28 +580,28 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << query, soci::use(remoteAddress), soci::into(count);
+		*session << query, soci::use(peerAddress), soci::into(count);
 
 		L_END_LOG_EXCEPTION
 
 		return count;
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &remoteAddress, int nLast, FilterMask mask) const {
+	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &peerAddress, int nLast, FilterMask mask) const {
 		if (!isConnected()) {
 			lWarning() << "Unable to get history. Not connected.";
 			return list<shared_ptr<EventLog>>();
 		}
 
 		// TODO.
-		(void)remoteAddress;
+		(void)peerAddress;
 		(void)nLast;
 		(void)mask;
 		return list<shared_ptr<EventLog>>();
 	}
 
 	list<shared_ptr<EventLog>> EventsDb::getHistory (
-		const string &remoteAddress,
+		const string &peerAddress,
 		int begin,
 		int end,
 		FilterMask mask
@@ -610,21 +612,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		}
 
 		// TODO.
-		(void)remoteAddress;
+		(void)peerAddress;
 		(void)begin;
 		(void)end;
 		(void)mask;
 		return list<shared_ptr<EventLog>>();
 	}
 
-	void EventsDb::cleanHistory (const string &remoteAddress) {
+	void EventsDb::cleanHistory (const string &peerAddress) {
 		if (!isConnected()) {
 			lWarning() << "Unable to clean history. Not connected.";
 			return;
 		}
 
 		// TODO.
-		(void)remoteAddress;
+		(void)peerAddress;
 	}
 
 // -----------------------------------------------------------------------------
