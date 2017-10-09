@@ -449,6 +449,8 @@ bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription
 extern LinphonePrivate::Sal::Callbacks linphone_sal_callbacks;
 LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
+bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id);
+void _linphone_core_add_group_chat_room(LinphoneCore *lc, const char *id, LinphoneChatRoom *cr);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 
@@ -832,6 +834,7 @@ struct _LinphoneCore
 	MSList *queued_calls;	/* used by the autoreplier */
 	MSList *call_logs;
 	MSList *chatrooms;
+	bctbx_map_t *group_chat_rooms;
 	int max_call_logs;
 	int missed_calls;
 	VideoPreview *previewstream;

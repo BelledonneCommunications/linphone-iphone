@@ -41,12 +41,15 @@ public:
 
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	std::shared_ptr<CallSession> getSession () const { return session; }
+	bool isSubscribedToConferenceEventPackage () const { return _isSubscribedToConferenceEventPackage; }
+	void subscribeToConferenceEventPackage (bool value) { _isSubscribedToConferenceEventPackage = value; }
 	void removeSession () { session = nullptr; }
 	void setAddress (const Address &newAddr) { addr = newAddr; }
 
 private:
 	Address addr;
 	bool isAdmin = false;
+	bool _isSubscribedToConferenceEventPackage = false;
 	std::shared_ptr<CallSession> session;
 
 	L_DECLARE_PUBLIC(Participant);

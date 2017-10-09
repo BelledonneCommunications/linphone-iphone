@@ -189,9 +189,11 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 }
 
 bool Conference::isMe (const Address &addr) const {
-	Address cleanedAddress = me->getAddress();
-	cleanedAddress.setPort(0);
-	return addr.equal(cleanedAddress);
+	Address cleanedMe = me->getAddress();
+	cleanedMe.setPort(0);
+	Address cleanedAddr = addr;
+	cleanedAddr.setPort(0);
+	return cleanedAddr.equal(cleanedMe);
 }
 
 LINPHONE_END_NAMESPACE

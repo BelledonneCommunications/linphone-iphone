@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
+#include "chat/client-group-chat-room-p.h"
 #include "conference/remote-conference-event-handler.h"
 
 // For migration purpose.
@@ -2115,11 +2116,13 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 			ms_message("Notify presence for list %p", list);
 			linphone_friend_list_notify_presence_received(list, lev, body);
 		}
-	} else if (strcmp(notified_event, "Conference") == 0) {
-		LinphonePrivate::RemoteConferenceEventHandler *handler =
-			reinterpret_cast<LinphonePrivate::RemoteConferenceEventHandler *>(linphone_event_get_user_data(lev));
-		if (handler)
-			handler->notifyReceived(reinterpret_cast<char *>(linphone_content_get_buffer(body)));
+	} else if (strcmp(notified_event, "conference") == 0) {
+		const LinphoneAddress *resource = linphone_event_get_resource(lev);
+		char *resourceUri = linphone_address_as_string_uri_only(resource);
+		LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, resourceUri);
+		bctbx_free(resourceUri);
+		if (cr)
+			L_GET_PRIVATE_FROM_C_OBJECT(cr, ClientGroupChatRoom)->notifyReceived(linphone_content_get_string_buffer(body));
 	}
 }
 
@@ -2251,6 +2254,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
 	lc->bw_controller = ms_bandwidth_controller_new();
+	lc->group_chat_rooms = bctbx_mmap_cchar_new();
 }
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata) {
@@ -5946,6 +5950,8 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	}
 
 	lc->chatrooms = bctbx_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
+	if (lc->group_chat_rooms)
+		bctbx_mmap_cchar_delete_with_data(lc->group_chat_rooms, (void (*)(void *))linphone_chat_room_unref);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED
@@ -7075,6 +7081,32 @@ void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri)
 
 const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
 	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
+}
+
+bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id) {
+	bool_t result;
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, id);
+	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
+	result = !bctbx_iterator_cchar_equals(it, endit);
+	bctbx_iterator_cchar_delete(endit);
+	bctbx_iterator_cchar_delete(it);
+	return result;
+}
+
+void _linphone_core_add_group_chat_room(LinphoneCore *lc, const char *id, LinphoneChatRoom *cr) {
+	bctbx_pair_t *pair = reinterpret_cast<bctbx_pair_t *>(bctbx_pair_cchar_new(id, linphone_chat_room_ref(cr)));
+	bctbx_map_cchar_insert_and_delete(lc->group_chat_rooms, pair);
+}
+
+LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id) {
+	LinphoneChatRoom *result = nullptr;
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, id);
+	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
+	if (!bctbx_iterator_cchar_equals(it, endit))
+		result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
+	bctbx_iterator_cchar_delete(endit);
+	bctbx_iterator_cchar_delete(it);
+	return result;
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

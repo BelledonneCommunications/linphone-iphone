@@ -38,6 +38,7 @@ public:
 	virtual ~ClientGroupChatRoomPrivate () = default;
 
 	std::shared_ptr<CallSession> createSession ();
+	void notifyReceived (std::string body);
 
 private:
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);

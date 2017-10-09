@@ -46,6 +46,9 @@ public:
 
 	LinphoneCore * getCore () const { return core; }
 
+	std::shared_ptr<Participant> findParticipant (const Address &addr) const;
+	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
+
 public:
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
@@ -81,8 +84,6 @@ private:
 protected:
 	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 
-	std::shared_ptr<Participant> findParticipant (const Address &addr) const;
-	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 	bool isMe (const Address &addr) const ;
 
 protected:

@@ -18,7 +18,7 @@
  */
 
 #include "conference/local-conference.h"
-#include "conference/participant.h"
+#include "conference/participant-p.h"
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
 
@@ -78,15 +78,15 @@ void LocalConferenceEventHandlerPrivate::notifyFullState (string notify, Linphon
 
 void LocalConferenceEventHandlerPrivate::notifyAllExcept (string notify, const Address &addr) {
 	for (const auto &participant : conf->getParticipants()) {
-		if (addr != participant->getAddress()) {
-			this->sendNotify(notify, addr);
-		}
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && (addr != participant->getAddress()))
+			sendNotify(notify, addr);
 	}
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAll (string notify) {
 	for (const auto &participant : conf->getParticipants()) {
-		this->sendNotify(notify, participant->getAddress());
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
+			sendNotify(notify, participant->getAddress());
 	}
 }
 
@@ -199,7 +199,17 @@ LocalConferenceEventHandler::~LocalConferenceEventHandler () {
 
 void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	L_D();
-	d->notifyFullState(d->createNotifyFullState(), lev);
+	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
+	char *addrStr = linphone_address_as_string(lAddr);
+	shared_ptr<Participant> participant = d->conf->findParticipant(Address(addrStr));
+	bctbx_free(addrStr);
+	if (participant) {
+		if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
+			participant->getPrivate()->subscribeToConferenceEventPackage(true);
+			d->notifyFullState(d->createNotifyFullState(), lev);
+		} else if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionTerminated)
+			participant->getPrivate()->subscribeToConferenceEventPackage(false);
+	}
 }
 
 void LocalConferenceEventHandler::notifyParticipantAdded (const Address &addr) {

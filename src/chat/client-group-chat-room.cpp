@@ -50,6 +50,11 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	return session;
 }
 
+void ClientGroupChatRoomPrivate::notifyReceived (string body) {
+	L_Q();
+	q->eventHandler->notifyReceived(body);
+}
+
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me, const string &uri, const string &subject)
@@ -169,6 +174,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
+	_linphone_core_add_group_chat_room(d->core, addr.asStringUriOnly().c_str(), L_GET_C_BACK_PTR(this));
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
