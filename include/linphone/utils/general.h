@@ -127,7 +127,7 @@ constexpr T *getPublicHelper (Object *object, const ObjectPrivate *) {
 	friend class CLASS;
 
 #define L_DISABLE_COPY(CLASS) \
-	CLASS(const CLASS &) = delete; \
+	CLASS (const CLASS &) = delete; \
 	CLASS &operator= (const CLASS &) = delete;
 
 #define L_D() decltype(std::declval<decltype(*this)>().getPrivate()) const d = getPrivate();

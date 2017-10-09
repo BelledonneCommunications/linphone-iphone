@@ -305,9 +305,10 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				{ content }
 			);
 
-			const bool noAppData = false;
-			const string appData = getValueFromLegacyMessage<string>(message, 10, const_cast<bool &>(noAppData));
-			(void)appData;
+			bool noAppData = false;
+			const string appData = getValueFromLegacyMessage<string>(message, 10, noAppData);
+			if (!noAppData)
+				return;
 		}
 
 		tr.commit();
@@ -383,6 +384,21 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  FOREIGN KEY (remote_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS message_participant ("
+			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  sip_address_id INT UNSIGNED NOT NULL,"
+			"  state TINYINT UNSIGNED NOT NULL,"
+
+			"  PRIMARY KEY (message_event_id, sip_address_id),"
+			"  FOREIGN KEY (message_event_id)"
+			"    REFERENCES message_event(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE,"
 			")";
 
 		*session <<
