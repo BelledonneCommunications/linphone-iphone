@@ -191,3 +191,8 @@ class SandcastleCSharpTranslator(Translator):
 		if len(lines) > 0:
 			lines.insert(0, '<summary>')
 			lines.append('</summary>')
+
+
+class SandcastleJavaTranslator(Translator):
+	def _tag_as_brief(self, lines):
+		pass

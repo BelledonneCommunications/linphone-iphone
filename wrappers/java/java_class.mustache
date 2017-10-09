@@ -1,0 +1,156 @@
+/*
+{{className}}.java
+Copyright (C) 2010  Belledonne Communications, Grenoble, France
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+package {{packageName}}
+
+{{#imports}}
+import {{import}}
+{{/imports}}
+{{#isLinphoneFactory}}
+import org.linphone.mediastream.Version;
+{{/isLinphoneFactory}}
+
+{{#doc}}
+/**
+    {{#lines}}
+  * {{line}}
+    {{/lines}}
+  */
+{{/doc}}
+public interface {{className}} {
+{{#enums}}
+    enum {{className}} {
+    {{#values}}
+        {{#doc}}
+        /**
+            {{#lines}}
+        * {{line}}
+            {{/lines}}
+        */
+        {{/doc}}
+        {{name}}({{value}}){{commarorsemicolon}}
+
+    {{/values}}
+        protected final int mValue;
+
+        private {{className}} (int value) {
+            mValue = value;
+        }
+
+        static protected {{className}} fromInt(int value) throws CoreException {
+            switch(value) {
+            {{#values}}
+            case {{value}}: return {{name}};
+            {{/values}}
+            default:
+                throw new CoreException("Unhandled enum value " + value + " for {{className}}");
+            }
+        }
+    };
+
+{{/enums}}
+{{#isLinphoneFactory}}
+    
+{{/isLinphoneFactory}}
+{{#methods}}
+    {{#doc}}
+    /**
+    {{#lines}}
+      * {{line}}
+    {{/lines}}
+      */
+    {{/doc}}
+    {{#deprecated}}@deprecated
+    {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
+
+{{/methods}}
+
+{{#staticMethods}}
+    {{#doc}}
+    /**
+        {{#lines}}
+    * {{line}}
+        {{/lines}}
+    */
+    {{/doc}}
+    public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
+
+{{/staticMethods}}
+}
+
+class {{classImplName}} implements {{className}} {
+
+    protected long nativePtr = 0;
+
+{{#isLinphoneFactory}}
+    private static boolean loadOptionalLibrary(String s) {
+		try {
+			System.loadLibrary(s);
+			return true;
+		} catch (Throwable e) {
+			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s + ": " +e.getMessage());
+		}
+		return false;
+	}
+
+	static {
+		System.loadLibrary("gnustl_shared");
+		loadOptionalLibrary("ffmpeg-linphone");
+		System.loadLibrary("bctoolbox");
+		System.loadLibrary("ortp");
+		System.loadLibrary("mediastreamer_base");
+		System.loadLibrary("mediastreamer_voip");
+		System.loadLibrary("linphone");
+		Version.dumpCapabilities();
+	}
+{{/isLinphoneFactory}}
+
+{{#methods}}
+    private native {{return_native}} {{name}}({{native_params}});
+    public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}} {
+        {{#convertInputClassArrayToLongArray}}
+        long[] longArray = new long[{{native_params_impl_list_param_name}}.length];
+        for (int i=0; i < {{native_params_impl_list_param_name}}.length; i++) {
+            longArray[i] = (({{native_params_impl_list_param_type}}){{native_params_impl_list_param_name}}[i]).nativePtr;
+        }
+        {{name}}(nativePtr{{native_params_impl}});
+        {{/convertInputClassArrayToLongArray}}
+        {{#convertOutputClassArrayToLongArray}}
+        long[] longArray = {{name}}(nativePtr{{native_params_impl}});
+        if (longArray == null) return null;
+
+        {{native_params_impl_list_param_type}}[] classArray = new {{native_params_impl_list_param_type}}[longArray.length];
+        for (int i=0; i < longArray.length; i++) {
+            classArray[i] = new {{native_params_impl_list_param_type}}Impl(longArray[i]);
+        }
+        return classArray;
+        {{/convertOutputClassArrayToLongArray}}
+        {{#classicMethod}}
+        {{return_keyword}}{{name}}(nativePtr{{native_params_impl}});
+        {{/classicMethod}}
+    }
+
+{{/methods}}
+
+{{#staticMethods}}
+    @Override
+    private native {{return_native}} {{name}}({{static_native_params}});
+
+{{/staticMethods}}
+}
