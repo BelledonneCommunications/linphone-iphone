@@ -44,10 +44,7 @@ namespace Cpim {
 	public:
 		HeaderNode () = default;
 
-		explicit HeaderNode (const Header &header) {
-			mName = header.getName();
-			mValue = header.getValue();
-
+		explicit HeaderNode (const Header &header) : mName(header.getName()), mValue(header.getValue()) {
 			// Generic header.
 			const GenericHeader *genericHeader = dynamic_cast<const GenericHeader *>(&header);
 			if (genericHeader) {

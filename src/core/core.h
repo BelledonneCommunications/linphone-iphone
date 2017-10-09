@@ -33,7 +33,7 @@ public:
 	// Nothing for the moment.
 
 private:
-	Core (CorePrivate &p);
+	explicit Core (CorePrivate &p);
 
 	L_DECLARE_PRIVATE(Core);
 	L_DISABLE_COPY(Core);
