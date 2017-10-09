@@ -102,8 +102,8 @@ namespace Cpim {
 			return header;
 		}
 
-		string mValue;
 		string mName;
+		string mValue;
 		string mParameters;
 	};
 
