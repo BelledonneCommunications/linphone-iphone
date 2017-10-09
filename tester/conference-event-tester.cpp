@@ -24,9 +24,11 @@
 #include "liblinphone_tester.h"
 #include "conference/conference-listener.h"
 #include "conference/local-conference.h"
-#include "conference/local-conference-event-handler.h"
+#include "conference/local-conference-event-handler-p.h"
 #include "conference/participant.h"
-#include "conference/remote-conference-event-handler.h"
+#include "conference/remote-conference-event-handler-p.h"
+#include "tools/private-access.h"
+#include "tools/tester.h"
 
 using namespace LinphonePrivate;
 using namespace std;
@@ -417,7 +419,8 @@ static const char *aliceUri = "sip:alice@example.com";
 static const char *frankUri = "sip:frank@example.com";
 static const char *confUri = "sips:conf233@example.com";
 
-
+L_ENABLE_ATTR_ACCESS(RemoteConferenceEventHandlerPrivate, Address, confAddress);
+L_ENABLE_ATTR_ACCESS(Conference, Address, conferenceAddress);
 
 class ConferenceEventTester : public ConferenceListener {
 public:
@@ -430,10 +433,11 @@ private:
 	void onParticipantAdded (const Address &addr) override;
 	void onParticipantRemoved (const Address &addr) override;
 	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
-	void onSubjectChanged(const std::string &subject) override;
+	void onSubjectChanged(const string &subject) override;
 public:
 	RemoteConferenceEventHandler *handler;
 	map<string, bool> participants;
+	string confSubject;
 };
 
 ConferenceEventTester::ConferenceEventTester (LinphoneCore *core, const Address &confAddr) {
@@ -461,6 +465,10 @@ void ConferenceEventTester::onParticipantSetAdmin (const Address &addr, bool isA
 		it->second = isAdmin;
 }
 
+void ConferenceEventTester::onSubjectChanged(const string &subject) {
+	confSubject = subject;
+}
+
 void first_notify_parsing() {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneAddress *confAddress = linphone_core_interpret_url(marie->lc, confUri);
@@ -474,6 +482,8 @@ void first_notify_parsing() {
 	size_t size = strlen(first_notify) + strlen(confUri);
 	char *notify = new char[size];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -503,6 +513,8 @@ void first_notify_parsing_wrong_conf() {
 	size_t size = strlen(first_notify) + strlen(confUri);
 	char *notify = new char[size];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -533,6 +545,8 @@ void participant_added_parsing() {
 	size_t size2 = strlen(participant_added_notify) + strlen(confUri);
 	char *notify_added = new char[size2];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -575,6 +589,8 @@ void participant_not_added_parsing() {
 	size_t size2 = strlen(participant_not_added_notify) + strlen(confUri);
 	char *notify_not_added = new char[size2];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -615,6 +631,8 @@ void participant_deleted_parsing() {
 	size_t size2 = strlen(participant_deleted_notify) + strlen(confUri);
 	char *notify_deleted = new char[size2];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -654,6 +672,8 @@ void participant_admined_parsing() {
 	size_t size2 = strlen(participant_admined_notify) + strlen(confUri);
 	char *notify_admined = new char[size2];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -694,6 +714,8 @@ void participant_unadmined_parsing() {
 	size_t size2 = strlen(participant_unadmined_notify) + strlen(confUri);
 	char *notify_unadmined = new char[size2];
 
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -740,12 +762,16 @@ void send_first_notify() {
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
-	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
-	string notify = localConf.getEventHandler()->subscribeReceived(lev);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
-	linphone_event_unref(lev);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
@@ -780,15 +806,19 @@ void send_added_notify() {
 	Address frankAddr(frankAddrStr);
 	bctbx_free(frankAddrStr);
 	linphone_address_unref(cFrankAddr);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
-	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
-	string notify = localConf.getEventHandler()->subscribeReceived(lev);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
-	linphone_event_unref(lev);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
@@ -796,7 +826,7 @@ void send_added_notify() {
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
 
-	notify = localConf.getEventHandler()->notifyParticipantAdded(frankAddr);
+	notify = localHandlerPrivate->createNotifyParticipantAdded(frankAddr);
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 3, int, "%d");
@@ -832,12 +862,16 @@ void send_removed_notify() {
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
-	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
-	string notify = localConf.getEventHandler()->subscribeReceived(lev);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
-	linphone_event_unref(lev);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
@@ -845,7 +879,7 @@ void send_removed_notify() {
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
 
-	notify = localConf.getEventHandler()->notifyParticipantRemoved(bobAddr);
+	notify = localHandlerPrivate->createNotifyParticipantRemoved(bobAddr);
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 1, int, "%d");
@@ -878,12 +912,15 @@ void send_admined_notify() {
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
-	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
-	string notify = localConf.getEventHandler()->subscribeReceived(lev);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
-	linphone_event_unref(lev);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
@@ -891,7 +928,7 @@ void send_admined_notify() {
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
 
-	notify = localConf.getEventHandler()->notifyParticipantSetAdmin(bobAddr, true);
+	notify = localHandlerPrivate->createNotifyParticipantAdmined(bobAddr, true);
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
@@ -925,12 +962,16 @@ void send_unadmined_notify() {
 
 	CallSessionParams params;
 	localConf.addParticipant(bobAddr, &params, false);
-	shared_ptr<Participant> alice = localConf.addParticipant(aliceAddr, &params, false);
+	localConf.addParticipant(aliceAddr, &params, false);
+	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	alice->setAdmin(true);
-	LinphoneEvent *lev = linphone_core_create_notify(pauline->lc, marie->identity, "conference");
-	string notify = localConf.getEventHandler()->subscribeReceived(lev);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
+	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState();
+	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
+	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
 	tester.handler->notifyReceived(notify);
-	linphone_event_unref(lev);
+
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
@@ -938,7 +979,7 @@ void send_unadmined_notify() {
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString())->second);
 
-	notify = localConf.getEventHandler()->notifyParticipantSetAdmin(aliceAddr, false);
+	notify = localHandlerPrivate->createNotifyParticipantAdmined(aliceAddr, false);
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
@@ -950,41 +991,6 @@ void send_unadmined_notify() {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
-
-#if 0
-void send_subscribe_receive_first_notify() {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	ConferenceEventTester tester(marie->lc, pauline->identity);
-	LinphoneAddress *bobAddr = linphone_core_interpret_url(marie->lc, bobUri);
-	LinphoneAddress *aliceAddr = linphone_core_interpret_url(marie->lc, aliceUri);
-	string confId("conf233");
-
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 1, 1000));
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1, 1000));
-
-	tester.handler->subscribe(confId);
-
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneSubscriptionIncomingReceived, 1, 1000));
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneSubscriptionActive, 1, 3000));
-	wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_NotifyReceived, 1, 3000);
-
-	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
-	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(bobAddr)) != tester.participants.end());
-	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(aliceAddr)) != tester.participants.end());
-	BC_ASSERT_TRUE(!tester.participants.find(linphone_address_as_string(bobAddr))->second);
-	BC_ASSERT_TRUE(tester.participants.find(linphone_address_as_string(aliceAddr))->second);
-
-	tester.handler->unsubscribe();
-
-	BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneSubscriptionTerminated, 1, 1000));
-
-	linphone_address_unref(bobAddr);
-	linphone_address_unref(aliceAddr);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-#endif
 
 test_t conference_event_tests[] = {
 	TEST_NO_TAG("First notify parsing", first_notify_parsing),
@@ -999,7 +1005,6 @@ test_t conference_event_tests[] = {
 	TEST_NO_TAG("Send participant removed notify", send_removed_notify),
 	TEST_NO_TAG("Send participant admined notify", send_admined_notify),
 	TEST_NO_TAG("Send participant unadmined notify", send_unadmined_notify)
-	//TEST_NO_TAG("Send subscribe receive first notify", send_subscribe_receive_first_notify)
 };
 
 test_suite_t conference_event_test_suite = {

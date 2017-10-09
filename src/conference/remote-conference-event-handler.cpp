@@ -17,12 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "remote-conference-event-handler.h"
-#include "logger/logger.h"
-#include "object/object-p.h"
-
 #include "private.h"
-
+#include "logger/logger.h"
+#include "remote-conference-event-handler-p.h"
 #include "xml/conference-info.h"
 
 // =============================================================================
@@ -32,14 +29,6 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 using namespace Xsd::ConferenceInfo;
-
-class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
-public:
-	LinphoneCore *core = nullptr;
-	ConferenceListener *listener = nullptr;
-	Address confAddress;
-	LinphoneEvent *lev = nullptr;
-};
 
 // -----------------------------------------------------------------------------
 

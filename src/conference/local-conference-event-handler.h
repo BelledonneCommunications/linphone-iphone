@@ -20,11 +20,8 @@
 #ifndef _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 #define _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
-#include <string>
-
-#include "linphone/types.h"
-
 #include "address/address.h"
+#include "linphone/types.h"
 #include "object/object.h"
 
 LINPHONE_BEGIN_NAMESPACE

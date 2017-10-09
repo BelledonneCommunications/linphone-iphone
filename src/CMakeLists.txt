@@ -56,6 +56,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference-listener.h
 	conference/conference.h
 	conference/local-conference.h
+	conference/local-conference-event-handler-p.h
 	conference/local-conference-event-handler.h
 	conference/params/call-session-params-p.h
 	conference/params/call-session-params.h
@@ -64,6 +65,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/participant-p.h
 	conference/participant.h
 	conference/remote-conference.h
+	conference/remote-conference-event-handler-p.h
 	conference/remote-conference-event-handler.h
 	conference/session/call-session-listener.h
 	conference/session/call-session-p.h
