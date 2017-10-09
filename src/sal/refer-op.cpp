@@ -61,8 +61,10 @@ void SalReferOp::process_request_event_cb(void *op_base, const belle_sip_request
 		op->reply(SalReasonUnknown);/*is mapped on bad request*/
 		return;
 	}
-	op->root->callbacks.refer_received(op, (SalAddress*)refer_to);
+	SalAddress *referToAddr = sal_address_new(belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(refer_to)));
+	op->root->callbacks.refer_received(op, referToAddr);
 	/*the app is expected to reply in the callback*/
+	sal_address_unref(referToAddr);
 }
 
 void SalReferOp::fill_cbs() {
@@ -87,6 +89,9 @@ int SalReferOp::send_refer(const SalAddress *refer_to) {
 	belle_sip_request_t* req=build_request("REFER");
 	if (req == NULL ) return -1;
 	if (get_contact_address()) belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(create_contact()));
+	belle_sip_header_refer_to_t *refer_to_header = belle_sip_header_refer_to_create(BELLE_SIP_HEADER_ADDRESS(refer_to));
+	belle_sip_header_address_set_automatic(BELLE_SIP_HEADER_ADDRESS(refer_to_header), true);
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), BELLE_SIP_HEADER(refer_to_header));
 	return send_request(req);
 }
 
