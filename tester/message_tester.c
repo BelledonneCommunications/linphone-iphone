@@ -2482,8 +2482,6 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message using external body url", file_transfer_using_external_body_url),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
 	TEST_NO_TAG("Text message denied", text_message_denied),
-	TEST_NO_TAG("Info message", info_message),
-	TEST_NO_TAG("Info message with body", info_message_with_body),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
 	TEST_NO_TAG("IMDN notifications", imdn_notifications),
 	TEST_NO_TAG("IM notification policy", im_notification_policy),
@@ -2511,13 +2509,10 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Database migration", database_migration),
 	TEST_NO_TAG("History range", history_range),
 	TEST_NO_TAG("History count", history_count),
-	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer),
 #endif
-	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
 	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
 	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),
 	TEST_NO_TAG("Transfer not sent if url moved permanently", file_transfer_not_sent_if_url_moved_permanently),
-	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "LeaksMemory"),
 	TEST_ONE_TAG("Real Time Text message", real_time_text_message, "RTT"),
 	TEST_ONE_TAG("Real Time Text SQL storage", real_time_text_sql_storage, "RTT"),
 	TEST_ONE_TAG("Real Time Text SQL storage with RTT messages not stored", real_time_text_sql_storage_rtt_disabled, "RTT"),
@@ -2537,7 +2532,13 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Text message with custom content-type and lime", text_message_with_custom_content_type_and_lime, "LIME"),
 #endif
 	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64),
-	TEST_NO_TAG("IM Encryption Engine b64 async", im_encryption_engine_b64_async)
+	TEST_NO_TAG("IM Encryption Engine b64 async", im_encryption_engine_b64_async),
+// Crash currently
+	TEST_NO_TAG("Info message", info_message),
+	TEST_NO_TAG("Info message with body", info_message_with_body),
+	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer),
+	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
+	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom, "LeaksMemory"),
 };
 
 static int message_tester_before_suite(void) {

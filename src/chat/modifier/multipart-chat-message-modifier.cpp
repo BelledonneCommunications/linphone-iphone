@@ -63,7 +63,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (shared_ptr<Cha
 	if (message->getInternalContent().getContentType().getType() == "multipart") {
 		string boundary = message->getInternalContent().getContentType().getParameter();
 		if (boundary.empty()) {
-			lError() << "Boundary parameter of content-type not found !";
+			lError() << "Boundary parameter of content-type not found: " << message->getInternalContent().getContentType().asString();
 			return ChatMessageModifier::Result::Error;
 		}
 

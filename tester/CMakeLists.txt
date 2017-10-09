@@ -200,6 +200,7 @@ set(SOURCE_FILES_CXX
 #	conference-event-tester.cpp
 	conference-tester.cpp
 	cpim-tester.cpp
+	multipart-tester.cpp
 	events-db-tester.cpp
 	property-container-tester.cpp
 )

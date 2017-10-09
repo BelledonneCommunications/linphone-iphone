@@ -55,6 +55,7 @@ extern test_suite_t log_collection_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t multi_call_test_suite;
 extern test_suite_t multicast_call_test_suite;
+extern test_suite_t multipart_test_suite;
 extern test_suite_t offeranswer_test_suite;
 extern test_suite_t player_test_suite;
 extern test_suite_t presence_server_test_suite;
