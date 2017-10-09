@@ -34,6 +34,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Tester {
 public:
+	Tester () = delete;
+	
 	template<typename Object>
 	static constexpr decltype(std::declval<Object>().getPrivate()) getPrivate (Object *cppObject) {
 		return cppObject->getPrivate();
