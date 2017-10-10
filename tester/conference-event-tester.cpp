@@ -25,7 +25,7 @@
 #include "conference/conference-listener.h"
 #include "conference/local-conference.h"
 #include "conference/local-conference-event-handler-p.h"
-#include "conference/participant.h"
+#include "conference/participant-p.h"
 #include "conference/remote-conference-event-handler-p.h"
 #include "tools/private-access.h"
 #include "tools/tester.h"
@@ -766,7 +766,7 @@ void send_first_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
@@ -814,7 +814,7 @@ void send_added_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
@@ -867,7 +867,7 @@ void send_removed_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
@@ -917,7 +917,7 @@ void send_admined_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
@@ -967,7 +967,7 @@ void send_unadmined_notify() {
 	localConf.addParticipant(bobAddr, &params, false);
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
@@ -1019,7 +1019,7 @@ void send_subject_changed_notify () {
 	localConf.addParticipant(aliceAddr, &params, false);
 	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
-	alice->setAdmin(true);
+	L_GET_PRIVATE(alice)->setAdmin(true);
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
 	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();

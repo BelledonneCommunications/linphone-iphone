@@ -48,6 +48,11 @@ bool BasicChatRoom::canHandleParticipants () const {
 	return false;
 }
 
+shared_ptr<Participant> BasicChatRoom::findParticipant (const Address &addr) const {
+	lError() << "findParticipant() is not allowed on a BasicChatRoom";
+	return nullptr;
+}
+
 const Address *BasicChatRoom::getConferenceAddress () const {
 	lError() << "a BasicChatRoom does not have a conference address";
 	return nullptr;
@@ -83,6 +88,10 @@ void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &part
 
 void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
+}
+
+void BasicChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+	lError() << "setParticipantAdminStatus() is not allowed on a BasicChatRoom";
 }
 
 void BasicChatRoom::setSubject (const string &subject) {

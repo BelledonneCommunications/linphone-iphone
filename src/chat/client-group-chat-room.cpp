@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "linphone/utils/utils.h"
+
 #include "address/address-p.h"
 #include "client-group-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
@@ -26,6 +28,7 @@
 #include "content/content.h"
 #include "hacks/hacks.h"
 #include "logger/logger.h"
+#include "sal/refer-op.h"
 
 // =============================================================================
 
@@ -103,6 +106,10 @@ bool ClientGroupChatRoom::canHandleParticipants () const {
 	return RemoteConference::canHandleParticipants();
 }
 
+shared_ptr<Participant> ClientGroupChatRoom::findParticipant (const Address &addr) const {
+	return RemoteConference::findParticipant(addr);
+}
+
 const Address *ClientGroupChatRoom::getConferenceAddress () const {
 	return RemoteConference::getConferenceAddress();
 }
@@ -148,6 +155,27 @@ void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant>
 
 void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	// TODO
+}
+
+void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+	L_D();
+	if (isAdmin == participant->isAdmin())
+		return;
+	if (!me->isAdmin()) {
+		lError() << "Cannot change the participant admin status because I am not admin";
+		return;
+	}
+	SalReferOp *referOp = new SalReferOp(d->core->sal);
+	LinphoneAddress *lAddr = linphone_address_new(conferenceAddress.asString().c_str());
+	linphone_configure_op(d->core, referOp, lAddr, nullptr, false);
+	linphone_address_unref(lAddr);
+	Address referToAddr = participant->getAddress();
+	referToAddr.setParam("text");
+	referToAddr.setParam("admin", Utils::toString(isAdmin));
+	referToAddr.setDomain("");
+	referToAddr.setPort(-1);
+	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->unref();
 }
 
 void ClientGroupChatRoom::setSubject (const string &subject) {
@@ -224,7 +252,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 		lWarning() << "Participant " << participant << " admin status has been changed but is not in the list of participants!";
 		return;
 	}
-	participant->setAdmin(isAdmin);
+	participant->getPrivate()->setAdmin(isAdmin);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);

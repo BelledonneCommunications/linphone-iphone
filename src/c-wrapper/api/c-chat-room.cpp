@@ -27,6 +27,7 @@
 #include "chat/basic-chat-room.h"
 #include "chat/client-group-chat-room.h"
 #include "chat/real-time-text-chat-room-p.h"
+#include "conference/participant.h"
 
 // =============================================================================
 
@@ -224,6 +225,10 @@ bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->canHandleParticipants();
 }
 
+LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom *cr, const LinphoneAddress *addr) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(*L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
+}
+
 const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr) {
 	if (cr->conferenceAddressCache) {
 		linphone_address_unref(cr->conferenceAddressCache);
@@ -258,6 +263,11 @@ void linphone_chat_room_remove_participant (LinphoneChatRoom *cr, LinphonePartic
 
 void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipants(L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(participants, Participant));
+}
+
+void linphone_chat_room_set_participant_admin_status (LinphoneChatRoom *cr, LinphoneParticipant *participant, bool_t isAdmin) {
+	shared_ptr<LinphonePrivate::Participant> p = L_GET_CPP_PTR_FROM_C_OBJECT(participant);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setParticipantAdminStatus(p, !!isAdmin);
 }
 
 void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) {

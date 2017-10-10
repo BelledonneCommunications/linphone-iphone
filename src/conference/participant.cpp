@@ -67,11 +67,6 @@ bool Participant::isAdmin () const {
 	return d->isAdmin;
 }
 
-void Participant::setAdmin (bool isAdmin) {
-	L_D();
-	d->isAdmin = isAdmin;
-}
-
 // =============================================================================
 
 ostream & operator<< (ostream &strm, const shared_ptr<Participant> &participant) {

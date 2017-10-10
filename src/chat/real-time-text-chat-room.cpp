@@ -144,6 +144,11 @@ bool RealTimeTextChatRoom::canHandleParticipants () const {
 	return false;
 }
 
+shared_ptr<Participant> RealTimeTextChatRoom::findParticipant (const Address &addr) const {
+	lError() << "findParticipant() is not allowed on a RealTimeTextChatRoom";
+	return nullptr;
+}
+
 const Address *RealTimeTextChatRoom::getConferenceAddress () const {
 	lError() << "a RealTimeTextChatRoom does not have a conference address";
 	return nullptr;
@@ -179,6 +184,10 @@ void RealTimeTextChatRoom::removeParticipant (const shared_ptr<const Participant
 
 void RealTimeTextChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
 	lError() << "removeParticipants() is not allowed on a RealTimeTextChatRoom";
+}
+
+void RealTimeTextChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+	lError() << "setParticipantAdminStatus() is not allowed on a RealTimeTextChatRoom";
 }
 
 void RealTimeTextChatRoom::setSubject (const string &subject) {

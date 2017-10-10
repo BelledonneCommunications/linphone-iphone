@@ -262,6 +262,13 @@ LINPHONE_PUBLIC void linphone_chat_room_add_participants (LinphoneChatRoom *cr, 
 LINPHONE_PUBLIC bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr);
 
 /**
+ * Find a participant of a chat room from its address.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] addr The address to search in the list of participants of the chat room
+ */
+LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom *cr, const LinphoneAddress *addr);
+
+/**
  * Get the conference address of the chat room.
  * @param[in] cr A LinphoneChatRoom object
  * @return The conference address of the chat room or NULL if this type of chat room is not conference based
@@ -308,6 +315,14 @@ LINPHONE_PUBLIC void linphone_chat_room_remove_participant (LinphoneChatRoom *cr
  * @param[in] participants \bctbx_list{LinphoneParticipant}
  */
 LINPHONE_PUBLIC void linphone_chat_room_remove_participants (LinphoneChatRoom *cr, const bctbx_list_t *participants);
+
+/**
+ * Change the admin status of a participant of a chat room (you need to be an admin yourself to do this).
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] participant The Participant for which to change the admin status
+ * @param[in] isAdmin A boolean value telling whether the participant should now be an admin or not
+ */
+LINPHONE_PUBLIC void linphone_chat_room_set_participant_admin_status (LinphoneChatRoom *cr, LinphoneParticipant *participant, bool_t isAdmin);
 
 /**
  * Set the subject of a chat room.

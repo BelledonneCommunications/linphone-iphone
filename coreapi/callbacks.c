@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal/refer-op.h"
 
 #include "linphone/core.h"
+#include "linphone/utils/utils.h"
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "linphone/lpconfig.h"
@@ -38,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
+#include "chat/chat-room.h"
 #include "conference/session/call-session.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/media-session.h"
@@ -719,10 +721,23 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 		LinphonePrivate::Address addr(sal_address_as_string(refer_to));
 		if (addr.isValid()) {
 			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
-			LinphoneChatRoom *cr = _linphone_core_join_client_group_chat_room(lc, addr);
-			if (cr) {
-				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
-				return;
+			if (addr.hasParam("admin")) {
+				LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_to());
+				if (cr) {
+					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
+					if (participant) {
+						bool value = Utils::stob(addr.getParamValue("admin"));
+						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setParticipantAdminStatus(participant, value);
+					}
+					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+					return;
+				}
+			} else {
+				LinphoneChatRoom *cr = _linphone_core_join_client_group_chat_room(lc, addr);
+				if (cr) {
+					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+					return;
+				}
 			}
 		}
 	}

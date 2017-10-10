@@ -72,13 +72,6 @@ LINPHONE_PUBLIC const LinphoneAddress * linphone_participant_get_address (const 
 LINPHONE_PUBLIC bool_t linphone_participant_is_admin (const LinphoneParticipant *participant);
 
 /**
- * Give the administrator rights or remove them to a conference participant.
- * @param[in] participant A LinphoneParticipant object
- * @param value A boolean value telling whether the participant should be an administrator or not
- */
-LINPHONE_PUBLIC void linphone_participant_set_admin (LinphoneParticipant *participant, bool_t value);
-
-/**
  * @}
  */
 

@@ -45,6 +45,7 @@ public:
 	void subscribeToConferenceEventPackage (bool value) { _isSubscribedToConferenceEventPackage = value; }
 	void removeSession () { session = nullptr; }
 	void setAddress (const Address &newAddr) { addr = newAddr; }
+	void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
 
 private:
 	Address addr;

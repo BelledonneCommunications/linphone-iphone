@@ -49,9 +49,7 @@ public:
 	explicit Participant (Address &&address);
 
 	const Address& getAddress () const;
-
 	bool isAdmin () const;
-	void setAdmin (bool isAdmin);
 
 private:
 	L_DECLARE_PRIVATE(Participant);
