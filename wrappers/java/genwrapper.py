@@ -191,20 +191,11 @@ class JavaTranslator(object):
             methodDict['params'] += self.translate_argument(arg)
             methodDict['native_params'] += self.translate_argument(arg, True)
             methodDict['static_native_params'] += self.translate_argument(arg, True)
-            if type(arg.type) is AbsApi.ListType:
-                if type(arg.type.containedTypeDesc) is AbsApi.ClassType:
-                    methodDict['convertInputClassArrayToLongArray'] = True
-                    methodDict['native_params_impl_list_param_name'] = self.translate_argument_name(arg.name)
-                    methodDict['native_params_impl_list_param_type'] = self.translate_type(arg.type.containedTypeDesc) + 'Impl'
-                    methodDict['native_params_impl'] += 'longArray'
-                else:
-                    methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
-            elif type(arg.type) is AbsApi.EnumType:
+            if type(arg.type) is AbsApi.EnumType:
                 methodDict['native_params_impl'] += self.translate_argument_name(arg.name) + '.toInt()'
             else:
                 methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
 
-        methodDict['classicMethod'] = not methodDict['convertInputClassArrayToLongArray']
         methodDict['deprecated'] = _method.deprecated
         methodDict['doc'] = self.docTranslator.translate(_method.briefDescription) if _method.briefDescription is not None else None
 

@@ -128,17 +128,8 @@ class {{classImplName}} implements {{className}} {
 {{#methods}}
     private native {{return_native}} {{name}}({{native_params}});
     public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}} {
-        {{#convertInputClassArrayToLongArray}}
-        long[] longArray = new long[{{native_params_impl_list_param_name}}.length];
-        for (int i=0; i < {{native_params_impl_list_param_name}}.length; i++) {
-            longArray[i] = (({{native_params_impl_list_param_type}}){{native_params_impl_list_param_name}}[i]).nativePtr;
-        }
-        {{name}}(nativePtr{{native_params_impl}});
-        {{/convertInputClassArrayToLongArray}}
-        {{#classicMethod}}
         {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
         {{#exception}}if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}
-        {{/classicMethod}}
     }
 
 {{/methods}}
