@@ -291,8 +291,8 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		soci::transaction tr(*session);
 
 		for (const auto &message : messages) {
-			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION) + 1;
-			if (direction != 1 && direction != 2) {
+			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
+			if (direction != 0 && direction != 1) {
 				lWarning() << "Unable to import legacy message with invalid direction.";
 				return;
 			}
@@ -356,7 +356,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				static_cast<ChatMessage::Direction>(direction),
 				message.get<string>(LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID, ""),
 				!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
-				{ content }
+				{ move(content) }
 			);
 		}
 
@@ -641,7 +641,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				") AND ";
 
 		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
-			+ "  AND state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+			+ "  AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 
 		L_BEGIN_LOG_EXCEPTION
 
