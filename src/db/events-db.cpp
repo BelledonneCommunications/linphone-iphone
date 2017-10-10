@@ -160,12 +160,20 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	void EventsDbPrivate::insertContent (long messageEventId, const Content &content) {
+		L_Q();
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long contentTypeId = insertContentType(content.getContentType().asString());
 		*session << "INSERT INTO message_content (message_event_id, content_type_id, body) VALUES"
 			"  (:messageEventId, :contentTypeId, :body)", soci::use(messageEventId), soci::use(contentTypeId),
 			soci::use(content.getBodyAsString());
+
+		long messageContentId = q->getLastInsertId();
+		for (const auto &appData : content.getAppDataMap())
+			*session << "INSERT INTO message_content_app_data (message_content_id, key, data) VALUES"
+				"  (:messageContentId, :key, :data)",
+				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
 	long EventsDbPrivate::insertContentType (const string &contentType) {

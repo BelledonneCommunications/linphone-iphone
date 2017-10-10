@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <unordered_map>
+#include <memory>
 
 #include "app-data-container.h"
 
@@ -29,40 +29,51 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AppDataContainerPrivate {
 public:
-	unordered_map<string, string> appData;
+	shared_ptr<unordered_map<string, string>> appData;
 };
 
 // -----------------------------------------------------------------------------
 
-AppDataContainer::AppDataContainer () : mPrivate(new AppDataContainerPrivate) {}
+AppDataContainer::AppDataContainer () : mPrivate(new AppDataContainerPrivate) {
+	L_D();
+	d->appData = make_shared<unordered_map<string, string>>();
+}
 
-// Empty copy constructor. Don't change this pattern.
-// AppDataContainer is an Entity component, not a simple structure.
-// An Entity is UNIQUE.
-AppDataContainer::AppDataContainer (const AppDataContainer &) : mPrivate(new AppDataContainerPrivate) {}
+AppDataContainer::AppDataContainer (const AppDataContainer &src) : mPrivate(new AppDataContainerPrivate) {
+	L_D();
+	d->appData = src.getPrivate()->appData;
+}
 
 AppDataContainer::~AppDataContainer () {
 	delete mPrivate;
 }
 
-AppDataContainer &AppDataContainer::operator= (const AppDataContainer &) {
+AppDataContainer &AppDataContainer::operator= (const AppDataContainer &src) {
+	L_D();
+	if (this != &src)
+		d->appData = src.getPrivate()->appData;
 	return *this;
+}
+
+const unordered_map<string, string> &AppDataContainer::getAppDataMap () const {
+	L_D();
+	return *d->appData.get();
 }
 
 string AppDataContainer::getAppData (const string &name) const {
 	L_D();
-	auto it = d->appData.find(name);
-	return it == d->appData.cend() ? string() : it->second;
+	auto it = d->appData->find(name);
+	return it == d->appData->cend() ? string() : it->second;
 }
 
 void AppDataContainer::setAppData (const string &name, const string &appData) {
 	L_D();
-	d->appData[name] = appData;
+	(*d->appData)[name] = appData;
 }
 
 void AppDataContainer::setAppData (const string &name, string &&appData) {
 	L_D();
-	d->appData[name] = move(appData);
+	(*d->appData)[name] = move(appData);
 }
 
 LINPHONE_END_NAMESPACE

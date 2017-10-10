@@ -21,6 +21,7 @@
 #define _APP_DATA_CONTAINER_H_
 
 #include <string>
+#include <unordered_map>
 
 #include "linphone/utils/general.h"
 
@@ -37,6 +38,8 @@ public:
 	virtual ~AppDataContainer ();
 
 	AppDataContainer &operator= (const AppDataContainer &src);
+
+	const std::unordered_map<std::string, std::string> &getAppDataMap () const;
 
 	std::string getAppData (const std::string &name) const;
 	void setAppData (const std::string &name, const std::string &appData);

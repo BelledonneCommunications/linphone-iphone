@@ -39,14 +39,14 @@ public:
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
-Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), AppDataContainer() {
+Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), AppDataContainer(src) {
 	L_D();
 	d->body = src.getBody();
 	d->contentType = src.getContentType();
 	d->contentDisposition = src.getContentDisposition();
 }
 
-Content::Content (Content &&src) : ClonableObject(*new ContentPrivate) {
+Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(src) {
 	L_D();
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
@@ -59,6 +59,7 @@ Content &Content::operator= (const Content &src) {
 		d->body = src.getBody();
 		d->contentType = src.getContentType();
 		d->contentDisposition = src.getContentDisposition();
+		AppDataContainer::operator=(src);
 	}
 
 	return *this;
@@ -69,6 +70,7 @@ Content &Content::operator= (Content &&src) {
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
 	d->contentDisposition = move(src.getPrivate()->contentDisposition);
+	AppDataContainer::operator=(move(src));
 	return *this;
 }
 
