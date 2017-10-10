@@ -72,6 +72,8 @@ public:
 		const list<Content> &contents
 	);
 
+	void insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state);
+
 	void importLegacyMessages (const soci::rowset<soci::row> &messages);
 #endif
 
@@ -257,6 +259,20 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return messageEventId;
 	}
 
+	void EventsDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		soci::statement statement = (
+			session->prepare << "UPDATE message_participant SET state = :state"
+				"  WHERE message_event_id = :messageEventId AND sip_address_id = :sipAddressId",
+				soci::use(static_cast<int>(state)), soci::use(messageEventId), soci::use(sipAddressId)
+		);
+		statement.execute(true);
+		if (statement.get_affected_rows() == 0)
+			*session << "INSERT INTO message_participant (message_event_id, sip_address_id, state)"
+				"  VALUES (:messageEventId, :sipAddressId, :state)",
+				soci::use(messageEventId), soci::use(sipAddressId), soci::use(static_cast<int>(state));
+	}
+
 // -----------------------------------------------------------------------------
 
 	#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1
@@ -294,12 +310,16 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
 			if (direction != 0 && direction != 1) {
 				lWarning() << "Unable to import legacy message with invalid direction.";
-				return;
+				continue;
 			}
 
 			const int state = message.get<int>(
 				LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
 			);
+			if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
+				lWarning() << "Unable to import legacy message with invalid state.";
+				continue;
+			}
 
 			const tm date = Utils::getLongAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
 
@@ -350,7 +370,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 			insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
 
-			insertMessageEvent (
+			long messageEventId = insertMessageEvent (
 				references,
 				static_cast<ChatMessage::State>(state),
 				static_cast<ChatMessage::Direction>(direction),
@@ -358,6 +378,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
 				{ move(content) }
 			);
+
+			if (state != static_cast<int>(ChatMessage::State::Displayed))
+				insertMessageParticipant(messageEventId, references.remoteSipAddressId, static_cast<ChatMessage::State>(state));
 		}
 
 		tr.commit();
