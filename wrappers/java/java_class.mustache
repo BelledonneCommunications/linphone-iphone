@@ -136,7 +136,7 @@ class {{classImplName}} implements {{className}} {
 
 {{#staticMethods}}
     @Override
-    private native {{return_native}} {{name}}({{static_native_params}});
+    public native {{return_native}} {{name}}({{static_native_params}});
 
 {{/staticMethods}}
 }
