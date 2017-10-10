@@ -20,6 +20,7 @@
 #include "address/address-p.h"
 #include "client-group-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
+#include "conference/params/call-session-params-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/participant-p.h"
 #include "content/content.h"
@@ -174,7 +175,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	conferenceAddress = addr;
 	d->setState(ChatRoom::State::Created);
-	_linphone_core_add_group_chat_room(d->core, addr.asStringUriOnly().c_str(), L_GET_C_BACK_PTR(this));
+	_linphone_core_add_group_chat_room(d->core, addr, L_GET_C_BACK_PTR(this));
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {

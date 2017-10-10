@@ -174,7 +174,7 @@ shared_ptr<Participant> Conference::findParticipant (const Address &addr) const 
 	for (const auto &participant : participants) {
 		Address participantAddr = participant->getAddress();
 		participantAddr.setPort(0);
-		if (testedAddr.equal(participantAddr))
+		if (testedAddr.weakEqual(participantAddr))
 			return participant;
 	}
 	return nullptr;

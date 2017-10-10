@@ -59,9 +59,13 @@ void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, 
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, const Address &addr) {
+	Address cleanedAddr(addr);
+	cleanedAddr.setPort(0);
 	for (const auto &participant : conf->getParticipants()) {
-		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && (addr != participant->getAddress()))
-			sendNotify(notify, addr);
+		Address cleanedParticipantAddr(participant->getAddress());
+		cleanedParticipantAddr.setPort(0);
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && !(cleanedAddr.weakEqual(cleanedParticipantAddr)))
+			sendNotify(notify, participant->getAddress());
 	}
 }
 
@@ -157,6 +161,8 @@ string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
 void LocalConferenceEventHandlerPrivate::sendNotify (const string &notify, const Address &addr) {
 	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
 	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
+	// Fix the From header to put the chat room URI
+	lev->op->set_from(this->conf->getConferenceAddress()->asString().c_str());
 	linphone_address_unref(cAddr);
 	doNotify(notify, lev);
 }

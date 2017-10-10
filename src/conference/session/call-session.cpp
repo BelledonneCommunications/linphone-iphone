@@ -492,6 +492,7 @@ bool CallSessionPrivate::isUpdateAllowed (LinphoneCallState &nextState) const {
 		case LinphoneCallOutgoingEarlyMedia:
 			nextState = LinphoneCallEarlyUpdating;
 			break;
+		case LinphoneCallConnected:
 		case LinphoneCallStreamsRunning:
 		case LinphoneCallPausedByRemote:
 		case LinphoneCallUpdatedByRemote:
@@ -943,8 +944,9 @@ LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &
 		return -1;
 	if (d->currentParams == csp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
-	if (content)
-		d->op->set_local_body(*content);
+	if (csp)
+		d->params = new CallSessionParams(*csp);
+	d->op->set_local_body(content ? *content : Content());
 	LinphoneStatus result = d->startUpdate(subject);
 	if (result && (d->state != initialState)) {
 		/* Restore initial state */

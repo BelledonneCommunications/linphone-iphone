@@ -30,13 +30,12 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallSession;
 class CallSessionParamsPrivate;
-class CallSessionPrivate;
 
 class CallSessionParams : public ClonableObject {
 	friend class CallSession;
 	friend class CallSessionPrivate;
+	friend class ClientGroupChatRoom;
 
 public:
 	CallSessionParams ();

@@ -7106,14 +7106,18 @@ bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id
 	return result;
 }
 
-void _linphone_core_add_group_chat_room(LinphoneCore *lc, const char *id, LinphoneChatRoom *cr) {
-	bctbx_pair_t *pair = reinterpret_cast<bctbx_pair_t *>(bctbx_pair_cchar_new(id, linphone_chat_room_ref(cr)));
+void _linphone_core_add_group_chat_room(LinphoneCore *lc, const LinphonePrivate::Address &addr, LinphoneChatRoom *cr) {
+	Address cleanedAddr = addr;
+	cleanedAddr.setPort(0);
+	bctbx_pair_t *pair = reinterpret_cast<bctbx_pair_t *>(bctbx_pair_cchar_new(cleanedAddr.asStringUriOnly().c_str(), linphone_chat_room_ref(cr)));
 	bctbx_map_cchar_insert_and_delete(lc->group_chat_rooms, pair);
 }
 
 LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id) {
 	LinphoneChatRoom *result = nullptr;
-	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, id);
+	Address cleanedAddr(id);
+	cleanedAddr.setPort(0);
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
 	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
 	if (!bctbx_iterator_cchar_equals(it, endit))
 		result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
