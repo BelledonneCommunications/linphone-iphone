@@ -84,6 +84,7 @@ set(LINPHONE_SOURCE_FILES_C
 	linphonecore.c
 	linphone_tunnel_config.c
 	localplayer.c
+	logging.c
 	lpc2xml.c
 	lpconfig.c
 	lsd.c

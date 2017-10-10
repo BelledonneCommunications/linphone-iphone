@@ -800,25 +800,28 @@ LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
 /**
  * @bref Define a log handler.
  * @param logfunc The function pointer of the log handler.
+ * @deprecated Use #linphone_log_service_set_log_handler() instead. Deprecated since 2017-10-10.
  * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 
 /**
  * @brief Define a log file.
  *
  * If the file pointer passed as an argument is NULL, stdout is used instead.
  * @param file A pointer to the FILE structure of the file to write to.
+ * @deprecated Use #linphone_log_service_set_file() instead. Deprecated since 2017-10-10.
  * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_log_file(FILE *file);
 
 /**
  * @brief Define the minimum level for logging.
  * @param loglevel Minimum level for logging messages.
+ * @deprecated Use #linphone_logging_service_set_log_level() instead. Deprecated since 2017-10-10.
  * @donotwrap
 **/
-LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_log_level(OrtpLogLevel loglevel);
 
 /**
  * Define the log level using mask.
@@ -826,22 +829,25 @@ LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
  * The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
  * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
  *
- * @param loglevel A bitmask of the log levels to set.
+ * @param mask A bitmask of the log levels to set.
+ * @deprecated Use #linphone_logging_service_set_log_level() instead. Deprecated since 2017-10-10.
  */
-LINPHONE_PUBLIC void linphone_core_set_log_level_mask(unsigned int loglevel);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_log_level_mask(unsigned int mask);
 
 /**
  * Get defined log level mask.
  *
  * @return The loglevel parameter is a bitmask parameter. Therefore to enable only warning and error
  * messages, use ORTP_WARNING | ORTP_ERROR. To disable logs, simply set loglevel to 0.
+ * @deprecated Use #linphone_logging_service_get_log_level_mask() instead. Deprecated since 2017-10-10.
  */
-LINPHONE_PUBLIC unsigned int linphone_core_get_log_level_mask(void);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED unsigned int linphone_core_get_log_level_mask(void);
 
 /**
  * Enable logs in supplied FILE*.
  * @param file a C FILE* where to fprintf logs. If null stdout is used.
- * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level instead.
+ * @deprecated Use #linphone_core_set_log_file and #linphone_core_set_log_level() instead.
+ * Deprecated since 2017-01-12.
  * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
@@ -851,13 +857,14 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_enable_logs(FILE *file);
  * @param logfunc The address of a OrtpLogFunc callback whose protoype is
  *            	  typedef void (*OrtpLogFunc)(OrtpLogLevel lev, const char *fmt, va_list args);
  * @deprecated Use #linphone_core_set_log_handler and #linphone_core_set_log_level instead.
+ * Deprecated since 2017-01-12.
  * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc);
 
 /**
  * Entirely disable logging.
- * @deprecated Use #linphone_core_set_log_level instead.
+ * @deprecated Use #linphone_core_set_log_level() instead. Deprecated since 2017-01-12.
  * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_disable_logs(void);
