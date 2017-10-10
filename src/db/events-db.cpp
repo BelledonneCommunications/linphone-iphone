@@ -379,11 +379,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  chat_room_id INT UNSIGNED NOT NULL,"
 			"  sip_address_id INT UNSIGNED NOT NULL,"
 			"  is_admin BOOLEAN NOT NULL,"
 
+			"  PRIMARY KEY (chat_room_id, sip_address_id),"
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(peer_sip_address_id)"
 			"    ON DELETE CASCADE,"
@@ -428,7 +428,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 			"  PRIMARY KEY (message_event_id, sip_address_id),"
 			"  FOREIGN KEY (message_event_id)"
-			"    REFERENCES message_event(id)"
+			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (sip_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -441,8 +441,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  message_event_id INT UNSIGNED NOT NULL,"
 			"  content_type_id INT UNSIGNED NOT NULL,"
 			"  body TEXT NOT NULL,"
+
 			"  FOREIGN KEY (message_event_id)"
-			"    REFERENCES message_event(id)"
+			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (content_type_id)"
 			"    REFERENCES content_type(id)"
@@ -451,12 +452,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_crypto_data ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
 			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  key VARCHAR(255),"
 			"  data BLOB,"
 
+			"  PRIMARY KEY (message_event_id, key),"
 			"  FOREIGN KEY (message_event_id)"
-			"    REFERENCES message_event(id)"
+			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE"
 			")";
 	}
@@ -633,14 +635,29 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return list<shared_ptr<EventLog>>();
 	}
 
-	void EventsDb::cleanHistory (const string &peerAddress) {
+	void EventsDb::cleanHistory (const string &peerAddress, FilterMask mask) {
+		L_D();
+
+		// TODO: Deal with mask.
+		(void)mask;
+
 		if (!isConnected()) {
 			lWarning() << "Unable to clean history. Not connected.";
 			return;
 		}
 
-		// TODO.
-		(void)peerAddress;
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM event WHERE id = ("
+			"  SELECT event_id FROM message_event WHERE chat_room_id = ("
+			"    SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = ("
+			"      SELECT id FROM sip_address WHERE value = :peerAddress"
+			"    )"
+			"  )"
+			")";
+
+		L_END_LOG_EXCEPTION
 	}
 
 // -----------------------------------------------------------------------------

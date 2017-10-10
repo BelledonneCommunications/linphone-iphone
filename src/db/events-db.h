@@ -64,8 +64,9 @@ public:
 		int end,
 		FilterMask mask = NoFilter
 	) const;
-	void cleanHistory (const std::string &peerAddress = "");
+	void cleanHistory (const std::string &peerAddress = "", FilterMask mask = NoFilter);
 
+	// Import legacy messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;
 
 protected:
