@@ -46,7 +46,7 @@ Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), App
 	d->contentDisposition = src.getContentDisposition();
 }
 
-Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(src) {
+Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(move(src)) {
 	L_D();
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
