@@ -291,6 +291,15 @@ class GenWrapper(object):
         self.interfaces = {}
         self.classes = {}
         self.enums_list = {
+            'AccountCreatorActivationCodeStatus': 'AccountCreator',
+            'AccountCreatorDomainStatus': 'AccountCreator',
+            'AccountCreatorEmailStatus': 'AccountCreator',
+            'AccountCreatorLanguageStatus': 'AccountCreator',
+            'AccountCreatorPasswordStatus': 'AccountCreator',
+            'AccountCreatorPhoneNumberStatus': 'AccountCreator',
+            'AccountCreatorStatus': 'AccountCreator',
+            'AccountCreatorTransportStatus': 'AccountCreator',
+            'AccountCreatorUsernameStatus': 'AccountCreator',
             'AddressFamily': 'CallStats',
             'CallDir': 'Call',
             'CallState': 'Call',
