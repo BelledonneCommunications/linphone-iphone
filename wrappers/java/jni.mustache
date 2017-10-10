@@ -112,16 +112,48 @@ void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong 
 	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}
 	{{#strings}}
 	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
-	{{/strings}}
-	{{#objects}}
+	{{/strings}}{{#objects}}
 	{{objectClassCName}}* c_{{object}} = NULL;
 	if ({{object}}) c_{{object}} = ({{objectClassCName}}*)GetObjectNativePtr(env, {{object}});
-	{{/objects}}
+	{{/objects}}{{#lists}}
+	bctbx_list_t *bctbx_list_{{list}} = NULL;
+	int count = env->GetArrayLength({{list}});
+	for (int i=0; i < count; i++) {
+		{{#isStringList}}
+		jstring obj = (jstring) env->GetObjectArrayElement({{list}}, i);
+		const char *str = GetStringUTFChars(env, obj);
+		if (str) {
+			bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, ms_strdup(str));
+			ReleaseStringUTFChars(env, obj, str);
+		}
+		{{/isStringList}}
+		{{#isObjList}}
+		jobject obj = env->GetObjectArrayElement({{list}}, i);
+		bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, GetObjectNativePtr(env, obj));
+		{{/isObjList}}
+	}
+	{{/lists}}{{#hasListReturn}}
+	bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
+	size_t count = bctbx_list_size(list);
+	{{#isRealObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("{{jniPath}}{{objectClassImplName}}"), NULL);{{/isRealObjectArray}}
+	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
+	for (size_t i = 0; i < count; i++) {
+		{{#isRealObjectArray}}
+		{{objectClassCName}}* c_object = ({{objectClassCName}}*)list->data;
+		jobject object = get{{objectClassName}}(c_object);
+		{{/isRealObjectArray}}
+		{{#isStringObjectArray}}jstring object = list->data ? env->NewStringUTF(list->data) : 0;{{/isStringObjectArray}}
+		if (object != 0) {
+			env->SetObjectArrayElement(jni_list_result, i, object);
+			{{#isRealObjectArray}}env->DeleteLocalRef(object);{{/isRealObjectArray}}
+		}
+		list = bctbx_list_next(list);
+	}
+	{{/hasListReturn}}{{#hasNormalReturn}}
 	{{#hasReturn}}{{return}} jni_result = {{#returnObject}}get{{returnClassName}}({{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
-	{{#strings}}
+	{{/hasNormalReturn}}{{#strings}}
 	ReleaseStringUTFChars(env, {{string}}, c_{{string}});
-	{{/strings}}
-	{{#hasReturn}}return jni_result;{{/hasReturn}}
+	{{/strings}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}
 }
 
 {{/methods}}

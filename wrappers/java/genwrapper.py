@@ -68,8 +68,10 @@ class JavaTranslator(object):
     def __init__(self, packageName):
         package_dirs = packageName.split('.')
         self.jni_package = ''
+        self.jni_path = ''
         for directory in package_dirs:
             self.jni_package += directory + '_'
+            self.jni_path += directory + '/'
 
         self.docTranslator = metadoc.SandcastleJavaTranslator()
 
@@ -230,19 +232,38 @@ class JavaTranslator(object):
         methodDict = {}
         methodDict['classCName'] = 'Linphone' + className.to_camel_case()
         methodDict['className'] = className.to_camel_case()
+        methodDict['classImplName'] = className.to_camel_case() + 'Impl'
+        methodDict['jniPath'] = self.jni_path
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
-        methodDict['hasReturn'] = not methodDict['return'] == 'void'
+        methodDict['hasListReturn'] = methodDict['return'] == 'jobjectArray'
+        methodDict['hasReturn'] = not methodDict['return'] == 'void' and not methodDict['hasListReturn']
+        methodDict['hasNormalReturn'] = not methodDict['hasListReturn']
         methodDict['name'] = 'Java_' + self.jni_package + className.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
         methodDict['notStatic'] = not static
         methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + _method.name.to_snake_case()
         methodDict['returnObject'] = methodDict['hasReturn'] and type(_method.returnType) is AbsApi.ClassType
         methodDict['returnClassName'] = self.translate_type(_method.returnType)
+        methodDict['isRealObjectArray'] = False
+        methodDict['isStringObjectArray'] = False
+
+        if methodDict['hasListReturn']:
+            if _method.returnType.name == 'string_array':
+                methodDict['isStringObjectArray'] = True
+            elif type(_method.returnType.containedTypeDesc) is AbsApi.ClassType:
+                methodDict['isRealObjectArray'] = True
+                methodDict['objectClassCName'] = 'Linphone' + _method.returnType.containedTypeDesc.desc.name.to_camel_case()
+                methodDict['objectClassName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case()
+                methodDict['objectClassImplName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case() + 'Impl'
+            else:
+                print 'toto'
 
         methodDict['params'] = 'JNIEnv *env, jobject thiz' if static else 'JNIEnv *env, jobject thiz, jlong ptr'
         methodDict['params_impl'] = ''
         methodDict['strings'] = []
         methodDict['objects'] = []
+        methodDict['lists'] = []
+        methodDict['array'] = []
         methodDict['returnedObjectGetter'] = ''
         for arg in _method.args:
             methodDict['params'] += ', '
@@ -253,6 +274,12 @@ class JavaTranslator(object):
             if type(arg.type) is AbsApi.ClassType:
                 methodDict['objects'].append({'object': argname, 'objectClassCName': 'Linphone' + arg.type.desc.name.to_camel_case()})
                 methodDict['params_impl'] += 'c_' + argname
+                
+            elif type(arg.type) is AbsApi.ListType:
+                isStringList = type(arg.type.containedTypeDesc) is AbsApi.BaseType and arg.type.containedTypeDesc.name == 'string'
+                isObjList = type(arg.type.containedTypeDesc) is AbsApi.ClassType
+                methodDict['lists'].append({'list': argname, 'isStringList': isStringList, 'isObjList': isObjList})
+                methodDict['params_impl'] += 'bctbx_list_' + argname
                 
             elif type(arg.type) is AbsApi.BaseType:
                 if arg.type.name == 'string':
