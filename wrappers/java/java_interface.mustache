@@ -39,7 +39,7 @@ public interface {{className}} {
     {{/lines}}
       */
     {{/doc}}
-    {{#deprecated}}@deprecated
+    {{#deprecated}}@Deprecated
     {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
 
 {{/methods}}
