@@ -102,6 +102,10 @@ class {{classImplName}} implements {{className}} {
 
     protected long nativePtr = 0;
 
+    protected {{classImplName}}(long ptr) {
+        nativePtr = ptr;
+    }
+
 {{#isLinphoneFactory}}
     private static boolean loadOptionalLibrary(String s) {
 		try {

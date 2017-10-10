@@ -214,13 +214,13 @@ class JavaTranslator(object):
 
         return methodDict
 
-    def translate_jni_method(self, _method):
+    def translate_jni_method(self, _method, static=False):
         methodDict = {}
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True)
         methodDict['name'] = 'Java_' + self.jni_package + _method.parent.name.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
 
-        methodDict['params'] = 'JNIEnv *env, jobject thiz'
+        methodDict['params'] = 'JNIEnv *env' if static else 'JNIEnv *env, jobject thiz'
         for arg in _method.args:
             if arg is not _method.args[0]:
                 methodDict['params'] += ', '
@@ -257,7 +257,7 @@ class JavaTranslator(object):
         for method in _class.classMethods:
             try:
                 methodDict = self.translate_method(method)
-                jniMethodDict = self.translate_jni_method(method)
+                jniMethodDict = self.translate_jni_method(method, True)
                 classDict['staticMethods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
             except AbsApi.Error as e:
