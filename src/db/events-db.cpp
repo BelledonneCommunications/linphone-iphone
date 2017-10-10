@@ -451,6 +451,18 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			")";
 
 		*session <<
+			"CREATE TABLE IF NOT EXISTS message_content_app_data ("
+			"  message_content_id INT UNSIGNED NOT NULL,"
+			"  key VARCHAR(255),"
+			"  data BLOB,"
+
+			"  PRIMARY KEY (message_content_id, key),"
+			"  FOREIGN KEY (message_content_id)"
+			"    REFERENCES message_content(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_crypto_data ("
 			"  message_event_id INT UNSIGNED NOT NULL,"
 			"  key VARCHAR(255),"
@@ -649,7 +661,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << "DELETE FROM event WHERE id = ("
+		*session << "DELETE FROM event WHERE id IN ("
 			"  SELECT event_id FROM message_event WHERE chat_room_id = ("
 			"    SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = ("
 			"      SELECT id FROM sip_address WHERE value = :peerAddress"
