@@ -17,10 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <sstream>
-
-#include <belle-sip/headers.h>
-
 #include "hacks.h"
 
 // =============================================================================
@@ -28,7 +24,5 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// -----------------------------------------------------------------------------
 
 LINPHONE_END_NAMESPACE

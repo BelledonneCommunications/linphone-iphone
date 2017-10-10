@@ -32,9 +32,9 @@ LINPHONE_BEGIN_NAMESPACE
 // can be located more easily.
 class Hacks {
 public:
+	Hacks () = delete;
 
 private:
-	Hacks () = default;
 
 	L_DISABLE_COPY(Hacks);
 };
