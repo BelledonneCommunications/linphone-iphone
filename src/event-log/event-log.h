@@ -32,6 +32,8 @@ LINPHONE_BEGIN_NAMESPACE
 class EventLogPrivate;
 
 class LINPHONE_PUBLIC EventLog : public ClonableObject {
+	friend class EventsDb;
+
 public:
 	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
 

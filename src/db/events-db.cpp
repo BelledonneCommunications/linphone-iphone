@@ -28,11 +28,12 @@
 
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
-#include "content/content.h"
 #include "conference/participant.h"
+#include "content/content.h"
 #include "db/provider/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
+#include "event-log/event-log-p.h"
 #include "logger/logger.h"
 
 #include "events-db.h"
@@ -501,14 +502,26 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	}
 
 	bool EventsDb::deleteEvent (const EventLog &eventLog) {
+		L_D();
+
 		if (!isConnected()) {
 			lWarning() << "Unable to delete event. Not connected.";
 			return false;
 		}
 
-		// TODO.
-		(void)eventLog;
-		return true;
+		int &id = const_cast<EventLog &>(eventLog).getPrivate()->id;
+		if (id < 0)
+			return false;
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM event WHERE id = :id", soci::use(id);
+		id = -1;
+
+		L_END_LOG_EXCEPTION
+
+		return id == -1;
 	}
 
 	void EventsDb::cleanEvents (FilterMask mask) {
