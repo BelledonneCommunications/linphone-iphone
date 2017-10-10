@@ -764,7 +764,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return list<shared_ptr<EventLog>>();
 	}
 
-	void EventsDb::cleanHistory (const string &) {}
+	void EventsDb::cleanHistory (const string &, FilterMask) {}
 
 	bool EventsDb::import (Backend, const string &) {
 		return false;
