@@ -81,7 +81,7 @@ public interface {{className}} {
       */
     {{/doc}}
     {{#deprecated}}@Deprecated
-    {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
+    {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
 
 {{/methods}}
 
