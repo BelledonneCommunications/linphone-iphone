@@ -650,24 +650,26 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 	void EventsDb::cleanHistory (const string &peerAddress, FilterMask mask) {
 		L_D();
 
-		// TODO: Deal with mask.
-		(void)mask;
-
 		if (!isConnected()) {
 			lWarning() << "Unable to clean history. Not connected.";
 			return;
 		}
 
+		string query;
+		if (mask == EventsDb::NoFilter || mask & MessageFilter)
+			query += "SELECT event_id FROM message_event WHERE chat_room_id = ("
+				"  SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = ("
+				"    SELECT id FROM sip_address WHERE value = :peerAddress"
+				"  )"
+				")";
+
+		if (query.empty())
+			return;
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << "DELETE FROM event WHERE id IN ("
-			"  SELECT event_id FROM message_event WHERE chat_room_id = ("
-			"    SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = ("
-			"      SELECT id FROM sip_address WHERE value = :peerAddress"
-			"    )"
-			"  )"
-			")";
+		*session << "DELETE FROM event WHERE id IN (" + query + ")", soci::use(peerAddress);
 
 		L_END_LOG_EXCEPTION
 	}
