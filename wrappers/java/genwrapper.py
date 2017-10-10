@@ -143,6 +143,10 @@ class JavaTranslator(object):
                 if native:
                     return 'int'
                 return 'void'
+            elif _type.name == 'string_array':
+                if jni:
+                    return 'jobjectArray'
+                return 'String[]'
             return _type.name
 
     def translate_argument(self, _arg, native=False, jni=False):
