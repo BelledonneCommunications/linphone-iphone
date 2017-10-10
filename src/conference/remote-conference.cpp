@@ -53,7 +53,7 @@ void RemoteConference::addParticipant (const Address &addr, const CallSessionPar
 
 void RemoteConference::removeParticipant (const shared_ptr<const Participant> &participant) {
 	for (const auto &p : participants) {
-		if (participant->getAddress().equal(p->getAddress())) {
+		if (participant->getAddress() == p->getAddress()) {
 			participants.remove(p);
 			return;
 		}

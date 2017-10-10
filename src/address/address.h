@@ -82,7 +82,6 @@ public:
 	std::string asString () const;
 	std::string asStringUriOnly () const;
 
-	bool equal (const Address &address) const;
 	bool weakEqual (const Address &address) const;
 
 	const std::string &getHeaderValue (const std::string &headerName) const;

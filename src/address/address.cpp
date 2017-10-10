@@ -65,7 +65,7 @@ Address &Address::operator= (const Address &src) {
 }
 
 bool Address::operator== (const Address &address) const {
-	return equal(address);
+	return asString() == address.asString();
 }
 
 bool Address::operator!= (const Address &address) const {
@@ -249,10 +249,6 @@ string Address::asStringUriOnly () const {
 	string out = buf;
 	ms_free(buf);
 	return out;
-}
-
-bool Address::equal (const Address &address) const {
-	return asString() == address.asString();
 }
 
 bool Address::weakEqual (const Address &address) const {

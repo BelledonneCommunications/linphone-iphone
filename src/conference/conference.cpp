@@ -193,7 +193,7 @@ bool Conference::isMe (const Address &addr) const {
 	cleanedMe.setPort(0);
 	Address cleanedAddr = addr;
 	cleanedAddr.setPort(0);
-	return cleanedAddr.equal(cleanedMe);
+	return cleanedAddr == cleanedMe;
 }
 
 LINPHONE_END_NAMESPACE
