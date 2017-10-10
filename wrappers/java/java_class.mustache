@@ -135,16 +135,6 @@ class {{classImplName}} implements {{className}} {
         }
         {{name}}(nativePtr{{native_params_impl}});
         {{/convertInputClassArrayToLongArray}}
-        {{#convertOutputClassArrayToLongArray}}
-        long[] longArray = {{name}}(nativePtr{{native_params_impl}});
-        if (longArray == null) return null;
-
-        {{native_params_impl_list_param_type}}[] classArray = new {{native_params_impl_list_param_type}}[longArray.length];
-        for (int i=0; i < longArray.length; i++) {
-            classArray[i] = new {{native_params_impl_list_param_type}}Impl(longArray[i]);
-        }
-        return classArray;
-        {{/convertOutputClassArrayToLongArray}}
         {{#classicMethod}}
         {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
         {{#exception}}if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}

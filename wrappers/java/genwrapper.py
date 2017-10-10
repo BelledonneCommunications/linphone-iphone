@@ -84,6 +84,8 @@ class JavaTranslator(object):
 
     def translate_type(self, _type, native=False, jni=False):
         if type(_type) is AbsApi.ListType:
+            if jni:
+                return 'jobjectArray'
             ptrtype = ''
             if type(_type.containedTypeDesc) is AbsApi.ClassType:
                 ptrtype = self.translate_type(_type.containedTypeDesc, native)
@@ -99,9 +101,7 @@ class JavaTranslator(object):
             return ptrtype + '[]'
                 
         elif type(_type) is AbsApi.ClassType:
-            if native:
-                return 'Object'
-            elif jni:
+            if jni:
                 return 'jobject'
             return _type.desc.name.to_camel_case()
         elif type(_type) is AbsApi.EnumType:
@@ -172,10 +172,6 @@ class JavaTranslator(object):
         methodDict['return_keyword'] = '' if methodDict['return'] == 'void' else 'return '
 
         methodDict['convertInputClassArrayToLongArray'] = False
-        methodDict['convertOutputClassArrayToLongArray'] = type(_method.returnType) is AbsApi.ListType and type(_method.returnType.containedTypeDesc) is AbsApi.ClassType
-        if methodDict['convertOutputClassArrayToLongArray']:
-            methodDict['native_params_impl_list_param_name'] = 'classArray'
-            methodDict['native_params_impl_list_param_type'] = self.translate_type(_method.returnType.containedTypeDesc)
 
         methodDict['name'] = _method.name.to_camel_case(lower=True)
         methodDict['exception'] = self.throws_exception(_method.returnType)
@@ -210,7 +206,7 @@ class JavaTranslator(object):
             else:
                 methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
 
-        methodDict['classicMethod'] = not methodDict['convertInputClassArrayToLongArray'] and not methodDict['convertOutputClassArrayToLongArray']
+        methodDict['classicMethod'] = not methodDict['convertInputClassArrayToLongArray']
         methodDict['deprecated'] = _method.deprecated
         methodDict['doc'] = self.docTranslator.translate(_method.briefDescription) if _method.briefDescription is not None else None
 
