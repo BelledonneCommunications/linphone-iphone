@@ -164,7 +164,7 @@ class JavaTranslator(object):
             methodDict['native_params'] += self.translate_argument(arg, True)
             methodDict['static_native_params'] += self.translate_argument(arg, True)
             if type(arg.type) is AbsApi.ClassType:
-                methodDict['native_params_impl'] += '((' + self.translate_type(arg.type) + ')' + self.translate_argument_name(arg.name) + ').nativePtr'
+                methodDict['native_params_impl'] += '((' + self.translate_type(arg.type) + 'Impl)' + self.translate_argument_name(arg.name) + ').nativePtr'
             elif type(arg.type) is AbsApi.ListType:
                 if type(arg.type.containedTypeDesc) is AbsApi.ClassType:
                     methodDict['convertInputClassArrayToLongArray'] = True
