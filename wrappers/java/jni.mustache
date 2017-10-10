@@ -36,3 +36,17 @@ static const char* GetStringUTFChars(JNIEnv* env, jstring string) {
 static void ReleaseStringUTFChars(JNIEnv* env, jstring string, const char *cstring) {
 	if (string) env->ReleaseStringUTFChars(string, cstring);
 }
+
+static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
+	jclass objClass = env->GetObjectClass(object);
+	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
+	jlong nativePtr = env->GetLongField(object, nativePtrId);
+	return nativePtr;
+}
+
+static jlong SetObjectNativePtr(JNIEnv *env, jobject object, jlong ptr) {
+	jclass objClass = env->GetObjectClass(object);
+	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
+	env->SetLongField(object, nativePtrId, ptr);
+	return ptr;
+}
