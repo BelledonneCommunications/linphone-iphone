@@ -147,6 +147,10 @@ class JavaTranslator(object):
                 if jni:
                     return 'jobjectArray'
                 return 'String[]'
+            elif _type.name == 'character':
+                if jni:
+                    return 'jchar'
+                return 'char'
             return _type.name
 
     def translate_argument(self, _arg, native=False, jni=False):
