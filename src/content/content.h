@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "content-type.h"
+#include "object/app-data-container.h"
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -31,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ContentPrivate;
 
-class LINPHONE_PUBLIC Content : public ClonableObject {
+class LINPHONE_PUBLIC Content : public ClonableObject, public AppDataContainer {
 public:
 	Content ();
 	Content (const Content &src);
@@ -63,7 +64,7 @@ public:
 	bool isEmpty () const;
 
 private:
-	L_DECLARE_PRIVATE(Content);
+	L_DECLARE_PRIVATE_T(Content, ClonableObject);
 };
 
 LINPHONE_END_NAMESPACE

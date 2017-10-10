@@ -1,5 +1,5 @@
 /*
- * event-log-p.h
+ * app-data-container.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,26 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_P_H_
-#define _EVENT_LOG_P_H_
+#ifndef _APP_DATA_CONTAINER_H_
+#define _APP_DATA_CONTAINER_H_
 
-#include "event-log.h"
-#include "object/clonable-object-p.h"
+#include <string>
+
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate : public ClonableObjectPrivate {
+class AppDataContainerPrivate;
+
+class LINPHONE_PUBLIC AppDataContainer {
 public:
-	long id = -1;
+	AppDataContainer ();
+	AppDataContainer (const AppDataContainer &src);
+	virtual ~AppDataContainer ();
+
+	AppDataContainer &operator= (const AppDataContainer &src);
+
+	std::string getAppData (const std::string &name) const;
+	void setAppData (const std::string &name, const std::string &appData);
+	void setAppData (const std::string &name, std::string &&appData);
 
 private:
-	EventLog::Type type = EventLog::Type::None;
+	AppDataContainerPrivate *mPrivate = nullptr;
 
-	L_DECLARE_PUBLIC(EventLog);
+	L_DECLARE_PRIVATE(AppDataContainer);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_P_H_
+#endif // ifndef _APP_DATA_CONTAINER_H_

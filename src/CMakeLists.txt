@@ -24,8 +24,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
 	c-wrapper/c-wrapper.h
-	c-wrapper/internal/c-tools.h
 	c-wrapper/internal/c-sal.h
+	c-wrapper/internal/c-tools.h
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
@@ -55,18 +55,18 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/real-time-text-chat-room.h
 	conference/conference-listener.h
 	conference/conference.h
-	conference/local-conference.h
 	conference/local-conference-event-handler-p.h
 	conference/local-conference-event-handler.h
+	conference/local-conference.h
 	conference/params/call-session-params-p.h
 	conference/params/call-session-params.h
 	conference/params/media-session-params-p.h
 	conference/params/media-session-params.h
 	conference/participant-p.h
 	conference/participant.h
-	conference/remote-conference.h
 	conference/remote-conference-event-handler-p.h
 	conference/remote-conference-event-handler.h
+	conference/remote-conference.h
 	conference/session/call-session-listener.h
 	conference/session/call-session-p.h
 	conference/session/call-session.h
@@ -93,6 +93,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	logger/logger.h
 	nat/ice-agent.h
 	nat/stun-client.h
+	object/app-data-container.h
 	object/clonable-object-p.h
 	object/clonable-object.h
 	object/object-p.h
@@ -110,14 +111,14 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
 	c-wrapper/api/c-address.cpp
-	c-wrapper/api/c-call.cpp
 	c-wrapper/api/c-call-cbs.cpp
 	c-wrapper/api/c-call-params.cpp
 	c-wrapper/api/c-call-stats.cpp
-	c-wrapper/api/c-chat-message.cpp
+	c-wrapper/api/c-call.cpp
 	c-wrapper/api/c-chat-message-cbs.cpp
-	c-wrapper/api/c-chat-room.cpp
+	c-wrapper/api/c-chat-message.cpp
 	c-wrapper/api/c-chat-room-cbs.cpp
+	c-wrapper/api/c-chat-room.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
 	c-wrapper/internal/c-sal.cpp
@@ -139,13 +140,13 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/modifier/multipart-chat-message-modifier.cpp
 	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp
-	conference/local-conference.cpp
 	conference/local-conference-event-handler.cpp
+	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
 	conference/participant.cpp
-	conference/remote-conference.cpp
 	conference/remote-conference-event-handler.cpp
+	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
 	content/content-type.cpp
@@ -164,6 +165,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	logger/logger.cpp
 	nat/ice-agent.cpp
 	nat/stun-client.cpp
+	object/app-data-container.cpp
 	object/clonable-object.cpp
 	object/object.cpp
 	object/property-container.cpp
@@ -172,9 +174,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/message-op.cpp
 	sal/op.cpp
 	sal/presence-op.cpp
+	sal/refer-op.cpp
 	sal/register-op.cpp
 	sal/sal.cpp
-	sal/refer-op.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp

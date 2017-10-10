@@ -509,7 +509,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			return false;
 		}
 
-		int &id = const_cast<EventLog &>(eventLog).getPrivate()->id;
+		long &id = const_cast<EventLog &>(eventLog).getPrivate()->id;
 		if (id < 0)
 			return false;
 

@@ -39,7 +39,7 @@ public:
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
-Content::Content (const Content &src) : ClonableObject(*new ContentPrivate) {
+Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), AppDataContainer() {
 	L_D();
 	d->body = src.getBody();
 	d->contentType = src.getContentType();

@@ -93,13 +93,27 @@ class ObjectPrivate;
 	friend class CLASS ## Private; \
 	friend class Wrapper;
 
+#define L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
+	inline CLASS ## Private *getPrivate() { \
+		return reinterpret_cast<CLASS ## Private *>(PARENT_TYPE::mPrivate); \
+	} \
+	inline const CLASS ## Private *getPrivate() const { \
+		return reinterpret_cast<const CLASS ## Private *>(PARENT_TYPE::mPrivate); \
+	} \
+	friend class CLASS ## Private; \
+	friend class Wrapper;
+
 // Allows access to private internal data.
 // Gives a control to C Wrapper.
 #ifndef LINPHONE_TESTER
 	#define L_DECLARE_PRIVATE(CLASS) L_INTERNAL_DECLARE_PRIVATE(CLASS)
+	#define L_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE)
 #else
 	#define L_DECLARE_PRIVATE(CLASS) \
 		L_INTERNAL_DECLARE_PRIVATE(CLASS) \
+		friend class Tester;
+	#define L_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
+		L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
 		friend class Tester;
 #endif
 
