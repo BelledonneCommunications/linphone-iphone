@@ -251,6 +251,19 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
+	#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1
+	#define LEGACY_MESSAGE_COL_REMOTE_ADDRESS 2
+	#define LEGACY_MESSAGE_COL_DIRECTION 3
+	#define LEGACY_MESSAGE_COL_TEXT 4
+	#define LEGACY_MESSAGE_COL_STATE 7
+	#define LEGACY_MESSAGE_COL_URL 8
+	#define LEGACY_MESSAGE_COL_DATE 9
+	#define LEGACY_MESSAGE_COL_APP_DATA 10
+	#define LEGACY_MESSAGE_COL_CONTENT_ID 11
+	#define LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID 12
+	#define LEGACY_MESSAGE_COL_CONTENT_TYPE 13
+	#define LEGACY_MESSAGE_COL_IS_SECURED 14
+
 	template<typename T>
 	static T getValueFromLegacyMessage (const soci::row &message, int index, bool &isNull) {
 		isNull = false;
@@ -270,21 +283,23 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		soci::transaction tr(*session);
 
 		for (const auto &message : messages) {
-			const int direction = message.get<int>(3) + 1;
+			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION) + 1;
 			if (direction != 1 && direction != 2) {
 				lWarning() << "Unable to import legacy message with invalid direction.";
 				return;
 			}
 
-			const int state = message.get<int>(7, static_cast<int>(ChatMessage::State::Displayed));
+			const int state = message.get<int>(
+				LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
+			);
 
-			const tm date = Utils::getLongAsTm(message.get<int>(9, 0));
+			const tm date = Utils::getLongAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
 
 			bool isNull;
-			const string url = getValueFromLegacyMessage<string>(message, 8, isNull);
+			const string url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
 
-			const int contentId = message.get<int>(11, -1);
-			ContentType contentType(message.get<string>(13, ""));
+			const int contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
+			ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
 			if (!contentType.isValid())
 				contentType = contentId != -1
 					? ContentType::FileTransfer
@@ -294,7 +309,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				continue;
 			}
 
-			const string text = getValueFromLegacyMessage<string>(message, 4, isNull);
+			const string text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
 
 			Content content;
 			content.setContentType(contentType);
@@ -305,13 +320,24 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				}
 				content.setBody(text);
 			} else {
-				continue;
+				if (contentType != ContentType::FileTransfer) {
+					lWarning() << "Unable to import unsupported legacy content.";
+					continue;
+				}
+
+				const string appData = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_APP_DATA, isNull);
+				if (isNull) {
+					lWarning() << "Unable to import legacy file message without app data.";
+					continue;
+				}
+
+				content.setAppData("legacy", appData);
 			}
 
 			struct MessageEventReferences references;
 			references.eventId = insertEvent(EventLog::Type::ChatMessage, date);
-			references.localSipAddressId = insertSipAddress(message.get<string>(1));
-			references.remoteSipAddressId = insertSipAddress(message.get<string>(2));
+			references.localSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
+			references.remoteSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
 			references.chatRoomId = insertChatRoom(references.remoteSipAddressId, date);
 
 			insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
@@ -320,15 +346,10 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				references,
 				static_cast<ChatMessage::State>(state),
 				static_cast<ChatMessage::Direction>(direction),
-				message.get<string>(12, ""),
-				!!message.get<int>(14, 0),
+				message.get<string>(LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID, ""),
+				!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
 				{ content }
 			);
-
-			bool noAppData = false;
-			const string appData = getValueFromLegacyMessage<string>(message, 10, noAppData);
-			if (!noAppData)
-				return;
 		}
 
 		tr.commit();
