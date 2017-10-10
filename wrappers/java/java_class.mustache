@@ -53,7 +53,7 @@ public interface {{className}} {
             mValue = value;
         }
 
-        static protected {{className}} fromInt(int value) throws CoreException {
+        static public {{className}} fromInt(int value) throws CoreException {
             switch(value) {
             {{#values}}
             case {{value}}: return {{name}};
@@ -61,6 +61,10 @@ public interface {{className}} {
             default:
                 throw new CoreException("Unhandled enum value " + value + " for {{className}}");
             }
+        }
+
+        public int toInt() {
+            return mValue;
         }
     };
 
@@ -142,7 +146,8 @@ class {{classImplName}} implements {{className}} {
         return classArray;
         {{/convertOutputClassArrayToLongArray}}
         {{#classicMethod}}
-        {{return_keyword}}{{name}}(nativePtr{{native_params_impl}});
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
+        {{#exception}}if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}
         {{/classicMethod}}
     }
 

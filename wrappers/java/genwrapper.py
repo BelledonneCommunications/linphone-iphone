@@ -104,7 +104,8 @@ class JavaTranslator(object):
             if name in ENUMS_LIST:
                 className = ENUMS_LIST[name]
                 if name.startswith(className):
-                    name = className + '.' + name[len(className):]
+                    name = name[len(className):]
+                name = className + '.' + name
             return name
         elif type(_type) is AbsApi.BaseType:
             if _type.name == 'string':
@@ -115,6 +116,10 @@ class JavaTranslator(object):
                 return 'float'
             elif _type.name == 'size':
                 return 'int'
+            elif _type.name == 'status':
+                if native:
+                    return 'int'
+                return 'void'
             return _type.name
 
     def translate_argument(self, _arg, native=False):
@@ -144,6 +149,7 @@ class JavaTranslator(object):
         methodDict['name'] = _method.name.to_camel_case(lower=True)
         methodDict['exception'] = self.throws_exception(_method.returnType)
 
+        methodDict['enumCast'] = type(_method.returnType) is AbsApi.EnumType
         methodDict['params'] = ''
         methodDict['native_params'] = 'long nativePtr'
         methodDict['static_native_params'] = ''
@@ -167,6 +173,8 @@ class JavaTranslator(object):
                     methodDict['native_params_impl'] += 'longArray'
                 else:
                     methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
+            elif type(arg.type) is AbsApi.EnumType:
+                methodDict['native_params_impl'] += self.translate_argument_name(arg.name) + '.toInt()'
             else:
                 methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
 

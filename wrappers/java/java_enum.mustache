@@ -48,7 +48,7 @@ public enum {{className}} {
         mValue = value;
     }
 
-    static protected {{className}} fromInt(int value) throws CoreException {
+    static public {{className}} fromInt(int value) throws CoreException {
         switch(value) {
         {{#values}}
         case {{value}}: return {{name}};
@@ -56,5 +56,9 @@ public enum {{className}} {
         default:
             throw new CoreException("Unhandled enum value " + value + " for {{className}}");
         }
+    }
+
+    public int toInt() {
+        return mValue;
     }
 }
