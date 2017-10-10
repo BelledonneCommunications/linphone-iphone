@@ -366,7 +366,7 @@ class GenWrapper(object):
                 javainterface = JavaInterface(_class, self.translator)
                 self.interfaces[javainterface.className] = javainterface
                 javaInterfaceStub = JavaInterfaceStub(javainterface)
-                self.interfaces[javaInterfaceStub.className] = javaInterfaceStub
+                self.interfaces[javaInterfaceStub.classNameStub] = javaInterfaceStub
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
             self.jni.add_methods(javainterface.className, javainterface.jniMethods)
