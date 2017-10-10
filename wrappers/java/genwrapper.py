@@ -31,6 +31,39 @@ import metadoc
 
 ##########################################################################
 
+ENUMS_LIST = {
+    'AccountCreatorActivationCodeStatus': 'AccountCreator',
+    'AccountCreatorDomainStatus': 'AccountCreator',
+    'AccountCreatorEmailStatus': 'AccountCreator',
+    'AccountCreatorLanguageStatus': 'AccountCreator',
+    'AccountCreatorPasswordStatus': 'AccountCreator',
+    'AccountCreatorPhoneNumberStatus': 'AccountCreator',
+    'AccountCreatorStatus': 'AccountCreator',
+    'AccountCreatorTransportStatus': 'AccountCreator',
+    'AccountCreatorUsernameStatus': 'AccountCreator',
+    'AddressFamily': 'CallStats',
+    'CallDir': 'Call',
+    'CallState': 'Call',
+    'CallStatus': 'CallLog',
+    'ChatMessageState': 'ChatMessage',
+    'ConfiguringState': 'Core',
+    'CoreLogCollectionUploadState': 'Core',
+    'GlobalState': 'Core',
+    'FriendListStatus': 'FriendList',
+    'IceState': 'CallStats',
+    'LimeState': 'Core',
+    'MediaDirection': 'Core',
+    'MediaEncryption': 'Core',
+    'PlayerState': 'Player',
+    'RegistrationState': 'Core',
+    'SubscribePolicy': 'Friend',
+    'TransportType': 'Address',
+    'XmlRpcArgType': 'XmlRpcRequest',
+    'XmlRpcStatus': 'XmlRpcRequest',
+}
+
+##########################################################################
+
 class JavaTranslator(object):
     def __init__(self):
         self.docTranslator = metadoc.SandcastleJavaTranslator()
@@ -67,7 +100,12 @@ class JavaTranslator(object):
         elif type(_type) is AbsApi.EnumType:
             if native:
                 return 'int'
-            return _type.desc.name.to_camel_case()
+            name = _type.desc.name.to_camel_case()
+            if name in ENUMS_LIST:
+                className = ENUMS_LIST[name]
+                if name.startswith(className):
+                    name = className + '.' + name[len(className):]
+            return name
         elif type(_type) is AbsApi.BaseType:
             if _type.name == 'string':
                 return 'String'
@@ -290,36 +328,6 @@ class GenWrapper(object):
         self.enums = {}
         self.interfaces = {}
         self.classes = {}
-        self.enums_list = {
-            'AccountCreatorActivationCodeStatus': 'AccountCreator',
-            'AccountCreatorDomainStatus': 'AccountCreator',
-            'AccountCreatorEmailStatus': 'AccountCreator',
-            'AccountCreatorLanguageStatus': 'AccountCreator',
-            'AccountCreatorPasswordStatus': 'AccountCreator',
-            'AccountCreatorPhoneNumberStatus': 'AccountCreator',
-            'AccountCreatorStatus': 'AccountCreator',
-            'AccountCreatorTransportStatus': 'AccountCreator',
-            'AccountCreatorUsernameStatus': 'AccountCreator',
-            'AddressFamily': 'CallStats',
-            'CallDir': 'Call',
-            'CallState': 'Call',
-            'CallStatus': 'CallLog',
-            'ChatMessageState': 'ChatMessage',
-            'ConfiguringState': 'Core',
-            'CoreLogCollectionUploadState': 'Core',
-            'GlobalState': 'Core',
-            'FriendListStatus': 'FriendList',
-            'IceState': 'CallStats',
-            'LimeState': 'Core',
-            'MediaDirection': 'Core',
-            'MediaEncryption': 'Core',
-            'PlayerState': 'Player',
-            'RegistrationState': 'Core',
-            'SubscribePolicy': 'Friend',
-            'TransportType': 'Address',
-            'XmlRpcArgType': 'XmlRpcRequest',
-            'XmlRpcStatus': 'XmlRpcRequest',
-        }
         self.enums_to_remove = []
 
     def render_all(self):
@@ -332,8 +340,8 @@ class GenWrapper(object):
                 self.render_java_enum(_enum[1])
 
         for name, value in self.enums.iteritems():
-            if name in self.enums_list:
-                className = self.enums_list[name]
+            if name in ENUMS_LIST:
+                className = ENUMS_LIST[name]
                 print 'Enum ' + name + ' belongs to class ' + className
                 self.classes[className].add_enum(value)
                 self.enums_to_remove.append(name)
