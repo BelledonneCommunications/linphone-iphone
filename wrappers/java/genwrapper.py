@@ -116,6 +116,8 @@ class JavaTranslator(object):
                 return 'float'
             elif _type.name == 'size':
                 return 'int'
+            elif _type.name == 'time':
+                return 'long'
             elif _type.name == 'status':
                 if native:
                     return 'int'
