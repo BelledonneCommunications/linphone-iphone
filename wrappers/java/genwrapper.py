@@ -186,6 +186,7 @@ class JavaTranslator(object):
 
         methodDict['enumCast'] = type(_method.returnType) is AbsApi.EnumType
         methodDict['classCast'] = type(_method.returnType) is AbsApi.ClassType
+        
         methodDict['params'] = ''
         methodDict['native_params'] = 'long nativePtr'
         methodDict['static_native_params'] = ''
