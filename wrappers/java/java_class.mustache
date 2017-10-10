@@ -146,7 +146,7 @@ class {{classImplName}} implements {{className}} {
         return classArray;
         {{/convertOutputClassArrayToLongArray}}
         {{#classicMethod}}
-        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
         {{#exception}}if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}
         {{/classicMethod}}
     }

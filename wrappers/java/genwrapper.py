@@ -100,11 +100,15 @@ class JavaTranslator(object):
                 
         elif type(_type) is AbsApi.ClassType:
             if native:
-                return 'long'
+                return 'Object'
+            elif jni:
+                return 'jobject'
             return _type.desc.name.to_camel_case()
         elif type(_type) is AbsApi.EnumType:
             if native:
                 return 'int'
+            elif jni:
+                return 'jint'
             name = _type.desc.name.to_camel_case()
             if name in ENUMS_LIST:
                 className = ENUMS_LIST[name]
@@ -114,16 +118,28 @@ class JavaTranslator(object):
             return name
         elif type(_type) is AbsApi.BaseType:
             if _type.name == 'string':
+                if jni:
+                    return 'jstring'
                 return 'String'
             elif _type.name == 'integer':
+                if jni:
+                    return 'jint'
                 return 'int'
             elif _type.name == 'floatant':
+                if jni:
+                    return 'jfloat'
                 return 'float'
             elif _type.name == 'size':
+                if jni:
+                    return 'jint'
                 return 'int'
             elif _type.name == 'time':
+                if jni:
+                    return 'jlong'
                 return 'long'
             elif _type.name == 'status':
+                if jni:
+                    return 'jint'
                 if native:
                     return 'int'
                 return 'void'
@@ -165,6 +181,7 @@ class JavaTranslator(object):
         methodDict['exception'] = self.throws_exception(_method.returnType)
 
         methodDict['enumCast'] = type(_method.returnType) is AbsApi.EnumType
+        methodDict['classCast'] = type(_method.returnType) is AbsApi.ClassType
         methodDict['params'] = ''
         methodDict['native_params'] = 'long nativePtr'
         methodDict['static_native_params'] = ''
