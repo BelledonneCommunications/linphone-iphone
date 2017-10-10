@@ -94,6 +94,7 @@ public interface {{className}} {
       */
     public Object getUserData();
 
+{{#isNotLinphoneFactory}}
 {{#staticMethods}}
     {{#doc}}
     /**
@@ -105,6 +106,7 @@ public interface {{className}} {
     public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
 
 {{/staticMethods}}
+{{/isNotLinphoneFactory}}
 }
 
 class {{classImplName}} implements {{className}} {
@@ -147,6 +149,7 @@ class {{classImplName}} implements {{className}} {
     }
 
 {{/methods}}
+{{#isNotLinphoneFactory}}
     private native void unref(long ptr);
     protected void finalize() throws Throwable {
 		if (nativePtr != 0) {
@@ -155,6 +158,7 @@ class {{classImplName}} implements {{className}} {
 		}
 		super.finalize();
 	}
+{{/isNotLinphoneFactory}}
     
     public void setUserData(Object data) {
         userData = data;
@@ -164,9 +168,11 @@ class {{classImplName}} implements {{className}} {
         return userData;
     }
 
+{{#isNotLinphoneFactory}}
 {{#staticMethods}}
     @Override
     public native {{return_native}} {{name}}({{static_native_params}});
 
 {{/staticMethods}}
+{{/isNotLinphoneFactory}}
 }

@@ -233,6 +233,7 @@ class JavaTranslator(object):
         methodDict['classCName'] = 'Linphone' + className.to_camel_case()
         methodDict['className'] = className.to_camel_case()
         methodDict['classImplName'] = className.to_camel_case() + 'Impl'
+        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()
         methodDict['jniPath'] = self.jni_path
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
@@ -406,6 +407,7 @@ class JavaClass(object):
     def __init__(self, package, _class, translator):
         self._class = translator.translate_class(_class)
         self.isLinphoneFactory = self._class['isLinphoneFactory']
+        self.isNotLinphoneFactory = not self.isLinphoneFactory
         self.cName = 'Linphone' + _class.name.to_camel_case()
         self.cPrefix = 'linphone_' + _class.name.to_snake_case()
         self.packageName = package
@@ -436,6 +438,8 @@ class Jni(object):
             self.jni_path += directory + '/'
 
     def add_object(self, javaClass):
+        if javaClass.className == 'Factory':
+            return
         obj = {
             'jniPrefix': self.jni_package,
             'jniPath': self.jni_path,

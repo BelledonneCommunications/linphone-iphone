@@ -41,13 +41,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <belle-sip/wakelock.h>
 #endif /* __ANDROID__ */
 
-static JavaVM *jvm=0;
+static JavaVM *jvm = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
 #ifdef __ANDROID__
 	ms_set_jvm(ajvm);
 #endif /* __ANDROID__ */
-	jvm=ajvm;
+	jvm = ajvm;
 	return JNI_VERSION_1_2;
 }
 
@@ -67,14 +67,38 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 	return nativePtr;
 }
 
+class LinphoneJavaBindings {
+public:
+	LinphoneJavaBindings(JNIEnv *env) {
+		{{#objects}}
+		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{classImplName}}"));
+		{{cPrefix}}_class_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
+		{{/objects}}
+	}
+
+	~LinphoneJavaBindings() {
+		JNIEnv *env = 0;
+		jvm->AttachCurrentThread(&env,NULL);
+		{{#objects}}
+		env->DeleteGlobalRef({{cPrefix}}_class);
+		{{/objects}}
+	}
+
+	{{#objects}}
+	jclass {{cPrefix}}_class;
+	jmethodID {{cPrefix}}_class_constructor;
+	{{/objects}}
+};
+
 {{#objects}}
 jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
 	jobject jobj = 0;
 
 	if (ptr != NULL) {
 		void *up = {{cPrefix}}_get_user_data(ptr);
-		jclass {{cPrefix}}_class = env->FindClass("{{jniPath}}{{classImplName}}");
-		jmethodID {{cPrefix}}_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
+		//TODO get ljb
+		jclass {{cPrefix}}_class = ljb->{{cPrefix}}_class;
+		jmethodID {{cPrefix}}_constructor = ljb->{{cPrefix}}_class_constructor;
 
 		if (up == NULL) {
 			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)ptr);
@@ -135,7 +159,9 @@ void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong 
 	{{/lists}}{{#hasListReturn}}
 	bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
 	size_t count = bctbx_list_size(list);
-	{{#isRealObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("{{jniPath}}{{objectClassImplName}}"), NULL);{{/isRealObjectArray}}
+	{{#isRealObjectArray}}
+	//TODO get ljb
+	jobjectArray jni_list_result = env->NewObjectArray(count, ljb->{{cPrefix}}_class, NULL);{{/isRealObjectArray}}
 	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
 	for (size_t i = 0; i < count; i++) {
 		{{#isRealObjectArray}}
