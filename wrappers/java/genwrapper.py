@@ -290,12 +290,25 @@ class GenWrapper(object):
         self.interfaces = {}
         self.classes = {}
         self.enums_list = {
+            'AddressFamily': 'CallStats',
+            'CallDir': 'Call',
             'CallState': 'Call',
+            'CallStatus': 'CallLog',
             'ChatMessageState': 'ChatMessage',
             'ConfiguringState': 'Core',
             'CoreLogCollectionUploadState': 'Core',
             'GlobalState': 'Core',
+            'FriendListStatus': 'FriendList',
+            'IceState': 'CallStats',
+            'LimeState': 'Core',
+            'MediaDirection': 'Core',
+            'MediaEncryption': 'Core',
+            'PlayerState': 'Player',
             'RegistrationState': 'Core',
+            'SubscribePolicy': 'Friend',
+            'TransportType': 'Address',
+            'XmlRpcArgType': 'XmlRpcRequest',
+            'XmlRpcStatus': 'XmlRpcRequest',
         }
         self.enums_to_remove = []
 
