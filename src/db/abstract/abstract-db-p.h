@@ -30,6 +30,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AbstractDbPrivate : public ObjectPrivate {
 public:
+	AbstractDbPrivate () = default;
+
 	DbSession dbSession;
 
 private:

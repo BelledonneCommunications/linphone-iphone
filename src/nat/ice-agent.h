@@ -39,7 +39,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class IceAgent {
 public:
-	IceAgent (MediaSession &mediaSession) : mediaSession(mediaSession) {}
+	explicit IceAgent (MediaSession &mediaSession) : mediaSession(mediaSession) {}
 
 	bool candidatesGathered () const;
 	void checkSession (IceRole role, bool isReinvite);

@@ -42,7 +42,7 @@ struct VbrCodecBitrate {
 
 class PayloadTypeHandler {
 public:
-	PayloadTypeHandler (LinphoneCore *core) : core(core) {}
+	explicit PayloadTypeHandler (LinphoneCore *core) : core(core) {}
 
 	bctbx_list_t *makeCodecsList (SalStreamType type, int bandwidthLimit, int maxCodecs, const bctbx_list_t *previousList);
 

@@ -43,7 +43,7 @@ public:
 		Soci
 	};
 
-	DbSession (Type type = None);
+	explicit DbSession (Type type = None);
 	DbSession (const DbSession &src);
 
 	DbSession &operator= (const DbSession &src);
