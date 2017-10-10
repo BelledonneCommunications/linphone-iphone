@@ -93,7 +93,7 @@ public interface {{className}} {
         {{/lines}}
     */
     {{/doc}}
-    public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
+    public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
 
 {{/staticMethods}}
 }
