@@ -18,7 +18,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include <jni.h>
+#ifdef USE_JAVAH
+#include "linphonecore_jni.h"
+#endif
+#include "linphone/core_utils.h"
 #include <cpu-features.h>
+
+#include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/msmediaplayer.h"
+#include "mediastreamer2/msutils.h"
+#include "mediastreamer2/devices.h"
+#include "mediastreamer2/msjava.h"
+#include "linphone/core.h"
+#include "linphone/tunnel.h"
+#include "linphone/account_creator.h"
+#include "linphone/wrapper_utils.h"
+#include "linphone/lpconfig.h"
+
+#ifdef __ANDROID__
+#include <android/log.h>
+#include <belle-sip/wakelock.h>
+#endif /* __ANDROID__ */
+
+static JavaVM *jvm=0;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
 #ifdef __ANDROID__
@@ -44,9 +67,61 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 	return nativePtr;
 }
 
-static jlong SetObjectNativePtr(JNIEnv *env, jobject object, jlong ptr) {
-	jclass objClass = env->GetObjectClass(object);
-	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
-	env->SetLongField(object, nativePtrId, ptr);
-	return ptr;
+{{#objects}}
+jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
+	jobject jobj = 0;
+
+	if (ptr != NULL) {
+		void *up = {{cPrefix}}_get_user_data(ptr);
+		jclass {{cPrefix}}_class = env->FindClass("{{jniPath}}{{classImplName}}");
+		jmethodID {{cPrefix}}_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
+
+		if (up == NULL) {
+			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)ptr);
+			{{cPrefix}}_set_user_data(ptr, (void*)env->NewWeakGlobalRef(jobj));
+			{{cPrefix}}_ref(ptr);
+		} else {
+			jobj = env->NewLocalRef((jobject)up);
+			if (jobj == NULL) {
+				// Delete weak ref ?
+				env->DeleteWeakGlobalRef((jobject)up);
+				// takes implicit local ref
+				jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)ptr);
+				{{cPrefix}}_set_user_data(ptr, (void*)env->NewWeakGlobalRef(jobj));
+				{{cPrefix}}_ref(ptr);
+			}
+		}
+	}
+	return jobj;
 }
+
+void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong ptr) {
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	jobject wref = (jobject){{cPrefix}}_get_user_data(cptr);
+	{{cPrefix}}_set_user_data(cptr, NULL);
+	if (wref) {
+		env->DeleteWeakGlobalRef(wref);
+	}
+	{{cPrefix}}_unref(cptr);
+}
+
+{{/objects}}
+
+{{#methods}}
+{{return}} {{name}}({{params}}) {
+	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}
+	{{#strings}}
+	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
+	{{/strings}}
+	{{#objects}}
+	{{objectClassCName}}* c_{{object}} = NULL;
+	if ({{object}}) c_{{object}} = ({{objectClassCName}}*)GetObjectNativePtr(env, {{object}});
+	{{/objects}}
+	{{#hasReturn}}{{return}} jni_result = {{#returnObject}}get{{returnClassName}}({{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
+	{{#strings}}
+	ReleaseStringUTFChars(env, {{string}}, c_{{string}});
+	{{/strings}}
+	{{#hasReturn}}return jni_result;{{/hasReturn}}
+}
+
+{{/methods}}

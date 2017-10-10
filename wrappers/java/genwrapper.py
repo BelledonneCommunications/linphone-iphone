@@ -82,10 +82,15 @@ class JavaTranslator(object):
     def translate_argument_name(self, _argName):
         return _argName.to_snake_case()
 
-    def translate_type(self, _type, native=False, jni=False):
+    def translate_type(self, _type, native=False, jni=False, isReturn=False):
         if type(_type) is AbsApi.ListType:
             if jni:
-                return 'jobjectArray'
+                if type(_type.containedTypeDesc) is AbsApi.ClassType:
+                    return 'jobjectArray'
+                elif type(_type.containedTypeDesc) is AbsApi.BaseType:
+                    return self.translate_type(_type.containedTypeDesc, jni=True) + 'Array'
+                elif type(_type.containedTypeDesc) is AbsApi.EnumType:
+                    ptrtype = self.translate_type(_type.containedTypeDesc, native)
             ptrtype = ''
             if type(_type.containedTypeDesc) is AbsApi.ClassType:
                 ptrtype = self.translate_type(_type.containedTypeDesc, native)
@@ -125,6 +130,10 @@ class JavaTranslator(object):
                 if jni:
                     return 'jint'
                 return 'int'
+            elif _type.name == 'boolean':
+                if jni:
+                    return 'jboolean'
+                return 'boolean'
             elif _type.name == 'floatant':
                 if jni:
                     return 'jfloat'
@@ -153,7 +162,10 @@ class JavaTranslator(object):
                 return 'char'
             elif _type.name == 'void':
                 if jni:
-                    return 'jobject'
+                    if isReturn:
+                        return 'void'
+                    else:
+                        return 'jobject'
                 return 'Object'
             return _type.name
 
@@ -168,19 +180,19 @@ class JavaTranslator(object):
             properties.append(self.translate_method(_property.setter))
         return properties
 
-    def translate_jni_property(self, _property):
+    def translate_jni_property(self, className, _property):
         properties = []
         if _property.getter is not None:
-            properties.append(self.translate_jni_method(_property.getter))
+            properties.append(self.translate_jni_method(className, _property.getter))
         if _property.setter is not None:
-            properties.append(self.translate_jni_method(_property.setter))
+            properties.append(self.translate_jni_method(className, _property.setter))
         return properties
 
     def translate_method(self, _method):
         methodDict = {}
 
-        methodDict['return'] = self.translate_type(_method.returnType)
-        methodDict['return_native'] = self.translate_type(_method.returnType, True)
+        methodDict['return'] = self.translate_type(_method.returnType, isReturn=True)
+        methodDict['return_native'] = self.translate_type(_method.returnType, native=True, isReturn=True)
         methodDict['return_keyword'] = '' if methodDict['return'] == 'void' else 'return '
 
         methodDict['convertInputClassArrayToLongArray'] = False
@@ -214,25 +226,50 @@ class JavaTranslator(object):
 
         return methodDict
 
-    def translate_jni_method(self, _method, static=False):
+    def translate_jni_method(self, className, _method, static=False):
         methodDict = {}
+        methodDict['classCName'] = 'Linphone' + className.to_camel_case()
+        methodDict['className'] = className.to_camel_case()
 
-        methodDict['return'] = self.translate_type(_method.returnType, jni=True)
-        methodDict['name'] = 'Java_' + self.jni_package + _method.parent.name.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
+        methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
+        methodDict['hasReturn'] = not methodDict['return'] == 'void'
+        methodDict['name'] = 'Java_' + self.jni_package + className.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
+        methodDict['notStatic'] = not static
+        methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + _method.name.to_snake_case()
+        methodDict['returnObject'] = methodDict['hasReturn'] and type(_method.returnType) is AbsApi.ClassType
+        methodDict['returnClassName'] = self.translate_type(_method.returnType)
 
-        methodDict['params'] = 'JNIEnv *env' if static else 'JNIEnv *env, jobject thiz'
+        methodDict['params'] = 'JNIEnv *env, jobject thiz' if static else 'JNIEnv *env, jobject thiz, jlong ptr'
+        methodDict['params_impl'] = ''
+        methodDict['strings'] = []
+        methodDict['objects'] = []
+        methodDict['returnedObjectGetter'] = ''
         for arg in _method.args:
-            if arg is not _method.args[0]:
-                methodDict['params'] += ', '
+            methodDict['params'] += ', '
+            methodDict['params_impl'] += ', '
             methodDict['params'] += self.translate_argument(arg, jni=True)
+            argname = self.translate_argument_name(arg.name)
+
+            if type(arg.type) is AbsApi.ClassType:
+                methodDict['objects'].append({'object': argname, 'objectClassCName': 'Linphone' + arg.type.desc.name.to_camel_case()})
+                methodDict['params_impl'] += 'c_' + argname
+                
+            elif type(arg.type) is AbsApi.BaseType:
+                if arg.type.name == 'string':
+                    methodDict['strings'].append({'string': argname})
+                    methodDict['params_impl'] += 'c_' + argname
+                else:
+                    methodDict['params_impl'] += argname
+            else:
+                methodDict['params_impl'] += argname
 
         return methodDict
 
     def translate_class(self, _class):
         classDict = {
-            'methods'             : [],
-            'staticMethods'       : [],
-            'jniMethods'          : [],
+            'methods': [],
+            'staticMethods': [],
+            'jniMethods': [],
         }
 
         classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
@@ -241,14 +278,14 @@ class JavaTranslator(object):
         for _property in _class.properties:
             try:
                 classDict['methods'] += self.translate_property(_property)
-                classDict['jniMethods'] += self.translate_jni_property(_property)
+                classDict['jniMethods'] += self.translate_jni_property(_class.name, _property)
             except AbsApi.Error as e:
                 print('error while translating {0} property: {1}'.format(_property.name.to_snake_case(), e.args[0]))
 
         for method in _class.instanceMethods:
             try:
                 methodDict = self.translate_method(method)
-                jniMethodDict = self.translate_jni_method(method)
+                jniMethodDict = self.translate_jni_method(_class.name, method)
                 classDict['methods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
             except AbsApi.Error as e:
@@ -257,7 +294,7 @@ class JavaTranslator(object):
         for method in _class.classMethods:
             try:
                 methodDict = self.translate_method(method)
-                jniMethodDict = self.translate_jni_method(method, True)
+                jniMethodDict = self.translate_jni_method(_class.name, method, True)
                 classDict['staticMethods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
             except AbsApi.Error as e:
@@ -267,7 +304,7 @@ class JavaTranslator(object):
 
     def translate_interface(self, _class):
         interfaceDict = {
-            'methods'             : [],
+            'methods': [],
         }
 
         interfaceDict['doc'] = self.docTranslator.translate(_class.briefDescription)
@@ -342,6 +379,8 @@ class JavaClass(object):
     def __init__(self, package, _class, translator):
         self._class = translator.translate_class(_class)
         self.isLinphoneFactory = self._class['isLinphoneFactory']
+        self.cName = 'Linphone' + _class.name.to_camel_case()
+        self.cPrefix = 'linphone_' + _class.name.to_snake_case()
         self.packageName = package
         self.className = _class.name.to_camel_case()
         self.classImplName = self.className + "Impl"
@@ -359,11 +398,30 @@ class JavaClass(object):
         self.enums.append(enum)
 
 class Jni(object):
-    def __init__(self):
-        self.methods = {}
+    def __init__(self, package):
+        self.objects = []
+        self.methods = []
+        self.jni_package = ''
+        self.jni_path = ''
+        package_dirs = package.split('.')
+        for directory in package_dirs:
+            self.jni_package += directory + '_'
+            self.jni_path += directory + '/'
+
+    def add_object(self, javaClass):
+        obj = {
+            'jniPrefix': self.jni_package,
+            'jniPath': self.jni_path,
+            'cPrefix': javaClass.cPrefix,
+            'className': javaClass.className,
+            'classCName': javaClass.cName,
+            'classImplName': javaClass.classImplName,
+        }
+        self.objects.append(obj)
 
     def add_methods(self, name, methods):
-        self.methods[name] = methods
+        for method in methods:
+            self.methods.append(method)
 
 ##########################################################################
 
@@ -381,7 +439,7 @@ class GenWrapper(object):
         self.parser.parse_all()
         self.translator = JavaTranslator(package)
         self.renderer = pystache.Renderer()
-        self.jni = Jni()
+        self.jni = Jni(package)
 
         self.enums = {}
         self.interfaces = {}
@@ -413,6 +471,7 @@ class GenWrapper(object):
             self.render(value, self.javadir + '/' + value.filename)
         for name, value in self.classes.iteritems():
             self.render(value, self.javadir + '/' + value.filename)
+            self.jni.add_object(value)
 
         self.render(self.jni, self.srcdir + '/linphone_jni.cc')
 
@@ -434,7 +493,7 @@ class GenWrapper(object):
                 self.enums[javaenum.className] = javaenum
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-            self.jni.add_methods(javaenum.className, javaenum.jniMethods)
+            #self.jni.add_methods(javaenum.className, javaenum.jniMethods)
 
     def render_java_interface(self, _class):
         if _class is not None:
@@ -445,7 +504,7 @@ class GenWrapper(object):
                 self.interfaces[javaInterfaceStub.classNameStub] = javaInterfaceStub
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-            self.jni.add_methods(javainterface.className, javainterface.jniMethods)
+            #self.jni.add_methods(javainterface.className, javainterface.jniMethods)
 
     def render_java_class(self, _class):
         if _class is not None:
