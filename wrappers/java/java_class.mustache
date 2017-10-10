@@ -84,6 +84,15 @@ public interface {{className}} {
     {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
 
 {{/methods}}
+    /**
+      * Sets the object to store in this object user's data
+      */
+    public void setUserData(Object data);
+
+    /**
+      * Gets the object stored in this object user's data
+      */
+    public Object getUserData();
 
 {{#staticMethods}}
     {{#doc}}
@@ -101,6 +110,7 @@ public interface {{className}} {
 class {{classImplName}} implements {{className}} {
 
     protected long nativePtr = 0;
+    protected Object userData = null;
 
     protected {{classImplName}}(long ptr) {
         nativePtr = ptr;
@@ -112,7 +122,7 @@ class {{classImplName}} implements {{className}} {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s + ": " +e.getMessage());
+			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s + ": " + e.getMessage());
 		}
 		return false;
 	}
@@ -132,11 +142,27 @@ class {{classImplName}} implements {{className}} {
 {{#methods}}
     private native {{return_native}} {{name}}({{native_params}});
     public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}}{{#enumCast}}throws CoreException{{/enumCast}} {
-        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};
-        {{#exception}}if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
+        if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult){{/exception}}
     }
 
 {{/methods}}
+    private native void unref(long ptr);
+    protected void finalize() throws Throwable {
+		if (nativePtr != 0) {
+			unref(nativePtr);
+			nativePtr = 0;
+		}
+		super.finalize();
+	}
+    
+    public void setUserData(Object data) {
+        userData = data;
+    }
+
+    public Object getUserData() {
+        return userData;
+    }
 
 {{#staticMethods}}
     @Override
