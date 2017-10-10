@@ -685,7 +685,7 @@ class GenWrapper(object):
 		self.parser = AbsApi.CParser(project)
 		self.parser.parse_all()
 		self.translator = CppTranslator()
-		self.renderer = pystache.Renderer()	
+		self.renderer = pystache.Renderer()
 		self.mainHeader = MainHeader()
 		self.impl = ClassImpl()
 

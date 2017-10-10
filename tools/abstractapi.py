@@ -292,7 +292,7 @@ class EnumValue(DocumentableObject):
 		self.value = None
 	
 	def value_from_string(self, stringValue):
-		m = re.match('^1\s*<<\s*([0-9]+)$', stringValue)
+		m = re.match('^\s*1\s*<<\s*([0-9]+)$', stringValue)
 		if m is not None:
 			self.value = Flag(int(m.group(1)))
 		else:
