@@ -151,6 +151,10 @@ class JavaTranslator(object):
                 if jni:
                     return 'jchar'
                 return 'char'
+            elif _type.name == 'void':
+                if jni:
+                    return 'jobject'
+                return 'Object'
             return _type.name
 
     def translate_argument(self, _arg, native=False, jni=False):
@@ -186,7 +190,7 @@ class JavaTranslator(object):
 
         methodDict['enumCast'] = type(_method.returnType) is AbsApi.EnumType
         methodDict['classCast'] = type(_method.returnType) is AbsApi.ClassType
-        
+
         methodDict['params'] = ''
         methodDict['native_params'] = 'long nativePtr'
         methodDict['static_native_params'] = ''
