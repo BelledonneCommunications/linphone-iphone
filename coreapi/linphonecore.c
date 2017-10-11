@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
-#include "chat/client-group-chat-room-p.h"
+#include "chat/chat-room/client-group-chat-room-p.h"
 #include "conference/remote-conference-event-handler.h"
 
 // For migration purpose.
