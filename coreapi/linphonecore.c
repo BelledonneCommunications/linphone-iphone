@@ -130,10 +130,6 @@ void linphone_core_zrtp_cache_db_init(LinphoneCore *lc, const char *fileName);
 #include "enum.h"
 #include "contact_providers_priv.h"
 
-
-using namespace LinphonePrivate;
-
-
 const char *linphone_core_get_nat_address_resolved(LinphoneCore *lc);
 static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
@@ -146,6 +142,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 
 #define HOLD_MUSIC_WAV "toy-mono.wav"
 #define HOLD_MUSIC_MKV "dont_wait_too_long.mkv"
+
+using namespace LinphonePrivate;
 
 extern Sal::Callbacks linphone_sal_callbacks;
 
@@ -3454,7 +3452,7 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
 	const char *identity;
-	
+
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
@@ -3479,7 +3477,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		op->set_to(addr);
 		ms_free(addr);
 	}
-	
+
 	op->set_from(identity);
 	op->set_sent_custom_header(headers);
 	op->set_realm(linphone_proxy_config_get_realm(proxy));

@@ -118,8 +118,8 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 	linphone_configure_op(core, op, peer, nullptr, !!lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
 
 	shared_ptr<ChatMessage> msg = q->createMessage();
-	msg->setFromAddress(identity);
-	msg->setToAddress(peerAddress.asString());
+	msg->setFromAddress(Address(identity));
+	msg->setToAddress(peerAddress);
 
 	Content content;
 	content.setContentType("message/imdn+xml");
@@ -210,8 +210,8 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			int retval = -1;
 
 			shared_ptr<ChatMessage> msg = q->createMessage();
-			msg->setFromAddress(identity);
-			msg->setToAddress(peerAddress.asString());
+			msg->setFromAddress(Address(identity));
+			msg->setToAddress(peerAddress);
 
 			Content content;
 			content.setContentType("application/im-iscomposing+xml");
@@ -298,7 +298,7 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 			message->setAppdata(argv[10]);
 		}
 		if (argv[12]) {
-			message->setId(argv[12]);
+			message->setImdnMessageId(argv[12]);
 		}
 		message->setIsSecured((bool)atoi(argv[14]));
 
@@ -404,12 +404,12 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	content.setBody(salMsg->text ? salMsg->text : "");
 	msg->setInternalContent(content);
 
-	msg->setToAddress(op->get_to() ? op->get_to() : linphone_core_get_identity(core));
+	msg->setToAddress(Address(op->get_to() ? op->get_to() : linphone_core_get_identity(core)));
 	msg->setFromAddress(peerAddress);
 	msg->getPrivate()->setTime(salMsg->time);
 	msg->getPrivate()->setState(ChatMessage::State::Delivered);
 	msg->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
-	msg->setId(op->get_call_id());
+	msg->setImdnMessageId(op->get_call_id());
 
 	const SalCustomHeader *ch = op->get_recv_custom_header();
 	if (ch)
@@ -560,7 +560,7 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 	chatMessage->addContent(content);*/
 
 	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
+	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
 
@@ -577,7 +577,7 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 	chatMessage->addContent(content);
 
 	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(linphone_core_get_identity(d->core));
+	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
 
 	return chatMessage;
 }
@@ -683,10 +683,10 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) 
 	if (!d->messages.empty()) {
 		/* Fill local addr with core identity instead of per message */
 		for (auto &message : d->messages) {
-			if (message->isOutgoing()) {
-				message->setFromAddress(linphone_core_get_identity(d->core));
+			if (message->getDirection() == ChatMessage::Direction::Outgoing) {
+				message->setFromAddress(Address(linphone_core_get_identity(d->core)));
 			} else {
-				message->setToAddress(linphone_core_get_identity(d->core));
+				message->setToAddress(Address(linphone_core_get_identity(d->core)));
 			}
 		}
 	}

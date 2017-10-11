@@ -69,7 +69,13 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			/* End of message */
 			lDebug() << "New line received, forge a message with content " << pendingMessage->getPrivate()->getText().c_str();
 			pendingMessage->setFromAddress(peerAddress);
-			pendingMessage->setToAddress(linphone_call_get_dest_proxy(call) ? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address) : linphone_core_get_identity(core));
+			pendingMessage->setToAddress(
+				Address(
+					linphone_call_get_dest_proxy(call)
+					  ? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
+						: linphone_core_get_identity(core)
+				)
+			);
 			pendingMessage->getPrivate()->setState(ChatMessage::State::Delivered);
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 

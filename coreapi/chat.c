@@ -43,7 +43,6 @@
 #include "content/content-type.h"
 
 using namespace std;
-using namespace LinphonePrivate;
 
 void linphone_core_disable_chat(LinphoneCore *lc, LinphoneReason deny_reason) {
 	lc->chat_deny_code = deny_reason;
@@ -156,7 +155,7 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return _linphone_core_get_or_create_chat_room(lc, to);
 }
 
-int linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
+int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 	linphone_address_clean(addr);
 	LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);

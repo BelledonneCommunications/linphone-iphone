@@ -19,8 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "sal_impl.h"
 #include "sal/sal.h"
 
-using namespace LinphonePrivate;
-
 SalReason _sal_reason_from_sip_code(int code) {
 	if (code>=100 && code<300) return SalReasonNone;
 
@@ -82,13 +80,12 @@ SalReason _sal_reason_from_sip_code(int code) {
 }
 
 const SalErrorInfo *sal_error_info_none(void){
-	static SalErrorInfo none={
+	static const SalErrorInfo none = {
 		SalReasonNone,
 		(char *)"Ok",
 		200,
 		NULL,
-		NULL,
-		
+		NULL
 	};
 	return &none;
 }
@@ -122,7 +119,7 @@ void sal_error_info_set(SalErrorInfo *ei, SalReason reason, const char *protocol
 	else{
 		ei->reason=reason;
 		if (code == 0) {
-			code = to_sip_code(reason);
+			code = LinphonePrivate::to_sip_code(reason);
 		}
 	}
 	ei->protocol_code=code;

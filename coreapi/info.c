@@ -28,8 +28,6 @@
 
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LinphonePrivate;
-
 struct _LinphoneInfoMessage{
 	belle_sip_object_t base;
 	LinphoneContent *content;
@@ -98,7 +96,11 @@ SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *i
 	return im->headers;
 }
 
-void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body_handler){
+void linphone_core_notify_info_message (
+	LinphoneCore* lc,
+	LinphonePrivate::SalOp *op,
+	SalBodyHandler *body_handler
+) {
 	LinphoneCall *call=(LinphoneCall*)op->get_user_pointer();
 	if (call){
 		LinphoneInfoMessage *info=linphone_core_create_info_message(lc);

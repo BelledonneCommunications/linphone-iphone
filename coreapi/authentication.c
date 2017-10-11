@@ -28,8 +28,6 @@
 
 #include "c-wrapper/c-wrapper.h"
 
-using namespace LinphonePrivate;
-
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
 
@@ -438,7 +436,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 
 	/* retry pending authentication operations */
 	for(l=elem=lc->sal->get_pending_auths();elem!=NULL;elem=elem->next){
-		SalOp *op=(SalOp*)elem->data;
+		LinphonePrivate::SalOp *op= static_cast<LinphonePrivate::SalOp*>(elem->data);
 		LinphoneAuthInfo *ai;
 		const SalAuthInfo *req_sai=op->get_auth_requested();
 		ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain, FALSE);

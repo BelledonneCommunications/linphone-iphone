@@ -78,7 +78,7 @@ void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *ev
 
 	if (dialog) {
 		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
-		
+
 		if (op == NULL  && strcmp("NOTIFY",method) == 0) {
 			/*special case for Dialog created by notify mathing subscribe*/
 			belle_sip_transaction_t * sub_trans = belle_sip_dialog_get_last_transaction(dialog);
@@ -372,7 +372,7 @@ Sal::Sal(MSFactory *factory){
 
 	this->prov = belle_sip_stack_create_provider(this->stack,NULL);
 	enable_nat_helper(TRUE);
-	
+
 	listener_callbacks.process_dialog_terminated=process_dialog_terminated_cb;
 	listener_callbacks.process_io_error=process_io_error_cb;
 	listener_callbacks.process_request_event=process_request_event_cb;

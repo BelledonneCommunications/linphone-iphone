@@ -1100,7 +1100,7 @@ void ChatMessagePrivate::send() {
 					}
 					linphone_address_unref(addr);
 				}
-				q->setFromAddress(identity);
+				q->setFromAddress(Address(identity));
 			}
 		}
 	}
@@ -1203,7 +1203,7 @@ void ChatMessagePrivate::send() {
 	}
 	//End of TODO Remove
 
-	q->setId(op->get_call_id()); /* must be known at that time */
+	q->setImdnMessageId(op->get_call_id()); /* must be known at that time */
 
 	if (call && linphone_call_get_op(call) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
@@ -1212,7 +1212,7 @@ void ChatMessagePrivate::send() {
 	}
 
 	/* If operation failed, we should not change message state */
-	if (q->isOutgoing()) {
+	if (q->getDirection() == ChatMessage::Direction::Outgoing) {
 		setIsReadOnly(true);
 		setState(ChatMessage::State::InProgress);
 	}
@@ -1225,12 +1225,6 @@ void ChatMessagePrivate::send() {
 // =============================================================================
 
 ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &room) : Object(*new ChatMessagePrivate(room)) {}
-
-ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p) {}
-
-LinphoneChatMessage * ChatMessage::getBackPtr() {
-	return L_GET_C_BACK_PTR(this);
-}
 
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	L_D();
@@ -1269,27 +1263,17 @@ ChatMessage::Direction ChatMessage::getDirection () const {
 	return d->direction;
 }
 
-bool ChatMessage::isOutgoing () const {
-	L_D();
-	return d->direction == Direction::Outgoing;
-}
-
-bool ChatMessage::isIncoming () const {
-	L_D();
-	return d->direction == Direction::Incoming;
-}
-
 ChatMessage::State ChatMessage::getState() const {
 	L_D();
 	return d->state;
 }
 
-const string& ChatMessage::getId () const {
+const string& ChatMessage::getImdnMessageId () const {
 	L_D();
 	return d->id;
 }
 
-void ChatMessage::setId (const string& id) {
+void ChatMessage::setImdnMessageId (const string& id) {
 	L_D();
 	d->id = id;
 }
@@ -1325,11 +1309,6 @@ void ChatMessage::setFromAddress(Address from) {
 	d->from = from;
 }
 
-void ChatMessage::setFromAddress(const string& from) {
-	L_D();
-	d->from = Address(from);
-}
-
 const Address& ChatMessage::getToAddress () const {
 	L_D();
 	return d->to;
@@ -1338,11 +1317,6 @@ const Address& ChatMessage::getToAddress () const {
 void ChatMessage::setToAddress(Address to) {
 	L_D();
 	d->to = to;
-}
-
-void ChatMessage::setToAddress(const string& to) {
-	L_D();
-	d->to = Address(to);
 }
 
 const string& ChatMessage::getFileTransferFilepath() const {
