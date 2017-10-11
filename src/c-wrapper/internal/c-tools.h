@@ -116,7 +116,7 @@ private:
 
 	static inline void abort (const char *message) {
 		std::cerr << "[FATAL C-WRAPPER]" << message << std::endl;
-		std::abort();
+		std::terminate();
 	}
 
 public:
