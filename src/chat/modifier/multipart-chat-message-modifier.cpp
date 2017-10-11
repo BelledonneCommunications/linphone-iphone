@@ -30,7 +30,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result MultipartChatMessageModifier::encode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result MultipartChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	if (message->getContents().size() > 1) {
 		LinphoneCore *lc = message->getChatRoom()->getCore();
 		char tmp[64];
@@ -59,7 +59,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (shared_ptr<Cha
 	return ChatMessageModifier::Result::Skipped;
 }	
 
-ChatMessageModifier::Result MultipartChatMessageModifier::decode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	if (message->getInternalContent().getContentType().getType() == "multipart") {
 		string boundary = message->getInternalContent().getContentType().getParameter();
 		if (boundary.empty()) {

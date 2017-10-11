@@ -32,7 +32,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result CpimChatMessageModifier::encode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	Cpim::Message cpimMessage;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
@@ -75,7 +75,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (shared_ptr<ChatMess
 	return ChatMessageModifier::Result::Done;
 }
 
-ChatMessageModifier::Result CpimChatMessageModifier::decode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	Content content;
 	if (!message->getInternalContent().isEmpty()) {
 		content = message->getInternalContent();

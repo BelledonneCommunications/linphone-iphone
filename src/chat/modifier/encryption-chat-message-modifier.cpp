@@ -34,7 +34,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result EncryptionChatMessageModifier::encode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result EncryptionChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	int retval = -1;
 	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
 	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
@@ -59,7 +59,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::encode (shared_ptr<Ch
 	return ChatMessageModifier::Result::Skipped;
 }
 
-ChatMessageModifier::Result EncryptionChatMessageModifier::decode (shared_ptr<ChatMessage> message, int *errorCode) {
+ChatMessageModifier::Result EncryptionChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int *errorCode) {
 	int retval = -1;
 	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
 	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
