@@ -1159,7 +1159,7 @@ static void sound_config_read(LinphoneCore *lc)
 			card=ms_alsa_card_new_custom(d+l,d+l);
 			ms_snd_card_manager_add_card(ms_factory_get_snd_card_manager(lc->factory),card);
 			*i=s;
-			l=i-d+1;
+			l=(size_t)(i-d)+1;
 		}
 		if(d[l]!='\0') {
 			card=ms_alsa_card_new_custom(d+l,d+l);
