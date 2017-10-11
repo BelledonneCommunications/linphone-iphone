@@ -1431,6 +1431,15 @@ uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cf
 }
 
 const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyConfig *cfg) {
+	// Workaround for wrapping.
+	if (cfg->contact_address)
+			linphone_address_unref(cfg->contact_address);
+
+	// Warning : Do not remove, the op can change its contact_address
+	char *buf = sal_address_as_string(cfg->op->get_contact_address());
+	const_cast<LinphoneProxyConfig *>(cfg)->contact_address = linphone_address_new(buf);
+	ms_free(buf);
+
 	return cfg->contact_address;
 }
 
