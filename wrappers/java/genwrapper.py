@@ -388,7 +388,7 @@ class JavaTranslator(object):
 
         return classDict
 
-    def translate_jni_interface(self, className, _method):
+    def translate_jni_interface(self, _class, className, _method):
         methodDict = {}
         listenerName = 'Linphone' + className.to_camel_case()
         methodDict['classCName'] = listenerName[:-8] #Remove Listener at the end
@@ -399,6 +399,9 @@ class JavaTranslator(object):
         methodDict['callbackName'] = methodDict['cPrefix'] + '_' + _method.name.to_snake_case()
         methodDict['jname'] = _method.name.to_camel_case(lower=True)
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
+
+        methodDict['isSingleListener'] = not _class.multilistener
+        methodDict['isMultiListener'] = _class.multilistener
 
         methodDict['jobjects'] = []
         methodDict['jenums'] = []
@@ -449,7 +452,7 @@ class JavaTranslator(object):
 
         for method in _class.methods:
             interfaceDict['methods'].append(self.translate_method(method))
-            interfaceDict['jniMethods'].append(self.translate_jni_interface(_class.name, method))
+            interfaceDict['jniMethods'].append(self.translate_jni_interface(_class.listenedClass, _class.name, method))
 
         return interfaceDict
 
@@ -500,12 +503,29 @@ class JavaEnum(object):
         self.doc = self._class['doc']
         self.jniName = translator.translate_java_jni_enum_name(_enum)
 
+class JniInterface(object):
+    def __init__(self, javaClass, apiClass):
+        self.isSingleListener = (not apiClass.multilistener)
+        self.isMultiListener = (apiClass.multilistener)
+        self.classCName = javaClass.cName
+        self.cPrefix = javaClass.cPrefix
+        self.callbacks = []
+        listener = apiClass.listenerInterface
+        for method in listener.methods:
+            cb = 'linphone_' + listener.name.to_snake_case()
+            cbName = cb + '_' + method.name.to_snake_case()
+            self.callbacks.append({
+                'callbackName': cbName,
+                'callback': method.name.to_snake_case()[3:], # Remove the on_
+            })
+
 class JavaInterface(object):
     def __init__(self, package, _interface, translator):
         self._class = translator.translate_interface(_interface)
         self.packageName = package
         self.className = _interface.name.to_camel_case()
         self.filename = self.className + ".java"
+        self.cPrefix = 'linphone_' + _interface.name.to_snake_case()
         self.imports = []
         self.methods = self._class['methods']
         self.doc = self._class['doc']
@@ -529,6 +549,7 @@ class JavaClass(object):
         self.packageName = package
         self.className = _class.name.to_camel_case()
         self.classImplName = self.className + "Impl"
+        self.factoryName = _class.name.to_snake_case()
         self.filename = self.className + ".java"
         self.imports = []
         self.methods = self._class['methods']
@@ -536,6 +557,9 @@ class JavaClass(object):
         self.jniMethods = self._class['jniMethods']
         self.doc = self._class['doc']
         self.enums = []
+        self.jniInterface = None
+        if _class.listenerInterface is not None:
+            self.jniInterface = JniInterface(self, _class)
 
     def add_enum(self, enum):
         if enum.className.startswith(self.className):
@@ -546,6 +570,7 @@ class Jni(object):
     def __init__(self, package):
         self.enums = []
         self.interfaces = []
+        self.callbacks = []
         self.objects = []
         self.methods = []
         self.jni_package = ''
@@ -578,9 +603,24 @@ class Jni(object):
         }
         self.objects.append(obj)
 
-    def add_interfaces(self, name, interfaces):
-        for interface in interfaces:
+        jniInterface = javaClass.jniInterface
+        if jniInterface is not None:
+            interface = {
+                'isSingleListener': jniInterface.isSingleListener,
+                'isMultiListener': jniInterface.isMultiListener,
+                'classCName': jniInterface.classCName,
+                'cPrefix': jniInterface.cPrefix,
+                'jniPackage': self.jni_package,
+                'factoryName': javaClass.factoryName,
+                'callbacksList': []
+            }
+            for callback in jniInterface.callbacks:
+                interface['callbacksList'].append(callback)
             self.interfaces.append(interface)
+
+    def add_callbacks(self, name, callbacks):
+        for callback in callbacks:
+            self.callbacks.append(callback)
 
     def add_methods(self, name, methods):
         for method in methods:
@@ -673,7 +713,7 @@ class GenWrapper(object):
                 self.interfaces[javaInterfaceStub.classNameStub] = javaInterfaceStub
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-            self.jni.add_interfaces(javainterface.className, javainterface.jniMethods)
+            self.jni.add_callbacks(javainterface.className, javainterface.jniMethods)
 
     def render_java_class(self, _class):
         if _class is not None:

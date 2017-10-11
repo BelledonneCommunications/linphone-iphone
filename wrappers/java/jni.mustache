@@ -158,7 +158,7 @@ static inline void handle_possible_java_exception(JNIEnv *env, jobject listener)
 	}
 }
 
-{{#interfaces}}
+{{#callbacks}}
 static {{return}} {{callbackName}}({{params}}) {
 	JNIEnv *env = 0;
 	jint result = jvm->AttachCurrentThread(&env,NULL);
@@ -168,7 +168,12 @@ static {{return}} {{callbackName}}({{params}}) {
 		return;
 	}
 
+	{{#isSingleListener}}
 	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(cptr);
+	{{/isSingleListener}}
+	{{#isMultiListener}}
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_current_callbacks(cptr);
+	{{/isMultiListener}}
 	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
 
 	if (jlistener == NULL) {
@@ -205,6 +210,38 @@ static {{return}} {{callbackName}}({{params}}) {
 
 	handle_possible_java_exception(env, jlistener);
 }
+
+{{/callbacks}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{{#interfaces}}
+{{#isSingleListener}}
+void {{jniPackage}}{{classCName}}Impl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+{{/isSingleListener}}
+{{#isMultiListener}}
+void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+{{/isMultiListener}}
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	jobject listener = env->NewGlobalRef(jlistener);
+	{{#isSingleListener}}
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(request);
+	{{/isSingleListener}}
+	{{#isMultiListener}}
+	{{classCName}}Cbs *cbs = linphone_factory_create_{{factoryName}}_cbs(NULL);
+	{{/isMultiListener}}
+	{{cPrefix}}_cbs_set_user_data(cbs, listener);
+	{{#callbacksList}}
+	{{cPrefix}}_cbs_set_{{callback}}(cbs, {{callbackName}});
+	{{/callbacksList}}
+}
+{{#isMultiListener}}
+
+void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	//TODO
+	{{cPrefix}}_remove_callbacks(ptr, );
+}
+{{/isMultiListener}}
 
 {{/interfaces}}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
