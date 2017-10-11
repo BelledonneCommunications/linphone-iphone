@@ -24,6 +24,8 @@
 #include <bctoolbox/defs.h>
 #include <belle-sip/provider.h>
 
+#include "content/content-type.h"
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
@@ -35,15 +37,15 @@ SalCallOp::~SalCallOp() {
 
 int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
 	if (desc) sal_media_description_ref(desc);
-	
+
 	belle_sip_error_code error;
 	belle_sdp_session_description_t *sdp = media_description_to_sdp(desc);
 	vector<char> buffer = marshal_media_description(sdp, error);
 	if (error != BELLE_SIP_OK) return -1;
-	
+
 	this->local_body.setContentType(ContentType::Sdp);
 	this->local_body.setBody(move(buffer));
-	
+
 	if (this->local_media) sal_media_description_unref(this->local_media);
 	this->local_media=desc;
 
@@ -66,7 +68,7 @@ int SalCallOp::set_local_body(const Content &body) {
 
 int SalCallOp::set_local_body(const Content &&body) {
 	if (!body.isValid()) return -1;
-	
+
 	if (body.getContentType() == ContentType::Sdp) {
 		SalMediaDescription *desc = NULL;
 		if (body.getSize() > 0) {
@@ -81,7 +83,7 @@ int SalCallOp::set_local_body(const Content &&body) {
 		if (this->local_media) sal_media_description_unref(this->local_media);
 		this->local_media = desc;
 	}
-	
+
 	this->local_body = body;
 	return 0;
 }
@@ -98,12 +100,12 @@ int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
 	ContentType contentType = body.getContentType();
 	string contentDisposition = body.getContentDisposition();
 	size_t bodySize = body.getBody().size();
-	
+
 	if (bodySize > SIP_MESSAGE_BODY_LIMIT) {
 		bctbx_error("trying to add a body greater than %lukB to message [%p]", (unsigned long)SIP_MESSAGE_BODY_LIMIT/1024, msg);
 		return -1;
 	}
-	
+
 	if (contentType.isValid()) {
 		belle_sip_header_content_type_t *content_type = belle_sip_header_content_type_create(contentType.getType().c_str(), contentType.getSubType().c_str());
 		belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_type));
@@ -114,13 +116,13 @@ int SalCallOp::set_custom_body(belle_sip_message_t *msg, const Content &body) {
 	}
 	belle_sip_header_content_length_t *content_length = belle_sip_header_content_length_create(bodySize);
 	belle_sip_message_add_header(msg, BELLE_SIP_HEADER(content_length));
-	
+
 	if (bodySize > 0) {
 		char *buffer = bctbx_new(char, bodySize);
 		memcpy(buffer, body.getBody().data(), bodySize);
 		belle_sip_message_assign_body(msg, buffer, bodySize);
 	}
-	
+
 	return 0;
 }
 
@@ -139,25 +141,25 @@ std::vector<char> SalCallOp::marshal_media_description(belle_sdp_session_descrip
 			buff.resize(bufLen);
 		}
 	}
-	
+
 	/* give up if hard limit reached */
 	if (error != BELLE_SIP_OK) {
 		ms_error("Buffer too small (%d) or not enough memory, giving up SDP", (int)bufLen);
 		return std::vector<char>(); // return a new vector in order to free the buffer held by 'buff' vector
 	}
-	
+
 	buff.resize(length);
 	return buff;
 }
 
 int SalCallOp::set_sdp(belle_sip_message_t *msg,belle_sdp_session_description_t* session_desc) {
 	belle_sip_error_code error;
-	
+
 	if (session_desc == NULL) return -1;
 
 	vector<char> buff = marshal_media_description(session_desc, error);
 	if (error != BELLE_SIP_OK) return -1;
-	
+
 	Content body;
 	body.setContentType(ContentType::Sdp);
 	body.setBody(move(buff));
@@ -230,7 +232,7 @@ Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	const char *subtype_str = content_type ? belle_sip_header_content_type_get_subtype(content_type) : NULL;
 	size_t length = content_length ? belle_sip_header_content_length_get_content_length(content_length) : 0;
 	const char *body_str = belle_sip_message_get_body(message);
-	
+
 	if (type_str && subtype_str) body.setContentType(ContentType(type_str, subtype_str));
 	if (contentDisposition)
 		body.setContentDisposition(belle_sip_header_content_disposition_get_content_disposition(contentDisposition));
@@ -241,7 +243,7 @@ Content SalCallOp::extract_body(belle_sip_message_t *message) {
 int SalCallOp::parse_sdp_body(const Content &body,belle_sdp_session_description_t** session_desc, SalReason *error) {
 	*session_desc = NULL;
 	*error = SalReasonNone;
-	
+
 	if (this->sdp_handling == SalOpSDPSimulateError) {
 		ms_error("Simulating SDP parsing error for op %p", this);
 		*error = SalReasonNotAcceptable;
@@ -252,7 +254,7 @@ int SalCallOp::parse_sdp_body(const Content &body,belle_sdp_session_description_
 		ms_error("Simulating no SDP for op %p", this);
 		return 0;
 	}
-	
+
 	*session_desc = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
 	if (*session_desc == NULL) {
 		ms_error("Failed to parse SDP message.");
@@ -301,7 +303,7 @@ void SalCallOp::sdp_process(){
 				}
 			}
 		}
-		
+
 		this->sdp_answer=(belle_sdp_session_description_t *)belle_sip_object_ref(media_description_to_sdp(this->result));
 		/*once we have generated the SDP answer, we modify the result description for processing by the upper layer.
 		 It should contains media parameters constraint from the remote offer, not our response*/
@@ -562,10 +564,10 @@ int SalCallOp::is_media_description_acceptable(SalMediaDescription *md) {
 
 SalReason SalCallOp::process_body_for_invite(belle_sip_request_t* invite) {
 	SalReason reason = SalReasonNone;
-	
+
 	Content body = extract_body(BELLE_SIP_MESSAGE(invite));
 	if (!body.isValid()) return SalReasonUnsupportedContent;
-	
+
 	if (body.getContentType() == ContentType::Sdp) {
 		belle_sdp_session_description_t* sdp;
 		if (parse_sdp_body(body, &sdp, &reason) == 0) {
@@ -1191,7 +1193,7 @@ int SalCallOp::refer_with_replaces(SalCallOp *other_call_op) {
 	/*rfc3891
 	 ...
 	 4.  User Agent Client Behavior: Sending a Replaces Header
-	 
+
 	 A User Agent that wishes to replace a single existing early or
 	 confirmed dialog with a new dialog of its own, MAY send the target
 	 User Agent an INVITE request containing a Replaces header field.  The
@@ -1200,7 +1202,7 @@ int SalCallOp::refer_with_replaces(SalCallOp *other_call_op) {
 	 and sends the new INVITE to the target.*/
 	from_tag=belle_sip_dialog_get_local_tag(other_call_op->dialog);
 	to_tag=belle_sip_dialog_get_remote_tag(other_call_op->dialog);
-	
+
 	replaces=belle_sip_header_replaces_create(belle_sip_header_call_id_get_call_id(belle_sip_dialog_get_call_id(other_call_op->dialog))
 											,from_tag,to_tag);
 	escaped_replaces=belle_sip_header_replaces_value_to_escaped_string(replaces);
@@ -1223,7 +1225,7 @@ SalCallOp *SalCallOp::get_replaces() {
 	if (this->replaces){
 		/*rfc3891
 		 3.  User Agent Server Behavior: Receiving a Replaces Header
-			
+
 		 The Replaces header contains information used to match an existing
 		 SIP dialog (call-id, to-tag, and from-tag).  Upon receiving an INVITE
 		 with a Replaces header, the User Agent (UA) attempts to match this
@@ -1438,7 +1440,7 @@ void SalCallOp::process_refer(const belle_sip_request_event_t *event, belle_sip_
 	belle_sip_header_referred_by_t *referred_by= belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_referred_by_t);
 	belle_sip_response_t* resp;
 	belle_sip_uri_t* refer_to_uri;
-	
+
 	ms_message("Receiving REFER request on op [%p]", this);
 	if (refer_to) {
 		refer_to_uri=belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(refer_to));

@@ -22,7 +22,6 @@
 
 #include <vector>
 
-#include "content-type.h"
 #include "object/app-data-container.h"
 #include "object/clonable-object.h"
 
@@ -30,6 +29,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ContentType;
 class ContentPrivate;
 
 class LINPHONE_PUBLIC Content : public ClonableObject, public AppDataContainer {

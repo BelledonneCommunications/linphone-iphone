@@ -998,11 +998,11 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	if (internalContent.getContentType() == ContentType::Cpim) {
 		CpimChatMessageModifier ccmm;
-		ccmm.decode(q->getSharedFromThis(), &errorCode);
+		ccmm.decode(q->getSharedFromThis(), errorCode);
 	}
 
 	EncryptionChatMessageModifier ecmm;
-	ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), &errorCode);
+	ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), errorCode);
 	if (result == ChatMessageModifier::Result::Error) {
 		/* Unable to decrypt message */
 		chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
@@ -1012,7 +1012,7 @@ LinphoneReason ChatMessagePrivate::receive() {
 	}
 
 	MultipartChatMessageModifier mcmm;
-	mcmm.decode(q->getSharedFromThis(), &errorCode);
+	mcmm.decode(q->getSharedFromThis(), errorCode);
 
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
@@ -1138,7 +1138,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (contents.size() > 1) {
 			MultipartChatMessageModifier mcmm;
-			mcmm.encode(q->getSharedFromThis(), &errorCode);
+			mcmm.encode(q->getSharedFromThis(), errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Multipart;
 	}
@@ -1147,7 +1147,7 @@ void ChatMessagePrivate::send() {
 		lInfo() << "Encryption step already done, skipping";
 	} else {
 		EncryptionChatMessageModifier ecmm;
-		ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), &errorCode);
+		ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
 		if (result == ChatMessageModifier::Result::Error) {
 			sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
 			q->updateState(ChatMessage::State::NotDelivered);
@@ -1165,7 +1165,7 @@ void ChatMessagePrivate::send() {
 	} else {
 		if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
 			CpimChatMessageModifier ccmm;
-			ccmm.encode(q->getSharedFromThis(), &errorCode);
+			ccmm.encode(q->getSharedFromThis(), errorCode);
 		}
 		currentSendStep |= ChatMessagePrivate::Step::Cpim;
 	}

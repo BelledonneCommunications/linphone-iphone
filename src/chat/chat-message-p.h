@@ -21,6 +21,7 @@
 #define _CHAT_MESSAGE_P_H_
 
 #include "chat-message.h"
+#include "content/content-type.h"
 #include "db/events-db.h"
 #include "object/object-p.h"
 

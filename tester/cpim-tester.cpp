@@ -16,10 +16,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "chat/cpim/cpim.h"
 #include "address/address.h"
 #include "chat/basic-chat-room.h"
 #include "chat/chat-message.h"
+#include "chat/cpim/cpim.h"
+#include "content/content-type.h"
 
 #include "liblinphone_tester.h"
 

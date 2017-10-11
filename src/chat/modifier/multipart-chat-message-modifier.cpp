@@ -17,12 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "multipart-chat-message-modifier.h"
-
 #include "address/address.h"
-#include "chat/chat-room.h"
 #include "chat/chat-message.h"
+#include "chat/chat-room.h"
+#include "content/content-type.h"
 #include "logger/logger.h"
+
+#include "multipart-chat-message-modifier.h"
 
 // =============================================================================
 
@@ -30,36 +31,39 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result MultipartChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int *errorCode) {
-	if (message->getContents().size() > 1) {
-		LinphoneCore *lc = message->getChatRoom()->getCore();
-		char tmp[64];
-		lc->sal->create_uuid(tmp, sizeof(tmp));
-		string boundary = tmp;
-		stringstream multipartMessage;
+ChatMessageModifier::Result MultipartChatMessageModifier::encode (
+	const shared_ptr<ChatMessage> &message,
+	int &errorCode
+) {
+	if (message->getContents().size() <= 1)
+		return ChatMessageModifier::Result::Skipped;
 
+	LinphoneCore *lc = message->getChatRoom()->getCore();
+	char tmp[64];
+	lc->sal->create_uuid(tmp, sizeof(tmp));
+	string boundary = tmp;
+	stringstream multipartMessage;
+
+	multipartMessage << "--" << boundary;
+	for (const auto &content : message->getContents()) {
+		multipartMessage << "\r\n";
+		multipartMessage << "Content-Type: " << content.getContentType().asString() << "\r\n\r\n";
+		multipartMessage << content.getBodyAsString() << "\r\n\r\n";
 		multipartMessage << "--" << boundary;
-		for (auto it = message->getContents().begin(); it != message->getContents().end(); it++) {
-			multipartMessage << "\r\n";
-			multipartMessage << "Content-Type: " << it->getContentType().asString() << "\r\n\r\n";
-			multipartMessage << it->getBodyAsString() << "\r\n\r\n";
-			multipartMessage << "--" << boundary;
-		}
-		multipartMessage << "--";
-
-		Content newContent;
-		ContentType newContentType("multipart/mixed");
-		newContentType.setParameter("boundary=" + boundary);
-		newContent.setContentType(newContentType);
-		newContent.setBody(multipartMessage.str());
-		message->setInternalContent(newContent);
-
-		return ChatMessageModifier::Result::Done;
 	}
-	return ChatMessageModifier::Result::Skipped;
-}	
+	multipartMessage << "--";
 
-ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int *errorCode) {
+	Content newContent;
+	ContentType newContentType("multipart/mixed");
+	newContentType.setParameter("boundary=" + boundary);
+	newContent.setContentType(newContentType);
+	newContent.setBody(multipartMessage.str());
+	message->setInternalContent(newContent);
+
+	return ChatMessageModifier::Result::Done;
+}
+
+ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	if (message->getInternalContent().getContentType().getType() == "multipart") {
 		string boundary = message->getInternalContent().getContentType().getParameter();
 		if (boundary.empty()) {
@@ -74,11 +78,11 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 		}
 		boundary = "--" + boundary.substr(pos + 1);
 		lInfo() << "Multipart boundary is " << boundary;
-	
+
 		const vector<char> body = message->getInternalContent().getBody();
 		string contentsString(body.begin(), body.end());
 
-		pos = contentsString.find(boundary); 
+		pos = contentsString.find(boundary);
 		if (pos == string::npos) {
 			lError() << "Boundary not found in body !";
 			return ChatMessageModifier::Result::Error;
@@ -89,9 +93,9 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 		do {
 			end = contentsString.find(boundary, start);
 			if (end != string::npos) {
-				string contentString = contentsString.substr(start, end-start);
+				string contentString = contentsString.substr(start, end - start);
 
-				size_t contentTypePos = contentString.find(": ") + 2; // 2 is the size of : 
+				size_t contentTypePos = contentString.find(": ") + 2; // 2 is the size of :
 				size_t endOfLinePos = contentString.find("\r\n");
 				if (contentTypePos >= endOfLinePos) {
 					lError() << "Content should start by a 'Content-Type: ' line !";

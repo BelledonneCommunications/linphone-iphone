@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "cpim-chat-message-modifier.h"
-
+#include "address/address.h"
+#include "chat/chat-message.h"
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
 #include "content/content.h"
-#include "address/address.h"
 #include "logger/logger.h"
-#include "chat/chat-message.h"
+
+#include "cpim-chat-message-modifier.h"
 
 // =============================================================================
 
@@ -32,7 +32,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int *errorCode) {
+ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	Cpim::Message cpimMessage;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
@@ -50,58 +50,53 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		content = message->getContents().front();
 	}
 
-	string contentType = content.getContentType().asString();
-	const vector<char> body = content.getBody();
-	string contentBody(body.begin(), body.end());
-
 	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
-	contentTypeHeader.setValue(contentType);
+	contentTypeHeader.setValue(content.getContentType().asString());
 	cpimMessage.addContentHeader(contentTypeHeader);
 
+	const string contentBody = content.getBodyAsString();
 	cpimMessage.setContent(contentBody);
 
 	if (!cpimMessage.isValid()) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
-		*errorCode = 500;
+		errorCode = 500;
 		return ChatMessageModifier::Result::Error;
-	} else {
-		Content newContent;
-		ContentType newContentType("Message/CPIM");
-		newContent.setContentType(newContentType);
-		newContent.setBody(cpimMessage.asString());
-		message->setInternalContent(newContent);
 	}
+
+	Content newContent;
+	newContent.setContentType(ContentType("Message/CPIM"));
+	newContent.setBody(cpimMessage.asString());
+	message->setInternalContent(newContent);
+
 	return ChatMessageModifier::Result::Done;
 }
 
-ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int *errorCode) {
+ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	Content content;
-	if (!message->getInternalContent().isEmpty()) {
+	if (!message->getInternalContent().isEmpty())
 		content = message->getInternalContent();
-	} else {
+	else
 		content = message->getContents().front();
-	}
 
-	if (content.getContentType() == ContentType::Cpim) {
-		const vector<char> body = content.getBody();
-		string contentBody(body.begin(), body.end());
-		shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
-		if (cpimMessage && cpimMessage->isValid()) {
-			Content newContent;
-			ContentType newContentType(cpimMessage->getContentHeaders()->front()->getValue());
-			newContent.setContentType(newContentType);
-			newContent.setBody(cpimMessage->getContent());
-			message->setInternalContent(newContent);
-		} else {
-			lError() << "[CPIM] Message is invalid: " << contentBody;
-			*errorCode = 500;
-			return ChatMessageModifier::Result::Error;
-		}
-	} else {
+	if (content.getContentType() != ContentType::Cpim) {
 		lError() << "[CPIM] Message is not CPIM but " << content.getContentType().asString();
 		return ChatMessageModifier::Result::Skipped;
 	}
+
+	const string contentBody = content.getBodyAsString();
+	const shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
+	if (!cpimMessage || !cpimMessage->isValid()) {
+		lError() << "[CPIM] Message is invalid: " << contentBody;
+		errorCode = 500;
+		return ChatMessageModifier::Result::Error;
+	}
+
+	Content newContent;
+	newContent.setContentType(ContentType(cpimMessage->getContentHeaders()->front()->getValue()));
+	newContent.setBody(cpimMessage->getContent());
+	message->setInternalContent(newContent);
+
 	return ChatMessageModifier::Result::Done;
 }
 

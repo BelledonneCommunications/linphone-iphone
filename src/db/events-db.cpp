@@ -29,6 +29,7 @@
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message.h"
 #include "conference/participant.h"
+#include "content/content-type.h"
 #include "content/content.h"
 #include "db/provider/db-session-provider.h"
 #include "event-log/call-event.h"
