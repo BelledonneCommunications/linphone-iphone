@@ -66,6 +66,8 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 	return nativePtr;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class LinphoneJavaBindings {
 public:
 	LinphoneJavaBindings(JNIEnv *env) {
@@ -86,7 +88,7 @@ public:
 		{{#objects}}
 		env->DeleteGlobalRef({{cPrefix}}_class);
 		{{/objects}}
-		
+
 		{{#enums}}
 		env->DeleteGlobalRef({{cPrefix}}_class);
 		{{/enums}}
@@ -102,6 +104,8 @@ public:
 	jmethodID {{cPrefix}}_class_constructor_from_int;
 	{{/enums}}
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#objects}}
 jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
@@ -143,6 +147,67 @@ void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong 
 }
 
 {{/objects}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static inline void handle_possible_java_exception(JNIEnv *env, jobject listener)
+{
+	if (env->ExceptionCheck()) {
+		env->ExceptionDescribe();
+		env->ExceptionClear();
+		ms_error("Listener %p raised an exception",listener);
+	}
+}
+
+{{#interfaces}}
+static {{return}} {{callbackName}}({{params}}) {
+	JNIEnv *env = 0;
+	jint result = jvm->AttachCurrentThread(&env,NULL);
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	if (result != 0) {
+		ms_error("cannot attach VM");
+		return;
+	}
+
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(cptr);
+	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+
+	if (jlistener == NULL) {
+		ms_warning("{{name}}() notification without listener");
+		return ;
+	}
+
+	jclass jlistenerClass = (jclass) env->GetObjectClass(jlistener);
+	jmethodID jcallback = env->GetMethodID(jlistenerClass, "{{jname}}", "{{jparams}}");
+	env->DeleteLocalRef(jlistenerClass);
+
+	{{#jobjects}}
+	jobject j_{{objectName}} = get{{className}}(env, {{objectName}});
+	{{/jobjects}}
+	{{#jenums}}
+	jobject j_{{enumName}} = env->CallStaticObjectMethod(ljb->{{cEnumPrefix}}_class, ljb->{{cEnumPrefix}}_class_constructor_from_int, (jint){{enumName}});
+	{{/jenums}}
+	{{#jstrings}}
+	jstring j_{{stringName}} = {{stringName}} ? env->NewStringUTF({{stringName}}) : NULL;
+	{{/jstrings}}
+	
+	env->CallVoidMethod(jlistener, jcallback, {{params_impl}});
+
+	{{#jobjects}}
+	if (j_{{objectName}}) {
+		env->DeleteLocalRef(j_{{objectName}});
+	}
+	{{/jobjects}}
+	{{#jstrings}}
+	if (j_{{stringName}}) {
+		env->DeleteLocalRef(j_{{stringName}});
+	}
+	{{/jstrings}}
+
+	handle_possible_java_exception(env, jlistener);
+}
+
+{{/interfaces}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#methods}}
 {{return}} {{name}}({{params}}) {

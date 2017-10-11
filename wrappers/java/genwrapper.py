@@ -84,6 +84,61 @@ class JavaTranslator(object):
     def translate_argument_name(self, _argName):
         return _argName.to_snake_case()
 
+    def translate_java_jni_enum_name(self, _enum):
+        name = _enum.name.to_camel_case()
+        if name in ENUMS_LIST:
+            className = ENUMS_LIST[name]
+            if name.startswith(className):
+                name = name[len(className):]
+            name = className + '$' + name
+        return name
+
+    def translate_java_jni_base_type_name(self, _type):
+        if _type == 'string':
+            return 'Ljava/lang/String;'
+        elif _type == 'integer':
+            return 'I'
+        elif _type == 'boolean':
+            return 'Z'
+        elif _type == 'floatant':
+            return 'F'
+        elif _type == 'size':
+            return 'I'
+        elif _type == 'time':
+            return 'I'
+        elif _type == 'status':
+            return 'I'
+        elif _type == 'string_array':
+            return '[Ljava/lang/String;'
+        elif _type == 'character':
+            return 'C'
+        elif _type == 'void':
+            return 'V'
+        return _type
+
+    def translate_as_c_base_type(self, _type):
+        if _type == 'string':
+            return 'const char *'
+        elif _type == 'integer':
+            return 'int'
+        elif _type == 'boolean':
+            return 'bool_t'
+        elif _type == 'floatant':
+            return 'float'
+        elif _type == 'size':
+            return 'size_t'
+        elif _type == 'time':
+            return 'time_t'
+        elif _type == 'status':
+            return 'int'
+        elif _type == 'string_array':
+            return 'const char **'
+        elif _type == 'character':
+            return 'char'
+        elif _type == 'void':
+            return 'void *'
+        return _type
+
     def translate_type(self, _type, native=False, jni=False, isReturn=False):
         if type(_type) is AbsApi.ListType:
             if jni:
@@ -163,11 +218,10 @@ class JavaTranslator(object):
                     return 'jchar'
                 return 'char'
             elif _type.name == 'void':
+                if isReturn:
+                    return 'void'
                 if jni:
-                    if isReturn:
-                        return 'void'
-                    else:
-                        return 'jobject'
+                    return 'jobject'
                 return 'Object'
             return _type.name
 
@@ -334,6 +388,57 @@ class JavaTranslator(object):
 
         return classDict
 
+    def translate_jni_interface(self, className, _method):
+        methodDict = {}
+        listenerName = 'Linphone' + className.to_camel_case()
+        methodDict['classCName'] = listenerName[:-8] #Remove Listener at the end
+        methodDict['className'] = className.to_camel_case()
+        methodDict['classImplName'] = className.to_camel_case() + 'Impl'
+        methodDict['jniPath'] = self.jni_path
+        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()
+        methodDict['callbackName'] = methodDict['cPrefix'] + '_' + _method.name.to_snake_case()
+        methodDict['jname'] = _method.name.to_camel_case(lower=True)
+        methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
+
+        methodDict['jobjects'] = []
+        methodDict['jenums'] = []
+        methodDict['jstrings'] = []
+        methodDict['params'] = ''
+        methodDict['jparams'] = '('
+        methodDict['params_impl'] = ''
+        for arg in _method.args:
+            argname = self.translate_argument_name(arg.name)
+            if arg is not _method.args[0]:
+                methodDict['params'] += ', '
+                methodDict['params_impl'] += ', '
+
+            if type(arg.type) is AbsApi.ClassType:
+                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' *' + (argname if arg is not _method.args[0] else 'cptr')
+                methodDict['jparams'] += 'L' + self.jni_path + arg.type.desc.name.to_camel_case() + ';'
+                methodDict['params_impl'] += 'j_' + argname
+                methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.desc.name.to_camel_case(),})
+            elif type(arg.type) is AbsApi.BaseType:
+                methodDict['params'] += self.translate_as_c_base_type(arg.type.name) + ' ' + argname
+                methodDict['jparams'] += self.translate_java_jni_base_type_name(arg.type.name)
+                if arg.type.name == 'string':
+                    methodDict['params_impl'] += 'j_' + argname
+                    methodDict['jstrings'].append({'stringName': argname,})
+                else:
+                    methodDict['params_impl'] += argname
+            elif type(arg.type) is AbsApi.EnumType:
+                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' ' + argname
+                methodDict['jparams'] += 'L' + self.jni_path + self.translate_java_jni_enum_name(arg.type.desc) + ';'
+                methodDict['params_impl'] += 'j_' + argname
+                methodDict['jenums'].append({'enumName': argname, 'cEnumPrefix': 'linphone_' + arg.type.desc.name.to_snake_case()})
+
+        methodDict['jparams'] += ')'
+        if (methodDict['return'] == 'void'):
+            methodDict['jparams'] += 'V'
+        else:
+            pass #TODO
+
+        return methodDict
+
     def translate_interface(self, _class):
         interfaceDict = {
             'methods': [],
@@ -344,6 +449,7 @@ class JavaTranslator(object):
 
         for method in _class.methods:
             interfaceDict['methods'].append(self.translate_method(method))
+            interfaceDict['jniMethods'].append(self.translate_jni_interface(_class.name, method))
 
         return interfaceDict
 
@@ -392,15 +498,7 @@ class JavaEnum(object):
         self.filename = self.className + ".java"
         self.values = self._class['values']
         self.doc = self._class['doc']
-        self.jniMethods = self._class['jniMethods']
-
-        name = _enum.name.to_camel_case()
-        if name in ENUMS_LIST:
-            className = ENUMS_LIST[name]
-            if name.startswith(className):
-                name = name[len(className):]
-            name = className + '$' + name
-        self.jniName = name
+        self.jniName = translator.translate_java_jni_enum_name(_enum)
 
 class JavaInterface(object):
     def __init__(self, package, _interface, translator):
@@ -446,8 +544,9 @@ class JavaClass(object):
 
 class Jni(object):
     def __init__(self, package):
-        self.objects = []
         self.enums = []
+        self.interfaces = []
+        self.objects = []
         self.methods = []
         self.jni_package = ''
         self.jni_path = ''
@@ -478,6 +577,10 @@ class Jni(object):
             'classImplName': javaClass.classImplName,
         }
         self.objects.append(obj)
+
+    def add_interfaces(self, name, interfaces):
+        for interface in interfaces:
+            self.interfaces.append(interface)
 
     def add_methods(self, name, methods):
         for method in methods:
@@ -560,7 +663,6 @@ class GenWrapper(object):
                 self.enums[javaenum.className] = javaenum
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-            #self.jni.add_methods(javaenum.className, javaenum.jniMethods)
 
     def render_java_interface(self, _class):
         if _class is not None:
@@ -571,7 +673,7 @@ class GenWrapper(object):
                 self.interfaces[javaInterfaceStub.classNameStub] = javaInterfaceStub
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-            #self.jni.add_methods(javainterface.className, javainterface.jniMethods)
+            self.jni.add_interfaces(javainterface.className, javainterface.jniMethods)
 
     def render_java_class(self, _class):
         if _class is not None:
