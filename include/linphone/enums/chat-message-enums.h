@@ -32,4 +32,8 @@
 	F(DeliveredToUser) \
 	F(Displayed)
 
+#define L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION(F) \
+	F(Incoming) \
+	F(Outgoing)
+
 #endif // ifndef _CHAT_MESSAGE_ENUMS_H_

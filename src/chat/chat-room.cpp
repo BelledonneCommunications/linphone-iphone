@@ -280,7 +280,7 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 		message->addContent(content);
 
 		Address peer(peerAddress.asString());
-		if (atoi(argv[3]) == ChatMessage::Direction::Incoming) {
+		if (atoi(argv[3]) == static_cast<int>(ChatMessage::Direction::Incoming)) {
 			message->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 			message->setFromAddress(peer);
 		} else {
@@ -552,7 +552,7 @@ void ChatRoom::compose () {
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	L_D();
 	shared_ptr<ChatMessage> chatMessage = createMessage();
-	
+
 	/* TODO
 	Content content;
 	content.setContentType(ContentType::FileTransfer);

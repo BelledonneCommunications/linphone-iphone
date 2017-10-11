@@ -137,6 +137,12 @@ typedef struct _LinphoneChatMessageEvent LinphoneChatMessageEvent;
  */
 L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 
+/**
+ * LinphoneChatMessageDirection is used to indicate if a message is outgoing or incoming.
+ * @ingroup chatroom
+ */
+L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
+
 L_DECLARE_C_ENUM(ChatRoomState, L_ENUM_VALUES_CHAT_ROOM_STATE);
 L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);
 

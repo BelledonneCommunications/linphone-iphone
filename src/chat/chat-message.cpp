@@ -1124,7 +1124,7 @@ void ChatMessagePrivate::send() {
 	//TODO Remove : This won't be necessary once we store the contentsList
 	string clearTextMessage;
 	ContentType clearTextContentType;
-	
+
 	if (!getText().empty()) {
 		clearTextMessage = getText().c_str();
 	}
@@ -1271,12 +1271,12 @@ ChatMessage::Direction ChatMessage::getDirection () const {
 
 bool ChatMessage::isOutgoing () const {
 	L_D();
-	return d->direction == Outgoing;
+	return d->direction == Direction::Outgoing;
 }
 
 bool ChatMessage::isIncoming () const {
 	L_D();
-	return d->direction == Incoming;
+	return d->direction == Direction::Incoming;
 }
 
 ChatMessage::State ChatMessage::getState() const {
@@ -1556,7 +1556,7 @@ int ChatMessage::putCharacter(uint32_t character) {
 				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
 				d->setTime(ms_time(0));
 				d->state = State::Displayed;
-				d->direction = Outgoing;
+				d->direction = Direction::Outgoing;
 				setFromAddress(LinphonePrivate::Address(linphone_address_as_string(linphone_address_new(linphone_core_get_identity(lc)))));
 				linphone_chat_message_store(L_GET_C_BACK_PTR(this));
 				d->rttMessage = "";
