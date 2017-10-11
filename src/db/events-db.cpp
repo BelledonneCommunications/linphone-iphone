@@ -267,11 +267,10 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				soci::use(static_cast<int>(state)), soci::use(messageEventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
-		if (statement.get_affected_rows() == 0 && state != ChatMessage::State::Displayed) {
+		if (statement.get_affected_rows() == 0 && state != ChatMessage::State::Displayed)
 			*session << "INSERT INTO message_participant (message_event_id, sip_address_id, state)"
 				"  VALUES (:messageEventId, :sipAddressId, :state)",
 				soci::use(messageEventId), soci::use(sipAddressId), soci::use(static_cast<int>(state));
-		}
 	}
 
 // -----------------------------------------------------------------------------
@@ -535,7 +534,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  AFTER UPDATE OF state ON message_participant FOR EACH ROW"
 			"  WHEN NEW.state = ";
 		participantMessageDeleter += displayedId;
-		participantMessageDeleter += "  AND (SELECT COUNT(*) FROM ("
+		participantMessageDeleter += " AND (SELECT COUNT(*) FROM ("
 			"    SELECT state FROM message_participant WHERE"
 			"    NEW.message_event_id = message_participant.message_event_id"
 			"    AND state <> ";
@@ -544,6 +543,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			"  )) = 0"
 			"  BEGIN"
 			"  DELETE FROM message_participant WHERE NEW.message_event_id = message_participant.message_event_id;"
+			"  UPDATE message_event SET state = ";
+		participantMessageDeleter += displayedId;
+		participantMessageDeleter += " WHERE event_id = NEW.message_event_id;"
 			"  END";
 
 		*session << participantMessageDeleter;
