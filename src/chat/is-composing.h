@@ -22,7 +22,7 @@
 
 #include "linphone/utils/general.h"
 
-#include "is-composing-listener.h"
+#include "chat/is-composing-listener.h"
 
 #include "private.h"
 

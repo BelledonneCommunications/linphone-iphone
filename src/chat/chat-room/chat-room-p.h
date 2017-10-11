@@ -27,8 +27,8 @@
 #include "private.h"
 
 #include "chat-room.h"
-#include "is-composing-listener.h"
-#include "is-composing.h"
+#include "chat/is-composing-listener.h"
+#include "chat/is-composing.h"
 #include "object/object-p.h"
 
 // =============================================================================

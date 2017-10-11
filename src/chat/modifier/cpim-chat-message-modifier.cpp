@@ -18,7 +18,7 @@
  */
 
 #include "address/address.h"
-#include "chat/chat-message.h"
+#include "chat/chat-message/chat-message.h"
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
 #include "content/content.h"

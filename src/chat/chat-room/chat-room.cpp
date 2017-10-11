@@ -23,10 +23,10 @@
 #include "linphone/utils/utils.h"
 
 #include "c-wrapper/c-wrapper.h"
-#include "chat-room-p.h"
-#include "imdn.h"
+#include "chat/chat-room/chat-room-p.h"
+#include "chat/imdn.h"
 #include "content/content.h"
-#include "chat-message-p.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat-room.h"
 #include "sal/message-op.h"
 #include "logger/logger.h"

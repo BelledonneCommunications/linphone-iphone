@@ -19,8 +19,8 @@
 
 #include "address/address.h"
 #include "c-wrapper/c-wrapper.h"
-#include "chat/chat-message.h"
-#include "chat/chat-room.h"
+#include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
 #include "content/content.h"
 

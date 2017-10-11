@@ -29,14 +29,16 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
-	chat/basic-chat-room-p.h
-	chat/basic-chat-room.h
-	chat/chat-message-p.h
-	chat/chat-message.h
-	chat/chat-room-p.h
-	chat/chat-room.h
-	chat/client-group-chat-room-p.h
-	chat/client-group-chat-room.h
+	chat/chat-message/chat-message-p.h
+	chat/chat-message/chat-message.h
+	chat/chat-room/basic-chat-room-p.h
+	chat/chat-room/basic-chat-room.h
+	chat/chat-room/chat-room-p.h
+	chat/chat-room/chat-room.h
+	chat/chat-room/client-group-chat-room-p.h
+	chat/chat-room/client-group-chat-room.h
+	chat/chat-room/real-time-text-chat-room-p.h
+	chat/chat-room/real-time-text-chat-room.h
 	chat/cpim/cpim.h
 	chat/cpim/header/cpim-core-headers.h
 	chat/cpim/header/cpim-generic-header.h
@@ -51,8 +53,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/modifier/cpim-chat-message-modifier.h
 	chat/modifier/encryption-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
-	chat/real-time-text-chat-room-p.h
-	chat/real-time-text-chat-room.h
 	conference/conference-listener.h
 	conference/conference.h
 	conference/local-conference-event-handler-p.h
@@ -124,10 +124,11 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-participant.cpp
 	c-wrapper/internal/c-sal.cpp
 	call/call.cpp
-	chat/basic-chat-room.cpp
-	chat/chat-message.cpp
-	chat/chat-room.cpp
-	chat/client-group-chat-room.cpp
+	chat/chat-message/chat-message.cpp
+	chat/chat-room/basic-chat-room.cpp
+	chat/chat-room/chat-room.cpp
+	chat/chat-room/client-group-chat-room.cpp
+	chat/chat-room/real-time-text-chat-room.cpp
 	chat/cpim/header/cpim-core-headers.cpp
 	chat/cpim/header/cpim-generic-header.cpp
 	chat/cpim/header/cpim-header.cpp
@@ -139,7 +140,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/modifier/cpim-chat-message-modifier.cpp
 	chat/modifier/encryption-chat-message-modifier.cpp
 	chat/modifier/multipart-chat-message-modifier.cpp
-	chat/real-time-text-chat-room.cpp
 	conference/conference.cpp
 	conference/local-conference-event-handler.cpp
 	conference/local-conference.cpp

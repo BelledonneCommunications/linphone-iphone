@@ -120,11 +120,11 @@ private:
 	Address from;
 	Address to;
 	time_t time = 0;
-	std::string id = "";
-	std::string appData = "";
-	std::string fileTransferFilePath = "";
-	std::string externalBodyUrl = "";
-	std::string rttMessage = "";
+	std::string id;
+	std::string appData;
+	std::string fileTransferFilePath;
+	std::string externalBodyUrl;
+	std::string rttMessage;
 	bool isSecured = false;
 	bool isReadOnly = false;
 	std::list<Content > contents;
@@ -140,7 +140,7 @@ private:
 	unsigned char currentSendStep = Step::None;
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
-	std::string cText = "";
+	std::string cText;
 	// Used for compatibility with previous C API
 	LinphoneContent *cFileTransferInformation = NULL;
 

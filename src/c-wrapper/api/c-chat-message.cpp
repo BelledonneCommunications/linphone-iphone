@@ -27,10 +27,10 @@
 #include "address/address.h"
 #include "content/content.h"
 #include "content/content-type.h"
-#include "chat/chat-message-p.h"
-#include "chat/chat-message.h"
-#include "chat/chat-room-p.h"
-#include "chat/real-time-text-chat-room-p.h"
+#include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room-p.h"
+#include "chat/chat-room/real-time-text-chat-room-p.h"
 
 // =============================================================================
 

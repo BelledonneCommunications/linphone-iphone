@@ -1,5 +1,5 @@
 /*
- * real-time-text-chat-room.h
+ * client-group-chat-room.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,13 +17,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_
-#define _REAL_TIME_TEXT_CHAT_ROOM_H_
+#ifndef _CLIENT_GROUP_CHAT_ROOM_H_
+#define _CLIENT_GROUP_CHAT_ROOM_H_
 
 // From coreapi
 #include "private.h"
 
-#include "chat/chat-room.h"
+#include "chat/chat-room/chat-room.h"
+#include "conference/remote-conference.h"
+#include "conference/session/call-session.h"
 
 #include "linphone/types.h"
 
@@ -31,16 +33,14 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RealTimeTextChatRoomPrivate;
+class ClientGroupChatRoomPrivate;
 
-class LINPHONE_PUBLIC RealTimeTextChatRoom : public ChatRoom {
+class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
-	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
-	virtual ~RealTimeTextChatRoom () = default;
+	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &uri, const std::string &subject);
+	virtual ~ClientGroupChatRoom () = default;
 
-	uint32_t getChar () const;
-	LinphoneCall *getCall () const;
-
+public:
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
@@ -58,10 +58,26 @@ public:
 	void setSubject (const std::string &subject) override;
 
 private:
-	L_DECLARE_PRIVATE(RealTimeTextChatRoom);
-	L_DISABLE_COPY(RealTimeTextChatRoom);
+	/* ConferenceListener */
+	void onConferenceCreated (const Address &addr) override;
+	void onConferenceTerminated (const Address &addr) override;
+	void onParticipantAdded (const Address &addr) override;
+	void onParticipantRemoved (const Address &addr) override;
+	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
+	void onSubjectChanged (const std::string &subject) override;
+	void onParticipantDeviceAdded (const Address &addr, const Address &gruu) override;
+	void onParticipantDeviceRemoved (const Address &addr, const Address &gruu) override;
+
+private:
+	/* CallSessionListener */
+	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
+
+private:
+	L_DECLARE_PRIVATE(ClientGroupChatRoom);
+	L_DISABLE_COPY(ClientGroupChatRoom);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_
+#endif // ifndef _CLIENT_GROUP_CHAT_ROOM_H_

@@ -1,5 +1,5 @@
 /*
- * basic-chat-room-p.h
+ * client-group-chat-room-p.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,30 +17,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _BASIC_CHAT_ROOM_P_H_
-#define _BASIC_CHAT_ROOM_P_H_
+#ifndef _CLIENT_GROUP_CHAT_ROOM_P_H_
+#define _CLIENT_GROUP_CHAT_ROOM_P_H_
 
 // From coreapi.
 #include "private.h"
 
-#include "basic-chat-room.h"
-#include "chat/chat-room-p.h"
+#include "client-group-chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class BasicChatRoomPrivate : public ChatRoomPrivate {
+class CallSession;
+
+class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	BasicChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
-	virtual ~BasicChatRoomPrivate () = default;
+	ClientGroupChatRoomPrivate (LinphoneCore *core);
+	virtual ~ClientGroupChatRoomPrivate () = default;
+
+	std::shared_ptr<CallSession> createSession ();
+	void notifyReceived (std::string body);
 
 private:
-	std::string subject;
-
-	L_DECLARE_PUBLIC(BasicChatRoom);
+	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _BASIC_CHAT_ROOM_P_H_
+#endif // ifndef _CLIENT_GROUP_CHAT_ROOM_P_H_

@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #ifdef SQLITE_STORAGE_ENABLED
 
-#include "chat/chat-room.h"
+#include "chat/chat-room/chat-room.h"
 
 #ifndef _WIN32
 #if !defined(__QNXNTO__) && !defined(__ANDROID__)

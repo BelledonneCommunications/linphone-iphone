@@ -27,7 +27,7 @@
 #include "linphone/utils/utils.h"
 
 #include "abstract/abstract-db-p.h"
-#include "chat/chat-message.h"
+#include "chat/chat-message/chat-message.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"

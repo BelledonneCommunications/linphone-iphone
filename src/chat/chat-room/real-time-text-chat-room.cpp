@@ -22,7 +22,7 @@
 #include "linphone/utils/utils.h"
 
 #include "real-time-text-chat-room-p.h"
-#include "chat-message-p.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
 

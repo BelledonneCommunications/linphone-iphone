@@ -29,7 +29,7 @@
 #include "object/object.h"
 #include "conference/conference-interface.h"
 
-#include "chat-message.h"
+#include "chat/chat-message/chat-message.h"
 
 #include "linphone/types.h"
 

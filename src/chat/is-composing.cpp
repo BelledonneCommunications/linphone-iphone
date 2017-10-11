@@ -19,10 +19,10 @@
 
 #include "linphone/utils/utils.h"
 
-#include "chat-room-p.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "logger/logger.h"
 
-#include "is-composing.h"
+#include "chat/is-composing.h"
 
 // =============================================================================
 

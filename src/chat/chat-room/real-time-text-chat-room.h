@@ -1,5 +1,5 @@
 /*
- * basic-chat-room.h
+ * real-time-text-chat-room.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,23 +17,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _BASIC_CHAT_ROOM_H_
-#define _BASIC_CHAT_ROOM_H_
+#ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_
+#define _REAL_TIME_TEXT_CHAT_ROOM_H_
 
-#include "chat/chat-room.h"
+// From coreapi
+#include "private.h"
+
+#include "chat/chat-room/chat-room.h"
+
+#include "linphone/types.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class BasicChatRoomPrivate;
+class RealTimeTextChatRoomPrivate;
 
-class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
+class LINPHONE_PUBLIC RealTimeTextChatRoom : public ChatRoom {
 public:
-	BasicChatRoom (LinphoneCore *core, const Address &peerAddress);
-	virtual ~BasicChatRoom () = default;
+	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
+	virtual ~RealTimeTextChatRoom () = default;
 
-	/* ConferenceInterface. */
+	uint32_t getChar () const;
+	LinphoneCall *getCall () const;
+
+	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
 	bool canHandleParticipants () const override;
@@ -50,10 +58,10 @@ public:
 	void setSubject (const std::string &subject) override;
 
 private:
-	L_DECLARE_PRIVATE(BasicChatRoom);
-	L_DISABLE_COPY(BasicChatRoom);
+	L_DECLARE_PRIVATE(RealTimeTextChatRoom);
+	L_DISABLE_COPY(RealTimeTextChatRoom);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _BASIC_CHAT_ROOM_H_
+#endif // ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_

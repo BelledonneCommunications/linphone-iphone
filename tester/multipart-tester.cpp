@@ -17,8 +17,8 @@
  */
 
 #include "address/address.h"
-#include "chat/basic-chat-room.h"
-#include "chat/chat-message.h"
+#include "chat/chat-room/basic-chat-room.h"
+#include "chat/chat-message/chat-message.h"
 #include "content/content-type.h"
 
 #include "liblinphone_tester.h"

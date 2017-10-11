@@ -23,8 +23,8 @@
 // From coreapi.
 #include "private.h"
 
-#include "real-time-text-chat-room.h"
-#include "chat/chat-room-p.h"
+#include "chat/chat-room/real-time-text-chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
 
 // =============================================================================
 

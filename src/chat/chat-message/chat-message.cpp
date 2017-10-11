@@ -25,14 +25,14 @@
 #include "c-wrapper/c-wrapper.h"
 #include "address/address.h"
 
-#include "chat-message-p.h"
+#include "chat/chat-message/chat-message-p.h"
 
 #include "content/content.h"
-#include "chat-room-p.h"
-#include "real-time-text-chat-room.h"
-#include "modifier/cpim-chat-message-modifier.h"
-#include "modifier/encryption-chat-message-modifier.h"
-#include "modifier/multipart-chat-message-modifier.h"
+#include "chat/chat-room/chat-room-p.h"
+#include "chat/chat-room/real-time-text-chat-room.h"
+#include "chat/modifier/cpim-chat-message-modifier.h"
+#include "chat/modifier/encryption-chat-message-modifier.h"
+#include "chat/modifier/multipart-chat-message-modifier.h"
 
 #include "logger/logger.h"
 #include "ortp/b64.h"

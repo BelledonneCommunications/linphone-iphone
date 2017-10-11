@@ -24,9 +24,9 @@
 #include "linphone/api/c-chat-room.h"
 
 #include "c-wrapper/c-wrapper.h"
-#include "chat/basic-chat-room.h"
-#include "chat/client-group-chat-room.h"
-#include "chat/real-time-text-chat-room-p.h"
+#include "chat/chat-room/basic-chat-room.h"
+#include "chat/chat-room/client-group-chat-room.h"
+#include "chat/chat-room/real-time-text-chat-room-p.h"
 #include "conference/participant.h"
 
 // =============================================================================

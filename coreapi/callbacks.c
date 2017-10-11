@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
-#include "chat/chat-room.h"
+#include "chat/chat-room/chat-room.h"
 #include "conference/session/call-session.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/media-session.h"
