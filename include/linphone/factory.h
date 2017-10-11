@@ -261,6 +261,21 @@ LINPHONE_PUBLIC LinphoneTransports *linphone_factory_create_transports(LinphoneF
  * @return  LinphoneVideoActivationPolicy object.
  */
 LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory);
+
+/**
+ * Gets the user data in the LinphoneFactory object
+ * @param[in] factory the LinphoneFactory
+ * @return the user data
+*/
+LINPHONE_PUBLIC void *linphone_factory_get_user_data(const LinphoneFactory *factory);
+
+/**
+ * Sets the user data in the LinphoneFactory object
+ * @param[in] factory the LinphoneFactory object
+ * @param[in] data the user data
+*/
+LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, void *data);
+
 /**
  * @}
  */

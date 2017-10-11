@@ -57,6 +57,8 @@ struct _LinphoneFactory {
 	char *cached_image_resources_dir;
 	char *cached_msplugins_dir;
 	LinphoneErrorInfo* ei;
+
+	void *user_data;
 };
 
 static void linphone_factory_uninit(LinphoneFactory *obj){
@@ -319,4 +321,12 @@ LinphoneTransports *linphone_factory_create_transports(LinphoneFactory *factory)
 
 LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory) {
 	return linphone_video_activation_policy_new();
+}
+
+void *linphone_factory_get_user_data(const LinphoneFactory *factory) {
+	return factory->user_data;
+}
+
+void linphone_factory_set_user_data(LinphoneFactory *factory, void *data) {
+	factory->user_data = data;
 }
