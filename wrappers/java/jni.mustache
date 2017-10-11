@@ -18,9 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include <jni.h>
-#ifdef USE_JAVAH
-#include "linphonecore_jni.h"
-#endif
 #include "linphone/core_utils.h"
 #include <cpu-features.h>
 
@@ -47,6 +44,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
 #ifdef __ANDROID__
 	ms_set_jvm(ajvm);
 #endif /* __ANDROID__ */
+	LinphoneJavaBindings *ljb = new LinphoneJavaBindings(ms_get_jni_env());
+	linphone_factory_set_user_data(linphone_factory_get(), ljb);
 	jvm = ajvm;
 	return JNI_VERSION_1_2;
 }
@@ -74,6 +73,11 @@ public:
 		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{classImplName}}"));
 		{{cPrefix}}_class_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
 		{{/objects}}
+
+		{{#enums}}
+		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{jniName}}"));
+		{{cPrefix}}_class_constructor_from_int = env->GetStaticMethodID({{cPrefix}}_class, "fromInt", "(I)L{{jniPath}}{{jniName}};");
+		{{/enums}}
 	}
 
 	~LinphoneJavaBindings() {
@@ -82,12 +86,21 @@ public:
 		{{#objects}}
 		env->DeleteGlobalRef({{cPrefix}}_class);
 		{{/objects}}
+		
+		{{#enums}}
+		env->DeleteGlobalRef({{cPrefix}}_class);
+		{{/enums}}
 	}
 
 	{{#objects}}
 	jclass {{cPrefix}}_class;
 	jmethodID {{cPrefix}}_class_constructor;
 	{{/objects}}
+
+	{{#enums}}
+	jclass {{cPrefix}}_class;
+	jmethodID {{cPrefix}}_class_constructor_from_int;
+	{{/enums}}
 };
 
 {{#objects}}
@@ -96,7 +109,7 @@ jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
 
 	if (ptr != NULL) {
 		void *up = {{cPrefix}}_get_user_data(ptr);
-		//TODO get ljb
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
 		jclass {{cPrefix}}_class = ljb->{{cPrefix}}_class;
 		jmethodID {{cPrefix}}_constructor = ljb->{{cPrefix}}_class_constructor;
 
@@ -160,8 +173,8 @@ void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong 
 	bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
 	size_t count = bctbx_list_size(list);
 	{{#isRealObjectArray}}
-	//TODO get ljb
-	jobjectArray jni_list_result = env->NewObjectArray(count, ljb->{{cPrefix}}_class, NULL);{{/isRealObjectArray}}
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	jobjectArray jni_list_result = env->NewObjectArray(count, ljb->{{objectCPrefix}}_class, NULL);{{/isRealObjectArray}}
 	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
 	for (size_t i = 0; i < count; i++) {
 		{{#isRealObjectArray}}

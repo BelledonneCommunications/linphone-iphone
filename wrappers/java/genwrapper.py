@@ -233,7 +233,6 @@ class JavaTranslator(object):
         methodDict['classCName'] = 'Linphone' + className.to_camel_case()
         methodDict['className'] = className.to_camel_case()
         methodDict['classImplName'] = className.to_camel_case() + 'Impl'
-        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()
         methodDict['jniPath'] = self.jni_path
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
@@ -253,6 +252,7 @@ class JavaTranslator(object):
                 methodDict['isStringObjectArray'] = True
             elif type(_method.returnType.containedTypeDesc) is AbsApi.ClassType:
                 methodDict['isRealObjectArray'] = True
+                methodDict['objectCPrefix'] = 'linphone_' + _method.returnType.containedTypeDesc.desc.name.to_snake_case()
                 methodDict['objectClassCName'] = 'Linphone' + _method.returnType.containedTypeDesc.desc.name.to_camel_case()
                 methodDict['objectClassName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case()
                 methodDict['objectClassImplName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case() + 'Impl'
@@ -281,6 +281,10 @@ class JavaTranslator(object):
                 isObjList = type(arg.type.containedTypeDesc) is AbsApi.ClassType
                 methodDict['lists'].append({'list': argname, 'isStringList': isStringList, 'isObjList': isObjList})
                 methodDict['params_impl'] += 'bctbx_list_' + argname
+
+            elif type(arg.type) is AbsApi.EnumType:
+                argCType = arg.type.name
+                methodDict['params_impl'] += '(' + argCType + ') ' + argname
                 
             elif type(arg.type) is AbsApi.BaseType:
                 if arg.type.name == 'string':
@@ -333,6 +337,7 @@ class JavaTranslator(object):
     def translate_interface(self, _class):
         interfaceDict = {
             'methods': [],
+            'jniMethods': [],
         }
 
         interfaceDict['doc'] = self.docTranslator.translate(_class.briefDescription)
@@ -343,13 +348,17 @@ class JavaTranslator(object):
         return interfaceDict
 
     def translate_enum(self, _class):
-        enumDict = {}
+        enumDict = {
+            'jniMethods': [],
+        }
 
         enumDict['name'] = _class.name.to_camel_case()
         enumDict['doc'] = self.docTranslator.translate(_class.briefDescription)
         enumDict['values'] = []
         i = 0
         lastValue = None
+
+        enumDict['jniPath'] = self.jni_path
 
         for enumValue in _class.values:
             enumValDict = {}
@@ -379,10 +388,19 @@ class JavaEnum(object):
         self._class = translator.translate_enum(_enum)
         self.packageName = package
         self.className = _enum.name.to_camel_case()
+        self.cPrefix = 'linphone_' + _enum.name.to_snake_case()
         self.filename = self.className + ".java"
         self.values = self._class['values']
         self.doc = self._class['doc']
-        self.jniMethods = []
+        self.jniMethods = self._class['jniMethods']
+
+        name = _enum.name.to_camel_case()
+        if name in ENUMS_LIST:
+            className = ENUMS_LIST[name]
+            if name.startswith(className):
+                name = name[len(className):]
+            name = className + '$' + name
+        self.jniName = name
 
 class JavaInterface(object):
     def __init__(self, package, _interface, translator):
@@ -393,7 +411,7 @@ class JavaInterface(object):
         self.imports = []
         self.methods = self._class['methods']
         self.doc = self._class['doc']
-        self.jniMethods = []
+        self.jniMethods = self._class['jniMethods']
 
 class JavaInterfaceStub(object):
     def __init__(self, _interface):
@@ -429,6 +447,7 @@ class JavaClass(object):
 class Jni(object):
     def __init__(self, package):
         self.objects = []
+        self.enums = []
         self.methods = []
         self.jni_package = ''
         self.jni_path = ''
@@ -436,6 +455,16 @@ class Jni(object):
         for directory in package_dirs:
             self.jni_package += directory + '_'
             self.jni_path += directory + '/'
+
+    def add_enum(self, javaEnum):
+        obj = {
+            'jniPrefix': self.jni_package,
+            'jniPath': self.jni_path,
+            'jniName': javaEnum.jniName,
+            'cPrefix': javaEnum.cPrefix,
+            'className': javaEnum.className,
+        }
+        self.enums.append(obj)
 
     def add_object(self, javaClass):
         if javaClass.className == 'Factory':
@@ -467,6 +496,12 @@ class GenWrapper(object):
         project.check()
 
         self.parser = AbsApi.CParser(project)
+        self.parser.functionBl = \
+            ['linphone_vcard_get_belcard',\
+            'linphone_core_get_current_vtable',\
+            'linphone_factory_get',\
+            'linphone_factory_clean']
+        self.parser.classBl += 'LinphoneCoreVTable'
         self.parser.parse_all()
         self.translator = JavaTranslator(package)
         self.renderer = pystache.Renderer()
@@ -487,6 +522,7 @@ class GenWrapper(object):
                 self.render_java_enum(_enum[1])
 
         for name, value in self.enums.iteritems():
+            self.jni.add_enum(value)
             if name in ENUMS_LIST:
                 className = ENUMS_LIST[name]
                 print 'Enum ' + name + ' belongs to class ' + className
@@ -552,7 +588,7 @@ def main():
     argparser = argparse.ArgumentParser(description='Generate source files for the Java wrapper')
     argparser.add_argument('xmldir', type=str, help='Directory where the XML documentation of the Linphone\'s API generated by Doxygen is placed')
     argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
-    argparser.add_argument('-p --package', type=str, help='the package name for the wrapper', dest='package', default='org.linphone')
+    argparser.add_argument('-p --package', type=str, help='the package name for the wrapper', dest='package', default='org.linphone.core')
     argparser.add_argument('-n --name', type=str, help='the name of the genarated source file', dest='name', default='linphone_jni.cc')
     args = argparser.parse_args()
 
