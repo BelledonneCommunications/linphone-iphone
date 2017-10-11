@@ -115,10 +115,21 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
-
 	UserType user = UserType();
 	UserRolesType roles;
 	UserType::EndpointSequence endpoints;
+
+	shared_ptr<Participant> p = conf->findParticipant(addr);
+	if (p) {
+		for (const auto &device : p->getPrivate()->getDevices()) {
+			const string &gruu = device.getGruu().asStringUriOnly();
+			EndpointType endpoint = EndpointType();
+			endpoint.setEntity(gruu);
+			endpoint.setState("full");
+			user.getEndpoint().push_back(endpoint);
+		}
+	}
+
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
