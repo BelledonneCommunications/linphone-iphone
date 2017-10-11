@@ -1217,7 +1217,10 @@ static void multi_devices_register_with_gruu(void) {
 	linphone_core_set_network_reachable(marie->lc,FALSE); /*to make sure first instance is not unregistered*/
 	linphone_core_manager_destroy(marie);
 
-	marie=linphone_core_manager_new("marie_rc");
+	marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie,TRUE);
 	cfg=linphone_core_get_default_proxy_config(marie->lc);
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
