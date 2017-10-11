@@ -300,7 +300,8 @@ static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, Linphone
 	if (!resource && cfg)
 		resource = linphone_proxy_config_get_identity_address(cfg);
 
-	lev = linphone_event_new(lc,LinphoneSubscriptionInvalidDir, event,expires);
+	lev = linphone_event_new_with_op(lc, new SalPublishOp(lc->sal), LinphoneSubscriptionInvalidDir, event);
+	lev->expires = expires;
 	linphone_configure_op_with_proxy(lc,lev->op,resource,NULL, !!lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0),cfg);
 	lev->op->set_manual_refresher_mode(!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	return lev;
