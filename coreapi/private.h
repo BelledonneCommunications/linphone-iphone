@@ -449,8 +449,9 @@ bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription
 extern LinphonePrivate::Sal::Callbacks linphone_sal_callbacks;
 LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc);
-bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id);
-void _linphone_core_add_group_chat_room(LinphoneCore *lc, const LinphonePrivate::Address &addr, LinphoneChatRoom *cr);
+bool_t _linphone_core_has_group_chat_room (const LinphoneCore *lc, const char *id);
+void _linphone_core_add_group_chat_room (LinphoneCore *lc, const LinphonePrivate::Address &addr, LinphoneChatRoom *cr);
+void _linphone_core_remove_group_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr);
 
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description);
 

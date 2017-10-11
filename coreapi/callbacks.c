@@ -721,10 +721,25 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 		LinphonePrivate::Address addr(sal_address_as_string(refer_to));
 		if (addr.isValid()) {
 			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
-			if (addr.hasParam("admin")) {
+			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
+				// The server asks a participant to leave a chat room
+				LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+				if (cr) {
+					L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
+					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+					return;
+				}
+				static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+			} else if (addr.hasParam("admin")) {
 				LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_to());
 				if (cr) {
-					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
+					Address fromAddr(op->get_from());
+					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
+					if (!participant || !participant->isAdmin()) {
+						static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+						return;
+					}
+					participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
 					if (participant) {
 						bool value = Utils::stob(addr.getParamValue("admin"));
 						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setParticipantAdminStatus(participant, value);

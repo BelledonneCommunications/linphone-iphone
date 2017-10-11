@@ -150,11 +150,22 @@ void ClientGroupChatRoom::leave () {
 }
 
 void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	// TODO
+	L_D();
+	SalReferOp *referOp = new SalReferOp(d->core->sal);
+	LinphoneAddress *lAddr = linphone_address_new(conferenceAddress.asString().c_str());
+	linphone_configure_op(d->core, referOp, lAddr, nullptr, false);
+	linphone_address_unref(lAddr);
+	Address referToAddr = participant->getAddress();
+	referToAddr.setParam("text");
+	referToAddr.setUriParam("method", "BYE");
+	referToAddr.setDomain("");
+	referToAddr.setPort(-1);
+	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->unref();
 }
 
 void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	// TODO
+	RemoteConference::removeParticipants(participants);
 }
 
 void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
@@ -231,7 +242,7 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (!participant) {
-		lWarning() << "Participant " << participant << " removed but is not in the list of participants!";
+		lWarning() << "Participant " << addr.asString() << " removed but not in the list of participants!";
 		return;
 	}
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
@@ -315,9 +326,8 @@ void ClientGroupChatRoom::onCallSessionStateChanged (const std::shared_ptr<const
 			focus->getPrivate()->getSession()->terminate();
 		}
 	} else {
-		if ((state == LinphoneCallReleased) && (d->state == ChatRoom::State::TerminationPending)) {
+		if ((state == LinphoneCallReleased) && (d->state == ChatRoom::State::TerminationPending))
 			onConferenceTerminated(conferenceAddress);
-		}
 	}
 }
 
