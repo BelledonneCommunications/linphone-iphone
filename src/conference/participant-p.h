@@ -40,18 +40,23 @@ public:
 	virtual ~ParticipantPrivate () = default;
 
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
-	std::shared_ptr<CallSession> getSession () const { return session; }
-	bool isSubscribedToConferenceEventPackage () const { return _isSubscribedToConferenceEventPackage; }
-	void subscribeToConferenceEventPackage (bool value) { _isSubscribedToConferenceEventPackage = value; }
-	void removeSession () { session = nullptr; }
-	void setAddress (const Address &newAddr) { addr = newAddr; }
-	void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
+	inline std::shared_ptr<CallSession> getSession () const { return session; }
+	inline bool isSubscribedToConferenceEventPackage () const { return _isSubscribedToConferenceEventPackage; }
+	inline void subscribeToConferenceEventPackage (bool value) { _isSubscribedToConferenceEventPackage = value; }
+	inline void removeSession () { session.reset(); }
+	inline void setAddress (const Address &newAddr) { addr = newAddr; }
+	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
+	const std::list<ParticipantDevice>::const_iterator findDevice (const Address &gruu) const;
+	const std::list<ParticipantDevice> &getDevices () const;
+	void addDevice (const Address &gruu);
+	void removeDevice (const Address &gruu);
 
 private:
 	Address addr;
 	bool isAdmin = false;
 	bool _isSubscribedToConferenceEventPackage = false;
 	std::shared_ptr<CallSession> session;
+	std::list<ParticipantDevice> devices;
 
 	L_DECLARE_PUBLIC(Participant);
 };

@@ -62,6 +62,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/params/call-session-params.h
 	conference/params/media-session-params-p.h
 	conference/params/media-session-params.h
+	conference/participant-device.h
 	conference/participant-p.h
 	conference/participant.h
 	conference/remote-conference-event-handler-p.h
@@ -144,6 +145,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
+	conference/participant-device.cpp
 	conference/participant.cpp
 	conference/remote-conference-event-handler.cpp
 	conference/remote-conference.cpp

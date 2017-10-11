@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <algorithm>
+
 #include "object/object-p.h"
 #include "participant-p.h"
 
@@ -39,6 +41,29 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 		session = ObjectFactory::create<CallSession>(conference, params, listener);
 	}
 	return session;
+}
+
+// -----------------------------------------------------------------------------
+
+const list<ParticipantDevice>::const_iterator ParticipantPrivate::findDevice (const Address &gruu) const {
+	ParticipantDevice device(gruu);
+	return find(devices.cbegin(), devices.cend(), device);
+}
+
+const list<ParticipantDevice> &ParticipantPrivate::getDevices () const {
+	return devices;
+}
+
+void ParticipantPrivate::addDevice (const Address &gruu) {
+	ParticipantDevice device(gruu);
+	if(findDevice(gruu) == devices.cend())
+		devices.push_back(device);
+}
+
+void ParticipantPrivate::removeDevice (const Address &gruu) {
+	ParticipantDevice device(gruu);
+	if(findDevice(gruu) != devices.cend())
+		devices.remove(device);
 }
 
 // =============================================================================

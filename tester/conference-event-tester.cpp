@@ -434,9 +434,12 @@ private:
 	void onParticipantRemoved (const Address &addr) override;
 	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
 	void onSubjectChanged(const string &subject) override;
+	void onParticipantDeviceAdded(const Address &addr, const Address &gruu) override;
+	void onParticipantDeviceRemoved(const Address &addr, const Address &gruu) override;
 public:
 	RemoteConferenceEventHandler *handler;
 	map<string, bool> participants;
+	map<string, int> participantDevices;
 	string confSubject;
 };
 
@@ -453,10 +456,12 @@ void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
 void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
 
 void ConferenceEventTester::onParticipantAdded (const Address &addr) {
-	participants.insert(pair<string, int>(addr.asString(), false));
+	participants.insert(pair<string, bool>(addr.asString(), FALSE));
+	participantDevices.insert(pair<string, int>(addr.asString(), 0));
 }
 void ConferenceEventTester::onParticipantRemoved (const Address &addr) {
 	participants.erase(addr.asString());
+	participantDevices.erase(addr.asString());
 }
 
 void ConferenceEventTester::onParticipantSetAdmin (const Address &addr, bool isAdmin) {
@@ -467,6 +472,19 @@ void ConferenceEventTester::onParticipantSetAdmin (const Address &addr, bool isA
 
 void ConferenceEventTester::onSubjectChanged(const string &subject) {
 	confSubject = subject;
+}
+
+void ConferenceEventTester::onParticipantDeviceAdded (const Address &addr, const Address &gruu) {
+	auto it = participantDevices.find(addr.asString());
+	if (it != participantDevices.end())
+		it->second++;
+
+}
+
+void ConferenceEventTester::onParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
+	auto it = participantDevices.find(addr.asString());
+	if (it != participantDevices.end() && it->second > 0)
+		it->second--;
 }
 
 void first_notify_parsing() {

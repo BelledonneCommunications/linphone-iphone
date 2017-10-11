@@ -65,6 +65,8 @@ private:
 	void onParticipantRemoved (const Address &addr) override;
 	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
 	void onSubjectChanged (const std::string &subject) override;
+	void onParticipantDeviceAdded (const Address &addr, const Address &gruu) override;
+	void onParticipantDeviceRemoved (const Address &addr, const Address &gruu) override;
 
 private:
 	/* CallSessionListener */

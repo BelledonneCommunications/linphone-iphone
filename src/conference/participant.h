@@ -20,10 +20,12 @@
 #ifndef _PARTICIPANT_H_
 #define _PARTICIPANT_H_
 
-#include "address/address.h"
+#include <list>
 
+#include "address/address.h"
 #include "object/object.h"
 #include "conference/params/call-session-params.h"
+#include "conference/participant-device.h"
 
 // =============================================================================
 

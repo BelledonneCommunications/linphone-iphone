@@ -1,5 +1,5 @@
 /*
- * cenference-listener.h
+ * participant-device.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,28 +17,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CONFERENCE_LISTENER_H_
-#define _CONFERENCE_LISTENER_H_
+#include "participant-device.h"
 
-#include "address/address.h"
+using namespace std;
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceListener {
-public:
-	virtual void onConferenceCreated (const Address &addr) = 0;
-	virtual void onConferenceTerminated (const Address &addr) = 0;
-	virtual void onParticipantAdded (const Address &addr) = 0;
-	virtual void onParticipantRemoved (const Address &addr) = 0;
-	virtual void onParticipantSetAdmin (const Address &addr, bool isAdmin) = 0;
-	virtual void onSubjectChanged (const std::string &subject) = 0;
-	virtual void onParticipantDeviceAdded (const Address &addr, const Address &gruu) = 0;
-	virtual void onParticipantDeviceRemoved (const Address &addr, const Address &gruu) = 0;
-};
+ParticipantDevice::ParticipantDevice (const Address &gruu) {
+	mGruu = gruu;
+}
+
+bool ParticipantDevice::operator== (const ParticipantDevice &device) const {
+	return (mGruu == device.getGruu());
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _CONFERENCE_LISTENER_H_
-

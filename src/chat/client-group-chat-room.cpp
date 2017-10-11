@@ -231,7 +231,7 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (!participant) {
-		lWarning() << "Participant " << participant << " removed but not in the list of participants!";
+		lWarning() << "Participant " << participant << " removed but is not in the list of participants!";
 		return;
 	}
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
@@ -267,6 +267,32 @@ void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
 	if (cb)
 		cb(cr, subject.c_str());
+}
+
+void ClientGroupChatRoom::onParticipantDeviceAdded (const Address &addr, const Address &gruu) {
+	shared_ptr<Participant> participant = nullptr;
+	if (isMe(addr))
+		participant = me;
+	else
+		participant = findParticipant(addr);
+	if (!participant) {
+		lWarning() << "Participant " << participant << " added a device but is not in the list of participants!";
+		return;
+	}
+	participant->getPrivate()->addDevice(gruu);
+}
+
+void ClientGroupChatRoom::onParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
+	shared_ptr<Participant> participant = nullptr;
+	if (isMe(addr))
+		participant = me;
+	else
+		participant = findParticipant(addr);
+	if (!participant) {
+		lWarning() << "Participant " << participant << " removed a device but is not in the list of participants!";
+		return;
+	}
+	participant->getPrivate()->removeDevice(gruu);
 }
 
 // -----------------------------------------------------------------------------
