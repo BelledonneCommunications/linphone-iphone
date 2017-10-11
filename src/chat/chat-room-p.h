@@ -45,19 +45,21 @@ private:
 	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
 
 public:
-	void addTransientMessage (std::shared_ptr<ChatMessage> msg);
-	void addWeakMessage (std::shared_ptr<ChatMessage> msg);
+	void addTransientMessage (const std::shared_ptr<ChatMessage> &msg);
+	void addWeakMessage (const std::shared_ptr<ChatMessage> &msg);
 	std::list<std::shared_ptr<ChatMessage> > getTransientMessages () const {
 		return transientMessages;
 	}
-	void moveTransientMessageToWeakMessages (std::shared_ptr<ChatMessage> msg);
-	void removeTransientMessage (std::shared_ptr<ChatMessage> msg);
+	void moveTransientMessageToWeakMessages (const std::shared_ptr<ChatMessage> &msg);
+	void removeTransientMessage (const std::shared_ptr<ChatMessage> &msg);
 
 	void release ();
 	void sendImdn (const std::string &content, LinphoneReason reason);
 
 	int getMessagesCount (bool unreadOnly);
 	void setState (ChatRoom::State newState);
+
+	virtual void sendMessage (const std::shared_ptr<ChatMessage> &msg);
 
 protected:
 	void sendIsComposingNotification ();
@@ -68,21 +70,21 @@ protected:
 	int sqlRequest (sqlite3 *db, const std::string &stmt);
 	void sqlRequestMessage (sqlite3 *db, const std::string &stmt);
 	std::list<std::shared_ptr<ChatMessage> > findMessages (const std::string &messageId);
-	void storeOrUpdateMessage (std::shared_ptr<ChatMessage> msg);
+	void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
 public:
 	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
 protected:
-	void chatMessageReceived (std::shared_ptr<ChatMessage> msg);
+	void chatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 	void imdnReceived (const std::string &text);
 	void isComposingReceived (const std::string &text);
 
 private:
-	void notifyChatMessageReceived (std::shared_ptr<ChatMessage> msg);
+	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 	void notifyStateChanged ();
-	void notifyUndecryptableMessageReceived (std::shared_ptr<ChatMessage> msg);
+	void notifyUndecryptableMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 
 private:
 	/* IsComposingListener */

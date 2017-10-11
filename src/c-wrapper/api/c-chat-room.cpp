@@ -74,7 +74,7 @@ void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, Linphone
 }
 
 void linphone_chat_room_send_message (LinphoneChatRoom *cr, const char *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg));
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg));
 }
 
 bool_t linphone_chat_room_is_remote_composing (const LinphoneChatRoom *cr) {
@@ -136,16 +136,16 @@ void linphone_chat_room_send_message2 (
 ) {
 	linphone_chat_message_set_message_state_changed_cb(msg, status_cb);
 	linphone_chat_message_set_message_state_changed_cb_user_data(msg, ud);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_send_chat_message_2 (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	linphone_chat_message_ref(msg);
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 void linphone_chat_room_send_chat_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
 uint32_t linphone_chat_room_get_char (const LinphoneChatRoom *cr) {

@@ -51,11 +51,11 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content.setBody("Hello Part 2");
 		marieMessage->addContent(content);
 	}
-	marieRoom->sendMessage(marieMessage);
+	marieMessage->send();
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_STRING_EQUAL(marieMessage->getInternalContent().getContentType().asString().c_str(), "multipart/mixed");
-	
+
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	//TODO
 

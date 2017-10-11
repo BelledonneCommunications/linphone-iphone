@@ -37,9 +37,9 @@ public:
 
 public:
 	void setCall (LinphoneCall *call) { this->call = call; }
-
-public:
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
+
+	void sendMessage (const std::shared_ptr<ChatMessage> &msg) override;
 
 public:
 	LinphoneCall *call = nullptr;

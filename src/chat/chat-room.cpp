@@ -51,18 +51,18 @@ int ChatRoomPrivate::createChatMessageFromDb (void *data, int argc, char **argv,
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::addTransientMessage (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::addTransientMessage (const shared_ptr<ChatMessage> &msg) {
 	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
 	if (iter == transientMessages.end())
 		transientMessages.push_back(msg);
 }
 
-void ChatRoomPrivate::addWeakMessage (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::addWeakMessage (const shared_ptr<ChatMessage> &msg) {
 	weak_ptr<ChatMessage> weakptr(msg);
 	weakMessages.push_back(weakptr);
 }
 
-void ChatRoomPrivate::moveTransientMessageToWeakMessages (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::moveTransientMessageToWeakMessages (const shared_ptr<ChatMessage> &msg) {
 	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
 	if (iter != transientMessages.end()) {
 		/* msg is not transient anymore, we can remove it from our transient list and unref it */
@@ -73,7 +73,7 @@ void ChatRoomPrivate::moveTransientMessageToWeakMessages (shared_ptr<ChatMessage
 	}
 }
 
-void ChatRoomPrivate::removeTransientMessage (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::removeTransientMessage (const shared_ptr<ChatMessage> &msg) {
 	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
 	if (iter != transientMessages.end()) {
 		transientMessages.erase(iter);
@@ -378,8 +378,25 @@ list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &mess
 	return result;
 }
 
-void ChatRoomPrivate::storeOrUpdateMessage (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) {
 	msg->store();
+}
+
+void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
+	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
+
+	/* Add to transient list */
+	addTransientMessage(msg);
+
+	msg->getPrivate()->setTime(ms_time(0));
+	msg->getPrivate()->send();
+
+	storeOrUpdateMessage(msg);
+
+	if (isComposing)
+		isComposing = false;
+	isComposingHandler.stopIdleTimer();
+	isComposingHandler.stopRefreshTimer();
 }
 
 // -----------------------------------------------------------------------------
@@ -460,7 +477,7 @@ end:
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::chatMessageReceived (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 	if ((msg->getPrivate()->getContentType() != ContentType::Imdn) && (msg->getPrivate()->getContentType() != ContentType::ImIsComposing)) {
 		notifyChatMessageReceived(msg);
@@ -481,7 +498,7 @@ void ChatRoomPrivate::isComposingReceived (const string &text) {
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::notifyChatMessageReceived (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	if (!msg->getPrivate()->getText().empty()) {
@@ -504,7 +521,7 @@ void ChatRoomPrivate::notifyStateChanged () {
 		cb(cr, (LinphoneChatRoomState)state);
 }
 
-void ChatRoomPrivate::notifyUndecryptableMessageReceived (shared_ptr<ChatMessage> msg) {
+void ChatRoomPrivate::notifyUndecryptableMessageReceived (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -598,7 +615,7 @@ void ChatRoom::deleteHistory () {
 	if (d->unreadCount > 0) d->unreadCount = 0;
 }
 
-void ChatRoom::deleteMessage (shared_ptr<ChatMessage> msg) {
+void ChatRoom::deleteMessage (const shared_ptr<ChatMessage> &msg) {
 	L_D();
 	if (!d->core->db) return;
 	char *buf = sqlite3_mprintf("DELETE FROM history WHERE id = %u;", msg->getPrivate()->getStorageId());
@@ -732,25 +749,6 @@ void ChatRoom::markAsRead () {
 	}
 
 	d->unreadCount = 0;
-}
-
-void ChatRoom::sendMessage (shared_ptr<ChatMessage> msg) {
-	L_D();
-
-	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
-
-	/* Add to transient list */
-	d->addTransientMessage(msg);
-
-	msg->getPrivate()->setTime(ms_time(0));
-	msg->getPrivate()->send();
-
-	d->storeOrUpdateMessage(msg);
-
-	if (d->isComposing)
-		d->isComposing = false;
-	d->isComposingHandler.stopIdleTimer();
-	d->isComposingHandler.stopRefreshTimer();
 }
 
 // -----------------------------------------------------------------------------

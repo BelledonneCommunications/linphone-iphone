@@ -55,7 +55,7 @@ public:
 	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
 	std::shared_ptr<ChatMessage> createMessage ();
 	void deleteHistory ();
-	void deleteMessage (std::shared_ptr<ChatMessage> msg);
+	void deleteMessage (const std::shared_ptr<ChatMessage> &msg);
 	std::shared_ptr<ChatMessage> findMessage (const std::string& messageId);
 	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
 	std::list<std::shared_ptr<ChatMessage> > getHistory (int nbMessages);
@@ -64,7 +64,6 @@ public:
 	int getUnreadMessagesCount ();
 	bool isRemoteComposing () const;
 	void markAsRead ();
-	virtual void sendMessage (std::shared_ptr<ChatMessage> msg);
 
 	LinphoneCore *getCore () const;
 

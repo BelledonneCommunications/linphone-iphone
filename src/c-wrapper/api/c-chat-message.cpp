@@ -265,11 +265,11 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 }
 
 void linphone_chat_message_resend(LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->reSend();
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->send();
 }
 
 void linphone_chat_message_resend_2(LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->reSend();
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->send();
 }
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {

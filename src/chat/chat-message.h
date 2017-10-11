@@ -61,18 +61,18 @@ public:
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
 	void updateState (State state);
-	void reSend ();
 	void sendDeliveryNotification (LinphoneReason reason);
 	void sendDisplayNotification ();
 	void setImdnMessageId (const std::string &imdnMessageId);
 	void setIsSecured (bool isSecured);
 	void setFromAddress (Address from);
 	void setToAddress (Address to);
+	void store ();
 	// ----- TODO: Remove me.
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;
 
-	void store ();
+	void send ();
 
 	time_t getTime () const;
 

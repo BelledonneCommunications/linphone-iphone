@@ -38,8 +38,6 @@ public:
 	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~RealTimeTextChatRoom () = default;
 
-	void sendMessage (std::shared_ptr<ChatMessage> msg) override;
-
 	uint32_t getChar () const;
 	LinphoneCall *getCall () const;
 

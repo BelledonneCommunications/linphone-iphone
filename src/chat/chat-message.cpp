@@ -1420,7 +1420,7 @@ void ChatMessage::updateState(State state) {
 		d->chatRoom->getPrivate()->moveTransientMessageToWeakMessages(getSharedFromThis());
 }
 
-void ChatMessage::reSend() {
+void ChatMessage::send () {
 	L_D();
 
 	if (d->state != State::NotDelivered) {
@@ -1428,7 +1428,7 @@ void ChatMessage::reSend() {
 		return;
 	}
 
-	d->chatRoom->sendMessage(getSharedFromThis());
+	d->chatRoom->getPrivate()->sendMessage(getSharedFromThis());
 }
 
 void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {

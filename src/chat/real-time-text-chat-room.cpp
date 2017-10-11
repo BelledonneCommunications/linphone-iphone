@@ -100,19 +100,16 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 	}
 }
 
-// =============================================================================
-
-RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) : ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
-
-// -----------------------------------------------------------------------------
-
-void RealTimeTextChatRoom::sendMessage (std::shared_ptr<ChatMessage> msg) {
-	L_D();
-	if (d->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(d->call))) {
+void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage> &msg) {
+	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		uint32_t new_line = 0x2028;
 		msg->putCharacter(new_line);
 	}
 }
+
+// =============================================================================
+
+RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) : ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
 
 // -----------------------------------------------------------------------------
 

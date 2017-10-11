@@ -257,7 +257,7 @@ static void parse_rfc_example () {
 
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
-	
+
 	string content = message->getContent();
 	BC_ASSERT_STRING_EQUAL(content.c_str(), body.c_str());
 }
@@ -283,7 +283,7 @@ static void parse_message_with_generic_header_parameters () {
 
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
-	
+
 	string content = message->getContent();
 	BC_ASSERT_STRING_EQUAL(content.c_str(), body.c_str());
 }
@@ -346,7 +346,7 @@ static void build_message () {
 	if (!BC_ASSERT_TRUE(contentTypeHeader.setName("Content-Type"))) return;
 	if (!BC_ASSERT_TRUE( contentTypeHeader.setValue("text/xml; charset=utf-8"))) return;
 	if (!BC_ASSERT_TRUE(message.addContentHeader(contentTypeHeader))) return;
-	
+
     Cpim::GenericHeader contentIdHeader;
 	if (!BC_ASSERT_TRUE(contentIdHeader.setName("Content-ID"))) return;
 	if (!BC_ASSERT_TRUE( contentIdHeader.setValue("<1234567890@foo.com>"))) return;
@@ -398,11 +398,11 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 		content.setBody("Hello Part 2");
 		marieMessage->addContent(content);
 	}
-	marieRoom->sendMessage(marieMessage);
+	marieMessage->send();
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_TRUE(marieMessage->getInternalContent().getContentType() == ContentType::Cpim);
-	
+
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	if (pauline->stat.last_received_chat_message != NULL) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), "Hello CPIM");
