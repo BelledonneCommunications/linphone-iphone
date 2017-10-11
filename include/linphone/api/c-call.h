@@ -757,6 +757,13 @@ LINPHONE_PUBLIC void linphone_call_add_callbacks(LinphoneCall *call, LinphoneCal
 LINPHONE_PUBLIC void linphone_call_remove_callbacks(LinphoneCall *call, LinphoneCallCbs *cbs);
 
 /**
+ * Gets the list of listener in the call
+ * @param[in] call LinphoneCall object
+ * @return the list of LinphoneCallCbs
+ */
+LINPHONE_PUBLIC const bctbx_list_t *linphone_call_get_callbacks(const LinphoneCall *call);
+
+/**
  * Gets the current LinphoneCallCbs.
  * This is meant only to be called from a callback to be able to get the user_data associated with the LinphoneCallCbs that is calling the callback.
  * @param[in] call LinphoneCall object

@@ -1097,6 +1097,10 @@ LinphoneCallCbs *linphone_call_get_current_callbacks (const LinphoneCall *call) 
 	return call->currentCbs;
 }
 
+const bctbx_list_t *linphone_call_get_callbacks(const LinphoneCall *call) {
+	return call->callbacks;
+}
+
 void linphone_call_set_params (LinphoneCall *call, const LinphoneCallParams *params) {
 #if 0
 	if ( call->state == LinphoneCallOutgoingInit || call->state == LinphoneCallIncomingReceived){

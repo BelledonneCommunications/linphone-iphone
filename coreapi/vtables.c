@@ -332,6 +332,16 @@ void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *v
 	}
 }
 
+bctbx_list_t *linphone_core_get_callbacks(const LinphoneCore *lc) {
+	bctbx_list_t *result;
+	bctbx_list_t *it;
+	for(it=lc->vtable_refs; it!=NULL; it=it->next){
+		VTableReference *ref=(VTableReference*)it->data;
+		result = bctbx_list_append(result, ref->cbs);
+	}
+	return result;
+}
+
 void linphone_core_remove_callbacks(LinphoneCore *lc, const LinphoneCoreCbs *cbs) {
 	bctbx_list_t *it;
 	ms_message("Callbacks [%p] unregistered on core [%p]",cbs,lc);

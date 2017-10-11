@@ -224,7 +224,7 @@ void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlo
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
 	jobject listener = env->NewGlobalRef(jlistener);
 	{{#isSingleListener}}
-	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(request);
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(cptr);
 	{{/isSingleListener}}
 	{{#isMultiListener}}
 	{{classCName}}Cbs *cbs = linphone_factory_create_{{factoryName}}_cbs(NULL);
@@ -233,13 +233,23 @@ void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlo
 	{{#callbacksList}}
 	{{cPrefix}}_cbs_set_{{callback}}(cbs, {{callbackName}});
 	{{/callbacksList}}
+	{{#isMultiListener}}
+	{{cPrefix}}_add_callbacks(cptr, cbs);
+	{{/isMultiListener}}
 }
 {{#isMultiListener}}
 
 void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
-	//TODO
-	{{cPrefix}}_remove_callbacks(ptr, );
+	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks(cptr);
+	bctbx_list_t *it;
+	for (it = cbs_list; it != NULL; it = it->next) {
+		{{classCName}}Cbs *cbs = ({{classCName}}Cbs *)it->data;
+		if ({{cPrefix}}_cbs_get_user_data(cbs) == jlistener) {
+			{{cPrefix}}_remove_callbacks(cptr, cbs);
+			break;
+		}
+	}	
 }
 {{/isMultiListener}}
 
