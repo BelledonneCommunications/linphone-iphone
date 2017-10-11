@@ -20,7 +20,7 @@
 #
 ################################################################################
 
-if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER)
+if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER OR ENABLE_JAVA_WRAPPER)
 	find_package(Doxygen)
 	if (DOXYGEN_FOUND)
 		if (DOXYGEN_DOT_FOUND)
