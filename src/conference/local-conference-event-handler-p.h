@@ -37,12 +37,15 @@ public:
 	std::string createNotifyParticipantRemoved (const Address &addr);
 	std::string createNotifyParticipantAdmined (const Address &addr, bool isAdmin);
 	std::string createNotifySubjectChanged ();
+	std::string createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
+	std::string createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
 
 private:
 	LinphoneCore *core = nullptr;
 	LocalConference *conf = nullptr;
 	
 	void sendNotify (const std::string &notify, const Address &addr);
+
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
 };
 

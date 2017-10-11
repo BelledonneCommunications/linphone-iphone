@@ -243,7 +243,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdmin) {
-	shared_ptr<Participant> participant = nullptr;
+	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = me;
 	else
@@ -270,7 +270,7 @@ void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
 }
 
 void ClientGroupChatRoom::onParticipantDeviceAdded (const Address &addr, const Address &gruu) {
-	shared_ptr<Participant> participant = nullptr;
+	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = me;
 	else
@@ -283,7 +283,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const Address &addr, const A
 }
 
 void ClientGroupChatRoom::onParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
-	shared_ptr<Participant> participant = nullptr;
+	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = me;
 	else

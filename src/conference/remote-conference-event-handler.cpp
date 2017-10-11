@@ -32,7 +32,7 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
-RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, ConferenceListener *listener)
+RemoteConferenceEventHandler::RemoteConferenceEventHandler (LinphoneCore *core, ConferenceListener *listener)
 	: Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
@@ -40,13 +40,13 @@ RemoteConferenceEventHandler::RemoteConferenceEventHandler(LinphoneCore *core, C
 	d->listener = listener;
 }
 
-RemoteConferenceEventHandler::~RemoteConferenceEventHandler() {
+RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 	xercesc::XMLPlatformUtils::Terminate();
 }
 
 // -----------------------------------------------------------------------------
 
-void RemoteConferenceEventHandler::subscribe(const Address &addr) {
+void RemoteConferenceEventHandler::subscribe (const Address &addr) {
 	L_D();
 	d->confAddress = addr;
 	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
@@ -57,7 +57,7 @@ void RemoteConferenceEventHandler::subscribe(const Address &addr) {
 	linphone_event_send_subscribe(d->lev, nullptr);
 }
 
-void RemoteConferenceEventHandler::unsubscribe() {
+void RemoteConferenceEventHandler::unsubscribe () {
 	L_D();
 	if (d->lev) {
 		linphone_event_terminate(d->lev);
@@ -65,7 +65,7 @@ void RemoteConferenceEventHandler::unsubscribe() {
 	}
 }
 
-void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
+void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 	L_D();
 	lInfo() << "NOTIFY received for conference " << d->confAddress.asString();
 	istringstream data(xmlBody);
@@ -73,10 +73,10 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.setPort(0);
 	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
-		if(confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
+		if (confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
 			d->listener->onSubjectChanged(confInfo->getConferenceDescription().get().getSubject().get());
 
-		if(!confInfo->getUsers().present())
+		if (!confInfo->getUsers().present())
 			return;
 
 		for (const auto &user : confInfo->getUsers()->getUser()) {
@@ -99,6 +99,17 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 				if (user.getState() == "full")
 					d->listener->onParticipantAdded(addr);
 				d->listener->onParticipantSetAdmin(addr, isAdmin);
+				for (const auto &endpoint : user.getEndpoint()) {
+					if (!endpoint.getEntity().present())
+						break;
+
+					Address gruu(endpoint.getEntity().get());
+					if (endpoint.getState() == "deleted")
+						d->listener->onParticipantDeviceRemoved(addr, gruu);
+					else if (endpoint.getState() == "full")
+						d->listener->onParticipantDeviceAdded(addr, gruu);
+
+				}
 			}
 			linphone_address_unref(cAddr);
 		}
@@ -107,7 +118,7 @@ void RemoteConferenceEventHandler::notifyReceived(string xmlBody) {
 
 // -----------------------------------------------------------------------------
 
-const Address &RemoteConferenceEventHandler::getConfAddress() {
+const Address &RemoteConferenceEventHandler::getConfAddress () {
 	L_D();
 	return d->confAddress;
 }

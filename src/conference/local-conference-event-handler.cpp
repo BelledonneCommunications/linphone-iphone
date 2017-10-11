@@ -64,7 +64,7 @@ void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, 
 	for (const auto &participant : conf->getParticipants()) {
 		Address cleanedParticipantAddr(participant->getAddress());
 		cleanedParticipantAddr.setPort(0);
-		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && !(cleanedAddr.weakEqual(cleanedParticipantAddr)))
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && !cleanedAddr.weakEqual(cleanedParticipantAddr))
 			sendNotify(notify, participant->getAddress());
 	}
 }
@@ -77,8 +77,8 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
-	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
-	string subject = this->conf->getSubject();
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
@@ -86,38 +86,51 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
 	confInfo.setUsers(users);
 	confInfo.setConferenceDescription((const ConferenceDescriptionType) confDescr);
 
-	for (const auto &participant : this->conf->getParticipants()) {
+	for (const auto &participant : conf->getParticipants()) {
 		UserType user = UserType();
 		UserRolesType roles;
+		UserType::EndpointSequence endpoints;
 		user.setRoles(roles);
+		user.setEndpoint(endpoints);
 		user.setEntity(participant->getAddress().asStringUriOnly());
 		user.getRoles()->getEntry().push_back(participant->isAdmin() ? "admin" : "participant");
 		user.setState("full");
+
+		for (const auto &device : participant->getPrivate()->getDevices()) {
+			const string &gruu = device.getGruu().asStringUriOnly();
+			EndpointType endpoint = EndpointType();
+			endpoint.setEntity(gruu);
+			endpoint.setState("full");
+			user.getEndpoint().push_back(endpoint);
+		}
+
 		confInfo.getUsers()->getUser().push_back(user);
 	}
 
-	return(createNotify(confInfo));
+	return createNotify(confInfo);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr) {
-	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
 
 	UserType user = UserType();
 	UserRolesType roles;
+	UserType::EndpointSequence endpoints;
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
 	user.setState("full");
+
 	confInfo.getUsers()->getUser().push_back(user);
 
-	return(createNotify(confInfo));
+	return createNotify(confInfo);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr) {
-	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -127,11 +140,11 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const
 	user.setState("deleted");
 	confInfo.getUsers()->getUser().push_back(user);
 
-	return(createNotify(confInfo));
+	return createNotify(confInfo);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const Address &addr, bool isAdmin) {
-	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -144,25 +157,71 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const
 	user.setState("partial");
 	confInfo.getUsers()->getUser().push_back(user);
 
-	return(createNotify(confInfo));
+	return createNotify(confInfo);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
-	string entity = this->conf->getConferenceAddress()->asStringUriOnly();
-	string subject = this->conf->getSubject();
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
 	confDescr.setSubject(subject);
 	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
 
-	return(createNotify(confInfo));
+	return createNotify(confInfo);
+}
+
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string subject = conf->getSubject();
+	ConferenceType confInfo = ConferenceType(entity);
+
+	UserType user = UserType();
+	UserRolesType roles;
+	UserType::EndpointSequence endpoints;
+	user.setRoles(roles);
+	user.setEntity(addr.asStringUriOnly());
+	user.getRoles()->getEntry().push_back("participant");
+	user.setState("partial");
+
+	EndpointType endpoint = EndpointType();
+	endpoint.setEntity(gruu.asStringUriOnly());
+	endpoint.setState("full");
+	user.getEndpoint().push_back(endpoint);
+
+	confInfo.getUsers()->getUser().push_back(user);
+
+	return createNotify(confInfo);
+}
+
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
+	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string subject = conf->getSubject();
+	ConferenceType confInfo = ConferenceType(entity);
+
+	UserType user = UserType();
+	UserRolesType roles;
+	UserType::EndpointSequence endpoints;
+	user.setRoles(roles);
+	user.setEntity(addr.asStringUriOnly());
+	user.getRoles()->getEntry().push_back("participant");
+	user.setState("partial");
+
+	EndpointType endpoint = EndpointType();
+	endpoint.setEntity(gruu.asStringUriOnly());
+	endpoint.setState("deleted");
+	user.getEndpoint().push_back(endpoint);
+
+	confInfo.getUsers()->getUser().push_back(user);
+
+	return createNotify(confInfo);
 }
 
 void LocalConferenceEventHandlerPrivate::sendNotify (const string &notify, const Address &addr) {
 	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
 	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
 	// Fix the From header to put the chat room URI
-	lev->op->set_from(this->conf->getConferenceAddress()->asString().c_str());
+	lev->op->set_from(conf->getConferenceAddress()->asString().c_str());
 	linphone_address_unref(cAddr);
 	doNotify(notify, lev);
 }
@@ -215,6 +274,16 @@ void LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr
 void LocalConferenceEventHandler::notifySubjectChanged () {
 	L_D();
 	d->notifyAll(d->createNotifySubjectChanged());
+}
+
+void LocalConferenceEventHandler::notifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
+	L_D();
+	d->notifyAll(d->createNotifyParticipantDeviceAdded(addr, gruu));
+}
+
+void LocalConferenceEventHandler::notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
+	L_D();
+	d->notifyAll(d->createNotifyParticipantDeviceRemoved(addr, gruu));
 }
 
 LINPHONE_END_NAMESPACE
