@@ -244,6 +244,36 @@ class JavaTranslator(object):
             properties.append(self.translate_jni_method(className, _property.setter))
         return properties
 
+    def generate_listener(self, name, _class):
+        methodDict = {}
+        methodDict['return'] = 'void'
+        methodDict['return_native'] = 'void'
+        methodDict['return_keyword'] = ''
+        methodDict['convertInputClassArrayToLongArray'] = False
+        methodDict['name'] = name
+        methodDict['exception'] = False
+        methodDict['enumCast'] = False
+        methodDict['classCast'] = False
+
+        methodDict['params'] = _class.name.to_camel_case() + 'Listener listener'
+        methodDict['native_params'] = 'long nativePtr, ' + _class.name.to_camel_case() + 'Listener listener'
+        methodDict['static_native_params'] = ''
+        methodDict['native_params_impl'] = ', listener'
+
+        methodDict['deprecated'] = False
+        methodDict['doc'] = None
+
+        return methodDict
+
+    def generate_add_listener(self, _class):
+        return self.generate_listener('addListener', _class)
+
+    def generate_remove_listener(self, _class):
+        return self.generate_listener('removeListener', _class)
+
+    def generate_set_listener(self, _class):
+        return self.generate_listener('setListener', _class)
+
     def translate_method(self, _method):
         methodDict = {}
 
@@ -385,6 +415,15 @@ class JavaTranslator(object):
                 classDict['jniMethods'].append(jniMethodDict)
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+
+        islistenable = _class.listenerInterface is not None
+        if islistenable:
+            isMultiListener = (_class.multilistener)
+            if isMultiListener:
+                classDict['methods'].append(self.generate_add_listener(_class))
+                classDict['methods'].append(self.generate_remove_listener(_class))
+            else:
+                classDict['methods'].append(self.generate_set_listener(_class))
 
         return classDict
 
