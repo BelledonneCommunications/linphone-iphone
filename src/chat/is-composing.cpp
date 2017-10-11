@@ -128,7 +128,7 @@ void IsComposing::startRefreshTimer () {
 void IsComposing::startRemoteRefreshTimer (const char *refreshStr) {
 	unsigned int duration = getRemoteRefreshTimerDuration();
 	if (refreshStr)
-		duration = static_cast<unsigned int>(stoi(refreshStr));
+		duration = static_cast<unsigned int>(Utils::stoi(refreshStr));
 	if (!remoteRefreshTimer) {
 		remoteRefreshTimer = core->sal->create_timer(remoteRefreshTimerExpired, this,
 			duration * 1000, "composing remote refresh timeout");

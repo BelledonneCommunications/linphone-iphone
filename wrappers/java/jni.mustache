@@ -241,7 +241,7 @@ void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlo
 
 void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
-	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks(cptr);
+	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks_list(cptr);
 	bctbx_list_t *it;
 	for (it = cbs_list; it != NULL; it = it->next) {
 		{{classCName}}Cbs *cbs = ({{classCName}}Cbs *)it->data;
