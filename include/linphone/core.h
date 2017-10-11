@@ -976,14 +976,6 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_remove_listener(LinphoneC
 LINPHONE_PUBLIC void linphone_core_remove_callbacks(LinphoneCore *lc, const LinphoneCoreCbs *cbs);
 
 /**
- * @ingroup initializing
- * Gets the list of listener in the core
- * @param lc The #LinphoneCore
- * @return the list of LinphoneCoreCbs
- */
-LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_callbacks(const LinphoneCore *lc);
-
-/**
  * Sets the user agent string used in SIP messages, ideally called just after linphone_core_new() or linphone_core_init().
  * @param[in] lc LinphoneCore object
  * @param[in] ua_name The user agent name

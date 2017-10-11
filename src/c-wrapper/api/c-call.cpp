@@ -1097,7 +1097,7 @@ LinphoneCallCbs *linphone_call_get_current_callbacks (const LinphoneCall *call) 
 	return call->currentCbs;
 }
 
-const bctbx_list_t *linphone_call_get_callbacks(const LinphoneCall *call) {
+const bctbx_list_t *linphone_call_get_callbacks_list(const LinphoneCall *call) {
 	return call->callbacks;
 }
 

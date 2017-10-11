@@ -25,6 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef _WRAPPER_UTILS_H
 #define _WRAPPER_UTILS_H
 
+#include <bctoolbox/list.h>
+#include "linphone/defs.h"
 #include "linphone/types.h"
 
 #ifdef __cplusplus
@@ -35,6 +37,22 @@ extern "C" {
  * @addtogroup wrapper
  * @{
  */
+
+/**
+ * @brief Gets the list of listener in the core.
+ * @param lc The #LinphoneCore.
+ * @return The list of #LinphoneCoreCbs.
+ * @donotwrap
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_callbacks_list(const LinphoneCore *lc);
+
+/**
+ * @brief Gets the list of listener in the call.
+ * @param[in] call #LinphoneCall object.
+ * @return The list of #LinphoneCallCbs.
+ * @donotwrap
+ */
+LINPHONE_PUBLIC const bctbx_list_t *linphone_call_get_callbacks_list(const LinphoneCall *call);
 
 /**
  * Send a message to peer member of this chat room.
