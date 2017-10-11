@@ -186,6 +186,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (c
 	string entity = conf->getConferenceAddress()->asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
+	confInfo.setUsers(users);
 
 	UserType user = UserType();
 	UserRolesType roles;
@@ -209,6 +211,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 	string entity = conf->getConferenceAddress()->asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
+	UsersType users;
+	confInfo.setUsers(users);
 
 	UserType user = UserType();
 	UserRolesType roles;
