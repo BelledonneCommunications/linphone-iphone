@@ -35,6 +35,7 @@
 //
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wfloat-equal"
 #ifndef __ANDROID__
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
