@@ -20,9 +20,9 @@
 #
 ############################################################################
 
-add_custom_command(OUTPUT linphone_jni.cc
-	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml"
-	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py
+add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/src/linphone_jni.cc"
+	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml" "-o" "${CMAKE_CURRENT_BINARY_DIR}"
+	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py ${LINPHONE_HEADER_FILES}
 	${PROJECT_SOURCE_DIR}/tools/metadoc.py
 	${PROJECT_SOURCE_DIR}/tools/abstractapi.py
 	genwrapper.py
@@ -33,10 +33,9 @@ add_custom_command(OUTPUT linphone_jni.cc
 	jni.mustache
 	linphone-doc
 	"${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml/index.xml"
+	COMMENT "Generating java wrapper"
 )
 
-add_custom_target(linphonej ALL DEPENDS linphone_jni.cc)
+add_custom_target(linphonej ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/src/linphone_jni.cc")
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/linphone_jni.cc
-        DESTINATION ${CMAKE_INSTALL_DATADIR}/linphonej
-)
+set(LINPHONE_JNI_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/src/linphone_jni.cc" PARENT_SCOPE)
