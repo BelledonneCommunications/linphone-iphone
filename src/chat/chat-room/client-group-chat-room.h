@@ -40,7 +40,8 @@ public:
 	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &uri, const std::string &subject);
 	virtual ~ClientGroupChatRoom () = default;
 
-public:
+	int getCapabilities () const override;
+
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;

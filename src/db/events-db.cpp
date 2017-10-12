@@ -28,6 +28,7 @@
 
 #include "abstract/abstract-db-p.h"
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
@@ -61,7 +62,7 @@ public:
 	void insertContent (long messageEventId, const Content &content);
 	long insertContentType (const string &contentType);
 	long insertEvent (EventLog::Type type, const tm &date);
-	long insertChatRoom (long sipAddressId, const tm &date);
+	long insertChatRoom (long sipAddressId, int capabilities, const tm &date);
 	void insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin);
 
 	long insertMessageEvent (
@@ -201,15 +202,16 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	long EventsDbPrivate::insertChatRoom (long sipAddressId, const tm &date) {
+	long EventsDbPrivate::insertChatRoom (long sipAddressId, int capabilities, const tm &date) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long id;
 		*session << "SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = :sipAddressId",
 			soci::use(sipAddressId), soci::into(id);
 		if (!session->got_data())
-			*session << "INSERT INTO chat_room (peer_sip_address_id, creation_date, last_update_date, subject) VALUES"
-				"  (:sipAddressId, :creationDate, :lastUpdateDate, '')", soci::use(sipAddressId), soci::use(date), soci::use(date);
+			*session << "INSERT INTO chat_room (peer_sip_address_id, creation_date, last_update_date, capabilities, subject) VALUES"
+				"  (:sipAddressId, :creationDate, :lastUpdateDate, :capabilities, '')",
+				soci::use(sipAddressId), soci::use(date), soci::use(date), soci::use(capabilities);
 		else
 			*session << "UPDATE chat_room SET last_update_date = :lastUpdateDate WHERE peer_sip_address_id = :sipAddressId",
 				soci::use(date), soci::use(sipAddressId);
@@ -367,7 +369,11 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 			references.eventId = insertEvent(EventLog::Type::ChatMessage, date);
 			references.localSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
 			references.remoteSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-			references.chatRoomId = insertChatRoom(references.remoteSipAddressId, date);
+			references.chatRoomId = insertChatRoom(
+				references.remoteSipAddressId,
+				static_cast<int>(ChatRoom::Capabilities::Basic),
+				date
+			);
 
 			insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
 
@@ -422,6 +428,9 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 			// Last event date (call, message...).
 			"  last_update_date DATE NOT NULL,"
+
+			// ConferenceChatRoom, BasicChatRoom, RTT...
+			"capabilities TINYINT UNSIGNED,"
 
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
@@ -531,7 +540,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		// Trigger to delete participant_message cache entries.
 		string displayedId = Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 		string participantMessageDeleter =
-		  "CREATE TRIGGER IF NOT EXISTS message_participant_deleter"
+			"CREATE TRIGGER IF NOT EXISTS message_participant_deleter"
 			"  AFTER UPDATE OF state ON message_participant FOR EACH ROW"
 			"  WHEN NEW.state = ";
 		participantMessageDeleter += displayedId;

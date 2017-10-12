@@ -44,11 +44,15 @@ class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
 	friend class ChatMessagePrivate;
 
 public:
-	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
+
+	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
+	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
 	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;
+
+	virtual int getCapabilities () const = 0;
 
 	void compose ();
 	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);

@@ -67,7 +67,9 @@ ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me,
 	this->subject = subject;
 }
 
-// -----------------------------------------------------------------------------
+int ClientGroupChatRoom::getCapabilities () const {
+	return static_cast<int>(Capabilities::Conference);
+}
 
 void ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	list<Address> addresses;

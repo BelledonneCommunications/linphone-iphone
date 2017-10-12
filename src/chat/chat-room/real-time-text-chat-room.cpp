@@ -111,7 +111,9 @@ void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage
 
 RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) : ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
 
-// -----------------------------------------------------------------------------
+int RealTimeTextChatRoom::getCapabilities () const {
+	return static_cast<int>(Capabilities::Basic) | static_cast<int>(Capabilities::RealTimeText);
+}
 
 uint32_t RealTimeTextChatRoom::getChar () const {
 	L_D();
