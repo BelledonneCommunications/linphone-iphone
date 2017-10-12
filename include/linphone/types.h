@@ -537,12 +537,14 @@ typedef enum _LinphoneIceState {
 /**
  * IM encryption engine.
  * @ingroup misc
+ * @donotwrap
  */
 typedef struct _LinphoneImEncryptionEngine LinphoneImEncryptionEngine;
 
 /**
  * An object to handle the callbacks for the handling a LinphoneImEncryptionEngine object.
  * @ingroup misc
+ * @donotwrap
  */
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 

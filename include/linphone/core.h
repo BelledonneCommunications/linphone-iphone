@@ -2686,8 +2686,18 @@ LINPHONE_PUBLIC LinphoneNatPolicy * linphone_core_get_nat_policy(const LinphoneC
  * @param[in] lc LinphoneCore object
  * @return An unmodifiable array of strings contanining the names of the available sound devices that is NULL terminated
  * @ingroup media_parameters
+ * @donotwrap
+ * @deprecated use linphone_core_get_sound_devices_list instead
 **/
 LINPHONE_PUBLIC const char** linphone_core_get_sound_devices(LinphoneCore *lc);
+
+/**
+ * Gets the list of the available sound devices.
+ * @param[in] lc LinphoneCore object
+ * @return \bctbx_list{char *} An unmodifiable array of strings contanining the names of the available sound devices that is NULL terminated
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_sound_devices_list(LinphoneCore *lc);
 
 /**
  * Use this function when you want to set the default sound devices
@@ -3592,8 +3602,18 @@ LINPHONE_PUBLIC void linphone_core_reload_video_devices(LinphoneCore *lc);
  * @param[in] lc LinphoneCore object
  * @return An unmodifiable array of strings contanining the names of the available video capture devices that is NULL terminated
  * @ingroup media_parameters
+ * @deprecated use linphone_core_get_video_devices_list instead
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const char**  linphone_core_get_video_devices(const LinphoneCore *lc);
+
+/**
+ * Gets the list of the available video capture devices.
+ * @param[in] lc LinphoneCore object
+ * @return \bctbx_list{char *} An unmodifiable array of strings contanining the names of the available video capture devices that is NULL terminated
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_video_devices_list(LinphoneCore *lc);
 
 /**
  * Sets the active video device.
@@ -4474,8 +4494,18 @@ LINPHONE_PUBLIC const char * linphone_core_get_file_transfer_server(LinphoneCore
  * @param core the core
  * @return the supported formats, typically 'wav' and 'mkv'
  * @ingroup media_parameters
+ * @deprecated use linphone_core_get_supported_file_formats_list instead
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const char ** linphone_core_get_supported_file_formats(LinphoneCore *core);
+
+/**
+ * Returns a null terminated table of strings containing the file format extension supported for call recording.
+ * @param core the core
+ * @return \bctbx_list{char *} the supported formats, typically 'wav' and 'mkv'
+ * @ingroup media_parameters
+**/
+LINPHONE_PUBLIC bctbx_list_t * linphone_core_get_supported_file_formats_list(LinphoneCore *core);
 
 /**
  * Returns whether a specific file format is supported.

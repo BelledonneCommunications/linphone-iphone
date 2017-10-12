@@ -1127,6 +1127,19 @@ const char** linphone_config_get_sections_names(LpConfig *lpconfig) {
 	return sections_names;
 }
 
+const bctbx_list_t * linphone_config_get_sections_names_list(LpConfig *lpconfig) {
+	const bctbx_list_t *sections = lpconfig->sections;
+	bctbx_list_t *sections_names = NULL;
+	int i;
+
+	for (i = 0; sections != NULL; sections = sections->next, i++) {
+		LpSection *section = (LpSection *)sections->data;
+		sections_names = bctbx_list_append(sections_names, section->name);
+	}
+
+	return sections_names;
+}
+
 char* linphone_config_dump_as_xml(const LpConfig *lpconfig) {
 	char *buffer;
 

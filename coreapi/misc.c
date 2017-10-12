@@ -824,6 +824,15 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	return core->supported_formats;
 }
 
+bctbx_list_t * linphone_core_get_supported_file_formats_list(LinphoneCore *core){
+	bctbx_list_t *file_formats = NULL;
+	file_formats = bctbx_list_append(file_formats, ms_strdup("wav"));
+	if (ms_factory_lookup_filter_by_id(core->factory,MS_MKV_RECORDER_ID)){
+		file_formats = bctbx_list_append(file_formats, ms_strdup("mkv"));
+	}
+	return file_formats;
+}
+
 bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt){
 	const char **formats=linphone_core_get_supported_file_formats(lc);
 	for(;*formats!=NULL;++formats){

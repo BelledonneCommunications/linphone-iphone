@@ -220,8 +220,17 @@ LINPHONE_PUBLIC void linphone_config_clean_entry(LinphoneConfig *lpconfig, const
  * Returns the list of sections' names in the LinphoneConfig.
  * @param[in] lpconfig The LinphoneConfig object
  * @return a null terminated static array of strings
+ * @deprecated use linphone_config_get_sections_names_list instead
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const char** linphone_config_get_sections_names(LinphoneConfig *lpconfig);
+
+/**
+ * Returns the list of sections' names in the LinphoneConfig.
+ * @param[in] lpconfig The LinphoneConfig object
+ * @return \bctbx_list{char *} a null terminated static array of strings
+**/
+LINPHONE_PUBLIC const bctbx_list_t * linphone_config_get_sections_names_list(LpConfig *lpconfig);
 
 /**
  * Call a function for each section present in the configuration.
