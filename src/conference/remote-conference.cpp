@@ -61,7 +61,7 @@ void RemoteConference::removeParticipant (const shared_ptr<const Participant> &p
 }
 
 
-string RemoteConference::getResourceLists (const list<Address> &addresses) {
+string RemoteConference::getResourceLists (const list<Address> &addresses) const {
 	ResourceLists rl = ResourceLists();
 	ListType l = ListType();
 	for (const auto &addr : addresses) {

@@ -40,7 +40,7 @@ public:
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 
-	std::string getResourceLists (const std::list<Address> &addresses);
+	std::string getResourceLists (const std::list<Address> &addresses) const;
 
 protected:
 	/* ConferenceListener */
