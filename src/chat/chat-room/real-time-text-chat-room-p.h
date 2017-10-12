@@ -20,11 +20,8 @@
 #ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_
 #define _REAL_TIME_TEXT_CHAT_ROOM_P_H_
 
-// From coreapi.
-#include "private.h"
-
-#include "chat/chat-room/real-time-text-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
+#include "chat/chat-room/real-time-text-chat-room.h"
 
 // =============================================================================
 
@@ -36,7 +33,10 @@ public:
 	virtual ~RealTimeTextChatRoomPrivate ();
 
 public:
-	void setCall (LinphoneCall *call) { this->call = call; }
+	void setCall (LinphoneCall *call) {
+		this->call = call;
+	}
+
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
 	void sendMessage (const std::shared_ptr<ChatMessage> &msg) override;

@@ -20,14 +20,8 @@
 #ifndef _CLIENT_GROUP_CHAT_ROOM_H_
 #define _CLIENT_GROUP_CHAT_ROOM_H_
 
-// From coreapi
-#include "private.h"
-
 #include "chat/chat-room/chat-room.h"
 #include "conference/remote-conference.h"
-#include "conference/session/call-session.h"
-
-#include "linphone/types.h"
 
 // =============================================================================
 

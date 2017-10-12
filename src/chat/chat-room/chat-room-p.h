@@ -20,15 +20,8 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
-#include "linphone/enums/chat-room-enums.h"
-#include "linphone/utils/enum-generator.h"
-
-// From coreapi.
-#include "private.h"
-
-#include "chat-room.h"
-#include "chat/is-composing-listener.h"
 #include "chat/is-composing.h"
+#include "chat-room.h"
 #include "object/object-p.h"
 
 // =============================================================================
@@ -37,6 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
 	friend class ChatMessagePrivate;
+
 public:
 	ChatRoomPrivate (LinphoneCore *core);
 	virtual ~ChatRoomPrivate ();
@@ -47,9 +41,10 @@ private:
 public:
 	void addTransientMessage (const std::shared_ptr<ChatMessage> &msg);
 	void addWeakMessage (const std::shared_ptr<ChatMessage> &msg);
-	std::list<std::shared_ptr<ChatMessage> > getTransientMessages () const {
+	std::list<std::shared_ptr<ChatMessage>> getTransientMessages () const {
 		return transientMessages;
 	}
+
 	void moveTransientMessageToWeakMessages (const std::shared_ptr<ChatMessage> &msg);
 	void removeTransientMessage (const std::shared_ptr<ChatMessage> &msg);
 
@@ -69,7 +64,7 @@ protected:
 	std::shared_ptr<ChatMessage> getWeakMessage (unsigned int storageId) const;
 	int sqlRequest (sqlite3 *db, const std::string &stmt);
 	void sqlRequestMessage (sqlite3 *db, const std::string &stmt);
-	std::list<std::shared_ptr<ChatMessage> > findMessages (const std::string &messageId);
+	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
 	void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
 public:
@@ -100,9 +95,9 @@ public:
 	int unreadCount = -1;
 	bool isComposing = false;
 	bool remoteIsComposing = false;
-	std::list<std::shared_ptr<ChatMessage> > messages;
-	std::list<std::shared_ptr<ChatMessage> > transientMessages;
-	std::list<std::weak_ptr<ChatMessage> > weakMessages;
+	std::list<std::shared_ptr<ChatMessage>> messages;
+	std::list<std::shared_ptr<ChatMessage>> transientMessages;
+	std::list<std::weak_ptr<ChatMessage>> weakMessages;
 	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
 	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 	IsComposing isComposingHandler;

@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+// TODO: Remove me later.
+#include "private.h"
+
 #include "address/address.h"
 #include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room.h"

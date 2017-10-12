@@ -20,17 +20,12 @@
 #ifndef _CLIENT_GROUP_CHAT_ROOM_P_H_
 #define _CLIENT_GROUP_CHAT_ROOM_P_H_
 
-// From coreapi.
-#include "private.h"
-
-#include "client-group-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
+#include "client-group-chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
-
-class CallSession;
 
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:

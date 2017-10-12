@@ -20,18 +20,8 @@
 #ifndef _CHAT_ROOM_H_
 #define _CHAT_ROOM_H_
 
-#include <list>
-
-// From coreapi
-#include "private.h"
-
-#include "address/address.h"
-#include "object/object.h"
-#include "conference/conference-interface.h"
-
 #include "chat/chat-message/chat-message.h"
-
-#include "linphone/types.h"
+#include "conference/conference-interface.h"
 
 // =============================================================================
 
@@ -60,18 +50,18 @@ public:
 	std::shared_ptr<ChatMessage> createMessage ();
 	void deleteHistory ();
 	void deleteMessage (const std::shared_ptr<ChatMessage> &msg);
-	std::shared_ptr<ChatMessage> findMessage (const std::string& messageId);
+	std::shared_ptr<ChatMessage> findMessage (const std::string &messageId);
 	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
-	std::list<std::shared_ptr<ChatMessage> > getHistory (int nbMessages);
+	std::list<std::shared_ptr<ChatMessage>> getHistory (int nbMessages);
 	int getHistorySize ();
-	std::list<std::shared_ptr<ChatMessage> > getHistoryRange (int startm, int endm);
+	std::list<std::shared_ptr<ChatMessage>> getHistoryRange (int startm, int endm);
 	int getUnreadMessagesCount ();
 	bool isRemoteComposing () const;
 	void markAsRead ();
 
 	LinphoneCore *getCore () const;
 
-	const Address& getPeerAddress () const;
+	const Address &getPeerAddress () const;
 	State getState () const;
 
 protected:

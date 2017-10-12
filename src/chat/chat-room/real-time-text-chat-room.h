@@ -20,12 +20,7 @@
 #ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_
 #define _REAL_TIME_TEXT_CHAT_ROOM_H_
 
-// From coreapi
-#include "private.h"
-
 #include "chat/chat-room/chat-room.h"
-
-#include "linphone/types.h"
 
 // =============================================================================
 

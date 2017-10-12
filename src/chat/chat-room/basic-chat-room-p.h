@@ -20,9 +20,6 @@
 #ifndef _BASIC_CHAT_ROOM_P_H_
 #define _BASIC_CHAT_ROOM_P_H_
 
-// From coreapi.
-#include "private.h"
-
 #include "basic-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
 

@@ -22,11 +22,8 @@
 #include "address/address-p.h"
 #include "client-group-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
-#include "conference/params/call-session-params-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/participant-p.h"
-#include "content/content.h"
-#include "hacks/hacks.h"
 #include "logger/logger.h"
 #include "sal/refer-op.h"
 
@@ -36,8 +33,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core)
-	: ChatRoomPrivate(core) {}
+ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
 
 // -----------------------------------------------------------------------------
 

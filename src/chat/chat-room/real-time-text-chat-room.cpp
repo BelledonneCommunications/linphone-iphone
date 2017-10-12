@@ -17,14 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <algorithm>
-
-#include "linphone/utils/utils.h"
-
-#include "real-time-text-chat-room-p.h"
-#include "chat/chat-message/chat-message-p.h"
 #include "c-wrapper/c-wrapper.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "logger/logger.h"
+#include "real-time-text-chat-room-p.h"
 
 // =============================================================================
 
