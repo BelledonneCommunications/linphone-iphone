@@ -116,11 +116,21 @@ class JavaTranslator(object):
             return 'V'
         return _type
 
-    def translate_as_c_base_type(self, _type):
+    def translate_as_c_base_type(self, t):
+        _type = t.name
         if _type == 'string':
-            return 'const char *'
+            return 'char *'
         elif _type == 'integer':
-            return 'int'
+            if t.size is None:
+                if t.isUnsigned:
+                    return 'unsigned int'
+                return 'int'
+            inttype = 'int{0}_t'.format(t.size)
+            if t.isUnsigned:
+                inttype = 'u' + inttype
+            if t.isref:
+                inttype = inttype + ' *'
+            return inttype
         elif _type == 'boolean':
             return 'bool_t'
         elif _type == 'floatant':
@@ -132,11 +142,13 @@ class JavaTranslator(object):
         elif _type == 'status':
             return 'int'
         elif _type == 'string_array':
-            return 'const char **'
+            return 'char **'
         elif _type == 'character':
             return 'char'
         elif _type == 'void':
-            return 'void *'
+            if t.isref:
+                return 'void *'
+            return 'void'
         return _type
 
     def translate_type(self, _type, native=False, jni=False, isReturn=False):
@@ -145,6 +157,8 @@ class JavaTranslator(object):
                 if type(_type.containedTypeDesc) is AbsApi.ClassType:
                     return 'jobjectArray'
                 elif type(_type.containedTypeDesc) is AbsApi.BaseType:
+                    if _type.containedTypeDesc.name == 'string':
+                        return 'jobjectArray'
                     return self.translate_type(_type.containedTypeDesc, jni=True) + 'Array'
                 elif type(_type.containedTypeDesc) is AbsApi.EnumType:
                     ptrtype = self.translate_type(_type.containedTypeDesc, native)
@@ -322,7 +336,8 @@ class JavaTranslator(object):
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
         methodDict['hasListReturn'] = methodDict['return'] == 'jobjectArray'
         methodDict['hasReturn'] = not methodDict['return'] == 'void' and not methodDict['hasListReturn']
-        methodDict['hasNormalReturn'] = not methodDict['hasListReturn']
+        methodDict['hasStringReturn'] = methodDict['return'] == 'jstring'
+        methodDict['hasNormalReturn'] = not methodDict['hasListReturn'] and not methodDict['hasStringReturn']
         methodDict['name'] = 'Java_' + self.jni_package + className.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
         methodDict['notStatic'] = not static
         methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + _method.name.to_snake_case()
@@ -332,7 +347,9 @@ class JavaTranslator(object):
         methodDict['isStringObjectArray'] = False
 
         if methodDict['hasListReturn']:
-            if _method.returnType.name == 'string_array':
+            if type(_method.returnType) is AbsApi.BaseType and _method.returnType.name == 'string_array':
+                methodDict['isStringObjectArray'] = True
+            elif type(_method.returnType.containedTypeDesc) is AbsApi.BaseType:
                 methodDict['isStringObjectArray'] = True
             elif type(_method.returnType.containedTypeDesc) is AbsApi.ClassType:
                 methodDict['isRealObjectArray'] = True
@@ -340,8 +357,6 @@ class JavaTranslator(object):
                 methodDict['objectClassCName'] = 'Linphone' + _method.returnType.containedTypeDesc.desc.name.to_camel_case()
                 methodDict['objectClassName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case()
                 methodDict['objectClassImplName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case() + 'Impl'
-            else:
-                print 'toto'
 
         methodDict['params'] = 'JNIEnv *env, jobject thiz' if static else 'JNIEnv *env, jobject thiz, jlong ptr'
         methodDict['params_impl'] = ''
@@ -352,18 +367,26 @@ class JavaTranslator(object):
         methodDict['returnedObjectGetter'] = ''
         for arg in _method.args:
             methodDict['params'] += ', '
-            methodDict['params_impl'] += ', '
+            if static:
+                if arg is not _method.args[0]:
+                    methodDict['params_impl'] += ', '
+            else:
+                methodDict['params_impl'] += ', '
+
             methodDict['params'] += self.translate_argument(arg, jni=True)
             argname = self.translate_argument_name(arg.name)
 
             if type(arg.type) is AbsApi.ClassType:
-                methodDict['objects'].append({'object': argname, 'objectClassCName': 'Linphone' + arg.type.desc.name.to_camel_case()})
+                classCName = 'Linphone' + arg.type.desc.name.to_camel_case()
+                if classCName[-8:] == 'Listener':
+                   classCName = 'Linphone' + arg.type.desc.name.to_camel_case()[:-8] + 'Cbs'
+                methodDict['objects'].append({'object': argname, 'objectClassCName': classCName})
                 methodDict['params_impl'] += 'c_' + argname
                 
             elif type(arg.type) is AbsApi.ListType:
                 isStringList = type(arg.type.containedTypeDesc) is AbsApi.BaseType and arg.type.containedTypeDesc.name == 'string'
                 isObjList = type(arg.type.containedTypeDesc) is AbsApi.ClassType
-                methodDict['lists'].append({'list': argname, 'isStringList': isStringList, 'isObjList': isObjList})
+                methodDict['lists'].append({'list': argname, 'isStringList': isStringList, 'isObjList': isObjList, 'objectClassCName': arg.type.containedTypeDesc.name})
                 methodDict['params_impl'] += 'bctbx_list_' + argname
 
             elif type(arg.type) is AbsApi.EnumType:
@@ -375,7 +398,7 @@ class JavaTranslator(object):
                     methodDict['strings'].append({'string': argname})
                     methodDict['params_impl'] += 'c_' + argname
                 else:
-                    methodDict['params_impl'] += argname
+                    methodDict['params_impl'] += '(' + self.translate_as_c_base_type(arg.type) + ')' + argname                        
             else:
                 methodDict['params_impl'] += argname
 
@@ -434,14 +457,18 @@ class JavaTranslator(object):
         methodDict['className'] = className.to_camel_case()
         methodDict['classImplName'] = className.to_camel_case() + 'Impl'
         methodDict['jniPath'] = self.jni_path
-        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()
+        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()[:-9] # Remove _listener at the end
         methodDict['callbackName'] = methodDict['cPrefix'] + '_' + _method.name.to_snake_case()
         methodDict['jname'] = _method.name.to_camel_case(lower=True)
-        methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
-
+        methodDict['return'] = self.translate_as_c_base_type(_method.returnType)
+        if type(_method.returnType) is AbsApi.ClassType:
+            methodDict['return'] += '*'
+        methodDict['returnIfFail'] = '' if  methodDict['return'] == 'void' else ' NULL' #TODO
+        methodDict['hasReturn'] = not methodDict['return'] == 'void'
         methodDict['isSingleListener'] = not _class.multilistener
         methodDict['isMultiListener'] = _class.multilistener
 
+        methodDict['firstParam'] = ''
         methodDict['jobjects'] = []
         methodDict['jenums'] = []
         methodDict['jstrings'] = []
@@ -453,14 +480,19 @@ class JavaTranslator(object):
             if arg is not _method.args[0]:
                 methodDict['params'] += ', '
                 methodDict['params_impl'] += ', '
+            else:
+                 methodDict['firstParam'] = argname
+
+            if (arg.type.isconst):
+                methodDict['params'] += 'const '
 
             if type(arg.type) is AbsApi.ClassType:
-                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' *' + (argname if arg is not _method.args[0] else 'cptr')
+                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' *' + argname
                 methodDict['jparams'] += 'L' + self.jni_path + arg.type.desc.name.to_camel_case() + ';'
                 methodDict['params_impl'] += 'j_' + argname
-                methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.desc.name.to_camel_case(),})
+                methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.desc.name.to_camel_case(), })
             elif type(arg.type) is AbsApi.BaseType:
-                methodDict['params'] += self.translate_as_c_base_type(arg.type.name) + ' ' + argname
+                methodDict['params'] += self.translate_as_c_base_type(arg.type) + ' ' + argname
                 methodDict['jparams'] += self.translate_java_jni_base_type_name(arg.type.name)
                 if arg.type.name == 'string':
                     methodDict['params_impl'] += 'j_' + argname
@@ -551,7 +583,7 @@ class JniInterface(object):
         self.callbacks = []
         listener = apiClass.listenerInterface
         for method in listener.methods:
-            cb = 'linphone_' + listener.name.to_snake_case()
+            cb = 'linphone_' + listener.name.to_snake_case()[:-9] # Remove _listener at the end
             cbName = cb + '_' + method.name.to_snake_case()
             self.callbacks.append({
                 'callbackName': cbName,
@@ -677,13 +709,14 @@ class GenWrapper(object):
         project.initFromDir(xmldir)
         project.check()
 
-        self.parser = AbsApi.CParser(project)
+        self.parser = AbsApi.CParser(project, ['LinphoneBuffer'])
         self.parser.functionBl = \
             ['linphone_vcard_get_belcard',\
             'linphone_core_get_current_vtable',\
             'linphone_factory_get',\
-            'linphone_factory_clean']
-        self.parser.classBl += 'LinphoneCoreVTable'
+            'linphone_factory_clean',\
+            'linphone_call_zoom_video',\
+            'linphone_config_get_range']
         self.parser.parse_all()
         self.translator = JavaTranslator(package)
         self.renderer = pystache.Renderer()

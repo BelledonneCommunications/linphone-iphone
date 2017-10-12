@@ -18,15 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include <jni.h>
-#include "linphone/core_utils.h"
 #include <cpu-features.h>
 
+#include "belle-sip/object.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/mscommon.h"
 #include "mediastreamer2/msmediaplayer.h"
 #include "mediastreamer2/msutils.h"
 #include "mediastreamer2/devices.h"
 #include "mediastreamer2/msjava.h"
+#include "linphone/core_utils.h"
 #include "linphone/core.h"
 #include "linphone/tunnel.h"
 #include "linphone/account_creator.h"
@@ -44,11 +45,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
 #ifdef __ANDROID__
 	ms_set_jvm(ajvm);
 #endif /* __ANDROID__ */
-	LinphoneJavaBindings *ljb = new LinphoneJavaBindings(ms_get_jni_env());
-	linphone_factory_set_user_data(linphone_factory_get(), ljb);
 	jvm = ajvm;
 	return JNI_VERSION_1_2;
 }
+
+#define belle_sip_java_user_data_key "java_object"
 
 static const char* GetStringUTFChars(JNIEnv* env, jstring string) {
 	const char *cstring = string ? env->GetStringUTFChars(string, NULL) : NULL;
@@ -108,28 +109,33 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#objects}}
-jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
+jobject get{{className}}(JNIEnv *env, {{classCName}} *cptr) {
 	jobject jobj = 0;
 
-	if (ptr != NULL) {
-		void *up = {{cPrefix}}_get_user_data(ptr);
+	if (cptr != NULL) {
+		void *up = belle_sip_object_data_get((belle_sip_object_t *)cptr, belle_sip_java_user_data_key);
 		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+		if (!ljb) {
+			ljb = new LinphoneJavaBindings(env);
+			linphone_factory_set_user_data(linphone_factory_get(), ljb);
+		}
+
 		jclass {{cPrefix}}_class = ljb->{{cPrefix}}_class;
 		jmethodID {{cPrefix}}_constructor = ljb->{{cPrefix}}_class_constructor;
 
 		if (up == NULL) {
-			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)ptr);
-			{{cPrefix}}_set_user_data(ptr, (void*)env->NewWeakGlobalRef(jobj));
-			{{cPrefix}}_ref(ptr);
+			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
+			belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
+			{{cPrefix}}_ref(cptr);
 		} else {
 			jobj = env->NewLocalRef((jobject)up);
 			if (jobj == NULL) {
 				// Delete weak ref ?
 				env->DeleteWeakGlobalRef((jobject)up);
 				// takes implicit local ref
-				jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)ptr);
-				{{cPrefix}}_set_user_data(ptr, (void*)env->NewWeakGlobalRef(jobj));
-				{{cPrefix}}_ref(ptr);
+				jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
+				belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
+				{{cPrefix}}_ref(cptr);
 			}
 		}
 	}
@@ -138,8 +144,8 @@ jobject get{{className}}(JNIEnv *env, {{classCName}} *ptr) {
 
 void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong ptr) {
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
-	jobject wref = (jobject){{cPrefix}}_get_user_data(cptr);
-	{{cPrefix}}_set_user_data(cptr, NULL);
+	jobject wref = (jobject)belle_sip_object_data_get((belle_sip_object_t *)cptr, belle_sip_java_user_data_key);
+	belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, NULL, NULL);
 	if (wref) {
 		env->DeleteWeakGlobalRef(wref);
 	}
@@ -161,24 +167,23 @@ static inline void handle_possible_java_exception(JNIEnv *env, jobject listener)
 {{#callbacks}}
 static {{return}} {{callbackName}}({{params}}) {
 	JNIEnv *env = 0;
-	jint result = jvm->AttachCurrentThread(&env,NULL);
-	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
-	if (result != 0) {
+	jint jvmResult = jvm->AttachCurrentThread(&env,NULL);
+	if (jvmResult != 0) {
 		ms_error("cannot attach VM");
-		return;
+		return{{returnIfFail}};
 	}
 
 	{{#isSingleListener}}
-	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(cptr);
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks({{firstParam}});
 	{{/isSingleListener}}
 	{{#isMultiListener}}
-	{{classCName}}Cbs *cbs = {{cPrefix}}_get_current_callbacks(cptr);
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_current_callbacks({{firstParam}});
 	{{/isMultiListener}}
 	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
 
 	if (jlistener == NULL) {
 		ms_warning("{{name}}() notification without listener");
-		return ;
+		return{{returnIfFail}};
 	}
 
 	jclass jlistenerClass = (jclass) env->GetObjectClass(jlistener);
@@ -186,9 +191,10 @@ static {{return}} {{callbackName}}({{params}}) {
 	env->DeleteLocalRef(jlistenerClass);
 
 	{{#jobjects}}
-	jobject j_{{objectName}} = get{{className}}(env, {{objectName}});
+	jobject j_{{objectName}} = get{{className}}(env, (Linphone{{className}} *){{objectName}});
 	{{/jobjects}}
 	{{#jenums}}
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
 	jobject j_{{enumName}} = env->CallStaticObjectMethod(ljb->{{cEnumPrefix}}_class, ljb->{{cEnumPrefix}}_class_constructor_from_int, (jint){{enumName}});
 	{{/jenums}}
 	{{#jstrings}}
@@ -209,6 +215,9 @@ static {{return}} {{callbackName}}({{params}}) {
 	{{/jstrings}}
 
 	handle_possible_java_exception(env, jlistener);
+	{{#hasReturn}}
+	return 0;
+	{{/hasReturn}}
 }
 
 {{/callbacks}}
@@ -243,7 +252,7 @@ void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, 
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
 	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks_list(cptr);
 	bctbx_list_t *it;
-	for (it = cbs_list; it != NULL; it = it->next) {
+	for (it = (bctbx_list_t *)cbs_list; it != NULL; it = it->next) {
 		{{classCName}}Cbs *cbs = ({{classCName}}Cbs *)it->data;
 		if ({{cPrefix}}_cbs_get_user_data(cbs) == jlistener) {
 			{{cPrefix}}_remove_callbacks(cptr, cbs);
@@ -258,16 +267,15 @@ void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, 
 
 {{#methods}}
 {{return}} {{name}}({{params}}) {
-	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}
-	{{#strings}}
+	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}{{#strings}}
 	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
 	{{/strings}}{{#objects}}
 	{{objectClassCName}}* c_{{object}} = NULL;
 	if ({{object}}) c_{{object}} = ({{objectClassCName}}*)GetObjectNativePtr(env, {{object}});
 	{{/objects}}{{#lists}}
 	bctbx_list_t *bctbx_list_{{list}} = NULL;
-	int count = env->GetArrayLength({{list}});
-	for (int i=0; i < count; i++) {
+	int {{list}}_count = env->GetArrayLength({{list}});
+	for (int i=0; i < {{list}}_count; i++) {
 		{{#isStringList}}
 		jstring obj = (jstring) env->GetObjectArrayElement({{list}}, i);
 		const char *str = GetStringUTFChars(env, obj);
@@ -278,30 +286,34 @@ void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, 
 		{{/isStringList}}
 		{{#isObjList}}
 		jobject obj = env->GetObjectArrayElement({{list}}, i);
-		bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, GetObjectNativePtr(env, obj));
+		bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, ({{objectClassCName}} *)GetObjectNativePtr(env, obj));
 		{{/isObjList}}
 	}
 	{{/lists}}{{#hasListReturn}}
-	bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
+	const bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
 	size_t count = bctbx_list_size(list);
 	{{#isRealObjectArray}}
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
-	jobjectArray jni_list_result = env->NewObjectArray(count, ljb->{{objectCPrefix}}_class, NULL);{{/isRealObjectArray}}
-	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray(count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
+	jobjectArray jni_list_result = env->NewObjectArray((int)count, ljb->{{objectCPrefix}}_class, NULL);{{/isRealObjectArray}}
+	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray((int)count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
 	for (size_t i = 0; i < count; i++) {
 		{{#isRealObjectArray}}
 		{{objectClassCName}}* c_object = ({{objectClassCName}}*)list->data;
-		jobject object = get{{objectClassName}}(c_object);
+		jobject object = get{{objectClassName}}(env, c_object);
 		{{/isRealObjectArray}}
-		{{#isStringObjectArray}}jstring object = list->data ? env->NewStringUTF(list->data) : 0;{{/isStringObjectArray}}
+		{{#isStringObjectArray}}const char *cstring = (const char *)list->data;
+		jstring object = cstring ? env->NewStringUTF(cstring) : 0;{{/isStringObjectArray}}
 		if (object != 0) {
-			env->SetObjectArrayElement(jni_list_result, i, object);
+			env->SetObjectArrayElement(jni_list_result, (int)i, object);
 			{{#isRealObjectArray}}env->DeleteLocalRef(object);{{/isRealObjectArray}}
 		}
 		list = bctbx_list_next(list);
 	}
-	{{/hasListReturn}}{{#hasNormalReturn}}
-	{{#hasReturn}}{{return}} jni_result = {{#returnObject}}get{{returnClassName}}({{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
+	{{/hasListReturn}}{{#hasStringReturn}}
+	const char *c_string = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
+	jstring jni_result = (c_string != NULL) ? env->NewStringUTF(c_string) : NULL;
+	{{/hasStringReturn}}{{#hasNormalReturn}}
+	{{#hasReturn}}{{return}} jni_result = ({{return}}){{#returnObject}}get{{returnClassName}}(env, (Linphone{{returnClassName}} *){{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
 	{{/hasNormalReturn}}{{#strings}}
 	ReleaseStringUTFChars(env, {{string}}, c_{{string}});
 	{{/strings}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}

@@ -446,7 +446,7 @@ class Interface(DocumentableObject):
 
 
 class CParser(object):
-	def __init__(self, cProject):
+	def __init__(self, cProject, classBlAppend=[]):
 		self.cBaseType = ['void', 'bool_t', 'char', 'short', 'int', 'long', 'size_t', 'time_t', 'float', 'double', 'LinphoneStatus']
 		self.cListType = 'bctbx_list_t'
 		self.regexFixedSizeInteger = '^(u?)int(\d?\d)_t$'
@@ -457,6 +457,8 @@ class CParser(object):
 					   'linphone_vcard_get_belcard'] # manualy wrapped
 
 		self.classBl = ['LpConfig']  # temporarly blacklisted
+		for bl in classBlAppend:
+			self.classBl.append(bl)
 		
 		# list of classes that must be concidered as refcountable even if
 		# they are no ref()/unref() methods
