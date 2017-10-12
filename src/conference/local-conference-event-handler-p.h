@@ -33,7 +33,6 @@ public:
 	void notifyFullState (const std::string &notify, LinphoneEvent *lev);
 	void notifyAllExcept (const std::string &notify, const Address &addr);
 	void notifyAll (const std::string &notify);
-	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo);
 	std::string createNotifyFullState ();
 	std::string createNotifyParticipantAdded (const Address &addr);
 	std::string createNotifyParticipantRemoved (const Address &addr);
@@ -49,6 +48,7 @@ private:
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 0;
 
+	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo);
 	void sendNotify (const std::string &notify, const Address &addr);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);

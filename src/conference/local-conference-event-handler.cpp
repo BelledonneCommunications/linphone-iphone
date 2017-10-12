@@ -249,7 +249,7 @@ LocalConferenceEventHandler::LocalConferenceEventHandler (LinphoneCore *core, Lo
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConf;
 	d->core = core;
-	//init d->lastNotify = last notify
+	// TODO : init d->lastNotify = last notify
 }
 
 LocalConferenceEventHandler::~LocalConferenceEventHandler () {
