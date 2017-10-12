@@ -118,7 +118,7 @@ void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 
 // -----------------------------------------------------------------------------
 
-const Address &RemoteConferenceEventHandler::getConfAddress () {
+const Address &RemoteConferenceEventHandler::getConfAddress () const {
 	L_D();
 	return d->confAddress;
 }

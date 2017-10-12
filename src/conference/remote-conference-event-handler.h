@@ -40,7 +40,7 @@ class RemoteConferenceEventHandler : public Object {
 		void notifyReceived (std::string xmlBody);
 		void unsubscribe ();
 
-		const Address &getConfAddress ();
+		const Address &getConfAddress () const;
 
 	private:
 		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);
