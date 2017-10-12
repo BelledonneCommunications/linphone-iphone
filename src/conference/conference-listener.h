@@ -20,11 +20,15 @@
 #ifndef _CONFERENCE_LISTENER_H_
 #define _CONFERENCE_LISTENER_H_
 
-#include "address/address.h"
+#include <string>
+
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
+
+class Address;
 
 class ConferenceListener {
 public:
@@ -41,4 +45,3 @@ public:
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _CONFERENCE_LISTENER_H_
-

@@ -17,27 +17,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "participant-p.h"
-
-#include "conference.h"
+#include "call/call-listener.h"
+#include "conference-p.h"
 #include "conference/session/call-session-p.h"
 #include "logger/logger.h"
+#include "participant-p.h"
+
+// =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-// =============================================================================
+Conference::Conference (ConferencePrivate &p, LinphoneCore *core, const Address &myAddress, CallListener *listener) : mPrivate(&p) {
+	L_D();
+	d->mPublic = this;
+	d->core = core;
+	d->callListener = listener;
+	d->me = ObjectFactory::create<Participant>(myAddress);
+}
 
-Conference::Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: core(core), callListener(listener) {
-	me = ObjectFactory::create<Participant>(myAddress);
+Conference::~Conference () {
+	delete mPrivate;
 }
 
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> Conference::getActiveParticipant () const {
-	return activeParticipant;
+	L_D();
+	return d->activeParticipant;
+}
+
+shared_ptr<Participant> Conference::getMe () const {
+	L_D();
+	return d->me;
+}
+
+LinphoneCore *Conference::getCore () const {
+	L_D();
+	return d->core;
 }
 
 // -----------------------------------------------------------------------------
@@ -61,20 +79,24 @@ bool Conference::canHandleParticipants () const {
 	return true;
 }
 
-const Address *Conference::getConferenceAddress () const {
-	return &conferenceAddress;
+const Address &Conference::getConferenceAddress () const {
+	L_D();
+	return d->conferenceAddress;
 }
 
 int Conference::getNbParticipants () const {
-	return static_cast<int>(participants.size());
+	L_D();
+	return static_cast<int>(d->participants.size());
 }
 
 list<shared_ptr<Participant>> Conference::getParticipants () const {
-	return participants;
+	L_D();
+	return d->participants;
 }
 
 const string &Conference::getSubject () const {
-	return subject;
+	L_D();
+	return d->subject;
 }
 
 void Conference::join () {}
@@ -90,110 +112,132 @@ void Conference::removeParticipants (const list<shared_ptr<Participant>> &partic
 		removeParticipant(p);
 }
 
-void Conference::setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) {
+void Conference::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
 	lError() << "Conference class does not handle setParticipantAdminStatus() generically";
 }
 
 void Conference::setSubject (const string &subject) {
-	this->subject = subject;
+	L_D();
+	d->subject = subject;
 }
 
 // -----------------------------------------------------------------------------
 
-void Conference::onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
-	if (callListener)
-		callListener->onAckBeingSent(headers);
+void Conference::onAckBeingSent (const shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onAckBeingSent(headers);
 }
 
-void Conference::onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
-	if (callListener)
-		callListener->onAckReceived(headers);
+void Conference::onAckReceived (const shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onAckReceived(headers);
 }
 
-void Conference::onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onIncomingCallToBeAdded();
+void Conference::onCallSessionAccepted (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onIncomingCallToBeAdded();
 }
 
-void Conference::onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onCallSetReleased();
+void Conference::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onCallSetReleased();
 }
 
-void Conference::onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onCallSetTerminated();
+void Conference::onCallSessionSetTerminated (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onCallSetTerminated();
 }
 
-void Conference::onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
-	if (callListener)
-		callListener->onCallStateChanged(state, message);
+void Conference::onCallSessionStateChanged (const shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onCallStateChanged(state, message);
 }
 
-void Conference::onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onCheckForAcceptation();
+void Conference::onCheckForAcceptation (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onCheckForAcceptation();
 }
 
-void Conference::onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onIncomingCallStarted();
+void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onIncomingCallStarted();
 }
 
-void Conference::onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
-	if (callListener)
-		callListener->onEncryptionChanged(activated, authToken);
+void Conference::onEncryptionChanged (const shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onEncryptionChanged(activated, authToken);
 }
 
 void Conference::onStatsUpdated (const LinphoneCallStats *stats) {
-	if (callListener)
-		callListener->onStatsUpdated(stats);
+	L_D();
+	if (d->callListener)
+		d->callListener->onStatsUpdated(stats);
 }
 
-void Conference::onResetCurrentSession (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onResetCurrentCall();
+void Conference::onResetCurrentSession (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onResetCurrentCall();
 }
 
-void Conference::onSetCurrentSession (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onSetCurrentCall();
+void Conference::onSetCurrentSession (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onSetCurrentCall();
 }
 
-void Conference::onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onFirstVideoFrameDecoded();
+void Conference::onFirstVideoFrameDecoded (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onFirstVideoFrameDecoded();
 }
 
-void Conference::onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
-	if (callListener)
-		callListener->onResetFirstVideoFrameDecoded();
+void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onResetFirstVideoFrameDecoded();
 }
 
 // -----------------------------------------------------------------------------
 
 shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
+	L_D();
+
 	Address testedAddr = addr;
 	testedAddr.setPort(0);
-	for (const auto &participant : participants) {
+	for (const auto &participant : d->participants) {
 		Address participantAddr = participant->getAddress();
 		participantAddr.setPort(0);
 		if (testedAddr.weakEqual(participantAddr))
 			return participant;
 	}
+
 	return nullptr;
 }
 
 shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const CallSession> &session) const {
-	for (const auto &participant : participants) {
+	L_D();
+
+	for (const auto &participant : d->participants) {
 		if (participant->getPrivate()->getSession() == session)
 			return participant;
 	}
+
 	return nullptr;
 }
 
 bool Conference::isMe (const Address &addr) const {
-	Address cleanedMe = me->getAddress();
+	L_D();
+	Address cleanedMe = d->me->getAddress();
 	cleanedMe.setPort(0);
 	Address cleanedAddr = addr;
 	cleanedAddr.setPort(0);

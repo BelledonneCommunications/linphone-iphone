@@ -43,6 +43,16 @@ namespace Utils {
 	}
 
 	template<typename T>
+	LINPHONE_PUBLIC constexpr T *getPtr (std::unique_ptr<T> &object) {
+		return object.get();
+	}
+
+	template<typename T>
+	LINPHONE_PUBLIC constexpr T *getPtr (const std::unique_ptr<T> &object) {
+		return object.get();
+	}
+
+	template<typename T>
 	LINPHONE_PUBLIC constexpr T *getPtr (T *object) {
 		return object;
 	}

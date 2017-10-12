@@ -78,7 +78,7 @@ string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -112,7 +112,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr) {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -142,7 +142,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr) {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -156,7 +156,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const Address &addr, bool isAdmin) {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -173,7 +173,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
@@ -184,7 +184,7 @@ string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -209,7 +209,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (c
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
-	string entity = conf->getConferenceAddress()->asStringUriOnly();
+	string entity = conf->getConferenceAddress().asStringUriOnly();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -237,7 +237,7 @@ void LocalConferenceEventHandlerPrivate::sendNotify (const string &notify, const
 	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
 	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
 	// Fix the From header to put the chat room URI
-	lev->op->set_from(conf->getConferenceAddress()->asString().c_str());
+	lev->op->set_from(conf->getConferenceAddress().asString().c_str());
 	linphone_address_unref(cAddr);
 	doNotify(notify, lev);
 }

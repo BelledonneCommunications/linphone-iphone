@@ -17,42 +17,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "local-conference.h"
+#include "local-conference-event-handler.h"
+#include "local-conference-p.h"
 #include "participant-p.h"
 #include "xml/resource-lists.h"
 
+// =============================================================================
+
 using namespace std;
-using namespace LinphonePrivate::Xsd::ResourceLists;
 
 LINPHONE_BEGIN_NAMESPACE
 
-// =============================================================================
-
 LocalConference::LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(core, myAddress, listener) {
-	eventHandler = new LocalConferenceEventHandler(core, this);
-}
-
-LocalConference::~LocalConference () {
-	delete eventHandler;
+	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {
+	L_D();
+	d->eventHandler.reset(new LocalConferenceEventHandler(core, this));
 }
 
 // -----------------------------------------------------------------------------
 
 void LocalConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+	L_D();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
 		return;
 	participant = ObjectFactory::create<Participant>(addr);
-	participants.push_back(participant);
-	if (!activeParticipant)
-		activeParticipant = participant;
+	d->participants.push_back(participant);
+	if (!d->activeParticipant)
+		d->activeParticipant = participant;
 }
 
 void LocalConference::removeParticipant (const shared_ptr<const Participant> &participant) {
-	for (const auto &p : participants) {
+	L_D();
+	for (const auto &p : d->participants) {
 		if (participant->getAddress() == p->getAddress()) {
-			participants.remove(p);
+			d->participants.remove(p);
 			return;
 		}
 	}
@@ -60,7 +59,10 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 
 list<Address> LocalConference::parseResourceLists (string xmlBody) {
 	istringstream data(xmlBody);
-	unique_ptr<ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(data, Xsd::XmlSchema::Flags::dont_validate);
+	unique_ptr<Xsd::ResourceLists::ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(
+		data,
+		Xsd::XmlSchema::Flags::dont_validate
+	);
 	list<Address> addresses = list<Address>();
 	for (const auto &l : rl->getList()) {
 		for (const auto &entry : l.getEntry()) {

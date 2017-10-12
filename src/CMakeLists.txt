@@ -54,9 +54,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/modifier/encryption-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
 	conference/conference-listener.h
+	conference/conference-p.h
 	conference/conference.h
 	conference/local-conference-event-handler-p.h
 	conference/local-conference-event-handler.h
+	conference/local-conference-p.h
 	conference/local-conference.h
 	conference/params/call-session-params-p.h
 	conference/params/call-session-params.h
@@ -67,6 +69,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/participant.h
 	conference/remote-conference-event-handler-p.h
 	conference/remote-conference-event-handler.h
+	conference/remote-conference-p.h
 	conference/remote-conference.h
 	conference/session/call-session-listener.h
 	conference/session/call-session-p.h

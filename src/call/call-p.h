@@ -20,10 +20,12 @@
 #ifndef _CALL_P_H_
 #define _CALL_P_H_
 
+#include "call-listener.h"
 #include "call.h"
 #include "conference/conference.h"
 #include "object/object-p.h"
 
+// TODO: Remove me later.
 #include "private.h"
 
 // =============================================================================

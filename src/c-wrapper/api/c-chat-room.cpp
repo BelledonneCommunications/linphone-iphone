@@ -230,12 +230,12 @@ LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom
 }
 
 const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr) {
-	if (cr->conferenceAddressCache) {
+	if (cr->conferenceAddressCache)
 		linphone_address_unref(cr->conferenceAddressCache);
-	}
-	auto addr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress();
-	if (addr)
-		cr->conferenceAddressCache = linphone_address_new(addr->asString().c_str());
+
+	const LinphonePrivate::Address &address = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress();
+	if (address.isValid())
+		cr->conferenceAddressCache = linphone_address_new(address.asString().c_str());
 	else
 		cr->conferenceAddressCache = nullptr;
 	return cr->conferenceAddressCache;

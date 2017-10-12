@@ -117,6 +117,13 @@ class ObjectPrivate;
 		friend class Tester;
 #endif
 
+// Generic public helper. (Neither ClonableObject nor Object.)
+// `void *` is used to avoid downcasting.
+template<typename T>
+constexpr T *getPublicHelper (void *object, const void *) {
+	return static_cast<T *>(object);
+}
+
 template<typename T, typename U>
 inline T *getPublicHelper (const U *map, const ClonableObjectPrivate *context) {
 	auto it = map->find(context);

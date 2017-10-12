@@ -36,9 +36,9 @@ class Tester {
 public:
 	Tester () = delete;
 
-	template<typename Object>
-	static constexpr decltype(std::declval<Object>().getPrivate()) getPrivate (Object *cppObject) {
-		return cppObject->getPrivate();
+	template<typename T>
+	static constexpr decltype(std::declval<T>().getPrivate()) getPrivate (T *object) {
+		return object->getPrivate();
 	}
 
 private:

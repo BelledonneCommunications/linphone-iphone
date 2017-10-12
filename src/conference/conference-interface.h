@@ -23,13 +23,15 @@
 #include <list>
 #include <memory>
 
-#include "address/address.h"
-#include "conference/participant.h"
-#include "conference/params/call-session-params.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
+
+class Address;
+class CallSessionParams;
+class Participant;
 
 class LINPHONE_PUBLIC ConferenceInterface {
 public:
@@ -39,7 +41,7 @@ public:
 	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual bool canHandleParticipants () const = 0;
 	virtual std::shared_ptr<Participant> findParticipant (const Address &addr) const = 0;
-	virtual const Address *getConferenceAddress () const = 0;
+	virtual const Address &getConferenceAddress () const = 0;
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;
 	virtual const std::string &getSubject () const = 0;

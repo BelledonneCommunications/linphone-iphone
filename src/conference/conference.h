@@ -22,39 +22,36 @@
 
 #include "linphone/types.h"
 
-#include "address/address.h"
-#include "call/call-listener.h"
 #include "conference/conference-interface.h"
-#include "conference/params/call-session-params.h"
-#include "conference/participant.h"
 #include "conference/session/call-session-listener.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallListener;
 class CallSessionPrivate;
+class ConferencePrivate;
 
 class LINPHONE_PUBLIC Conference : public ConferenceInterface, public CallSessionListener {
 	friend class CallSessionPrivate;
 
 public:
-	virtual ~Conference() = default;
+	virtual ~Conference();
 
 	std::shared_ptr<Participant> getActiveParticipant () const;
-	std::shared_ptr<Participant> getMe () const { return me; }
+	std::shared_ptr<Participant> getMe () const;
 
-	LinphoneCore * getCore () const { return core; }
+	LinphoneCore * getCore () const;
 
 	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 
-public:
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
 	bool canHandleParticipants () const override;
 	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
-	const Address *getConferenceAddress () const override;
+	const Address &getConferenceAddress () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
 	const std::string &getSubject () const override;
@@ -83,21 +80,19 @@ private:
 	void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) override;
 
 protected:
-	explicit Conference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	explicit Conference (
+		ConferencePrivate &p,
+		LinphoneCore *core,
+		const Address &myAddress,
+		CallListener *listener = nullptr
+	);
 
-	bool isMe (const Address &addr) const ;
+	bool isMe (const Address &addr) const;
 
-protected:
-	LinphoneCore *core = nullptr;
-	CallListener *callListener = nullptr;
-
-	std::shared_ptr<Participant> activeParticipant;
-	std::shared_ptr<Participant> me;
-	std::list<std::shared_ptr<Participant>> participants;
-	Address conferenceAddress;
-	std::string subject;
+	ConferencePrivate *mPrivate = nullptr;
 
 private:
+	L_DECLARE_PRIVATE(Conference);
 	L_DISABLE_COPY(Conference);
 };
 

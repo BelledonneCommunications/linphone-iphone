@@ -17,7 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "linphone/utils/utils.h"
+
 #include "basic-chat-room-p.h"
+#include "conference/participant.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -57,9 +60,9 @@ shared_ptr<Participant> BasicChatRoom::findParticipant (const Address &addr) con
 	return nullptr;
 }
 
-const Address *BasicChatRoom::getConferenceAddress () const {
+const Address &BasicChatRoom::getConferenceAddress () const {
 	lError() << "a BasicChatRoom does not have a conference address";
-	return nullptr;
+	return Utils::getEmptyConstRefObject<Address>();
 }
 
 int BasicChatRoom::getNbParticipants () const {

@@ -17,57 +17,59 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "remote-conference.h"
 #include "participant-p.h"
+#include "remote-conference-event-handler.h"
+#include "remote-conference-p.h"
 #include "xml/resource-lists.h"
-
-using namespace std;
-using namespace LinphonePrivate::Xsd::ResourceLists;
-
-LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
+
 RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(core, myAddress, listener) {
-	eventHandler = new RemoteConferenceEventHandler(core, this);
+	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
+	L_D();
+	d->eventHandler.reset(new RemoteConferenceEventHandler(core, this));
 }
 
 RemoteConference::~RemoteConference () {
-	eventHandler->unsubscribe();
-	delete eventHandler;
+	L_D();
+	d->eventHandler->unsubscribe();
 }
 
 // -----------------------------------------------------------------------------
 
 void RemoteConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+	L_D();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
 		return;
 	participant = ObjectFactory::create<Participant>(addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, this);
-	participants.push_back(participant);
-	if (!activeParticipant)
-		activeParticipant = participant;
+	d->participants.push_back(participant);
+	if (!d->activeParticipant)
+		d->activeParticipant = participant;
 }
 
 void RemoteConference::removeParticipant (const shared_ptr<const Participant> &participant) {
-	for (const auto &p : participants) {
+	L_D();
+	for (const auto &p : d->participants) {
 		if (participant->getAddress() == p->getAddress()) {
-			participants.remove(p);
+			d->participants.remove(p);
 			return;
 		}
 	}
 }
 
-
 string RemoteConference::getResourceLists (const list<Address> &addresses) const {
-	ResourceLists rl = ResourceLists();
-	ListType l = ListType();
+	Xsd::ResourceLists::ResourceLists rl = Xsd::ResourceLists::ResourceLists();
+	Xsd::ResourceLists::ListType l = Xsd::ResourceLists::ListType();
 	for (const auto &addr : addresses) {
-		EntryType entry = EntryType(addr.asStringUriOnly());
+		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asStringUriOnly());
 		if (!addr.getDisplayName().empty())
-			entry.setDisplayName(DisplayName(addr.getDisplayName()));
+			entry.setDisplayName(Xsd::ResourceLists::DisplayName(addr.getDisplayName()));
 		l.getEntry().push_back(entry);
 	}
 	rl.getList().push_back(l);
@@ -83,7 +85,8 @@ string RemoteConference::getResourceLists (const list<Address> &addresses) const
 void RemoteConference::onConferenceCreated (const Address &addr) {}
 
 void RemoteConference::onConferenceTerminated (const Address &addr) {
-	eventHandler->unsubscribe();
+	L_D();
+	d->eventHandler->unsubscribe();
 }
 
 void RemoteConference::onParticipantAdded (const Address &addr) {}

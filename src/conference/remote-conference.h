@@ -20,22 +20,22 @@
 #ifndef _REMOTE_CONFERENCE_H_
 #define _REMOTE_CONFERENCE_H_
 
+#include "conference-listener.h"
 #include "conference.h"
-#include "remote-conference-event-handler.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class RemoteConferencePrivate;
+
 class LINPHONE_PUBLIC RemoteConference : public Conference, public ConferenceListener {
+	friend class ClientGroupChatRoomPrivate;
+
 public:
 	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 	virtual ~RemoteConference();
 
-protected:
-	std::shared_ptr<Participant> focus;
-
-public:
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
@@ -53,10 +53,8 @@ protected:
 	void onParticipantDeviceAdded (const Address &addr, const Address &gruu) override;
 	void onParticipantDeviceRemoved (const Address &addr, const Address &gruu) override;
 
-protected:
-	RemoteConferenceEventHandler *eventHandler = nullptr;
-
 private:
+	L_DECLARE_PRIVATE(RemoteConference);
 	L_DISABLE_COPY(RemoteConference);
 };
 

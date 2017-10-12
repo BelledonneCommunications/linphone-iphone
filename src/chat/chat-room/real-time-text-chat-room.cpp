@@ -19,6 +19,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
+#include "conference/participant.h"
 #include "logger/logger.h"
 #include "real-time-text-chat-room-p.h"
 
@@ -150,9 +151,9 @@ shared_ptr<Participant> RealTimeTextChatRoom::findParticipant (const Address &ad
 	return nullptr;
 }
 
-const Address *RealTimeTextChatRoom::getConferenceAddress () const {
+const Address &RealTimeTextChatRoom::getConferenceAddress () const {
 	lError() << "a RealTimeTextChatRoom does not have a conference address";
-	return nullptr;
+	return Utils::getEmptyConstRefObject<Address>();
 }
 
 int RealTimeTextChatRoom::getNbParticipants () const {

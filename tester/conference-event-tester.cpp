@@ -19,14 +19,15 @@
 #include <map>
 #include <string>
 
-#include "linphone/core.h"
-#include "private.h"
-#include "liblinphone_tester.h"
 #include "conference/conference-listener.h"
-#include "conference/local-conference.h"
 #include "conference/local-conference-event-handler-p.h"
+#include "conference/local-conference-p.h"
+#include "conference/local-conference.h"
 #include "conference/participant-p.h"
 #include "conference/remote-conference-event-handler-p.h"
+#include "liblinphone_tester.h"
+#include "linphone/core.h"
+#include "private.h"
 #include "tools/private-access.h"
 #include "tools/tester.h"
 
@@ -431,14 +432,12 @@ static const char *participant_unadmined_notify = \
 "    </users>"\
 "   </conference-info>";
 
-
 static const char *bobUri = "sip:bob@example.com";
 static const char *aliceUri = "sip:alice@example.com";
 static const char *frankUri = "sip:frank@example.com";
 static const char *confUri = "sips:conf233@example.com";
 
-L_ENABLE_ATTR_ACCESS(RemoteConferenceEventHandlerPrivate, Address, confAddress);
-L_ENABLE_ATTR_ACCESS(Conference, Address, conferenceAddress);
+L_ENABLE_ATTR_ACCESS(LocalConferencePrivate, unique_ptr<LocalConferenceEventHandler>, eventHandler);
 
 class ConferenceEventTester : public ConferenceListener {
 public:
@@ -518,8 +517,8 @@ void first_notify_parsing() {
 	size_t size = strlen(first_notify) + strlen(confUri);
 	char *notify = new char[size];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
+
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -555,8 +554,7 @@ void first_notify_parsing_wrong_conf() {
 	size_t size = strlen(first_notify) + strlen(confUri);
 	char *notify = new char[size];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -587,8 +585,7 @@ void participant_added_parsing() {
 	size_t size2 = strlen(participant_added_notify) + strlen(confUri);
 	char *notify_added = new char[size2];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -633,8 +630,7 @@ void participant_not_added_parsing() {
 	size_t size2 = strlen(participant_not_added_notify) + strlen(confUri);
 	char *notify_not_added = new char[size2];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -676,8 +672,7 @@ void participant_deleted_parsing() {
 	size_t size2 = strlen(participant_deleted_notify) + strlen(confUri);
 	char *notify_deleted = new char[size2];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -719,8 +714,7 @@ void participant_admined_parsing() {
 	size_t size2 = strlen(participant_admined_notify) + strlen(confUri);
 	char *notify_admined = new char[size2];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -761,8 +755,7 @@ void participant_unadmined_parsing() {
 	size_t size2 = strlen(participant_unadmined_notify) + strlen(confUri);
 	char *notify_unadmined = new char[size2];
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	snprintf(notify, size, first_notify, confUri);
 	tester.handler->notifyReceived(notify);
 
@@ -813,12 +806,13 @@ void send_first_notify() {
 	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "A random test subject");
@@ -861,12 +855,13 @@ void send_added_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
@@ -916,12 +911,13 @@ void send_removed_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
@@ -968,11 +964,13 @@ void send_admined_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
@@ -1018,11 +1016,13 @@ void send_unadmined_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 
@@ -1070,12 +1070,13 @@ void send_subject_changed_notify () {
 	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "A random test subject");
@@ -1124,12 +1125,13 @@ void send_device_added_notify() {
 	localConf.addParticipant(aliceAddr, &params, false);
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participantDevices.size(), 2, int, "%d");
@@ -1176,12 +1178,13 @@ void send_device_removed_notify() {
 	localConf.setSubject("A random test subject");
 	shared_ptr<Participant> alice = localConf.findParticipant(aliceAddr);
 	L_GET_PRIVATE(alice)->setAdmin(true);
-	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(localConf.getEventHandler());
-	L_ATTR_GET(static_cast<Conference &>(localConf), conferenceAddress) = addr;
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
-	RemoteConferenceEventHandlerPrivate *remoteHandlerPrivate = L_GET_PRIVATE(tester.handler);
-	L_ATTR_GET(remoteHandlerPrivate, confAddress) = addr;
+	const_cast<Address &>(tester.handler->getConfAddress()) = addr;
 	tester.handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester.participantDevices.size(), 2, int, "%d");

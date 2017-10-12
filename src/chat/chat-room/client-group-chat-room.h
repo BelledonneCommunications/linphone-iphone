@@ -41,7 +41,7 @@ public:
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
 	bool canHandleParticipants () const override;
 	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
-	const Address *getConferenceAddress () const override;
+	const Address &getConferenceAddress () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
 	const std::string &getSubject () const override;
@@ -69,7 +69,7 @@ private:
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 
 private:
-	L_DECLARE_PRIVATE(ClientGroupChatRoom);
+	L_DECLARE_PRIVATE_T(ClientGroupChatRoom, ChatRoom);
 	L_DISABLE_COPY(ClientGroupChatRoom);
 };
 

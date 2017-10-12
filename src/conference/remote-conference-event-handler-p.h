@@ -20,14 +20,19 @@
 #ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
 #define _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
 
+#include "address/address.h"
 #include "object/object-p.h"
 #include "remote-conference-event-handler.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
-	inline unsigned int getLastNotify () const { return lastNotify; };
+	inline unsigned int getLastNotify () const {
+		return lastNotify;
+	};
 
 private:
 	LinphoneCore *core = nullptr;
