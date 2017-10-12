@@ -68,7 +68,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (LinphoneCore *core, const Address &me,
 	: ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
 	static_cast<RemoteConferencePrivate *>(Conference::mPrivate)->focus =
 		ObjectFactory::create<Participant>(Address(uri));
-	setSubject(subject);
+	RemoteConference::setSubject(subject);
 }
 
 int ClientGroupChatRoom::getCapabilities () const {
@@ -152,7 +152,7 @@ void ClientGroupChatRoom::leave () {
 	L_D();
 
 	RemoteConferencePrivate *conferencePrivate =
-	  static_cast<RemoteConferencePrivate *>(Conference::mPrivate);
+		static_cast<RemoteConferencePrivate *>(Conference::mPrivate);
 	conferencePrivate->eventHandler->unsubscribe();
 
 	shared_ptr<CallSession> session = conferencePrivate->focus->getPrivate()->getSession();
@@ -298,7 +298,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 }
 
 void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
-	setSubject(subject);
+	RemoteConference::setSubject(subject);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);

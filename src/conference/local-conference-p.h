@@ -30,9 +30,10 @@ LINPHONE_BEGIN_NAMESPACE
 class LocalConferenceEventHandler;
 
 class LocalConferencePrivate : public ConferencePrivate {
-private:
+public:
 	std::unique_ptr<LocalConferenceEventHandler> eventHandler;
 
+private:
 	L_DECLARE_PUBLIC(LocalConference);
 };
 
