@@ -26,13 +26,17 @@ add_custom_command(OUTPUT linphone_jni.cc
 	${PROJECT_SOURCE_DIR}/tools/metadoc.py
 	${PROJECT_SOURCE_DIR}/tools/abstractapi.py
 	genwrapper.py
-	wrapper_impl.mustache
+	java_class.mustache
+	java_enum.mustache
+	java_interface_stub.mustache
+	java_interface.mustache
+	jni.mustache
 	linphone-doc
 	"${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml/index.xml"
 )
 
 add_custom_target(linphonej ALL DEPENDS linphone_jni.cc)
 
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/linphone_jni.cc
-#        DESTINATION ${CMAKE_INSTALL_DATADIR}/linphonej
-#)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/linphone_jni.cc
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/linphonej
+)
