@@ -38,6 +38,7 @@ RemoteConferenceEventHandler::RemoteConferenceEventHandler (LinphoneCore *core, 
 	xercesc::XMLPlatformUtils::Initialize();
 	d->core = core;
 	d->listener = listener;
+	// TODO : d->lastNotify = lastNotify
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
@@ -48,6 +49,7 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 
 void RemoteConferenceEventHandler::subscribe (const Address &addr) {
 	L_D();
+	// TODO : add last notify
 	d->confAddress = addr;
 	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
 	d->lev = linphone_core_create_subscribe(d->core, lAddr, "conference", 600);
@@ -75,6 +77,9 @@ void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
 		if (confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
 			d->listener->onSubjectChanged(confInfo->getConferenceDescription().get().getSubject().get());
+
+		if (confInfo->getVersion().present())
+			d->lastNotify = confInfo->getVersion().get();
 
 		if (!confInfo->getUsers().present())
 			return;

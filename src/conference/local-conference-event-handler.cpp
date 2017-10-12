@@ -21,10 +21,7 @@
 #include "conference/participant-p.h"
 #include "local-conference-event-handler-p.h"
 #include "object/object-p.h"
-
 #include "private.h"
-
-#include "xml/conference-info.h"
 
 // =============================================================================
 
@@ -42,14 +39,6 @@ static void doNotify (const string &notify, LinphoneEvent *lev) {
 	linphone_event_notify(lev, content);
 	linphone_content_unref(content);
 	linphone_event_unref(lev);
-}
-
-static string createNotify (ConferenceType confInfo) {
-	stringstream notify;
-	Xsd::XmlSchema::NamespaceInfomap map;
-	map[""].name = "urn:ietf:params:xml:ns:conference-info";
-	serializeConferenceInfo(notify, confInfo, map);
-	return notify.str();
 }
 
 // -----------------------------------------------------------------------------
@@ -74,6 +63,18 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 		if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
 			sendNotify(notify, participant->getAddress());
 	}
+}
+
+string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo) {
+	if (confInfo.getVersion().present()) {
+		lastNotify = confInfo.getVersion().get() + 1;
+		confInfo.setVersion(lastNotify);
+	}
+	stringstream notify;
+	Xsd::XmlSchema::NamespaceInfomap map;
+	map[""].name = "urn:ietf:params:xml:ns:conference-info";
+	serializeConferenceInfo(notify, confInfo, map);
+	return notify.str();
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyFullState () {
@@ -248,6 +249,7 @@ LocalConferenceEventHandler::LocalConferenceEventHandler (LinphoneCore *core, Lo
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConf;
 	d->core = core;
+	//init d->lastNotify = last notify
 }
 
 LocalConferenceEventHandler::~LocalConferenceEventHandler () {

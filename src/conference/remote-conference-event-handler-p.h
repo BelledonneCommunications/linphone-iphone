@@ -26,11 +26,15 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
+public:
+	inline unsigned int getLastNotify () const { return lastNotify; };
+
 private:
 	LinphoneCore *core = nullptr;
 	ConferenceListener *listener = nullptr;
 	Address confAddress;
 	LinphoneEvent *lev = nullptr;
+	unsigned int lastNotify = 0;
 
 	L_DECLARE_PUBLIC(RemoteConferenceEventHandler);
 };
