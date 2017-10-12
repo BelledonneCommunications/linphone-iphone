@@ -91,21 +91,24 @@ string AbstractDb::primaryKeyAutoIncrementStr (const string &type) const {
 }
 
 long AbstractDb::getLastInsertId () const {
-	L_D();
-
-	string sql;
-	switch(d->backend) {
-		case Sqlite3:
-			sql = "SELECT last_insert_rowid()";
-			break;
-		default:
-			lWarning() << "Unsupported backend.";
-			return -1;
-	}
-
 	long result = 0;
 
 	#ifdef SOCI_ENABLED
+		L_D();
+
+		string sql;
+		switch (d->backend) {
+			case Mysql:
+				sql = "SELECT LAST_INSERT_ID()";
+				break;
+			case Sqlite3:
+				sql = "SELECT last_insert_rowid()";
+				break;
+			default:
+				lWarning() << "Unsupported backend.";
+				return -1;
+		}
+
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		*session << sql, soci::into(result);
 	#endif // ifdef SOCI_ENABLED
