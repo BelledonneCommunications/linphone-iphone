@@ -89,89 +89,68 @@ UTF8-multi = %xC0-DF %x80-BF
 	/ %xF0-F7 %x80-BF %x80-BF %x80-BF
 	/ %xF8-FB %x80-BF %x80-BF %x80-BF %x80-BF
 	/ %xFC-FD %x80-BF %x80-BF %x80-BF %x80-BF %x80-BF
+
+URI = absoluteURI
 )==GRAMMAR=="
 
-// See: https://tools.ietf.org/html/rfc2396
+// See: https://tools.ietf.org/html/rfc2396 & https://tools.ietf.org/html/rfc2732
 R"==GRAMMAR==(
-URI = scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+absoluteURI = scheme ":" ( hier-part / opaque-part )
+relativeURI = ( net-path / abs-path / rel-path ) [ "?" query ]
 
-hier-part = "//" authority path-abempty
-	/ path-absolute
-	/ path-rootless
-	/ path-empty
+hier-part = ( net-path / abs-path ) [ "?" query ]
+opaque-part = uric-no-slash *uric
 
-URI-reference = URI / relative-ref
+uric-no-slash = unreserved / escaped / ";" / "?" / ":" / "@" / "&" / "=" / "+" / "$" / ","
 
-absolute-URI = scheme ":" hier-part [ "?" query ]
+net-path = "//" authority [ abs-path ]
+abs-path = "/" path-segments
+rel-path = rel-segment [ abs-path ]
 
-relative-ref = relative-part [ "?" query ] [ "#" fragment ]
-
-relative-part = "//" authority path-abempty
-	/ path-absolute
-	/ path-noscheme
-	/ path-empty
+rel-segment = 1*( unreserved / escaped / ";" / "@" / "&" / "=" / "+" / "$" / "," )
 
 scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
 
-authority = [ userinfo "@" ] host [ ":" port ]
-userinfo = *( unreserved / pct-encoded / sub-delims / ":" )
-host = IP-literal / IPv4address / reg-name
+authority = server / reg-name
+
+reg-name = 1*( unreserved / escaped / "$" / "," / ";" / ":" / "@" / "&" / "=" / "+" )
+
+server = [ [ userinfo "@" ] hostport ]
+userinfo = *( unreserved / escaped / ";" / ":" / "&" / "=" / "+" / "$" / "," )
+
+hostport = host [ ":" port ]
+host = hostname / IPv4address / IPv6address
+ipv6reference = "[" IPv6address "]"
+hostname = *( domainlabel "." ) toplabel [ "." ]
+domainlabel = alphanum / alphanum *( alphanum / "-" ) alphanum
+toplabel = ALPHA / ALPHA *( alphanum / "-" ) alphanum
+IPv6address = hexpart [ ":" IPv4address ]
+IPv4address = 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT "." 1*3DIGIT
 port = *DIGIT
 
-IP-literal = "[" ( IPv6address / IPvFuture  ) "]"
+IPv6prefix  = hexpart "/" 1*2DIGIT
+hexpart = hexseq / hexseq "::" [ hexseq ] / "::" [ hexseq ]
+hexseq = hex4 *( ":" hex4)
+hex4 = 1*4HEXDIG
 
-IPvFuture = "v" 1*HEXDIG "." 1*( unreserved / sub-delims / ":" )
+path = [ abs-path / opaque-part ]
+path-segments = segment *( "/" segment )
+segment = *pchar *( ";" param )
+param = *pchar
+pchar = unreserved / escaped / ":" / "@" / "&" / "=" / "+" / "$" / ","
 
-IPv6address = 6( h16 ":" ) ls32
-	/ "::" 5( h16 ":" ) ls32
-	/ [ h16 ] "::" 4( h16 ":" ) ls32
-	/ [ *1( h16 ":" ) h16 ] "::" 3( h16 ":" ) ls32
-	/ [ *2( h16 ":" ) h16 ] "::" 2( h16 ":" ) ls32
-	/ [ *3( h16 ":" ) h16 ] "::" h16 ":" ls32
-	/ [ *4( h16 ":" ) h16 ] "::" ls32
-	/ [ *5( h16 ":" ) h16 ] "::" h16
-	/ [ *6( h16 ":" ) h16 ] "::"
+query = *uric
 
-h16 = 1*4HEXDIG
-ls32 = ( h16 ":" h16 ) / IPv4address
-IPv4address = dec-octet "." dec-octet "." dec-octet "." dec-octet
-dec-octet = DIGIT
-	/ %x31-39 DIGIT
-	/ "1" 2DIGIT
-	/ "2" %x30-34 DIGIT
-	/ "25" %x30-35
+fragment = *uric
 
-reg-name = *( unreserved / pct-encoded / sub-delims )
+uric = reserved / unreserved / escaped
+reserved = ";" / "/" / "?" / ":" / "@" / "&" / "=" / "+" / "$" / "," / "[" / "]"
+unreserved = alphanum / mark
+mark = "-" / "_" / "." / "!" / "~" / "*" / "'" / "(" / ")"
 
-path = path-abempty
-	/ path-absolute
-	/ path-noscheme
-	/ path-rootless
-	/ path-empty
+escaped = "%" HEXDIG HEXDIG
 
-path-abempty = *( "/" segment )
-path-absolute = "/" [ segment-nz *( "/" segment ) ]
-path-noscheme = segment-nz-nc *( "/" segment )
-path-rootless = segment-nz *( "/" segment )
-path-empty = [pchar]
-
-segment = *pchar
-segment-nz = 1*pchar
-segment-nz-nc = 1*( unreserved / pct-encoded / sub-delims / "@" )
-
-pchar = unreserved / pct-encoded / sub-delims / ":" / "@" / "\,"
-
-query = *( pchar / "/" / "?" )
-
-fragment = *( pchar / "/" / "?" )
-
-pct-encoded = "%" HEXDIG HEXDIG
-
-unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
-reserved = gen-delims / sub-delims
-gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-sub-delims = "!" / "$" / "&" / "'" / "(" / ")"
-	/ "*" / "+" / "," / ";" / "="
+alphanum = ALPHA / DIGIT
 )==GRAMMAR=="
 
 // See: https://tools.ietf.org/html/rfc3066
