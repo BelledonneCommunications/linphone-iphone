@@ -1081,6 +1081,8 @@ void send_subject_changed_notify () {
 
 	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "A random test subject");
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
+	BC_ASSERT_EQUAL(L_GET_PRIVATE(tester.handler)->getLastNotify(), 1, int, "%d");
+	BC_ASSERT_EQUAL(localHandlerPrivate->getLastNotify(), 1, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString()) != tester.participants.end());
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);
@@ -1092,6 +1094,8 @@ void send_subject_changed_notify () {
 
 	BC_ASSERT_STRING_EQUAL(tester.confSubject.c_str(), "Another random test subject...");
 	BC_ASSERT_EQUAL(tester.participants.size(), 2, int, "%d");
+	BC_ASSERT_EQUAL(L_GET_PRIVATE(tester.handler)->getLastNotify(), 2, int, "%d");
+	BC_ASSERT_EQUAL(localHandlerPrivate->getLastNotify(), 2, int, "%d");
 	BC_ASSERT_TRUE(tester.participants.find(bobAddr.asString()) != tester.participants.end());
 	BC_ASSERT_TRUE(tester.participants.find(aliceAddr.asString()) != tester.participants.end());
 	BC_ASSERT_TRUE(!tester.participants.find(bobAddr.asString())->second);

@@ -66,10 +66,9 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 }
 
 string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo) {
-	if (confInfo.getVersion().present()) {
-		lastNotify = confInfo.getVersion().get() + 1;
-		confInfo.setVersion(lastNotify);
-	}
+	lastNotify = lastNotify + 1;
+	confInfo.setVersion(lastNotify);
+
 	stringstream notify;
 	Xsd::XmlSchema::NamespaceInfomap map;
 	map[""].name = "urn:ietf:params:xml:ns:conference-info";
