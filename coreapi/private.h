@@ -32,6 +32,9 @@
 #include "linphone/core_utils.h"
 #include "linphone/conference.h"
 #include "sal/sal.h"
+#ifdef __cplusplus
+#include "platform-helpers.h"
+#endif
 #include "linphone/sipsetup.h"
 #include "quality_reporting.h"
 #include "linphone/ringtoneplayer.h"
@@ -1026,6 +1029,7 @@ struct _LinphoneCore
 	MSList* vtable_refs;
 	int vtable_notify_recursion;
 	Sal *sal;
+	void *platform_helper; /*is a LinphonePrivate::PlatformHelpers but cannot be used as is because private.h is compiled as C in testers.*/
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
 	MSList *default_audio_codecs;
@@ -1133,16 +1137,6 @@ struct _LinphoneCore
 	LinphoneContent *log_collection_upload_information;
 	LinphoneCoreCbs *current_cbs; // the latest LinphoneCoreCbs object to call a callback, see linphone_core_get_current_cbs()
 	LinphoneRingtonePlayer *ringtoneplayer;
-#ifdef __ANDROID__
-	jobject wifi_lock;
-	jclass wifi_lock_class;
-	jmethodID wifi_lock_acquire_id;
-	jmethodID wifi_lock_release_id;
-	jobject multicast_lock;
-	jclass multicast_lock_class;
-	jmethodID multicast_lock_acquire_id;
-	jmethodID multicast_lock_release_id;
-#endif
 	LinphoneVcardContext *vcard_context;
 
 	/*for tests only*/
@@ -1157,6 +1151,10 @@ struct _LinphoneCore
 	struct _LinphoneAccountCreatorService *default_ac_service;
 	MSBandwidthController *bw_controller;
 };
+
+#ifdef __cplusplus
+#define getPlatformHelpers(lc) static_cast<LinphonePrivate::PlatformHelpers*>(lc->platform_helper)
+#endif
 
 
 struct _LinphoneEvent{
@@ -1289,6 +1287,8 @@ LINPHONE_PUBLIC int linphone_core_get_call_history_size(LinphoneCore *lc);
 
 int linphone_core_get_edge_bw(LinphoneCore *lc);
 int linphone_core_get_edge_ptime(LinphoneCore *lc);
+
+LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context);
 
 int linphone_upnp_init(LinphoneCore *lc);
 void linphone_upnp_destroy(LinphoneCore *lc);
@@ -1964,12 +1964,6 @@ SalStreamDir sal_dir_from_call_params_dir(LinphoneMediaDirection cpdir);
  */
 void ** linphone_content_get_cryptoContext_address(LinphoneContent *content);
 
-#ifdef __ANDROID__
-void linphone_core_wifi_lock_acquire(LinphoneCore *lc);
-void linphone_core_wifi_lock_release(LinphoneCore *lc);
-void linphone_core_multicast_lock_acquire(LinphoneCore *lc);
-void linphone_core_multicast_lock_release(LinphoneCore *lc);
-#endif
 
 struct _VTableReference{
 	LinphoneCoreCbs *cbs;

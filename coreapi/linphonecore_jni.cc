@@ -1659,7 +1659,7 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 		,jobject jlistener
 		,jstring juserConfig
 		,jstring jfactoryConfig
-		,jobject juserdata){
+		,jobject juserdata, jobject context){
 
 	const char* userConfig = GetStringUTFChars(env, juserConfig);
 	const char* factoryConfig = GetStringUTFChars(env, jfactoryConfig);
@@ -1669,11 +1669,12 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_newLinphoneCore(JNIEnv*
 	LinphoneCoreVTable *vTable = linphone_core_v_table_new();
 	LinphoneCoreData* ldata = new LinphoneCoreData(env, thiz, vTable, jlistener, ljb);
 	linphone_core_v_table_set_user_data(vTable, ldata);
-
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	_linphone_core_cbs_set_v_table(cbs, vTable, TRUE);
 
 	jobject core = env->NewGlobalRef(thiz);
 	ljb->setCore(core);
-	LinphoneCore *lc = linphone_core_new(vTable, userConfig, factoryConfig, ljb);
+	LinphoneCore *lc = linphone_factory_create_core_2(linphone_factory_get(), cbs, userConfig, factoryConfig, ljb, context);
 
 	jlong nativePtr = (jlong)lc;
 	ReleaseStringUTFChars(env, juserConfig, userConfig);
@@ -1685,17 +1686,7 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_delete(JNIEnv* env, jobj
 	LinphoneCore *lc=(LinphoneCore*)native_ptr;
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data(lc);
 
-	jobject multicast_lock = lc->multicast_lock;
-	jobject multicast_lock_class = lc->multicast_lock_class;
-	jobject wifi_lock = lc->wifi_lock;
-	jobject wifi_lock_class = lc->wifi_lock_class;
-
 	linphone_core_destroy(lc);
-
-	if (wifi_lock) env->DeleteGlobalRef(wifi_lock);
-	if (wifi_lock_class) env->DeleteGlobalRef(wifi_lock_class);
-	if (multicast_lock) env->DeleteGlobalRef(multicast_lock);
-	if (multicast_lock_class) env->DeleteGlobalRef(multicast_lock_class);
 
 	if (ljb) {
 		jobject core = ljb->getCore();
@@ -5935,43 +5926,9 @@ extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidPowerManager(J
 
 /*released in Java_org_linphone_core_LinphoneCoreImpl_delete*/
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidWifiLock(JNIEnv *env, jobject thiz, jlong ptr, jobject wifi_lock) {
-#ifdef __ANDROID__
-	LinphoneCore *lc=(LinphoneCore*)ptr;
-	if (lc->wifi_lock) {
-		env->DeleteGlobalRef(lc->wifi_lock);
-		env->DeleteGlobalRef(lc->wifi_lock_class);
-	}
-	if (wifi_lock != NULL) {
-		lc->wifi_lock=env->NewGlobalRef(wifi_lock);
-		lc->wifi_lock_class = env->FindClass("android/net/wifi/WifiManager$WifiLock");
-		lc->wifi_lock_class = (jclass)env->NewGlobalRef(lc->wifi_lock_class); /*to make sure methodid are preserved*/
-		lc->wifi_lock_acquire_id = env->GetMethodID(lc->wifi_lock_class, "acquire", "()V");
-		lc->wifi_lock_release_id = env->GetMethodID(lc->wifi_lock_class, "release", "()V");
-	} else {
-		lc->wifi_lock=NULL;
-		lc->wifi_lock_class=NULL;
-	}
-#endif
 }
 /*released in Java_org_linphone_core_LinphoneCoreImpl_delete*/
 extern "C" void Java_org_linphone_core_LinphoneCoreImpl_setAndroidMulticastLock(JNIEnv *env, jobject thiz, jlong ptr, jobject multicast_lock) {
-#ifdef __ANDROID__
-	LinphoneCore *lc=(LinphoneCore*)ptr;
-	if (lc->multicast_lock) {
-		env->DeleteGlobalRef(lc->multicast_lock);
-		env->DeleteGlobalRef(lc->multicast_lock_class);
-	}
-	if (multicast_lock != NULL) {
-		lc->multicast_lock=env->NewGlobalRef(multicast_lock);
-		lc->multicast_lock_class = env->FindClass("android/net/wifi/WifiManager$MulticastLock");
-		lc->multicast_lock_class = (jclass)env->NewGlobalRef(lc->multicast_lock_class);/*to make sure methodid are preserved*/
-		lc->multicast_lock_acquire_id = env->GetMethodID(lc->multicast_lock_class, "acquire", "()V");
-		lc->multicast_lock_release_id = env->GetMethodID(lc->multicast_lock_class, "release", "()V");
-	} else {
-		lc->multicast_lock=NULL;
-		lc->multicast_lock_class=NULL;
-	}
-#endif
 }
 
 extern "C" jint Java_org_linphone_core_LinphoneCoreImpl_getAudioDscp(JNIEnv* env,jobject thiz,jlong ptr){

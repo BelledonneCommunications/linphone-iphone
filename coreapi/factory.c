@@ -31,7 +31,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define PACKAGE_DATA_DIR "."
 #endif
 
-extern LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata);
 extern LinphoneAddress *_linphone_address_new(const char *addr);
 
 typedef belle_sip_object_t_vptr_t LinphoneFactory_vptr_t;
@@ -146,18 +145,27 @@ void linphone_factory_clean(void){
 	}
 }
 
-LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
-		const char *config_path, const char *factory_config_path) {
+LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
+		const char *config_path, const char *factory_config_path, void *user_data, void *system_context) {
 	bctbx_init_logger(FALSE);
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, NULL);
+	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context);
 	lp_config_unref(config);
 	bctbx_uninit_logger();
 	return lc;
 }
 
+LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
+		const char *config_path, const char *factory_config_path){
+	return linphone_factory_create_core_2(factory, cbs, config_path, factory_config_path, NULL, NULL);
+}
+
 LinphoneCore *linphone_factory_create_core_with_config(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config) {
-	return _linphone_core_new_with_config(cbs, config, NULL);
+	return _linphone_core_new_with_config(cbs, config, NULL, NULL);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config, void *user_data, void *system_context) {
+	return _linphone_core_new_with_config(cbs, config, user_data, system_context);
 }
 
 LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory) {

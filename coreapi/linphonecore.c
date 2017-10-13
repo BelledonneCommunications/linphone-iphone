@@ -2148,6 +2148,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
+	lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
 
 	linphone_task_list_init(&lc->hooks);
 
@@ -2223,9 +2224,21 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->bw_controller = ms_bandwidth_controller_new();
 }
 
-LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata) {
+static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
+	if (lc->platform_helper) delete getPlatformHelpers(lc);
+	lc->platform_helper = ph;
+}
+
+static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
+#ifdef __ANDROID__
+	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
+#endif
+}
+
+LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context) {
 	LinphoneCore *core = belle_sip_object_new(LinphoneCore);
 	linphone_core_init(core, cbs, config, userdata);
+	_linphone_core_set_system_context(core, system_context);
 	return core;
 }
 
@@ -2235,7 +2248,7 @@ LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, st
 	LinphoneCore *core = NULL;
 	if (vtable != NULL) *local_vtable = *vtable;
 	_linphone_core_cbs_set_v_table(cbs, local_vtable, TRUE);
-	core = _linphone_core_new_with_config(cbs, config, userdata);
+	core = _linphone_core_new_with_config(cbs, config, userdata, NULL);
 	linphone_core_cbs_unref(cbs);
 	return core;
 }
@@ -6133,6 +6146,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	bctbx_list_free_with_data(lc->vtable_refs,(void (*)(void *))v_table_reference_destroy);
 	ms_bandwidth_controller_destroy(lc->bw_controller);
 	ms_factory_destroy(lc->factory);
+	if (lc->platform_helper) delete getPlatformHelpers(lc);
 	bctbx_uninit_logger();
 }
 
@@ -6155,6 +6169,11 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
+	
+	if (is_sip_reachable){
+		getPlatformHelpers(lc)->setDnsServers();
+	}
+	
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
 	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
@@ -6994,40 +7013,6 @@ const char * linphone_core_get_video_preset(const LinphoneCore *lc) {
 	return lp_config_get_string(lc->config, "video", "preset", NULL);
 }
 
-#ifdef __ANDROID__
-static int linphone_core_call_void_method(jobject obj, jmethodID id) {
-	JNIEnv *env=ms_get_jni_env();
-	if (env && obj) {
-		env->CallVoidMethod(obj,id);
-		if (env->ExceptionCheck()) {
-			env->ExceptionClear();
-			return -1;
-		} else
-			return 0;
-	} else
-		return -1;
-}
-
-void linphone_core_wifi_lock_acquire(LinphoneCore *lc) {
-	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_acquire_id))
-		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
-}
-
-void linphone_core_wifi_lock_release(LinphoneCore *lc) {
-	if (linphone_core_call_void_method(lc->wifi_lock,lc->wifi_lock_release_id))
-		ms_warning("No wifi lock configured or not usable for core [%p]",lc);
-}
-
-void linphone_core_multicast_lock_acquire(LinphoneCore *lc) {
-	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_acquire_id))
-			ms_warning("No multicast lock configured or not usable for core [%p]",lc);
-}
-
-void linphone_core_multicast_lock_release(LinphoneCore *lc) {
-	if (linphone_core_call_void_method(lc->multicast_lock,lc->multicast_lock_release_id))
-			ms_warning("No wifi lock configured or not usable for core [%p]",lc);
-}
-#endif
 
 
 LINPHONE_PUBLIC const char *linphone_core_log_collection_upload_state_to_string(const LinphoneCoreLogCollectionUploadState lcus) {

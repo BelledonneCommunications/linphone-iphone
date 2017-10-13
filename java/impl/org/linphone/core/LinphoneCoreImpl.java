@@ -47,7 +47,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private AudioManager mAudioManager = null;
 	private boolean openh264DownloadEnabled = false;
 	private boolean mSpeakerEnabled = false;
-	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata);
+	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata, Object context);
 	private native void iterate(long nativePtr);
 	private native LinphoneProxyConfig getDefaultProxyConfig(long nativePtr);
 
@@ -196,15 +196,17 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private native Object createFriendWithAddress(long nativePtr, String address);
 	private native int getIncomingTimeout(long nativePtr);
 	
-	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata) throws IOException {
+	LinphoneCoreImpl(LinphoneCoreListener listener, File userConfig, File factoryConfig, Object userdata, Object context) throws IOException {
 		mListener = listener;
 		String user = userConfig == null ? null : userConfig.getCanonicalPath();
 		String factory = factoryConfig == null ? null : factoryConfig.getCanonicalPath();
-		nativePtr = newLinphoneCore(listener, user, factory, userdata);
+		nativePtr = newLinphoneCore(listener, user, factory, userdata, context);
+		setContext(context);
 	}
-	LinphoneCoreImpl(LinphoneCoreListener listener) throws IOException {
+	LinphoneCoreImpl(LinphoneCoreListener listener, Object context) throws IOException {
 		mListener = listener;
-		nativePtr = newLinphoneCore(listener,null,null,null);
+		nativePtr = newLinphoneCore(listener,null,null,null, context);
+		setContext(context);
 	}
 
 	protected void finalize() throws Throwable {
@@ -223,19 +225,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 		ApplicationInfo info = mContext.getApplicationInfo();
 		reloadMsPlugins(info.nativeLibraryDir);
 		mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-		setAndroidPowerManager(mContext.getSystemService(Context.POWER_SERVICE));
-		if (Version.sdkAboveOrEqual(Version.API12_HONEYCOMB_MR1_31X)) {
-			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-			WifiLock lock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "linphonecore ["+ nativePtr+"] wifi-lock");
-			lock.setReferenceCounted(true);
-			setAndroidWifiLock(nativePtr,lock);
-		}
-		if (Version.sdkAboveOrEqual(Version.API14_ICE_CREAM_SANDWICH_40)) {
-			WifiManager wifiManager=(WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-			MulticastLock lock = wifiManager.createMulticastLock("linphonecore ["+ nativePtr+"] multicast-lock");
-			lock.setReferenceCounted(true);
-			setAndroidMulticastLock(nativePtr, lock);
-		}
+		
 	}
 
 	public Context getContext() {
