@@ -40,7 +40,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	cpimMessage.addCpimHeader(cpimContentTypeHeader);
 
 	Cpim::FromHeader cpimFromHeader;
-	cpimFromHeader.setValue(cpimAddressAsString(message->getPrivate()->getCpimFromAddress()));
+	cpimFromHeader.setValue(cpimAddressAsString(message->getFromAddress()));
 	cpimMessage.addMessageHeader(cpimFromHeader);
 	Cpim::ToHeader cpimToHeader;
 	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
@@ -133,7 +133,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	// Modify the initial message since there was no error
 	message->setInternalContent(newContent);
 	if (cpimFromAddress.isValid())
-		message->getPrivate()->setCpimFromAddress(cpimFromAddress);
+		message->setFromAddress(cpimFromAddress);
 	if (cpimToAddress.isValid())
 		message->setToAddress(cpimToAddress);
 

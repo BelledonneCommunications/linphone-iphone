@@ -57,9 +57,6 @@ public:
 
 	void setApplyModifiers (bool value) { applyModifiers = value; }
 
-	const Address &getCpimFromAddress () const { return cpimFrom; }
-	void setCpimFromAddress (const Address &addr);
-
 	void setDirection (ChatMessage::Direction dir);
 
 	void setState(ChatMessage::State state);
@@ -129,7 +126,6 @@ private:
 	unsigned int storageId = 0;
 	Address from;
 	Address to;
-	Address cpimFrom;
 	time_t time = 0;
 	std::string id;
 	std::string appData;

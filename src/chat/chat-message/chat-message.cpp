@@ -60,11 +60,6 @@ void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
 	chatRoom = cr;
 }
 
-void ChatMessagePrivate::setCpimFromAddress (const Address &addr) {
-	cpimFrom = addr;
-	cpimFrom.clean();
-}
-
 void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
 	direction = dir;
 }

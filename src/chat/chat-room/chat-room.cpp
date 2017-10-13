@@ -557,7 +557,6 @@ shared_ptr<ChatMessage> ChatRoom::createMessage () {
 	shared_ptr<ChatMessage> chatMessage = ObjectFactory::create<ChatMessage>(getSharedFromThis());
 	chatMessage->setToAddress(d->peerAddress);
 	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
-	chatMessage->getPrivate()->setCpimFromAddress(chatMessage->getFromAddress());
 	chatMessage->getPrivate()->setTime(ms_time(0));
 	return chatMessage;
 }
