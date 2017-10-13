@@ -264,6 +264,10 @@ void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->cancelFileTransfer();
 }
 
+void linphone_chat_message_send (LinphoneChatMessage *msg) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->send();
+}
+
 void linphone_chat_message_resend(LinphoneChatMessage *msg) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->send();
 }

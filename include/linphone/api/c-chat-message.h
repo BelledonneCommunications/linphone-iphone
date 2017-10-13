@@ -264,11 +264,18 @@ LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_download_file(LinphoneChatM
 LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage* msg);
 
 /**
+ * Send a chat message.
+ * @param[in] msg LinphoneChatMessage object
+ */
+LINPHONE_PUBLIC void linphone_chat_message_send (LinphoneChatMessage *msg);
+
+/**
  * Resend a chat message if it is in the 'not delivered' state for whatever reason.
  * @param[in] msg LinphoneChatMessage object
+ * @deprecated Use linphone_chat_message_send instead.
  * @donotwrap
  */
-LINPHONE_PUBLIC void linphone_chat_message_resend(LinphoneChatMessage *msg);
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_resend(LinphoneChatMessage *msg);
 
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_peer_address(LinphoneChatMessage *msg);
 
