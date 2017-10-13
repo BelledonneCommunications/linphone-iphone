@@ -39,6 +39,7 @@ class ChatMessagePrivate;
 class LINPHONE_PUBLIC ChatMessage : public Object {
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;
+	friend class CpimChatMessageModifier;
 	friend class RealTimeTextChatRoomPrivate;
 
 public:

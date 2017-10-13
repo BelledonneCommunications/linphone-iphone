@@ -55,6 +55,11 @@ public:
 
 	// -----------------------------------------------------------------------------
 
+	void setApplyModifiers (bool value) { applyModifiers = value; }
+
+	const Address &getCpimFromAddress () const { return cpimFrom; }
+	void setCpimFromAddress (const Address &addr);
+
 	void setDirection (ChatMessage::Direction dir);
 
 	void setState(ChatMessage::State state);
@@ -124,6 +129,7 @@ private:
 	unsigned int storageId = 0;
 	Address from;
 	Address to;
+	Address cpimFrom;
 	time_t time = 0;
 	std::string id;
 	std::string appData;
@@ -143,6 +149,7 @@ private:
 	SalCustomHeader *salCustomHeaders = NULL;
 	unsigned long backgroundTaskId;
 	unsigned char currentSendStep = Step::None;
+	bool applyModifiers = true;
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
 	std::string cText;

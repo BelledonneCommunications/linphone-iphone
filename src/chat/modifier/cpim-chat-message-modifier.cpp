@@ -18,7 +18,7 @@
  */
 
 #include "address/address.h"
-#include "chat/chat-message/chat-message.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
 #include "content/content.h"
@@ -36,8 +36,15 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	Cpim::Message cpimMessage;
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
-	cpimContentTypeHeader.setValue("Message/CPIM");
+	cpimContentTypeHeader.setValue(ContentType::Cpim.asString());
 	cpimMessage.addCpimHeader(cpimContentTypeHeader);
+
+	Cpim::FromHeader cpimFromHeader;
+	cpimFromHeader.setValue(cpimAddressAsString(message->getPrivate()->getCpimFromAddress()));
+	cpimMessage.addMessageHeader(cpimFromHeader);
+	Cpim::ToHeader cpimToHeader;
+	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
+	cpimMessage.addMessageHeader(cpimToHeader);
 
 	Content content;
 	if (!message->getInternalContent().isEmpty()) {
@@ -93,11 +100,52 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	}
 
 	Content newContent;
-	newContent.setContentType(ContentType(cpimMessage->getContentHeaders()->front()->getValue()));
+	bool contentTypeFound = false;
+	Cpim::Message::HeaderList l = cpimMessage->getContentHeaders();
+	if (l) {
+		for (const auto &header : *l.get()) {
+			if (header->getName() == "Content-Type") {
+				contentTypeFound = true;
+				newContent.setContentType(ContentType(header->getValue()));
+				break;
+			}
+		}
+	}
+	if (!contentTypeFound) {
+		lError() << "[CPIM] No Content-type for the content of the message";
+		errorCode = 500;
+		return ChatMessageModifier::Result::Error;
+	}
 	newContent.setBody(cpimMessage->getContent());
+
+	Address cpimFromAddress;
+	Address cpimToAddress;
+	l = cpimMessage->getMessageHeaders();
+	if (l) {
+		for (const auto &header : *l.get()) {
+			if (header->getName() == "From")
+				cpimFromAddress = Address(header->getValue());
+			else if (header->getName() == "To")
+				cpimToAddress = Address(header->getValue());
+		}
+	}
+
+	// Modify the initial message since there was no error
 	message->setInternalContent(newContent);
+	if (cpimFromAddress.isValid())
+		message->getPrivate()->setCpimFromAddress(cpimFromAddress);
+	if (cpimToAddress.isValid())
+		message->setToAddress(cpimToAddress);
 
 	return ChatMessageModifier::Result::Done;
+}
+
+string CpimChatMessageModifier::cpimAddressAsString (const Address &addr) const {
+	ostringstream os;
+	if (!addr.getDisplayName().empty())
+		os << addr.getDisplayName() << " ";
+	os << "<" << addr.asStringUriOnly() << ">";
+	return os.str();
 }
 
 LINPHONE_END_NAMESPACE

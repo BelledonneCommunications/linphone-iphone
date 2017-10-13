@@ -60,6 +60,11 @@ void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
 	chatRoom = cr;
 }
 
+void ChatMessagePrivate::setCpimFromAddress (const Address &addr) {
+	cpimFrom = addr;
+	cpimFrom.clean();
+}
+
 void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
 	direction = dir;
 }
@@ -1132,41 +1137,43 @@ void ChatMessagePrivate::send() {
 	}
 	//End of TODO Remove
 
-	if ((currentSendStep & ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
-		lInfo() << "Multipart step already done, skipping";
-	} else {
-		if (contents.size() > 1) {
-			MultipartChatMessageModifier mcmm;
-			mcmm.encode(q->getSharedFromThis(), errorCode);
+	if (applyModifiers) {
+		if ((currentSendStep & ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
+			lInfo() << "Multipart step already done, skipping";
+		} else {
+			if (contents.size() > 1) {
+				MultipartChatMessageModifier mcmm;
+				mcmm.encode(q->getSharedFromThis(), errorCode);
+			}
+			currentSendStep |= ChatMessagePrivate::Step::Multipart;
 		}
-		currentSendStep |= ChatMessagePrivate::Step::Multipart;
-	}
 
-	if ((currentSendStep & ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
-		lInfo() << "Encryption step already done, skipping";
-	} else {
-		EncryptionChatMessageModifier ecmm;
-		ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
-		if (result == ChatMessageModifier::Result::Error) {
-			sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
-			q->updateState(ChatMessage::State::NotDelivered);
-			q->store();
-			return;
-		} else if (result == ChatMessageModifier::Result::Suspended) {
+		if ((currentSendStep & ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
+			lInfo() << "Encryption step already done, skipping";
+		} else {
+			EncryptionChatMessageModifier ecmm;
+			ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
+			if (result == ChatMessageModifier::Result::Error) {
+				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
+				q->updateState(ChatMessage::State::NotDelivered);
+				q->store();
+				return;
+			} else if (result == ChatMessageModifier::Result::Suspended) {
+				currentSendStep |= ChatMessagePrivate::Step::Encryption;
+				return;
+			}
 			currentSendStep |= ChatMessagePrivate::Step::Encryption;
-			return;
 		}
-		currentSendStep |= ChatMessagePrivate::Step::Encryption;
-	}
 
-	if ((currentSendStep & ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
-		lInfo() << "Cpim step already done, skipping";
-	} else {
-		if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
-			CpimChatMessageModifier ccmm;
-			ccmm.encode(q->getSharedFromThis(), errorCode);
+		if ((currentSendStep & ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
+			lInfo() << "Cpim step already done, skipping";
+		} else {
+			if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
+				CpimChatMessageModifier ccmm;
+				ccmm.encode(q->getSharedFromThis(), errorCode);
+			}
+			currentSendStep |= ChatMessagePrivate::Step::Cpim;
 		}
-		currentSendStep |= ChatMessagePrivate::Step::Cpim;
 	}
 
 	// ---------------------------------------

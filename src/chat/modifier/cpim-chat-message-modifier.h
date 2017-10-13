@@ -32,6 +32,9 @@ public:
 
 	Result encode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
 	Result decode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
+
+private:
+	std::string cpimAddressAsString (const Address &addr) const;
 };
 
 LINPHONE_END_NAMESPACE
