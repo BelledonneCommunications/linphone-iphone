@@ -1,5 +1,5 @@
 /*
- * events-db.h
+ * main-db.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENTS_DB_H_
-#define _EVENTS_DB_H_
+#ifndef _MAIN_DB_H_
+#define _MAIN_DB_H_
 
 #include <list>
 
@@ -28,10 +28,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatRoom;
 class EventLog;
-class EventsDbPrivate;
+class MainDbPrivate;
 
-class LINPHONE_PUBLIC EventsDb : public AbstractDb {
+class LINPHONE_PUBLIC MainDb : public AbstractDb {
+	friend class ChatRoomProvider;
+
 public:
 	enum Filter {
 		NoFilter = 0x0,
@@ -42,7 +45,7 @@ public:
 
 	typedef int FilterMask;
 
-	EventsDb ();
+	MainDb ();
 
 	// Generic.
 	bool addEvent (const EventLog &eventLog);
@@ -66,6 +69,9 @@ public:
 	) const;
 	void cleanHistory (const std::string &peerAddress = "", FilterMask mask = NoFilter);
 
+	// ChatRooms.
+	std::shared_ptr<ChatRoom> findChatRoom (const std::string &peerAddress) const;
+
 	// Import legacy messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;
 
@@ -73,10 +79,10 @@ protected:
 	void init () override;
 
 private:
-	L_DECLARE_PRIVATE(EventsDb);
-	L_DISABLE_COPY(EventsDb);
+	L_DECLARE_PRIVATE(MainDb);
+	L_DISABLE_COPY(MainDb);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENTS_DB_H_
+#endif // ifndef _MAIN_DB_H_

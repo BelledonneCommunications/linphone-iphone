@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "db/events-db.h"
+#include "db/main-db.h"
 
 #include "liblinphone_tester.h"
 

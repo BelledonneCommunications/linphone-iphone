@@ -1,5 +1,5 @@
 /*
- * events-db.cpp
+ * main-db.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -38,7 +38,7 @@
 #include "event-log/event-log-p.h"
 #include "logger/logger.h"
 
-#include "events-db.h"
+#include "main-db.h"
 
 // =============================================================================
 
@@ -55,7 +55,7 @@ struct MessageEventReferences {
 #endif
 };
 
-class EventsDbPrivate : public AbstractDbPrivate {
+class MainDbPrivate : public AbstractDbPrivate {
 #ifdef SOCI_ENABLED
 public:
 	long insertSipAddress (const string &sipAddress);
@@ -80,12 +80,14 @@ public:
 #endif
 
 private:
-	L_DECLARE_PUBLIC(EventsDb);
+	unordered_map<string, weak_ptr<ChatRoom>> chatRooms;
+
+	L_DECLARE_PUBLIC(MainDb);
 };
 
 // -----------------------------------------------------------------------------
 
-EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
+MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 #ifdef SOCI_ENABLED
 
@@ -106,13 +108,13 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		);
 	}
 
-	static constexpr EnumToSql<EventsDb::Filter> eventFilterToSql[] = {
-		{ EventsDb::MessageFilter, "1" },
-		{ EventsDb::CallFilter, "2" },
-		{ EventsDb::ConferenceFilter, "3" }
+	static constexpr EnumToSql<MainDb::Filter> eventFilterToSql[] = {
+		{ MainDb::MessageFilter, "1" },
+		{ MainDb::CallFilter, "2" },
+		{ MainDb::ConferenceFilter, "3" }
 	};
 
-	static constexpr const char *mapEventFilterToSql (EventsDb::Filter filter) {
+	static constexpr const char *mapEventFilterToSql (MainDb::Filter filter) {
 		return mapEnumToSql(
 			eventFilterToSql, sizeof eventFilterToSql / sizeof eventFilterToSql[0], filter
 		);
@@ -120,14 +122,14 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	static string buildSqlEventFilter (const list<EventsDb::Filter> &filters, EventsDb::FilterMask mask) {
+	static string buildSqlEventFilter (const list<MainDb::Filter> &filters, MainDb::FilterMask mask) {
 		L_ASSERT(
-			find_if(filters.cbegin(), filters.cend(), [](const EventsDb::Filter &filter) {
-					return filter == EventsDb::NoFilter;
+			find_if(filters.cbegin(), filters.cend(), [](const MainDb::Filter &filter) {
+					return filter == MainDb::NoFilter;
 				}) == filters.cend()
 		);
 
-		if (mask == EventsDb::NoFilter)
+		if (mask == MainDb::NoFilter)
 			return "";
 
 		bool isStart = true;
@@ -150,7 +152,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	long EventsDbPrivate::insertSipAddress (const string &sipAddress) {
+	long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -163,7 +165,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	void EventsDbPrivate::insertContent (long messageEventId, const Content &content) {
+	void MainDbPrivate::insertContent (long messageEventId, const Content &content) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -180,7 +182,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
-	long EventsDbPrivate::insertContentType (const string &contentType) {
+	long MainDbPrivate::insertContentType (const string &contentType) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -193,7 +195,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	long EventsDbPrivate::insertEvent (EventLog::Type type, const tm &date) {
+	long MainDbPrivate::insertEvent (EventLog::Type type, const tm &date) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -202,7 +204,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	long EventsDbPrivate::insertChatRoom (long sipAddressId, int capabilities, const tm &date) {
+	long MainDbPrivate::insertChatRoom (long sipAddressId, int capabilities, const tm &date) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long id;
@@ -219,7 +221,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return sipAddressId;
 	}
 
-	void EventsDbPrivate::insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin) {
+	void MainDbPrivate::insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
@@ -233,7 +235,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
 	}
 
-	long EventsDbPrivate::insertMessageEvent (
+	long MainDbPrivate::insertMessageEvent (
 		const MessageEventReferences &references,
 		ChatMessage::State state,
 		ChatMessage::Direction direction,
@@ -262,7 +264,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return messageEventId;
 	}
 
-	void EventsDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state) {
+	void MainDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE message_participant SET state = :state"
@@ -304,7 +306,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return T();
 	}
 
-	void EventsDbPrivate::importLegacyMessages (const soci::rowset<soci::row> &messages) {
+	void MainDbPrivate::importLegacyMessages (const soci::rowset<soci::row> &messages) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		soci::transaction tr(*session);
@@ -395,7 +397,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	void EventsDb::init () {
+	void MainDb::init () {
 		L_D();
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
@@ -561,7 +563,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		*session << participantMessageDeleter;
 	}
 
-	bool EventsDb::addEvent (const EventLog &eventLog) {
+	bool MainDb::addEvent (const EventLog &eventLog) {
 		if (!isConnected()) {
 			lWarning() << "Unable to add event. Not connected.";
 			return false;
@@ -586,7 +588,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return true;
 	}
 
-	bool EventsDb::deleteEvent (const EventLog &eventLog) {
+	bool MainDb::deleteEvent (const EventLog &eventLog) {
 		L_D();
 
 		if (!isConnected()) {
@@ -609,7 +611,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return id == -1;
 	}
 
-	void EventsDb::cleanEvents (FilterMask mask) {
+	void MainDb::cleanEvents (FilterMask mask) {
 		L_D();
 
 		if (!isConnected()) {
@@ -628,7 +630,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		L_END_LOG_EXCEPTION
 	}
 
-	int EventsDb::getEventsCount (FilterMask mask) const {
+	int MainDb::getEventsCount (FilterMask mask) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -650,7 +652,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return count;
 	}
 
-	int EventsDb::getMessagesCount (const string &peerAddress) const {
+	int MainDb::getMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -680,7 +682,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return count;
 	}
 
-	int EventsDb::getUnreadMessagesCount (const string &peerAddress) const {
+	int MainDb::getUnreadMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -713,7 +715,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return count;
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &peerAddress, int nLast, FilterMask mask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistory (const string &peerAddress, int nLast, FilterMask mask) const {
 		if (!isConnected()) {
 			lWarning() << "Unable to get history. Not connected.";
 			return list<shared_ptr<EventLog>>();
@@ -726,7 +728,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return list<shared_ptr<EventLog>>();
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (
+	list<shared_ptr<EventLog>> MainDb::getHistory (
 		const string &peerAddress,
 		int begin,
 		int end,
@@ -745,7 +747,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		return list<shared_ptr<EventLog>>();
 	}
 
-	void EventsDb::cleanHistory (const string &peerAddress, FilterMask mask) {
+	void MainDb::cleanHistory (const string &peerAddress, FilterMask mask) {
 		L_D();
 
 		if (!isConnected()) {
@@ -754,7 +756,7 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 		}
 
 		string query;
-		if (mask == EventsDb::NoFilter || mask & MessageFilter)
+		if (mask == MainDb::NoFilter || mask & MessageFilter)
 			query += "SELECT event_id FROM message_event WHERE chat_room_id = ("
 				"  SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = ("
 				"    SELECT id FROM sip_address WHERE value = :peerAddress"
@@ -774,7 +776,42 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	bool EventsDb::import (Backend, const string &parameters) {
+shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
+	L_D();
+
+	const auto it = d->chatRooms.find(peerAddress);
+	if (it != d->chatRooms.cend()) {
+		try {
+			return it->second.lock();
+		} catch (const exception &) {
+			lError() << "Cannot lock chat room: `" + peerAddress + "`";
+		}
+	} else {
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+
+		tm creationDate;
+		tm lastUpdateDate;
+		int capabilities;
+		string subject;
+
+		*session << "SELECT creation_date, last_update_date, capabilities, subject "
+			"  FROM chat_room"
+			"  WHERE peer_sip_address_id = ("
+			"    SELECT id from sip_address WHERE value = :peerAddress"
+			"  )", soci::use(peerAddress), soci::into(creationDate), soci::into(lastUpdateDate),
+			soci::use(capabilities), soci::use(subject);
+
+		L_END_LOG_EXCEPTION
+	}
+
+	return shared_ptr<ChatRoom>();
+}
+
+// -----------------------------------------------------------------------------
+
+	bool MainDb::import (Backend, const string &parameters) {
 		L_D();
 
 		if (!isConnected()) {
@@ -817,41 +854,43 @@ EventsDb::EventsDb () : AbstractDb(*new EventsDbPrivate) {}
 
 #else
 
-	void EventsDb::init () {}
+	void MainDb::init () {}
 
-	bool EventsDb::addEvent (const EventLog &) {
+	bool MainDb::addEvent (const EventLog &) {
 		return false;
 	}
 
-	bool EventsDb::deleteEvent (const EventLog &) {
+	bool MainDb::deleteEvent (const EventLog &) {
 		return false;
 	}
 
-	void EventsDb::cleanEvents (FilterMask) {}
+	void MainDb::cleanEvents (FilterMask) {}
 
-	int EventsDb::getEventsCount (FilterMask) const {
+	int MainDb::getEventsCount (FilterMask) const {
 		return 0;
 	}
 
-	int EventsDb::getMessagesCount (const string &) const {
+	int MainDb::getMessagesCount (const string &) const {
 		return 0;
 	}
 
-	int EventsDb::getUnreadMessagesCount (const string &) const {
+	int MainDb::getUnreadMessagesCount (const string &) const {
 		return 0;
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &, int, FilterMask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistory (const string &, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	list<shared_ptr<EventLog>> EventsDb::getHistory (const string &, int, int, FilterMask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistory (const string &, int, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	void EventsDb::cleanHistory (const string &, FilterMask) {}
+	void MainDb::cleanHistory (const string &, FilterMask) {}
 
-	bool EventsDb::import (Backend, const string &) {
+	shared_ptr<ChatRoom> MainDb::findChatRoom (const string &) const {}
+
+	bool MainDb::import (Backend, const string &) {
 		return false;
 	}
 

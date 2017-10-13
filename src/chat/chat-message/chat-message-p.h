@@ -26,7 +26,6 @@
 #include "chat/notification/imdn.h"
 #include "content/content.h"
 #include "content/content-type.h"
-#include "db/events-db.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
 
@@ -137,7 +136,6 @@ private:
 	std::list<Content > contents;
 	Content internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
-	std::shared_ptr<EventsDb> eventsDb;
 	mutable LinphoneErrorInfo * errorInfo = NULL;
 	belle_http_request_t *httpRequest = NULL;
 	belle_http_request_listener_t *httpListener = NULL;

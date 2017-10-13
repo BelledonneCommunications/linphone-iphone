@@ -82,7 +82,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	core/core.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
-	db/events-db.h
+	db/main-db.h
 	db/session/db-session-p.h
 	db/session/db-session-provider.h
 	db/session/db-session.h
@@ -159,7 +159,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content.cpp
 	core/core.cpp
 	db/abstract/abstract-db.cpp
-	db/events-db.cpp
+	db/main-db.cpp
 	db/session/db-session-provider.cpp
 	db/session/db-session.cpp
 	event-log/call-event.cpp
