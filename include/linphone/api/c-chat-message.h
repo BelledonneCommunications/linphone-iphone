@@ -29,11 +29,6 @@
 
 // =============================================================================
 
-typedef enum _ImdnType {
-	ImdnTypeDelivery,
-	ImdnTypeDisplay
-} ImdnType;
-
 typedef enum _LinphoneChatMessageDir{
 	LinphoneChatMessageIncoming,
 	LinphoneChatMessageOutgoing

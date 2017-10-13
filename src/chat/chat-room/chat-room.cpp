@@ -187,46 +187,15 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	L_Q();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core);
 	if (linphone_im_notif_policy_get_send_is_composing(policy)) {
-		LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
-		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, peer);
-		const char *identity = nullptr;
-
-		if (proxy)
-			identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
-		else
-			identity = linphone_core_get_primary_contact(core);
-
-		/* Sending out of call */
-		SalMessageOp *op = new SalMessageOp(core->sal);
-		linphone_configure_op(core, op, peer, nullptr, !!lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
 		string payload = isComposingHandler.marshal(isComposing);
 		if (!payload.empty()) {
-			int retval = -1;
-
 			shared_ptr<ChatMessage> msg = q->createMessage();
-			msg->setFromAddress(Address(identity));
-			msg->setToAddress(peerAddress);
-
 			Content content;
 			content.setContentType("application/im-iscomposing+xml");
 			content.setBody(payload);
 			msg->addContent(content);
-
-			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(core);
-			if (imee) {
-				LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-				LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
-				if (cbProcessOutgoingMessage) {
-					retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(q), L_GET_C_BACK_PTR(msg));
-				}
-			}
-
-			if (retval <= 0) {
-				op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
-			}
-			op->unref();
+			msg->getPrivate()->send();
 		}
-		linphone_address_unref(peer);
 	}
 }
 
@@ -561,7 +530,6 @@ void ChatRoom::compose () {
 }
 
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
-	L_D();
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 
 	/* TODO
@@ -570,31 +538,25 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 	content.setBody(linphone_content_get_string_buffer(initialContent));
 	chatMessage->addContent(content);*/
 
-	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
-
 	return chatMessage;
 }
 
 shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
-	L_D();
 	shared_ptr<ChatMessage> chatMessage = createMessage();
-
 	Content content;
 	content.setContentType(ContentType::PlainText);
 	content.setBody(message);
 	chatMessage->addContent(content);
-
-	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
-
 	return chatMessage;
 }
 
 shared_ptr<ChatMessage> ChatRoom::createMessage () {
+	L_D();
 	shared_ptr<ChatMessage> chatMessage = ObjectFactory::create<ChatMessage>(getSharedFromThis());
+	chatMessage->setToAddress(d->peerAddress);
+	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
 	chatMessage->getPrivate()->setTime(ms_time(0));
 	return chatMessage;
 }

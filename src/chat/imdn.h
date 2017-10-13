@@ -32,6 +32,11 @@ class ChatRoom;
 
 class Imdn {
 public:
+	enum class Type {
+		Delivery,
+		Display
+	};
+
 	static void parse (ChatRoom &cr, const std::string &content);
 
 private:

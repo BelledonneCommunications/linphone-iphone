@@ -1118,7 +1118,6 @@ void linphone_chat_room_remove_transient_message(LinphoneChatRoom *cr, LinphoneC
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg);
 void linphone_chat_message_release(LinphoneChatMessage *msg);
 void linphone_chat_message_fetch_content_from_database(sqlite3 *db, LinphoneChatMessage *message, int content_id);
-void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, ImdnType imdn_type, LinphoneReason reason);
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);

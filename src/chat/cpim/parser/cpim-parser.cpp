@@ -23,6 +23,7 @@
 #include "linphone/utils/utils.h"
 
 #include "cpim-grammar.h"
+#include "content/content-type.h"
 #include "logger/logger.h"
 #include "object/object-p.h"
 
@@ -172,7 +173,7 @@ namespace Cpim {
 
 			if (find_if(cpimHeaders->cbegin(), cpimHeaders->cend(),
 						[](const shared_ptr<const HeaderNode> &headerNode) {
-							return Utils::iequals(headerNode->getName(), "content-type") && headerNode->getValue() == "Message/CPIM";
+							return Utils::iequals(headerNode->getName(), "content-type") && (ContentType(headerNode->getValue()) == ContentType::Cpim);
 						}) == cpimHeaders->cend()) {
 				lWarning() << "No MIME `Content-Type` found!";
 				return nullptr;

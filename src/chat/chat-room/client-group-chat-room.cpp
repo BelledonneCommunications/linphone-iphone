@@ -245,8 +245,8 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
-
 	dConference->conferenceAddress = addr;
+	d->peerAddress = addr;
 	d->setState(ChatRoom::State::Created);
 	_linphone_core_add_group_chat_room(d->core, addr, L_GET_C_BACK_PTR(this));
 }

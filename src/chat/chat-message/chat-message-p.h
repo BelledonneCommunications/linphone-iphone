@@ -20,10 +20,15 @@
 #ifndef _CHAT_MESSAGE_P_H_
 #define _CHAT_MESSAGE_P_H_
 
-#include "chat-message.h"
+#include <belle-sip/types.h>
+
+#include "chat/chat-message/chat-message.h"
+#include "chat/imdn.h"
+#include "content/content.h"
 #include "content/content-type.h"
 #include "db/events-db.h"
 #include "object/object-p.h"
+#include "sal/sal.h"
 
 // =============================================================================
 
@@ -107,7 +112,7 @@ public:
 
 	// -----------------------------------------------------------------------------
 
-	void sendImdn(ImdnType imdnType, LinphoneReason reason);
+	void sendImdn(Imdn::Type imdnType, LinphoneReason reason);
 
 	LinphoneReason receive();
 	void send();
@@ -146,7 +151,7 @@ private:
 
 	// -----------------------------------------------------------------------------
 
-	std::string createImdnXml(ImdnType imdnType, LinphoneReason reason);
+	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
 
 	void fileUploadEndBackgroundTask();
 	void fileUploadBeginBackgroundTask();

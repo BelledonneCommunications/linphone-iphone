@@ -74,7 +74,6 @@ void ChatMessagePrivate::setIsReadOnly(bool readOnly) {
 
 void ChatMessagePrivate::setState(ChatMessage::State s) {
 	L_Q();
-
 	if (s != state && chatRoom) {
 		if (((state == ChatMessage::State::Displayed) || (state == ChatMessage::State::DeliveredToUser))
 			&& ((s == ChatMessage::State::DeliveredToUser) || (s == ChatMessage::State::Delivered) || (s == ChatMessage::State::NotDelivered))) {
@@ -204,7 +203,7 @@ void ChatMessagePrivate::setFileTransferInformation(LinphoneContent *content) {
 
 // -----------------------------------------------------------------------------
 
-string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reason) {
+string ChatMessagePrivate::createImdnXml(Imdn::Type imdnType, LinphoneReason reason) {
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
@@ -241,7 +240,7 @@ string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reaso
 		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
 	}
 	if (err >= 0) {
-		if (imdnType == ImdnTypeDelivery) {
+		if (imdnType == Imdn::Type::Delivery) {
 			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivery-notification");
 		} else {
 			err = xmlTextWriterStartElement(writer, (const xmlChar *)"display-notification");
@@ -252,7 +251,7 @@ string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reaso
 	}
 	if (err >= 0) {
 		if (reason == LinphoneReasonNone) {
-			if (imdnType == ImdnTypeDelivery) {
+			if (imdnType == Imdn::Type::Delivery) {
 				err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
 			} else {
 				err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
@@ -304,7 +303,7 @@ string ChatMessagePrivate::createImdnXml(ImdnType imdnType, LinphoneReason reaso
 	return content;
 }
 
-void ChatMessagePrivate::sendImdn(ImdnType imdnType, LinphoneReason reason) {
+void ChatMessagePrivate::sendImdn(Imdn::Type imdnType, LinphoneReason reason) {
 	string content = createImdnXml(imdnType, reason);
 	chatRoom->getPrivate()->sendImdn(content, reason);
 }
@@ -1082,7 +1081,7 @@ void ChatMessagePrivate::send() {
 	}
 
 	if (lp_config_get_int(chatRoom->getCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
-		call = linphone_core_get_call_by_remote_address(chatRoom->getCore(), chatRoom->getPeerAddress().asString().c_str());
+		call = linphone_core_get_call_by_remote_address(chatRoom->getCore(), to.asString().c_str());
 		if (call) {
 			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
 				linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
@@ -1091,7 +1090,7 @@ void ChatMessagePrivate::send() {
 				op = linphone_call_get_op(call);
 				string identity = linphone_core_find_best_identity(chatRoom->getCore(), linphone_call_get_remote_address(call));
 				if (identity.empty()) {
-					LinphoneAddress *addr = linphone_address_new(chatRoom->getPeerAddress().asString().c_str());
+					LinphoneAddress *addr = linphone_address_new(to.asString().c_str());
 					LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(chatRoom->getCore(), addr);
 					if (proxy) {
 						identity = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
@@ -1106,7 +1105,7 @@ void ChatMessagePrivate::send() {
 	}
 
 	if (!op) {
-		LinphoneAddress *peer = linphone_address_new(chatRoom->getPeerAddress().asString().c_str());
+		LinphoneAddress *peer = linphone_address_new(to.asString().c_str());
 		/* Sending out of call */
 		salOp = op = new SalMessageOp(chatRoom->getCore()->sal);
 		linphone_configure_op(
@@ -1181,14 +1180,14 @@ void ChatMessagePrivate::send() {
 	if (!externalBodyUrl.empty()) {
 		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
 		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-		msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), content_type, nullptr, nullptr);
+		msgOp->send_message(from.asString().c_str(), to.asString().c_str(), content_type, nullptr, nullptr);
 		ms_free(content_type);
 	} else {
 		auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 		if (internalContent.getContentType().isValid()) {
-			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str(), chatRoom->getPeerAddress().asStringUriOnly().c_str());
+			msgOp->send_message(from.asString().c_str(), to.asString().c_str(), internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str(), to.asStringUriOnly().c_str());
 		} else {
-			msgOp->send_message(from.asString().c_str(), chatRoom->getPeerAddress().asString().c_str(), internalContent.getBodyAsString().c_str());
+			msgOp->send_message(from.asString().c_str(), to.asString().c_str(), internalContent.getBodyAsString().c_str());
 		}
 	}
 
@@ -1436,7 +1435,7 @@ void ChatMessage::sendDeliveryNotification(LinphoneReason reason) {
 	LinphoneCore *lc = d->chatRoom->getCore();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if (linphone_im_notif_policy_get_send_imdn_delivered(policy)) {
-		d->sendImdn(ImdnTypeDelivery, reason);
+		d->sendImdn(Imdn::Type::Delivery, reason);
 	}
 }
 
@@ -1445,7 +1444,7 @@ void ChatMessage::sendDisplayNotification() {
 	LinphoneCore *lc = d->chatRoom->getCore();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(lc);
 	if (linphone_im_notif_policy_get_send_imdn_displayed(policy)) {
-		d->sendImdn(ImdnTypeDisplay, LinphoneReasonNone);
+		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 	}
 }
 

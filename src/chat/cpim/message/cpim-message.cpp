@@ -23,6 +23,7 @@
 
 #include "logger/logger.h"
 #include "chat/cpim/parser/cpim-parser.h"
+#include "content/content-type.h"
 #include "object/object-p.h"
 
 #include "cpim-message.h"
@@ -137,7 +138,7 @@ bool Cpim::Message::isValid () const {
 
 	return find_if(d->cpimHeaders->cbegin(), d->cpimHeaders->cend(),
 		[](const shared_ptr<const Header> &header) {
-			return Utils::iequals(header->getName(), "content-type") && header->getValue() == "Message/CPIM";
+			return Utils::iequals(header->getName(), "content-type") && (ContentType(header->getValue()) == ContentType::Cpim);
 		}) != d->cpimHeaders->cend();
 }
 

@@ -28,9 +28,9 @@
 #include "content/content.h"
 #include "content/content-type.h"
 #include "chat/chat-message/chat-message-p.h"
-#include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
+#include "chat/imdn.h"
 
 // =============================================================================
 
@@ -274,9 +274,6 @@ void linphone_chat_message_resend_2(LinphoneChatMessage *msg) {
 
 void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->updateState((LinphonePrivate::ChatMessage::State) new_state);
-}
-void linphone_chat_message_send_imdn(LinphoneChatMessage *msg, ImdnType imdn_type, LinphoneReason reason) {
-	L_GET_PRIVATE_FROM_C_OBJECT(msg)->sendImdn(imdn_type, reason);
 }
 
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
