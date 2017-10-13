@@ -63,6 +63,19 @@ public class OpenH264DownloadHelper {
         if (context.getFilesDir() != null) {
             fileDirection = context.getFilesDir().toString();
         }
+        
+        File file = new File(context.getApplicationInfo().nativeLibraryDir+"/libmsopenh264.so");
+        if (!file.exists()) {
+			Log.i("LinphoneCoreFactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
+			isDownloadEnabled = false;
+		}
+        if (isCodecFound()) {
+            Log.i("OpenH264DownloadHelper"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
+			System.load(downloadHelper.getFullPathLib());
+        } else {
+			Log.i("OpenH264DownloadHelper"," Cannot load OpenH264 downloaded plugin");
+		}
+        isDownloadEnabled = true;
     }
 
     public static boolean isOpenH264DownloadEnabled() {
@@ -72,24 +85,6 @@ public class OpenH264DownloadHelper {
     public static void setOpenH264DownloadEnabled(boolean enabled) {
         isDownloadEnabled = enabled;
     }
-
-	public static boolean checkIfOpenH264DownloadCanBeEnabled(Context context) {
-		File file = new File(context.getApplicationInfo().nativeLibraryDir+"/libmsopenh264.so");
-
-		if (!file.exists()) {
-			Log.i("LinphoneCoreFactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
-			return false;
-		}
-
-		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
-		if (downloadHelper.isCodecFound()) {
-			Log.i("OpenH264DownloadHelper"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
-			System.load(downloadHelper.getFullPathLib());
-		} else {
-			Log.i("OpenH264DownloadHelper"," Cannot load OpenH264 downloaded plugin");
-		}
-		return true;
-	}
 
 	/**
      * Set OpenH264DownloadHelperListener

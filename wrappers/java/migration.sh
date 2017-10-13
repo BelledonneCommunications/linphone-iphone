@@ -234,7 +234,6 @@ eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloa
 #Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath());
 #Factory.instance().enableLogCollection(isDebugEnabled);
 #Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name));
-#Factory.instance().createConfig(String s);
 #AccountCreator.updatePassword
 
 #Android specifics not wrapped automatically
