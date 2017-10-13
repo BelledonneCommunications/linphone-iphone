@@ -19,6 +19,7 @@
 
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
+#include "linphone/utils/utils.h"
 #include "local-conference-event-handler-p.h"
 #include "object/object-p.h"
 #include "private.h"
@@ -184,7 +185,6 @@ string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged () {
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
 	string entity = conf->getConferenceAddress().asStringUriOnly();
-	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -209,7 +209,6 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (c
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
 	string entity = conf->getConferenceAddress().asStringUriOnly();
-	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	confInfo.setUsers(users);
@@ -265,8 +264,13 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	bctbx_free(addrStr);
 	if (participant) {
 		if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
-			participant->getPrivate()->subscribeToConferenceEventPackage(true);
-			d->notifyFullState(d->createNotifyFullState(), lev);
+			int lastNotify = Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version"));
+			if(lastNotify == 0) {
+				participant->getPrivate()->subscribeToConferenceEventPackage(true);
+				d->notifyFullState(d->createNotifyFullState(), lev);
+			} else {
+				// TODO : send all missed notify from lastNotify to d->lastNotify
+			}
 		} else if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionTerminated)
 			participant->getPrivate()->subscribeToConferenceEventPackage(false);
 	}
