@@ -257,6 +257,8 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
+	L_D_T(RemoteConference, dConference);
+
 	if (isMe(addr))
 		return;
 
@@ -267,7 +269,7 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 	}
 
 	participant = ObjectFactory::create<Participant>(addr);
-	RemoteConference::mPrivate->participants.push_back(participant);
+	dConference->participants.push_back(participant);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
@@ -276,17 +278,22 @@ void ClientGroupChatRoom::onParticipantAdded (const Address &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantRemoved (const Address &addr) {
+	L_D_T(RemoteConference, dConference);
+
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (!participant) {
 		lWarning() << "Participant " << addr.asString() << " removed but not in the list of participants!";
 		return;
 	}
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
+
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant));
-	RemoteConference::mPrivate->participants.remove(participant);
+
+	dConference->participants.remove(participant);
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdmin) {
@@ -299,10 +306,12 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const Address &addr, bool isAdm
 		lWarning() << "Participant " << participant << " admin status has been changed but is not in the list of participants!";
 		return;
 	}
+
 	participant->getPrivate()->setAdmin(isAdmin);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
+
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant), isAdmin);
 }
@@ -312,6 +321,7 @@ void ClientGroupChatRoom::onSubjectChanged (const std::string &subject) {
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
+
 	if (cb)
 		cb(cr, subject.c_str());
 }
