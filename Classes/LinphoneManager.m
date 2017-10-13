@@ -711,7 +711,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
 						 linphone_core_get_video_policy(LC)->automatically_accept &&
 						 linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
-				[LinphoneManager.instance.providerDelegate reportIncomingCallwithUUID:uuid handle:address video:video];
+				[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:address video:video];
 #else
 				[PhoneMainView.instance displayIncomingCall:call];
 #endif

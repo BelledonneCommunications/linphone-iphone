@@ -23,7 +23,7 @@
 @property BOOL pendingCallVideo;
 @property int callKitCalls;
 
-- (void)reportIncomingCallwithUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video;
+- (void)reportIncomingCall:(LinphoneCall *) call withUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video;
 - (void)config;
 - (void)configAudioSession:(AVAudioSession *)audioSession;
 @end
