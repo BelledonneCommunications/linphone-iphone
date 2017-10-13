@@ -92,6 +92,8 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
 		}
 		return _Factory;
 	}
+
+    abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
 {{/isLinphoneFactory}}
 {{#methods}}
     {{#doc}}
@@ -161,30 +163,12 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 		Version.dumpCapabilities();
 	}
 
-    private boolean loadingDownloadedOpenH264(Context context) {
-		File file = new File(context.getApplicationInfo().nativeLibraryDir + "/libmsopenh264.so");
-
-		if (!file.exists()) {
-			Log.i("FactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
-			return false;
-		}
-
-		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
-		if (downloadHelper.isCodecFound()) {
-			Log.i("FactoryImpl"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
-			System.load(downloadHelper.getFullPathLib());
-		} else {
-			Log.i("FactoryImpl"," Cannot load OpenH264 downloaded plugin");
-		}
-		return true;
-	}
-
-    public OpenH264DownloadHelper createOpenH264DownloadHelper() {
-		if (fcontext == null) {
+    public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context) {
+		if (context == null) {
 			new CoreException("Cannot create OpenH264DownloadHelper");
-			return null;//exception
+			return null;
 		}
-		return new OpenH264DownloadHelper(fcontext);
+		return new OpenH264DownloadHelper(context);
 	}
 {{/isLinphoneFactory}}
 

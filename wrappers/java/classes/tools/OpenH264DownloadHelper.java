@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import org.apache.commons.compress.compressors.bzip2.*;
-import org.linphone.core.OpenH264DownloadHelperListener;
+import org.linphone.core.tools.OpenH264DownloadHelperListener;
 import org.linphone.mediastream.Log;
 
 /**
@@ -58,10 +58,28 @@ public class OpenH264DownloadHelper {
         nameLib = "libopenh264.so";
         urlDownload = "http://ciscobinary.openh264.org/libopenh264-1.5.0-android19.so.bz2";
         nameFileDownload = "libopenh264-1.5.0-android19.so.bz2";
-        if(context.getFilesDir() != null) {
+        if (context.getFilesDir() != null) {
             fileDirection = context.getFilesDir().toString();
         }
     }
+
+	public static boolean isOpenH264DownloadEnabled(Context context) {
+		File file = new File(context.getApplicationInfo().nativeLibraryDir+"/libmsopenh264.so");
+
+		if (!file.exists()) {
+			Log.i("LinphoneCoreFactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
+			return false;
+		}
+
+		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
+		if (downloadHelper.isCodecFound()) {
+			Log.i("OpenH264DownloadHelper"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
+			System.load(downloadHelper.getFullPathLib());
+		} else {
+			Log.i("OpenH264DownloadHelper"," Cannot load OpenH264 downloaded plugin");
+		}
+		return true;
+	}
 
 	/**
      * Set OpenH264DownloadHelperListener

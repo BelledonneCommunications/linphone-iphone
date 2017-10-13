@@ -5,6 +5,7 @@ SED_END='{} \;'
 
 # Imports
 eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
 
 # Listeners
 eval "$SED_START 's/AccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
@@ -22,6 +23,7 @@ eval "$SED_START 's/RegistrationState.RegistrationOk/RegistrationState.Ok/g' $SE
 eval "$SED_START 's/RegistrationState.RegistrationFailed/RegistrationState.Failed/g' $SED_END"
 eval "$SED_START 's/RegistrationState.RegistrationCleared/RegistrationState.Cleared/g' $SED_END"
 eval "$SED_START 's/RegistrationState.RegistrationProgress/RegistrationState.Progress/g' $SED_END"
+eval "$SED_START 's/RegistrationState.RegistrationNone/RegistrationState.None/g' $SED_END"
 
 eval "$SED_START 's/RemoteProvisioningState.ConfiguringSuccessful/ConfiguringState.Successful/g' $SED_END"
 eval "$SED_START 's/LinphoneCore.RemoteProvisioningState/Core.ConfiguringState/g' $SED_END"
@@ -107,8 +109,9 @@ eval "$SED_START 's/onChatMessageFileTransferProgressChanged/onFileTransferProgr
 eval "$SED_START 's/registrationState/onRegistrationStateChanged/g' $SED_END"
 
 # Methods
-eval "$SED_START 's/getFriendList(/getFriendsLists(/g' $SED_END"
+eval "$SED_START 's/getFriendsLists()/getFriends()/g' $SED_END"
 eval "$SED_START 's/getFriendLists()/getFriendsLists()/g' $SED_END"
+eval "$SED_START 's/getFriendList(/getFriendsLists(/g' $SED_END"
 eval "$SED_START 's/getIdentity(/getIdentityAddress(/g' $SED_END"
 eval "$SED_START 's/isTunnelAvailable()/tunnelAvailable()/g' $SED_END"
 eval "$SED_START 's/setZrtpSecretsCache(/setZrtpSecretsFile(/g' $SED_END"
@@ -182,6 +185,7 @@ eval "$SED_START 's/loadXmlFile(/loadFromXmlFile(/g' $SED_END"
 eval "$SED_START 's/activatePhoneNumberLink()/activateAlias()/g' $SED_END"
 eval "$SED_START 's/isPhoneNumberUsed()/isAliasUsed()/g' $SED_END"
 eval "$SED_START 's/recoverPhoneAccount()/recoverAccount()/g' $SED_END"
+eval "$SED_START 's/isLimeEncryptionAvailable()/limeAvailable()/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
@@ -214,6 +218,11 @@ eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
 #DialPlan
 #LinphoneBuffer
 #Call.zoomVideo()
+#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath());
+#Factory.instance().enableLogCollection(isDebugEnabled);
+#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name));
+#Factory.instance().createConfig(String s);
+#Core.enableDownloadOpenH264
 
 #Android specifics not wrapped automatically
 #Core.needsEchoCalibration()
