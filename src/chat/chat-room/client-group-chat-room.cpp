@@ -211,6 +211,7 @@ void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &pa
 
 void ClientGroupChatRoom::setSubject (const string &subject) {
 	L_D();
+	L_D_T(RemoteConference, dConference);
 
 	if (d->state != ChatRoom::State::Created) {
 		lError() << "Cannot change the ClientGroupChatRoom subject in a state other than Created";
@@ -222,8 +223,7 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 		return;
 	}
 
-	shared_ptr<CallSession> session =
-		static_cast<RemoteConferencePrivate *>(Conference::mPrivate)->focus->getPrivate()->getSession();
+	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
 	if (session)
 		session->update(nullptr, subject);
 	else {

@@ -20,6 +20,10 @@
 #ifndef _GENERAL_H_
 #define _GENERAL_H_
 
+#ifdef __cplusplus
+	#include <type_traits>
+#endif
+
 // =============================================================================
 
 #ifdef __cplusplus
@@ -151,8 +155,30 @@ constexpr T *getPublicHelper (Object *object, const ObjectPrivate *) {
 	CLASS (const CLASS &) = delete; \
 	CLASS &operator= (const CLASS &) = delete;
 
-#define L_D() decltype(std::declval<decltype(*this)>().getPrivate()) const d = getPrivate();
-#define L_Q() decltype(std::declval<decltype(*this)>().getPublic()) const q = getPublic();
+// Get Private data.
+#define L_D() decltype(getPrivate()) const d = getPrivate();
+
+// Get Public data.
+#define L_Q() decltype(getPublic()) const q = getPublic();
+
+template<typename T, typename U>
+struct AddConstMirror {
+	typedef U type;
+};
+
+template<typename T, typename U>
+struct AddConstMirror<const T, U> {
+	typedef typename std::add_const<U>::type type;
+};
+
+// Get Private data of class in a multiple inheritance case.
+#define L_D_T(CLASS, NAME) \
+	auto const NAME = static_cast< \
+		AddConstMirror< \
+			std::remove_reference<decltype(*this)>::type, \
+			CLASS ## Private \
+		>::type * \
+	>(CLASS::mPrivate);
 
 #define L_OVERRIDE_SHARED_FROM_THIS(CLASS) \
 	inline std::shared_ptr<CLASS> getSharedFromThis () { \
