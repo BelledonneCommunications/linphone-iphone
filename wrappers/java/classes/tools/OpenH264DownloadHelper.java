@@ -38,6 +38,8 @@ import org.linphone.mediastream.Log;
  * @author Erwan Croze
  */
 public class OpenH264DownloadHelper {
+    private static boolean isDownloadEnabled;
+
     private OpenH264DownloadHelperListener openH264DownloadHelperListener;
     private ArrayList<Object> userData;
     private String fileDirection;
@@ -63,7 +65,15 @@ public class OpenH264DownloadHelper {
         }
     }
 
-	public static boolean isOpenH264DownloadEnabled(Context context) {
+    public static boolean isOpenH264DownloadEnabled() {
+        return isDownloadEnabled;
+    }
+
+    public static void setOpenH264DownloadEnabled(boolean enabled) {
+        isDownloadEnabled = enabled;
+    }
+
+	public static boolean checkIfOpenH264DownloadCanBeEnabled(Context context) {
 		File file = new File(context.getApplicationInfo().nativeLibraryDir+"/libmsopenh264.so");
 
 		if (!file.exists()) {

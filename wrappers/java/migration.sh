@@ -156,7 +156,9 @@ eval "$SED_START 's/findFriendByAddress(/findFriend(/g' $SED_END"
 eval "$SED_START 's/getTimestamp()/getStartDate()/g' $SED_END"
 #For ProxyConfigs only 
 eval "$SED_START 's/lpc.getAddress()/lpc.getIdentityAddress()/g' $SED_END"
-eval "$SED_START 's/cfg.getAddress()/lpc.getIdentityAddress()/g' $SED_END"
+eval "$SED_START 's/cfg.getAddress()/cfg.getIdentityAddress()/g' $SED_END"
+eval "$SED_START 's/prxCfg.getAddress()/prxCfg.getIdentityAddress()/g' $SED_END"
+eval "$SED_START 's/proxy.getAddress()/proxy.getIdentityAddress()/g' $SED_END"
 #
 eval "$SED_START 's/getCallDuration()/getDuration()/g' $SED_END"
 eval "$SED_START 's/isVCardSupported()/vcardSupported()/g' $SED_END"
@@ -186,12 +188,20 @@ eval "$SED_START 's/activatePhoneNumberLink()/activateAlias()/g' $SED_END"
 eval "$SED_START 's/isPhoneNumberUsed()/isAliasUsed()/g' $SED_END"
 eval "$SED_START 's/recoverPhoneAccount()/recoverAccount()/g' $SED_END"
 eval "$SED_START 's/isLimeEncryptionAvailable()/limeAvailable()/g' $SED_END"
+eval "$SED_START 's/getUseRfc2833ForDtmfs/getUseRfc2833ForDtmf/g' $SED_END"
+eval "$SED_START 's/setUseRfc2833ForDtmfs/setUseRfc2833ForDtmf/g' $SED_END"
+eval "$SED_START 's/getUseSipInfoForDtmfs/getUseInfoForDtmf/g' $SED_END"
+eval "$SED_START 's/setUseSipInfoForDtmfs/setUseInfoForDtmf/g' $SED_END"
+eval "$SED_START 's/getIncomingTimeout/getIncTimeout/g' $SED_END"
+eval "$SED_START 's/setIncomingTimeout/setIncTimeout/g' $SED_END"
+eval "$SED_START 's/migrateCallLogs()/migrateLogsFromRcToDb()/g' $SED_END"
+eval "$SED_START 's/setRLSUri/setRlsUri/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
 eval "$SED_START 's/getBool(/getInt(/g' $SED_END"
 eval "$SED_START 's/setBool(/setInt(/g' $SED_END"
-eval "$SED_START 's/isInConference()/getConference() != null/g' $SED_END"
+eval "$SED_START 's/isInConference()/(getConference() != null)/g' $SED_END"
 eval "$SED_START 's/getAudioStats()/getStats(StreamType.Audio)/g' $SED_END"
 eval "$SED_START 's/getVideoStats()/getStats(StreamType.Video)/g' $SED_END"
 eval "$SED_START 's/getVcardToString()/getVcard().asVcard4String()/g' $SED_END"
@@ -212,9 +222,12 @@ eval "$SED_START 's/transports.tls/transports.getTlsPort()/g' $SED_END"
 eval "$SED_START 's/getPrimaryContactUsername()/getPrimaryContactParsed().getUsername()/g' $SED_END"
 eval "$SED_START 's/getPrimaryContactDisplayName()/getPrimaryContactParsed().getDisplayName()/g' $SED_END"
 eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
+eval "$SED_START 's/content.getData() == null/content.getSize() == 0/'g $SED_END"
+eval "$SED_START 's/lc.downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
+eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloadOpenH264(/g' $SED_END"
 
 #Changes in library required
-#OpenH264DownloadHelper
+#Tunnel
 #DialPlan
 #LinphoneBuffer
 #Call.zoomVideo()
@@ -222,12 +235,15 @@ eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
 #Factory.instance().enableLogCollection(isDebugEnabled);
 #Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name));
 #Factory.instance().createConfig(String s);
-#Core.enableDownloadOpenH264
+#AccountCreator.updatePassword
 
 #Android specifics not wrapped automatically
 #Core.needsEchoCalibration()
 #Core.hasCrappyOpenGL()
 #Core.getMSFactory()
+#COre.startEchoCalibration
+#Core.startEchoTester
+#Core.stopEchoTester
 
 # For the payloads, get the list from the Core, call the method on the object directly and set it back if required
 #Core.enablePayloadType()
@@ -235,9 +251,15 @@ eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
 #Core.payloadTypeIsVbr()
 #Core.setPayloadTypeBitrate()
 
+#Factory.createLpConfigFromString => Config.newFromBuffer
+#Factory.createLpConfig => Config.newWithFactory or Core.createConfig
+#Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
+#Factory.createAccountCreator() => Core.createAccountCreator()
+#Factory.createPresenceModel() => Core.createPresenceModel()
 #CallParams.getJitterBufferSize() => CallStatsImpl.getJitterBufferSizeMs()
 #Core.getSupportedVideoSizes() => Factory.getSupportedVideoDefinitions()
 #Core.removeFriend() => FriendList.removeFriend()
+#Core.getFriendsLists() => now returns a FriendList[] instead of a Friend[]
 #Core.enableSpeaker / isSpeakerEnabled() => mAudioManager.setSpeakerphoneOn(speakerOn);
 #Core.enableVideo(true, true) => Core.enableVideoCapture(bool) & Core.enableVideoDisplay(bool)
 #Core.setCpuCount() => Not needed anymore, can be removed
