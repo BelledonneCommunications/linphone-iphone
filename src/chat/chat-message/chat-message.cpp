@@ -1422,8 +1422,10 @@ void ChatMessage::updateState(State state) {
 void ChatMessage::send () {
 	L_D();
 
-	if (d->state != State::NotDelivered) {
-		lWarning() << "Cannot resend chat message in state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state);
+	// Do not allow sending a message that is already being sent or that has been correctly delivered/displayed
+	if ((d->state == State::InProgress) || (d->state == State::Delivered) || (d->state == State::FileTransferDone)
+		|| (d->state == State::DeliveredToUser) || (d->state == State::Displayed)) {
+		lWarning() << "Cannot send chat message in state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state);
 		return;
 	}
 
