@@ -2697,7 +2697,7 @@ LINPHONE_PUBLIC const char** linphone_core_get_sound_devices(LinphoneCore *lc);
  * @return \bctbx_list{char *} An unmodifiable array of strings contanining the names of the available sound devices that is NULL terminated
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_sound_devices_list(LinphoneCore *lc);
+LINPHONE_PUBLIC bctbx_list_t * linphone_core_get_sound_devices_list(const LinphoneCore *lc);
 
 /**
  * Use this function when you want to set the default sound devices
@@ -3613,7 +3613,7 @@ LINPHONE_PUBLIC const char**  linphone_core_get_video_devices(const LinphoneCore
  * @return \bctbx_list{char *} An unmodifiable array of strings contanining the names of the available video capture devices that is NULL terminated
  * @ingroup media_parameters
 **/
-LINPHONE_PUBLIC const bctbx_list_t * linphone_core_get_video_devices_list(LinphoneCore *lc);
+LINPHONE_PUBLIC bctbx_list_t * linphone_core_get_video_devices_list(const LinphoneCore *lc);
 
 /**
  * Sets the active video device.
