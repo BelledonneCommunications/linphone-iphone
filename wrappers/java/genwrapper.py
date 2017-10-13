@@ -61,8 +61,8 @@ ENUMS_LIST = {
     'SubscribePolicy': 'Friend',
     'TransportType': 'Address',
     'TunnelMode': 'Tunnel',
-    'XmlRpcArgType': 'XmlRpcRequest',
-    'XmlRpcStatus': 'XmlRpcRequest',
+    'XmlRpcRequestArgType': 'XmlRpcRequest',
+    'XmlRpcRequestStatus': 'XmlRpcRequest',
 }
 
 ##########################################################################
@@ -572,11 +572,19 @@ class JavaEnum(object):
         self._class = translator.translate_enum(_enum)
         self.packageName = package
         self.className = _enum.name.to_camel_case()
+        if self.className == 'XmlRpcArgType':
+            self.className = 'XmlRpcRequestArgType'
+        elif self.className == 'XmlRpcStatus':
+            self.className = 'XmlRpcRequestStatus'
         self.cPrefix = 'linphone_' + _enum.name.to_snake_case()
         self.filename = self.className + ".java"
         self.values = self._class['values']
         self.doc = self._class['doc']
         self.jniName = translator.translate_java_jni_enum_name(_enum)
+        if self.className == 'XmlRpcRequestArgType':
+            self.jniName = 'XmlRpcRequest$ArgType'
+        elif self.className == 'XmlRpcRequestStatus':
+            self.jniName = 'XmlRpcRequest$Status'
 
 class JniInterface(object):
     def __init__(self, javaClass, apiClass):

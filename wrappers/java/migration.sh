@@ -38,6 +38,7 @@ eval "$SED_START 's/LogCollectionUploadState.LogCollectionUploadStateDelivered/L
 eval "$SED_START 's/LogCollectionUploadState.LogCollectionUploadStateNotDelivered/LogCollectionUploadState.NotDelivered/g' $SED_END"
 
 eval "$SED_START 's/AccountCreator.RequestStatus/AccountCreator.Status/g' $SED_END"
+eval "$SED_START 's/RequestStatus/Status/g' $SED_END"
 eval "$SED_START 's/AccountCreator.Status.Ok/AccountCreator.Status.RequestOk/g' $SED_END"
 eval "$SED_START 's/AccountCreator.PasswordCheck/AccountCreator.PasswordStatus/g' $SED_END"
 eval "$SED_START 's/AccountCreator.PhoneNumberCheck/AccountCreator.PhoneNumberStatus/g' $SED_END"
@@ -45,6 +46,7 @@ eval "$SED_START 's/AccountCreator.EmailCheck/AccountCreator.EmailStatus/g' $SED
 eval "$SED_START 's/AccountCreator.UsernameCheck/AccountCreator.UsernameStatus/g' $SED_END"
 eval "$SED_START 's/AccountCreator.Status.Failed/AccountCreator.Status.RequestFailed/g' $SED_END"
 eval "$SED_START 's/AccountCreator.Status.ErrorServer/AccountCreator.Status.ServerError/g' $SED_END"
+eval "$SED_START 's/PhoneNumberStatus.CountryCodeInvalid/PhoneNumberStatus.InvalidCountryCode/g' $SED_END"
 
 eval "$SED_START 's/Reason.Media/Reason.NotAcceptable/g' $SED_END"
 eval "$SED_START 's/Reason.BadCredentials/Reason.Forbidden/g' $SED_END"
@@ -175,7 +177,8 @@ eval "$SED_START 's/VideoDefinition().toDisplayableString()/VideoDefinition().ge
 eval "$SED_START 's/isAccountUsed/isAccountExist()/g' $SED_END"
 eval "$SED_START 's/loadXmlFile(/loadFromXmlFile(/g' $SED_END"
 eval "$SED_START 's/activatePhoneNumberLink()/activateAlias()/g' $SED_END"
-eval "$SED_START 's//g' $SED_END"
+eval "$SED_START 's/isPhoneNumberUsed()/isAliasUsed()/g' $SED_END"
+eval "$SED_START 's/recoverPhoneAccount()/recoverAccount()/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
