@@ -65,10 +65,10 @@ protected:
 	int sqlRequest (sqlite3 *db, const std::string &stmt);
 	void sqlRequestMessage (sqlite3 *db, const std::string &stmt);
 	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
-	void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
+	virtual void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
 public:
-	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
+	virtual LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
 protected:
