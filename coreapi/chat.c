@@ -156,11 +156,18 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 }
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
-	LinphoneAddress *addr = linphone_address_new(sal_msg->from);
-	linphone_address_clean(addr);
-	LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
-	LinphoneReason reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
-	linphone_address_unref(addr);
+	LinphoneReason reason = LinphoneReasonNotAcceptable;
+	LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_from());
+	if (cr)
+		reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
+	else {
+		LinphoneAddress *addr = linphone_address_new(sal_msg->from);
+		linphone_address_clean(addr);
+		cr = linphone_core_get_chat_room(lc, addr);
+		if (cr)
+			reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
+		linphone_address_unref(addr);
+	}
 	return reason;
 }
 
