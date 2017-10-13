@@ -371,12 +371,6 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	LinphoneReason reason = LinphoneReasonNone;
 	shared_ptr<ChatMessage> msg;
 
-	/* Check if this is a duplicate message */
-	if ((msg = q->findMessageWithDirection(op->get_call_id(), ChatMessage::Direction::Incoming))) {
-		reason = core->chat_deny_code;
-		return reason;
-	}
-
 	msg = q->createMessage();
 
 	Content content;

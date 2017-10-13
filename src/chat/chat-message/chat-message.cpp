@@ -989,7 +989,6 @@ LinphoneReason ChatMessagePrivate::receive() {
 	L_Q();
 	int errorCode = 0;
 	LinphoneReason reason = LinphoneReasonNone;
-	bool store = false;
 
 	// ---------------------------------------
 	// Start of message modification
@@ -1024,13 +1023,12 @@ LinphoneReason ChatMessagePrivate::receive() {
 
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
-		for (auto it = contents.begin(); it != contents.end(); it++) {
-			if (linphone_core_is_content_type_supported(chatRoom->getCore(), it->getContentType().asString().c_str())) {
+		for (const auto &c : contents) {
+			if (linphone_core_is_content_type_supported(chatRoom->getCore(), c.getContentType().asString().c_str())) {
 				foundSupportContentType = true;
 				break;
-			} else {
-				lError() << "Unsupported content-type: " << it->getContentType().asString();
-			}
+			} else
+				lError() << "Unsupported content-type: " << c.getContentType().asString();
 		}
 
 		if (!foundSupportContentType) {
@@ -1039,24 +1037,31 @@ LinphoneReason ChatMessagePrivate::receive() {
 		}
 	}
 
+	// Check if this is in fact an outgoing message (case where this is a message sent by us from an other device)
+	Address me(linphone_core_get_identity(chatRoom->getCore()));
+	if (me.weakEqual(from))
+		setDirection(ChatMessage::Direction::Outgoing);
+
+	/* Check if this is a duplicate message */
+	if (chatRoom->findMessageWithDirection(q->getImdnMessageId(), q->getDirection()))
+		return chatRoom->getCore()->chat_deny_code;
+
 	if (errorCode > 0) {
 		reason = linphone_error_code_to_reason(errorCode);
 		q->sendDeliveryNotification(reason);
 		return reason;
 	}
 
-	for (auto it = contents.begin(); it != contents.end(); it++) {
-		if (it->getContentType() == ContentType::FileTransfer) {
-			store = true;
-			createFileTransferInformationsFromVndGsmaRcsFtHttpXml(it->getBodyAsString());
-		} else if (it->getContentType() == ContentType::PlainText) {
-			store = true;
-		}
+	bool messageToBeStored = false;
+	for (const auto &c : contents) {
+		if (c.getContentType() == ContentType::FileTransfer) {
+			messageToBeStored = true;
+			createFileTransferInformationsFromVndGsmaRcsFtHttpXml(c.getBodyAsString());
+		} else if (c.getContentType() == ContentType::PlainText)
+			messageToBeStored = true;
 	}
-
-	if (store) {
+	if (messageToBeStored)
 		q->store();
-	}
 
 	return reason;
 }

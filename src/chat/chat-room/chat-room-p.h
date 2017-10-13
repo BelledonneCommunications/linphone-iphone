@@ -98,7 +98,6 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> messages;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
 	std::list<std::weak_ptr<ChatMessage>> weakMessages;
-	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
 	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 	IsComposing isComposingHandler;
 
