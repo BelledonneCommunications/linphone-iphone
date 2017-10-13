@@ -23,7 +23,17 @@ package {{packageName}};
 import {{import}}
 {{/imports}}
 {{#isLinphoneFactory}}
+import android.content.Context;
+import android.os.Build;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.linphone.mediastream.Log;
 import org.linphone.mediastream.Version;
+import org.linphone.core.tools.OpenH264DownloadHelper;
 {{/isLinphoneFactory}}
 
 {{#doc}}
@@ -33,7 +43,7 @@ import org.linphone.mediastream.Version;
     {{/lines}}
   */
 {{/doc}}
-public interface {{className}} {
+public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}interface{{/isNotLinphoneFactory}} {{className}} {
 {{#enums}}
     enum {{className}} {
     {{#values}}
@@ -70,7 +80,18 @@ public interface {{className}} {
 
 {{/enums}}
 {{#isLinphoneFactory}}
-    
+    static Factory _Factory;
+
+    public static final synchronized Factory instance() {
+		try {
+			if (_Factory == null) {
+				_Factory = new FactoryImpl(0);
+			}
+		} catch (Exception e) {
+			System.err.println("Cannot instanciate factory");
+		}
+		return _Factory;
+	}
 {{/isLinphoneFactory}}
 {{#methods}}
     {{#doc}}
@@ -81,18 +102,18 @@ public interface {{className}} {
       */
     {{/doc}}
     {{#deprecated}}@Deprecated
-    {{/deprecated}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
+    {{/deprecated}}{{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}}{{#enumCast}} throws CoreException{{/enumCast}};
 
 {{/methods}}
     /**
       * Sets the object to store in this object user's data
       */
-    public void setUserData(Object data);
+    {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public void setUserData(Object data);
 
     /**
       * Gets the object stored in this object user's data
       */
-    public Object getUserData();
+    {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public Object getUserData();
 
 {{#isNotLinphoneFactory}}
 {{#staticMethods}}
@@ -109,7 +130,7 @@ public interface {{className}} {
 {{/isNotLinphoneFactory}}
 }
 
-class {{classImplName}} implements {{className}} {
+class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}implements{{/isNotLinphoneFactory}} {{className}} {
 
     protected long nativePtr = 0;
     protected Object userData = null;
@@ -119,12 +140,12 @@ class {{classImplName}} implements {{className}} {
     }
 
 {{#isLinphoneFactory}}
-    private static boolean loadOptionalLibrary(String s) {
+	private static boolean loadOptionalLibrary(String s) {
 		try {
 			System.loadLibrary(s);
 			return true;
 		} catch (Throwable e) {
-			android.util.Log.w("LinphoneCoreFactoryImpl", "Unable to load optional library " + s + ": " + e.getMessage());
+			android.util.Log.w("FactoryImpl", "Unable to load optional library " + s + ": " + e.getMessage());
 		}
 		return false;
 	}
@@ -139,10 +160,37 @@ class {{classImplName}} implements {{className}} {
 		System.loadLibrary("linphone");
 		Version.dumpCapabilities();
 	}
+
+    private boolean loadingDownloadedOpenH264(Context context) {
+		File file = new File(context.getApplicationInfo().nativeLibraryDir + "/libmsopenh264.so");
+
+		if (!file.exists()) {
+			Log.i("FactoryImpl"," libmsopenh264 not found, we disable the download of Openh264");
+			return false;
+		}
+
+		OpenH264DownloadHelper downloadHelper = new OpenH264DownloadHelper(context);
+		if (downloadHelper.isCodecFound()) {
+			Log.i("FactoryImpl"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
+			System.load(downloadHelper.getFullPathLib());
+		} else {
+			Log.i("FactoryImpl"," Cannot load OpenH264 downloaded plugin");
+		}
+		return true;
+	}
+
+    public OpenH264DownloadHelper createOpenH264DownloadHelper() {
+		if (fcontext == null) {
+			new CoreException("Cannot create OpenH264DownloadHelper");
+			return null;//exception
+		}
+		return new OpenH264DownloadHelper(fcontext);
+	}
 {{/isLinphoneFactory}}
 
 {{#methods}}
     private native {{return_native}} {{name}}({{native_params}});
+    @Override
     public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}}{{#enumCast}}throws CoreException{{/enumCast}} {
         {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
         if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult);{{/exception}}
@@ -160,10 +208,12 @@ class {{classImplName}} implements {{className}} {
 	}
 {{/isNotLinphoneFactory}}
     
+    @Override
     public void setUserData(Object data) {
         userData = data;
     }
 
+    @Override
     public Object getUserData() {
         return userData;
     }

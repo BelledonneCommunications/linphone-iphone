@@ -3,6 +3,9 @@
 SED_START='find ./src/android/org/linphone/ -type f -exec sed -i -e '
 SED_END='{} \;'
 
+# Imports
+eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' $SED_END"
+
 # Listeners
 eval "$SED_START 's/AccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
 eval "$SED_START 's/LinphoneCoreListenerBase/CoreListenerStub/g' $SED_END"
@@ -204,6 +207,7 @@ eval "$SED_START 's/transports.tcp/transports.getTcpPort()/g' $SED_END"
 eval "$SED_START 's/transports.tls/transports.getTlsPort()/g' $SED_END"
 eval "$SED_START 's/getPrimaryContactUsername()/getPrimaryContactParsed().getUsername()/g' $SED_END"
 eval "$SED_START 's/getPrimaryContactDisplayName()/getPrimaryContactParsed().getDisplayName()/g' $SED_END"
+eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
 
 #Changes in library required
 #OpenH264DownloadHelper
