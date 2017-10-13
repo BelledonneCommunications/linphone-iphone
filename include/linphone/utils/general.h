@@ -180,6 +180,15 @@ struct AddConstMirror<const T, U> {
 		>::type * \
 	>(CLASS::mPrivate);
 
+// Get Private data of class in a multiple inheritance case.
+#define L_Q_T(CLASS, NAME) \
+	auto const NAME = static_cast< \
+		AddConstMirror< \
+			std::remove_reference<decltype(*this)>::type, \
+			CLASS \
+		>::type * \
+	>(getPublic());
+
 #define L_OVERRIDE_SHARED_FROM_THIS(CLASS) \
 	inline std::shared_ptr<CLASS> getSharedFromThis () { \
 		return std::static_pointer_cast<CLASS>(Object::getSharedFromThis()); \

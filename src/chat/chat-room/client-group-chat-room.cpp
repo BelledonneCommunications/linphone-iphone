@@ -41,11 +41,12 @@ ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : Ch
 
 shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	L_Q();
+	L_Q_T(RemoteConference, qConference);
 
 	CallSessionParams csp;
 	csp.addCustomHeader("Require", "recipient-list-invite");
 
-	shared_ptr<Participant> focus = static_cast<RemoteConference *>(q)->getPrivate()->focus;
+	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, q);
 	const Address &myAddress = q->getMe()->getAddress();
 	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getAddress());
@@ -58,8 +59,8 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 }
 
 void ClientGroupChatRoomPrivate::notifyReceived (string body) {
-	L_Q();
-	static_cast<RemoteConference *>(q)->getPrivate()->eventHandler->notifyReceived(body);
+	L_Q_T(RemoteConference, qConference);
+	qConference->getPrivate()->eventHandler->notifyReceived(body);
 }
 
 // =============================================================================
