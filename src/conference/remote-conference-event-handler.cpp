@@ -20,6 +20,7 @@
 #include "private.h"
 #include "logger/logger.h"
 #include "remote-conference-event-handler-p.h"
+#include "linphone/utils/utils.h"
 #include "xml/conference-info.h"
 
 // =============================================================================
@@ -49,10 +50,10 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 
 void RemoteConferenceEventHandler::subscribe (const Address &addr) {
 	L_D();
-	// TODO : add last notify
 	d->confAddress = addr;
 	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
 	d->lev = linphone_core_create_subscribe(d->core, lAddr, "conference", 600);
+	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", Utils::toString(d->lastNotify).c_str());
 	linphone_address_unref(lAddr);
 	linphone_event_set_internal(d->lev, TRUE);
 	linphone_event_set_user_data(d->lev, this);
