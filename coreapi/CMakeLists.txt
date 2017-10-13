@@ -47,6 +47,7 @@ list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 	sqlite3_bctbx_vfs.h
 	vcard_private.h
 	xml2lpc.h
+	platform-helpers.h
 )
 
 set(LINPHONE_SOURCE_FILES_C
@@ -110,6 +111,8 @@ set(LINPHONE_SOURCE_FILES_C
 set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
 	tester_utils.cpp
+	platform-helpers.cpp
+	android-helpers.cpp
 )
 set(LINPHONE_INCLUDE_DIRS ${LINPHONE_INCLUDE_DIRS})
 if(ENABLE_JAVA_WRAPPER)

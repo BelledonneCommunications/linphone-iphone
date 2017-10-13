@@ -107,9 +107,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
-			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata);
+			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata, context);
 			lc.enableDownloadOpenH264(openh264DownloadEnabled);
-			if (context != null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
@@ -123,9 +122,8 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			boolean openh264DownloadEnabled = false;
 			if (context != null) openh264DownloadEnabled = loadingDownloadedOpenH264(fcontext);
 			MediastreamerAndroidContext.setContext(context);
-			LinphoneCore lc = new LinphoneCoreImpl(listener);
+			LinphoneCore lc = new LinphoneCoreImpl(listener, context);
 			lc.enableDownloadOpenH264(openh264DownloadEnabled);
-			if (context != null) lc.setContext(context);
 			return lc;
 		} catch (IOException e) {
 			throw new LinphoneCoreException("Cannot create LinphoneCore",e);
