@@ -79,6 +79,22 @@ LINPHONE_PUBLIC void linphone_auth_info_unref(LinphoneAuthInfo *info);
 LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
 
 /**
+ * Sets the password.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] passwd The password.
+ * @deprecated, use linphone_auth_info_set_password instead
+ * @donotwrap
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd);
+
+/**
+ * Sets the password.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @param[in] passwd The password.
+**/
+LINPHONE_PUBLIC void linphone_auth_info_set_password(LinphoneAuthInfo *info, const char *passwd);
+
+/**
  * Sets the username.
  * @param[in] info The #LinphoneAuthInfo object
  * @param[in] username The username.
@@ -154,8 +170,18 @@ LINPHONE_PUBLIC const char *linphone_auth_info_get_username(const LinphoneAuthIn
  * Gets the password.
  * @param[in] info The #LinphoneAuthInfo object
  * @return The password.
+ * @deprecated, use linphone_auth_info_get_password instead
+ * @donotwrap
  */
 LINPHONE_PUBLIC const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *info);
+
+/**
+ * Gets the password.
+ * @param[in] info The #LinphoneAuthInfo object
+ * @return The password.
+ */
+LINPHONE_PUBLIC const char *linphone_auth_info_get_password(const LinphoneAuthInfo *info);
+
 
 /**
  * Gets the userid.

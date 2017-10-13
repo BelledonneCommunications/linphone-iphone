@@ -83,6 +83,10 @@ const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i) {
 }
 
 const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i) {
+	return linphone_auth_info_get_password(i);
+}
+
+const char *linphone_auth_info_get_password(const LinphoneAuthInfo *i) {
 	return i->passwd;
 }
 
@@ -118,8 +122,11 @@ const char *linphone_auth_info_get_tls_key_path(const LinphoneAuthInfo *i) {
 	return i->tls_key_path;
 }
 
-
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd) {
+	linphone_auth_info_set_password(info, passwd);
+}
+
+void linphone_auth_info_set_password(LinphoneAuthInfo *info, const char *passwd) {
 	if (info->passwd) {
 		ms_free(info->passwd);
 		info->passwd = NULL;
