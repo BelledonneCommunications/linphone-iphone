@@ -22,7 +22,7 @@
 #endif // ifdef SOCI_ENABLED
 
 #include "abstract-db-p.h"
-#include "db/provider/db-session-provider.h"
+#include "db/session/db-session-provider.h"
 #include "logger/logger.h"
 
 // =============================================================================

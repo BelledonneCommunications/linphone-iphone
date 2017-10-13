@@ -82,9 +82,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
 	db/events-db.h
-	db/provider/db-session-p.h
-	db/provider/db-session-provider.h
-	db/provider/db-session.h
+	db/session/db-session-p.h
+	db/session/db-session-provider.h
+	db/session/db-session.h
 	enums.h
 	event-log/call-event.h
 	event-log/chat-message-event.h
@@ -159,8 +159,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	core/core.cpp
 	db/abstract/abstract-db.cpp
 	db/events-db.cpp
-	db/provider/db-session-provider.cpp
-	db/provider/db-session.cpp
+	db/session/db-session-provider.cpp
+	db/session/db-session.cpp
 	event-log/call-event.cpp
 	event-log/chat-message-event.cpp
 	event-log/conference-event.cpp

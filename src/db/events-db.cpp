@@ -32,7 +32,7 @@
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
-#include "db/provider/db-session-provider.h"
+#include "db/session/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
 #include "event-log/event-log-p.h"

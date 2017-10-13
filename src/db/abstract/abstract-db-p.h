@@ -21,7 +21,7 @@
 #define _ABSTRACT_DB_P_H_
 
 #include "abstract-db.h"
-#include "db/provider/db-session.h"
+#include "db/session/db-session.h"
 #include "object/object-p.h"
 
 // =============================================================================
