@@ -19,9 +19,9 @@
 
 #include "logger/logger.h"
 
-#include "chat/imdn.h"
-#include "chat/chat-room/chat-room.h"
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room.h"
+#include "chat/notification/imdn.h"
 
 // =============================================================================
 

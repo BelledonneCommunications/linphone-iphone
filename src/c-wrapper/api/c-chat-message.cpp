@@ -30,7 +30,7 @@
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
-#include "chat/imdn.h"
+#include "chat/notification/imdn.h"
 
 // =============================================================================
 

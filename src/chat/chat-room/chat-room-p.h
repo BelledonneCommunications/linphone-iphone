@@ -20,7 +20,7 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
-#include "chat/is-composing.h"
+#include "chat/notification/is-composing.h"
 #include "chat-room.h"
 #include "object/object-p.h"
 

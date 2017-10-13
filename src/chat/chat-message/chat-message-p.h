@@ -23,7 +23,7 @@
 #include <belle-sip/types.h>
 
 #include "chat/chat-message/chat-message.h"
-#include "chat/imdn.h"
+#include "chat/notification/imdn.h"
 #include "content/content.h"
 #include "content/content-type.h"
 #include "db/events-db.h"

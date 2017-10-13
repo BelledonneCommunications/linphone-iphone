@@ -47,12 +47,13 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/cpim/message/cpim-message.h
 	chat/cpim/parser/cpim-grammar.h
 	chat/cpim/parser/cpim-parser.h
-	chat/imdn.h
-	chat/is-composing.h
 	chat/modifier/chat-message-modifier.h
 	chat/modifier/cpim-chat-message-modifier.h
 	chat/modifier/encryption-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
+	chat/notification/imdn.h
+	chat/notification/is-composing.h
+	chat/notification/is-composing-listener.h
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h
@@ -138,11 +139,11 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/cpim/message/cpim-message.cpp
 	chat/cpim/parser/cpim-grammar.cpp
 	chat/cpim/parser/cpim-parser.cpp
-	chat/imdn.cpp
-	chat/is-composing.cpp
 	chat/modifier/cpim-chat-message-modifier.cpp
 	chat/modifier/encryption-chat-message-modifier.cpp
 	chat/modifier/multipart-chat-message-modifier.cpp
+	chat/notification/imdn.cpp
+	chat/notification/is-composing.cpp
 	conference/conference.cpp
 	conference/local-conference-event-handler.cpp
 	conference/local-conference.cpp
