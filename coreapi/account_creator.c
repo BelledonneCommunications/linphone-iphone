@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/lpconfig.h"
 
 #include "c-wrapper/c-wrapper.h"
+#include "linphone/api/c-dial-plan.h"
 
 #if !_WIN32
 	#include "regex.h"
@@ -402,10 +403,10 @@ LinphoneAccountCreatorPhoneNumberStatusMask linphone_account_creator_set_phone_n
 			if (linphone_dial_plan_is_generic(plan)) {
 				return_status = LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode;
 			}
-			if (size < plan->nnl - 1) {
+			if (size < linphone_dial_plan_get_national_number_length(plan) - 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooShort;
 				goto end;
-			} else if (size > plan->nnl + 1) {
+			} else if (size > linphone_dial_plan_get_national_number_length(plan) + 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooLong;
 				goto end;
 			} else if (return_status & LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode) {

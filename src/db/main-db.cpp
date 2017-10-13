@@ -888,7 +888,9 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 
 	void MainDb::cleanHistory (const string &, FilterMask) {}
 
-	shared_ptr<ChatRoom> MainDb::findChatRoom (const string &) const {}
+	shared_ptr<ChatRoom> MainDb::findChatRoom (const string &) const {
+		return nullptr;
+	}
 
 	bool MainDb::import (Backend, const string &) {
 		return false;

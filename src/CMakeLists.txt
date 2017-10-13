@@ -86,6 +86,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/session/db-session-p.h
 	db/session/db-session-provider.h
 	db/session/db-session.h
+	dial-plan/dial-plan-p.h
+	dial-plan/dial-plan.h
 	enums.h
 	event-log/call-event.h
 	event-log/chat-message-event.h
@@ -124,6 +126,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-chat-message.cpp
 	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-chat-room.cpp
+	c-wrapper/api/c-dial-plan.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
 	c-wrapper/internal/c-sal.cpp
@@ -162,6 +165,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	db/main-db.cpp
 	db/session/db-session-provider.cpp
 	db/session/db-session.cpp
+	dial-plan/dial-plan.cpp
 	event-log/call-event.cpp
 	event-log/chat-message-event.cpp
 	event-log/conference-event.cpp

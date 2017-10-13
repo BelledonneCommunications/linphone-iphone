@@ -84,6 +84,7 @@ set(C_API_HEADER_FILES
 	c-chat-message-cbs.h
 	c-chat-room.h
 	c-chat-room-cbs.h
+	c-dial-plan.h
 	c-event-log.h
 	c-participant.h
 	c-types.h

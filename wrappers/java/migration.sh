@@ -231,9 +231,6 @@ eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloa
 #DialPlan
 #LinphoneBuffer
 #Call.zoomVideo()
-#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath());
-#Factory.instance().enableLogCollection(isDebugEnabled);
-#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name));
 #AccountCreator.updatePassword
 
 #Android specifics not wrapped automatically
@@ -264,3 +261,6 @@ eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloa
 #Core.setCpuCount() => Not needed anymore, can be removed
 #AccountCreator.getPrefix => linphone_dial_plan_lookup_ccc_from_e164
 #ProxyConfig.lookupCCCFromIso=> linphone_dial_plan_lookup_ccc_from_iso
+#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
+#Factory.instance().enableLogCollection(isDebugEnabled); => COre.enableLogCollection
+#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask

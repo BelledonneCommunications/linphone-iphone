@@ -117,6 +117,12 @@ typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
 **/
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
+/**
+* Represents a dial plan
+* @ingroup misc
+**/
+typedef struct _LinphoneDialPlan LinphoneDialPlan;
+
 // -----------------------------------------------------------------------------
 // EventLog.
 // -----------------------------------------------------------------------------
