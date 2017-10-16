@@ -942,14 +942,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 					  NSString *tmp_phone =
 						  [NSString stringWithUTF8String:linphone_account_creator_get_phone_number(account_creator)];
 					  int ccc = -1;
-					  LinphoneDialPlan dialplan = {0};
+					  const LinphoneDialPlan *dialplan = NULL;
 					  char *nationnal_significant_number = NULL;
 					  ccc = linphone_dial_plan_lookup_ccc_from_e164(tmp_phone.UTF8String);
 					  if (ccc > -1) { /*e164 like phone number*/
-						  dialplan = *linphone_dial_plan_by_ccc_as_int(ccc);
-						  nationnal_significant_number = strstr(tmp_phone.UTF8String, dialplan.ccc);
+						  dialplan = linphone_dial_plan_by_ccc_as_int(ccc);
+						  nationnal_significant_number = strstr(tmp_phone.UTF8String, linphone_dial_plan_get_country_calling_code(dialplan));
 						  if (nationnal_significant_number) {
-							  nationnal_significant_number += strlen(dialplan.ccc);
+							  nationnal_significant_number += strlen(linphone_dial_plan_get_country_calling_code(dialplan));
 						  }
 					  }
 					  [self changeView:_linphoneLoginView back:FALSE animation:TRUE];
@@ -971,15 +971,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 											  ofType:[UITextField class]])
 						  .text = @"";
 					  linphone_account_creator_set_activation_code(account_creator, "");
-					  if (dialplan.iso_country_code) {
+					  if (linphone_dial_plan_get_iso_country_code(dialplan)) {
 						  NSDictionary *country = [CountryListView
-							  countryWithIso:[NSString stringWithUTF8String:dialplan.iso_country_code]];
+							  countryWithIso:[NSString stringWithUTF8String:linphone_dial_plan_get_iso_country_code(dialplan)]];
 						  [self didSelectCountry:country];
 					  }
 					  // Reset phone number in account_creator to be sure to let the user retry
 					  if (nationnal_significant_number) {
 						  linphone_account_creator_set_phone_number(account_creator, nationnal_significant_number,
-																	dialplan.ccc);
+																	linphone_dial_plan_get_country_calling_code(dialplan));
 					  }
 					}];
 

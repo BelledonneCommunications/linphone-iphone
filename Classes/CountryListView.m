@@ -7,7 +7,6 @@
 //
 
 #import "CountryListView.h"
-
 #import "linphone/linphonecore_utils.h"
 
 @interface CountryListView ()
@@ -24,14 +23,16 @@ static NSMutableArray * dataRows = nil;
 + (NSArray*) getData {
 	if (!dataRows) {
 		dataRows = [[NSMutableArray alloc] init];
-
-		for (const LinphoneDialPlan* dial_plan=linphone_dial_plan_get_all(); dial_plan->country!=NULL; dial_plan++) {
+		const bctbx_list_t *dialPlans = linphone_dial_plan_get_all_list();
+		while (dialPlans) {
+			LinphoneDialPlan* dial_plan = (LinphoneDialPlan*)dialPlans->data;
 			[dataRows addObject:@{
-								  @"name":[NSString stringWithUTF8String:dial_plan->country],
-								  @"iso":[NSString stringWithUTF8String:dial_plan->iso_country_code],
-								  @"code":[NSString stringWithFormat:@"+%s",dial_plan->ccc],
-								  @"phone_length":@(dial_plan->nnl)
+								  @"name":[NSString stringWithUTF8String:linphone_dial_plan_get_country(dial_plan)],
+								  @"iso":[NSString stringWithUTF8String:linphone_dial_plan_get_iso_country_code(dial_plan)],
+								  @"code":[NSString stringWithFormat:@"+%s",linphone_dial_plan_get_country_calling_code(dial_plan)],
+								  @"phone_length":@(linphone_dial_plan_get_national_number_length(dial_plan))
 								  }];
+			dialPlans = dialPlans->next;
 		}
 	}
 	return dataRows;
