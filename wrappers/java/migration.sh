@@ -229,6 +229,8 @@ eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
 eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
 eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
 eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
+eval "$SED_START 's/accountCreator.getPrefix(/LinphoneUtils::getPrefixFromE164(/g' $SED_END"
+eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/LinphoneUtils::getCccFromIso(/g' $SED_END"
 
 #Changes in library required
 #Tunnel
@@ -261,8 +263,6 @@ eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
 #Core.enableSpeaker / isSpeakerEnabled() => mAudioManager.setSpeakerphoneOn(speakerOn);
 #Core.enableVideo(true, true) => Core.enableVideoCapture(bool) & Core.enableVideoDisplay(bool)
 #Core.setCpuCount() => Not needed anymore, can be removed
-#AccountCreator.getPrefix => linphone_dial_plan_lookup_ccc_from_e164
-#ProxyConfig.lookupCCCFromIso=> linphone_dial_plan_lookup_ccc_from_iso
 #Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
 #Factory.instance().enableLogCollection(isDebugEnabled); => COre.enableLogCollection
 #Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
