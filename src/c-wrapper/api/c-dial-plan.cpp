@@ -29,6 +29,14 @@ using namespace std;
 
 L_DECLARE_C_OBJECT_IMPL(DialPlan);
 
+LinphoneDialPlan *linphone_dial_plan_ref(LinphoneDialPlan *dp) {
+	return (LinphoneDialPlan *)belle_sip_object_ref(dp);
+}
+
+void linphone_dial_plan_unref(LinphoneDialPlan *dp) {
+	belle_sip_object_unref(dp);
+}
+
 const char * linphone_dial_plan_get_country(const LinphoneDialPlan *dp) {
 	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getCountry());
 }

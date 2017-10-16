@@ -83,6 +83,18 @@ LINPHONE_PUBLIC void linphone_chat_message_resend_2(LinphoneChatMessage *msg);
  */
 LINPHONE_PUBLIC void *linphone_vcard_get_belcard(LinphoneVcard *vcard);
 
+
+/**
+ * @brief Increases the reference counter of #LinphoneDialPlan objects.
+ */
+LINPHONE_PUBLIC LinphoneDialPlan *linphone_dial_plan_ref(LinphoneDialPlan *dp);
+
+/**
+ * @brief Decreases the reference counter of #LinphoneDialPaln objects.
+ */
+LINPHONE_PUBLIC void linphone_dial_plan_unref(LinphoneDialPlan *dp);
+
+
 /**
  * @}
  */
