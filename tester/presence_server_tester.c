@@ -971,12 +971,12 @@ static void long_term_presence_with_phone_without_sip(void) {
 		
 		while ((dialPlan = linphone_dial_plan_by_ccc_as_int(bctbx_random()%900)) == linphone_dial_plan_by_ccc(NULL));
 		/*now with have a dialplan*/
-		for (i = 0; i < MIN((size_t)dialPlan->nnl,sizeof(phone)-1); i++) {
+		for (i = 0; i < MIN((size_t)linphone_dial_plan_get_national_number_length(dialPlan),sizeof(phone)-1); i++) {
 			phone[i] = '0' + rand() % 10;
 		}
 		phone[i]='\0';
 		
-		e164=ms_strdup_printf("+%s%s",dialPlan->ccc,phone);
+		e164=ms_strdup_printf("+%s%s",linphone_dial_plan_get_country_calling_code(dialPlan),phone);
 		
 		ms_message("Phone number is %s, e164 is %s", phone, e164);
 		
@@ -1001,7 +1001,7 @@ static void long_term_presence_with_phone_without_sip(void) {
 		/*know adding ccc to proxy config*/
 		proxy_config = linphone_core_get_default_proxy_config(pauline->lc);
 		linphone_proxy_config_edit(proxy_config);
-		linphone_proxy_config_set_dial_prefix(proxy_config, dialPlan->ccc);
+		linphone_proxy_config_set_dial_prefix(proxy_config, linphone_dial_plan_get_country_calling_code(dialPlan));
 		linphone_proxy_config_done(proxy_config);
 		/*re-create sub list*/
 		linphone_friend_list_enable_subscriptions(linphone_core_get_default_friend_list(pauline->lc), FALSE);
@@ -1032,12 +1032,12 @@ static char * generate_random_e164_phone_from_dial_plan(const LinphoneDialPlan *
 	char phone[64];
 	size_t i;
 	/*now with have a dialplan*/
-	for (i = 0; i < MIN((size_t)dialPlan->nnl,sizeof(phone)-1); i++) {
+	for (i = 0; i < MIN((size_t)linphone_dial_plan_get_national_number_length(dialPlan),sizeof(phone)-1); i++) {
 		phone[i] = '0' + rand() % 10;
 	}
 	phone[i]='\0';
 	
-	return ms_strdup_printf("+%s%s",dialPlan->ccc,phone);
+	return ms_strdup_printf("+%s%s",linphone_dial_plan_get_country_calling_code(dialPlan),phone);
 }
 /* use case:
   I have a friend, I invite him to use Linphone for the first time.

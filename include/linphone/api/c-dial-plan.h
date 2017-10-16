@@ -86,7 +86,7 @@ LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
 /**
  * @return {\bctbx_list const LinphoneDialPlan*} of all known dial plans
 **/
-LINPHONE_PUBLIC const bctbx_list_t * linphone_dial_plan_get_all_list();
+LINPHONE_PUBLIC const bctbx_list_t * linphone_dial_plan_get_all_list(void);
 
 /**
  * Find best match for given CCC
