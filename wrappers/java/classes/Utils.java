@@ -1,5 +1,5 @@
 /*
-LinphoneUtils.java
+Utils.java
 Copyright (C) 2010-2017 Belledonne Communications, Grenoble, France
 
 This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.linphone.core;
 
-public class LinphoneUtils {
+public class Utils {
 	public static int getPrefixFromE164(String e164) {
 		DialPlan[] dialPlans = Factory.instance().getDialPlans();
 		DialPlan dialPlan = dialPlans[0];
