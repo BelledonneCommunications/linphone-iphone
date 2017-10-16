@@ -1,5 +1,5 @@
 /*
- * conference-event.cpp
+ * conference-subject-event.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "address/address.h"
 #include "conference-event-p.h"
+#include "conference-subject-event.h"
 
 // =============================================================================
 
@@ -26,35 +26,35 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, const Address &conferenceAddress) :
-	EventLog(*new ConferenceEventPrivate, type) {
+class ConferenceSubjectEventPrivate : public ConferenceEventPrivate {
+public:
+	string subject;
+};
+
+// -----------------------------------------------------------------------------
+
+ConferenceSubjectEvent::ConferenceSubjectEvent (const Address &address, const string &subject) :
+	ConferenceEvent(*new ConferenceSubjectEventPrivate, Type::ConferenceSubjectChanged, address) {
 	L_D();
-	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
-	d->conferenceAddress = conferenceAddress;
+	d->subject = subject;
 }
 
-ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) :
-	ConferenceEvent(src.getType(), src.getConferenceAddress()) {}
+ConferenceSubjectEvent::ConferenceSubjectEvent (const ConferenceSubjectEvent &src) :
+	ConferenceSubjectEvent(src.getConferenceAddress(), src.getSubject()) {}
 
-ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &conferenceAddress) :
-	EventLog(p, type) {
-		L_D();
-		d->conferenceAddress = conferenceAddress;
-	}
-
-ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
+ConferenceSubjectEvent &ConferenceSubjectEvent::operator= (const ConferenceSubjectEvent &src) {
 	L_D();
 	if (this != &src) {
-		EventLog::operator=(src);
-		d->conferenceAddress = src.getPrivate()->conferenceAddress;
+		ConferenceEvent::operator=(src);
+		d->subject = src.getPrivate()->subject;
 	}
 
 	return *this;
 }
 
-const Address &ConferenceEvent::getConferenceAddress () const {
+const string &ConferenceSubjectEvent::getSubject () const {
 	L_D();
-	return d->conferenceAddress;
+	return d->subject;
 }
 
 LINPHONE_END_NAMESPACE

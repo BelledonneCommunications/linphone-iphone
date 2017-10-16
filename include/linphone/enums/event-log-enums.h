@@ -34,6 +34,7 @@
 	F(ConferenceParticipantSetAdmin) \
 	F(ConferenceParticipantUnsetAdmin) \
 	F(ConferenceParticipantDeviceAdded) \
-	F(ConferenceParticipantDeviceRemoved)
+	F(ConferenceParticipantDeviceRemoved) \
+	F(ConferenceSubjectChanged)
 
 #endif // ifndef _EVENT_LOG_ENUMS_H_

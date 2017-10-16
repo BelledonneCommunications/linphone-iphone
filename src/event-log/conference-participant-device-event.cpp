@@ -55,7 +55,7 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (const ConferenceParticipantDeviceEvent &src) :
 	ConferenceParticipantDeviceEvent(
 		src.getType(),
-		src.getAddress(),
+		src.getConferenceAddress(),
 		src.getParticipantAddress(),
 		src.getGruuAddress()
 	) {}

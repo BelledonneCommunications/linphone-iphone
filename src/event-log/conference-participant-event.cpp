@@ -43,7 +43,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 }
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticipantEvent &src) :
-	ConferenceParticipantEvent(src.getType(), src.getAddress(), src.getParticipantAddress()) {}
+	ConferenceParticipantEvent(src.getType(), src.getConferenceAddress(), src.getParticipantAddress()) {}
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,

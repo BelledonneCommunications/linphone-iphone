@@ -31,16 +31,15 @@ class ConferenceEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, const Address &address);
+	ConferenceEvent (Type type, const Address &conferenceAddress);
 	ConferenceEvent (const ConferenceEvent &src);
-	virtual ~ConferenceEvent () = default;
 
 	ConferenceEvent &operator= (const ConferenceEvent &src);
 
-	const Address &getAddress () const;
+	const Address &getConferenceAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &address);
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &conferenceAddress);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);

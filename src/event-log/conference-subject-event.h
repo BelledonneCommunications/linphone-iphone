@@ -1,5 +1,5 @@
 /*
- * event-log.h
+ * conference-subject-event.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,40 +17,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_H_
-#define _EVENT_LOG_H_
+#ifndef _CONFERENCE_SUBJECT_EVENT_H_
+#define _CONFERENCE_SUBJECT_EVENT_H_
 
-#include "linphone/enums/event-log-enums.h"
-#include "linphone/utils/enum-generator.h"
-
-#include "object/clonable-object.h"
+#include "conference-event.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate;
+class ConferenceSubjectEventPrivate;
 
-class LINPHONE_PUBLIC EventLog : public ClonableObject {
-	friend class MainDb;
-
+class LINPHONE_PUBLIC ConferenceSubjectEvent : public ConferenceEvent {
 public:
-	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
+	ConferenceSubjectEvent (const Address &conferenceAddress, const std::string &subject);
+	ConferenceSubjectEvent (const ConferenceSubjectEvent &src);
 
-	EventLog ();
-	EventLog (const EventLog &src);
+	ConferenceSubjectEvent &operator= (const ConferenceSubjectEvent &src);
 
-	EventLog &operator= (const EventLog &src);
-
-	Type getType () const;
-
-protected:
-	EventLog (EventLogPrivate &p, Type type);
+	const std::string &getSubject () const;
 
 private:
-	L_DECLARE_PRIVATE(EventLog);
+	L_DECLARE_PRIVATE(ConferenceSubjectEvent);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_H_
+#endif // ifndef _CONFERENCE_SUBJECT_EVENT_H_

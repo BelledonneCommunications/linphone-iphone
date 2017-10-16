@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceEventPrivate : public EventLogPrivate {
 private:
-	Address address;
+	Address conferenceAddress;
 
 	L_DECLARE_PUBLIC(ConferenceEvent);
 };
