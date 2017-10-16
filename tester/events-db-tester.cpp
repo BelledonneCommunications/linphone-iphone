@@ -36,12 +36,39 @@ static const string getDatabasePath () {
 // -----------------------------------------------------------------------------
 
 static void open_database () {
-	EventsDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(EventsDb::Sqlite3, getDatabasePath()));
+	MainDb eventsDb;
+	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+}
+
+static void get_events_count () {
+	MainDb eventsDb;
+	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(), 4976, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::CallFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::MessageFilter), 4976, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::NoFilter), 4976, int, "%d");
+}
+
+static void get_messages_count () {
+	MainDb eventsDb;
+	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(eventsDb.getMessagesCount(), 4976, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getMessagesCount("sip:test-7@sip.linphone.org"), 3, int, "%d");
+}
+
+static void get_unread_messages_count () {
+	MainDb eventsDb;
+	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(eventsDb.getUnreadMessagesCount(), 2, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getUnreadMessagesCount("sip:test-7@sip.linphone.org"), 0, int, "%d");
 }
 
 test_t events_db_tests[] = {
-	TEST_NO_TAG("Open database", open_database)
+	TEST_NO_TAG("Open database", open_database),
+	TEST_NO_TAG("Get events count", get_events_count),
+	TEST_NO_TAG("Get messages count", get_messages_count),
+	TEST_NO_TAG("Get unread messages count", get_unread_messages_count)
 };
 
 test_suite_t events_db_test_suite = {
