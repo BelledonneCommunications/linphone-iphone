@@ -59,16 +59,42 @@ typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 **/
 LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
+
 /**
  * Start the simulation of call to test the latency with an external device
  * @param lc The core.
  * @param rate Sound sample rate.
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
+
 /**
  * Stop the simulation of call
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_echo_tester(LinphoneCore *lc);
+
+/**
+ * Check whether the device is flagged has crappy opengl
+ * @returns TRUE if crappy opengl flag is set, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_has_crappy_opengl(LinphoneCore *lc);
+
+/**
+ * Check whether the device has a hardware echo canceller
+ * @returns TRUE if it does, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_has_builtin_echo_canceller(LinphoneCore *lc);
+
+/**
+ * Check whether the device is echo canceller calibration is required
+ * @returns TRUE if it is required, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_is_echo_canceller_calibration_required(LinphoneCore *lc);
+
 /**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode

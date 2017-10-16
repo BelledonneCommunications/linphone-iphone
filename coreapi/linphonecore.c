@@ -7371,3 +7371,12 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 	}
 #endif
 }
+
+bool_t linphone_core_has_crappy_opengl(LinphoneCore *lc) {
+	MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return FALSE;
+	if (sound_description->flags & DEVICE_HAS_CRAPPY_OPENGL) return TRUE;
+	return FALSE;
+}

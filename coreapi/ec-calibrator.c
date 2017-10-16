@@ -324,3 +324,22 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 	ec_calibrator_start(lc->ecc);
 	return 0;
 }
+
+bool_t linphone_core_has_builtin_echo_canceller(LinphoneCore *lc) {
+    MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return FALSE;
+	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return TRUE;
+	return FALSE;
+}
+
+bool_t linphone_core_is_echo_canceller_calibration_required(LinphoneCore *lc) {
+    MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return TRUE;
+	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return FALSE;
+	if (sound_description->delay != 0) return FALSE;
+	return TRUE;
+}
