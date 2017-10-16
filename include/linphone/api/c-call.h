@@ -272,10 +272,20 @@ LINPHONE_PUBLIC LinphoneCallState linphone_call_get_transfer_state (LinphoneCall
  * @param zoom_factor a floating point number describing the zoom factor. A value 1.0 corresponds to no zoom applied.
  * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
  * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.
- *
+ * @deprecated use linphone_call_zoom instead
  * cx and cy are updated in return in case their coordinates were too excentrated for the requested zoom factor. The zoom ensures that all the screen is fullfilled with the video.
 **/
 LINPHONE_PUBLIC void linphone_call_zoom_video (LinphoneCall *call, float zoom_factor, float *cx, float *cy);
+
+/**
+ * Perform a zoom of the video displayed during a call.
+ * The zoom ensures that all the screen is fullfilled with the video.
+ * @param call the call.
+ * @param zoom_factor a floating point number describing the zoom factor. A value 1.0 corresponds to no zoom applied.
+ * @param cx a floating point number pointing the horizontal center of the zoom to be applied. This value should be between 0.0 and 1.0.
+ * @param cy a floating point number pointing the vertical center of the zoom to be applied. This value should be between 0.0 and 1.0.
+**/
+LINPHONE_PUBLIC void linphone_call_zoom (LinphoneCall *call, float zoom_factor, float cx, float cy);
 
 /**
  * Send the specified dtmf.

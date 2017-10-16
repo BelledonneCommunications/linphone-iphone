@@ -4381,20 +4381,24 @@ LinphoneStatus MediaSession::takeVideoSnapshot (const string& file) {
 }
 
 void MediaSession::zoomVideo (float zoomFactor, float *cx, float *cy) {
+	zoomVideo(zoomFactor, *cx, *cy);
+}
+
+void MediaSession::zoomVideo (float zoomFactor, float cx, float cy) {
 	L_D();
 	if (d->videoStream && d->videoStream->output) {
 		if (zoomFactor < 1)
 			zoomFactor = 1;
 		float halfsize = 0.5f * 1.0f / zoomFactor;
-		if ((*cx - halfsize) < 0)
-			*cx = 0 + halfsize;
-		if ((*cx + halfsize) > 1)
-			*cx = 1 - halfsize;
-		if ((*cy - halfsize) < 0)
-			*cy = 0 + halfsize;
-		if ((*cy + halfsize) > 1)
-			*cy = 1 - halfsize;
-		float zoom[3] = { zoomFactor, *cx, *cy };
+		if ((cx - halfsize) < 0)
+			cx = 0 + halfsize;
+		if ((cx + halfsize) > 1)
+			cx = 1 - halfsize;
+		if ((cy - halfsize) < 0)
+			cy = 0 + halfsize;
+		if ((cy + halfsize) > 1)
+			cy = 1 - halfsize;
+		float zoom[3] = { zoomFactor, cx, cy };
 		ms_filter_call_method(d->videoStream->output, MS_VIDEO_DISPLAY_ZOOM, &zoom);
 	} else
 		lWarning() << "Could not apply zoom: video output wasn't activated";

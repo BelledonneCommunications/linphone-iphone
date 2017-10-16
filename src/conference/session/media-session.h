@@ -58,6 +58,7 @@ public:
 	LinphoneStatus takePreviewSnapshot (const std::string& file);
 	LinphoneStatus takeVideoSnapshot (const std::string& file);
 	void zoomVideo (float zoomFactor, float *cx, float *cy);
+	void zoomVideo (float zoomFactor, float cx, float cy);
 
 	bool cameraEnabled () const;
 	bool echoCancellationEnabled () const;

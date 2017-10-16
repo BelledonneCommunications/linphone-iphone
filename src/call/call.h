@@ -64,6 +64,7 @@ public:
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
 	LinphoneStatus update (const MediaSessionParams *msp = nullptr);
 	void zoomVideo (float zoomFactor, float *cx, float *cy);
+	void zoomVideo (float zoomFactor, float cx, float cy);
 
 	bool cameraEnabled () const;
 	bool echoCancellationEnabled () const;

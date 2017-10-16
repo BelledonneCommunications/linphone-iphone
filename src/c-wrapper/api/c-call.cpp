@@ -765,6 +765,10 @@ void linphone_call_zoom_video (LinphoneCall* call, float zoom_factor, float* cx,
 	L_GET_CPP_PTR_FROM_C_OBJECT(call)->zoomVideo(zoom_factor, cx, cy);
 }
 
+void linphone_call_zoom (LinphoneCall *call, float zoom_factor, float cx, float cy) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->zoomVideo(zoom_factor, cx, cy);
+}
+
 LinphoneStatus linphone_call_send_dtmf (LinphoneCall *call, char dtmf) {
 #if 0
 	if (!call){

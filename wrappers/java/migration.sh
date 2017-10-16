@@ -231,11 +231,12 @@ eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
 eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
 eval "$SED_START 's/accountCreator.getPrefix(/org.linphone.core.Utils::getPrefixFromE164(/g' $SED_END"
 eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils::getCccFromIso(/g' $SED_END"
+eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
+eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
 
 #Changes in library required
 #Tunnel
 #LinphoneBuffer
-#Call.zoomVideo()
 #AccountCreator.updatePassword
 
 #Android specifics not wrapped automatically

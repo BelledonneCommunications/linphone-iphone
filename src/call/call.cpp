@@ -315,6 +315,10 @@ LinphoneStatus Call::update (const MediaSessionParams *msp) {
 }
 
 void Call::zoomVideo (float zoomFactor, float *cx, float *cy) {
+	zoomVideo(zoomFactor, *cx, *cy);
+}
+
+void Call::zoomVideo (float zoomFactor, float cx, float cy) {
 	L_D();
 	static_cast<MediaSession *>(d->getActiveSession().get())->zoomVideo(zoomFactor, cx, cy);
 }
