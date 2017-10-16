@@ -263,6 +263,13 @@ LINPHONE_PUBLIC LinphoneTransports *linphone_factory_create_transports(LinphoneF
 LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory);
 
 /**
+ * Returns a bctbx_list_t of all DialPlans
+ * @param[in] factory the LinphoneFactory object
+ * @return \bctbx_list{LinphoneDialPlan} a list of DialPlan
+ */
+LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_dial_plans(const LinphoneFactory *factory);
+
+/**
  * Gets the user data in the LinphoneFactory object
  * @param[in] factory the LinphoneFactory
  * @return the user data
@@ -275,13 +282,6 @@ LINPHONE_PUBLIC void *linphone_factory_get_user_data(const LinphoneFactory *fact
  * @param[in] data the user data
 */
 LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, void *data);
-
-/***
- * Returns a bctbx_list_t of all DialPlans
- * @param[in] factory the LinphoneFactory object
- * @return \bctbx_list{DialPlan} a list of DialPlan
- */
-LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_dial_plans(LinphoneFactory *factory);
 
 /**
  * @}

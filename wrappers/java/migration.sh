@@ -226,6 +226,8 @@ eval "$SED_START 's/content.getData() == null/content.getSize() == 0/'g $SED_END
 eval "$SED_START 's/lc.downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
 eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloadOpenH264(/g' $SED_END"
 eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
+eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
+eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
 
 #Changes in library required
 #Tunnel

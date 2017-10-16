@@ -323,14 +323,14 @@ LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(L
 	return linphone_video_activation_policy_new();
 }
 
+const bctbx_list_t * linphone_factory_get_dial_plans(const LinphoneFactory *factory) {
+	return linphone_dial_plan_get_all_list();
+}
+
 void *linphone_factory_get_user_data(const LinphoneFactory *factory) {
 	return factory->user_data;
 }
 
 void linphone_factory_set_user_data(LinphoneFactory *factory, void *data) {
 	factory->user_data = data;
-}
-
-const bctbx_list_t * linphone_factory_get_dial_plans(LinphoneFactory *factory) {
-	return linphone_dial_plan_get_all_list();
 }
