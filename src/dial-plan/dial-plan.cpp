@@ -262,8 +262,7 @@ list<DialPlan> const DialPlan::DialPlans = {
 	{"Wallis and Futuna"	        ,"WF"		, "681"     , 5		, "00"  },
 	{"Yemen"                        ,"YE"		, "967"     , 9     , "00"  },
 	{"Zambia"                       ,"ZM"		, "260"     , 9     , "00"	},
-	{"Zimbabwe"                     ,"ZW"		, "263"     , 9     , "00"  },
-	{NULL                           ,NULL       ,  ""       , 0     , NULL	}
+	{"Zimbabwe"                     ,"ZW"		, "263"     , 9     , "00"  }
 };
 
 const DialPlan DialPlan::MostCommon("generic", "", "", 10, "00");
