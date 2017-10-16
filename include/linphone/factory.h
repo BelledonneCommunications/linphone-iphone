@@ -276,6 +276,13 @@ LINPHONE_PUBLIC void *linphone_factory_get_user_data(const LinphoneFactory *fact
 */
 LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, void *data);
 
+/***
+ * Returns a bctbx_list_t of all DialPlans
+ * @param[in] factory the LinphoneFactory object
+ * @return \bctbx_list{DialPlan} a list of DialPlan
+ */
+LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_dial_plans(LinphoneFactory *factory);
+
 /**
  * @}
  */

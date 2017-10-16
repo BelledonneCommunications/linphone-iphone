@@ -238,7 +238,7 @@ eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
 #Core.needsEchoCalibration()
 #Core.hasCrappyOpenGL()
 #Core.getMSFactory()
-#COre.startEchoCalibration
+#Core.startEchoCalibration
 #Core.startEchoTester
 #Core.stopEchoTester
 

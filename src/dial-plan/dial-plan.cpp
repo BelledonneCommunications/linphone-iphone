@@ -373,7 +373,7 @@ int DialPlan::lookupCccFromIso(string iso) {
 }
 
 const DialPlan& DialPlan::findByCccAsInt(int ccc) {
-    string cccString = to_string(ccc);
+    string cccString = Utils::toString(ccc);
     return DialPlan::findByCcc(cccString);
 }
 
