@@ -33,10 +33,34 @@
  * @{
  */
 
+ /**
+  * Returns the country name of the dialplan
+  * @return the country name
+  */
  LINPHONE_PUBLIC const char * linphone_dial_plan_get_country(const LinphoneDialPlan *dp);
+
+  /**
+  * Returns the iso country code of the dialplan
+  * @return the iso country code
+  */
  LINPHONE_PUBLIC const char * linphone_dial_plan_get_iso_country_code(const LinphoneDialPlan *dp);
+
+  /**
+  * Returns the country calling code of the dialplan
+  * @return the country calling code
+  */
  LINPHONE_PUBLIC const char * linphone_dial_plan_get_country_calling_code(const LinphoneDialPlan *dp);
+
+  /**
+  * Returns the national number length of the dialplan
+  * @return the national number length
+  */
  LINPHONE_PUBLIC int linphone_dial_plan_get_national_number_length(const LinphoneDialPlan *dp);
+
+  /**
+  * Returns the international call prefix of the dialplan
+  * @return the international call prefix
+  */
  LINPHONE_PUBLIC const char * linphone_dial_plan_get_international_call_prefix(const LinphoneDialPlan *dp);
 
  /**

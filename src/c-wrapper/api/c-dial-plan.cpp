@@ -19,7 +19,6 @@
 
 #include "linphone/api/c-dial-plan.h"
 
-#include "linphone/wrapper_utils.h"
 #include "c-wrapper/c-wrapper.h"
 #include "dial-plan/dial-plan.h"
 
@@ -30,28 +29,23 @@ using namespace std;
 L_DECLARE_C_OBJECT_IMPL(DialPlan);
 
 const char * linphone_dial_plan_get_country(const LinphoneDialPlan *dp) {
-	//return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp).getCountry());
-	return NULL;
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getCountry());
 }
 
 const char * linphone_dial_plan_get_iso_country_code(const LinphoneDialPlan *dp) {
-	//return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp).getIsoCountryCode());
-	return NULL;
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getIsoCountryCode());
 }
 
 const char * linphone_dial_plan_get_country_calling_code(const LinphoneDialPlan *dp) {
-	//return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp).getCountryCallingCode());
-	return NULL;
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getCountryCallingCode());
 }
 
 int linphone_dial_plan_get_national_number_length(const LinphoneDialPlan *dp) {
-	//return L_GET_CPP_PTR_FROM_C_OBJECT(dp).getNationalNumberLength();
-	return -1;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getNationalNumberLength();
 }
 
 const char * linphone_dial_plan_get_international_call_prefix(const LinphoneDialPlan *dp) {
-	//return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp).getInternationalCallPrefix());
-	return NULL;
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getInternationalCallPrefix());
 }
 
 int linphone_dial_plan_lookup_ccc_from_e164(const char* e164) {
@@ -63,15 +57,13 @@ int linphone_dial_plan_lookup_ccc_from_iso(const char* iso) {
 }
 
 const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc) {
-	//LinphonePrivate::DialPlan dp = LinphonePrivate::DialPlan::findByCccAsInt(ccc);
-	//return L_GET_C_BACK_PTR();
-	return NULL; //TODO
+	const LinphonePrivate::DialPlan& dp = LinphonePrivate::DialPlan::findByCccAsInt(ccc);
+	return L_GET_C_BACK_PTR(&dp);
 }
 
 const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
-	//LinphonePrivate::DialPlan dp = LinphonePrivate::DialPlan::findByCcc(L_C_TO_STRING(ccc));
-	//return L_GET_C_BACK_PTR();
-	return NULL; //TODO
+	const LinphonePrivate::DialPlan& dp = LinphonePrivate::DialPlan::findByCcc(L_C_TO_STRING(ccc));
+	return L_GET_C_BACK_PTR(&dp);
 }
 
 const LinphoneDialPlan* linphone_dial_plan_get_all() {
@@ -79,12 +71,10 @@ const LinphoneDialPlan* linphone_dial_plan_get_all() {
 }
 
 const bctbx_list_t * linphone_dial_plan_get_all_list() {
-	//const list<DialPlan> dps = LinphonePrivate::DialPlan::getAllDialPlans();
-	//return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST();
-	return NULL; //TODO
+	const list<LinphonePrivate::DialPlan>& dps = LinphonePrivate::DialPlan::getAllDialPlans();
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(dps);
 }
 
 bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc) {
-	//return L_GET_CPP_PTR_FROM_C_OBJECT(ccc).isGeneric();
-	return FALSE;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(ccc)->isGeneric();
 }

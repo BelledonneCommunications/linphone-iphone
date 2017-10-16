@@ -34,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
  * http://en.wikipedia.org/wiki/Telephone_numbers_in_Europe
  * imported from https://en.wikipedia.org/wiki/List_of_mobile_phone_number_series_by_country
  */
-static list<DialPlan> const DialPlans = {
+list<DialPlan> const DialPlan::DialPlans = {
 	//Country					, iso country code, e164 country calling code, number length, international usual prefix
 	{"Afghanistan"                  ,"AF"		, "93"      , 9		, "00"  },
 	{"Albania"                      ,"AL"		, "355"     , 9		, "00"  },

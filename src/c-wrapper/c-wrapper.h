@@ -37,6 +37,7 @@
 	F(ChatRoom, ChatRoom) \
 	F(ConferenceEvent, ConferenceEvent) \
 	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
+	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
 	F(MediaSessionParams, CallParams) \
 	F(Participant, Participant)
@@ -72,7 +73,6 @@ BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneCore),
 BELLE_SIP_TYPE_ID(LinphoneCoreCbs),
-BELLE_SIP_TYPE_ID(LinphoneDialPlan),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneEvent),
 BELLE_SIP_TYPE_ID(LinphoneFactory),
