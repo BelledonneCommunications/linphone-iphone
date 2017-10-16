@@ -76,7 +76,7 @@ const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc) {
 }
 
 const LinphoneDialPlan* linphone_dial_plan_get_all() {
-	return NULL; //TODO
+	return NULL;
 }
 
 const bctbx_list_t * linphone_dial_plan_get_all_list() {

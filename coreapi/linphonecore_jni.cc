@@ -226,28 +226,30 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreFactoryImpl_getAllDia
 	jclass addr_class = env->FindClass("org/linphone/core/DialPlanImpl");
 	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)V");
 	jobjectArray jaddr_array;
-	int i, size = 0;
-	countries = (LinphoneDialPlan *)linphone_dial_plan_get_all();
+	size_t i;
+	const bctbx_list_t *countries = linphone_dial_plan_get_all_list();
+	size_t size = bctbx_list_size(countries);
 
-	while (countries[size].country != NULL) size++;
+	jaddr_array = env->NewObjectArray((int)size, addr_class, NULL);
 
-	jaddr_array = env->NewObjectArray(size, addr_class, NULL);
+	for (i = 0; i < size; i++) {
+		LinphoneDialPlan* dp = (LinphoneDialPlan*)countries->data;
 
-	for (i=0; i < size ; i++) {
-		jstring jcountry = env->NewStringUTF(countries[i].country);
-		jstring jiso = env->NewStringUTF(countries[i].iso_country_code);
-		jstring jccc = env->NewStringUTF(countries[i].ccc);
-		jint jnnl = (jint)countries[i].nnl;
-		jstring jicp = env->NewStringUTF(countries[i].icp);
+		jstring jcountry = env->NewStringUTF(linphone_dial_plan_get_country(dp));
+		jstring jiso = env->NewStringUTF(linphone_dial_plan_get_iso_country_code(dp));
+		jstring jccc = env->NewStringUTF(linphone_dial_plan_get_country_calling_code(dp));
+		jint jnnl = (jint)linphone_dial_plan_get_national_number_length(dp);
+		jstring jicp = env->NewStringUTF(linphone_dial_plan_get_international_call_prefix(dp));
 
 		jobject jaddr = env->NewObject(addr_class, addr_constructor, jcountry, jiso, jccc, jnnl, jicp);
 
-		env->SetObjectArrayElement(jaddr_array, i, jaddr);
+		env->SetObjectArrayElement(jaddr_array, (int)i, jaddr);
 
 		env->DeleteLocalRef(jcountry);
 		env->DeleteLocalRef(jiso);
 		env->DeleteLocalRef(jccc);
 		env->DeleteLocalRef(jicp);
+		countries = countries->next;
 	}
 	return jaddr_array;
 }

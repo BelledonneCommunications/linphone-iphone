@@ -79,7 +79,8 @@ LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
 
 /**
  * Return NULL-terminated array of all known dial plans
- * @deprecated use linphone_dial_plan_get_all_list instead
+ * @deprecated use linphone_dial_plan_get_all_list instead, this method will always return NULL
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
 
