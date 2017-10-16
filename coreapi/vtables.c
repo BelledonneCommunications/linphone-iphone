@@ -292,6 +292,21 @@ void linphone_core_notify_chat_room_instantiated (LinphoneCore *lc, LinphoneChat
 	cleanup_dead_vtable_refs(lc);
 }
 
+void linphone_core_notify_ec_calibration_result(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms) {
+	NOTIFY_IF_EXIST(ec_calibration_result, lc, status, delay_ms);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_ec_calibration_audio_init(LinphoneCore *lc) {
+	NOTIFY_IF_EXIST(ec_calibration_audio_init, lc);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_ec_calibration_audio_uninit(LinphoneCore *lc) {
+	NOTIFY_IF_EXIST(ec_calibration_audio_uninit, lc);
+	cleanup_dead_vtable_refs(lc);
+}
+
 static VTableReference * v_table_reference_new(LinphoneCoreCbs *cbs, bool_t internal){
 	VTableReference *ref=ms_new0(VTableReference,1);
 	ref->valid=TRUE;

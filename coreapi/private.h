@@ -1475,6 +1475,10 @@ void linphone_core_notify_call_created(LinphoneCore *lc, LinphoneCall *call);
 void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
 void linphone_core_notify_chat_room_instantiated (LinphoneCore *lc, LinphoneChatRoom *cr);
 
+void linphone_core_notify_ec_calibration_result(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms);
+void linphone_core_notify_ec_calibration_audio_init(LinphoneCore *lc);
+void linphone_core_notify_ec_calibration_audio_uninit(LinphoneCore *lc);
+
 void set_playback_gain_db(AudioStream *st, float gain);
 
 LinphoneMediaDirection media_direction_from_sal_stream_dir(SalStreamDir dir);

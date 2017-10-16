@@ -436,6 +436,18 @@ void linphone_core_cbs_set_chat_room_instantiated (LinphoneCoreCbs *cbs, Linphon
 	cbs->vtable->chat_room_instantiated = cb;
 }
 
+void linphone_core_cbs_set_ec_calibration_result(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationResultCb cb) {
+	cbs->vtable->ec_calibration_result = cb;
+}
+
+void linphone_core_cbs_set_ec_calibration_audio_init(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationAudioInitCb cb) {
+	cbs->vtable->ec_calibration_audio_init = cb;
+}
+
+void linphone_core_cbs_set_ec_calibration_audio_uninit(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationAudioUninitCb cb) {
+	cbs->vtable->ec_calibration_audio_uninit = cb;
+}
+
 
 typedef belle_sip_object_t_vptr_t LinphoneCore_vptr_t;
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneCore);
@@ -2189,7 +2201,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_cbs_set_publish_state_changed(internal_cbs, linphone_core_internal_publish_state_changed);
 	_linphone_core_add_callbacks(lc, internal_cbs, TRUE);
 	belle_sip_object_unref(internal_cbs);
-
 
 	if (cbs != NULL) {
 		_linphone_core_add_callbacks(lc, cbs, FALSE);

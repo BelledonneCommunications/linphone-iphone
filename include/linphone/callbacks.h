@@ -493,6 +493,26 @@ typedef void (*LinphoneFriendListCbsSyncStateChangedCb)(LinphoneFriendList *list
  */
 
 /**
+ * @brief Function prototype used by #linphone_core_cbs_set_ec_calibrator_result().
+ * @param lc The core.
+ * @param status The state of the calibrator.
+ * @param delay_ms The measured delay if available.
+ */
+typedef void (*LinphoneCoreCbsEcCalibrationResultCb)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms);
+
+/**
+ * @brief Function prototype used by #linphone_core_cbs_set_ec_calibrator_audio_init().
+ * @param lc The core.
+ */
+typedef void (*LinphoneCoreCbsEcCalibrationAudioInitCb)(LinphoneCore *lc);
+
+/**
+ * @biref Function prototype used by #linphone_core_cbs_set_ec_calibrator_audio_uninit().
+ * @param lc The core.
+ */
+typedef void (*LinphoneCoreCbsEcCalibrationAudioUninitCb)(LinphoneCore *lc);
+
+/**
  * Callback to decrypt incoming LinphoneChatMessage
  * @param engine ImEncryptionEngine object
  * @param room LinphoneChatRoom object

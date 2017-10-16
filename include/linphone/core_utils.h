@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #include "linphone/types.h"
+#include "linphone/callbacks.h"
 
 
 #ifdef __cplusplus
@@ -49,16 +50,28 @@ LINPHONE_PUBLIC void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSo
 LINPHONE_PUBLIC void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
 
-typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
-typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
-typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 
 /**
  *
- * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
+ * @brief Starts an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+ * @deprecated Use #linphone_core_start_echo_canceller_calibration() instead. To set the callbacks create or get an already instantiated
+ * #LinphoneCoreCbs and call #linphone_core_cbs_set_ec_calibration_result(), #linphone_core_cbs_set_ec_calibration_audio_init() and
+ * #linphone_core_cbs_set_ec_callibration_audio_uninit(). Deprecated since 2017-10-16.
+ * @ingroup misc
 **/
-LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+LINPHONE_DEPRECATED LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
+
+/**
+ * @brief Starts an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+ * @param[in] lc #LinphoneCore object.
+ * @return #LinphoneStatus whether calibration has started or not.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LinphoneStatus linphone_core_start_echo_canceller_calibration(LinphoneCore *lc);
 
 /**
  * Start the simulation of call to test the latency with an external device

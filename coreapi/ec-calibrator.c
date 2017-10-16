@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/dtmfgen.h"
 
 #include "linphone/lpconfig.h"
-
+#include "c-wrapper/c-wrapper.h"
 
 
 static void ecc_init_filters(EcCalibrator *ecc){
@@ -320,6 +320,37 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 	}
 	rate = (unsigned int)lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
 	lc->ecc=ec_calibrator_new(lc->factory, lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
+	lc->ecc->play_cool_tones = !!lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
+	ec_calibrator_start(lc->ecc);
+	return 0;
+}
+
+static void _ec_calibration_result_cb(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *user_data) {
+	linphone_core_notify_ec_calibration_result(lc, status, delay_ms);
+}
+
+static void _ec_calibration_audio_init_cb(void *user_data) {
+	LinphoneCore *lc = (LinphoneCore *)user_data;
+	linphone_core_notify_ec_calibration_audio_init(lc);
+}
+
+static void _ec_calibration_audio_uninit_cb(void *user_data) {
+	LinphoneCore *lc = (LinphoneCore *)user_data;
+	linphone_core_notify_ec_calibration_audio_uninit(lc);
+}
+
+LinphoneStatus linphone_core_start_echo_canceller_calibration(LinphoneCore *lc) {
+	unsigned int rate;
+	
+	if (lc->ecc!=NULL){
+		ms_error("Echo calibration is still on going !");
+		return -1;
+	}
+	rate = (unsigned int)lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
+	lc->ecc=ec_calibrator_new(lc->factory, lc->sound_conf.play_sndcard, lc->sound_conf.capt_sndcard, rate,
+		_ec_calibration_result_cb,
+		_ec_calibration_audio_init_cb,
+		_ec_calibration_audio_uninit_cb, lc);
 	lc->ecc->play_cool_tones = !!lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
 	ec_calibrator_start(lc->ecc);
 	return 0;

@@ -186,6 +186,9 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreCbsCallCreatedCb call_created;
 	LinphoneCoreCbsVersionUpdateCheckResultReceivedCb version_update_check_result_received;
 	LinphoneCoreCbsChatRoomInstantiatedCb chat_room_instantiated;
+	LinphoneCoreCbsEcCalibrationResultCb ec_calibration_result;
+	LinphoneCoreCbsEcCalibrationAudioInitCb ec_calibration_audio_init;
+	LinphoneCoreCbsEcCalibrationAudioUninitCb ec_calibration_audio_uninit;
 	void *user_data; /**<User data associated with the above callbacks */
 } LinphoneCoreVTable;
 
@@ -671,6 +674,21 @@ LINPHONE_PUBLIC LinphoneCoreCbsChatRoomInstantiatedCb linphone_core_cbs_get_chat
  * @param[in] cb The callback to use
  */
 LINPHONE_PUBLIC void linphone_core_cbs_set_chat_room_instantiated (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomInstantiatedCb cb);
+
+/**
+ * @brief Sets a callback to call each time the echo-canceler calibration is completed.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_ec_calibration_result(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationResultCb cb);
+
+/**
+ * @brief Sets a callback to call when the echo-canceler calibrator has completed its audio graph.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_ec_calibration_audio_init(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationAudioInitCb cb);
+
+/**
+ * @brief Sets a callback to call when the echo-canceler calibrator destroys its audio graph.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_ec_calibration_audio_uninit(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationAudioUninitCb cb);
 
 /**
  * @}
