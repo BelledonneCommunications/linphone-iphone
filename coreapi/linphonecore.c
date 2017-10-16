@@ -2224,7 +2224,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->bw_controller = ms_bandwidth_controller_new();
 }
 
-static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
+void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
 	if (lc->platform_helper) delete getPlatformHelpers(lc);
 	lc->platform_helper = ph;
 }
