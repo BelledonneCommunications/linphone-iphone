@@ -82,6 +82,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	core/core.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
+	db/main-db-p.h
 	db/main-db.h
 	db/session/db-session-p.h
 	db/session/db-session-provider.h

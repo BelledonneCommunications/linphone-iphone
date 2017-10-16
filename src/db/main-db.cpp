@@ -26,8 +26,6 @@
 
 #include "linphone/utils/utils.h"
 
-#include "abstract/abstract-db-p.h"
-#include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
@@ -37,53 +35,13 @@
 #include "event-log/chat-message-event.h"
 #include "event-log/event-log-p.h"
 #include "logger/logger.h"
-
-#include "main-db.h"
+#include "main-db-p.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-struct MessageEventReferences {
-#ifdef SOCI_ENABLED
-	long eventId;
-	long localSipAddressId;
-	long remoteSipAddressId;
-	long chatRoomId;
-#endif
-};
-
-class MainDbPrivate : public AbstractDbPrivate {
-#ifdef SOCI_ENABLED
-public:
-	long insertSipAddress (const string &sipAddress);
-	void insertContent (long messageEventId, const Content &content);
-	long insertContentType (const string &contentType);
-	long insertEvent (EventLog::Type type, const tm &date);
-	long insertChatRoom (long sipAddressId, int capabilities, const tm &date);
-	void insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin);
-
-	long insertMessageEvent (
-		const MessageEventReferences &references,
-		ChatMessage::State state,
-		ChatMessage::Direction direction,
-		const string &imdnMessageId,
-		bool isSecured,
-		const list<Content> &contents
-	);
-
-	void insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state);
-
-	void importLegacyMessages (const soci::rowset<soci::row> &messages);
-#endif
-
-private:
-	unordered_map<string, weak_ptr<ChatRoom>> chatRooms;
-
-	L_DECLARE_PUBLIC(MainDb);
-};
 
 // -----------------------------------------------------------------------------
 
@@ -304,95 +262,6 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		}
 
 		return T();
-	}
-
-	void MainDbPrivate::importLegacyMessages (const soci::rowset<soci::row> &messages) {
-		soci::session *session = dbSession.getBackendSession<soci::session>();
-
-		soci::transaction tr(*session);
-
-		for (const auto &message : messages) {
-			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
-			if (direction != 0 && direction != 1) {
-				lWarning() << "Unable to import legacy message with invalid direction.";
-				continue;
-			}
-
-			const int state = message.get<int>(
-				LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
-			);
-			if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
-				lWarning() << "Unable to import legacy message with invalid state.";
-				continue;
-			}
-
-			const tm date = Utils::getLongAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
-
-			bool isNull;
-			const string url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
-
-			const int contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
-			ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
-			if (!contentType.isValid())
-				contentType = contentId != -1
-					? ContentType::FileTransfer
-					: (isNull ? ContentType::PlainText : ContentType::ExternalBody);
-			if (contentType == ContentType::ExternalBody) {
-				lInfo() << "Import of external body content is skipped.";
-				continue;
-			}
-
-			const string text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
-
-			Content content;
-			content.setContentType(contentType);
-			if (contentType == ContentType::PlainText) {
-				if (isNull) {
-					lWarning() << "Unable to import legacy message with no text.";
-					continue;
-				}
-				content.setBody(text);
-			} else {
-				if (contentType != ContentType::FileTransfer) {
-					lWarning() << "Unable to import unsupported legacy content.";
-					continue;
-				}
-
-				const string appData = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_APP_DATA, isNull);
-				if (isNull) {
-					lWarning() << "Unable to import legacy file message without app data.";
-					continue;
-				}
-
-				content.setAppData("legacy", appData);
-			}
-
-			struct MessageEventReferences references;
-			references.eventId = insertEvent(EventLog::Type::ChatMessage, date);
-			references.localSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
-			references.remoteSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-			references.chatRoomId = insertChatRoom(
-				references.remoteSipAddressId,
-				static_cast<int>(ChatRoom::Capabilities::Basic),
-				date
-			);
-
-			insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
-
-			long messageEventId = insertMessageEvent (
-				references,
-				static_cast<ChatMessage::State>(state),
-				static_cast<ChatMessage::Direction>(direction),
-				message.get<string>(LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID, ""),
-				!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
-				{ move(content) }
-			);
-
-			if (state != static_cast<int>(ChatMessage::State::Displayed))
-				insertMessageParticipant(messageEventId, references.remoteSipAddressId, static_cast<ChatMessage::State>(state));
-		}
-
-		tr.commit();
 	}
 
 // -----------------------------------------------------------------------------
@@ -786,25 +655,26 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 		} catch (const exception &) {
 			lError() << "Cannot lock chat room: `" + peerAddress + "`";
 		}
-	} else {
-		L_BEGIN_LOG_EXCEPTION
-
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-
-		tm creationDate;
-		tm lastUpdateDate;
-		int capabilities;
-		string subject;
-
-		*session << "SELECT creation_date, last_update_date, capabilities, subject "
-			"  FROM chat_room"
-			"  WHERE peer_sip_address_id = ("
-			"    SELECT id from sip_address WHERE value = :peerAddress"
-			"  )", soci::use(peerAddress), soci::into(creationDate), soci::into(lastUpdateDate),
-			soci::use(capabilities), soci::use(subject);
-
-		L_END_LOG_EXCEPTION
+		return shared_ptr<ChatRoom>();
 	}
+
+	L_BEGIN_LOG_EXCEPTION
+
+	soci::session *session = d->dbSession.getBackendSession<soci::session>();
+
+	tm creationDate;
+	tm lastUpdateDate;
+	int capabilities;
+	string subject;
+
+	*session << "SELECT creation_date, last_update_date, capabilities, subject "
+		"  FROM chat_room"
+		"  WHERE peer_sip_address_id = ("
+		"    SELECT id from sip_address WHERE value = :peerAddress"
+		"  )", soci::use(peerAddress), soci::into(creationDate), soci::into(lastUpdateDate),
+		soci::use(capabilities), soci::use(subject);
+
+	L_END_LOG_EXCEPTION
 
 	return shared_ptr<ChatRoom>();
 }
@@ -834,7 +704,94 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 		try {
 			soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
 			try {
-				d->importLegacyMessages(messages);
+				soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
+
+				for (const auto &message : messages) {
+					const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
+					if (direction != 0 && direction != 1) {
+						lWarning() << "Unable to import legacy message with invalid direction.";
+						continue;
+					}
+
+					const int state = message.get<int>(
+						LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
+					);
+					if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
+						lWarning() << "Unable to import legacy message with invalid state.";
+						continue;
+					}
+
+					const tm date = Utils::getLongAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
+
+					bool isNull;
+					const string url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
+
+					const int contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
+					ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
+					if (!contentType.isValid())
+						contentType = contentId != -1
+							? ContentType::FileTransfer
+							: (isNull ? ContentType::PlainText : ContentType::ExternalBody);
+					if (contentType == ContentType::ExternalBody) {
+						lInfo() << "Import of external body content is skipped.";
+						continue;
+					}
+
+					const string text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
+
+					Content content;
+					content.setContentType(contentType);
+					if (contentType == ContentType::PlainText) {
+						if (isNull) {
+							lWarning() << "Unable to import legacy message with no text.";
+							continue;
+						}
+						content.setBody(text);
+					} else {
+						if (contentType != ContentType::FileTransfer) {
+							lWarning() << "Unable to import unsupported legacy content.";
+							continue;
+						}
+
+						const string appData = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_APP_DATA, isNull);
+						if (isNull) {
+							lWarning() << "Unable to import legacy file message without app data.";
+							continue;
+						}
+
+						content.setAppData("legacy", appData);
+					}
+
+					struct MessageEventReferences references;
+					references.eventId = d->insertEvent(EventLog::Type::ChatMessage, date);
+					references.localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
+					references.remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
+					references.chatRoomId = d->insertChatRoom(
+						references.remoteSipAddressId,
+						static_cast<int>(ChatRoom::Capabilities::Basic),
+						date
+					);
+
+					d->insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
+
+					long messageEventId = d->insertMessageEvent (
+						references,
+						static_cast<ChatMessage::State>(state),
+						static_cast<ChatMessage::Direction>(direction),
+						message.get<string>(LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID, ""),
+						!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
+						{ move(content) }
+					);
+
+					if (state != static_cast<int>(ChatMessage::State::Displayed))
+						d->insertMessageParticipant(
+							messageEventId,
+							references.remoteSipAddressId,
+							static_cast<ChatMessage::State>(state)
+						);
+				}
+
+				tr.commit();
 			} catch (const exception &e) {
 				lInfo() << "Failed to import legacy messages from: `" << uri << "`. (" << e.what() << ")";
 				return false;
