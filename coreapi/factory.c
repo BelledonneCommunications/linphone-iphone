@@ -155,7 +155,7 @@ LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, Lin
 	return lc;
 }
 
-LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
+LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
 		const char *config_path, const char *factory_config_path){
 	return linphone_factory_create_core_2(factory, cbs, config_path, factory_config_path, NULL, NULL);
 }
