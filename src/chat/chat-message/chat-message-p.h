@@ -136,11 +136,11 @@ private:
 	std::list<Content > contents;
 	Content internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
-	mutable LinphoneErrorInfo * errorInfo = NULL;
-	belle_http_request_t *httpRequest = NULL;
-	belle_http_request_listener_t *httpListener = NULL;
-	SalOp *salOp = NULL;
-	SalCustomHeader *salCustomHeaders = NULL;
+	mutable LinphoneErrorInfo * errorInfo = nullptr;
+	belle_http_request_t *httpRequest = nullptr;
+	belle_http_request_listener_t *httpListener = nullptr;
+	SalOp *salOp = nullptr;
+	SalCustomHeader *salCustomHeaders = nullptr;
 	unsigned long backgroundTaskId;
 	unsigned char currentSendStep = Step::None;
 	bool applyModifiers = true;
@@ -148,7 +148,7 @@ private:
 	ContentType cContentType;
 	std::string cText;
 	// Used for compatibility with previous C API
-	LinphoneContent *cFileTransferInformation = NULL;
+	LinphoneContent *cFileTransferInformation = nullptr;
 
 	// -----------------------------------------------------------------------------
 

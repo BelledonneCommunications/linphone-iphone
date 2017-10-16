@@ -51,7 +51,10 @@ ChatMessagePrivate::ChatMessagePrivate (const shared_ptr<ChatRoom> &room)
 : chatRoom(room) {
 }
 
-ChatMessagePrivate::~ChatMessagePrivate () {}
+ChatMessagePrivate::~ChatMessagePrivate () {
+	if (salOp)
+		salOp->release();
+}
 
 // -----------------------------------------------------------------------------
 

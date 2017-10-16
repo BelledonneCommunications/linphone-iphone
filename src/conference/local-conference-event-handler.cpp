@@ -39,7 +39,6 @@ static void doNotify (const string &notify, LinphoneEvent *lev) {
 	linphone_content_set_buffer(content, notify.c_str(), strlen(notify.c_str()));
 	linphone_event_notify(lev, content);
 	linphone_content_unref(content);
-	linphone_event_unref(lev);
 }
 
 // -----------------------------------------------------------------------------
