@@ -1,5 +1,5 @@
 /*
- * conference-participant-event.h
+ * conference-participant-device-event.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,42 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CONFERENCE_PARTICIPANT_EVENT_H_
-#define _CONFERENCE_PARTICIPANT_EVENT_H_
+#ifndef _CONFERENCE_PARTICIPANT_DEVICE_EVENT_H_
+#define _CONFERENCE_PARTICIPANT_DEVICE_EVENT_H_
 
-#include "conference-event.h"
+#include "conference-participant-event.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceParticipantEventPrivate;
+class ConferenceParticipantDeviceEventPrivate;
 
-class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceEvent {
+class LINPHONE_PUBLIC ConferenceParticipantDeviceEvent : public ConferenceParticipantEvent {
 public:
-	ConferenceParticipantEvent (
+	ConferenceParticipantDeviceEvent (
 		Type type,
 		const Address &conferenceAddress,
-		const Address &participantAddress
+		const Address &participantAddress,
+		const Address &gruuAddress
 	);
-	ConferenceParticipantEvent (const ConferenceParticipantEvent &src);
+	ConferenceParticipantDeviceEvent (const ConferenceParticipantDeviceEvent &src);
 
-	ConferenceParticipantEvent &operator= (const ConferenceParticipantEvent &src);
+	ConferenceParticipantDeviceEvent &operator= (const ConferenceParticipantDeviceEvent &src);
 
-	const Address &getParticipantAddress () const;
-
-protected:
-	ConferenceParticipantEvent (
-		ConferenceParticipantEventPrivate &p,
-		Type type,
-		const Address &conferenceAddress,
-		const Address &participantAddress
-	);
+	const Address &getGruuAddress () const;
 
 private:
-	L_DECLARE_PRIVATE(ConferenceParticipantEvent);
+	L_DECLARE_PRIVATE(ConferenceParticipantDeviceEvent);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_PARTICIPANT_EVENT_H_
+#endif // ifndef _CONFERENCE_PARTICIPANT_DEVICE_EVENT_H_

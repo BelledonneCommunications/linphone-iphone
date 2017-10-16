@@ -17,20 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "address/address.h"
-#include "conference-event-p.h"
-#include "conference-participant-event.h"
+#include "conference-participant-event-p.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-class ConferenceParticipantEventPrivate : public ConferenceEventPrivate {
-public:
-	Address participantAddress;
-};
 
 // -----------------------------------------------------------------------------
 
@@ -51,6 +44,16 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticipantEvent &src) :
 	ConferenceParticipantEvent(src.getType(), src.getAddress(), src.getParticipantAddress()) {}
+
+ConferenceParticipantEvent::ConferenceParticipantEvent (
+	ConferenceParticipantEventPrivate &p,
+	Type type,
+	const Address &conferenceAddress,
+	const Address &participantAddress
+) : ConferenceEvent(p, type, conferenceAddress) {
+	L_D();
+	d->participantAddress = participantAddress;
+}
 
 ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const ConferenceParticipantEvent &src) {
 	L_D();

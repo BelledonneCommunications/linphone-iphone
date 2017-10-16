@@ -1,5 +1,5 @@
 /*
- * event-log-enums.h
+ * conference-participant-event-p.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,23 +17,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_ENUMS_H_
-#define _EVENT_LOG_ENUMS_H_
+#ifndef _CONFERENCE_PARTICIPANT_EVENT_P_H_
+#define _CONFERENCE_PARTICIPANT_EVENT_P_H_
+
+#include "conference-event-p.h"
+#include "conference-participant-event.h"
 
 // =============================================================================
 
-#define L_ENUM_VALUES_EVENT_LOG_TYPE(F) \
-	F(None) \
-	F(ChatMessage) \
-	F(CallStart) \
-	F(CallEnd) \
-	F(ConferenceCreated) \
-	F(ConferenceDestroyed) \
-	F(ConferenceParticipantAdded) \
-	F(ConferenceParticipantRemoved) \
-	F(ConferenceParticipantSetAdmin) \
-	F(ConferenceParticipantUnsetAdmin) \
-	F(ConferenceParticipantDeviceAdded) \
-	F(ConferenceParticipantDeviceRemoved)
+LINPHONE_BEGIN_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_ENUMS_H_
+class ConferenceParticipantEventPrivate : public ConferenceEventPrivate {
+private:
+	Address participantAddress;
+
+	L_DECLARE_PUBLIC(ConferenceParticipantEvent);
+};
+
+LINPHONE_END_NAMESPACE
+
+#endif // ifndef _CONFERENCE_PARTICIPANT_EVENT_P_H_

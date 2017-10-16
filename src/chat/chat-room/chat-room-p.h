@@ -101,7 +101,7 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> messages;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
 	std::list<std::weak_ptr<ChatMessage>> weakMessages;
-	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
+	std::shared_ptr<ChatMessage> pendingMessage;
 	IsComposing isComposingHandler;
 
 private:

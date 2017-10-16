@@ -453,6 +453,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
+			case EventLog::Type::ConferenceParticipantDeviceAdded:
+			case EventLog::Type::ConferenceParticipantDeviceRemoved:
 				break;
 		}
 
