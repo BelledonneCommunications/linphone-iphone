@@ -2132,7 +2132,7 @@ static void _linphone_core_init_account_creator_service(LinphoneCore *lc) {
 	linphone_core_set_account_creator_service(lc, service);
 }
 
-static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata){
+static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata, void *system_context){
 	const char *remote_provisioning_uri = NULL;
 	LinphoneFactory *lfactory = linphone_factory_get();
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
@@ -2148,8 +2148,15 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
+	
+#ifdef __ANDROID__
+	if (system_context)
+		lc->platform_helper = LinphonePrivate::createAndroidPlatformHelpers(lc, system_context);
+#endif
+	if (lc->platform_helper == NULL)
+		lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
 
+	
 	linphone_task_list_init(&lc->hooks);
 
 	_linphone_core_init_account_creator_service(lc);
@@ -2216,6 +2223,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
+	
+	getPlatformHelpers(lc)->setDnsServers();
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
 	if (remote_provisioning_uri == NULL) {
@@ -2224,21 +2233,10 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->bw_controller = ms_bandwidth_controller_new();
 }
 
-void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
-	if (lc->platform_helper) delete getPlatformHelpers(lc);
-	lc->platform_helper = ph;
-}
-
-static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-#ifdef __ANDROID__
-	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
-#endif
-}
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context) {
 	LinphoneCore *core = belle_sip_object_new(LinphoneCore);
-	linphone_core_init(core, cbs, config, userdata);
-	_linphone_core_set_system_context(core, system_context);
+	linphone_core_init(core, cbs, config, userdata, system_context);
 	return core;
 }
 
