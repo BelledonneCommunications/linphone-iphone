@@ -49,7 +49,7 @@ public class AndroidPlatformHelper{
 
 	public AndroidPlatformHelper(Object ctx_obj){
 		Context ctx = (Context) ctx_obj;
-		WifiManager wifiMgr = ctx.getSystemService(WifiManager.class);
+		WifiManager wifiMgr = (WifiManager)ctx.getSystemService(Context.WIFI_SERVICE);
 		mPowerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
 		mConnectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
