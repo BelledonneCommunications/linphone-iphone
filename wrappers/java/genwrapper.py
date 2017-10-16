@@ -591,7 +591,8 @@ class JniInterface(object):
     def __init__(self, javaClass, apiClass):
         self.isSingleListener = (not apiClass.multilistener)
         self.isMultiListener = (apiClass.multilistener)
-        self.classCName = javaClass.className
+        self.className = javaClass.className
+        self.classCName = javaClass.cName
         self.cPrefix = javaClass.cPrefix
         self.callbacks = []
         listener = apiClass.listenerInterface
@@ -694,6 +695,7 @@ class Jni(object):
                 'isSingleListener': jniInterface.isSingleListener,
                 'isMultiListener': jniInterface.isMultiListener,
                 'classCName': jniInterface.classCName,
+                'className': jniInterface.className,
                 'cPrefix': jniInterface.cPrefix,
                 'jniPackage': self.jni_package,
                 'factoryName': javaClass.factoryName,

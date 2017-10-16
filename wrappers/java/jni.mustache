@@ -234,10 +234,10 @@ static {{return}} {{callbackName}}({{params}}) {
 
 {{#interfaces}}
 {{#isSingleListener}}
-void {{jniPackage}}{{classCName}}Impl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+void {{jniPackage}}{{className}}Impl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 {{/isSingleListener}}
 {{#isMultiListener}}
-void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+void {{jniPackage}}{{className}}Impl_addListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 {{/isMultiListener}}
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
 	jobject listener = env->NewGlobalRef(jlistener);
@@ -257,7 +257,7 @@ void {{jniPackage}}{{classCName}}Impl_addListener(JNIEnv* env, jobject thiz, jlo
 }
 {{#isMultiListener}}
 
-void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+void {{jniPackage}}{{className}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
 	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks_list(cptr);
 	bctbx_list_t *it;
