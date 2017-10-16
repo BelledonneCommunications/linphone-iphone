@@ -20,6 +20,8 @@
 #ifndef _IS_COMPOSING_H_
 #define _IS_COMPOSING_H_
 
+#include <unordered_map>
+
 #include "linphone/utils/general.h"
 
 #include "chat/notification/is-composing-listener.h"
@@ -36,24 +38,25 @@ public:
 	~IsComposing ();
 
 	std::string marshal (bool isComposing);
-	void parse (const std::string &content);
+	void parse (const Address &remoteAddr, const std::string &content);
 	void startIdleTimer ();
 	void startRefreshTimer ();
-	void startRemoteRefreshTimer (const char *refreshStr);
-	void stopComposing ();
 	void stopIdleTimer ();
 	void stopRefreshTimer ();
-	void stopRemoteRefreshTimer ();
+	void stopRemoteRefreshTimer (const std::string &uri);
 	void stopTimers ();
 
 private:
 	unsigned int getIdleTimerDuration ();
 	unsigned int getRefreshTimerDuration ();
 	unsigned int getRemoteRefreshTimerDuration ();
-	void parse (xmlparsing_context_t *xmlCtx);
-	int idleTimerExpired (unsigned int revents);
-	int refreshTimerExpired (unsigned int revents);
-	int remoteRefreshTimerExpired (unsigned int revents);
+	void parse (xmlparsing_context_t *xmlCtx, const Address &remoteAddr);
+	int idleTimerExpired ();
+	int refreshTimerExpired ();
+	int remoteRefreshTimerExpired (const std::string &uri);
+	void startRemoteRefreshTimer (const std::string &uri, const char *refreshStr);
+	void stopAllRemoteRefreshTimers ();
+	std::unordered_map<std::string, belle_sip_source_t *>::iterator stopRemoteRefreshTimer (const std::unordered_map<std::string, belle_sip_source_t *>::const_iterator it);
 
 	static int idleTimerExpired (void *data, unsigned int revents);
 	static int refreshTimerExpired (void *data, unsigned int revents);
@@ -67,7 +70,7 @@ private:
 
 	LinphoneCore *core = nullptr;
 	IsComposingListener *listener = nullptr;
-	belle_sip_source_t *remoteRefreshTimer = nullptr;
+	std::unordered_map<std::string, belle_sip_source_t *>remoteRefreshTimers;
 	belle_sip_source_t *idleTimer = nullptr;
 	belle_sip_source_t *refreshTimer = nullptr;
 };

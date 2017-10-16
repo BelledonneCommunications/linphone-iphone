@@ -20,6 +20,8 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
+#include <unordered_set>
+
 #include "chat/notification/is-composing.h"
 #include "chat-room.h"
 #include "object/object-p.h"
@@ -74,17 +76,18 @@ public:
 protected:
 	void chatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 	void imdnReceived (const std::string &text);
-	void isComposingReceived (const std::string &text);
+	void isComposingReceived (const Address &remoteAddr, const std::string &text);
 
 private:
 	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
+	void notifyIsComposingReceived (const Address &remoteAddr, bool isComposing);
 	void notifyStateChanged ();
 	void notifyUndecryptableMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 
 private:
 	/* IsComposingListener */
 	void onIsComposingStateChanged (bool isComposing) override;
-	void onIsRemoteComposingStateChanged (bool isComposing) override;
+	void onIsRemoteComposingStateChanged (const Address &remoteAddr, bool isComposing) override;
 	void onIsComposingRefreshNeeded () override;
 
 public:
@@ -94,7 +97,7 @@ public:
 	Address peerAddress;
 	int unreadCount = -1;
 	bool isComposing = false;
-	bool remoteIsComposing = false;
+	std::unordered_set<std::string> remoteIsComposing;
 	std::list<std::shared_ptr<ChatMessage>> messages;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
 	std::list<std::weak_ptr<ChatMessage>> weakMessages;

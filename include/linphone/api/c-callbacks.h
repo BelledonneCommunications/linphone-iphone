@@ -144,9 +144,10 @@ typedef void (*LinphoneChatMessageCbsFileTransferProgressIndicationCb)(LinphoneC
 /**
  * Is composing notification callback prototype.
  * @param[in] cr #LinphoneChatRoom involved in the conversation
- * @param[in] participant The #LinphoneParticipant that has sent the is-composing notification
+ * @param[in] remoteAddr The address that has sent the is-composing notification
+ * @param[in] isComposing A boolean value telling whether the remote is composing or not
  */
-typedef void (*LinphoneChatRoomCbsIsComposingReceivedCb) (LinphoneChatRoom *cr, const LinphoneParticipant *participant);
+typedef void (*LinphoneChatRoomCbsIsComposingReceivedCb) (LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing);
 
 /**
  * Callback used to notify a chat room that a message has been received.

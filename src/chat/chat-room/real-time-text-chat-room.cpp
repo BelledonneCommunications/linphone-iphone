@@ -59,7 +59,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 		cmc->has_been_read = FALSE;
 		receivedRttCharacters.push_back(cmc);
 
-		remoteIsComposing = true;
+		remoteIsComposing.insert(peerAddress.asStringUriOnly());
 		linphone_core_notify_is_composing_received(core, L_GET_C_BACK_PTR(q));
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
