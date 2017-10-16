@@ -306,6 +306,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
 
+			"  last_notify INT UNSIGNED,"
+
 			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
