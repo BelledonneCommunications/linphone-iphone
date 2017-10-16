@@ -72,6 +72,9 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 class LinphoneJavaBindings {
 public:
 	LinphoneJavaBindings(JNIEnv *env) {
+		ms_factory_class = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/mediastream/Factory"));
+		ms_factory_class_constructor = env->GetMethodID(ms_factory_class, "<init>", "(J)V");
+
 		{{#objects}}
 		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{classImplName}}"));
 		{{cPrefix}}_class_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
@@ -86,6 +89,9 @@ public:
 	~LinphoneJavaBindings() {
 		JNIEnv *env = 0;
 		jvm->AttachCurrentThread(&env,NULL);
+
+		env->DeleteGlobalRef(ms_factory_class);
+
 		{{#objects}}
 		env->DeleteGlobalRef({{cPrefix}}_class);
 		{{/objects}}
@@ -94,6 +100,9 @@ public:
 		env->DeleteGlobalRef({{cPrefix}}_class);
 		{{/enums}}
 	}
+
+	jclass ms_factory_class;
+	jmethodID ms_factory_class_constructor;
 
 	{{#objects}}
 	jclass {{cPrefix}}_class;
@@ -263,6 +272,14 @@ void {{jniPackage}}{{classCName}}Impl_removeListener(JNIEnv* env, jobject thiz, 
 {{/isMultiListener}}
 
 {{/interfaces}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+jobject {{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	MSFactory *factory = linphone_core_get_ms_factory((LinphoneCore*)ptr);
+	return env->NewObject(ljb->ms_factory_class, ljb->ms_factory_class_constructor, (jlong)factory);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#methods}}

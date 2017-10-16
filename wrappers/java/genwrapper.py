@@ -416,6 +416,7 @@ class JavaTranslator(object):
         }
 
         classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
+        classDict['isLinphoneCore'] = _class.name.to_camel_case() == "Core"
         classDict['doc'] = self.docTranslator.translate(_class.briefDescription) if _class.briefDescription is not None else None
 
         for _property in _class.properties:
@@ -590,7 +591,7 @@ class JniInterface(object):
     def __init__(self, javaClass, apiClass):
         self.isSingleListener = (not apiClass.multilistener)
         self.isMultiListener = (apiClass.multilistener)
-        self.classCName = javaClass.cName
+        self.classCName = javaClass.className
         self.cPrefix = javaClass.cPrefix
         self.callbacks = []
         listener = apiClass.listenerInterface
@@ -626,6 +627,7 @@ class JavaClass(object):
     def __init__(self, package, _class, translator):
         self._class = translator.translate_class(_class)
         self.isLinphoneFactory = self._class['isLinphoneFactory']
+        self.isLinphoneCore = self._class['isLinphoneCore']
         self.isNotLinphoneFactory = not self.isLinphoneFactory
         self.cName = 'Linphone' + _class.name.to_camel_case()
         self.cPrefix = 'linphone_' + _class.name.to_snake_case()

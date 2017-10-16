@@ -95,6 +95,12 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
 
     abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
 {{/isLinphoneFactory}}
+{{#isLinphoneCore}}
+    /**
+      * Gets the mediastreamer's factory
+      */
+    public org.linphone.mediastream.Factory getMediastreamerFactory();
+{{/isLinphoneCore}}
 {{#methods}}
     {{#doc}}
     /**
@@ -181,6 +187,13 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
     }
 
 {{/methods}}
+{{#isLinphoneCore}}
+    private native org.linphone.mediastream.Factory getMediastreamerFactory(long nativePtr);
+    public org.linphone.mediastream.Factory getMediastreamerFactory() {
+        return getMediastreamerFactory(nativePtr);
+    }
+
+{{/isLinphoneCore}}
 {{#isNotLinphoneFactory}}
     private native void unref(long ptr);
     protected void finalize() throws Throwable {

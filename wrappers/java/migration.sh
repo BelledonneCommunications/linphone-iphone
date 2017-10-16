@@ -228,10 +228,10 @@ eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloa
 eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
 eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
 eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
+eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
 
 #Changes in library required
 #Tunnel
-#DialPlan
 #LinphoneBuffer
 #Call.zoomVideo()
 #AccountCreator.updatePassword
@@ -239,7 +239,6 @@ eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
 #Android specifics not wrapped automatically
 #Core.needsEchoCalibration()
 #Core.hasCrappyOpenGL()
-#Core.getMSFactory()
 #Core.startEchoCalibration
 #Core.startEchoTester
 #Core.stopEchoTester
