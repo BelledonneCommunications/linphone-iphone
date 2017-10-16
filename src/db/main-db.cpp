@@ -329,6 +329,55 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			")";
 
 		*session <<
+			"CREATE TABLE IF NOT EXISTS conference_event ("
+			"  event_id INT UNSIGNED PRIMARY KEY,"
+			"  chat_room_id INT UNSIGNED NOT NULL,"
+
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES event(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (chat_room_id)"
+			"    REFERENCES chat_room(peer_sip_address_id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
+			"  conference_event_id INT UNSIGNED PRIMARY KEY,"
+			"  participant_address_id INT UNSIGNED NOT NULL,"
+
+			"  FOREIGN KEY (conference_event_id)"
+			"    REFERENCES event(event_id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (participant_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
+			"  conference_participant_event_id INT UNSIGNED PRIMARY KEY,"
+			"  gruu_address_id INT UNSIGNED NOT NULL,"
+
+			"  FOREIGN KEY (conference_participant_event_id)"
+			"    REFERENCES conference_participant_event(conference_event_id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (gruu_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
+			"  conference_event_id INT UNSIGNED PRIMARY KEY,"
+			"  subject VARCHAR(255),"
+
+			"  FOREIGN KEY (conference_event_id)"
+			"    REFERENCES event(event_id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
 			"CREATE TABLE IF NOT EXISTS message_event ("
 			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  chat_room_id INT UNSIGNED NOT NULL,"
