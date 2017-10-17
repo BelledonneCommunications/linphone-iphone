@@ -6,7 +6,10 @@ SED_END='{} \;'
 # Imports
 eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' $SED_END"
 eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.LinphoneCore.Transports;/import org.linphone.core.Transports/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.LinphoneCore.Transports/import org.linphone.core.Transports/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcRequest.LinphoneXmlRpcRequestListener/import org.linphone.core.XmlRpcRequestListener/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcRequestImpl/\/\/import org.linphone.core.XmlRpcRequestImpl/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcSessionImpl/\/\/import org.linphone.core.XmlRpcSessionImpl/g' $SED_END"
 
 # Listeners
 eval "$SED_START 's/LinphoneAccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
@@ -304,11 +307,12 @@ eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils.getCcc
 eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
 eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
 eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
+eval "$SED_START 's/new XmlRpcRequestImpl(/xmlRpcSession.createRequest(/g' $SED_END"
+eval "$SED_START 's/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g' $SED_END"
 
 # TODO
 #Tunnel, TunnelConfig
 #AccountCreator.updatePassword => What to do ?
-# XmlRpcRequest and XmlRpcSession constructors
 
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them
@@ -335,6 +339,8 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 # Buffer.setContent now takes the size as second parameter
 # ChatMessageListener onFileTransferSend now returns the Buffer instead of having it as part of his arguments
 # Core.startEchoCancellerCalibration no longer takes a parameter
+# XmlRpcSession.createRequest takes first the return arg type and then the name of the method, until now it was the other way around
+
 
 # # Factory
 #Factory.createLpConfigFromString => Config.newFromBuffer
