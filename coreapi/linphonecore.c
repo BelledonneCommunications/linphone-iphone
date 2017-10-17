@@ -5962,6 +5962,10 @@ LinphoneAddress * linphone_core_create_address(LinphoneCore *lc, const char *add
 	return linphone_address_new(address);
 }
 
+LinphoneXmlRpcSession * linphone_core_create_xml_rpc_session(LinphoneCore *lc, const char *url) {
+	return linphone_xml_rpc_session_new(lc, url);
+}
+
 static void linphone_core_uninit(LinphoneCore *lc)
 {
 	bctbx_list_t *elem = NULL;

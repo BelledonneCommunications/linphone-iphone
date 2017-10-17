@@ -310,8 +310,6 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 #AccountCreator.updatePassword => What to do ?
 # XmlRpcRequest and XmlRpcSession constructors
 
-#Android specifics not wrapped automatically
-
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them
 # Above sed commands will create erros in syntax you need to manually fix:

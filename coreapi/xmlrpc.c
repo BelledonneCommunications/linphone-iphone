@@ -383,6 +383,10 @@ void linphone_xml_rpc_session_set_user_data(LinphoneXmlRpcSession *session, void
 	session->user_data = ud;
 }
 
+LinphoneXmlRpcRequest * linphone_xml_rpc_session_create_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcArgType return_type, const char *method) {
+	return linphone_xml_rpc_request_new(return_type, method);
+}
+
 void linphone_xml_rpc_session_send_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcRequest *request) {
 	belle_http_request_listener_callbacks_t cbs = { 0 };
 	belle_http_request_listener_t *l;

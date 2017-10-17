@@ -209,6 +209,15 @@ LINPHONE_PUBLIC LinphoneXmlRpcRequestCbsResponseCb linphone_xml_rpc_request_cbs_
 LINPHONE_PUBLIC void linphone_xml_rpc_request_cbs_set_response(LinphoneXmlRpcRequestCbs *cbs, LinphoneXmlRpcRequestCbsResponseCb cb);
 
 /**
+ * Creates a LinphoneXmlRpcRequest from a LinphoneXmlRpcSession
+ * @param[in] session the LinphoneXmlRpcSession
+ * @param[in] return_type the return type of the request as a LinphoneXmlRpcArgType
+ * @param[in] method the function name to call
+ * @return a LinphoneXmlRpcRequest object
+ */
+LINPHONE_PUBLIC LinphoneXmlRpcRequest * linphone_xml_rpc_session_create_request(LinphoneXmlRpcSession *session, LinphoneXmlRpcArgType return_type, const char *method);
+
+/**
  * @}
  */
 
