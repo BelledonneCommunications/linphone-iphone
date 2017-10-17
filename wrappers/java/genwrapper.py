@@ -483,9 +483,19 @@ class JavaTranslator(object):
         methodDict['callbackName'] = methodDict['cPrefix'] + '_' + _method.name.to_snake_case()
         methodDict['jname'] = _method.name.to_camel_case(lower=True)
         methodDict['return'] = self.translate_as_c_base_type(_method.returnType)
+        methodDict['jniUpcallMethod'] = 'CallVoidMethod'
+        methodDict['isJniUpcallBasicType'] = False
+        methodDict['isJniUpcallObject'] = False
         if type(_method.returnType) is AbsApi.ClassType:
             methodDict['return'] += '*'
-        methodDict['returnIfFail'] = '' if  methodDict['return'] == 'void' else ' NULL' #TODO
+            methodDict['jniUpcallMethod'] = 'CallObjectMethod'
+            methodDict['isJniUpcallObject'] = True
+            methodDict['jniUpcallType'] = 'jobject'
+        elif type(_method.returnType) is AbsApi.BaseType:
+            methodDict['jniUpcallMethod'] = 'CallIntMethod'
+            methodDict['jniUpcallType'] = self.translate_type(_method.returnType, jni=True)
+            methodDict['isJniUpcallBasicType'] = True
+        methodDict['returnIfFail'] = '' if  methodDict['return'] == 'void' else ' NULL'
         methodDict['hasReturn'] = not methodDict['return'] == 'void'
         methodDict['isSingleListener'] = not _class.multilistener
         methodDict['isMultiListener'] = _class.multilistener
@@ -531,7 +541,12 @@ class JavaTranslator(object):
         if (methodDict['return'] == 'void'):
             methodDict['jparams'] += 'V'
         else:
-            pass #TODO
+            if type(_method.returnType) is AbsApi.ClassType:
+                methodDict['jparams'] += 'L' + self.jni_path + _method.returnType.desc.name.to_camel_case() + ';'
+            elif type(_method.returnType) is AbsApi.BaseType:
+                methodDict['jparams'] += self.translate_java_jni_base_type_name(_method.returnType.name)
+            else:
+                pass #TODO
 
         return methodDict
 

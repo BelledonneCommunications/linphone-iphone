@@ -210,7 +210,16 @@ static {{return}} {{callbackName}}({{params}}) {
 	jstring j_{{stringName}} = {{stringName}} ? env->NewStringUTF({{stringName}}) : NULL;
 	{{/jstrings}}
 	
-	env->CallVoidMethod(jlistener, jcallback, {{params_impl}});
+	{{#hasReturn}}{{jniUpcallType}} jni_upcall_result = {{/hasReturn}}env->{{jniUpcallMethod}}(jlistener, jcallback, {{params_impl}});
+	{{#hasReturn}}
+	{{#isJniUpcallObject}}
+	{{return}} c_upcall_result = NULL;
+	if (jni_upcall_result) c_upcall_result = ({{return}})GetObjectNativePtr(env, jni_upcall_result);
+	{{/isJniUpcallObject}}
+	{{#isJniUpcallBasicType}}
+	{{return}} c_upcall_result = ({{return}}) jni_upcall_result;
+	{{/isJniUpcallBasicType}}
+	{{/hasReturn}}
 
 	{{#jobjects}}
 	if (j_{{objectName}}) {
@@ -225,7 +234,7 @@ static {{return}} {{callbackName}}({{params}}) {
 
 	handle_possible_java_exception(env, jlistener);
 	{{#hasReturn}}
-	return 0;
+	return c_upcall_result;
 	{{/hasReturn}}
 }
 

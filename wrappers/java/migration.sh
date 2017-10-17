@@ -304,13 +304,10 @@ eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
 eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
 eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 
-#Core.setCpuCount() => Not needed anymore, can be removed
 # TODO
 #Tunnel, TunnelConfig
-#LinphoneBuffer
 #AccountCreator.updatePassword => What to do ?
 # XmlRpcRequest and XmlRpcSession constructors
-# Callbacks with return like chat messages' file transfer
 
 #Android specifics not wrapped automatically
 #Core.startEchoCalibration
@@ -337,6 +334,8 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 # setPrimaryContact only takes one String argument
 # AdaptiveRateAlgorithm was an enum, now is nothing
 # createAddress(userName,domain,null); no longer exists
+# Buffer.setContent now takes the size as second parameter
+# ChatMessageListener onFileTransferSend now returns the Buffer instead of having it as part of his arguments
 
 # # Factory
 #Factory.createLpConfigFromString => Config.newFromBuffer
