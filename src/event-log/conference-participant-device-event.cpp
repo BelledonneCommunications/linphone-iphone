@@ -35,7 +35,7 @@ public:
 
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	Type type,
-	const time_t &time,
+	time_t time,
 	const Address &conferenceAddress,
 	const Address &participantAddress,
 	const Address &gruuAddress

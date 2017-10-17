@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
-	const time_t &time,
+	time_t time,
 	const Address &conferenceAddress,
 	const Address &participantAddress
 ) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, time, conferenceAddress) {
@@ -55,7 +55,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
-	const time_t &time,
+	time_t time,
 	const Address &conferenceAddress,
 	const Address &participantAddress
 ) : ConferenceEvent(p, type, time, conferenceAddress) {

@@ -68,6 +68,7 @@ private:
 	// ---------------------------------------------------------------------------
 
 	long insertEvent (const EventLog &eventLog);
+	long insertCallEvent (const EventLog &eventLog);
 	long insertMessageEvent (const EventLog &eventLog);
 	long insertConferenceEvent (const EventLog &eventLog);
 	long insertConferenceParticipantEvent (const EventLog &eventLog);

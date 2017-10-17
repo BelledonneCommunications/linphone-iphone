@@ -30,7 +30,7 @@ class ConferenceSubjectEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceSubjectEvent : public ConferenceEvent {
 public:
-	ConferenceSubjectEvent (const std::time_t &time, const Address &conferenceAddress, const std::string &subject);
+	ConferenceSubjectEvent (std::time_t time, const Address &conferenceAddress, const std::string &subject);
 	ConferenceSubjectEvent (const ConferenceSubjectEvent &src);
 
 	ConferenceSubjectEvent &operator= (const ConferenceSubjectEvent &src);

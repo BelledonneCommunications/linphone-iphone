@@ -244,6 +244,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return insertEvent(eventLog.getType(), Utils::getLongAsTm(eventLog.getTime()));
 	}
 
+	long MainDbPrivate::insertCallEvent (const EventLog &eventLog) {
+		// TODO.
+		return 0;
+	}
+
 	long MainDbPrivate::insertMessageEvent (const EventLog &eventLog) {
 		// TODO.
 		return 0;
@@ -251,31 +256,49 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog) {
 		long eventId = insertEvent(eventLog);
+		long chatRoomId = insertSipAddress(
+			static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString()
+		);
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_event (event_id, chat_room_id)"
-			"  VALUES (:eventId, (SELECT id FROM sip_address WHERE value = :conferenceAddress))",
-			soci::use(eventId), soci::use(static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString());
+			"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
 		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
 		long eventId = insertConferenceEvent(eventLog);
+		long participantAddressId = insertSipAddress(
+			static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asString()
+		);
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_participant_event (conference_event_id, chat_room_id)"
-			"  VALUES (:eventId, (SELECT id FROM sip_address WHERE value = :participantAddress))",
-			soci::use(eventId),
-			soci::use(static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asStringUriOnly());
+		*session << "INSERT INTO conference_participant_event (conference_event_id, participant_address_id)"
+			"  VALUES (:eventId, :participantAddressId)", soci::use(eventId), soci::use(participantAddressId);
 		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceParticipantDeviceEvent (const EventLog &eventLog) {
-		// TODO.
-		return 0;
+		long eventId = insertConferenceParticipantEvent(eventLog);
+		long gruuAddressId = insertSipAddress(
+			static_cast<const ConferenceParticipantDeviceEvent &>(eventLog).getGruuAddress().asString()
+		);
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "INSERT INTO conference_participant_device_event (conference_participant_event_id, gruu_address_id)"
+			"  VALUES (:eventId, :gruuAddressId)", soci::use(eventId), soci::use(gruuAddressId);
+		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
-		// TODO.
-		return 0;
+		long eventId = insertConferenceEvent(eventLog);
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "INSERT INTO conference_subject_event (conference_event_id, subject)"
+			"  VALUES (:eventId, :subject)", soci::use(eventId), soci::use(
+				static_cast<const ConferenceSubjectEvent &>(eventLog).getSubject()
+			);
+		return eventId;
 	}
 
 // -----------------------------------------------------------------------------
@@ -533,7 +556,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			return false;
 		}
 
-		// TODO.
+		bool soFarSoGood = false;
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
+
 		switch (eventLog.getType()) {
 			case EventLog::Type::None:
 				return false;
@@ -544,7 +572,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 			case EventLog::Type::CallStart:
 			case EventLog::Type::CallEnd:
-				return false; // TODO.
+				d->insertCallEvent(eventLog);
+				break;
 
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
@@ -568,7 +597,13 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 				break;
 		}
 
-		return true;
+		tr.commit();
+
+		soFarSoGood = true;
+
+		L_END_LOG_EXCEPTION
+
+		return soFarSoGood;
 	}
 
 	bool MainDb::deleteEvent (const EventLog &eventLog) {

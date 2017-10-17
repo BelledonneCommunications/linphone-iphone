@@ -33,7 +33,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
-CallEvent::CallEvent (Type type, const time_t &time, const shared_ptr<Call> &call) :
+CallEvent::CallEvent (Type type, time_t time, const shared_ptr<Call> &call) :
 	EventLog(*new CallEventPrivate, type, time) {
 	L_D();
 	L_ASSERT(call);

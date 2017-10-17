@@ -34,7 +34,7 @@ public:
 // -----------------------------------------------------------------------------
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (
-	const time_t &time,
+	time_t time,
 	const Address &address,
 	const string &subject
 ) : ConferenceEvent(*new ConferenceSubjectEventPrivate, Type::ConferenceSubjectChanged, time, address) {

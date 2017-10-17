@@ -34,7 +34,7 @@ public:
 // -----------------------------------------------------------------------------
 
 ChatMessageEvent::ChatMessageEvent (
-	const time_t &time,
+	time_t time,
 	const shared_ptr<ChatMessage> &chatMessage
 ) : EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage, time) {
 	L_D();

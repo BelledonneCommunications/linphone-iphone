@@ -26,7 +26,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, const time_t &time, const Address &conferenceAddress) :
+ConferenceEvent::ConferenceEvent (Type type, time_t time, const Address &conferenceAddress) :
 	EventLog(*new ConferenceEventPrivate, type, time) {
 	L_D();
 	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
@@ -39,7 +39,7 @@ ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) :
 ConferenceEvent::ConferenceEvent (
 	ConferenceEventPrivate &p,
 	Type type,
-	const time_t &time,
+	time_t time,
 	const Address &conferenceAddress
 ) : EventLog(p, type, time) {
 	L_D();

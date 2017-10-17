@@ -33,7 +33,7 @@ class ChatMessageEventPrivate;
 
 class LINPHONE_PUBLIC ChatMessageEvent : public EventLog {
 public:
-	ChatMessageEvent (const std::time_t &time, const std::shared_ptr<ChatMessage> &chatMessage);
+	ChatMessageEvent (std::time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
 	ChatMessageEvent (const ChatMessageEvent &src);
 
 	ChatMessageEvent &operator= (const ChatMessageEvent &src);
