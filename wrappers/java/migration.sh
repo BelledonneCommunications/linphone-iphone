@@ -195,6 +195,7 @@ s/isVCardSupported()/vcardSupported()/g; \
 s/getPresenceModelForUri(/getPresenceModelForUriOrTel(/g; \
 s/setAvpfRRInterval(/setAvpfRrInterval(/g; \
 s/getAvpfRRInterval(/getAvpfRrInterval(/g; \
+s/hasBuiltInEchoCanceler()/hasBuiltinEchoCanceller()/g; \
 s/getProxy()/getServerAddr()/g; \
 s/setProxy(/setServerAddr(/g; \
 s/setIdentity(/setIdentityAddress(/g; \
