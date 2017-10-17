@@ -381,6 +381,7 @@ class JavaTranslator(object):
         methodDict['objects'] = []
         methodDict['lists'] = []
         methodDict['array'] = []
+        methodDict['bytes'] = []
         methodDict['returnedObjectGetter'] = ''
         for arg in _method.args:
             methodDict['params'] += ', '
@@ -411,7 +412,10 @@ class JavaTranslator(object):
                 methodDict['params_impl'] += '(' + argCType + ') ' + argname
                 
             elif type(arg.type) is AbsApi.BaseType:
-                if arg.type.name == 'string':
+                if arg.type.name == 'integer' and arg.type.size is not None and arg.type.isref:
+                    methodDict['bytes'].append({'bytesargname': argname, 'bytesargtype' : self.translate_as_c_base_type(arg.type)})
+                    methodDict['params_impl'] += 'c_' + argname
+                elif arg.type.name == 'string':
                     methodDict['strings'].append({'string': argname})
                     methodDict['params_impl'] += 'c_' + argname
                 else:

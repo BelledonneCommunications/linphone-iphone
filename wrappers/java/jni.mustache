@@ -286,7 +286,9 @@ jobject {{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thi
 {{return}} {{name}}({{params}}) {
 	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}{{#strings}}
 	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
-	{{/strings}}{{#objects}}
+	{{/strings}}{{#bytes}}
+	{{bytesargtype}} c_{{bytesargname}} = ({{bytesargtype}})env->GetByteArrayElements({{bytesargname}}, NULL);
+	{{/bytes}}{{#objects}}
 	{{objectClassCName}}* c_{{object}} = NULL;
 	if ({{object}}) c_{{object}} = ({{objectClassCName}}*)GetObjectNativePtr(env, {{object}});
 	{{/objects}}{{#lists}}
@@ -340,7 +342,9 @@ jobject {{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thi
 	{{#hasReturn}}{{return}} jni_result = ({{return}}){{#returnObject}}get{{returnClassName}}(env, (Linphone{{returnClassName}} *){{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
 	{{/hasNormalReturn}}{{#strings}}
 	ReleaseStringUTFChars(env, {{string}}, c_{{string}});
-	{{/strings}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}
+	{{/strings}}{{#bytes}}
+	env->ReleaseByteArrayElements({{bytesargname}}, (jbyte*)c_{{bytesargname}}, JNI_ABORT);
+	{{/bytes}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}
 }
 
 {{/methods}}
