@@ -452,9 +452,11 @@ class CParser(object):
 		self.regexFixedSizeInteger = '^(u?)int(\d?\d)_t$'
 		self.methodBl = ['ref', 'unref', 'new', 'destroy', 'getCurrentCallbacks', 'setUserData', 'getUserData']
 		self.functionBl = [
-					   'linphone_factory_create_core', # manualy wrapped
-					   'linphone_factory_create_core_with_config', # manualy wrapped
-					   'linphone_vcard_get_belcard'] # manualy wrapped
+					   'linphone_factory_create_core', # manually wrapped
+					   'linphone_factory_create_core_2', # manually wrapped
+					   'linphone_factory_create_core_with_config', # manually wrapped
+					   'linphone_factory_create_core_with_config_2', # manually wrapped
+					   'linphone_vcard_get_belcard'] # manually wrapped
 
 		self.classBl = ['LpConfig']  # temporarly blacklisted
 		for bl in classBlAppend:
