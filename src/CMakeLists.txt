@@ -102,6 +102,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	event-log/conference/conference-subject-event.h
 	event-log/event-log-p.h
 	event-log/event-log.h
+	event-log/events.h
 	hacks/hacks.h
 	logger/logger.h
 	nat/ice-agent.h
