@@ -21,7 +21,6 @@
 #define _MAIN_DB_P_H_
 
 #include "abstract/abstract-db-p.h"
-#include "chat/chat-message/chat-message.h"
 #include "event-log/event-log.h"
 #include "main-db.h"
 
@@ -29,7 +28,6 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatRoom;
 class Content;
 
 struct MessageEventReferences {
@@ -56,18 +54,25 @@ private:
 
 	long insertMessageEvent (
 		const MessageEventReferences &references,
-		ChatMessage::State state,
-		ChatMessage::Direction direction,
+		int state,
+		int direction,
 		const std::string &imdnMessageId,
 		bool isSecured,
 		const std::list<Content> &contents
 	);
 
-	void insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state);
+	void insertMessageParticipant (long messageEventId, long sipAddressId, int state);
 
-	void insertConferenceEvent (long eventId, long chatRoomId);
+	// ---------------------------------------------------------------------------
+	// Events API.
+	// ---------------------------------------------------------------------------
 
-	std::unordered_map<std::string, std::weak_ptr<ChatRoom>> chatRooms;
+	long insertEvent (const EventLog &eventLog);
+	long insertMessageEvent (const EventLog &eventLog);
+	long insertConferenceEvent (const EventLog &eventLog);
+	long insertConferenceParticipantEvent (const EventLog &eventLog);
+	long insertConferenceParticipantDeviceEvent (const EventLog &eventLog);
+	long insertConferenceSubjectEvent (const EventLog &eventLog);
 
 	L_DECLARE_PUBLIC(MainDb);
 };

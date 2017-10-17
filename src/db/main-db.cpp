@@ -33,6 +33,8 @@
 #include "db/session/db-session-provider.h"
 #include "event-log/call-event.h"
 #include "event-log/chat-message-event.h"
+#include "event-log/conference-participant-device-event.h"
+#include "event-log/conference-subject-event.h"
 #include "event-log/event-log-p.h"
 #include "logger/logger.h"
 #include "main-db-p.h"
@@ -195,8 +197,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 	long MainDbPrivate::insertMessageEvent (
 		const MessageEventReferences &references,
-		ChatMessage::State state,
-		ChatMessage::Direction direction,
+		int state,
+		int direction,
 		const string &imdnMessageId,
 		bool isSecured,
 		const list<Content> &contents
@@ -211,8 +213,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			"  :eventId, :chatRoomId, :localSipaddressId, :remoteSipaddressId,"
 			"  :state, :direction, :imdnMessageId, :isSecured"
 			")", soci::use(references.eventId), soci::use(references.chatRoomId), soci::use(references.localSipAddressId),
-			soci::use(references.remoteSipAddressId), soci::use(static_cast<int>(state)),
-			soci::use(static_cast<int>(direction)), soci::use(imdnMessageId), soci::use(isSecured ? 1 : 0);
+			soci::use(references.remoteSipAddressId), soci::use(state), soci::use(direction),
+			soci::use(imdnMessageId), soci::use(isSecured ? 1 : 0);
 
 		long messageEventId = q->getLastInsertId();
 
@@ -222,24 +224,58 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return messageEventId;
 	}
 
-	void MainDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state) {
+	void MainDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, int state) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE message_participant SET state = :state"
 				"  WHERE message_event_id = :messageEventId AND sip_address_id = :sipAddressId",
-				soci::use(static_cast<int>(state)), soci::use(messageEventId), soci::use(sipAddressId)
+				soci::use(state), soci::use(messageEventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
-		if (statement.get_affected_rows() == 0 && state != ChatMessage::State::Displayed)
+		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
 			*session << "INSERT INTO message_participant (message_event_id, sip_address_id, state)"
 				"  VALUES (:messageEventId, :sipAddressId, :state)",
-				soci::use(messageEventId), soci::use(sipAddressId), soci::use(static_cast<int>(state));
+				soci::use(messageEventId), soci::use(sipAddressId), soci::use(state);
 	}
 
-	void MainDbPrivate::insertConferenceEvent (long eventId, long chatRoomId) {
+// -----------------------------------------------------------------------------
+
+	long MainDbPrivate::insertEvent (const EventLog &eventLog) {
+		return insertEvent(eventLog.getType(), Utils::getLongAsTm(eventLog.getTime()));
+	}
+
+	long MainDbPrivate::insertMessageEvent (const EventLog &eventLog) {
+		// TODO.
+		return 0;
+	}
+
+	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog) {
+		long eventId = insertEvent(eventLog);
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_event (event_id, chat_room_id) VALUES (:eventId, :chatRoomId)",
-			soci::use(eventId), soci::use(chatRoomId);
+		*session << "INSERT INTO conference_event (event_id, chat_room_id)"
+			"  VALUES (:eventId, (SELECT id FROM sip_address WHERE value = :conferenceAddress))",
+			soci::use(eventId), soci::use(static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString());
+		return eventId;
+	}
+
+	long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
+		long eventId = insertConferenceEvent(eventLog);
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "INSERT INTO conference_participant_event (conference_event_id, chat_room_id)"
+			"  VALUES (:eventId, (SELECT id FROM sip_address WHERE value = :participantAddress))",
+			soci::use(eventId),
+			soci::use(static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asStringUriOnly());
+		return eventId;
+	}
+
+	long MainDbPrivate::insertConferenceParticipantDeviceEvent (const EventLog &eventLog) {
+		// TODO.
+		return 0;
+	}
+
+	long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
+		// TODO.
+		return 0;
 	}
 
 // -----------------------------------------------------------------------------
@@ -490,6 +526,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	bool MainDb::addEvent (const EventLog &eventLog) {
+		L_D();
+
 		if (!isConnected()) {
 			lWarning() << "Unable to add event. Not connected.";
 			return false;
@@ -499,18 +537,34 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		switch (eventLog.getType()) {
 			case EventLog::Type::None:
 				return false;
+
 			case EventLog::Type::ChatMessage:
+				d->insertMessageEvent(eventLog);
+				break;
+
 			case EventLog::Type::CallStart:
 			case EventLog::Type::CallEnd:
+				return false; // TODO.
+
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
+				d->insertConferenceEvent(eventLog);
+				break;
+
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
+				d->insertConferenceParticipantEvent(eventLog);
+				break;
+
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
 			case EventLog::Type::ConferenceParticipantDeviceRemoved:
+				d->insertConferenceParticipantDeviceEvent(eventLog);
+				break;
+
 			case EventLog::Type::ConferenceSubjectChanged:
+				d->insertConferenceSubjectEvent(eventLog);
 				break;
 		}
 
@@ -708,15 +762,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 	L_D();
 
-	const auto it = d->chatRooms.find(peerAddress);
-	if (it != d->chatRooms.cend()) {
-		try {
-			return it->second.lock();
-		} catch (const exception &) {
-			lError() << "Cannot lock chat room: `" + peerAddress + "`";
-		}
-		return shared_ptr<ChatRoom>();
-	}
+	// TODO: Use core cache.
 
 	L_BEGIN_LOG_EXCEPTION
 
@@ -836,8 +882,8 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 
 					long messageEventId = d->insertMessageEvent (
 						references,
-						static_cast<ChatMessage::State>(state),
-						static_cast<ChatMessage::Direction>(direction),
+						state,
+						direction,
 						message.get<string>(LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID, ""),
 						!!message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0),
 						{ move(content) }
@@ -847,7 +893,7 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 						d->insertMessageParticipant(
 							messageEventId,
 							references.remoteSipAddressId,
-							static_cast<ChatMessage::State>(state)
+							state
 						);
 				}
 
