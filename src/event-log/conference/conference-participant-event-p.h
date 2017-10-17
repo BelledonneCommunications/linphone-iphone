@@ -20,14 +20,14 @@
 #ifndef _CONFERENCE_PARTICIPANT_EVENT_P_H_
 #define _CONFERENCE_PARTICIPANT_EVENT_P_H_
 
-#include "conference-event-p.h"
+#include "conference-notified-event-p.h"
 #include "conference-participant-event.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceParticipantEventPrivate : public ConferenceEventPrivate {
+class ConferenceParticipantEventPrivate : public ConferenceNotifiedEventPrivate {
 private:
 	Address participantAddress;
 

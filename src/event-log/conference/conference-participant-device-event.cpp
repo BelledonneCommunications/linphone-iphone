@@ -37,6 +37,7 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	Type type,
 	time_t time,
 	const Address &conferenceAddress,
+	unsigned int notifyId,
 	const Address &participantAddress,
 	const Address &gruuAddress
 ) : ConferenceParticipantEvent(
@@ -44,6 +45,7 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	type,
 	time,
 	conferenceAddress,
+	notifyId,
 	participantAddress
 ) {
 	L_D();
@@ -59,6 +61,7 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (const Confer
 		src.getType(),
 		src.getTime(),
 		src.getConferenceAddress(),
+		src.getNotifyId(),
 		src.getParticipantAddress(),
 		src.getGruuAddress()
 	) {}

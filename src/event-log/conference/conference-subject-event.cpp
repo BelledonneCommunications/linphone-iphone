@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "conference-event-p.h"
+#include "conference-notified-event-p.h"
 #include "conference-subject-event.h"
 
 // =============================================================================
@@ -26,7 +26,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceSubjectEventPrivate : public ConferenceEventPrivate {
+class ConferenceSubjectEventPrivate : public ConferenceNotifiedEventPrivate {
 public:
 	string subject;
 };
@@ -35,15 +35,22 @@ public:
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (
 	time_t time,
-	const Address &address,
+	const Address &conferenceAddress,
+	unsigned int notifyId,
 	const string &subject
-) : ConferenceEvent(*new ConferenceSubjectEventPrivate, Type::ConferenceSubjectChanged, time, address) {
+) : ConferenceNotifiedEvent(
+	*new ConferenceSubjectEventPrivate,
+	Type::ConferenceSubjectChanged,
+	time,
+	conferenceAddress,
+	notifyId
+) {
 	L_D();
 	d->subject = subject;
 }
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (const ConferenceSubjectEvent &src) :
-	ConferenceSubjectEvent(src.getTime(), src.getConferenceAddress(), src.getSubject()) {}
+	ConferenceSubjectEvent(src.getTime(), src.getConferenceAddress(), src.getNotifyId(), src.getSubject()) {}
 
 ConferenceSubjectEvent &ConferenceSubjectEvent::operator= (const ConferenceSubjectEvent &src) {
 	L_D();

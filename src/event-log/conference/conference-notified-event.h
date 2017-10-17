@@ -26,20 +26,25 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
 class ConferenceNotifiedEventPrivate;
 
-class LINPHONE_PUBLIC ConferenceNotifiedEvent : public EventLog {
+class LINPHONE_PUBLIC ConferenceNotifiedEvent : public ConferenceEvent {
 public:
-	ConferenceNotifiedEvent (Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceNotifiedEvent (Type type, std::time_t time, const Address &conferenceAddress, unsigned int notifiyId);
 	ConferenceNotifiedEvent (const ConferenceNotifiedEvent &src);
 
 	ConferenceNotifiedEvent &operator= (const ConferenceNotifiedEvent &src);
 
-	const Address &getConferenceAddress () const;
+	unsigned int getNotifyId () const;
 
 protected:
-	ConferenceNotifiedEvent (ConferenceNotifiedEventPrivate &p, Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceNotifiedEvent (
+		ConferenceNotifiedEventPrivate &p,
+		Type type,
+		std::time_t time,
+		const Address &conferenceAddress,
+		unsigned int notifyId
+	);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceNotifiedEvent);

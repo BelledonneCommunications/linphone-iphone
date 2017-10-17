@@ -34,6 +34,7 @@ public:
 		Type type,
 		std::time_t time,
 		const Address &conferenceAddress,
+		unsigned int notifyId,
 		const Address &participantAddress,
 		const Address &gruuAddress
 	);

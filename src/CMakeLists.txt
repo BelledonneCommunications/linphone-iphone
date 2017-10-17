@@ -52,8 +52,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/modifier/encryption-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
 	chat/notification/imdn.h
-	chat/notification/is-composing.h
 	chat/notification/is-composing-listener.h
+	chat/notification/is-composing.h
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h

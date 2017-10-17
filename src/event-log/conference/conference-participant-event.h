@@ -20,7 +20,7 @@
 #ifndef _CONFERENCE_PARTICIPANT_EVENT_H_
 #define _CONFERENCE_PARTICIPANT_EVENT_H_
 
-#include "conference-event.h"
+#include "conference-notified-event.h"
 
 // =============================================================================
 
@@ -28,12 +28,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceParticipantEventPrivate;
 
-class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceEvent {
+class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceNotifiedEvent {
 public:
 	ConferenceParticipantEvent (
 		Type type,
 		std::time_t time,
 		const Address &conferenceAddress,
+		unsigned int notifyId,
 		const Address &participantAddress
 	);
 	ConferenceParticipantEvent (const ConferenceParticipantEvent &src);
@@ -48,6 +49,7 @@ protected:
 		Type type,
 		std::time_t time,
 		const Address &conferenceAddress,
+		unsigned int notifyId,
 		const Address &participantAddress
 	);
 

@@ -31,8 +31,9 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
 	time_t time,
 	const Address &conferenceAddress,
+	unsigned int notifyId,
 	const Address &participantAddress
-) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, time, conferenceAddress) {
+) : ConferenceNotifiedEvent(*new ConferenceParticipantEventPrivate, type, time, conferenceAddress, notifyId) {
 	L_D();
 	L_ASSERT(
 		type == Type::ConferenceParticipantAdded ||
@@ -49,6 +50,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	src.getType(),
 	src.getTime(),
 	src.getConferenceAddress(),
+	src.getNotifyId(),
 	src.getParticipantAddress()
 ) {}
 
@@ -57,8 +59,9 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
 	time_t time,
 	const Address &conferenceAddress,
+	unsigned int notifyId,
 	const Address &participantAddress
-) : ConferenceEvent(p, type, time, conferenceAddress) {
+) : ConferenceNotifiedEvent(p, type, time, conferenceAddress, notifyId) {
 	L_D();
 	d->participantAddress = participantAddress;
 }
