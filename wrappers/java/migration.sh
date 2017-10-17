@@ -8,8 +8,8 @@ eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' 
 eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
 
 # Listeners
-eval "$SED_START 's/LinphoneAccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
-eval "$SED_START 's/AccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
+eval "$SED_START 's/LinphoneAccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
+eval "$SED_START 's/AccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
 eval "$SED_START 's/LinphoneCoreListenerBase/CoreListenerStub/g' $SED_END"
 eval "$SED_START 's/LinphoneCoreListener/CoreListener/g' $SED_END"
 eval "$SED_START 's/LinphoneChatMessage.LinphoneChatMessageListener/ChatMessageListener/g' $SED_END"
