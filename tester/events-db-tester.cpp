@@ -38,8 +38,6 @@ static const string getDatabasePath () {
 static void open_database () {
 	MainDb eventsDb;
 	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
-
-	eventsDb.import(AbstractDb::Backend::Sqlite3, "/home/rabhamon/.local/share/linphone/message-history.db");
 }
 
 static void get_events_count () {
