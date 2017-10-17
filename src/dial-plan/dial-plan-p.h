@@ -28,13 +28,14 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class DialPlanPrivate : public ClonableObjectPrivate {
-
-public:
+private:
 	std::string country;
-	std::string isoCountryCode; /* ISO 3166-1 alpha-2 code, ex: FR for France*/
-	std::string countryCallingCode; /*country calling code*/
-	int nationalNumberLength = 0; /*maximum national number length*/
-	std::string internationalCallPrefix; /*international call prefix, ex: 00 in europe*/
+	std::string isoCountryCode; // ISO 3166-1 alpha-2 code, ex: FR for France.
+	std::string countryCallingCode; // Country calling code.
+	int nationalNumberLength = 0; // Maximum national number length.
+	std::string internationalCallPrefix; // International call prefix, ex: 00 in europe.
+
+	static const std::list<DialPlan> DialPlans;
 
 	L_DECLARE_PUBLIC(DialPlan);
 };

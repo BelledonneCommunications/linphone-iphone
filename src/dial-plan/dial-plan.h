@@ -32,30 +32,33 @@ class DialPlanPrivate;
 
 class LINPHONE_PUBLIC DialPlan : public ClonableObject {
 public:
-	DialPlan (const std::string &country = "", const std::string &isoCountryCode = "", const std::string &ccc = "", int nnl = 0, const std::string &icp = "");
+	DialPlan (
+		const std::string &country = "",
+		const std::string &isoCountryCode = "",
+		const std::string &ccc = "",
+		int nnl = 0,
+		const std::string &icp = ""
+	);
 	DialPlan (const DialPlan &src);
-	~DialPlan ();
 
 	DialPlan &operator= (const DialPlan &src);
 
-	const std::string& getCountry() const;
-	const std::string& getIsoCountryCode() const;
-	const std::string& getCountryCallingCode() const;
-	int getNationalNumberLength() const;
-	const std::string& getInternationalCallPrefix() const;
-	bool isGeneric() const;
+	const std::string &getCountry () const;
+	const std::string &getIsoCountryCode () const;
+	const std::string &getCountryCallingCode () const;
+	int getNationalNumberLength () const;
+	const std::string &getInternationalCallPrefix () const;
+	bool isGeneric () const;
 
 	static const DialPlan MostCommon;
 
-	static int lookupCccFromE164(std::string e164);
-	static int lookupCccFromIso(std::string iso);
-	static const DialPlan& findByCccAsInt(int ccc);
-	static const DialPlan& findByCcc(const std::string& ccc);
-	static const std::list<DialPlan>& getAllDialPlans();
+	static int lookupCccFromE164 (const std::string &e164);
+	static int lookupCccFromIso (const std::string &iso);
+	static const DialPlan &findByCccAsInt (int ccc);
+	static const DialPlan &findByCcc (const std::string &ccc);
+	static const std::list<DialPlan> &getAllDialPlans ();
 
 private:
-	static std::list<DialPlan> const DialPlans;
-
 	L_DECLARE_PRIVATE(DialPlan);
 };
 
