@@ -122,14 +122,14 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	void MainDbPrivate::insertContent (long messageEventId, const Content &content) {
+	void MainDbPrivate::insertContent (long eventId, const Content &content) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long contentTypeId = insertContentType(content.getContentType().asString());
-		*session << "INSERT INTO message_content (message_event_id, content_type_id, body) VALUES"
-			"  (:messageEventId, :contentTypeId, :body)", soci::use(messageEventId), soci::use(contentTypeId),
+		*session << "INSERT INTO message_content (event_id, content_type_id, body) VALUES"
+			"  (:eventId, :contentTypeId, :body)", soci::use(eventId), soci::use(contentTypeId),
 			soci::use(content.getBodyAsString());
 
 		long messageContentId = q->getLastInsertId();
@@ -213,26 +213,26 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			soci::use(references.remoteSipAddressId), soci::use(state), soci::use(direction),
 			soci::use(imdnMessageId), soci::use(isSecured ? 1 : 0);
 
-		long messageEventId = q->getLastInsertId();
+		long eventId = q->getLastInsertId();
 
 		for (const auto &content : contents)
-			insertContent(messageEventId, content);
+			insertContent(eventId, content);
 
-		return messageEventId;
+		return eventId;
 	}
 
-	void MainDbPrivate::insertMessageParticipant (long messageEventId, long sipAddressId, int state) {
+	void MainDbPrivate::insertMessageParticipant (long eventId, long sipAddressId, int state) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE message_participant SET state = :state"
-				"  WHERE message_event_id = :messageEventId AND sip_address_id = :sipAddressId",
-				soci::use(state), soci::use(messageEventId), soci::use(sipAddressId)
+				"  WHERE event_id = :eventId AND sip_address_id = :sipAddressId",
+				soci::use(state), soci::use(eventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
-			*session << "INSERT INTO message_participant (message_event_id, sip_address_id, state)"
-				"  VALUES (:messageEventId, :sipAddressId, :state)",
-				soci::use(messageEventId), soci::use(sipAddressId), soci::use(state);
+			*session << "INSERT INTO message_participant (event_id, sip_address_id, state)"
+				"  VALUES (:eventId, :sipAddressId, :state)",
+				soci::use(eventId), soci::use(sipAddressId), soci::use(state);
 	}
 
 // -----------------------------------------------------------------------------
@@ -490,12 +490,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_participant ("
-			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  event_id INT UNSIGNED NOT NULL,"
 			"  sip_address_id INT UNSIGNED NOT NULL,"
 			"  state TINYINT UNSIGNED NOT NULL,"
 
-			"  PRIMARY KEY (message_event_id, sip_address_id),"
-			"  FOREIGN KEY (message_event_id)"
+			"  PRIMARY KEY (event_id, sip_address_id),"
+			"  FOREIGN KEY (event_id)"
 			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (sip_address_id)"
@@ -506,11 +506,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_content ("
 			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  event_id INT UNSIGNED NOT NULL,"
 			"  content_type_id INT UNSIGNED NOT NULL,"
 			"  body TEXT NOT NULL,"
 
-			"  FOREIGN KEY (message_event_id)"
+			"  FOREIGN KEY (event_id)"
 			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (content_type_id)"
@@ -532,12 +532,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS message_crypto_data ("
-			"  message_event_id INT UNSIGNED NOT NULL,"
+			"  event_id INT UNSIGNED NOT NULL,"
 			"  key VARCHAR(255),"
 			"  data BLOB,"
 
-			"  PRIMARY KEY (message_event_id, key),"
-			"  FOREIGN KEY (message_event_id)"
+			"  PRIMARY KEY (event_id, key),"
+			"  FOREIGN KEY (event_id)"
 			"    REFERENCES message_event(event_id)"
 			"    ON DELETE CASCADE"
 			")";
@@ -551,16 +551,16 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		participantMessageDeleter += displayedId;
 		participantMessageDeleter += " AND (SELECT COUNT(*) FROM ("
 			"    SELECT state FROM message_participant WHERE"
-			"    NEW.message_event_id = message_participant.message_event_id"
+			"    NEW.event_id = message_participant.event_id"
 			"    AND state <> ";
 		participantMessageDeleter += displayedId;
 		participantMessageDeleter += "    LIMIT 1"
 			"  )) = 0"
 			"  BEGIN"
-			"  DELETE FROM message_participant WHERE NEW.message_event_id = message_participant.message_event_id;"
+			"  DELETE FROM message_participant WHERE NEW.event_id = message_participant.event_id;"
 			"  UPDATE message_event SET state = ";
 		participantMessageDeleter += displayedId;
-		participantMessageDeleter += " WHERE event_id = NEW.message_event_id;"
+		participantMessageDeleter += " WHERE event_id = NEW.event_id;"
 			"  END";
 
 		*session << participantMessageDeleter;
@@ -933,7 +933,7 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 
 					d->insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
 
-					long messageEventId = d->insertMessageEvent (
+					long eventId = d->insertMessageEvent (
 						references,
 						state,
 						direction,
@@ -944,7 +944,7 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 
 					if (state != static_cast<int>(ChatMessage::State::Displayed))
 						d->insertMessageParticipant(
-							messageEventId,
+							eventId,
 							references.remoteSipAddressId,
 							state
 						);
