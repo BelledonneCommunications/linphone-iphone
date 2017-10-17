@@ -236,6 +236,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 				soci::use(messageEventId), soci::use(sipAddressId), soci::use(static_cast<int>(state));
 	}
 
+	void MainDbPrivate::insertConferenceEvent (long eventId, long chatRoomId) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "INSERT INTO conference_event (event_id, chat_room_id) VALUES (:eventId, :chatRoomId)",
+			soci::use(eventId), soci::use(chatRoomId);
+	}
+
 // -----------------------------------------------------------------------------
 
 	#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1

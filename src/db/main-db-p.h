@@ -43,6 +43,10 @@ class MainDbPrivate : public AbstractDbPrivate {
 public:
 
 private:
+	// ---------------------------------------------------------------------------
+	// Low level API.
+	// ---------------------------------------------------------------------------
+
 	long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long messageEventId, const Content &content);
 	long insertContentType (const std::string &contentType);
@@ -60,6 +64,8 @@ private:
 	);
 
 	void insertMessageParticipant (long messageEventId, long sipAddressId, ChatMessage::State state);
+
+	void insertConferenceEvent (long eventId, long chatRoomId);
 
 	std::unordered_map<std::string, std::weak_ptr<ChatRoom>> chatRooms;
 
