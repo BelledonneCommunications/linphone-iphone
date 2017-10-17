@@ -387,8 +387,12 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	char* errmsg = NULL;
 	int ret;
 	char *buf;
-
-	ret = sqlite3_open(lc->friends_db_file, &db);
+	char *friends_db = bc_tester_file("friends.db");
+	
+	unlink(friends_db);
+	
+	ret = sqlite3_open(friends_db, &db);
+	bc_free(friends_db);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
@@ -455,8 +459,12 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	char *buf;
 	bctoolboxTimeSpec t1;
 	bctoolboxTimeSpec t2;
+	char *friends_db = bc_tester_file("friends.db");
+	
+	unlink(friends_db);
 
-	ret = sqlite3_open(lc->friends_db_file, &db);
+	ret = sqlite3_open(friends_db, &db);
+	bc_free(friends_db);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
