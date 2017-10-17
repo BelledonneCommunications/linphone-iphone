@@ -8,6 +8,7 @@ eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' 
 eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
 
 # Listeners
+eval "$SED_START 's/LinphoneAccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
 eval "$SED_START 's/AccountCreator.AccountCreatorListener/AccountCreatorListener/g' $SED_END"
 eval "$SED_START 's/LinphoneCoreListenerBase/CoreListenerStub/g' $SED_END"
 eval "$SED_START 's/LinphoneCoreListener/CoreListener/g' $SED_END"
@@ -231,8 +232,8 @@ eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
 eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
 eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
 eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
-eval "$SED_START 's/accountCreator.getPrefix(/org.linphone.core.Utils::getPrefixFromE164(/g' $SED_END"
-eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils::getCccFromIso(/g' $SED_END"
+eval "$SED_START 's/accountCreator.getPrefix(/org.linphone.core.Utils.getPrefixFromE164(/g' $SED_END"
+eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils.getCccFromIso(/g' $SED_END"
 eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
 eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
 
