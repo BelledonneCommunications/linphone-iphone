@@ -39,7 +39,7 @@ static LinphoneDialPlan const dial_plans[]={
 	{"Armenia"                      ,"AM"		, "374"     , 8		, "00"  },
 	{"Aruba"                        ,"AW"		, "297"     , 7		, "011"	},
 	{"Australia"                    ,"AU"		, "61"      , 9	    , "0011"},
-	{"Austria"                      ,"AT"		, "43"      , 10	, "00"  },
+	{"Austria"                      ,"AT"		, "43"      , 11	, "00"  }, /*11 digits are possible, most numbers have 10 digits*/
 	{"Azerbaijan"                   ,"AZ"       , "994"     , 9		, "00"  },
 	{"Bahamas"                      ,"BS"		, "1"       , 10    , "011"	},
 	{"Bahrain"                      ,"BH"		, "973"     , 8     , "00"  },
