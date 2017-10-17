@@ -20,6 +20,8 @@
 #ifndef _EVENT_LOG_H_
 #define _EVENT_LOG_H_
 
+#include <ctime>
+
 #include "linphone/enums/event-log-enums.h"
 #include "linphone/utils/enum-generator.h"
 
@@ -43,9 +45,10 @@ public:
 	EventLog &operator= (const EventLog &src);
 
 	Type getType () const;
+	std::time_t getTime () const;
 
 protected:
-	EventLog (EventLogPrivate &p, Type type);
+	EventLog (EventLogPrivate &p, Type type, const std::time_t &time);
 
 private:
 	L_DECLARE_PRIVATE(EventLog);

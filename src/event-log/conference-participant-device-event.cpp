@@ -35,12 +35,14 @@ public:
 
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	Type type,
+	const time_t &time,
 	const Address &conferenceAddress,
 	const Address &participantAddress,
 	const Address &gruuAddress
 ) : ConferenceParticipantEvent(
 	*new ConferenceParticipantDeviceEventPrivate,
 	type,
+	time,
 	conferenceAddress,
 	participantAddress
 ) {
@@ -55,6 +57,7 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (const ConferenceParticipantDeviceEvent &src) :
 	ConferenceParticipantDeviceEvent(
 		src.getType(),
+		src.getTime(),
 		src.getConferenceAddress(),
 		src.getParticipantAddress(),
 		src.getGruuAddress()

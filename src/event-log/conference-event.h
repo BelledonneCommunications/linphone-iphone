@@ -31,7 +31,7 @@ class ConferenceEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, const Address &conferenceAddress);
+	ConferenceEvent (Type type, const std::time_t &time, const Address &conferenceAddress);
 	ConferenceEvent (const ConferenceEvent &src);
 
 	ConferenceEvent &operator= (const ConferenceEvent &src);
@@ -39,7 +39,7 @@ public:
 	const Address &getConferenceAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &conferenceAddress);
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, const std::time_t &time, const Address &conferenceAddress);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);

@@ -29,10 +29,11 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventLogPrivate : public ClonableObjectPrivate {
 public:
-	long id = -1;
+	long storageId = -1;
 
 private:
 	EventLog::Type type = EventLog::Type::None;
+	std::time_t time = -1;
 
 	L_DECLARE_PUBLIC(EventLog);
 };

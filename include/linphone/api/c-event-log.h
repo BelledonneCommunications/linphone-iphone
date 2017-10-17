@@ -33,12 +33,17 @@ LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_clone (const LinphoneEventL
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_ref (LinphoneEventLog *event_log);
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);
 
-LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneCall *call);
+LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_new (
+	LinphoneEventLogType type,
+	time_t time,
+	LinphoneCall *call
+);
 LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_clone (const LinphoneCallEvent *call_event);
 LINPHONE_PUBLIC LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event);
 
 LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_new (
 	LinphoneEventLogType type,
+	time_t time,
 	const LinphoneAddress *address
 );
 LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_clone (const LinphoneConferenceEvent *conference_event);
@@ -46,6 +51,7 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_event_get_address (co
 
 LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
 	LinphoneEventLogType type,
+	time_t time,
 	const LinphoneAddress *conferenceAddress,
 	const LinphoneAddress *participantAddress
 );
@@ -56,7 +62,10 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get
 	const LinphoneConferenceParticipantEvent *conference_participant_event
 );
 
-LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message);
+LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_new (
+	LinphoneChatMessage *chat_message,
+	time_t time
+);
 LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_clone (
 	const LinphoneChatMessageEvent *chat_message_event
 );

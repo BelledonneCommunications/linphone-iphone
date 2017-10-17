@@ -26,21 +26,25 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, const Address &conferenceAddress) :
-	EventLog(*new ConferenceEventPrivate, type) {
+ConferenceEvent::ConferenceEvent (Type type, const time_t &time, const Address &conferenceAddress) :
+	EventLog(*new ConferenceEventPrivate, type, time) {
 	L_D();
 	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
 	d->conferenceAddress = conferenceAddress;
 }
 
 ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) :
-	ConferenceEvent(src.getType(), src.getConferenceAddress()) {}
+	ConferenceEvent(src.getType(), src.getTime(), src.getConferenceAddress()) {}
 
-ConferenceEvent::ConferenceEvent (ConferenceEventPrivate &p, Type type, const Address &conferenceAddress) :
-	EventLog(p, type) {
-		L_D();
-		d->conferenceAddress = conferenceAddress;
-	}
+ConferenceEvent::ConferenceEvent (
+	ConferenceEventPrivate &p,
+	Type type,
+	const time_t &time,
+	const Address &conferenceAddress
+) : EventLog(p, type, time) {
+	L_D();
+	d->conferenceAddress = conferenceAddress;
+}
 
 ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
 	L_D();

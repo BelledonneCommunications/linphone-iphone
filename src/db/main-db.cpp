@@ -519,19 +519,19 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			return false;
 		}
 
-		long &id = const_cast<EventLog &>(eventLog).getPrivate()->id;
-		if (id < 0)
+		long &storageId = const_cast<EventLog &>(eventLog).getPrivate()->storageId;
+		if (storageId < 0)
 			return false;
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << "DELETE FROM event WHERE id = :id", soci::use(id);
-		id = -1;
+		*session << "DELETE FROM event WHERE id = :id", soci::use(storageId);
+		storageId = -1;
 
 		L_END_LOG_EXCEPTION
 
-		return id == -1;
+		return storageId == -1;
 	}
 
 	void MainDb::cleanEvents (FilterMask mask) {

@@ -27,9 +27,10 @@ EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
 
 EventLog::EventLog (const EventLog &) : ClonableObject(*new EventLogPrivate) {}
 
-EventLog::EventLog (EventLogPrivate &p, Type type) : ClonableObject(*new EventLogPrivate) {
+EventLog::EventLog (EventLogPrivate &p, Type type, const time_t &time) : ClonableObject(*new EventLogPrivate) {
 	L_D();
 	d->type = type;
+	d->time = time;
 }
 
 EventLog &EventLog::operator= (const EventLog &src) {

@@ -62,12 +62,13 @@ LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_
 // Call event.
 // -----------------------------------------------------------------------------
 
-LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, LinphoneCall *call) {
+LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, time_t time, LinphoneCall *call) {
 	LinphoneCallEvent *call_event = _linphone_CallEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		call_event,
 		new LinphonePrivate::CallEvent(
 			static_cast<LinphonePrivate::EventLog::Type>(type),
+			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(call)
 		)
 	);
@@ -86,6 +87,7 @@ LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event)
 
 LinphoneConferenceEvent *linphone_conference_event_new (
 	LinphoneEventLogType type,
+	time_t time,
 	const LinphoneAddress *address
 ) {
 	// TODO.
@@ -103,6 +105,7 @@ const LinphoneAddress *linphone_conference_event_get_address (const LinphoneConf
 
 LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
 	LinphoneEventLogType type,
+	time_t time,
 	const LinphoneAddress *conferenceAddress,
 	const LinphoneAddress *participantAddress
 ) {
@@ -121,11 +124,12 @@ const LinphoneAddress *linphone_conference_participant_event_get_participant_add
 // Message event.
 // -----------------------------------------------------------------------------
 
-LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message) {
+LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message, time_t time) {
 	LinphoneChatMessageEvent *chat_message_event = _linphone_ChatMessageEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		chat_message_event,
 		new LinphonePrivate::ChatMessageEvent(
+			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(chat_message)
 		)
 	);

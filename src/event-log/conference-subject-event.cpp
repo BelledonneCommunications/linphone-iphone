@@ -33,14 +33,17 @@ public:
 
 // -----------------------------------------------------------------------------
 
-ConferenceSubjectEvent::ConferenceSubjectEvent (const Address &address, const string &subject) :
-	ConferenceEvent(*new ConferenceSubjectEventPrivate, Type::ConferenceSubjectChanged, address) {
+ConferenceSubjectEvent::ConferenceSubjectEvent (
+	const time_t &time,
+	const Address &address,
+	const string &subject
+) : ConferenceEvent(*new ConferenceSubjectEventPrivate, Type::ConferenceSubjectChanged, time, address) {
 	L_D();
 	d->subject = subject;
 }
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (const ConferenceSubjectEvent &src) :
-	ConferenceSubjectEvent(src.getConferenceAddress(), src.getSubject()) {}
+	ConferenceSubjectEvent(src.getTime(), src.getConferenceAddress(), src.getSubject()) {}
 
 ConferenceSubjectEvent &ConferenceSubjectEvent::operator= (const ConferenceSubjectEvent &src) {
 	L_D();

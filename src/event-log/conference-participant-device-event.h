@@ -32,6 +32,7 @@ class LINPHONE_PUBLIC ConferenceParticipantDeviceEvent : public ConferencePartic
 public:
 	ConferenceParticipantDeviceEvent (
 		Type type,
+		const std::time_t &time,
 		const Address &conferenceAddress,
 		const Address &participantAddress,
 		const Address &gruuAddress

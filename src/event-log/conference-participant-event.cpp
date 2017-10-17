@@ -29,9 +29,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
+	const time_t &time,
 	const Address &conferenceAddress,
 	const Address &participantAddress
-) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, conferenceAddress) {
+) : ConferenceEvent(*new ConferenceParticipantEventPrivate, type, time, conferenceAddress) {
 	L_D();
 	L_ASSERT(
 		type == Type::ConferenceParticipantAdded ||
@@ -42,15 +43,22 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	d->participantAddress = participantAddress;
 }
 
-ConferenceParticipantEvent::ConferenceParticipantEvent (const ConferenceParticipantEvent &src) :
-	ConferenceParticipantEvent(src.getType(), src.getConferenceAddress(), src.getParticipantAddress()) {}
+ConferenceParticipantEvent::ConferenceParticipantEvent (
+	const ConferenceParticipantEvent &src
+) : ConferenceParticipantEvent(
+	src.getType(),
+	src.getTime(),
+	src.getConferenceAddress(),
+	src.getParticipantAddress()
+) {}
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
+	const time_t &time,
 	const Address &conferenceAddress,
 	const Address &participantAddress
-) : ConferenceEvent(p, type, conferenceAddress) {
+) : ConferenceEvent(p, type, time, conferenceAddress) {
 	L_D();
 	d->participantAddress = participantAddress;
 }

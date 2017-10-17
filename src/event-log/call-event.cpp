@@ -33,14 +33,15 @@ public:
 
 // -----------------------------------------------------------------------------
 
-CallEvent::CallEvent (Type type, const shared_ptr<Call> &call) : EventLog(*new CallEventPrivate, type) {
+CallEvent::CallEvent (Type type, const time_t &time, const shared_ptr<Call> &call) :
+	EventLog(*new CallEventPrivate, type, time) {
 	L_D();
 	L_ASSERT(call);
 	L_ASSERT(type == Type::CallStart || type == Type::CallEnd);
 	d->call = call;
 }
 
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getCall()) {}
+CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getTime(), src.getCall()) {}
 
 CallEvent &CallEvent::operator= (const CallEvent &src) {
 	L_D();

@@ -33,14 +33,18 @@ public:
 
 // -----------------------------------------------------------------------------
 
-ChatMessageEvent::ChatMessageEvent (const shared_ptr<ChatMessage> &chatMessage) :
-	EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage) {
+ChatMessageEvent::ChatMessageEvent (
+	const time_t &time,
+	const shared_ptr<ChatMessage> &chatMessage
+) : EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage, time) {
 	L_D();
 	L_ASSERT(chatMessage);
 	d->chatMessage = chatMessage;
 }
 
-ChatMessageEvent::ChatMessageEvent (const ChatMessageEvent &src) : ChatMessageEvent(src.getChatMessage()) {}
+ChatMessageEvent::ChatMessageEvent (
+	const ChatMessageEvent &src
+) : ChatMessageEvent(src.getTime(), src.getChatMessage()) {}
 
 ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
 	L_D();
