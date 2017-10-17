@@ -1,5 +1,5 @@
 /*
- * conference-event.h
+ * conference-notified-event.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,34 +17,34 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CONFERENCE_EVENT_H_
-#define _CONFERENCE_EVENT_H_
+#ifndef _CONFERENCE_NOTIFIED_EVENT_H_
+#define _CONFERENCE_NOTIFIED_EVENT_H_
 
-#include "event-log.h"
+#include "conference-event.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class Address;
-class ConferenceEventPrivate;
+class ConferenceNotifiedEventPrivate;
 
-class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
+class LINPHONE_PUBLIC ConferenceNotifiedEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, std::time_t time, const Address &conferenceAddress);
-	ConferenceEvent (const ConferenceEvent &src);
+	ConferenceNotifiedEvent (Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceNotifiedEvent (const ConferenceNotifiedEvent &src);
 
-	ConferenceEvent &operator= (const ConferenceEvent &src);
+	ConferenceNotifiedEvent &operator= (const ConferenceNotifiedEvent &src);
 
 	const Address &getConferenceAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceNotifiedEvent (ConferenceNotifiedEventPrivate &p, Type type, std::time_t time, const Address &conferenceAddress);
 
 private:
-	L_DECLARE_PRIVATE(ConferenceEvent);
+	L_DECLARE_PRIVATE(ConferenceNotifiedEvent);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_EVENT_H_
+#endif // ifndef _CONFERENCE_NOTIFIED_EVENT_H_

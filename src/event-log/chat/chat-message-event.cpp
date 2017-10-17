@@ -18,7 +18,7 @@
  */
 
 #include "chat-message-event.h"
-#include "event-log-p.h"
+#include "event-log/event-log-p.h"
 
 // =============================================================================
 

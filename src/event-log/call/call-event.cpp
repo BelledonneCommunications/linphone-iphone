@@ -18,7 +18,7 @@
  */
 
 #include "call-event.h"
-#include "event-log-p.h"
+#include "event-log/event-log-p.h"
 
 // =============================================================================
 

@@ -21,6 +21,7 @@
 #define _DIAL_PLAN_H_
 
 #include <list>
+
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -34,7 +35,7 @@ public:
 	DialPlan (const std::string &country = "", const std::string &isoCountryCode = "", const std::string &ccc = "", int nnl = 0, const std::string &icp = "");
 	DialPlan (const DialPlan &src);
 	~DialPlan ();
-	
+
 	DialPlan &operator= (const DialPlan &src);
 
 	const std::string& getCountry() const;
@@ -54,7 +55,7 @@ public:
 
 private:
 	static std::list<DialPlan> const DialPlans;
-	
+
 	L_DECLARE_PRIVATE(DialPlan);
 };
 
