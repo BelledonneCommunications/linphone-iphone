@@ -191,6 +191,8 @@ class JavaTranslator(object):
                 return 'int'
             elif jni:
                 return 'jint'
+            if _type.desc.name.to_camel_case() == "XmlRpcStatus":
+                return "XmlRpcRequest.Status"
             name = _type.desc.name.to_camel_case()
             if name in ENUMS_LIST:
                 className = ENUMS_LIST[name]

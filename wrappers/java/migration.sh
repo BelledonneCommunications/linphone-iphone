@@ -308,9 +308,7 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 #Tunnel, TunnelConfig
 #LinphoneBuffer
 #AccountCreator.updatePassword => What to do ?
-# XmlRpcStatus ! must be XmlRpcRequest.Status
-# XmlRpcRequest and XmlRpcSession constructors...
-# Factory.createContent(
+# XmlRpcRequest and XmlRpcSession constructors
 # Callbacks with return like chat messages' file transfer
 
 #Android specifics not wrapped automatically
@@ -347,6 +345,7 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 #Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
 #Factory.instance().enableLogCollection(isDebugEnabled); => Core.enableLogCollection
 #Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
+#Factory.createContent( => Core.createContent(
 
 # # Core
 #Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
