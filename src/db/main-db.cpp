@@ -31,10 +31,7 @@
 #include "content/content-type.h"
 #include "content/content.h"
 #include "db/session/db-session-provider.h"
-#include "event-log/call/call-event.h"
-#include "event-log/chat/chat-message-event.h"
-#include "event-log/conference/conference-participant-device-event.h"
-#include "event-log/conference/conference-subject-event.h"
+#include "event-log/events.h"
 #include "event-log/event-log-p.h"
 #include "logger/logger.h"
 #include "main-db-p.h"
@@ -266,14 +263,25 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
+	long MainDbPrivate::insertConferenceNotifiedEvent (const EventLog &eventLog) {
 		long eventId = insertConferenceEvent(eventLog);
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
+			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(
+				static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId()
+			);
+		return eventId;
+	}
+
+	long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
+		long eventId = insertConferenceNotifiedEvent(eventLog);
 		long participantAddressId = insertSipAddress(
 			static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_participant_event (conference_event_id, participant_address_id)"
+		*session << "INSERT INTO conference_participant_event (event_id, participant_address_id)"
 			"  VALUES (:eventId, :participantAddressId)", soci::use(eventId), soci::use(participantAddressId);
 		return eventId;
 	}
@@ -285,16 +293,16 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_participant_device_event (conference_participant_event_id, gruu_address_id)"
+		*session << "INSERT INTO conference_participant_device_event (event_id, gruu_address_id)"
 			"  VALUES (:eventId, :gruuAddressId)", soci::use(eventId), soci::use(gruuAddressId);
 		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
-		long eventId = insertConferenceEvent(eventLog);
+		long eventId = insertConferenceNotifiedEvent(eventLog);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_subject_event (conference_event_id, subject)"
+		*session << "INSERT INTO conference_subject_event (event_id, subject)"
 			"  VALUES (:eventId, :subject)", soci::use(eventId), soci::use(
 				static_cast<const ConferenceSubjectEvent &>(eventLog).getSubject()
 			);
@@ -407,12 +415,22 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			")";
 
 		*session <<
+			"CREATE TABLE IF NOT EXISTS conference_notified_event ("
+			"  event_id INT UNSIGNED PRIMARY KEY,"
+			"  notify_id INT UNSIGNED NOT NULL,"
+
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES conference_event(event_id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
-			"  conference_event_id INT UNSIGNED PRIMARY KEY,"
+			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  participant_address_id INT UNSIGNED NOT NULL,"
 
-			"  FOREIGN KEY (conference_event_id)"
-			"    REFERENCES event(event_id)"
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES conference_notified_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (participant_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -421,11 +439,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
-			"  conference_participant_event_id INT UNSIGNED PRIMARY KEY,"
+			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  gruu_address_id INT UNSIGNED NOT NULL,"
 
-			"  FOREIGN KEY (conference_participant_event_id)"
-			"    REFERENCES conference_participant_event(conference_event_id)"
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES conference_participant_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (gruu_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -434,11 +452,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
-			"  conference_event_id INT UNSIGNED PRIMARY KEY,"
+			"  event_id INT UNSIGNED PRIMARY KEY,"
 			"  subject VARCHAR(255),"
 
-			"  FOREIGN KEY (conference_event_id)"
-			"    REFERENCES event(event_id)"
+			"  FOREIGN KEY (event_id)"
+			"    REFERENCES conference_notified_event(event_id)"
 			"    ON DELETE CASCADE"
 			")";
 

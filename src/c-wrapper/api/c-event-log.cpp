@@ -23,9 +23,7 @@
 #include "c-wrapper/c-wrapper.h"
 #include "call/call.h"
 #include "chat/chat-message/chat-message.h"
-#include "event-log/call/call-event.h"
-#include "event-log/chat/chat-message-event.h"
-#include "event-log/conference/conference-participant-event.h"
+#include "event-log/events.h"
 
 // =============================================================================
 
