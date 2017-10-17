@@ -26,6 +26,7 @@
 #include "conference/remote-conference-event-handler.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
+#include "event-log/events.h"
 #include "logger/logger.h"
 #include "sal/refer-op.h"
 
@@ -274,6 +275,14 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
+	ConferenceParticipantEvent event(
+		EventLog::Type::ConferenceParticipantAdded,
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		addr
+	);
+
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant));
 }
@@ -290,6 +299,13 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
+	ConferenceParticipantEvent event(
+		EventLog::Type::ConferenceParticipantRemoved,
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		addr
+	);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant));
@@ -298,6 +314,7 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) 
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) {
+	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -312,22 +329,37 @@ void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr,
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
+	ConferenceParticipantEvent event(
+		isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		addr
+	);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(participant), isAdmin);
 }
 
 void ClientGroupChatRoom::onSubjectChanged (time_t tm, const std::string &subject) {
+	L_D_T(RemoteConference, dConference);
 	RemoteConference::setSubject(subject);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
+	ConferenceSubjectEvent event(
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		subject
+	);
 
 	if (cb)
 		cb(cr, subject.c_str());
 }
 
 void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) {
+	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -338,9 +370,18 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &ad
 		return;
 	}
 	participant->getPrivate()->addDevice(gruu);
+	ConferenceParticipantDeviceEvent event(
+		EventLog::Type::ConferenceParticipantDeviceAdded,
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		addr,
+		gruu
+	);
 }
 
 void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) {
+	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -351,6 +392,14 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, const Address &
 		return;
 	}
 	participant->getPrivate()->removeDevice(gruu);
+	ConferenceParticipantDeviceEvent event(
+		EventLog::Type::ConferenceParticipantDeviceRemoved,
+		tm,
+		dConference->conferenceAddress,
+		dConference->eventHandler->getLastNotify(),
+		addr,
+		gruu
+	);
 }
 
 // -----------------------------------------------------------------------------

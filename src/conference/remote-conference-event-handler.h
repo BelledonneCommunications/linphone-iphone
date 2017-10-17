@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include "linphone/types.h"
-
 #include "object/object.h"
 #include "conference-listener.h"
 
@@ -37,10 +35,11 @@ class RemoteConferenceEventHandler : public Object {
 		~RemoteConferenceEventHandler ();
 
 		void subscribe (const Address &confAddress);
-		void notifyReceived (std::string xmlBody);
+		void notifyReceived (const std::string &xmlBody);
 		void unsubscribe ();
 
 		const Address &getConfAddress () const;
+		unsigned int getLastNotify () const;
 
 	private:
 		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);

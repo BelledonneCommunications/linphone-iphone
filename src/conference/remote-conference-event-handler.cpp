@@ -68,7 +68,7 @@ void RemoteConferenceEventHandler::unsubscribe () {
 	}
 }
 
-void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
+void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	L_D();
 	lInfo() << "NOTIFY received for conference " << d->confAddress.asString();
 	istringstream data(xmlBody);
@@ -132,5 +132,10 @@ const Address &RemoteConferenceEventHandler::getConfAddress () const {
 	L_D();
 	return d->confAddress;
 }
+
+unsigned int RemoteConferenceEventHandler::getLastNotify () const {
+	L_D();
+	return d->lastNotify;
+};
 
 LINPHONE_END_NAMESPACE

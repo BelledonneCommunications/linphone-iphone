@@ -29,11 +29,6 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
-public:
-	inline unsigned int getLastNotify () const {
-		return lastNotify;
-	};
-
 private:
 	LinphoneCore *core = nullptr;
 	ConferenceListener *listener = nullptr;
