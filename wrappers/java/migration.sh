@@ -265,6 +265,7 @@ eval "$SED_START 's/hasCrappyOpenGL(/hasCrappyOpenGl(/g' $SED_END"
 eval "$SED_START 's/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g' $SED_END"
 eval "$SED_START 's/getCountryCode()/getCountryCallingCode()/g' $SED_END"
 eval "$SED_START 's/isEchoCancellationEnabled()/echoCancellationEnabled()/g' $SED_END"
+eval "$SED_START 's/startEchoCalibration(/startEchoCancellerCalibration(/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
@@ -310,7 +311,6 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 # XmlRpcRequest and XmlRpcSession constructors
 
 #Android specifics not wrapped automatically
-#Core.startEchoCalibration
 
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them
@@ -336,6 +336,7 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 # createAddress(userName,domain,null); no longer exists
 # Buffer.setContent now takes the size as second parameter
 # ChatMessageListener onFileTransferSend now returns the Buffer instead of having it as part of his arguments
+# Core.startEchoCancellerCalibration no longer takes a parameter
 
 # # Factory
 #Factory.createLpConfigFromString => Config.newFromBuffer
