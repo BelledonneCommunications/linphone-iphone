@@ -648,7 +648,6 @@ bool_t linphone_config_get_range(const LpConfig *lpconfig, const char *section, 
 	}
 }
 
-
 int linphone_config_get_int(const LpConfig *lpconfig,const char *section, const char *key, int default_value){
 	const char *str=linphone_config_get_string(lpconfig,section,key,NULL);
 	if (str!=NULL) {
@@ -661,6 +660,16 @@ int linphone_config_get_int(const LpConfig *lpconfig,const char *section, const 
 		return ret;
 	}
 	else return default_value;
+}
+
+bool_t linphone_config_get_bool(const LpConfig *lpconfig, const char *section, const char *key, bool_t default_value) {
+	const char *str = linphone_config_get_string(lpconfig, section, key, NULL);
+	if (str != NULL) {
+		int ret = 0;
+		sscanf(str, "%i", &ret);
+		return ret != 0;
+	}
+	return default_value;
 }
 
 int64_t linphone_config_get_int64(const LpConfig *lpconfig,const char *section, const char *key, int64_t default_value){
@@ -773,6 +782,14 @@ void linphone_config_set_int(LpConfig *lpconfig,const char *section, const char 
 	char tmp[30];
 	snprintf(tmp,sizeof(tmp),"%i",value);
 	linphone_config_set_string(lpconfig,section,key,tmp);
+}
+
+void linphone_config_set_bool(LpConfig *lpconfig, const char *section, const char *key, bool_t value) {
+	if (value) {
+		linphone_config_set_int(lpconfig, section, key, 1);
+	} else {
+		linphone_config_set_int(lpconfig, section, key, 0);
+	}
 }
 
 void linphone_config_set_int_hex(LpConfig *lpconfig,const char *section, const char *key, int value){

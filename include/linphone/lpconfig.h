@@ -133,6 +133,13 @@ LINPHONE_PUBLIC bool_t linphone_config_get_range(const LinphoneConfig *lpconfig,
 LINPHONE_PUBLIC int linphone_config_get_int(const LinphoneConfig *lpconfig,const char *section, const char *key, int default_value);
 
 /**
+ * Retrieves a configuration item as a boolean, given its section, key, and default value.
+ *
+ * The default boolean value is returned if the config item isn't found.
+**/
+LINPHONE_PUBLIC bool_t linphone_config_get_bool(const LpConfig *lpconfig, const char *section, const char *key, bool_t default_value);
+
+/**
  * Retrieves a configuration item as a 64 bit integer, given its section, key, and default value.
  *
  * The default integer value is returned if the config item isn't found.
@@ -169,6 +176,11 @@ LINPHONE_PUBLIC void linphone_config_set_range(LinphoneConfig *lpconfig, const c
  * Sets an integer config item
 **/
 LINPHONE_PUBLIC void linphone_config_set_int(LinphoneConfig *lpconfig,const char *section, const char *key, int value);
+
+/**
+ * Sets a boolean config item
+**/
+LINPHONE_PUBLIC void linphone_config_set_bool(LinphoneConfig *lpconfig,const char *section, const char *key, bool_t value);
 
 /**
  * Sets an integer config item, but store it as hexadecimal

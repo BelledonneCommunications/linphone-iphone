@@ -20,10 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core;
 
 public class Utils {
-	public static int getPrefixFromE164(String e164) {
+	public static String getPrefixFromE164(String e164) {
 		DialPlan[] dialPlans = Factory.instance().getDialPlans();
 		DialPlan dialPlan = dialPlans[0];
-		return dialPlan.lookupCccFromE164(e164);
+		return String.valueOf(dialPlan.lookupCccFromE164(e164));
 	}
 
 	public static int getCccFromIso(String countryIso) {

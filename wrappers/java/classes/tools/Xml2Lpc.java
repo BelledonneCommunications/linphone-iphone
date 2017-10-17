@@ -1,6 +1,6 @@
 package org.linphone.core.tools;
 
-import org.linphone.core.LpConfig;
+import org.linphone.core.Config;
 import org.linphone.mediastream.Log;
 
 public class Xml2Lpc {
@@ -34,7 +34,7 @@ public class Xml2Lpc {
 	public native int setXsdString(String content);
 
 	public native int validate();
-	public native int convert(LpConfig config);
+	public native int convert(Config config);
 	
 	public void printLog(int level, String message) {
 		if(level > 0 && level < LogLevel.values().length) {

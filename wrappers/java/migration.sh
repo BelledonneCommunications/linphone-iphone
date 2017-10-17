@@ -6,6 +6,7 @@ SED_END='{} \;'
 # Imports
 eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' $SED_END"
 eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
+eval "$SED_START 's/import org.linphone.core.LinphoneCore.Transports;/import org.linphone.core.Transports/g' $SED_END"
 
 # Listeners
 eval "$SED_START 's/LinphoneAccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
@@ -116,6 +117,8 @@ eval "$SED_START 's/onAccountCreatorPhoneAccountRecovered/onRecoverAccount/g' $S
 eval "$SED_START 's/onAccountCreatorIsAccountLinked/onIsAccountLinked/g' $SED_END"
 eval "$SED_START 's/onAccountCreatorIsPhoneNumberUsed/onIsAliasUsed/g' $SED_END"
 eval "$SED_START 's/onAccountCreatorPasswordUpdated/onUpdateAccount/g' $SED_END"
+eval "$SED_START 's/(AccountCreator accountCreator, Status status)/(AccountCreator accountCreator, Status status, String resp)/g' $SED_END"
+eval "$SED_START 's/(AccountCreator accountCreator, AccountCreator.Status status)/(AccountCreator accountCreator, AccountCreator.Status status, String resp)/g' $SED_END"
 
 # # Chat message
 eval "$SED_START 's/onChatMessageStateChanged/onMsgStateChanged/g' $SED_END"
@@ -125,7 +128,7 @@ eval "$SED_START 's/onChatMessageFileTransferProgressChanged/onFileTransferProgr
 
 # # Core
 eval "$SED_START 's/authInfoRequested/removed/g' $SED_END" # Removed
-eval "$SED_START 's/show(Core/removed/g' $SED_END" # Removed
+eval "$SED_START 's/show(Core/removed(/g' $SED_END" # Removed
 eval "$SED_START 's/displayStatus/removed/g' $SED_END" # Removed
 eval "$SED_START 's/displayMessage/removed/g' $SED_END" # Removed
 eval "$SED_START 's/displayWarning/removed/g' $SED_END" # Removed
@@ -136,6 +139,7 @@ eval "$SED_START 's/notifyReceived(Core lc, Event/onNotifyReceived(Core lc, Even
 eval "$SED_START 's/notifyReceived/removed/g' $SED_END" # Removed
 #eval "$SED_START 's/ecCalibrationStatus//g' $SED_END"
 eval "$SED_START 's/publishStateChanged/onPublishStateChanged/g' $SED_END" # Removed
+eval "$SED_START 's/messageReceivedUnableToDecrypted/removed/g' $SED_END" # Removed
 eval "$SED_START 's/callStatsUpdated/onCallStatsUpdated/g' $SED_END"
 eval "$SED_START 's/authenticationRequested/onAuthenticationRequested/g' $SED_END"
 eval "$SED_START 's/newSubscriptionRequest/onNewSubscriptionRequested/g' $SED_END"
@@ -148,7 +152,6 @@ eval "$SED_START 's/globalState/onGlobalStateChanged/g' $SED_END"
 eval "$SED_START 's/registrationState/onRegistrationStateChanged/g' $SED_END"
 eval "$SED_START 's/configuringStatus/onConfiguringStatus/g' $SED_END"
 eval "$SED_START 's/messageReceived/onMessageReceived/g' $SED_END"
-eval "$SED_START 's/messageReceivedUnableToDecrypted//g' $SED_END"
 eval "$SED_START 's/callState/onCallStateChanged/g' $SED_END"
 eval "$SED_START 's/callEncryptionChanged/onCallEncryptionChanged/g' $SED_END"
 eval "$SED_START 's/isComposingReceived/onIsComposingReceived/g' $SED_END"
@@ -218,11 +221,13 @@ eval "$SED_START 's/lpc.getAddress()/lpc.getIdentityAddress()/g' $SED_END"
 eval "$SED_START 's/cfg.getAddress()/cfg.getIdentityAddress()/g' $SED_END"
 eval "$SED_START 's/prxCfg.getAddress()/prxCfg.getIdentityAddress()/g' $SED_END"
 eval "$SED_START 's/proxy.getAddress()/proxy.getIdentityAddress()/g' $SED_END"
+eval "$SED_START 's/getProxyConfig(n).getAddress()/getProxyConfig(n).getIdentityAddress()/g' $SED_END"
 #
 eval "$SED_START 's/getCallDuration()/getDuration()/g' $SED_END"
 eval "$SED_START 's/isVCardSupported()/vcardSupported()/g' $SED_END"
 eval "$SED_START 's/getPresenceModelForUri(/getPresenceModelForUriOrTel(/g' $SED_END"
 eval "$SED_START 's/setAvpfRRInterval(/setAvpfRrInterval(/g' $SED_END"
+eval "$SED_START 's/getAvpfRRInterval(/getAvpfRrInterval(/g' $SED_END"
 eval "$SED_START 's/getProxy()/getServerAddr()/g' $SED_END"
 eval "$SED_START 's/setProxy(/setServerAddr(/g' $SED_END"
 eval "$SED_START 's/setIdentity(/setIdentityAddress(/g' $SED_END"
@@ -257,7 +262,8 @@ eval "$SED_START 's/migrateCallLogs()/migrateLogsFromRcToDb()/g' $SED_END"
 eval "$SED_START 's/setRLSUri/setRlsUri/g' $SED_END"
 eval "$SED_START 's/hasCrappyOpenGL(/hasCrappyOpenGl(/g' $SED_END"
 eval "$SED_START 's/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g' $SED_END"
-eval "$SED_START 's//getCountryCode()/getCountryCallingCode()/g' $SED_END"
+eval "$SED_START 's/getCountryCode()/getCountryCallingCode()/g' $SED_END"
+eval "$SED_START 's/isEchoCancellationEnabled()/echoCancellationEnabled()/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
@@ -270,10 +276,10 @@ eval "$SED_START 's/getVcardToString()/getVcard().asVcard4String()/g' $SED_END"
 eval "$SED_START 's/getVideoAutoInitiatePolicy()/getVideoActivationPolicy().getAutomaticallyInitiate()/g' $SED_END"
 eval "$SED_START 's/setFamilyName(/getVcard().setFamilyName(/g' $SED_END"
 eval "$SED_START 's/setGivenName(/getVcard().setGivenName(/g' $SED_END"
-eval "$SED_START 's/setOrganization(/getVcard().setOrganization(/g' $SED_END"
+eval "$SED_START 's/\.setOrganization(/\.getVcard().setOrganization(/g' $SED_END"
 eval "$SED_START 's/getFamilyName()/getVcard().getFamilyName()/g' $SED_END"
 eval "$SED_START 's/getGivenName()/getVcard().getGivenName()/g' $SED_END"
-eval "$SED_START 's/getOrganization()/getVcard().getOrganization()/g' $SED_END"
+eval "$SED_START 's/\.getOrganization()/\.getVcard().getOrganization()/g' $SED_END"
 eval "$SED_START 's/enableAvpf(/setAvpfMode(AVPFMode.Enabled)/g' $SED_END"
 eval "$SED_START 's/transports.udp = /transports.setUdpPort(/g' $SED_END"
 eval "$SED_START 's/transports.tcp = /transports.setTcpPort(/g' $SED_END"
@@ -286,6 +292,8 @@ eval "$SED_START 's/getPrimaryContactDisplayName()/getPrimaryContactParsed().get
 eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
 eval "$SED_START 's/content.getData() == null/content.getSize() == 0/'g $SED_END"
 eval "$SED_START 's/lc.downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
+eval "$SED_START 's/LinphoneManager.getLc().downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
+eval "$SED_START 's/getLc().enableDownloadOpenH264(/OpenH264DownloadHelper.setOpenH264DownloadEnabled(/g' $SED_END"
 eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloadOpenH264(/g' $SED_END"
 eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
 eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
@@ -295,33 +303,68 @@ eval "$SED_START 's/accountCreator.getPrefix(/org.linphone.core.Utils.getPrefixF
 eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils.getCccFromIso(/g' $SED_END"
 eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
 eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
+eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 
-#Changes in library required
-#Tunnel
+#Core.setCpuCount() => Not needed anymore, can be removed
+# TODO
+#Tunnel, TunnelConfig
 #LinphoneBuffer
-#AccountCreator.updatePassword
+#AccountCreator.updatePassword => What to do ?
+# XmlRpcStatus ! must be XmlRpcRequest.Status
+# XmlRpcRequest and XmlRpcSession constructors...
+# Factory.createContent(
+# Callbacks with return like chat messages' file transfer
+# createConfigFromString / createConfig
+# 
 
 #Android specifics not wrapped automatically
 #Core.startEchoCalibration
 
-# For the payloads, get the list from the Core, call the method on the object directly and set it back if required
-#Core.enablePayloadType()
-#Core.isPayloadTypeEnabled()
-#Core.payloadTypeIsVbr()
-#Core.setPayloadTypeBitrate()
+# Manual changes required
+# Some callbacks no longer exist, their name will be "removed", remove them
+# Above sed commands will create erros in syntax you need to manually fix:
+# # !micEnabled()
+# # (getConference() != null)
+# # (AVPFMode.Enabled)
+# # (port;
+# Some methods that used to take or return String or LinphoneAddress now take the other
+# createAddress, addAddress, addFriend, acceptCall, acceptCallWithParams no longer throws a CoreException
+# AccountCreator's Status.Ok must be renamed in Status.RequestOk
+# VideoDevices were int, now are String
+# XmlRpcSessionImpl => XmlRpcSession
+# getFriendsLists() returned Friend[], now is a FriendList[]
+# No need anymore to cast to a Impl class to be able to use setUserData or getUserData
+# findFriend now takes an Address instead of a String
+# createOpenH264DownloadHelper() now takes a Context
+# Factory.createCore(this, mConfigFile, mLinphoneFactoryConfigFile, null, c) => createCore(this, mConfigFile, mLinphoneFactoryConfigFile)
+# startEchoTester and stopEchoTester now return void
+# createProxyConfig no longer takes any parameter
+# setPrimaryContact only takes one String argument
+# AdaptiveRateAlgorithm was an enum, now is nothing
+# createAddress(userName,domain,null); no longer exists
 
+# # Factory
 #Factory.createLpConfigFromString => Config.newFromBuffer
 #Factory.createLpConfig => Config.newWithFactory or Core.createConfig
-#Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
 #Factory.createAccountCreator() => Core.createAccountCreator()
 #Factory.createPresenceModel() => Core.createPresenceModel()
-#CallParams.getJitterBufferSize() => CallStatsImpl.getJitterBufferSizeMs()
+#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
+#Factory.instance().enableLogCollection(isDebugEnabled); => Core.enableLogCollection
+#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
+
+# # Core
+#Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
 #Core.getSupportedVideoSizes() => Factory.getSupportedVideoDefinitions()
 #Core.removeFriend() => FriendList.removeFriend()
 #Core.getFriendsLists() => now returns a FriendList[] instead of a Friend[]
 #Core.enableSpeaker / isSpeakerEnabled() => mAudioManager.setSpeakerphoneOn(speakerOn);
 #Core.enableVideo(true, true) => Core.enableVideoCapture(bool) & Core.enableVideoDisplay(bool)
-#Core.setCpuCount() => Not needed anymore, can be removed
-#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
-#Factory.instance().enableLogCollection(isDebugEnabled); => COre.enableLogCollection
-#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
+
+# # Other
+#CallParams.getJitterBufferSize() => CallStatsImpl.getJitterBufferSizeMs()
+
+# # Payloads
+#Core.enablePayloadType() => PayloadType.enable()
+#Core.isPayloadTypeEnabled() => PayloadType.enabled()
+#Core.payloadTypeIsVbr() => PayloadType.isVbr()
+#Core.setPayloadTypeBitrate() => PayloadType.setNormalBitrate()

@@ -1,6 +1,6 @@
 package org.linphone.core.tools;
 
-import org.linphone.core.LpConfig;
+import org.linphone.core.Config;
 import org.linphone.mediastream.Log;
 
 public class Lpc2Xml {
@@ -27,7 +27,7 @@ public class Lpc2Xml {
 		destroy();
 	}
 	
-	public native int setLpc(LpConfig lpc);
+	public native int setLpc(Config lpc);
 
 	public native int convertFile(String file);
 	public native int convertString(StringBuffer content);
