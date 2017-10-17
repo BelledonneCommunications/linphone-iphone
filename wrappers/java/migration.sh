@@ -104,19 +104,19 @@ s/onChatMessageStateChanged/onMsgStateChanged/g; \
 s/onChatMessageFileTransferProgressChanged/onFileTransferProgressIndication/g; \
 s/onChatMessageFileTransferSent/onFileTransferSend/g; \
 s/onChatMessageFileTransferReceived/onFileTransferRecv/g; \
-s/authInfoRequested/removed/g; \
-s/show(Core/removed(/g; \
-s/displayStatus/removed/g; \
-s/displayMessage/removed/g; \
-s/displayWarning/removed/g; \
-s/fileTransferProgressIndication/removed/g; \
-s/fileTransferRecv/removed/g; \
-s/fileTransferSend/removed/g; \
+s/authInfoRequested/authInfoRequested_removed/g; \
+s/show(Core/show_removed(Core/g; \
+s/displayStatus/displayStatus_removed/g; \
+s/displayMessage/displayMessage_removed/g; \
+s/displayWarning/displayWarning_removed/g; \
+s/fileTransferProgressIndication/fileTransferProgressIndication_removed/g; \
+s/fileTransferRecv/fileTransferRecv_removed/g; \
+s/fileTransferSend/fileTransferSend_removed/g; \
 s/notifyReceived(Core lc, Event/onNotifyReceived(Core lc, Event/g; \
-s/notifyReceived/removed/g; \
+s/notifyReceived/notifyReceived_removed/g; \
 s/ecCalibrationStatus/onEcCalibrationResult/g; \
 s/publishStateChanged/onPublishStateChanged/g; \
-s/messageReceivedUnableToDecrypted/removed/g; \
+s/messageReceivedUnableToDecrypted/messageReceivedUnableToDecrypted_removed/g; \
 s/callStatsUpdated/onCallStatsUpdated/g; \
 s/authenticationRequested/onAuthenticationRequested/g; \
 s/newSubscriptionRequest/onNewSubscriptionRequested/g; \
@@ -273,6 +273,11 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # TODO
 #Tunnel, TunnelConfig
 #AccountCreator.updatePassword => What to do ?
+#Core.removeFriend(friend)
+#Factory.instance().enableLogCollection(isDebugEnabled);
+#Factory.instance().setDebugMode(isDebugEnabled, context.getString(R.string.app_name));
+#setVideoDevice()
+#Factory.instance().createBuffer();
 
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them
@@ -322,6 +327,7 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 
 # # Other
 #CallParams.getJitterBufferSize() => CallStatsImpl.getJitterBufferSizeMs()
+#Core.findAuthInfo was (username, realm, domain) now is (realm, username, domain)
 
 # # Payloads
 #Core.enablePayloadType() => PayloadType.enable()
