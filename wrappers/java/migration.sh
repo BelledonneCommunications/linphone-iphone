@@ -267,8 +267,6 @@ eval "$SED_START 's/isEchoCancellationEnabled()/echoCancellationEnabled()/g' $SE
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
-eval "$SED_START 's/getBool(/getInt(/g' $SED_END"
-eval "$SED_START 's/setBool(/setInt(/g' $SED_END"
 eval "$SED_START 's/isInConference()/(getConference() != null)/g' $SED_END"
 eval "$SED_START 's/getAudioStats()/getStats(StreamType.Audio)/g' $SED_END"
 eval "$SED_START 's/getVideoStats()/getStats(StreamType.Video)/g' $SED_END"
@@ -314,8 +312,6 @@ eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
 # XmlRpcRequest and XmlRpcSession constructors...
 # Factory.createContent(
 # Callbacks with return like chat messages' file transfer
-# createConfigFromString / createConfig
-# 
 
 #Android specifics not wrapped automatically
 #Core.startEchoCalibration
