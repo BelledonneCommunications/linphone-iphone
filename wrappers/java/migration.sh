@@ -105,9 +105,67 @@ eval "$SED_START 's/LinphoneVcard/Vcard/g' $SED_END"
 eval "$SED_START 's/LinphoneXmlRpc/XmlRpc/g' $SED_END"
 
 # Callbacks
+# # Account creator
+eval "$SED_START 's/onAccountCreatorIsAccountUsed/onIsAccountExist/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorAccountCreated/onCreateAccount/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorAccountActivated/onActivateAccount/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorAccountLinkedWithPhoneNumber/onLinkAccount/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorPhoneNumberLinkActivated/onActivateAlias/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorIsAccountActivated/onIsAccountActivated/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorPhoneAccountRecovered/onRecoverAccount/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorIsAccountLinked/onIsAccountLinked/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorIsPhoneNumberUsed/onIsAliasUsed/g' $SED_END"
+eval "$SED_START 's/onAccountCreatorPasswordUpdated/onUpdateAccount/g' $SED_END"
+
+# # Chat message
 eval "$SED_START 's/onChatMessageStateChanged/onMsgStateChanged/g' $SED_END"
 eval "$SED_START 's/onChatMessageFileTransferProgressChanged/onFileTransferProgressIndication/g' $SED_END"
+#eval "$SED_START 's/onChatMessageFileTransferSent//g' $SED_END"
+#eval "$SED_START 's/onChatMessageFileTransferReceived//g' $SED_END"
+
+# # Core
+eval "$SED_START 's/authInfoRequested/removed/g' $SED_END" # Removed
+eval "$SED_START 's/show(Core/removed/g' $SED_END" # Removed
+eval "$SED_START 's/displayStatus/removed/g' $SED_END" # Removed
+eval "$SED_START 's/displayMessage/removed/g' $SED_END" # Removed
+eval "$SED_START 's/displayWarning/removed/g' $SED_END" # Removed
+eval "$SED_START 's/fileTransferProgressIndication/removed/g' $SED_END" # Removed
+eval "$SED_START 's/fileTransferRecv/removed/g' $SED_END" # Removed
+eval "$SED_START 's/fileTransferSend/removed/g' $SED_END" # Removed
+eval "$SED_START 's/notifyReceived(Core lc, Event/onNotifyReceived(Core lc, Event/g' $SED_END"
+eval "$SED_START 's/notifyReceived/removed/g' $SED_END" # Removed
+#eval "$SED_START 's/ecCalibrationStatus//g' $SED_END"
+eval "$SED_START 's/publishStateChanged/onPublishStateChanged/g' $SED_END" # Removed
+eval "$SED_START 's/callStatsUpdated/onCallStatsUpdated/g' $SED_END"
+eval "$SED_START 's/authenticationRequested/onAuthenticationRequested/g' $SED_END"
+eval "$SED_START 's/newSubscriptionRequest/onNewSubscriptionRequested/g' $SED_END"
+eval "$SED_START 's/notifyPresenceReceived/onNotifyPresenceReceived/g' $SED_END"
+eval "$SED_START 's/dtmfReceived/onDtmfReceived/g' $SED_END"
+eval "$SED_START 's/transferState/onTransferStateChanged/g' $SED_END"
+eval "$SED_START 's/infoReceived/onInfoReceived/g' $SED_END"
+eval "$SED_START 's/subscriptionStateChanged/onSubscriptionStateChanged/g' $SED_END"
+eval "$SED_START 's/globalState/onGlobalStateChanged/g' $SED_END"
 eval "$SED_START 's/registrationState/onRegistrationStateChanged/g' $SED_END"
+eval "$SED_START 's/configuringStatus/onConfiguringStatus/g' $SED_END"
+eval "$SED_START 's/messageReceived/onMessageReceived/g' $SED_END"
+eval "$SED_START 's/messageReceivedUnableToDecrypted//g' $SED_END"
+eval "$SED_START 's/callState/onCallStateChanged/g' $SED_END"
+eval "$SED_START 's/callEncryptionChanged/onCallEncryptionChanged/g' $SED_END"
+eval "$SED_START 's/isComposingReceived/onIsComposingReceived/g' $SED_END"
+eval "$SED_START 's/uploadProgressIndication/onLogCollectionUploadProgressIndication/g' $SED_END"
+eval "$SED_START 's/uploadStateChanged/onLogCollectionUploadStateChanged/g' $SED_END"
+eval "$SED_START 's/friendListCreated/onFriendListCreated/g' $SED_END"
+eval "$SED_START 's/friendListRemoved/onFriendListRemoved/g' $SED_END"
+eval "$SED_START 's/networkReachableChanged/onNetworkReachable/g' $SED_END"
+
+# # Friend list
+eval "$SED_START 's/onFriendCreated/onContactCreated/g' $SED_END"
+eval "$SED_START 's/onFriendUpdated/onContactUpdated/g' $SED_END"
+eval "$SED_START 's/onFriendDeleted/onContactDeleted/g' $SED_END"
+eval "$SED_START 's/onFriendSyncStatusChanged/onSyncStatusChanged/g' $SED_END"
+
+# # XmlRpc request
+eval "$SED_START 's/onXmlRpcRequestResponse/onResponse/g' $SED_END"
 
 # Methods
 eval "$SED_START 's/getFriendsLists()/getFriends()/g' $SED_END"
@@ -183,7 +241,7 @@ eval "$SED_START 's/clearAuthInfos()/clearAllAuthInfo()/g' $SED_END"
 eval "$SED_START 's/clearProxyConfigs()/clearProxyConfig()/g' $SED_END"
 eval "$SED_START 's/isVideoSupported()/videoSupported()/g' $SED_END"
 eval "$SED_START 's/VideoDefinition().toDisplayableString()/VideoDefinition().getName()/g' $SED_END"
-eval "$SED_START 's/isAccountUsed/isAccountExist()/g' $SED_END"
+eval "$SED_START 's/isAccountUsed()/isAccountExist()/g' $SED_END"
 eval "$SED_START 's/loadXmlFile(/loadFromXmlFile(/g' $SED_END"
 eval "$SED_START 's/activatePhoneNumberLink()/activateAlias()/g' $SED_END"
 eval "$SED_START 's/isPhoneNumberUsed()/isAliasUsed()/g' $SED_END"
@@ -199,6 +257,7 @@ eval "$SED_START 's/migrateCallLogs()/migrateLogsFromRcToDb()/g' $SED_END"
 eval "$SED_START 's/setRLSUri/setRlsUri/g' $SED_END"
 eval "$SED_START 's/hasCrappyOpenGL(/hasCrappyOpenGl(/g' $SED_END"
 eval "$SED_START 's/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g' $SED_END"
+eval "$SED_START 's//getCountryCode()/getCountryCallingCode()/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
