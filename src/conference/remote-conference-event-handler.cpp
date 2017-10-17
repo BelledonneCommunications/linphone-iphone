@@ -73,11 +73,15 @@ void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 	lInfo() << "NOTIFY received for conference " << d->confAddress.asString();
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
+	time_t tm = time(nullptr);
+	if (confInfo->getConferenceDescription()->getFreeText().present())
+		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
+
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.setPort(0);
 	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
 		if (confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
-			d->listener->onSubjectChanged(confInfo->getConferenceDescription().get().getSubject().get());
+			d->listener->onSubjectChanged(tm, confInfo->getConferenceDescription().get().getSubject().get());
 
 		if (confInfo->getVersion().present())
 			d->lastNotify = confInfo->getVersion().get();
@@ -91,7 +95,7 @@ void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 			Address addr(cAddrStr);
 			bctbx_free(cAddrStr);
 			if (user.getState() == "deleted")
-				d->listener->onParticipantRemoved(addr);
+				d->listener->onParticipantRemoved(tm, addr);
 			else {
 				bool isAdmin = false;
 				if (user.getRoles()) {
@@ -103,17 +107,17 @@ void RemoteConferenceEventHandler::notifyReceived (string xmlBody) {
 					}
 				}
 				if (user.getState() == "full")
-					d->listener->onParticipantAdded(addr);
-				d->listener->onParticipantSetAdmin(addr, isAdmin);
+					d->listener->onParticipantAdded(tm, addr);
+				d->listener->onParticipantSetAdmin(tm, addr, isAdmin);
 				for (const auto &endpoint : user.getEndpoint()) {
 					if (!endpoint.getEntity().present())
 						break;
 
 					Address gruu(endpoint.getEntity().get());
 					if (endpoint.getState() == "deleted")
-						d->listener->onParticipantDeviceRemoved(addr, gruu);
+						d->listener->onParticipantDeviceRemoved(tm, addr, gruu);
 					else if (endpoint.getState() == "full")
-						d->listener->onParticipantDeviceAdded(addr, gruu);
+						d->listener->onParticipantDeviceAdded(tm, addr, gruu);
 
 				}
 			}

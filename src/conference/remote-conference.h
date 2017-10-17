@@ -46,12 +46,12 @@ protected:
 	/* ConferenceListener */
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (const Address &addr) override;
-	void onParticipantRemoved (const Address &addr) override;
-	void onParticipantSetAdmin (const Address &addr, bool isAdmin) override;
-	void onSubjectChanged (const std::string &subject) override;
-	void onParticipantDeviceAdded (const Address &addr, const Address &gruu) override;
-	void onParticipantDeviceRemoved (const Address &addr, const Address &gruu) override;
+	void onParticipantAdded (time_t tm, const Address &addr) override;
+	void onParticipantRemoved (time_t tm, const Address &addr) override;
+	void onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) override;
+	void onSubjectChanged (time_t tm, const std::string &subject) override;
+	void onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) override;
+	void onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) override;
 
 private:
 	L_DECLARE_PRIVATE(RemoteConference);

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <ctime>
+
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
 #include "linphone/utils/utils.h"
@@ -68,6 +70,13 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo) {
 	lastNotify = lastNotify + 1;
 	confInfo.setVersion(lastNotify);
+	if (!confInfo.getConferenceDescription()) {
+		ConferenceDescriptionType description = ConferenceDescriptionType();
+		confInfo.setConferenceDescription(description);
+	}
+
+	time_t result = time(nullptr);
+	confInfo.getConferenceDescription()->setFreeText(Utils::toString(static_cast<long>(result)));
 
 	stringstream notify;
 	Xsd::XmlSchema::NamespaceInfomap map;
