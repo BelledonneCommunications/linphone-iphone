@@ -136,6 +136,8 @@ class JavaTranslator(object):
                 inttype = 'u' + inttype
             if t.isref:
                 inttype = inttype + ' *'
+            if t.isconst:
+                inttype = 'const ' + inttype
             return inttype
         elif _type == 'boolean':
             return 'bool_t'
@@ -206,6 +208,10 @@ class JavaTranslator(object):
                     return 'jstring'
                 return 'String'
             elif _type.name == 'integer':
+                if _type.size is not None and _type.isref:
+                    if jni:
+                        return 'jbyteArray'
+                    return 'byte[]'
                 if jni:
                     return 'jint'
                 return 'int'
@@ -344,9 +350,10 @@ class JavaTranslator(object):
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
         methodDict['hasListReturn'] = methodDict['return'] == 'jobjectArray'
-        methodDict['hasReturn'] = not methodDict['return'] == 'void' and not methodDict['hasListReturn']
+        methodDict['hasByteArrayReturn'] = methodDict['return'] == 'jbyteArray'
+        methodDict['hasReturn'] = not methodDict['return'] == 'void' and not methodDict['hasListReturn'] and not methodDict['hasByteArrayReturn']
         methodDict['hasStringReturn'] = methodDict['return'] == 'jstring'
-        methodDict['hasNormalReturn'] = not methodDict['hasListReturn'] and not methodDict['hasStringReturn']
+        methodDict['hasNormalReturn'] = not methodDict['hasListReturn'] and not methodDict['hasStringReturn'] and not methodDict['hasByteArrayReturn']
         methodDict['name'] = 'Java_' + self.jni_package + className.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
         methodDict['notStatic'] = not static
         methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + _method.name.to_snake_case()
@@ -354,6 +361,7 @@ class JavaTranslator(object):
         methodDict['returnClassName'] = self.translate_type(_method.returnType)
         methodDict['isRealObjectArray'] = False
         methodDict['isStringObjectArray'] = False
+        methodDict['c_type_return'] = self.translate_as_c_base_type(_method.returnType)
 
         if methodDict['hasListReturn']:
             if type(_method.returnType) is AbsApi.BaseType and _method.returnType.name == 'string_array':
@@ -731,7 +739,7 @@ class GenWrapper(object):
         project.initFromDir(xmldir)
         project.check()
 
-        self.parser = AbsApi.CParser(project, ['LinphoneBuffer'])
+        self.parser = AbsApi.CParser(project)
         self.parser.functionBl = \
             ['linphone_vcard_get_belcard',\
             'linphone_core_get_current_vtable',\

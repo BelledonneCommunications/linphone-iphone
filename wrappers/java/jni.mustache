@@ -326,7 +326,14 @@ jobject {{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thi
 		}
 		list = bctbx_list_next(list);
 	}
-	{{/hasListReturn}}{{#hasStringReturn}}
+	{{/hasListReturn}}{{#hasByteArrayReturn}}
+	{{c_type_return}} jni_result = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
+	if (!jni_result) return NULL;
+	size_t jni_result_length = strlen((const char *)jni_result);
+	jbyteArray array = env->NewByteArray((int)jni_result_length);
+	env->SetByteArrayRegion(array, 0, (int)jni_result_length, (const jbyte*)jni_result);
+	return array;
+	{{/hasByteArrayReturn}}{{#hasStringReturn}}
 	const char *c_string = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
 	jstring jni_result = (c_string != NULL) ? env->NewStringUTF(c_string) : NULL;
 	{{/hasStringReturn}}{{#hasNormalReturn}}
