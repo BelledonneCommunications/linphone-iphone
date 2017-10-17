@@ -63,13 +63,13 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
             mValue = value;
         }
 
-        static public {{className}} fromInt(int value) throws CoreException {
+        static public {{className}} fromInt(int value) throws RuntimeException {
             switch(value) {
             {{#values}}
             case {{value}}: return {{name}};
             {{/values}}
             default:
-                throw new CoreException("Unhandled enum value " + value + " for {{className}}");
+                throw new RuntimeException("Unhandled enum value " + value + " for {{className}}");
             }
         }
 

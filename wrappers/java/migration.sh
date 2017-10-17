@@ -196,6 +196,8 @@ eval "$SED_START 's/getIncomingTimeout/getIncTimeout/g' $SED_END"
 eval "$SED_START 's/setIncomingTimeout/setIncTimeout/g' $SED_END"
 eval "$SED_START 's/migrateCallLogs()/migrateLogsFromRcToDb()/g' $SED_END"
 eval "$SED_START 's/setRLSUri/setRlsUri/g' $SED_END"
+eval "$SED_START 's/hasCrappyOpenGL(/hasCrappyOpenGl(/g' $SED_END"
+eval "$SED_START 's/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g' $SED_END"
 
 # Removed methods
 eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
@@ -240,11 +242,7 @@ eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
 #AccountCreator.updatePassword
 
 #Android specifics not wrapped automatically
-#Core.needsEchoCalibration()
-#Core.hasCrappyOpenGL()
 #Core.startEchoCalibration
-#Core.startEchoTester
-#Core.stopEchoTester
 
 # For the payloads, get the list from the Core, call the method on the object directly and set it back if required
 #Core.enablePayloadType()

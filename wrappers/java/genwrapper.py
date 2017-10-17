@@ -68,7 +68,8 @@ ENUMS_LIST = {
 ##########################################################################
 
 class JavaTranslator(object):
-    def __init__(self, packageName):
+    def __init__(self, packageName, exceptions):
+        self.exceptions = exceptions
         package_dirs = packageName.split('.')
         self.jni_package = ''
         self.jni_path = ''
@@ -79,6 +80,8 @@ class JavaTranslator(object):
         self.docTranslator = metadoc.SandcastleJavaTranslator()
 
     def throws_exception(self, _type):
+        if not self.exceptions:
+            return False
         if type(_type) is AbsApi.BaseType:
             if _type.name == 'status':
                 return True
@@ -716,10 +719,11 @@ class Jni(object):
 ##########################################################################
 
 class GenWrapper(object):
-    def __init__(self, srcdir, javadir, package, xmldir):
+    def __init__(self, srcdir, javadir, package, xmldir, exceptions):
         self.srcdir = srcdir
         self.javadir = javadir
         self.package = package
+        self.exceptions = exceptions
 
         project = CApi.Project()
         project.initFromDir(xmldir)
@@ -734,7 +738,7 @@ class GenWrapper(object):
             'linphone_call_zoom_video',\
             'linphone_config_get_range']
         self.parser.parse_all()
-        self.translator = JavaTranslator(package)
+        self.translator = JavaTranslator(package, exceptions)
         self.renderer = pystache.Renderer()
         self.jni = Jni(package)
 
@@ -820,6 +824,7 @@ def main():
     argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
     argparser.add_argument('-p --package', type=str, help='the package name for the wrapper', dest='package', default='org.linphone.core')
     argparser.add_argument('-n --name', type=str, help='the name of the genarated source file', dest='name', default='linphone_jni.cc')
+    argparser.add_argument('-e --exceptions', type=bool, help='enable the wrapping of LinphoneStatus into CoreException', dest='exceptions', default=False)
     args = argparser.parse_args()
 
     srcdir = args.outputdir + '/src'
@@ -842,7 +847,7 @@ def main():
             print("Cannot create '{0}' dircetory: {1}".format(javadir, e.strerror))
             sys.exit(1)
 
-    genwrapper = GenWrapper(srcdir, javadir, args.package, args.xmldir)
+    genwrapper = GenWrapper(srcdir, javadir, args.package, args.xmldir, args.exceptions)
     genwrapper.render_all()
 
 if __name__ == '__main__':
