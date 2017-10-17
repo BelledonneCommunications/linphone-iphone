@@ -1,314 +1,273 @@
 #!/bin/sh
 
-SED_START='find ./src/android/org/linphone/ -type f -exec sed -i -e '
-SED_END='{} \;'
-
-# Imports
-eval "$SED_START 's/import org.linphone.tools/import org.linphone.core.tools/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.LinphoneCore.Transports/import org.linphone.core.Transports/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcRequest.LinphoneXmlRpcRequestListener/import org.linphone.core.XmlRpcRequestListener/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcRequestImpl/\/\/import org.linphone.core.XmlRpcRequestImpl/g' $SED_END"
-eval "$SED_START 's/import org.linphone.core.LinphoneXmlRpcSessionImpl/\/\/import org.linphone.core.XmlRpcSessionImpl/g' $SED_END"
-
-# Listeners
-eval "$SED_START 's/LinphoneAccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
-eval "$SED_START 's/AccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g' $SED_END"
-eval "$SED_START 's/LinphoneCoreListenerBase/CoreListenerStub/g' $SED_END"
-eval "$SED_START 's/LinphoneCoreListener/CoreListener/g' $SED_END"
-eval "$SED_START 's/LinphoneChatMessage.LinphoneChatMessageListener/ChatMessageListener/g' $SED_END"
-
-# Enums
-eval "$SED_START 's/Core.LinphoneLimeState/Core.LimeState/g' $SED_END"
-eval "$SED_START 's/LinphoneLimeState/LimeState/g' $SED_END"
-
-eval "$SED_START 's/GlobalState.GlobalOn/Core.GlobalState.On/g' $SED_END"
-
-eval "$SED_START 's/RegistrationState.RegistrationOk/RegistrationState.Ok/g' $SED_END"
-eval "$SED_START 's/RegistrationState.RegistrationFailed/RegistrationState.Failed/g' $SED_END"
-eval "$SED_START 's/RegistrationState.RegistrationCleared/RegistrationState.Cleared/g' $SED_END"
-eval "$SED_START 's/RegistrationState.RegistrationProgress/RegistrationState.Progress/g' $SED_END"
-eval "$SED_START 's/RegistrationState.RegistrationNone/RegistrationState.None/g' $SED_END"
-
-eval "$SED_START 's/RemoteProvisioningState.ConfiguringSuccessful/ConfiguringState.Successful/g' $SED_END"
-eval "$SED_START 's/LinphoneCore.RemoteProvisioningState/Core.ConfiguringState/g' $SED_END"
-eval "$SED_START 's/RemoteProvisioningState/ConfiguringState/g' $SED_END"
-eval "$SED_START 's/ConfiguringFailed/Failed/g' $SED_END"
-
-eval "$SED_START 's/CallDirection/Call.Dir/g' $SED_END"
-
-eval "$SED_START 's/State.CallReleased/State.Released/g' $SED_END"
-eval "$SED_START 's/State.CallEnd/State.End/g' $SED_END"
-eval "$SED_START 's/State.CallUpdatedByRemote/State.UpdatedByRemote/g' $SED_END"
-eval "$SED_START 's/State.CallIncomingEarlyMedia/State.IncomingEarlyMedia/g' $SED_END"
-eval "$SED_START 's/State.CallUpdating/State.Updating/g' $SED_END"
-
-eval "$SED_START 's/LogCollectionUploadState.LogCollectionUploadStateInProgress/LogCollectionUploadState.InProgress/g' $SED_END"
-eval "$SED_START 's/LogCollectionUploadState.LogCollectionUploadStateDelivered/LogCollectionUploadState.Delivered/g' $SED_END"
-eval "$SED_START 's/LogCollectionUploadState.LogCollectionUploadStateNotDelivered/LogCollectionUploadState.NotDelivered/g' $SED_END"
-
-eval "$SED_START 's/AccountCreator.RequestStatus/AccountCreator.Status/g' $SED_END"
-eval "$SED_START 's/RequestStatus/Status/g' $SED_END"
-eval "$SED_START 's/AccountCreator.Status.Ok/AccountCreator.Status.RequestOk/g' $SED_END"
-eval "$SED_START 's/AccountCreator.PasswordCheck/AccountCreator.PasswordStatus/g' $SED_END"
-eval "$SED_START 's/AccountCreator.PhoneNumberCheck/AccountCreator.PhoneNumberStatus/g' $SED_END"
-eval "$SED_START 's/AccountCreator.EmailCheck/AccountCreator.EmailStatus/g' $SED_END"
-eval "$SED_START 's/AccountCreator.UsernameCheck/AccountCreator.UsernameStatus/g' $SED_END"
-eval "$SED_START 's/AccountCreator.Status.Failed/AccountCreator.Status.RequestFailed/g' $SED_END"
-eval "$SED_START 's/AccountCreator.Status.ErrorServer/AccountCreator.Status.ServerError/g' $SED_END"
-eval "$SED_START 's/PhoneNumberStatus.CountryCodeInvalid/PhoneNumberStatus.InvalidCountryCode/g' $SED_END"
-
-eval "$SED_START 's/Reason.Media/Reason.NotAcceptable/g' $SED_END"
-eval "$SED_START 's/Reason.BadCredentials/Reason.Forbidden/g' $SED_END"
-
-eval "$SED_START 's/TransportType.LinphoneTransportUdp/TransportType.Udp/g' $SED_END"
-eval "$SED_START 's/TransportType.LinphoneTransportTcp/TransportType.Tcp/g' $SED_END"
-eval "$SED_START 's/TransportType.LinphoneTransportTls/TransportType.Tls/g' $SED_END"
-eval "$SED_START 's/TransportType.LinphoneTransportDtls/TransportType.Dtls/g' $SED_END"
-
-eval "$SED_START 's/AddressFamily.INET_6.getInt()/AddressFamily.Inet6.toInt()/g' $SED_END"
-eval "$SED_START 's/AddressFamily.INET.getInt()/AddressFamily.Inet.toInt()/g' $SED_END"
-
-# Classes
-eval "$SED_START 's/LpConfig/Config/g' $SED_END"
-eval "$SED_START 's/LinphoneCoreException/CoreException/g' $SED_END"
-eval "$SED_START 's/LinphoneCoreFactory/Factory/g' $SED_END"
-eval "$SED_START 's/LinphoneAccountCreator/AccountCreator/g' $SED_END"
-eval "$SED_START 's/LinphoneAddress/Address/g' $SED_END"
-eval "$SED_START 's/LinphoneAuthInfo/AuthInfo/g' $SED_END"
-eval "$SED_START 's/LinphoneBuffer/Buffer/g' $SED_END"
-eval "$SED_START 's/LinphoneCallLog/CallLog/g' $SED_END"
-eval "$SED_START 's/LinphoneCallParams/CallParams/g' $SED_END"
-eval "$SED_START 's/LinphoneCallStats/CallStats/g' $SED_END"
-eval "$SED_START 's/LinphoneCall/Call/g' $SED_END"
-eval "$SED_START 's/LinphoneChatMessage/ChatMessage/g' $SED_END"
-eval "$SED_START 's/LinphoneChatRoom/ChatRoom/g' $SED_END"
-eval "$SED_START 's/LinphoneConferenceParams/ConferenceParams/g' $SED_END"
-eval "$SED_START 's/LinphoneConference/Conference/g' $SED_END"
-eval "$SED_START 's/LinphoneConfig/Config/g' $SED_END"
-eval "$SED_START 's/LinphoneContent/Content/g' $SED_END"
-eval "$SED_START 's/LinphoneCore/Core/g' $SED_END"
-eval "$SED_START 's/LinphoneEvent/Event/g' $SED_END"
-eval "$SED_START 's/LinphoneFriendList/FriendList/g' $SED_END"
-eval "$SED_START 's/LinphoneFriend/Friend/g' $SED_END"
-eval "$SED_START 's/LinphoneHeaders/Headers/g' $SED_END"
-eval "$SED_START 's/LinphoneImNotifyPolicy/ImNotifyPolicy/g' $SED_END"
-eval "$SED_START 's/LinphoneInfoMessage/InfoMessage/g' $SED_END"
-eval "$SED_START 's/LinphoneNatPolicy/NatPolicy/g' $SED_END"
-eval "$SED_START 's/LinphonePayloadType/PayloadType/g' $SED_END"
-eval "$SED_START 's/LinphonePlayer/Player/g' $SED_END"
-eval "$SED_START 's/LinphonePresence/Presence/g' $SED_END"
-eval "$SED_START 's/LinphonePrivacy/Privacy/g' $SED_END"
-eval "$SED_START 's/LinphoneProxyConfig/ProxyConfig/g' $SED_END"
-eval "$SED_START 's/LinphonePublishState/PublishState/g' $SED_END"
-eval "$SED_START 's/LinphoneRange/Range/g' $SED_END"
-eval "$SED_START 's/LinphoneStreamType/StreamType/g' $SED_END"
-eval "$SED_START 's/LinphoneSubscription/Subscription/g' $SED_END"
-eval "$SED_START 's/LinphoneTransports/Transports/g' $SED_END"
-eval "$SED_START 's/LinphoneTunnel/Tunnel/g' $SED_END"
-eval "$SED_START 's/LinphoneVcard/Vcard/g' $SED_END"
-eval "$SED_START 's/LinphoneXmlRpc/XmlRpc/g' $SED_END"
-
-# Callbacks
-# # Account creator
-eval "$SED_START 's/onAccountCreatorIsAccountUsed/onIsAccountExist/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorAccountCreated/onCreateAccount/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorAccountActivated/onActivateAccount/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorAccountLinkedWithPhoneNumber/onLinkAccount/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorPhoneNumberLinkActivated/onActivateAlias/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorIsAccountActivated/onIsAccountActivated/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorPhoneAccountRecovered/onRecoverAccount/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorIsAccountLinked/onIsAccountLinked/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorIsPhoneNumberUsed/onIsAliasUsed/g' $SED_END"
-eval "$SED_START 's/onAccountCreatorPasswordUpdated/onUpdateAccount/g' $SED_END"
-eval "$SED_START 's/(AccountCreator accountCreator, Status status)/(AccountCreator accountCreator, Status status, String resp)/g' $SED_END"
-eval "$SED_START 's/(AccountCreator accountCreator, AccountCreator.Status status)/(AccountCreator accountCreator, AccountCreator.Status status, String resp)/g' $SED_END"
-
-# # Chat message
-eval "$SED_START 's/onChatMessageStateChanged/onMsgStateChanged/g' $SED_END"
-eval "$SED_START 's/onChatMessageFileTransferProgressChanged/onFileTransferProgressIndication/g' $SED_END"
-#eval "$SED_START 's/onChatMessageFileTransferSent//g' $SED_END"
-#eval "$SED_START 's/onChatMessageFileTransferReceived//g' $SED_END"
-
-# # Core
-eval "$SED_START 's/authInfoRequested/removed/g' $SED_END" # Removed
-eval "$SED_START 's/show(Core/removed(/g' $SED_END" # Removed
-eval "$SED_START 's/displayStatus/removed/g' $SED_END" # Removed
-eval "$SED_START 's/displayMessage/removed/g' $SED_END" # Removed
-eval "$SED_START 's/displayWarning/removed/g' $SED_END" # Removed
-eval "$SED_START 's/fileTransferProgressIndication/removed/g' $SED_END" # Removed
-eval "$SED_START 's/fileTransferRecv/removed/g' $SED_END" # Removed
-eval "$SED_START 's/fileTransferSend/removed/g' $SED_END" # Removed
-eval "$SED_START 's/notifyReceived(Core lc, Event/onNotifyReceived(Core lc, Event/g' $SED_END"
-eval "$SED_START 's/notifyReceived/removed/g' $SED_END" # Removed
-#eval "$SED_START 's/ecCalibrationStatus//g' $SED_END"
-eval "$SED_START 's/publishStateChanged/onPublishStateChanged/g' $SED_END" # Removed
-eval "$SED_START 's/messageReceivedUnableToDecrypted/removed/g' $SED_END" # Removed
-eval "$SED_START 's/callStatsUpdated/onCallStatsUpdated/g' $SED_END"
-eval "$SED_START 's/authenticationRequested/onAuthenticationRequested/g' $SED_END"
-eval "$SED_START 's/newSubscriptionRequest/onNewSubscriptionRequested/g' $SED_END"
-eval "$SED_START 's/notifyPresenceReceived/onNotifyPresenceReceived/g' $SED_END"
-eval "$SED_START 's/dtmfReceived/onDtmfReceived/g' $SED_END"
-eval "$SED_START 's/transferState/onTransferStateChanged/g' $SED_END"
-eval "$SED_START 's/infoReceived/onInfoReceived/g' $SED_END"
-eval "$SED_START 's/subscriptionStateChanged/onSubscriptionStateChanged/g' $SED_END"
-eval "$SED_START 's/globalState/onGlobalStateChanged/g' $SED_END"
-eval "$SED_START 's/registrationState/onRegistrationStateChanged/g' $SED_END"
-eval "$SED_START 's/configuringStatus/onConfiguringStatus/g' $SED_END"
-eval "$SED_START 's/messageReceived/onMessageReceived/g' $SED_END"
-eval "$SED_START 's/callState/onCallStateChanged/g' $SED_END"
-eval "$SED_START 's/callEncryptionChanged/onCallEncryptionChanged/g' $SED_END"
-eval "$SED_START 's/isComposingReceived/onIsComposingReceived/g' $SED_END"
-eval "$SED_START 's/uploadProgressIndication/onLogCollectionUploadProgressIndication/g' $SED_END"
-eval "$SED_START 's/uploadStateChanged/onLogCollectionUploadStateChanged/g' $SED_END"
-eval "$SED_START 's/friendListCreated/onFriendListCreated/g' $SED_END"
-eval "$SED_START 's/friendListRemoved/onFriendListRemoved/g' $SED_END"
-eval "$SED_START 's/networkReachableChanged/onNetworkReachable/g' $SED_END"
-
-# # Friend list
-eval "$SED_START 's/onFriendCreated/onContactCreated/g' $SED_END"
-eval "$SED_START 's/onFriendUpdated/onContactUpdated/g' $SED_END"
-eval "$SED_START 's/onFriendDeleted/onContactDeleted/g' $SED_END"
-eval "$SED_START 's/onFriendSyncStatusChanged/onSyncStatusChanged/g' $SED_END"
-
-# # XmlRpc request
-eval "$SED_START 's/onXmlRpcRequestResponse/onResponse/g' $SED_END"
-
-# Methods
-eval "$SED_START 's/getFriendsLists()/getFriends()/g' $SED_END"
-eval "$SED_START 's/getFriendLists()/getFriendsLists()/g' $SED_END"
-eval "$SED_START 's/getFriendList(/getFriendsLists(/g' $SED_END"
-eval "$SED_START 's/getIdentity(/getIdentityAddress(/g' $SED_END"
-eval "$SED_START 's/isTunnelAvailable()/tunnelAvailable()/g' $SED_END"
-eval "$SED_START 's/setZrtpSecretsCache(/setZrtpSecretsFile(/g' $SED_END"
-eval "$SED_START 's/setRootCA(/setRootCa(/g' $SED_END"
-eval "$SED_START 's/isInComingInvitePending()/isIncomingInvitePending()/g' $SED_END"
-eval "$SED_START 's/getAudioCodecs()/getAudioPayloadTypes()/g' $SED_END"
-eval "$SED_START 's/getVideoCodecs()/getVideoPayloadTypes()/g' $SED_END"
-eval "$SED_START 's/getMime()/getMimeType()/g' $SED_END"
-eval "$SED_START 's/getFrom()/getFromAddress()/g' $SED_END"
-eval "$SED_START 's/getTo()/getToAddress()/g' $SED_END"
-eval "$SED_START 's/getUserName()/getUsername()/g' $SED_END"
-eval "$SED_START 's/getLimeEncryption()/limeEnabled()/g' $SED_END"
-eval "$SED_START 's/getDirection/getDir/g' $SED_END"
-eval "$SED_START 's/.getVideoEnabled()/.videoEnabled()/g' $SED_END"
-eval "$SED_START 's/.getDataAsString()/.getStringBuffer()/g' $SED_END"
-eval "$SED_START 's/getEventName()/getName()/g' $SED_END"
-eval "$SED_START 's/setPlaybackGain(/setPlaybackGainDb(/g' $SED_END"
-eval "$SED_START 's/isIncall()/inCall()/g' $SED_END"
-eval "$SED_START 's/setVideoEnabled(/enableVideo(/g' $SED_END"
-eval "$SED_START 's/setAudioBandwidth(/setAudioBandwidthLimit(/g' $SED_END"
-eval "$SED_START 's/isAuthenticationTokenVerified()/getAuthenticationTokenVerified()/g' $SED_END"
-eval "$SED_START 's/isMicMuted()/!micEnabled()/g' $SED_END"
-eval "$SED_START 's/isLowBandwidthEnabled()/lowBandwidthEnabled()/g' $SED_END"
-eval "$SED_START 's/muteMic(/enableMic(!/g' $SED_END"
-eval "$SED_START 's/getRate()/getClockRate()/g' $SED_END"
-eval "$SED_START 's/getSentVideoSize()/getSentVideoDefinition()/g' $SED_END"
-eval "$SED_START 's/getReceivedVideoSize()/getReceivedVideoDefinition()/g' $SED_END"
-eval "$SED_START 's/getUsedAudioCodec()/getUsedAudioPayloadType()/g' $SED_END"
-eval "$SED_START 's/getUsedVideoCodec()/getUsedVideoPayloadType()/g' $SED_END"
-eval "$SED_START 's/setVideoWindow(/setNativeVideoWindowId(/g' $SED_END"
-eval "$SED_START 's/setPreviewWindow(/setNativePreviewWindowId(/g' $SED_END"
-eval "$SED_START 's/islimeAvailable()/limeAvailable()/g' $SED_END"
-eval "$SED_START 's/createChatMessage(/createMessage(/g' $SED_END"
-#For messages only
-eval "$SED_START 's/message.getStatus()/message.getState()/g' $SED_END"
-#
-eval "$SED_START 's/reSend()/resend()/g' $SED_END"
-eval "$SED_START 's/setAppData(/setAppdata(/g' $SED_END"
-eval "$SED_START 's/getAppData()/getAppdata()/g' $SED_END"
-eval "$SED_START 's/getOrCreateChatRoom(/getChatRoomFromUri(/g' $SED_END"
-eval "$SED_START 's/findFriendByAddress(/findFriend(/g' $SED_END"
-eval "$SED_START 's/getTimestamp()/getStartDate()/g' $SED_END"
-#For ProxyConfigs only 
-eval "$SED_START 's/lpc.getAddress()/lpc.getIdentityAddress()/g' $SED_END"
-eval "$SED_START 's/cfg.getAddress()/cfg.getIdentityAddress()/g' $SED_END"
-eval "$SED_START 's/prxCfg.getAddress()/prxCfg.getIdentityAddress()/g' $SED_END"
-eval "$SED_START 's/proxy.getAddress()/proxy.getIdentityAddress()/g' $SED_END"
-eval "$SED_START 's/getProxyConfig(n).getAddress()/getProxyConfig(n).getIdentityAddress()/g' $SED_END"
-#
-eval "$SED_START 's/getCallDuration()/getDuration()/g' $SED_END"
-eval "$SED_START 's/isVCardSupported()/vcardSupported()/g' $SED_END"
-eval "$SED_START 's/getPresenceModelForUri(/getPresenceModelForUriOrTel(/g' $SED_END"
-eval "$SED_START 's/setAvpfRRInterval(/setAvpfRrInterval(/g' $SED_END"
-eval "$SED_START 's/getAvpfRRInterval(/getAvpfRrInterval(/g' $SED_END"
-eval "$SED_START 's/getProxy()/getServerAddr()/g' $SED_END"
-eval "$SED_START 's/setProxy(/setServerAddr(/g' $SED_END"
-eval "$SED_START 's/setIdentity(/setIdentityAddress(/g' $SED_END"
-eval "$SED_START 's/setUserId(/setUserid(/g' $SED_END"
-eval "$SED_START 's/getUserId(/getUserid(/g' $SED_END"
-eval "$SED_START 's/getAuthInfosList(/getAuthInfoList(/g' $SED_END"
-eval "$SED_START 's/getSignalingTransportPorts()/getTransports()/g' $SED_END"
-eval "$SED_START 's/setSignalingTransportPorts(/setTransports(/g' $SED_END"
-eval "$SED_START 's/isIpv6Enabled()/ipv6Enabled()/g' $SED_END"
-eval "$SED_START 's/isAdaptiveRateControlEnabled()/adaptiveRateControlEnabled()/g' $SED_END"
-eval "$SED_START 's/setLimeEncryption(/enableLime(/g' $SED_END"
-#For enums only
-eval "$SED_START 's/.value()/.toInt()/g' $SED_END"
-#
-eval "$SED_START 's/clearAuthInfos()/clearAllAuthInfo()/g' $SED_END"
-eval "$SED_START 's/clearProxyConfigs()/clearProxyConfig()/g' $SED_END"
-eval "$SED_START 's/isVideoSupported()/videoSupported()/g' $SED_END"
-eval "$SED_START 's/VideoDefinition().toDisplayableString()/VideoDefinition().getName()/g' $SED_END"
-eval "$SED_START 's/isAccountUsed()/isAccountExist()/g' $SED_END"
-eval "$SED_START 's/loadXmlFile(/loadFromXmlFile(/g' $SED_END"
-eval "$SED_START 's/activatePhoneNumberLink()/activateAlias()/g' $SED_END"
-eval "$SED_START 's/isPhoneNumberUsed()/isAliasUsed()/g' $SED_END"
-eval "$SED_START 's/recoverPhoneAccount()/recoverAccount()/g' $SED_END"
-eval "$SED_START 's/isLimeEncryptionAvailable()/limeAvailable()/g' $SED_END"
-eval "$SED_START 's/getUseRfc2833ForDtmfs/getUseRfc2833ForDtmf/g' $SED_END"
-eval "$SED_START 's/setUseRfc2833ForDtmfs/setUseRfc2833ForDtmf/g' $SED_END"
-eval "$SED_START 's/getUseSipInfoForDtmfs/getUseInfoForDtmf/g' $SED_END"
-eval "$SED_START 's/setUseSipInfoForDtmfs/setUseInfoForDtmf/g' $SED_END"
-eval "$SED_START 's/getIncomingTimeout/getIncTimeout/g' $SED_END"
-eval "$SED_START 's/setIncomingTimeout/setIncTimeout/g' $SED_END"
-eval "$SED_START 's/migrateCallLogs()/migrateLogsFromRcToDb()/g' $SED_END"
-eval "$SED_START 's/setRLSUri/setRlsUri/g' $SED_END"
-eval "$SED_START 's/hasCrappyOpenGL(/hasCrappyOpenGl(/g' $SED_END"
-eval "$SED_START 's/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g' $SED_END"
-eval "$SED_START 's/getCountryCode()/getCountryCallingCode()/g' $SED_END"
-eval "$SED_START 's/isEchoCancellationEnabled()/echoCancellationEnabled()/g' $SED_END"
-eval "$SED_START 's/startEchoCalibration(/startEchoCancellerCalibration(/g' $SED_END"
-
-# Removed methods
-eval "$SED_START 's/.isRegistered()/.getState() == RegistrationState.Ok/g' $SED_END"
-eval "$SED_START 's/isInConference()/(getConference() != null)/g' $SED_END"
-eval "$SED_START 's/getAudioStats()/getStats(StreamType.Audio)/g' $SED_END"
-eval "$SED_START 's/getVideoStats()/getStats(StreamType.Video)/g' $SED_END"
-eval "$SED_START 's/getVcardToString()/getVcard().asVcard4String()/g' $SED_END"
-eval "$SED_START 's/getVideoAutoInitiatePolicy()/getVideoActivationPolicy().getAutomaticallyInitiate()/g' $SED_END"
-eval "$SED_START 's/setFamilyName(/getVcard().setFamilyName(/g' $SED_END"
-eval "$SED_START 's/setGivenName(/getVcard().setGivenName(/g' $SED_END"
-eval "$SED_START 's/\.setOrganization(/\.getVcard().setOrganization(/g' $SED_END"
-eval "$SED_START 's/getFamilyName()/getVcard().getFamilyName()/g' $SED_END"
-eval "$SED_START 's/getGivenName()/getVcard().getGivenName()/g' $SED_END"
-eval "$SED_START 's/\.getOrganization()/\.getVcard().getOrganization()/g' $SED_END"
-eval "$SED_START 's/enableAvpf(/setAvpfMode(AVPFMode.Enabled)/g' $SED_END"
-eval "$SED_START 's/transports.udp = /transports.setUdpPort(/g' $SED_END"
-eval "$SED_START 's/transports.tcp = /transports.setTcpPort(/g' $SED_END"
-eval "$SED_START 's/transports.tls = /transports.setTlsPort(/g' $SED_END"
-eval "$SED_START 's/transports.udp/transports.getUdpPort()/g' $SED_END"
-eval "$SED_START 's/transports.tcp/transports.getTcpPort()/g' $SED_END"
-eval "$SED_START 's/transports.tls/transports.getTlsPort()/g' $SED_END"
-eval "$SED_START 's/getPrimaryContactUsername()/getPrimaryContactParsed().getUsername()/g' $SED_END"
-eval "$SED_START 's/getPrimaryContactDisplayName()/getPrimaryContactParsed().getDisplayName()/g' $SED_END"
-eval "$SED_START 's/.sendDtmf(/.getCurrentCall().sendDtmf(/g' $SED_END"
-eval "$SED_START 's/content.getData() == null/content.getSize() == 0/'g $SED_END"
-eval "$SED_START 's/lc.downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
-eval "$SED_START 's/LinphoneManager.getLc().downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g' $SED_END"
-eval "$SED_START 's/getLc().enableDownloadOpenH264(/OpenH264DownloadHelper.setOpenH264DownloadEnabled(/g' $SED_END"
-eval "$SED_START 's/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloadOpenH264(/g' $SED_END"
-eval "$SED_START 's/mLc.destroy()/mLc = null/g' $SED_END"
-eval "$SED_START 's/getAllDialPlan()/getDialPlans()/g' $SED_END"
-eval "$SED_START 's/getCountryName()/getCountry()/g' $SED_END"
-eval "$SED_START 's/getMSFactory()/getMediastreamerFactory()/g' $SED_END"
-eval "$SED_START 's/accountCreator.getPrefix(/org.linphone.core.Utils.getPrefixFromE164(/g' $SED_END"
-eval "$SED_START 's/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils.getCccFromIso(/g' $SED_END"
-eval "$SED_START 's/linkPhoneNumberWithAccount()/linkAccount()/g' $SED_END"
-eval "$SED_START 's/zoomVideo(/zoom(/g' $SED_END"
-eval "$SED_START 's/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g' $SED_END"
-eval "$SED_START 's/new XmlRpcRequestImpl(/xmlRpcSession.createRequest(/g' $SED_END"
-eval "$SED_START 's/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g' $SED_END"
+find ./src/android/org/linphone/ -type f -exec sed -i -e "s/import org.linphone.tools/import org.linphone.core.tools/g; \
+s/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g; \
+s/import org.linphone.core.LinphoneCore.Transports/import org.linphone.core.Transports/g; \
+s/import org.linphone.core.LinphoneXmlRpcRequest.LinphoneXmlRpcRequestListener/import org.linphone.core.XmlRpcRequestListener/g; \
+s/import org.linphone.core.LinphoneXmlRpcRequestImpl/\/\/import org.linphone.core.XmlRpcRequestImpl/g; \
+s/import org.linphone.core.LinphoneXmlRpcSessionImpl/\/\/import org.linphone.core.XmlRpcSessionImpl/g; \
+s/LinphoneAccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g; \
+s/AccountCreator.LinphoneAccountCreatorListener/AccountCreatorListener/g; \
+s/LinphoneCoreListenerBase/CoreListenerStub/g; \
+s/LinphoneCoreListener/CoreListener/g; \
+s/LinphoneChatMessage.LinphoneChatMessageListener/ChatMessageListener/g; \
+s/Core.LinphoneLimeState/Core.LimeState/g; \
+s/LinphoneLimeState/LimeState/g; \
+s/GlobalState.GlobalOn/Core.GlobalState.On/g; \
+s/RegistrationState.RegistrationOk/RegistrationState.Ok/g; \
+s/RegistrationState.RegistrationFailed/RegistrationState.Failed/g; \
+s/RegistrationState.RegistrationCleared/RegistrationState.Cleared/g; \
+s/RegistrationState.RegistrationProgress/RegistrationState.Progress/g; \
+s/RegistrationState.RegistrationNone/RegistrationState.None/g; \
+s/RemoteProvisioningState.ConfiguringSuccessful/ConfiguringState.Successful/g; \
+s/LinphoneCore.RemoteProvisioningState/Core.ConfiguringState/g; \
+s/RemoteProvisioningState/ConfiguringState/g; \
+s/ConfiguringFailed/Failed/g; \
+s/CallDirection/Call.Dir/g; \
+s/State.CallReleased/State.Released/g; \
+s/State.CallEnd/State.End/g; \
+s/State.CallUpdatedByRemote/State.UpdatedByRemote/g; \
+s/State.CallIncomingEarlyMedia/State.IncomingEarlyMedia/g; \
+s/State.CallUpdating/State.Updating/g; \
+s/LogCollectionUploadState.LogCollectionUploadStateInProgress/LogCollectionUploadState.InProgress/g; \
+s/LogCollectionUploadState.LogCollectionUploadStateDelivered/LogCollectionUploadState.Delivered/g; \
+s/LogCollectionUploadState.LogCollectionUploadStateNotDelivered/LogCollectionUploadState.NotDelivered/g; \
+s/AccountCreator.RequestStatus/AccountCreator.Status/g; \
+s/RequestStatus/Status/g; \
+s/AccountCreator.Status.Ok/AccountCreator.Status.RequestOk/g; \
+s/AccountCreator.PasswordCheck/AccountCreator.PasswordStatus/g; \
+s/AccountCreator.PhoneNumberCheck/AccountCreator.PhoneNumberStatus/g; \
+s/AccountCreator.EmailCheck/AccountCreator.EmailStatus/g; \
+s/AccountCreator.UsernameCheck/AccountCreator.UsernameStatus/g; \
+s/AccountCreator.Status.Failed/AccountCreator.Status.RequestFailed/g; \
+s/AccountCreator.Status.ErrorServer/AccountCreator.Status.ServerError/g; \
+s/PhoneNumberStatus.CountryCodeInvalid/PhoneNumberStatus.InvalidCountryCode/g; \
+s/Reason.Media/Reason.NotAcceptable/g; \
+s/Reason.BadCredentials/Reason.Forbidden/g; \
+s/TransportType.LinphoneTransportUdp/TransportType.Udp/g; \
+s/TransportType.LinphoneTransportTcp/TransportType.Tcp/g; \
+s/TransportType.LinphoneTransportTls/TransportType.Tls/g; \
+s/TransportType.LinphoneTransportDtls/TransportType.Dtls/g; \
+s/AddressFamily.INET_6.getInt()/AddressFamily.Inet6.toInt()/g; \
+s/AddressFamily.INET.getInt()/AddressFamily.Inet.toInt()/g; \
+s/LpConfig/Config/g; \
+s/LinphoneCoreException/CoreException/g; \
+s/LinphoneCoreFactory/Factory/g; \
+s/LinphoneAccountCreator/AccountCreator/g; \
+s/LinphoneAddress/Address/g; \
+s/LinphoneAuthInfo/AuthInfo/g; \
+s/LinphoneBuffer/Buffer/g; \
+s/LinphoneCallLog/CallLog/g; \
+s/LinphoneCallParams/CallParams/g; \
+s/LinphoneCallStats/CallStats/g; \
+s/LinphoneCall/Call/g; \
+s/LinphoneChatMessage/ChatMessage/g; \
+s/LinphoneChatRoom/ChatRoom/g; \
+s/LinphoneConferenceParams/ConferenceParams/g; \
+s/LinphoneConference/Conference/g; \
+s/LinphoneConfig/Config/g; \
+s/LinphoneContent/Content/g; \
+s/LinphoneCore/Core/g; \
+s/LinphoneEvent/Event/g; \
+s/LinphoneFriendList/FriendList/g; \
+s/LinphoneFriend/Friend/g; \
+s/LinphoneHeaders/Headers/g; \
+s/LinphoneImNotifyPolicy/ImNotifyPolicy/g; \
+s/LinphoneInfoMessage/InfoMessage/g; \
+s/LinphoneNatPolicy/NatPolicy/g; \
+s/LinphonePayloadType/PayloadType/g; \
+s/LinphonePlayer/Player/g; \
+s/LinphonePresence/Presence/g; \
+s/LinphonePrivacy/Privacy/g; \
+s/LinphoneProxyConfig/ProxyConfig/g; \
+s/LinphonePublishState/PublishState/g; \
+s/LinphoneRange/Range/g; \
+s/LinphoneStreamType/StreamType/g; \
+s/LinphoneSubscription/Subscription/g; \
+s/LinphoneTransports/Transports/g; \
+s/LinphoneTunnel/Tunnel/g; \
+s/LinphoneVcard/Vcard/g; \
+s/LinphoneXmlRpc/XmlRpc/g; \
+s/onAccountCreatorIsAccountUsed/onIsAccountExist/g; \
+s/onAccountCreatorAccountCreated/onCreateAccount/g; \
+s/onAccountCreatorAccountActivated/onActivateAccount/g; \
+s/onAccountCreatorAccountLinkedWithPhoneNumber/onLinkAccount/g; \
+s/onAccountCreatorPhoneNumberLinkActivated/onActivateAlias/g; \
+s/onAccountCreatorIsAccountActivated/onIsAccountActivated/g; \
+s/onAccountCreatorPhoneAccountRecovered/onRecoverAccount/g; \
+s/onAccountCreatorIsAccountLinked/onIsAccountLinked/g; \
+s/onAccountCreatorIsPhoneNumberUsed/onIsAliasUsed/g; \
+s/onAccountCreatorPasswordUpdated/onUpdateAccount/g; \
+s/(AccountCreator accountCreator, Status status)/(AccountCreator accountCreator, Status status, String resp)/g; \
+s/(AccountCreator accountCreator, AccountCreator.Status status)/(AccountCreator accountCreator, AccountCreator.Status status, String resp)/g; \
+s/onChatMessageStateChanged/onMsgStateChanged/g; \
+s/onChatMessageFileTransferProgressChanged/onFileTransferProgressIndication/g; \
+s/onChatMessageFileTransferSent/onFileTransferSend/g; \
+s/onChatMessageFileTransferReceived/onFileTransferRecv/g; \
+s/authInfoRequested/removed/g; \
+s/show(Core/removed(/g; \
+s/displayStatus/removed/g; \
+s/displayMessage/removed/g; \
+s/displayWarning/removed/g; \
+s/fileTransferProgressIndication/removed/g; \
+s/fileTransferRecv/removed/g; \
+s/fileTransferSend/removed/g; \
+s/notifyReceived(Core lc, Event/onNotifyReceived(Core lc, Event/g; \
+s/notifyReceived/removed/g; \
+s/ecCalibrationStatus/onEcCalibrationResult/g; \
+s/publishStateChanged/onPublishStateChanged/g; \
+s/messageReceivedUnableToDecrypted/removed/g; \
+s/callStatsUpdated/onCallStatsUpdated/g; \
+s/authenticationRequested/onAuthenticationRequested/g; \
+s/newSubscriptionRequest/onNewSubscriptionRequested/g; \
+s/notifyPresenceReceived/onNotifyPresenceReceived/g; \
+s/dtmfReceived/onDtmfReceived/g; \
+s/transferState/onTransferStateChanged/g; \
+s/infoReceived/onInfoReceived/g; \
+s/subscriptionStateChanged/onSubscriptionStateChanged/g; \
+s/globalState/onGlobalStateChanged/g; \
+s/registrationState/onRegistrationStateChanged/g; \
+s/configuringStatus/onConfiguringStatus/g; \
+s/messageReceived/onMessageReceived/g; \
+s/callState/onCallStateChanged/g; \
+s/callEncryptionChanged/onCallEncryptionChanged/g; \
+s/isComposingReceived/onIsComposingReceived/g; \
+s/uploadProgressIndication/onLogCollectionUploadProgressIndication/g; \
+s/uploadStateChanged/onLogCollectionUploadStateChanged/g; \
+s/friendListCreated/onFriendListCreated/g; \
+s/friendListRemoved/onFriendListRemoved/g; \
+s/networkReachableChanged/onNetworkReachable/g; \
+s/onFriendCreated/onContactCreated/g; \
+s/onFriendUpdated/onContactUpdated/g; \
+s/onFriendDeleted/onContactDeleted/g; \
+s/onFriendSyncStatusChanged/onSyncStatusChanged/g; \
+s/onXmlRpcRequestResponse/onResponse/g; \
+s/getFriendsLists()/getFriends()/g; \
+s/getFriendLists()/getFriendsLists()/g; \
+s/getFriendList(/getFriendsLists(/g; \
+s/getIdentity(/getIdentityAddress(/g; \
+s/isTunnelAvailable()/tunnelAvailable()/g; \
+s/setZrtpSecretsCache(/setZrtpSecretsFile(/g; \
+s/setRootCA(/setRootCa(/g; \
+s/isInComingInvitePending()/isIncomingInvitePending()/g; \
+s/getAudioCodecs()/getAudioPayloadTypes()/g; \
+s/getVideoCodecs()/getVideoPayloadTypes()/g; \
+s/getMime()/getMimeType()/g; \
+s/getFrom()/getFromAddress()/g; \
+s/getTo()/getToAddress()/g; \
+s/getUserName()/getUsername()/g; \
+s/getLimeEncryption()/limeEnabled()/g; \
+s/getDirection/getDir/g; \
+s/.getVideoEnabled()/.videoEnabled()/g; \
+s/.getDataAsString()/.getStringBuffer()/g; \
+s/getEventName()/getName()/g; \
+s/setPlaybackGain(/setPlaybackGainDb(/g; \
+s/isIncall()/inCall()/g; \
+s/setVideoEnabled(/enableVideo(/g; \
+s/setAudioBandwidth(/setAudioBandwidthLimit(/g; \
+s/isAuthenticationTokenVerified()/getAuthenticationTokenVerified()/g; \
+s/isMicMuted()/!micEnabled()/g; \
+s/isLowBandwidthEnabled()/lowBandwidthEnabled()/g; \
+s/muteMic(/enableMic(!/g; \
+s/getRate()/getClockRate()/g; \
+s/getSentVideoSize()/getSentVideoDefinition()/g; \
+s/getReceivedVideoSize()/getReceivedVideoDefinition()/g; \
+s/getUsedAudioCodec()/getUsedAudioPayloadType()/g; \
+s/getUsedVideoCodec()/getUsedVideoPayloadType()/g; \
+s/setVideoWindow(/setNativeVideoWindowId(/g; \
+s/setPreviewWindow(/setNativePreviewWindowId(/g; \
+s/islimeAvailable()/limeAvailable()/g; \
+s/createChatMessage(/createMessage(/g; \
+s/message.getStatus()/message.getState()/g; \
+s/reSend()/resend()/g; \
+s/setAppData(/setAppdata(/g; \
+s/getAppData()/getAppdata()/g; \
+s/getOrCreateChatRoom(/getChatRoomFromUri(/g; \
+s/findFriendByAddress(/findFriend(/g; \
+s/getTimestamp()/getStartDate()/g; \
+s/lpc.getAddress()/lpc.getIdentityAddress()/g; \
+s/cfg.getAddress()/cfg.getIdentityAddress()/g; \
+s/prxCfg.getAddress()/prxCfg.getIdentityAddress()/g; \
+s/proxy.getAddress()/proxy.getIdentityAddress()/g; \
+s/getProxyConfig(n).getAddress()/getProxyConfig(n).getIdentityAddress()/g; \
+s/getCallDuration()/getDuration()/g; \
+s/isVCardSupported()/vcardSupported()/g; \
+s/getPresenceModelForUri(/getPresenceModelForUriOrTel(/g; \
+s/setAvpfRRInterval(/setAvpfRrInterval(/g; \
+s/getAvpfRRInterval(/getAvpfRrInterval(/g; \
+s/getProxy()/getServerAddr()/g; \
+s/setProxy(/setServerAddr(/g; \
+s/setIdentity(/setIdentityAddress(/g; \
+s/setUserId(/setUserid(/g; \
+s/getUserId(/getUserid(/g; \
+s/getAuthInfosList(/getAuthInfoList(/g; \
+s/getSignalingTransportPorts()/getTransports()/g; \
+s/setSignalingTransportPorts(/setTransports(/g; \
+s/isIpv6Enabled()/ipv6Enabled()/g; \
+s/isAdaptiveRateControlEnabled()/adaptiveRateControlEnabled()/g; \
+s/setLimeEncryption(/enableLime(/g; \
+s/.value()/.toInt()/g; \
+s/clearAuthInfos()/clearAllAuthInfo()/g; \
+s/clearProxyConfigs()/clearProxyConfig()/g; \
+s/isVideoSupported()/videoSupported()/g; \
+s/VideoDefinition().toDisplayableString()/VideoDefinition().getName()/g; \
+s/isAccountUsed()/isAccountExist()/g; \
+s/loadXmlFile(/loadFromXmlFile(/g; \
+s/activatePhoneNumberLink()/activateAlias()/g; \
+s/isPhoneNumberUsed()/isAliasUsed()/g; \
+s/recoverPhoneAccount()/recoverAccount()/g; \
+s/isLimeEncryptionAvailable()/limeAvailable()/g; \
+s/getUseRfc2833ForDtmfs/getUseRfc2833ForDtmf/g; \
+s/setUseRfc2833ForDtmfs/setUseRfc2833ForDtmf/g; \
+s/getUseSipInfoForDtmfs/getUseInfoForDtmf/g; \
+s/setUseSipInfoForDtmfs/setUseInfoForDtmf/g; \
+s/getIncomingTimeout/getIncTimeout/g; \
+s/setIncomingTimeout/setIncTimeout/g; \
+s/migrateCallLogs()/migrateLogsFromRcToDb()/g; \
+s/setRLSUri/setRlsUri/g; \
+s/hasCrappyOpenGL(/hasCrappyOpenGl(/g; \
+s/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g; \
+s/getCountryCode()/getCountryCallingCode()/g; \
+s/isEchoCancellationEnabled()/echoCancellationEnabled()/g; \
+s/startEchoCalibration(/startEchoCancellerCalibration(/g; \
+s/.isRegistered()/.getState() == RegistrationState.Ok/g; \
+s/isInConference()/(getConference() != null)/g; \
+s/getAudioStats()/getStats(StreamType.Audio)/g; \
+s/getVideoStats()/getStats(StreamType.Video)/g; \
+s/getVcardToString()/getVcard().asVcard4String()/g; \
+s/getVideoAutoInitiatePolicy()/getVideoActivationPolicy().getAutomaticallyInitiate()/g; \
+s/setFamilyName(/getVcard().setFamilyName(/g; \
+s/setGivenName(/getVcard().setGivenName(/g; \
+s/\.setOrganization(/\.getVcard().setOrganization(/g; \
+s/getFamilyName()/getVcard().getFamilyName()/g; \
+s/getGivenName()/getVcard().getGivenName()/g; \
+s/\.getOrganization()/\.getVcard().getOrganization()/g; \
+s/enableAvpf(/setAvpfMode(AVPFMode.Enabled)/g; \
+s/transports.udp = /transports.setUdpPort(/g; \
+s/transports.tcp = /transports.setTcpPort(/g; \
+s/transports.tls = /transports.setTlsPort(/g; \
+s/transports.udp/transports.getUdpPort()/g; \
+s/transports.tcp/transports.getTcpPort()/g; \
+s/transports.tls/transports.getTlsPort()/g; \
+s/getPrimaryContactUsername()/getPrimaryContactParsed().getUsername()/g; \
+s/getPrimaryContactDisplayName()/getPrimaryContactParsed().getDisplayName()/g; \
+s/.sendDtmf(/.getCurrentCall().sendDtmf(/g; \
+s/content.getData() == null/content.getSize() == 0/g; \
+s/lc.downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g; \
+s/LinphoneManager.getLc().downloadOpenH264Enabled()/OpenH264DownloadHelper.isOpenH264DownloadEnabled()/g; \
+s/getLc().enableDownloadOpenH264(/OpenH264DownloadHelper.setOpenH264DownloadEnabled(/g; \
+s/enableDownloadOpenH264(/OpenH264DownloadHelper.enableDownloadOpenH264(/g; \
+s/mLc.destroy()/mLc = null/g; \
+s/getAllDialPlan()/getDialPlans()/g; \
+s/getCountryName()/getCountry()/g; \
+s/getMSFactory()/getMediastreamerFactory()/g; \
+s/accountCreator.getPrefix(/org.linphone.core.Utils.getPrefixFromE164(/g; \
+s/proxyConfig.lookupCCCFromIso(/org.linphone.core.Utils.getCccFromIso(/g; \
+s/linkPhoneNumberWithAccount()/linkAccount()/g; \
+s/zoomVideo(/zoom(/g; \
+s/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g; \
+s/new XmlRpcRequestImpl(/xmlRpcSession.createRequest(/g; \
+s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g" {} \;
 
 # TODO
 #Tunnel, TunnelConfig
