@@ -29,12 +29,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 {{/includes}}
 #include "object.hh"
 
-{{#_class}}{{#isVcard}}
-#include <belcard/belcard.hpp>
-{{/isVcard}}{{/_class}}
 {{#_class}}{{#isfactory}}
 #include "config.hh"
 {{/isfactory}}{{/_class}}
+
+{{#_class}}{{#isVcard}}
+namespace belcard {
+class BelCard;
+}
+{{/isVcard}}{{/_class}}
 
 
 {{#_class}}
