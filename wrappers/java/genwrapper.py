@@ -377,7 +377,7 @@ class JavaTranslator(object):
                 methodDict['objectClassName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case()
                 methodDict['objectClassImplName'] = _method.returnType.containedTypeDesc.desc.name.to_camel_case() + 'Impl'
 
-        methodDict['params'] = 'JNIEnv *env, jobject thiz' if static else 'JNIEnv *env, jobject thiz, jlong ptr'
+        methodDict['params'] = 'JNIEnv *env, jobject thiz, jlong ptr'
         methodDict['params_impl'] = ''
         methodDict['strings'] = []
         methodDict['objects'] = []
@@ -430,7 +430,6 @@ class JavaTranslator(object):
     def translate_class(self, _class):
         classDict = {
             'methods': [],
-            'staticMethods': [],
             'jniMethods': [],
         }
 
@@ -458,7 +457,7 @@ class JavaTranslator(object):
             try:
                 methodDict = self.translate_method(method)
                 jniMethodDict = self.translate_jni_method(_class.name, method, True)
-                classDict['staticMethods'].append(methodDict)
+                classDict['methods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
             except AbsApi.Error as e:
                 print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
@@ -673,7 +672,6 @@ class JavaClass(object):
         self.filename = self.className + ".java"
         self.imports = []
         self.methods = self._class['methods']
-        self.staticMethods = self._class['staticMethods']
         self.jniMethods = self._class['jniMethods']
         self.doc = self._class['doc']
         self.enums = []
