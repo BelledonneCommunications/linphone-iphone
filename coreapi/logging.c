@@ -69,7 +69,7 @@ LinphoneLogLevel _bctbx_log_level_to_linphone_log_level(BctbxLogLevel level) {
 	if (response != tmap.cend()) {
 		return response->first;
 	} else {
-		ms_fatal("%s(): invalid argurement [%d]", __FUNCTION__, level);
+		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
 		return LinphoneLogLevelDebug;
 	}
 }
@@ -84,7 +84,7 @@ unsigned int _bctbx_log_mask_to_linphone_log_mask(unsigned int mask) {
 		}
 	}
 	if (mask != 0) {
-		ms_fatal("%s(): invalid flag set in mask [%x]", __FUNCTION__, mask);
+		ms_warning("%s(): invalid flag set in mask [%x]", __FUNCTION__, mask);
 	}
 	return res;
 }
