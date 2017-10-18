@@ -323,6 +323,34 @@ LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(L
 	return linphone_video_activation_policy_new();
 }
 
+LinphoneContent *linphone_factory_create_content(LinphoneFactory *factory) {
+	return linphone_content_new();
+}
+
+LinphoneBuffer *linphone_factory_create_buffer(LinphoneFactory *factory) {
+	return linphone_buffer_new();
+}
+
+LinphoneBuffer *linphone_factory_create_buffer_from_data(LinphoneFactory *factory, const uint8_t *data, size_t size) {
+	return linphone_buffer_new_from_data(data, size);
+}
+
+LinphoneBuffer *linphone_factory_create_buffer_from_string(LinphoneFactory *factory, const char *data) {
+	return linphone_buffer_new_from_string(data);
+}
+
+LinphoneConfig *linphone_factory_create_config(LinphoneFactory *factory, const char *path) {
+	return linphone_config_new(path);
+}
+
+LinphoneConfig *linphone_factory_create_config_with_factory(LinphoneFactory *factory, const char *path, const char *factory_path) {
+	return linphone_config_new_with_factory(path, factory_path);
+}
+
+LinphoneConfig *linphone_factory_create_config_from_string(LinphoneFactory *factory, const char *data) {
+	return linphone_config_new_from_buffer(data);
+}
+
 const bctbx_list_t * linphone_factory_get_dial_plans(const LinphoneFactory *factory) {
 	return linphone_dial_plan_get_all_list();
 }

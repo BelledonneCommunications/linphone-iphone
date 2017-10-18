@@ -70,8 +70,8 @@ public class OpenH264DownloadHelper {
 			isDownloadEnabled = false;
 		}
         if (isCodecFound()) {
-            Log.i("OpenH264DownloadHelper"," Loading OpenH264 downloaded plugin:" + downloadHelper.getFullPathLib());
-			System.load(downloadHelper.getFullPathLib());
+            Log.i("OpenH264DownloadHelper"," Loading OpenH264 downloaded plugin:" + getFullPathLib());
+			System.load(getFullPathLib());
         } else {
 			Log.i("OpenH264DownloadHelper"," Cannot load OpenH264 downloaded plugin");
 		}

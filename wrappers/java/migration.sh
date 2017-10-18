@@ -211,6 +211,8 @@ s/.value()/.toInt()/g; \
 s/clearAuthInfos()/clearAllAuthInfo()/g; \
 s/clearProxyConfigs()/clearProxyConfig()/g; \
 s/isVideoSupported()/videoSupported()/g; \
+s/getReceivedVideoDefinition().width/getReceivedVideoDefinition().getWidth()/g; \
+s/getReceivedVideoDefinition().height/getReceivedVideoDefinition().getHeight()/g; \
 s/VideoDefinition().toDisplayableString()/VideoDefinition().getName()/g; \
 s/isAccountUsed()/isAccountExist()/g; \
 s/loadXmlFile(/loadFromXmlFile(/g; \
@@ -273,11 +275,8 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # TODO
 #Tunnel, TunnelConfig
 #AccountCreator.updatePassword => What to do ?
-#Core.removeFriend(friend)
 #Factory.instance().enableLogCollection(isDebugEnabled);
 #Factory.instance().setDebugMode(isDebugEnabled, context.getString(R.string.app_name));
-#setVideoDevice()
-#Factory.instance().createBuffer();
 
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them

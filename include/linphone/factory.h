@@ -270,6 +270,61 @@ LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_factory_create_video_act
 LINPHONE_PUBLIC const bctbx_list_t * linphone_factory_get_dial_plans(const LinphoneFactory *factory);
 
 /**
+ * Creates an object LinphoneContent
+ * @param[in] factory the LinphoneFactory
+ * @return a LinphoneContent
+ */
+LINPHONE_PUBLIC LinphoneContent *linphone_factory_create_content(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneBuffer
+ * @param[in] factory the LinphoneFactory
+ * @return a LinphoneBuffer
+ */
+LINPHONE_PUBLIC LinphoneBuffer *linphone_factory_create_buffer(LinphoneFactory *factory);
+
+/**
+ * Creates an object LinphoneBuffer
+ * @param[in] factory the LinphoneFactory
+ * @param[in] data the data to set in the buffer
+ * @param[in] size the size of the data
+ * @return a LinphoneBuffer
+ */
+LINPHONE_PUBLIC LinphoneBuffer *linphone_factory_create_buffer_from_data(LinphoneFactory *factory, const uint8_t *data, size_t size);
+
+/**
+ * Creates an object LinphoneBuffer
+ * @param[in] factory the LinphoneFactory
+ * @param[in] data the data to set in the buffer
+ * @return a LinphoneBuffer
+ */
+LINPHONE_PUBLIC LinphoneBuffer *linphone_factory_create_buffer_from_string(LinphoneFactory *factory, const char *data);
+
+/**
+ * Creates an object LinphoneConfig
+ * @param[in] factory the LinphoneFactory
+ * @param[in] the path of the config
+ * @return a LinphoneConfig
+ */
+LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config(LinphoneFactory *factory, const char *path);
+
+/**
+ * Creates an object LinphoneConfig
+ * @param[in] factory the LinphoneFactory
+ * @param[in] the path of the config
+ * @param[in] the path of the factory
+ * @return a LinphoneConfig
+ */
+LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config_with_factory(LinphoneFactory *factory, const char *path, const char *factory_path);
+
+/**
+ * Creates an object LinphoneConfig
+ * @param[in] factory the LinphoneFactory
+ * @return a LinphoneConfig
+ */
+LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config_from_string(LinphoneFactory *factory, const char *data);
+
+/**
  * Gets the user data in the LinphoneFactory object
  * @param[in] factory the LinphoneFactory
  * @return the user data
