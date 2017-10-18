@@ -64,7 +64,7 @@ private:
 	long insertEvent (const EventLog &eventLog);
 	long insertCallEvent (const EventLog &eventLog);
 	long insertMessageEvent (const EventLog &eventLog);
-	long insertConferenceEvent (const EventLog &eventLog);
+	long insertConferenceEvent (const EventLog &eventLog, long *chatRoomId = nullptr);
 	long insertConferenceNotifiedEvent (const EventLog &eventLog);
 	long insertConferenceParticipantEvent (const EventLog &eventLog);
 	long insertConferenceParticipantDeviceEvent (const EventLog &eventLog);

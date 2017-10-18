@@ -273,9 +273,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			eventTime
 		);
 
-		insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
-
-		long eventId = insertMessageEvent (
+		return insertMessageEvent (
 			references,
 			static_cast<int>(chatMessage->getState()),
 			static_cast<int>(chatMessage->getDirection()),
@@ -283,31 +281,34 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			chatMessage->isSecured(),
 			chatMessage->getContents()
 		);
-
-		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog) {
+	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog, long *chatRoomId) {
 		long eventId = insertEvent(eventLog);
-		long chatRoomId = insertSipAddress(
+		long curChatRoomId = insertSipAddress(
 			static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_event (event_id, chat_room_id)"
-			"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
+			"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(curChatRoomId);
+
+		if (chatRoomId)
+			*chatRoomId = curChatRoomId;
 
 		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceNotifiedEvent (const EventLog &eventLog) {
-		long eventId = insertConferenceEvent(eventLog);
+		long chatRoomId;
+		long eventId = insertConferenceEvent(eventLog, &chatRoomId);
+		unsigned int lastNotifyId = static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
-			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(
-				static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId()
-			);
+			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(lastNotifyId);
+		*session << "UPDATE chat_room SET last_notify_id = :lastNotifyId WHERE peer_sip_address_id = :chatRoomId",
+			soci::use(lastNotifyId), soci::use(chatRoomId);
 
 		return eventId;
 	}
@@ -420,7 +421,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
 
-			"  last_notify INT UNSIGNED,"
+			"  last_notify_id INT UNSIGNED,"
 
 			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
