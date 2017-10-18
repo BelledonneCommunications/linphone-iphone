@@ -122,20 +122,6 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
       * Gets the object stored in this object user's data
       */
     {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public Object getUserData();
-
-{{#isNotLinphoneFactory}}
-{{#staticMethods}}
-    {{#doc}}
-    /**
-        {{#lines}}
-    * {{line}}
-        {{/lines}}
-    */
-    {{/doc}}
-    public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}};
-
-{{/staticMethods}}
-{{/isNotLinphoneFactory}}
 }
 
 class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}implements{{/isNotLinphoneFactory}} {{className}} {
@@ -214,12 +200,4 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
     public Object getUserData() {
         return userData;
     }
-
-{{#isNotLinphoneFactory}}
-{{#staticMethods}}
-    @Override
-    public native {{return_native}} {{name}}({{static_native_params}});
-
-{{/staticMethods}}
-{{/isNotLinphoneFactory}}
 }

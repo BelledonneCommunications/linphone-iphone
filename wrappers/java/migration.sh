@@ -305,16 +305,12 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # Core.startEchoCancellerCalibration no longer takes a parameter
 # XmlRpcSession.createRequest takes first the return arg type and then the name of the method, until now it was the other way around
 
-
 # # Factory
-#Factory.createLpConfigFromString => Config.newFromBuffer
-#Factory.createLpConfig => Config.newWithFactory or Core.createConfig
 #Factory.createAccountCreator() => Core.createAccountCreator()
 #Factory.createPresenceModel() => Core.createPresenceModel()
 #Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
 #Factory.instance().enableLogCollection(isDebugEnabled); => Core.enableLogCollection
 #Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
-#Factory.createContent( => Core.createContent(
 
 # # Core
 #Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
