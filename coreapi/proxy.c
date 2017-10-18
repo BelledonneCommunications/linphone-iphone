@@ -686,7 +686,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 		ms_debug("Using dial plan '%s'",linphone_dial_plan_get_country(dialplan));
 
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
-		if (linphone_dial_plan_get_country_calling_code(dialplan)[0]!='\0') {
+		if (linphone_dial_plan_get_country_calling_code(dialplan) != NULL && linphone_dial_plan_get_country_calling_code(dialplan)[0]!='\0') {
 			/* the number already starts with + or international prefix*/
 			/*0. keep at most national number significant digits */
 			char* nationnal_significant_number_start = nationnal_significant_number
