@@ -40,6 +40,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #endif /* __ANDROID__ */
 
 static JavaVM *jvm = NULL;
+static const char* LogDomain = "Linphone";
+static jmethodID loghandler_id;
+static jobject handler_obj=NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
 #ifdef __ANDROID__
