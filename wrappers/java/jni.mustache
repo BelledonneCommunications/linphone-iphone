@@ -70,6 +70,12 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 	return nativePtr;
 }
 
+static void SetObjectNativePtr(JNIEnv *env, jobject object, jlong ptr) {
+	jclass objClass = env->GetObjectClass(object);
+	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
+	env->SetLongField(object, nativePtrId, ptr);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void linphone_android_log_handler(int prio, char *str) {
@@ -357,8 +363,9 @@ jobject Java_{{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobjec
 	return env->NewObject(ljb->ms_factory_class, ljb->ms_factory_class_constructor, (jlong)factory);
 }
 
-jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jlong ptr, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path) {
-	LinphoneFactory *cptr = (LinphoneFactory*)ptr;
+jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jobject jfactory, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path) {
+	LinphoneFactory *cptr = linphone_factory_get();
+	SetObjectNativePtr(env, jfactory, (jlong)cptr); // Set the C factory ptr as Factory.nativePtr for next factory calls
 
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(cptr);
 	jobject listener = env->NewGlobalRef(jlistener);
