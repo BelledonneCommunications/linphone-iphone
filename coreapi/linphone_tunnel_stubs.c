@@ -38,6 +38,14 @@ LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 void linphone_tunnel_destroy(LinphoneTunnel *tunnel){
 }
 
+LinphoneTunnel *linphone_tunnel_ref(LinphoneTunnel *tunnel) {
+	ms_warning("linphone_tunnel_ref() - stubbed, no implementation");
+	return tunnel;
+}
+
+void linphone_tunnel_unref(LinphoneTunnel *tunnel) {
+	ms_warning("linphone_tunnel_unref() - stubbed, no implementation");
+}
 
 void linphone_tunnel_add_server(LinphoneTunnel *tunnel, LinphoneTunnelConfig *tunnel_config){
 	ms_warning("linphone_tunnel_add_server() - stubbed, no implementation");

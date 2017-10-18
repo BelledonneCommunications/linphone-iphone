@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "private.h"
+#include "linphone/wrapper_utils.h"
 
 
 LinphoneCoreVTable *linphone_core_v_table_new() {
