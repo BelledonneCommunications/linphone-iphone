@@ -494,9 +494,10 @@ class JavaTranslator(object):
             methodDict['isJniUpcallObject'] = True
             methodDict['jniUpcallType'] = 'jobject'
         elif type(_method.returnType) is AbsApi.BaseType:
-            methodDict['jniUpcallMethod'] = 'CallIntMethod'
-            methodDict['jniUpcallType'] = self.translate_type(_method.returnType, jni=True)
-            methodDict['isJniUpcallBasicType'] = True
+            if not _method.returnType.name == 'void':
+                methodDict['jniUpcallMethod'] = 'CallIntMethod'
+                methodDict['jniUpcallType'] = self.translate_type(_method.returnType, jni=True)
+                methodDict['isJniUpcallBasicType'] = True
         methodDict['returnIfFail'] = '' if  methodDict['return'] == 'void' else ' NULL'
         methodDict['hasReturn'] = not methodDict['return'] == 'void'
         methodDict['isSingleListener'] = not _class.multilistener
@@ -761,7 +762,11 @@ class GenWrapper(object):
 
         self.parser = AbsApi.CParser(project)
         self.parser.functionBl = \
-            ['linphone_vcard_get_belcard',\
+            ['linphone_factory_create_core_with_config',\
+            'linphone_factory_create_core',\
+            'linphone_factory_create_core_2',\
+            'linphone_factory_create_core_with_config_2',\
+            'linphone_vcard_get_belcard',\
             'linphone_core_get_current_vtable',\
             'linphone_factory_get',\
             'linphone_factory_clean',\
