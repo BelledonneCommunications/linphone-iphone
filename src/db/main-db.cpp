@@ -854,6 +854,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
+list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
+	list<shared_ptr<ChatRoom>> chatRooms;
+	// TODO.
+	return chatRooms;
+}
+
 shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 	L_D();
 
@@ -874,6 +880,8 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 		"    SELECT id from sip_address WHERE value = :peerAddress"
 		"  )", soci::use(peerAddress), soci::into(creationDate), soci::into(lastUpdateDate),
 		soci::use(capabilities), soci::use(subject);
+
+	// TODO.
 
 	L_END_LOG_EXCEPTION
 

@@ -20,21 +20,26 @@
 #ifndef _CORE_H_
 #define _CORE_H_
 
-#include "object/object.h"
+#include <list>
+
+#include "chat/chat-room/chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatRoom;
 class CorePrivate;
 
 class LINPHONE_PUBLIC Core : public Object {
 public:
-	// Nothing for the moment.
+	Core ();
+
+	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
+	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
+	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
 
 private:
-	explicit Core (CorePrivate &p);
-
 	L_DECLARE_PRIVATE(Core);
 	L_DISABLE_COPY(Core);
 };

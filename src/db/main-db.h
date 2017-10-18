@@ -70,6 +70,7 @@ public:
 	void cleanHistory (const std::string &peerAddress = "", FilterMask mask = NoFilter);
 
 	// ChatRooms.
+	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
 	std::shared_ptr<ChatRoom> findChatRoom (const std::string &peerAddress) const;
 
 	// Import legacy messages from old db.

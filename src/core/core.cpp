@@ -17,21 +17,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <algorithm>
+
+#include "address/address.h"
+#include "chat/chat-room/basic-chat-room.h"
+#include "core-p.h"
+#include "db/main-db.h"
 #include "object/object-p.h"
 
 #include "core.h"
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
+using namespace std;
 
-class CorePrivate : public ObjectPrivate {
-public:
-	// TODO.
-};
+LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-Core::Core (CorePrivate &p) : Object(p) {}
+Core::Core () : Object(*new CorePrivate) {}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
+	// TODO.
+	return shared_ptr<ChatRoom>();
+}
+
+shared_ptr<ChatRoom> Core::getOrCreateChatRoom (const string &peerAddress, bool isRtt) const {
+	return shared_ptr<ChatRoom>();
+}
+
+const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
+	L_D();
+	return d->chatRooms;
+}
+
+// -----------------------------------------------------------------------------
 
 LINPHONE_END_NAMESPACE
