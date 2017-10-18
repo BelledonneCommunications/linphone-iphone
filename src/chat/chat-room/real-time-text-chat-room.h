@@ -33,7 +33,7 @@ public:
 	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~RealTimeTextChatRoom () = default;
 
-	int getCapabilities () const override;
+	CapabilitiesMask getCapabilities () const override;
 
 	uint32_t getChar () const;
 	LinphoneCall *getCall () const;

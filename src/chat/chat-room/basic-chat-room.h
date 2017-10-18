@@ -33,7 +33,7 @@ public:
 	BasicChatRoom (LinphoneCore *core, const Address &peerAddress);
 	virtual ~BasicChatRoom () = default;
 
-	int getCapabilities () const override;
+	CapabilitiesMask getCapabilities () const override;
 
 	/* ConferenceInterface. */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;

@@ -247,8 +247,37 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	long MainDbPrivate::insertMessageEvent (const EventLog &eventLog) {
-		// TODO.
-		return 0;
+		shared_ptr<ChatMessage> chatMessage = static_cast<const ChatMessageEvent &>(eventLog).getChatMessage();
+		shared_ptr<ChatRoom> chatRoom = chatMessage->getChatRoom();
+		if (!chatRoom) {
+			lError() << "Unable to get a valid chat room. It was removed from database.";
+			return -1;
+		}
+
+		tm eventTime = Utils::getLongAsTm(static_cast<long>(eventLog.getTime()));
+
+		struct MessageEventReferences references;
+		references.eventId = insertEvent(EventLog::Type::ChatMessage, eventTime);
+		references.localSipAddressId = insertSipAddress(chatMessage->getLocalAddress().asString());
+		references.remoteSipAddressId = insertSipAddress(chatMessage->getRemoteAddress().asString());
+		references.chatRoomId = insertChatRoom(
+			references.remoteSipAddressId,
+			chatRoom->getCapabilities(),
+			eventTime
+		);
+
+		insertChatRoomParticipant(references.chatRoomId, references.remoteSipAddressId, false);
+
+		long eventId = insertMessageEvent (
+			references,
+			static_cast<int>(chatMessage->getState()),
+			static_cast<int>(chatMessage->getDirection()),
+			chatMessage->getImdnMessageId(),
+			chatMessage->isSecured(),
+			chatMessage->getContents()
+		);
+
+		return eventId;
 	}
 
 	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog) {
@@ -260,6 +289,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 			"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
+
 		return eventId;
 	}
 
@@ -271,6 +301,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(
 				static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId()
 			);
+
 		return eventId;
 	}
 
@@ -283,6 +314,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_participant_event (event_id, participant_address_id)"
 			"  VALUES (:eventId, :participantAddressId)", soci::use(eventId), soci::use(participantAddressId);
+
 		return eventId;
 	}
 
@@ -295,6 +327,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_participant_device_event (event_id, gruu_address_id)"
 			"  VALUES (:eventId, :gruuAddressId)", soci::use(eventId), soci::use(gruuAddressId);
+
 		return eventId;
 	}
 
@@ -306,6 +339,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			"  VALUES (:eventId, :subject)", soci::use(eventId), soci::use(
 				static_cast<const ConferenceSubjectEvent &>(eventLog).getSubject()
 			);
+
 		return eventId;
 	}
 

@@ -1327,6 +1327,14 @@ void ChatMessage::setToAddress(Address to) {
 	d->to = to;
 }
 
+const Address &ChatMessage::getLocalAddress () const {
+	return getDirection() == Direction::Incoming ? getToAddress() : getFromAddress();
+}
+
+const Address &ChatMessage::getRemoteAddress () const {
+	return getDirection() != Direction::Incoming ? getToAddress() : getFromAddress();
+}
+
 const string& ChatMessage::getFileTransferFilepath() const {
 	L_D();
 	return d->fileTransferFilePath;

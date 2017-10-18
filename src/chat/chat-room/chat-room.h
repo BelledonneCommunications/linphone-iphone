@@ -39,10 +39,12 @@ public:
 	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
+	typedef int CapabilitiesMask;
+
 	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;
 
-	virtual int getCapabilities () const = 0;
+	virtual CapabilitiesMask getCapabilities () const = 0;
 
 	void compose ();
 	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);

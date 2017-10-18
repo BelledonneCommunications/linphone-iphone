@@ -85,6 +85,8 @@ public:
 
 	const Address &getFromAddress () const;
 	const Address &getToAddress () const;
+	const Address &getLocalAddress () const;
+	const Address &getRemoteAddress () const;
 
 	const LinphoneErrorInfo *getErrorInfo () const;
 
