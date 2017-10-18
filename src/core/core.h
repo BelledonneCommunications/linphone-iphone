@@ -32,6 +32,7 @@ class ChatRoom;
 class CorePrivate;
 
 class LINPHONE_PUBLIC Core : public Object {
+friend class ClientGroupChatRoom;
 public:
 	Core ();
 

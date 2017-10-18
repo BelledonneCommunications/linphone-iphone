@@ -26,6 +26,7 @@
 #include "conference/remote-conference-event-handler.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
+#include "core/core-p.h"
 #include "event-log/events.h"
 #include "logger/logger.h"
 #include "sal/refer-op.h"
@@ -282,6 +283,7 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));
@@ -306,6 +308,7 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) 
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));
@@ -336,6 +339,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr,
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));
@@ -353,6 +357,7 @@ void ClientGroupChatRoom::onSubjectChanged (time_t tm, const std::string &subjec
 		dConference->eventHandler->getLastNotify(),
 		subject
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));
@@ -381,6 +386,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &ad
 		addr,
 		gruu
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));
@@ -409,6 +415,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, const Address &
 		addr,
 		gruu
 	);
+	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(&event));

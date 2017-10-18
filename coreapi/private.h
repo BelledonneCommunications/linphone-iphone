@@ -33,6 +33,7 @@
 #include "linphone/conference.h"
 #include "address/address.h"
 #include "c-wrapper/internal/c-sal.h"
+#include "core/core.h"
 #include "sal/call-op.h"
 #include "sal/event-op.h"
 #include "sal/message-op.h"
@@ -810,6 +811,10 @@ struct _LinphoneCore
 	MSList* vtable_refs;
 	int vtable_notify_recursion;
 	LinphonePrivate::Sal *sal;
+
+	// For migration purposes
+	LinphonePrivate::Core cppCore;
+
 	LinphoneGlobalState state;
 	struct _LpConfig *config;
 	MSList *default_audio_codecs;

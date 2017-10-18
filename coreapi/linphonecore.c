@@ -2233,6 +2233,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->sal->set_user_pointer(lc);
 	lc->sal->set_callbacks(&linphone_sal_callbacks);
 
+	new(&lc->cppCore) Core();
+
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
 #endif
@@ -5824,6 +5826,8 @@ void sip_config_uninit(LinphoneCore *lc)
 	lc->sal->iterate(); /*make sure event are purged*/
 	delete lc->sal;
 	lc->sal=NULL;
+
+	lc->cppCore.~Core();
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);
