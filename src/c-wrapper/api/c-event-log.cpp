@@ -31,6 +31,8 @@ L_DECLARE_C_CLONABLE_STRUCT_IMPL(EventLog);
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallEvent);
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceEvent);
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceParticipantEvent);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceParticipantDeviceEvent);
+L_DECLARE_C_CLONABLE_STRUCT_IMPL(ConferenceSubjectEvent);
 L_DECLARE_C_CLONABLE_STRUCT_IMPL(ChatMessageEvent);
 
 using namespace std;

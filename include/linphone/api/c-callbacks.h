@@ -96,7 +96,7 @@ typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeade
  * @addtogroup chatroom
  * @{
  */
- 
+
  /**
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
@@ -161,14 +161,14 @@ typedef void (*LinphoneChatRoomCbsMessageReceivedCb) (LinphoneChatRoom *cr, Linp
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been added to the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantAddedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant);
+typedef void (*LinphoneChatRoomCbsParticipantAddedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
 
 /**
  * Callback used to notify a chat room that a participant has been removed.
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant);
+typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
 
 /**
  * Callback used to notify a chat room that the admin status of a participant has been changed.
@@ -176,7 +176,7 @@ typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, L
  * @param[in] participant The #LinphoneParticipant for which the admin status has been changed
  * @param[in] isAdmin The new admin status of the participant
  */
-typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChatRoom *cr, LinphoneParticipant *participant, bool_t isAdmin);
+typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
 
 /**
  * Callback used to notify a chat room state has changed.
@@ -190,7 +190,7 @@ typedef void (*LinphoneChatRoomCbsStateChangedCb) (LinphoneChatRoom *cr, Linphon
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] subject The new subject of the chat room
  */
-typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const char *subject);
+typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const LinphoneConferenceSubjectEvent *event);
 
 /**
  * Callback used to notify a chat room that a message has been received but we were unable to decrypt it
@@ -199,6 +199,19 @@ typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const
  */
 typedef void (*LinphoneChatRoomCbsUndecryptableMessageReceivedCb) (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
+/**
+ * Callback used to notify a chat room that a participant has been added.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participant The #LinphoneParticipant that has been added to the chat room
+ */
+typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantDeviceEvent *event);
+
+/**
+ * Callback used to notify a chat room that a participant has been removed.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
+ */
+typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantDeviceEvent *event);
 /**
  * @}
 **/

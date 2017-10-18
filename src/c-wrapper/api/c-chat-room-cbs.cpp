@@ -30,6 +30,8 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsMessageReceivedCb messageReceivedCb;
 	LinphoneChatRoomCbsParticipantAddedCb participantAddedCb;
 	LinphoneChatRoomCbsParticipantRemovedCb participantRemovedCb;
+	LinphoneChatRoomCbsParticipantDeviceAddedCb participantDeviceAddedCb;
+	LinphoneChatRoomCbsParticipantDeviceRemovedCb participantDeviceRemovedCb;
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb participantAdminStatusChangedCb;
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsSubjectChangedCb subjectChangedCb;
@@ -132,4 +134,20 @@ LinphoneChatRoomCbsUndecryptableMessageReceivedCb linphone_chat_room_cbs_get_und
 
 void linphone_chat_room_cbs_set_undecryptable_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb) {
 	cbs->undecryptableMessageReceivedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantDeviceAddedCb linphone_chat_room_cbs_get_participant_device_added (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantDeviceAddedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_device_added (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceAddedCb cb) {
+	cbs->participantDeviceAddedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantDeviceRemovedCb linphone_chat_room_cbs_get_participant_device_removed (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantDeviceRemovedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceRemovedCb cb) {
+	cbs->participantDeviceRemovedCb = cb;
 }

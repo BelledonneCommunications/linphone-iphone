@@ -37,6 +37,8 @@
 	F(ChatRoom, ChatRoom) \
 	F(ConferenceEvent, ConferenceEvent) \
 	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
+	F(ConferenceParticipantDeviceEvent, ConferenceParticipantDeviceEvent) \
+	F(ConferenceSubjectEvent, ConferenceSubjectEvent) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
 	F(MediaSessionParams, CallParams) \

@@ -174,6 +174,33 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsUndecryptableMessageReceivedCb linphone_chat_
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_undecryptable_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb);
 
 /**
+ * Get the participant device added callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current participant device added callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceAddedCb linphone_chat_room_cbs_get_participant_device_added (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant device added callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The participant device added callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_added (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceAddedCb cb);
+
+/**
+ * Get the participant device removed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current participant device removed callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceRemovedCb linphone_chat_room_cbs_get_participant_device_removed (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant device removed callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The participant device removed callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceRemovedCb cb);
+/**
  * @}
  */
 
