@@ -94,6 +94,8 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
 	}
 
     abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
+
+    abstract public void setDebugMode(boolean enable, String tag);
 {{/isLinphoneFactory}}
 {{#isLinphoneCore}}
     /**
@@ -162,6 +164,9 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 		}
 		return new OpenH264DownloadHelper(context);
 	}
+
+    @Override
+    public native void setDebugMode(boolean enable, String tag);
 {{/isLinphoneFactory}}
 
 {{#methods}}

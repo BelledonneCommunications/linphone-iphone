@@ -69,6 +69,68 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void linphone_android_log_handler(int prio, char *str) {
+	char *current;
+	char *next;
+
+	if (strlen(str) < 512) {
+		__android_log_write(prio, LogDomain, str);
+	} else {
+		current = str;
+		while ((next = strchr(current, '\n')) != NULL) {
+
+			*next = '\0';
+			if (next != str && next[-1] == '\r')
+				next[-1] = '\0';
+			__android_log_write(prio, LogDomain, current);
+			current = next + 1;
+		}
+		__android_log_write(prio, LogDomain, current);
+	}
+}
+
+static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
+	char* str = bctbx_strdup_vprintf(fmt, args);
+    const char *levname = "undef";
+
+    if (str == NULL) return;
+
+    int prio;
+    switch(lev) {
+    	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
+    	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
+    	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
+    	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
+    	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
+    	default:			prio = ANDROID_LOG_DEFAULT;	break;
+    }
+
+    if (handler_obj) {
+    	JNIEnv *env = ms_get_jni_env();
+    	jstring jdomain = env->NewStringUTF(LogDomain);
+    	jstring jlevname = env->NewStringUTF(levname);
+    	jstring jstr = env->NewStringUTF(str);
+    	env->CallVoidMethod(handler_obj, loghandler_id, jdomain, (jint)lev, jlevname, jstr, NULL);
+    	if (jdomain) env->DeleteLocalRef(jdomain);
+    	if (jlevname) env->DeleteLocalRef(jlevname);
+    	if (jstr) env->DeleteLocalRef(jstr);
+    } else {
+    	linphone_android_log_handler(prio, str);
+    }
+    bctbx_free(str);
+}
+
+void Java_org_linphone_core_FactoryImpl_setDebugMode(JNIEnv* env, jobject thiz, jboolean isDebug, jstring jdebugTag) {
+	if (isDebug) {
+		LogDomain = GetStringUTFChars(env, jdebugTag);
+		linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
+	} else {
+		linphone_core_disable_logs();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class LinphoneJavaBindings {
 public:
 	LinphoneJavaBindings(JNIEnv *env) {

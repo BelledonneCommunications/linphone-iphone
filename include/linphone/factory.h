@@ -339,6 +339,20 @@ LINPHONE_PUBLIC void *linphone_factory_get_user_data(const LinphoneFactory *fact
 LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, void *data);
 
 /**
+ * Sets the log collection path
+ * @param[in] factory the LinphoneFactory
+ * @param[in] the path of the logs
+ */
+LINPHONE_PUBLIC void linphone_factory_log_collection_path(LinphoneFactory *factory, const char *path);
+
+/**
+ * Enables or disables log collection
+ * @param[in] factory the LinphoneFactory
+ * @param[in] the policy for log collection
+ */
+LINPHONE_PUBLIC void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state);
+
+/**
  * @}
  */
 

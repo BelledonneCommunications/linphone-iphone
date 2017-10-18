@@ -362,3 +362,11 @@ void *linphone_factory_get_user_data(const LinphoneFactory *factory) {
 void linphone_factory_set_user_data(LinphoneFactory *factory, void *data) {
 	factory->user_data = data;
 }
+
+void linphone_factory_log_collection_path(LinphoneFactory *factory, const char *path) {
+	linphone_core_set_log_collection_path(path);
+}
+
+void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state) {
+	linphone_core_enable_log_collection(state);
+}
