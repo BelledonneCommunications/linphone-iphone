@@ -779,8 +779,6 @@ class GenWrapper(object):
             'linphone_factory_get',\
             'linphone_factory_clean',\
             'linphone_call_zoom_video',\
-            'linphone_core_get_native_video_window_id',\
-            'linphone_core_get_native_preview_window_id',\
             'linphone_core_get_zrtp_cache_db',\
             'linphone_config_get_range']
         self.parser.parse_all()
