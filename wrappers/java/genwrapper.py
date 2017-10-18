@@ -310,6 +310,7 @@ class JavaTranslator(object):
         methodDict['return'] = self.translate_type(_method.returnType, isReturn=True)
         methodDict['return_native'] = self.translate_type(_method.returnType, native=True, isReturn=True)
         methodDict['return_keyword'] = '' if methodDict['return'] == 'void' else 'return '
+        methodDict['hasReturn'] = not methodDict['return'] == 'void'
 
         methodDict['convertInputClassArrayToLongArray'] = False
 

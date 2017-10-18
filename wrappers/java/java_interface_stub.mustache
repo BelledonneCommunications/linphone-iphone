@@ -28,6 +28,9 @@ public class {{classNameStub}} implements {{className}} {
     @Override
     public {{return}} {{name}}({{params}}){{#exception}} throws CoreException{{/exception}} {
         // Auto-generated method stub
+        {{#hasReturn}}
+        {{#classCast}}return null;{{/classCast}}
+        {{/hasReturn}}
     }
 
 {{/methods}}
