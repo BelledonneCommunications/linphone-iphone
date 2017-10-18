@@ -363,7 +363,7 @@ void linphone_factory_set_user_data(LinphoneFactory *factory, void *data) {
 	factory->user_data = data;
 }
 
-void linphone_factory_log_collection_path(LinphoneFactory *factory, const char *path) {
+void linphone_factory_set_log_collection_path(LinphoneFactory *factory, const char *path) {
 	linphone_core_set_log_collection_path(path);
 }
 

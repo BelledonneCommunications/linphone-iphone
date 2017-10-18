@@ -343,7 +343,7 @@ LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, vo
  * @param[in] factory the LinphoneFactory
  * @param[in] the path of the logs
  */
-LINPHONE_PUBLIC void linphone_factory_log_collection_path(LinphoneFactory *factory, const char *path);
+LINPHONE_PUBLIC void linphone_factory_set_log_collection_path(LinphoneFactory *factory, const char *path);
 
 /**
  * Enables or disables log collection

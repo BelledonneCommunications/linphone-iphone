@@ -275,8 +275,6 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # TODO
 #Tunnel, TunnelConfig
 #AccountCreator.updatePassword => What to do ?
-#Factory.instance().enableLogCollection(isDebugEnabled);
-#Factory.instance().setDebugMode(isDebugEnabled, context.getString(R.string.app_name));
 
 # Manual changes required
 # Some callbacks no longer exist, their name will be "removed", remove them
@@ -308,9 +306,7 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # # Factory
 #Factory.createAccountCreator() => Core.createAccountCreator()
 #Factory.createPresenceModel() => Core.createPresenceModel()
-#Factory.instance().setLogCollectionPath(getFilesDir().getAbsolutePath()); => Core.setLogCollectionPath
-#Factory.instance().enableLogCollection(isDebugEnabled); => Core.enableLogCollection
-#Factory.instance().setDebugMode(isDebugEnabled, getString(R.string.app_name)); => Core.setLogLevelMask
+#Factory.instance().enableLogCollection(isDebugEnabled); now takes a LogCollectionState
 
 # # Core
 #Core.getVideoDevice and Core.setVideoDevice now takes/returns String instead of int
