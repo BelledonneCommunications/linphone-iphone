@@ -249,9 +249,17 @@ class JavaTranslator(object):
                 return 'char'
             elif _type.name == 'void':
                 if isReturn:
+                    if _type.isref and jni:
+                        return 'jbyteArray'
+                    if _type.isref:
+                        return 'byte[]'
                     return 'void'
                 if jni:
+                    if _type.isref and _type.isconst:
+                        return 'jbyteArray'
                     return 'jobject'
+                if _type.isref and _type.isconst:
+                    return 'byte[]'
                 return 'Object'
             return _type.name
 
@@ -415,7 +423,7 @@ class JavaTranslator(object):
                 methodDict['params_impl'] += '(' + argCType + ') ' + argname
                 
             elif type(arg.type) is AbsApi.BaseType:
-                if arg.type.name == 'integer' and arg.type.size is not None and arg.type.isref:
+                if (arg.type.name == 'integer' and arg.type.size is not None and arg.type.isref) or (arg.type.name == 'void' and arg.type.isref and arg.type.isconst):
                     methodDict['bytes'].append({'bytesargname': argname, 'bytesargtype' : self.translate_as_c_base_type(arg.type)})
                     methodDict['params_impl'] += 'c_' + argname
                 elif arg.type.name == 'string':
