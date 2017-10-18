@@ -123,7 +123,7 @@ static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel l
     bctbx_free(str);
 }
 
-void Java_org_linphone_core_FactoryImpl_setDebugMode(JNIEnv* env, jobject thiz, jboolean isDebug, jstring jdebugTag) {
+extern "C" void Java_org_linphone_core_FactoryImpl_setDebugMode(JNIEnv* env, jobject thiz, jboolean isDebug, jstring jdebugTag) {
 	if (isDebug) {
 		LogDomain = GetStringUTFChars(env, jdebugTag);
 		linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
@@ -306,6 +306,10 @@ static {{return}} {{callbackName}}({{params}}) {
 {{/callbacks}}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 {{#interfaces}}
 {{#isSingleListener}}
 void {{jniPackage}}{{className}}Impl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
@@ -422,3 +426,7 @@ jobject {{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thi
 }
 
 {{/methods}}
+
+#ifdef __cplusplus
+}
+#endif
