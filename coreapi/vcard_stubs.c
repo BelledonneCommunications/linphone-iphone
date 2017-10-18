@@ -18,6 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
+#include "linphone/wrapper_utils.h"
 #include "vcard_private.h"
 
 struct _LinphoneVcardContext {
@@ -178,4 +179,12 @@ bool_t linphone_core_vcard_supported(void) {
 }
 
 void linphone_vcard_clean_cache(LinphoneVcard *vCard) {
+}
+
+void *linphone_vcard_get_belcard(LinphoneVcard *vCard) {
+	return NULL;
+}
+
+LinphoneVcard *linphone_vcard_clone(const LinphoneVcard *vCard) {
+	return NULL;
 }
