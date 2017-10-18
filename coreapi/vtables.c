@@ -349,7 +349,7 @@ void linphone_core_remove_listener(LinphoneCore *lc, const LinphoneCoreVTable *v
 }
 
 bctbx_list_t *linphone_core_get_callbacks_list(const LinphoneCore *lc) {
-	bctbx_list_t *result;
+	bctbx_list_t *result = NULL;
 	bctbx_list_t *it;
 	for(it=lc->vtable_refs; it!=NULL; it=it->next){
 		VTableReference *ref=(VTableReference*)it->data;
