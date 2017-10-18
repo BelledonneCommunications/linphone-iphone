@@ -29,13 +29,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Content;
-
-struct MessageEventReferences {
-	long eventId;
-	long localSipAddressId;
-	long remoteSipAddressId;
-	long chatRoomId;
-};
+struct MessageEventReferences;
 
 class MainDbPrivate : public AbstractDbPrivate {
 public:

@@ -42,6 +42,13 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+struct MessageEventReferences {
+	long eventId;
+	long localSipAddressId;
+	long remoteSipAddressId;
+	long chatRoomId;
+};
+
 // -----------------------------------------------------------------------------
 
 MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
