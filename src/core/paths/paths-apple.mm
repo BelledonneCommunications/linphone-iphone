@@ -30,7 +30,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
+const std::string &SysPaths::getDataPath (PlatformHelpers *platformHelper) {
 #ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 	NSString *writablePath = [paths objectAtIndex:0];
@@ -41,7 +41,7 @@ const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
 	return Utils::getEmptyConstRefObject<std::string>();
 }
 
-const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
+const std::string &SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
 #ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString *configPath = [paths objectAtIndex:0];

@@ -38,7 +38,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-const string &Paths::getPath (Paths::Type type, PlatformHelper *platformHelper) {
+const string &Paths::getPath (Paths::Type type, PlatformHelpers *platformHelper) {
 	switch (type) {
 		case Data:
 			return SysPaths::getDataPath(platformHelper);

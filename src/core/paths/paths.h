@@ -28,14 +28,14 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class PlatformHelper;
+class PlatformHelpers;
 namespace Paths {
 	enum Type {
 		Data,
 		Config
 	};
 
-	LINPHONE_PUBLIC const std::string &getPath(Type type, PlatformHelper *platformHelper);
+	LINPHONE_PUBLIC const std::string &getPath(Type type, PlatformHelpers *platformHelper);
 }
 
 LINPHONE_END_NAMESPACE

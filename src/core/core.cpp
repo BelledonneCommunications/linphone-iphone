@@ -71,12 +71,12 @@ const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
 
 const std::string &Core::getDataPath() const {
 	L_D();
-	return Paths::getPath(Paths::Data, static_cast<PlatformHelper *>(d->cCore->platform_helper));
+	return Paths::getPath(Paths::Data, static_cast<PlatformHelpers *>(d->cCore->platform_helper));
 }
 
 const std::string &Core::getConfigPath() const {
 	L_D();
-	return Paths::getPath(Paths::Config, static_cast<PlatformHelper *>(d->cCore->platform_helper));
+	return Paths::getPath(Paths::Config, static_cast<PlatformHelpers *>(d->cCore->platform_helper));
 }
 
 // -----------------------------------------------------------------------------

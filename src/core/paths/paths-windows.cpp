@@ -26,12 +26,12 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
+const std::string &SysPaths::getDataPath (PlatformHelpers *platformHelper) {
 	//TODO.
 	return Utils::getEmptyConstRefObject<std::string>();
 }
 
-const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
+const std::string &SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
 	//TODO.
 	return Utils::getEmptyConstRefObject<std::string>();
 }
