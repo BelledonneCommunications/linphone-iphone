@@ -30,15 +30,15 @@ LINPHONE_BEGIN_NAMESPACE
 class AndroidPlatformHelpers : public PlatformHelpers {
 public:
 	AndroidPlatformHelpers (LinphoneCore *lc, void *system_context);
-	virtual void setDnsServers ();
-	virtual void acquireWifiLock ();
-	virtual void releaseWifiLock ();
-	virtual void acquireMcastLock ();
-	virtual void releaseMcastLock ();
-	virtual void acquireCpuLock ();
-	virtual void releaseCpuLock ();
-	virtual std::string getDataPath ();
-	virtual std::string getConfigPath ();
+	void setDnsServers () override;
+	void acquireWifiLock () override;
+	void releaseWifiLock () override;
+	void acquireMcastLock () override;
+	void releaseMcastLock () override;
+	void acquireCpuLock () override;
+	void releaseCpuLock () override;
+	std::string getDataPath () override;
+	std::string getConfigPath () override;
 	~AndroidPlatformHelpers ();
 private:
 	int callVoidMethod (jmethodID id);
