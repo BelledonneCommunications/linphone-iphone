@@ -62,7 +62,7 @@ jmethodID AndroidPlatformHelpers::getMethodId(JNIEnv *env, jclass klass, const c
 
 AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
 	JNIEnv *env=ms_get_jni_env();
-	jclass klass = env->FindClass("org/linphone/core/util/AndroidPlatformHelper");
+	jclass klass = env->FindClass("org/linphone/core/tools/AndroidPlatformHelper");
 	if (!klass){
 		ms_fatal("Could not find java AndroidPlatformHelper class");
 		return;
