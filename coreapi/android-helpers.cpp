@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/utils/utils.h"
+
 #include "private.h"
 #include "platform-helpers.h"
 
@@ -24,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <jni.h>
 
-namespace LinphonePrivate{
+LINPHONE_BEGIN_NAMESPACE
 
 class AndroidPlatformHelpers : public PlatformHelpers{
 public:
@@ -36,6 +38,8 @@ public:
 	virtual void releaseMcastLock();
 	virtual void acquireCpuLock();
 	virtual void releaseCpuLock();
+	virtual std::string getDataPath();
+	virtual std::string getConfigPath();
 	~AndroidPlatformHelpers();
 private:
 	int callVoidMethod(jmethodID id);
@@ -49,8 +53,19 @@ private:
 	jmethodID mCpuLockReleaseId;
 	jmethodID mGetDnsServersId;
 	jmethodID mGetPowerManagerId;
+	jmethodID mGetDataPathId;
+	jmethodID mGetConfigPathId;
 
 };
+
+static const char* GetStringUTFChars(JNIEnv* env, jstring string) {
+		const char *cstring = string ? env->GetStringUTFChars(string, NULL) : NULL;
+		return cstring;
+}
+
+static void ReleaseStringUTFChars(JNIEnv* env, jstring string, const char *cstring) {
+		if (string) env->ReleaseStringUTFChars(string, cstring);
+}
 
 jmethodID AndroidPlatformHelpers::getMethodId(JNIEnv *env, jclass klass, const char *method, const char *signature){
 	jmethodID id = env->GetMethodID(klass, method, signature);
@@ -83,6 +98,8 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 	mCpuLockReleaseId = getMethodId(env, klass, "releaseCpuLock", "()V");
 	mGetDnsServersId = getMethodId(env, klass, "getDnsServers", "()[Ljava/lang/String;");
 	mGetPowerManagerId = getMethodId(env, klass, "getPowerManager", "()Ljava/lang/Object;");
+	mGetDataPathId = getMethodId(env, klass, "getDataPath", "()Ljava/lang/String;");
+	mGetConfigPathId = getMethodId(env, klass, "getConfigPath", "()Ljava/lang/String;");
 
 	jobject pm = env->CallObjectMethod(mJavaHelper,mGetPowerManagerId);
 	belle_sip_wake_lock_init(env, pm);
@@ -152,6 +169,21 @@ void AndroidPlatformHelpers::releaseCpuLock(){
 	callVoidMethod(mCpuLockReleaseId);
 }
 
+std::string AndroidPlatformHelpers::getDataPath(){
+	jstring jdata_path = (jstring)env->CallObjectMethod(mJavaHelper,mGetDataPathId);
+	const char *data_path = GetStringUTFChars(env, jdata_path);
+	string dataPath = data_path;
+	ReleaseStringUTFChars(env, jdata_path, data_path);
+	return dataPath;
+}
+
+std::string AndroidPlatformHelpers::getConfigPath(){
+	jstring jconfig_path = (jstring)env->CallObjectMethod(mJavaHelper,mGetConfigPathId);
+	const char *config_path = GetStringUTFChars(env, jconfig_path);
+	string configPath = config_path;
+	ReleaseStringUTFChars(env, jconfig_path, config_path);
+	return configPath;
+}
 
 int AndroidPlatformHelpers::callVoidMethod(jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
@@ -170,10 +202,6 @@ PlatformHelpers *createAndroidPlatformHelpers(LinphoneCore *lc, void *system_con
 	return new AndroidPlatformHelpers(lc, system_context);
 }
 
-}//end of namespace
-
-
-
+LINPHONE_END_NAMESPACE
 
 #endif
-

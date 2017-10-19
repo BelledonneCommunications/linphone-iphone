@@ -52,7 +52,7 @@ public class AndroidPlatformHelper{
 		WifiManager wifiMgr = ctx.getSystemService(WifiManager.class);
 		mPowerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
 		mConnectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
+
 		mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,	"AndroidPlatformHelper");
 		mWakeLock.setReferenceCounted(true);
 		mMcastLock = wifiMgr.createMulticastLock("AndroidPlatformHelper");
@@ -60,11 +60,11 @@ public class AndroidPlatformHelper{
 		mWifiLock = wifiMgr.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AndroidPlatformHelper");
 		mWifiLock.setReferenceCounted(true);
 	}
-	
+
 	public Object getPowerManager(){
 		return mPowerManager;
 	}
-	
+
 	public String[] getDnsServers() {
 		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
 			return null;

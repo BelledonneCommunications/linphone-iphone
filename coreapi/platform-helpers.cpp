@@ -17,11 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/utils/utils.h"
+
 #include "private.h"
 
+LINPHONE_BEGIN_NAMESPACE
 
-namespace LinphonePrivate{
-	
 PlatformHelpers::~PlatformHelpers(){
 }
 
@@ -42,8 +43,13 @@ void StubbedPlatformHelpers::acquireCpuLock(){
 }
 void StubbedPlatformHelpers::releaseCpuLock(){
 }
-
+std::string StubbedPlatformHelpers::getDataPath(){
+	return Utils::getEmptyConstRefObject<std::string>();
+}
+std::string StubbedPlatformHelpers::getConfigPath(){
+	return Utils::getEmptyConstRefObject<std::string>();
+}
 StubbedPlatformHelpers::~StubbedPlatformHelpers(){
 }
 
-}
+LINPHONE_END_NAMESPACE

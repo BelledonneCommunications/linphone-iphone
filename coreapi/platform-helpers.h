@@ -37,6 +37,8 @@ class PlatformHelpers{
 		virtual void releaseMcastLock() = 0;
 		virtual void acquireCpuLock() = 0;
 		virtual void releaseCpuLock() = 0;
+		virtual std::string getDataPath() = 0;
+		virtual std::string getConfigPath() = 0;
 		virtual ~PlatformHelpers();
 	protected:
 		PlatformHelpers(LinphoneCore *lc) : mCore(lc){
@@ -54,6 +56,8 @@ public:
 	void releaseMcastLock() override;
 	void acquireCpuLock() override;
 	void releaseCpuLock() override;
+	std::string getDataPath() override;
+	std::string getConfigPath() override;
 	virtual ~StubbedPlatformHelpers();
 };
 
