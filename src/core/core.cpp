@@ -19,14 +19,13 @@
 
 #include <algorithm>
 
-#include "address/address.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "core-p.h"
 #include "db/main-db.h"
-#include "linphone/core.h"
 #include "object/object-p.h"
 #include "paths/paths.h"
 
+// TODO: Remove me later.
 #include "private.h"
 
 // =============================================================================

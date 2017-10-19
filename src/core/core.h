@@ -22,9 +22,11 @@
 
 #include <list>
 
-#include "chat/chat-room/chat-room.h"
+#include "object/object.h"
 
 // =============================================================================
+
+L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
