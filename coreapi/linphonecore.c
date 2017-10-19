@@ -2234,7 +2234,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->sal->set_user_pointer(lc);
 	lc->sal->set_callbacks(&linphone_sal_callbacks);
 
-	new(&lc->cppCore) Core();
+	new(&lc->cppCore) Core(lc);
 
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);

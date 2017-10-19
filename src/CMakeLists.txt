@@ -199,6 +199,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/register-op.cpp
 	sal/sal.cpp
 	utils/general.cpp
+	utils/paths/paths.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp
 	variant/variant.cpp
@@ -206,6 +207,27 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	xml/resource-lists.cpp
 	xml/xml.cpp
 )
+
+set(LINPHONE_OBJC_SOURCE_FILES)
+if (APPLE)
+	list(APPEND LINPHONE_OBJC_SOURCE_FILES utils/paths/paths-apple.mm)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-apple.h)
+endif()
+
+if (ANDROID)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-android.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-android.h)
+endif()
+
+if (WIN32)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-windows.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-windows.h)
+endif()
+
+if (UNIX AND NOT APPLE)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-linux.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-linux.h)
+endif()
 
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
@@ -223,11 +245,12 @@ endforeach()
 set(LINPHONE_PRIVATE_HEADER_FILES ${LINPHONE_PRIVATE_HEADER_FILES} PARENT_SCOPE)
 
 bc_apply_compile_flags(LINPHONE_CXX_OBJECTS_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
+bc_apply_compile_flags(LINPHONE_OBJC_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX STRICT_OPTIONS_OBJC)
 
 if(ENABLE_STATIC)
 	add_library(
 		linphone-cxx-objects-static OBJECT
-		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES}
+		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
 	)
 	target_compile_definitions(linphone-cxx-objects-static PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
 	target_include_directories(linphone-cxx-objects-static SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
@@ -236,7 +259,7 @@ endif()
 if(ENABLE_SHARED)
 	add_library(
 		linphone-cxx-objects OBJECT
-		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES}
+		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
 	)
 	target_compile_definitions(linphone-cxx-objects PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
 	target_include_directories(linphone-cxx-objects SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})

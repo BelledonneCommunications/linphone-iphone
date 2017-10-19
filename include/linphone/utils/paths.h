@@ -1,5 +1,5 @@
 /*
- * core.h
+ * paths.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,34 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CORE_H_
-#define _CORE_H_
+#ifndef _PATHS_H_
+#define _PATHS_H_
 
-#include <list>
+#include <string>
 
-#include "chat/chat-room/chat-room.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatRoom;
-class CorePrivate;
+namespace Paths {
+	enum Type {
+		Data,
+		Config
+	};
 
-class LINPHONE_PUBLIC Core : public Object {
-friend class ClientGroupChatRoom;
-public:
-	Core (LinphoneCore *cCore);
-
-	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
-	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
-	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
-
-private:
-	L_DECLARE_PRIVATE(Core);
-	L_DISABLE_COPY(Core);
-};
+	LINPHONE_PUBLIC const std::string &getPath(Type type, void *context);
+}
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CORE_H_
+#endif // ifndef _PATHS_H_

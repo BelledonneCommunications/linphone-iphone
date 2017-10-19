@@ -31,6 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 class CorePrivate : public ObjectPrivate {
 public:
 	MainDb mainDb;
+	LinphoneCore *cCore;
 
 private:
 	std::list<std::shared_ptr<ChatRoom>> chatRooms;

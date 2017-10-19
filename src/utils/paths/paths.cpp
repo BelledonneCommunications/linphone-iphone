@@ -1,5 +1,5 @@
 /*
- * core.h
+ * utils.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,34 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CORE_H_
-#define _CORE_H_
+#include "linphone/utils/paths.h"
 
-#include <list>
-
-#include "chat/chat-room/chat-room.h"
-
+#ifdef __APPLE__
+#include "paths-apple.h"
+#elif defined(__ANDROID__)
+#include "paths-android.h"
+#elif defined(_WIN32)
+#include "paths-windows.h"
+#elif defined(__linux)
+#include "paths-linux.h"
+#else
+#error "Unsupported system"
+#endif
 // =============================================================================
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatRoom;
-class CorePrivate;
-
-class LINPHONE_PUBLIC Core : public Object {
-friend class ClientGroupChatRoom;
-public:
-	Core (LinphoneCore *cCore);
-
-	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
-	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
-	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
-
-private:
-	L_DECLARE_PRIVATE(Core);
-	L_DISABLE_COPY(Core);
-};
+const string &Paths::getPath (Paths::Type type, void *context) {
+	switch (type) {
+		case Data:
+			return SysPaths::getDataPath(context);
+		case Config:
+			return SysPaths::getConfigPath(context);
+	}
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _CORE_H_

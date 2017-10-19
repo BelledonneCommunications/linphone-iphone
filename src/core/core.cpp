@@ -23,6 +23,7 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "core-p.h"
 #include "db/main-db.h"
+#include "linphone/core.h"
 #include "object/object-p.h"
 
 #include "core.h"
@@ -35,7 +36,21 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-Core::Core () : Object(*new CorePrivate) {}
+Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
+	L_D();
+	d->cCore = cCore;
+	const char *uri = lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_uri", NULL);
+	if (uri) {
+		AbstractDb::Backend backend =
+			strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_backend", NULL), "mysql") == 0
+			? MainDb::Mysql
+			: MainDb::Sqlite3;
+		d->mainDb.connect(backend, uri);
+	}	else {
+		// TODO
+		// d->mainDb.connect(MainDb::Sqlite3, linphone_factory_get_writable_dir()/linphone.db);
+	}
+}
 
 // -----------------------------------------------------------------------------
 
