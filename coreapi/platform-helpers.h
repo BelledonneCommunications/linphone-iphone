@@ -47,13 +47,13 @@ class PlatformHelpers{
 class StubbedPlatformHelpers : public PlatformHelpers{
 public:
 	StubbedPlatformHelpers(LinphoneCore *lc);
-	virtual void setDnsServers();
-	virtual void acquireWifiLock();
-	virtual void releaseWifiLock();
-	virtual void acquireMcastLock();
-	virtual void releaseMcastLock();
-	virtual void acquireCpuLock();
-	virtual void releaseCpuLock();
+	void setDnsServers() override;
+	void acquireWifiLock() override;
+	void releaseWifiLock() override;
+	void acquireMcastLock() override;
+	void releaseMcastLock() override;
+	void acquireCpuLock() override;
+	void releaseCpuLock() override;
 	virtual ~StubbedPlatformHelpers();
 };
 

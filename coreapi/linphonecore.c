@@ -2269,16 +2269,20 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->group_chat_rooms = bctbx_mmap_cchar_new();
 }
 
+#ifdef __ANDROID__
 static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
 	if (lc->platform_helper) delete getPlatformHelpers(lc);
 	lc->platform_helper = ph;
 }
 
 static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-#ifdef __ANDROID__
 	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
-#endif
 }
+#else
+static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
+	
+}
+#endif
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context) {
 	LinphoneCore *core = belle_sip_object_new(LinphoneCore);
