@@ -363,7 +363,7 @@ jobject Java_{{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobjec
 	return env->NewObject(ljb->ms_factory_class, ljb->ms_factory_class_constructor, (jlong)factory);
 }
 
-jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jobject jfactory, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path) {
+jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jobject jfactory, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path, jobject jcontext) {
 	LinphoneFactory *cptr = linphone_factory_get();
 	SetObjectNativePtr(env, jfactory, (jlong)cptr); // Set the C factory ptr as Factory.nativePtr for next factory calls
 
@@ -409,7 +409,7 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 	linphone_core_cbs_set_log_collection_upload_state_changed(cbs, linphone_core_on_log_collection_upload_state_changed);
 	linphone_core_cbs_set_dtmf_received(cbs, linphone_core_on_dtmf_received);
 
-	core = linphone_factory_create_core(linphone_factory_get(), cbs, config_path, factory_config_path);
+	core = linphone_factory_create_core_2(linphone_factory_get(), cbs, config_path, factory_config_path, NULL, (void *)jcontext);
 
 	ReleaseStringUTFChars(env, jconfig_path, config_path);
 	ReleaseStringUTFChars(env, jfactory_config_path, factory_config_path);
