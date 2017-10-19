@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <stream>
+#include "shlobj.h"
+
 #include "core/platform-helpers/platform-helpers.h"
 #include "linphone/utils/utils.h"
 
@@ -24,16 +27,27 @@
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-	//TODO.
+string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
+	TCHAR szPath[MAX_PATH];
+	// Get path for each computer, non-user specific and non-roaming data.
+	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
+		stringstream path;
+		path << boost::lexical_cast<std::string>(szPath) << "/linphone";
+		string ret = path.str();
+		boost::replace_all(ret, "\\", "\\\\");
+		return ret;
+	}
+
 	return Utils::getEmptyConstRefObject<std::string>();
 }
 
-std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	//TODO.
-	return Utils::getEmptyConstRefObject<std::string>();
+string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
+	// seems to be the same directory
+	return getDataPath(platformHelper);
 }
 
 LINPHONE_END_NAMESPACE
