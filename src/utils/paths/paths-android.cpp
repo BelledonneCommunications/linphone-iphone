@@ -28,22 +28,18 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (void *context) {
-	if (!context) {
+const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
+	if (!platformHelper) {
 		return Utils::getEmptyConstRefObject<std::string>();
 	}
-
-	AndroidPlatformHelper *helper = static_cast<AndroidPlatformHelper>(context);
-	return helper->getDataPath();
+	return platformHelper->getDataPath();
 }
 
-const std::string &SysPaths::getConfigPath (void *context) {
-	if (!context) {
+const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
+	if (!platformHelper) {
 		return Utils::getEmptyConstRefObject<std::string>();
 	}
-
-	AndroidPlatformHelper *helper = static_cast<AndroidPlatformHelper>(context);
-	return helper->getConfigPath();
+	return platformHelper->getConfigPath();
 }
 
 LINPHONE_END_NAMESPACE
