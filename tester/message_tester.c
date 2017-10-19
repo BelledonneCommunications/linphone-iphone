@@ -833,7 +833,7 @@ void info_message_base(bool_t with_content) {
 		LinphoneContent* ct=linphone_core_create_content(marie->lc);
 		linphone_content_set_type(ct,"application");
 		linphone_content_set_subtype(ct,"somexml");
-		linphone_content_set_buffer(ct,info_content,strlen(info_content));
+		linphone_content_set_buffer(ct,(const uint8_t *)info_content,strlen(info_content));
 		linphone_info_message_set_content(info,ct);
 		linphone_content_unref(ct);
 	}

@@ -55,7 +55,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 	content = linphone_core_create_content(lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml2");
-	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
+	linphone_content_set_buffer(content,(const uint8_t *)notify_content,strlen(notify_content));
 
 	ms_message("Subscription state [%s] from [%s]",linphone_subscription_state_to_string(state),from);
 	ms_free(from);
@@ -138,7 +138,7 @@ static void subscribe_test_declined(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	pauline->decline_subscribe=TRUE;
 
@@ -186,7 +186,7 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	linphone_event_ref(lev);
@@ -244,7 +244,7 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -332,7 +332,7 @@ static void subscribe_loosing_dialog(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -395,7 +395,7 @@ static void subscribe_with_io_error(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -449,7 +449,7 @@ static void subscribe_not_timely_responded(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -495,7 +495,7 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_publish",refresh);
 
@@ -551,7 +551,7 @@ static void out_of_dialog_notify(void){
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
+	linphone_content_set_buffer(content,(const uint8_t *)notify_content,strlen(notify_content));
 
 	lev = linphone_core_create_notify(marie->lc,pauline->identity,"dodo");
 	linphone_event_ref(lev);

@@ -118,11 +118,11 @@ void linphone_content_set_subtype(LinphoneContent *content, const char *subtype)
 	sal_body_handler_set_subtype(content->body_handler, subtype);
 }
 
-void * linphone_content_get_buffer(const LinphoneContent *content) {
-	return sal_body_handler_get_data(content->body_handler);
+uint8_t * linphone_content_get_buffer(const LinphoneContent *content) {
+	return (uint8_t *)sal_body_handler_get_data(content->body_handler);
 }
 
-void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, size_t size) {
+void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer, size_t size) {
 	void *data;
 	sal_body_handler_set_size(content->body_handler, size);
 	data = belle_sip_malloc(size + 1);

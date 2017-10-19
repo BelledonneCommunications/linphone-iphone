@@ -42,7 +42,7 @@ static void subscribe_forking(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content, liblinphone_tester_get_subscribe_content(), strlen(liblinphone_tester_get_subscribe_content()));
+	linphone_content_set_buffer(content, (const uint8_t *)liblinphone_tester_get_subscribe_content(), strlen(liblinphone_tester_get_subscribe_content()));
 
 	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 
@@ -1102,7 +1102,7 @@ static void test_list_subscribe (void) {
 
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"resource-lists+xml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,list_name,"presence",60);
 

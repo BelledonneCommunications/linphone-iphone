@@ -887,7 +887,7 @@ int linphone_proxy_config_send_publish(LinphoneProxyConfig *proxy, LinphonePrese
 		}
 
 		content = linphone_content_new();
-		linphone_content_set_buffer(content,presence_body,strlen(presence_body));
+		linphone_content_set_buffer(content, (const uint8_t *)presence_body,strlen(presence_body));
 		linphone_content_set_type(content, "application");
 		linphone_content_set_subtype(content,"pidf+xml");
 		if (proxy->sip_etag) {

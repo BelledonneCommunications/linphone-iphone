@@ -94,7 +94,7 @@ LINPHONE_PUBLIC void linphone_content_set_subtype(LinphoneContent *content, cons
  * @param[in] content LinphoneContent object.
  * @return The content data buffer.
  */
-LINPHONE_PUBLIC void * linphone_content_get_buffer(const LinphoneContent *content);
+LINPHONE_PUBLIC uint8_t * linphone_content_get_buffer(const LinphoneContent *content);
 
 /**
  * Set the content data buffer, usually a string.
@@ -102,7 +102,7 @@ LINPHONE_PUBLIC void * linphone_content_get_buffer(const LinphoneContent *conten
  * @param[in] buffer The content data buffer.
  * @param[in] size The size of the content data buffer.
  */
-LINPHONE_PUBLIC void linphone_content_set_buffer(LinphoneContent *content, const void *buffer, size_t size);
+LINPHONE_PUBLIC void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer, size_t size);
 
 /**
  * Get the string content data buffer.

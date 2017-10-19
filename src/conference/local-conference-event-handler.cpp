@@ -38,7 +38,7 @@ using namespace Xsd::ConferenceInfo;
 
 static void doNotify (const string &notify, LinphoneEvent *lev) {
 	LinphoneContent *content = linphone_core_create_content(lev->lc);
-	linphone_content_set_buffer(content, notify.c_str(), strlen(notify.c_str()));
+	linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
 	linphone_event_notify(lev, content);
 	linphone_content_unref(content);
 }
