@@ -108,11 +108,9 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 		switch (newState) {
 			case LinphoneCallOutgoingInit:
 			case LinphoneCallIncomingReceived:
-#ifdef __ANDROID__
-				lInfo() << "CallSession [" << q << "] acquires both wifi and multicast lock";
-				linphone_core_wifi_lock_acquire(core);
-				linphone_core_multicast_lock_acquire(core); /* Does no affect battery more than regular rtp traffic */
-#endif
+				getPlatformHelpers(core)->acquireWifiLock();
+				getPlatformHelpers(core)->acquireMcastLock();
+				getPlatformHelpers(core)->acquireCpuLock();
 				break;
 			case LinphoneCallEnd:
 			case LinphoneCallError:
@@ -152,11 +150,9 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				log->connected_date_time = ms_time(nullptr);
 				break;
 			case LinphoneCallReleased:
-#ifdef __ANDROID__
-				lInfo() << "CallSession [" << q << "] releases wifi/multicast lock";
-				linphone_core_wifi_lock_release(core);
-				linphone_core_multicast_lock_release(core);
-#endif
+				getPlatformHelpers(core)->acquireWifiLock();
+				getPlatformHelpers(core)->acquireMcastLock();
+				getPlatformHelpers(core)->acquireCpuLock();
 				break;
 			default:
 				break;

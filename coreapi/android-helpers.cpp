@@ -17,15 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-
-
 #include "private.h"
 #include "platform-helpers.h"
-#include <jni.h>
-
-
 
 #ifdef __ANDROID__
+
+#include <jni.h>
 
 namespace LinphonePrivate{
 
@@ -52,7 +49,7 @@ private:
 	jmethodID mCpuLockReleaseId;
 	jmethodID mGetDnsServersId;
 	jmethodID mGetPowerManagerId;
-	
+
 };
 
 jmethodID AndroidPlatformHelpers::getMethodId(JNIEnv *env, jclass klass, const char *method, const char *signature){
@@ -77,7 +74,7 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 		return;
 	}
 	mJavaHelper = (jobject) env->NewGlobalRef(mJavaHelper);
-	
+
 	mWifiLockAcquireId = getMethodId(env, klass, "acquireWifiLock", "()V");
 	mWifiLockReleaseId = getMethodId(env, klass, "releaseWifiLock", "()V");
 	mMcastLockAcquireId = getMethodId(env, klass, "acquireMcastLock", "()V");
@@ -86,10 +83,10 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 	mCpuLockReleaseId = getMethodId(env, klass, "releaseCpuLock", "()V");
 	mGetDnsServersId = getMethodId(env, klass, "getDnsServers", "()[Ljava/lang/String;");
 	mGetPowerManagerId = getMethodId(env, klass, "getPowerManager", "()Ljava/lang/Object;");
-	
+
 	jobject pm = env->CallObjectMethod(mJavaHelper,mGetPowerManagerId);
 	belle_sip_wake_lock_init(env, pm);
-	
+
 	ms_message("AndroidPlatformHelpers is fully initialised");
 }
 
