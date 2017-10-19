@@ -1,5 +1,5 @@
 /*
- * paths-android.cpp
+ * utils.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,29 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <jni.h>
+#include "core/platform-helpers/platform-helpers.h"
+#include "paths.h"
 
-#include "private.h"
-#include "linphone/utils/utils.h"
-
+#ifdef __APPLE__
+#include "paths-apple.h"
+#elif defined(__ANDROID__)
 #include "paths-android.h"
+#elif defined(_WIN32)
+#include "paths-windows.h"
+#elif defined(__linux)
+#include "paths-linux.h"
+#else
+#error "Unsupported system"
+#endif
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
-	if (!platformHelper) {
-		return Utils::getEmptyConstRefObject<std::string>();
+const string &Paths::getPath (Paths::Type type, PlatformHelper *platformHelper) {
+	switch (type) {
+		case Data:
+			return SysPaths::getDataPath(platformHelper);
+		case Config:
+		default:
+			return SysPaths::getConfigPath(platformHelper);
 	}
-	return platformHelper->getDataPath();
-}
-
-const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
-	if (!platformHelper) {
-		return Utils::getEmptyConstRefObject<std::string>();
-	}
-	return platformHelper->getConfigPath();
 }
 
 LINPHONE_END_NAMESPACE

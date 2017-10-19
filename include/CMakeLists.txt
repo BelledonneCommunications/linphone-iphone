@@ -100,7 +100,6 @@ set(UTILS_HEADER_FILES
 	enum-generator.h
 	general.h
 	magic-macros.h
-	paths.h
 	utils.h
 )
 

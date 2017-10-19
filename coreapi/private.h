@@ -42,7 +42,7 @@
 #include "sal/register-op.h"
 
 #ifdef __cplusplus
-#include "platform-helpers.h"
+#include "core/platform-helpers/platform-helpers.h"
 #endif
 
 #include "linphone/sipsetup.h"

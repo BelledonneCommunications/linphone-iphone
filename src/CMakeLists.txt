@@ -81,6 +81,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	content/content.h
 	core/core-p.h
 	core/core.h
+	core/paths/paths.h
+	core/platform-helpers/platform-helpers.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
 	db/main-db-p.h
@@ -169,6 +171,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content-type.cpp
 	content/content.cpp
 	core/core.cpp
+	core/paths/paths.cpp
+	core/platform-helpers/platform-helpers.cpp
 	db/abstract/abstract-db.cpp
 	db/main-db.cpp
 	db/session/db-session-provider.cpp
@@ -199,7 +203,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/register-op.cpp
 	sal/sal.cpp
 	utils/general.cpp
-	utils/paths/paths.cpp
 	utils/payload-type-handler.cpp
 	utils/utils.cpp
 	variant/variant.cpp
@@ -210,20 +213,20 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 
 set(LINPHONE_OBJC_SOURCE_FILES)
 if (APPLE)
-	list(APPEND LINPHONE_OBJC_SOURCE_FILES utils/paths/paths-apple.mm)
-	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-apple.h)
+	list(APPEND LINPHONE_OBJC_SOURCE_FILES core/paths/paths-apple.mm)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-apple.h)
 
 elseif(ANDROID)
-	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-android.cpp)
-	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-android.h)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-android.cpp core/platform-helpers/android-helpers.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-android.h)
 
 elseif(WIN32)
-	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-windows.cpp)
-	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-windows.h)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-windows.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-windows.h)
 
 elseif(UNIX)
-	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES utils/paths/paths-linux.cpp)
-	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES utils/paths/paths-linux.h)
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-linux.cpp)
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-linux.h)
 endif()
 
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})

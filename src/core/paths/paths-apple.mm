@@ -19,7 +19,7 @@
 
 #import "linphone/utils/utils.h"
 
-#include "private.h"
+#include "core/platform-helpers/platform-helpers.h"
 #import "paths-apple.h"
 
 #ifdef __OBJC__

@@ -20,6 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef platform_helpers_h
 #define platform_helpers_h
 
+#include <string>
+
+#include "linphone/core.h"
 #include "linphone/utils/general.h"
 
 LINPHONE_BEGIN_NAMESPACE

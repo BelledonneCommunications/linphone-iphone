@@ -24,12 +24,10 @@
 #include "core-p.h"
 #include "db/main-db.h"
 #include "linphone/core.h"
-#include "linphone/utils/paths.h"
 #include "object/object-p.h"
+#include "paths/paths.h"
 
 #include "private.h"
-
-#include "core.h"
 
 // =============================================================================
 
@@ -50,7 +48,7 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			: MainDb::Sqlite3;
 		d->mainDb.connect(backend, uri);
 	}	else {
-		string path = Paths::getPath(Paths::Data, static_cast<PlatformHelper *>(cCore->platform_helper));
+		string path = getDataPath();
 		//d->mainDb.connect(MainDb::Sqlite3, linphone_factory_get_writable_dir()/linphone.db);
 	}
 }
@@ -69,6 +67,16 @@ shared_ptr<ChatRoom> Core::getOrCreateChatRoom (const string &peerAddress, bool 
 const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
 	L_D();
 	return d->chatRooms;
+}
+
+const std::string &Core::getDataPath() const {
+	L_D();
+	return Paths::getPath(Paths::Data, static_cast<PlatformHelper *>(d->cCore->platform_helper));
+}
+
+const std::string &Core::getConfigPath() const {
+	L_D();
+	return Paths::getPath(Paths::Config, static_cast<PlatformHelper *>(d->cCore->platform_helper));
 }
 
 // -----------------------------------------------------------------------------

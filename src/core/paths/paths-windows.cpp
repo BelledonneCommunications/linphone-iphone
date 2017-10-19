@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "private.h"
+#include "core/platform-helpers/platform-helpers.h"
 #include "linphone/utils/utils.h"
 
 #include "paths-windows.h"
