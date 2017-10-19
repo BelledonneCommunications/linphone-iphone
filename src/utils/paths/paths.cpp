@@ -43,6 +43,7 @@ const string &Paths::getPath (Paths::Type type, void *context) {
 		case Config:
 			return SysPaths::getConfigPath(context);
 	}
+	return NULL;
 }
 
 LINPHONE_END_NAMESPACE
