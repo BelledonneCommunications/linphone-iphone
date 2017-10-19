@@ -28,22 +28,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LINPHONE_BEGIN_NAMESPACE
 
-class AndroidPlatformHelpers : public PlatformHelpers{
+class AndroidPlatformHelpers : public PlatformHelpers {
 public:
-	AndroidPlatformHelpers(LinphoneCore *lc, void *system_context);
-	virtual void setDnsServers();
-	virtual void acquireWifiLock();
-	virtual void releaseWifiLock();
-	virtual void acquireMcastLock();
-	virtual void releaseMcastLock();
-	virtual void acquireCpuLock();
-	virtual void releaseCpuLock();
-	virtual std::string getDataPath();
-	virtual std::string getConfigPath();
-	~AndroidPlatformHelpers();
+	AndroidPlatformHelpers (LinphoneCore *lc, void *system_context);
+	virtual void setDnsServers ();
+	virtual void acquireWifiLock ();
+	virtual void releaseWifiLock ();
+	virtual void acquireMcastLock ();
+	virtual void releaseMcastLock ();
+	virtual void acquireCpuLock ();
+	virtual void releaseCpuLock ();
+	virtual std::string getDataPath ();
+	virtual std::string getConfigPath ();
+	~AndroidPlatformHelpers ();
 private:
-	int callVoidMethod(jmethodID id);
-	static jmethodID getMethodId(JNIEnv *env, jclass klass, const char *method, const char *signature);
+	int callVoidMethod (jmethodID id);
+	static jmethodID getMethodId (JNIEnv *env, jclass klass, const char *method, const char *signature);
 	jobject mJavaHelper;
 	jmethodID mWifiLockAcquireId;
 	jmethodID mWifiLockReleaseId;
@@ -58,33 +58,33 @@ private:
 
 };
 
-static const char* GetStringUTFChars(JNIEnv* env, jstring string) {
+static const char* GetStringUTFChars (JNIEnv* env, jstring string) {
 		const char *cstring = string ? env->GetStringUTFChars(string, NULL) : NULL;
 		return cstring;
 }
 
-static void ReleaseStringUTFChars(JNIEnv* env, jstring string, const char *cstring) {
+static void ReleaseStringUTFChars (JNIEnv* env, jstring string, const char *cstring) {
 		if (string) env->ReleaseStringUTFChars(string, cstring);
 }
 
-jmethodID AndroidPlatformHelpers::getMethodId(JNIEnv *env, jclass klass, const char *method, const char *signature){
+jmethodID AndroidPlatformHelpers::getMethodId (JNIEnv *env, jclass klass, const char *method, const char *signature) {
 	jmethodID id = env->GetMethodID(klass, method, signature);
-	if (id == 0){
+	if (id == 0) {
 		ms_fatal("Could not find java method '%s %s'", method, signature);
 	}
 	return id;
 }
 
-AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
+AndroidPlatformHelpers::AndroidPlatformHelpers (LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
 	JNIEnv *env=ms_get_jni_env();
 	jclass klass = env->FindClass("org/linphone/core/tools/AndroidPlatformHelper");
-	if (!klass){
+	if (!klass) {
 		ms_fatal("Could not find java AndroidPlatformHelper class");
 		return;
 	}
 	jmethodID ctor = env->GetMethodID(klass,"<init>", "(Ljava/lang/Object;)V");
 	mJavaHelper = env->NewObject(klass, ctor, (jobject)system_context);
-	if (!mJavaHelper){
+	if (!mJavaHelper) {
 		ms_error("Could not instanciate AndroidPlatformHelper object.");
 		return;
 	}
@@ -107,8 +107,8 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 	ms_message("AndroidPlatformHelpers is fully initialised");
 }
 
-AndroidPlatformHelpers::~AndroidPlatformHelpers(){
-	if (mJavaHelper){
+AndroidPlatformHelpers::~AndroidPlatformHelpers () {
+	if (mJavaHelper) {
 		JNIEnv *env = ms_get_jni_env();
 		belle_sip_wake_lock_uninit(env);
 		env->DeleteGlobalRef(mJavaHelper);
@@ -117,7 +117,7 @@ AndroidPlatformHelpers::~AndroidPlatformHelpers(){
 }
 
 
-void AndroidPlatformHelpers::setDnsServers(){
+void AndroidPlatformHelpers::setDnsServers () {
 	if (!mJavaHelper) return;
 	JNIEnv *env=ms_get_jni_env();
 	if (env && mJavaHelper) {
@@ -128,13 +128,13 @@ void AndroidPlatformHelpers::setDnsServers(){
 			ms_error("AndroidPlatformHelpers::setDnsServers() exception");
 			return;
 		}
-		if (jservers != NULL){
+		if (jservers != NULL) {
 			int count = env->GetArrayLength(jservers);
 
 			for (int i=0; i < count; i++) {
 				jstring jserver = (jstring) env->GetObjectArrayElement(jservers, i);
 				const char *str = env->GetStringUTFChars(jserver, NULL);
-				if (str){
+				if (str) {
 					l = bctbx_list_append(l, ms_strdup(str));
 					env->ReleaseStringUTFChars(jserver, str);
 				}
@@ -145,31 +145,31 @@ void AndroidPlatformHelpers::setDnsServers(){
 	}
 }
 
-void AndroidPlatformHelpers::acquireWifiLock(){
+void AndroidPlatformHelpers::acquireWifiLock () {
 	callVoidMethod(mWifiLockAcquireId);
 }
 
-void AndroidPlatformHelpers::releaseWifiLock(){
+void AndroidPlatformHelpers::releaseWifiLock () {
 	callVoidMethod(mWifiLockReleaseId);
 }
 
-void AndroidPlatformHelpers::acquireMcastLock(){
+void AndroidPlatformHelpers::acquireMcastLock () {
 	callVoidMethod(mMcastLockAcquireId);
 }
 
-void AndroidPlatformHelpers::releaseMcastLock(){
+void AndroidPlatformHelpers::releaseMcastLock () {
 	callVoidMethod(mMcastLockReleaseId);
 }
 
-void AndroidPlatformHelpers::acquireCpuLock(){
+void AndroidPlatformHelpers::acquireCpuLock () {
 	callVoidMethod(mCpuLockAcquireId);
 }
 
-void AndroidPlatformHelpers::releaseCpuLock(){
+void AndroidPlatformHelpers::releaseCpuLock () {
 	callVoidMethod(mCpuLockReleaseId);
 }
 
-std::string AndroidPlatformHelpers::getDataPath(){
+std::string AndroidPlatformHelpers::getDataPath () {
 	JNIEnv *env = ms_get_jni_env();
 	jstring jdata_path = (jstring)env->CallObjectMethod(mJavaHelper,mGetDataPathId);
 	const char *data_path = GetStringUTFChars(env, jdata_path);
@@ -178,7 +178,7 @@ std::string AndroidPlatformHelpers::getDataPath(){
 	return dataPath;
 }
 
-std::string AndroidPlatformHelpers::getConfigPath(){
+std::string AndroidPlatformHelpers::getConfigPath () {
 	JNIEnv *env = ms_get_jni_env();
 	jstring jconfig_path = (jstring)env->CallObjectMethod(mJavaHelper,mGetConfigPathId);
 	const char *config_path = GetStringUTFChars(env, jconfig_path);
@@ -187,7 +187,7 @@ std::string AndroidPlatformHelpers::getConfigPath(){
 	return configPath;
 }
 
-int AndroidPlatformHelpers::callVoidMethod(jmethodID id) {
+int AndroidPlatformHelpers::callVoidMethod (jmethodID id) {
 	JNIEnv *env=ms_get_jni_env();
 	if (env && mJavaHelper) {
 		env->CallVoidMethod(mJavaHelper,id);
@@ -200,7 +200,7 @@ int AndroidPlatformHelpers::callVoidMethod(jmethodID id) {
 		return -1;
 }
 
-PlatformHelpers *createAndroidPlatformHelpers(LinphoneCore *lc, void *system_context){
+PlatformHelpers *createAndroidPlatformHelpers (LinphoneCore *lc, void *system_context) {
 	return new AndroidPlatformHelpers(lc, system_context);
 }
 

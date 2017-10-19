@@ -23,33 +23,31 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 LINPHONE_BEGIN_NAMESPACE
 
-PlatformHelpers::~PlatformHelpers(){
-}
+PlatformHelpers::~PlatformHelpers () {}
 
-StubbedPlatformHelpers::StubbedPlatformHelpers(LinphoneCore *lc) : PlatformHelpers(lc){
-}
+StubbedPlatformHelpers::StubbedPlatformHelpers (LinphoneCore *lc) : PlatformHelpers(lc) {}
 
-void StubbedPlatformHelpers::setDnsServers(){
+void StubbedPlatformHelpers::setDnsServers () {
 }
-void StubbedPlatformHelpers::acquireWifiLock(){
+void StubbedPlatformHelpers::acquireWifiLock () {
 }
-void StubbedPlatformHelpers::releaseWifiLock(){
+void StubbedPlatformHelpers::releaseWifiLock () {
 }
-void StubbedPlatformHelpers::acquireMcastLock(){
+void StubbedPlatformHelpers::acquireMcastLock () {
 }
-void StubbedPlatformHelpers::releaseMcastLock(){
+void StubbedPlatformHelpers::releaseMcastLock () {
 }
-void StubbedPlatformHelpers::acquireCpuLock(){
+void StubbedPlatformHelpers::acquireCpuLock () {
 }
-void StubbedPlatformHelpers::releaseCpuLock(){
+void StubbedPlatformHelpers::releaseCpuLock () {
 }
-std::string StubbedPlatformHelpers::getDataPath(){
+std::string StubbedPlatformHelpers::getDataPath () {
 	return Utils::getEmptyConstRefObject<std::string>();
 }
-std::string StubbedPlatformHelpers::getConfigPath(){
+std::string StubbedPlatformHelpers::getConfigPath () {
 	return Utils::getEmptyConstRefObject<std::string>();
 }
-StubbedPlatformHelpers::~StubbedPlatformHelpers(){
+StubbedPlatformHelpers::~StubbedPlatformHelpers () {
 }
 
 LINPHONE_END_NAMESPACE

@@ -30,6 +30,7 @@
 #else
 #error "Unsupported system"
 #endif
+
 // =============================================================================
 
 using namespace std;

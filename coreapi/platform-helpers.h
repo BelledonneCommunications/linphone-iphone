@@ -20,49 +20,50 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef platform_helpers_h
 #define platform_helpers_h
 
+#include "linphone/utils/general.h"
 
-namespace LinphonePrivate{
+LINPHONE_BEGIN_NAMESPACE
 
 /**
  * This interface aims at abstracting some features offered by the platform, most often mobile platforms.
  * A per platform implementation is to be made to implement these features, if available on the platform
  */
-class PlatformHelpers{
-	public:
-		//This method shall retrieve DNS server list from the platform and assign it to the core.
-		virtual void setDnsServers() = 0;
-		virtual void acquireWifiLock() = 0;
-		virtual void releaseWifiLock() = 0;
-		virtual void acquireMcastLock() = 0;
-		virtual void releaseMcastLock() = 0;
-		virtual void acquireCpuLock() = 0;
-		virtual void releaseCpuLock() = 0;
-		virtual std::string getDataPath() = 0;
-		virtual std::string getConfigPath() = 0;
-		virtual ~PlatformHelpers();
-	protected:
-		PlatformHelpers(LinphoneCore *lc) : mCore(lc){
-		}
-		LinphoneCore *mCore;
-};
-
-class StubbedPlatformHelpers : public PlatformHelpers{
+class PlatformHelpers {
 public:
-	StubbedPlatformHelpers(LinphoneCore *lc);
-	void setDnsServers() override;
-	void acquireWifiLock() override;
-	void releaseWifiLock() override;
-	void acquireMcastLock() override;
-	void releaseMcastLock() override;
-	void acquireCpuLock() override;
-	void releaseCpuLock() override;
-	std::string getDataPath() override;
-	std::string getConfigPath() override;
-	virtual ~StubbedPlatformHelpers();
+	//This method shall retrieve DNS server list from the platform and assign it to the core.
+	virtual void setDnsServers () = 0;
+	virtual void acquireWifiLock () = 0;
+	virtual void releaseWifiLock () = 0;
+	virtual void acquireMcastLock () = 0;
+	virtual void releaseMcastLock () = 0;
+	virtual void acquireCpuLock () = 0;
+	virtual void releaseCpuLock () = 0;
+	virtual std::string getDataPath () = 0;
+	virtual std::string getConfigPath () = 0;
+	virtual ~PlatformHelpers ();
+
+protected:
+	inline PlatformHelpers (LinphoneCore *lc) : mCore(lc) {}
+	LinphoneCore *mCore;
 };
 
-PlatformHelpers *createAndroidPlatformHelpers(LinphoneCore *lc, void *system_context);
+class StubbedPlatformHelpers : public PlatformHelpers {
+public:
+	StubbedPlatformHelpers (LinphoneCore *lc);
+	void setDnsServers () override;
+	void acquireWifiLock () override;
+	void releaseWifiLock () override;
+	void acquireMcastLock () override;
+	void releaseMcastLock () override;
+	void acquireCpuLock () override;
+	void releaseCpuLock () override;
+	std::string getDataPath () override;
+	std::string getConfigPath () override;
+	virtual ~StubbedPlatformHelpers ();
+};
 
-}//end of namespace
+PlatformHelpers *createAndroidPlatformHelpers (LinphoneCore *lc, void *system_context);
+
+LINPHONE_END_NAMESPACE
 
 #endif
