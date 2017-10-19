@@ -26,14 +26,15 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+static std::string dataPath = "~/.local/share/linphone";
+static std::string configPath = "~/.config/linphone";
+
 std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-	//TODO.
-	return Utils::getEmptyConstRefObject<std::string>();
+	return dataPath;
 }
 
 std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	//TODO.
-	return Utils::getEmptyConstRefObject<std::string>();
+	return configPath;
 }
 
 LINPHONE_END_NAMESPACE
