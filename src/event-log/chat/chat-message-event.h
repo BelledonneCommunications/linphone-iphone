@@ -34,14 +34,12 @@ class ChatMessageEventPrivate;
 class LINPHONE_PUBLIC ChatMessageEvent : public EventLog {
 public:
 	ChatMessageEvent (std::time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
-	ChatMessageEvent (const ChatMessageEvent &src);
-
-	ChatMessageEvent &operator= (const ChatMessageEvent &src);
 
 	std::shared_ptr<ChatMessage> getChatMessage () const;
 
 private:
 	L_DECLARE_PRIVATE(ChatMessageEvent);
+	L_DISABLE_COPY(ChatMessageEvent);
 };
 
 LINPHONE_END_NAMESPACE

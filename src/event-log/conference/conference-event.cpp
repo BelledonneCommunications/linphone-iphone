@@ -33,9 +33,6 @@ ConferenceEvent::ConferenceEvent (Type type, time_t time, const Address &confere
 	d->conferenceAddress = conferenceAddress;
 }
 
-ConferenceEvent::ConferenceEvent (const ConferenceEvent &src) :
-	ConferenceEvent(src.getType(), src.getTime(), src.getConferenceAddress()) {}
-
 ConferenceEvent::ConferenceEvent (
 	ConferenceEventPrivate &p,
 	Type type,
@@ -44,16 +41,6 @@ ConferenceEvent::ConferenceEvent (
 ) : EventLog(p, type, time) {
 	L_D();
 	d->conferenceAddress = conferenceAddress;
-}
-
-ConferenceEvent &ConferenceEvent::operator= (const ConferenceEvent &src) {
-	L_D();
-	if (this != &src) {
-		EventLog::operator=(src);
-		d->conferenceAddress = src.getPrivate()->conferenceAddress;
-	}
-
-	return *this;
 }
 
 const Address &ConferenceEvent::getConferenceAddress () const {

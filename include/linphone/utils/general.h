@@ -82,27 +82,42 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_UNLIKELY(EXPRESSION) EXPRESSION
 #endif
 
+class BaseObject;
+class BaseObjectPrivate;
 class ClonableObject;
 class ClonableObjectPrivate;
 class Object;
 class ObjectPrivate;
 
-#define L_INTERNAL_DECLARE_PRIVATE(CLASS) \
-	inline CLASS ## Private *getPrivate() { \
-		return reinterpret_cast<CLASS ## Private *>(mPrivate); \
-	} \
-	inline const CLASS ## Private *getPrivate() const { \
-		return reinterpret_cast<const CLASS ## Private *>(mPrivate); \
-	} \
-	friend class CLASS ## Private; \
-	friend class Wrapper;
+#define L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS) \
+	static_assert( \
+		!(std::is_base_of<BaseObject, CLASS>::value && std::is_base_of<ClonableObject, CLASS>::value), \
+		"Multiple inheritance between BaseObject and ClonableObject is not allowed." \
+	);
 
-#define L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
-	inline CLASS ## Private *getPrivate() { \
-		return reinterpret_cast<CLASS ## Private *>(PARENT_TYPE::mPrivate); \
+#define L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS) \
+	std::conditional< \
+		std::is_base_of<BaseObject, CLASS>::value, \
+		BaseObject, \
+		std::conditional< \
+			std::is_base_of<ClonableObject, CLASS>::value, \
+			ClonableObject, \
+			CLASS \
+		>::type \
+	>::type
+
+#define L_INTERNAL_DECLARE_PRIVATE(CLASS) \
+	inline CLASS ## Private *getPrivate () { \
+		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
+		return reinterpret_cast<CLASS ## Private *>( \
+			L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS)::mPrivate \
+		); \
 	} \
-	inline const CLASS ## Private *getPrivate() const { \
-		return reinterpret_cast<const CLASS ## Private *>(PARENT_TYPE::mPrivate); \
+	inline const CLASS ## Private *getPrivate () const { \
+		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
+		return reinterpret_cast<const CLASS ## Private *>( \
+			L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS)::mPrivate \
+		); \
 	} \
 	friend class CLASS ## Private; \
 	friend class Wrapper;
@@ -111,17 +126,13 @@ class ObjectPrivate;
 // Gives a control to C Wrapper.
 #ifndef LINPHONE_TESTER
 	#define L_DECLARE_PRIVATE(CLASS) L_INTERNAL_DECLARE_PRIVATE(CLASS)
-	#define L_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE)
 #else
 	#define L_DECLARE_PRIVATE(CLASS) \
 		L_INTERNAL_DECLARE_PRIVATE(CLASS) \
 		friend class Tester;
-	#define L_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
-		L_INTERNAL_DECLARE_PRIVATE_T(CLASS, PARENT_TYPE) \
-		friend class Tester;
 #endif
 
-// Generic public helper. (Neither ClonableObject nor Object.)
+// Generic public helper. (Neither ClonableObject.)
 // `void *` is used to avoid downcasting.
 template<typename T>
 constexpr T *getPublicHelper (void *object, const void *) {
@@ -133,11 +144,6 @@ inline T *getPublicHelper (const U *map, const ClonableObjectPrivate *context) {
 	auto it = map->find(context);
 	L_ASSERT(it != map->end());
 	return static_cast<T *>(it->second);
-}
-
-template<typename T>
-constexpr T *getPublicHelper (Object *object, const ObjectPrivate *) {
-	return static_cast<T *>(object);
 }
 
 #define L_DECLARE_PUBLIC(CLASS) \

@@ -1,5 +1,5 @@
 /*
- * conference-event.h
+ * base-object-p.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,32 +17,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CONFERENCE_EVENT_H_
-#define _CONFERENCE_EVENT_H_
+ #ifndef _BASE_OBJECT_P_H_
+ #define _BASE_OBJECT_P_H_
 
-#include "event-log/event-log.h"
+#include "linphone/utils/general.h"
+
+#include "object-head-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
-class ConferenceEventPrivate;
+class BaseObjectPrivate {
+	L_OBJECT_PRIVATE;
 
-class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, std::time_t time, const Address &conferenceAddress);
-
-	const Address &getConferenceAddress () const;
+	BaseObjectPrivate () = default;
+	virtual ~BaseObjectPrivate () = default;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, std::time_t time, const Address &conferenceAddress);
+	BaseObject *mPublic = nullptr;
 
 private:
-	L_DECLARE_PRIVATE(ConferenceEvent);
-	L_DISABLE_COPY(ConferenceEvent);
+	L_DECLARE_PUBLIC(BaseObject);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_EVENT_H_
+#endif // ifndef _BASE_OBJECT_P_H_

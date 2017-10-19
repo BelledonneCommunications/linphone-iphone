@@ -31,9 +31,6 @@ class ConferenceNotifiedEventPrivate;
 class LINPHONE_PUBLIC ConferenceNotifiedEvent : public ConferenceEvent {
 public:
 	ConferenceNotifiedEvent (Type type, std::time_t time, const Address &conferenceAddress, unsigned int notifiyId);
-	ConferenceNotifiedEvent (const ConferenceNotifiedEvent &src);
-
-	ConferenceNotifiedEvent &operator= (const ConferenceNotifiedEvent &src);
 
 	unsigned int getNotifyId () const;
 
@@ -48,6 +45,7 @@ protected:
 
 private:
 	L_DECLARE_PRIVATE(ConferenceNotifiedEvent);
+	L_DISABLE_COPY(ConferenceNotifiedEvent);
 };
 
 LINPHONE_END_NAMESPACE

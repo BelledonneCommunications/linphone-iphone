@@ -38,14 +38,12 @@ public:
 		const Address &participantAddress,
 		const Address &gruuAddress
 	);
-	ConferenceParticipantDeviceEvent (const ConferenceParticipantDeviceEvent &src);
-
-	ConferenceParticipantDeviceEvent &operator= (const ConferenceParticipantDeviceEvent &src);
 
 	const Address &getGruuAddress () const;
 
 private:
 	L_DECLARE_PRIVATE(ConferenceParticipantDeviceEvent);
+	L_DISABLE_COPY(ConferenceParticipantDeviceEvent);
 };
 
 LINPHONE_END_NAMESPACE

@@ -37,9 +37,6 @@ public:
 		unsigned int notifyId,
 		const Address &participantAddress
 	);
-	ConferenceParticipantEvent (const ConferenceParticipantEvent &src);
-
-	ConferenceParticipantEvent &operator= (const ConferenceParticipantEvent &src);
 
 	const Address &getParticipantAddress () const;
 
@@ -55,6 +52,7 @@ protected:
 
 private:
 	L_DECLARE_PRIVATE(ConferenceParticipantEvent);
+	L_DISABLE_COPY(ConferenceParticipantEvent);
 };
 
 LINPHONE_END_NAMESPACE

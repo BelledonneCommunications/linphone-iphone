@@ -41,18 +41,6 @@ CallEvent::CallEvent (Type type, time_t time, const shared_ptr<Call> &call) :
 	d->call = call;
 }
 
-CallEvent::CallEvent (const CallEvent &src) : CallEvent(src.getType(), src.getTime(), src.getCall()) {}
-
-CallEvent &CallEvent::operator= (const CallEvent &src) {
-	L_D();
-	if (this != &src) {
-		EventLog::operator=(src);
-		d->call = src.getPrivate()->call;
-	}
-
-	return *this;
-}
-
 shared_ptr<Call> CallEvent::getCall () const {
 	L_D();
 	return d->call;

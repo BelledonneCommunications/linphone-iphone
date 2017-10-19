@@ -25,7 +25,7 @@
 #include "linphone/enums/event-log-enums.h"
 #include "linphone/utils/enum-generator.h"
 
-#include "object/clonable-object.h"
+#include "object/base-object.h"
 
 // =============================================================================
 
@@ -33,16 +33,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventLogPrivate;
 
-class LINPHONE_PUBLIC EventLog : public ClonableObject {
+class LINPHONE_PUBLIC EventLog : public BaseObject {
 	friend class MainDb;
 
 public:
 	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 	EventLog ();
-	EventLog (const EventLog &src);
-
-	EventLog &operator= (const EventLog &src);
 
 	Type getType () const;
 	std::time_t getTime () const;
@@ -52,6 +49,7 @@ protected:
 
 private:
 	L_DECLARE_PRIVATE(EventLog);
+	L_DISABLE_COPY(EventLog);
 };
 
 LINPHONE_END_NAMESPACE

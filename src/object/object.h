@@ -22,25 +22,28 @@
 
 #include <memory>
 
+#include "base-object.h"
 #include "property-container.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class LINPHONE_PUBLIC Object : public PropertyContainer {
+/*
+ * Main Object of Linphone. Can be shared but is not Clonable.
+ * Must be built with ObjectFactory.
+ */
+class LINPHONE_PUBLIC Object : public BaseObject, public PropertyContainer {
 	friend class ObjectFactory;
 
 public:
-	virtual ~Object ();
+	virtual ~Object () = default;
 
 protected:
 	explicit Object (ObjectPrivate &p);
 
 	std::shared_ptr<Object> getSharedFromThis ();
 	std::shared_ptr<const Object> getSharedFromThis () const;
-
-	ObjectPrivate *mPrivate = nullptr;
 
 private:
 	L_DECLARE_PRIVATE(Object);

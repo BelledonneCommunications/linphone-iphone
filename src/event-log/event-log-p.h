@@ -20,14 +20,15 @@
 #ifndef _EVENT_LOG_P_H_
 #define _EVENT_LOG_P_H_
 
+#include "object/base-object-p.h"
+
 #include "event-log.h"
-#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate : public ClonableObjectPrivate {
+class EventLogPrivate : public BaseObjectPrivate {
 public:
 	long storageId = -1;
 

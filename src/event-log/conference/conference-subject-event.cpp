@@ -49,19 +49,6 @@ ConferenceSubjectEvent::ConferenceSubjectEvent (
 	d->subject = subject;
 }
 
-ConferenceSubjectEvent::ConferenceSubjectEvent (const ConferenceSubjectEvent &src) :
-	ConferenceSubjectEvent(src.getTime(), src.getConferenceAddress(), src.getNotifyId(), src.getSubject()) {}
-
-ConferenceSubjectEvent &ConferenceSubjectEvent::operator= (const ConferenceSubjectEvent &src) {
-	L_D();
-	if (this != &src) {
-		ConferenceEvent::operator=(src);
-		d->subject = src.getPrivate()->subject;
-	}
-
-	return *this;
-}
-
 const string &ConferenceSubjectEvent::getSubject () const {
 	L_D();
 	return d->subject;

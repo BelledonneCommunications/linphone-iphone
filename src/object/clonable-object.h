@@ -20,13 +20,20 @@
 #ifndef _CLONABLE_OBJECT_H_
 #define _CLONABLE_OBJECT_H_
 
+#include "object-head.h"
 #include "property-container.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+/*
+ * Clonable Object of Linphone. Generally it's just a data object with no
+ * intelligence.
+ */
 class LINPHONE_PUBLIC ClonableObject : public PropertyContainer {
+	L_OBJECT;
+
 public:
 	virtual ~ClonableObject ();
 

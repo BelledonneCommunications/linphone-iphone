@@ -20,6 +20,8 @@
 #ifndef _CONFERENCE_SUBJECT_EVENT_H_
 #define _CONFERENCE_SUBJECT_EVENT_H_
 
+#include <string>
+
 #include "conference-notified-event.h"
 
 // =============================================================================
@@ -36,14 +38,12 @@ public:
 		unsigned int notifyId,
 		const std::string &subject
 	);
-	ConferenceSubjectEvent (const ConferenceSubjectEvent &src);
-
-	ConferenceSubjectEvent &operator= (const ConferenceSubjectEvent &src);
 
 	const std::string &getSubject () const;
 
 private:
 	L_DECLARE_PRIVATE(ConferenceSubjectEvent);
+	L_DISABLE_COPY(ConferenceSubjectEvent);
 };
 
 LINPHONE_END_NAMESPACE

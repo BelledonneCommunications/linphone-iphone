@@ -64,7 +64,7 @@ public:
 	bool isEmpty () const;
 
 private:
-	L_DECLARE_PRIVATE_T(Content, ClonableObject);
+	L_DECLARE_PRIVATE(Content);
 };
 
 LINPHONE_END_NAMESPACE

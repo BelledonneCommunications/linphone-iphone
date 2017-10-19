@@ -24,11 +24,15 @@
 
 #include "linphone/utils/general.h"
 
+#include "object-head-p.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ClonableObjectPrivate {
+	L_OBJECT_PRIVATE;
+
 public:
 	ClonableObjectPrivate () = default;
 	virtual ~ClonableObjectPrivate () = default;

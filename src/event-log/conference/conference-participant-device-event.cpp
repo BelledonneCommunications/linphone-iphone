@@ -56,28 +56,6 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	d->gruuAddress = gruuAddress;
 }
 
-ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (const ConferenceParticipantDeviceEvent &src) :
-	ConferenceParticipantDeviceEvent(
-		src.getType(),
-		src.getTime(),
-		src.getConferenceAddress(),
-		src.getNotifyId(),
-		src.getParticipantAddress(),
-		src.getGruuAddress()
-	) {}
-
-ConferenceParticipantDeviceEvent &ConferenceParticipantDeviceEvent::operator= (
-	const ConferenceParticipantDeviceEvent &src
-) {
-	L_D();
-	if (this != &src) {
-		ConferenceParticipantEvent::operator=(src);
-		d->gruuAddress = src.getPrivate()->gruuAddress;
-	}
-
-	return *this;
-}
-
 const Address &ConferenceParticipantDeviceEvent::getGruuAddress () const {
 	L_D();
 	return d->gruuAddress;

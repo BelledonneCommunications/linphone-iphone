@@ -42,20 +42,6 @@ ChatMessageEvent::ChatMessageEvent (
 	d->chatMessage = chatMessage;
 }
 
-ChatMessageEvent::ChatMessageEvent (
-	const ChatMessageEvent &src
-) : ChatMessageEvent(src.getTime(), src.getChatMessage()) {}
-
-ChatMessageEvent &ChatMessageEvent::operator= (const ChatMessageEvent &src) {
-	L_D();
-	if (this != &src) {
-		EventLog::operator=(src);
-		d->chatMessage = src.getPrivate()->chatMessage;
-	}
-
-	return *this;
-}
-
 shared_ptr<ChatMessage> ChatMessageEvent::getChatMessage () const {
 	L_D();
 	return d->chatMessage;

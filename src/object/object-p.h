@@ -23,20 +23,15 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base-object-p.h"
 #include "variant/variant.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ObjectPrivate {
+class ObjectPrivate : public BaseObjectPrivate {
 	friend class ObjectFactory;
-
-public:
-	virtual ~ObjectPrivate () = default;
-
-protected:
-	Object *mPublic = nullptr;
 
 private:
 	std::unordered_map<std::string, Variant> properties;

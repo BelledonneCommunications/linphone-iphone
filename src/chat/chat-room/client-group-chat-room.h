@@ -69,7 +69,7 @@ private:
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 
 private:
-	L_DECLARE_PRIVATE_T(ClientGroupChatRoom, ChatRoom);
+	L_DECLARE_PRIVATE(ClientGroupChatRoom);
 	L_DISABLE_COPY(ClientGroupChatRoom);
 };
 

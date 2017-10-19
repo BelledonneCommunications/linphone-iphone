@@ -45,16 +45,6 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 }
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
-	const ConferenceParticipantEvent &src
-) : ConferenceParticipantEvent(
-	src.getType(),
-	src.getTime(),
-	src.getConferenceAddress(),
-	src.getNotifyId(),
-	src.getParticipantAddress()
-) {}
-
-ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
 	time_t time,
@@ -64,16 +54,6 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 ) : ConferenceNotifiedEvent(p, type, time, conferenceAddress, notifyId) {
 	L_D();
 	d->participantAddress = participantAddress;
-}
-
-ConferenceParticipantEvent &ConferenceParticipantEvent::operator= (const ConferenceParticipantEvent &src) {
-	L_D();
-	if (this != &src) {
-		ConferenceEvent::operator=(src);
-		d->participantAddress = src.getPrivate()->participantAddress;
-	}
-
-	return *this;
 }
 
 const Address &ConferenceParticipantEvent::getParticipantAddress () const {

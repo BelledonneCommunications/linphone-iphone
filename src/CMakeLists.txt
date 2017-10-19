@@ -111,8 +111,12 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	nat/ice-agent.h
 	nat/stun-client.h
 	object/app-data-container.h
+	object/base-object-p.h
+	object/base-object.h
 	object/clonable-object-p.h
 	object/clonable-object.h
+	object/object-head-p.h
+	object/object-head.h
 	object/object-p.h
 	object/object.h
 	object/property-container.h
@@ -191,6 +195,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	nat/ice-agent.cpp
 	nat/stun-client.cpp
 	object/app-data-container.cpp
+	object/base-object.cpp
 	object/clonable-object.cpp
 	object/object.cpp
 	object/property-container.cpp

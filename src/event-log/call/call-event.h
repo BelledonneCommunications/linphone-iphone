@@ -34,14 +34,12 @@ class CallEventPrivate;
 class LINPHONE_PUBLIC CallEvent : public EventLog {
 public:
 	CallEvent (Type type, std::time_t time, const std::shared_ptr<Call> &message);
-	CallEvent (const CallEvent &src);
-
-	CallEvent &operator= (const CallEvent &src);
 
 	std::shared_ptr<Call> getCall () const;
 
 private:
 	L_DECLARE_PRIVATE(CallEvent);
+	L_DISABLE_COPY(CallEvent);
 };
 
 LINPHONE_END_NAMESPACE

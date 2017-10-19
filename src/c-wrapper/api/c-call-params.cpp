@@ -23,7 +23,7 @@
 
 // =============================================================================
 
-L_DECLARE_C_CLONABLE_STRUCT_IMPL(CallParams)
+L_DECLARE_C_CLONABLE_OBJECT_IMPL(CallParams)
 
 using namespace std;
 

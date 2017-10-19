@@ -30,13 +30,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-Object::Object (ObjectPrivate &p) : mPrivate(&p) {
-	mPrivate->mPublic = this;
-}
-
-Object::~Object () {
-	delete mPrivate;
-}
+Object::Object (ObjectPrivate &p) : BaseObject(p) {}
 
 shared_ptr<Object> Object::getSharedFromThis () {
 	return const_pointer_cast<Object>(static_cast<const Object *>(this)->getSharedFromThis());
@@ -46,7 +40,7 @@ shared_ptr<const Object> Object::getSharedFromThis () const {
 	shared_ptr<const Object> object;
 
 	try {
-		object = mPrivate->weak.lock();
+		object = getPrivate()->weak.lock();
 		if (!object)
 			lFatal() << GET_SHARED_FROM_THIS_FATAL_ERROR;
 	} catch (const exception &) {

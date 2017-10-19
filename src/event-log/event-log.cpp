@@ -23,21 +23,12 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
+EventLog::EventLog () : BaseObject(*new EventLogPrivate) {}
 
-EventLog::EventLog (const EventLog &) : ClonableObject(*new EventLogPrivate) {}
-
-EventLog::EventLog (EventLogPrivate &p, Type type, time_t time) : ClonableObject(*new EventLogPrivate) {
+EventLog::EventLog (EventLogPrivate &p, Type type, std::time_t time) : BaseObject(p) {
 	L_D();
 	d->type = type;
 	d->time = time;
-}
-
-EventLog &EventLog::operator= (const EventLog &src) {
-	L_D();
-	if (this != &src)
-		d->type = src.getPrivate()->type;
-	return *this;
 }
 
 EventLog::Type EventLog::getType () const {
