@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "private.h"
 #include "linphone/utils/paths.h"
 
 #ifdef __APPLE__
@@ -37,13 +38,13 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-const string &Paths::getPath (Paths::Type type, void *context) {
+const string &Paths::getPath (Paths::Type type, PlatformHelper *platformHelper) {
 	switch (type) {
 		case Data:
-			return SysPaths::getDataPath(context);
+			return SysPaths::getDataPath(platformHelper);
 		case Config:
 		default:
-			return SysPaths::getConfigPath(context);
+			return SysPaths::getConfigPath(platformHelper);
 	}
 }
 

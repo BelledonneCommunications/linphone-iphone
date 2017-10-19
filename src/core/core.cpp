@@ -24,7 +24,10 @@
 #include "core-p.h"
 #include "db/main-db.h"
 #include "linphone/core.h"
+#include "linphone/utils/paths.h"
 #include "object/object-p.h"
+
+#include "private.h"
 
 #include "core.h"
 
@@ -47,8 +50,8 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			: MainDb::Sqlite3;
 		d->mainDb.connect(backend, uri);
 	}	else {
-		// TODO
-		// d->mainDb.connect(MainDb::Sqlite3, linphone_factory_get_writable_dir()/linphone.db);
+		string path = Paths::getPath(Paths::Data, static_cast<PlatformHelper *>(cCore->platform_helper));
+		//d->mainDb.connect(MainDb::Sqlite3, linphone_factory_get_writable_dir()/linphone.db);
 	}
 }
 

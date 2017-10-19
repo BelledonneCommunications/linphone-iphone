@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "private.h"
 #include "linphone/utils/utils.h"
 
 #include "paths-windows.h"
@@ -25,12 +26,12 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (void *context) {
+const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
 	//TODO.
 	return Utils::getEmptyConstRefObject<std::string>();
 }
 
-const std::string &SysPaths::getConfigPath (void *context) {
+const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
 	//TODO.
 	return Utils::getEmptyConstRefObject<std::string>();
 }

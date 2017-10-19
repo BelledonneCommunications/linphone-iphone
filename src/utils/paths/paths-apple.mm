@@ -19,6 +19,7 @@
 
 #import "linphone/utils/utils.h"
 
+#include "private.h"
 #import "paths-apple.h"
 
 #ifdef __OBJC__
@@ -29,7 +30,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-const std::string &SysPaths::getDataPath (void *context) {
+const std::string &SysPaths::getDataPath (PlatformHelper *platformHelper) {
 #ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 	NSString *writablePath = [paths objectAtIndex:0];
@@ -40,7 +41,7 @@ const std::string &SysPaths::getDataPath (void *context) {
 	return Utils::getEmptyConstRefObject<std::string>();
 }
 
-const std::string &SysPaths::getConfigPath (void *context) {
+const std::string &SysPaths::getConfigPath (PlatformHelper *platformHelper) {
 #ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString *configPath = [paths objectAtIndex:0];
