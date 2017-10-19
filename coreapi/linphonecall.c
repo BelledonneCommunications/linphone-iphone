@@ -120,3 +120,9 @@ const char* linphone_privacy_to_string(LinphonePrivacy privacy) {
 	default: return "Unknown privacy mode";
 	}
 }
+
+void set_playback_gain_db(AudioStream *st, float gain){
+	if (st->volrecv){
+		ms_filter_call_method(st->volrecv,MS_VOLUME_SET_DB_GAIN,&gain);
+	}else ms_warning("Could not apply playback gain: gain control wasn't activated.");
+}
