@@ -141,7 +141,7 @@ private:
 	belle_http_request_listener_t *httpListener = nullptr;
 	SalOp *salOp = nullptr;
 	SalCustomHeader *salCustomHeaders = nullptr;
-	unsigned long backgroundTaskId;
+	unsigned long backgroundTaskId = 0;
 	unsigned char currentSendStep = Step::None;
 	bool applyModifiers = true;
 	// Cache for returned values, used for compatibility with previous C API
