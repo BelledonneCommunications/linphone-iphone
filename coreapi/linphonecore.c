@@ -2317,7 +2317,7 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 }
 
 LinphoneCore *linphone_core_ref(LinphoneCore *lc) {
-	return (LinphoneCore *)belle_sip_object_ref(BELLE_SIP_OBJECT(lc));
+	return reinterpret_cast<LinphoneCore *>(belle_sip_object_ref(BELLE_SIP_OBJECT(lc)));
 }
 
 void linphone_core_unref(LinphoneCore *lc) {

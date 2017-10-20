@@ -167,7 +167,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 		return -1;
 	}
 	if (!res) return -1;
-	memcpy(ss,res->ai_addr,res->ai_addrlen);
+	memcpy(ss,res->ai_addr,(size_t)res->ai_addrlen);
 	*socklen=(socklen_t)res->ai_addrlen;
 	freeaddrinfo(res);
 	return 0;
