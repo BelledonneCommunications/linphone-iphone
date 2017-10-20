@@ -94,7 +94,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	dial-plan/dial-plan.h
 	enums.h
 	event-log/call/call-event.h
-	event-log/chat/chat-message-event.h
 	event-log/conference/conference-event-p.h
 	event-log/conference/conference-event.h
 	event-log/conference/conference-notified-event-p.h
@@ -183,7 +182,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	db/session/db-session.cpp
 	dial-plan/dial-plan.cpp
 	event-log/call/call-event.cpp
-	event-log/chat/chat-message-event.cpp
+	event-log/conference/conference-chat-message-event.cpp
 	event-log/conference/conference-event.cpp
 	event-log/conference/conference-notified-event.cpp
 	event-log/conference/conference-participant-device-event.cpp

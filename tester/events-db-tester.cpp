@@ -44,9 +44,9 @@ static void get_events_count () {
 	MainDb eventsDb;
 	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(eventsDb.getEventsCount(), 4976, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::CallFilter), 0, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceFilter), 0, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::MessageFilter), 4976, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceInfoFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceChatMessageFilter), 4976, int, "%d");
 	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::NoFilter), 4976, int, "%d");
 }
 

@@ -1364,6 +1364,13 @@ const list<Content >& ChatMessage::getContents () const {
 	return d->contents;
 }
 
+void ChatMessage::addContent (Content &&content) {
+	L_D();
+	if (d->isReadOnly) return;
+
+	d->contents.push_back(move(content));
+}
+
 void ChatMessage::addContent (const Content &content) {
 	L_D();
 	if (d->isReadOnly) return;

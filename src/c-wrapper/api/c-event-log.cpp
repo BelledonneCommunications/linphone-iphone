@@ -27,13 +27,13 @@
 
 // =============================================================================
 
-L_DECLARE_C_BASE_OBJECT_IMPL(EventLog);
 L_DECLARE_C_BASE_OBJECT_IMPL(CallEvent);
+L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceChatMessageEvent);
 L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceParticipantEvent);
 L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceParticipantDeviceEvent);
+L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceParticipantEvent);
 L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceSubjectEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ChatMessageEvent);
+L_DECLARE_C_BASE_OBJECT_IMPL(EventLog);
 
 using namespace std;
 
@@ -124,11 +124,11 @@ const LinphoneAddress *linphone_conference_participant_event_get_participant_add
 // Message event.
 // -----------------------------------------------------------------------------
 
-LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message, time_t time) {
-	LinphoneChatMessageEvent *chat_message_event = _linphone_ChatMessageEvent_init();
+LinphoneConferenceChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *chat_message, time_t time) {
+	LinphoneConferenceChatMessageEvent *chat_message_event = _linphone_ConferenceChatMessageEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		chat_message_event,
-		new LinphonePrivate::ChatMessageEvent(
+		new LinphonePrivate::ConferenceChatMessageEvent(
 			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(chat_message)
 		)
@@ -136,7 +136,9 @@ LinphoneChatMessageEvent *linphone_chat_message_event_new (LinphoneChatMessage *
 	return chat_message_event;
 }
 
-LinphoneChatMessage *linphone_chat_message_event_get_chat_message (const LinphoneChatMessageEvent *chat_message_event) {
+LinphoneChatMessage *linphone_chat_message_event_get_chat_message (
+	const LinphoneConferenceChatMessageEvent *chat_message_event
+) {
 	return L_GET_C_BACK_PTR(
 		L_GET_CPP_PTR_FROM_C_OBJECT(chat_message_event)->getChatMessage()
 	);

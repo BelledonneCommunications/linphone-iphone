@@ -33,11 +33,11 @@
 	F(Call, Call) \
 	F(CallEvent, CallEvent) \
 	F(ChatMessage, ChatMessage) \
-	F(ChatMessageEvent, ChatMessageEvent) \
 	F(ChatRoom, ChatRoom) \
+	F(ConferenceChatMessageEvent, ConferenceChatMessageEvent) \
 	F(ConferenceEvent, ConferenceEvent) \
-	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
 	F(ConferenceParticipantDeviceEvent, ConferenceParticipantDeviceEvent) \
+	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
 	F(ConferenceSubjectEvent, ConferenceSubjectEvent) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \

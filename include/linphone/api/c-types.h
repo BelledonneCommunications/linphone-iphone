@@ -133,7 +133,7 @@ typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipant
 typedef struct _LinphoneConferenceParticipantDeviceEvent LinphoneConferenceParticipantDeviceEvent;
 typedef struct _LinphoneConferenceSubjectEvent LinphoneConferenceSubjectEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;
-typedef struct _LinphoneChatMessageEvent LinphoneChatMessageEvent;
+typedef struct _LinphoneConferenceChatMessageEvent LinphoneConferenceChatMessageEvent;
 
 // =============================================================================
 // C Enums.

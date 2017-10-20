@@ -94,6 +94,7 @@ public:
 	bool isReadOnly () const;
 
 	const std::list<Content> &getContents () const;
+	void addContent (Content &&content);
 	void addContent (const Content &content);
 	void removeContent (const Content &content);
 

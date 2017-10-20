@@ -1,5 +1,5 @@
 /*
- * chat-message-event.cpp
+ * conference-chat-message-event.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "chat-message-event.h"
-#include "event-log/event-log-p.h"
+#include "chat/chat-message/chat-message.h"
+#include "conference-chat-message-event.h"
+#include "conference-event-p.h"
 
 // =============================================================================
 
@@ -26,23 +27,28 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatMessageEventPrivate : public EventLogPrivate {
+class ConferenceChatMessageEventPrivate : public ConferenceEventPrivate {
 public:
 	shared_ptr<ChatMessage> chatMessage;
 };
 
 // -----------------------------------------------------------------------------
 
-ChatMessageEvent::ChatMessageEvent (
+ConferenceChatMessageEvent::ConferenceChatMessageEvent (
 	time_t time,
 	const shared_ptr<ChatMessage> &chatMessage
-) : EventLog(*new ChatMessageEventPrivate, EventLog::Type::ChatMessage, time) {
+) : ConferenceEvent(
+	*new ConferenceChatMessageEventPrivate,
+	EventLog::Type::ConferenceChatMessage,
+	time,
+	chatMessage->getRemoteAddress()
+) {
 	L_D();
 	L_ASSERT(chatMessage);
 	d->chatMessage = chatMessage;
 }
 
-shared_ptr<ChatMessage> ChatMessageEvent::getChatMessage () const {
+shared_ptr<ChatMessage> ConferenceChatMessageEvent::getChatMessage () const {
 	L_D();
 	return d->chatMessage;
 }

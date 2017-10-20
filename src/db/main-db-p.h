@@ -42,29 +42,18 @@ private:
 	long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long messageEventId, const Content &content);
 	long insertContentType (const std::string &contentType);
-	long insertEvent (EventLog::Type type, const tm &date);
 	long insertChatRoom (long sipAddressId, int capabilities, const tm &date);
 	void insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin);
-
-	long insertMessageEvent (
-		const MessageEventReferences &references,
-		int state,
-		int direction,
-		const std::string &imdnMessageId,
-		bool isSecured,
-		const std::list<Content> &contents
-	);
-
-	void insertMessageParticipant (long messageEventId, long sipAddressId, int state);
+	void insertChatMessageParticipant (long messageEventId, long sipAddressId, int state);
 
 	// ---------------------------------------------------------------------------
 	// Events API.
 	// ---------------------------------------------------------------------------
 
 	long insertEvent (const EventLog &eventLog);
-	long insertCallEvent (const EventLog &eventLog);
-	long insertMessageEvent (const EventLog &eventLog);
 	long insertConferenceEvent (const EventLog &eventLog, long *chatRoomId = nullptr);
+	long insertConferenceCallEvent (const EventLog &eventLog);
+	long insertConferenceChatMessageEvent (const EventLog &eventLog);
 	long insertConferenceNotifiedEvent (const EventLog &eventLog);
 	long insertConferenceParticipantEvent (const EventLog &eventLog);
 	long insertConferenceParticipantDeviceEvent (const EventLog &eventLog);

@@ -38,9 +38,9 @@ class LINPHONE_PUBLIC MainDb : public AbstractDb {
 public:
 	enum Filter {
 		NoFilter = 0x0,
-		MessageFilter = 0x1,
-		CallFilter = 0x2,
-		ConferenceFilter = 0x4
+		ConferenceCallFilter = 0x1,
+		ConferenceChatMessageFilter = 0x2,
+		ConferenceInfoFilter = 0x4
 	};
 
 	typedef int FilterMask;

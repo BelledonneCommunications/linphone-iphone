@@ -56,12 +56,12 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get
 	const LinphoneConferenceParticipantEvent *conference_participant_event
 );
 
-LINPHONE_PUBLIC LinphoneChatMessageEvent *linphone_chat_message_event_new (
+LINPHONE_PUBLIC LinphoneConferenceChatMessageEvent *linphone_chat_message_event_new (
 	LinphoneChatMessage *chat_message,
 	time_t time
 );
 LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_message_event_get_chat_message (
-	const LinphoneChatMessageEvent *chat_message_event
+	const LinphoneConferenceChatMessageEvent *chat_message_event
 );
 
 #ifdef __cplusplus

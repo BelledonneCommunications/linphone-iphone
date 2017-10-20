@@ -22,24 +22,24 @@
 
 #include <memory>
 
-#include "event-log/event-log.h"
+#include "conference-event.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ChatMessage;
-class ChatMessageEventPrivate;
+class ConferenceChatMessageEventPrivate;
 
-class LINPHONE_PUBLIC ChatMessageEvent : public EventLog {
+class LINPHONE_PUBLIC ConferenceChatMessageEvent : public ConferenceEvent {
 public:
-	ChatMessageEvent (std::time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
+	ConferenceChatMessageEvent (std::time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
 
 	std::shared_ptr<ChatMessage> getChatMessage () const;
 
 private:
-	L_DECLARE_PRIVATE(ChatMessageEvent);
-	L_DISABLE_COPY(ChatMessageEvent);
+	L_DECLARE_PRIVATE(ConferenceChatMessageEvent);
+	L_DISABLE_COPY(ConferenceChatMessageEvent);
 };
 
 LINPHONE_END_NAMESPACE

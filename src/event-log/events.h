@@ -21,7 +21,7 @@
 #define _EVENTS_H_
 
 #include "call/call-event.h"
-#include "chat/chat-message-event.h"
+#include "conference/conference-chat-message-event.h"
 #include "conference/conference-participant-device-event.h"
 #include "conference/conference-subject-event.h"
 
