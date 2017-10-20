@@ -50,6 +50,14 @@ private:
 	// Events API.
 	// ---------------------------------------------------------------------------
 
+	std::shared_ptr<EventLog> selectEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceCallEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceChatMessageEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceParticipantEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceParticipantDeviceEvent (long eventId, EventLog::Type type, time_t date) const;
+	std::shared_ptr<EventLog> selectConferenceSubjectEvent (long eventId, EventLog::Type type, time_t date) const;
+
 	long insertEvent (const EventLog &eventLog);
 	long insertConferenceEvent (const EventLog &eventLog, long *chatRoomId = nullptr);
 	long insertConferenceCallEvent (const EventLog &eventLog);

@@ -73,6 +73,12 @@ static void get_history () {
 		int,
 		"%d"
 	);
+	BC_ASSERT_EQUAL(
+		eventsDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceCallFilter).size(),
+		0,
+		int,
+		"%d"
+	);
 }
 
 test_t events_db_tests[] = {
