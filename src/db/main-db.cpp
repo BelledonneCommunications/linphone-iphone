@@ -66,13 +66,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	static constexpr EnumToSql<MainDb::Filter> eventFilterToSql[] = {
-		{ MainDb::ConferenceCallFilter, "type = 1 OR type = 2" },
-		{ MainDb::ConferenceChatMessageFilter, "type = 5" },
-		{
-			MainDb::ConferenceInfoFilter,
-			"type = 3 OR type = 4 OR type = 6 OR type = 7 OR type = 8 OR "
-			"type = 9 OR type = 10 OR type = 11 OR type = 12"
-		}
+		{ MainDb::ConferenceCallFilter, "1, 2" },
+		{ MainDb::ConferenceChatMessageFilter, "5" },
+		{ MainDb::ConferenceInfoFilter, "3, 4, 6, 7, 8, 9, 10, 11, 12" }
 	};
 
 	static constexpr const char *mapEventFilterToSql (MainDb::Filter filter) {
@@ -83,7 +79,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	static string buildSqlEventFilter (const list<MainDb::Filter> &filters, MainDb::FilterMask mask) {
+	static string buildSqlEventFilter (
+		const list<MainDb::Filter> &filters,
+		MainDb::FilterMask mask,
+		const string &condKeyWord = "WHERE"
+	) {
 		L_ASSERT(
 			find_if(filters.cbegin(), filters.cend(), [](const MainDb::Filter &filter) {
 					return filter == MainDb::NoFilter;
@@ -101,11 +101,14 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 			if (isStart) {
 				isStart = false;
-				sql += " WHERE ";
+				sql += " " + condKeyWord + " type IN (";
 			} else
-				sql += " OR ";
+				sql += ", ";
 			sql += mapEventFilterToSql(filter);
 		}
+
+		if (!isStart)
+			sql += ") ";
 
 		return sql;
 	}
@@ -738,9 +741,6 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		}
 
 		// TODO.
-		(void)peerAddress;
-		(void)nLast;
-		(void)mask;
 		return list<shared_ptr<EventLog>>();
 	}
 
@@ -750,17 +750,56 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		int end,
 		FilterMask mask
 	) const {
+		L_D();
+
+		list<shared_ptr<EventLog>> events;
+
 		if (!isConnected()) {
 			lWarning() << "Unable to get history. Not connected.";
-			return list<shared_ptr<EventLog>>();
+			return events;
 		}
 
-		// TODO.
-		(void)peerAddress;
-		(void)begin;
-		(void)end;
-		(void)mask;
-		return list<shared_ptr<EventLog>>();
+		if (begin < 0)
+			begin = 0;
+
+		if (end > 0 && begin > end) {
+			lWarning() << "Unable to get history. Invalid range.";
+			return events;
+		}
+
+		string query = "SELECT id, type, date FROM event"
+			"  WHERE id IN ("
+			"    SELECT event_id FROM conference_event WHERE chat_room_id = ("
+			"      SELECT id FROM sip_address WHERE value = :peerAddress"
+			"    )"
+			"  )";
+		query += buildSqlEventFilter({
+			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+		}, mask, "AND");
+		query += "  ORDER BY id DESC";
+
+		if (end >= 0)
+			query += "  LIMIT " + Utils::toString(end + 1 - begin);
+		else
+			query += "  LIMIT -1";
+
+		if (begin > 0)
+			query += "  OFFSET " + Utils::toString(begin);
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress));
+		for (const auto &row : rows) {
+			(void)row;
+			events.push_back(std::make_shared<EventLog>());
+		}
+
+		L_END_LOG_EXCEPTION
+
+		return events;
 	}
 
 	void MainDb::cleanHistory (const string &peerAddress, FilterMask mask) {
@@ -770,6 +809,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			lWarning() << "Unable to clean history. Not connected.";
 			return;
 		}
+
+		// TODO: Deal with mask.
 
 		string query;
 		if (mask == MainDb::NoFilter || mask & ConferenceChatMessageFilter)

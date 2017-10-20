@@ -64,11 +64,23 @@ static void get_unread_messages_count () {
 	BC_ASSERT_EQUAL(eventsDb.getUnreadMessagesCount("sip:test-7@sip.linphone.org"), 0, int, "%d");
 }
 
+static void get_history () {
+	MainDb eventsDb;
+	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(
+		eventsDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		3,
+		int,
+		"%d"
+	);
+}
+
 test_t events_db_tests[] = {
 	TEST_NO_TAG("Open database", open_database),
 	TEST_NO_TAG("Get events count", get_events_count),
 	TEST_NO_TAG("Get messages count", get_messages_count),
-	TEST_NO_TAG("Get unread messages count", get_unread_messages_count)
+	TEST_NO_TAG("Get unread messages count", get_unread_messages_count),
+	TEST_NO_TAG("Get history", get_history)
 };
 
 test_suite_t events_db_test_suite = {
