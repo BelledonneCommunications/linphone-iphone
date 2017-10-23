@@ -50,7 +50,7 @@ private:
 	// Events API.
 	// ---------------------------------------------------------------------------
 
-	std::shared_ptr<EventLog> selectEventFromPeerAddress (
+	std::shared_ptr<EventLog> selectGenericConferenceEvent (
 		long eventId,
 		EventLog::Type type,
 		time_t date,

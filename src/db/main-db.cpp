@@ -205,7 +205,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	shared_ptr<EventLog> MainDbPrivate::selectEventFromPeerAddress (
+	shared_ptr<EventLog> MainDbPrivate::selectGenericConferenceEvent (
 		long eventId,
 		EventLog::Type type,
 		time_t date,
@@ -249,8 +249,15 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		time_t date,
 		const string &peerAddress
 	) const {
-		// TODO.
-		return nullptr;
+		// Useless here.
+		(void)eventId;
+
+		// TODO: Use cache.
+		return make_shared<ConferenceEvent>(
+			type,
+			date,
+			Address(peerAddress)
+		);
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceCallEvent (
@@ -907,7 +914,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress));
 		for (const auto &row : rows) {
 			tm date = row.get<tm>(2);
-			events.push_back(d->selectConferenceEvent(
+			events.push_back(d->selectGenericConferenceEvent(
 				row.get<long>(0),
 				static_cast<EventLog::Type>(row.get<int>(1)),
 				mktime(&date),
