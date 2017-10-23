@@ -51,9 +51,10 @@ protected:
 
 	virtual void init ();
 
-	std::string primaryKeyAutoIncrementStr (const std::string &type = "INT") const;
+	std::string primaryKeyStr (const std::string &type = "INT") const;
+	std::string primaryKeyRefStr (const std::string &type = "INT") const;
 
-	long getLastInsertId () const;
+	long long getLastInsertId () const;
 
 private:
 	L_DECLARE_PRIVATE(AbstractDb);

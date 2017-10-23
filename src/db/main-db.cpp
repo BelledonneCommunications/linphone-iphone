@@ -115,11 +115,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	long MainDbPrivate::insertSipAddress (const string &sipAddress) {
+	long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long id;
+		long long id;
 		*session << "SELECT id FROM sip_address WHERE value = :sipAddress", soci::use(sipAddress), soci::into(id);
 		if (session->got_data())
 			return id;
@@ -128,28 +128,28 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	void MainDbPrivate::insertContent (long eventId, const Content &content) {
+	void MainDbPrivate::insertContent (long long eventId, const Content &content) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long contentTypeId = insertContentType(content.getContentType().asString());
+		long long contentTypeId = insertContentType(content.getContentType().asString());
 		*session << "INSERT INTO chat_message_content (event_id, content_type_id, body) VALUES"
 			"  (:eventId, :contentTypeId, :body)", soci::use(eventId), soci::use(contentTypeId),
 			soci::use(content.getBodyAsString());
 
-		long messageContentId = q->getLastInsertId();
+		long long messageContentId = q->getLastInsertId();
 		for (const auto &appData : content.getAppDataMap())
 			*session << "INSERT INTO chat_message_content_app_data (chat_message_content_id, key, data) VALUES"
 				"  (:messageContentId, :key, :data)",
 				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
-	long MainDbPrivate::insertContentType (const string &contentType) {
+	long long MainDbPrivate::insertContentType (const string &contentType) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long id;
+		long long id;
 		*session << "SELECT id FROM content_type WHERE value = :contentType", soci::use(contentType), soci::into(id);
 		if (session->got_data())
 			return id;
@@ -158,10 +158,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	long MainDbPrivate::insertChatRoom (long sipAddressId, int capabilities, const tm &date) {
+	long long MainDbPrivate::insertChatRoom (long long sipAddressId, int capabilities, const tm &date) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long id;
+		long long id;
 		*session << "SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = :sipAddressId",
 			soci::use(sipAddressId), soci::into(id);
 		if (!session->got_data())
@@ -175,7 +175,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return sipAddressId;
 	}
 
-	void MainDbPrivate::insertChatRoomParticipant (long chatRoomId, long sipAddressId, bool isAdmin) {
+	void MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
@@ -189,7 +189,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
 	}
 
-	void MainDbPrivate::insertChatMessageParticipant (long eventId, long sipAddressId, int state) {
+	void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long sipAddressId, int state) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_message_participant SET state = :state"
@@ -206,7 +206,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 // -----------------------------------------------------------------------------
 
 	shared_ptr<EventLog> MainDbPrivate::selectGenericConferenceEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -244,7 +244,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -261,7 +261,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceCallEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -271,7 +271,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -281,7 +281,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -308,7 +308,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantDeviceEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -340,7 +340,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceSubjectEvent (
-		long eventId,
+		long long eventId,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
@@ -366,7 +366,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	long MainDbPrivate::insertEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertEvent (const EventLog &eventLog) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -375,9 +375,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return q->getLastInsertId();
 	}
 
-	long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog, long *chatRoomId) {
-		long eventId = insertEvent(eventLog);
-		long curChatRoomId = insertSipAddress(
+	long long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog, long long *chatRoomId) {
+		long long eventId = insertEvent(eventLog);
+		long long curChatRoomId = insertSipAddress(
 			static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString()
 		);
 
@@ -391,12 +391,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceCallEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceCallEvent (const EventLog &eventLog) {
 		// TODO.
 		return 0;
 	}
 
-	long MainDbPrivate::insertConferenceChatMessageEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceChatMessageEvent (const EventLog &eventLog) {
 		shared_ptr<ChatMessage> chatMessage = static_cast<const ConferenceChatMessageEvent &>(eventLog).getChatMessage();
 		shared_ptr<ChatRoom> chatRoom = chatMessage->getChatRoom();
 		if (!chatRoom) {
@@ -406,10 +406,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		tm eventTime = Utils::getLongAsTm(static_cast<long>(eventLog.getTime()));
 
-		long localSipAddressId = insertSipAddress(chatMessage->getLocalAddress().asString());
-		long remoteSipAddressId = insertSipAddress(chatMessage->getRemoteAddress().asString());
+		long long localSipAddressId = insertSipAddress(chatMessage->getLocalAddress().asString());
+		long long remoteSipAddressId = insertSipAddress(chatMessage->getRemoteAddress().asString());
 		insertChatRoom(remoteSipAddressId, chatRoom->getCapabilities(), eventTime);
-		long eventId = insertConferenceEvent(eventLog);
+		long long eventId = insertConferenceEvent(eventLog);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -429,9 +429,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceNotifiedEvent (const EventLog &eventLog) {
-		long chatRoomId;
-		long eventId = insertConferenceEvent(eventLog, &chatRoomId);
+	long long MainDbPrivate::insertConferenceNotifiedEvent (const EventLog &eventLog) {
+		long long chatRoomId;
+		long long eventId = insertConferenceEvent(eventLog, &chatRoomId);
 		unsigned int lastNotifyId = static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -443,9 +443,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
-		long eventId = insertConferenceNotifiedEvent(eventLog);
-		long participantAddressId = insertSipAddress(
+	long long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
+		long long eventId = insertConferenceNotifiedEvent(eventLog);
+		long long participantAddressId = insertSipAddress(
 			static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asString()
 		);
 
@@ -456,9 +456,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceParticipantDeviceEvent (const EventLog &eventLog) {
-		long eventId = insertConferenceParticipantEvent(eventLog);
-		long gruuAddressId = insertSipAddress(
+	long long MainDbPrivate::insertConferenceParticipantDeviceEvent (const EventLog &eventLog) {
+		long long eventId = insertConferenceParticipantEvent(eventLog);
+		long long gruuAddressId = insertSipAddress(
 			static_cast<const ConferenceParticipantDeviceEvent &>(eventLog).getGruuAddress().asString()
 		);
 
@@ -469,8 +469,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
-		long eventId = insertConferenceNotifiedEvent(eventLog);
+	long long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
+		long long eventId = insertConferenceNotifiedEvent(eventLog);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_subject_event (event_id, subject)"
@@ -489,19 +489,19 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS content_type ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  id" + primaryKeyStr("UNSIGNED SMALLINT") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
+			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
 			"  type TINYINT UNSIGNED NOT NULL,"
 			"  date DATE NOT NULL"
 			")";
@@ -509,7 +509,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room ("
 			// Server (for conference) or user sip address.
-			"  peer_sip_address_id INT UNSIGNED PRIMARY KEY,"
+			"  peer_sip_address_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
 
 			// Dialog creation date.
 			"  creation_date DATE NOT NULL,"
@@ -532,8 +532,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
-			"  chat_room_id INT UNSIGNED NOT NULL,"
-			"  sip_address_id INT UNSIGNED NOT NULL,"
+			"  chat_room_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+
 			"  is_admin BOOLEAN NOT NULL,"
 
 			"  PRIMARY KEY (chat_room_id, sip_address_id),"
@@ -547,8 +548,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
-			"  chat_room_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
+			"  chat_room_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
@@ -560,7 +562,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_notified_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
+			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
 			"  notify_id INT UNSIGNED NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
@@ -570,8 +573,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
-			"  participant_address_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
+			"  participant_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
@@ -583,8 +587,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
-			"  gruu_address_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
+			"  gruu_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_participant_event(event_id)"
@@ -596,7 +601,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
+			"  event_id" + primaryKeyStr("BIGINT") + ","
+
 			"  subject VARCHAR(255),"
 
 			"  FOREIGN KEY (event_id)"
@@ -606,9 +612,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_chat_message_event ("
-			"  event_id INT UNSIGNED PRIMARY KEY,"
-			"  local_sip_address_id INT UNSIGNED NOT NULL,"
-			"  remote_sip_address_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
+			"  local_sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  remote_sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
@@ -630,8 +637,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_participant ("
-			"  event_id INT UNSIGNED NOT NULL,"
-			"  sip_address_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
 			"  state TINYINT UNSIGNED NOT NULL,"
 
 			"  PRIMARY KEY (event_id, sip_address_id),"
@@ -645,9 +652,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content ("
-			"  id" + primaryKeyAutoIncrementStr() + ","
-			"  event_id INT UNSIGNED NOT NULL,"
-			"  content_type_id INT UNSIGNED NOT NULL,"
+			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+
+			"  event_id " + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  content_type_id" + primaryKeyRefStr("UNSIGNED SMALLINT") + ","
 			"  body TEXT NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
@@ -660,7 +668,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content_app_data ("
-			"  chat_message_content_id INT UNSIGNED NOT NULL,"
+			"  chat_message_content_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+
 			"  key VARCHAR(255),"
 			"  data BLOB,"
 
@@ -672,7 +681,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_message_crypto_data ("
-			"  event_id INT UNSIGNED NOT NULL,"
+			"  event_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+
 			"  key VARCHAR(255),"
 			"  data BLOB,"
 
@@ -772,7 +782,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			return false;
 		}
 
-		long &storageId = const_cast<EventLog &>(eventLog).getPrivate()->storageId;
+		long long &storageId = const_cast<EventLog &>(eventLog).getPrivate()->storageId;
 		if (storageId < 0)
 			return false;
 
@@ -956,7 +966,9 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		for (const auto &row : rows) {
 			tm date = row.get<tm>(2);
 			events.push_back(d->selectGenericConferenceEvent(
-				row.get<long>(0),
+				// See: http://soci.sourceforge.net/doc/master/backends/
+				// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
+				getBackend() == Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0),
 				static_cast<EventLog::Type>(row.get<int>(1)),
 				mktime(&date),
 				peerAddress
@@ -1144,10 +1156,10 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 					*session << "INSERT INTO event (type, date) VALUES (:type, :date)",
 					soci::use(static_cast<int>(EventLog::Type::ConferenceChatMessage)), soci::use(date);
 
-					long eventId = getLastInsertId();
-					long localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
-					long remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-					long chatRoomId = d->insertChatRoom(remoteSipAddressId, static_cast<int>(ChatRoom::Capabilities::Basic), date);
+					long long eventId = getLastInsertId();
+					long long localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
+					long long remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
+					long long chatRoomId = d->insertChatRoom(remoteSipAddressId, static_cast<int>(ChatRoom::Capabilities::Basic), date);
 
 					*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 						"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);

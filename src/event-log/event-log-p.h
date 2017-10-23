@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventLogPrivate : public BaseObjectPrivate {
 public:
-	long storageId = -1;
+	long long storageId = -1;
 
 private:
 	EventLog::Type type = EventLog::Type::None;

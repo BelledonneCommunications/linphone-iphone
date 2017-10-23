@@ -54,21 +54,21 @@ static void get_messages_count () {
 	MainDb mainDb;
 	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(mainDb.getMessagesCount(), 4976, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getMessagesCount("sip:test-7@sip.linphone.org"), 3, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getMessagesCount("sip:test-39@sip.linphone.org"), 3, int, "%d");
 }
 
 static void get_unread_messages_count () {
 	MainDb mainDb;
 	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(mainDb.getUnreadMessagesCount(), 2, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getUnreadMessagesCount("sip:test-7@sip.linphone.org"), 0, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getUnreadMessagesCount("sip:test-39@sip.linphone.org"), 0, int, "%d");
 }
 
 static void get_history () {
 	MainDb mainDb;
 	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(
-		mainDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		mainDb.getHistory("sip:test-39@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
 		3,
 		int,
 		"%d"

@@ -77,21 +77,38 @@ void AbstractDb::init () {
 
 // -----------------------------------------------------------------------------
 
-string AbstractDb::primaryKeyAutoIncrementStr (const string &type) const {
+string AbstractDb::primaryKeyStr (const string &type) const {
 	L_D();
 
 	switch (d->backend) {
 		case Mysql:
-			return type + "UNSIGNED PRIMARY KEY AUTO_INCREMENT";
+			return type + " PRIMARY KEY AUTO_INCREMENT";
 		case Sqlite3:
-			return " INTEGER PRIMARY KEY AUTOINCREMENT";
+			// See: ROWIDs and the INTEGER PRIMARY KEY
+			// https://www.sqlite.org/lang_createtable.html
+			return " INTEGER PRIMARY KEY ASC";
 	}
 
+	L_ASSERT(false);
 	return "";
 }
 
-long AbstractDb::getLastInsertId () const {
-	long result = 0;
+string AbstractDb::primaryKeyRefStr (const string &type) const {
+	L_D();
+
+	switch (d->backend) {
+		case Mysql:
+			return " " + type;
+		case Sqlite3:
+			return " INTEGER";
+	}
+
+	L_ASSERT(false);
+	return "";
+}
+
+long long AbstractDb::getLastInsertId () const {
+	long long id = 0;
 
 	#ifdef SOCI_ENABLED
 		L_D();
@@ -110,10 +127,10 @@ long AbstractDb::getLastInsertId () const {
 		}
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << sql, soci::into(result);
+		*session << sql, soci::into(id);
 	#endif // ifdef SOCI_ENABLED
 
-	return result;
+	return id;
 }
 
 LINPHONE_END_NAMESPACE
