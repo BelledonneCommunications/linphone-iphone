@@ -22,10 +22,9 @@
 
 #include <list>
 
-#include "linphone/utils/utils.h"
+#include <belle-sip/types.h>
 
-// TODO: From coreapi. Remove me later.
-#include "private.h"
+#include "linphone/utils/utils.h"
 
 #include "object/property-container.h"
 

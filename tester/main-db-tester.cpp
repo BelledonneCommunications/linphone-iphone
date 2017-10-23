@@ -1,5 +1,5 @@
 /*
- * events-db-tester.cpp
+ * main-db-tester.cpp
  * Copyright (C) 2017  Belledonne Communications SARL
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,52 +36,52 @@ static const string getDatabasePath () {
 // -----------------------------------------------------------------------------
 
 static void open_database () {
-	MainDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDb mainDb;
+	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 }
 
 static void get_events_count () {
-	MainDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(), 4976, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceInfoFilter), 0, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::ConferenceChatMessageFilter), 4976, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getEventsCount(MainDb::NoFilter), 4976, int, "%d");
+	MainDb mainDb;
+	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(), 4976, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceInfoFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceChatMessageFilter), 4976, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::NoFilter), 4976, int, "%d");
 }
 
 static void get_messages_count () {
-	MainDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
-	BC_ASSERT_EQUAL(eventsDb.getMessagesCount(), 4976, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getMessagesCount("sip:test-7@sip.linphone.org"), 3, int, "%d");
+	MainDb mainDb;
+	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(mainDb.getMessagesCount(), 4976, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getMessagesCount("sip:test-7@sip.linphone.org"), 3, int, "%d");
 }
 
 static void get_unread_messages_count () {
-	MainDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
-	BC_ASSERT_EQUAL(eventsDb.getUnreadMessagesCount(), 2, int, "%d");
-	BC_ASSERT_EQUAL(eventsDb.getUnreadMessagesCount("sip:test-7@sip.linphone.org"), 0, int, "%d");
+	MainDb mainDb;
+	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	BC_ASSERT_EQUAL(mainDb.getUnreadMessagesCount(), 2, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getUnreadMessagesCount("sip:test-7@sip.linphone.org"), 0, int, "%d");
 }
 
 static void get_history () {
-	MainDb eventsDb;
-	BC_ASSERT_TRUE(eventsDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDb mainDb;
+	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(
-		eventsDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		mainDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
 		3,
 		int,
 		"%d"
 	);
 	BC_ASSERT_EQUAL(
-		eventsDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceCallFilter).size(),
+		mainDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceCallFilter).size(),
 		0,
 		int,
 		"%d"
 	);
 }
 
-test_t events_db_tests[] = {
+test_t main_db_tests[] = {
 	TEST_NO_TAG("Open database", open_database),
 	TEST_NO_TAG("Get events count", get_events_count),
 	TEST_NO_TAG("Get messages count", get_messages_count),
@@ -89,7 +89,7 @@ test_t events_db_tests[] = {
 	TEST_NO_TAG("Get history", get_history)
 };
 
-test_suite_t events_db_test_suite = {
-	"EventsDb", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
-	sizeof(events_db_tests) / sizeof(events_db_tests[0]), events_db_tests
+test_suite_t main_db_test_suite = {
+	"MainDb", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+	sizeof(main_db_tests) / sizeof(main_db_tests[0]), main_db_tests
 };

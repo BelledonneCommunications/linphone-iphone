@@ -293,8 +293,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		*session << "SELECT notify_id, participant_address.value"
 			"  FROM conference_notified_event, conference_participant_event, sip_address as participant_address"
 			"  WHERE conference_participant_event.event_id = :eventId"
-			"    AND conference_notified_event.event_id = conference_participant_event.event_id",
-			"    AND participant_address.id = participant_address_id"
+			"    AND conference_notified_event.event_id = conference_participant_event.event_id"
+			"    AND participant_address.id = participant_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::use(eventId);
 
 		// TODO: Use cache.

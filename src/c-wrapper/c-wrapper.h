@@ -24,6 +24,9 @@
 
 #include "internal/c-tools.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 // =============================================================================
 // Declare exported C types.
 // =============================================================================
