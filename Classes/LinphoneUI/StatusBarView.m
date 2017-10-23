@@ -137,13 +137,14 @@
 		(linphone_content_get_buffer(content) == NULL)) {
 		return;
 	}
-	const char *body = linphone_content_get_buffer(content);
+	uint8_t *bodyTmp = linphone_content_get_buffer(content);
+	const char *body = (const char *)bodyTmp;
 	if ((body = strstr(body, "voice-message: ")) == NULL) {
 		LOGW(@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it.");
 		return;
 	}
 
-	sscanf(body, "voice-message: %d", &messagesUnreadCount);
+	sscanf((const char *)body, "voice-message: %d", &messagesUnreadCount);
 
 	LOGI(@"Received new NOTIFY from voice mail: there is/are now %d message(s) unread", messagesUnreadCount);
 

@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1217" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,6 +17,8 @@
                 <outlet property="bottomBarColor" destination="mlr-pl-B6T" id="4Lk-Vn-E8h"/>
                 <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
+                <outlet property="eventContactDateLabel" destination="LEt-tj-YCt" id="EwK-F4-O5f"/>
+                <outlet property="eventView" destination="4Hz-lQ-xx1" id="abe-u8-FDQ"/>
                 <outlet property="imdmIcon" destination="WlS-fU-Aut" id="bYC-jb-Amo"/>
                 <outlet property="imdmLabel" destination="yKD-pC-Nhu" id="ge9-Yl-qsr"/>
                 <outlet property="messageText" destination="CYa-If-oB4" id="7xm-UF-1qB"/>
@@ -32,11 +34,33 @@
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" misplaced="YES" id="ucH-2r-rar">
-            <rect key="frame" x="0.0" y="0.0" width="334" height="67"/>
+            <rect key="frame" x="0.0" y="0.0" width="334" height="110"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view clipsSubviews="YES" contentMode="scaleToFill" id="vdk-RV-QRU" userLabel="innerView">
-                    <rect key="frame" x="6" y="5" width="322" height="57"/>
+                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="4Hz-lQ-xx1" userLabel="eventView">
+                    <rect key="frame" x="0.0" y="0.0" width="334" height="43"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    <subviews>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="11:35 John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LEt-tj-YCt" userLabel="eventContactDateLabel">
+                            <rect key="frame" x="112" y="18" width="110" height="14"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                            <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_E.png" id="wbB-p7-QMP" userLabel="RightBar">
+                            <rect key="frame" x="230" y="24" width="104" height="1"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_E.png" id="PjI-cq-XPw" userLabel="LeftBar">
+                            <rect key="frame" x="0.0" y="24" width="104" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        </imageView>
+                    </subviews>
+                </view>
+                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="vdk-RV-QRU" userLabel="innerView">
+                    <rect key="frame" x="6" y="44" width="322" height="57"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="ZIO-Cb-28G" userLabel="backgroundColorImage">
@@ -105,7 +129,7 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="26" y="55.5"/>
+            <point key="canvasLocation" x="16" y="92"/>
         </view>
     </objects>
     <resources>
@@ -114,10 +138,6 @@
         <image name="chat_read.png" width="24" height="24"/>
         <image name="chat_unsecure.png" width="18" height="27"/>
         <image name="color_A.png" width="2" height="2"/>
+        <image name="color_E.png" width="2" height="2"/>
     </resources>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
-    </simulatedMetricsContainer>
 </document>
