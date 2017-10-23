@@ -286,8 +286,24 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		time_t date,
 		const string &peerAddress
 	) const {
-		// TODO.
-		return nullptr;
+		unsigned int notifyId;
+		string participantAddress;
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "SELECT notify_id, participant_address_id"
+			"  FROM conference_notified_event, conference_participant_event"
+			"  WHERE conference_participant_event.event_id = :eventId"
+			"    AND conference_notified_event.event_id = conference_participant_event.event_id",
+			soci::into(notifyId), soci::into(participantAddress), soci::use(eventId);
+
+		// TODO: Use cache.
+		return make_shared<ConferenceParticipantEvent>(
+			type,
+			date,
+			Address(peerAddress),
+			notifyId,
+			Address(participantAddress)
+		);
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantDeviceEvent (
@@ -306,13 +322,15 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		time_t date,
 		const string &peerAddress
 	) const {
-		soci::session *session = dbSession.getBackendSession<soci::session>();
-
 		unsigned int notifyId;
 		string subject;
 
-		*session << "SELECT notify_id, subject FROM conference_subject_event WHERE event_id = :eventId",
-			soci::use(eventId), soci::into(notifyId), soci::into(subject);
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "SELECT notify_id, subject"
+			"  FROM conference_notified_event, conference_subject_event"
+			"  WHERE conference_subject_event.event_id = :eventId"
+			"    AND conference_notified_event.event_id = conference_subject_event.event_id",
+			soci::into(notifyId), soci::into(subject), soci::use(eventId);
 
 		// TODO: Use cache.
 		return make_shared<ConferenceSubjectEvent>(
