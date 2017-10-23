@@ -290,10 +290,11 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		string participantAddress;
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "SELECT notify_id, participant_address_id"
-			"  FROM conference_notified_event, conference_participant_event"
+		*session << "SELECT notify_id, participant_address.value"
+			"  FROM conference_notified_event, conference_participant_event, sip_address as participant_address"
 			"  WHERE conference_participant_event.event_id = :eventId"
 			"    AND conference_notified_event.event_id = conference_participant_event.event_id",
+			"    AND participant_address.id = participant_address_id"
 			soci::into(notifyId), soci::into(participantAddress), soci::use(eventId);
 
 		// TODO: Use cache.
@@ -317,11 +318,14 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		string gruuAddress;
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "SELECT notify_id, participant_address_id, gruu_address_id"
-			"  FROM conference_notified_event, conference_participant_event, conference_participant_device_event"
+		*session << "SELECT notify_id, participant_address.value, gruu_address.value"
+			"  FROM conference_notified_event, conference_participant_event, conference_participant_device_event,"
+			"    sip_address AS participant_address, sip_address AS gruu_address"
 			"  WHERE conference_participant_device_event.event_id = :eventId"
 			"    AND conference_participant_event.event_id = conference_participant_device_event.event_id"
-			"    AND conference_notified_event.event_id = conference_participant_event.event_id",
+			"    AND conference_notified_event.event_id = conference_participant_event.event_id"
+			"    AND participant_address.id = participant_address_id"
+			"    AND gruu_address.id = gruu_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::into(gruuAddress), soci::use(eventId);
 
 		// TODO: Use cache.
