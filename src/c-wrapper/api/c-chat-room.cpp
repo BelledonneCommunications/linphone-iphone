@@ -274,6 +274,15 @@ void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) 
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setSubject(L_C_TO_STRING(subject));
 }
 
+bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) {
+	LinphonePrivate::ChatRoomPrivate *room = L_GET_PRIVATE_FROM_C_OBJECT(cr);
+	bctbx_list_t *result = NULL;
+	for (auto i = room->remoteIsComposing.begin(); i != room->remoteIsComposing.end(); ++i) {
+		result = bctbx_list_append(result, linphone_address_new((*i).c_str()));
+	}
+	return result;
+}
+
 // =============================================================================
 // Reference and user data handling functions.
 // =============================================================================

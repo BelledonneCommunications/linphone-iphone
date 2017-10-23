@@ -334,6 +334,13 @@ LINPHONE_PUBLIC void linphone_chat_room_set_participant_admin_status (LinphoneCh
 LINPHONE_PUBLIC void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject);
 
 /**
+ * Gets the list of participants that are currently composing
+ * @param[in] cr A LinphoneChatRoom object
+ * @return \bctbx_list{LinphoneAddress *} list of addresses that are in the is_composing state
+ */
+LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr);
+
+/**
  * Returns back pointer to #LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
  * @donotwrap
