@@ -205,67 +205,115 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	shared_ptr<EventLog> MainDbPrivate::selectEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectEventFromPeerAddress (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		switch (type) {
 			case EventLog::Type::None:
 				return nullptr;
 
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
-				return selectConferenceEvent(eventId, type, date);
+				return selectConferenceEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::CallStart:
 			case EventLog::Type::CallEnd:
-				return selectConferenceCallEvent(eventId, type, date);
+				return selectConferenceCallEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::ConferenceChatMessage:
-				return selectConferenceChatMessageEvent(eventId, type, date);
+				return selectConferenceChatMessageEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
-				return selectConferenceParticipantEvent(eventId, type, date);
+				return selectConferenceParticipantEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
 			case EventLog::Type::ConferenceParticipantDeviceRemoved:
-				return selectConferenceParticipantDeviceEvent(eventId, type, date);
+				return selectConferenceParticipantDeviceEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::ConferenceSubjectChanged:
-				return selectConferenceSubjectEvent(eventId, type, date);
+				return selectConferenceSubjectEvent(eventId, type, date, peerAddress);
 		}
 
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		// TODO.
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceCallEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceCallEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		// TODO.
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		// TODO.
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		// TODO.
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantDeviceEvent (long eventId, EventLog::Type type, time_t date) const {
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantDeviceEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
 		// TODO.
 		return nullptr;
 	}
 
-	shared_ptr<EventLog> MainDbPrivate::selectConferenceSubjectEvent (long eventId, EventLog::Type type, time_t date) const {
-		// TODO.
-		return nullptr;
+	shared_ptr<EventLog> MainDbPrivate::selectConferenceSubjectEvent (
+		long eventId,
+		EventLog::Type type,
+		time_t date,
+		const string &peerAddress
+	) const {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		unsigned int notifyId;
+		string subject;
+
+		*session << "SELECT notify_id, subject FROM conference_subject_event WHERE event_id = :eventId",
+			soci::use(eventId), soci::into(notifyId), soci::into(subject);
+
+		// TODO: Use cache.
+		return make_shared<ConferenceSubjectEvent>(
+			date,
+			Address(peerAddress),
+			notifyId,
+			subject
+		);
 	}
 
 // -----------------------------------------------------------------------------
@@ -859,7 +907,12 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress));
 		for (const auto &row : rows) {
 			tm date = row.get<tm>(2);
-			events.push_back(d->selectEvent(row.get<long>(0), static_cast<EventLog::Type>(row.get<int>(1)), mktime(&date)));
+			events.push_back(d->selectConferenceEvent(
+				row.get<long>(0),
+				static_cast<EventLog::Type>(row.get<int>(1)),
+				mktime(&date),
+				peerAddress
+			));
 		}
 
 		L_END_LOG_EXCEPTION
