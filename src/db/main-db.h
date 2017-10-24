@@ -48,8 +48,8 @@ public:
 	MainDb ();
 
 	// Generic.
-	bool addEvent (const EventLog &eventLog);
-	bool deleteEvent (const EventLog &eventLog);
+	bool addEvent (const std::shared_ptr<EventLog> &eventLog);
+	bool deleteEvent (const std::shared_ptr<EventLog> &eventLog);
 	void cleanEvents (FilterMask mask = NoFilter);
 	int getEventsCount (FilterMask mask = NoFilter) const;
 

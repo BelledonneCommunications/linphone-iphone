@@ -31,7 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 class BaseObjectPrivate;
 
 /*
- * Base Object of Linphone. Cannot be cloned. Cannot be Shared.
+ * Base Object of Linphone. Cannot be cloned. Can be Shared.
  * It's the base class of Object. It's useful for lightweight entities
  * like Events.
  */

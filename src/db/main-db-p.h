@@ -99,14 +99,14 @@ private:
 		const std::string &peerAddress
 	) const;
 
-	long long insertEvent (const EventLog &eventLog);
-	long long insertConferenceEvent (const EventLog &eventLog, long long *chatRoomId = nullptr);
-	long long insertConferenceCallEvent (const EventLog &eventLog);
-	long long insertConferenceChatMessageEvent (const EventLog &eventLog);
-	long long insertConferenceNotifiedEvent (const EventLog &eventLog);
-	long long insertConferenceParticipantEvent (const EventLog &eventLog);
-	long long insertConferenceParticipantDeviceEvent (const EventLog &eventLog);
-	long long insertConferenceSubjectEvent (const EventLog &eventLog);
+	long long insertEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
+	long long insertConferenceCallEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceChatMessageEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceNotifiedEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
 
 	L_DECLARE_PUBLIC(MainDb);
 };

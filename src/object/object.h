@@ -31,6 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 /*
  * Main Object of Linphone. Can be shared but is not Clonable.
+ * Supports properties and shared from this.
  * Must be built with ObjectFactory.
  */
 class LINPHONE_PUBLIC Object : public BaseObject, public PropertyContainer {

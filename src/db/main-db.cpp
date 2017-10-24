@@ -366,19 +366,19 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-	long long MainDbPrivate::insertEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertEvent (const shared_ptr<EventLog> &eventLog) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		*session << "INSERT INTO event (type, date) VALUES (:type, :date)",
-		soci::use(static_cast<int>(eventLog.getType())), soci::use(Utils::getLongAsTm(eventLog.getTime()));
+		soci::use(static_cast<int>(eventLog->getType())), soci::use(Utils::getLongAsTm(eventLog->getTime()));
 		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertConferenceEvent (const EventLog &eventLog, long long *chatRoomId) {
+	long long MainDbPrivate::insertConferenceEvent (const shared_ptr<EventLog> &eventLog, long long *chatRoomId) {
 		long long eventId = insertEvent(eventLog);
 		long long curChatRoomId = insertSipAddress(
-			static_cast<const ConferenceEvent &>(eventLog).getConferenceAddress().asString()
+			static_pointer_cast<ConferenceEvent>(eventLog)->getConferenceAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -391,20 +391,20 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceCallEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceCallEvent (const shared_ptr<EventLog> &eventLog) {
 		// TODO.
 		return 0;
 	}
 
-	long long MainDbPrivate::insertConferenceChatMessageEvent (const EventLog &eventLog) {
-		shared_ptr<ChatMessage> chatMessage = static_cast<const ConferenceChatMessageEvent &>(eventLog).getChatMessage();
+	long long MainDbPrivate::insertConferenceChatMessageEvent (const shared_ptr<EventLog> &eventLog) {
+		shared_ptr<ChatMessage> chatMessage = static_pointer_cast<ConferenceChatMessageEvent>(eventLog)->getChatMessage();
 		shared_ptr<ChatRoom> chatRoom = chatMessage->getChatRoom();
 		if (!chatRoom) {
 			lError() << "Unable to get a valid chat room. It was removed from database.";
 			return -1;
 		}
 
-		tm eventTime = Utils::getLongAsTm(static_cast<long>(eventLog.getTime()));
+		tm eventTime = Utils::getLongAsTm(static_cast<long>(eventLog->getTime()));
 
 		long long localSipAddressId = insertSipAddress(chatMessage->getLocalAddress().asString());
 		long long remoteSipAddressId = insertSipAddress(chatMessage->getRemoteAddress().asString());
@@ -429,10 +429,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceNotifiedEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceNotifiedEvent (const shared_ptr<EventLog> &eventLog) {
 		long long chatRoomId;
 		long long eventId = insertConferenceEvent(eventLog, &chatRoomId);
-		unsigned int lastNotifyId = static_cast<const ConferenceNotifiedEvent &>(eventLog).getNotifyId();
+		unsigned int lastNotifyId = static_pointer_cast<ConferenceNotifiedEvent>(eventLog)->getNotifyId();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
@@ -443,10 +443,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceParticipantEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceParticipantEvent (const shared_ptr<EventLog> &eventLog) {
 		long long eventId = insertConferenceNotifiedEvent(eventLog);
 		long long participantAddressId = insertSipAddress(
-			static_cast<const ConferenceParticipantEvent &>(eventLog).getParticipantAddress().asString()
+			static_pointer_cast<ConferenceParticipantEvent>(eventLog)->getParticipantAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -456,10 +456,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceParticipantDeviceEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceParticipantDeviceEvent (const shared_ptr<EventLog> &eventLog) {
 		long long eventId = insertConferenceParticipantEvent(eventLog);
 		long long gruuAddressId = insertSipAddress(
-			static_cast<const ConferenceParticipantDeviceEvent &>(eventLog).getGruuAddress().asString()
+			static_pointer_cast<ConferenceParticipantDeviceEvent>(eventLog)->getGruuAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -469,13 +469,13 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceSubjectEvent (const EventLog &eventLog) {
+	long long MainDbPrivate::insertConferenceSubjectEvent (const shared_ptr<EventLog> &eventLog) {
 		long long eventId = insertConferenceNotifiedEvent(eventLog);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_subject_event (event_id, subject)"
 			"  VALUES (:eventId, :subject)", soci::use(eventId), soci::use(
-				static_cast<const ConferenceSubjectEvent &>(eventLog).getSubject()
+				static_pointer_cast<ConferenceSubjectEvent>(eventLog)->getSubject()
 			);
 
 		return eventId;
@@ -716,7 +716,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		*session << participantMessageDeleter;
 	}
 
-	bool MainDb::addEvent (const EventLog &eventLog) {
+	bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
 		L_D();
 
 		if (!isConnected()) {
@@ -730,7 +730,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
 
-		switch (eventLog.getType()) {
+		switch (eventLog->getType()) {
 			case EventLog::Type::None:
 				return false;
 
@@ -774,7 +774,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		return soFarSoGood;
 	}
 
-	bool MainDb::deleteEvent (const EventLog &eventLog) {
+	bool MainDb::deleteEvent (const shared_ptr<EventLog> &eventLog) {
 		L_D();
 
 		if (!isConnected()) {
@@ -782,7 +782,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			return false;
 		}
 
-		long long &storageId = const_cast<EventLog &>(eventLog).getPrivate()->storageId;
+		long long &storageId = eventLog->getPrivate()->storageId;
 		if (storageId < 0)
 			return false;
 

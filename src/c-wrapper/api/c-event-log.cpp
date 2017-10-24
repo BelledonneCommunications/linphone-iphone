@@ -27,13 +27,13 @@
 
 // =============================================================================
 
-L_DECLARE_C_BASE_OBJECT_IMPL(CallEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceChatMessageEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceParticipantDeviceEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceParticipantEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(ConferenceSubjectEvent);
-L_DECLARE_C_BASE_OBJECT_IMPL(EventLog);
+L_DECLARE_C_OBJECT_IMPL(CallEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceChatMessageEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceParticipantDeviceEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceParticipantEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceSubjectEvent);
+L_DECLARE_C_OBJECT_IMPL(EventLog);
 
 using namespace std;
 
@@ -43,7 +43,7 @@ using namespace std;
 
 LinphoneEventLog *linphone_event_log_new () {
 	LinphoneEventLog *event_log = _linphone_EventLog_init();
-	L_SET_CPP_PTR_FROM_C_OBJECT(event_log, new LinphonePrivate::EventLog());
+	L_SET_CPP_PTR_FROM_C_OBJECT(event_log, make_shared<LinphonePrivate::EventLog>());
 	return event_log;
 }
 
@@ -66,7 +66,7 @@ LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, time_t ti
 	LinphoneCallEvent *call_event = _linphone_CallEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		call_event,
-		new LinphonePrivate::CallEvent(
+		make_shared<LinphonePrivate::CallEvent>(
 			static_cast<LinphonePrivate::EventLog::Type>(type),
 			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(call)
@@ -128,7 +128,7 @@ LinphoneConferenceChatMessageEvent *linphone_chat_message_event_new (LinphoneCha
 	LinphoneConferenceChatMessageEvent *chat_message_event = _linphone_ConferenceChatMessageEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
 		chat_message_event,
-		new LinphonePrivate::ConferenceChatMessageEvent(
+		make_shared<LinphonePrivate::ConferenceChatMessageEvent>(
 			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(chat_message)
 		)
