@@ -42,7 +42,14 @@
  **/
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_new (void);
 
+/**
+ * Increment reference count of #LinphoneEventLog object.
+ **/
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_ref (LinphoneEventLog *event_log);
+
+/**
+ * Decrement reference count of #LinphoneEventLog object. When dropped to zero, memory is freed.
+ **/
 LINPHONE_PUBLIC void linphone_event_log_unref (LinphoneEventLog *event_log);
 
 /**
@@ -73,6 +80,16 @@ LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_new (
 );
 
 /**
+ * Increment reference count of #LinphoneConferenceEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_ref (LinphoneConferenceEvent *conference_event);
+
+/**
+ * Decrement reference count of #LinphoneConferenceEvent object. When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_event_unref (LinphoneConferenceEvent *conference_event);
+
+/**
  * Returns the conference address of a conference event.
  * @param[in] conference_event A #LinphoneConferenceEvent object.
  * @return The conference address.
@@ -93,6 +110,20 @@ LINPHONE_PUBLIC LinphoneConferenceNotifiedEvent *linphone_conference_notified_ev
 	time_t time,
 	const LinphoneAddress *conference_address,
 	unsigned int notify_id
+);
+
+/**
+ * Increment reference count of #LinphoneConferenceNotifiedEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceNotifiedEvent *linphone_conference_notified_event_ref (
+	LinphoneConferenceNotifiedEvent *conference_notified_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceNotifiedEvent object. When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_notified_event_unref (
+	LinphoneConferenceNotifiedEvent *conference_notified_event
 );
 
 /**
@@ -118,6 +149,20 @@ LINPHONE_PUBLIC LinphoneConferenceCallEvent *linphone_conference_call_event_new 
 );
 
 /**
+ * Increment reference count of #LinphoneConferenceCallEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceCallEvent *linphone_conference_call_event_ref (
+	LinphoneConferenceCallEvent *conference_call_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceCallEvent object. When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_call_event_unref (
+	LinphoneConferenceCallEvent *conference_call_event
+);
+
+/**
  * Returns the call of a conference call event.
  * @param[in] conference_conference_call_event A #LinphoneConferenceCallEvent object.
  * @return The conference call.
@@ -136,6 +181,20 @@ LINPHONE_PUBLIC LinphoneCall *linphone_conference_call_event_get_call (
 LINPHONE_PUBLIC LinphoneConferenceChatMessageEvent *linphone_conference_chat_message_event_new (
 	time_t time,
 	LinphoneChatMessage *chat_message
+);
+
+/**
+ * Increment reference count of #LinphoneConferenceChatMessageEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceChatMessageEvent *linphone_conference_chat_message_event_ref (
+	LinphoneConferenceChatMessageEvent *conference_chat_message_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceChatMessageEvent object. When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_chat_message_event_unref (
+	LinphoneConferenceChatMessageEvent *conference_chat_message_event
 );
 
 /**
@@ -160,6 +219,20 @@ LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_particip
 	const LinphoneAddress *conference_address,
 	unsigned int notify_id,
 	const LinphoneAddress *participant_address
+);
+
+/**
+ * Increment reference count of #LinphoneConferenceParticipantEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_participant_event_ref (
+	LinphoneConferenceParticipantEvent *conference_participant_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceParticipantEvent object. When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_participant_event_unref (
+	LinphoneConferenceParticipantEvent *conference_participant_event
 );
 
 /**
@@ -188,6 +261,21 @@ LINPHONE_PUBLIC LinphoneConferenceParticipantDeviceEvent *linphone_conference_pa
 );
 
 /**
+ * Increment reference count of #LinphoneConferenceParticipantDeviceEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceParticipantDeviceEvent *linphone_conference_participant_device_event_ref (
+	LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceParticipantDeviceEvent object.
+ * When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_participant_device_event_unref (
+	LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
+);
+
+/**
  * Returns the gruu address of a conference participant device event.
  * @param[in] conference_participant_device_event A #LinphoneConferenceParticipantDeviceEvent object.
  * @return The conference gruu address.
@@ -208,6 +296,21 @@ LINPHONE_PUBLIC LinphoneConferenceSubjectEvent *linphone_conference_subject_even
 	const LinphoneAddress *conference_address,
 	unsigned int notify_id,
 	const char *subject
+);
+
+/**
+ * Increment reference count of #LinphoneConferenceSubjectEvent object.
+ **/
+LINPHONE_PUBLIC LinphoneConferenceSubjectEvent *linphone_conference_subject_event_ref (
+	LinphoneConferenceSubjectEvent *conference_subject_event
+);
+
+/**
+ * Decrement reference count of #LinphoneConferenceSubjectEvent object.
+ * When dropped to zero, memory is freed.
+ **/
+LINPHONE_PUBLIC void linphone_conference_subject_event_unref (
+	LinphoneConferenceSubjectEvent *conference_subject_event
 );
 
 /**

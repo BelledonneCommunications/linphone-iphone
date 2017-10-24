@@ -87,6 +87,15 @@ LinphoneConferenceEvent *linphone_conference_event_new (
 	return conference_event;
 }
 
+LinphoneConferenceEvent *linphone_conference_event_ref (LinphoneConferenceEvent *conference_event) {
+	belle_sip_object_ref(conference_event);
+	return conference_event;
+}
+
+void linphone_conference_event_unref (LinphoneConferenceEvent *conference_event) {
+	belle_sip_object_unref(conference_event);
+}
+
 const LinphoneAddress *linphone_conference_event_get_conference_address (
 	const LinphoneConferenceEvent *conference_event
 ) {
@@ -118,6 +127,19 @@ LinphoneConferenceNotifiedEvent *linphone_conference_notified_event_new (
 	return conference_notified_event;
 }
 
+LinphoneConferenceNotifiedEvent *linphone_conference_notified_event_ref (
+	LinphoneConferenceNotifiedEvent *conference_notified_event
+) {
+	belle_sip_object_ref(conference_notified_event);
+	return conference_notified_event;
+}
+
+void linphone_conference_notified_event_unref (
+	LinphoneConferenceNotifiedEvent *conference_notified_event
+) {
+	belle_sip_object_unref(conference_notified_event);
+}
+
 unsigned int linphone_conference_notified_event_get_notify_id (
 	const LinphoneConferenceNotifiedEvent *conference_notified_event
 ) {
@@ -145,6 +167,19 @@ LinphoneConferenceCallEvent *linphone_conference_call_event_new (
 	return conference_call_event;
 }
 
+LinphoneConferenceCallEvent *linphone_conference_call_event_ref (
+	LinphoneConferenceCallEvent *conference_call_event
+) {
+	belle_sip_object_ref(conference_call_event);
+	return conference_call_event;
+}
+
+void linphone_conference_call_event_unref (
+	LinphoneConferenceCallEvent *conference_call_event
+) {
+	belle_sip_object_unref(conference_call_event);
+}
+
 LinphoneCall *linphone_conference_call_event_get_call (const LinphoneConferenceCallEvent *conference_call_event) {
 	return L_GET_C_BACK_PTR(
 		L_GET_CPP_PTR_FROM_C_OBJECT(conference_call_event)->getCall()
@@ -168,6 +203,19 @@ LinphoneConferenceChatMessageEvent *linphone_conference_chat_message_event_new (
 		)
 	);
 	return conference_chat_message_event;
+}
+
+LinphoneConferenceChatMessageEvent *linphone_conference_chat_message_event_ref (
+	LinphoneConferenceChatMessageEvent *conference_chat_message_event
+) {
+	belle_sip_object_ref(conference_chat_message_event);
+	return conference_chat_message_event;
+}
+
+void linphone_conference_chat_message_event_unref (
+	LinphoneConferenceChatMessageEvent *conference_chat_message_event
+) {
+	belle_sip_object_unref(conference_chat_message_event);
 }
 
 LinphoneChatMessage *linphone_conference_chat_message_event_get_chat_message (
@@ -201,6 +249,19 @@ LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
 		)
 	);
 	return conference_participant_event;
+}
+
+LinphoneConferenceParticipantEvent *linphone_conference_participant_event_ref (
+	LinphoneConferenceParticipantEvent *conference_participant_event
+) {
+	belle_sip_object_ref(conference_participant_event);
+	return conference_participant_event;
+}
+
+void linphone_conference_participant_event_unref (
+	LinphoneConferenceParticipantEvent *conference_participant_event
+) {
+	belle_sip_object_unref(conference_participant_event);
 }
 
 const LinphoneAddress *linphone_conference_participant_event_get_participant_address (
@@ -240,6 +301,19 @@ LinphoneConferenceParticipantDeviceEvent *linphone_conference_participant_device
 	return conference_participant_device_event;
 }
 
+LinphoneConferenceParticipantDeviceEvent *linphone_conference_participant_device_event_ref (
+	LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
+) {
+	belle_sip_object_ref(conference_participant_device_event);
+	return conference_participant_device_event;
+}
+
+void linphone_conference_participant_device_event_unref (
+	LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
+) {
+	belle_sip_object_unref(conference_participant_device_event);
+}
+
 const LinphoneAddress *linphone_conference_participant_device_event_get_gruu_address (
 	const LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
 ) {
@@ -270,6 +344,19 @@ LinphoneConferenceSubjectEvent *linphone_conference_subject_event_new (
 		)
 	);
 	return conference_subject_event;
+}
+
+LinphoneConferenceSubjectEvent *linphone_conference_subject_event_ref (
+	LinphoneConferenceSubjectEvent *conference_subject_event
+) {
+	belle_sip_object_ref(conference_subject_event);
+	return conference_subject_event;
+}
+
+void linphone_conference_subject_event_unref (
+	LinphoneConferenceSubjectEvent *conference_subject_event
+) {
+	belle_sip_object_unref(conference_subject_event);
 }
 
 LINPHONE_PUBLIC const char *linphone_conference_subject_event_get_subject (
