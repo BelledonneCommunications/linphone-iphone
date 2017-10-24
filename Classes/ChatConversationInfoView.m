@@ -62,11 +62,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - next functions
 
-- (LinphoneChatRoom *)onCreate {
+- (void)onCreate {
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, _nameLabel.text.UTF8String);
 	if(!room) {
 		return;
 	}
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
+	linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
+	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
 	bctbx_list_t *addresses = NULL;
 	for(NSString *addr in _contacts.allKeys) {
 		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
@@ -78,30 +81,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	linphone_chat_room_add_participants(room, addresses);
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
-	return room;
 }
 
-- (LinphoneChatRoom *) onValidate {
-	return NULL;
+- (void)onValidate {
+	//TODO : Apply all modifications
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 #pragma mark - Buttons responders
 
 - (IBAction)onNextClick:(id)sender {
-	LinphoneChatRoom *room = NULL;
 	if(_create)
-		room = [self onCreate];
+		[self onCreate];
 	else
-		room = [self onValidate];
-
-	if(!room) {
-		LOGE(@"No chat room to go to.");
-		return;
-	}
-
-	ChatConversationView *view = VIEW(ChatConversationView);
-	view.chatRoom = room;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+		[self onValidate];
 }
 
 - (IBAction)onBackClick:(id)sender {
@@ -158,6 +152,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_nextButton.enabled = (!((string.length == 0 || string == nil || [string isEqual:@""]) && (textField.text.length == 1))
 						   && _contacts.count > 0);
 	return TRUE;
+}
+
+#pragma mark - chat room callbacks
+
+- (void)onChatRoomCreated:(LinphoneChatRoom *)cr {
+	ChatConversationView *view = VIEW(ChatConversationView);
+	view.chatRoom = cr;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	switch (newState) {
+		case LinphoneChatRoomStateCreated:
+			LOGI(@"Chat room [%p] created on server.", cr);
+			[(__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) onChatRoomCreated:cr];
+			break;
+		case LinphoneChatRoomStateCreationFailed:
+			LOGE(@"Chat room [%p] could not be created on server.", cr);
+			break;
+		default:
+			break;
+	}
 }
 
 @end

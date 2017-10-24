@@ -77,7 +77,51 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 }
 
+#pragma mark - Chat room functions
+
+void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	switch (newState) {
+		case LinphoneChatRoomStateCreated:
+			LOGI(@"Chat room [%p] created on server.", cr);
+			[(__bridge ChatConversationCreateView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) onChatRoomCreated:cr];
+			break;
+		case LinphoneChatRoomStateCreationFailed:
+			LOGE(@"Chat room [%p] could not be created on server.", cr);
+			break;
+		default:
+			break;
+	}
+}
+
+- (void)onChatRoomCreated:(LinphoneChatRoom *)cr {
+	ChatConversationView *view = VIEW(ChatConversationView);
+	view.chatRoom = cr;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+- (void)createChatRoom {
+	NSString *addr = _tableController.contactsDict.allKeys[0];
+	NSString* name = [_tableController.contactsDict objectForKey:addr];
+	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, name.UTF8String);
+	if(!room) {
+		return;
+	}
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
+	linphone_chat_room_cbs_set_state_changed(cbs, create_chat_room_state_changed);
+	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+	bctbx_list_t *addresses = bctbx_list_new((void *)linphoneAddress);
+	linphone_chat_room_add_participants(room, addresses);
+	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+}
+
+#pragma mark - Buttons signals
+
 - (IBAction)onNextClick:(id)sender {
+	if (_tableController.contactsGroup.count == 1) {
+		[self createChatRoom];
+		return;
+	}
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.contacts = _tableController.contactsDict;
 	view.create = TRUE;
