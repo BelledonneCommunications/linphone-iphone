@@ -626,7 +626,6 @@
 		8C2595DD1DEDC92D007A6424 /* ProviderDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */; };
 		8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2595DE1DEDCC8E007A6424 /* CallKit.framework */; };
 		8C2595E11DEDDC67007A6424 /* callkit_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2595E01DEDDC67007A6424 /* callkit_logo.png */; };
-		8C2A81921F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */; };
 		8C2A81951F87B8000012A66B /* chat_group_avatar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */; };
 		8C2A81961F87B8000012A66B /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
 		8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C300D981E40E0CC00728EF3 /* lime_ko.png */; };
@@ -688,20 +687,24 @@
 		8C9C5E111F83BD97006987FA /* UIChatCreateCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */; };
 		8C9C5E121F83BD97006987FA /* UIChatCreateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */; };
 		8CA2004C1D8158440095F859 /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8CA2004B1D8158440095F859 /* PushKit.framework */; };
+		8CA70AC61F9DEDE000A3D2EB /* ChatConversationInfoView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CA70AC51F9DEDE000A3D2EB /* ChatConversationInfoView.xib */; };
+		8CA70AD11F9E0AE100A3D2EB /* ChatConversationInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */; };
+		8CA70AD41F9E285C00A3D2EB /* chat_group_add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA70AD21F9E285B00A3D2EB /* chat_group_add@2x.png */; };
+		8CA70AD51F9E285C00A3D2EB /* chat_group_add.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */; };
+		8CA70AE41F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */; };
+		8CA70AE51F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CA70AE31F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib */; };
 		8CB2B8F91F86229E0015CEE2 /* chat_secure.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F61F86229B0015CEE2 /* chat_secure.png */; };
 		8CB2B8FA1F86229E0015CEE2 /* next_disabled.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F71F86229C0015CEE2 /* next_disabled.png */; };
 		8CB2B8FB1F86229E0015CEE2 /* next_disabled@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */; };
-		8CD3F5AC1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */; };
-		8CD3F5B71F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */; };
 		8CDC61951F84D89B0087CF7F /* check_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC618C1F84D89B0087CF7F /* check_selected.png */; };
 		8CDC61971F84D9270087CF7F /* check_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC61961F84D9270087CF7F /* check_selected@2x.png */; };
-		8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */; };
-		8CDC619C1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */; };
 		8CE24F4B1F8234A30077AC0A /* next_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F491F8234A20077AC0A /* next_default.png */; };
 		8CE24F4C1F8234A30077AC0A /* next_default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F4A1F8234A30077AC0A /* next_default@2x.png */; };
 		8CE24F571F8268850077AC0A /* conference_delete.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F551F8268840077AC0A /* conference_delete.png */; };
 		8CE24F581F8268850077AC0A /* conference_delete@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F561F8268840077AC0A /* conference_delete@2x.png */; };
 		8CE845651EC3500A00A94D60 /* bctoolbox-tester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; };
+		8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */; };
+		8CF25D961F9F336100BEA0C1 /* check_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D941F9F336100BEA0C1 /* check_unselected.png */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -1675,7 +1678,6 @@
 		8C2595DC1DEDC92D007A6424 /* ProviderDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProviderDelegate.m; sourceTree = "<group>"; };
 		8C2595DE1DEDCC8E007A6424 /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		8C2595E01DEDDC67007A6424 /* callkit_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = callkit_logo.png; sourceTree = "<group>"; };
-		8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatCreateConfirmCollectionViewCell.xib; sourceTree = "<group>"; };
 		8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_avatar@2x.png"; sourceTree = "<group>"; };
 		8C2A81941F87B8000012A66B /* chat_group_avatar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_avatar.png; sourceTree = "<group>"; };
 		8C300D981E40E0CC00728EF3 /* lime_ko.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lime_ko.png; sourceTree = "<group>"; };
@@ -1703,22 +1705,25 @@
 		8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateCollectionViewCell.m; sourceTree = "<group>"; };
 		8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatCreateCollectionViewCell.xib; sourceTree = "<group>"; };
 		8CA2004B1D8158440095F859 /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		8CA70AC51F9DEDE000A3D2EB /* ChatConversationInfoView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatConversationInfoView.xib; sourceTree = "<group>"; };
+		8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationInfoView.h; sourceTree = "<group>"; };
+		8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationInfoView.m; sourceTree = "<group>"; };
+		8CA70AD21F9E285B00A3D2EB /* chat_group_add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_add@2x.png"; sourceTree = "<group>"; };
+		8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_add.png; sourceTree = "<group>"; };
+		8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatConversationInfoTableViewCell.h; sourceTree = "<group>"; };
+		8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatConversationInfoTableViewCell.m; sourceTree = "<group>"; };
+		8CA70AE31F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatConversationInfoTableViewCell.xib; sourceTree = "<group>"; };
 		8CB2B8F61F86229B0015CEE2 /* chat_secure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_secure.png; sourceTree = "<group>"; };
 		8CB2B8F71F86229C0015CEE2 /* next_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_disabled.png; sourceTree = "<group>"; };
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
-		8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatCreateConfirmCollectionViewCell.h; sourceTree = "<group>"; };
-		8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatCreateConfirmCollectionViewCell.m; sourceTree = "<group>"; };
-		8CD3F5B51F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmCollectionViewController.h; sourceTree = "<group>"; };
-		8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateConfirmCollectionViewController.m; sourceTree = "<group>"; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
-		8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateConfirmView.h; sourceTree = "<group>"; };
-		8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateConfirmView.m; sourceTree = "<group>"; };
-		8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatConversationCreateConfirmView.xib; sourceTree = "<group>"; };
 		8CE24F491F8234A20077AC0A /* next_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_default.png; sourceTree = "<group>"; };
 		8CE24F4A1F8234A30077AC0A /* next_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_default@2x.png"; sourceTree = "<group>"; };
 		8CE24F551F8268840077AC0A /* conference_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = conference_delete.png; sourceTree = "<group>"; };
 		8CE24F561F8268840077AC0A /* conference_delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conference_delete@2x.png"; sourceTree = "<group>"; };
+		8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check_unselected@2x.png"; sourceTree = "<group>"; };
+		8CF25D941F9F336100BEA0C1 /* check_unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = check_unselected.png; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -2040,6 +2045,9 @@
 				D3F83EEA1582021700336684 /* CallView.m */,
 				D381881C15FE3FCA00C3EDCA /* CallView.xib */,
 				638F1A861C2167C2004B8E02 /* CallView~ipad.xib */,
+				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
+				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
+				8CA70AC51F9DEDE000A3D2EB /* ChatConversationInfoView.xib */,
 				8C9C5E0B1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.h */,
 				8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */,
 				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
@@ -2047,11 +2055,6 @@
 				6336715E1BCBAAD200BFCBDE /* ChatConversationCreateView.h */,
 				6336715F1BCBAAD200BFCBDE /* ChatConversationCreateView.m */,
 				63B8D68E1BCBE65600C12B09 /* ChatConversationCreateView.xib */,
-				8CD3F5B51F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.h */,
-				8CD3F5B61F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m */,
-				8CDC61981F84EAC10087CF7F /* ChatConversationCreateConfirmView.h */,
-				8CDC61991F84EAC10087CF7F /* ChatConversationCreateConfirmView.m */,
-				8CDC619B1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib */,
 				D32B6E2715A5BC430033019F /* ChatConversationTableView.h */,
 				D32B6E2815A5BC430033019F /* ChatConversationTableView.m */,
 				D3F795D315A582800077328B /* ChatConversationView.h */,
@@ -2185,12 +2188,12 @@
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
+				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
+				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
+				8CA70AE31F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib */,
 				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
 				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
 				8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */,
-				8CD3F5AA1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.h */,
-				8CD3F5AB1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m */,
-				8C2A81911F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib */,
 				63B8D69F1BCBF43100C12B09 /* UIChatCreateCell.h */,
 				63B8D6A01BCBF43100C12B09 /* UIChatCreateCell.m */,
 				639E9CA81C0DB7F200019A75 /* UIChatCreateCell.xib */,
@@ -2443,6 +2446,10 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8CF25D941F9F336100BEA0C1 /* check_unselected.png */,
+				8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */,
+				8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */,
+				8CA70AD21F9E285B00A3D2EB /* chat_group_add@2x.png */,
 				8C2A81941F87B8000012A66B /* chat_group_avatar.png */,
 				8C2A81931F87B7FF0012A66B /* chat_group_avatar@2x.png */,
 				8CB2B8F61F86229B0015CEE2 /* chat_secure.png */,
@@ -3334,6 +3341,7 @@
 				633FEDC41D3CD5590014B822 /* call_hangup_disabled.png in Resources */,
 				633FEDA81D3CD5590014B822 /* backspace_default.png in Resources */,
 				636316D11A1DEBCB0009B839 /* AboutView.xib in Resources */,
+				8CA70AE51F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib in Resources */,
 				244523AF1E8266CC0037A187 /* chat_delivered.png in Resources */,
 				633FEF481D3CD55A0014B822 /* speaker_selected.png in Resources */,
 				633FEED91D3CD55A0014B822 /* numpad_7~ipad.png in Resources */,
@@ -3343,6 +3351,7 @@
 				633FEF021D3CD55A0014B822 /* options_disabled.png in Resources */,
 				633FEDC81D3CD5590014B822 /* call_missed.png in Resources */,
 				8CB2B8FA1F86229E0015CEE2 /* next_disabled.png in Resources */,
+				8CF25D961F9F336100BEA0C1 /* check_unselected.png in Resources */,
 				633FEF4B1D3CD55A0014B822 /* splashscreen@2x.png in Resources */,
 				8C300D9A1E40E0CC00728EF3 /* lime_ko.png in Resources */,
 				633FEE311D3CD5590014B822 /* color_I.png in Resources */,
@@ -3470,6 +3479,7 @@
 				244523B11E8266CC0037A187 /* chat_read.png in Resources */,
 				639E9CAC1C0DB80300019A75 /* UIContactDetailsCell.xib in Resources */,
 				633FEE511D3CD5590014B822 /* deselect_all@2x.png in Resources */,
+				8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */,
 				F088488A19FF8C41007FFCF3 /* UIContactCell.xib in Resources */,
 				633FEE381D3CD5590014B822 /* contact_add_default.png in Resources */,
 				633FEE6F1D3CD5590014B822 /* footer_history_default@2x.png in Resources */,
@@ -3661,6 +3671,7 @@
 				633FEEE91D3CD55A0014B822 /* numpad_9~ipad.png in Resources */,
 				633FEE331D3CD5590014B822 /* color_M.png in Resources */,
 				633FEE811D3CD5590014B822 /* led_connected@2x.png in Resources */,
+				8CA70AD51F9E285C00A3D2EB /* chat_group_add.png in Resources */,
 				633FEE881D3CD5590014B822 /* linphone_logo.png in Resources */,
 				633FEE9B1D3CD55A0014B822 /* numpad_0_default.png in Resources */,
 				633FEE591D3CD5590014B822 /* dialer_background@2x.png in Resources */,
@@ -3686,14 +3697,12 @@
 				633FEF1D1D3CD55A0014B822 /* presence_offline@2x.png in Resources */,
 				24A3459E1D95797700881A5C /* UIShopTableCell.xib in Resources */,
 				633FEE231D3CD5590014B822 /* chat_start_body_over@2x.png in Resources */,
-				8CDC619C1F84EAFD0087CF7F /* ChatConversationCreateConfirmView.xib in Resources */,
 				633FEEBE1D3CD55A0014B822 /* numpad_4_over@2x.png in Resources */,
 				633FEF471D3CD55A0014B822 /* speaker_disabled@2x.png in Resources */,
 				633FEEFE1D3CD55A0014B822 /* options_add_call_disabled.png in Resources */,
 				633FEE291D3CD5590014B822 /* checkbox_unchecked@2x.png in Resources */,
 				63AADC001B6A0FF200AA16FD /* assistant_linphone_create.rc in Resources */,
 				633FEF1C1D3CD55A0014B822 /* presence_offline.png in Resources */,
-				8C2A81921F877EDC0012A66B /* UIChatCreateConfirmCollectionViewCell.xib in Resources */,
 				633FEE901D3CD55A0014B822 /* list_details_over.png in Resources */,
 				633FEDE31D3CD5590014B822 /* call_status_incoming@2x.png in Resources */,
 				633FEE821D3CD5590014B822 /* led_disconnected.png in Resources */,
@@ -3721,6 +3730,7 @@
 				633FEDB91D3CD5590014B822 /* call_alt_start_disabled@2x.png in Resources */,
 				633FEE691D3CD5590014B822 /* footer_contacts_disabled@2x.png in Resources */,
 				633FEE891D3CD5590014B822 /* linphone_logo@2x.png in Resources */,
+				8CA70AC61F9DEDE000A3D2EB /* ChatConversationInfoView.xib in Resources */,
 				633FEF071D3CD55A0014B822 /* options_start_conference_default@2x.png in Resources */,
 				633FEE151D3CD5590014B822 /* chat_send_default@2x.png in Resources */,
 				633FEDC31D3CD5590014B822 /* call_hangup_default@2x.png in Resources */,
@@ -3847,6 +3857,7 @@
 				633FEF2F1D3CD55A0014B822 /* route_speaker_default@2x.png in Resources */,
 				633FEDDD1D3CD5590014B822 /* call_start_body_disabled~ipad@2x.png in Resources */,
 				633FEEBD1D3CD55A0014B822 /* numpad_4_over.png in Resources */,
+				8CA70AD41F9E285C00A3D2EB /* chat_group_add@2x.png in Resources */,
 				633FEEF11D3CD55A0014B822 /* numpad_hash~ipad.png in Resources */,
 				633FEE781D3CD5590014B822 /* history_chat_indicator.png in Resources */,
 				633FEF431D3CD55A0014B822 /* select_all_disabled@2x.png in Resources */,
@@ -4001,11 +4012,9 @@
 				6341807C1BBC103100F71761 /* ChatConversationCreateTableView.m in Sources */,
 				63BE7A781D75BDF6000990EF /* ShopTableView.m in Sources */,
 				D326483815887D5200930C67 /* OrderedDictionary.m in Sources */,
-				8CD3F5AC1F86632100680C98 /* UIChatCreateConfirmCollectionViewCell.m in Sources */,
 				D32648441588F6FC00930C67 /* UIToggleButton.m in Sources */,
 				D36FB2D51589EF7C0036F6F2 /* UIPauseButton.m in Sources */,
 				D31C9C98158A1CDF00756B45 /* UIHistoryCell.m in Sources */,
-				8CDC619A1F84EAC10087CF7F /* ChatConversationCreateConfirmView.m in Sources */,
 				D35E7597159460580066B1C1 /* ChatsListView.m in Sources */,
 				D35E759F159460B70066B1C1 /* SettingsView.m in Sources */,
 				63B81A101B57DA33009604A6 /* UIScrollView+TPKeyboardAvoidingAdditions.m in Sources */,
@@ -4053,8 +4062,10 @@
 				D3807FE815C2894A005BE9BC /* IASKAppSettingsViewController.m in Sources */,
 				D3807FEA15C2894A005BE9BC /* IASKAppSettingsWebViewController.m in Sources */,
 				D3807FEC15C2894A005BE9BC /* IASKSpecifierValuesViewController.m in Sources */,
+				8CA70AE41F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m in Sources */,
 				D3807FEE15C2894A005BE9BC /* IASKSettingsReader.m in Sources */,
 				D3807FF015C2894A005BE9BC /* IASKSettingsStore.m in Sources */,
+				8CA70AD11F9E0AE100A3D2EB /* ChatConversationInfoView.m in Sources */,
 				D3807FF215C2894A005BE9BC /* IASKSettingsStoreFile.m in Sources */,
 				D3807FF415C2894A005BE9BC /* IASKSettingsStoreUserDefaults.m in Sources */,
 				639E9C801C0DB13D00019A75 /* UICheckBoxTableView.m in Sources */,
@@ -4062,7 +4073,6 @@
 				D3807FF815C2894A005BE9BC /* IASKPSSliderSpecifierViewCell.m in Sources */,
 				D3807FFA15C2894A005BE9BC /* IASKPSTextFieldSpecifierViewCell.m in Sources */,
 				D3807FFC15C2894A005BE9BC /* IASKPSTitleValueSpecifierViewCell.m in Sources */,
-				8CD3F5B71F867A1400680C98 /* ChatConversationCreateConfirmCollectionViewController.m in Sources */,
 				D3807FFE15C2894A005BE9BC /* IASKSlider.m in Sources */,
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,

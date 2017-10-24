@@ -6,6 +6,9 @@
 //
 //
 
+#ifndef ChatConversationCreateView_h
+#define ChatConversationCreateView_h
+
 #import <UIKit/UIKit.h>
 #import "ChatConversationCreateTableView.h"
 #import "ChatConversationCreateCollectionViewController.h"
@@ -28,3 +31,5 @@
 - (IBAction)onNextClick:(id)sender;
 
 @end
+
+#endif /* ChatConversationCreateView_h */

@@ -57,13 +57,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	_nextButton.enabled = FALSE;
-	_tableController.tableView.frame = CGRectMake(_tableController.tableView.frame.origin.x,
-												  _tableController.searchBar.frame.origin.y + _tableController.searchBar.frame.size.height,
-												  _tableController.tableView.frame.size.width,
-												  _tableController.tableView.frame.size.height + _collectionView.frame.size.height);
+	if(_tableController.contactsGroup.count == 0) {
+		_nextButton.enabled = FALSE;
+		_tableController.tableView.frame = CGRectMake(_tableController.tableView.frame.origin.x,
+													  _tableController.searchBar.frame.origin.y + _tableController.searchBar.frame.size.height,
+													  _tableController.tableView.frame.size.width,
+													  _tableController.tableView.frame.size.height + _collectionView.frame.size.height);
+	}
 	[_collectionView reloadData];
 	[self changeView:ContactsAll];
+	[_tableController loadData];
 }
 
 #pragma mark - searchBar delegate
@@ -75,8 +78,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onNextClick:(id)sender {
-	ChatConversationCreateConfirmView *view = VIEW(ChatConversationCreateConfirmView);
+	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.contacts = _tableController.contactsDict;
+	view.create = TRUE;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

@@ -24,6 +24,13 @@
 	[super viewWillAppear:animated];
 	_allContacts =
 		[[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+	if(_notFirstTime) {
+		_notFirstTime = FALSE;
+		for(NSString *addr in _contactsGroup) {
+			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
+		}
+		return;
+	}
 	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_contactsDict = [[NSMutableDictionary alloc] init];
@@ -31,6 +38,10 @@
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
+}
+
+- (void) viewWillDisappear:(BOOL)animated {
+	_notFirstTime = FALSE;
 }
 
 - (void) loadData {
