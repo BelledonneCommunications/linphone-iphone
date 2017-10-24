@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <sstream>
 
 #include "chat/chat-room/basic-chat-room.h"
 #include "core-p.h"
@@ -47,8 +48,9 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			: MainDb::Sqlite3;
 		d->mainDb.connect(backend, uri);
 	}	else {
-		string path = getDataPath();
-		//d->mainDb.connect(MainDb::Sqlite3, linphone_factory_get_writable_dir()/linphone.db);
+		stringstream path;
+		path << getDataPath() << "/linphone.db";
+		d->mainDb.connect(MainDb::Sqlite3, path.str());
 	}
 }
 
