@@ -24,10 +24,10 @@
 
 #define L_ENUM_VALUES_EVENT_LOG_TYPE(F) \
 	F(None) \
-	F(CallStart) \
-	F(CallEnd) \
 	F(ConferenceCreated) \
 	F(ConferenceDestroyed) \
+	F(ConferenceCallStart) \
+	F(ConferenceCallEnd) \
 	F(ConferenceChatMessage) \
 	F(ConferenceParticipantAdded) \
 	F(ConferenceParticipantRemoved) \

@@ -34,9 +34,9 @@
 #define L_REGISTER_TYPES(F) \
 	F(Address, Address) \
 	F(Call, Call) \
-	F(CallEvent, CallEvent) \
 	F(ChatMessage, ChatMessage) \
 	F(ChatRoom, ChatRoom) \
+	F(ConferenceCallEvent, ConferenceCallEvent) \
 	F(ConferenceChatMessageEvent, ConferenceChatMessageEvent) \
 	F(ConferenceEvent, ConferenceEvent) \
 	F(ConferenceNotifiedEvent, ConferenceNotifiedEvent) \

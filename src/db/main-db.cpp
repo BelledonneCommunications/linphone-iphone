@@ -219,8 +219,8 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			case EventLog::Type::ConferenceDestroyed:
 				return selectConferenceEvent(eventId, type, date, peerAddress);
 
-			case EventLog::Type::CallStart:
-			case EventLog::Type::CallEnd:
+			case EventLog::Type::ConferenceCallStart:
+			case EventLog::Type::ConferenceCallEnd:
 				return selectConferenceCallEvent(eventId, type, date, peerAddress);
 
 			case EventLog::Type::ConferenceChatMessage:
@@ -734,18 +734,18 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 			case EventLog::Type::None:
 				return false;
 
-			case EventLog::Type::ConferenceChatMessage:
-				d->insertConferenceChatMessageEvent(eventLog);
-				break;
-
-			case EventLog::Type::CallStart:
-			case EventLog::Type::CallEnd:
-				d->insertConferenceCallEvent(eventLog);
-				break;
-
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
 				d->insertConferenceEvent(eventLog);
+				break;
+
+			case EventLog::Type::ConferenceCallStart:
+			case EventLog::Type::ConferenceCallEnd:
+				d->insertConferenceCallEvent(eventLog);
+				break;
+
+			case EventLog::Type::ConferenceChatMessage:
+				d->insertConferenceChatMessageEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceParticipantAdded:

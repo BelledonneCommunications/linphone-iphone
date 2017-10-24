@@ -27,7 +27,7 @@
 
 // =============================================================================
 
-L_DECLARE_C_OBJECT_IMPL(CallEvent);
+L_DECLARE_C_OBJECT_IMPL(ConferenceCallEvent);
 L_DECLARE_C_OBJECT_IMPL(ConferenceChatMessageEvent);
 L_DECLARE_C_OBJECT_IMPL(ConferenceEvent);
 L_DECLARE_C_OBJECT_IMPL(ConferenceParticipantDeviceEvent);
@@ -62,22 +62,22 @@ LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_
 // Call event.
 // -----------------------------------------------------------------------------
 
-LinphoneCallEvent *linphone_call_event_new (LinphoneEventLogType type, time_t time, LinphoneCall *call) {
-	LinphoneCallEvent *call_event = _linphone_CallEvent_init();
+LinphoneConferenceCallEvent *linphone_conference_call_event_new (LinphoneEventLogType type, time_t time, LinphoneCall *call) {
+	LinphoneConferenceCallEvent *conference_call_event = _linphone_ConferenceCallEvent_init();
 	L_SET_CPP_PTR_FROM_C_OBJECT(
-		call_event,
-		make_shared<LinphonePrivate::CallEvent>(
+		conference_call_event,
+		make_shared<LinphonePrivate::ConferenceCallEvent>(
 			static_cast<LinphonePrivate::EventLog::Type>(type),
 			time,
 			L_GET_CPP_PTR_FROM_C_OBJECT(call)
 		)
 	);
-	return call_event;
+	return conference_call_event;
 }
 
-LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event) {
+LinphoneCall *linphone_conference_call_event_get_call (const LinphoneConferenceCallEvent *conference_call_event) {
 	return L_GET_C_BACK_PTR(
-		L_GET_CPP_PTR_FROM_C_OBJECT(call_event)->getCall()
+		L_GET_CPP_PTR_FROM_C_OBJECT(conference_call_event)->getCall()
 	);
 }
 

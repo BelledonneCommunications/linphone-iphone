@@ -1,5 +1,5 @@
 /*
- * call-event.h
+ * conference-call-event.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,31 +17,33 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CALL_EVENT_H_
-#define _CALL_EVENT_H_
-
-#include <memory>
-
-#include "event-log/event-log.h"
+#include "conference-call-event.h"
+#include "event-log/event-log-p.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class Call;
-class CallEventPrivate;
-
-class LINPHONE_PUBLIC CallEvent : public EventLog {
+class ConferenceCallEventPrivate : public EventLogPrivate {
 public:
-	CallEvent (Type type, std::time_t time, const std::shared_ptr<Call> &call);
-
-	std::shared_ptr<Call> getCall () const;
-
-private:
-	L_DECLARE_PRIVATE(CallEvent);
-	L_DISABLE_COPY(CallEvent);
+	shared_ptr<Call> call;
 };
 
-LINPHONE_END_NAMESPACE
+// -----------------------------------------------------------------------------
 
-#endif // ifndef _CALL_EVENT_H_
+ConferenceCallEvent::ConferenceCallEvent (Type type, time_t time, const shared_ptr<Call> &call) :
+	EventLog(*new ConferenceCallEventPrivate, type, time) {
+	L_D();
+	L_ASSERT(call);
+	L_ASSERT(type == Type::ConferenceCallStart || type == Type::ConferenceCallEnd);
+	d->call = call;
+}
+
+shared_ptr<Call> ConferenceCallEvent::getCall () const {
+	L_D();
+	return d->call;
+}
+
+LINPHONE_END_NAMESPACE

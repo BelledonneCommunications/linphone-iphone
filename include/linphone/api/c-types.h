@@ -131,7 +131,7 @@ typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
  * Call start/end events.
  * @ingroup events
  */
-typedef struct _LinphoneCallEvent LinphoneCallEvent;
+typedef struct _LinphoneConferenceCallEvent LinphoneConferenceCallEvent;
 
 /**
  * Chat message event.
