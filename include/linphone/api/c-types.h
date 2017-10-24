@@ -223,7 +223,7 @@ L_DECLARE_C_ENUM(ChatRoomState, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
 /**
  * LinphoneEventLogType is used to indicate the type of an event. Useful for cast.
- * @ingroup chatroom
+ * @ingroup events
  */
 L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);
 

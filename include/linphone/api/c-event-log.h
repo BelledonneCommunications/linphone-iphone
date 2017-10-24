@@ -28,44 +28,177 @@
 	extern "C" {
 #endif // ifdef __cplusplus
 
+/**
+ * @addtogroup events
+ * @{
+ */
+
+// -----------------------------------------------------------------------------
+// EventLog.
+// -----------------------------------------------------------------------------
+
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_new (void);
 LINPHONE_PUBLIC LinphoneEventLog *linphone_event_log_ref (LinphoneEventLog *event_log);
+LINPHONE_PUBLIC void linphone_event_log_unref (LinphoneEventLog *event_log);
+
+/**
+ * Returns the type of a event log.
+ * @param[in] event_log A EventLog object
+ * @return The event type
+ */
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);
+
+/**
+ * Returns the time of a event log.
+ * @param[in] event_log A EventLog object
+ * @return The event time
+ */
+LINPHONE_PUBLIC time_t linphone_event_log_get_time (const LinphoneEventLog *event_log);
+
+// -----------------------------------------------------------------------------
+// ConferenceEvent.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_new (
+	LinphoneEventLogType type,
+	time_t time,
+	const LinphoneAddress *conference_address
+);
+
+/**
+ * Returns the conference address of a conference event.
+ * @param[in] conference_event A ConferenceEvent object
+ * @return The conference address
+ */
+LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_event_get_conference_address (
+	const LinphoneConferenceEvent *conference_event
+);
+
+// -----------------------------------------------------------------------------
+// ConferenceNotifiedEvent.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceNotifiedEvent *linphone_conference_notified_event_new (
+	LinphoneEventLogType type,
+	time_t time,
+	const LinphoneAddress *conference_address,
+	unsigned int notify_id
+);
+
+/**
+ * Returns the notify id of a conference notified event.
+ * @param[in] conference_notified_event A ConferenceNotifiedEvent object
+ * @return The conference notify id
+ */
+LINPHONE_PUBLIC unsigned int linphone_conference_event_get_notify_id (
+	const LinphoneConferenceNotifiedEvent *conference_notified_event
+);
+
+// -----------------------------------------------------------------------------
+// CallEvent.
+// -----------------------------------------------------------------------------
 
 LINPHONE_PUBLIC LinphoneCallEvent *linphone_call_event_new (
 	LinphoneEventLogType type,
 	time_t time,
 	LinphoneCall *call
 );
+
+/**
+ * Returns the call of a conference call event.
+ * @param[in] conference_call_event A ConferenceCallEvent object
+ * @return The conference call
+ */
 LINPHONE_PUBLIC LinphoneCall *linphone_call_event_get_call (const LinphoneCallEvent *call_event);
 
-LINPHONE_PUBLIC LinphoneConferenceEvent *linphone_conference_event_new (
-	LinphoneEventLogType type,
+// -----------------------------------------------------------------------------
+// ConferenceChatMessageEvent.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceChatMessageEvent *linphone_conference_chat_message_event_new (
 	time_t time,
-	const LinphoneAddress *address
+	LinphoneChatMessage *chat_message
 );
-LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_event_get_address (const LinphoneConferenceEvent *conference_event);
+
+/**
+ * Returns the chat message of a conference chat message event.
+ * @param[in] conference_chat_message_event A ConferenceChatMessageEvent object
+ * @return The conference chat message
+ */
+LINPHONE_PUBLIC LinphoneChatMessage *linphone_conference_chat_message_event_get_chat_message (
+	const LinphoneConferenceChatMessageEvent *conference_chat_message_event
+);
+
+// -----------------------------------------------------------------------------
+// ConferenceParticipantEvent.
+// -----------------------------------------------------------------------------
 
 LINPHONE_PUBLIC LinphoneConferenceParticipantEvent *linphone_conference_participant_event_new (
 	LinphoneEventLogType type,
 	time_t time,
-	const LinphoneAddress *conferenceAddress,
-	const LinphoneAddress *participantAddress
+	const LinphoneAddress *conference_address,
+	unsigned int notify_id,
+	const LinphoneAddress *participant_address
 );
-LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_event_get_participant_address (
+
+/**
+ * Returns the participant address of a conference participant event.
+ * @param[in] conference_participant_event A ConferenceParticipantEvent object
+ * @return The conference participant address
+ */
+LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_get_participant_address (
 	const LinphoneConferenceParticipantEvent *conference_participant_event
 );
 
-LINPHONE_PUBLIC LinphoneConferenceChatMessageEvent *linphone_chat_message_event_new (
-	LinphoneChatMessage *chat_message,
-	time_t time
+// -----------------------------------------------------------------------------
+// ConferenceParticipantDeviceEvent.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceParticipantDeviceEvent *linphone_conference_participant_device_event_new (
+	LinphoneEventLogType type,
+	time_t time,
+	const LinphoneAddress *conference_address,
+	unsigned int notify_id,
+	const LinphoneAddress *participant_address,
+	const LinphoneAddress *gruu_address
 );
-LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_message_event_get_chat_message (
-	const LinphoneConferenceChatMessageEvent *chat_message_event
+
+/**
+ * Returns the gruu address of a conference participant device event.
+ * @param[in] conference_participant_device_event A ConferenceParticipantDeviceEvent object
+ * @return The conference gruu address
+ */
+LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_device_get_gruu_address (
+	const LinphoneConferenceParticipantDeviceEvent *conference_participant_device_event
 );
+
+// -----------------------------------------------------------------------------
+// ConferenceSubjectEvent.
+// -----------------------------------------------------------------------------
+
+LINPHONE_PUBLIC LinphoneConferenceSubjectEvent *linphone_conference_subject_event_new (
+	LinphoneEventLogType type,
+	time_t time,
+	const LinphoneAddress *conference_address,
+	unsigned int notify_id,
+	const char *subject
+);
+
+/**
+ * Returns the subject of a conference subject event.
+ * @param[in] conference_subject_event A ConferenceSubjectEvent object
+ * @return The conference subject
+ */
+LINPHONE_PUBLIC const char *linphone_conference_subject_get_subject (
+	const LinphoneConferenceSubjectEvent *conference_subject_event
+);
+
+/**
+ * @}
+ */
 
 #ifdef __cplusplus
 	}
-#endif
+#endif // ifdef __cplusplus
 
 #endif // ifndef _C_EVENT_LOG_H_
