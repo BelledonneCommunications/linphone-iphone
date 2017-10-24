@@ -18,6 +18,7 @@
  */
 
 #include "linphone/api/c-dial-plan.h"
+#include "linphone/wrapper_utils.h"
 
 #include "c-wrapper/c-wrapper.h"
 #include "dial-plan/dial-plan.h"
