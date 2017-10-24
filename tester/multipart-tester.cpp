@@ -30,7 +30,7 @@ using namespace std;
 
 using namespace LinphonePrivate;
 
-static void chat_message_multipart_modifier_base(bool first_file_transfer, bool second_file_transfer) {
+static void chat_message_multipart_modifier_base(bool first_file_transfer, bool second_file_transfer, bool use_cpim) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
@@ -39,14 +39,27 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 
 	shared_ptr<ChatMessage> marieMessage;
 	if (first_file_transfer) {
-		//TODO
-		marieMessage = marieRoom->createFileTransferMessage(NULL);
+		LinphoneContent *content = linphone_core_create_content(marie->lc);
+		belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
+		linphone_content_set_type(content,"video");
+		linphone_content_set_subtype(content,"mkv");
+		linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
+		marieMessage = marieRoom->createFileTransferMessage(content);
 	} else {
 		marieMessage = marieRoom->createMessage("Hello Part 1");
 	}
 
 	if (second_file_transfer) {
-		//TODO
+		LinphoneContent *initialContent = linphone_core_create_content(marie->lc);
+		belle_sip_object_set_name(BELLE_SIP_OBJECT(initialContent), "sintel trailer content");
+		linphone_content_set_type(initialContent,"video");
+		linphone_content_set_subtype(initialContent,"mkv");
+		linphone_content_set_name(initialContent,"sintel_trailer_opus_h264.mkv");
+		
+		Content content;
+		content.setContentType(ContentType::FileTransfer);
+		content.setBody(linphone_content_get_string_buffer(initialContent));
+		marieMessage->addContent(content);
 	} else {
 		Content content;
 		content.setContentType(ContentType::PlainText);
@@ -66,11 +79,36 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 }
 
 static void multipart_two_text_content(void) {
-	chat_message_multipart_modifier_base(false, false);
+	chat_message_multipart_modifier_base(false, false, false);
+}
+
+static void multipart_two_text_content_with_cpim(void) {
+	chat_message_multipart_modifier_base(false, false, true);
+}
+
+static void multipart_one_text_and_one_file_content(void) {
+	chat_message_multipart_modifier_base(true, false, false);
+}
+
+static void multipart_one_text_and_one_file_content_with_cpim(void) {
+	chat_message_multipart_modifier_base(true, false, true);
+}
+
+static void multipart_two_file_content(void) {
+	chat_message_multipart_modifier_base(true, true, false);
+}
+
+static void multipart_two_file_content_with_cpim(void) {
+	chat_message_multipart_modifier_base(true, true, true);
 }
 
 test_t multipart_tests[] = {
 	TEST_NO_TAG("Chat message multipart 2 text content", multipart_two_text_content),
+	TEST_NO_TAG("Chat message multipart 2 text content with CPIM", multipart_two_text_content_with_cpim),
+	TEST_NO_TAG("Chat message multipart 1 file content and 1 text content", multipart_one_text_and_one_file_content),
+	TEST_NO_TAG("Chat message multipart 1 file content and 1 text content with CPIM", multipart_one_text_and_one_file_content_with_cpim),
+	TEST_NO_TAG("Chat message multipart 2 file content", multipart_two_file_content),
+	TEST_NO_TAG("Chat message multipart 2 file content with CPIM", multipart_two_file_content_with_cpim),
 };
 
 test_suite_t multipart_test_suite = {
