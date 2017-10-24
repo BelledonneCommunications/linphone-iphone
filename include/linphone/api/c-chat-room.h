@@ -336,7 +336,7 @@ LINPHONE_PUBLIC void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const
 /**
  * Gets the list of participants that are currently composing
  * @param[in] cr A LinphoneChatRoom object
- * @return \bctbx_list{LinphoneAddress *} list of addresses that are in the is_composing state
+ * @return \bctbx_list{LinphoneAddress} list of addresses that are in the is_composing state
  */
 LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr);
 
