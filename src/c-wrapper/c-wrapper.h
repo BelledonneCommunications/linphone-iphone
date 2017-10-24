@@ -39,6 +39,7 @@
 	F(ChatRoom, ChatRoom) \
 	F(ConferenceChatMessageEvent, ConferenceChatMessageEvent) \
 	F(ConferenceEvent, ConferenceEvent) \
+	F(ConferenceNotifiedEvent, ConferenceNotifiedEvent) \
 	F(ConferenceParticipantDeviceEvent, ConferenceParticipantDeviceEvent) \
 	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
 	F(ConferenceSubjectEvent, ConferenceSubjectEvent) \
