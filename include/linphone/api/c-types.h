@@ -128,12 +128,12 @@ typedef struct _LinphoneDialPlan LinphoneDialPlan;
 // -----------------------------------------------------------------------------
 
 typedef struct _LinphoneCallEvent LinphoneCallEvent;
+typedef struct _LinphoneConferenceChatMessageEvent LinphoneConferenceChatMessageEvent;
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
-typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneConferenceParticipantDeviceEvent LinphoneConferenceParticipantDeviceEvent;
+typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
 typedef struct _LinphoneConferenceSubjectEvent LinphoneConferenceSubjectEvent;
 typedef struct _LinphoneEventLog LinphoneEventLog;
-typedef struct _LinphoneConferenceChatMessageEvent LinphoneConferenceChatMessageEvent;
 
 // =============================================================================
 // C Enums.
