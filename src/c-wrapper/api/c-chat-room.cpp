@@ -23,11 +23,13 @@
 #include "linphone/wrapper_utils.h"
 #include "linphone/api/c-chat-room.h"
 
+#include "event-log/event-log.h"
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
 #include "conference/participant.h"
+#include "core/core-p.h"
 
 // =============================================================================
 
@@ -199,6 +201,25 @@ bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int st
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_message));
+}
+
+bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb.getHistory(
+			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
+			nb_events
+		)
+	);
+}
+
+bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb.getHistory(
+			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
+			begin,
+			end
+		)
+	);
 }
 
 LinphoneChatMessage *linphone_chat_room_find_message (LinphoneChatRoom *cr, const char *message_id) {

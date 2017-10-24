@@ -413,7 +413,7 @@ public:
 
 	template<
 		typename CppType,
-		typename = typename std::enable_if<IsDefinedCppObject<CppType>::value, CppType>::type
+		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
 	>
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<std::shared_ptr<CppType>> &cppList) {
 		bctbx_list_t *result = nullptr;
