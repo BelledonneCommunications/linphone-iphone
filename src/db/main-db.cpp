@@ -906,16 +906,10 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const string &peerAddress, int nLast, FilterMask mask) const {
-		if (!isConnected()) {
-			lWarning() << "Unable to get history. Not connected.";
-			return list<shared_ptr<EventLog>>();
-		}
-
-		// TODO.
-		return list<shared_ptr<EventLog>>();
+		return getHistoryRange(peerAddress, 0, nLast - 1, mask);
 	}
 
-	list<shared_ptr<EventLog>> MainDb::getHistory (
+	list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		const string &peerAddress,
 		int begin,
 		int end,
@@ -1228,7 +1222,7 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	list<shared_ptr<EventLog>> MainDb::getHistory (const string &, int, int, FilterMask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistoryRange (const string &, int, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
 	}
 

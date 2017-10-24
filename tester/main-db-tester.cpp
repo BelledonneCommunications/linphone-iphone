@@ -68,14 +68,26 @@ static void get_history () {
 	MainDb mainDb;
 	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
 	BC_ASSERT_EQUAL(
-		mainDb.getHistory("sip:test-39@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		mainDb.getHistoryRange("sip:test-39@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
 		3,
 		int,
 		"%d"
 	);
 	BC_ASSERT_EQUAL(
-		mainDb.getHistory("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceCallFilter).size(),
+		mainDb.getHistoryRange("sip:test-7@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceCallFilter).size(),
 		0,
+		int,
+		"%d"
+	);
+	BC_ASSERT_EQUAL(
+		mainDb.getHistoryRange("sip:test-1@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		862,
+		int,
+		"%d"
+	);
+	BC_ASSERT_EQUAL(
+		mainDb.getHistory("sip:test-1@sip.linphone.org", 100, MainDb::Filter::ConferenceChatMessageFilter).size(),
+		100,
 		int,
 		"%d"
 	);

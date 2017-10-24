@@ -61,7 +61,7 @@ public:
 		int nLast,
 		FilterMask mask = NoFilter
 	) const;
-	std::list<std::shared_ptr<EventLog>> getHistory (
+	std::list<std::shared_ptr<EventLog>> getHistoryRange (
 		const std::string &peerAddress,
 		int begin,
 		int end,
