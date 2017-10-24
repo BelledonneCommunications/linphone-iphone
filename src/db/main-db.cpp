@@ -1202,11 +1202,11 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 
 	void MainDb::init () {}
 
-	bool MainDb::addEvent (const EventLog &) {
+	bool MainDb::addEvent (const shared_ptr<EventLog> &) {
 		return false;
 	}
 
-	bool MainDb::deleteEvent (const EventLog &) {
+	bool MainDb::deleteEvent (const shared_ptr<EventLog> &) {
 		return false;
 	}
 
