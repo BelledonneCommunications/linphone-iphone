@@ -204,7 +204,6 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_conference_participant_device_ev
  * Constructs a #LinphoneConferenceSubjectEvent object.
  **/
 LINPHONE_PUBLIC LinphoneConferenceSubjectEvent *linphone_conference_subject_event_new (
-	LinphoneEventLogType type,
 	time_t time,
 	const LinphoneAddress *conference_address,
 	unsigned int notify_id,
