@@ -11,6 +11,8 @@
 #import "PhoneMainView.h"
 #import "UIChatConversationInfoTableViewCell.h"
 
+#import "linphone/core.h"
+
 @implementation ChatConversationInfoView
 
 #pragma mark - UICompositeViewDelegate Functions
@@ -58,9 +60,48 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_quitButton.hidden = _create;
 }
 
+#pragma mark - next functions
+
+- (LinphoneChatRoom *)onCreate {
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, _nameLabel.text.UTF8String);
+	if(!room) {
+		return;
+	}
+	bctbx_list_t *addresses = NULL;
+	for(NSString *addr in _contacts.allKeys) {
+		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
+		if (!addresses) {
+			addresses = bctbx_list_new((void *)linphoneAddress);
+			continue;
+		}
+		addresses = bctbx_list_append(addresses, (void *)linphoneAddress);
+	}
+	linphone_chat_room_add_participants(room, addresses);
+	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+	return room;
+}
+
+- (LinphoneChatRoom *) onValidate {
+	return NULL;
+}
+
 #pragma mark - Buttons responders
 
 - (IBAction)onNextClick:(id)sender {
+	LinphoneChatRoom *room = NULL;
+	if(_create)
+		room = [self onCreate];
+	else
+		room = [self onValidate];
+
+	if(!room) {
+		LOGE(@"No chat room to go to.");
+		return;
+	}
+
+	ChatConversationView *view = VIEW(ChatConversationView);
+	view.chatRoom = room;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onBackClick:(id)sender {
@@ -99,6 +140,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		cell.adminLabel.enabled	= FALSE;
 		cell.adminImage.image = [UIImage imageNamed:@"check_unselected.png"];
 	}
+	cell.adminButton.hidden = _create;
 	return cell;
 }
 
