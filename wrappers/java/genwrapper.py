@@ -51,6 +51,7 @@ ENUMS_LIST = {
     'ConfiguringState': 'Core',
     'CoreLogCollectionUploadState': 'Core',
     'EcCalibratorStatus': 'Core',
+    'EventLogType': 'EventLog',
     'GlobalState': 'Core',
     'FriendListStatus': 'FriendList',
     'IceState': 'CallStats',
