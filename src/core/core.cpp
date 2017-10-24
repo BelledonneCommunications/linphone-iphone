@@ -47,11 +47,11 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			? MainDb::Mysql
 			: MainDb::Sqlite3;
 		d->mainDb.connect(backend, uri);
-	}	else {
-		stringstream path;
-		path << getDataPath() << "/linphone.db";
-		d->mainDb.connect(MainDb::Sqlite3, path.str());
+		return;
 	}
+
+	static string path = getDataPath() + "/linphone.db";
+	d->mainDb.connect(MainDb::Sqlite3, path);
 }
 
 // -----------------------------------------------------------------------------
