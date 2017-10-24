@@ -23,11 +23,14 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "core-p.h"
 #include "db/main-db.h"
+#include "logger/logger.h"
 #include "object/object-p.h"
 #include "paths/paths.h"
 
 // TODO: Remove me later.
 #include "private.h"
+
+#define LINPHONE_DB "linphone.db"
 
 // =============================================================================
 
@@ -46,13 +49,13 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_backend", NULL), "mysql") == 0
 			? MainDb::Mysql
 			: MainDb::Sqlite3;
-		lInfo << "Creating linphone.db at : " << uri;
+		lInfo() << "Creating " LINPHONE_DB " at: " << uri;
 		d->mainDb.connect(backend, uri);
 		return;
 	}
 
-	static string path = getDataPath() + "/linphone.db";
-	lInfo << "Creating linphone.db at : " << path;
+	static string path = getDataPath() + "/" LINPHONE_DB;
+	lInfo() << "Creating " LINPHONE_DB " at: " << path;
 	d->mainDb.connect(MainDb::Sqlite3, path);
 }
 
