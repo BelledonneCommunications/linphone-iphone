@@ -53,6 +53,10 @@
 // C Structures.
 // =============================================================================
 
+// -----------------------------------------------------------------------------
+// Address.
+// -----------------------------------------------------------------------------
+
 /**
  * Object that represents a SIP address.
  *
@@ -66,6 +70,10 @@
  * @ingroup linphone_address
  */
 typedef struct _LinphoneAddress LinphoneAddress;
+
+// -----------------------------------------------------------------------------
+// Call.
+// -----------------------------------------------------------------------------
 
 /**
  * The LinphoneCall object represents a call issued or received by the LinphoneCore
@@ -86,18 +94,9 @@ typedef void (*LinphoneCallCbFunc) (LinphoneCall *call, void *ud);
  */
 typedef struct _LinphoneCallCbs LinphoneCallCbs;
 
-/**
- * A chat room is the place where text messages are exchanged.
- * Can be created by linphone_core_create_chat_room().
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatRoom LinphoneChatRoom;
-
-/**
- * An object to handle the callbacks for the handling a LinphoneChatRoom objects.
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
+// -----------------------------------------------------------------------------
+// ChatRoom.
+// -----------------------------------------------------------------------------
 
 /**
  * An chat message is the object that is sent and received through LinphoneChatRooms.
@@ -112,38 +111,93 @@ typedef struct _LinphoneChatMessage LinphoneChatMessage;
 typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
 
 /**
-* The LinphoneParticipant object represents a participant of a conference.
-* @ingroup misc
-**/
-typedef struct _LinphoneParticipant LinphoneParticipant;
+ * A chat room is the place where text messages are exchanged.
+ * Can be created by linphone_core_create_chat_room().
+ * @ingroup chatroom
+ */
+typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 /**
-* Represents a dial plan
-* @ingroup misc
-**/
-typedef struct _LinphoneDialPlan LinphoneDialPlan;
+ * An object to handle the callbacks for the handling a LinphoneChatRoom objects.
+ * @ingroup chatroom
+ */
+typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
 
 // -----------------------------------------------------------------------------
 // EventLog.
 // -----------------------------------------------------------------------------
 
+/**
+ * Call start/end events.
+ * @ingroup events
+ */
 typedef struct _LinphoneCallEvent LinphoneCallEvent;
+
+/**
+ * Chat message event.
+ * @ingroup events
+ */
 typedef struct _LinphoneConferenceChatMessageEvent LinphoneConferenceChatMessageEvent;
+
+/**
+ * Conference created/destroyed events.
+ * @ingroup events
+ */
 typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
+
+/**
+ * Conference notified event.
+ * @ingroup events
+ */
+typedef struct _LinphoneConferenceNotifiedEvent LinphoneConferenceNotifiedEvent;
+
+/**
+ * Conference participant device added/removed events.
+ * @ingroup events
+ */
 typedef struct _LinphoneConferenceParticipantDeviceEvent LinphoneConferenceParticipantDeviceEvent;
+
+/**
+ * Conference participant added/removed & set/unset admin events.
+ * @ingroup events
+ */
 typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
+
+/**
+ * Conference subject changed event.
+ * @ingroup events
+ */
 typedef struct _LinphoneConferenceSubjectEvent LinphoneConferenceSubjectEvent;
+
+/**
+ * Base object of events.
+ * @ingroup events
+ */
 typedef struct _LinphoneEventLog LinphoneEventLog;
+
+// -----------------------------------------------------------------------------
+// Misc.
+// -----------------------------------------------------------------------------
+
+/**
+ * Represents a dial plan
+ * @ingroup misc
+**/
+typedef struct _LinphoneDialPlan LinphoneDialPlan;
+
+/**
+ * The LinphoneParticipant object represents a participant of a conference.
+ * @ingroup misc
+**/
+typedef struct _LinphoneParticipant LinphoneParticipant;
 
 // =============================================================================
 // C Enums.
 // =============================================================================
 
-/**
- * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
- * @ingroup chatroom
- */
-L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
+// -----------------------------------------------------------------------------
+// ChatRoom.
+// -----------------------------------------------------------------------------
 
 /**
  * LinphoneChatMessageDirection is used to indicate if a message is outgoing or incoming.
@@ -151,7 +205,26 @@ L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
  */
 L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
+/**
+ * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
+ * @ingroup chatroom
+*/
+L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
+
+/**
+ * LinphoneChatRoomState is used to indicate the current state of a chat room.
+ * @ingroup chatroom
+ */
 L_DECLARE_C_ENUM(ChatRoomState, L_ENUM_VALUES_CHAT_ROOM_STATE);
+
+// -----------------------------------------------------------------------------
+// EventLog.
+// -----------------------------------------------------------------------------
+
+/**
+ * LinphoneEventLogType is used to indicate the type of an event. Useful for cast.
+ * @ingroup chatroom
+ */
 L_DECLARE_C_ENUM(EventLogType, L_ENUM_VALUES_EVENT_LOG_TYPE);
 
 #ifdef __cplusplus
