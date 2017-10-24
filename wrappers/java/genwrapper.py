@@ -46,6 +46,7 @@ ENUMS_LIST = {
     'CallDir': 'Call',
     'CallState': 'Call',
     'CallStatus': 'CallLog',
+    'ChatRoomState': 'ChatRoom',
     'ChatMessageState': 'ChatMessage',
     'ConfiguringState': 'Core',
     'CoreLogCollectionUploadState': 'Core',
