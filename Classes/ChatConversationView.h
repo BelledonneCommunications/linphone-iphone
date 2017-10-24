@@ -55,6 +55,8 @@
 @property(nonatomic, strong) IBOutlet UIButton *pictureButton;
 @property(weak, nonatomic) IBOutlet UIIconButton *callButton;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
+@property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
+@property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;

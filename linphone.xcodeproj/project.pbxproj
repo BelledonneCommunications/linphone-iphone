@@ -705,6 +705,8 @@
 		8CE845651EC3500A00A94D60 /* bctoolbox-tester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */; };
 		8CF25D951F9F336100BEA0C1 /* check_unselected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */; };
 		8CF25D961F9F336100BEA0C1 /* check_unselected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D941F9F336100BEA0C1 /* check_unselected.png */; };
+		8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */; };
+		8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */; };
 		C90FAA7915AF54E6002091CB /* HistoryDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */; };
 		D306459E1611EC2A00BB571E /* UILoadingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D306459D1611EC2900BB571E /* UILoadingImageView.m */; };
 		D3128FE115AABC7E00A2147A /* ContactDetailsView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3128FDF15AABC7E00A2147A /* ContactDetailsView.m */; };
@@ -1724,6 +1726,8 @@
 		8CE24F561F8268840077AC0A /* conference_delete@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "conference_delete@2x.png"; sourceTree = "<group>"; };
 		8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check_unselected@2x.png"; sourceTree = "<group>"; };
 		8CF25D941F9F336100BEA0C1 /* check_unselected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = check_unselected.png; sourceTree = "<group>"; };
+		8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_group_informations.png; sourceTree = "<group>"; };
+		8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "chat_group_informations@2x.png"; sourceTree = "<group>"; };
 		C90FAA7615AF54E6002091CB /* HistoryDetailsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryDetailsView.h; sourceTree = "<group>"; };
 		C90FAA7715AF54E6002091CB /* HistoryDetailsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryDetailsView.m; sourceTree = "<group>"; };
 		C9B3A6FD15B485DB006F52EE /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = Utils/Utils.h; sourceTree = "<group>"; };
@@ -2446,6 +2450,8 @@
 		633FEBE11D3CD5570014B822 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				8CF25D9B1F9F76BC00BEA0C1 /* chat_group_informations.png */,
+				8CF25D9C1F9F76BD00BEA0C1 /* chat_group_informations@2x.png */,
 				8CF25D941F9F336100BEA0C1 /* check_unselected.png */,
 				8CF25D8B1F9F336000BEA0C1 /* check_unselected@2x.png */,
 				8CA70AD31F9E285B00A3D2EB /* chat_group_add.png */,
@@ -3577,6 +3583,7 @@
 				633FEE801D3CD5590014B822 /* led_connected.png in Resources */,
 				633FEEF41D3CD55A0014B822 /* numpad_star_default.png in Resources */,
 				633FEDDE1D3CD5590014B822 /* call_start_body_over.png in Resources */,
+				8CF25D9D1F9F76BD00BEA0C1 /* chat_group_informations.png in Resources */,
 				633FEDFB1D3CD5590014B822 /* camera_selected@2x.png in Resources */,
 				633FEF051D3CD55A0014B822 /* options_selected@2x.png in Resources */,
 				633FEDD61D3CD5590014B822 /* call_start_body_default.png in Resources */,
@@ -3665,6 +3672,7 @@
 				633FEF351D3CD55A0014B822 /* routes_default@2x.png in Resources */,
 				633FEEDB1D3CD55A0014B822 /* numpad_8_default.png in Resources */,
 				633FEE5C1D3CD5590014B822 /* edit_disabled.png in Resources */,
+				8CF25D9E1F9F76BD00BEA0C1 /* chat_group_informations@2x.png in Resources */,
 				633FEDCA1D3CD5590014B822 /* call_outgoing.png in Resources */,
 				633FEDF81D3CD5590014B822 /* camera_disabled.png in Resources */,
 				8CB2B8FB1F86229E0015CEE2 /* next_disabled@2x.png in Resources */,

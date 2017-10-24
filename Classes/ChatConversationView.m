@@ -117,9 +117,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCallUpdate
 											 object:nil];
 
-	[_backToCallButton update];
-	_callButton.hidden = !_backToCallButton.hidden;
-
+	[self updateSuperposedButtons];
+	
 	if (_tableController.isEditing) {
 		[_tableController setEditing:NO];
 	}
@@ -130,6 +129,23 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = self.chatRoom;
+	_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+
+	if (linphone_chat_room_get_nb_participants(_chatRoom) == 1) {
+		_particpantsLabel.hidden = TRUE;
+	} else {
+		_particpantsLabel.hidden = FALSE;
+		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+		_particpantsLabel.text = @"";
+		while (participants) {
+			LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
+			if (![_particpantsLabel.text isEqualToString:@""])
+				_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:@", "];
+
+			_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))]];
+			participants = participants->next;
+		}
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -149,8 +165,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_messageField refreshHeight];
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
-	[_backToCallButton update];
-	self.callButton.hidden = !self.backToCallButton.hidden;
+	[self updateSuperposedButtons];
 	[_tableController scrollToBottom:true];
 }
 
@@ -187,8 +202,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
-	_callButton.hidden = (_tableController.isEditing || linphone_core_get_current_call(LC) != NULL);
-	_backToCallButton.hidden = !_callButton.hidden;
+	[_backToCallButton update];
 }
 
 - (void)markAsRead {
@@ -340,6 +354,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}];
 }
 
+- (void)updateSuperposedButtons {
+	[_backToCallButton update];
+	_infoButton.hidden = (linphone_chat_room_get_nb_participants(_chatRoom) == 1) || !_backToCallButton.hidden;
+	_callButton.hidden = !_backToCallButton.hidden && !_infoButton.hidden;
+}
+
 #pragma mark - Event Functions
 
 - (void)textReceivedEvent:(NSNotification *)notif {
@@ -429,75 +449,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 }
-/*
-#pragma mark - UITextFieldDelegate Functions
-
-- (BOOL)textViewShouldBeginEditing:(UITextView *)textView {
-	if (_tableController.isEditing) {
-		[_tableController setEditing:NO];
-	}
-	[_listTapGestureRecognizer setEnabled:TRUE];
-	return TRUE;
-}
-
-- (BOOL)textViewShouldEndEditing:(UITextView *)textView {
-	[_listTapGestureRecognizer setEnabled:FALSE];
-	return TRUE;
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-	if ([text isEqualToString:@"\n"]) {
-		[_listTapGestureRecognizer setEnabled:FALSE];
-		[self onSendClick:nil];
-		textView.text = @"";
-		return NO;
-	}
-	return YES;
-}
-
-- (void)textViewDidChange:(UITextView *)textView {
-	if ([textView.text length] > 0) {
-		linphone_chat_room_compose(_chatRoom);
-	}
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView {
-	[_listTapGestureRecognizer setEnabled:FALSE];
-	[textView resignFirstResponder];
-}
-*/
-/*
- - (void)growingTextView:(HPGrowingTextView *)growingTextView willChangeHeight:(float)height {
-	int diff = height - growingTextView.bounds.size.height;
-
-	if (diff != 0) {
-		CGRect messageRect = [_messageView frame];
-		messageRect.origin.y -= diff;
-		messageRect.size.height += diff;
-		[_messageView setFrame:messageRect];
-
-		// Always stay at bottom
-		if (scrollOnGrowingEnabled) {
-			CGRect tableFrame = [_tableController.view frame];
-			CGPoint contentPt = [_tableController.tableView contentOffset];
-			contentPt.y += diff;
-			if (contentPt.y + tableFrame.size.height > _tableController.tableView.contentSize.height)
-				contentPt.y += diff;
-			[_tableController.tableView setContentOffset:contentPt animated:FALSE];
-		}
-
-		CGRect tableRect = [_tableController.view frame];
-		tableRect.size.height -= diff;
-		[_tableController.view setFrame:tableRect];
-
-		// if we're showing the compose message, update it position
-		if (![_composeLabel isHidden]) {
-			CGRect frame = [_composeLabel frame];
-			frame.origin.y -= diff;
-			[_composeLabel setFrame:frame];
-		}
-	}
-}*/
 
 #pragma mark - Action Functions
 
@@ -541,11 +492,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	_backButton.hidden = _callButton.hidden = _tableController.isEditing;
-	[_backToCallButton update];
-	if (!_backToCallButton.hidden) {
-		_callButton.hidden = TRUE;
-	}
+	_backButton.hidden = _tableController.isEditing;
+	[self updateSuperposedButtons];
 }
 
 - (IBAction)onCallClick:(id)sender {
@@ -567,6 +515,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onPictureClick:(id)event {
 	[_messageField resignFirstResponder];
 	[ImagePickerView SelectImageFromDevice:self atPosition:_pictureButton inView:self.view];
+}
+
+- (IBAction)onInfoClick:(id)sender {
+	NSMutableDictionary *contactsDict = [[NSMutableDictionary alloc] init];
+	NSMutableArray *admins = [[NSMutableArray alloc] init];
+	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+	while (participants) {
+		LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
+		NSString *name = [NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))];
+		NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_get_address(participant))];
+		[contactsDict setObject:name forKey:uri];
+
+		if(linphone_participant_is_admin(participant))
+		   [admins addObject:uri];
+		participants = participants->next;
+	}
+	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+	view.contacts = contactsDict;
+	view.create = FALSE;
+	view.admins = admins;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 #pragma mark ChatRoomDelegate
