@@ -136,7 +136,7 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_gruu_address (cons
  * @param[in] event_log A #LinphoneEventLog object.
  * @return The conference subject.
  */
-LINPHONE_PUBLIC const char *linphone_event_get_subject (const LinphoneEventLog *event_log);
+LINPHONE_PUBLIC const char *linphone_event_log_get_subject (const LinphoneEventLog *event_log);
 
 /**
  * @}
