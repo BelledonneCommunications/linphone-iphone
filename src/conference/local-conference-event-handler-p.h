@@ -33,13 +33,14 @@ public:
 	void notifyFullState (const std::string &notify, LinphoneEvent *lev);
 	void notifyAllExcept (const std::string &notify, const Address &addr);
 	void notifyAll (const std::string &notify);
-	std::string createNotifyFullState ();
-	std::string createNotifyParticipantAdded (const Address &addr);
-	std::string createNotifyParticipantRemoved (const Address &addr);
-	std::string createNotifyParticipantAdmined (const Address &addr, bool isAdmin);
-	std::string createNotifySubjectChanged ();
-	std::string createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
-	std::string createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
+	void notifyParticipant (const std::string &notify, const Address &addr);
+	std::string createNotifyFullState (int notifyId = -1);
+	std::string createNotifyParticipantAdded (const Address &addr, int notifyId = -1);
+	std::string createNotifyParticipantRemoved (const Address &addr, int notifyId = -1);
+	std::string createNotifyParticipantAdmined (const Address &addr, bool isAdmin, int notifyId = -1);
+	std::string createNotifySubjectChanged (int notifyId = -1);
+	std::string createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu, int notifyId = -1);
+	std::string createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu, int notifyId = -1);
 
 	inline unsigned int getLastNotify () const { return lastNotify; };
 
@@ -48,7 +49,7 @@ private:
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 0;
 
-	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo);
+	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1);
 	void sendNotify (const std::string &notify, const Address &addr);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
