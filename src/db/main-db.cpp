@@ -1004,37 +1004,51 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 // -----------------------------------------------------------------------------
 
 list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
-	list<shared_ptr<ChatRoom>> chatRooms;
-	// TODO.
-	return chatRooms;
-}
+	static const string query = "SELECT value, creation_date, last_update_date, capabilities, subject, last_notify_id"
+		"  FROM chat_room, sip_address"
+		"  WHERE peer_sip_address_id = id";
 
-shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 	L_D();
 
-	// TODO: Use core cache.
+	list<shared_ptr<ChatRoom>> chatRooms;
 
 	L_BEGIN_LOG_EXCEPTION
 
 	soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
-	tm creationDate;
-	tm lastUpdateDate;
-	int capabilities;
-	string subject;
+	soci::rowset<soci::row> rows = (session->prepare << query);
+	for (const auto &row : rows) {
+		string sipAddress = row.get<string>(0);
+		tm creationDate = row.get<tm>(1);
+		tm lastUpdateDate = row.get<tm>(2);
+		int capabilities = row.get<int>(3);
+		string subject = row.get<string>(4);
+		unsigned int lastNotifyId = row.get<unsigned int>(5);
 
-	*session << "SELECT creation_date, last_update_date, capabilities, subject "
-		"  FROM chat_room"
-		"  WHERE peer_sip_address_id = ("
-		"    SELECT id from sip_address WHERE value = :peerAddress"
-		"  )", soci::use(peerAddress), soci::into(creationDate), soci::into(lastUpdateDate),
-		soci::use(capabilities), soci::use(subject);
+		(void)sipAddress;
+		(void)creationDate;
+		(void)lastUpdateDate;
+		(void)capabilities;
+		(void)subject;
+		(void)lastNotifyId;
 
-	// TODO.
+		if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
+			if (capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)) {
+				// TODO.
+				continue;
+			}
+			// TODO.
+			continue;
+		}
+
+		if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
+			// TODO.
+		}
+	}
 
 	L_END_LOG_EXCEPTION
 
-	return shared_ptr<ChatRoom>();
+	return chatRooms;
 }
 
 // -----------------------------------------------------------------------------
@@ -1227,10 +1241,6 @@ shared_ptr<ChatRoom> MainDb::findChatRoom (const string &peerAddress) const {
 	}
 
 	void MainDb::cleanHistory (const string &, FilterMask) {}
-
-	shared_ptr<ChatRoom> MainDb::findChatRoom (const string &) const {
-		return nullptr;
-	}
 
 	bool MainDb::import (Backend, const string &) {
 		return false;

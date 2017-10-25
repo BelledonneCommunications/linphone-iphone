@@ -41,9 +41,10 @@ public:
 	std::string getDataPath() const;
 	std::string getConfigPath() const;
 
+	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
+
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
 	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
-	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
 
 private:
 	L_DECLARE_PRIVATE(Core);

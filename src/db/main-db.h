@@ -71,7 +71,6 @@ public:
 
 	// ChatRooms.
 	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
-	std::shared_ptr<ChatRoom> findChatRoom (const std::string &peerAddress) const;
 
 	// Import legacy messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;
