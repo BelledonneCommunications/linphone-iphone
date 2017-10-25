@@ -128,48 +128,6 @@ typedef struct _LinphoneChatRoomCbs LinphoneChatRoomCbs;
 // -----------------------------------------------------------------------------
 
 /**
- * Call start/end events.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceCallEvent LinphoneConferenceCallEvent;
-
-/**
- * Chat message event.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceChatMessageEvent LinphoneConferenceChatMessageEvent;
-
-/**
- * Conference created/destroyed events.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceEvent LinphoneConferenceEvent;
-
-/**
- * Conference notified event.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceNotifiedEvent LinphoneConferenceNotifiedEvent;
-
-/**
- * Conference participant device added/removed events.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceParticipantDeviceEvent LinphoneConferenceParticipantDeviceEvent;
-
-/**
- * Conference participant added/removed & set/unset admin events.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceParticipantEvent LinphoneConferenceParticipantEvent;
-
-/**
- * Conference subject changed event.
- * @ingroup events
- */
-typedef struct _LinphoneConferenceSubjectEvent LinphoneConferenceSubjectEvent;
-
-/**
  * Base object of events.
  * @ingroup events
  */

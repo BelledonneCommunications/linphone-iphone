@@ -161,14 +161,14 @@ typedef void (*LinphoneChatRoomCbsMessageReceivedCb) (LinphoneChatRoom *cr, Linp
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been added to the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantAddedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
+typedef void (*LinphoneChatRoomCbsParticipantAddedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
  * Callback used to notify a chat room that a participant has been removed.
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
+typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
  * Callback used to notify a chat room that the admin status of a participant has been changed.
@@ -176,7 +176,7 @@ typedef void (*LinphoneChatRoomCbsParticipantRemovedCb) (LinphoneChatRoom *cr, c
  * @param[in] participant The #LinphoneParticipant for which the admin status has been changed
  * @param[in] isAdmin The new admin status of the participant
  */
-typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantEvent *event);
+typedef void (*LinphoneChatRoomCbsParticipantAdminStatusChangedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
  * Callback used to notify a chat room state has changed.
@@ -190,7 +190,7 @@ typedef void (*LinphoneChatRoomCbsStateChangedCb) (LinphoneChatRoom *cr, Linphon
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] subject The new subject of the chat room
  */
-typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const LinphoneConferenceSubjectEvent *event);
+typedef void (*LinphoneChatRoomCbsSubjectChangedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
  * Callback used to notify a chat room that a message has been received but we were unable to decrypt it
@@ -204,14 +204,14 @@ typedef void (*LinphoneChatRoomCbsUndecryptableMessageReceivedCb) (LinphoneChatR
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been added to the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantDeviceEvent *event);
+typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
  * Callback used to notify a chat room that a participant has been removed.
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
  */
-typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneConferenceParticipantDeviceEvent *event);
+typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 /**
  * @}
 **/

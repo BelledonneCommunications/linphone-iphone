@@ -38,11 +38,12 @@ friend class ClientGroupChatRoom;
 public:
 	Core (LinphoneCore *cCore);
 
+	std::string getDataPath() const;
+	std::string getConfigPath() const;
+
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
 	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
 	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
-	std::string getDataPath() const;
-	std::string getConfigPath() const;
 
 private:
 	L_DECLARE_PRIVATE(Core);

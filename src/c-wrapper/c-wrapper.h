@@ -36,13 +36,6 @@
 	F(Call, Call) \
 	F(ChatMessage, ChatMessage) \
 	F(ChatRoom, ChatRoom) \
-	F(ConferenceCallEvent, ConferenceCallEvent) \
-	F(ConferenceChatMessageEvent, ConferenceChatMessageEvent) \
-	F(ConferenceEvent, ConferenceEvent) \
-	F(ConferenceNotifiedEvent, ConferenceNotifiedEvent) \
-	F(ConferenceParticipantDeviceEvent, ConferenceParticipantDeviceEvent) \
-	F(ConferenceParticipantEvent, ConferenceParticipantEvent) \
-	F(ConferenceSubjectEvent, ConferenceSubjectEvent) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
 	F(MediaSessionParams, CallParams) \
@@ -51,7 +44,14 @@
 #define L_REGISTER_SUBTYPES(F) \
 	F(ChatRoom, BasicChatRoom) \
 	F(ChatRoom, ClientGroupChatRoom) \
-	F(ChatRoom, RealTimeTextChatRoom)
+	F(ChatRoom, RealTimeTextChatRoom) \
+	F(EventLog, ConferenceCallEvent) \
+	F(EventLog, ConferenceChatMessageEvent) \
+	F(EventLog, ConferenceEvent) \
+	F(EventLog, ConferenceNotifiedEvent) \
+	F(EventLog, ConferenceParticipantDeviceEvent) \
+	F(EventLog, ConferenceParticipantEvent) \
+	F(EventLog, ConferenceSubjectEvent)
 
 // =============================================================================
 // Register belle-sip ID.

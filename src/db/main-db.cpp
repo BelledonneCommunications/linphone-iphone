@@ -941,7 +941,7 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 		query += buildSqlEventFilter({
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 		}, mask, "AND");
-		query += "  ORDER BY id DESC";
+		query += "  ORDER BY date DESC";
 
 		if (end >= 0)
 			query += "  LIMIT " + Utils::toString(end + 1 - begin);
