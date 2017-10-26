@@ -55,6 +55,11 @@ public:
 	int getEventsCount (FilterMask mask = NoFilter) const;
 
 	// Messages, calls and conferences.
+	std::list<std::shared_ptr<EventLog>> getHistorySinceNotifyId (
+		const std::string &peerAddress,
+		unsigned int notifyId
+	);
+
 	int getMessagesCount (const std::string &peerAddress = "") const;
 	int getUnreadMessagesCount (const std::string &peerAddress = "") const;
 	std::list<std::shared_ptr<EventLog>> getHistory (

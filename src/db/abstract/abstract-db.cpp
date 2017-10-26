@@ -43,7 +43,9 @@ bool AbstractDb::connect (Backend backend, const string &parameters) {
 
 	if (d->dbSession) {
 		try {
+			enableForeignKeys(false);
 			init();
+			enableForeignKeys(true);
 		} catch (const exception &e) {
 			lWarning() << "Unable to init database: " << e.what();
 
@@ -131,6 +133,21 @@ long long AbstractDb::getLastInsertId () const {
 	#endif // ifdef SOCI_ENABLED
 
 	return id;
+}
+
+void AbstractDb::enableForeignKeys (bool status) {
+	#ifdef SOCI_ENABLED
+		L_D();
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		switch (d->backend) {
+			case Mysql:
+				*session << string("SET FOREIGN_KEY_CHECKS = ") + (status ? "1" : "0");
+				break;
+			case Sqlite3:
+				*session << string("PRAGMA foreign_keys = ") + (status ? "ON" : "OFF");
+				break;
+		}
+	#endif // ifdef SOCI_ENABLED
 }
 
 LINPHONE_END_NAMESPACE

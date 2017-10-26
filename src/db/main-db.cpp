@@ -607,7 +607,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
 			"  event_id" + primaryKeyStr("BIGINT") + ","
 
-			"  subject VARCHAR(255),"
+			"  subject VARCHAR(255) NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
@@ -629,7 +629,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			"  is_secured BOOLEAN NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
-			"    REFERENCES conference_event(id)"
+			"    REFERENCES conference_event(event_id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (local_sip_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -840,6 +840,14 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		L_END_LOG_EXCEPTION
 
 		return count;
+	}
+
+	list<shared_ptr<EventLog>> MainDb::getHistorySinceNotifyId (
+		const string &peerAddress,
+		unsigned int notifyId
+	) {
+		// TODO.
+		return list<shared_ptr<EventLog>>();
 	}
 
 	int MainDb::getMessagesCount (const string &peerAddress) const {
@@ -1067,7 +1075,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << "DELETE FROM chat_room WHERE peer_sip_address_id IN ("
+		*session << "DELETE FROM chat_room WHERE peer_sip_address_id = ("
 			"  SELECT id FROM sip_address WHERE value = :peerAddress"
 			")", soci::use(peerAddress);
 
@@ -1245,6 +1253,13 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 
 	int MainDb::getEventsCount (FilterMask) const {
 		return 0;
+	}
+
+	list<shared_ptr<EventLog>> MainDb::getHistorySinceNotifyId (
+		const string &peerAddress,
+		unsigned int notifyId
+	) {
+		return list<shared_ptr<EventLog>>();
 	}
 
 	int MainDb::getMessagesCount (const string &) const {

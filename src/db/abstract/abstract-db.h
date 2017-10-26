@@ -56,6 +56,8 @@ protected:
 
 	long long getLastInsertId () const;
 
+	void enableForeignKeys (bool status);
+
 private:
 	L_DECLARE_PRIVATE(AbstractDb);
 	L_DISABLE_COPY(AbstractDb);
