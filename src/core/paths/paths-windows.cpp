@@ -38,7 +38,7 @@ string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
 	// Get path for each computer, non-user specific and non-roaming data.
 	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
 		stringstream path;
-		path << boost::lexical_cast<std::string>(szPath) << "/linphone";
+		path << boost::lexical_cast<std::string>(szPath) << "\\linphone\\";
 		string ret = path.str();
 		boost::replace_all(ret, "\\", "\\\\");
 		return ret;

@@ -105,7 +105,7 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 			: MainDb::Sqlite3;
 	else {
 		backend = AbstractDb::Sqlite3;
-		uri = getDataPath() + "/" LINPHONE_DB;
+		uri = getDataPath() + LINPHONE_DB;
 	}
 
 	lInfo() << "Opening " LINPHONE_DB " at: " << uri;

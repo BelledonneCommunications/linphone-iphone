@@ -1,5 +1,5 @@
 /*
- * paths-apple.m
+ * paths-apple.mm
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -19,37 +19,29 @@
 
 #import "linphone/utils/utils.h"
 
-#include "core/platform-helpers/platform-helpers.h"
+#import "core/platform-helpers/platform-helpers.h"
 #import "paths-apple.h"
 
-#ifdef __OBJC__
 #import <Foundation/Foundation.h>
-#endif
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-#ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 	NSString *writablePath = [paths objectAtIndex:0];
 	NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
 	const char *ret = fullPath.UTF8String;
 	return ret;
-#endif
-	return Utils::getEmptyConstRefObject<std::string>();
 }
 
 std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-#ifdef __OBJC__
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString *configPath = [paths objectAtIndex:0];
 	NSString *fullPath = [configPath stringByAppendingString:@"/Preferences/linphone/"];
 	const char *ret = fullPath.UTF8String;
 	return ret;
-#endif
-	return Utils::getEmptyConstRefObject<std::string>();
 }
 
 LINPHONE_END_NAMESPACE

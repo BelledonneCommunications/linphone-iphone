@@ -42,12 +42,12 @@ static string getBaseDirectory () {
 }
 
 string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-	static string dataPath = getBaseDirectory() + "/.local/share/linphone";
+	static string dataPath = getBaseDirectory() + "/.local/share/linphone/";
 	return dataPath;
 }
 
 string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	static string configPath = getBaseDirectory() + "/.config/linphone";
+	static string configPath = getBaseDirectory() + "/.config/linphone/";
 	return configPath;
 }
 
