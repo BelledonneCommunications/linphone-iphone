@@ -1263,6 +1263,14 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		return list<shared_ptr<EventLog>>();
 	}
 
+	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
+		return list<shared_ptr<ChatRoom>>();
+	}
+
+	void MainDb::insertChatRoom (const string &, int) {}
+
+	void MainDb::deleteChatRoom (const string &) {}
+
 	void MainDb::cleanHistory (const string &, FilterMask) {}
 
 	bool MainDb::import (Backend, const string &) {
