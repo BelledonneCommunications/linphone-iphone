@@ -31,7 +31,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(*new AbstractDbPrivate) {}
+AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
