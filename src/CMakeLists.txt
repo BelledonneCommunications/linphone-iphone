@@ -77,6 +77,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/call-session.h
 	conference/session/media-session.h
 	conference/session/port-config.h
+	content/content-manager.h
 	content/content-type.h
 	content/content.h
 	core/core-p.h
@@ -171,6 +172,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
+	content/content-manager.cpp
 	content/content-type.cpp
 	content/content.cpp
 	core/core.cpp

@@ -46,6 +46,7 @@ const ContentType ContentType::ImIsComposing("application/im-iscomposing+xml");
 const ContentType ContentType::PlainText("text/plain");
 const ContentType ContentType::ResourceLists("application/resource-lists+xml");
 const ContentType ContentType::Sdp("application/sdp");
+const ContentType ContentType::ConferenceInfo("application/conference-info+xml");
 
 // -----------------------------------------------------------------------------
 

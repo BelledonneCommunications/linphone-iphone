@@ -66,6 +66,7 @@ public:
 	static const ContentType PlainText;
 	static const ContentType ResourceLists;
 	static const ContentType Sdp;
+	static const ContentType ConferenceInfo;
 
 private:
 	L_DECLARE_PRIVATE(ContentType);
