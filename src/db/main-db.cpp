@@ -1061,7 +1061,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		d->insertChatRoom(d->insertSipAddress(peerAddress), capabilities, Utils::getLongAsTm(0));
 	}
 
-	void MainDb::deleteChatRoom (const std::string &peerAddress) {
+	void MainDb::deleteChatRoom (const string &peerAddress) {
 		L_D();
 
 		L_BEGIN_LOG_EXCEPTION

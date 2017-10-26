@@ -22,6 +22,7 @@
 #endif // ifdef SOCI_ENABLED
 
 #include "db-session-p.h"
+#include "logger/logger.h"
 #include "object/object-p.h"
 
 #include "db-session-provider.h"
@@ -59,9 +60,12 @@ DbSession DbSessionProvider::getSession (const string &uri) {
 				d->sessions[uri] = make_pair(backendSession, p);
 			} else // Share session.
 				session.setRef(*d->sessions[uri].second);
-		} catch (const exception &) {}
+		} catch (const exception &e) {
+			lWarning() << "Unable to get db session: " << e.what();
+		}
 	#else
 		DbSession session(DbSession::None);
+		lWarning() << "Unable to get db session: soci not enabled.";
 	#endif // ifdef SOCI_ENABLED
 
 	// Remove invalid weak ptrs.
