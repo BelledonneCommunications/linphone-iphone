@@ -116,10 +116,14 @@ AndroidPlatformHelpers::~AndroidPlatformHelpers () {
 		env->DeleteGlobalRef(mJavaHelper);
 		mJavaHelper = nullptr;
 	}
+	lInfo() << "AndroidPlatformHelpers has been destroyed.";
 }
 
 void AndroidPlatformHelpers::setDnsServers () {
-	if (!mJavaHelper) return;
+	if (!mJavaHelper) {
+		lError() << "AndroidPlatformHelpers' mJavaHelper is null.";
+		return;
+	}
 	JNIEnv *env = ms_get_jni_env();
 	if (env && mJavaHelper) {
 		jobjectArray jservers = (jobjectArray)env->CallObjectMethod(mJavaHelper, mGetDnsServersId);
@@ -136,10 +140,13 @@ void AndroidPlatformHelpers::setDnsServers () {
 				jstring jserver = (jstring)env->GetObjectArrayElement(jservers, i);
 				const char *str = env->GetStringUTFChars(jserver, nullptr);
 				if (str) {
+					lInfo() << "AndroidPlatformHelpers found DNS server " << str;
 					l = bctbx_list_append(l, ms_strdup(str));
 					env->ReleaseStringUTFChars(jserver, str);
 				}
 			}
+		} else {
+			lError() << "AndroidPlatformHelpers::setDnsServers() failed to get DNS servers list";
 		}
 		linphone_core_set_dns_servers(mCore, l);
 		bctbx_list_free_with_data(l, ms_free);
