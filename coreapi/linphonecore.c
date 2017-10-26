@@ -37,6 +37,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
 #include <bctoolbox/defs.h>
+
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msequalizer.h"
@@ -45,8 +46,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
+
 #include "chat/chat-room/client-group-chat-room-p.h"
 #include "conference/remote-conference-event-handler.h"
+#include "core/core.h"
 
 // For migration purpose.
 #include "address/address-p.h"
@@ -2128,9 +2131,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		}
 	} else if (strcmp(notified_event, "conference") == 0) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		char *resourceUri = linphone_address_as_string_uri_only(resource);
-		LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, resourceUri);
-		bctbx_free(resourceUri);
+		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)));
 		if (cr)
 			L_GET_PRIVATE_FROM_C_OBJECT(cr, ClientGroupChatRoom)->notifyReceived(linphone_content_get_string_buffer(body));
 	}
@@ -2234,7 +2235,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->sal->set_user_pointer(lc);
 	lc->sal->set_callbacks(&linphone_sal_callbacks);
 
-	new(&lc->cppCore) Core(lc);
+	new(&lc->cppCore) std::shared_ptr<Core>();
+	lc->cppCore = ObjectFactory::create<Core>(lc);
 
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
@@ -2266,7 +2268,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
 	lc->bw_controller = ms_bandwidth_controller_new();
-	lc->group_chat_rooms = bctbx_mmap_cchar_new();
 }
 
 #ifdef __ANDROID__
@@ -2280,7 +2281,7 @@ static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_con
 }
 #else
 static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-	
+
 }
 #endif
 
@@ -5873,7 +5874,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	delete lc->sal;
 	lc->sal=NULL;
 
-	lc->cppCore.~Core();
+	lc->cppCore.~shared_ptr<Core>();
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);
@@ -6043,9 +6044,7 @@ static void linphone_core_uninit(LinphoneCore *lc)
 		ms_usleep(10000);
 	}
 
-	lc->chatrooms = bctbx_list_free_with_data(lc->chatrooms, (MSIterateFunc)linphone_chat_room_release);
-	if (lc->group_chat_rooms)
-		bctbx_mmap_cchar_delete_with_data(lc->group_chat_rooms, (void (*)(void *))linphone_chat_room_unref);
+	lc->chat_rooms = bctbx_list_free_with_data(lc->chat_rooms, (bctbx_list_free_func)linphone_chat_room_unref);
 
 	linphone_core_set_state(lc,LinphoneGlobalShutdown,"Shutting down");
 #ifdef VIDEO_ENABLED
@@ -6143,11 +6142,11 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
-	
+
 	if (is_sip_reachable){
 		getPlatformHelpers(lc)->setDnsServers();
 	}
-	
+
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
 	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;
@@ -7147,53 +7146,6 @@ void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri)
 
 const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
 	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
-}
-
-bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id) {
-	bool_t result;
-	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, id);
-	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
-	result = !bctbx_iterator_cchar_equals(it, endit);
-	bctbx_iterator_cchar_delete(endit);
-	bctbx_iterator_cchar_delete(it);
-	return result;
-}
-
-void _linphone_core_add_group_chat_room(LinphoneCore *lc, const LinphonePrivate::Address &addr, LinphoneChatRoom *cr) {
-	Address cleanedAddr(addr);
-	cleanedAddr.clean();
-	cleanedAddr.setPort(0);
-	bctbx_pair_t *pair = reinterpret_cast<bctbx_pair_t *>(bctbx_pair_cchar_new(cleanedAddr.asStringUriOnly().c_str(), linphone_chat_room_ref(cr)));
-	bctbx_map_cchar_insert_and_delete(lc->group_chat_rooms, pair);
-}
-
-void _linphone_core_remove_group_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {
-	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(cr);
-	Address cleanedAddr(*L_GET_CPP_PTR_FROM_C_OBJECT(confAddr));
-	cleanedAddr.clean();
-	cleanedAddr.setPort(0);
-	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
-	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
-	if (!bctbx_iterator_cchar_equals(it, endit)) {
-		bctbx_map_cchar_erase(lc->group_chat_rooms, it);
-		linphone_chat_room_unref(cr);
-	}
-	bctbx_iterator_cchar_delete(endit);
-	bctbx_iterator_cchar_delete(it);
-}
-
-LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id) {
-	LinphoneChatRoom *result = nullptr;
-	Address cleanedAddr(id);
-	cleanedAddr.clean();
-	cleanedAddr.setPort(0);
-	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
-	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
-	if (!bctbx_iterator_cchar_equals(it, endit))
-		result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
-	bctbx_iterator_cchar_delete(endit);
-	bctbx_iterator_cchar_delete(it);
-	return result;
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

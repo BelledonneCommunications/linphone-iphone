@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "linphone/tunnel.h"
 #include "c-wrapper/internal/c-sal.h"
-#include <sqlite3.h> 
+#include <sqlite3.h>
 #include "quality_reporting.h"
 #include "vcard_private.h"
 
@@ -94,7 +94,6 @@ LINPHONE_PUBLIC mblk_t *_linphone_call_stats_get_received_rtcp (const LinphoneCa
 LINPHONE_PUBLIC LinphoneQualityReporting *linphone_call_log_get_quality_reporting(LinphoneCallLog *call_log);
 LINPHONE_PUBLIC reporting_session_report_t **linphone_quality_reporting_get_reports(LinphoneQualityReporting *qreporting);
 
-LINPHONE_PUBLIC LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id);
 LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
 
 LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);

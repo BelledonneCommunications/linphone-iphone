@@ -69,7 +69,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			pendingMessage->setToAddress(
 				Address(
 					linphone_call_get_dest_proxy(call)
-					  ? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
+						? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
 						: linphone_core_get_identity(core)
 				)
 			);
@@ -106,7 +106,8 @@ void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage
 
 // =============================================================================
 
-RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) : ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
+RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) :
+	ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
 
 int RealTimeTextChatRoom::getCapabilities () const {
 	return static_cast<int>(Capabilities::Basic) | static_cast<int>(Capabilities::RealTimeText);

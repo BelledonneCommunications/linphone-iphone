@@ -29,6 +29,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoom;
+class Core;
 class EventLog;
 class MainDbPrivate;
 
@@ -45,7 +46,7 @@ public:
 
 	typedef int FilterMask;
 
-	MainDb ();
+	MainDb (Core *core);
 
 	// Generic.
 	bool addEvent (const std::shared_ptr<EventLog> &eventLog);
@@ -71,6 +72,8 @@ public:
 
 	// ChatRooms.
 	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
+	void insertChatRoom (const std::string &peerAddress, int capabilities);
+	void deleteChatRoom (const std::string &peerAddress);
 
 	// Import legacy messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;

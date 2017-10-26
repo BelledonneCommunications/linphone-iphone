@@ -30,21 +30,36 @@ L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Address;
 class ChatRoom;
 class CorePrivate;
 
 class LINPHONE_PUBLIC Core : public Object {
-friend class ClientGroupChatRoom;
+	friend class ClientGroupChatRoom;
+
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(Core);
+
 	Core (LinphoneCore *cCore);
+
+	// ---------------------------------------------------------------------------
+	// Paths.
+	// ---------------------------------------------------------------------------
 
 	std::string getDataPath() const;
 	std::string getConfigPath() const;
 
-	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
+	// ---------------------------------------------------------------------------
+	// ChatRoom.
+	// ---------------------------------------------------------------------------
 
+	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
+	std::shared_ptr<ChatRoom> findChatRoom (const Address &peerAddress) const;
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
-	std::shared_ptr<ChatRoom> getOrCreateChatRoom (const std::string &peerAddress, bool isRtt = false) const;
+	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const Address &peerAddress, bool isRtt = false);
+	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const std::string &peerAddress, bool isRtt = false);
+
+	static void deleteChatRoom (const std::shared_ptr<const ChatRoom> &chatRoom);
 
 private:
 	L_DECLARE_PRIVATE(Core);

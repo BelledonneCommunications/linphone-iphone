@@ -108,6 +108,8 @@ private:
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
 
+	Core *core;
+
 	L_DECLARE_PUBLIC(MainDb);
 };
 

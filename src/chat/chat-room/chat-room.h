@@ -30,6 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
+	friend class Core;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 

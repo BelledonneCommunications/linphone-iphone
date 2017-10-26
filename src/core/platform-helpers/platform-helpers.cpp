@@ -21,6 +21,8 @@
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
 StubbedPlatformHelpers::StubbedPlatformHelpers (LinphoneCore *lc) : PlatformHelpers(lc) {}
@@ -39,11 +41,11 @@ void StubbedPlatformHelpers::acquireCpuLock () {}
 
 void StubbedPlatformHelpers::releaseCpuLock () {}
 
-std::string StubbedPlatformHelpers::getDataPath () {
+string StubbedPlatformHelpers::getDataPath () {
 	return "";
 }
 
-std::string StubbedPlatformHelpers::getConfigPath () {
+string StubbedPlatformHelpers::getConfigPath () {
 	return "";
 }
 

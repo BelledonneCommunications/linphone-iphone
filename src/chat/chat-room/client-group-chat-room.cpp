@@ -251,7 +251,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	dConference->conferenceAddress = addr;
 	d->peerAddress = addr;
 	d->setState(ChatRoom::State::Created);
-	_linphone_core_add_group_chat_room(d->core, addr, L_GET_C_BACK_PTR(this));
+	d->core->cppCore->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
@@ -283,7 +283,7 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -308,7 +308,7 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) 
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -339,7 +339,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr,
 		dConference->eventHandler->getLastNotify(),
 		addr
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -357,7 +357,7 @@ void ClientGroupChatRoom::onSubjectChanged (time_t tm, const std::string &subjec
 		dConference->eventHandler->getLastNotify(),
 		subject
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -386,7 +386,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &ad
 		addr,
 		gruu
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -415,7 +415,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, const Address &
 		addr,
 		gruu
 	);
-	Conference::getCore()->cppCore.getPrivate()->mainDb.addEvent(event);
+	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));

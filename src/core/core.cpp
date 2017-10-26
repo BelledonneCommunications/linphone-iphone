@@ -21,6 +21,8 @@
 #include <sstream>
 
 #include "chat/chat-room/basic-chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
+#include "chat/chat-room/real-time-text-chat-room.h"
 #include "core-p.h"
 #include "db/main-db.h"
 #include "logger/logger.h"
@@ -28,6 +30,7 @@
 #include "paths/paths.h"
 
 // TODO: Remove me later.
+#include "c-wrapper/c-wrapper.h"
 #include "private.h"
 
 #define LINPHONE_DB "linphone.db"
@@ -39,41 +42,83 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
+// Helpers.
+// -----------------------------------------------------------------------------
+
+static inline Address getCleanedPeerAddress (const Address &peerAddress) {
+	Address cleanedAddress = peerAddress;
+	cleanedAddress.clean();
+	cleanedAddress.setPort(0);
+	return cleanedAddress;
+}
+
+// -----------------------------------------------------------------------------
+// CorePrivate: ChatRoom.
+// -----------------------------------------------------------------------------
+
+void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
+	L_ASSERT(chatRoom);
+	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
+
+	string peerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress()).asStringUriOnly();
+	deleteChatRoom(peerAddress);
+
+	chatRooms.push_back(chatRoom);
+	chatRoomsByUri[peerAddress] = chatRoom;
+}
+
+void CorePrivate::deleteChatRoom (const string &peerAddress) {
+	auto it = chatRoomsByUri.find(peerAddress);
+	if (it != chatRoomsByUri.end())
+		chatRooms.erase(
+			find_if(chatRooms.begin(), chatRooms.end(), [&peerAddress](const shared_ptr<const ChatRoom> &chatRoom) {
+				return peerAddress == chatRoom->getPeerAddress().asStringUriOnly();
+			})
+		);
+}
+
+void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
+	insertChatRoom(chatRoom);
+	mainDb->insertChatRoom(
+		getCleanedPeerAddress(chatRoom->getPeerAddress()).asStringUriOnly(),
+		chatRoom->getCapabilities()
+	);
+}
+
+void CorePrivate::deleteChatRoomWithDb (const string &peerAddress) {
+	deleteChatRoom(peerAddress);
+	mainDb->deleteChatRoom(peerAddress);
+}
+
+// =============================================================================
 
 Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 	L_D();
 	d->cCore = cCore;
-	const char *uri = lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_uri", NULL);
-	if (uri) {
-		AbstractDb::Backend backend =
-			strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_backend", NULL), "mysql") == 0
+	d->mainDb.reset(new MainDb(this));
+
+	AbstractDb::Backend backend;
+	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_uri", NULL));
+	if (!uri.empty())
+		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_backend", NULL), "mysql") == 0
 			? MainDb::Mysql
 			: MainDb::Sqlite3;
-		lInfo() << "Creating " LINPHONE_DB " at: " << uri;
-		d->mainDb.connect(backend, uri);
-		return;
+	else {
+		backend = AbstractDb::Sqlite3;
+		uri = getDataPath() + "/" LINPHONE_DB;
 	}
 
-	static string path = getDataPath() + "/" LINPHONE_DB;
-	lInfo() << "Creating " LINPHONE_DB " at: " << path;
-	d->mainDb.connect(MainDb::Sqlite3, path);
+	lInfo() << "Opening " LINPHONE_DB " at: " << uri;
+	if (!d->mainDb->connect(backend, uri))
+		lFatal() << "Unable to open linphone database.";
+
+	for (auto &chatRoom : d->mainDb->getChatRooms())
+		d->insertChatRoom(chatRoom);
 }
 
 // -----------------------------------------------------------------------------
-
-shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
-	// TODO.
-	return shared_ptr<ChatRoom>();
-}
-
-shared_ptr<ChatRoom> Core::getOrCreateChatRoom (const string &peerAddress, bool isRtt) const {
-	return shared_ptr<ChatRoom>();
-}
-
-const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
-	L_D();
-	return d->chatRooms;
-}
+// Paths.
+// -----------------------------------------------------------------------------
 
 string Core::getDataPath() const {
 	L_D();
@@ -83,6 +128,78 @@ string Core::getDataPath() const {
 string Core::getConfigPath() const {
 	L_D();
 	return Paths::getPath(Paths::Config, static_cast<PlatformHelpers *>(d->cCore->platform_helper));
+}
+
+// -----------------------------------------------------------------------------
+// ChatRoom.
+// -----------------------------------------------------------------------------
+
+const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
+	L_D();
+	return d->chatRooms;
+}
+
+shared_ptr<ChatRoom> Core::findChatRoom (const Address &peerAddress) const {
+	L_D();
+	auto it = d->chatRoomsByUri.find(getCleanedPeerAddress(peerAddress).asStringUriOnly());
+	return it == d->chatRoomsByUri.cend() ? shared_ptr<ChatRoom>() : it->second;
+}
+
+shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
+	L_D();
+
+	const char *factoryUri = linphone_core_get_conference_factory_uri(d->cCore);
+	if (!factoryUri)
+		return nullptr;
+
+	return L_GET_CPP_PTR_FROM_C_OBJECT(
+		_linphone_client_group_chat_room_new(d->cCore, factoryUri, L_STRING_TO_C(subject))
+	);
+}
+
+shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const Address &peerAddress, bool isRtt) {
+	L_D();
+
+	if (!peerAddress.isValid()) {
+		lWarning() << "Cannot find get or create chat room with invalid peer address.";
+		return nullptr;
+	}
+
+	shared_ptr<ChatRoom> chatRoom = findChatRoom(peerAddress);
+	if (chatRoom)
+		return chatRoom;
+
+	if (isRtt)
+		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(d->cCore, peerAddress);
+	else
+		chatRoom = ObjectFactory::create<BasicChatRoom>(d->cCore, peerAddress);
+
+	chatRoom->getPrivate()->setState(ChatRoom::State::Instantiated);
+	chatRoom->getPrivate()->setState(ChatRoom::State::Created);
+
+	d->insertChatRoomWithDb(chatRoom);
+
+	return chatRoom;
+}
+
+shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const string &peerAddress, bool isRtt) {
+	L_D();
+
+	LinphoneAddress *address = linphone_core_interpret_url(d->cCore, L_STRING_TO_C(peerAddress));
+	if (!address) {
+		lError() << "Cannot make a valid address with: `" << peerAddress << "`.";
+		return nullptr;
+	}
+
+	shared_ptr<ChatRoom> chatRoom = getOrCreateBasicChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(address), isRtt);
+	linphone_address_unref(address);
+	return chatRoom;
+}
+
+void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
+	CorePrivate *d = chatRoom->getCore()->cppCore->getPrivate();
+	string peerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress()).asStringUriOnly();
+	d->deleteChatRoomWithDb(peerAddress);
 }
 
 // -----------------------------------------------------------------------------

@@ -17,23 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "core/platform-helpers/platform-helpers.h"
 #include "linphone/utils/utils.h"
+
+#include "core/platform-helpers/platform-helpers.h"
+#include "logger/logger.h"
 
 #include "paths-linux.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-static std::string dataPath = "~/.local/share/linphone";
-static std::string configPath = "~/.config/linphone";
+static string getBaseDirectory () {
+	static string base;
+	if (base.empty()) {
+		char *dir = getenv("HOME");
+		if (!dir)
+			lFatal() << "Unable to get home directory.";
+		base = dir;
+	}
+	return base;
+}
 
-std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
+string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
+	static string dataPath = getBaseDirectory() + "/.local/share/linphone";
 	return dataPath;
 }
 
-std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
+string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
+	static string configPath = getBaseDirectory() + "/.config/linphone";
 	return configPath;
 }
 

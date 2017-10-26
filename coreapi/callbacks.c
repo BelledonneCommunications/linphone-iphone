@@ -45,6 +45,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "conference/session/call-session.h"
 #include "conference/session/media-session-p.h"
 #include "conference/session/media-session.h"
+#include "core/core-p.h"
 
 using namespace LinphonePrivate;
 
@@ -724,7 +725,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				// The server asks a participant to leave a chat room
-				LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(addr));
 				if (cr) {
 					L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
 					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
@@ -732,7 +733,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 				}
 				static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 			} else if (addr.hasParam("admin")) {
-				LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_to());
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(Address(op->get_to())));
 				if (cr) {
 					Address fromAddr(op->get_from());
 					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
@@ -749,11 +750,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = _linphone_core_join_client_group_chat_room(lc, addr);
-				if (cr) {
-					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
-					return;
-				}
+				LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
+				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
+				L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+
+				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+				return;
 			}
 		}
 	}

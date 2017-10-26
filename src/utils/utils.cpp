@@ -178,4 +178,8 @@ tm Utils::getLongAsTm (long time) {
 	return *gmtime_r(&static_cast<time_t &>(time), &result);
 }
 
+long Utils::getTmAsLong (const tm &time) {
+	return timegm(&const_cast<tm &>(time));
+}
+
 LINPHONE_END_NAMESPACE

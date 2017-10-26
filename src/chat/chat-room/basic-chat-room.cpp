@@ -35,7 +35,8 @@ BasicChatRoomPrivate::BasicChatRoomPrivate (LinphoneCore *core, const Address &p
 
 // =============================================================================
 
-BasicChatRoom::BasicChatRoom (LinphoneCore *core, const Address &peerAddress) : ChatRoom(*new BasicChatRoomPrivate(core, peerAddress)) {}
+BasicChatRoom::BasicChatRoom (LinphoneCore *core, const Address &peerAddress) :
+	ChatRoom(*new BasicChatRoomPrivate(core, peerAddress)) {}
 
 // -----------------------------------------------------------------------------
 

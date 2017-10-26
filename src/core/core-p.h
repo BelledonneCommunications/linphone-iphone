@@ -30,12 +30,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CorePrivate : public ObjectPrivate {
 public:
-	MainDb mainDb;
-	LinphoneCore *cCore;
+	std::unique_ptr<MainDb> mainDb;
+	LinphoneCore *cCore = nullptr;
+
+	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
+	void deleteChatRoomWithDb (const std::string &peerAddress);
 
 private:
+	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
+	void deleteChatRoom (const std::string &peerAddress);
+
 	std::list<std::shared_ptr<ChatRoom>> chatRooms;
-	std::unordered_map<std::string, std::shared_ptr<ChatRoom>> chatRoomsMap;
+	std::unordered_map<std::string, std::shared_ptr<ChatRoom>> chatRoomsByUri;
 
 	L_DECLARE_PUBLIC(Core);
 };

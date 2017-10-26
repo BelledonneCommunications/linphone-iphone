@@ -21,16 +21,16 @@
 #include "paths.h"
 
 #ifdef __APPLE__
-#include "paths-apple.h"
+	#include "paths-apple.h"
 #elif defined(__ANDROID__)
-#include "paths-android.h"
+	#include "paths-android.h"
 #elif defined(_WIN32)
-#include "paths-windows.h"
+	#include "paths-windows.h"
 #elif defined(__linux)
-#include "paths-linux.h"
+	#include "paths-linux.h"
 #else
-#error "Unsupported system"
-#endif
+	#error "Unsupported system."
+#endif // ifdef __APPLE__
 
 // =============================================================================
 
@@ -43,9 +43,11 @@ string Paths::getPath (Paths::Type type, PlatformHelpers *platformHelper) {
 		case Data:
 			return SysPaths::getDataPath(platformHelper);
 		case Config:
-		default:
 			return SysPaths::getConfigPath(platformHelper);
 	}
+
+	L_ASSERT(false);
+	return "";
 }
 
 LINPHONE_END_NAMESPACE

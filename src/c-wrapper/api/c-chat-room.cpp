@@ -205,7 +205,7 @@ bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_messa
 
 bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb.getHistory(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb->getHistory(
 			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
 			nb_events
 		)
@@ -214,7 +214,7 @@ bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int n
 
 bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb.getHistory(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb->getHistory(
 			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
 			begin,
 			end
@@ -330,14 +330,10 @@ void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
 // =============================================================================
 
 LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
-	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	if (linphone_core_realtime_text_enabled(core))
-		L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::RealTimeTextChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
-	else
-		L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::BasicChatRoom>(core, *L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
-	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
-	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Created);
-	return cr;
+	return L_GET_C_BACK_PTR(core->cppCore->getOrCreateBasicChatRoom(
+		*L_GET_CPP_PTR_FROM_C_OBJECT(addr),
+		linphone_core_realtime_text_enabled(core)
+	));
 }
 
 LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject) {

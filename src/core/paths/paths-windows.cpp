@@ -18,10 +18,12 @@
  */
 
 #include <stream>
+
 #include "shlobj.h"
 
-#include "core/platform-helpers/platform-helpers.h"
 #include "linphone/utils/utils.h"
+
+#include "core/platform-helpers/platform-helpers.h"
 
 #include "paths-windows.h"
 
@@ -46,7 +48,7 @@ string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
 }
 
 string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	// seems to be the same directory
+	// Seems to be the same directory.
 	return getDataPath(platformHelper);
 }
 

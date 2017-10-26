@@ -30,9 +30,10 @@
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "core/core.h"
 #include "db/session/db-session-provider.h"
-#include "event-log/events.h"
 #include "event-log/event-log-p.h"
+#include "event-log/events.h"
 #include "logger/logger.h"
 #include "main-db-p.h"
 
@@ -44,7 +45,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
+MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
+	L_D();
+	d->core = core;
+}
 
 #ifdef SOCI_ENABLED
 
@@ -1003,53 +1007,72 @@ MainDb::MainDb () : AbstractDb(*new MainDbPrivate) {}
 
 // -----------------------------------------------------------------------------
 
-list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
-	static const string query = "SELECT value, creation_date, last_update_date, capabilities, subject, last_notify_id"
-		"  FROM chat_room, sip_address"
-		"  WHERE peer_sip_address_id = id";
+	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
+		static const string query = "SELECT value, creation_date, last_update_date, capabilities, subject, last_notify_id"
+			"  FROM chat_room, sip_address"
+			"  WHERE peer_sip_address_id = id";
 
-	L_D();
+		L_D();
 
-	list<shared_ptr<ChatRoom>> chatRooms;
+		list<shared_ptr<ChatRoom>> chatRooms;
 
-	L_BEGIN_LOG_EXCEPTION
+		L_BEGIN_LOG_EXCEPTION
 
-	soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
-	soci::rowset<soci::row> rows = (session->prepare << query);
-	for (const auto &row : rows) {
-		string sipAddress = row.get<string>(0);
-		tm creationDate = row.get<tm>(1);
-		tm lastUpdateDate = row.get<tm>(2);
-		int capabilities = row.get<int>(3);
-		string subject = row.get<string>(4);
-		unsigned int lastNotifyId = row.get<unsigned int>(5);
+		soci::rowset<soci::row> rows = (session->prepare << query);
+		for (const auto &row : rows) {
+			string sipAddress = row.get<string>(0);
+			tm creationDate = row.get<tm>(1);
+			tm lastUpdateDate = row.get<tm>(2);
+			int capabilities = row.get<int>(3);
+			string subject = row.get<string>(4);
+			unsigned int lastNotifyId = row.get<unsigned int>(5);
 
-		(void)sipAddress;
-		(void)creationDate;
-		(void)lastUpdateDate;
-		(void)capabilities;
-		(void)subject;
-		(void)lastNotifyId;
+			// TODO: Use me.
+			(void)creationDate;
+			(void)lastUpdateDate;
+			(void)subject;
+			(void)lastNotifyId;
 
-		if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
-			if (capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)) {
-				// TODO.
-				continue;
+			shared_ptr<ChatRoom> chatRoom;
+			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
+				chatRoom = d->core ? d->core->getOrCreateBasicChatRoom(
+					Address(sipAddress),
+					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
+				) : nullptr;
+			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
+				// TODO: Set sip address and participants.
 			}
-			// TODO.
-			continue;
+
+			if (!chatRoom)
+				continue; // Not fetched.
+
+			chatRooms.push_back(chatRoom);
 		}
 
-		if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
-			// TODO.
-		}
+		L_END_LOG_EXCEPTION
+
+		return chatRooms;
 	}
 
-	L_END_LOG_EXCEPTION
+	void MainDb::insertChatRoom (const string &peerAddress, int capabilities) {
+		L_D();
+		d->insertChatRoom(d->insertSipAddress(peerAddress), capabilities, Utils::getLongAsTm(0));
+	}
 
-	return chatRooms;
-}
+	void MainDb::deleteChatRoom (const std::string &peerAddress) {
+		L_D();
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM chat_room WHERE peer_sip_address_id IN ("
+			"  SELECT id FROM sip_address WHERE value = :peerAddress"
+			")", soci::use(peerAddress);
+
+		L_END_LOG_EXCEPTION
+	}
 
 // -----------------------------------------------------------------------------
 
