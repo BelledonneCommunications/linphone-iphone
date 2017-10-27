@@ -33,9 +33,14 @@ LINPHONE_BEGIN_NAMESPACE
 
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
+extern "C" void register_factory_sqlite3();
+
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
-
+#if defined(__APPLE__) || defined(__ANDROID__)
+	if (backend == Sqlite3)
+		register_factory_sqlite3();
+#endif  // defined(__APPLE__) || defined(__ANDROID__)*/
 	d->backend = backend;
 	d->dbSession = DbSessionProvider::getInstance()->getSession(
 			(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
