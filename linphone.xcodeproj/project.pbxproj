@@ -1631,6 +1631,7 @@
 		63FB30341A680E73008CA393 /* UIRoundedImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIRoundedImageView.m; sourceTree = "<group>"; };
 		70E542F213E147E3002BA2C0 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		70E542F413E147EB002BA2C0 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_sqlite3.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_sqlite3.a"; sourceTree = "<group>"; };
 		8C1B67051E671826001EA2FE /* AudioHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioHelper.m; sourceTree = "<group>"; };
 		8C1B67081E6718BC001EA2FE /* AudioHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioHelper.h; path = Utils/AudioHelper.h; sourceTree = "<group>"; };
 		8C1C42E61E43408E00FE9A91 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/AboutView.strings; sourceTree = "<group>"; };
@@ -1718,6 +1719,8 @@
 		8CB2B8F61F86229B0015CEE2 /* chat_secure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_secure.png; sourceTree = "<group>"; };
 		8CB2B8F71F86229C0015CEE2 /* next_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_disabled.png; sourceTree = "<group>"; };
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
+		8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_core.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_core.a"; sourceTree = "<group>"; };
+		8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite3.a; path = "liblinphone-sdk/apple-darwin/lib/libsqlite3.a"; sourceTree = "<group>"; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
 		8CE24F491F8234A20077AC0A /* next_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_default.png; sourceTree = "<group>"; };
@@ -2288,6 +2291,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
+				8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */,
+				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
 				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
 				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,
 				8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */,
