@@ -20,10 +20,9 @@
 // TODO: Remove me later.
 #include "linphone/chat.h"
 
-#include "linphone/wrapper_utils.h"
 #include "linphone/api/c-chat-room.h"
+#include "linphone/wrapper_utils.h"
 
-#include "event-log/event-log.h"
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"

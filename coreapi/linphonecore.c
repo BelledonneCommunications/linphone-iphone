@@ -7198,33 +7198,6 @@ void _linphone_core_remove_group_chat_room(LinphoneCore *lc, LinphoneChatRoom *c
 	bctbx_iterator_cchar_delete(it);
 }
 
-LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id) {
-	LinphoneChatRoom *result = nullptr;
-	Address cleanedAddr(id);
-	cleanedAddr.clean();
-	cleanedAddr.setPort(0);
-	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
-	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
-	if (!bctbx_iterator_cchar_equals(it, endit)) {
-		result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
-	} else {
-		bctbx_iterator_cchar_delete(it);
-		Address backupAddress(cleanedAddr);
-		Address factoryAddress(linphone_core_get_conference_factory_uri(lc));
-		backupAddress.setDomain(factoryAddress.getDomain());
-		lWarning() << "We don't found the chat room with address " << id << " as a temporary workaround, searching with " << backupAddress.asString();
-		it = bctbx_map_cchar_find_key(lc->group_chat_rooms, backupAddress.asStringUriOnly().c_str());
-
-		if (!bctbx_iterator_cchar_equals(it, endit)) {
-			result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
-		}
-		if (!result) lWarning() << "Chatroom " << id << " or " << backupAddress.asString() << " not found!";
-	}
-	bctbx_iterator_cchar_delete(endit);
-	bctbx_iterator_cchar_delete(it);
-	return result;
-}
-
 void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
 	lp_config_set_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", enable);
 }
