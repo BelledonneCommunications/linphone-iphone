@@ -441,8 +441,7 @@ void ClientGroupChatRoom::onCallSessionStateChanged (
 
 	if (state == LinphoneCallConnected) {
 		if (d->state == ChatRoom::State::CreationPending) {
-			Address addr(session->getRemoteContact());
-			addr.clean();
+			Address addr(session->getRemoteContactAddress()->asStringUriOnly());
 			onConferenceCreated(addr);
 			if (session->getRemoteContactAddress()->hasParam("isfocus"))
 				dConference->eventHandler->subscribe(getConferenceAddress());

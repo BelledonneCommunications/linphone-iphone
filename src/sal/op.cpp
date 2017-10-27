@@ -426,7 +426,7 @@ int SalOp::process_redirect(){
 	belle_sip_request_set_uri(request, redirect_uri);
 	redirect_uri = BELLE_SIP_URI(belle_sip_object_clone(BELLE_SIP_OBJECT(redirect_uri)));
 	belle_sip_uri_set_port(redirect_uri, 0);
-	belle_sip_uri_set_transport_param(redirect_uri, nullptr);
+	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(redirect_uri), "transport");
 	belle_sip_header_address_set_uri((belle_sip_header_address_t*)to, redirect_uri);
 	send_request(request);
 	return 0;

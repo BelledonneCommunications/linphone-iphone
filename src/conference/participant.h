@@ -45,6 +45,8 @@ class Participant : public Object {
 	friend class LocalConferenceEventHandlerPrivate;
 	friend class MediaSessionPrivate;
 	friend class RemoteConference;
+	friend class ServerGroupChatRoom;
+	friend class ServerGroupChatRoomPrivate;
 
 public:
 	explicit Participant (const Address &address);

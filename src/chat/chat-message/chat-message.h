@@ -41,6 +41,7 @@ class LINPHONE_PUBLIC ChatMessage : public Object {
 	friend class ChatRoomPrivate;
 	friend class CpimChatMessageModifier;
 	friend class RealTimeTextChatRoomPrivate;
+	friend class ServerGroupChatRoomPrivate;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ChatMessage);

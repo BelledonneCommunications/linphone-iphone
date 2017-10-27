@@ -79,8 +79,61 @@ LinphoneChatRoom *linphone_core_create_client_group_chat_room (LinphoneCore *lc,
 	return L_GET_C_BACK_PTR(lc->cppCore->createClientGroupChatRoom(L_C_TO_STRING(subject)));
 }
 
-void linphone_core_delete_chat_room (LinphoneCore *, LinphoneChatRoom *cr) {
-	LinphonePrivate::Core::deleteChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+static LinphoneChatRoom *_linphone_core_get_or_create_chat_room(LinphoneCore *lc, const char *to) {
+	LinphoneAddress *to_addr = linphone_core_interpret_url(lc, to);
+	LinphoneChatRoom *ret;
+
+	if (to_addr == NULL) {
+		ms_error("linphone_core_get_or_create_chat_room(): Cannot make a valid address with %s", to);
+		return NULL;
+	}
+	ret = _linphone_core_get_chat_room(lc, to_addr);
+	linphone_address_unref(to_addr);
+	if (!ret) {
+		ret = _linphone_core_create_chat_room_from_url(lc, to);
+	}
+	return ret;
+}
+
+LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr) {
+	LinphoneChatRoom *ret = _linphone_core_get_chat_room(lc, addr);
+	if (!ret) {
+		ret = _linphone_core_create_chat_room(lc, addr);
+	}
+	return ret;
+}
+
+LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject) {
+	const char *factoryUri = linphone_core_get_conference_factory_uri(lc);
+	if (!factoryUri)
+		return nullptr;
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, factoryUri, subject);
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	return cr;
+}
+
+LinphoneChatRoom *_linphone_core_join_client_group_chat_room (LinphoneCore *lc, const LinphonePrivate::Address &addr) {
+	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	return cr;
+}
+
+LinphoneChatRoom *_linphone_core_create_server_group_chat_room (LinphoneCore *lc, LinphonePrivate::SalCallOp *op) {
+	LinphoneChatRoom *cr = _linphone_server_group_chat_room_new(lc, op);
+	_linphone_core_add_group_chat_room(lc, L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress(), cr);
+	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	return cr;
+}
+
+void linphone_core_delete_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {
+	if (bctbx_list_find(lc->chatrooms, cr)) {
+		lc->chatrooms = bctbx_list_remove(lc->chatrooms, cr);
+		linphone_chat_room_delete_history(cr);
+		linphone_chat_room_unref(cr);
+	} else {
+		ms_error("linphone_core_delete_chat_room(): chatroom [%p] isn't part of LinphoneCore.", cr);
+	}
 }
 
 LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
@@ -89,7 +142,8 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(LinphonePrivate::Address(op->get_from())));
+	LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc,
+		linphone_core_conference_server_enabled(lc) ? op->get_to() : op->get_from());
 	if (cr)
 		reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
 	else {

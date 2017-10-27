@@ -78,8 +78,14 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
 
 	Address cleanedConfAddress = d->confAddress;
+	cleanedConfAddress.clean();
 	cleanedConfAddress.setPort(0);
-	if (confInfo->getEntity() == cleanedConfAddress.asString()) {
+	// Temporary workaround
+	Address entityAddress(confInfo->getEntity().c_str());
+	Address cleanedConfAddress2(cleanedConfAddress);
+	cleanedConfAddress2.setDomain(entityAddress.getDomain());
+	if (confInfo->getEntity() == cleanedConfAddress.asString()
+		|| confInfo->getEntity() == cleanedConfAddress2.asString()) {
 		if (confInfo->getConferenceDescription().present() && confInfo->getConferenceDescription().get().getSubject().present())
 			d->listener->onSubjectChanged(tm, confInfo->getConferenceDescription().get().getSubject().get());
 

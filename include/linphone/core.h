@@ -4236,6 +4236,21 @@ void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri)
 const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc);
 
 /**
+ * Enable the conference server feature. This has the effect to listen of the conference factory uri
+ * to create new conferences when receiving INVITE messages there.
+ * @param[in] lc A #LinphoneCore object
+ * @param[in] enable A boolean value telling whether to enable or disable the conference server feature
+ */
+void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable);
+
+/**
+ * Tells whether the conference server feature is enabled.
+ * @param[in] lc A #LinphoneCore object
+ * @return A boolean value telling whether the conference server feature is enabled or not
+ */
+bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc);
+
+/**
  * @}
  */
 

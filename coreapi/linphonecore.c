@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "quality_reporting.h"
 #include "lime.h"
 #include "conference_private.h"
+#include "logger/logger.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
 #include "sqlite3_bctbx_vfs.h"
@@ -48,6 +49,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msvolume.h"
 
 #include "chat/chat-room/client-group-chat-room-p.h"
+#include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/remote-conference-event-handler.h"
 #include "core/core.h"
 
@@ -2137,11 +2139,25 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 	}
 }
 
+static void _linphone_core_conference_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
+	if ((linphone_event_get_subscription_dir(lev) == LinphoneSubscriptionIncoming) && (state == LinphoneSubscriptionIncomingReceived)) {
+		const LinphoneAddress *resource = linphone_event_get_resource(lev);
+		char *resourceUri = linphone_address_as_string_uri_only(resource);
+		LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, resourceUri);
+		bctbx_free(resourceUri);
+		if (cr) {
+			linphone_event_accept_subscription(lev);
+			L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->subscribeReceived(lev);
+		} else
+			linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
+	}
+}
+
 static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
 	} else if (strcmp(linphone_event_get_name(lev), "conference") == 0) {
-
+		_linphone_core_conference_subscription_state_changed(lc, lev, state);
 	}
 }
 
@@ -7146,7 +7162,84 @@ void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri)
 }
 
 const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
-	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
+	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", "sip:");
+}
+
+bool_t _linphone_core_has_group_chat_room(const LinphoneCore *lc, const char *id) {
+	bool_t result;
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, id);
+	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
+	result = !bctbx_iterator_cchar_equals(it, endit);
+	bctbx_iterator_cchar_delete(endit);
+	bctbx_iterator_cchar_delete(it);
+	return result;
+}
+
+void _linphone_core_add_group_chat_room(LinphoneCore *lc, const LinphonePrivate::Address &addr, LinphoneChatRoom *cr) {
+	Address cleanedAddr(addr);
+	cleanedAddr.clean();
+	cleanedAddr.setPort(0);
+	bctbx_pair_t *pair = reinterpret_cast<bctbx_pair_t *>(bctbx_pair_cchar_new(cleanedAddr.asStringUriOnly().c_str(), linphone_chat_room_ref(cr)));
+	bctbx_map_cchar_insert_and_delete(lc->group_chat_rooms, pair);
+}
+
+void _linphone_core_remove_group_chat_room(LinphoneCore *lc, LinphoneChatRoom *cr) {
+	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(cr);
+	Address cleanedAddr(*L_GET_CPP_PTR_FROM_C_OBJECT(confAddr));
+	cleanedAddr.clean();
+	cleanedAddr.setPort(0);
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
+	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
+	if (!bctbx_iterator_cchar_equals(it, endit)) {
+		bctbx_map_cchar_erase(lc->group_chat_rooms, it);
+		linphone_chat_room_unref(cr);
+	}
+	bctbx_iterator_cchar_delete(endit);
+	bctbx_iterator_cchar_delete(it);
+}
+
+LinphoneChatRoom *_linphone_core_find_group_chat_room(const LinphoneCore *lc, const char *id) {
+	LinphoneChatRoom *result = nullptr;
+	Address cleanedAddr(id);
+	cleanedAddr.clean();
+	cleanedAddr.setPort(0);
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(lc->group_chat_rooms, cleanedAddr.asStringUriOnly().c_str());
+	bctbx_iterator_t *endit = bctbx_map_cchar_end(lc->group_chat_rooms);
+	if (!bctbx_iterator_cchar_equals(it, endit)) {
+		result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
+	} else {
+		bctbx_iterator_cchar_delete(it);
+		Address backupAddress(cleanedAddr);
+		Address factoryAddress(linphone_core_get_conference_factory_uri(lc));
+		backupAddress.setDomain(factoryAddress.getDomain());
+		lWarning() << "We don't found the chat room with address " << id << " as a temporary workaround, searching with " << backupAddress.asString();
+		it = bctbx_map_cchar_find_key(lc->group_chat_rooms, backupAddress.asStringUriOnly().c_str());
+
+		if (!bctbx_iterator_cchar_equals(it, endit)) {
+			result = reinterpret_cast<LinphoneChatRoom *>(bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
+		}
+		if (!result) lWarning() << "Chatroom " << id << " or " << backupAddress.asString() << " not found!";
+	}
+	bctbx_iterator_cchar_delete(endit);
+	bctbx_iterator_cchar_delete(it);
+	return result;
+}
+
+void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
+	lp_config_set_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", enable);
+}
+
+bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc) {
+	return lp_config_get_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", FALSE) ? TRUE : FALSE;
+}
+
+bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const LinphoneAddress *addr) {
+	LinphoneAddress *factoryAddr = linphone_address_new(linphone_core_get_conference_factory_uri(lc));
+	if (!factoryAddr)
+		return FALSE;
+	bool_t result = linphone_address_weak_equal(factoryAddr, addr);
+	linphone_address_unref(factoryAddr);
+	return result;
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

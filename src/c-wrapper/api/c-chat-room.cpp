@@ -28,8 +28,10 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
+#include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
 #include "core/core-p.h"
+#include "content/content.h"
 
 // =============================================================================
 
@@ -349,6 +351,14 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ClientGroupChatRoom>(core, me, L_C_TO_STRING(uri), L_C_TO_STRING(subject)));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+	return cr;
+}
+
+LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, LinphonePrivate::SalCallOp *op) {
+	LinphoneChatRoom *cr = L_INIT(ChatRoom);
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ServerGroupChatRoom>(core, op));
+	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+	L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmCreation();
 	return cr;
 }
 

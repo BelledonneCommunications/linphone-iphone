@@ -40,6 +40,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
 #include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/call-session.h"
@@ -114,6 +115,28 @@ static void call_received(SalCallOp *h) {
 	if (!fromAddr)
 		fromAddr = linphone_address_new(h->get_from());
 	LinphoneAddress *toAddr = linphone_address_new(h->get_to());
+
+	if (_linphone_core_is_conference_creation(lc, toAddr)) {
+		if (sal_address_has_param(h->get_remote_contact_address(), "text"))
+			_linphone_core_create_server_group_chat_room(lc, h);
+		// TODO: handle media conference creation if the "text" feature tag is not present
+		linphone_address_unref(toAddr);
+		linphone_address_unref(fromAddr);
+		return;
+	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
+		linphone_address_unref(toAddr);
+		linphone_address_unref(fromAddr);
+		LinphonePrivate::Address addr(h->get_to());
+		if (addr.isValid()) {
+			LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+			if (cr) {
+				L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmJoining(h);
+				return;
+			}
+		}
+	} else {
+		// TODO: handle media conference joining if the "text" feature tag is not present
+	}
 
 	/* First check if we can answer successfully to this invite */
 	LinphonePresenceActivity *activity = nullptr;
@@ -720,18 +743,38 @@ static void on_notify_response(SalOp *op){
 
 static void refer_received(SalOp *op, const SalAddress *refer_to){
 	if (sal_address_has_param(refer_to, "text")) {
-		LinphonePrivate::Address addr(sal_address_as_string(refer_to));
+		char *refer_uri = sal_address_as_string(refer_to);
+		LinphonePrivate::Address addr(refer_uri);
+		bctbx_free(refer_uri);
 		if (addr.isValid()) {
 			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
-				// The server asks a participant to leave a chat room
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(addr));
-				if (cr) {
-					L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
-					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
-					return;
+				if (linphone_core_conference_server_enabled(lc)) {
+					// Removal of a participant at the server side
+					LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_to());
+					if (cr) {
+						Address fromAddr(op->get_from());
+						std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
+						if (!participant || !participant->isAdmin()) {
+							static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+							return;
+						}
+						participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
+						if (participant)
+							L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipant(participant);
+						static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+						return;
+					}
+				} else {
+					// The server asks a participant to leave a chat room
+					LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+					if (cr) {
+						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
+						static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+						return;
+					}
+					static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 				}
-				static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 			} else if (addr.hasParam("admin")) {
 				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(Address(op->get_to())));
 				if (cr) {

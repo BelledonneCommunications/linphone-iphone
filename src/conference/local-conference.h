@@ -29,6 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 class LocalConferencePrivate;
 
 class LocalConference : public Conference {
+	friend class ServerGroupChatRoomPrivate;
+
 public:
 	LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
 

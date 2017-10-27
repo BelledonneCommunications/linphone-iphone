@@ -40,6 +40,8 @@ class LINPHONE_PUBLIC CallSession : public Object {
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
 	friend class Conference;
+	friend class ServerGroupChatRoom;
+	friend class ServerGroupChatRoomPrivate;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(CallSession);

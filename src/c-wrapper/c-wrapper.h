@@ -51,7 +51,8 @@
 	F(EventLog, ConferenceNotifiedEvent) \
 	F(EventLog, ConferenceParticipantDeviceEvent) \
 	F(EventLog, ConferenceParticipantEvent) \
-	F(EventLog, ConferenceSubjectEvent)
+	F(EventLog, ConferenceSubjectEvent) \
+	F(ChatRoom, ServerGroupChatRoom)
 
 // =============================================================================
 // Register belle-sip ID.
