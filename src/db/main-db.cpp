@@ -1049,7 +1049,8 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
 		static const string query = "SELECT value, creation_date, last_update_date, capabilities, subject, last_notify_id"
 			"  FROM chat_room, sip_address"
-			"  WHERE peer_sip_address_id = id";
+			"  WHERE peer_sip_address_id = id"
+			"  ORDER BY last_update_date DESC";
 
 		L_D();
 
