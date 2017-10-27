@@ -20,6 +20,7 @@
 #import "linphone/utils/utils.h"
 
 #import "core/platform-helpers/platform-helpers.h"
+#import "logger/logger.h"
 #import "paths-apple.h"
 
 #import <Foundation/Foundation.h>
@@ -32,6 +33,17 @@ std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 	NSString *writablePath = [paths objectAtIndex:0];
 	NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
+	if(![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+		NSError *error;
+		lInfo() << "Data path " << fullPath.UTF8String << " does not exist, creating it.";
+		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
+	                                 withIntermediateDirectories:YES
+	                                                  attributes:nil
+	                                                       error:&error]) {
+			lError() << "Create data path directory error: " << error.description;
+		}
+	}
+
 	const char *ret = fullPath.UTF8String;
 	return ret;
 }
@@ -40,6 +52,17 @@ std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString *configPath = [paths objectAtIndex:0];
 	NSString *fullPath = [configPath stringByAppendingString:@"/Preferences/linphone/"];
+	if(![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+		NSError *error;
+		lInfo() << "Config path " << fullPath.UTF8String << " does not exist, creating it.";
+		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
+	                                 withIntermediateDirectories:YES
+	                                                  attributes:nil
+	                                                       error:&error]) {
+			lError() << "Create config path directory error: " << error.description;
+		}
+	}
+
 	const char *ret = fullPath.UTF8String;
 	return ret;
 }
