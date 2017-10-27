@@ -33,6 +33,7 @@ class CObject:
 		self.detailedDescription = None
 		self.deprecated = False
 		self.briefDoc = None
+		self.detailedDoc = None
 
 
 class CEnumValue(CObject):
@@ -339,6 +340,7 @@ class Project:
 					if st.associatedTypedef == td:
 						cclass = CClass(st)
 						cclass.briefDoc = td.briefDoc
+						cclass.detailedDoc = td.detailedDoc
 						self.add(cclass)
 						break
 			elif ('Linphone' + td.definition) == td.name:
@@ -346,6 +348,7 @@ class Project:
 				st.associatedTypedef = td
 				cclass = CClass(st)
 				cclass.briefDoc = td.briefDoc
+				cclass.detailedDoc = td.detailedDoc
 				self.add(st)
 				self.add(cclass)
 		# Sort classes by length of name (longest first), so that methods are put in the right class
@@ -389,6 +392,7 @@ class Project:
 			ev.deprecated = True
 		ev.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 		ev.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		ev.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 		ev.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return ev
 
@@ -401,6 +405,7 @@ class Project:
 			e.deprecated = True
 		e.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 		e.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		e.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 		e.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		enumvalues = node.findall("enumvalue[@prot='public']")
 		for enumvalue in enumvalues:
@@ -424,6 +429,7 @@ class Project:
 			sm.deprecated = True
 		sm.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 		sm.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		sm.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 		sm.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		return sm
 
@@ -434,6 +440,7 @@ class Project:
 			s.deprecated = True
 		s.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 		s.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		s.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 		s.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		structmembers = node.findall("sectiondef/memberdef[@kind='variable'][@prot='public']")
 		for structmember in structmembers:
@@ -503,6 +510,7 @@ class Project:
 				f.deprecated = True
 			f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 			f.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+			f.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 			f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return f
 		else:
@@ -515,6 +523,7 @@ class Project:
 				td.deprecated = True
 			td.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
 			td.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+			td.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 			td.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 			return td
 		return None
@@ -531,6 +540,11 @@ class Project:
 		internal = node.find("./detaileddescription/internal")
 		if internal is not None:
 			return None
+		
+		# The doc must be parsed here since the XML tree is to be modified in below code
+		briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
+		
 		missingDocWarning = ''
 		name = node.find('./name').text
 		t = ''.join(node.find('./type').itertext())
@@ -574,10 +588,11 @@ class Project:
 		if deprecatedNode is not None:
 			f.deprecated = True
 		f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-		f.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
 		f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
 		if f.briefDescription == '' and ''.join(f.detailedDescription.itertext()).strip() == '':
 			return None
+		f.briefDoc = briefDoc
+		f.detailedDoc = detailedDoc
 		locationNode = node.find('./location')
 		if locationNode is not None:
 			f.location = locationNode.get('file')
