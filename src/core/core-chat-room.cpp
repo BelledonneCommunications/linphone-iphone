@@ -75,12 +75,13 @@ void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 
 void CorePrivate::deleteChatRoom (const string &peerAddress) {
 	auto it = chatRoomsByUri.find(peerAddress);
-	if (it != chatRoomsByUri.end())
-		chatRooms.erase(
-			find_if(chatRooms.begin(), chatRooms.end(), [&peerAddress](const shared_ptr<const ChatRoom> &chatRoom) {
-				return peerAddress == chatRoom->getPeerAddress().asStringUriOnly();
-			})
-		);
+	if (it != chatRoomsByUri.end()) {
+		auto it = find_if(chatRooms.begin(), chatRooms.end(), [&peerAddress](const shared_ptr<const ChatRoom> &chatRoom) {
+			return peerAddress == chatRoom->getPeerAddress().asStringUriOnly();
+		});
+		if (it == chatRooms.end()) return;
+		chatRooms.erase(it);
+	}
 }
 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
