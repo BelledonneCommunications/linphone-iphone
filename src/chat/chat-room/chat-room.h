@@ -31,6 +31,7 @@ class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
 	friend class Core;
+	friend class CorePrivate;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 

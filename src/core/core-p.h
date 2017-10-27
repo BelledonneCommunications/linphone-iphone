@@ -36,6 +36,8 @@ public:
 	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
 	void deleteChatRoomWithDb (const std::string &peerAddress);
 
+	std::shared_ptr<ChatRoom> createChatRoom (const Address &peerAddress, bool isRtt);
+
 private:
 	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void deleteChatRoom (const std::string &peerAddress);

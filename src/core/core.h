@@ -36,6 +36,7 @@ class CorePrivate;
 
 class LINPHONE_PUBLIC Core : public Object {
 	friend class ClientGroupChatRoom;
+	friend class MainDb;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(Core);

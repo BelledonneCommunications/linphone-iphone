@@ -56,6 +56,21 @@ static inline Address getCleanedPeerAddress (const Address &peerAddress) {
 // CorePrivate: ChatRoom.
 // -----------------------------------------------------------------------------
 
+shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bool isRtt) {
+	shared_ptr<ChatRoom> chatRoom;
+
+	if (isRtt)
+		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(cCore, peerAddress);
+	else
+		chatRoom = ObjectFactory::create<BasicChatRoom>(cCore, peerAddress);
+
+	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
+	dChatRoom->setState(ChatRoom::State::Instantiated);
+	dChatRoom->setState(ChatRoom::State::Created);
+
+	return chatRoom;
+}
+
 void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
@@ -169,14 +184,7 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const Address &peerAddress,
 	if (chatRoom)
 		return chatRoom;
 
-	if (isRtt)
-		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(d->cCore, peerAddress);
-	else
-		chatRoom = ObjectFactory::create<BasicChatRoom>(d->cCore, peerAddress);
-
-	chatRoom->getPrivate()->setState(ChatRoom::State::Instantiated);
-	chatRoom->getPrivate()->setState(ChatRoom::State::Created);
-
+	chatRoom = d->createChatRoom(peerAddress, isRtt);
 	d->insertChatRoomWithDb(chatRoom);
 
 	return chatRoom;

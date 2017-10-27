@@ -30,7 +30,7 @@
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "db/session/db-session-provider.h"
 #include "event-log/event-log-p.h"
 #include "event-log/events.h"
@@ -1035,7 +1035,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			tm lastUpdateDate = row.get<tm>(2);
 			int capabilities = row.get<int>(3);
 			string subject = row.get<string>(4);
-			unsigned int lastNotifyId = row.get<unsigned int>(5);
+			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(5, 0));
 
 			// TODO: Use me.
 			(void)creationDate;
@@ -1045,7 +1045,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 
 			shared_ptr<ChatRoom> chatRoom;
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
-				chatRoom = d->core ? d->core->getOrCreateBasicChatRoom(
+				chatRoom = d->core ? d->core->getPrivate()->createChatRoom(
 					Address(sipAddress),
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				) : nullptr;
@@ -1066,7 +1066,11 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 
 	void MainDb::insertChatRoom (const string &peerAddress, int capabilities) {
 		L_D();
-		d->insertChatRoom(d->insertSipAddress(peerAddress), capabilities, Utils::getLongAsTm(0));
+		d->insertChatRoom(
+			d->insertSipAddress(peerAddress),
+			capabilities,
+			Utils::getLongAsTm(static_cast<long>(time(0)))
+		);
 	}
 
 	void MainDb::deleteChatRoom (const string &peerAddress) {
