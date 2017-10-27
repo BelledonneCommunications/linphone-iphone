@@ -105,8 +105,8 @@ namespace Utils {
 		return object;
 	}
 
-	LINPHONE_PUBLIC std::tm getLongAsTm (long time);
-	LINPHONE_PUBLIC long getTmAsLong (const std::tm &time);
+	LINPHONE_PUBLIC std::tm getTimeTAsTm (std::time_t time);
+	LINPHONE_PUBLIC std::time_t getTmAsTimeT (const std::tm &time);
 }
 
 LINPHONE_END_NAMESPACE

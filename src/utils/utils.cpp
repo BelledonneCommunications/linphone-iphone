@@ -173,12 +173,12 @@ char *Utils::utf8ToChar (uint32_t ic) {
 
 // -----------------------------------------------------------------------------
 
-tm Utils::getLongAsTm (long time) {
+tm Utils::getTimeTAsTm (time_t time) {
 	tm result;
-	return *gmtime_r(&static_cast<time_t &>(time), &result);
+	return *gmtime_r(&time, &result);
 }
 
-long Utils::getTmAsLong (const tm &time) {
+long Utils::getTmAsTimeT (const tm &time) {
 	return timegm(&const_cast<tm &>(time));
 }
 
