@@ -1,5 +1,5 @@
 /*
- * server-group-chat-room.cpp
+ * server-group-chat-room-stub.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,20 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <algorithm>
-
-#include "address/address-p.h"
-#include "address/address.h"
-#include "c-wrapper/c-wrapper.h"
-#include "chat/chat-message/chat-message-p.h"
-#include "chat/modifier/cpim-chat-message-modifier.h"
-#include "conference/local-conference-event-handler.h"
-#include "conference/local-conference-p.h"
-#include "conference/participant-p.h"
-#include "conference/session/call-session-p.h"
-#include "content/content-type.h"
-#include "logger/logger.h"
-#include "sal/refer-op.h"
 #include "server-group-chat-room-p.h"
 
 // =============================================================================
@@ -43,17 +29,17 @@ ServerGroupChatRoomPrivate::ServerGroupChatRoomPrivate (LinphoneCore *core) : Ch
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const Address &addr) {
+shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const Address &) {
 	return nullptr;
 }
 
-void ServerGroupChatRoomPrivate::confirmCreation () {
-}
+void ServerGroupChatRoomPrivate::confirmCreation () {}
 
-void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *op) {
-}
+void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
 
-shared_ptr<Participant> ServerGroupChatRoomPrivate::findRemovedParticipant (const shared_ptr<const CallSession> &session) const {
+shared_ptr<Participant> ServerGroupChatRoomPrivate::findRemovedParticipant (
+	const shared_ptr<const CallSession> &
+) const {
 	return nullptr;
 }
 
@@ -61,31 +47,25 @@ string ServerGroupChatRoomPrivate::generateConferenceId () const {
 	return "";
 }
 
-void ServerGroupChatRoomPrivate::removeParticipant (const shared_ptr<const Participant> &participant) {
-}
+void ServerGroupChatRoomPrivate::removeParticipant (const shared_ptr<const Participant> &) {}
 
-void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *event) {
-}
+void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *) {}
 
-void ServerGroupChatRoomPrivate::update (SalCallOp *op) {
-}
+void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::dispatchMessage (const Address &fromAddr, const Content &content) {
-}
+void ServerGroupChatRoomPrivate::dispatchMessage (const Address &, const Content &) {}
 
-void ServerGroupChatRoomPrivate::storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg) {
-}
+void ServerGroupChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &) {}
 
-LinphoneReason ServerGroupChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *salMsg) {
+LinphoneReason ServerGroupChatRoomPrivate::messageReceived (SalOp *, const SalMessage *) {
 	return LinphoneReasonNone;
 }
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::designateAdmin () {
-}
+void ServerGroupChatRoomPrivate::designateAdmin () {}
 
 bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
@@ -94,8 +74,7 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (LinphoneCore *core, SalCallOp *op)
-	: ChatRoom(*new ServerGroupChatRoomPrivate(core)), LocalConference(core, Address(op->get_to()), nullptr) {
-}
+	: ChatRoom(*new ServerGroupChatRoomPrivate(core)), LocalConference(core, Address(op->get_to()), nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
@@ -103,17 +82,15 @@ int ServerGroupChatRoom::getCapabilities () const {
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-}
+void ServerGroupChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {}
 
-void ServerGroupChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-}
+void ServerGroupChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {}
 
 bool ServerGroupChatRoom::canHandleParticipants () const {
-	return FALSE;
+	return false;
 }
 
-shared_ptr<Participant> ServerGroupChatRoom::findParticipant (const Address &addr) const {
+shared_ptr<Participant> ServerGroupChatRoom::findParticipant (const Address &) const {
 	return nullptr;
 }
 
@@ -137,21 +114,20 @@ void ServerGroupChatRoom::join () {}
 
 void ServerGroupChatRoom::leave () {}
 
-void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-}
+void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
 
-void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-}
+void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
 
-void ServerGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
-}
+void ServerGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {}
 
-void ServerGroupChatRoom::setSubject (const std::string &subject) {
-}
+void ServerGroupChatRoom::setSubject (const string &) {}
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoom::onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) {
-}
+void ServerGroupChatRoom::onCallSessionStateChanged (
+	const shared_ptr<const CallSession> &,
+	LinphoneCallState,
+	const string &
+) {}
 
 LINPHONE_END_NAMESPACE
