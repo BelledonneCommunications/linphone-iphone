@@ -1027,9 +1027,11 @@ LINPHONE_PUBLIC void linphone_core_set_user_agent(LinphoneCore *lc, const char *
 LINPHONE_PUBLIC LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
 /**
- * Initiates an outgoing call
+ * @brief Initiates an outgoing call.
+ * 
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ * 
  * @param[in] lc LinphoneCore object
  * @param[in] url The destination of the call (sip address, or phone number).
  * @return A LinphoneCall object or NULL in case of failure
@@ -1159,11 +1161,11 @@ LINPHONE_PUBLIC LinphoneCall *linphone_core_get_current_call(const LinphoneCore 
  *
  * Basically the application is notified of incoming calls within the
  * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
- * a LinphoneCallIncoming event with the associated LinphoneCall object.
+ * a #LinphoneCallIncoming event with the associated #LinphoneCall object.
  * The application can later accept the call using this method.
- * @param[in] lc LinphoneCore object
- * @param[in] call The LinphoneCall object representing the call to be answered
- * @return 0 on success, -1 on failure
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] call The #LinphoneCall object representing the call to be answered.
+ * @return 0 on success, -1 on failure.
  * @ingroup call_control
  * @deprecated Use #linphone_call_accept() instead. Deprecated since 2017-02-13.
 **/
@@ -1174,12 +1176,11 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_call(Lin
  *
  * Basically the application is notified of incoming calls within the
  * call_state_changed callback of the #LinphoneCoreVTable structure, where it will receive
- * a LinphoneCallIncoming event with the associated LinphoneCall object.
- * The application can later accept the call using
- * this method.
- * @param[in] lc LinphoneCore object
- * @param[in] call The LinphoneCall object representing the call to be answered
- * @param[in] params The specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters
+ * a #LinphoneCallIncoming event with the associated #LinphoneCall object.
+ * The application can later accept the call using this method.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] call The #LinphoneCall object representing the call to be answered.
+ * @param[in] params The specific parameters for this call, for example whether video is accepted or not. Use NULL to use default parameters.
  * @return 0 on success, -1 on failure
  * @ingroup call_control
  * @deprecated Use #linphone_call_accept_with_params() instead. Deprecated since 2017-02-13.
@@ -1337,19 +1338,19 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_defer_call_upda
  * @brief Accept call modifications initiated by other end.
  *
  * This call may be performed in response to a #LinphoneCallUpdatedByRemote state notification.
- * When such notification arrives, the application can decide to call linphone_core_defer_update_call() so that it can
- * have the time to prompt the user. linphone_call_get_remote_params() can be used to get information about the call parameters
+ * When such notification arrives, the application can decide to call #linphone_core_defer_call_update() so that it can
+ * have the time to prompt the user. #linphone_call_get_remote_params() can be used to get information about the call parameters
  * requested by the other party, such as whether a video stream is requested.
  *
- * When the user accepts or refuse the change, linphone_core_accept_call_update() can be done to answer to the other party.
+ * When the user accepts or refuse the change, #linphone_core_accept_call_update() can be done to answer to the other party.
  * If params is NULL, then the same call parameters established before the update request will continue to be used (no change).
  * If params is not NULL, then the update will be accepted according to the parameters passed.
  * Typical example is when a user accepts to start video, then params should indicate that video stream should be used
- * (see linphone_call_params_enable_video()).
- * @param[in] lc LinphoneCore object
+ * (see #linphone_call_params_enable_video()).
+ * @param[in] lc #LinphoneCore object
  * @param[in] call The call for which to accept an update
- * @param[in] params A LinphoneCallParams object describing the call parameters to accept
- * @return 0 if successful, -1 otherwise (actually when this function call is performed outside ot #LinphoneCallUpdatedByRemote state)
+ * @param[in] params A #LinphoneCallParams object describing the call parameters to accept
+ * @return 0 if successful, -1 otherwise (actually when this function call is performed outside of #LinphoneCallUpdatedByRemote state)
  * @ingroup call_control
  * @deprecated Use #linphone_call_accept_update() instead. Deprecated since 2017-02-13.
 **/

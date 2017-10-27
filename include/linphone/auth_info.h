@@ -56,6 +56,7 @@ LINPHONE_PUBLIC LinphoneAuthInfo *linphone_auth_info_new(const char *username, c
 
 /**
  * Instantiates a new auth info with values from source.
+ * 
  * @param[in] source The #LinphoneAuthInfo object to be cloned
  * @return The newly created #LinphoneAuthInfo object.
  */

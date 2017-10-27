@@ -207,9 +207,6 @@ typedef enum _LinphoneAudioRoute {
 /**
  * Object holding authentication information.
  *
- * @note The object's fields should not be accessed directly. Prefer using
- * the accessor methods.
- *
  * In most case, authentication information consists of a username and password.
  * Sometimes, a userid is required by proxy, and realm can be useful to discriminate
  * different SIP domains.
@@ -225,6 +222,9 @@ typedef enum _LinphoneAudioRoute {
  * The application can respond to this information request later using
  * linphone_core_add_auth_info(). This will unblock all pending authentication
  * transactions and retry them with authentication headers.
+ * 
+ * @note The object's fields should not be accessed directly. Prefer using
+ * the accessor methods.
  *
  * @ingroup authentication
 **/
@@ -516,7 +516,7 @@ typedef struct _LinphoneEvent LinphoneEvent;
 
 /**
  * #LinphoneFactory is a singleton object devoted to the creation of all the object
- * of Liblinphone that cannot created by #LinphoneCore or #LinphoneCore itself.
+ * of Liblinphone that cannot be created by #LinphoneCore itself.
  * @ingroup initializing
  */
 typedef struct _LinphoneFactory LinphoneFactory;
@@ -1118,6 +1118,10 @@ typedef enum _LinphoneTransportType {
  */
 typedef struct _LinphoneTunnel LinphoneTunnel;
 
+/**
+ * @brief Class to store tunnel settings.
+ * @ingroup tunnel
+ */
 typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
 
 /**
