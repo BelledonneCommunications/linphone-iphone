@@ -41,7 +41,7 @@
 #include "chat/chat-room/real-time-text-chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
 #include "content/content-type.h"
-#include "core/core.h"
+#include "core/core-p.h"
 
 using namespace std;
 
@@ -82,14 +82,13 @@ LinphoneChatRoom *linphone_core_create_client_group_chat_room (LinphoneCore *lc,
 LinphoneChatRoom *_linphone_core_join_client_group_chat_room (LinphoneCore *lc, const LinphonePrivate::Address &addr) {
 	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
-	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 	return cr;
 }
 
 LinphoneChatRoom *_linphone_core_create_server_group_chat_room (LinphoneCore *lc, LinphonePrivate::SalCallOp *op) {
 	LinphoneChatRoom *cr = _linphone_server_group_chat_room_new(lc, op);
-	_linphone_core_add_group_chat_room(lc, L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress(), cr);
-	lc->chatrooms = bctbx_list_append(lc->chatrooms, cr);
+	L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 	return cr;
 }
 
