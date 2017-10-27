@@ -1002,15 +1002,17 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		soci::transaction tr(*session);
 
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress));
-		for (const auto &row : rows)
-			events.push_back(d->selectGenericConferenceEvent(
+		for (const auto &row : rows) {
+			shared_ptr<EventLog> log = d->selectGenericConferenceEvent(
 				// See: http://soci.sourceforge.net/doc/master/backends/
 				// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
 				getBackend() == Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0),
 				static_cast<EventLog::Type>(row.get<int>(1)),
 				Utils::getTmAsTimeT(row.get<tm>(2)),
 				peerAddress
-			));
+			);
+			if (log) events.push_back(log);
+		}
 
 		L_END_LOG_EXCEPTION
 
