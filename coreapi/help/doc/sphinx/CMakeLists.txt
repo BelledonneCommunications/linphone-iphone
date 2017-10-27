@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if (ENABLE_DOC AND ENABLE_SPHINX_DOC)
+if (ENABLE_SPHINX_DOC)
 	set(GENERATED_LANGUAGES c cpp csharp)
 	set(DOCUMENTATION_DIRS )
 	set(GENERATED_SPHINX_SOURCES )
