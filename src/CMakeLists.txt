@@ -178,6 +178,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content-manager.cpp
 	content/content-type.cpp
 	content/content.cpp
+	core/core-chat-room.cpp
 	core/core.cpp
 	core/paths/paths.cpp
 	core/platform-helpers/platform-helpers.cpp
