@@ -128,7 +128,7 @@ static void call_received(SalCallOp *h) {
 		linphone_address_unref(fromAddr);
 		LinphonePrivate::Address addr(h->get_to());
 		if (addr.isValid()) {
-			LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+			LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(addr));
 			if (cr) {
 				L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmJoining(h);
 				return;
@@ -751,7 +751,9 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
-					LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, op->get_to());
+					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
+						lc->cppCore->findChatRoom(Address(op->get_to()))
+					);
 					if (cr) {
 						Address fromAddr(op->get_from());
 						std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
@@ -767,7 +769,9 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					}
 				} else {
 					// The server asks a participant to leave a chat room
-					LinphoneChatRoom *cr = _linphone_core_find_group_chat_room(lc, addr.asStringUriOnly().c_str());
+					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
+						lc->cppCore->findChatRoom(addr)
+					);
 					if (cr) {
 						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
 						static_cast<SalReferOp *>(op)->reply(SalReasonNone);

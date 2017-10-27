@@ -45,14 +45,14 @@
 	F(ChatRoom, BasicChatRoom) \
 	F(ChatRoom, ClientGroupChatRoom) \
 	F(ChatRoom, RealTimeTextChatRoom) \
+	F(ChatRoom, ServerGroupChatRoom) \
 	F(EventLog, ConferenceCallEvent) \
 	F(EventLog, ConferenceChatMessageEvent) \
 	F(EventLog, ConferenceEvent) \
 	F(EventLog, ConferenceNotifiedEvent) \
 	F(EventLog, ConferenceParticipantDeviceEvent) \
 	F(EventLog, ConferenceParticipantEvent) \
-	F(EventLog, ConferenceSubjectEvent) \
-	F(ChatRoom, ServerGroupChatRoom)
+	F(EventLog, ConferenceSubjectEvent)
 
 // =============================================================================
 // Register belle-sip ID.

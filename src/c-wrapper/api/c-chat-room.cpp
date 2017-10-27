@@ -31,7 +31,7 @@
 #include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
 #include "core/core-p.h"
-#include "content/content.h"
+#include "event-log/event-log.h"
 
 // =============================================================================
 
