@@ -40,6 +40,10 @@ BasicChatRoom::BasicChatRoom (LinphoneCore *core, const Address &peerAddress) :
 
 // -----------------------------------------------------------------------------
 
+void BasicChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
+
+}
+
 int BasicChatRoom::getCapabilities () const {
 	return static_cast<int>(Capabilities::Basic);
 }

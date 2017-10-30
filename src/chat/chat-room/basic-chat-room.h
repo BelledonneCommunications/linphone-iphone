@@ -35,6 +35,7 @@ public:
 
 	CapabilitiesMask getCapabilities () const override;
 
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 	/* ConferenceInterface. */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;

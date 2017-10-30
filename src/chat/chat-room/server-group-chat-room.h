@@ -59,6 +59,7 @@ public:
 	void setSubject (const std::string &subject) override;
 
 private:
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 	/* CallSessionListener */
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 

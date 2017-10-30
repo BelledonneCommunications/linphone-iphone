@@ -245,6 +245,10 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 
 // -----------------------------------------------------------------------------
 
+void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
+	
+}
+
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);

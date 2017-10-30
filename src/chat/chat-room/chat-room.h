@@ -69,6 +69,7 @@ public:
 	State getState () const;
 
 protected:
+	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) = 0;
 	explicit ChatRoom (ChatRoomPrivate &p);
 
 private:

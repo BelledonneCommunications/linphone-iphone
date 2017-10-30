@@ -53,6 +53,9 @@ public:
 	void setSubject (const std::string &subject) override;
 
 private:
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
+
+private:
 	/* ConferenceListener */
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;

@@ -90,6 +90,20 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb);
 
 /**
+ * Get the chat message received callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current chat message received callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsChatMessageReceivedCb linphone_chat_room_cbs_get_chat_message_received (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the chat message received callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The chat message received callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_chat_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsChatMessageReceivedCb cb);
+
+/**
  * Get the participant added callback.
  * @param[in] cbs LinphoneChatRoomCbs object.
  * @return The current participant added callback.

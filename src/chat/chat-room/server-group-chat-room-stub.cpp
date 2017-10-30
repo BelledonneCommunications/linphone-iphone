@@ -82,6 +82,8 @@ int ServerGroupChatRoom::getCapabilities () const {
 
 // -----------------------------------------------------------------------------
 
+void ServerGroupChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
+
 void ServerGroupChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {}
 
 void ServerGroupChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {}

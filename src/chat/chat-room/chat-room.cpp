@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "c-wrapper/c-wrapper.h"
+#include "event-log/conference/conference-chat-message-event.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/notification/imdn.h"
@@ -435,8 +436,21 @@ end:
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
+	L_Q();
+
 	if ((msg->getPrivate()->getContentType() != ContentType::Imdn) && (msg->getPrivate()->getContentType() != ContentType::ImIsComposing)) {
+		q->onChatMessageReceived(msg);
+
+		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+		LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
+		shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(msg->getTime(), msg);
+		if (cb) {
+			cb(cr, L_GET_C_BACK_PTR(event));
+		}
+		// Legacy
 		notifyChatMessageReceived(msg);
+
 		remoteIsComposing.erase(msg->getFromAddress().asStringUriOnly());
 		isComposingHandler.stopRemoteRefreshTimer(msg->getFromAddress().asStringUriOnly());
 		notifyIsComposingReceived(msg->getFromAddress(), false);

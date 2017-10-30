@@ -135,6 +135,8 @@ LinphoneCall *RealTimeTextChatRoom::getCall () const {
 
 // -----------------------------------------------------------------------------
 
+void RealTimeTextChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
+
 void RealTimeTextChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
 	lError() << "addParticipant() is not allowed on a RealTimeTextChatRoom";
 }

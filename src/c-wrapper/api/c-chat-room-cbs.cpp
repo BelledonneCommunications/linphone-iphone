@@ -36,6 +36,7 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsSubjectChangedCb subjectChangedCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
+	LinphoneChatRoomCbsChatMessageReceivedCb chatMessageReceivedCb;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatRoomCbs);
@@ -86,6 +87,14 @@ LinphoneChatRoomCbsMessageReceivedCb linphone_chat_room_cbs_get_message_received
 
 void linphone_chat_room_cbs_set_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsMessageReceivedCb cb) {
 	cbs->messageReceivedCb = cb;
+}
+
+LinphoneChatRoomCbsChatMessageReceivedCb linphone_chat_room_cbs_get_chat_message_received (const LinphoneChatRoomCbs *cbs) {
+	return cbs->chatMessageReceivedCb;
+}
+
+void linphone_chat_room_cbs_set_chat_message_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsChatMessageReceivedCb cb) {
+	cbs->chatMessageReceivedCb = cb;
 }
 
 LinphoneChatRoomCbsParticipantAddedCb linphone_chat_room_cbs_get_participant_added (const LinphoneChatRoomCbs *cbs) {
