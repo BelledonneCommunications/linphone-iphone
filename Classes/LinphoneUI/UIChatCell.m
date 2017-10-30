@@ -64,8 +64,8 @@
 		return;
 	}
 
-	if(linphone_chat_room_get_nb_participants(chatRoom) > 1) {
-		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(chatRoom)];
+	if(linphone_chat_room_can_handle_participants(chatRoom)) {
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(chatRoom) ? linphone_chat_room_get_subject(chatRoom) : "No subject"];
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	} else {
 		const LinphoneAddress *addr = linphone_chat_room_get_peer_address(chatRoom);

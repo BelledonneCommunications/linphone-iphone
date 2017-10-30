@@ -129,9 +129,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = self.chatRoom;
-	_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+	if (linphone_chat_room_get_subject(_chatRoom))
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 
-	if (linphone_chat_room_get_nb_participants(_chatRoom) == 1) {
+	if (!linphone_chat_room_can_handle_participants(_chatRoom)) {
 		_particpantsLabel.hidden = TRUE;
 	} else {
 		_particpantsLabel.hidden = FALSE;
@@ -142,7 +143,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 			if (![_particpantsLabel.text isEqualToString:@""])
 				_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:@", "];
 
-			_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))]];
+			_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))
+																					  ? linphone_address_get_display_name(linphone_participant_get_address(participant))
+																				      : linphone_address_get_username(linphone_participant_get_address(participant))]];
 			participants = participants->next;
 		}
 	}
@@ -356,7 +359,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	_infoButton.hidden = (linphone_chat_room_get_nb_participants(_chatRoom) == 1) || !_backToCallButton.hidden;
+	_infoButton.hidden = !linphone_chat_room_can_handle_participants(_chatRoom) || !_backToCallButton.hidden;
 	_callButton.hidden = !_backToCallButton.hidden && !_infoButton.hidden;
 }
 
@@ -523,7 +526,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 	while (participants) {
 		LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
-		NSString *name = [NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))];
+		NSString *name = [NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))
+						  ? linphone_address_get_display_name(linphone_participant_get_address(participant))
+					      : linphone_address_get_username(linphone_participant_get_address(participant))];
 		NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_get_address(participant))];
 		[contactsDict setObject:name forKey:uri];
 

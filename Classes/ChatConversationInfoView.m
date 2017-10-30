@@ -73,6 +73,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	bctbx_list_t *addresses = NULL;
 	for(NSString *addr in _contacts.allKeys) {
 		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
+		if (!linphoneAddress)
+			continue;
+
 		if (!addresses) {
 			addresses = bctbx_list_new((void *)linphoneAddress);
 			continue;
@@ -104,6 +107,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.tableController.contactsDict = _contacts;
 		view.tableController.contactsGroup = [[_contacts allKeys] mutableCopy];
 		view.tableController.notFirstTime = TRUE;
+		[PhoneMainView.instance popToView:view.compositeViewDescription];
+	} else {
+		ChatConversationView *view = VIEW(ChatConversationView);
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	}
 }
