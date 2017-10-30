@@ -114,7 +114,7 @@ shared_ptr<ChatRoom> Core::findChatRoom (const Address &peerAddress) const {
 
 	// TODO: Remove me, temp workaround.
 	cleanedAddress.setDomain(Address(linphone_core_get_conference_factory_uri(d->cCore)).getDomain());
-	lWarning() << "We don't found the chat room with address " << peerAddress.asString() <<
+	lWarning() << "We don't find the chat room with address " << peerAddress.asString() <<
 		" as a temporary workaround, searching with " << cleanedAddress.asString();
 
 	it = d->chatRoomsByUri.find(cleanedAddress.asStringUriOnly());
