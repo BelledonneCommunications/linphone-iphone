@@ -1201,11 +1201,11 @@ void ChatMessagePrivate::send() {
 	}
 
 	//TODO Remove : This won't be necessary once we store the contentsList
-	if (!getText().empty() && getText() == clearTextMessage) {
+	if (!getText().empty() && getText() != clearTextMessage) {
 		/* We replace the encrypted message by the original one so it can be correctly stored and displayed by the application */
 		setText(clearTextMessage);
 	}
-	if (getContentType().isValid() && (getContentType() == clearTextContentType)) {
+	if (getContentType().isValid() && (getContentType() != clearTextContentType)) {
 		/* We replace the encrypted content type by the original one */
 		setContentType(clearTextContentType);
 	}
