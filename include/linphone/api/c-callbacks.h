@@ -164,6 +164,13 @@ typedef void (*LinphoneChatRoomCbsMessageReceivedCb) (LinphoneChatRoom *cr, Linp
 typedef void (*LinphoneChatRoomCbsChatMessageReceivedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
+ * Callback used to notify a chat room that a chat message is being sent.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] event_log The #LinphoneChatMessage event log that is being sent
+ */
+typedef void (*LinphoneChatRoomCbsChatMessageSentCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
+
+/**
  * Callback used to notify a chat room that a participant has been added.
  * @param[in] cr #LinphoneChatRoom object
  * @param[in] participant The #LinphoneParticipant that has been added to the chat room

@@ -347,6 +347,8 @@ void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) 
 }
 
 void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
+	L_Q();
+	
 	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 
 	/* Add to transient list */
@@ -354,6 +356,14 @@ void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 
 	msg->getPrivate()->setTime(ms_time(0));
 	msg->getPrivate()->send();
+
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_sent(cbs);
+	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(msg->getTime(), msg);
+	if (cb) {
+		cb(cr, L_GET_C_BACK_PTR(event));
+	}
 
 	storeOrUpdateMessage(msg);
 
