@@ -79,8 +79,28 @@ void CorePrivate::deleteChatRoom (const string &peerAddress) {
 		auto it = find_if(chatRooms.begin(), chatRooms.end(), [&peerAddress](const shared_ptr<const ChatRoom> &chatRoom) {
 			return peerAddress == chatRoom->getPeerAddress().asStringUriOnly();
 		});
-		if (it == chatRooms.end()) return;
-		chatRooms.erase(it);
+		if (it != chatRooms.end()) {
+			chatRooms.erase(it);
+			return;
+		}
+
+		// TODO: Remove me, temp workaround.
+		string workaroundAddress;
+		{
+			Address address(peerAddress);
+			address.setDomain(Address(linphone_core_get_conference_factory_uri(cCore)).getDomain());
+			workaroundAddress = address.asStringUriOnly();
+		}
+
+		lWarning() << "We don't find the chat room with address " << peerAddress <<
+		" as a temporary workaround, searching with " << workaroundAddress;
+		it = find_if(chatRooms.begin(), chatRooms.end(), [&workaroundAddress](const shared_ptr<const ChatRoom> &chatRoom) {
+			return workaroundAddress == chatRoom->getPeerAddress().asStringUriOnly();
+		});
+		if (it != chatRooms.end())
+			chatRooms.erase(it);
+		else
+			lError() << "Unable to remove chat room: " << peerAddress;
 	}
 }
 
