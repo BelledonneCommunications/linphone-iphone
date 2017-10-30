@@ -43,7 +43,6 @@ public:
 
 	typedef int CapabilitiesMask;
 
-	ChatRoom (LinphoneCore *core);
 	virtual ~ChatRoom () = default;
 
 	virtual CapabilitiesMask getCapabilities () const = 0;

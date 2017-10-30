@@ -537,8 +537,6 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 
 // =============================================================================
 
-ChatRoom::ChatRoom (LinphoneCore *core) : Object(*new ChatRoomPrivate(core)) {}
-
 ChatRoom::ChatRoom (ChatRoomPrivate &p) : Object(p) {}
 
 // -----------------------------------------------------------------------------
