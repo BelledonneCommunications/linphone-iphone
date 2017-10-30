@@ -128,6 +128,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		if (session->got_data())
 			return id;
 
+		lInfo() << "Insert new sip address in database: `" << sipAddress << "`.";
 		*session << "INSERT INTO sip_address (value) VALUES (:sipAddress)", soci::use(sipAddress);
 		return q->getLastInsertId();
 	}
@@ -158,6 +159,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		if (session->got_data())
 			return id;
 
+		lInfo() << "Insert new content type in database: `" << contentType << "`.";
 		*session << "INSERT INTO content_type (value) VALUES (:contentType)", soci::use(contentType);
 		return q->getLastInsertId();
 	}
@@ -168,10 +170,12 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		long long id;
 		*session << "SELECT peer_sip_address_id FROM chat_room WHERE peer_sip_address_id = :sipAddressId",
 			soci::use(sipAddressId), soci::into(id);
-		if (!session->got_data())
+		if (!session->got_data()) {
+			lInfo() << "Insert new chat room in database: `" << sipAddressId << "` (capabilities=" << capabilities << ").";
 			*session << "INSERT INTO chat_room (peer_sip_address_id, creation_date, last_update_date, capabilities, subject) VALUES"
 				"  (:sipAddressId, :creationDate, :lastUpdateDate, :capabilities, '')",
 				soci::use(sipAddressId), soci::use(date), soci::use(date), soci::use(capabilities);
+		}
 		else
 			*session << "UPDATE chat_room SET last_update_date = :lastUpdateDate WHERE peer_sip_address_id = :sipAddressId",
 				soci::use(date), soci::use(sipAddressId);
@@ -187,10 +191,12 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 				soci::use(static_cast<int>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
-		if (statement.get_affected_rows() == 0)
+		if (statement.get_affected_rows() == 0) {
+			lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
 			*session << "INSERT INTO chat_room_participant (chat_room_id, sip_address_id, is_admin)"
 				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
 				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
+		}
 	}
 
 	void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long sipAddressId, int state) {
