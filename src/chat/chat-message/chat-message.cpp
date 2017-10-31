@@ -1170,7 +1170,7 @@ void ChatMessagePrivate::send() {
 		if ((currentSendStep & ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
 			lInfo() << "Cpim step already done, skipping";
 		} else {
-			if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 0) == 1) {
+			if (lp_config_get_int(chatRoom->getCore()->config, "sip", "use_cpim", 1) == 1) {
 				CpimChatMessageModifier ccmm;
 				ccmm.encode(q->getSharedFromThis(), errorCode);
 			}
