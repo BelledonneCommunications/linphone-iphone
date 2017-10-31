@@ -33,11 +33,11 @@ public:
 	std::unique_ptr<MainDb> mainDb;
 	LinphoneCore *cCore = nullptr;
 
+	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
 	std::shared_ptr<ChatRoom> createChatRoom (const Address &peerAddress, bool isRtt);
 
 private:
-	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void deleteChatRoom (const std::string &peerAddress);
 	void deleteChatRoomWithDb (const std::string &peerAddress);
 
