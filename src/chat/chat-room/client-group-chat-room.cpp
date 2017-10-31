@@ -254,6 +254,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
 	d->peerAddress = addr;
+	d->core->cppCore->getPrivate()->insertChatRoom(getSharedFromThis());
 	d->setState(ChatRoom::State::Created);
 	d->core->cppCore->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }

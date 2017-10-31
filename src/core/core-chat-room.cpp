@@ -66,6 +66,7 @@ shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bo
 		chatRoom = ObjectFactory::create<BasicChatRoom>(cCore, peerAddress);
 
 	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
+	insertChatRoom(chatRoom);
 	dChatRoom->setState(ChatRoom::State::Instantiated);
 	dChatRoom->setState(ChatRoom::State::Created);
 
@@ -74,7 +75,6 @@ shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bo
 
 void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
-	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 
 	Address cleanedPeerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress());
 
@@ -104,7 +104,7 @@ void CorePrivate::deleteChatRoom (const string &peerAddress) {
 }
 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
-	insertChatRoom(chatRoom);
+	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 
 	ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
 	mainDb->insertChatRoom(
