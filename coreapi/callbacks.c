@@ -799,9 +799,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			} else {
 				LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
-				L_GET_PRIVATE(lc->cppCore)->insertChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+				/* The following causes a crash because chat room hasn't yet a peer address.
+				The above call to join() will create a CallSession which will call onConferenceCreated when it'll reach the Connected state.
+				onConferenceCreated will then call the following commented lines, no need for them here. */
+				/*L_GET_PRIVATE(lc->cppCore)->insertChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 				L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Created);
-				L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+				L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));*/
 				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 				return;
 			}
