@@ -202,7 +202,7 @@ void linphone_logging_service_set_log_level_mask(LinphoneLoggingService *log_ser
 }
 
 unsigned int linphone_logging_service_get_log_level_mask(const LinphoneLoggingService *log_service) {
-	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(ORTP_LOG_DOMAIN));
+	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(BCTBX_LOG_DOMAIN));
 }
 
 void linphone_logging_service_set_log_file(const LinphoneLoggingService *service, const char *dir, const char *filename, size_t max_size) {
