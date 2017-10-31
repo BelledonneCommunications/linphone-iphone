@@ -101,16 +101,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:UIKeyboardWillHideNotification
 											 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(textReceivedEvent:)
-											   name:kLinphoneMessageReceived
-											 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(onMessageChange:)
 											   name:UITextViewTextDidChangeNotification
-											 object:nil];
-	[NSNotificationCenter.defaultCenter addObserver:self
-										   selector:@selector(textComposeEvent:)
-											   name:kLinphoneTextComposeEvent
 											 object:nil];
 	[NSNotificationCenter.defaultCenter addObserver:self
 										   selector:@selector(callUpdateEvent:)
@@ -123,6 +115,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_room_cbs_set_participant_added(cbs, on_chat_room_participant_added);
 	linphone_chat_room_cbs_set_participant_removed(cbs, on_chat_room_participant_removed);
 	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, on_chat_room_participant_admin_status_changed);
+	linphone_chat_room_cbs_set_chat_message_received(cbs, on_chat_room_chat_message_received);
+	linphone_chat_room_cbs_set_chat_message_sent(cbs, on_chat_room_chat_message_sent);
+	linphone_chat_room_cbs_set_is_composing_received(cbs, on_chat_room_is_composing_received);
 	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
 
 	[self updateSuperposedButtons];
@@ -153,6 +148,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_room_cbs_set_participant_removed(cbs, NULL);
 	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, NULL);
 	linphone_chat_room_cbs_set_user_data(cbs, NULL);
+	linphone_chat_room_cbs_set_chat_message_received(cbs, NULL);
+	linphone_chat_room_cbs_set_chat_message_sent(cbs, NULL);
+	linphone_chat_room_cbs_set_is_composing_received(cbs, NULL);
 
 	[_messageField resignFirstResponder];
 
@@ -264,10 +262,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// we must ref & unref message because in case of error, it will be destroy otherwise
 	linphone_chat_room_send_chat_message(_chatRoom, linphone_chat_message_ref(msg));
-	[_tableController addChatEntry:msg];
 	linphone_chat_message_unref(msg);
-
-	[_tableController scrollToBottom:true];
 
 	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(_chatRoom)) {
 		[LinphoneManager.instance alertLIME:_chatRoom];
@@ -380,44 +375,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 																												   : linphone_address_get_username(linphone_participant_get_address(participant))]];
 			participants = participants->next;
 		}
-	}
-}
-
-#pragma mark - Event Functions
-
-- (void)textReceivedEvent:(NSNotification *)notif {
-	LinphoneAddress *from = [[[notif userInfo] objectForKey:@"from_address"] pointerValue];
-	LinphoneChatRoom *room = [[notif.userInfo objectForKey:@"room"] pointerValue];
-	LinphoneChatMessage *chat = [[notif.userInfo objectForKey:@"message"] pointerValue];
-
-	if (from == NULL || chat == NULL) {
-		return;
-	}
-
-	char *fromStr = linphone_address_as_string_uri_only(from);
-	const LinphoneAddress *cr_from = linphone_chat_room_get_peer_address(_chatRoom);
-	char *cr_from_string = linphone_address_as_string_uri_only(cr_from);
-
-	if (fromStr && cr_from_string) {
-		if (strcasecmp(cr_from_string, fromStr) == 0) {
-			if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-				linphone_chat_room_mark_as_read(room);
-			}
-			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
-			[_tableController addChatEntry:chat];
-			[self setComposingVisible:FALSE withDelay:0];
-			[_tableController scrollToLastUnread:TRUE];
-		}
-	}
-	ms_free(fromStr);
-	ms_free(cr_from_string);
-}
-
-- (void)textComposeEvent:(NSNotification *)notif {
-	LinphoneChatRoom *room = [[[notif userInfo] objectForKey:@"room"] pointerValue];
-	if (room && room == _chatRoom) {
-		BOOL composing = linphone_chat_room_is_remote_composing(room);
-		[self setComposingVisible:composing withDelay:0.3];
 	}
 }
 
@@ -749,6 +706,48 @@ void on_chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventL
 void on_chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	if (view) {};
+}
+
+void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+
+	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
+	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
+
+	if (from == NULL || chat == NULL) {
+		return;
+	}
+
+	char *fromStr = linphone_address_as_string_uri_only(from);
+	const LinphoneAddress *cr_from = linphone_chat_room_get_peer_address(view.chatRoom);
+	char *cr_from_string = linphone_address_as_string_uri_only(cr_from);
+
+	if (fromStr && cr_from_string) {
+		if (strcasecmp(cr_from_string, fromStr) == 0) {
+			if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+				linphone_chat_room_mark_as_read(view.chatRoom);
+			}
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+			[view.tableController addChatEntry:chat];
+			[view setComposingVisible:FALSE withDelay:0];
+			[view.tableController scrollToLastUnread:TRUE];
+		}
+	}
+	ms_free(fromStr);
+	ms_free(cr_from_string);
+}
+
+void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
+	[view.tableController addChatEntry:chat];
+	[view.tableController scrollToBottom:true];
+}
+
+void on_chat_room_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	BOOL composing = linphone_chat_room_is_remote_composing(view.chatRoom);
+	[view setComposingVisible:composing withDelay:0.3];
 }
 
 @end
