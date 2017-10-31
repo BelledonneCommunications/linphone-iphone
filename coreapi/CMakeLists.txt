@@ -153,6 +153,7 @@ bc_git_version(liblinphone ${PROJECT_VERSION})
 add_definitions(
 	-DUSE_BELLESIP
 	-DLIBLINPHONE_EXPORTS
+	-DBCTBX_LOG_DOMAIN="liblinphone"
 )
 
 set(LIBS

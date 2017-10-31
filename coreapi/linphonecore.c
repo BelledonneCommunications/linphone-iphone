@@ -481,14 +481,17 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 	linphone_logging_service_set_log_level(log_service, _bctbx_log_level_to_linphone_log_level(loglevel));
 }
 
+
 void linphone_core_set_log_level_mask(unsigned int mask) {
 	LinphoneLoggingService *log_service = linphone_logging_service_get();
 	linphone_logging_service_set_log_level_mask(log_service, _bctbx_log_mask_to_linphone_log_mask(mask));
 }
+
 unsigned int linphone_core_get_log_level_mask(void) {
 	LinphoneLoggingService *log_service = linphone_logging_service_get();
 	return linphone_logging_service_get_log_level_mask(log_service);
 }
+
 static int _open_log_collection_file_with_idx(int idx) {
 	struct stat statbuf;
 	char *log_filename;
@@ -591,8 +594,8 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 	}
 	if (liblinphone_log_collection_file) {
 		ortp_mutex_lock(&liblinphone_log_collection_mutex);
-		ret = fprintf(liblinphone_log_collection_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s %s\n",
-			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
+		ret = fprintf(liblinphone_log_collection_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i [%s] %s %s\n",
+			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), domain, lname, msg);
 		fflush(liblinphone_log_collection_file);
 		if (ret > 0) {
 			liblinphone_log_collection_file_size += ret;

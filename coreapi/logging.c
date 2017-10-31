@@ -69,7 +69,7 @@ LinphoneLogLevel _bctbx_log_level_to_linphone_log_level(BctbxLogLevel level) {
 	if (response != tmap.cend()) {
 		return response->first;
 	} else {
-		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
+		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
 		return LinphoneLogLevelDebug;
 	}
 }
@@ -175,9 +175,12 @@ LinphoneLoggingServiceCbs *linphone_logging_service_get_callbacks(const Linphone
 }
 
 static const char *_linphone_logging_service_log_domains[] = {
-	ORTP_LOG_DOMAIN,
+	"bctbx",
+	"ortp",
 	"bzrtp",
+	"mediastreamer",
 	BELLE_SIP_LOG_DOMAIN,
+	BCTBX_LOG_DOMAIN,
 	NULL
 };
 
@@ -196,7 +199,7 @@ void linphone_logging_service_set_log_level_mask(LinphoneLoggingService *log_ser
 }
 
 unsigned int linphone_logging_service_get_log_level_mask(const LinphoneLoggingService *log_service) {
-	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(ORTP_LOG_DOMAIN));
+	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(BCTBX_LOG_DOMAIN));
 }
 
 void linphone_logging_service_set_log_file(const LinphoneLoggingService *service, const char *dir, const char *filename, size_t max_size) {
