@@ -61,7 +61,7 @@ class ChildrenList(list):
 		return children
 
 
-class TreeNode:
+class TreeNode(object):
 	def __init__(self):
 		self.parent = None
 	
@@ -441,7 +441,7 @@ class Translator:
 		for para in paragraphs:
 			if para is not paragraphs[0]:
 				lines.append('')
-			lines += para.split(sep='\n')
+			lines += para.split('\n')
 		return lines
 	
 	def _crop_text(self, inputLines, width):
