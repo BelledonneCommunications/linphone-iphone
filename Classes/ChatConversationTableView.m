@@ -21,6 +21,7 @@
 #import "ChatConversationTableView.h"
 #import "UIChatBubbleTextCell.h"
 #import "UIChatBubblePhotoCell.h"
+#import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
 
 @implementation ChatConversationTableView
@@ -165,25 +166,35 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = nil;
-	LinphoneChatMessage *chat = bctbx_list_nth_data(messageList, (int)[indexPath row]);
-	if (linphone_chat_message_get_file_transfer_information(chat) ||
-		linphone_chat_message_get_external_body_url(chat)) {
-		kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
-	} else {
-		kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-	}
-	UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-	if (cell == nil) {
-		cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-	}
-	[cell setChatMessage:chat];
-	if (chat) {
-		[cell update];
-	}
-	[cell setChatRoomDelegate:_chatRoomDelegate];
-	[super accessoryForCell:cell atPath:indexPath];
-	cell.selectionStyle = UITableViewCellSelectionStyleNone;
-	return cell;
+	//LinphoneEventLog *event = bctbx_list_nth_data(messageList, (int)[indexPath row]);
+	//if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
+		LinphoneChatMessage *chat = bctbx_list_nth_data(messageList, (int)[indexPath row]); //linphone_event_log_get_chat_message(event);
+		if (linphone_chat_message_get_file_transfer_information(chat) ||
+			linphone_chat_message_get_external_body_url(chat)) {
+			kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
+		} else {
+			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
+		}
+		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+		if (cell == nil) {
+			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
+		}
+		[cell setChatMessage:chat];
+		if (chat) {
+			[cell update];
+		}
+		[cell setChatRoomDelegate:_chatRoomDelegate];
+		[super accessoryForCell:cell atPath:indexPath];
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		return cell;
+	/*} else {
+		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);
+		UIChatNotifiedEventCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
+		[cell setEvent:event];
+		[super accessoryForCell:cell atPath:indexPath];
+		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+		return cell;
+	}*/
 }
 
 #pragma mark - UITableViewDelegate Functions

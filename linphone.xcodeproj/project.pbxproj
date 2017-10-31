@@ -683,6 +683,8 @@
 		8C5BCEDF1EB385B100A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
 		8C5BCEE01EB385B100A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C73477C1D9BA3A00022EE8C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
+		8C92ABE81FA773190006FB5D /* UIChatNotifiedEventCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */; };
+		8C92ABF31FA773E50006FB5D /* UIChatNotifiedEventCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */; };
 		8C9C5E0D1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */; };
 		8C9C5E111F83BD97006987FA /* UIChatCreateCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */; };
 		8C9C5E121F83BD97006987FA /* UIChatCreateCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */; };
@@ -1702,6 +1704,9 @@
 		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatNotifiedEventCell.xib; sourceTree = "<group>"; };
+		8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatNotifiedEventCell.h; sourceTree = "<group>"; };
+		8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatNotifiedEventCell.m; sourceTree = "<group>"; };
 		8C9C5E0B1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationCreateCollectionViewController.h; sourceTree = "<group>"; };
 		8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationCreateCollectionViewController.m; sourceTree = "<group>"; };
 		8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatCreateCollectionViewCell.h; sourceTree = "<group>"; };
@@ -2192,6 +2197,9 @@
 				D3A8BB6E15A6C7D500F96BE5 /* UIChatBubbleTextCell.h */,
 				D3A8BB6F15A6C7D500F96BE5 /* UIChatBubbleTextCell.m */,
 				639E9CA51C0DB7EA00019A75 /* UIChatBubbleTextCell.xib */,
+				8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */,
+				8C92ABF21FA773E50006FB5D /* UIChatNotifiedEventCell.m */,
+				8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */,
 				D3EA540F159853750037DC6B /* UIChatCell.h */,
 				D3EA5410159853750037DC6B /* UIChatCell.m */,
 				639CEB0B1A1DF4FA004DE38F /* UIChatCell.xib */,
@@ -3419,6 +3427,7 @@
 				D38187F815FE355D00C3EDCA /* TabBarView.xib in Resources */,
 				633FEE2F1D3CD5590014B822 /* color_G.png in Resources */,
 				633FEECE1D3CD55A0014B822 /* numpad_6_over@2x.png in Resources */,
+				8C92ABE81FA773190006FB5D /* UIChatNotifiedEventCell.xib in Resources */,
 				633FEDAB1D3CD5590014B822 /* backspace_disabled@2x.png in Resources */,
 				633FEDD91D3CD5590014B822 /* call_start_body_default~ipad@2x.png in Resources */,
 				633FEE401D3CD5590014B822 /* contacts_all_selected.png in Resources */,
@@ -4091,6 +4100,7 @@
 				D380800015C2894A005BE9BC /* IASKSwitch.m in Sources */,
 				D380800215C2894A005BE9BC /* IASKTextField.m in Sources */,
 				D380801315C299D0005BE9BC /* ColorSpaceUtilites.m in Sources */,
+				8C92ABF31FA773E50006FB5D /* UIChatNotifiedEventCell.m in Sources */,
 				633FEF581D3CD5E00014B822 /* UIAvatarPresence.m in Sources */,
 				637157A11B283FE200C91677 /* FileTransferDelegate.m in Sources */,
 				D378AB2A15DCDB4A0098505D /* ImagePickerView.m in Sources */,

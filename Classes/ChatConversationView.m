@@ -117,6 +117,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCallUpdate
 											 object:nil];
 
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
+	linphone_chat_room_cbs_set_state_changed(cbs, on_chat_room_state_changed);
+	linphone_chat_room_cbs_set_subject_changed(cbs, on_chat_room_subject_changed);
+	linphone_chat_room_cbs_set_participant_added(cbs, on_chat_room_participant_added);
+	linphone_chat_room_cbs_set_participant_removed(cbs, on_chat_room_participant_removed);
+	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, on_chat_room_participant_admin_status_changed);
+	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+
 	[self updateSuperposedButtons];
 	
 	if (_tableController.isEditing) {
@@ -132,27 +140,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (linphone_chat_room_get_subject(_chatRoom))
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 
-	if (!linphone_chat_room_can_handle_participants(_chatRoom)) {
-		_particpantsLabel.hidden = TRUE;
-	} else {
-		_particpantsLabel.hidden = FALSE;
-		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
-		_particpantsLabel.text = @"";
-		while (participants) {
-			LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
-			if (![_particpantsLabel.text isEqualToString:@""])
-				_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:@", "];
-
-			_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))
-																					  ? linphone_address_get_display_name(linphone_participant_get_address(participant))
-																				      : linphone_address_get_username(linphone_participant_get_address(participant))]];
-			participants = participants->next;
-		}
-	}
+	[self updateParticipantLabel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
+
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
+	linphone_chat_room_cbs_set_state_changed(cbs, NULL);
+	linphone_chat_room_cbs_set_subject_changed(cbs, NULL);
+	linphone_chat_room_cbs_set_participant_added(cbs, NULL);
+	linphone_chat_room_cbs_set_participant_removed(cbs, NULL);
+	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, NULL);
+	linphone_chat_room_cbs_set_user_data(cbs, NULL);
 
 	[_messageField resignFirstResponder];
 
@@ -360,7 +360,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
 	_infoButton.hidden = !linphone_chat_room_can_handle_participants(_chatRoom) || !_backToCallButton.hidden;
-	_callButton.hidden = !_backToCallButton.hidden && !_infoButton.hidden;
+	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden;
+}
+
+- (void)updateParticipantLabel {
+	if (!linphone_chat_room_can_handle_participants(_chatRoom)) {
+		_particpantsLabel.hidden = TRUE;
+	} else {
+		_particpantsLabel.hidden = FALSE;
+		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+		_particpantsLabel.text = @"";
+		while (participants) {
+			LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
+			if (![_particpantsLabel.text isEqualToString:@""])
+				_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:@", "];
+
+			_particpantsLabel.text = [_particpantsLabel.text stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))
+																					  ? linphone_address_get_display_name(linphone_participant_get_address(participant))
+																												   : linphone_address_get_username(linphone_participant_get_address(participant))]];
+			participants = participants->next;
+		}
+	}
 }
 
 #pragma mark - Event Functions
@@ -702,6 +722,33 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		completion:^(BOOL finished){
 		}];
+}
+
+#pragma mark - chat room callbacks
+
+void on_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	if (view) {};
+}
+
+void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	view.addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
+}
+
+void on_chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	[view updateParticipantLabel];
+}
+
+void on_chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	[view updateParticipantLabel];
+}
+
+void on_chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	if (view) {};
 }
 
 @end

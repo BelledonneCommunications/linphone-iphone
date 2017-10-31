@@ -17,8 +17,6 @@
                 <outlet property="bottomBarColor" destination="mlr-pl-B6T" id="4Lk-Vn-E8h"/>
                 <outlet property="bubbleView" destination="ucH-2r-rar" id="XWU-yi-1z8"/>
                 <outlet property="contactDateLabel" destination="GRe-ur-aSb" id="DQA-v4-IjX"/>
-                <outlet property="eventContactDateLabel" destination="LEt-tj-YCt" id="EwK-F4-O5f"/>
-                <outlet property="eventView" destination="4Hz-lQ-xx1" id="abe-u8-FDQ"/>
                 <outlet property="imdmIcon" destination="WlS-fU-Aut" id="bYC-jb-Amo"/>
                 <outlet property="imdmLabel" destination="yKD-pC-Nhu" id="ge9-Yl-qsr"/>
                 <outlet property="messageText" destination="CYa-If-oB4" id="7xm-UF-1qB"/>
@@ -34,37 +32,15 @@
             </connections>
         </tapGestureRecognizer>
         <view contentMode="scaleToFill" misplaced="YES" id="ucH-2r-rar">
-            <rect key="frame" x="0.0" y="0.0" width="334" height="110"/>
+            <rect key="frame" x="0.0" y="0.0" width="334" height="74"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
             <subviews>
-                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="4Hz-lQ-xx1" userLabel="eventView">
-                    <rect key="frame" x="0.0" y="0.0" width="334" height="43"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" misplaced="YES" text="11:35 John Doe" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="LEt-tj-YCt" userLabel="eventContactDateLabel">
-                            <rect key="frame" x="112" y="18" width="110" height="14"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Contact name"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                            <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_E.png" id="wbB-p7-QMP" userLabel="RightBar">
-                            <rect key="frame" x="230" y="24" width="104" height="1"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="color_E.png" id="PjI-cq-XPw" userLabel="LeftBar">
-                            <rect key="frame" x="0.0" y="24" width="104" height="1"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        </imageView>
-                    </subviews>
-                </view>
                 <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="vdk-RV-QRU" userLabel="innerView">
-                    <rect key="frame" x="6" y="44" width="322" height="57"/>
+                    <rect key="frame" x="6" y="9" width="322" height="56"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="ZIO-Cb-28G" userLabel="backgroundColorImage">
-                            <rect key="frame" x="0.0" y="0.0" width="322" height="57"/>
+                            <rect key="frame" x="0.0" y="0.0" width="322" height="56"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         </imageView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="avatar.png" id="P1c-sD-eOv" userLabel="avatarImage" customClass="UIRoundedImageView">
@@ -93,11 +69,11 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                         </activityIndicatorView>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="mlr-pl-B6T" userLabel="bottomBarColor">
-                            <rect key="frame" x="0.0" y="56" width="322" height="1"/>
+                            <rect key="frame" x="0.0" y="55" width="322" height="1"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         </imageView>
                         <textView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Lore ipsum..." id="CYa-If-oB4" userLabel="messageText" customClass="UITextViewNoDefine">
-                            <rect key="frame" x="50" y="15" width="279" height="50"/>
+                            <rect key="frame" x="50" y="15" width="279" height="49"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -109,14 +85,14 @@
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Read" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yKD-pC-Nhu" userLabel="imdmLabel">
-                            <rect key="frame" x="238" y="40" width="64" height="20"/>
+                            <rect key="frame" x="238" y="39" width="64" height="20"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="11"/>
                             <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_read.png" id="WlS-fU-Aut" userLabel="imdmIcon">
-                            <rect key="frame" x="306" y="42" width="13" height="13"/>
+                            <rect key="frame" x="306" y="41" width="13" height="13"/>
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
@@ -129,7 +105,7 @@
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="16" y="92"/>
+            <point key="canvasLocation" x="16" y="110"/>
         </view>
     </objects>
     <resources>
@@ -138,6 +114,5 @@
         <image name="chat_read.png" width="24" height="24"/>
         <image name="chat_unsecure.png" width="18" height="27"/>
         <image name="color_A.png" width="2" height="2"/>
-        <image name="color_E.png" width="2" height="2"/>
     </resources>
 </document>

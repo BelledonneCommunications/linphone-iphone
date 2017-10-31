@@ -39,8 +39,6 @@
 @property(weak, nonatomic) IBOutlet UIImageView *LIMEKO;
 @property(weak, nonatomic) IBOutlet UIImageView *imdmIcon;
 @property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
-@property (weak, nonatomic) IBOutlet UILabel *eventContactDateLabel;
-@property (weak, nonatomic) IBOutlet UIView *eventView;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 

@@ -68,6 +68,8 @@
 	<string>Make calls with your friends</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Use microphone to make audio calls</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Add tranfered files to your library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSVoIPUsageDescription</key>
