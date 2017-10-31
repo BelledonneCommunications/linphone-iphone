@@ -241,7 +241,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 	_addressLabel.accessibilityValue = _addressLabel.text;
-	_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), _addressLabel.text];
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl withInternalURL:(NSURL *)internalUrl {
@@ -323,7 +322,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
-
 	if (composingVisible == visible)
 		return;
 
@@ -335,6 +333,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// pull up the composing frame and shrink the table view
 		newTableFrame.size.height -= newComposingFrame.size.height;
 		newComposingFrame.origin.y = keyboardFrame.origin.y - newComposingFrame.size.height;
+		bctbx_list_t *addresses = linphone_chat_room_get_composing_addresses(_chatRoom);
+		NSString *composingAddresses = @"";
+		if (bctbx_list_size(addresses) == 1) {
+			composingAddresses = [NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)];
+			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), composingAddresses];
+		} else {
+			while (addresses) {
+				composingAddresses = [composingAddresses stringByAppendingString:@", "];
+				composingAddresses = [composingAddresses stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)]];
+				addresses = addresses->next;
+			}
+			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ are composing...", nil), composingAddresses];
+		}
 	} else {
 		// pull down the composing frame and widen the tableview
 		newTableFrame.size.height += newComposingFrame.size.height;

@@ -271,8 +271,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	ChatConversationView *view = VIEW(ChatConversationView);
 	// if we already are in the conversation, we should not ring/vibrate
-	if (view.chatRoom && linphone_address_weak_equal(linphone_chat_room_get_peer_address(room),
-													 linphone_chat_room_get_peer_address(view.chatRoom)))
+	if (view.chatRoom && _currentRoom == view.chatRoom)
 		return;
 
 	if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
