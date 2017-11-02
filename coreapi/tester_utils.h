@@ -60,7 +60,6 @@ LINPHONE_PUBLIC int linphone_run_stun_tests(LinphoneCore *lc, int audioPort, int
 	char *audioCandidateAddr, int *audioCandidatePort, char *videoCandidateAddr, int *videoCandidatePort, char *textCandidateAddr, int *textCandidatePort);
 LINPHONE_PUBLIC void linphone_core_enable_short_turn_refresh(LinphoneCore *lc, bool_t enable);
 
-LINPHONE_PUBLIC sqlite3 *linphone_core_get_sqlite_database(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_zrtp_cache_db(LinphoneCore *lc, sqlite3 *cache_db);
 
 LINPHONE_PUBLIC LinphoneCoreCbs *linphone_core_get_first_callbacks(const LinphoneCore *lc);

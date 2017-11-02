@@ -34,8 +34,7 @@ class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
 	friend class ChatMessagePrivate;
 
 public:
-	ChatRoomPrivate (LinphoneCore *core);
-	virtual ~ChatRoomPrivate ();
+	ChatRoomPrivate () = default;
 
 private:
 	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
@@ -53,7 +52,6 @@ public:
 	void release ();
 	void sendImdn (const std::string &content, LinphoneReason reason);
 
-	int getMessagesCount (bool unreadOnly);
 	void setState (ChatRoom::State newState);
 
 	virtual void sendMessage (const std::shared_ptr<ChatMessage> &msg);
@@ -64,8 +62,6 @@ protected:
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
 	std::shared_ptr<ChatMessage> getTransientMessage (unsigned int storageId) const;
 	std::shared_ptr<ChatMessage> getWeakMessage (unsigned int storageId) const;
-	int sqlRequest (sqlite3 *db, const std::string &stmt);
-	void sqlRequestMessage (sqlite3 *db, const std::string &stmt);
 	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
 	virtual void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
@@ -91,18 +87,20 @@ private:
 	void onIsComposingRefreshNeeded () override;
 
 public:
-	LinphoneCore *core = nullptr;
 	LinphoneCall *call = nullptr;
 	ChatRoom::State state = ChatRoom::State::None;
 	Address peerAddress;
-	int unreadCount = -1;
 	bool isComposing = false;
 	std::unordered_set<std::string> remoteIsComposing;
-	std::list<std::shared_ptr<ChatMessage>> messages;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
+
 	std::list<std::weak_ptr<ChatMessage>> weakMessages;
+
+	// TODO: Remove me. Must be present only in rtt chat room.
 	std::shared_ptr<ChatMessage> pendingMessage;
-	IsComposing isComposingHandler;
+
+	// TODO: Use CoreAccessor on IsComposing. And avoid pointer if possible.
+	std::unique_ptr<IsComposing> isComposingHandler;
 
 private:
 	L_DECLARE_PUBLIC(ChatRoom);

@@ -906,12 +906,10 @@ struct _LinphoneCore
 	int max_calls;
 	LinphoneTunnel *tunnel;
 	char* device_id;
-	char *chat_db_file;
 	char *logs_db_file;
 	char *friends_db_file;
 #ifdef SQLITE_STORAGE_ENABLED
 	sqlite3 *zrtp_cache_db; /**< zrtp sqlite cache, used by both zrtp and lime */
-	sqlite3 *db;
 	sqlite3 *logs_db;
 	sqlite3 *friends_db;
 	bool_t debug_storage;
@@ -1092,15 +1090,7 @@ void linphone_upnp_destroy(LinphoneCore *lc);
 
 #ifdef SQLITE_STORAGE_ENABLED
 int _linphone_sqlite3_open(const char *db_file, sqlite3 **db);
-sqlite3 * linphone_message_storage_init(void);
-void linphone_message_storage_init_chat_rooms(LinphoneCore *lc);
 #endif
-void linphone_chat_message_store_update(LinphoneChatMessage *msg);
-void linphone_chat_message_store_state(LinphoneChatMessage *msg);
-void linphone_chat_message_store_appdata(LinphoneChatMessage* msg);
-void linphone_core_message_storage_init(LinphoneCore *lc);
-void linphone_core_message_storage_close(LinphoneCore *lc);
-void linphone_core_message_storage_set_debug(LinphoneCore *lc, bool_t debug);
 
 void linphone_chat_message_set_time(LinphoneChatMessage* msg, time_t time);
 void linphone_chat_message_set_incoming(LinphoneChatMessage *msg);

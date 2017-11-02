@@ -27,58 +27,30 @@
 
 #include "db-session-provider.h"
 
-#define CLEAN_COUNTER_MAX 1000
-
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class DbSessionProviderPrivate : public ObjectPrivate {
-public:
-	typedef pair<weak_ptr<void>, DbSessionPrivate *> InternalSession;
-	unordered_map<string, InternalSession> sessions;
-	int cleanCounter = 0;
-};
-
-DbSessionProvider::DbSessionProvider () : Singleton(*new DbSessionProviderPrivate) {}
+DbSessionProvider::DbSessionProvider () : Singleton(*new ObjectPrivate) {}
 
 DbSession DbSessionProvider::getSession (const string &uri) {
-	L_D();
+	DbSession session(DbSession::None);
 
 	#ifdef SOCI_ENABLED
-		DbSession session(DbSession::Soci);
 		try {
-			shared_ptr<void> backendSession = d->sessions[uri].first.lock();
-			++d->cleanCounter;
-			if (!backendSession) { // Create new session.
-				backendSession = make_shared<soci::session>(uri);
-				DbSessionPrivate *p = session.getPrivate();
-				p->backendSession = backendSession;
-				p->isValid = true;
-				d->sessions[uri] = make_pair(backendSession, p);
-			} else // Share session.
-				session.setRef(*d->sessions[uri].second);
+			session = DbSession(DbSession::Soci);
+			DbSessionPrivate *p = session.getPrivate();
+			p->backendSession = make_shared<soci::session>(uri);
+			p->isValid = true;
 		} catch (const exception &e) {
+			session = DbSession(DbSession::None);
 			lWarning() << "Unable to get db session: " << e.what();
 		}
 	#else
-		DbSession session(DbSession::None);
 		lWarning() << "Unable to get db session: soci not enabled.";
 	#endif // ifdef SOCI_ENABLED
-
-	// Remove invalid weak ptrs.
-	if (d->cleanCounter >= CLEAN_COUNTER_MAX) {
-		d->cleanCounter = 0;
-
-		for (auto it = d->sessions.begin(), itEnd = d->sessions.end(); it != itEnd;) {
-			if (it->second.first.expired())
-				it = d->sessions.erase(it);
-			else
-				++it;
-		}
-	}
 
 	return session;
 }

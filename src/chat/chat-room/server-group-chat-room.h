@@ -36,12 +36,10 @@ class ServerGroupChatRoomPrivate;
 
 class ServerGroupChatRoom : public ChatRoom, public LocalConference {
 public:
-	ServerGroupChatRoom (LinphoneCore *core, SalCallOp *op);
-	virtual ~ServerGroupChatRoom () = default;
+	ServerGroupChatRoom (const std::shared_ptr<Core> &core, SalCallOp *op);
 
 	int getCapabilities () const override;
 
-public:
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;

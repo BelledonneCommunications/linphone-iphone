@@ -56,6 +56,11 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 		d->insertChatRoom(chatRoom);
 }
 
+LinphoneCore *Core::getCCore () const {
+	L_D();
+	return d->cCore;
+}
+
 string Core::getDataPath() const {
 	L_D();
 	return Paths::getPath(Paths::Data, static_cast<PlatformHelpers *>(d->cCore->platform_helper));

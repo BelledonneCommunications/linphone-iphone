@@ -35,6 +35,7 @@ class ChatRoom;
 class CorePrivate;
 
 class LINPHONE_PUBLIC Core : public Object {
+	friend class ChatRoom;
 	friend class ClientGroupChatRoom;
 	friend class MainDb;
 
@@ -42,6 +43,13 @@ public:
 	L_OVERRIDE_SHARED_FROM_THIS(Core);
 
 	Core (LinphoneCore *cCore);
+
+	// ---------------------------------------------------------------------------
+	// C-Core.
+	// ---------------------------------------------------------------------------
+
+	// TODO: Remove me later.
+	LinphoneCore *getCCore () const;
 
 	// ---------------------------------------------------------------------------
 	// Paths.

@@ -17,11 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "logger/logger.h"
-
 #include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room.h"
-#include "chat/notification/imdn.h"
+#include "core/core.h"
+#include "logger/logger.h"
+
+#include "imdn.h"
 
 // =============================================================================
 
@@ -66,7 +67,7 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
 		} else {
-			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(cr.getCore());
+			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(cr.getCore()->getCCore());
 			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:delivery-notification/imdn:status", imdnPrefix.c_str());
 			xmlXPathObjectPtr deliveryStatusObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, xpathStr);
 			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:display-notification/imdn:status", imdnPrefix.c_str());

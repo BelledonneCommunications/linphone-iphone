@@ -22,6 +22,7 @@
 
 #include "chat/chat-message/chat-message.h"
 #include "conference/conference-interface.h"
+#include "core/core-accessor.h"
 
 // =============================================================================
 
@@ -29,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate;
 
-class LINPHONE_PUBLIC ChatRoom : public Object, public ConferenceInterface {
+class LINPHONE_PUBLIC ChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
 	friend class Core;
 	friend class CorePrivate;
 	friend class ChatMessage;
@@ -58,18 +59,18 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> getHistory (int nbMessages);
 	int getHistorySize ();
 	std::list<std::shared_ptr<ChatMessage>> getHistoryRange (int startm, int endm);
-	int getUnreadMessagesCount ();
+	int getUnreadChatMessagesCount ();
 	bool isRemoteComposing () const;
-	void markAsRead ();
 
-	LinphoneCore *getCore () const;
+	virtual void markAsRead ();
 
 	const Address &getPeerAddress () const;
 	State getState () const;
 
 protected:
+	explicit ChatRoom (ChatRoomPrivate &p, const std::shared_ptr<Core> &core, const Address &address);
+
 	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) = 0;
-	explicit ChatRoom (ChatRoomPrivate &p);
 
 private:
 	L_DECLARE_PRIVATE(ChatRoom);

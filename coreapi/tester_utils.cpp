@@ -36,10 +36,6 @@ void linphone_core_enable_send_call_stats_periodical_updates(LinphoneCore *lc, b
 	lc->send_call_stats_periodical_updates = enabled;
 }
 
-sqlite3 *linphone_core_get_sqlite_database(const LinphoneCore *lc) {
-	return lc->db;
-}
-
 void linphone_core_set_zrtp_cache_db(LinphoneCore *lc, sqlite3 *cache_db) {
 	lc->zrtp_cache_db = cache_db;
 }

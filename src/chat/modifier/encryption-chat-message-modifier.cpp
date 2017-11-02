@@ -23,6 +23,7 @@
 #include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "core/core.h"
 
 #include "encryption-chat-message-modifier.h"
 
@@ -37,7 +38,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::encode (
 	int &errorCode
 ) {
 	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
-	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
+	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->getCCore()->im_encryption_engine;
 	if (!imee)
 		return ChatMessageModifier::Result::Skipped;
 
@@ -70,7 +71,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::decode (
 	int &errorCode
 ) {
 	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
-	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->im_encryption_engine;
+	LinphoneImEncryptionEngine *imee = chatRoom->getCore()->getCCore()->im_encryption_engine;
 	if (!imee)
 		return ChatMessageModifier::Result::Skipped;
 

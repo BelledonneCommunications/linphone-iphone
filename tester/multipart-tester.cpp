@@ -21,6 +21,10 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "core/core.h"
+
+// TODO: Remove me later.
+#include "private.h"
 
 #include "liblinphone_tester.h"
 
@@ -32,10 +36,10 @@ using namespace LinphonePrivate;
 
 static void chat_message_multipart_modifier_base(bool first_file_transfer, bool second_file_transfer, bool use_cpim) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 
 	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc, paulineAddress);
+	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage;
 	if (first_file_transfer) {
@@ -55,7 +59,7 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		linphone_content_set_type(initialContent,"video");
 		linphone_content_set_subtype(initialContent,"mkv");
 		linphone_content_set_name(initialContent,"sintel_trailer_opus_h264.mkv");
-		
+
 		Content content;
 		content.setContentType(ContentType::FileTransfer);
 		content.setBody(linphone_content_get_string_buffer(initialContent));

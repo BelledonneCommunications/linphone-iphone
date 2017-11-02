@@ -31,8 +31,13 @@ class ClientGroupChatRoomPrivate;
 
 class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
 public:
-	ClientGroupChatRoom (LinphoneCore *core, const Address &me, const std::string &uri, const std::string &subject);
-	virtual ~ClientGroupChatRoom () = default;
+	// TODO: Make me private.
+	ClientGroupChatRoom (
+		const std::shared_ptr<Core> &core,
+		const Address &me,
+		const std::string &uri,
+		const std::string &subject
+	);
 
 	CapabilitiesMask getCapabilities () const override;
 
@@ -52,7 +57,7 @@ public:
 	void setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) override;
 	void setSubject (const std::string &subject) override;
 
-private:
+protected:
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 
 private:

@@ -38,7 +38,6 @@ public:
 private:
 	DbSessionProvider ();
 
-	L_DECLARE_PRIVATE(DbSessionProvider);
 	L_DISABLE_COPY(DbSessionProvider);
 };
 

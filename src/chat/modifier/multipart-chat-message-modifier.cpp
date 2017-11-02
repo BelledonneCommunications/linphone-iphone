@@ -25,6 +25,7 @@
 #include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
 #include "logger/logger.h"
+#include "core/core.h"
 
 #include "multipart-chat-message-modifier.h"
 
@@ -41,7 +42,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 	if (message->getContents().size() <= 1)
 		return ChatMessageModifier::Result::Skipped;
 
-	LinphoneCore *lc = message->getChatRoom()->getCore();
+	LinphoneCore *lc = message->getChatRoom()->getCore()->getCCore();
 	char tmp[64];
 	lc->sal->create_uuid(tmp, sizeof(tmp));
 	string boundary = tmp;

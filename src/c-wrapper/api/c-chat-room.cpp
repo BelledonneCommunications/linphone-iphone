@@ -89,7 +89,7 @@ LinphoneCore *linphone_chat_room_get_lc (const LinphoneChatRoom *cr) {
 }
 
 LinphoneCore *linphone_chat_room_get_core (const LinphoneChatRoom *cr) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->getCCore();
 }
 
 const LinphoneAddress *linphone_chat_room_get_peer_address (LinphoneChatRoom *cr) {
@@ -181,7 +181,7 @@ void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {
 }
 
 int linphone_chat_room_get_unread_messages_count (LinphoneChatRoom *cr) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getUnreadMessagesCount();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getUnreadChatMessagesCount();
 }
 
 int linphone_chat_room_get_history_size (LinphoneChatRoom *cr) {
@@ -206,7 +206,7 @@ bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_messa
 
 bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb->getHistory(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
 			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
 			nb_events
 		)
@@ -215,7 +215,7 @@ bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int n
 
 bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore()->cppCore)->mainDb->getHistory(
+		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
 			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
 			begin,
 			end
@@ -348,14 +348,19 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::Address me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ClientGroupChatRoom>(core, me, L_C_TO_STRING(uri), L_C_TO_STRING(subject)));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ClientGroupChatRoom>(
+		core->cppCore, me, L_C_TO_STRING(uri), L_C_TO_STRING(subject))
+	);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;
 }
 
 LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, LinphonePrivate::SalCallOp *op) {
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ServerGroupChatRoom>(core, op));
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, LinphonePrivate::ObjectFactory::create<LinphonePrivate::ServerGroupChatRoom>(
+		core->cppCore,
+		op
+	));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmCreation();
 	return cr;

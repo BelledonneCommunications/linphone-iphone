@@ -29,8 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class BasicChatRoomPrivate : public ChatRoomPrivate {
 public:
-	BasicChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
-	virtual ~BasicChatRoomPrivate () = default;
+	BasicChatRoomPrivate () = default;
 
 private:
 	std::string subject;

@@ -1,5 +1,5 @@
 /*
- * client-group-chat-room-p.h
+ * core-accessor.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,42 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CLIENT_GROUP_CHAT_ROOM_P_H_
-#define _CLIENT_GROUP_CHAT_ROOM_P_H_
+#include "logger/logger.h"
 
-#include "chat/chat-room/chat-room-p.h"
-#include "client-group-chat-room.h"
+#include "core-accessor.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
+class CoreAccessorPrivate {
 public:
-	ClientGroupChatRoomPrivate () = default;
-
-	std::shared_ptr<CallSession> createSession ();
-	void notifyReceived (std::string body);
-
-private:
-	L_DECLARE_PUBLIC(ClientGroupChatRoom);
+	weak_ptr<Core> core;
 };
 
-LINPHONE_END_NAMESPACE
+// -----------------------------------------------------------------------------
 
-#endif // ifndef _CLIENT_GROUP_CHAT_ROOM_P_H_
+CoreAccessor::CoreAccessor (const shared_ptr<Core> &core) {
+	L_D();
+	d->core = core;
+}
+
+CoreAccessor::CoreAccessor (const shared_ptr<Core> &&core) {
+	L_D();
+	d->core = move(core);
+}
+
+CoreAccessor::~CoreAccessor () {}
+
+shared_ptr<Core> CoreAccessor::getCore () const {
+	L_D();
+
+	shared_ptr<Core> core = d->core.lock();
+	if (!core)
+		lWarning() << "Unable to get valid core instance.";
+	return core;
+}
+
+LINPHONE_END_NAMESPACE

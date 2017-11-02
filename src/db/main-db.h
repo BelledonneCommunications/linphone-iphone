@@ -28,14 +28,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatMessage;
 class ChatRoom;
 class Core;
 class EventLog;
 class MainDbPrivate;
 
 class LINPHONE_PUBLIC MainDb : public AbstractDb {
-	friend class ChatRoomProvider;
-
 public:
 	enum Filter {
 		NoFilter = 0x0,
@@ -48,20 +47,37 @@ public:
 
 	MainDb (Core *core);
 
+	// ---------------------------------------------------------------------------
 	// Generic.
+	// ---------------------------------------------------------------------------
+
 	bool addEvent (const std::shared_ptr<EventLog> &eventLog);
 	bool deleteEvent (const std::shared_ptr<EventLog> &eventLog);
 	void cleanEvents (FilterMask mask = NoFilter);
 	int getEventsCount (FilterMask mask = NoFilter) const;
 
-	// Messages, calls and conferences.
+	// ---------------------------------------------------------------------------
+	// Conference notified events.
+	// ---------------------------------------------------------------------------
+
 	std::list<std::shared_ptr<EventLog>> getConferenceNotifiedEvents (
 		const std::string &peerAddress,
 		unsigned int lastNotifyId
 	);
 
-	int getMessagesCount (const std::string &peerAddress = "") const;
-	int getUnreadMessagesCount (const std::string &peerAddress = "") const;
+	// ---------------------------------------------------------------------------
+	// Conference chat message events.
+	// ---------------------------------------------------------------------------
+
+	int getChatMessagesCount (const std::string &peerAddress = "") const;
+	int getUnreadChatMessagesCount (const std::string &peerAddress = "") const;
+	void markChatMessagesAsRead (const std::string &peerAddress = "") const;
+	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const std::string &peerAddress = "") const;
+
+	// ---------------------------------------------------------------------------
+	// Conference events.
+	// ---------------------------------------------------------------------------
+
 	std::list<std::shared_ptr<EventLog>> getHistory (
 		const std::string &peerAddress,
 		int nLast,
@@ -75,10 +91,17 @@ public:
 	) const;
 	void cleanHistory (const std::string &peerAddress = "", FilterMask mask = NoFilter);
 
-	// ChatRooms.
+	// ---------------------------------------------------------------------------
+	// Chat rooms.
+	// ---------------------------------------------------------------------------
+
 	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
 	void insertChatRoom (const std::string &peerAddress, int capabilities);
 	void deleteChatRoom (const std::string &peerAddress);
+
+	// ---------------------------------------------------------------------------
+	// Other.
+	// ---------------------------------------------------------------------------
 
 	// Import legacy messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;

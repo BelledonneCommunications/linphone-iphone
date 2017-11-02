@@ -58,12 +58,14 @@ static inline string resolveWorkaroundClientGroupChatRoomAddress (
 // -----------------------------------------------------------------------------
 
 shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bool isRtt) {
+	L_Q();
+
 	shared_ptr<ChatRoom> chatRoom;
 
 	if (isRtt)
-		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(cCore, peerAddress);
+		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(q->getSharedFromThis(), peerAddress);
 	else
-		chatRoom = ObjectFactory::create<BasicChatRoom>(cCore, peerAddress);
+		chatRoom = ObjectFactory::create<BasicChatRoom>(q->getSharedFromThis(), peerAddress);
 
 	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 	insertChatRoom(chatRoom);
@@ -188,7 +190,7 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const string &peerAddress, 
 }
 
 void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
-	CorePrivate *d = chatRoom->getCore()->cppCore->getPrivate();
+	CorePrivate *d = chatRoom->getCore()->getPrivate();
 	const Address cleanedPeerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress());
 	d->deleteChatRoomWithDb(
 		chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Conference)

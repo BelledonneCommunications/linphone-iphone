@@ -25,17 +25,13 @@
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/notification/imdn.h"
 #include "logger/logger.h"
+#include "core/core-p.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-ChatRoomPrivate::ChatRoomPrivate (LinphoneCore *core)
-	: core(core), isComposingHandler(core, this) {}
-
-ChatRoomPrivate::~ChatRoomPrivate () {}
 
 // -----------------------------------------------------------------------------
 
@@ -79,38 +75,44 @@ void ChatRoomPrivate::removeTransientMessage (const shared_ptr<ChatMessage> &msg
 
 void ChatRoomPrivate::release () {
 	L_Q();
-	isComposingHandler.stopTimers();
+	isComposingHandler->stopTimers();
 
+	// TODO: Remove me?
+	// Why chat room is set to nullptr? Avoid shared ptr lock?! Wtf?!
 	for (auto &message : weakMessages) {
 		try {
 			shared_ptr<ChatMessage> msg(message);
 			msg->cancelFileTransfer();
 			msg->getPrivate()->setChatRoom(nullptr);
-		} catch(const std::bad_weak_ptr& e) {}
+		} catch (const bad_weak_ptr &) {}
 	}
 	for (auto &message : transientMessages) {
 		message->cancelFileTransfer();
 		message->getPrivate()->setChatRoom(nullptr);
 	}
 
-	core = nullptr;
 	linphone_chat_room_unref(L_GET_C_BACK_PTR(q));
 }
 
 void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 	L_Q();
 
+	shared_ptr<Core> core = q->getCore();
+	if (!core)
+		return;
+	LinphoneCore *cCore = core->getCCore();
+
 	const char *identity = nullptr;
 	LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
-	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, peer);
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cCore, peer);
 	if (proxy)
 		identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
 	else
-		identity = linphone_core_get_primary_contact(core);
+		identity = linphone_core_get_primary_contact(cCore);
 
 	/* Sending out of call */
-	SalMessageOp *op = new SalMessageOp(core->sal);
-	linphone_configure_op(core, op, peer, nullptr, !!lp_config_get_int(core->config, "sip", "chat_msg_with_contact", 0));
+	SalMessageOp *op = new SalMessageOp(cCore->sal);
+	linphone_configure_op(cCore, op, peer, nullptr, !!lp_config_get_int(cCore->config, "sip", "chat_msg_with_contact", 0));
 
 	shared_ptr<ChatMessage> msg = q->createMessage();
 	msg->setFromAddress(Address(identity));
@@ -123,7 +125,7 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 
 	/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
 	int retval = -1;
-	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(core);
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cCore);
 	if (imee && (reason == LinphoneReasonNone)) {
 		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
@@ -142,42 +144,12 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 
 // -----------------------------------------------------------------------------
 
-int ChatRoomPrivate::getMessagesCount (bool unreadOnly) {
-	if (!core->db) return 0;
-
-	/* Optimization: do not read database if the count is already available in memory */
-	if (unreadOnly && unreadCount >= 0) return unreadCount;
-
-	string peer = peerAddress.asStringUriOnly();
-	char *option = nullptr;
-	if (unreadOnly)
-		option = bctbx_strdup_printf("AND status!=%i AND direction=%i", LinphoneChatMessageStateDisplayed, LinphoneChatMessageIncoming);
-	char *buf = sqlite3_mprintf("SELECT count(*) FROM history WHERE remoteContact = %Q %s;", peer.c_str(), unreadOnly ? option : "");
-	sqlite3_stmt *selectStatement;
-	int numrows = 0;
-	int returnValue = sqlite3_prepare_v2(core->db, buf, -1, &selectStatement, nullptr);
-	if (returnValue == SQLITE_OK) {
-		if (sqlite3_step(selectStatement) == SQLITE_ROW) {
-			numrows = sqlite3_column_int(selectStatement, 0);
-		}
-	}
-	sqlite3_finalize(selectStatement);
-	sqlite3_free(buf);
-
-	/* No need to test the sign of unreadCount here because it has been tested above */
-	if (unreadOnly) {
-		unreadCount = numrows;
-	}
-	if (option) bctbx_free(option);
-	return numrows;
-}
-
 void ChatRoomPrivate::setState (ChatRoom::State newState) {
 	L_Q();
 	if (newState != state) {
 		state = newState;
 		if (state == ChatRoom::State::Instantiated)
-			linphone_core_notify_chat_room_instantiated(core, L_GET_C_BACK_PTR(q));
+			linphone_core_notify_chat_room_instantiated(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
 		notifyStateChanged();
 	}
 }
@@ -186,9 +158,9 @@ void ChatRoomPrivate::setState (ChatRoom::State newState) {
 
 void ChatRoomPrivate::sendIsComposingNotification () {
 	L_Q();
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core);
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
 	if (linphone_im_notif_policy_get_send_is_composing(policy)) {
-		string payload = isComposingHandler.marshal(isComposing);
+		string payload = isComposingHandler->marshal(isComposing);
 		if (!payload.empty()) {
 			shared_ptr<ChatMessage> msg = q->createMessage();
 			Content content;
@@ -222,72 +194,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
  * | 14 | secured flag
  */
 int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colName) {
-	L_Q();
-	unsigned int storageId = (unsigned int)atoi(argv[0]);
-
-	/* Check if the message exists in the weak messages list, in which case we should return that one. */
-	shared_ptr<ChatMessage> message = getWeakMessage(storageId);
-	if (!message) {
-		/* Check if the message exists in the transient list, in which case we should return that one. */
-		message = getTransientMessage(storageId);
-	}
-	if (!message) {
-		message = q->createMessage();
-
-		Content content;
-		if (argv[4]) {
-			content.setBody(argv[4]);
-		}
-		if (argv[13]) {
-			content.setContentType(argv[13]);
-		}
-		message->addContent(content);
-
-		Address peer(peerAddress.asString());
-		if (atoi(argv[3]) == static_cast<int>(ChatMessage::Direction::Incoming)) {
-			message->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
-			message->setFromAddress(peer);
-		} else {
-			message->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
-			message->setToAddress(peer);
-		}
-
-		message->getPrivate()->setTime((time_t)atol(argv[9]));
-		message->getPrivate()->setState((ChatMessage::State)atoi(argv[7]));
-		message->getPrivate()->setStorageId(storageId);
-		if (argv[8]) {
-			message->setExternalBodyUrl(argv[8]);
-		}
-		if (argv[10]) {
-			message->setAppdata(argv[10]);
-		}
-		if (argv[12]) {
-			message->setImdnMessageId(argv[12]);
-		}
-		message->setIsSecured((bool)atoi(argv[14]));
-
-		if (argv[11]) {
-			int id = atoi(argv[11]);
-			if (id >= 0)
-				linphone_chat_message_fetch_content_from_database(core->db, L_GET_C_BACK_PTR(message), id);
-		}
-
-		/* Fix content type for old messages that were stored without it */
-		/* To keep ?
-		if (message->getPrivate()->getContentType().empty()) {
-			if (message->getPrivate()->getFileTransferInformation()) {
-				message->getPrivate()->setContentType("application/vnd.gsma.rcs-ft-http+xml");
-			} else if (!message->getExternalBodyUrl().empty()) {
-				message->getPrivate()->setContentType("message/external-body");
-			} else {
-				message->getPrivate()->setContentType("text/plain");
-			}
-		}*/
-
-		/* Add the new message to the weak messages list. */
-		addWeakMessage(message);
-	}
-	messages.push_front(message);
+	// TODO: history.
 	return 0;
 }
 
@@ -310,36 +217,9 @@ std::shared_ptr<ChatMessage> ChatRoomPrivate::getWeakMessage (unsigned int stora
 	return nullptr;
 }
 
-int ChatRoomPrivate::sqlRequest (sqlite3 *db, const string &stmt) {
-	char *errmsg = nullptr;
-	int ret = sqlite3_exec(db, stmt.c_str(), nullptr, nullptr, &errmsg);
-	if (ret != SQLITE_OK) {
-		lError() << "ChatRoomPrivate::sqlRequest: statement " << stmt << " -> error sqlite3_exec(): " << errmsg;
-		sqlite3_free(errmsg);
-	}
-	return ret;
-}
-
-void ChatRoomPrivate::sqlRequestMessage (sqlite3 *db, const string &stmt) {
-	char *errmsg = nullptr;
-	int ret = sqlite3_exec(db, stmt.c_str(), createChatMessageFromDb, this, &errmsg);
-	if (ret != SQLITE_OK) {
-		lError() << "Error in creation: " << errmsg;
-		sqlite3_free(errmsg);
-	}
-}
-
 list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) {
-	if (!core->db)
-		return list<shared_ptr<ChatMessage> >();
-	string peer = peerAddress.asStringUriOnly();
-	char *buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND messageId = %Q", peer.c_str(), messageId.c_str());
-	messages.clear();
-	sqlRequestMessage(core->db, buf);
-	sqlite3_free(buf);
-	list<shared_ptr<ChatMessage> > result = messages;
-	messages.clear();
-	return result;
+	// TODO: history.
+	return list<shared_ptr<ChatMessage>>();
 }
 
 void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) {
@@ -369,8 +249,8 @@ void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 
 	if (isComposing)
 		isComposing = false;
-	isComposingHandler.stopIdleTimer();
-	isComposingHandler.stopRefreshTimer();
+	isComposingHandler->stopIdleTimer();
+	isComposingHandler->stopRefreshTimer();
 }
 
 // -----------------------------------------------------------------------------
@@ -382,6 +262,11 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	LinphoneReason reason = LinphoneReasonNone;
 	shared_ptr<ChatMessage> msg;
 
+	shared_ptr<Core> core = q->getCore();
+	if (!core)
+		return reason;
+	LinphoneCore *cCore = core->getCCore();
+
 	msg = q->createMessage();
 
 	Content content;
@@ -389,7 +274,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	content.setBody(salMsg->text ? salMsg->text : "");
 	msg->setInternalContent(content);
 
-	msg->setToAddress(Address(op->get_to() ? op->get_to() : linphone_core_get_identity(core)));
+	msg->setToAddress(Address(op->get_to() ? op->get_to() : linphone_core_get_identity(cCore)));
 	msg->setFromAddress(peerAddress);
 	msg->getPrivate()->setTime(salMsg->time);
 	msg->getPrivate()->setState(ChatMessage::State::Delivered);
@@ -413,22 +298,18 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		isComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
-		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
+		if (lp_config_get_int(cCore->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		imdnReceived(msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
-		if (lp_config_get_int(core->config, "sip", "deliver_imdn", 0) != 1) {
+		if (lp_config_get_int(cCore->config, "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	}
 
 	if (increaseMsgCount) {
-		if (unreadCount < 0)
-			unreadCount = 1;
-		else
-			unreadCount++;
 		/* Mark the message as pending so that if ChatRoom::markAsRead() is called in the
 		 * ChatRoomPrivate::chatMessageReceived() callback, it will effectively be marked as
 		 * being read before being stored. */
@@ -462,7 +343,7 @@ void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 		notifyChatMessageReceived(msg);
 
 		remoteIsComposing.erase(msg->getFromAddress().asStringUriOnly());
-		isComposingHandler.stopRemoteRefreshTimer(msg->getFromAddress().asStringUriOnly());
+		isComposingHandler->stopRemoteRefreshTimer(msg->getFromAddress().asStringUriOnly());
 		notifyIsComposingReceived(msg->getFromAddress(), false);
 		msg->sendDeliveryNotification(LinphoneReasonNone);
 	}
@@ -474,7 +355,7 @@ void ChatRoomPrivate::imdnReceived (const string &text) {
 }
 
 void ChatRoomPrivate::isComposingReceived (const Address &remoteAddr, const string &text) {
-	isComposingHandler.parse(remoteAddr, text);
+	isComposingHandler->parse(remoteAddr, text);
 }
 
 // -----------------------------------------------------------------------------
@@ -484,13 +365,18 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	if (!msg->getPrivate()->getText().empty()) {
 		/* Legacy API */
-		linphone_core_notify_text_message_received(core, cr, L_GET_C_BACK_PTR(&msg->getFromAddress()), msg->getPrivate()->getText().c_str());
+		linphone_core_notify_text_message_received(
+			q->getCore()->getCCore(),
+			cr,
+			L_GET_C_BACK_PTR(&msg->getFromAddress()),
+			msg->getPrivate()->getText().c_str()
+		);
 	}
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsMessageReceivedCb cb = linphone_chat_room_cbs_get_message_received(cbs);
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(msg));
-	linphone_core_notify_message_received(core, cr, L_GET_C_BACK_PTR(msg));
+	linphone_core_notify_message_received(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(msg));
 }
 
 void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddr, bool isComposing) {
@@ -504,7 +390,7 @@ void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddr, bool
 		linphone_address_unref(lAddr);
 	}
 	// Legacy notification
-	linphone_core_notify_is_composing_received(core, cr);
+	linphone_core_notify_is_composing_received(q->getCore()->getCCore(), cr);
 }
 
 void ChatRoomPrivate::notifyStateChanged () {
@@ -523,7 +409,7 @@ void ChatRoomPrivate::notifyUndecryptableMessageReceived (const shared_ptr<ChatM
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb = linphone_chat_room_cbs_get_undecryptable_message_received(cbs);
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(msg));
-	linphone_core_notify_message_received_unable_decrypt(core, cr, L_GET_C_BACK_PTR(msg));
+	linphone_core_notify_message_received_unable_decrypt(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(msg));
 }
 
 // -----------------------------------------------------------------------------
@@ -547,7 +433,15 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 
 // =============================================================================
 
-ChatRoom::ChatRoom (ChatRoomPrivate &p) : Object(p) {}
+ChatRoom::ChatRoom (
+	ChatRoomPrivate &p,
+	const shared_ptr<Core> &core,
+	const Address &peerAddress
+) : Object(p), CoreAccessor(core) {
+	L_D();
+	d->peerAddress = peerAddress;
+	d->isComposingHandler.reset(new IsComposing(core->getCCore(), d));
+}
 
 // -----------------------------------------------------------------------------
 
@@ -556,9 +450,9 @@ void ChatRoom::compose () {
 	if (!d->isComposing) {
 		d->isComposing = true;
 		d->sendIsComposingNotification();
-		d->isComposingHandler.startRefreshTimer();
+		d->isComposingHandler->startRefreshTimer();
 	}
-	d->isComposingHandler.startIdleTimer();
+	d->isComposingHandler->startIdleTimer();
 }
 
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
@@ -588,31 +482,17 @@ shared_ptr<ChatMessage> ChatRoom::createMessage () {
 	L_D();
 	shared_ptr<ChatMessage> chatMessage = ObjectFactory::create<ChatMessage>(getSharedFromThis());
 	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(Address(linphone_core_get_identity(d->core)));
+	chatMessage->setFromAddress(Address(linphone_core_get_identity(getCore()->getCCore())));
 	chatMessage->getPrivate()->setTime(ms_time(0));
 	return chatMessage;
 }
 
 void ChatRoom::deleteHistory () {
-	L_D();
-	if (!d->core->db) return;
-	string peer = d->peerAddress.asStringUriOnly();
-	char *buf = sqlite3_mprintf("DELETE FROM history WHERE remoteContact = %Q;", peer.c_str());
-	d->sqlRequest(d->core->db, buf);
-	sqlite3_free(buf);
-	if (d->unreadCount > 0) d->unreadCount = 0;
+	// TODO: history.
 }
 
 void ChatRoom::deleteMessage (const shared_ptr<ChatMessage> &msg) {
-	L_D();
-	if (!d->core->db) return;
-	char *buf = sqlite3_mprintf("DELETE FROM history WHERE id = %u;", msg->getPrivate()->getStorageId());
-	d->sqlRequest(d->core->db, buf);
-	sqlite3_free(buf);
-
-	/* Invalidate unread_count when we modify the database, so that next
-		 time we need it it will be recomputed from latest database state */
-	d->unreadCount = -1;
+	// TODO: history.
 }
 
 shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
@@ -644,66 +524,19 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistory (int nbMessages) {
 
 int ChatRoom::getHistorySize () {
 	L_D();
-	return d->getMessagesCount(false);
+	shared_ptr<Core> core = getCore();
+	return core ? core->getPrivate()->mainDb->getChatMessagesCount(d->peerAddress.asStringUriOnly()) : 0;
 }
 
 list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) {
-	L_D();
-	if (!d->core->db) return list<shared_ptr<ChatMessage> >();
-	string peer = d->peerAddress.asStringUriOnly();
-	d->messages.clear();
-
-	/* Since we want to append query parameters depending on arguments given, we use malloc instead of sqlite3_mprintf */
-	const int bufMaxSize = 512;
-	char *buf = reinterpret_cast<char *>(ms_malloc(bufMaxSize));
-	buf = sqlite3_snprintf(bufMaxSize - 1, buf, "SELECT * FROM history WHERE remoteContact = %Q ORDER BY id DESC", peer.c_str());
-
-	if (startm < 0) startm = 0;
-	if (((endm > 0) && (endm >= startm)) || ((startm == 0) && (endm == 0))) {
-		char *buf2 = ms_strdup_printf("%s LIMIT %i ", buf, endm + 1 - startm);
-		ms_free(buf);
-		buf = buf2;
-	} else if (startm > 0) {
-		lInfo() << __FUNCTION__ << "(): end is lower than start (" << endm << " < " << startm << "). Assuming no end limit.";
-		char *buf2 = ms_strdup_printf("%s LIMIT -1", buf);
-		ms_free(buf);
-		buf = buf2;
-	}
-	if (startm > 0) {
-		char *buf2 = ms_strdup_printf("%s OFFSET %i ", buf, startm);
-		ms_free(buf);
-		buf = buf2;
-	}
-
-	uint64_t begin = ortp_get_cur_time_ms();
-	d->sqlRequestMessage(d->core->db, buf);
-	uint64_t end = ortp_get_cur_time_ms();
-
-	if ((endm + 1 - startm) > 1) {
-		/* Display message only if at least 2 messages are loaded */
-		lInfo() << __FUNCTION__ << "(): completed in " << (int)(end - begin) << " ms";
-	}
-	ms_free(buf);
-
-	if (!d->messages.empty()) {
-		/* Fill local addr with core identity instead of per message */
-		for (auto &message : d->messages) {
-			if (message->getDirection() == ChatMessage::Direction::Outgoing) {
-				message->setFromAddress(Address(linphone_core_get_identity(d->core)));
-			} else {
-				message->setToAddress(Address(linphone_core_get_identity(d->core)));
-			}
-		}
-	}
-
-	list<shared_ptr<ChatMessage> > result = d->messages;
-	d->messages.clear();
-	return result;
+	// TODO: history.
+	return list<shared_ptr<ChatMessage>>();
 }
 
-int ChatRoom::getUnreadMessagesCount () {
+int ChatRoom::getUnreadChatMessagesCount () {
 	L_D();
-	return d->getMessagesCount(true);
+	shared_ptr<Core> core = getCore();
+	return core ? core->getPrivate()->mainDb->getUnreadChatMessagesCount(d->peerAddress.asStringUriOnly()) : 0;
 }
 
 bool ChatRoom::isRemoteComposing () const {
@@ -714,36 +547,21 @@ bool ChatRoom::isRemoteComposing () const {
 void ChatRoom::markAsRead () {
 	L_D();
 
-	if (!d->core->db) return;
+	if (getUnreadChatMessagesCount() == 0)
+		return;
 
-	/* Optimization: do not modify the database if no message is marked as unread */
-	if (getUnreadMessagesCount() == 0) return;
+	shared_ptr<Core> core = getCore();
+	if (!core)
+		return;
 
-	string peer = d->peerAddress.asStringUriOnly();
-	char *buf = sqlite3_mprintf("SELECT * FROM history WHERE remoteContact = %Q AND direction = %i AND status != %i", peer.c_str(), ChatMessage::Direction::Incoming, ChatMessage::State::Displayed);
-	d->sqlRequestMessage(d->core->db, buf);
-	sqlite3_free(buf);
-	for (auto &message : d->messages) {
-		message->sendDisplayNotification();
-	}
-	d->messages.clear();
-	buf = sqlite3_mprintf("UPDATE history SET status=%i WHERE remoteContact=%Q AND direction=%i;", ChatMessage::State::Displayed, peer.c_str(), ChatMessage::Direction::Incoming);
-	d->sqlRequest(d->core->db, buf);
-	sqlite3_free(buf);
+	CorePrivate *dCore = core->getPrivate();
+	const string peerAddress = d->peerAddress.asStringUriOnly();
+	list<shared_ptr<ChatMessage>> chatMessages = dCore->mainDb->getUnreadChatMessages(peerAddress);
 
-	if (d->pendingMessage) {
-		d->pendingMessage->updateState(ChatMessage::State::Displayed);
-		d->pendingMessage->sendDisplayNotification();
-	}
+	for (auto &chatMessage : chatMessages)
+		chatMessage->sendDisplayNotification();
 
-	d->unreadCount = 0;
-}
-
-// -----------------------------------------------------------------------------
-
-LinphoneCore *ChatRoom::getCore () const {
-	L_D();
-	return d->core;
+	dCore->mainDb->markChatMessagesAsRead(peerAddress);
 }
 
 // -----------------------------------------------------------------------------

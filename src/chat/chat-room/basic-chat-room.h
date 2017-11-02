@@ -30,8 +30,7 @@ class BasicChatRoomPrivate;
 
 class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
 public:
-	BasicChatRoom (LinphoneCore *core, const Address &peerAddress);
-	virtual ~BasicChatRoom () = default;
+	BasicChatRoom (const std::shared_ptr<Core> &core, const Address &peerAddress);
 
 	CapabilitiesMask getCapabilities () const override;
 

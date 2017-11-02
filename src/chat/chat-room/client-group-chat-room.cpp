@@ -37,8 +37,6 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ClientGroupChatRoomPrivate::ClientGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
-
 // -----------------------------------------------------------------------------
 
 shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
@@ -68,11 +66,11 @@ void ClientGroupChatRoomPrivate::notifyReceived (string body) {
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (
-	LinphoneCore *core,
+	const std::shared_ptr<Core> &core,
 	const Address &me,
-	const string &uri,
-	const string &subject
-) : ChatRoom(*new ClientGroupChatRoomPrivate(core)), RemoteConference(core, me, nullptr) {
+	const std::string &uri,
+	const std::string &subject
+) : ChatRoom(*new ClientGroupChatRoomPrivate, core, me), RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = ObjectFactory::create<Participant>(Address(uri));
 	RemoteConference::setSubject(subject);
@@ -178,10 +176,11 @@ void ClientGroupChatRoom::leave () {
 }
 
 void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	L_D();
-	SalReferOp *referOp = new SalReferOp(d->core->sal);
+	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+
+	SalReferOp *referOp = new SalReferOp(cCore->sal);
 	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
-	linphone_configure_op(d->core, referOp, lAddr, nullptr, false);
+	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
 	linphone_address_unref(lAddr);
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
@@ -197,8 +196,6 @@ void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>
 }
 
 void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
-	L_D();
-
 	if (isAdmin == participant->isAdmin())
 		return;
 
@@ -207,9 +204,11 @@ void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &pa
 		return;
 	}
 
-	SalReferOp *referOp = new SalReferOp(d->core->sal);
+	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+
+	SalReferOp *referOp = new SalReferOp(cCore->sal);
 	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
-	linphone_configure_op(d->core, referOp, lAddr, nullptr, false);
+	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
 	linphone_address_unref(lAddr);
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
@@ -246,7 +245,7 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
-	
+
 }
 
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
@@ -254,9 +253,9 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
 	d->peerAddress = addr;
-	d->core->cppCore->getPrivate()->insertChatRoom(getSharedFromThis());
+	CoreAccessor::getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 	d->setState(ChatRoom::State::Created);
-	d->core->cppCore->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
+	CoreAccessor::getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {

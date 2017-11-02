@@ -30,13 +30,15 @@ class RealTimeTextChatRoomPrivate;
 
 class LINPHONE_PUBLIC RealTimeTextChatRoom : public ChatRoom {
 public:
-	RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress);
-	virtual ~RealTimeTextChatRoom () = default;
+	// TODO: Make me private.
+	RealTimeTextChatRoom (const std::shared_ptr<Core> &core, const Address &peerAddress);
 
 	CapabilitiesMask getCapabilities () const override;
 
 	uint32_t getChar () const;
 	LinphoneCall *getCall () const;
+
+	void markAsRead () override;
 
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 	/* ConferenceInterface */

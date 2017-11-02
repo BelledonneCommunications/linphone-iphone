@@ -286,8 +286,24 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		time_t date,
 		const string &peerAddress
 	) const {
-		// TODO.
-		return nullptr;
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "SELECT event_id, type, date, local_sip_address.value, "
+			"remote_sip_address.value, imdn_message_id, state, direction, is_secured"
+			"  FROM event, conference_chat_message_event, sip_address AS local_sip_address,"
+			"  sip_address AS remote_sip_address"
+			"  WHERE event_id = event.id"
+			"  AND local_sip_address_id = local_sip_address.id"
+			"  AND remote_sip_address_id = remote_sip_address.id"
+			"  AND remote_sip_address.value = :peerAddress", soci::use(peerAddress);
+
+		// TODO: Create me.
+		shared_ptr<ChatMessage> chatMessage;
+
+		// TODO: Use cache.
+		return make_shared<ConferenceChatMessageEvent>(
+			date,
+			chatMessage
+		);
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantEvent (
@@ -889,7 +905,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		return events;
 	}
 
-	int MainDb::getMessagesCount (const string &peerAddress) const {
+	int MainDb::getChatMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -921,7 +937,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		return count;
 	}
 
-	int MainDb::getUnreadMessagesCount (const string &peerAddress) const {
+	int MainDb::getUnreadChatMessagesCount (const string &peerAddress) const {
 		L_D();
 
 		if (!isConnected()) {
@@ -954,6 +970,45 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		L_END_LOG_EXCEPTION
 
 		return count;
+	}
+
+	void MainDb::markChatMessagesAsRead (const string &peerAddress) const {
+		L_D();
+
+		if (!isConnected()) {
+			lWarning() << "Unable to mark messages as read. Not connected.";
+			return;
+		}
+
+		if (getUnreadChatMessagesCount(peerAddress) == 0)
+			return;
+
+		string query = "UPDATE FROM conference_chat_message_event"
+			"  SET state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+		query += "WHERE";
+		if (!peerAddress.empty())
+			query += " event_id IN ("
+				"  SELECT event_id FROM conference_event WHERE chat_room_id = ("
+				"    SELECT id FROM sip_address WHERE value = :peerAddress"
+				"  )"
+				") AND";
+		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming));
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+
+		if (peerAddress.empty())
+			*session << query;
+		else
+			*session << query, soci::use(peerAddress);
+
+		L_END_LOG_EXCEPTION
+	}
+
+	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const std::string &peerAddress) const {
+		// TODO.
+		return list<shared_ptr<ChatMessage>>();
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const string &peerAddress, int nLast, FilterMask mask) const {
@@ -1080,6 +1135,13 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
 			string sipAddress = row.get<string>(0);
+			shared_ptr<ChatRoom> chatRoom = d->core->findChatRoom(Address(sipAddress));
+			if (chatRoom) {
+				lInfo() << "Don't fetch chat room from database: `" << sipAddress << "`, it already exists.";
+				chatRooms.push_back(chatRoom);
+				continue;
+			}
+
 			tm creationDate = row.get<tm>(1);
 			tm lastUpdateDate = row.get<tm>(2);
 			int capabilities = row.get<int>(3);
@@ -1092,7 +1154,6 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			(void)subject;
 			(void)lastNotifyId;
 
-			shared_ptr<ChatRoom> chatRoom;
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
 				chatRoom = d->core ? d->core->getPrivate()->createChatRoom(
 					Address(sipAddress),
@@ -1121,11 +1182,19 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			return;
 		}
 
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
+
 		d->insertChatRoom(
 			d->insertSipAddress(peerAddress),
 			capabilities,
 			Utils::getTimeTAsTm(time(0))
 		);
+
+		tr.commit();
+
+		L_END_LOG_EXCEPTION
 	}
 
 	void MainDb::deleteChatRoom (const string &peerAddress) {
@@ -1326,12 +1395,18 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	int MainDb::getMessagesCount (const string &) const {
+	int MainDb::getChatMessagesCount (const string &) const {
 		return 0;
 	}
 
-	int MainDb::getUnreadMessagesCount (const string &) const {
+	int MainDb::getUnreadChatMessagesCount (const string &) const {
 		return 0;
+	}
+
+	void MainDb::markChatMessagesAsRead (const string &) const {}
+
+	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const std::string &) const {
+		return list<shared_ptr<ChatMessage>>();
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const string &, int, FilterMask) const {

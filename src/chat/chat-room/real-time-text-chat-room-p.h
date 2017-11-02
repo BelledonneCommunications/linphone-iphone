@@ -29,8 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RealTimeTextChatRoomPrivate : public ChatRoomPrivate {
 public:
-	RealTimeTextChatRoomPrivate (LinphoneCore *core, const Address &peerAddress);
-	virtual ~RealTimeTextChatRoomPrivate ();
+	RealTimeTextChatRoomPrivate () = default;
+	~RealTimeTextChatRoomPrivate ();
 
 public:
 	void setCall (LinphoneCall *call) {

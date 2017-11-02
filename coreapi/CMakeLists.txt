@@ -87,7 +87,6 @@ set(LINPHONE_SOURCE_FILES_C
 	lpc2xml.c
 	lpconfig.c
 	lsd.c
-	message_storage.c
 	misc.c
 	nat_policy.c
 	offeranswer.c

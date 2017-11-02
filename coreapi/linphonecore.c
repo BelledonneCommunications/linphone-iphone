@@ -6106,9 +6106,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 	if(lc->rec_file!=NULL){
 		ms_free(lc->rec_file);
 	}
-	if (lc->chat_db_file){
-		ms_free(lc->chat_db_file);
-	}
 	if (lc->logs_db_file) {
 		ms_free(lc->logs_db_file);
 	}
@@ -6127,7 +6124,6 @@ static void linphone_core_uninit(LinphoneCore *lc)
 
 	linphone_core_free_payload_types(lc);
 	if (lc->supported_formats) ms_free((void *)lc->supported_formats);
-	linphone_core_message_storage_close(lc);
 	linphone_core_call_log_storage_close(lc);
 	linphone_core_friends_storage_close(lc);
 	linphone_core_zrtp_cache_close(lc);
@@ -6508,6 +6504,90 @@ void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook
 
 }
 
+// =============================================================================
+// TODO: Remove me later, code found in message_storage.c.
+// =============================================================================
+
+#ifdef SQLITE_STORAGE_ENABLED
+
+#ifndef _WIN32
+	#if !defined(__QNXNTO__) && !defined(__ANDROID__)
+		#include <ctype.h>
+		#include <langinfo.h>
+		#include <locale.h>
+		#include <iconv.h>
+		#include <string.h>
+	#endif
+#else
+	#include <Windows.h>
+#endif
+
+#define MAX_DB_PATH_SIZE 1024
+
+static char *utf8_convert(const char *filename){
+	char db_file_utf8[MAX_DB_PATH_SIZE] = "";
+#if defined(_WIN32)
+	wchar_t db_file_utf16[MAX_DB_PATH_SIZE]={0};
+	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, filename, -1, db_file_utf16, MAX_DB_PATH_SIZE);
+	WideCharToMultiByte(CP_UTF8, 0, db_file_utf16, -1, db_file_utf8, sizeof(db_file_utf8), NULL, NULL);
+#elif defined(__QNXNTO__) || defined(__ANDROID__)
+	strncpy(db_file_utf8, filename, MAX_DB_PATH_SIZE - 1);
+#else
+	char db_file_locale[MAX_DB_PATH_SIZE] = {'\0'};
+	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
+	size_t inbyteleft = MAX_DB_PATH_SIZE, outbyteleft = MAX_DB_PATH_SIZE;
+	iconv_t cb;
+
+	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
+		strncpy(db_file_utf8, filename, MAX_DB_PATH_SIZE - 1);
+	} else {
+		strncpy(db_file_locale, filename, MAX_DB_PATH_SIZE-1);
+		cb = iconv_open("UTF-8", nl_langinfo(CODESET));
+		if (cb != (iconv_t)-1) {
+			int ret;
+			ret = static_cast<int>(iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft));
+			if(ret == -1) db_file_utf8[0] = '\0';
+			iconv_close(cb);
+		}
+	}
+#endif
+	return ms_strdup(db_file_utf8);
+}
+
+int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
+	char* errmsg = NULL;
+	int ret;
+	int flags = SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE;
+
+#if TARGET_OS_IPHONE
+	/* the secured filesystem of the iPHone doesn't allow writing while the app is in background mode, which is problematic.
+	 * We workaround by asking that the open is made with no protection*/
+	flags |= SQLITE_OPEN_FILEPROTECTION_NONE;
+#endif
+
+	/*since we plug our vfs into sqlite, we convert to UTF-8.
+	 * On Windows, the filename has to be converted back to windows native charset.*/
+	char *utf8_filename = utf8_convert(db_file);
+	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
+	ms_free(utf8_filename);
+
+	if (ret != SQLITE_OK) return ret;
+	// Some platforms do not provide a way to create temporary files which are needed
+	// for transactions... so we work in memory only
+	// see http ://www.sqlite.org/compile.html#temp_store
+	ret = sqlite3_exec(*db, "PRAGMA temp_store=MEMORY", NULL, NULL, &errmsg);
+	if (ret != SQLITE_OK) {
+		ms_error("Cannot set sqlite3 temporary store to memory: %s.", errmsg);
+		sqlite3_free(errmsg);
+	}
+
+	return ret;
+}
+
+#endif
+
+// =============================================================================
+
 void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
 	if (lc->zrtp_secrets_cache != NULL) {
@@ -6821,19 +6901,13 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc){
 	return lp_config_get_int(lc->config,"rtp","video_dscp",0);
 }
 
-void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path){
-	if (lc->chat_db_file){
-		ms_free(lc->chat_db_file);
-		lc->chat_db_file=NULL;
-	}
-	if (path) {
-		lc->chat_db_file=ms_strdup(path);
-		linphone_core_message_storage_init(lc);
-	}
+void linphone_core_set_chat_database_path (LinphoneCore *, const char *) {
+	lError() << "Do not use `linphone_core_set_chat_database_path`. Not necessary.";
 }
 
-const char* linphone_core_get_chat_database_path(const LinphoneCore *lc) {
-	return lc->chat_db_file;
+const char *linphone_core_get_chat_database_path (const LinphoneCore *) {
+	lError() << "Do not use `linphone_core_get_chat_database_path`. Not necessary.";
+	return "";
 }
 
 void linphone_core_enable_sdp_200_ack(LinphoneCore *lc, bool_t enable) {

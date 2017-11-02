@@ -22,6 +22,10 @@
 #include "chat/cpim/cpim.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "core/core.h"
+
+// TODO: Remove me later.
+#include "private.h"
 
 #include "liblinphone_tester.h"
 
@@ -391,7 +395,7 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	lp_config_set_int(config, "sip", "use_cpim", 1);
 
 	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc, paulineAddress);
+	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage("Hello CPIM");
 	if (use_multipart) {

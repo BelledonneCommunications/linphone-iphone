@@ -47,8 +47,8 @@ public:
 		Cpim = 1 << 4
 	};
 
-	ChatMessagePrivate (const std::shared_ptr<ChatRoom> &room);
-	virtual ~ChatMessagePrivate ();
+	ChatMessagePrivate ();
+	~ChatMessagePrivate ();
 
 	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
 
@@ -119,7 +119,10 @@ public:
 	void send();
 
 private:
-	std::shared_ptr<ChatRoom> chatRoom;
+	std::weak_ptr<ChatRoom> chatRoom;
+	Address peerAddress;
+
+	// TODO: Clean attributes.
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
 	ChatMessage::State state = ChatMessage::State::Idle;
 	unsigned int storageId = 0;
@@ -157,9 +160,13 @@ private:
 	void fileUploadEndBackgroundTask();
 	void fileUploadBeginBackgroundTask();
 	bool isFileTransferInProgressAndValid();
-	int startHttpTransfer(std::string url, std::string action, belle_http_request_listener_callbacks_t *cbs);
+	int startHttpTransfer(
+		const std::string &url,
+		const std::string &action,
+		belle_http_request_listener_callbacks_t *cbs
+	);
 	void releaseHttpRequest();
-	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(std::string body);
+	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(const std::string &body);
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

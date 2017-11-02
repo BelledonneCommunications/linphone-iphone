@@ -1575,156 +1575,6 @@ void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, unsi
 	bctbx_list_free_with_data(messages, (void (*)(void *))linphone_chat_message_unref);
 }
 
-static void database_migration(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	char *src_db = bc_tester_res("messages.db");
-	char *tmp_db  = bc_tester_file("tmp.db");
-	const bctbx_list_t* chatrooms;
-	LinphoneChatRoom *cr;
-
-	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
-
-	// enable to test the performances of the migration step
-	//linphone_core_message_storage_set_debug(marie->lc, TRUE);
-
-	// the messages.db has 10000 dummy messages with the very first DB scheme.
-	// This will test the migration procedure
-	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
-	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
-
-	chatrooms = linphone_core_get_chat_rooms(marie->lc);
-	BC_ASSERT(bctbx_list_size(chatrooms) > 0);
-
-	// check that all messages have been migrated to the UTC time storage
-	BC_ASSERT(sqlite3_exec(linphone_core_get_sqlite_database(marie->lc), "SELECT COUNT(*) FROM history WHERE time != '-1';", check_no_strange_time, NULL, NULL) == SQLITE_OK);
-
-	// check that the read messages (field read=1) has been migrated to the LinphoneChatMessageStateDisplayed state
-	cr = linphone_core_get_chat_room_from_uri(marie->lc, "sip:Marielle@sip.linphone.org");
-	BC_ASSERT_EQUAL(linphone_chat_room_get_unread_messages_count(cr), 8, int, "%i");
-
-end:
-	linphone_core_manager_destroy(marie);
-	remove(tmp_db);
-	bc_free(src_db);
-	bc_free(tmp_db);
-}
-
-static void history_range(void){
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
-	LinphoneChatRoom *chatroom;
-	char *src_db = bc_tester_res("messages.db");
-	char *tmp_db  = bc_tester_file("tmp.db");
-
-	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
-
-	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
-	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
-
-	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
-	BC_ASSERT_PTR_NOT_NULL(chatroom);
-	if (chatroom){
-		// We have 20 tests to perform to fully qualify the function, here they are:
-		history_message_count_helper(chatroom, 0, 0, 1);
-		history_message_count_helper(chatroom, -1, 0, 1);
-		history_message_count_helper(chatroom, 0, -1, 1270);
-		history_message_count_helper(chatroom, 1, 3, 3);
-		history_message_count_helper(chatroom, 3, 1, 1270-3);
-		history_message_count_helper(chatroom, 10, 10, 1);
-		history_message_count_helper(chatroom, -1, -1, 1270);
-		history_message_count_helper(chatroom, -1, -2, 1270);
-		history_message_count_helper(chatroom, -2, -1, 1270);
-		history_message_count_helper(chatroom, 3, -1, 1270-3);
-		history_message_count_helper(chatroom, 1, -3, 1270-1);
-		history_message_count_helper(chatroom, 2, -2, 1270-2);
-		history_message_count_helper(chatroom, 2, 0, 1270-2);
-		history_message_count_helper(chatroom, 0, 2, 3);
-		history_message_count_helper(chatroom, -1, 3, 4);
-		history_message_count_helper(chatroom, -2, 2, 3);
-		history_message_count_helper(chatroom, -3, 1, 2);
-	}
-
-end:
-	linphone_core_manager_destroy(marie);
-	linphone_address_unref(jehan_addr);
-	remove(tmp_db);
-	bc_free(src_db);
-	bc_free(tmp_db);
-}
-
-static void history_count(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneAddress *jehan_addr = linphone_address_new("<sip:Jehan@sip.linphone.org>");
-	LinphoneChatRoom *chatroom;
-	bctbx_list_t *messages;
-	char *src_db = bc_tester_res("messages.db");
-	char *tmp_db  = bc_tester_file("tmp.db");
-
-	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
-
-	linphone_core_set_chat_database_path(marie->lc, tmp_db);
-	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
-	if (!linphone_core_get_sqlite_database(marie->lc)) goto end;
-
-	chatroom = linphone_core_get_chat_room(marie->lc, jehan_addr);
-	BC_ASSERT_PTR_NOT_NULL(chatroom);
-	if (chatroom){
-		messages=linphone_chat_room_get_history(chatroom,10);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 10, unsigned int, "%u");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		messages=linphone_chat_room_get_history(chatroom,1);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1, unsigned int, "%u");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		messages=linphone_chat_room_get_history(chatroom,0);
-		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(chatroom), 1270, int, "%d");
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270, unsigned int, "%u");
-
-		/*check the second most recent msg*/
-		BC_ASSERT_PTR_NOT_NULL(messages);
-		if (messages){
-			BC_ASSERT_PTR_NOT_NULL(messages->next->data);
-			if (messages->next->data){
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->next->data), "Fore and aft follow each other.");
-			}
-		}
-
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		/*test offset+limit: retrieve the 42th latest msg only and check its content*/
-		messages=linphone_chat_room_get_history_range(chatroom, 42, 42);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1, unsigned int, "%u");
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage *)messages->data), "If you open yourself to the Tao is intangible and evasive, yet prefers to keep us at the mercy of the kingdom, then all of the streams of hundreds of valleys because of its limitless possibilities.");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		/*test offset without limit*/
-		messages = linphone_chat_room_get_history_range(chatroom, 1265, -1);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270-1265, unsigned int, "%u");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		/*test limit without offset*/
-		messages = linphone_chat_room_get_history_range(chatroom, 0, 5);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 6, unsigned int, "%u");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-
-		/*test invalid start*/
-		messages = linphone_chat_room_get_history_range(chatroom, 1265, 1260);
-		BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(messages), 1270-1265, unsigned int, "%u");
-		bctbx_list_free_with_data(messages, (void (*)(void*))linphone_chat_message_unref);
-	}
-
-end:
-	linphone_core_manager_destroy(marie);
-	linphone_address_unref(jehan_addr);
-	remove(tmp_db);
-	bc_free(src_db);
-	bc_free(tmp_db);
-}
-
-
 void crash_during_file_transfer(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
@@ -1847,10 +1697,6 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 	if (sql_storage) {
 		linphone_core_set_chat_database_path(marie->lc, marie_db);
 		linphone_core_set_chat_database_path(pauline->lc, pauline_db);
-#ifdef SQLITE_STORAGE_ENABLED
-		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(marie->lc));
-		BC_ASSERT_PTR_NOT_NULL(linphone_core_get_sqlite_database(pauline->lc));
-#endif
 
 		if (do_not_store_rtt_messages_in_sql_storage) {
 			lp_config_set_int(linphone_core_get_config(marie->lc), "misc", "store_rtt_messages", 0);
@@ -2506,9 +2352,6 @@ test_t message_tests[] = {
 	TEST_ONE_TAG("Lime transfer message without encryption 2", lime_transfer_message_without_encryption_2, "LIME"),
 	TEST_ONE_TAG("Lime cache migration", lime_cache_migration, "LIME"),
 	TEST_ONE_TAG("Lime unitary", lime_unit, "LIME"),
-	TEST_NO_TAG("Database migration", database_migration),
-	TEST_NO_TAG("History range", history_range),
-	TEST_NO_TAG("History count", history_count),
 #endif
 	TEST_NO_TAG("Transfer not sent if invalid url", file_transfer_not_sent_if_invalid_url),
 	TEST_NO_TAG("Transfer not sent if host not found", file_transfer_not_sent_if_host_not_found),

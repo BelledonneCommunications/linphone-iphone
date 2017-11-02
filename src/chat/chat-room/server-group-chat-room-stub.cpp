@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "core/core.h"
+
 #include "server-group-chat-room-p.h"
 
 // =============================================================================
@@ -24,8 +26,6 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-ServerGroupChatRoomPrivate::ServerGroupChatRoomPrivate (LinphoneCore *core) : ChatRoomPrivate(core) {}
 
 // -----------------------------------------------------------------------------
 
@@ -73,8 +73,9 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 
 // =============================================================================
 
-ServerGroupChatRoom::ServerGroupChatRoom (LinphoneCore *core, SalCallOp *op)
-	: ChatRoom(*new ServerGroupChatRoomPrivate(core)), LocalConference(core, Address(op->get_to()), nullptr) {}
+ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
+  ChatRoom(*new ServerGroupChatRoomPrivate, core, Address(op->get_to())),
+	LocalConference(core->getCCore(), Address(op->get_to()), nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {
 	return 0;

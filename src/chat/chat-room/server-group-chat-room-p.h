@@ -35,8 +35,7 @@ class Participant;
 
 class ServerGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	ServerGroupChatRoomPrivate (LinphoneCore *core);
-	virtual ~ServerGroupChatRoomPrivate () = default;
+	ServerGroupChatRoomPrivate () = default;
 
 	std::shared_ptr<Participant> addParticipant (const Address &addr);
 	void confirmCreation ();

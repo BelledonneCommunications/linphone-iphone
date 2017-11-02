@@ -20,6 +20,7 @@
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "conference/participant.h"
+#include "core/core.h"
 #include "logger/logger.h"
 #include "real-time-text-chat-room-p.h"
 
@@ -28,11 +29,6 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-RealTimeTextChatRoomPrivate::RealTimeTextChatRoomPrivate (LinphoneCore *core, const Address &peerAddress)
-	: ChatRoomPrivate(core) {
-	this->peerAddress = peerAddress;
-}
 
 RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
 	if (!receivedRttCharacters.empty()) {
@@ -49,6 +45,9 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 	const uint32_t crlf = 0x0D0A;
 	const uint32_t lf = 0x0A;
 
+	shared_ptr<Core> core = q->getCore();
+	LinphoneCore *cCore = core->getCCore();
+
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		LinphoneChatMessageCharacter *cmc = bctbx_new0(LinphoneChatMessageCharacter, 1);
 
@@ -60,7 +59,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 		receivedRttCharacters.push_back(cmc);
 
 		remoteIsComposing.insert(peerAddress.asStringUriOnly());
-		linphone_core_notify_is_composing_received(core, L_GET_C_BACK_PTR(q));
+		linphone_core_notify_is_composing_received(cCore, L_GET_C_BACK_PTR(q));
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
 			/* End of message */
@@ -70,17 +69,14 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 				Address(
 					linphone_call_get_dest_proxy(call)
 						? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
-						: linphone_core_get_identity(core)
+						: linphone_core_get_identity(cCore)
 				)
 			);
 			pendingMessage->getPrivate()->setState(ChatMessage::State::Delivered);
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 
-			if (lp_config_get_int(core->config, "misc", "store_rtt_messages", 1) == 1)
+			if (lp_config_get_int(cCore->config, "misc", "store_rtt_messages", 1) == 1)
 				storeOrUpdateMessage(pendingMessage);
-
-			if (unreadCount < 0) unreadCount = 1;
-			else unreadCount++;
 
 			chatMessageReceived(pendingMessage);
 			pendingMessage = nullptr;
@@ -106,8 +102,8 @@ void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage
 
 // =============================================================================
 
-RealTimeTextChatRoom::RealTimeTextChatRoom (LinphoneCore *core, const Address &peerAddress) :
-	ChatRoom(*new RealTimeTextChatRoomPrivate(core, peerAddress)) {}
+RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const Address &peerAddress) :
+	ChatRoom(*new RealTimeTextChatRoomPrivate, core, peerAddress) {}
 
 int RealTimeTextChatRoom::getCapabilities () const {
 	return static_cast<int>(Capabilities::Basic) | static_cast<int>(Capabilities::RealTimeText);
@@ -131,6 +127,15 @@ uint32_t RealTimeTextChatRoom::getChar () const {
 LinphoneCall *RealTimeTextChatRoom::getCall () const {
 	L_D();
 	return d->call;
+}
+
+void RealTimeTextChatRoom::markAsRead () {
+	L_D();
+	ChatRoom::markAsRead();
+	if (d->pendingMessage) {
+		d->pendingMessage->updateState(ChatMessage::State::Displayed);
+		d->pendingMessage->sendDisplayNotification();
+	}
 }
 
 // -----------------------------------------------------------------------------

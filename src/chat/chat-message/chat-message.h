@@ -25,6 +25,7 @@
 #include "linphone/api/c-types.h"
 #include "linphone/enums/chat-message-enums.h"
 
+#include "core/core-accessor.h"
 #include "object/object.h"
 
 // =============================================================================
@@ -36,7 +37,7 @@ class ChatRoom;
 class Content;
 class ChatMessagePrivate;
 
-class LINPHONE_PUBLIC ChatMessage : public Object {
+class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;
 	friend class CpimChatMessageModifier;
@@ -49,6 +50,7 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 	L_DECLARE_ENUM(Direction, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
+	// TODO: Make me private.
 	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom);
 
 	// ----- TODO: Remove me.
