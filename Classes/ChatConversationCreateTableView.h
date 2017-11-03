@@ -17,6 +17,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIIconButton *controllerNextButton;
 
+@property(nonatomic) Boolean isForEditing;
 - (void) loadData;
 
 @end

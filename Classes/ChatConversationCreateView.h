@@ -27,6 +27,8 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *linphoneButton;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
 
+@property(nonatomic) Boolean isForEditing;
+
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onNextClick:(id)sender;
 

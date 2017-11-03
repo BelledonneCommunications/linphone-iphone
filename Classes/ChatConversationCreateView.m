@@ -53,12 +53,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView setCollectionViewLayout:layout];
 	_tableController.collectionView = _collectionView;
 	_tableController.controllerNextButton = _nextButton;
+	_isForEditing = FALSE;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	if(_tableController.contactsGroup.count == 0) {
-		_nextButton.enabled = FALSE;
+		if (!_isForEditing)
+			_nextButton.enabled = FALSE;
+
 		_tableController.tableView.frame = CGRectMake(_tableController.tableView.frame.origin.x,
 													  _tableController.searchBar.frame.origin.y + _tableController.searchBar.frame.size.height,
 													  _tableController.tableView.frame.size.width,
@@ -67,6 +70,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_collectionView reloadData];
 	[self changeView:ContactsAll];
 	[_tableController loadData];
+	_tableController.isForEditing = _isForEditing;
 }
 
 #pragma mark - searchBar delegate
@@ -119,8 +123,15 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 		return;
 	}
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	view.contacts = _tableController.contactsDict;
-	view.create = TRUE;
+	if (!_isForEditing)
+		view.contacts = _tableController.contactsDict;
+	else {
+		for (NSString *uri in _tableController.contactsDict) {
+			[view.contacts setObject:[_tableController.contactsDict objectForKey:uri] forKey:uri];
+		}
+	}
+
+	view.create = !_isForEditing;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

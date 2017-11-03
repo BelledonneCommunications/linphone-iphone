@@ -123,7 +123,7 @@
                                     <state key="disabled" image="valid_disabled.png"/>
                                     <state key="highlighted" backgroundImage="color_E.png"/>
                                     <connections>
-                                        <action selector="onBackClick:" destination="-1" eventType="touchUpInside" id="EHU-0A-zHi"/>
+                                        <action selector="onAddClick:" destination="-1" eventType="touchUpInside" id="Dcn-sR-xRc"/>
                                     </connections>
                                 </button>
                             </subviews>

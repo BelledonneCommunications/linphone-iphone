@@ -107,6 +107,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		view.tableController.contactsDict = _contacts;
 		view.tableController.contactsGroup = [[_contacts allKeys] mutableCopy];
 		view.tableController.notFirstTime = TRUE;
+		view.isForEditing = FALSE;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
@@ -115,6 +116,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onQuitClick:(id)sender {
+}
+
+- (IBAction)onAddClick:(id)sender {
+	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+	view.tableController.notFirstTime = TRUE;
+	view.isForEditing = !_create;
+	[view.tableController.contactsDict removeAllObjects];
+	[view.tableController.contactsGroup removeAllObjects];
+	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
 #pragma mark - TableView

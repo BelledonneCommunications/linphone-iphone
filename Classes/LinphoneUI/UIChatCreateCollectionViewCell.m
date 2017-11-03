@@ -47,6 +47,6 @@
 	}
 	[_controller.collectionView reloadData];
 	[_controller.tableController.tableView reloadData];
-	_controller.tableController.controllerNextButton.enabled = (_controller.tableController.contactsGroup.count > 0);
+	_controller.nextButton.enabled = (_controller.tableController.contactsGroup.count > 0) || _controller.isForEditing;
 }
 @end

@@ -38,6 +38,30 @@
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
+	if (_contactsGroup.count > 0) {
+		[UIView animateWithDuration:0
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x,
+															_collectionView.frame.origin.y + _collectionView.frame.size.height,
+															self.tableView.frame.size.width,
+															self.tableView.frame.size.height - _collectionView.frame.size.height)];
+
+						 }
+						 completion:nil];
+	} else {
+		[UIView animateWithDuration:0
+							  delay:0
+							options:UIViewAnimationOptionCurveEaseOut
+						 animations:^{
+							 [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x,
+															_searchBar.frame.origin.y + _searchBar.frame.size.height,
+															self.tableView.frame.size.width,
+															self.tableView.frame.size.height + _collectionView.frame.size.height)];
+						 }
+						 completion:nil];
+	}
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
@@ -81,6 +105,8 @@
 
 	[self.tableView reloadData];
 }
+
+#pragma mark - TableView methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 	return 1;
@@ -129,7 +155,7 @@
 		[_contactsDict removeObjectForKey:cell.addressLabel.text];
 	}
 	cell.selectedImage.hidden = !cell.selectedImage.hidden;
-	_controllerNextButton.enabled = (_contactsGroup.count > 0);
+	_controllerNextButton.enabled = (_contactsGroup.count > 0) || _isForEditing;
 	if (_contactsGroup.count > 1 || (_contactsGroup.count == 1 && cell.selectedImage.hidden)) {
 		[UIView animateWithDuration:0.2
 							  delay:0
