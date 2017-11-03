@@ -940,6 +940,15 @@ void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, 
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 	bool_t call_logs_sqlite_db_found = FALSE;
 
+	// Do not add calls made to the conference factory in the history
+	char *to = linphone_address_as_string(call_log->to);
+	const char *conference_factory_uri = linphone_core_get_conference_factory_uri(lc);
+	if (strcmp(conference_factory_uri, to) == 0) {
+		ms_free(to);
+		return;
+	}
+	ms_free(to);
+
 #ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {
 		call_logs_sqlite_db_found = TRUE;
