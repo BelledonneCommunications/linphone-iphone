@@ -25,6 +25,7 @@
 
 @interface UIChatBubbleTextCell : UITableViewCell
 
+@property(readonly, nonatomic) LinphoneEventLog *event;
 @property(readonly, nonatomic) LinphoneChatMessage *message;
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
@@ -42,6 +43,7 @@
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 
+- (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 
 - (IBAction)onDeleteClick:(id)event;

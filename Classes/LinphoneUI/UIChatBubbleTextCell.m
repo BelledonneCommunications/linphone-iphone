@@ -49,6 +49,18 @@
 
 #pragma mark -
 
+- (void)setEvent:(LinphoneEventLog *)event {
+	if(!event)
+		return;
+
+	_event = event;
+	if (!(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage)) {
+		LOGE(@"Impossible to create a ChatBubbleText whit a non message event");
+		return;
+	}
+	[self setChatMessage:linphone_event_log_get_chat_message(event)];
+}
+
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	if (amessage == _message) {
 		return;
@@ -65,7 +77,9 @@
 	if (amessage) {
 		linphone_chat_message_ref(_message);
 		linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), message_status);
+		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+		linphone_chat_message_cbs_set_user_data(cbs, (__bridge void *)self);
 	}
 }
 
@@ -249,8 +263,9 @@
 #pragma mark - State changed handling
 static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState state) {
 	LOGI(@"State for message [%p] changed to %s", msg, linphone_chat_message_state_to_string(state));
+	UIChatBubbleTextCell *data = (__bridge UIChatBubbleTextCell *)linphone_chat_message_cbs_get_user_data(linphone_chat_message_get_callbacks(msg));
 	ChatConversationView *view = VIEW(ChatConversationView);
-	[view.tableController updateChatEntry:msg];
+	[view.tableController updateEventEntry:data.event];
 }
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state {
@@ -286,21 +301,13 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 	if (!text || text.length == 0)
 		return CGSizeMake(0, 0);
 
-#pragma deploymate push "ignored-api-availability"
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-	if ([[[UIDevice currentDevice] systemVersion] doubleValue] >= 7) {
-		return [text boundingRectWithSize:size
-								  options:(NSStringDrawingUsesLineFragmentOrigin |
-										   NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
-							   attributes:@{
-								   NSFontAttributeName : font
-							   }
-								  context:nil]
-			.size;
-	}
-#endif
-#pragma deploymate pop
-	{ return [text sizeWithFont:font constrainedToSize:size lineBreakMode:NSLineBreakByCharWrapping]; }
+	return [text boundingRectWithSize:size
+							  options:(NSStringDrawingUsesLineFragmentOrigin |
+									   NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
+						   attributes:@{
+							   NSFontAttributeName : font
+						   }
+							  context:nil].size;
 }
 
 static const CGFloat CELL_MIN_HEIGHT = 60.0f;

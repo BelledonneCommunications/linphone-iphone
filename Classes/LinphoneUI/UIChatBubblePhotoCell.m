@@ -232,7 +232,7 @@
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[view.tableController updateChatEntry:self.message];
+		[view.tableController updateEventEntry:self.event];
 	}
 }
 - (void)onFileTransferRecvUpdate:(NSNotification *)notif {
@@ -243,7 +243,7 @@
 		_fileTransferProgress.hidden = _cancelButton.hidden = (_fileTransferProgress.progress == 1.f);
 	} else {
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[view.tableController updateChatEntry:self.message];
+		[view.tableController updateEventEntry:self.event];
 	}
 }
 

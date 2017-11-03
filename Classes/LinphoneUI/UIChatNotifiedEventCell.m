@@ -15,6 +15,13 @@
 
 @implementation UIChatNotifiedEventCell
 
+#pragma mark - Class methods
+static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
+
++ (CGFloat)height {
+	return NOTIFIED_CELL_HEIGHT;
+}
+
 #pragma mark - Lifecycle Functions
 
 - (id)initWithIdentifier:(NSString *)identifier {
@@ -29,6 +36,7 @@
 			[self addSubview:sub];
 		}
 	}
+	_event = NULL;
 	return self;
 }
 
@@ -36,10 +44,76 @@
 	_event = NULL;
 }
 
+- (void)setEditing:(BOOL)editing {
+	[self setEditing:editing animated:FALSE];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated {
+	_leftBar.hidden = _rightBar.hidden = editing;
+	if (editing)
+		[_contactDateLabel setFrame:CGRectMake(1, 1, _contactDateLabel.frame.size.width, NOTIFIED_CELL_HEIGHT)];
+}
+
 #pragma mark -
 
 - (void)setEvent:(LinphoneEventLog *)event {
-	
+	_event = event;
+	NSString *eventString;
+	switch (linphone_event_log_get_type(event)) {
+		case LinphoneEventLogTypeConferenceSubjectChanged: {
+			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event)];
+			NSString *formatedString = [NSString stringWithFormat:@"Chat room subject changed to : %@", subject];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		case LinphoneEventLogTypeConferenceParticipantAdded: {
+			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ was added to the chat room", participant];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		case LinphoneEventLogTypeConferenceParticipantRemoved: {
+			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ was removed to the chat room", participant];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		case LinphoneEventLogTypeConferenceParticipantSetAdmin: {
+			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ was set admin of the chat room", participant];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		case LinphoneEventLogTypeConferenceParticipantUnsetAdmin: {
+			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ is no more an admin of the chat room", participant];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		default:
+			return;
+	}
+	NSString *timeString = [LinphoneUtils timeToString:linphone_event_log_get_time(event)
+											withFormat:LinphoneDateChatBubble];
+
+	_contactDateLabel.text = [NSString stringWithFormat:@"%@ - %@", timeString, eventString];
+
+	CGSize newSize = [_contactDateLabel.text boundingRectWithSize:CGSizeZero
+														  options:(NSStringDrawingUsesLineFragmentOrigin |
+																   NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading)
+													   attributes:@{NSFontAttributeName :_contactDateLabel.font}
+														  context:nil].size;
+	float delta = (_contactDateLabel.frame.size.width - newSize.width) / 2;
+
+	[_contactDateLabel setFrame:CGRectMake((_eventView.frame.size.width - newSize.width) / 2, 1, newSize.width, NOTIFIED_CELL_HEIGHT)];
+	[_leftBar setFrame:CGRectMake(0,
+								  _leftBar.frame.origin.y,
+								  _contactDateLabel.frame.origin.x - 5,
+								  1)];
+	[_rightBar setFrame:CGRectMake(_contactDateLabel.frame.origin.x + newSize.width + 5,
+								   _rightBar.frame.origin.y,
+								   _rightBar.frame.size.width + delta,
+								   1)];
 }
 
 - (void)layoutSubviews {

@@ -12,6 +12,9 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UIChatNotifiedEventCell">
             <connections>
                 <outlet property="contactDateLabel" destination="t5k-5N-iBU" id="b6X-2a-1jl"/>
+                <outlet property="eventView" destination="vAS-G5-9nz" id="4DB-Nl-8bN"/>
+                <outlet property="leftBar" destination="hk1-mC-xLF" id="hax-Ji-XpZ"/>
+                <outlet property="rightBar" destination="nHs-Ev-fGT" id="vvz-5w-tIh"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>

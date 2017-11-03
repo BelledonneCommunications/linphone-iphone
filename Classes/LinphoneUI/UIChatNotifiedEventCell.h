@@ -16,8 +16,14 @@
 
 @property(readonly, nonatomic) LinphoneEventLog *event;
 @property (weak, nonatomic) IBOutlet UILabel *contactDateLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *rightBar;
+@property (weak, nonatomic) IBOutlet UIImageView *leftBar;
+@property (weak, nonatomic) IBOutlet UITableViewCell *eventView;
+
++ (CGFloat)height;
 
 - (void)setEvent:(LinphoneEventLog *)event;
+
 @end
 
 #endif /* UIChatNotifiedEventCell_h */

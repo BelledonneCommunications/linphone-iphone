@@ -35,15 +35,15 @@
 
 @interface ChatConversationTableView : UICheckBoxTableView {
   @private
-	MSList *messageList;
+	MSList *eventList;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
 
-- (void)addChatEntry:(LinphoneChatMessage *)chat;
+- (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;
 - (void)scrollToLastUnread:(BOOL)animated;
-- (void)updateChatEntry:(LinphoneChatMessage *)chat;
+- (void)updateEventEntry:(LinphoneEventLog *)event;
 
 @end

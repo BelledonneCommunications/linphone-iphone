@@ -100,13 +100,9 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 }
 
 - (void)createChatRoom {
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, "dummy subject");
 	NSString *addr = _tableController.contactsDict.allKeys[0];
-	NSString* name = [_tableController.contactsDict objectForKey:addr];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, name.UTF8String);
-	if(!room) {
-		return;
-	}
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
 	linphone_chat_room_cbs_set_state_changed(cbs, create_chat_room_state_changed);
 	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
