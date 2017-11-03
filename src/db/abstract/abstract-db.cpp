@@ -38,14 +38,14 @@ LINPHONE_BEGIN_NAMESPACE
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
 // Force static sqlite3 linking for IOS and Android.
-#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+#if TARGET_OS_IPHONE || defined(__ANDROID__)
 	extern "C" void register_factory_sqlite3();
-#endif // defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+#endif // TARGET_OS_IPHONE || defined(__ANDROID__)
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
 
-	#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+	#if TARGET_OS_IPHONE || defined(__ANDROID__)
 		if (backend == Sqlite3)
 			register_factory_sqlite3();
 	#endif // defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
