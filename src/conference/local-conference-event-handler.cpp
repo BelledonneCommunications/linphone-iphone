@@ -76,14 +76,14 @@ void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify
 			sendNotify(notify, participant->getAddress());
 }
 
-string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId) {
+string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
 	if (notifyId == -1) {
 		lastNotify = lastNotify + 1;
 		confInfo.setVersion(lastNotify);
 	} else {
 		confInfo.setVersion(static_cast<unsigned int>(notifyId));
 	}
-
+	confInfo.setState(isFullState ? "full" : "optional");
 	if (!confInfo.getConferenceDescription()) {
 		ConferenceDescriptionType description = ConferenceDescriptionType();
 		confInfo.setConferenceDescription(description);
@@ -130,7 +130,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) 
 		confInfo.getUsers()->getUser().push_back(user);
 	}
 
-	return createNotify(confInfo, notifyId);
+	return createNotify(confInfo, notifyId, TRUE);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr, int notifyId) {

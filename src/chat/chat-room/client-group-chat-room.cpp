@@ -263,7 +263,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 	d->setState(ChatRoom::State::Terminated);
 }
 
-void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
+void ClientGroupChatRoom::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {
 	L_D_T(RemoteConference, dConference);
 
 	if (isMe(addr))
@@ -293,7 +293,7 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) {
+void ClientGroupChatRoom::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {
 	L_D_T(RemoteConference, dConference);
 
 	shared_ptr<Participant> participant = findParticipant(addr);
@@ -320,7 +320,7 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, const Address &addr) 
 	dConference->participants.remove(participant);
 }
 
-void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) {
+void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {
 	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -349,7 +349,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, const Address &addr,
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onSubjectChanged (time_t tm, const std::string &subject) {
+void ClientGroupChatRoom::onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) {
 	L_D_T(RemoteConference, dConference);
 	RemoteConference::setSubject(subject);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
@@ -367,7 +367,7 @@ void ClientGroupChatRoom::onSubjectChanged (time_t tm, const std::string &subjec
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) {
+void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
 	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -396,7 +396,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, const Address &ad
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) {
+void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
 	L_D_T(RemoteConference, dConference);
 	shared_ptr<Participant> participant;
 	if (isMe(addr))

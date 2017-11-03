@@ -77,6 +77,7 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	if (confInfo->getConferenceDescription()->getFreeText().present())
 		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
 
+	bool isFullState = (confInfo->getState() == "full");
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.clean();
 	cleanedConfAddress.setPort(0);
@@ -92,7 +93,7 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
 		)
-			d->listener->onSubjectChanged(tm, confInfo->getConferenceDescription().get().getSubject().get());
+			d->listener->onSubjectChanged(tm, isFullState, confInfo->getConferenceDescription().get().getSubject().get());
 
 		if (confInfo->getVersion().present())
 			d->lastNotify = confInfo->getVersion().get();
@@ -106,7 +107,7 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			Address addr(cAddrStr);
 			bctbx_free(cAddrStr);
 			if (user.getState() == "deleted")
-				d->listener->onParticipantRemoved(tm, addr);
+				d->listener->onParticipantRemoved(tm, isFullState, addr);
 			else {
 				bool isAdmin = false;
 				if (user.getRoles()) {
@@ -118,17 +119,17 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 					}
 				}
 				if (user.getState() == "full")
-					d->listener->onParticipantAdded(tm, addr);
-				d->listener->onParticipantSetAdmin(tm, addr, isAdmin);
+					d->listener->onParticipantAdded(tm, isFullState, addr);
+				d->listener->onParticipantSetAdmin(tm, isFullState, addr, isAdmin);
 				for (const auto &endpoint : user.getEndpoint()) {
 					if (!endpoint.getEntity().present())
 						break;
 
 					Address gruu(endpoint.getEntity().get());
 					if (endpoint.getState() == "deleted")
-						d->listener->onParticipantDeviceRemoved(tm, addr, gruu);
+						d->listener->onParticipantDeviceRemoved(tm, isFullState, addr, gruu);
 					else if (endpoint.getState() == "full")
-						d->listener->onParticipantDeviceAdded(tm, addr, gruu);
+						d->listener->onParticipantDeviceAdded(tm, isFullState, addr, gruu);
 
 				}
 			}

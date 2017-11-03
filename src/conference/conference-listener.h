@@ -35,12 +35,12 @@ class ConferenceListener {
 public:
 	virtual void onConferenceCreated (const Address &addr) = 0;
 	virtual void onConferenceTerminated (const Address &addr) = 0;
-	virtual void onParticipantAdded (time_t tm, const Address &addr) = 0;
-	virtual void onParticipantRemoved (time_t tm, const Address &addr) = 0;
-	virtual void onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) = 0;
-	virtual void onSubjectChanged (time_t tm, const std::string &subject) = 0;
-	virtual void onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) = 0;
-	virtual void onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) = 0;
+	virtual void onParticipantAdded (time_t tm, bool isFullState, const Address &addr) = 0;
+	virtual void onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) = 0;
+	virtual void onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) = 0;
+	virtual void onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) = 0;
+	virtual void onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) = 0;
+	virtual void onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) = 0;
 };
 
 LINPHONE_END_NAMESPACE

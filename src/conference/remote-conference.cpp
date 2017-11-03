@@ -89,16 +89,16 @@ void RemoteConference::onConferenceTerminated (const Address &addr) {
 	d->eventHandler->unsubscribe();
 }
 
-void RemoteConference::onParticipantAdded (time_t tm, const Address &addr) {}
+void RemoteConference::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {}
 
-void RemoteConference::onParticipantRemoved (time_t tm, const Address &addr) {}
+void RemoteConference::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {}
 
-void RemoteConference::onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) {}
+void RemoteConference::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {}
 
-void RemoteConference::onSubjectChanged (time_t tm, const std::string &subject) {}
+void RemoteConference::onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) {}
 
-void RemoteConference::onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) {}
+void RemoteConference::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {}
 
-void RemoteConference::onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) {}
+void RemoteConference::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {}
 
 LINPHONE_END_NAMESPACE

@@ -447,12 +447,12 @@ public:
 private:
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (time_t tm, const Address &addr) override;
-	void onParticipantRemoved (time_t tm, const Address &addr) override;
-	void onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) override;
-	void onSubjectChanged (time_t tm, const string &subject) override;
-	void onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) override;
-	void onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) override;
+	void onParticipantAdded (time_t tm, bool isFullState, const Address &addr) override;
+	void onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) override;
+	void onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) override;
+	void onSubjectChanged (time_t tm, bool isFullState, const string &subject) override;
+	void onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
+	void onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
 
 public:
 	RemoteConferenceEventHandler *handler;
@@ -473,33 +473,33 @@ void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
 
 void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
 
-void ConferenceEventTester::onParticipantAdded (time_t tm, const Address &addr) {
+void ConferenceEventTester::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {
 	participants.insert(pair<string, bool>(addr.asString(), FALSE));
 	participantDevices.insert(pair<string, int>(addr.asString(), 0));
 }
-void ConferenceEventTester::onParticipantRemoved (time_t tm, const Address &addr) {
+void ConferenceEventTester::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {
 	participants.erase(addr.asString());
 	participantDevices.erase(addr.asString());
 }
 
-void ConferenceEventTester::onParticipantSetAdmin (time_t tm, const Address &addr, bool isAdmin) {
+void ConferenceEventTester::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {
 	auto it = participants.find(addr.asString());
 	if (it != participants.end())
 		it->second = isAdmin;
 }
 
-void ConferenceEventTester::onSubjectChanged(time_t tm, const string &subject) {
+void ConferenceEventTester::onSubjectChanged(time_t tm, bool isFullState, const string &subject) {
 	confSubject = subject;
 }
 
-void ConferenceEventTester::onParticipantDeviceAdded (time_t tm, const Address &addr, const Address &gruu) {
+void ConferenceEventTester::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end())
 		it->second++;
 
 }
 
-void ConferenceEventTester::onParticipantDeviceRemoved (time_t tm, const Address &addr, const Address &gruu) {
+void ConferenceEventTester::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end() && it->second > 0)
 		it->second--;
