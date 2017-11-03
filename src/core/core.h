@@ -42,6 +42,8 @@ class LINPHONE_PUBLIC Core : public Object {
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(Core);
 
+	~Core ();
+
 	// Return a new Core instance. Entry point of Linphone.
 	static std::shared_ptr<Core> create (LinphoneCore *cCore);
 

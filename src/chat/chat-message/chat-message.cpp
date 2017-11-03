@@ -642,8 +642,7 @@ void ChatMessagePrivate::processResponseFromPostFile (const belle_http_response_
 			shared_ptr<Core> core = q->getCore();
 			shared_ptr<ChatRoom> chatRoom = q->getChatRoom();
 
-			if (core)
-				imee = linphone_core_get_im_encryption_engine(core->getCCore());
+			imee = linphone_core_get_im_encryption_engine(core->getCCore());
 
 			if (imee && chatRoom) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
@@ -938,9 +937,6 @@ int ChatMessagePrivate::startHttpTransfer (
 	belle_generic_uri_t *uri = nullptr;
 
 	shared_ptr<Core> core = q->getCore();
-	if (!core)
-		return -1;
-
 	const char *ua = linphone_core_get_user_agent(core->getCCore());
 
 	if (url.empty()) {
@@ -1108,14 +1104,13 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
-		if (core)
-			for (const auto &c : contents) {
-				if (linphone_core_is_content_type_supported(core->getCCore(), c.getContentType().asString().c_str())) {
-					foundSupportContentType = true;
-					break;
-				} else
-					lError() << "Unsupported content-type: " << c.getContentType().asString();
-			}
+		for (const auto &c : contents) {
+			if (linphone_core_is_content_type_supported(core->getCCore(), c.getContentType().asString().c_str())) {
+				foundSupportContentType = true;
+				break;
+			} else
+			lError() << "Unsupported content-type: " << c.getContentType().asString();
+		}
 
 		if (!foundSupportContentType) {
 			errorCode = 415;
@@ -1124,11 +1119,9 @@ LinphoneReason ChatMessagePrivate::receive () {
 	}
 
 	// Check if this is in fact an outgoing message (case where this is a message sent by us from an other device).
-	if (core) {
-		Address me(linphone_core_get_identity(core->getCCore()));
-		if (me.weakEqual(from))
-			setDirection(ChatMessage::Direction::Outgoing);
-	}
+	Address me(linphone_core_get_identity(core->getCCore()));
+	if (me.weakEqual(from))
+		setDirection(ChatMessage::Direction::Outgoing);
 
 	// Check if this is a duplicate message.
 	if (chatRoom && chatRoom->findMessageWithDirection(q->getImdnMessageId(), q->getDirection()))
@@ -1174,7 +1167,7 @@ void ChatMessagePrivate::send () {
 	}
 
 	shared_ptr<Core> core = q->getCore();
-	if (core && lp_config_get_int(core->getCCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
+	if (lp_config_get_int(core->getCCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
 		call = linphone_core_get_call_by_remote_address(core->getCCore(), to.asString().c_str());
 		if (call) {
 			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
@@ -1198,7 +1191,7 @@ void ChatMessagePrivate::send () {
 		}
 	}
 
-	if (core && !op) {
+	if (!op) {
 		LinphoneAddress *peer = linphone_address_new(to.asString().c_str());
 		/* Sending out of call */
 		salOp = op = new SalMessageOp(core->getCCore()->sal);
@@ -1257,7 +1250,7 @@ void ChatMessagePrivate::send () {
 		if ((currentSendStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
 			lInfo() << "Cpim step already done, skipping";
 		} else {
-			if (core && lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", 0) == 1) {
+			if (lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", 0) == 1) {
 				CpimChatMessageModifier ccmm;
 				ccmm.encode(q->getSharedFromThis(), errorCode);
 			}
@@ -1329,11 +1322,8 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 	L_D();
 
 	shared_ptr<ChatRoom> chatRoom = d->chatRoom.lock();
-	if (!chatRoom) {
-		shared_ptr<Core> core = getCore();
-		if (core)
-			chatRoom = core->getOrCreateBasicChatRoom(d->peerAddress);
-	}
+	if (!chatRoom)
+		chatRoom = getCore()->getOrCreateBasicChatRoom(d->peerAddress);
 
 	return chatRoom;
 }
@@ -1388,11 +1378,7 @@ void ChatMessage::setImdnMessageId (const string &id) {
 bool ChatMessage::isRead () const {
 	L_D();
 
-	shared_ptr<Core> core = getCore();
-	if (!core)
-		return false;
-
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core->getCCore());
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(getCore()->getCCore());
 	if (linphone_im_notif_policy_get_recv_imdn_displayed(policy) && d->state == State::Displayed)
 		return true;
 
@@ -1578,11 +1564,7 @@ void ChatMessage::send () {
 void ChatMessage::sendDeliveryNotification (LinphoneReason reason) {
 	L_D();
 
-	shared_ptr<Core> core = getCore();
-	if (!core)
-		return;
-
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core->getCCore());
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(getCore()->getCCore());
 	if (linphone_im_notif_policy_get_send_imdn_delivered(policy))
 		d->sendImdn(Imdn::Type::Delivery, reason);
 }
@@ -1590,21 +1572,13 @@ void ChatMessage::sendDeliveryNotification (LinphoneReason reason) {
 void ChatMessage::sendDisplayNotification () {
 	L_D();
 
-	shared_ptr<Core> core = getCore();
-	if (!core)
-		return;
-
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(core->getCCore());
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(getCore()->getCCore());
 	if (linphone_im_notif_policy_get_send_imdn_displayed(policy))
 		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
 int ChatMessage::uploadFile () {
 	L_D();
-
-	shared_ptr<Core> core = getCore();
-	if (!core)
-		return -1;
 
 	if (d->httpRequest) {
 		lError() << "linphone_chat_room_upload_file(): there is already an upload in progress.";
@@ -1616,7 +1590,7 @@ int ChatMessage::uploadFile () {
 	cbs.process_io_error = _chat_message_process_io_error_upload;
 	cbs.process_auth_requested = _chat_message_process_auth_requested_upload;
 
-	int err = d->startHttpTransfer(linphone_core_get_file_transfer_server(core->getCCore()), "POST", &cbs);
+	int err = d->startHttpTransfer(linphone_core_get_file_transfer_server(getCore()->getCCore()), "POST", &cbs);
 	if (err == -1)
 		d->setState(State::NotDelivered);
 
@@ -1652,8 +1626,8 @@ void ChatMessage::cancelFileTransfer () {
 		}
 		if (!belle_http_request_is_cancelled(d->httpRequest)) {
 			shared_ptr<ChatRoom> chatRoom = getChatRoom();
-			shared_ptr<Core> core = getCore();
-			if (chatRoom && core) {
+			if (chatRoom) {
+				shared_ptr<Core> core = getCore();
 				lInfo() << "Canceling file transfer " << (
 					d->externalBodyUrl.empty()
 						? linphone_core_get_file_transfer_server(core->getCCore())
@@ -1674,9 +1648,6 @@ int ChatMessage::putCharacter (uint32_t character) {
 	L_D();
 
 	shared_ptr<Core> core = getCore();
-	if (!core)
-		return -1;
-
 	if (linphone_core_realtime_text_enabled(core->getCCore())) {
 		static const uint32_t new_line = 0x2028;
 		static const uint32_t crlf = 0x0D0A;

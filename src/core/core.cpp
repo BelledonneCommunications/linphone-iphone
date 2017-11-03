@@ -34,6 +34,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 Core::Core () : Object(*new CorePrivate) {}
 
+Core::~Core () {
+	lInfo() << "Destroying core: " << this;
+}
+
 shared_ptr<Core> Core::create (LinphoneCore *cCore) {
 	// Do not use `make_shared` => Private constructor.
 	shared_ptr<Core> core = shared_ptr<Core>(new Core);

@@ -34,7 +34,7 @@ using namespace LinphonePrivate;
 // -----------------------------------------------------------------------------
 
 static const string getDatabasePath () {
-	static const string path = string(bc_tester_get_resource_dir_prefix()) + "/db/linphone.db";
+	static const string path = string(bc_tester_get_resource_dir_prefix()) + "db/linphone.db";
 	return path;
 }
 
