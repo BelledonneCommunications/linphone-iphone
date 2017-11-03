@@ -181,7 +181,7 @@ string AndroidPlatformHelpers::getDataPath () {
 	JNIEnv *env = ms_get_jni_env();
 	jstring jdata_path = (jstring)env->CallObjectMethod(mJavaHelper, mGetDataPathId);
 	const char *data_path = GetStringUTFChars(env, jdata_path);
-	string dataPath = data_path;
+	string dataPath = data_path + "/";
 	ReleaseStringUTFChars(env, jdata_path, data_path);
 	return dataPath;
 }
@@ -190,7 +190,7 @@ string AndroidPlatformHelpers::getConfigPath () {
 	JNIEnv *env = ms_get_jni_env();
 	jstring jconfig_path = (jstring)env->CallObjectMethod(mJavaHelper, mGetConfigPathId);
 	const char *config_path = GetStringUTFChars(env, jconfig_path);
-	string configPath = config_path;
+	string configPath = config_path + "/";
 	ReleaseStringUTFChars(env, jconfig_path, config_path);
 	return configPath;
 }
