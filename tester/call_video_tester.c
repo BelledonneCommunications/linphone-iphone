@@ -1889,7 +1889,6 @@ static void outgoing_reinvite_with_invalid_ack_sdp(void)  {
 	linphone_core_manager_destroy(caller);
 }
 
-#endif
 static void video_call_with_no_audio_and_no_video_codec(void){
 	LinphoneCoreManager* callee = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* caller = linphone_core_manager_new(transport_supported(LinphoneTransportTcp) ? "pauline_rc" : "pauline_tcp_rc");
@@ -2155,6 +2154,8 @@ static void video_call_expected_fps_for_high_bandwidth(void) {
 	video_call_expected_fps_for_specified_bandwidth(5000000, 30, "vga");
 #endif
 }
+
+#endif // VIDEO_ENABLED
 
 test_t call_video_tests[] = {
 #ifdef VIDEO_ENABLED
