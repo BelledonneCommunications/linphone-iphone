@@ -34,39 +34,24 @@ LINPHONE_BEGIN_NAMESPACE
  * Supports properties and shared from this.
  * Must be built with ObjectFactory.
  */
-class LINPHONE_PUBLIC Object : public BaseObject, public PropertyContainer {
+class LINPHONE_PUBLIC Object :
+	public std::enable_shared_from_this<Object>,
+	public BaseObject,
+	public PropertyContainer {
 	friend class ObjectFactory;
 
 public:
 	virtual ~Object () = default;
 
-protected:
-	explicit Object (ObjectPrivate &p);
-
 	std::shared_ptr<Object> getSharedFromThis ();
 	std::shared_ptr<const Object> getSharedFromThis () const;
+
+protected:
+	explicit Object (ObjectPrivate &p);
 
 private:
 	L_DECLARE_PRIVATE(Object);
 	L_DISABLE_COPY(Object);
-};
-
-class ObjectFactory {
-public:
-	template<typename T, class ...Args>
-	static inline std::shared_ptr<T> create (Args &&...args) {
-		static_assert(std::is_base_of<Object, T>::value, "Not an object.");
-		std::shared_ptr<T> object = std::make_shared<T>(args...);
-		setPublic(object);
-		return object;
-	}
-
-private:
-	ObjectFactory () = delete;
-
-	static void setPublic (const std::shared_ptr<Object> &object);
-
-	L_DISABLE_COPY(ObjectFactory);
 };
 
 LINPHONE_END_NAMESPACE

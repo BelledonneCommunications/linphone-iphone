@@ -39,6 +39,9 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 static inline Address getCleanedPeerAddress (const Address &peerAddress) {
+	if (!peerAddress.isValid())
+		return Address();
+
 	Address cleanedAddress = peerAddress;
 	cleanedAddress.clean();
 	cleanedAddress.setPort(0);
@@ -50,8 +53,12 @@ static inline string resolveWorkaroundClientGroupChatRoomAddress (
 	const CorePrivate &corePrivate,
 	const Address &peerAddress
 ) {
+	const char *uri = linphone_core_get_conference_factory_uri(corePrivate.cCore);
+	if (!uri)
+		return "";
+
 	Address workaroundAddress = peerAddress;
-	workaroundAddress.setDomain(Address(linphone_core_get_conference_factory_uri(corePrivate.cCore)).getDomain());
+	workaroundAddress.setDomain(Address(uri).getDomain());
 	return workaroundAddress.asStringUriOnly();
 }
 
@@ -63,9 +70,9 @@ shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bo
 	shared_ptr<ChatRoom> chatRoom;
 
 	if (isRtt)
-		chatRoom = ObjectFactory::create<RealTimeTextChatRoom>(q->getSharedFromThis(), peerAddress);
+		chatRoom = make_shared<RealTimeTextChatRoom>(q->getSharedFromThis(), peerAddress);
 	else
-		chatRoom = ObjectFactory::create<BasicChatRoom>(q->getSharedFromThis(), peerAddress);
+		chatRoom = make_shared<BasicChatRoom>(q->getSharedFromThis(), peerAddress);
 
 	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 	insertChatRoom(chatRoom);

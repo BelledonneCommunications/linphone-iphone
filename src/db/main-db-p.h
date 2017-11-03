@@ -29,11 +29,8 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Content;
-struct MessageEventReferences;
 
 class MainDbPrivate : public AbstractDbPrivate {
-public:
-
 private:
 	// ---------------------------------------------------------------------------
 	// Low level API.
@@ -107,8 +104,6 @@ private:
 	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
-
-	Core *core = nullptr;
 
 	L_DECLARE_PUBLIC(MainDb);
 };

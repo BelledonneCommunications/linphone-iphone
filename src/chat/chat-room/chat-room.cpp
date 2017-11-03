@@ -480,7 +480,7 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 
 shared_ptr<ChatMessage> ChatRoom::createMessage () {
 	L_D();
-	shared_ptr<ChatMessage> chatMessage = ObjectFactory::create<ChatMessage>(getSharedFromThis());
+	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(getSharedFromThis());
 	chatMessage->setToAddress(d->peerAddress);
 	chatMessage->setFromAddress(Address(linphone_core_get_identity(getCore()->getCCore())));
 	chatMessage->getPrivate()->setTime(ms_time(0));

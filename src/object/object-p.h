@@ -31,11 +31,8 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ObjectPrivate : public BaseObjectPrivate {
-	friend class ObjectFactory;
-
 private:
 	std::unordered_map<std::string, Variant> properties;
-	std::weak_ptr<Object> weak;
 
 	L_DECLARE_PUBLIC(Object);
 };

@@ -24,8 +24,6 @@
 
 // =============================================================================
 
-#define GET_SHARED_FROM_THIS_FATAL_ERROR "Object was not created with `ObjectFactory::create`."
-
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
@@ -37,24 +35,13 @@ shared_ptr<Object> Object::getSharedFromThis () {
 }
 
 shared_ptr<const Object> Object::getSharedFromThis () const {
-	shared_ptr<const Object> object;
-
 	try {
-		object = getPrivate()->weak.lock();
-		if (!object)
-			lFatal() << GET_SHARED_FROM_THIS_FATAL_ERROR;
+		return shared_from_this();
 	} catch (const exception &) {
-		lFatal() << GET_SHARED_FROM_THIS_FATAL_ERROR;
+		lFatal() << "Object " << this << " was not created with make_shared.";
 	}
 
-	return object;
-}
-
-void ObjectFactory::setPublic (const shared_ptr<Object> &object) {
-	L_ASSERT(object);
-	ObjectPrivate *d = object->getPrivate();
-	d->mPublic = object.get();
-	d->weak = object;
+	return nullptr;
 }
 
 LINPHONE_END_NAMESPACE

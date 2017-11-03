@@ -32,20 +32,26 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
-	L_D();
+Core::Core () : Object(*new CorePrivate) {}
+
+shared_ptr<Core> Core::create (LinphoneCore *cCore) {
+	// Do not use `make_shared` => Private constructor.
+	shared_ptr<Core> core = shared_ptr<Core>(new Core);
+
+	CorePrivate * const d = core->getPrivate();
+
 	d->cCore = cCore;
-	d->mainDb.reset(new MainDb(this));
+	d->mainDb.reset(new MainDb(core->getSharedFromThis()));
 
 	AbstractDb::Backend backend;
-	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_uri", NULL));
+	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "backend", nullptr));
 	if (!uri.empty())
-		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "server", "db_backend", NULL), "mysql") == 0
+		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "uri", nullptr), "mysql") == 0
 			? MainDb::Mysql
 			: MainDb::Sqlite3;
 	else {
 		backend = AbstractDb::Sqlite3;
-		uri = getDataPath() + LINPHONE_DB;
+		uri = core->getDataPath() + LINPHONE_DB;
 	}
 
 	lInfo() << "Opening " LINPHONE_DB " at: " << uri;
@@ -54,6 +60,8 @@ Core::Core (LinphoneCore *cCore) : Object(*new CorePrivate) {
 
 	for (auto &chatRoom : d->mainDb->getChatRooms())
 		d->insertChatRoom(chatRoom);
+
+	return core;
 }
 
 LinphoneCore *Core::getCCore () const {

@@ -72,7 +72,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::string &subject
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, me), RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
-	dConference->focus = ObjectFactory::create<Participant>(Address(uri));
+	dConference->focus = make_shared<Participant>(Address(uri));
 	RemoteConference::setSubject(subject);
 }
 
@@ -275,7 +275,7 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, const Address &addr) {
 		return;
 	}
 
-	participant = ObjectFactory::create<Participant>(addr);
+	participant = make_shared<Participant>(addr);
 	dConference->participants.push_back(participant);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);

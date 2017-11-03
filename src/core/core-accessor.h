@@ -31,13 +31,15 @@ LINPHONE_BEGIN_NAMESPACE
 class Core;
 class CoreAccessorPrivate;
 
-class CoreAccessor {
+// Decorator to get a valid core instance.
+LINPHONE_PUBLIC class CoreAccessor {
 public:
 	CoreAccessor (const std::shared_ptr<Core> &core);
 	CoreAccessor (const std::shared_ptr<Core> &&core);
 
 	virtual ~CoreAccessor () = 0;
 
+	// Returns a valid core instance. Or throw one std::bad_weak_ptr exception if core is destroyed.
 	std::shared_ptr<Core> getCore () const;
 
 private:

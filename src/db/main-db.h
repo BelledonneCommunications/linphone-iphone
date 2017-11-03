@@ -23,6 +23,7 @@
 #include <list>
 
 #include "abstract/abstract-db.h"
+#include "core/core-accessor.h"
 
 // =============================================================================
 
@@ -34,7 +35,7 @@ class Core;
 class EventLog;
 class MainDbPrivate;
 
-class LINPHONE_PUBLIC MainDb : public AbstractDb {
+class LINPHONE_PUBLIC MainDb : public CoreAccessor, public AbstractDb {
 public:
 	enum Filter {
 		NoFilter = 0x0,
@@ -45,7 +46,7 @@ public:
 
 	typedef int FilterMask;
 
-	MainDb (Core *core);
+	MainDb (const std::shared_ptr<Core> &core);
 
 	// ---------------------------------------------------------------------------
 	// Generic.
@@ -63,7 +64,7 @@ public:
 	std::list<std::shared_ptr<EventLog>> getConferenceNotifiedEvents (
 		const std::string &peerAddress,
 		unsigned int lastNotifyId
-	);
+	) const;
 
 	// ---------------------------------------------------------------------------
 	// Conference chat message events.

@@ -42,7 +42,8 @@ class LINPHONE_PUBLIC Core : public Object {
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(Core);
 
-	Core (LinphoneCore *cCore);
+	// Return a new Core instance. Entry point of Linphone.
+	static std::shared_ptr<Core> create (LinphoneCore *cCore);
 
 	// ---------------------------------------------------------------------------
 	// C-Core.
@@ -71,6 +72,8 @@ public:
 	static void deleteChatRoom (const std::shared_ptr<const ChatRoom> &chatRoom);
 
 private:
+	Core ();
+
 	L_DECLARE_PRIVATE(Core);
 	L_DISABLE_COPY(Core);
 };

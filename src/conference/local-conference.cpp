@@ -41,7 +41,7 @@ void LocalConference::addParticipant (const Address &addr, const CallSessionPara
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
 		return;
-	participant = ObjectFactory::create<Participant>(addr);
+	participant = make_shared<Participant>(addr);
 	d->participants.push_back(participant);
 	if (!d->activeParticipant)
 		d->activeParticipant = participant;

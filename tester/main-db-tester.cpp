@@ -17,8 +17,11 @@
  */
 
 #include "address/address.h"
+#include "core/core.h"
 #include "db/main-db.h"
 #include "event-log/events.h"
+
+#include "private.h"
 
 #include "liblinphone_tester.h"
 
@@ -37,14 +40,37 @@ static const string getDatabasePath () {
 
 // -----------------------------------------------------------------------------
 
+class MainDbProvider {
+public:
+	MainDbProvider () {
+		mCoreManager = linphone_core_manager_new("marie_rc");
+		mMainDb = new MainDb(mCoreManager->lc->cppCore->getSharedFromThis());
+		BC_ASSERT_TRUE(mMainDb->connect(MainDb::Sqlite3, getDatabasePath()));
+	}
+
+	~MainDbProvider () {
+		delete mMainDb;
+		linphone_core_manager_destroy(mCoreManager);
+	}
+
+	const MainDb &getMainDb () {
+		return *mMainDb;
+	}
+
+private:
+	LinphoneCoreManager *mCoreManager;
+	MainDb *mMainDb;
+};
+
+// -----------------------------------------------------------------------------
+
 static void open_database () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
 }
 
 static void get_events_count () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
+	const MainDb &mainDb = provider.getMainDb();
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(), 4994, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceInfoFilter), 18, int, "%d");
@@ -53,22 +79,22 @@ static void get_events_count () {
 }
 
 static void get_messages_count () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
+	const MainDb &mainDb = provider.getMainDb();
 	BC_ASSERT_EQUAL(mainDb.getChatMessagesCount(), 4976, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getChatMessagesCount("sip:test-39@sip.linphone.org"), 3, int, "%d");
 }
 
 static void get_unread_messages_count () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
+	const MainDb &mainDb = provider.getMainDb();
 	BC_ASSERT_EQUAL(mainDb.getUnreadChatMessagesCount(), 2, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getUnreadChatMessagesCount("sip:test-39@sip.linphone.org"), 0, int, "%d");
 }
 
 static void get_history () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
+	const MainDb &mainDb = provider.getMainDb();
 	BC_ASSERT_EQUAL(
 		mainDb.getHistoryRange("sip:test-39@sip.linphone.org", 0, -1, MainDb::Filter::ConferenceChatMessageFilter).size(),
 		3,
@@ -96,8 +122,8 @@ static void get_history () {
 }
 
 static void get_conference_notified_events () {
-	MainDb mainDb(nullptr);
-	BC_ASSERT_TRUE(mainDb.connect(MainDb::Sqlite3, getDatabasePath()));
+	MainDbProvider provider;
+	const MainDb &mainDb = provider.getMainDb();
 	list<shared_ptr<EventLog>> events = mainDb.getConferenceNotifiedEvents("sip:fake-group-2@sip.linphone.org", 1);
 	BC_ASSERT_EQUAL(events.size(), 3, int, "%d");
 	if (events.size() != 3)

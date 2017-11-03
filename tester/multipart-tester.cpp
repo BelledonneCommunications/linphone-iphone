@@ -39,7 +39,7 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 
 	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<ChatRoom> marieRoom = ObjectFactory::create<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
+	shared_ptr<ChatRoom> marieRoom = make_shared<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage;
 	if (first_file_transfer) {

@@ -2259,7 +2259,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->sal->set_callbacks(&linphone_sal_callbacks);
 
 	new(&lc->cppCore) std::shared_ptr<Core>();
-	lc->cppCore = ObjectFactory::create<Core>(lc);
+	lc->cppCore = Core::create(lc);
 
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
@@ -7237,7 +7237,7 @@ void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri)
 }
 
 const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
-	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", "sip:");
+	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
 }
 
 void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
@@ -7249,7 +7249,11 @@ bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc) {
 }
 
 bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const LinphoneAddress *addr) {
-	LinphoneAddress *factoryAddr = linphone_address_new(linphone_core_get_conference_factory_uri(lc));
+	const char *uri = linphone_core_get_conference_factory_uri(lc);
+	if (!uri)
+		return FALSE;
+
+	LinphoneAddress *factoryAddr = linphone_address_new(uri);
 	if (!factoryAddr)
 		return FALSE;
 	bool_t result = linphone_address_weak_equal(factoryAddr, addr);

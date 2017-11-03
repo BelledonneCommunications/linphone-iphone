@@ -34,7 +34,7 @@ Conference::Conference (ConferencePrivate &p, LinphoneCore *core, const Address 
 	d->mPublic = this;
 	d->core = core;
 	d->callListener = listener;
-	d->me = ObjectFactory::create<Participant>(myAddress);
+	d->me = make_shared<Participant>(myAddress);
 }
 
 Conference::~Conference () {

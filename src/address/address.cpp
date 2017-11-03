@@ -83,12 +83,20 @@ bool Address::isValid () const {
 
 const string &Address::getScheme () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.scheme = L_C_TO_STRING(sal_address_get_scheme(d->internalAddress));
 	return d->cache.scheme;
 }
 
 const string &Address::getDisplayName () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.displayName = L_C_TO_STRING(sal_address_get_display_name(d->internalAddress));
 	return d->cache.displayName;
 }
@@ -105,6 +113,10 @@ bool Address::setDisplayName (const string &displayName) {
 
 const string &Address::getUsername () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.username = L_C_TO_STRING(sal_address_get_username(d->internalAddress));
 	return d->cache.username;
 }
@@ -121,6 +133,10 @@ bool Address::setUsername (const string &username) {
 
 const string &Address::getDomain () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.domain = L_C_TO_STRING(sal_address_get_domain(d->internalAddress));
 	return d->cache.domain;
 }
@@ -187,6 +203,10 @@ bool Address::isSip () const {
 
 const string &Address::getMethodParam () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.methodParam = L_C_TO_STRING(sal_address_get_method_param(d->internalAddress));
 	return d->cache.methodParam;
 }
@@ -203,6 +223,10 @@ bool Address::setMethodParam (const string &methodParam) {
 
 const string &Address::getPassword () const {
 	L_D();
+
+	if (!d->internalAddress)
+		return Utils::getEmptyConstRefObject<string>();
+
 	d->cache.password = L_C_TO_STRING(sal_address_get_password(d->internalAddress));
 	return d->cache.password;
 }
@@ -260,10 +284,12 @@ bool Address::weakEqual (const Address &address) const {
 const string &Address::getHeaderValue (const string &headerName) const {
 	L_D();
 
-	const char *value = sal_address_get_header(d->internalAddress, L_STRING_TO_C(headerName));
-	if (value) {
-		d->cache.headers[headerName] = value;
-		return d->cache.headers[headerName];
+	if (d->internalAddress) {
+		const char *value = sal_address_get_header(d->internalAddress, L_STRING_TO_C(headerName));
+		if (value) {
+			d->cache.headers[headerName] = value;
+			return d->cache.headers[headerName];
+		}
 	}
 
 	return Utils::getEmptyConstRefObject<string>();
@@ -281,16 +307,18 @@ bool Address::setHeader (const string &headerName, const string &headerValue) {
 
 bool Address::hasParam (const string &paramName) const {
 	L_D();
-	return !!sal_address_has_param(d->internalAddress, L_STRING_TO_C(paramName));
+	return d->internalAddress && !!sal_address_has_param(d->internalAddress, L_STRING_TO_C(paramName));
 }
 
 const string &Address::getParamValue (const string &paramName) const {
 	L_D();
 
-	const char *value = sal_address_get_param(d->internalAddress, L_STRING_TO_C(paramName));
-	if (value) {
-		d->cache.params[paramName] = value;
-		return d->cache.params[paramName];
+	if (d->internalAddress) {
+		const char *value = sal_address_get_param(d->internalAddress, L_STRING_TO_C(paramName));
+		if (value) {
+			d->cache.params[paramName] = value;
+			return d->cache.params[paramName];
+		}
 	}
 
 	return Utils::getEmptyConstRefObject<string>();
@@ -318,16 +346,18 @@ bool Address::setParams (const string &params) {
 
 bool Address::hasUriParam (const string &uriParamName) const {
 	L_D();
-	return !!sal_address_has_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
+	return d->internalAddress && !!sal_address_has_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
 }
 
 const string &Address::getUriParamValue (const string &uriParamName) const {
 	L_D();
 
-	const char *value = sal_address_get_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
-	if (value) {
-		d->cache.uriParams[uriParamName] = value;
-		return d->cache.uriParams[uriParamName];
+	if (d->internalAddress) {
+		const char *value = sal_address_get_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
+		if (value) {
+			d->cache.uriParams[uriParamName] = value;
+			return d->cache.uriParams[uriParamName];
+		}
 	}
 
 	return Utils::getEmptyConstRefObject<string>();

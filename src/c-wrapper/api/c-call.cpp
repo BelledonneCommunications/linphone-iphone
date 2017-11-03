@@ -1148,7 +1148,7 @@ void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
 
 LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, LinphonePrivate::ObjectFactory::create<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 		cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params)));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();
@@ -1160,7 +1160,7 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 
 LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op) {
 	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, LinphonePrivate::ObjectFactory::create<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
+	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
 		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 		nullptr, op, nullptr));
 	call->currentParamsCache = linphone_call_params_new_for_wrapper();

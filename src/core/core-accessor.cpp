@@ -35,23 +35,30 @@ public:
 // -----------------------------------------------------------------------------
 
 CoreAccessor::CoreAccessor (const shared_ptr<Core> &core) {
-	L_D();
-	d->core = core;
+	L_ASSERT(core);
+	mPrivate = new CoreAccessorPrivate();
+	mPrivate->core = core;
 }
 
 CoreAccessor::CoreAccessor (const shared_ptr<Core> &&core) {
-	L_D();
-	d->core = move(core);
+	L_ASSERT(core);
+	mPrivate = new CoreAccessorPrivate();
+	mPrivate->core = move(core);
 }
 
-CoreAccessor::~CoreAccessor () {}
+CoreAccessor::~CoreAccessor () {
+	delete mPrivate;
+}
 
 shared_ptr<Core> CoreAccessor::getCore () const {
 	L_D();
 
 	shared_ptr<Core> core = d->core.lock();
-	if (!core)
+	if (!core) {
 		lWarning() << "Unable to get valid core instance.";
+		throw std::bad_weak_ptr();
+	}
+
 	return core;
 }
 

@@ -26,6 +26,7 @@
 
 #include "linphone/utils/utils.h"
 
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
@@ -45,10 +46,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
-	L_D();
-	d->core = core;
-}
+MainDb::MainDb (const shared_ptr<Core> &core) : CoreAccessor(core), AbstractDb(*new MainDbPrivate) {}
 
 #ifdef SOCI_ENABLED
 
@@ -286,18 +284,49 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		time_t date,
 		const string &peerAddress
 	) const {
+		L_Q();
+
+		shared_ptr<Core> core = q->getCore();
+		L_ASSERT(core);
+
+		// TODO: Avoid address creation.
+		shared_ptr<ChatRoom> chatRoom = core->findChatRoom(Address(peerAddress));
+		if (!chatRoom)
+			return nullptr;
+
+		string localSipAddress;
+		string remoteSipAddress;
+		string imdnMessageId;
+		int state;
+		int direction;
+		int isSecured;
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "SELECT event_id, type, date, local_sip_address.value, "
-			"remote_sip_address.value, imdn_message_id, state, direction, is_secured"
+		*session << "SELECT local_sip_address.value, remote_sip_address.value, imdn_message_id, state, direction, is_secured"
 			"  FROM event, conference_chat_message_event, sip_address AS local_sip_address,"
 			"  sip_address AS remote_sip_address"
 			"  WHERE event_id = event.id"
 			"  AND local_sip_address_id = local_sip_address.id"
 			"  AND remote_sip_address_id = remote_sip_address.id"
-			"  AND remote_sip_address.value = :peerAddress", soci::use(peerAddress);
+			"  AND remote_sip_address.value = :peerAddress", soci::into(localSipAddress), soci::into(remoteSipAddress),
+			soci::into(imdnMessageId), soci::into(state), soci::into(direction), soci::into(isSecured),
+			soci::use(peerAddress);
 
 		// TODO: Create me.
-		shared_ptr<ChatMessage> chatMessage;
+		// TODO: Use cache, do not fetch the same message twice.
+		shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(chatRoom);
+
+		chatMessage->getPrivate()->setState(static_cast<ChatMessage::State>(state));
+		chatMessage->getPrivate()->setDirection(static_cast<ChatMessage::Direction>(direction));
+		chatMessage->setIsSecured(static_cast<bool>(isSecured));
+
+		if (direction == static_cast<int>(ChatMessage::Direction::Outgoing)) {
+			chatMessage->setFromAddress(Address(localSipAddress));
+			chatMessage->setToAddress(Address(remoteSipAddress));
+		} else {
+			chatMessage->setFromAddress(Address(remoteSipAddress));
+			chatMessage->setToAddress(Address(localSipAddress));
+		}
 
 		// TODO: Use cache.
 		return make_shared<ConferenceChatMessageEvent>(
@@ -867,7 +896,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 	list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
 		const string &peerAddress,
 		unsigned int lastNotifyId
-	) {
+	) const {
 		static const string query = "SELECT id, type, date FROM event"
 			"  WHERE id IN ("
 			"    SELECT event_id FROM conference_notified_event WHERE event_id IN ("
@@ -1126,6 +1155,9 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			return list<shared_ptr<ChatRoom>>();
 		}
 
+		shared_ptr<Core> core = getCore();
+		L_ASSERT(core);
+
 		list<shared_ptr<ChatRoom>> chatRooms;
 
 		L_BEGIN_LOG_EXCEPTION
@@ -1135,7 +1167,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
 			string sipAddress = row.get<string>(0);
-			shared_ptr<ChatRoom> chatRoom = d->core->findChatRoom(Address(sipAddress));
+			shared_ptr<ChatRoom> chatRoom = core->findChatRoom(Address(sipAddress));
 			if (chatRoom) {
 				lInfo() << "Don't fetch chat room from database: `" << sipAddress << "`, it already exists.";
 				chatRooms.push_back(chatRoom);
@@ -1155,10 +1187,10 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 			(void)lastNotifyId;
 
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
-				chatRoom = d->core ? d->core->getPrivate()->createChatRoom(
+				chatRoom = core->getPrivate()->createChatRoom(
 					Address(sipAddress),
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
-				) : nullptr;
+				);
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
 				// TODO: Set sip address and participants.
 			}
@@ -1391,7 +1423,7 @@ MainDb::MainDb (Core *core) : AbstractDb(*new MainDbPrivate) {
 	list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
 		const string &peerAddress,
 		unsigned int notifyId
-	) {
+	) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
