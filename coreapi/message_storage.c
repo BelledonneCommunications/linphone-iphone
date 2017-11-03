@@ -989,4 +989,8 @@ int linphone_chat_room_get_history_size(LinphoneChatRoom *cr){
 void linphone_chat_message_store_update(LinphoneChatMessage *msg){
 }
 
+LinphoneChatMessage * linphone_chat_room_find_message_with_dir(LinphoneChatRoom *cr, const char *message_id, LinphoneChatMessageDir dir) {
+	return NULL;
+}
+
 #endif
