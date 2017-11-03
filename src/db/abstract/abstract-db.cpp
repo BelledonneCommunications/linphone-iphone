@@ -21,6 +21,10 @@
 	#include <soci/soci.h>
 #endif // ifdef SOCI_ENABLED
 
+#ifdef __APPLE__
+	#include <TargetConditionals.h>
+#endif // ifdef __APPLE__
+
 #include "abstract-db-p.h"
 #include "db/session/db-session-provider.h"
 #include "logger/logger.h"
@@ -33,14 +37,19 @@ LINPHONE_BEGIN_NAMESPACE
 
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
-extern "C" void register_factory_sqlite3();
+// Force static sqlite3 linking for IOS and Android.
+#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+	extern "C" void register_factory_sqlite3();
+#endif // defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
-#if defined(__APPLE__) || defined(__ANDROID__)
-	if (backend == Sqlite3)
-		register_factory_sqlite3();
-#endif  // defined(__APPLE__) || defined(__ANDROID__)*/
+
+	#if defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+		if (backend == Sqlite3)
+			register_factory_sqlite3();
+	#endif // defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+
 	d->backend = backend;
 	d->dbSession = DbSessionProvider::getInstance()->getSession(
 			(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
