@@ -451,8 +451,11 @@ void ClientGroupChatRoom::onCallSessionStateChanged (
 				dConference->eventHandler->subscribe(getConferenceAddress());
 		} else if (d->state == ChatRoom::State::TerminationPending)
 			dConference->focus->getPrivate()->getSession()->terminate();
-	} else if (state == LinphoneCallReleased && d->state == ChatRoom::State::TerminationPending)
+	} else if (state == LinphoneCallReleased && d->state == ChatRoom::State::TerminationPending) {
 		onConferenceTerminated(getConferenceAddress());
+	} else if (state == LinphoneCallError && d->state == ChatRoom::State::CreationPending) {
+		d->setState(ChatRoom::State::CreationFailed);
+	}
 }
 
 LINPHONE_END_NAMESPACE
