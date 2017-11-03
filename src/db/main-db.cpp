@@ -287,7 +287,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : CoreAccessor(core), AbstractDb(*
 		L_Q();
 
 		shared_ptr<Core> core = q->getCore();
-		L_ASSERT(core);
 
 		// TODO: Avoid address creation.
 		shared_ptr<ChatRoom> chatRoom = core->findChatRoom(Address(peerAddress));
