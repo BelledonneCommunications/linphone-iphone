@@ -7256,8 +7256,13 @@ bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const Linp
 	LinphoneAddress *factoryAddr = linphone_address_new(uri);
 	if (!factoryAddr)
 		return FALSE;
-	bool_t result = linphone_address_weak_equal(factoryAddr, addr);
+	// Do not compare ports
+	linphone_address_set_port(factoryAddr, 0);
+	LinphoneAddress *testedAddr = linphone_address_clone(addr);
+	linphone_address_set_port(testedAddr, 0);
+	bool_t result = linphone_address_weak_equal(factoryAddr, testedAddr);
 	linphone_address_unref(factoryAddr);
+	linphone_address_unref(testedAddr);
 	return result;
 }
 

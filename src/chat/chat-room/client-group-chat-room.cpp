@@ -320,7 +320,11 @@ void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipan
 		return;
 	}
 
-	participant->getPrivate()->setAdmin(event->getType() == EventLog::Type::ConferenceParticipantSetAdmin);
+	bool isAdmin = event->getType() == EventLog::Type::ConferenceParticipantSetAdmin;
+	if (participant->isAdmin() == isAdmin)
+		return; // No change in the local admin status, do not notify
+	participant->getPrivate()->setAdmin(isAdmin);
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
@@ -331,7 +335,10 @@ void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipan
 }
 
 void ClientGroupChatRoom::onSubjectChanged (shared_ptr<ConferenceSubjectEvent> event) {
+	if (getSubject() == event->getSubject())
+		return; // No change in the local subject, do not notify
 	RemoteConference::setSubject(event->getSubject());
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);

@@ -80,15 +80,11 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	bool isFullState = (confInfo->getState() == StateType::full);
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.clean();
-	cleanedConfAddress.setPort(0);
 	// Temporary workaround
 	Address entityAddress(confInfo->getEntity().c_str());
 	Address cleanedConfAddress2(cleanedConfAddress);
 	cleanedConfAddress2.setDomain(entityAddress.getDomain());
-	if (
-		confInfo->getEntity() == cleanedConfAddress.asString() ||
-		confInfo->getEntity() == cleanedConfAddress2.asString()
-	) {
+	if (entityAddress.weakEqual(cleanedConfAddress) || entityAddress.weakEqual(cleanedConfAddress2)) {
 		if (
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
