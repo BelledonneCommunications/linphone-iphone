@@ -2306,7 +2306,69 @@ void im_encryption_engine_b64_async(void) {
 	im_encryption_engine_b64_base(TRUE);
 }
 
+void file_and_text_message(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
+
+	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
+	char *receive_filepath = bc_tester_file("receive_file.dump");
+	LinphoneChatRoom* chat_room;
+	LinphoneChatMessage* msg;
+	LinphoneChatMessageCbs *cbs;
+
+	/* Remove any previously downloaded file */
+	remove(receive_filepath);
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(pauline->lc,"https://www.linphone.org:444/lft.php");
+
+	/* create a chatroom on pauline's side */
+	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+
+	/* create a file transfer msg */
+	msg = create_file_transfer_message_from_sintel_trailer(chat_room);
+	linphone_chat_message_add_text_content(msg, "Text message");
+
+	BC_ASSERT_TRUE(linphone_chat_message_has_text_content(msg));
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(msg), "Text message");
+	BC_ASSERT_FALSE(linphone_chat_message_has_file_content(msg));
+
+	linphone_chat_room_send_chat_message(chat_room, msg);
+	
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceivedWithFile, 1, 60000));
+	if (marie->stat.last_received_chat_message) {
+		LinphoneChatMessage *recv_msg;
+		recv_msg = marie->stat.last_received_chat_message;
+
+		BC_ASSERT_TRUE(linphone_chat_message_has_text_content(recv_msg));
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(recv_msg), "Text message");
+		BC_ASSERT_TRUE(linphone_chat_message_has_file_content(recv_msg));
+
+		cbs = linphone_chat_message_get_callbacks(recv_msg);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+		linphone_chat_message_set_file_transfer_filepath(recv_msg, receive_filepath);
+		linphone_chat_message_download_file(recv_msg);
+
+		/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
+		if (BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneFileTransferDownloadSuccessful, 1, 55000))) {
+			compare_files(send_filepath, receive_filepath);
+		}
+	}
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 2, int, "%d"); //sent twice because of file transfer
+	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered, 1, int, "%d");
+
+	remove(receive_filepath);
+	bc_free(send_filepath);
+	bc_free(receive_filepath);
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+}
+
 test_t message_tests[] = {
+	TEST_NO_TAG("File + Text message", file_and_text_message),
 	TEST_NO_TAG("Text message", text_message),
 	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
 	TEST_NO_TAG("Text message with credentials from auth callback", text_message_with_credential_from_auth_callback),
