@@ -211,6 +211,19 @@ private:
 
 public:
 	// ---------------------------------------------------------------------------
+	// Back ptr reset, used by uninit c object function.
+	// ---------------------------------------------------------------------------
+
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+	>
+	static void resetCBackPtr (const std::shared_ptr<CppType> &cppObject) {
+		if (cppObject)
+			cppObject->setCBackPtr(nullptr);
+	}
+
+	// ---------------------------------------------------------------------------
 	// Belle sip handlers.
 	// Deal with floating references.
 	// ---------------------------------------------------------------------------
@@ -331,11 +344,7 @@ public:
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static L_INTERNAL_WRAPPER_CONSTEXPR const CppType *getCppPtrFromC (const CType *cObject) {
-		#ifdef DEBUG
-			return getCppPtrFromC(const_cast<CType *>(cObject));
-		#else
-			return reinterpret_cast<const WrappedClonableObject<CppType> *>(cObject)->cppPtr;
-		#endif
+		return getCppPtrFromC(const_cast<CType *>(cObject));
 	}
 
 	// ---------------------------------------------------------------------------
@@ -580,6 +589,12 @@ LINPHONE_END_NAMESPACE
 	} \
 	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
 		DESTRUCTOR(object); \
+		{ \
+			std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> wrappedObject = object->weakCppPtr.lock(); \
+			if (!wrappedObject) \
+				wrappedObject = object->cppPtr; \
+			LinphonePrivate::Wrapper::resetCBackPtr(wrappedObject); \
+		} \
 		object->cppPtr.~shared_ptr(); \
 		object->weakCppPtr.~weak_ptr(); \
 	} \
