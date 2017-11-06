@@ -48,9 +48,9 @@ shared_ptr<Core> Core::create (LinphoneCore *cCore) {
 	d->mainDb.reset(new MainDb(core->getSharedFromThis()));
 
 	AbstractDb::Backend backend;
-	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "backend", nullptr));
+	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "uri", nullptr));
 	if (!uri.empty())
-		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "uri", nullptr), "mysql") == 0
+		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "backend", nullptr), "mysql") == 0
 			? MainDb::Mysql
 			: MainDb::Sqlite3;
 	else {
