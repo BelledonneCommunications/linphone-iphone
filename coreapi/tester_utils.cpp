@@ -20,6 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tester_utils.h"
 #include "private.h"
 
+#include "chat/chat-room/chat-room.h"
+#include "core/core.h"
+#include "c-wrapper/c-wrapper.h"
+
 LinphoneVcardContext *linphone_core_get_vcard_context(const LinphoneCore *lc) {
 	return lc->vcard_context;
 }
@@ -46,6 +50,14 @@ LinphoneCoreCbs *linphone_core_get_first_callbacks(const LinphoneCore *lc) {
 
 bctbx_list_t **linphone_core_get_call_logs_attribute(LinphoneCore *lc) {
 	return &lc->call_logs;
+}
+
+LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *addr) {
+	const LinphonePrivate::Address *cppAddr = L_GET_CPP_PTR_FROM_C_OBJECT(addr);
+	std::shared_ptr<LinphonePrivate::ChatRoom> cr = lc->cppCore->findChatRoom(*cppAddr);
+	if (!cr)
+		return nullptr;
+	return L_GET_C_BACK_PTR(cr);
 }
 
 void linphone_core_cbs_set_auth_info_requested(LinphoneCoreCbs *cbs, LinphoneCoreAuthInfoRequestedCb cb) {
