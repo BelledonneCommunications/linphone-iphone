@@ -305,6 +305,10 @@ bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) 
 	return result;
 }
 
+LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(initial_content));
+}
+
 // =============================================================================
 // Reference and user data handling functions.
 // =============================================================================

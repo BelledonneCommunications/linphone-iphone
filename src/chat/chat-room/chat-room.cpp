@@ -458,8 +458,7 @@ void ChatRoom::compose () {
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 
-	/* TODO
-	Content content;
+	/*Content content;
 	content.setContentType(ContentType::FileTransfer);
 	content.setBody(linphone_content_get_string_buffer(initialContent));
 	chatMessage->addContent(content);*/

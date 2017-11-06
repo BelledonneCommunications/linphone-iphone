@@ -28,6 +28,3 @@
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-room/chat-room.h"
 
-LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
-	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(initial_content));
-}

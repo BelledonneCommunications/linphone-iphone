@@ -102,6 +102,12 @@ public:
 	void addContent (const Content &content);
 	void removeContent (const Content &content);
 
+	bool hasTextContent() const;
+	const Content &getTextContent() const;
+	
+	bool hasFileTransferContent() const;
+	const Content &getFileTransferContent() const;
+
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
 

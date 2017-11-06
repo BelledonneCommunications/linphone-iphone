@@ -1153,7 +1153,7 @@ void ChatMessagePrivate::send () {
 	LinphoneCall *call = nullptr;
 	int errorCode = 0;
 
-	if ((currentSendStep &ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
+	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
 	} else {
 		if (getFileTransferInformation()) {
@@ -1514,6 +1514,46 @@ void ChatMessage::removeCustomHeader (const string &headerName) {
 	if (d->isReadOnly) return;
 
 	d->customHeaders.erase(headerName);
+}
+
+bool ChatMessage::hasTextContent() const {
+	L_D();
+	for (const auto &c : d->contents) {
+		if (c.getContentType() == ContentType::PlainText) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const Content &ChatMessage::getTextContent() const {
+	L_D();
+	for (const auto &c : d->contents) {
+		if (c.getContentType() == ContentType::PlainText) {
+			return c;
+		}
+	}
+	return Content::Empty;
+}
+
+bool ChatMessage::hasFileTransferContent() const {
+	L_D();
+	for (const auto &c : d->contents) {
+		if (c.getContentType() == ContentType::FileTransfer) {
+			return true;
+		}
+	}
+	return false;
+}
+
+const Content &ChatMessage::getFileTransferContent() const {
+	L_D();
+	for (const auto &c : d->contents) {
+		if (c.getContentType() == ContentType::FileTransfer) {
+			return c;
+		}
+	}
+	return Content::Empty;
 }
 
 // -----------------------------------------------------------------------------

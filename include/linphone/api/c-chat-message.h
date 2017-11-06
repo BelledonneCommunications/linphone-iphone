@@ -347,6 +347,34 @@ LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessag
 LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg);
 
 /**
+ * Adds a content to the ChatMessage
+ * @param[in] msg LinphoneChatMessage object
+ * @param[in] c_content LinphoneContent object
+ */
+LINPHONE_PUBLIC void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const LinphoneContent *c_content);
+
+/**
+ * Returns true if the chat message has a text content
+ * @param[in] msg LinphoneChatMessage object
+ * @return true if it has one, false otherwise
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg);
+
+/**
+ * Returns true if the chat message has a file transfer content
+ * @param[in] msg LinphoneChatMessage object
+ * @return true if it has one, false otherwise
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_message_has_file_content(const LinphoneChatMessage *msg);
+
+/**
+ * Gets the text content if available as a string
+ * @param[in] msg LinphoneChatMessage object
+ * @return the LinphoneContent buffer if available, null otherwise
+ */
+LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const LinphoneChatMessage *msg);
+
+/**
  * @}
  */
 

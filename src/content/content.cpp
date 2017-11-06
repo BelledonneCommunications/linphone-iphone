@@ -35,6 +35,8 @@ public:
 	string contentDisposition;
 };
 
+const Content Content::Empty;
+
 // -----------------------------------------------------------------------------
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}

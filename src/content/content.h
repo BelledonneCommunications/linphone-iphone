@@ -63,6 +63,8 @@ public:
 
 	bool isEmpty () const;
 
+	static const Content Empty;
+
 private:
 	L_DECLARE_PRIVATE(Content);
 };
