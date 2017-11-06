@@ -122,8 +122,8 @@ private:
 	// ---------------------------------------------------------------------------
 
 	enum class WrappedObjectOwner : int {
-		Internal,
-		External
+		External,
+		Internal
 	};
 
 	template<typename CppType>
@@ -132,7 +132,7 @@ private:
 		std::shared_ptr<CppType> cppPtr;
 		std::weak_ptr<CppType> weakCppPtr;
 
-		// By default: Internal.
+		// By default: External.
 		WrappedObjectOwner owner;
 	};
 
@@ -151,22 +151,39 @@ private:
 		std::terminate();
 	}
 
-public:
 	// ---------------------------------------------------------------------------
-	// Belle sip handlers.
-	// Deal with floating references.
+	// Get cpp ptr (shared if BaseObject, not shared if ClonableObject)
+	// from cpp object.
 	// ---------------------------------------------------------------------------
 
-	static void onBelleSipFirstRef (belle_sip_object_t *base) {
-		WrappedBaseObject<BaseObject> *wrappedObject = reinterpret_cast<WrappedBaseObject<BaseObject> *>(base);
-		if (wrappedObject->owner == WrappedObjectOwner::Internal)
-			wrappedObject->cppPtr = wrappedObject->weakCppPtr.lock();
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
+	>
+	static inline std::shared_ptr<CppType> getResolvedCppPtr (const CppType *cppObject) {
+		if (L_UNLIKELY(!cppObject))
+			return nullptr;
+
+		try {
+			typedef typename std::decay<decltype(*cppObject->getSharedFromThis())>::type SharedFromThisType;
+
+			return std::static_pointer_cast<CppType>(
+				std::const_pointer_cast<SharedFromThisType>(cppObject->getSharedFromThis())
+			);
+		} catch (const std::bad_weak_ptr &e) {
+			abort(e.what());
+		}
+
+		L_ASSERT(false);
+		return nullptr;
 	}
 
-	static void onBelleSipLastRef (belle_sip_object_t *base) {
-		WrappedBaseObject<BaseObject> *wrappedObject = reinterpret_cast<WrappedBaseObject<BaseObject> *>(base);
-		if (wrappedObject->owner == WrappedObjectOwner::Internal)
-			wrappedObject->cppPtr.reset();
+	template<
+		typename CppType,
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
+	>
+	static constexpr const CppType *getResolvedCppPtr (const CppType *cppObject) {
+		return cppObject;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -190,6 +207,24 @@ public:
 		#else
 			return static_cast<CppDerivedPrivateType *>(base);
 		#endif
+	}
+
+public:
+	// ---------------------------------------------------------------------------
+	// Belle sip handlers.
+	// Deal with floating references.
+	// ---------------------------------------------------------------------------
+
+	static void onBelleSipFirstRef (belle_sip_object_t *base) {
+		WrappedBaseObject<BaseObject> *wrappedObject = reinterpret_cast<WrappedBaseObject<BaseObject> *>(base);
+		if (wrappedObject->owner == WrappedObjectOwner::Internal)
+			wrappedObject->cppPtr = wrappedObject->weakCppPtr.lock();
+	}
+
+	static void onBelleSipLastRef (belle_sip_object_t *base) {
+		WrappedBaseObject<BaseObject> *wrappedObject = reinterpret_cast<WrappedBaseObject<BaseObject> *>(base);
+		if (wrappedObject->owner == WrappedObjectOwner::Internal)
+			wrappedObject->cppPtr.reset();
 	}
 
 	// ---------------------------------------------------------------------------
@@ -357,44 +392,10 @@ public:
 	}
 
 	// ---------------------------------------------------------------------------
-	// Get cpp ptr (shared if BaseObject, not shared if ClonableObject)
-	// from cpp object.
-	// ---------------------------------------------------------------------------
-
-	template<
-		typename CppType,
-		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
-	>
-	static inline std::shared_ptr<CppType> getResolvedCppPtr (const CppType *cppObject) {
-		if (L_UNLIKELY(!cppObject))
-			return nullptr;
-
-		try {
-			typedef typename std::decay<decltype(*cppObject->getSharedFromThis())>::type SharedFromThisType;
-
-			return std::static_pointer_cast<CppType>(
-				std::const_pointer_cast<SharedFromThisType>(cppObject->getSharedFromThis())
-			);
-		} catch (const std::bad_weak_ptr &e) {
-			abort(e.what());
-		}
-
-		L_ASSERT(false);
-		return nullptr;
-	}
-
-	template<
-		typename CppType,
-		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
-	>
-	static constexpr const CppType *getResolvedCppPtr (const CppType *cppObject) {
-		return cppObject;
-	}
-
-	// ---------------------------------------------------------------------------
 	// Get c back ptr resolver helpers.
 	// ---------------------------------------------------------------------------
 
+private:
 	template<
 		typename CppType,
 		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
@@ -427,6 +428,7 @@ public:
 	// Get c back ptr helpers.
 	// ---------------------------------------------------------------------------
 
+public:
 	template<
 		typename CppType,
 		typename = typename std::enable_if<
