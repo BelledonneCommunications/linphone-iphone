@@ -365,7 +365,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_has_text_content(const LinphoneChat
  * @param[in] msg LinphoneChatMessage object
  * @return true if it has one, false otherwise
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_has_file_content(const LinphoneChatMessage *msg);
+LINPHONE_PUBLIC bool_t linphone_chat_message_has_file_transfer_content(const LinphoneChatMessage *msg);
 
 /**
  * Gets the text content if available as a string

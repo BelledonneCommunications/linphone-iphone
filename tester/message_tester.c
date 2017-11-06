@@ -2310,6 +2310,9 @@ void file_and_text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 
+	LpConfig *config = linphone_core_get_config(pauline->lc);
+	lp_config_set_int(config, "sip", "use_cpim", 1);
+
 	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	char *receive_filepath = bc_tester_file("receive_file.dump");
 	LinphoneChatRoom* chat_room;
@@ -2331,18 +2334,20 @@ void file_and_text_message(void) {
 
 	BC_ASSERT_TRUE(linphone_chat_message_has_text_content(msg));
 	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(msg), "Text message");
-	BC_ASSERT_FALSE(linphone_chat_message_has_file_content(msg));
+	BC_ASSERT_FALSE(linphone_chat_message_has_file_transfer_content(msg)); // On sender side, content is a file content, not a file transfer
 
 	linphone_chat_room_send_chat_message(chat_room, msg);
 	
-	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceivedWithFile, 1, 60000));
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1, 60000));
+	BC_ASSERT_TRUE(linphone_chat_message_has_file_transfer_content(msg)); // Once sent, it should have the file transfer content
+
 	if (marie->stat.last_received_chat_message) {
 		LinphoneChatMessage *recv_msg;
 		recv_msg = marie->stat.last_received_chat_message;
 
 		BC_ASSERT_TRUE(linphone_chat_message_has_text_content(recv_msg));
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(recv_msg), "Text message");
-		BC_ASSERT_TRUE(linphone_chat_message_has_file_content(recv_msg));
+		BC_ASSERT_TRUE(linphone_chat_message_has_file_transfer_content(recv_msg));
 
 		cbs = linphone_chat_message_get_callbacks(recv_msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);

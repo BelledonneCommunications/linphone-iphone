@@ -764,7 +764,7 @@ void ChatMessagePrivate::processResponseFromPostFile (const belle_http_response_
 				
 				Content fileTransferContent;
 				fileTransferContent.setContentType(ContentType::FileTransfer);
-				fileTransferContent.setBody(linphone_content_get_string_buffer(cFileTransferInformation));
+				fileTransferContent.setBody(getText());
 				q->addContent(fileTransferContent);
 
 				q->updateState(ChatMessage::State::FileTransferDone);
