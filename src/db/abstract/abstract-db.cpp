@@ -98,7 +98,7 @@ string AbstractDb::primaryKeyStr (const string &type) const {
 
 	switch (d->backend) {
 		case Mysql:
-			return type + " PRIMARY KEY AUTO_INCREMENT";
+			return " " + type + " AUTO_INCREMENT PRIMARY KEY";
 		case Sqlite3:
 			// See: ROWIDs and the INTEGER PRIMARY KEY
 			// https://www.sqlite.org/lang_createtable.html

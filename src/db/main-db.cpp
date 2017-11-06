@@ -546,19 +546,19 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
-			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS content_type ("
-			"  id" + primaryKeyStr("UNSIGNED SMALLINT") + ","
+			"  id" + primaryKeyStr("SMALLINT UNSIGNED") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
 			")";
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event ("
-			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  type TINYINT UNSIGNED NOT NULL,"
 			"  date DATE NOT NULL"
 			")";
@@ -566,7 +566,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room ("
 			// Server (for conference) or user sip address.
-			"  peer_sip_address_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  peer_sip_address_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
 			// Dialog creation date.
 			"  creation_date DATE NOT NULL,"
@@ -589,8 +589,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
-			"  chat_room_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
-			"  sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  is_admin BOOLEAN NOT NULL,"
 
@@ -605,9 +605,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_event ("
-			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  chat_room_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
@@ -619,7 +619,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_notified_event ("
-			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
 			"  notify_id INT UNSIGNED NOT NULL,"
 
@@ -630,9 +630,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
-			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  participant_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
@@ -644,9 +644,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
-			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  gruu_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  gruu_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_participant_event(event_id)"
@@ -669,10 +669,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_chat_message_event ("
-			"  event_id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  local_sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
-			"  remote_sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  remote_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
@@ -694,8 +694,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_participant ("
-			"  event_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
-			"  sip_address_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  state TINYINT UNSIGNED NOT NULL,"
 
 			"  PRIMARY KEY (event_id, sip_address_id),"
@@ -709,10 +709,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content ("
-			"  id" + primaryKeyStr("UNSIGNED BIGINT") + ","
+			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  event_id " + primaryKeyRefStr("UNSIGNED BIGINT") + ","
-			"  content_type_id" + primaryKeyRefStr("UNSIGNED SMALLINT") + ","
+			"  event_id " + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  content_type_id" + primaryKeyRefStr("SMALLINT UNSIGNED") + ","
 			"  body TEXT NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
@@ -725,7 +725,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content_app_data ("
-			"  chat_message_content_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  chat_message_content_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  key VARCHAR(255),"
 			"  data BLOB,"
@@ -738,7 +738,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_message_crypto_data ("
-			"  event_id" + primaryKeyRefStr("UNSIGNED BIGINT") + ","
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  key VARCHAR(255),"
 			"  data BLOB,"
