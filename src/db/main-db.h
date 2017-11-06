@@ -35,7 +35,7 @@ class Core;
 class EventLog;
 class MainDbPrivate;
 
-class LINPHONE_PUBLIC MainDb : public CoreAccessor, public AbstractDb {
+class LINPHONE_PUBLIC MainDb : public AbstractDb, public CoreAccessor {
 public:
 	enum Filter {
 		NoFilter = 0x0,

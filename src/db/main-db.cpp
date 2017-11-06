@@ -46,7 +46,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-MainDb::MainDb (const shared_ptr<Core> &core) : CoreAccessor(core), AbstractDb(*new MainDbPrivate) {}
+MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), CoreAccessor(core) {}
 
 #ifdef SOCI_ENABLED
 
