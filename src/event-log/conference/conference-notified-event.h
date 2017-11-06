@@ -30,15 +30,22 @@ class ConferenceNotifiedEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceNotifiedEvent : public ConferenceEvent {
 public:
-	ConferenceNotifiedEvent (Type type, std::time_t time, const Address &conferenceAddress, unsigned int notifiyId);
+	ConferenceNotifiedEvent (
+		Type type, std::time_t time,
+		bool isFullState,
+		const Address &conferenceAddress,
+		unsigned int notifiyId
+	);
 
 	unsigned int getNotifyId () const;
+	bool isFullState() const;
 
 protected:
 	ConferenceNotifiedEvent (
 		ConferenceNotifiedEventPrivate &p,
 		Type type,
 		std::time_t time,
+		bool isFullState,
 		const Address &conferenceAddress,
 		unsigned int notifyId
 	);

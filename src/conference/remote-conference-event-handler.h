@@ -22,8 +22,8 @@
 
 #include <string>
 
-#include "object/object.h"
 #include "conference-listener.h"
+#include "object/object.h"
 
 LINPHONE_BEGIN_NAMESPACE
 

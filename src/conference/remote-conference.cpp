@@ -89,16 +89,16 @@ void RemoteConference::onConferenceTerminated (const Address &addr) {
 	d->eventHandler->unsubscribe();
 }
 
-void RemoteConference::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {}
+void RemoteConference::onParticipantAdded (std::shared_ptr<ConferenceParticipantEvent> event) {}
 
-void RemoteConference::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {}
+void RemoteConference::onParticipantRemoved (std::shared_ptr<ConferenceParticipantEvent> event) {}
 
-void RemoteConference::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {}
+void RemoteConference::onParticipantSetAdmin (std::shared_ptr<ConferenceParticipantEvent> event) {}
 
-void RemoteConference::onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) {}
+void RemoteConference::onSubjectChanged (std::shared_ptr<ConferenceSubjectEvent> event) {}
 
-void RemoteConference::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {}
+void RemoteConference::onParticipantDeviceAdded (std::shared_ptr<ConferenceParticipantDeviceEvent> event) {}
 
-void RemoteConference::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {}
+void RemoteConference::onParticipantDeviceRemoved (std::shared_ptr<ConferenceParticipantDeviceEvent> event) {}
 
 LINPHONE_END_NAMESPACE

@@ -77,7 +77,7 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	if (confInfo->getConferenceDescription()->getFreeText().present())
 		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
 
-	bool isFullState = (confInfo->getState() == "full");
+	bool isFullState = (confInfo->getState() == StateType::full);
 	Address cleanedConfAddress = d->confAddress;
 	cleanedConfAddress.clean();
 	cleanedConfAddress.setPort(0);
@@ -93,8 +93,13 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
 		)
-			d->listener->onSubjectChanged(tm, isFullState, confInfo->getConferenceDescription().get().getSubject().get());
-
+			d->listener->onSubjectChanged(make_shared<ConferenceSubjectEvent>(
+				tm,
+				isFullState,
+				d->confAddress,
+				d->lastNotify,
+				confInfo->getConferenceDescription().get().getSubject().get()
+			));
 		if (confInfo->getVersion().present())
 			d->lastNotify = confInfo->getVersion().get();
 
@@ -106,9 +111,16 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			char *cAddrStr = linphone_address_as_string(cAddr);
 			Address addr(cAddrStr);
 			bctbx_free(cAddrStr);
-			if (user.getState() == "deleted")
-				d->listener->onParticipantRemoved(tm, isFullState, addr);
-			else {
+			if (user.getState() == StateType::deleted) {
+				d->listener->onParticipantRemoved(make_shared<ConferenceParticipantEvent>(
+					EventLog::Type::ConferenceParticipantRemoved,
+					tm,
+					isFullState,
+					d->confAddress,
+					d->lastNotify,
+					addr
+				));
+			} else {
 				bool isAdmin = false;
 				if (user.getRoles()) {
 					for (const auto &entry : user.getRoles()->getEntry()) {
@@ -118,19 +130,50 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 						}
 					}
 				}
-				if (user.getState() == "full")
-					d->listener->onParticipantAdded(tm, isFullState, addr);
-				d->listener->onParticipantSetAdmin(tm, isFullState, addr, isAdmin);
+				if (user.getState() == StateType::full) {
+					d->listener->onParticipantAdded(make_shared<ConferenceParticipantEvent>(
+						EventLog::Type::ConferenceParticipantAdded,
+						tm,
+						isFullState,
+						d->confAddress,
+						d->lastNotify,
+						addr
+					));
+				}
+				d->listener->onParticipantSetAdmin(make_shared<ConferenceParticipantEvent>(
+					isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
+					tm,
+					isFullState,
+					d->confAddress,
+					d->lastNotify,
+					addr
+				));
 				for (const auto &endpoint : user.getEndpoint()) {
 					if (!endpoint.getEntity().present())
 						break;
 
 					Address gruu(endpoint.getEntity().get());
-					if (endpoint.getState() == "deleted")
-						d->listener->onParticipantDeviceRemoved(tm, isFullState, addr, gruu);
-					else if (endpoint.getState() == "full")
-						d->listener->onParticipantDeviceAdded(tm, isFullState, addr, gruu);
-
+					if (endpoint.getState() == StateType::deleted) {
+						d->listener->onParticipantDeviceRemoved(make_shared<ConferenceParticipantDeviceEvent>(
+							EventLog::Type::ConferenceParticipantDeviceRemoved,
+							tm,
+							isFullState,
+							d->confAddress,
+							d->lastNotify,
+							addr,
+							gruu
+						));
+					} else if (endpoint.getState() == StateType::full) {
+						d->listener->onParticipantDeviceAdded(make_shared<ConferenceParticipantDeviceEvent>(
+							EventLog::Type::ConferenceParticipantDeviceAdded,
+							tm,
+							isFullState,
+							d->confAddress,
+							d->lastNotify,
+							addr,
+							gruu
+						));
+					}
 				}
 			}
 			linphone_address_unref(cAddr);

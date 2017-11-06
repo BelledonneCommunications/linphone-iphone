@@ -145,7 +145,7 @@ static const char *participant_added_notify = \
 "   <conference-info"\
 "    xmlns=\"urn:ietf:params:xml:ns:conference-info\""\
 "    entity=\"%s\""\
-"    state=\"full\" version=\"1\">"\
+"    state=\"partial\" version=\"1\">"\
 "   <!--"\
 "     CONFERENCE INFO"\
 "   -->"\
@@ -202,7 +202,7 @@ static const char *participant_not_added_notify = \
 "   <conference-info"\
 "    xmlns=\"urn:ietf:params:xml:ns:conference-info\""\
 "    entity=\"%s\""\
-"    state=\"full\" version=\"1\">"\
+"    state=\"partial\" version=\"1\">"\
 "   <!--"\
 "     CONFERENCE INFO"\
 "   -->"\
@@ -259,7 +259,7 @@ static const char *participant_deleted_notify = \
 "   <conference-info"\
 "    xmlns=\"urn:ietf:params:xml:ns:conference-info\""\
 "    entity=\"%s\""\
-"    state=\"full\" version=\"1\">"\
+"    state=\"partial\" version=\"1\">"\
 "   <!--"\
 "     CONFERENCE INFO"\
 "   -->"\
@@ -316,7 +316,7 @@ static const char *participant_admined_notify = \
 "   <conference-info"\
 "    xmlns=\"urn:ietf:params:xml:ns:conference-info\""\
 "    entity=\"%s\""\
-"    state=\"full\" version=\"1\">"\
+"    state=\"partial\" version=\"1\">"\
 "   <!--"\
 "     CONFERENCE INFO"\
 "   -->"\
@@ -377,7 +377,7 @@ static const char *participant_unadmined_notify = \
 "   <conference-info"\
 "    xmlns=\"urn:ietf:params:xml:ns:conference-info\""\
 "    entity=\"%s\""\
-"    state=\"full\" version=\"1\">"\
+"    state=\"partial\" version=\"1\">"\
 "   <!--"\
 "     CONFERENCE INFO"\
 "   -->"\
@@ -447,12 +447,12 @@ public:
 private:
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (time_t tm, bool isFullState, const Address &addr) override;
-	void onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) override;
-	void onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) override;
-	void onSubjectChanged (time_t tm, bool isFullState, const string &subject) override;
-	void onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
-	void onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
+	void onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) override;
+	void onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) override;
+	void onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) override;
+	void onSubjectChanged (shared_ptr<ConferenceSubjectEvent> event) override;
+	void onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) override;
+	void onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) override;
 
 public:
 	RemoteConferenceEventHandler *handler;
@@ -473,33 +473,38 @@ void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
 
 void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
 
-void ConferenceEventTester::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {
+void ConferenceEventTester::onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) {
+	const Address addr = event->getParticipantAddress();
 	participants.insert(pair<string, bool>(addr.asString(), FALSE));
 	participantDevices.insert(pair<string, int>(addr.asString(), 0));
 }
-void ConferenceEventTester::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {
+void ConferenceEventTester::onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) {
+	const Address addr = event->getParticipantAddress();
 	participants.erase(addr.asString());
 	participantDevices.erase(addr.asString());
 }
 
-void ConferenceEventTester::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {
+void ConferenceEventTester::onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) {
+	const Address addr = event->getParticipantAddress();
 	auto it = participants.find(addr.asString());
 	if (it != participants.end())
-		it->second = isAdmin;
+		it->second = (event->getType() == EventLog::Type::ConferenceParticipantSetAdmin);
 }
 
-void ConferenceEventTester::onSubjectChanged(time_t tm, bool isFullState, const string &subject) {
-	confSubject = subject;
+void ConferenceEventTester::onSubjectChanged(shared_ptr<ConferenceSubjectEvent> event) {
+	confSubject = event->getSubject();
 }
 
-void ConferenceEventTester::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
+void ConferenceEventTester::onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+	const Address addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end())
 		it->second++;
 
 }
 
-void ConferenceEventTester::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
+void ConferenceEventTester::onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+	const Address addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end() && it->second > 0)
 		it->second--;

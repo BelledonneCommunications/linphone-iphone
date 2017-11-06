@@ -83,7 +83,7 @@ string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo
 	} else {
 		confInfo.setVersion(static_cast<unsigned int>(notifyId));
 	}
-	confInfo.setState(isFullState ? "full" : "optional");
+	confInfo.setState(isFullState ? StateType::full : StateType::partial);
 	if (!confInfo.getConferenceDescription()) {
 		ConferenceDescriptionType description = ConferenceDescriptionType();
 		confInfo.setConferenceDescription(description);
@@ -117,13 +117,13 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) 
 		user.setEndpoint(endpoints);
 		user.setEntity(participant->getAddress().asStringUriOnly());
 		user.getRoles()->getEntry().push_back(participant->isAdmin() ? "admin" : "participant");
-		user.setState("full");
+		user.setState(StateType::full);
 
 		for (const auto &device : participant->getPrivate()->getDevices()) {
 			const string &gruu = device.getGruu().asStringUriOnly();
 			EndpointType endpoint = EndpointType();
 			endpoint.setEntity(gruu);
-			endpoint.setState("full");
+			endpoint.setState(StateType::full);
 			user.getEndpoint().push_back(endpoint);
 		}
 
@@ -148,7 +148,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 			const string &gruu = device.getGruu().asStringUriOnly();
 			EndpointType endpoint = EndpointType();
 			endpoint.setEntity(gruu);
-			endpoint.setState("full");
+			endpoint.setState(StateType::full);
 			user.getEndpoint().push_back(endpoint);
 		}
 	}
@@ -156,7 +156,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
-	user.setState("full");
+	user.setState(StateType::full);
 
 	confInfo.getUsers()->getUser().push_back(user);
 
@@ -171,7 +171,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const
 
 	UserType user = UserType();
 	user.setEntity(addr.asStringUriOnly());
-	user.setState("deleted");
+	user.setState(StateType::deleted);
 	confInfo.getUsers()->getUser().push_back(user);
 
 	return createNotify(confInfo, notifyId);
@@ -188,7 +188,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back(isAdmin ? "admin" : "participant");
-	user.setState("partial");
+	user.setState(StateType::partial);
 	confInfo.getUsers()->getUser().push_back(user);
 
 	return createNotify(confInfo, notifyId);
@@ -217,11 +217,11 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (c
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
-	user.setState("partial");
+	user.setState(StateType::partial);
 
 	EndpointType endpoint = EndpointType();
 	endpoint.setEntity(gruu.asStringUriOnly());
-	endpoint.setState("full");
+	endpoint.setState(StateType::full);
 	user.getEndpoint().push_back(endpoint);
 
 	confInfo.getUsers()->getUser().push_back(user);
@@ -241,11 +241,11 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
 	user.getRoles()->getEntry().push_back("participant");
-	user.setState("partial");
+	user.setState(StateType::partial);
 
 	EndpointType endpoint = EndpointType();
 	endpoint.setEntity(gruu.asStringUriOnly());
-	endpoint.setState("deleted");
+	endpoint.setState(StateType::deleted);
 	user.getEndpoint().push_back(endpoint);
 
 	confInfo.getUsers()->getUser().push_back(user);

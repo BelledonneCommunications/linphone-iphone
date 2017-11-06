@@ -33,6 +33,7 @@ public:
 	ConferenceParticipantDeviceEvent (
 		Type type,
 		std::time_t time,
+		bool isFullState,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const Address &participantAddress,

@@ -46,12 +46,12 @@ protected:
 	/* ConferenceListener */
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (time_t tm, bool isFullState, const Address &addr) override;
-	void onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) override;
-	void onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) override;
-	void onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) override;
-	void onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
-	void onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) override;
+	void onParticipantAdded (std::shared_ptr<ConferenceParticipantEvent> event) override;
+	void onParticipantRemoved (std::shared_ptr<ConferenceParticipantEvent> event) override;
+	void onParticipantSetAdmin (std::shared_ptr<ConferenceParticipantEvent> event) override;
+	void onSubjectChanged (std::shared_ptr<ConferenceSubjectEvent> event) override;
+	void onParticipantDeviceAdded (std::shared_ptr<ConferenceParticipantDeviceEvent> event) override;
+	void onParticipantDeviceRemoved (std::shared_ptr<ConferenceParticipantDeviceEvent> event) override;
 
 private:
 	L_DECLARE_PRIVATE(RemoteConference);

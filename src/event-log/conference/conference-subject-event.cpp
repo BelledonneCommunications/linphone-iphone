@@ -35,6 +35,7 @@ public:
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (
 	time_t time,
+	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const string &subject
@@ -42,6 +43,7 @@ ConferenceSubjectEvent::ConferenceSubjectEvent (
 	*new ConferenceSubjectEventPrivate,
 	Type::ConferenceSubjectChanged,
 	time,
+	isFullState,
 	conferenceAddress,
 	notifyId
 ) {

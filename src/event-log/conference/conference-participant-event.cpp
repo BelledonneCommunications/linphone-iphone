@@ -30,10 +30,18 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
 	time_t time,
+	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const Address &participantAddress
-) : ConferenceNotifiedEvent(*new ConferenceParticipantEventPrivate, type, time, conferenceAddress, notifyId) {
+) : ConferenceNotifiedEvent(
+	*new ConferenceParticipantEventPrivate,
+	type,
+	time,
+	isFullState,
+	conferenceAddress,
+	notifyId
+) {
 	L_D();
 	L_ASSERT(
 		type == Type::ConferenceParticipantAdded ||
@@ -48,10 +56,18 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
 	time_t time,
+	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const Address &participantAddress
-) : ConferenceNotifiedEvent(p, type, time, conferenceAddress, notifyId) {
+) : ConferenceNotifiedEvent(
+	p,
+	type,
+	time,
+	isFullState,
+	conferenceAddress,
+	notifyId
+) {
 	L_D();
 	d->participantAddress = participantAddress;
 }

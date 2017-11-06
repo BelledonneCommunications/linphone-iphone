@@ -263,9 +263,10 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 	d->setState(ChatRoom::State::Terminated);
 }
 
-void ClientGroupChatRoom::onParticipantAdded (time_t tm, bool isFullState, const Address &addr) {
+void ClientGroupChatRoom::onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) {
 	L_D_T(RemoteConference, dConference);
 
+	const Address &addr = event->getParticipantAddress();
 	if (isMe(addr))
 		return;
 
@@ -280,22 +281,16 @@ void ClientGroupChatRoom::onParticipantAdded (time_t tm, bool isFullState, const
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
-	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
-		EventLog::Type::ConferenceParticipantAdded,
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		addr
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantRemoved (time_t tm, bool isFullState, const Address &addr) {
+void ClientGroupChatRoom::onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) {
 	L_D_T(RemoteConference, dConference);
 
+	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (!participant) {
 		lWarning() << "Participant " << addr.asString() << " removed but not in the list of participants!";
@@ -305,13 +300,6 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, bool isFullState, con
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
-	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
-		EventLog::Type::ConferenceParticipantRemoved,
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		addr
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
@@ -320,8 +308,8 @@ void ClientGroupChatRoom::onParticipantRemoved (time_t tm, bool isFullState, con
 	dConference->participants.remove(participant);
 }
 
-void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, bool isFullState, const Address &addr, bool isAdmin) {
-	L_D_T(RemoteConference, dConference);
+void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) {
+	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -332,43 +320,29 @@ void ClientGroupChatRoom::onParticipantSetAdmin (time_t tm, bool isFullState, co
 		return;
 	}
 
-	participant->getPrivate()->setAdmin(isAdmin);
+	participant->getPrivate()->setAdmin(event->getType() == EventLog::Type::ConferenceParticipantSetAdmin);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
-	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
-		isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		addr
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onSubjectChanged (time_t tm, bool isFullState, const std::string &subject) {
-	L_D_T(RemoteConference, dConference);
-	RemoteConference::setSubject(subject);
+void ClientGroupChatRoom::onSubjectChanged (shared_ptr<ConferenceSubjectEvent> event) {
+	RemoteConference::setSubject(event->getSubject());
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
-	shared_ptr<ConferenceSubjectEvent> event = make_shared<ConferenceSubjectEvent>(
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		subject
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
-	L_D_T(RemoteConference, dConference);
+void ClientGroupChatRoom::onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -378,26 +352,18 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (time_t tm, bool isFullState,
 		lWarning() << "Participant " << participant << " added a device but is not in the list of participants!";
 		return;
 	}
-	participant->getPrivate()->addDevice(gruu);
+	participant->getPrivate()->addDevice(event->getGruuAddress());
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceAddedCb cb = linphone_chat_room_cbs_get_participant_device_added(cbs);
-	shared_ptr<ConferenceParticipantDeviceEvent> event = make_shared<ConferenceParticipantDeviceEvent>(
-		EventLog::Type::ConferenceParticipantDeviceAdded,
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		addr,
-		gruu
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, bool isFullState, const Address &addr, const Address &gruu) {
-	L_D_T(RemoteConference, dConference);
+void ClientGroupChatRoom::onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -407,18 +373,10 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (time_t tm, bool isFullStat
 		lWarning() << "Participant " << participant << " removed a device but is not in the list of participants!";
 		return;
 	}
-	participant->getPrivate()->removeDevice(gruu);
+	participant->getPrivate()->removeDevice(event->getGruuAddress());
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceRemovedCb cb = linphone_chat_room_cbs_get_participant_device_removed(cbs);
-	shared_ptr<ConferenceParticipantDeviceEvent> event = make_shared<ConferenceParticipantDeviceEvent>(
-		EventLog::Type::ConferenceParticipantDeviceRemoved,
-		tm,
-		dConference->conferenceAddress,
-		dConference->eventHandler->getLastNotify(),
-		addr,
-		gruu
-	);
 	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
