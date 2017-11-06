@@ -351,7 +351,7 @@ LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(con
  * @param[in] msg LinphoneChatMessage object
  * @param[in] c_content LinphoneContent object
  */
-LINPHONE_PUBLIC void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const LinphoneContent *c_content);
+LINPHONE_PUBLIC void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const char *c_content);
 
 /**
  * Returns true if the chat message has a text content
