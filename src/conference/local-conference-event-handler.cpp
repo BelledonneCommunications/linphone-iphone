@@ -130,7 +130,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) 
 		confInfo.getUsers()->getUser().push_back(user);
 	}
 
-	return createNotify(confInfo, notifyId, TRUE);
+	return createNotify(confInfo, notifyId, true);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr, int notifyId) {

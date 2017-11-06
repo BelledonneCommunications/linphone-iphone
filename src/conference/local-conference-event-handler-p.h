@@ -49,7 +49,7 @@ private:
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 0;
 
-	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = FALSE);
+	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
 	void sendNotify (const std::string &notify, const Address &addr);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
