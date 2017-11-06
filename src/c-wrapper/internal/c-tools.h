@@ -249,8 +249,9 @@ public:
 	>
 	static void signalCppPtrDestruction (CppType *cppObject) {
 		void *value = cppObject->getCBackPtr();
-		if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
-			belle_sip_object_unref(value);
+		//TODO
+		/*if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
+			belle_sip_object_unref(value);*/
 	}
 
 	// ---------------------------------------------------------------------------
