@@ -306,7 +306,10 @@ bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) 
 }
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
-	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(initial_content));
+	shared_ptr<LinphonePrivate::ChatMessage> cppPtr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(initial_content);
+	LinphoneChatMessage *object = L_INIT(ChatMessage);
+	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
+	return object;
 }
 
 // =============================================================================
