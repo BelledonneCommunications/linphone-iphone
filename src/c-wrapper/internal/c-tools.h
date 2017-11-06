@@ -557,6 +557,7 @@ LINPHONE_END_NAMESPACE
 #define L_INTERNAL_C_OBJECT_NO_XTOR(C_OBJECT)
 
 #define L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, CPP_TYPE, ...) \
+	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> cppPtr; \
@@ -650,13 +651,11 @@ LINPHONE_END_NAMESPACE
 
 // Declare wrapped C object with constructor/destructor.
 #define L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
-	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, L_CPP_TYPE_OF_C_TYPE(C_TYPE), __VA_ARGS__) \
 	L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR)
 
 // Declare wrapped C object.
 #define L_DECLARE_C_OBJECT_IMPL(C_TYPE, ...) \
-	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, L_CPP_TYPE_OF_C_TYPE(C_TYPE), __VA_ARGS__) \
 	L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, L_INTERNAL_C_OBJECT_NO_XTOR, L_INTERNAL_C_OBJECT_NO_XTOR)
 
