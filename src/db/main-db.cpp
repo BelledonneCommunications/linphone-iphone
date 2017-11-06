@@ -1186,7 +1186,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : CoreAccessor(core), AbstractDb(*
 			(void)lastNotifyId;
 
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
-				chatRoom = core->getPrivate()->createChatRoom(
+				chatRoom = core->getPrivate()->createBasicChatRoom(
 					Address(sipAddress),
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				);

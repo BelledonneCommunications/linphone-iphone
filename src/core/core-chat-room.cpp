@@ -64,7 +64,7 @@ static inline string resolveWorkaroundClientGroupChatRoomAddress (
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bool isRtt) {
+shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const Address &peerAddress, bool isRtt) {
 	L_Q();
 
 	shared_ptr<ChatRoom> chatRoom;
@@ -75,7 +75,7 @@ shared_ptr<ChatRoom> CorePrivate::createChatRoom (const Address &peerAddress, bo
 		chatRoom = make_shared<BasicChatRoom>(q->getSharedFromThis(), peerAddress);
 
 	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
-	insertChatRoom(chatRoom);
+
 	dChatRoom->setState(ChatRoom::State::Instantiated);
 	dChatRoom->setState(ChatRoom::State::Created);
 
@@ -176,7 +176,8 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const Address &peerAddress,
 	if (chatRoom)
 		return chatRoom;
 
-	chatRoom = d->createChatRoom(peerAddress, isRtt);
+	chatRoom = d->createBasicChatRoom(peerAddress, isRtt);
+	d->insertChatRoom(chatRoom);
 	d->insertChatRoomWithDb(chatRoom);
 
 	return chatRoom;
