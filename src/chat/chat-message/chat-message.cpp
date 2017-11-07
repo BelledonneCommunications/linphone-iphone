@@ -225,6 +225,11 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 		content.setBody(linphone_content_get_string_buffer(c_content));
 	}
 	content.setContentDisposition(linphone_content_get_name(c_content));
+	
+	// This is a ugly workaround required to be able to get the total size of the file in the content
+	vector<char> empty(linphone_content_get_size(c_content));
+	content.setBody(empty);
+
 	q->addContent(content);
 }
 
