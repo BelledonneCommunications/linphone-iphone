@@ -98,6 +98,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		LinphoneChatRoom *chat_room = iter->data;
 		bctbx_list_t *history = linphone_chat_room_get_history_events(iter->data, 1);
 		LinphoneChatMessage *last_msg = NULL;
+		// TODO [2017/11/07]: get_last_message directly via chat room API
 		while (history) {
 			LinphoneEventLog *event = history->data;
 			if (linphone_event_log_get_type(event) != LinphoneEventLogTypeConferenceChatMessage) {
