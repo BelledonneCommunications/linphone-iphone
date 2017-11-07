@@ -1188,10 +1188,15 @@ void ChatMessagePrivate::send () {
 		currentFileTransferContent = nullptr;
 		for (Content &content : contents) {
 			ContentType contentType = content.getContentType();
-			if (contentType != ContentType::FileTransfer && contentType != ContentType::PlainText) {
-				lInfo() << "Found content with content type " << contentType.asString() << ", set it for file upload";
-				currentFileTransferContent = &content;
-				break;
+			//TODO Improve !
+			if (contentType != ContentType::FileTransfer && contentType != ContentType::PlainText &&
+				contentType != ContentType::ExternalBody && contentType != ContentType::Imdn &&
+				contentType != ContentType::ImIsComposing && contentType != ContentType::ResourceLists &&
+				contentType != ContentType::Sdp && contentType != ContentType::ConferenceInfo && 
+				contentType != ContentType::Cpim) {
+					lInfo() << "Found content with type " << contentType.asString() << ", set it for file upload";
+					currentFileTransferContent = &content;
+					break;
 			}
 		}
 		if (currentFileTransferContent != nullptr) {
