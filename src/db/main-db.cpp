@@ -711,7 +711,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS chat_message_content ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  event_id " + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  content_type_id" + primaryKeyRefStr("SMALLINT UNSIGNED") + ","
 			"  body TEXT NOT NULL,"
 

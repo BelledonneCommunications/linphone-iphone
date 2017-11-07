@@ -68,10 +68,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 void l_assert (const char *condition, const char *file, int line);
 
-#ifndef DEBUG
-	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
-#else
+#ifdef DEBUG
 	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::l_assert(#CONDITION, __FILE__, __LINE__))
+#else
+	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #endif
 
 #ifndef _MSC_VER
@@ -132,18 +132,54 @@ class ObjectPrivate;
 		friend class Tester;
 #endif
 
-// Generic public helper. (Neither ClonableObject.)
-// `void *` is used to avoid downcasting.
+namespace Private {
+	// See: http://en.cppreference.com/w/cpp/types/void_t
+	template<typename... T> struct MakeVoid {
+		typedef void type;
+	};
+	template<typename... T>
+	using void_t = typename MakeVoid<T...>::type;
+
+	template<typename T, typename U = void>
+	struct IsMapContainerImpl : std::false_type {};
+
+	template<typename T>
+	struct IsMapContainerImpl<
+		T,
+		void_t<
+			typename T::key_type,
+			typename T::mapped_type,
+			decltype(std::declval<T&>()[std::declval<const typename T::key_type&>()])
+		>
+	> : std::true_type {};
+};
+
+// Check if a type is a std container like map, unordered_map...
 template<typename T>
-constexpr T *getPublicHelper (void *object, const void *) {
-	return static_cast<T *>(object);
+struct IsMapContainer : Private::IsMapContainerImpl<T>::type {};
+
+// Generic public helper.
+template<
+	typename R,
+	typename P,
+	typename C,
+	typename = typename std::enable_if<!IsMapContainer<P>::value, P>::type
+>
+constexpr R *getPublicHelper (P *object, const C *) {
+	return static_cast<R *>(object);
 }
 
-template<typename T, typename U>
-inline T *getPublicHelper (const U *map, const ClonableObjectPrivate *context) {
+// Generic public helper. Deal with shared data.
+template<
+	typename R,
+	typename P,
+	typename C,
+	typename = typename std::enable_if<IsMapContainer<P>::value, P>::type
+>
+inline R *getPublicHelper (const P *map, const C *context) {
 	auto it = map->find(context);
-	L_ASSERT(it != map->end());
-	return static_cast<T *>(it->second);
+	L_ASSERT(it != map->cend());
+	return static_cast<R *>(it->second);
 }
 
 #define L_DECLARE_PUBLIC(CLASS) \
