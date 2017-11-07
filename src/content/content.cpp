@@ -21,6 +21,7 @@
 #include "object/clonable-object-p.h"
 
 #include "content.h"
+#include "linphone/core.h"
 
 // =============================================================================
 
@@ -151,6 +152,16 @@ bool Content::isEmpty () const {
 bool Content::isValid() const {
 	L_D();
 	return d->contentType.isValid() || d->body.empty();
+}
+
+LinphoneContent * Content::toLinphoneContent() const {
+	LinphoneContent* content;
+	content = linphone_core_create_content(NULL);
+	linphone_content_set_type(content, getContentType().getType().c_str());
+	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
+	linphone_content_set_size(content, getSize());
+	linphone_content_set_name(content, getContentDisposition().c_str());
+	return content;
 }
 
 LINPHONE_END_NAMESPACE

@@ -81,7 +81,7 @@ public:
 	std::string getSalCustomHeaderValue(const std::string& name);
 
 	// -----------------------------------------------------------------------------
-	// Methods only used for C wrapper, to be removed some day...
+	// Deprecated methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------
 
 	const ContentType &getContentType();
@@ -91,7 +91,7 @@ public:
 	void setText(const std::string &text);
 
 	LinphoneContent *getFileTransferInformation() const;
-	void setFileTransferInformation(LinphoneContent *content);
+	void setFileTransferInformation(const LinphoneContent *content);
 
 	// -----------------------------------------------------------------------------
 	// Need to be public to be called from static C callbacks
@@ -138,6 +138,7 @@ private:
 	bool isReadOnly = false;
 	std::list<Content > contents;
 	Content internalContent;
+	Content *currentFileTransferContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
 	belle_http_request_t *httpRequest = nullptr;
@@ -150,8 +151,6 @@ private:
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
 	std::string cText;
-	// Used for compatibility with previous C API
-	LinphoneContent *cFileTransferInformation = nullptr;
 
 	// -----------------------------------------------------------------------------
 

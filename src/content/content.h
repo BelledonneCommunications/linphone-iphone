@@ -24,6 +24,7 @@
 
 #include "object/app-data-container.h"
 #include "object/clonable-object.h"
+#include "linphone/content.h"
 
 // =============================================================================
 
@@ -62,6 +63,8 @@ public:
 	bool isValid() const;
 
 	bool isEmpty () const;
+
+	LinphoneContent * toLinphoneContent() const;
 
 	static const Content Empty;
 

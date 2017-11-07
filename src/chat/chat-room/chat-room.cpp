@@ -459,7 +459,7 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 	shared_ptr<ChatMessage> chatMessage = createMessage();
 
 	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
-	chatMessage->getPrivate()->setFileTransferInformation(linphone_content_copy(initialContent));
+	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
 	return chatMessage;
 }
 
