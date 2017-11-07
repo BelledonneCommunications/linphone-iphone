@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "address/simple-address.h"
 #include "private.h"
 #include "logger/logger.h"
 #include "remote-conference-event-handler-p.h"
@@ -78,13 +79,12 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
 
 	bool isFullState = (confInfo->getState() == StateType::full);
-	Address cleanedConfAddress = d->confAddress;
-	cleanedConfAddress.clean();
+	SimpleAddress simpleConfAddress(d->confAddress);
 	// Temporary workaround
-	Address entityAddress(confInfo->getEntity().c_str());
-	Address cleanedConfAddress2(cleanedConfAddress);
-	cleanedConfAddress2.setDomain(entityAddress.getDomain());
-	if (entityAddress.weakEqual(cleanedConfAddress) || entityAddress.weakEqual(cleanedConfAddress2)) {
+	SimpleAddress entityAddress(confInfo->getEntity().c_str());
+	SimpleAddress simpleConfAddress2(simpleConfAddress);
+	simpleConfAddress2.setDomain(entityAddress.getDomain());
+	if ((entityAddress == simpleConfAddress) || (entityAddress == simpleConfAddress2)) {
 		if (
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
