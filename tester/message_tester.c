@@ -2334,12 +2334,10 @@ void file_and_text_message(void) {
 
 	BC_ASSERT_TRUE(linphone_chat_message_has_text_content(msg));
 	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(msg), "Text message");
-	BC_ASSERT_FALSE(linphone_chat_message_has_file_transfer_content(msg)); // On sender side, content is a file content, not a file transfer
 
 	linphone_chat_room_send_chat_message(chat_room, msg);
 	
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1, 60000));
-	BC_ASSERT_TRUE(linphone_chat_message_has_file_transfer_content(msg)); // Once sent, it should have the file transfer content
 
 	if (marie->stat.last_received_chat_message) {
 		LinphoneChatMessage *recv_msg;
@@ -2347,7 +2345,6 @@ void file_and_text_message(void) {
 
 		BC_ASSERT_TRUE(linphone_chat_message_has_text_content(recv_msg));
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(recv_msg), "Text message");
-		BC_ASSERT_TRUE(linphone_chat_message_has_file_transfer_content(recv_msg));
 
 		cbs = linphone_chat_message_get_callbacks(recv_msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
