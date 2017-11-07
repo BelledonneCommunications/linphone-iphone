@@ -182,8 +182,8 @@
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		return cell;
 	} else {
-		if (linphone_event_log_is_full_state(event))
-			return NULL;
+		//if (linphone_event_log_is_full_state(event))
+		//	return NULL;
 
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);
 		UIChatNotifiedEventCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
