@@ -376,6 +376,13 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_has_file_transfer_content(const Lin
 LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const LinphoneChatMessage *msg);
 
 /**
+ * Gets the file transfer content if available as a string
+ * @param[in] msg LinphoneChatMessage object
+ * @return the file name if available, null otherwise
+ */
+LINPHONE_PUBLIC const char* linphone_chat_message_get_file_transfer_content_file_name(const LinphoneChatMessage *msg);
+
+/**
  * @}
  */
 

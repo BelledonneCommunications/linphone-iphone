@@ -321,6 +321,14 @@ const char * linphone_chat_message_get_text_content(const LinphoneChatMessage *m
 	return L_STRING_TO_C(content.getBodyAsString());
 }
 
+const char* linphone_chat_message_get_file_transfer_content_file_name(const LinphoneChatMessage *msg) {
+	LinphonePrivate::Content content = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getFileTransferContent();
+	if (content == LinphonePrivate::Content::Empty) {
+		return NULL;
+	}
+	return L_STRING_TO_C(content.getContentDisposition());
+}
+
 // =============================================================================
 // Old listener
 // =============================================================================
