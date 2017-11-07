@@ -90,7 +90,7 @@
 	if (url || last_content) {
 		return @"🗻";
 	} else {
-		const char *text = linphone_chat_message_get_text(message) ?: "";
+		const char *text = linphone_chat_message_get_text_content(message) ?: "";
 		return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
 														   ?: NSLocalizedString(@"(invalid string)", nil);
 	}

@@ -164,30 +164,32 @@
 	LinphoneEventLog *event = bctbx_list_nth_data(eventList, (int)[indexPath row]);
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		if (linphone_chat_message_get_file_transfer_information(chat) ||
-			linphone_chat_message_get_external_body_url(chat)) {
+		if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat))
 			kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
-		} else {
+		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-		}
+
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-		if (cell == nil) {
+		if (cell == nil)
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-		}
+
 		[cell setChatMessage:chat];
-		if (chat) {
+		if (chat)
 			[cell update];
-		}
+
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
 		return cell;
 	} else {
+		if (linphone_event_log_is_full_state(event))
+			return NULL;
+
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);
 		UIChatNotifiedEventCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-		if (cell == nil) {
+		if (cell == nil)
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-		}
+
 		[cell setEvent:event];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
