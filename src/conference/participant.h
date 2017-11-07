@@ -23,6 +23,7 @@
 #include <list>
 
 #include "address/address.h"
+#include "address/simple-address.h"
 #include "object/object.h"
 #include "conference/params/call-session-params.h"
 #include "conference/participant-device.h"
@@ -52,7 +53,8 @@ public:
 	explicit Participant (const Address &address);
 	explicit Participant (Address &&address);
 
-	const Address& getAddress () const;
+	const SimpleAddress& getAddress () const;
+	const Address& getContactAddress () const;
 	bool isAdmin () const;
 
 private:

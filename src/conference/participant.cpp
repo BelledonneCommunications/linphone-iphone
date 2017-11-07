@@ -70,19 +70,26 @@ void ParticipantPrivate::removeDevice (const Address &gruu) {
 
 Participant::Participant (const Address &address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->addr = address;
+	d->contactAddr = address;
+	d->addr = SimpleAddress(address);
 }
 
 Participant::Participant (Address &&address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->addr = move(address);
+	d->contactAddr = move(address);
+	d->addr = SimpleAddress(address);
 }
 
 // -----------------------------------------------------------------------------
 
-const Address& Participant::getAddress () const {
+const SimpleAddress& Participant::getAddress () const {
 	L_D();
 	return d->addr;
+}
+
+const Address& Participant::getContactAddress () const {
+	L_D();
+	return d->contactAddr;
 }
 
 // -----------------------------------------------------------------------------

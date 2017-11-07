@@ -22,6 +22,7 @@
 #include "address-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
+#include "address/simple-address.h"
 
 // =============================================================================
 
@@ -34,8 +35,7 @@ LINPHONE_BEGIN_NAMESPACE
 Address::Address (const string &address) : ClonableObject(*new AddressPrivate) {
 	L_D();
 	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(address)))) {
-		lWarning() << "Cannot create address, bad uri [" << address << "].";
-		return;
+		lWarning() << "Cannot create Address, bad uri [" << address << "]";
 	}
 }
 
@@ -44,6 +44,18 @@ Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 	SalAddress *salAddress = src.getPrivate()->internalAddress;
 	if (salAddress)
 		d->internalAddress = sal_address_clone(salAddress);
+}
+
+Address::Address (const SimpleAddress &src) : ClonableObject(*new AddressPrivate) {
+	L_D();
+	string uri = src.getScheme() + ":" + src.getUsername() + "@";
+	if (src.getDomain().find(':') != string::npos)
+		uri += "[" + src.getDomain() + "]";
+	else
+		uri += src.getDomain();
+	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(uri)))) {
+		lWarning() << "Cannot create Address, bad SimpleAddress source";
+	}
 }
 
 Address::~Address () {

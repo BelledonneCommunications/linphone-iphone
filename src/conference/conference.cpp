@@ -212,12 +212,9 @@ void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSessi
 shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
 	L_D();
 
-	Address testedAddr = addr;
-	testedAddr.setPort(0);
+	SimpleAddress simpleAddr(addr);
 	for (const auto &participant : d->participants) {
-		Address participantAddr = participant->getAddress();
-		participantAddr.setPort(0);
-		if (testedAddr.weakEqual(participantAddr))
+		if (participant->getAddress() == simpleAddr)
 			return participant;
 	}
 
@@ -237,11 +234,8 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 
 bool Conference::isMe (const Address &addr) const {
 	L_D();
-	Address cleanedMe = d->me->getAddress();
-	cleanedMe.setPort(0);
-	Address cleanedAddr = addr;
-	cleanedAddr.setPort(0);
-	return cleanedAddr == cleanedMe;
+	SimpleAddress simpleAddr(addr);
+	return d->me->getAddress() == simpleAddr;
 }
 
 LINPHONE_END_NAMESPACE

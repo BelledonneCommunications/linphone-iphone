@@ -44,15 +44,17 @@ public:
 	inline bool isSubscribedToConferenceEventPackage () const { return _isSubscribedToConferenceEventPackage; }
 	inline void subscribeToConferenceEventPackage (bool value) { _isSubscribedToConferenceEventPackage = value; }
 	inline void removeSession () { session.reset(); }
-	inline void setAddress (const Address &newAddr) { addr = newAddr; }
+	inline void setAddress (const SimpleAddress &newAddr) { addr = newAddr; }
 	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
+	inline void setContactAddress (const Address &contactAddr) { this->contactAddr = contactAddr; }
 	const std::list<ParticipantDevice>::const_iterator findDevice (const Address &gruu) const;
 	const std::list<ParticipantDevice> &getDevices () const;
 	void addDevice (const Address &gruu);
 	void removeDevice (const Address &gruu);
 
 private:
-	Address addr;
+	SimpleAddress addr;
+	Address contactAddr;
 	bool isAdmin = false;
 	bool _isSubscribedToConferenceEventPackage = false;
 	std::shared_ptr<CallSession> session;

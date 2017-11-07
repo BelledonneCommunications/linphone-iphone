@@ -19,6 +19,7 @@
 
 #include <algorithm>
 
+#include "address/simple-address.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
@@ -38,28 +39,18 @@ LINPHONE_BEGIN_NAMESPACE
 // Helpers.
 // -----------------------------------------------------------------------------
 
-static inline Address getCleanedPeerAddress (const Address &peerAddress) {
-	if (!peerAddress.isValid())
-		return Address();
-
-	Address cleanedAddress = peerAddress;
-	cleanedAddress.clean();
-	cleanedAddress.setPort(0);
-	return cleanedAddress;
-}
-
 // TODO: Remove me later.
 static inline string resolveWorkaroundClientGroupChatRoomAddress (
 	const CorePrivate &corePrivate,
-	const Address &peerAddress
+	const SimpleAddress &peerAddr
 ) {
 	const char *uri = linphone_core_get_conference_factory_uri(corePrivate.cCore);
 	if (!uri)
 		return "";
 
-	Address workaroundAddress = peerAddress;
-	workaroundAddress.setDomain(Address(uri).getDomain());
-	return workaroundAddress.asStringUriOnly();
+	SimpleAddress workaroundAddr(peerAddr);
+	workaroundAddr.setDomain(Address(uri).getDomain());
+	return workaroundAddr.asString();
 }
 
 // -----------------------------------------------------------------------------
@@ -85,48 +76,48 @@ shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const Address &peerAddres
 void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
 
-	Address cleanedPeerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress());
-
+	const SimpleAddress simpleAddr(chatRoom->getPeerAddress());
 	const string peerAddress = chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Conference)
-		? resolveWorkaroundClientGroupChatRoomAddress(*this, cleanedPeerAddress)
-		: cleanedPeerAddress.asStringUriOnly();
+		? resolveWorkaroundClientGroupChatRoomAddress(*this, simpleAddr)
+		: simpleAddr.asString();
 
 	deleteChatRoom(peerAddress);
-
 	chatRooms.push_back(chatRoom);
 	chatRoomsByUri[peerAddress] = chatRoom;
 }
 
-void CorePrivate::deleteChatRoom (const string &peerAddress) {
-	auto it = chatRoomsByUri.find(peerAddress);
+void CorePrivate::deleteChatRoom (const string &peerAddr) {
+	const SimpleAddress simpleAddr(peerAddr);
+	auto it = chatRoomsByUri.find(simpleAddr.asString());
 	if (it != chatRoomsByUri.end()) {
-		auto it = find_if(chatRooms.begin(), chatRooms.end(), [&peerAddress](const shared_ptr<const ChatRoom> &chatRoom) {
-			return peerAddress == chatRoom->getPeerAddress().asStringUriOnly();
+		auto it = find_if(chatRooms.begin(), chatRooms.end(), [&peerAddr, &simpleAddr](const shared_ptr<const ChatRoom> &chatRoom) {
+			return peerAddr == simpleAddr.asString();
 		});
 		if (it != chatRooms.end()) {
 			chatRooms.erase(it);
 			return;
 		}
-
-		lError() << "Unable to remove chat room: " << peerAddress;
+		lError() << "Unable to remove chat room: " << peerAddr;
 	}
 }
 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 
+	const SimpleAddress simpleAddr(chatRoom->getPeerAddress());
 	ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
 	mainDb->insertChatRoom(
 		capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)
-			? resolveWorkaroundClientGroupChatRoomAddress(*this, chatRoom->getPeerAddress())
-			: chatRoom->getPeerAddress().asStringUriOnly(),
+			? resolveWorkaroundClientGroupChatRoomAddress(*this, simpleAddr)
+			: simpleAddr.asString(),
 		capabilities
 	);
 }
 
-void CorePrivate::deleteChatRoomWithDb (const string &peerAddress) {
-	deleteChatRoom(peerAddress);
-	mainDb->deleteChatRoom(peerAddress);
+void CorePrivate::deleteChatRoomWithDb (const string &peerAddr) {
+	const SimpleAddress simpleAddr(peerAddr);
+	deleteChatRoom(simpleAddr.asString());
+	mainDb->deleteChatRoom(simpleAddr.asString());
 }
 
 // -----------------------------------------------------------------------------
@@ -136,21 +127,24 @@ const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
 	return d->chatRooms;
 }
 
-shared_ptr<ChatRoom> Core::findChatRoom (const Address &peerAddress) const {
+shared_ptr<ChatRoom> Core::findChatRoom (const Address &peerAddr) const {
 	L_D();
 
-	Address cleanedAddress = getCleanedPeerAddress(peerAddress);
-	auto it = d->chatRoomsByUri.find(cleanedAddress.asStringUriOnly());
+	const SimpleAddress simpleAddr(peerAddr);
+	auto it = d->chatRoomsByUri.find(simpleAddr.asString());
 	if (it != d->chatRoomsByUri.cend())
 		return it->second;
 
-	lInfo() << "Unable to find chat room: `" << peerAddress.asStringUriOnly() << "`.";
+	lInfo() << "Unable to find chat room: `" << simpleAddr.asString() << "`";
 
 	// TODO: Remove me, temp workaround.
-	const string workaroundAddress = resolveWorkaroundClientGroupChatRoomAddress(*d, cleanedAddress);
-	lWarning() << "Workaround: searching chat room with: `" << workaroundAddress << "`.";
-	it = d->chatRoomsByUri.find(workaroundAddress);
-	return it == d->chatRoomsByUri.cend() ? shared_ptr<ChatRoom>() : it->second;
+	const string workaroundAddress = resolveWorkaroundClientGroupChatRoomAddress(*d, simpleAddr);
+	if (!workaroundAddress.empty()) {
+		lWarning() << "Workaround: searching chat room with: `" << workaroundAddress << "`";
+		it = d->chatRoomsByUri.find(workaroundAddress);
+		return it == d->chatRoomsByUri.cend() ? shared_ptr<ChatRoom>() : it->second;
+	}
+	return shared_ptr<ChatRoom>();
 }
 
 shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
@@ -199,11 +193,11 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const string &peerAddress, 
 
 void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
 	CorePrivate *d = chatRoom->getCore()->getPrivate();
-	const Address cleanedPeerAddress = getCleanedPeerAddress(chatRoom->getPeerAddress());
+	const SimpleAddress simpleAddr(chatRoom->getPeerAddress());
 	d->deleteChatRoomWithDb(
 		chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Conference)
-			? resolveWorkaroundClientGroupChatRoomAddress(*d, cleanedPeerAddress)
-			: cleanedPeerAddress.asStringUriOnly()
+			? resolveWorkaroundClientGroupChatRoomAddress(*d, simpleAddr)
+			: simpleAddr.asString()
 	);
 }
 

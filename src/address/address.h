@@ -28,6 +28,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class AddressPrivate;
+class SimpleAddress;
 
 class LINPHONE_PUBLIC Address : public ClonableObject {
 	// TODO: Remove me later.
@@ -36,10 +37,12 @@ class LINPHONE_PUBLIC Address : public ClonableObject {
 	friend class ClientGroupChatRoomPrivate;
 	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
+	friend class SimpleAddress;
 
 public:
 	explicit Address (const std::string &address = "");
 	Address (const Address &src);
+	Address (const SimpleAddress &src);
 	~Address ();
 
 	Address &operator= (const Address &src);

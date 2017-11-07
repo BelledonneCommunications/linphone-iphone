@@ -49,7 +49,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, q);
 	const Address &myAddress = q->getMe()->getAddress();
-	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getAddress());
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getContactAddress());
 	session->initiateOutgoing();
 
 	Address addr = myAddress;

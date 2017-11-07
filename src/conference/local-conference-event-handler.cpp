@@ -51,29 +51,25 @@ void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, 
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, const Address &addr) {
-	Address cleanedAddr(addr);
-	cleanedAddr.setPort(0);
+	SimpleAddress simpleAddr(addr);
 	for (const auto &participant : conf->getParticipants()) {
-		Address cleanedParticipantAddr(participant->getAddress());
-		cleanedParticipantAddr.setPort(0);
-		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && !cleanedAddr.weakEqual(cleanedParticipantAddr))
-			sendNotify(notify, participant->getAddress());
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && (participant->getAddress() != simpleAddr))
+			sendNotify(notify, participant->getContactAddress());
 	}
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 	for (const auto &participant : conf->getParticipants()) {
 		if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
-			sendNotify(notify, participant->getAddress());
+			sendNotify(notify, participant->getContactAddress());
 	}
 }
 
 void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const Address &addr) {
-	Address cleanedAddr(addr);
-	cleanedAddr.setPort(0);
-	shared_ptr<Participant> participant = conf->findParticipant(cleanedAddr);
+	SimpleAddress simpleAddr(addr);
+	shared_ptr<Participant> participant = conf->findParticipant(simpleAddr);
 	if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
-			sendNotify(notify, participant->getAddress());
+			sendNotify(notify, participant->getContactAddress());
 }
 
 string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
