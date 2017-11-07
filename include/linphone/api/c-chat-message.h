@@ -135,6 +135,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage 
 /**
  * Get text part of this message
  * @return text or NULL if no text.
+ * @deprecated use getTextContent() instead
  */
 LINPHONE_PUBLIC const char* linphone_chat_message_get_text(LinphoneChatMessage* msg);
 

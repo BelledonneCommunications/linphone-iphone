@@ -187,7 +187,9 @@ const string &ChatMessagePrivate::getText () {
 			cText = internalContent.getBodyAsString();
 		}
 	} else {
-		if (!internalContent.isEmpty()) {
+		if (hasTextContent()) {
+			cText = getTextContent.getBodyAsString();
+		} else if (!internalContent.isEmpty()) {
 			cText = internalContent.getBodyAsString();
 		} else {
 			if (contents.size() > 0) {

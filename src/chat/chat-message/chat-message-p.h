@@ -81,7 +81,7 @@ public:
 	std::string getSalCustomHeaderValue(const std::string& name);
 
 	// -----------------------------------------------------------------------------
-	// Methods only used for C wrapper
+	// Methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------
 
 	const ContentType &getContentType();
