@@ -60,6 +60,9 @@ public:
 
 	size_t getSize () const;
 
+	void setExpectedSize(size_t expectedSize);
+	size_t getExpectedSize() const;
+
 	bool isValid() const;
 
 	bool isEmpty () const;

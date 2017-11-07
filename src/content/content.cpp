@@ -34,6 +34,7 @@ public:
 	vector<char> body;
 	ContentType contentType;
 	string contentDisposition;
+	size_t expectedSize;
 };
 
 const Content Content::Empty;
@@ -47,6 +48,7 @@ Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), App
 	d->body = src.getBody();
 	d->contentType = src.getContentType();
 	d->contentDisposition = src.getContentDisposition();
+	d->expectedSize = src.getExpectedSize();
 }
 
 Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(move(src)) {
@@ -54,6 +56,7 @@ Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataC
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
 	d->contentDisposition = move(src.getPrivate()->contentDisposition);
+	d->expectedSize = move(src.getExpectedSize());
 }
 
 Content &Content::operator= (const Content &src) {
@@ -62,6 +65,7 @@ Content &Content::operator= (const Content &src) {
 		d->body = src.getBody();
 		d->contentType = src.getContentType();
 		d->contentDisposition = src.getContentDisposition();
+		d->expectedSize = src.getExpectedSize();
 		AppDataContainer::operator=(src);
 	}
 
@@ -73,6 +77,7 @@ Content &Content::operator= (Content &&src) {
 	d->body = move(src.getPrivate()->body);
 	d->contentType = move(src.getPrivate()->contentType);
 	d->contentDisposition = move(src.getPrivate()->contentDisposition);
+	d->expectedSize = move(src.getExpectedSize());
 	AppDataContainer::operator=(move(src));
 	return *this;
 }
@@ -145,6 +150,16 @@ size_t Content::getSize () const {
 	return d->body.size();
 }
 
+void Content::setExpectedSize(size_t expectedSize) {
+	L_D();
+	d->expectedSize = expectedSize;
+}
+
+size_t Content::getExpectedSize() const {
+	L_D();
+	return d->expectedSize;
+}
+
 bool Content::isEmpty () const {
 	return getSize() == 0;
 }
@@ -159,7 +174,7 @@ LinphoneContent * Content::toLinphoneContent() const {
 	content = linphone_core_create_content(NULL);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
-	linphone_content_set_size(content, getSize());
+	linphone_content_set_size(content, getExpectedSize());
 	linphone_content_set_name(content, getContentDisposition().c_str());
 	return content;
 }

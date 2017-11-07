@@ -225,10 +225,7 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 		content.setBody(linphone_content_get_string_buffer(c_content));
 	}
 	content.setContentDisposition(linphone_content_get_name(c_content));
-	
-	// This is a ugly workaround required to be able to get the total size of the file in the content
-	vector<char> empty(linphone_content_get_size(c_content));
-	content.setBody(empty);
+	content.setExpectedSize(linphone_content_get_size(c_content));
 
 	q->addContent(content);
 }
@@ -423,7 +420,7 @@ int ChatMessagePrivate::onSendBody (
 
 	// if we've not reach the end of file yet, ask for more data
 	// in case of file body handler, won't be called
-	if (fileTransferFilePath.empty() && offset < currentFileTransferContent->getSize()) {
+	if (fileTransferFilePath.empty() && offset < currentFileTransferContent->getExpectedSize()) {
 		// get data from call back
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 		LinphoneChatMessageCbsFileTransferSendCb file_transfer_send_cb =
@@ -696,7 +693,7 @@ void ChatMessagePrivate::processResponseFromPostFile (const belle_http_response_
 			}
 
 			// create a user body handler to take care of the file and add the content disposition and content-type headers
-			first_part_bh = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(currentFileTransferContent->getSize(),
+			first_part_bh = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(currentFileTransferContent->getExpectedSize(),
 					_chat_message_file_transfer_on_progress, nullptr, nullptr,
 					_chat_message_on_send_body, _chat_message_on_send_end, this);
 			if (!fileTransferFilePath.empty()) {
@@ -829,10 +826,8 @@ static Content createFileTransferInformationFromHeaders (const belle_sip_message
 		ContentType contentType(type, subtype);
 	}
 	if (content_length_hdr) {
-		// This is a ugly workaround required to be able to get the total size of the file in the content
-		vector<char> empty(belle_sip_header_content_length_get_content_length(content_length_hdr));
-		content.setBody(empty);
-		lInfo() << "Extracted content length " << content.getSize() << " from header";
+		content.setExpectedSize(belle_sip_header_content_length_get_content_length(content_length_hdr));
+		lInfo() << "Extracted content length " << content.getExpectedSize() << " from header";
 	}
 
 	return content;
@@ -854,14 +849,12 @@ void ChatMessagePrivate::processResponseHeadersFromGetFile (const belle_http_res
 			q->addContent(content);
 		} else {
 			belle_sip_header_content_length_t *content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(response, "Content-Length"));
-			// This is a ugly workaround required to be able to get the total size of the file in the content
-			vector<char> empty(belle_sip_header_content_length_get_content_length(content_length_hdr));
-			currentFileTransferContent->setBody(empty);
-			lInfo() << "Extracted content length " << currentFileTransferContent->getSize() << " from header";
+			currentFileTransferContent->setExpectedSize(belle_sip_header_content_length_get_content_length(content_length_hdr));
+			lInfo() << "Extracted content length " << currentFileTransferContent->getExpectedSize() << " from header";
 		}
 
 		if (q->hasFileTransferContent()) {
-			body_size = q->getFileTransferContent().getSize();
+			body_size = q->getFileTransferContent().getExpectedSize();
 		}
 
 		body_handler = (belle_sip_body_handler_t *)belle_sip_user_body_handler_new(body_size, _chat_message_file_transfer_on_progress,
@@ -1037,9 +1030,7 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
 							xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							size_t size = (size_t)strtol((const char *)fileSizeString, nullptr, 10);
-							// This is a ugly workaround required to be able to get the total size of the file in the content
-							vector<char> empty(size);
-							content.setBody(empty);
+							content.setExpectedSize(size);
 							xmlFree(fileSizeString);
 						}
 
