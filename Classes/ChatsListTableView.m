@@ -96,11 +96,17 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		bctbx_list_t *history = linphone_chat_room_get_history(iter->data, 1);
+		bctbx_list_t *history = linphone_chat_room_get_history_events(iter->data, 1);
 		LinphoneChatMessage *last_msg = NULL;
-		if (history) {
-			last_msg = linphone_chat_message_ref(history->data);
+		while (history) {
+			LinphoneEventLog *event = history->data;
+			if (linphone_event_log_get_type(event) != LinphoneEventLogTypeConferenceChatMessage) {
+				history = history->next;
+				continue;
+			}
+			last_msg = linphone_chat_message_ref(linphone_event_log_get_chat_message(event));
 			bctbx_list_free(history);
+			break;
 		}
 		linphone_chat_room_set_user_data(chat_room, last_msg);
 		sorted = bctbx_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room),

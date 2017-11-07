@@ -194,7 +194,7 @@
 	for (int i = 0; i < 50; i++) {
 		[tester waitForTimeInterval:.5f];
 
-		if (bctbx_list_size(linphone_chat_room_get_history(room, 0)) == count) {
+		if (bctbx_list_size(linphone_chat_room_get_history_events(room, 0)) == count) {
 			break;
 		}
 	}
