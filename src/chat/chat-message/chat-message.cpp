@@ -179,6 +179,7 @@ void ChatMessagePrivate::setContentType (const ContentType &contentType) {
 }
 
 const string &ChatMessagePrivate::getText () {
+	L_Q();
 	if (direction == ChatMessage::Direction::Incoming) {
 		if (contents.size() > 0) {
 			Content content = contents.front();
@@ -187,8 +188,8 @@ const string &ChatMessagePrivate::getText () {
 			cText = internalContent.getBodyAsString();
 		}
 	} else {
-		if (hasTextContent()) {
-			cText = getTextContent.getBodyAsString();
+		if (q->hasTextContent()) {
+			cText = q->getTextContent().getBodyAsString();
 		} else if (!internalContent.isEmpty()) {
 			cText = internalContent.getBodyAsString();
 		} else {
