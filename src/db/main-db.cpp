@@ -854,25 +854,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return storageId == -1;
 	}
 
-	void MainDb::cleanEvents (FilterMask mask) {
-		L_D();
-
-		if (!isConnected()) {
-			lWarning() << "Unable to clean events. Not connected.";
-			return;
-		}
-
-		string query = "DELETE FROM event" +
-			buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter }, mask);
-
-		L_BEGIN_LOG_EXCEPTION
-
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << query;
-
-		L_END_LOG_EXCEPTION
-	}
-
 	int MainDb::getEventsCount (FilterMask mask) const {
 		L_D();
 
@@ -1415,8 +1396,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	bool MainDb::deleteEvent (const shared_ptr<EventLog> &) {
 		return false;
 	}
-
-	void MainDb::cleanEvents (FilterMask) {}
 
 	int MainDb::getEventsCount (FilterMask) const {
 		return 0;
