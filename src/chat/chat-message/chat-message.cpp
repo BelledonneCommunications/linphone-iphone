@@ -767,7 +767,7 @@ void ChatMessagePrivate::processResponseFromPostFile (const belle_http_response_
 				
 				Content fileTransferContent;
 				fileTransferContent.setContentType(ContentType::FileTransfer);
-				fileTransferContent.setBody(getText());
+				fileTransferContent.setBody(internalContent.getBodyAsString());
 				q->addContent(fileTransferContent);
 
 				q->updateState(ChatMessage::State::FileTransferDone);
