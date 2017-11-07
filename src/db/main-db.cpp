@@ -727,10 +727,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS chat_message_content_app_data ("
 			"  chat_message_content_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
-			"  key VARCHAR(255),"
+			"  name VARCHAR(255),"
 			"  data BLOB,"
 
-			"  PRIMARY KEY (chat_message_content_id, key),"
+			"  PRIMARY KEY (chat_message_content_id, name),"
 			"  FOREIGN KEY (chat_message_content_id)"
 			"    REFERENCES chat_message_content(id)"
 			"    ON DELETE CASCADE"
@@ -740,10 +740,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_message_crypto_data ("
 			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
-			"  key VARCHAR(255),"
+			"  name VARCHAR(255),"
 			"  data BLOB,"
 
-			"  PRIMARY KEY (event_id, key),"
+			"  PRIMARY KEY (event_id, name),"
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_chat_message_event(event_id)"
 			"    ON DELETE CASCADE"
