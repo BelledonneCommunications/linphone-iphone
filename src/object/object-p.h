@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include "base-object-p.h"
+#include "object.h"
 #include "variant/variant.h"
 
 // =============================================================================
