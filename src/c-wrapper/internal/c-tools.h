@@ -61,62 +61,62 @@ struct CTypeMetaInfo {
 	typedef void cppType;
 };
 
+// ---------------------------------------------------------------------------
+// IsCppObject traits.
+// ---------------------------------------------------------------------------
+
+template<typename CppType>
+struct IsCppObject {
+	enum {
+		value = std::is_base_of<BaseObject, CppType>::value || std::is_base_of<ClonableObject, CppType>::value
+	};
+};
+
+template<typename CppPrivateType>
+struct IsPrivateCppObject {
+	enum {
+		value = std::is_base_of<BaseObjectPrivate, CppPrivateType>::value ||
+		std::is_base_of<ClonableObjectPrivate, CppPrivateType>::value
+	};
+};
+
+template<typename CppType>
+struct IsRegisteredCppObject {
+	enum {
+		value = CppTypeMetaInfo<CppType>::defined && (
+			!CppTypeMetaInfo<CppType>::isSubtype ||
+			std::is_base_of<typename CTypeMetaInfo<typename CppTypeMetaInfo<CppType>::cType>::cppType, CppType>::value
+		)
+	};
+};
+
+// ---------------------------------------------------------------------------
+// IsDefined traits.
+// ---------------------------------------------------------------------------
+
+template<typename CppType>
+struct IsDefinedBaseCppObject {
+	enum {
+		value = IsRegisteredCppObject<CppType>::value && std::is_base_of<BaseObject, CppType>::value
+	};
+};
+
+template<typename CppType>
+struct IsDefinedCppObject {
+	enum {
+		value = IsDefinedBaseCppObject<CppType>::value && std::is_base_of<Object, CppType>::value
+	};
+};
+
+template<typename CppType>
+struct IsDefinedClonableCppObject {
+	enum {
+		value = IsRegisteredCppObject<CppType>::value && std::is_base_of<ClonableObject, CppType>::value
+	};
+};
+
 class Wrapper {
 private:
-	// ---------------------------------------------------------------------------
-	// IsCppObject traits.
-	// ---------------------------------------------------------------------------
-
-	template<typename CppType>
-	struct IsCppObject {
-		enum {
-			value = std::is_base_of<BaseObject, CppType>::value || std::is_base_of<ClonableObject, CppType>::value
-		};
-	};
-
-	template<typename CppPrivateType>
-	struct IsPrivateCppObject {
-		enum {
-			value = std::is_base_of<BaseObjectPrivate, CppPrivateType>::value ||
-				std::is_base_of<ClonableObjectPrivate, CppPrivateType>::value
-		};
-	};
-
-	template<typename CppType>
-	struct IsRegisteredCppObject {
-		enum {
-			value = CppTypeMetaInfo<CppType>::defined && (
-				!CppTypeMetaInfo<CppType>::isSubtype ||
-				std::is_base_of<typename CTypeMetaInfo<typename CppTypeMetaInfo<CppType>::cType>::cppType, CppType>::value
-			)
-		};
-	};
-
-	// ---------------------------------------------------------------------------
-	// IsDefined traits.
-	// ---------------------------------------------------------------------------
-
-	template<typename CppType>
-	struct IsDefinedBaseCppObject {
-		enum {
-			value = IsRegisteredCppObject<CppType>::value && std::is_base_of<BaseObject, CppType>::value
-		};
-	};
-
-	template<typename CppType>
-	struct IsDefinedCppObject {
-		enum {
-			value = IsDefinedBaseCppObject<CppType>::value && std::is_base_of<Object, CppType>::value
-		};
-	};
-
-	template<typename CppType>
-	struct IsDefinedClonableCppObject {
-		enum {
-			value = IsRegisteredCppObject<CppType>::value && std::is_base_of<ClonableObject, CppType>::value
-		};
-	};
-
 	// ---------------------------------------------------------------------------
 	// Wrapped Objects.
 	// ---------------------------------------------------------------------------
@@ -215,12 +215,31 @@ public:
 	// ---------------------------------------------------------------------------
 
 	template<
-		typename CppType,
-		typename = typename std::enable_if<IsCppObject<CppType>::value, CppType>::type
+		typename CType,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
+		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
 	>
-	static void resetCBackPtr (const std::shared_ptr<CppType> &cppObject) {
+	static void uninitBaseCppObject (CType *cObject) {
+		WrappedBaseObject<CppType> *wrappedObject = reinterpret_cast<WrappedBaseObject<CppType> *>(cObject);
+
+		std::shared_ptr<CppType> cppObject = wrappedObject->owner == WrappedObjectOwner::Internal
+			? wrappedObject->weakCppPtr.lock()
+			: wrappedObject->cppPtr;
+
 		if (cppObject)
-			cppObject->setCBackPtr(nullptr);
+			cppObject->setCBackPtr(nullptr); \
+
+		wrappedObject->cppPtr.~shared_ptr();
+		wrappedObject->weakCppPtr.~weak_ptr();
+	}
+
+	template<
+		typename CType,
+		typename CppType = typename CTypeMetaInfo<CType>::cppType,
+		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
+	>
+	static void uninitClonableCppObject (CType *cObject) {
+		delete reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -261,10 +280,11 @@ public:
 		typename = typename std::enable_if<std::is_base_of<BaseObject, CppType>::value, CppType>::type
 	>
 	static void signalCppPtrDestruction (CppType *cppObject) {
-		//void *value = cppObject->getCBackPtr();
-		//TODO
-		/*if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
-			belle_sip_object_unref(value);*/
+		// TODO: Remove commented section in the future.
+		// Repair message storage first.
+		// void *value = cppObject->getCBackPtr();
+		// if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
+		//  belle_sip_object_unref(value);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -570,6 +590,12 @@ LINPHONE_END_NAMESPACE
 
 #define L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, CPP_TYPE, ...) \
 	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
+	static_assert( \
+		LinphonePrivate::IsDefinedBaseCppObject< \
+			LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::cppType \
+		>::value, \
+		"Type is not declared as base object." \
+	); \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> cppPtr; \
@@ -589,14 +615,7 @@ LINPHONE_END_NAMESPACE
 	} \
 	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
 		DESTRUCTOR(object); \
-		{ \
-			std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)> wrappedObject = object->weakCppPtr.lock(); \
-			if (!wrappedObject) \
-				wrappedObject = object->cppPtr; \
-			LinphonePrivate::Wrapper::resetCBackPtr(wrappedObject); \
-		} \
-		object->cppPtr.~shared_ptr(); \
-		object->weakCppPtr.~weak_ptr(); \
+		LinphonePrivate::Wrapper::uninitBaseCppObject(object); \
 	} \
 	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
 	BELLE_SIP_INSTANCIATE_VPTR2( \
@@ -680,6 +699,12 @@ LINPHONE_END_NAMESPACE
 // Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_OBJECT_IMPL(C_TYPE, ...) \
 	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
+	static_assert( \
+		LinphonePrivate::IsDefinedClonableCppObject< \
+			LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::cppType \
+		>::value, \
+		"Type is not declared as clonable object." \
+	); \
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
@@ -690,7 +715,7 @@ LINPHONE_END_NAMESPACE
 		return belle_sip_object_new(Linphone ## C_TYPE); \
 	} \
 	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
-		delete object->cppPtr; \
+		LinphonePrivate::Wrapper::uninitClonableCppObject(object); \
 	} \
 	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
 		L_ASSERT(src->cppPtr); \
