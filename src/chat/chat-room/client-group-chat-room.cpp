@@ -196,8 +196,6 @@ void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant>
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
 	referToAddr.setUriParam("method", "BYE");
-	referToAddr.setDomain("");
-	referToAddr.setPort(-1);
 	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
 	referOp->unref();
 }
@@ -224,8 +222,6 @@ void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &pa
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
 	referToAddr.setParam("admin", Utils::toString(isAdmin));
-	referToAddr.setDomain("");
-	referToAddr.setPort(-1);
 	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
 	referOp->unref();
 }

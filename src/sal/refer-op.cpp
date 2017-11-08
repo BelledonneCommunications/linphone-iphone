@@ -89,8 +89,11 @@ int SalReferOp::send_refer(const SalAddress *refer_to) {
 	belle_sip_request_t* req=build_request("REFER");
 	if (req == NULL ) return -1;
 	if (get_contact_address()) belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(create_contact()));
-	belle_sip_header_refer_to_t *refer_to_header = belle_sip_header_refer_to_create(BELLE_SIP_HEADER_ADDRESS(refer_to));
-	belle_sip_header_address_set_automatic(BELLE_SIP_HEADER_ADDRESS(refer_to_header), true);
+	belle_sip_header_address_t *address = BELLE_SIP_HEADER_ADDRESS(refer_to);
+	belle_sip_uri_t *uri = belle_sip_header_address_get_uri(address);
+	if (!belle_sip_uri_get_host(uri))
+		belle_sip_header_address_set_automatic(address, true);
+	belle_sip_header_refer_to_t *refer_to_header = belle_sip_header_refer_to_create(address);
 	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), BELLE_SIP_HEADER(refer_to_header));
 	return send_request(req);
 }
