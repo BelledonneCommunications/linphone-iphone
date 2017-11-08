@@ -15,6 +15,10 @@
 @property(nonatomic, strong) NSMutableDictionary *contacts;
 @property(nonatomic, strong) NSMutableArray *admins;
 @property(nonatomic) BOOL create;
+@property(nonatomic) NSString *oldSubject;
+@property(nonatomic, strong) NSMutableDictionary *oldContacts;
+@property(nonatomic, strong) NSMutableArray *oldAdmins;
+@property(nonatomic) LinphoneChatRoom *room;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *backButton;

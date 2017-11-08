@@ -529,9 +529,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		participants = participants->next;
 	}
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	view.contacts = contactsDict;
 	view.create = FALSE;
-	view.admins = admins;
+	view.contacts = [contactsDict mutableCopy];
+	view.oldContacts = [contactsDict mutableCopy];
+	view.admins = [admins mutableCopy];
+	view.oldAdmins = [admins mutableCopy];
+	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+	view.room = _chatRoom;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

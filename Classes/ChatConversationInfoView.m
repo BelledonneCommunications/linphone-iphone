@@ -51,6 +51,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableView.dataSource = self;
 	_tableView.delegate	= self;
 	_admins = [[NSMutableArray alloc] init];
+	_oldAdmins = [[NSMutableArray alloc] init];
+	_oldContacts = [[NSMutableDictionary alloc] init];
+	_room = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -87,8 +90,40 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)onValidate {
-	//TODO : Apply all modifications
 	ChatConversationView *view = VIEW(ChatConversationView);
+	// Change subject if necessary
+	if (![_oldSubject isEqualToString:_nameLabel.text])
+		linphone_chat_room_set_subject(_room, _nameLabel.text.UTF8String);
+
+	// Remove participants if necessary
+	for (NSString *uri in _oldContacts.allKeys) {
+		if ([_contacts objectForKey:uri])
+			continue;
+
+		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+		linphone_chat_room_remove_participant(_room, linphone_chat_room_find_participant(_room, addr));
+		linphone_address_unref(addr);
+	}
+
+	// add admins if necessary
+	for (NSString *admin in _admins) {
+		if ([_oldAdmins containsObject:admin])
+			continue;
+
+		LinphoneAddress *addr = linphone_address_new(admin.UTF8String);
+		linphone_chat_room_set_participant_admin_status(_room, linphone_chat_room_find_participant(_room, linphone_address_new(admin.UTF8String)), true);
+		linphone_address_unref(addr);
+	}
+
+	// remove admins if necessary
+	for (NSString *admin in _oldAdmins) {
+		if ([_admins containsObject:admin])
+			continue;
+
+		LinphoneAddress *addr = linphone_address_new(admin.UTF8String);
+		linphone_chat_room_set_participant_admin_status(_room, linphone_chat_room_find_participant(_room, linphone_address_new(admin.UTF8String)), false);
+		linphone_address_unref(addr);
+	}
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
@@ -116,6 +151,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onQuitClick:(id)sender {
+	linphone_chat_room_leave(_room);
 }
 
 - (IBAction)onAddClick:(id)sender {
@@ -144,13 +180,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 		cell = [[UIChatConversationInfoTableViewCell alloc] initWithIdentifier:kCellId];
 	}
 	cell.uri = _contacts.allKeys[indexPath.row];
-	cell.nameLabel.text = [_contacts objectForKey:cell.uri];
+	LinphoneAddress *addr = linphone_address_new(cell.uri.UTF8String);
+	cell.nameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.controllerView = self;
 	if(![_admins containsObject:cell.uri]) {
 		cell.adminLabel.enabled	= FALSE;
 		cell.adminImage.image = [UIImage imageNamed:@"check_unselected.png"];
 	}
 	cell.adminButton.hidden = _create;
+	linphone_address_unref(addr);
 	return cell;
 }
 

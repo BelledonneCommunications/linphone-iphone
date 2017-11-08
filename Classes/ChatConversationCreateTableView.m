@@ -142,6 +142,8 @@
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
 	NSInteger index = 0;
+	_searchBar.text = @"";
+	[self searchBar:_searchBar textDidChange:@""];
 	if(cell.selectedImage.hidden) {
 		if(![_contactsGroup containsObject:cell.addressLabel.text]) {
 			[_contactsGroup addObject:cell.addressLabel.text];
@@ -210,6 +212,8 @@
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
 	searchBar.showsCancelButton = (searchText.length > 0);
 	[self reloadDataWithFilter:searchText];
+	if ([searchText isEqualToString:@""])
+		[_searchBar resignFirstResponder];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {

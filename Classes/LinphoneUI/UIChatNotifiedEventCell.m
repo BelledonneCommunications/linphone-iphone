@@ -62,41 +62,38 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 	switch (linphone_event_log_get_type(event)) {
 		case LinphoneEventLogTypeConferenceSubjectChanged: {
 			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"Chat room subject changed to : %@", subject];
+			NSString *formatedString = [NSString stringWithFormat:@"Chat room subject has changed to : %@", subject];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantAdded: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ was added to the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ has been added to the chat room", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantRemoved: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ was removed to the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ has been removed of the chat room", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantSetAdmin: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ was set admin of the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ is now an admin of the chat room", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantUnsetAdmin: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ is no more an admin of the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ is no longer an admin of the chat room", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		default:
 			return;
 	}
-	NSString *timeString = [LinphoneUtils timeToString:linphone_event_log_get_time(event)
-											withFormat:LinphoneDateChatBubble];
-
-	_contactDateLabel.text = [NSString stringWithFormat:@"%@ - %@", timeString, eventString];
+	_contactDateLabel.text = eventString;
 
 	CGSize newSize = [_contactDateLabel.text boundingRectWithSize:CGSizeZero
 														  options:(NSStringDrawingUsesLineFragmentOrigin |
