@@ -44,40 +44,40 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 
 	shared_ptr<ChatMessage> marieMessage;
 	if (first_file_transfer) {
+		char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 		LinphoneContent *content = linphone_core_create_content(marie->lc);
 		belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
 		linphone_content_set_type(content,"video");
 		linphone_content_set_subtype(content,"mkv");
 		linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
 		marieMessage = marieRoom->createFileTransferMessage(content);
+		marieMessage->setFileTransferFilepath(send_filepath);
+		bc_free(send_filepath);
 	} else {
 		marieMessage = marieRoom->createMessage("Hello Part 1");
 	}
 
 	if (second_file_transfer) {
-		LinphoneContent *initialContent = linphone_core_create_content(marie->lc);
-		belle_sip_object_set_name(BELLE_SIP_OBJECT(initialContent), "sintel trailer content");
-		linphone_content_set_type(initialContent,"video");
-		linphone_content_set_subtype(initialContent,"mkv");
-		linphone_content_set_name(initialContent,"sintel_trailer_opus_h264.mkv");
-
+		char *send_filepath = bc_tester_res("vcards/vcards.vcf");
 		FileContent *content = new FileContent();
-		content->setContentType(ContentType::FileTransfer);
-		content->setBody(linphone_content_get_string_buffer(initialContent));
+		content->setContentType("file/vcf");
+		content->setFilePath(send_filepath);
+		content->setFileName("vcards.vcf");
 		marieMessage->addContent(content);
+		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
 		marieMessage->addContent(content);
 	}
+
+	linphone_core_set_file_transfer_server(marie->lc,"https://www.linphone.org:444/lft.php");
 	marieMessage->send();
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_STRING_EQUAL(marieMessage->getInternalContent().getContentType().asString().c_str(), "multipart/mixed");
-
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
-	//TODO
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), "multipart/mixed");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
