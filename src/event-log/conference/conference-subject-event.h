@@ -34,7 +34,6 @@ class LINPHONE_PUBLIC ConferenceSubjectEvent : public ConferenceNotifiedEvent {
 public:
 	ConferenceSubjectEvent (
 		std::time_t time,
-		bool isFullState,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const std::string &subject

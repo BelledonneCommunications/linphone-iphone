@@ -30,7 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 class ConferenceNotifiedEventPrivate : public ConferenceEventPrivate {
 private:
 	unsigned int notifyId = 0;
-	bool isFullState = false;
 
 	L_DECLARE_PUBLIC(ConferenceNotifiedEvent);
 };

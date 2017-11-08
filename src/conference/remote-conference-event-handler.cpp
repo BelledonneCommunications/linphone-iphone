@@ -89,13 +89,15 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
 		)
-			d->listener->onSubjectChanged(make_shared<ConferenceSubjectEvent>(
-				tm,
-				isFullState,
-				d->confAddress,
-				d->lastNotify,
-				confInfo->getConferenceDescription().get().getSubject().get()
-			));
+			d->listener->onSubjectChanged(
+				make_shared<ConferenceSubjectEvent>(
+					tm,
+					d->confAddress,
+					d->lastNotify,
+					confInfo->getConferenceDescription().get().getSubject().get()
+				),
+				isFullState
+			);
 		if (confInfo->getVersion().present())
 			d->lastNotify = confInfo->getVersion().get();
 
@@ -108,14 +110,16 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			Address addr(cAddrStr);
 			bctbx_free(cAddrStr);
 			if (user.getState() == StateType::deleted) {
-				d->listener->onParticipantRemoved(make_shared<ConferenceParticipantEvent>(
-					EventLog::Type::ConferenceParticipantRemoved,
-					tm,
-					isFullState,
-					d->confAddress,
-					d->lastNotify,
-					addr
-				));
+				d->listener->onParticipantRemoved(
+					make_shared<ConferenceParticipantEvent>(
+						EventLog::Type::ConferenceParticipantRemoved,
+						tm,
+						d->confAddress,
+						d->lastNotify,
+						addr
+					),
+					isFullState
+				);
 			} else {
 				bool isAdmin = false;
 				if (user.getRoles()) {
@@ -126,49 +130,60 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 						}
 					}
 				}
+
 				if (user.getState() == StateType::full) {
-					d->listener->onParticipantAdded(make_shared<ConferenceParticipantEvent>(
-						EventLog::Type::ConferenceParticipantAdded,
+					d->listener->onParticipantAdded(
+						make_shared<ConferenceParticipantEvent>(
+							EventLog::Type::ConferenceParticipantAdded,
+							tm,
+							d->confAddress,
+							d->lastNotify,
+							addr
+						),
+						isFullState
+					);
+				}
+
+				d->listener->onParticipantSetAdmin(
+					make_shared<ConferenceParticipantEvent>(
+						isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
 						tm,
-						isFullState,
 						d->confAddress,
 						d->lastNotify,
 						addr
-					));
-				}
-				d->listener->onParticipantSetAdmin(make_shared<ConferenceParticipantEvent>(
-					isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
-					tm,
-					isFullState,
-					d->confAddress,
-					d->lastNotify,
-					addr
-				));
+					),
+					isFullState
+				);
+
 				for (const auto &endpoint : user.getEndpoint()) {
 					if (!endpoint.getEntity().present())
 						break;
 
 					Address gruu(endpoint.getEntity().get());
 					if (endpoint.getState() == StateType::deleted) {
-						d->listener->onParticipantDeviceRemoved(make_shared<ConferenceParticipantDeviceEvent>(
-							EventLog::Type::ConferenceParticipantDeviceRemoved,
-							tm,
-							isFullState,
-							d->confAddress,
-							d->lastNotify,
-							addr,
-							gruu
-						));
+						d->listener->onParticipantDeviceRemoved(
+							make_shared<ConferenceParticipantDeviceEvent>(
+								EventLog::Type::ConferenceParticipantDeviceRemoved,
+								tm,
+								d->confAddress,
+								d->lastNotify,
+								addr,
+								gruu
+							),
+							isFullState
+						);
 					} else if (endpoint.getState() == StateType::full) {
-						d->listener->onParticipantDeviceAdded(make_shared<ConferenceParticipantDeviceEvent>(
-							EventLog::Type::ConferenceParticipantDeviceAdded,
-							tm,
-							isFullState,
-							d->confAddress,
-							d->lastNotify,
-							addr,
-							gruu
-						));
+						d->listener->onParticipantDeviceAdded(
+							make_shared<ConferenceParticipantDeviceEvent>(
+								EventLog::Type::ConferenceParticipantDeviceAdded,
+								tm,
+								d->confAddress,
+								d->lastNotify,
+								addr,
+								gruu
+							),
+							isFullState
+						);
 					}
 				}
 			}

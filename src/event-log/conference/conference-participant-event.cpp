@@ -30,7 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
 	time_t time,
-	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const Address &participantAddress
@@ -38,7 +37,6 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	*new ConferenceParticipantEventPrivate,
 	type,
 	time,
-	isFullState,
 	conferenceAddress,
 	notifyId
 ) {
@@ -56,7 +54,6 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
 	time_t time,
-	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const Address &participantAddress
@@ -64,7 +61,6 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	p,
 	type,
 	time,
-	isFullState,
 	conferenceAddress,
 	notifyId
 ) {

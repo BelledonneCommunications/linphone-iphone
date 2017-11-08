@@ -447,12 +447,12 @@ public:
 private:
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) override;
-	void onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) override;
-	void onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) override;
-	void onSubjectChanged (shared_ptr<ConferenceSubjectEvent> event) override;
-	void onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) override;
-	void onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) override;
+	void onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onSubjectChanged (const shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) override;
+	void onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
+	void onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
 
 public:
 	RemoteConferenceEventHandler *handler;
@@ -473,29 +473,34 @@ void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
 
 void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
 
-void ConferenceEventTester::onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) {
+void ConferenceEventTester::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	const Address addr = event->getParticipantAddress();
 	participants.insert(pair<string, bool>(addr.asString(), FALSE));
 	participantDevices.insert(pair<string, int>(addr.asString(), 0));
 }
-void ConferenceEventTester::onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) {
+void ConferenceEventTester::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	const Address addr = event->getParticipantAddress();
 	participants.erase(addr.asString());
 	participantDevices.erase(addr.asString());
 }
 
-void ConferenceEventTester::onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) {
+void ConferenceEventTester::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	const Address addr = event->getParticipantAddress();
 	auto it = participants.find(addr.asString());
 	if (it != participants.end())
 		it->second = (event->getType() == EventLog::Type::ConferenceParticipantSetAdmin);
 }
 
-void ConferenceEventTester::onSubjectChanged(shared_ptr<ConferenceSubjectEvent> event) {
+void ConferenceEventTester::onSubjectChanged(const shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	confSubject = event->getSubject();
 }
 
-void ConferenceEventTester::onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+void ConferenceEventTester::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	const Address addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end())
@@ -503,7 +508,8 @@ void ConferenceEventTester::onParticipantDeviceAdded (shared_ptr<ConferenceParti
 
 }
 
-void ConferenceEventTester::onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+void ConferenceEventTester::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
 	const Address addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end() && it->second > 0)

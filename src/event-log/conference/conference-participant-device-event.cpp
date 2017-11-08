@@ -36,7 +36,6 @@ public:
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	Type type,
 	time_t time,
-	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId,
 	const Address &participantAddress,
@@ -45,7 +44,6 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	*new ConferenceParticipantDeviceEventPrivate,
 	type,
 	time,
-	isFullState,
 	conferenceAddress,
 	notifyId,
 	participantAddress

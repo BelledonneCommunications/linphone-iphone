@@ -33,7 +33,6 @@ public:
 	ConferenceParticipantEvent (
 		Type type,
 		std::time_t time,
-		bool isFullState,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const Address &participantAddress
@@ -46,7 +45,6 @@ protected:
 		ConferenceParticipantEventPrivate &p,
 		Type type,
 		std::time_t time,
-		bool isFullState,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const Address &participantAddress

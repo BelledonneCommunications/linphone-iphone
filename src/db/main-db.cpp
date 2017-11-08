@@ -355,7 +355,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return make_shared<ConferenceParticipantEvent>(
 			type,
 			date,
-			false,
 			Address(peerAddress),
 			notifyId,
 			Address(participantAddress)
@@ -387,7 +386,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return make_shared<ConferenceParticipantDeviceEvent>(
 			type,
 			date,
-			false,
 			Address(peerAddress),
 			notifyId,
 			Address(participantAddress),
@@ -414,7 +412,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// TODO: Use cache.
 		return make_shared<ConferenceSubjectEvent>(
 			date,
-			false,
 			Address(peerAddress),
 			notifyId,
 			subject

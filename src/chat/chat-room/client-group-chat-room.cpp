@@ -263,7 +263,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 	d->setState(ChatRoom::State::Terminated);
 }
 
-void ClientGroupChatRoom::onParticipantAdded (shared_ptr<ConferenceParticipantEvent> event) {
+void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	L_D_T(RemoteConference, dConference);
 
 	const Address &addr = event->getParticipantAddress();
@@ -278,6 +278,10 @@ void ClientGroupChatRoom::onParticipantAdded (shared_ptr<ConferenceParticipantEv
 
 	participant = make_shared<Participant>(addr);
 	dConference->participants.push_back(participant);
+
+	if (isFullState)
+		return;
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
@@ -287,7 +291,9 @@ void ClientGroupChatRoom::onParticipantAdded (shared_ptr<ConferenceParticipantEv
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantRemoved (shared_ptr<ConferenceParticipantEvent> event) {
+void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
+
 	L_D_T(RemoteConference, dConference);
 
 	const Address &addr = event->getParticipantAddress();
@@ -308,7 +314,7 @@ void ClientGroupChatRoom::onParticipantRemoved (shared_ptr<ConferenceParticipant
 	dConference->participants.remove(participant);
 }
 
-void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipantEvent> event) {
+void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -325,6 +331,9 @@ void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipan
 		return; // No change in the local admin status, do not notify
 	participant->getPrivate()->setAdmin(isAdmin);
 
+	if (isFullState)
+		return;
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
@@ -334,10 +343,13 @@ void ClientGroupChatRoom::onParticipantSetAdmin (shared_ptr<ConferenceParticipan
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onSubjectChanged (shared_ptr<ConferenceSubjectEvent> event) {
+void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {
 	if (getSubject() == event->getSubject())
 		return; // No change in the local subject, do not notify
 	RemoteConference::setSubject(event->getSubject());
+
+	if (isFullState)
+		return;
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -348,7 +360,7 @@ void ClientGroupChatRoom::onSubjectChanged (shared_ptr<ConferenceSubjectEvent> e
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceAdded (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
 	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -360,6 +372,10 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (shared_ptr<ConferencePartici
 		return;
 	}
 	participant->getPrivate()->addDevice(event->getGruuAddress());
+
+	if (isFullState)
+		return;
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceAddedCb cb = linphone_chat_room_cbs_get_participant_device_added(cbs);
@@ -369,7 +385,9 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (shared_ptr<ConferencePartici
 		cb(cr, L_GET_C_BACK_PTR(event));
 }
 
-void ClientGroupChatRoom::onParticipantDeviceRemoved (shared_ptr<ConferenceParticipantDeviceEvent> event) {
+void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
+	(void)isFullState; // unused
+
 	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))

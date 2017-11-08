@@ -83,13 +83,6 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_conference_address
  */
 LINPHONE_PUBLIC unsigned int linphone_event_log_get_notify_id (const LinphoneEventLog *event_log);
 
-/**
- * Returns whether or not the event comes from a full state notify.
- * @param[in] event_log A #LinphoneEventLog object.
- * @return whether or not the event comes from a full state notify.
- */
-LINPHONE_PUBLIC bool_t linphone_event_log_is_full_state (const LinphoneEventLog *event_log);
-
 // -----------------------------------------------------------------------------
 // ConferenceCallEvent.
 // -----------------------------------------------------------------------------

@@ -30,36 +30,27 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceNotifiedEvent::ConferenceNotifiedEvent (
 	Type type,
 	time_t time,
-	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId
 ) : ConferenceEvent(*new ConferenceNotifiedEventPrivate, type, time, conferenceAddress) {
 	L_D();
 	d->notifyId = notifyId;
-	d->isFullState = isFullState;
 }
 
 ConferenceNotifiedEvent::ConferenceNotifiedEvent (
 	ConferenceNotifiedEventPrivate &p,
 	Type type,
 	time_t time,
-	bool isFullState,
 	const Address &conferenceAddress,
 	unsigned int notifyId
 ) : ConferenceEvent(p, type, time, conferenceAddress) {
 	L_D();
 	d->notifyId = notifyId;
-	d->isFullState = isFullState;
 }
 
 unsigned int ConferenceNotifiedEvent::getNotifyId () const {
 	L_D();
 	return d->notifyId;
-}
-
-bool ConferenceNotifiedEvent::isFullState () const {
-	L_D();
-	return d->isFullState;
 }
 
 LINPHONE_END_NAMESPACE

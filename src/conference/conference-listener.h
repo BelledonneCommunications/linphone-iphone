@@ -23,8 +23,9 @@
 #include <ctime>
 #include <string>
 
-#include "event-log/events.h"
 #include "linphone/utils/general.h"
+
+#include "event-log/events.h"
 
 // =============================================================================
 
@@ -36,12 +37,12 @@ class ConferenceListener {
 public:
 	virtual void onConferenceCreated (const Address &addr) = 0;
 	virtual void onConferenceTerminated (const Address &addr) = 0;
-	virtual void onParticipantAdded (std::shared_ptr<ConferenceParticipantEvent> event) = 0;
-	virtual void onParticipantRemoved (std::shared_ptr<ConferenceParticipantEvent> event) = 0;
-	virtual void onParticipantSetAdmin (std::shared_ptr<ConferenceParticipantEvent> event) = 0;
-	virtual void onSubjectChanged (std::shared_ptr<ConferenceSubjectEvent> event) = 0;
-	virtual void onParticipantDeviceAdded (std::shared_ptr<ConferenceParticipantDeviceEvent> event) = 0;
-	virtual void onParticipantDeviceRemoved (std::shared_ptr<ConferenceParticipantDeviceEvent> event) = 0;
+	virtual void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
+	virtual void onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
+	virtual void onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
+	virtual void onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) = 0;
+	virtual void onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) = 0;
+	virtual void onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) = 0;
 };
 
 LINPHONE_END_NAMESPACE

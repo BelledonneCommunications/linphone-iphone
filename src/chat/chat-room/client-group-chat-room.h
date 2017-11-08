@@ -64,12 +64,12 @@ private:
 	/* ConferenceListener */
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
-	void onParticipantAdded (std::shared_ptr<ConferenceParticipantEvent> event) override;
-	void onParticipantRemoved (std::shared_ptr<ConferenceParticipantEvent> event) override;
-	void onParticipantSetAdmin (std::shared_ptr<ConferenceParticipantEvent> event) override;
-	void onSubjectChanged (std::shared_ptr<ConferenceSubjectEvent> event) override;
-	void onParticipantDeviceAdded (std::shared_ptr<ConferenceParticipantDeviceEvent> event) override;
-	void onParticipantDeviceRemoved (std::shared_ptr<ConferenceParticipantDeviceEvent> event) override;
+	void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
+	void onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) override;
+	void onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
+	void onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
 
 private:
 	/* CallSessionListener */

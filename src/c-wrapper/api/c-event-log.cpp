@@ -193,15 +193,6 @@ unsigned int linphone_event_log_get_notify_id (const LinphoneEventLog *event_log
 	)->getNotifyId();
 }
 
-bool_t linphone_event_log_is_full_state (const LinphoneEventLog *event_log) {
-	if (!isConferenceNotifiedType(linphone_event_log_get_type(event_log)))
-		return FALSE;
-
-	return static_pointer_cast<const LinphonePrivate::ConferenceNotifiedEvent>(
-		L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
-	)->isFullState();
-}
-
 // -----------------------------------------------------------------------------
 // ConferenceCallEvent.
 // -----------------------------------------------------------------------------
