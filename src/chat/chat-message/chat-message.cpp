@@ -1257,38 +1257,12 @@ void ChatMessagePrivate::send () {
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
 	} else {
-		// TODO
-		/*FileTransferChatMessageModifier ftcmm;
-		ChatMessageModifier::Result result = ftcmm.encode(q->getSharedFromThis(), errorCode);
+		ChatMessageModifier::Result result = fileTransferChatMessageModifier.encode(q->getSharedFromThis(), errorCode);
 		if (result == ChatMessageModifier::Result::Error) {
+			setState(ChatMessage::State::NotDelivered);
 			return;
 		} else if (result == ChatMessageModifier::Result::Suspended) {
 			setState(ChatMessage::State::InProgress);
-			return;
-		}
-		currentSendStep |= ChatMessagePrivate::Step::FileUpload;*/
-
-		currentFileContentToTransfer = nullptr;
-		// For each FileContent, upload it and create a FileTransferContent
-		for (Content *content : contents) {
-			ContentType contentType = content->getContentType();
-			//TODO Improve
-			if (contentType != ContentType::FileTransfer && contentType != ContentType::PlainText &&
-				contentType != ContentType::ExternalBody && contentType != ContentType::Imdn &&
-				contentType != ContentType::ImIsComposing && contentType != ContentType::ResourceLists &&
-				contentType != ContentType::Sdp && contentType != ContentType::ConferenceInfo && 
-				contentType != ContentType::Cpim) {
-					lInfo() << "Found content with type " << contentType.asString() << ", set it for file upload";
-					FileContent *fileContent = (FileContent *)content;
-					currentFileContentToTransfer = fileContent;
-					break;
-			}
-		}
-		if (currentFileContentToTransfer != nullptr) {
-			/* Open a transaction with the server and send an empty request(RCS5.1 section 3.5.4.8.3.1) */
-			if (uploadFile() == 0) {
-				setState(ChatMessage::State::InProgress);
-			}
 			return;
 		}
 		currentSendStep |= ChatMessagePrivate::Step::FileUpload;

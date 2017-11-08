@@ -35,6 +35,7 @@ class LINPHONE_PUBLIC ChatRoom : public Object, public CoreAccessor, public Conf
 	friend class CorePrivate;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
+	friend class FileTransferChatMessageModifier;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);

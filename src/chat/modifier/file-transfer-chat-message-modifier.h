@@ -26,15 +26,38 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class FileTransferMessageModifier : public ChatMessageModifier {
+class Core;
+
+class FileTransferChatMessageModifier : public ChatMessageModifier {
 public:
-	FileTransferMessageModifier () = default;
+	FileTransferChatMessageModifier () = default;
 
 	Result encode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
 	Result decode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
+	
+	int onSendBody (belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t *size);
+	void onSendEnd (belle_sip_user_body_handler_t *bh);
+	void fileUploadBackgroundTaskEnded();
+	void fileTransferOnProgress (belle_sip_body_handler_t *bh, belle_sip_message_t *m, size_t offset, size_t total);
+	void processResponseFromPostFile (const belle_http_response_event_t *event);
+	void processIoErrorUpload (const belle_sip_io_error_event_t *event);
+	void processAuthRequestedUpload (const belle_sip_auth_event *event);
 
 private:
+	std::shared_ptr<ChatRoom> chatRoom;
 	std::shared_ptr<ChatMessage> chatMessage;
+	FileContent* currentFileContentToTransfer;
+	unsigned long backgroundTaskId = 0;
+	belle_http_request_t *httpRequest = nullptr;
+	belle_http_request_listener_t *httpListener = nullptr;
+
+	int uploadFile();
+	int startHttpTransfer(const std::string &url, const std::string &action, belle_http_request_listener_callbacks_t *cbs);
+	void fileUploadBeginBackgroundTask();
+	void fileUploadEndBackgroundTask();
+
+	bool isFileTransferInProgressAndValid();
+	void releaseHttpRequest();
 };
 
 LINPHONE_END_NAMESPACE

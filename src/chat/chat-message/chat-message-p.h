@@ -27,6 +27,7 @@
 #include "content/content.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
+#include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "content/content-type.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
@@ -39,7 +40,6 @@ class ChatMessagePrivate : public ObjectPrivate {
 	friend class CpimChatMessageModifier;
 	friend class EncryptionChatMessageModifier;
 	friend class MultipartChatMessageModifier;
-	friend class FileTransferChatMessageModifier;
 
 public:
 	enum Step {
@@ -153,6 +153,7 @@ private:
 	unsigned long backgroundTaskId = 0;
 	unsigned char currentSendStep = Step::None;
 	bool applyModifiers = true;
+	FileTransferChatMessageModifier fileTransferChatMessageModifier;
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
 	std::string cText;
