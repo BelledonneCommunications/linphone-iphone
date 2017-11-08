@@ -136,6 +136,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 
 	[self updateParticipantLabel];
+
+	if (linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateTerminated) {
+		_messageField.editable = false;
+		_messageView.userInteractionEnabled = false;
+	}
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -80,7 +80,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Action Functions
 
 - (IBAction)onAddClick:(id)event {
-	[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
+	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+	view.isForEditing = false;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
