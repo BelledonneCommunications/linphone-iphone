@@ -189,6 +189,9 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			}
 			linphone_address_unref(cAddr);
 		}
+
+		if (isFullState)
+			d->listener->onFirstNotifyReceived(d->confAddress);
 	}
 }
 

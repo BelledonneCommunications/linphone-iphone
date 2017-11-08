@@ -89,6 +89,8 @@ void RemoteConference::onConferenceTerminated (const Address &addr) {
 	d->eventHandler->unsubscribe();
 }
 
+void RemoteConference::onFirstNotifyReceived (const Address &addr) {}
+
 void RemoteConference::onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)event; // unused
 	(void)isFullState; // unused

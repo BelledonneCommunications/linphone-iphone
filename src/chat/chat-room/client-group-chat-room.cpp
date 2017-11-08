@@ -254,13 +254,17 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	dConference->conferenceAddress = addr;
 	d->peerAddress = addr;
 	CoreAccessor::getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
-	d->setState(ChatRoom::State::Created);
-	CoreAccessor::getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Terminated);
+}
+
+void ClientGroupChatRoom::onFirstNotifyReceived (const Address &addr) {
+	L_D();
+	d->setState(ChatRoom::State::Created);
+	CoreAccessor::getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {

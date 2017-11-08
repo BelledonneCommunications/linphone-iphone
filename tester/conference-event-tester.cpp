@@ -447,6 +447,7 @@ public:
 private:
 	void onConferenceCreated (const Address &addr) override;
 	void onConferenceTerminated (const Address &addr) override;
+	void onFirstNotifyReceived (const Address &addr) override;
 	void onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
 	void onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
 	void onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
@@ -472,6 +473,8 @@ ConferenceEventTester::~ConferenceEventTester () {
 void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
 
 void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
+
+void ConferenceEventTester::onFirstNotifyReceived (const Address &addr) {}
 
 void ConferenceEventTester::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
