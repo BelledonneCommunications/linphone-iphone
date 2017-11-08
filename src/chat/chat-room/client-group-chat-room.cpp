@@ -307,7 +307,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 }
 
 void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
-	(void)isFullState; // unused
+	(void)isFullState;
 
 	L_D_T(RemoteConference, dConference);
 
@@ -401,7 +401,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 }
 
 void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
-	(void)isFullState; // unused
+	(void)isFullState;
 
 	const Address &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
