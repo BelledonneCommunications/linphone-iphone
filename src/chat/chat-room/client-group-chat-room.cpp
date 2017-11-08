@@ -39,6 +39,20 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+list<Address> ClientGroupChatRoomPrivate::cleanAddressesList (const list<Address> &addresses) const {
+	L_Q();
+	list<Address> cleanedList(addresses);
+	cleanedList.sort();
+	cleanedList.unique();
+	for (auto it = cleanedList.begin(); it != cleanedList.end();) {
+		if (q->findParticipant(*it))
+			it = cleanedList.erase(it);
+		else
+			it++;
+	}
+	return cleanedList;
+}
+
 shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	L_Q();
 	L_Q_T(RemoteConference, qConference);
@@ -94,7 +108,8 @@ void ClientGroupChatRoom::addParticipants (
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	if (addresses.empty())
+	list<Address> addressesList = d->cleanAddressesList(addresses);
+	if (addressesList.empty())
 		return;
 
 	if ((d->state != ChatRoom::State::Instantiated) && (d->state != ChatRoom::State::Created)) {
@@ -102,12 +117,8 @@ void ClientGroupChatRoom::addParticipants (
 		return;
 	}
 
-	list<Address> sortedAddresses(addresses);
-	sortedAddresses.sort();
-	sortedAddresses.unique();
-
 	Content content;
-	content.setBody(getResourceLists(sortedAddresses));
+	content.setBody(getResourceLists(addressesList));
 	content.setContentType("application/resource-lists+xml");
 	content.setContentDisposition("recipient-list");
 

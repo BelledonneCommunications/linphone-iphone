@@ -31,6 +31,7 @@ class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
 	ClientGroupChatRoomPrivate () = default;
 
+	std::list<Address> cleanAddressesList (const std::list<Address> &addresses) const;
 	std::shared_ptr<CallSession> createSession ();
 	void notifyReceived (std::string body);
 
