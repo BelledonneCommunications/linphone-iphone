@@ -39,6 +39,7 @@ class ChatMessagePrivate : public ObjectPrivate {
 	friend class CpimChatMessageModifier;
 	friend class EncryptionChatMessageModifier;
 	friend class MultipartChatMessageModifier;
+	friend class FileTransferChatMessageModifier;
 
 public:
 	enum Step {

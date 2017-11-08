@@ -54,6 +54,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/modifier/chat-message-modifier.h
 	chat/modifier/cpim-chat-message-modifier.h
 	chat/modifier/encryption-chat-message-modifier.h
+	chat/modifier/file-transfer-chat-message-modifier.h
 	chat/modifier/multipart-chat-message-modifier.h
 	chat/notification/imdn.h
 	chat/notification/is-composing-listener.h
@@ -170,6 +171,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/cpim/parser/cpim-parser.cpp
 	chat/modifier/cpim-chat-message-modifier.cpp
 	chat/modifier/encryption-chat-message-modifier.cpp
+	chat/modifier/file-transfer-chat-message-modifier.cpp
 	chat/modifier/multipart-chat-message-modifier.cpp
 	chat/notification/imdn.cpp
 	chat/notification/is-composing.cpp

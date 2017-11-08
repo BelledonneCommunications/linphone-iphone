@@ -30,6 +30,7 @@
 #include "chat/chat-room/real-time-text-chat-room.h"
 #include "chat/modifier/cpim-chat-message-modifier.h"
 #include "chat/modifier/encryption-chat-message-modifier.h"
+#include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
 #include "content/file-content.h"
 #include "content/content.h"
@@ -1256,6 +1257,17 @@ void ChatMessagePrivate::send () {
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
 	} else {
+		// TODO
+		/*FileTransferChatMessageModifier ftcmm;
+		ChatMessageModifier::Result result = ftcmm.encode(q->getSharedFromThis(), errorCode);
+		if (result == ChatMessageModifier::Result::Error) {
+			return;
+		} else if (result == ChatMessageModifier::Result::Suspended) {
+			setState(ChatMessage::State::InProgress);
+			return;
+		}
+		currentSendStep |= ChatMessagePrivate::Step::FileUpload;*/
+
 		currentFileContentToTransfer = nullptr;
 		// For each FileContent, upload it and create a FileTransferContent
 		for (Content *content : contents) {
