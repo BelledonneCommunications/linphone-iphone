@@ -538,6 +538,19 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 // -----------------------------------------------------------------------------
 
+	shared_ptr<EventLog> MainDbPrivate::getEventFromCache (long long eventId) const {
+		auto it = storageIdToEvent.find(eventId);
+		if (it == storageIdToEvent.cend())
+			return nullptr;
+
+		shared_ptr<EventLog> eventLog = it->second.lock();
+		// Must exist. If not, implementation bug.
+		L_ASSERT(eventLog);
+		return eventLog;
+	}
+
+// -----------------------------------------------------------------------------
+
 	void MainDb::init () {
 		L_D();
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -920,13 +933,17 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::transaction tr(*session);
 
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress), soci::use(lastNotifyId));
-		for (const auto &row : rows)
-			events.push_back(d->selectGenericConferenceEvent(
-				getBackend() == Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0),
+		for (const auto &row : rows) {
+			long long eventId = getBackend() == Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0);
+			shared_ptr<EventLog> eventLog = d->getEventFromCache(eventId);
+
+			events.push_back(eventLog ? eventLog : d->selectGenericConferenceEvent(
+				eventId,
 				static_cast<EventLog::Type>(row.get<int>(1)),
 				Utils::getTmAsTimeT(row.get<tm>(2)),
 				peerAddress
 			));
+		}
 
 		L_END_LOG_EXCEPTION
 

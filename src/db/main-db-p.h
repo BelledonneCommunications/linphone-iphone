@@ -108,6 +108,12 @@ private:
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
 
+	// ---------------------------------------------------------------------------
+	// Cache API.
+	// ---------------------------------------------------------------------------
+
+	std::shared_ptr<EventLog> getEventFromCache (long long eventId) const;
+
 	L_DECLARE_PUBLIC(MainDb);
 };
 
