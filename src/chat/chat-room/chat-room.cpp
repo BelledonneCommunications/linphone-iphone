@@ -228,7 +228,7 @@ void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) 
 
 void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
-	
+
 	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 
 	/* Add to transient list */
@@ -556,6 +556,11 @@ void ChatRoom::markAsRead () {
 		chatMessage->sendDisplayNotification();
 
 	dCore->mainDb->markChatMessagesAsRead(peerAddress);
+
+	if (d->pendingMessage) {
+		d->pendingMessage->updateState(ChatMessage::State::Displayed);
+		d->pendingMessage->sendDisplayNotification();
+	}
 }
 
 // -----------------------------------------------------------------------------

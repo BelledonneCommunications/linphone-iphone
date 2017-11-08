@@ -129,15 +129,6 @@ LinphoneCall *RealTimeTextChatRoom::getCall () const {
 	return d->call;
 }
 
-void RealTimeTextChatRoom::markAsRead () {
-	L_D();
-	ChatRoom::markAsRead();
-	if (d->pendingMessage) {
-		d->pendingMessage->updateState(ChatMessage::State::Displayed);
-		d->pendingMessage->sendDisplayNotification();
-	}
-}
-
 // -----------------------------------------------------------------------------
 
 void RealTimeTextChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
