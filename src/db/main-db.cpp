@@ -735,6 +735,19 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			")";
 
 		*session <<
+			"CREATE TABLE IF NOT EXISTS chat_message_file_content ("
+			"  chat_message_content_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
+
+			"  name VARCHAR(256) NOT NULL,"
+			"  size INT UNSIGNED NOT NULL,"
+			"  path VARCHAR(512) NOT NULL,"
+
+			"  FOREIGN KEY (chat_message_content_id)"
+			"    REFERENCES chat_message_content(id)"
+			"    ON DELETE CASCADE"
+			")";
+
+		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content_app_data ("
 			"  chat_message_content_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
