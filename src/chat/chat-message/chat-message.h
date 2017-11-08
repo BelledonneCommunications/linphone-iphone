@@ -35,6 +35,7 @@ LINPHONE_BEGIN_NAMESPACE
 class Address;
 class ChatRoom;
 class Content;
+class FileTransferContent;
 class ChatMessagePrivate;
 
 class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
@@ -61,8 +62,6 @@ public:
 	void setAppdata (const std::string &appData);
 	const std::string &getExternalBodyUrl () const;
 	void setExternalBodyUrl (const std::string &url);
-	int uploadFile ();
-	int downloadFile ();
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
 	void updateState (State state);
@@ -114,6 +113,8 @@ public:
 	std::string getCustomHeaderValue (const std::string &headerName) const;
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
+
+	int downloadFile (FileTransferContent& content);
 
 private:
 	L_DECLARE_PRIVATE(ChatMessage);

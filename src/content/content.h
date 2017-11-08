@@ -60,16 +60,16 @@ public:
 
 	size_t getSize () const;
 
-	void setExpectedSize(size_t expectedSize);
-	size_t getExpectedSize() const;
-
 	bool isValid() const;
 
 	bool isEmpty () const;
 
-	LinphoneContent * toLinphoneContent() const;
+	virtual LinphoneContent * toLinphoneContent() const;
 
 	static const Content Empty;
+
+protected:
+	explicit Content (ContentPrivate &p);
 
 private:
 	L_DECLARE_PRIVATE(Content);

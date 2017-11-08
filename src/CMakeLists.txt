@@ -84,6 +84,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	content/content-manager.h
 	content/content-type.h
 	content/content.h
+	content/content-p.h
+	content/file-content.h
+	content/file-transfer-content.h
 	core/core-accessor.h
 	core/core-p.h
 	core/core.h
@@ -184,6 +187,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content-manager.cpp
 	content/content-type.cpp
 	content/content.cpp
+	content/file-content.cpp
+	content/file-transfer-content.cpp
 	core/core-accessor.cpp
 	core/core-chat-room.cpp
 	core/core.cpp

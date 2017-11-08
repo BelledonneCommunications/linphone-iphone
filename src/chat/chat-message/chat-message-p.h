@@ -25,6 +25,8 @@
 #include "chat/chat-message/chat-message.h"
 #include "chat/notification/imdn.h"
 #include "content/content.h"
+#include "content/file-content.h"
+#include "content/file-transfer-content.h"
 #include "content/content-type.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
@@ -92,6 +94,8 @@ public:
 
 	LinphoneContent *getFileTransferInformation() const;
 	void setFileTransferInformation(const LinphoneContent *content);
+	
+	int downloadFile ();
 
 	// -----------------------------------------------------------------------------
 	// Need to be public to be called from static C callbacks
@@ -138,7 +142,7 @@ private:
 	bool isReadOnly = false;
 	std::list<Content > contents;
 	Content internalContent;
-	Content *currentFileTransferContent;
+	FileContent *currentFileContentToTransfer;
 	std::unordered_map<std::string, std::string> customHeaders;
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
 	belle_http_request_t *httpRequest = nullptr;
@@ -153,7 +157,8 @@ private:
 	std::string cText;
 
 	// -----------------------------------------------------------------------------
-
+	
+	int uploadFile ();
 	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
 
 	void fileUploadEndBackgroundTask();
@@ -165,7 +170,7 @@ private:
 		belle_http_request_listener_callbacks_t *cbs
 	);
 	void releaseHttpRequest();
-	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(const std::string &body);
+	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent &content);
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

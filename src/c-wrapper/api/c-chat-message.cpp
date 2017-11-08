@@ -252,12 +252,8 @@ const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChat
 // Methods
 // =============================================================================
 
-int linphone_chat_room_upload_file(LinphoneChatMessage *msg) {
-	return ((LinphoneStatus)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->uploadFile());
-}
-
 LinphoneStatus linphone_chat_message_download_file(LinphoneChatMessage *msg) {
-	return ((LinphoneStatus)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->downloadFile());
+	return ((LinphoneStatus)L_GET_PRIVATE_FROM_C_OBJECT(msg)->downloadFile());
 }
 
 void linphone_chat_message_cancel_file_transfer(LinphoneChatMessage *msg) {
