@@ -833,8 +833,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_END_LOG_EXCEPTION
 
-		if (soFarSoGood)
+		if (soFarSoGood) {
 			dEventLog->dbKey = MainDbEventKey(getCore(), storageId);
+			d->storageIdToEvent[storageId] = eventLog;
+		}
 
 		return soFarSoGood;
 	}

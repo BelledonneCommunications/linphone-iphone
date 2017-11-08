@@ -17,7 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "core/core-p.h"
 #include "main-db-event-key-p.h"
+#include "main-db-p.h"
 
 // =============================================================================
 
@@ -44,9 +46,10 @@ MainDbEventKey::MainDbEventKey (const MainDbEventKey &src) : MainDbEventKey() {
 }
 
 MainDbEventKey::~MainDbEventKey () {
-	if (isValid()) {
-		// TODO: Remove key from main db references if necessary.
-	}
+	L_D();
+
+	if (isValid())
+		d->core.lock()->getPrivate()->mainDb->getPrivate()->storageIdToEvent.erase(d->storageId);
 }
 
 MainDbEventKey &MainDbEventKey::operator= (const MainDbEventKey &src) {

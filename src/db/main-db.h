@@ -36,6 +36,8 @@ class EventLog;
 class MainDbPrivate;
 
 class MainDb : public AbstractDb, public CoreAccessor {
+	friend class MainDbEventKey;
+
 public:
 	enum Filter {
 		NoFilter = 0x0,

@@ -31,6 +31,9 @@ LINPHONE_BEGIN_NAMESPACE
 class Content;
 
 class MainDbPrivate : public AbstractDbPrivate {
+public:
+	std::unordered_map<long long, std::weak_ptr<EventLog>> storageIdToEvent;
+
 private:
 	// ---------------------------------------------------------------------------
 	// Low level API.
