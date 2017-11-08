@@ -266,6 +266,10 @@ const LinphoneAddress *linphone_chat_room_get_conference_address (const Linphone
 	return cr->conferenceAddressCache;
 }
 
+LinphoneParticipant *linphone_chat_room_get_me (const LinphoneChatRoom *cr) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getMe());
+}
+
 int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getNbParticipants();
 }

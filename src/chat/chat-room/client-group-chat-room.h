@@ -47,6 +47,7 @@ public:
 	bool canHandleParticipants () const override;
 	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
 	const Address &getConferenceAddress () const override;
+	std::shared_ptr<Participant> getMe () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
 	const std::string &getSubject () const override;

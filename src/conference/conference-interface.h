@@ -42,6 +42,7 @@ public:
 	virtual bool canHandleParticipants () const = 0;
 	virtual std::shared_ptr<Participant> findParticipant (const Address &addr) const = 0;
 	virtual const Address &getConferenceAddress () const = 0;
+	virtual std::shared_ptr<Participant> getMe () const = 0;
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;
 	virtual const std::string &getSubject () const = 0;

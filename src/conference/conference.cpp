@@ -48,11 +48,6 @@ shared_ptr<Participant> Conference::getActiveParticipant () const {
 	return d->activeParticipant;
 }
 
-shared_ptr<Participant> Conference::getMe () const {
-	L_D();
-	return d->me;
-}
-
 LinphoneCore *Conference::getCore () const {
 	L_D();
 	return d->core;
@@ -82,6 +77,11 @@ bool Conference::canHandleParticipants () const {
 const Address &Conference::getConferenceAddress () const {
 	L_D();
 	return d->conferenceAddress;
+}
+
+shared_ptr<Participant> Conference::getMe () const {
+	L_D();
+	return d->me;
 }
 
 int Conference::getNbParticipants () const {

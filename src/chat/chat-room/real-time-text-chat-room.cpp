@@ -164,6 +164,11 @@ const Address &RealTimeTextChatRoom::getConferenceAddress () const {
 	return Utils::getEmptyConstRefObject<Address>();
 }
 
+shared_ptr<Participant> RealTimeTextChatRoom::getMe () const {
+	lError() << "a RealTimeTextChatRoom does not handle participants";
+	return nullptr;
+}
+
 int RealTimeTextChatRoom::getNbParticipants () const {
 	return 1;
 }

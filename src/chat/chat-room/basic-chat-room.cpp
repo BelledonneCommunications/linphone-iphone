@@ -64,6 +64,11 @@ const Address &BasicChatRoom::getConferenceAddress () const {
 	return Utils::getEmptyConstRefObject<Address>();
 }
 
+shared_ptr<Participant> BasicChatRoom::getMe () const {
+	lError() << "a BasicChatRoom does not handle participants";
+	return nullptr;
+}
+
 int BasicChatRoom::getNbParticipants () const {
 	return 1;
 }

@@ -145,6 +145,10 @@ const Address &ClientGroupChatRoom::getConferenceAddress () const {
 	return RemoteConference::getConferenceAddress();
 }
 
+shared_ptr<Participant> ClientGroupChatRoom::getMe () const {
+	return RemoteConference::getMe();
+}
+
 int ClientGroupChatRoom::getNbParticipants () const {
 	return RemoteConference::getNbParticipants();
 }

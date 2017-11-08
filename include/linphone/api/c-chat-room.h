@@ -284,6 +284,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_can_handle_participants (const Linphon
  * Find a participant of a chat room from its address.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] addr The address to search in the list of participants of the chat room
+ * @return The participant if found, NULL otherwise.
  */
 LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom *cr, const LinphoneAddress *addr);
 
@@ -293,6 +294,13 @@ LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_find_participant (const 
  * @return The conference address of the chat room or NULL if this type of chat room is not conference based
  */
 LINPHONE_PUBLIC const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr);
+
+/**
+ * Get the participant representing myself in the chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return The participant representing myself in the conference.
+ */
+LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_get_me (const LinphoneChatRoom *cr);
 
 /**
  * Get the number of participants in the chat room (that is without ourselves).
