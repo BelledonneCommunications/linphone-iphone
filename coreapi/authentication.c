@@ -43,23 +43,26 @@ BELLE_SIP_INSTANCIATE_VPTR(
 );
 
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
-	LinphoneAuthInfo *obj=belle_sip_object_new(LinphoneAuthInfo);
-	if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
-	if (userid!=NULL && (strlen(userid)>0)) obj->userid=ms_strdup(userid);
-	if (passwd!=NULL && (strlen(passwd)>0)) obj->passwd=ms_strdup(passwd);
-	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
-	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
-	if (domain!=NULL && (strlen(domain)>0)) obj->domain=ms_strdup(domain);
-	return obj;
+    return linphone_auth_info_new_for_algorithm(username, userid, passwd, ha1, realm, domain, NULL);
 }
 
 LinphoneAuthInfo *linphone_auth_info_new_for_algorithm(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain, const char *algorithm){
-    LinphoneAuthInfo *obj=linphone_auth_info_new(username,userid,passwd,ha1,realm,domain);
+    LinphoneAuthInfo *obj=belle_sip_object_new(LinphoneAuthInfo);
+    if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
+    if (userid!=NULL && (strlen(userid)>0)) obj->userid=ms_strdup(userid);
+    if (passwd!=NULL && (strlen(passwd)>0)) obj->passwd=ms_strdup(passwd);
+    if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
+    if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
+    if (domain!=NULL && (strlen(domain)>0)) obj->domain=ms_strdup(domain);
     /* Default algorithm is MD5 if it's NULL*/
+    if(algorithm==NULL)
+        obj->algorithm = ms_strdup("MD5");
+    /* If algorithm is neither MD5 or SHA-256, exit wit error*/
     if(algorithm && strcmp(algorithm, "MD5") && strcmp(algorithm, "SHA-256")){
         ms_error("Given algorithm %s is not correct.", algorithm);
         return NULL;
     }
+    /*Else, set algorithm for obj */
     if(algorithm){
         obj->algorithm=ms_strdup(algorithm);
     }
@@ -253,10 +256,12 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	}
 	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username || obj->userid) && store_ha1_passwd) {
 		/*compute ha1 to avoid storing clear text password*/
+        /* Default algorithm is MD5 if it's NULL */
         if((obj->algorithm==NULL)||(!(strcmp(obj->algorithm, "MD5")))){
             obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
             sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
         }
+        /* If algorithm is SHA-256, calcul ha1 by sha256*/
         if((obj->algorithm)&&(!(strcmp(obj->algorithm, "SHA-256")))){
             obj->ha1 = reinterpret_cast<char *>(ms_malloc(65));
             sal_auth_compute_ha1_for_algorithm(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1,65, obj->algorithm);
