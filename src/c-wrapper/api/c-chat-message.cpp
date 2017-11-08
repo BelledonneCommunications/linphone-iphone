@@ -294,10 +294,10 @@ LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t
 }
 
 void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const char *c_content) {
-	LinphonePrivate::Content content;
+	LinphonePrivate::Content *content = new LinphonePrivate::Content();
 	LinphonePrivate::ContentType contentType = LinphonePrivate::ContentType::PlainText;
-	content.setContentType(contentType);
-	content.setBody(L_C_TO_STRING(c_content));
+	content->setContentType(contentType);
+	content->setBody(L_C_TO_STRING(c_content));
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->addContent(content);
 }
 
@@ -306,11 +306,11 @@ bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg) {
 }
 
 const char * linphone_chat_message_get_text_content(const LinphoneChatMessage *msg) {
-	LinphonePrivate::Content content = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getTextContent();
-	if (content == LinphonePrivate::Content::Empty) {
+	const LinphonePrivate::Content *content = L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getTextContent();
+	if (*content == LinphonePrivate::Content::Empty) {
 		return NULL;
 	}
-	return L_STRING_TO_C(content.getBodyAsString());
+	return L_STRING_TO_C(content->getBodyAsString());
 }
 
 // =============================================================================

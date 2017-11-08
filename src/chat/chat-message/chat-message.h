@@ -96,16 +96,15 @@ public:
 	bool isRead () const;
 	bool isReadOnly () const;
 
-	const std::list<Content> &getContents () const;
-	void addContent (Content &&content);
-	void addContent (const Content &content);
-	void removeContent (const Content &content);
+	const std::list<Content *> &getContents () const;
+	void addContent (Content *content);
+	void removeContent (Content *content);
 
 	bool hasTextContent() const;
-	const Content &getTextContent() const;
+	const Content* getTextContent() const;
 	
 	bool hasFileTransferContent() const;
-	const Content &getFileTransferContent() const;
+	const Content* getFileTransferContent() const;
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
@@ -114,7 +113,7 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-	int downloadFile (FileTransferContent& content);
+	int downloadFile (FileTransferContent *content);
 
 private:
 	L_DECLARE_PRIVATE(ChatMessage);

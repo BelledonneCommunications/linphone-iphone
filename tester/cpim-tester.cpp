@@ -399,9 +399,9 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage("Hello CPIM");
 	if (use_multipart) {
-		Content content;
-		content.setContentType(ContentType::PlainText);
-		content.setBody("Hello Part 2");
+		Content *content = new Content();
+		content->setContentType(ContentType::PlainText);
+		content->setBody("Hello Part 2");
 		marieMessage->addContent(content);
 	}
 	marieMessage->send();

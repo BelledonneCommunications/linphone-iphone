@@ -31,7 +31,7 @@ class FileContentPrivate : public ContentPrivate {
 public:
 	string fileName;
 	string filePath;
-	size_t fileSize;
+	size_t fileSize = 0;
 };
 
 // -----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ void FileContent::setFileName(const string &name) {
 	d->fileName = name;
 }
 
-string FileContent::getFileName() const {
+const string& FileContent::getFileName() const {
 	L_D();
 	return d->fileName;
 }
@@ -108,7 +108,7 @@ void FileContent::setFilePath(const string &path) {
 	d->filePath = path;
 }
 
-string FileContent::getFilePath() const {
+const string& FileContent::getFilePath() const {
 	L_D();
 	return d->filePath;
 }

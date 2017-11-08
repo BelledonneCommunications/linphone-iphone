@@ -21,6 +21,7 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "content/file-content.h"
 #include "core/core.h"
 
 // TODO: Remove me later.
@@ -60,14 +61,14 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		linphone_content_set_subtype(initialContent,"mkv");
 		linphone_content_set_name(initialContent,"sintel_trailer_opus_h264.mkv");
 
-		Content content;
-		content.setContentType(ContentType::FileTransfer);
-		content.setBody(linphone_content_get_string_buffer(initialContent));
+		FileContent *content = new FileContent();
+		content->setContentType(ContentType::FileTransfer);
+		content->setBody(linphone_content_get_string_buffer(initialContent));
 		marieMessage->addContent(content);
 	} else {
-		Content content;
-		content.setContentType(ContentType::PlainText);
-		content.setBody("Hello Part 2");
+		Content *content = new Content();
+		content->setContentType(ContentType::PlainText);
+		content->setBody("Hello Part 2");
 		marieMessage->addContent(content);
 	}
 	marieMessage->send();

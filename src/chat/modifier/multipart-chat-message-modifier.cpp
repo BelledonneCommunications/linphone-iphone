@@ -24,6 +24,7 @@
 #include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
+#include "content/file-transfer-content.h"
 #include "logger/logger.h"
 #include "core/core.h"
 
@@ -49,10 +50,10 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 	stringstream multipartMessage;
 
 	multipartMessage << "--" << boundary;
-	for (const auto &content : message->getContents()) {
+	for (Content *content : message->getContents()) {
 		multipartMessage << "\r\n";
-		multipartMessage << "Content-Type: " << content.getContentType().asString() << "\r\n\r\n";
-		multipartMessage << content.getBodyAsString() << "\r\n\r\n";
+		multipartMessage << "Content-Type: " << content->getContentType().asString() << "\r\n\r\n";
+		multipartMessage << content->getBodyAsString() << "\r\n\r\n";
 		multipartMessage << "--" << boundary;
 	}
 	multipartMessage << "--";
@@ -111,9 +112,14 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 				endOfLinePos += 4; // 4 is two time the size of \r\n
 				string contentBody = contentString.substr(endOfLinePos, contentString.length() - (endOfLinePos + 4)); // 4 is two time the size of \r\n
 
-				Content content;
-				content.setContentType(contentType);
-				content.setBody(contentBody);
+				Content *content;
+				if (contentType == ContentType::FileTransfer) {
+					content = new FileTransferContent();
+				} else {
+					content = new Content();
+				}
+				content->setContentType(contentType);
+				content->setBody(contentBody);
 				message->addContent(content);
 
 				lInfo() << "Parsed and added content with type " << contentType.asString();

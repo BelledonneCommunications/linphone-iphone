@@ -159,8 +159,8 @@ string ChatMessagePrivate::getSalCustomHeaderValue (const string &name) {
 const ContentType &ChatMessagePrivate::getContentType () {
 	if (direction == ChatMessage::Direction::Incoming) {
 		if (contents.size() > 0) {
-			Content content = contents.front();
-			cContentType = content.getContentType();
+			Content *content = contents.front();
+			cContentType = content->getContentType();
 		} else {
 			cContentType = internalContent.getContentType();
 		}
@@ -169,8 +169,8 @@ const ContentType &ChatMessagePrivate::getContentType () {
 			cContentType = internalContent.getContentType();
 		} else {
 			if (contents.size() > 0) {
-				Content content = contents.front();
-				cContentType = content.getContentType();
+				Content *content = contents.front();
+				cContentType = content->getContentType();
 			}
 		}
 	}
@@ -184,21 +184,23 @@ void ChatMessagePrivate::setContentType (const ContentType &contentType) {
 const string &ChatMessagePrivate::getText () {
 	L_Q();
 	if (direction == ChatMessage::Direction::Incoming) {
-		if (contents.size() > 0) {
-			Content content = contents.front();
-			cText = content.getBodyAsString();
+		if (q->hasTextContent()) {
+			cText = q->getTextContent()->getBodyAsString();
+		} else if (contents.size() > 0) {
+			Content *content = contents.front();
+			cText = content->getBodyAsString();
 		} else {
 			cText = internalContent.getBodyAsString();
 		}
 	} else {
 		if (q->hasTextContent()) {
-			cText = q->getTextContent().getBodyAsString();
+			cText = q->getTextContent()->getBodyAsString();
 		} else if (!internalContent.isEmpty()) {
 			cText = internalContent.getBodyAsString();
 		} else {
 			if (contents.size() > 0) {
-				Content content = contents.front();
-				cText = content.getBodyAsString();
+				Content *content = contents.front();
+				cText = content->getBodyAsString();
 			}
 		}
 	}
@@ -212,7 +214,7 @@ void ChatMessagePrivate::setText (const string &text) {
 LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
 	L_Q();
 	if (q->hasFileTransferContent()) {
-		return q->getFileTransferContent().toLinphoneContent();
+		return q->getFileTransferContent()->toLinphoneContent();
 	}
 	return NULL;
 }
@@ -221,13 +223,13 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 	L_Q();
 
 	// Create a FileContent, it will create the FileTransferContent at upload time
-	FileContent fileContent;
+	FileContent *fileContent = new FileContent();
 	ContentType contentType(linphone_content_get_type(c_content), linphone_content_get_subtype(c_content));
-	fileContent.setContentType(contentType);
-	fileContent.setFileSize(linphone_content_get_size(c_content));
-	fileContent.setFileName(linphone_content_get_name(c_content));
+	fileContent->setContentType(contentType);
+	fileContent->setFileSize(linphone_content_get_size(c_content));
+	fileContent->setFileName(linphone_content_get_name(c_content));
 	if (linphone_content_get_string_buffer(c_content) != NULL) {
-		fileContent.setBody(linphone_content_get_string_buffer(c_content));
+		fileContent->setBody(linphone_content_get_string_buffer(c_content));
 	}
 
 	q->addContent(fileContent);
@@ -236,9 +238,9 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 int ChatMessagePrivate::downloadFile () {
 	L_Q();
 
-	for (Content& content : contents) {
-		if (content.getContentType() == ContentType::FileTransfer) {
-			return q->downloadFile(static_cast<FileTransferContent&>(content));
+	for (Content *content : contents) {
+		if (content->getContentType() == ContentType::FileTransfer) {
+			return q->downloadFile((FileTransferContent*)content);
 		}
 	}
 
@@ -641,13 +643,14 @@ void ChatMessagePrivate::onRecvEnd (belle_sip_user_body_handler_t *bh) {
 
 	if (retval <= 0 && state != ChatMessage::State::FileTransferError) {
 		// Remove the FileTransferContent from the message and store the FileContent
-		FileContent fileContent = *currentFileContentToTransfer;
+		FileContent *fileContent = currentFileContentToTransfer;
 		q->addContent(fileContent);
-		for (Content &content : contents) {
-			if (content.getContentType() == ContentType::FileTransfer) {
-				FileTransferContent fileTransferContent = static_cast<FileTransferContent&>(content);
-				if (fileTransferContent.getFileContent() == fileContent) {
+		for (Content *content : contents) {
+			if (content->getContentType() == ContentType::FileTransfer) {
+				FileTransferContent *fileTransferContent = (FileTransferContent*)content;
+				if (fileTransferContent->getFileContent() == fileContent) {
 					q->removeContent(content);
+					free(fileTransferContent);
 					break;
 				}
 			}
@@ -811,12 +814,12 @@ void ChatMessagePrivate::processResponseFromPostFile (const belle_http_response_
 					setText(body);
 				}
 				setContentType(ContentType::FileTransfer);*/
-				FileContent fileContent = *currentFileContentToTransfer;
+				FileContent *fileContent = currentFileContentToTransfer;
 
-				FileTransferContent fileTransferContent;
-				fileTransferContent.setContentType(ContentType::FileTransfer);
-				fileTransferContent.setFileContent(fileContent);
-				fileTransferContent.setBody(body);
+				FileTransferContent *fileTransferContent = new FileTransferContent();
+				fileTransferContent->setContentType(ContentType::FileTransfer);
+				fileTransferContent->setFileContent(fileContent);
+				fileTransferContent->setBody(body);
 
 				q->removeContent(fileContent);
 				q->addContent(fileTransferContent);
@@ -845,8 +848,8 @@ static void _chat_process_response_headers_from_get_file (void *data, const bell
 	d->processResponseHeadersFromGetFile(event);
 }
 
-static FileContent createFileTransferInformationFromHeaders (const belle_sip_message_t *m) {
-	FileContent content;
+static FileContent* createFileTransferInformationFromHeaders (const belle_sip_message_t *m) {
+	FileContent *fileContent = new FileContent();
 
 	belle_sip_header_content_length_t *content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(m, "Content-Length"));
 	belle_sip_header_content_type_t *content_type_hdr = BELLE_SIP_HEADER_CONTENT_TYPE(belle_sip_message_get_header(m, "Content-Type"));
@@ -857,14 +860,14 @@ static FileContent createFileTransferInformationFromHeaders (const belle_sip_mes
 		subtype = belle_sip_header_content_type_get_subtype(content_type_hdr);
 		lInfo() << "Extracted content type " << type << " / " << subtype << " from header";
 		ContentType contentType(type, subtype);
-		content.setContentType(contentType);
+		fileContent->setContentType(contentType);
 	}
 	if (content_length_hdr) {
-		content.setFileSize(belle_sip_header_content_length_get_content_length(content_length_hdr));
-		lInfo() << "Extracted content length " << content.getFileSize() << " from header";
+		fileContent->setFileSize(belle_sip_header_content_length_get_content_length(content_length_hdr));
+		lInfo() << "Extracted content length " << fileContent->getFileSize() << " from header";
 	}
 
-	return content;
+	return fileContent;
 }
 
 void ChatMessagePrivate::processResponseHeadersFromGetFile (const belle_http_response_event_t *event) {
@@ -879,7 +882,7 @@ void ChatMessagePrivate::processResponseHeadersFromGetFile (const belle_http_res
 
 		if (currentFileContentToTransfer == nullptr) {
 			lWarning() << "No file transfer information for msg [" << this << "]: creating...";
-			FileContent content = createFileTransferInformationFromHeaders(response);
+			FileContent *content = createFileTransferInformationFromHeaders(response);
 			q->addContent(content);
 		} else {
 			belle_sip_header_content_length_t *content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(response, "Content-Length"));
@@ -1067,13 +1070,13 @@ int ChatMessagePrivate::uploadFile () {
 	return err;
 }
 
-void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferContent &fileTransferContent) {
+void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferContent *fileTransferContent) {
 	xmlChar *file_url = nullptr;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
 	/* parse the msg body to get all informations from it */
-	xmlMessageBody = xmlParseDoc((const xmlChar *)fileTransferContent.getBodyAsString().c_str());
-	FileContent fileContent;
+	xmlMessageBody = xmlParseDoc((const xmlChar *)fileTransferContent->getBodyAsString().c_str());
+	FileContent *fileContent = new FileContent();
 
 	cur = xmlDocGetRootElement(xmlMessageBody);
 	if (cur != nullptr) {
@@ -1088,13 +1091,13 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-size")) {
 							xmlChar *fileSizeString = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							size_t size = (size_t)strtol((const char *)fileSizeString, nullptr, 10);
-							fileContent.setFileSize(size);
+							fileContent->setFileSize(size);
 							xmlFree(fileSizeString);
 						}
 
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-							fileContent.setFileName((char *)filename);
+							fileContent->setFileName((char *)filename);
 							xmlFree(filename);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
@@ -1108,7 +1111,7 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (
 							type = ms_strndup((char *)content_type, contentTypeIndex);
 							subtype = ms_strdup(((char *)content_type + contentTypeIndex + 1));
 							ContentType contentType(type, subtype);
-							fileContent.setContentType(contentType);
+							fileContent->setContentType(contentType);
 							ms_free(subtype);
 							ms_free(type);
 							ms_free(content_type);
@@ -1144,11 +1147,11 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (
 	}
 	xmlFreeDoc(xmlMessageBody);
 
-	fileContent.setFilePath(fileTransferContent.getFilePath()); // Copy file path from file transfer content to file content for file body handler
-	fileTransferContent.setFileUrl(string((const char *)file_url)); // Set file url in the file transfer content for the download
+	fileContent->setFilePath(fileTransferContent->getFilePath()); // Copy file path from file transfer content to file content for file body handler
+	fileTransferContent->setFileUrl(string((const char *)file_url)); // Set file url in the file transfer content for the download
 
 	// Link the FileContent to the FileTransferContent
-	fileTransferContent.setFileContent(fileContent);
+	fileTransferContent->setFileContent(fileContent);
 
 	xmlFree(file_url);
 }
@@ -1186,7 +1189,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
-		contents.push_back(internalContent);
+		contents.push_back(&internalContent);
 	}
 
 	// ---------------------------------------
@@ -1195,12 +1198,12 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
-		for (const auto &c : contents) {
-			if (linphone_core_is_content_type_supported(core->getCCore(), c.getContentType().asString().c_str())) {
+		for (Content *c : contents) {
+			if (linphone_core_is_content_type_supported(core->getCCore(), c->getContentType().asString().c_str())) {
 				foundSupportContentType = true;
 				break;
 			} else
-			lError() << "Unsupported content-type: " << c.getContentType().asString();
+			lError() << "Unsupported content-type: " << c->getContentType().asString();
 		}
 
 		if (!foundSupportContentType) {
@@ -1225,8 +1228,8 @@ LinphoneReason ChatMessagePrivate::receive () {
 	}
 
 	bool messageToBeStored = false;
-	for (Content &c : contents) {
-		if (c.getContentType() == ContentType::FileTransfer || c.getContentType() == ContentType::PlainText) {
+	for (Content *c : contents) {
+		if (c->getContentType() == ContentType::FileTransfer || c->getContentType() == ContentType::PlainText) {
 			messageToBeStored = true;
 		}
 	}
@@ -1247,8 +1250,8 @@ void ChatMessagePrivate::send () {
 	} else {
 		currentFileContentToTransfer = nullptr;
 		// For each FileContent, upload it and create a FileTransferContent
-		for (Content &content : contents) {
-			ContentType contentType = content.getContentType();
+		for (Content *content : contents) {
+			ContentType contentType = content->getContentType();
 			//TODO Improve
 			if (contentType != ContentType::FileTransfer && contentType != ContentType::PlainText &&
 				contentType != ContentType::ExternalBody && contentType != ContentType::Imdn &&
@@ -1256,7 +1259,8 @@ void ChatMessagePrivate::send () {
 				contentType != ContentType::Sdp && contentType != ContentType::ConferenceInfo && 
 				contentType != ContentType::Cpim) {
 					lInfo() << "Found content with type " << contentType.asString() << ", set it for file upload";
-					currentFileContentToTransfer = (FileContent *)&content;
+					FileContent *fileContent = (FileContent *)content;
+					currentFileContentToTransfer = fileContent;
 					break;
 			}
 		}
@@ -1355,7 +1359,7 @@ void ChatMessagePrivate::send () {
 	// ---------------------------------------
 
 	if (internalContent.isEmpty()) {
-		internalContent = contents.front();
+		internalContent = *(contents.front());
 	}
 
 	if (!externalBodyUrl.empty()) { // Deprecated way of sending files
@@ -1372,12 +1376,13 @@ void ChatMessagePrivate::send () {
 		}
 	}
 
-	for (Content &content : contents) {
+	for (Content *content : contents) {
 		// Restore FileContents and remove FileTransferContents
-		if (content.getContentType() == ContentType::FileTransfer) {
-			FileTransferContent fileTransferContent = static_cast<FileTransferContent&>(content);
+		if (content->getContentType() == ContentType::FileTransfer) {
+			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
 			q->removeContent(content);
-			q->addContent(fileTransferContent.getFileContent());
+			free(fileTransferContent);
+			q->addContent(fileTransferContent->getFileContent());
 		}
 	}
 
@@ -1513,26 +1518,19 @@ bool ChatMessage::isReadOnly () const {
 	return d->isReadOnly;
 }
 
-const list<Content> &ChatMessage::getContents () const {
+const list<Content *> &ChatMessage::getContents () const {
 	L_D();
 	return d->contents;
 }
 
-void ChatMessage::addContent (Content &&content) {
-	L_D();
-	if (d->isReadOnly) return;
-
-	d->contents.push_back(move(content));
-}
-
-void ChatMessage::addContent (const Content &content) {
+void ChatMessage::addContent (Content *content) {
 	L_D();
 	if (d->isReadOnly) return;
 
 	d->contents.push_back(content);
 }
 
-void ChatMessage::removeContent (const Content &content) {
+void ChatMessage::removeContent (Content *content) {
 	L_D();
 	if (d->isReadOnly) return;
 
@@ -1632,7 +1630,7 @@ void ChatMessage::sendDisplayNotification () {
 		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
-int ChatMessage::downloadFile(FileTransferContent& fileTransferContent) {
+int ChatMessage::downloadFile(FileTransferContent *fileTransferContent) {
 	L_D();
 	
 	if (d->httpRequest) {
@@ -1640,14 +1638,14 @@ int ChatMessage::downloadFile(FileTransferContent& fileTransferContent) {
 		return -1;
 	}
 
-	if (fileTransferContent.getContentType() != ContentType::FileTransfer) {
+	if (fileTransferContent->getContentType() != ContentType::FileTransfer) {
 		lError() << "linphone_chat_message_download_file(): content type is not FileTransfer";
 		return -1;
 	}
 
 	d->createFileTransferInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
-	FileContent fileContent = fileTransferContent.getFileContent();
-	d->currentFileContentToTransfer = &fileContent;
+	FileContent *fileContent = fileTransferContent->getFileContent();
+	d->currentFileContentToTransfer = fileContent;
 	if (d->currentFileContentToTransfer == nullptr) {
 		return -1;
 	}
@@ -1657,7 +1655,7 @@ int ChatMessage::downloadFile(FileTransferContent& fileTransferContent) {
 	cbs.process_response = _chat_message_process_response_from_get_file;
 	cbs.process_io_error = _chat_message_process_io_error_download;
 	cbs.process_auth_requested = _chat_message_process_auth_requested_download;
-	int err = d->startHttpTransfer(fileTransferContent.getFileUrl(), "GET", &cbs); // File URL has been set by createFileTransferInformationsFromVndGsmaRcsFtHttpXml
+	int err = d->startHttpTransfer(fileTransferContent->getFileUrl(), "GET", &cbs); // File URL has been set by createFileTransferInformationsFromVndGsmaRcsFtHttpXml
 
 	if (err == -1) return -1;
 	// start the download, status is In Progress
@@ -1746,42 +1744,42 @@ int ChatMessage::putCharacter (uint32_t character) {
 
 bool ChatMessage::hasTextContent() const {
 	L_D();
-	for (const auto &c : d->contents) {
-		if (c.getContentType() == ContentType::PlainText) {
+	for (const Content *c : d->contents) {
+		if (c->getContentType() == ContentType::PlainText) {
 			return true;
 		}
 	}
 	return false;
 }
 
-const Content &ChatMessage::getTextContent() const {
+const Content* ChatMessage::getTextContent() const {
 	L_D();
-	for (const auto &c : d->contents) {
-		if (c.getContentType() == ContentType::PlainText) {
+	for (const Content *c : d->contents) {
+		if (c->getContentType() == ContentType::PlainText) {
 			return c;
 		}
 	}
-	return Content::Empty;
+	return &Content::Empty;
 }
 
 bool ChatMessage::hasFileTransferContent() const {
 	L_D();
-	for (const auto &c : d->contents) {
-		if (c.getContentType() == ContentType::FileTransfer) {
+	for (const Content *c : d->contents) {
+		if (c->getContentType() == ContentType::FileTransfer) {
 			return true;
 		}
 	}
 	return false;
 }
 
-const Content &ChatMessage::getFileTransferContent() const {
+const Content* ChatMessage::getFileTransferContent() const {
 	L_D();
-	for (const auto &c : d->contents) {
-		if (c.getContentType() == ContentType::FileTransfer) {
+	for (const Content *c : d->contents) {
+		if (c->getContentType() == ContentType::FileTransfer) {
 			return c;
 		}
 	}
-	return Content::Empty;
+	return &Content::Empty;
 }
 
 const string &ChatMessage::getFileTransferFilepath () const {

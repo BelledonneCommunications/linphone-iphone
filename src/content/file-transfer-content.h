@@ -40,13 +40,13 @@ public:
 	bool operator== (const FileTransferContent &content) const;
 	
 	void setFileUrl(const std::string &url);
-	std::string getFileUrl() const;
+	const std::string& getFileUrl() const;
 	
 	void setFilePath(const std::string &path);
-	std::string getFilePath() const;
+	const std::string& getFilePath() const;
 
-	void setFileContent(const FileContent &content);
-	FileContent getFileContent() const;
+	void setFileContent(FileContent *content);
+	FileContent* getFileContent() const;
 
 	LinphoneContent * toLinphoneContent() const override;
 

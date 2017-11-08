@@ -42,10 +42,10 @@ public:
 	size_t getFileSize() const;
 	
 	void setFileName(const std::string &name);
-	std::string getFileName() const;
+	const std::string& getFileName() const;
 		
 	void setFilePath(const std::string &path);
-	std::string getFilePath() const;
+	const std::string& getFilePath() const;
 
 	LinphoneContent * toLinphoneContent() const override;
 

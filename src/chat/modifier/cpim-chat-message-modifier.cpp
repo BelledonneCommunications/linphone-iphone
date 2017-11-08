@@ -46,10 +46,10 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
 	cpimMessage.addMessageHeader(cpimToHeader);
 
-	Content content;
+	const Content *content;
 	if (!message->getInternalContent().isEmpty()) {
 		// Another ChatMessageModifier was called before this one, we apply our changes on the private content
-		content = message->getInternalContent();
+		content = &(message->getInternalContent());
 	} else {
 		// We're the first ChatMessageModifier to be called, we'll create the private content from the public one
 		// We take the first one because if there is more of them, the multipart modifier should have been called first
@@ -59,10 +59,10 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 
 	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
-	contentTypeHeader.setValue(content.getContentType().asString());
+	contentTypeHeader.setValue(content->getContentType().asString());
 	cpimMessage.addContentHeader(contentTypeHeader);
 
-	const string contentBody = content.getBodyAsString();
+	const string contentBody = content->getBodyAsString();
 	cpimMessage.setContent(contentBody);
 
 	if (!cpimMessage.isValid()) {
@@ -80,18 +80,18 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 }
 
 ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
-	Content content;
+	const Content *content;
 	if (!message->getInternalContent().isEmpty())
-		content = message->getInternalContent();
+		content = &(message->getInternalContent());
 	else
 		content = message->getContents().front();
 
-	if (content.getContentType() != ContentType::Cpim) {
-		lError() << "[CPIM] Message is not CPIM but " << content.getContentType().asString();
+	if (content->getContentType() != ContentType::Cpim) {
+		lError() << "[CPIM] Message is not CPIM but " << content->getContentType().asString();
 		return ChatMessageModifier::Result::Skipped;
 	}
 
-	const string contentBody = content.getBodyAsString();
+	const string contentBody = content->getBodyAsString();
 	const shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
 	if (!cpimMessage || !cpimMessage->isValid()) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;

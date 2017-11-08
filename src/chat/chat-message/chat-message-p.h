@@ -140,7 +140,7 @@ private:
 	std::string rttMessage;
 	bool isSecured = false;
 	bool isReadOnly = false;
-	std::list<Content > contents;
+	std::list<Content* > contents;
 	Content internalContent;
 	FileContent *currentFileContentToTransfer;
 	std::unordered_map<std::string, std::string> customHeaders;
@@ -170,7 +170,7 @@ private:
 		belle_http_request_listener_callbacks_t *cbs
 	);
 	void releaseHttpRequest();
-	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent &content);
+	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent* content);
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

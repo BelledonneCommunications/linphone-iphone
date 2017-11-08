@@ -31,7 +31,7 @@ class FileTransferContentPrivate : public ContentPrivate {
 public:
 	string fileUrl;
 	string filePath;
-	FileContent fileContent;
+	FileContent *fileContent = nullptr;
 };
 
 // -----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ void FileTransferContent::setFileUrl(const string &url) {
 	d->fileUrl = url;
 }
 
-string FileTransferContent::getFileUrl() const {
+const string& FileTransferContent::getFileUrl() const {
 	L_D();
 	return d->fileUrl;
 }
@@ -97,17 +97,17 @@ void FileTransferContent::setFilePath(const string &path) {
 	d->filePath = path;
 }
 
-string FileTransferContent::getFilePath() const {
+const string& FileTransferContent::getFilePath() const {
 	L_D();
 	return d->filePath;
 }
 
-void FileTransferContent::setFileContent(const FileContent &content) {
+void FileTransferContent::setFileContent(FileContent *content) {
 	L_D();
 	d->fileContent = content;
 }
 
-FileContent FileTransferContent::getFileContent() const {
+FileContent* FileTransferContent::getFileContent() const {
 	L_D();
 	return d->fileContent;
 }

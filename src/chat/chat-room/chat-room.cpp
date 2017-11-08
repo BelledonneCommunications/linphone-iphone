@@ -118,9 +118,9 @@ void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
 	msg->setFromAddress(Address(identity));
 	msg->setToAddress(peerAddress);
 
-	Content content;
-	content.setContentType("message/imdn+xml");
-	content.setBody(payload);
+	Content *content = new Content();
+	content->setContentType("message/imdn+xml");
+	content->setBody(payload);
 	msg->addContent(content);
 
 	/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
@@ -163,9 +163,9 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 		string payload = isComposingHandler->marshal(isComposing);
 		if (!payload.empty()) {
 			shared_ptr<ChatMessage> msg = q->createMessage();
-			Content content;
-			content.setContentType("application/im-iscomposing+xml");
-			content.setBody(payload);
+			Content *content = new Content();
+			content->setContentType("application/im-iscomposing+xml");
+			content->setBody(payload);
 			msg->addContent(content);
 			msg->getPrivate()->send();
 		}
@@ -465,9 +465,9 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 
 shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 	shared_ptr<ChatMessage> chatMessage = createMessage();
-	Content content;
-	content.setContentType(ContentType::PlainText);
-	content.setBody(message);
+	Content *content = new Content();
+	content->setContentType(ContentType::PlainText);
+	content->setBody(message);
 	chatMessage->addContent(content);
 	return chatMessage;
 }

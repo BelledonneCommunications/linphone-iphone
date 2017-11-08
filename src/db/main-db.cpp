@@ -478,8 +478,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(static_cast<int>(chatMessage->getState())), soci::use(static_cast<int>(chatMessage->getDirection())),
 			soci::use(chatMessage->getImdnMessageId()), soci::use(chatMessage->isSecured() ? 1 : 0);
 
-		for (const auto &content : chatMessage->getContents())
-			insertContent(eventId, content);
+		for (Content *content : chatMessage->getContents())
+			insertContent(eventId, *content);
 
 		return eventId;
 	}
