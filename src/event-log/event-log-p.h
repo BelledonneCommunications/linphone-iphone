@@ -20,6 +20,7 @@
 #ifndef _EVENT_LOG_P_H_
 #define _EVENT_LOG_P_H_
 
+#include "db/main-db-event-key.h"
 #include "object/base-object-p.h"
 
 #include "event-log.h"
@@ -30,7 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class EventLogPrivate : public BaseObjectPrivate {
 public:
-	long long storageId = -1;
+	mutable MainDbEventKey dbKey;
 
 private:
 	EventLog::Type type = EventLog::Type::None;

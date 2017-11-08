@@ -36,6 +36,7 @@
 #include "event-log/event-log-p.h"
 #include "event-log/events.h"
 #include "logger/logger.h"
+#include "main-db-event-key-p.h"
 #include "main-db-p.h"
 
 // =============================================================================
@@ -778,7 +779,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return false;
 		}
 
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		if (dEventLog->dbKey.isValid()) {
+			lWarning() << "Unable to add an event twice!!!";
+			return false;
+		}
+
 		bool soFarSoGood = false;
+		long long storageId;
 
 		L_BEGIN_LOG_EXCEPTION
 
@@ -790,32 +798,32 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
-				d->insertConferenceEvent(eventLog);
+				storageId = d->insertConferenceEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceCallStart:
 			case EventLog::Type::ConferenceCallEnd:
-				d->insertConferenceCallEvent(eventLog);
+				storageId = d->insertConferenceCallEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceChatMessage:
-				d->insertConferenceChatMessageEvent(eventLog);
+				storageId = d->insertConferenceChatMessageEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
-				d->insertConferenceParticipantEvent(eventLog);
+				storageId = d->insertConferenceParticipantEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
 			case EventLog::Type::ConferenceParticipantDeviceRemoved:
-				d->insertConferenceParticipantDeviceEvent(eventLog);
+				storageId = d->insertConferenceParticipantDeviceEvent(eventLog);
 				break;
 
 			case EventLog::Type::ConferenceSubjectChanged:
-				d->insertConferenceSubjectEvent(eventLog);
+				storageId = d->insertConferenceSubjectEvent(eventLog);
 				break;
 		}
 
@@ -825,30 +833,39 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_END_LOG_EXCEPTION
 
+		if (soFarSoGood)
+			dEventLog->dbKey = MainDbEventKey(getCore(), storageId);
+
 		return soFarSoGood;
 	}
 
 	bool MainDb::deleteEvent (const shared_ptr<EventLog> &eventLog) {
-		L_D();
+		EventLogPrivate *dEventLog = eventLog->getPrivate();
+		if (!dEventLog->dbKey.isValid()) {
+			lWarning() << "Unable to delete invalid event.";
+			return false;
+		}
 
-		if (!isConnected()) {
+		MainDbEventKeyPrivate *dEventKey = dEventLog->dbKey.getPrivate();
+		shared_ptr<Core> core = dEventKey->core.lock();
+		L_ASSERT(core);
+
+		MainDb &mainDb = *core->getPrivate()->mainDb.get();
+		if (!mainDb.isConnected()) {
 			lWarning() << "Unable to delete event. Not connected.";
 			return false;
 		}
 
-		long long &storageId = eventLog->getPrivate()->storageId;
-		if (storageId < 0)
-			return false;
-
 		L_BEGIN_LOG_EXCEPTION
 
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << "DELETE FROM event WHERE id = :id", soci::use(storageId);
-		storageId = -1;
+		soci::session *session = mainDb.getPrivate()->dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM event WHERE id = :id", soci::use(dEventKey->storageId);
 
 		L_END_LOG_EXCEPTION
 
-		return storageId == -1;
+		dEventLog->dbKey = MainDbEventKey();
+
+		return true;
 	}
 
 	int MainDb::getEventsCount (FilterMask mask) const {

@@ -91,6 +91,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	core/platform-helpers/platform-helpers.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
+	db/main-db-event-key-p.h
+	db/main-db-event-key.h
 	db/main-db-p.h
 	db/main-db.h
 	db/session/db-session-p.h
@@ -188,6 +190,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	core/paths/paths.cpp
 	core/platform-helpers/platform-helpers.cpp
 	db/abstract/abstract-db.cpp
+	db/main-db-event-key.cpp
 	db/main-db.cpp
 	db/session/db-session-provider.cpp
 	db/session/db-session.cpp

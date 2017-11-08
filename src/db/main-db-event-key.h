@@ -1,5 +1,5 @@
 /*
- * event-log.h
+ * main-db-event-key.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,41 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_H_
-#define _EVENT_LOG_H_
+#ifndef _MAIN_DB_EVENT_KEY_H_
+#define _MAIN_DB_EVENT_KEY_H_
 
-#include <ctime>
+#include <memory>
 
-#include "linphone/enums/event-log-enums.h"
-#include "linphone/utils/enum-generator.h"
-
-#include "object/base-object.h"
+#include "object/clonable-object.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class EventLogPrivate;
+class Core;
+class MainDbEventKeyPrivate;
 
-class LINPHONE_PUBLIC EventLog : public BaseObject {
+class MainDbEventKey : public ClonableObject {
 	friend class MainDb;
 
 public:
-	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);
+	MainDbEventKey ();
+	MainDbEventKey (const std::shared_ptr<Core> &core, long long storageId);
+	MainDbEventKey (const MainDbEventKey &src);
+	~MainDbEventKey ();
 
-	EventLog ();
+	MainDbEventKey &operator= (const MainDbEventKey &src);
 
-	Type getType () const;
-	std::time_t getTime () const;
-
-protected:
-	EventLog (EventLogPrivate &p, Type type, std::time_t time);
+	bool isValid () const;
 
 private:
-	L_DECLARE_PRIVATE(EventLog);
-	L_DISABLE_COPY(EventLog);
+	L_DECLARE_PRIVATE(MainDbEventKey);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_H_
+#endif // ifndef _MAIN_DB_EVENT_KEY_H_
