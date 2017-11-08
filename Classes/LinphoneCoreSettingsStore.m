@@ -636,7 +636,7 @@
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
-	[[LinphoneManager.instance fastAddressBook] reload];
+        [[LinphoneManager.instance fastAddressBook] reloadAllContacts];
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {

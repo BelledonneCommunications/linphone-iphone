@@ -2166,10 +2166,10 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
 	// reload friends
-	[self.fastAddressBook reload];
+        [self.fastAddressBook reloadAllContacts];
 
-	// reset network state to trigger a new network connectivity assessment
-	linphone_core_set_network_reachable(theLinphoneCore, FALSE);
+        // reset network state to trigger a new network connectivity assessment
+        linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 }
 
 static int comp_call_id(const LinphoneCall *call, const char *callid) {

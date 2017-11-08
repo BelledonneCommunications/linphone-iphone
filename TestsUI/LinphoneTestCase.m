@@ -150,11 +150,14 @@
 		linphone_core_set_file_transfer_server(lc, "https://www.linphone.org:444/lft.php");
 
 		// reload address book to prepend proxy config domain to contacts' phone number
-		[[[LinphoneManager instance] fastAddressBook] reload];
+                [[[LinphoneManager instance] fastAddressBook]
+                    reloadAllContacts];
 
-		[self waitForRegistration];
-		[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];
-	}
+                [self waitForRegistration];
+                [[LinphoneManager instance]
+                    lpConfigSetInt:NO
+                            forKey:@"animations_preference"];
+        }
 }
 
 - (UITableView *)findTableView:(NSString *)table {

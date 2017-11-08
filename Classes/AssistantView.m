@@ -412,10 +412,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
-		[[LinphoneManager.instance fastAddressBook] reload];
-	} else {
-		[self displayAssistantConfigurationError];
-	}
+                [[LinphoneManager.instance fastAddressBook] reloadAllContacts];
+        } else {
+          [self displayAssistantConfigurationError];
+        }
 }
 
 - (void)displayAssistantConfigurationError {
@@ -1366,14 +1366,17 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 				linphone_core_set_default_proxy_config(LC, config);
 				// reload address book to prepend proxy config domain to contacts' phone number
 				// todo: STOP doing that!
-				[[LinphoneManager.instance fastAddressBook] reload];
-				[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
-			} else {
-				[self displayAssistantConfigurationError];
-			}
-		} else {
-			[self displayAssistantConfigurationError];
-		}
+                                [[LinphoneManager.instance fastAddressBook]
+                                    reloadAllContacts];
+                                [PhoneMainView.instance
+                                    changeCurrentView:
+                                        DialerView.compositeViewDescription];
+                        } else {
+                          [self displayAssistantConfigurationError];
+                        }
+                } else {
+                  [self displayAssistantConfigurationError];
+                }
 	});
 }
 

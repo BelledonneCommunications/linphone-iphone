@@ -28,16 +28,20 @@
 @property(readonly, nonatomic) NSMutableDictionary *addressBookMap;
 @property BOOL needToUpdate;
 
-- (void)reload;
-- (void)saveAddressBook;
-- (int)removeContact:(Contact *)contact;
+- (BOOL)reloadAllContacts;
+//- (void)saveAddressBook;
+- (BOOL)deleteContact:(Contact *)contact;
+- (BOOL)deleteCNContact:(CNContact *)CNContact;
+- (BOOL)deleteAllContacts;
 - (BOOL)saveContact:(Contact *)contact;
+- (BOOL)saveCNContact:(CNContact *)CNContact contact:(Contact *)Contact;
 
 + (BOOL)isAuthorized;
 
 // TOOLS
 
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address;
+- (CNContact *)getCNContactFromContact:(Contact *)acontact;
 
 + (UIImage *)imageForContact:(Contact *)contact;
 + (UIImage *)imageForAddress:(const LinphoneAddress *)addr;
@@ -52,5 +56,6 @@
 + (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
 
 + (NSString *)localizedLabel:(NSString *)label;
+- (void)registerAddrsFor:(Contact *)contact;
 
 @end
