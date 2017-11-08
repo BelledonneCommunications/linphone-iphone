@@ -1148,7 +1148,7 @@ void ChatMessagePrivate::createFileTransferInformationsFromVndGsmaRcsFtHttpXml (
 	xmlFreeDoc(xmlMessageBody);
 
 	fileContent->setFilePath(fileTransferContent->getFilePath()); // Copy file path from file transfer content to file content for file body handler
-	fileTransferContent->setFileUrl(string((const char *)file_url)); // Set file url in the file transfer content for the download
+	fileTransferContent->setFileUrl((const char *)file_url); // Set file url in the file transfer content for the download
 
 	// Link the FileContent to the FileTransferContent
 	fileTransferContent->setFileContent(fileContent);
@@ -1189,7 +1189,15 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
-		contents.push_back(&internalContent);
+		// But first check if content type is file transfer
+		if (internalContent.getContentType() == ContentType::FileTransfer) {
+			FileTransferContent *content = new FileTransferContent();
+			content->setContentType(internalContent.getContentType());
+			content->setBody(internalContent.getBody());
+			contents.push_back(content);
+		} else {
+			contents.push_back(&internalContent);
+		}
 	}
 
 	// ---------------------------------------
