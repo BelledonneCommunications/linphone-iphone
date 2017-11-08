@@ -74,7 +74,7 @@ list<Content> ContentManager::multipartToContentLists (Content content) const {
 Content ContentManager::contentsListToMultipart (list<Content> contents) const {
 	char *desc;
 	string sub;
-	belle_sip_memory_body_handler_t *mbh;
+	belle_sip_memory_body_handler_t *mbh = NULL;
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new(NULL, NULL, NULL, MULTIPART_BOUNDARY);
 	belle_sip_object_ref(mpbh);
 	for (const auto &content : contents) {
