@@ -101,6 +101,10 @@ const Address &ServerGroupChatRoom::getConferenceAddress () const {
 	return LocalConference::getConferenceAddress();
 }
 
+shared_ptr<Participant> ServerGroupChatRoom::getMe () const {
+	return nullptr;
+}
+
 int ServerGroupChatRoom::getNbParticipants () const {
 	return 0;
 }
