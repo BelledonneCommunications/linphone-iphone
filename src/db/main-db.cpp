@@ -1125,12 +1125,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			// See: http://soci.sourceforge.net/doc/master/backends/
 			// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
 			long long eventId = getBackend() == Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0);
-			shared_ptr<EventLog> event = d->selectGenericConferenceEvent(
-				eventId,
-				static_cast<EventLog::Type>(row.get<int>(1)),
-				Utils::getTmAsTimeT(row.get<tm>(2)),
-				peerAddress
-			);
+			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
+
+			if (!event)
+				event = d->selectGenericConferenceEvent(
+					eventId,
+					static_cast<EventLog::Type>(row.get<int>(1)),
+					Utils::getTmAsTimeT(row.get<tm>(2)),
+					peerAddress
+				);
+
 			if (event)
 				events.push_back(event);
 			else
