@@ -526,6 +526,16 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 	}
 	if (ai) {
 		if (sai->mode == SalAuthModeHttpDigest) {
+            /* Compare algorithm of server(sai) with algorithm of client(ai), if they are not correspondant,
+             exit. The default algorithm is MD5 if it's NULL. */
+            if(sai->algorithm && ai->algorithm) {
+                if(strcmp(ai->algorithm, sai->algorithm))
+                    return TRUE;
+            }
+            else if((ai->algorithm && strcmp(ai->algorithm, "MD5")) ||
+                   (sai->algorithm && strcmp(sai->algorithm, "MD5")))
+                    return TRUE;
+
 			sai->userid = ms_strdup(ai->userid ? ai->userid : ai->username);
 			sai->password = ai->passwd?ms_strdup(ai->passwd) : NULL;
 			sai->ha1 = ai->ha1 ? ms_strdup(ai->ha1) : NULL;

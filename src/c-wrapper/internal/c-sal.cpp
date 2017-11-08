@@ -762,6 +762,7 @@ SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info) {
 	new_auth_info->realm=auth_info->realm?ms_strdup(auth_info->realm):NULL;
 	new_auth_info->domain=auth_info->realm?ms_strdup(auth_info->domain):NULL;
 	new_auth_info->password=auth_info->password?ms_strdup(auth_info->password):NULL;
+    new_auth_info->algorithm=auth_info->algorithm?ms_strdup(auth_info->algorithm):NULL;
 	return new_auth_info;
 }
 
@@ -774,6 +775,7 @@ void sal_auth_info_delete(SalAuthInfo* auth_info) {
 	if (auth_info->ha1) ms_free(auth_info->ha1);
 	if (auth_info->certificates) sal_certificates_chain_delete(auth_info->certificates);
 	if (auth_info->key) sal_signing_key_delete(auth_info->key);
+    if (auth_info->algorithm) ms_free(auth_info->algorithm);
 	ms_free(auth_info);
 }
 

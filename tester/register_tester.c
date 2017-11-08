@@ -113,7 +113,7 @@ static void register_with_refresh_base_3(LinphoneCore* lc
 		if (counters->number_of_auth_info_requested>0 && linphone_proxy_config_get_state(proxy_cfg) == LinphoneRegistrationFailed && late_auth_info) {
 			if (!linphone_core_get_auth_info_list(lc)) {
 				BC_ASSERT_EQUAL(linphone_proxy_config_get_error(proxy_cfg),LinphoneReasonUnauthorized, int, "%d");
-				info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+                info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 				linphone_core_add_auth_info(lc,info); /*add authentication info to LinphoneCore*/
 				linphone_auth_info_unref(info);
 			}
@@ -165,7 +165,7 @@ static void register_with_refresh_with_send_error(void) {
 	int retry=0;
 	LinphoneCoreManager* lcm = create_lcm_with_auth(1);
 	stats* counters = &lcm->stat;
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+    LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
@@ -310,7 +310,7 @@ static void simple_tls_register(void){
 static void simple_authenticated_register(void){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
-	LinphoneAuthInfo *info=linphone_auth_info_new(test_username,NULL,test_password,NULL,auth_domain,NULL); /*create authentication structure from identity*/
+    LinphoneAuthInfo *info=linphone_auth_info_new_for_algorithm(test_username,NULL,test_password,NULL,auth_domain,NULL,NULL); /*create authentication structure from identity*/
 	char route[256];
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
@@ -321,6 +321,20 @@ static void simple_authenticated_register(void){
 	linphone_core_manager_destroy(lcm);
 }
 
+static void simple_authenticated_register_for_algorithm(void){
+    stats* counters;
+    LinphoneCoreManager* lcm = create_lcm();
+    LinphoneAuthInfo *info=linphone_auth_info_new_for_algorithm(test_username,NULL,test_password,NULL,auth_domain,NULL,"SHA-256"); /*create authentication structure from identity*/
+    char route[256];
+    sprintf(route,"sip:%s",test_route);
+    linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+    linphone_auth_info_unref(info);
+    counters = &lcm->stat;
+    register_with_refresh(lcm,FALSE,auth_domain,route);
+    BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
+    linphone_core_manager_destroy(lcm);
+}
+
 static void ha1_authenticated_register(void){
 	stats* counters;
 	LinphoneCoreManager* lcm = create_lcm();
@@ -328,7 +342,7 @@ static void ha1_authenticated_register(void){
 	LinphoneAuthInfo *info;
 	char route[256];
 	sal_auth_compute_ha1(test_username,auth_domain,test_password,ha1);
-	info=linphone_auth_info_new(test_username,NULL,NULL,ha1,auth_domain,NULL); /*create authentication structure from identity*/
+	info=linphone_auth_info_new_for_algorithm(test_username,NULL,NULL,ha1,auth_domain,NULL,NULL); /*create authentication structure from identity*/
 	sprintf(route,"sip:%s",test_route);
 	linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
 	linphone_auth_info_unref(info);
@@ -336,6 +350,23 @@ static void ha1_authenticated_register(void){
 	register_with_refresh(lcm,FALSE,auth_domain,route);
 	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
 	linphone_core_manager_destroy(lcm);
+}
+
+static void ha1_authenticated_register_for_algorithm(void){
+    stats* counters;
+    LinphoneCoreManager* lcm = create_lcm();
+    char ha1[65];
+    LinphoneAuthInfo *info;
+    char route[256];
+    sal_auth_compute_ha1_for_algorithm(test_username,auth_domain,test_password,ha1,65,"SHA-256");
+    info=linphone_auth_info_new_for_algorithm(test_username,NULL,NULL,ha1,auth_domain,NULL,"SHA-256"); /*create authentication structure from identity*/
+    sprintf(route,"sip:%s",test_route);
+    linphone_core_add_auth_info(lcm->lc,info); /*add authentication info to LinphoneCore*/
+    linphone_auth_info_unref(info);
+    counters = &lcm->stat;
+    register_with_refresh(lcm,FALSE,auth_domain,route);
+    BC_ASSERT_EQUAL(counters->number_of_auth_info_requested,0, int, "%d");
+    linphone_core_manager_destroy(lcm);
 }
 
 static void authenticated_register_with_no_initial_credentials(void){
@@ -1243,7 +1274,9 @@ test_t register_tests[] = {
 	TEST_NO_TAG("TLS certificate given by string instead of file",tls_certificate_data),
 	TEST_NO_TAG("TLS with non tls server",tls_with_non_tls_server),
 	TEST_NO_TAG("Simple authenticated register", simple_authenticated_register),
+    TEST_NO_TAG("Simple authenticated register SHA-256", simple_authenticated_register_for_algorithm),
 	TEST_NO_TAG("Ha1 authenticated register", ha1_authenticated_register),
+    TEST_NO_TAG("Ha1 authenticated register SHA-256", ha1_authenticated_register_for_algorithm),
 	TEST_NO_TAG("Digest auth without initial credentials", authenticated_register_with_no_initial_credentials),
 	TEST_NO_TAG("Digest auth with wrong credentials", authenticated_register_with_wrong_credentials),
 	TEST_NO_TAG("Digest auth with wrong credentials, check if registration attempts are stopped", authenticated_register_with_wrong_credentials_2),

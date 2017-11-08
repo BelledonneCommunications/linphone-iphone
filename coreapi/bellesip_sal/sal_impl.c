@@ -65,6 +65,7 @@ SalAuthInfo* sal_auth_info_create(belle_sip_auth_event_t* event) {
 	auth_info->username = ms_strdup(belle_sip_auth_event_get_username(event));
 	auth_info->domain = ms_strdup(belle_sip_auth_event_get_domain(event));
 	auth_info->mode = (SalAuthMode)belle_sip_auth_event_get_mode(event);
+    auth_info->algorithm = ms_strdup(belle_sip_auth_event_get_algorithm(event));
 	return auth_info;
 }
 
@@ -81,6 +82,11 @@ void sal_signing_key_delete(belle_sip_signing_key_t *key) {
 
 int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]) {
 	return belle_sip_auth_helper_compute_ha1(userid, realm, password, ha1);
+}
+
+int sal_auth_compute_ha1_for_algorithm(const char* userid,const char* realm,const char* password, char* ha1,
+                                       size_t size, const char* algo) {
+    return belle_sip_auth_helper_compute_ha1_for_algorithm(userid, realm, password, ha1, size, algo);
 }
 
 SalCustomHeader *sal_custom_header_ref(SalCustomHeader *ch){

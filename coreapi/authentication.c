@@ -53,6 +53,19 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	return obj;
 }
 
+LinphoneAuthInfo *linphone_auth_info_new_for_algorithm(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain, const char *algorithm){
+    LinphoneAuthInfo *obj=linphone_auth_info_new(username,userid,passwd,ha1,realm,domain);
+    /* Default algorithm is MD5 if it's NULL*/
+    if(algorithm && strcmp(algorithm, "MD5") && strcmp(algorithm, "SHA-256")){
+        ms_error("Given algorithm %s is not correct.", algorithm);
+        return NULL;
+    }
+    if(algorithm){
+        obj->algorithm=ms_strdup(algorithm);
+    }
+    return obj;
+}
+
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src) {
 	if (src->username)      dst->username = ms_strdup(src->username);
 	if (src->userid)        dst->userid = ms_strdup(src->userid);
@@ -64,6 +77,7 @@ static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthIn
 	if (src->tls_key)       dst->tls_key = ms_strdup(src->tls_key);
 	if (src->tls_cert_path) dst->tls_cert_path = ms_strdup(src->tls_cert_path);
 	if (src->tls_key_path)  dst->tls_key_path = ms_strdup(src->tls_key_path);
+    if (src->algorithm)     dst->algorithm = ms_strdup(src->algorithm);
 }
 
 LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
@@ -217,6 +231,7 @@ static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj) {
 	if (obj->tls_key != NULL) ms_free(obj->tls_key);
 	if (obj->tls_cert_path != NULL) ms_free(obj->tls_cert_path);
 	if (obj->tls_key_path != NULL) ms_free(obj->tls_key_path);
+    if (obj->algorithm != NULL) ms_free(obj->algorithm);
 }
 
 /**
@@ -238,8 +253,14 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	}
 	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username || obj->userid) && store_ha1_passwd) {
 		/*compute ha1 to avoid storing clear text password*/
-		obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
-		sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
+        if((obj->algorithm==NULL)||(!(strcmp(obj->algorithm, "MD5")))){
+            obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
+            sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
+        }
+        if((obj->algorithm)&&(!(strcmp(obj->algorithm, "SHA-256")))){
+            obj->ha1 = reinterpret_cast<char *>(ms_malloc(65));
+            sal_auth_compute_ha1_for_algorithm(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1,65, obj->algorithm);
+        }
 	}
 	if (obj->username != NULL) {
 		lp_config_set_string(config, key, "username", obj->username);
@@ -271,6 +292,9 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	if (obj->tls_key_path != NULL) {
 		lp_config_set_string(config, key, "client_cert_key", obj->tls_key_path);
 	}
+    if (obj->algorithm != NULL) {
+        lp_config_set_string(config, key, "algorithm", obj->algorithm);
+    }
 }
 
 LinphoneAuthInfo *linphone_auth_info_new_from_config_file(LpConfig * config, int pos)
@@ -455,6 +479,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			sai.realm=ai->realm;
 			sai.password=ai->passwd;
 			sai.ha1=ai->ha1;
+            sai.algorithm=ai->algorithm;
 			if (ai->tls_cert && ai->tls_key) {
 				sal_certificates_chain_parse(&sai, ai->tls_cert, SAL_CERTIFICATE_RAW_FORMAT_PEM);
 				sal_signing_key_parse(&sai, ai->tls_key, "");
