@@ -197,7 +197,6 @@ set(SOURCE_FILES_C
 set(SOURCE_FILES_CXX
 	clonable-object-tester.cpp
 	conference-event-tester.cpp
-	conference-tester.cpp
 	content-manager-tester.cpp
 	cpim-tester.cpp
 	main-db-tester.cpp
