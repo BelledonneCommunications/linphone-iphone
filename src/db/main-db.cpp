@@ -562,26 +562,28 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	void MainDb::init () {
 		L_D();
+
+		const string charset = getBackend() == Mysql ? "DEFAULT CHARSET=utf8" : "";
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS sip_address ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS content_type ("
 			"  id" + primaryKeyStr("SMALLINT UNSIGNED") + ","
 			"  value VARCHAR(255) UNIQUE NOT NULL"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS event ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  type TINYINT UNSIGNED NOT NULL,"
 			"  date DATE NOT NULL"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room ("
@@ -605,7 +607,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
@@ -621,7 +623,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_event ("
@@ -635,7 +637,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(peer_sip_address_id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_notified_event ("
@@ -646,7 +648,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_event(event_id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
@@ -660,7 +662,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (participant_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
@@ -674,7 +676,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (gruu_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
@@ -685,7 +687,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_chat_message_event ("
@@ -710,7 +712,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (remote_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_participant ("
@@ -725,7 +727,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content ("
@@ -741,7 +743,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (content_type_id)"
 			"    REFERENCES content_type(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_file_content ("
@@ -754,7 +756,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (chat_message_content_id)"
 			"    REFERENCES chat_message_content(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_content_app_data ("
@@ -767,7 +769,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (chat_message_content_id)"
 			"    REFERENCES chat_message_content(id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_message_crypto_data ("
@@ -780,7 +782,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_chat_message_event(event_id)"
 			"    ON DELETE CASCADE"
-			") DEFAULT CHARSET=utf8";
+			") " + charset;
 
 		// Trigger to delete participant_message cache entries.
 		string displayedId = Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
