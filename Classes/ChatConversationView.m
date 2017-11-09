@@ -137,8 +137,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self updateParticipantLabel];
 
-	_messageField.editable = !(linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateTerminated);
-	_messageView.userInteractionEnabled = !(linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateTerminated);
+	_messageField.editable = (linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateCreated);
+	_pictureButton.enabled = (linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateCreated);
+	_messageView.userInteractionEnabled = (linphone_chat_room_get_state(_chatRoom) == LinphoneChatRoomStateCreated);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -707,6 +708,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 void on_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	view.messageField.editable = (newState == LinphoneChatRoomStateCreated);
+	view.pictureButton.enabled = (newState == LinphoneChatRoomStateCreated);
 	view.messageView.userInteractionEnabled = (newState == LinphoneChatRoomStateCreated);
 }
 
