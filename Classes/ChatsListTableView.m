@@ -140,7 +140,9 @@ static void chatTable_free_chatrooms(void *data) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
 			[self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
 		} else if (![self selectFirstRow]) {
-			[PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
+			ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
+			view.tableController.notFirstTime = FALSE;
+			[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 		}
 	}
 }

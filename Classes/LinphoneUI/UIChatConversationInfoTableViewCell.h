@@ -10,6 +10,7 @@
 
 @interface UIChatConversationInfoTableViewCell : UITableViewCell <UIGestureRecognizerDelegate>
 
+@property (weak, nonatomic) IBOutlet UIIconButton *removeButton;
 @property (weak, nonatomic) IBOutlet UIView *adminButton;
 @property (weak, nonatomic) IBOutlet UILabel *adminLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *adminImage;

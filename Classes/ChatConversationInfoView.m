@@ -58,9 +58,31 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+
+	if (_room)
+		_nameLabel.text = linphone_chat_room_get_subject(_room)
+			? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
+			: @"";
 	_nextButton.enabled = _nameLabel.text.length > 0 && _contacts.count > 0;
+	LinphoneParticipant *me = _room ? linphone_chat_room_get_me(_room) : NULL;
+	_imAdmin = me ? linphone_participant_is_admin(me) : false;
+	_quitButton.hidden = _create || (me == NULL);
+	_nameLabel.enabled = _create || _imAdmin;
+	_addButton.hidden = !_create && !_imAdmin;
+	_nextButton.hidden = !_create && !_imAdmin;
+
+	CGFloat height = _quitButton.hidden
+		? self.view.frame.size.height - _tableView.frame.origin.y
+		: _quitButton.frame.origin.y - _tableView.frame.origin.y - 10;
+
+	[_tableView setFrame:CGRectMake(
+		_tableView.frame.origin.x,
+		_tableView.frame.origin.y,
+		_tableView.frame.size.width,
+		height
+	)];
+
 	[_tableView reloadData];
-	_quitButton.hidden = _create;
 }
 
 #pragma mark - next functions
@@ -95,13 +117,27 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (![_oldSubject isEqualToString:_nameLabel.text])
 		linphone_chat_room_set_subject(_room, _nameLabel.text.UTF8String);
 
+	// Add participants if necessary
+	for (NSString *uri in _contacts.allKeys) {
+		if ([_oldContacts objectForKey:uri])
+			continue;
+
+		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+		linphone_chat_room_add_participant(_room, addr);
+		linphone_address_unref(addr);
+	}
+
 	// Remove participants if necessary
 	for (NSString *uri in _oldContacts.allKeys) {
 		if ([_contacts objectForKey:uri])
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
-		linphone_chat_room_remove_participant(_room, linphone_chat_room_find_participant(_room, addr));
+		LinphoneParticipant *participant = linphone_chat_room_find_participant(_room, addr);
+		if (!participant)
+			continue;
+
+		linphone_chat_room_remove_participant(_room, participant);
 		linphone_address_unref(addr);
 	}
 
@@ -111,7 +147,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(admin.UTF8String);
-		linphone_chat_room_set_participant_admin_status(_room, linphone_chat_room_find_participant(_room, linphone_address_new(admin.UTF8String)), true);
+		LinphoneParticipant *participant = linphone_chat_room_find_participant(_room, addr);
+		if (!participant)
+			continue;
+
+		linphone_chat_room_set_participant_admin_status(_room, participant, true);
 		linphone_address_unref(addr);
 	}
 
@@ -121,7 +161,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(admin.UTF8String);
-		linphone_chat_room_set_participant_admin_status(_room, linphone_chat_room_find_participant(_room, linphone_address_new(admin.UTF8String)), false);
+		LinphoneParticipant *participant = linphone_chat_room_find_participant(_room, addr);
+		if (!participant)
+			continue;
+
+		linphone_chat_room_set_participant_admin_status(_room, participant, false);
 		linphone_address_unref(addr);
 	}
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
@@ -161,8 +205,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.tableController.notFirstTime = TRUE;
 	view.isForEditing = !_create;
-	[view.tableController.contactsDict removeAllObjects];
-	[view.tableController.contactsGroup removeAllObjects];
+	view.tableController.contactsDict = _contacts;
+	view.tableController.contactsGroup = [[_contacts allKeys] mutableCopy];
 	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
@@ -190,8 +234,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		cell.adminLabel.enabled	= FALSE;
 		cell.adminImage.image = [UIImage imageNamed:@"check_unselected.png"];
 	}
-	cell.adminButton.hidden = _create;
+	cell.adminButton.hidden = _create; // (linphone_chat_room_find_participant(_room, addr) == NULL) ?
 	linphone_address_unref(addr);
+
+	cell.adminButton.hidden = !_imAdmin;
+	cell.removeButton.hidden = !_create && !_imAdmin;
+
 	return cell;
 }
 

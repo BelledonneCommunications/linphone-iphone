@@ -82,6 +82,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onAddClick:(id)event {
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.isForEditing = false;
+	view.tableController.notFirstTime = FALSE;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

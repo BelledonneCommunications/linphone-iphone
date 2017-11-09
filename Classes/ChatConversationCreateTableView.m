@@ -25,7 +25,6 @@
 	_allContacts =
 		[[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
 	if(_notFirstTime) {
-		_notFirstTime = FALSE;
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
 		}

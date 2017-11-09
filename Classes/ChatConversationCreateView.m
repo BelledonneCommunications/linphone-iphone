@@ -73,14 +73,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableController.isForEditing = _isForEditing;
 }
 
-#pragma mark - searchBar delegate
-
-- (IBAction)onBackClick:(id)sender {
-	[_tableController.contactsDict removeAllObjects];
-	[_tableController.contactsGroup removeAllObjects];
-	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
-}
-
 #pragma mark - Chat room functions
 
 void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
@@ -117,28 +109,27 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 
 #pragma mark - Buttons signals
 
+- (IBAction)onBackClick:(id)sender {
+	[_tableController.contactsDict removeAllObjects];
+	[_tableController.contactsGroup removeAllObjects];
+	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+}
+
 - (IBAction)onNextClick:(id)sender {
-	if (_tableController.contactsGroup.count == 1) {
+	if (_tableController.contactsGroup.count == 1 && !_isForEditing) {
 		[self createChatRoom];
 		return;
 	}
-	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	if (!_isForEditing)
-		view.contacts = _tableController.contactsDict;
-	else {
-		for (NSString *uri in _tableController.contactsDict) {
-			[view.contacts setObject:[_tableController.contactsDict objectForKey:uri] forKey:uri];
-		}
-	}
 
+	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
+	view.contacts = _tableController.contactsDict;
 	view.create = !_isForEditing;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (void)dismissKeyboards {
-	if ([self.tableController.searchBar isFirstResponder]) {
+	if ([self.tableController.searchBar isFirstResponder])
 		[self.tableController.searchBar resignFirstResponder];
-	}
 }
 
 #pragma mark - Contacts filter
@@ -192,7 +183,9 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 	UIChatCreateCollectionViewCell *cell = (UIChatCreateCollectionViewCell *)[_collectionView dequeueReusableCellWithReuseIdentifier:uri forIndexPath:indexPath];
 	cell.controller = self;
 	cell.uri = uri;
-	cell = [cell initWithName:_tableController.contactsDict[uri]];
+	LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+	cell = [cell initWithName:[FastAddressBook displayNameForAddress:addr]];
+	linphone_address_unref(addr);
 	return cell;
 }
 
