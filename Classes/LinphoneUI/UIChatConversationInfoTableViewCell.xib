@@ -19,18 +19,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="John Doe" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rrT-f7-NQO" userLabel="displayNameLabel">
-                        <rect key="frame" x="46" y="10" width="184" height="20"/>
+                        <rect key="frame" x="51" y="11" width="199" height="20"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="Zsv-H9-9Dv" userLabel="avatarImage" customClass="UIRoundedImageView">
-                        <rect key="frame" x="0.0" y="7" width="43" height="28"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                    </imageView>
                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PbQ-SL-kUk">
-                        <rect key="frame" x="213" y="1" width="98" height="39"/>
+                        <rect key="frame" x="229" y="2" width="98" height="39"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" image="check_selected.png" translatesAutoresizingMaskIntoConstraints="NO" id="FOh-C4-1Is" userLabel="adminImage">
@@ -68,12 +64,17 @@
                             <action selector="onDelete:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="gSd-t2-eDY"/>
                         </connections>
                     </button>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="Zsv-H9-9Dv" userLabel="avatarImage" customClass="UIRoundedImageView">
+                        <rect key="frame" x="8" y="0.0" width="35" height="42"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </imageView>
                 </subviews>
             </tableViewCellContentView>
             <connections>
                 <outlet property="adminButton" destination="PbQ-SL-kUk" id="Fgj-Oc-VhO"/>
                 <outlet property="adminImage" destination="FOh-C4-1Is" id="g51-C3-Ua8"/>
                 <outlet property="adminLabel" destination="DYS-vK-7Ol" id="OCp-Sw-hSc"/>
+                <outlet property="avatarImage" destination="Zsv-H9-9Dv" id="fAg-vm-e5o"/>
                 <outlet property="nameLabel" destination="rrT-f7-NQO" id="iwZ-ou-jVQ"/>
                 <outlet property="removeButton" destination="JPd-hQ-On6" id="Kfw-by-wbR"/>
             </connections>
