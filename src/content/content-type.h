@@ -59,6 +59,8 @@ public:
 
 	std::string asString () const;
 
+	static bool isFile (const ContentType &contentType);
+
 	static const ContentType Cpim;
 	static const ContentType ExternalBody;
 	static const ContentType FileTransfer;

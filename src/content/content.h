@@ -22,9 +22,11 @@
 
 #include <vector>
 
+// TODO: Remove me.
+#include "linphone/content.h"
+
 #include "object/app-data-container.h"
 #include "object/clonable-object.h"
-#include "linphone/content.h"
 
 // =============================================================================
 

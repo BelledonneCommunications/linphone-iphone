@@ -154,16 +154,8 @@ bool ContentType::isValid () const {
 	return !d->type.empty() && !d->subType.empty();
 }
 
-bool ContentType::isFile() const {
-	//TODO Improve
-	if (*this != ContentType::FileTransfer && *this != ContentType::PlainText &&
-		*this != ContentType::ExternalBody && *this != ContentType::Imdn &&
-		*this != ContentType::ImIsComposing && *this != ContentType::ResourceLists &&
-		*this != ContentType::Sdp && *this != ContentType::Cpim &&
-		*this != ContentType::ConferenceInfo) {
-			return true;
-	}
-	return false;
+bool ContentType::isFile () const {
+	return isFile(*this);
 }
 
 string ContentType::asString () const {
@@ -176,6 +168,19 @@ string ContentType::asString () const {
 		return asString;
 	}
 	return "";
+}
+
+bool ContentType::isFile (const ContentType &contentType) {
+	// TODO Improve.
+	return contentType != FileTransfer &&
+		contentType != PlainText &&
+		contentType != ExternalBody &&
+		contentType != Imdn &&
+		contentType != ImIsComposing &&
+		contentType != ResourceLists &&
+		contentType != Sdp &&
+		contentType != Cpim &&
+		contentType != ConferenceInfo;
 }
 
 LINPHONE_END_NAMESPACE

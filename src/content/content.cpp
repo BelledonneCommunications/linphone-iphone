@@ -121,7 +121,7 @@ void Content::setBody (const vector<char> &body) {
 	d->body = body;
 }
 
-void Content::setBody (std::vector<char> &&body) {
+void Content::setBody (vector<char> &&body) {
 	L_D();
 	d->body = move(body);
 }
