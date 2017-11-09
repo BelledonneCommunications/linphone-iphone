@@ -59,13 +59,20 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	if (_room)
+	if (_room) {
 		_nameLabel.text = linphone_chat_room_get_subject(_room)
 			? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 			: @"";
+	}
+
 	_nextButton.enabled = _nameLabel.text.length > 0 && _contacts.count > 0;
-	LinphoneParticipant *me = _room ? linphone_chat_room_get_me(_room) : NULL;
-	_imAdmin = me ? linphone_participant_is_admin(me) : false;
+	LinphoneParticipant *me = _room && (linphone_chat_room_get_state(_room) == LinphoneChatRoomStateCreated)
+		? linphone_chat_room_get_me(_room)
+		: NULL;
+
+	_imAdmin = me
+		? linphone_participant_is_admin(me)
+		: false;
 	_quitButton.hidden = _create || (me == NULL);
 	_nameLabel.enabled = _create || _imAdmin;
 	_addButton.hidden = !_create && !_imAdmin;
