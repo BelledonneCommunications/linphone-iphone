@@ -98,26 +98,6 @@ public:
 	
 	int downloadFile ();
 
-	// -----------------------------------------------------------------------------
-	// Need to be public to be called from static C callbacks
-	// -----------------------------------------------------------------------------
-
-	void fileTransferOnProgress(belle_sip_body_handler_t *bh, belle_sip_message_t *m, size_t offset, size_t total);
-	int onSendBody(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t *size);
-	void onSendEnd(belle_sip_user_body_handler_t *bh);
-	void onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t size);
-	void onRecvEnd(belle_sip_user_body_handler_t *bh);
-	void fileUploadBackgroundTaskEnded();
-	void processResponseFromPostFile(const belle_http_response_event_t *event);
-	void processResponseHeadersFromGetFile(const belle_http_response_event_t *event);
-	void processAuthRequestedDownload(const belle_sip_auth_event *event);
-	void processIoErrorUpload(const belle_sip_io_error_event_t *event);
-	void processAuthRequestedUpload(const belle_sip_auth_event *event);
-	void processIoErrorDownload(const belle_sip_io_error_event_t *event);
-	void processResponseFromGetFile(const belle_http_response_event_t *event);
-
-	// -----------------------------------------------------------------------------
-
 	void sendImdn(Imdn::Type imdnType, LinphoneReason reason);
 
 	LinphoneReason receive();
@@ -143,36 +123,21 @@ private:
 	bool isReadOnly = false;
 	std::list<Content* > contents;
 	Content internalContent;
-	FileContent *currentFileContentToTransfer;
 	std::unordered_map<std::string, std::string> customHeaders;
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
-	belle_http_request_t *httpRequest = nullptr;
-	belle_http_request_listener_t *httpListener = nullptr;
 	SalOp *salOp = nullptr;
 	SalCustomHeader *salCustomHeaders = nullptr;
-	unsigned long backgroundTaskId = 0;
 	unsigned char currentSendStep = Step::None;
 	bool applyModifiers = true;
 	FileTransferChatMessageModifier fileTransferChatMessageModifier;
+
 	// Cache for returned values, used for compatibility with previous C API
 	ContentType cContentType;
 	std::string cText;
 
 	// -----------------------------------------------------------------------------
 	
-	int uploadFile ();
 	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
-
-	void fileUploadEndBackgroundTask();
-	void fileUploadBeginBackgroundTask();
-	bool isFileTransferInProgressAndValid();
-	int startHttpTransfer(
-		const std::string &url,
-		const std::string &action,
-		belle_http_request_listener_callbacks_t *cbs
-	);
-	void releaseHttpRequest();
-	void createFileTransferInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent* content);
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

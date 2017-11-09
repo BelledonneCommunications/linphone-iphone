@@ -38,8 +38,6 @@ public:
 	uint32_t getChar () const;
 	LinphoneCall *getCall () const;
 
-	void markAsRead () override;
-
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;

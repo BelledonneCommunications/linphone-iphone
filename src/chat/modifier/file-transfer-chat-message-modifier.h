@@ -34,6 +34,9 @@ public:
 
 	Result encode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
 	Result decode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
+
+	belle_http_request_t *getHttpRequest() const;
+	void setHttpRequest(belle_http_request_t *request);
 	
 	int onSendBody (belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t *size);
 	void onSendEnd (belle_sip_user_body_handler_t *bh);
@@ -42,6 +45,17 @@ public:
 	void processResponseFromPostFile (const belle_http_response_event_t *event);
 	void processIoErrorUpload (const belle_sip_io_error_event_t *event);
 	void processAuthRequestedUpload (const belle_sip_auth_event *event);
+
+	void onRecvBody(belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t size);
+	void onRecvEnd(belle_sip_user_body_handler_t *bh);
+	void processResponseHeadersFromGetFile(const belle_http_response_event_t *event);
+	void processAuthRequestedDownload(const belle_sip_auth_event *event);
+	void processIoErrorDownload(const belle_sip_io_error_event_t *event);
+	void processResponseFromGetFile(const belle_http_response_event_t *event);
+
+	int downloadFile(const std::shared_ptr<ChatMessage> &message, FileTransferContent *fileTransferContent);
+	void cancelFileTransfer();
+	bool isFileTransferInProgressAndValid();
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
@@ -56,7 +70,6 @@ private:
 	void fileUploadBeginBackgroundTask();
 	void fileUploadEndBackgroundTask();
 
-	bool isFileTransferInProgressAndValid();
 	void releaseHttpRequest();
 };
 
