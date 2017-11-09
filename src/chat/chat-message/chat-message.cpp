@@ -286,6 +286,12 @@ LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
 	if (hasFileTransferContent()) {
 		return getFileTransferContent()->toLinphoneContent();
 	}
+	for (const Content *c : contents) {
+		if (c->getContentType().isFile()) {
+			FileContent *fileContent = (FileContent *)c;
+			return fileContent->toLinphoneContent();
+		}
+	}
 	return NULL;
 }
 
