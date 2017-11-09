@@ -45,7 +45,7 @@ public:
 	MainDbProvider () {
 		mCoreManager = linphone_core_manager_new("marie_rc");
 		mMainDb = new MainDb(mCoreManager->lc->cppCore->getSharedFromThis());
-		BC_ASSERT_TRUE(mMainDb->connect(MainDb::Sqlite3, getDatabasePath()));
+		mMainDb->connect(MainDb::Sqlite3, getDatabasePath());
 	}
 
 	~MainDbProvider () {
@@ -66,6 +66,7 @@ private:
 
 static void open_database () {
 	MainDbProvider provider;
+	BC_ASSERT_TRUE(provider.getMainDb().isConnected());
 }
 
 static void get_events_count () {

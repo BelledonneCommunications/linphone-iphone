@@ -143,8 +143,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		long long messageContentId = q->getLastInsertId();
 		for (const auto &appData : content.getAppDataMap())
-			*session << "INSERT INTO chat_message_content_app_data (chat_message_content_id, key, data) VALUES"
-				"  (:messageContentId, :key, :data)",
+			*session << "INSERT INTO chat_message_content_app_data (chat_message_content_id, name, data) VALUES"
+				"  (:messageContentId, :name, :data)",
 				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
