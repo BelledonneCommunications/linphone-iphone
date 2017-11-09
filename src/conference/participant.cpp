@@ -26,11 +26,20 @@
 #include "params/media-session-params.h"
 #include "session/media-session.h"
 
+#include "linphone/event.h"
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
+
+ParticipantPrivate::~ParticipantPrivate () {
+	if (conferenceSubscribeEvent)
+		linphone_event_unref(conferenceSubscribeEvent);
+}
+
+// -----------------------------------------------------------------------------
 
 shared_ptr<CallSession> ParticipantPrivate::createSession (
 	const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener
@@ -41,6 +50,14 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 		session = make_shared<CallSession>(conference, params, listener);
 	}
 	return session;
+}
+
+// -----------------------------------------------------------------------------
+
+void ParticipantPrivate::setConferenceSubscribeEvent (LinphoneEvent *ev) {
+	if (conferenceSubscribeEvent)
+		linphone_event_unref(conferenceSubscribeEvent);
+	conferenceSubscribeEvent = linphone_event_ref(ev);
 }
 
 // -----------------------------------------------------------------------------

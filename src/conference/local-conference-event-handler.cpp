@@ -37,39 +37,25 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
-static void doNotify (const string &notify, LinphoneEvent *lev) {
-	LinphoneContent *content = linphone_core_create_content(lev->lc);
-	linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
-	linphone_event_notify(lev, content);
-	linphone_content_unref(content);
+void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, const shared_ptr<Participant> &participant) {
+	sendNotify(notify, participant);
 }
 
-// -----------------------------------------------------------------------------
-
-void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, LinphoneEvent *lev) {
-	doNotify(notify, lev);
-}
-
-void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, const Address &addr) {
-	SimpleAddress simpleAddr(addr);
+void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, const shared_ptr<Participant> &exceptParticipant) {
 	for (const auto &participant : conf->getParticipants()) {
-		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && (participant->getAddress() != simpleAddr))
-			sendNotify(notify, participant->getContactAddress());
+		if (participant->getPrivate()->isSubscribedToConferenceEventPackage() && (participant != exceptParticipant))
+			sendNotify(notify, participant);
 	}
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
-	for (const auto &participant : conf->getParticipants()) {
-		if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
-			sendNotify(notify, participant->getContactAddress());
-	}
+	for (const auto &participant : conf->getParticipants())
+		notifyParticipant(notify, participant);
 }
 
-void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const Address &addr) {
-	SimpleAddress simpleAddr(addr);
-	shared_ptr<Participant> participant = conf->findParticipant(simpleAddr);
+void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const shared_ptr<Participant> &participant) {
 	if (participant->getPrivate()->isSubscribedToConferenceEventPackage())
-			sendNotify(notify, participant->getContactAddress());
+			sendNotify(notify, participant);
 }
 
 string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
@@ -249,13 +235,14 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 	return createNotify(confInfo, notifyId);
 }
 
-void LocalConferenceEventHandlerPrivate::sendNotify (const string &notify, const Address &addr) {
-	LinphoneAddress *cAddr = linphone_address_new(addr.asString().c_str());
-	LinphoneEvent *lev = linphone_core_create_notify(core, cAddr, "conference");
-	// Fix the From header to put the chat room URI
-	lev->op->set_from(conf->getConferenceAddress().asString().c_str());
-	linphone_address_unref(cAddr);
-	doNotify(notify, lev);
+void LocalConferenceEventHandlerPrivate::sendNotify (const string &notify, const shared_ptr<Participant> &participant) {
+	LinphoneEvent *ev = participant->getPrivate()->getConferenceSubscribeEvent();
+	if (!ev)
+		return;
+	LinphoneContent *content = linphone_core_create_content(ev->lc);
+	linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
+	linphone_event_notify(ev, content);
+	linphone_content_unref(content);
 }
 
 // =============================================================================
@@ -286,8 +273,8 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 			unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
 			if (lastNotify == 0) {
 				lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asStringUriOnly() << " to: " << addrStr;
-				participant->getPrivate()->subscribeToConferenceEventPackage(true);
-				d->notifyFullState(d->createNotifyFullState(), lev);
+				participant->getPrivate()->setConferenceSubscribeEvent(lev);
+				d->notifyFullState(d->createNotifyFullState(), participant);
 			} else if (lastNotify < d->lastNotify) {
 				lInfo() << "Sending all missed notify for conference:" << d->conf->getConferenceAddress().asStringUriOnly() <<
 					" from: " << lastNotify << " to: " << addrStr;
@@ -298,18 +285,20 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 					" should not be higher than last notify sent by server: [" << d->lastNotify << "].";
 			}
 		} else if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionTerminated)
-			participant->getPrivate()->subscribeToConferenceEventPackage(false);
+			participant->getPrivate()->setConferenceSubscribeEvent(nullptr);
 	}
 }
 
 void LocalConferenceEventHandler::notifyParticipantAdded (const Address &addr) {
 	L_D();
-	d->notifyAllExcept(d->createNotifyParticipantAdded(addr), addr);
+	shared_ptr<Participant> participant = d->conf->findParticipant(addr);
+	d->notifyAllExcept(d->createNotifyParticipantAdded(addr), participant);
 }
 
 void LocalConferenceEventHandler::notifyParticipantRemoved (const Address &addr) {
 	L_D();
-	d->notifyAllExcept(d->createNotifyParticipantRemoved(addr), addr);
+	shared_ptr<Participant> participant = d->conf->findParticipant(addr);
+	d->notifyAllExcept(d->createNotifyParticipantRemoved(addr), participant);
 }
 
 void LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr, bool isAdmin) {
