@@ -610,7 +610,8 @@ void ChatMessagePrivate::send () {
 		if ((currentSendStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
 			lInfo() << "Cpim step already done, skipping";
 		} else {
-			if (lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", 0) == 1) {
+			int defaultValue = !!lp_config_get_string(core->getCCore()->config, "misc", "conference_factory_uri", nullptr);
+			if (lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", defaultValue) == 1) {
 				CpimChatMessageModifier ccmm;
 				ccmm.encode(q->getSharedFromThis(), errorCode);
 			}
