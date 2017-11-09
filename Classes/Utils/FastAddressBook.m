@@ -156,27 +156,11 @@
         return self;
 }
 
-/*- (void)saveAddressBook {
-        if (addressBook != nil) {
-                if (!ABAddressBookSave(addressBook, nil)) {
-                        LOGW(@"Couldn't save Address Book");
-                }
-        }
-}
-*/
-
 -(void) updateAddressBook:(NSNotification*) notif {
 	LOGD(@"address book has changed");
 	self.needToUpdate = TRUE;
-        //[self reloadAllContacts];
 }
 
-/*- (void)reload {
-        [self getAllContacts];
-        LOGE(@"Create AddressBook failed");
-
-}
-*/
 - (BOOL)reloadAllContacts {
   BOOL success = FALSE;
   if ([CNContactStore class]) {
@@ -209,8 +193,6 @@
                                         } else {
                                           Contact *newContact = [[Contact alloc]
                                               initWithCNContact:contact];
-                                          [_addressBookMap setObject:newContact
-                                                              forKey:contact];
                                           [self registerAddrsFor:newContact];
                                         }
                                       }];
