@@ -29,6 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class FileTransferContentPrivate : public ContentPrivate {
 public:
+	string fileName;
 	string fileUrl;
 	string filePath;
 	FileContent *fileContent = nullptr;
@@ -42,6 +43,7 @@ FileTransferContent::FileTransferContent() : Content(*new FileTransferContentPri
 
 FileTransferContent::FileTransferContent (const FileTransferContent &src) : Content(*new FileTransferContentPrivate) {
 	L_D();
+	d->fileName = src.getFileName();
 	d->fileUrl = src.getFileUrl();
 	d->filePath = src.getFilePath();
 	d->fileContent = src.getFileContent();
@@ -49,6 +51,7 @@ FileTransferContent::FileTransferContent (const FileTransferContent &src) : Cont
 
 FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*new FileTransferContentPrivate) {
 	L_D();
+	d->fileName = move(src.getPrivate()->fileName);
 	d->fileUrl = move(src.getPrivate()->fileUrl);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
@@ -58,6 +61,7 @@ FileTransferContent &FileTransferContent::operator= (const FileTransferContent &
 	L_D();
 	if (this != &src) {
 		Content::operator=(src);
+		d->fileName = src.getFileName();
 		d->fileUrl = src.getFileUrl();
 		d->filePath = src.getFilePath();
 		d->fileContent = src.getFileContent();
@@ -69,6 +73,7 @@ FileTransferContent &FileTransferContent::operator= (const FileTransferContent &
 FileTransferContent &FileTransferContent::operator= (FileTransferContent &&src) {
 	L_D();
 	Content::operator=(move(src));
+	d->fileName = move(src.getPrivate()->fileName);
 	d->fileUrl = move(src.getPrivate()->fileUrl);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
@@ -78,8 +83,19 @@ FileTransferContent &FileTransferContent::operator= (FileTransferContent &&src) 
 bool FileTransferContent::operator== (const FileTransferContent &content) const {
 	L_D();
 	return Content::operator==(content) &&
+		d->fileName == content.getFileName() &&
 		d->fileUrl == content.getFileUrl() &&
 		d->filePath == content.getFilePath();
+}
+
+void FileTransferContent::setFileName(const string &name) {
+	L_D();
+	d->fileName = name;
+}
+
+const string& FileTransferContent::getFileName() const {
+	L_D();
+	return d->fileName;
 }
 
 void FileTransferContent::setFileUrl(const string &url) {
@@ -117,6 +133,7 @@ LinphoneContent * FileTransferContent::toLinphoneContent() const {
 	content = linphone_core_create_content(NULL);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
+	linphone_content_set_name(content, getFileName().c_str());
 	return content;
 }
 

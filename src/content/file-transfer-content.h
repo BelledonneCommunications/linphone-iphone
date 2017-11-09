@@ -39,6 +39,9 @@ public:
 	FileTransferContent &operator= (FileTransferContent &&src);
 	bool operator== (const FileTransferContent &content) const;
 	
+	void setFileName(const std::string &name);
+	const std::string& getFileName() const;
+	
 	void setFileUrl(const std::string &url);
 	const std::string& getFileUrl() const;
 	

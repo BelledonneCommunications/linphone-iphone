@@ -457,17 +457,12 @@ LinphoneReason ChatMessagePrivate::receive () {
 	MultipartChatMessageModifier mcmm;
 	mcmm.decode(q->getSharedFromThis(), errorCode);
 
+	// This will check if internal content is FileTransfer and make the appropriate changes
+	fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
+
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
-		// But first check if content type is file transfer
-		if (internalContent.getContentType() == ContentType::FileTransfer) {
-			FileTransferContent *content = new FileTransferContent();
-			content->setContentType(internalContent.getContentType());
-			content->setBody(internalContent.getBody());
-			contents.push_back(content);
-		} else {
-			contents.push_back(&internalContent);
-		}
+		contents.push_back(&internalContent);
 	}
 
 	// ---------------------------------------

@@ -505,7 +505,71 @@ void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {
 
 // ----------------------------------------------------------
 
+static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent *fileTransferContent) {
+	xmlChar *file_url = nullptr;
+	xmlDocPtr xmlMessageBody;
+	xmlNodePtr cur;
+	/* parse the msg body to get all informations from it */
+	xmlMessageBody = xmlParseDoc((const xmlChar *)fileTransferContent->getBodyAsString().c_str());
+
+	cur = xmlDocGetRootElement(xmlMessageBody);
+	if (cur != nullptr) {
+		cur = cur->xmlChildrenNode;
+		while (cur != nullptr) {
+			if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) {
+				/* we found a file info node, check if it has a type="file" attribute */
+				xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+				if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) {         /* this is the node we are looking for */
+					cur = cur->xmlChildrenNode;           /* now loop on the content of the file-info node */
+					while (cur != nullptr) {
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
+							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							fileTransferContent->setFileName((char *)filename);
+							
+							xmlFree(filename);
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
+							file_url = xmlGetProp(cur, (const xmlChar *)"url");
+						}
+
+						cur = cur->next;
+					}
+					xmlFree(typeAttribute);
+					break;
+				}
+				xmlFree(typeAttribute);
+			}
+			cur = cur->next;
+		}
+	}
+	xmlFreeDoc(xmlMessageBody);
+
+	fileTransferContent->setFileUrl((const char *)file_url); // Set file url in the file transfer content for the download
+
+	xmlFree(file_url);
+}
+
 ChatMessageModifier::Result FileTransferChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
+	chatMessage = message;
+
+	Content internalContent = chatMessage->getInternalContent();
+	if (internalContent.getContentType() == ContentType::FileTransfer) {
+		FileTransferContent *fileTransferContent = new FileTransferContent();
+		fileTransferContent->setContentType(internalContent.getContentType());
+		fileTransferContent->setBody(internalContent.getBody());
+		fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
+		chatMessage->addContent(fileTransferContent);
+		return ChatMessageModifier::Result::Done;
+	} else {
+		for (Content *content : chatMessage->getContents()) {
+			if (content->getContentType() == ContentType::FileTransfer) {
+				FileTransferContent *fileTransferContent = (FileTransferContent *)content;
+				fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
+			}
+		}
+		return ChatMessageModifier::Result::Done;
+	}
+
 	return ChatMessageModifier::Result::Skipped;
 }
 
@@ -539,6 +603,7 @@ static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferC
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							fileContent->setFileName((char *)filename);
+							
 							xmlFree(filename);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
@@ -589,8 +654,6 @@ static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferC
 	xmlFreeDoc(xmlMessageBody);
 
 	fileContent->setFilePath(fileTransferContent->getFilePath()); // Copy file path from file transfer content to file content for file body handler
-	fileTransferContent->setFileUrl((const char *)file_url); // Set file url in the file transfer content for the download
-
 	// Link the FileContent to the FileTransferContent
 	fileTransferContent->setFileContent(fileContent);
 
