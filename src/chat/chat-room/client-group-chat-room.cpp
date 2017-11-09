@@ -45,7 +45,7 @@ list<Address> ClientGroupChatRoomPrivate::cleanAddressesList (const list<Address
 	cleanedList.sort();
 	cleanedList.unique();
 	for (auto it = cleanedList.begin(); it != cleanedList.end();) {
-		if (q->findParticipant(*it))
+		if (q->findParticipant(*it) || (q->getMe()->getAddress() == SimpleAddress(*it)))
 			it = cleanedList.erase(it);
 		else
 			it++;
