@@ -284,8 +284,8 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	const SalCustomHeader *ch = op->get_recv_custom_header();
 	if (ch)
 		msg->getPrivate()->setSalCustomHeaders(sal_custom_header_clone(ch));
-	if (salMsg->url)
-		msg->setExternalBodyUrl(salMsg->url);
+	/*if (salMsg->url)
+		msg->getPrivate()->setExternalBodyUrl(salMsg->url);*/
 
 	reason = msg->getPrivate()->receive();
 

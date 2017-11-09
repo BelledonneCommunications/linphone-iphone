@@ -42,19 +42,20 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
 	shared_ptr<ChatRoom> marieRoom = make_shared<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
 
-	shared_ptr<ChatMessage> marieMessage;
+	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage();
 	if (first_file_transfer) {
 		char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
-		LinphoneContent *content = linphone_core_create_content(marie->lc);
-		belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
-		linphone_content_set_type(content,"video");
-		linphone_content_set_subtype(content,"mkv");
-		linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
-		marieMessage = marieRoom->createFileTransferMessage(content);
-		marieMessage->setFileTransferFilepath(send_filepath);
+		FileContent *content = new FileContent();
+		content->setContentType("video/mkv");
+		content->setFilePath(send_filepath);
+		content->setFileName("sintel_trailer_opus_h264.mkv");
+		marieMessage->addContent(content);
 		bc_free(send_filepath);
 	} else {
-		marieMessage = marieRoom->createMessage("Hello Part 1");
+		Content *content = new Content();
+		content->setContentType(ContentType::PlainText);
+		content->setBody("Hello Part 1");
+		marieMessage->addContent(content);
 	}
 
 	if (second_file_transfer) {

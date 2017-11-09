@@ -57,12 +57,6 @@ public:
 	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom);
 
 	// ----- TODO: Remove me.
-	const std::string &getFileTransferFilepath () const;
-	void setFileTransferFilepath (const std::string &path);
-	const std::string &getAppdata () const;
-	void setAppdata (const std::string &appData);
-	const std::string &getExternalBodyUrl () const;
-	void setExternalBodyUrl (const std::string &url);
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
 	void updateState (State state);
@@ -100,12 +94,6 @@ public:
 	const std::list<Content *> &getContents () const;
 	void addContent (Content *content);
 	void removeContent (Content *content);
-
-	bool hasTextContent() const;
-	const Content* getTextContent() const;
-	
-	bool hasFileTransferContent() const;
-	const Content* getFileTransferContent() const;
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);

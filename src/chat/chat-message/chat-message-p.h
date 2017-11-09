@@ -93,6 +93,20 @@ public:
 	const std::string &getText();
 	void setText(const std::string &text);
 
+	const std::string &getFileTransferFilepath () const;
+	void setFileTransferFilepath (const std::string &path);
+
+	const std::string &getAppdata () const;
+	void setAppdata (const std::string &appData);
+
+	const std::string &getExternalBodyUrl () const;
+	
+	bool hasTextContent() const;
+	const Content* getTextContent() const;
+	
+	bool hasFileTransferContent() const;
+	const Content* getFileTransferContent() const;
+
 	LinphoneContent *getFileTransferInformation() const;
 	void setFileTransferInformation(const LinphoneContent *content);
 	
@@ -115,9 +129,6 @@ private:
 	Address to;
 	time_t time = 0;
 	std::string id;
-	std::string appData;
-	std::string fileTransferFilePath;
-	std::string externalBodyUrl;
 	std::string rttMessage;
 	bool isSecured = false;
 	bool isReadOnly = false;
@@ -132,6 +143,8 @@ private:
 	FileTransferChatMessageModifier fileTransferChatMessageModifier;
 
 	// Cache for returned values, used for compatibility with previous C API
+	std::string appData;
+	std::string fileTransferFilePath;
 	ContentType cContentType;
 	std::string cText;
 

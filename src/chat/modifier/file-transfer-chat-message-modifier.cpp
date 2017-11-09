@@ -432,8 +432,8 @@ int FileTransferChatMessageModifier::uploadFile () {
 	}
 
 	// THIS IS ONLY FOR BACKWARD C API COMPAT
-	if (currentFileContentToTransfer->getFilePath().empty() && !chatMessage->getFileTransferFilepath().empty()) {
-		currentFileContentToTransfer->setFilePath(chatMessage->getFileTransferFilepath());
+	if (currentFileContentToTransfer->getFilePath().empty() && !chatMessage->getPrivate()->getFileTransferFilepath().empty()) {
+		currentFileContentToTransfer->setFilePath(chatMessage->getPrivate()->getFileTransferFilepath());
 	}
 
 	belle_http_request_listener_callbacks_t cbs = { 0 };
@@ -850,8 +850,8 @@ int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> 
 	}
 	
 	// THIS IS ONLY FOR BACKWARD C API COMPAT
-	if (currentFileContentToTransfer->getFilePath().empty() && !chatMessage->getFileTransferFilepath().empty()) {
-		currentFileContentToTransfer->setFilePath(chatMessage->getFileTransferFilepath());
+	if (currentFileContentToTransfer->getFilePath().empty() && !chatMessage->getPrivate()->getFileTransferFilepath().empty()) {
+		currentFileContentToTransfer->setFilePath(chatMessage->getPrivate()->getFileTransferFilepath());
 	}
 	
 	belle_http_request_listener_callbacks_t cbs = { 0 };
