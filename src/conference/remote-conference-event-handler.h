@@ -40,6 +40,7 @@ class RemoteConferenceEventHandler : public Object {
 
 		const Address &getConfAddress () const;
 		unsigned int getLastNotify () const;
+		void resetLastNotify ();
 
 	private:
 		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);

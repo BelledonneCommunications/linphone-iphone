@@ -207,4 +207,9 @@ unsigned int RemoteConferenceEventHandler::getLastNotify () const {
 	return d->lastNotify;
 };
 
+void RemoteConferenceEventHandler::resetLastNotify () {
+	L_D();
+	d->lastNotify = 0;
+}
+
 LINPHONE_END_NAMESPACE

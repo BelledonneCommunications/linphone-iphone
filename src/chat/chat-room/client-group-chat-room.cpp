@@ -163,7 +163,7 @@ void ClientGroupChatRoom::join () {
 	L_D_T(RemoteConference, dConference);
 
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
-	if (!session && d->state == ChatRoom::State::Instantiated) {
+	if (!session && ((d->state == ChatRoom::State::Instantiated) || (d->state == ChatRoom::State::Terminated))) {
 		session = d->createSession();
 		session->startInvite(nullptr, "", nullptr);
 		d->setState(ChatRoom::State::CreationPending);
@@ -266,6 +266,8 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 	L_D();
+	L_D_T(RemoteConference, dConference);
+	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
 }
 
@@ -446,9 +448,9 @@ void ClientGroupChatRoom::onCallSessionStateChanged (
 				dConference->eventHandler->subscribe(getConferenceAddress());
 		} else if (d->state == ChatRoom::State::TerminationPending)
 			dConference->focus->getPrivate()->getSession()->terminate();
-	} else if (state == LinphoneCallReleased && d->state == ChatRoom::State::TerminationPending) {
+	} else if ((state == LinphoneCallReleased) && (d->state == ChatRoom::State::TerminationPending)) {
 		onConferenceTerminated(getConferenceAddress());
-	} else if (state == LinphoneCallError && d->state == ChatRoom::State::CreationPending) {
+	} else if ((state == LinphoneCallError) && (d->state == ChatRoom::State::CreationPending)) {
 		d->setState(ChatRoom::State::CreationFailed);
 	}
 }
