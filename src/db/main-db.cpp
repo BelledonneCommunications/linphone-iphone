@@ -28,6 +28,7 @@
 
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/client-group-chat-room.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
@@ -1275,10 +1276,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
-			string sipAddress = row.get<string>(0);
-			shared_ptr<ChatRoom> chatRoom = core->findChatRoom(Address(sipAddress));
+			Address peerAddress = Address(row.get<string>(0));
+			shared_ptr<ChatRoom> chatRoom = core->findChatRoom(peerAddress);
 			if (chatRoom) {
-				lInfo() << "Don't fetch chat room from database: `" << sipAddress << "`, it already exists.";
 				chatRooms.push_back(chatRoom);
 				continue;
 			}
@@ -1292,16 +1292,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			// TODO: Use me.
 			(void)creationDate;
 			(void)lastUpdateDate;
-			(void)subject;
 			(void)lastNotifyId;
 
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
 				chatRoom = core->getPrivate()->createBasicChatRoom(
-					Address(sipAddress),
+					peerAddress,
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				);
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
-				// TODO: Set sip address and participants.
+				chatRoom = make_shared<ClientGroupChatRoom>(
+					getCore(),
+					Address("sip:titi@sip.linphone.org"), // TODO: Fix me!!!
+					peerAddress.asStringUriOnly(),
+					subject
+				);
 			}
 
 			if (!chatRoom)
