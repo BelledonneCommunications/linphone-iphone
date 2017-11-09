@@ -53,6 +53,9 @@ using namespace std;
 ChatMessagePrivate::ChatMessagePrivate () {}
 
 ChatMessagePrivate::~ChatMessagePrivate () {
+	for (Content *content : contents) {
+		free(content);
+	}
 	if (salOp)
 		salOp->release();
 }
