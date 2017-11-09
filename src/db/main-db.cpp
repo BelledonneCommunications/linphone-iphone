@@ -346,7 +346,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					string path;
 
 					*session << "SELECT name, size, path FROM chat_message_file_content"
-						"  WHERE chat_message_content_id = :contentId", soci::use(contentId);
+						"  WHERE chat_message_content_id = :contentId",
+						soci::into(name), soci::into(size), soci::into(path) soci::use(contentId);
 
 					FileContent *fileContent = new FileContent();
 					fileContent->setFileName(name);
@@ -355,7 +356,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 					content = fileContent;
 				} else
-					Content *content = new Content();
+					content = new Content();
 
 				content->setContentType(contentType);
 				content->setBody(row.get<string>(2));
