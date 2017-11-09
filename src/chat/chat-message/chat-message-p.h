@@ -143,7 +143,6 @@ private:
 	FileTransferChatMessageModifier fileTransferChatMessageModifier;
 
 	// Cache for returned values, used for compatibility with previous C API
-	std::string appData;
 	std::string fileTransferFilePath;
 	ContentType cContentType;
 	std::string cText;

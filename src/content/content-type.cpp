@@ -154,6 +154,18 @@ bool ContentType::isValid () const {
 	return !d->type.empty() && !d->subType.empty();
 }
 
+bool ContentType::isFile() const {
+	//TODO Improve
+	if (*this != ContentType::FileTransfer && *this != ContentType::PlainText &&
+		*this != ContentType::ExternalBody && *this != ContentType::Imdn &&
+		*this != ContentType::ImIsComposing && *this != ContentType::ResourceLists &&
+		*this != ContentType::Sdp && *this != ContentType::Cpim &&
+		*this != ContentType::ConferenceInfo) {
+			return true;
+	}
+	return false;
+}
+
 string ContentType::asString () const {
 	L_D();
 	if (isValid()) {

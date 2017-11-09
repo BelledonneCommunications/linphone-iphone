@@ -202,14 +202,22 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 }
 
 const string &ChatMessagePrivate::getAppdata () const {
-	return appData;
+	for (const Content *c : contents) {
+		if (c->getContentType().isFile()) {
+			FileContent *fileContent = (FileContent *)c;
+			return fileContent->getFilePath();
+		}
+	}
+	return Utils::getEmptyConstRefObject<string>();
 }
 
 void ChatMessagePrivate::setAppdata (const string &data) {
-	appData = data;
-
-	// TODO: history.
-	// linphone_chat_message_store_appdata(L_GET_C_BACK_PTR(this));
+	for (const Content *c : contents) {
+		if (c->getContentType().isFile()) {
+			FileContent *fileContent = (FileContent *)c;
+			return fileContent->setFilePath(data);
+		}
+	}
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
