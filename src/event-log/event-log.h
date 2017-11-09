@@ -35,6 +35,7 @@ class EventLogPrivate;
 
 class LINPHONE_PUBLIC EventLog : public BaseObject {
 	friend class MainDb;
+	friend class MainDbPrivate;
 
 public:
 	L_DECLARE_ENUM(Type, L_ENUM_VALUES_EVENT_LOG_TYPE);

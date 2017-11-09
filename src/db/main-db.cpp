@@ -89,8 +89,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	) {
 		L_ASSERT(
 			find_if(filters.cbegin(), filters.cend(), [](const MainDb::Filter &filter) {
-					return filter == MainDb::NoFilter;
-				}) == filters.cend()
+				return filter == MainDb::NoFilter;
+			}) == filters.cend()
 		);
 
 		if (mask == MainDb::NoFilter)
@@ -134,7 +134,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	void MainDbPrivate::insertContent (long long eventId, const Content &content) {
 		L_Q();
-
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long long contentTypeId = insertContentType(content.getContentType().asString());
@@ -253,15 +252,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceEvent (
-		long long eventId,
+		long long,
 		EventLog::Type type,
 		time_t date,
 		const string &peerAddress
 	) const {
-		// Useless here.
-		(void)eventId;
-
-		// TODO: Use cache.
 		return make_shared<ConferenceEvent>(
 			type,
 			date,
@@ -352,7 +347,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"    AND participant_address.id = participant_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::use(eventId);
 
-		// TODO: Use cache.
 		return make_shared<ConferenceParticipantEvent>(
 			type,
 			date,
@@ -383,7 +377,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"    AND gruu_address.id = gruu_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::into(gruuAddress), soci::use(eventId);
 
-		// TODO: Use cache.
 		return make_shared<ConferenceParticipantDeviceEvent>(
 			type,
 			date,
@@ -410,7 +403,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"    AND conference_notified_event.event_id = conference_subject_event.event_id",
 			soci::into(notifyId), soci::into(subject), soci::use(eventId);
 
-		// TODO: Use cache.
 		return make_shared<ConferenceSubjectEvent>(
 			date,
 			Address(peerAddress),
@@ -478,7 +470,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(static_cast<int>(chatMessage->getState())), soci::use(static_cast<int>(chatMessage->getDirection())),
 			soci::use(chatMessage->getImdnMessageId()), soci::use(chatMessage->isSecured() ? 1 : 0);
 
-		for (Content *content : chatMessage->getContents())
+		for (const Content *content : chatMessage->getContents())
 			insertContent(eventId, *content);
 
 		return eventId;
@@ -547,6 +539,23 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// Must exist. If not, implementation bug.
 		L_ASSERT(eventLog);
 		return eventLog;
+	}
+
+	void MainDbPrivate::invalidEventsFromQuery (const string &query, const string &peerAddress) {
+		L_Q();
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(peerAddress));
+		for (const auto &row : rows) {
+			shared_ptr<EventLog> eventLog = getEventFromCache(
+				q->getBackend() == AbstractDb::Sqlite3 ? static_cast<long long>(row.get<int>(0)) : row.get<long long>(0)
+			);
+			if (eventLog) {
+				const EventLogPrivate *dEventLog = eventLog->getPrivate();
+				L_ASSERT(dEventLog->dbKey.isValid());
+				dEventLog->dbKey = MainDbEventKey();
+			}
+		}
 	}
 
 // -----------------------------------------------------------------------------
@@ -1154,19 +1163,15 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return;
 		}
 
-		// TODO: Deal with mask.
-
-		string query;
-		if (mask == MainDb::NoFilter || mask & ConferenceChatMessageFilter)
-			query += "SELECT event_id FROM conference_event WHERE chat_room_id = ("
-				"  SELECT id FROM sip_address WHERE value = :peerAddress"
-				")";
-
-		if (query.empty())
-			return;
+		string query = "SELECT event_id FROM conference_event WHERE chat_room_id = ("
+			"  SELECT id FROM sip_address WHERE value = :peerAddress"
+			")" + buildSqlEventFilter({
+				ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+			}, mask);
 
 		L_BEGIN_LOG_EXCEPTION
 
+		d->invalidEventsFromQuery(query, peerAddress);
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		*session << "DELETE FROM event WHERE id IN (" + query + ")", soci::use(peerAddress);
 
@@ -1271,6 +1276,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		L_BEGIN_LOG_EXCEPTION
+
+		d->invalidEventsFromQuery(
+			"SELECT event_id FROM conference_event WHERE chat_room_id = ("
+			"  SELECT id FROM sip_address WHERE value = :peerAddress"
+			")",
+			peerAddress
+		);
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		*session << "DELETE FROM chat_room WHERE peer_sip_address_id = ("

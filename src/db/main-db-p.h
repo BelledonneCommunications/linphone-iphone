@@ -113,6 +113,7 @@ private:
 	// ---------------------------------------------------------------------------
 
 	std::shared_ptr<EventLog> getEventFromCache (long long eventId) const;
+	void invalidEventsFromQuery (const std::string &query, const std::string &peerAddress);
 
 	L_DECLARE_PUBLIC(MainDb);
 };
