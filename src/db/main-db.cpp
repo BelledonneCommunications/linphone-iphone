@@ -919,6 +919,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter }, mask);
 		int count = 0;
 
+		DurationLogger durationLogger(
+			"Get events count with mask=" + Utils::toString(static_cast<int>(mask)) + "."
+		);
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -950,6 +954,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		list<shared_ptr<EventLog>> events;
+
+		DurationLogger durationLogger(
+			"Get conference notified events of: `" + peerAddress +
+			"` (lastNotifyId=" + Utils::toString(lastNotifyId) + ")."
+		);
 
 		L_BEGIN_LOG_EXCEPTION
 
@@ -983,6 +992,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		int count = 0;
+
+		DurationLogger durationLogger("Get chat messages count of: `" + peerAddress + "`.");
 
 		L_BEGIN_LOG_EXCEPTION
 
@@ -1027,6 +1038,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
 			+ " AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 
+		DurationLogger durationLogger("Get unread chat messages count of: `" + peerAddress + "`.");
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -1063,6 +1076,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				") AND";
 		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming));
 
+		DurationLogger durationLogger("Mark chat messages as read of: `" + peerAddress + "`.");
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -1076,6 +1091,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const std::string &peerAddress) const {
+		DurationLogger durationLogger("Get unread chat messages: `" + peerAddress + "`.");
+
 		// TODO.
 		return list<shared_ptr<ChatMessage>>();
 	}
@@ -1126,6 +1143,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		if (begin > 0)
 			query += "  OFFSET " + Utils::toString(begin);
 
+		DurationLogger durationLogger(
+			"Get history range of: `" + peerAddress +
+			"` (begin=" + Utils::toString(begin) + ", end=" + Utils::toString(end) + ")."
+		);
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -1171,6 +1193,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 			}, mask);
 
+		DurationLogger durationLogger(
+			"Clean history of: `" + peerAddress + "` (mask=" + Utils::toString(static_cast<int>(mask)) + ")."
+		);
+
 		L_BEGIN_LOG_EXCEPTION
 
 		d->invalidEventsFromQuery(query, peerAddress);
@@ -1199,6 +1225,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		L_ASSERT(core);
 
 		list<shared_ptr<ChatRoom>> chatRooms;
+
+		DurationLogger durationLogger("Get chat rooms.");
 
 		L_BEGIN_LOG_EXCEPTION
 
@@ -1254,6 +1282,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return;
 		}
 
+		DurationLogger durationLogger(
+			"Insert chat room: `" + peerAddress + "` (capabilities=" + Utils::toString(capabilities) + ")."
+		);
+
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
@@ -1276,6 +1308,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			lWarning() << "Unable to delete chat room. Not connected.";
 			return;
 		}
+
+		DurationLogger durationLogger("Delete chat room: `" + peerAddress + "`.");
 
 		L_BEGIN_LOG_EXCEPTION
 

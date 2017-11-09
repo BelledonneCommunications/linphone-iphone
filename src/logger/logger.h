@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-#include "object/object.h"
+#include "object/base-object.h"
 
 // =============================================================================
 
@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class LoggerPrivate;
 
-class LINPHONE_PUBLIC Logger : public Object {
+class LINPHONE_PUBLIC Logger : public BaseObject {
 public:
 	enum Level {
 		Debug,
@@ -50,6 +50,18 @@ private:
 	L_DISABLE_COPY(Logger);
 };
 
+class DurationLoggerPrivate;
+
+class DurationLogger : public BaseObject {
+public:
+	DurationLogger (const std::string &label, Logger::Level level = Logger::Info);
+	~DurationLogger ();
+
+private:
+	L_DECLARE_PRIVATE(DurationLogger);
+	L_DISABLE_COPY(DurationLogger);
+};
+
 LINPHONE_END_NAMESPACE
 
 #define lDebug() LinphonePrivate::Logger(LinphonePrivate::Logger::Debug).getOutput()
@@ -61,8 +73,8 @@ LINPHONE_END_NAMESPACE
 #define L_BEGIN_LOG_EXCEPTION try {
 
 #define L_END_LOG_EXCEPTION \
-} catch (const exception &e) { \
-	lWarning() << "Error: " << e.what(); \
-}
+	} catch (const exception &e) { \
+		lWarning() << "Error: " << e.what(); \
+	}
 
 #endif // ifndef _LOGGER_H_

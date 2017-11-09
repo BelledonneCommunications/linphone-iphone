@@ -17,9 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <chrono>
+#include <memory>
+
 #include "linphone/core.h"
 
-#include "object/object-p.h"
+#include "object/base-object-p.h"
 
 #include "logger.h"
 
@@ -29,7 +32,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-class LoggerPrivate : public ObjectPrivate {
+class LoggerPrivate : public BaseObjectPrivate {
 public:
 	Logger::Level level;
 	ostringstream os;
@@ -37,7 +40,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
-Logger::Logger (Level level) : Object(*new LoggerPrivate) {
+Logger::Logger (Level level) : BaseObject(*new LoggerPrivate) {
 	L_D();
 	d->level = level;
 }
@@ -71,6 +74,34 @@ Logger::~Logger () {
 ostringstream &Logger::getOutput () {
 	L_D();
 	return d->os;
+}
+
+// -----------------------------------------------------------------------------
+
+class DurationLoggerPrivate : public BaseObjectPrivate {
+public:
+	unique_ptr<Logger> logger;
+
+	chrono::high_resolution_clock::time_point start;
+};
+
+// -----------------------------------------------------------------------------
+
+DurationLogger::DurationLogger (const string &label, Logger::Level level) : BaseObject(*new DurationLoggerPrivate) {
+	L_D();
+
+	d->logger.reset(new Logger(level));
+	d->logger->getOutput() << "Duration of [" + label + "]: ";
+	d->start = chrono::high_resolution_clock::now();
+
+	Logger(level).getOutput() << "Start measurement of [" + label + "].";
+}
+
+DurationLogger::~DurationLogger () {
+	L_D();
+
+	chrono::high_resolution_clock::time_point end = chrono::high_resolution_clock::now();
+	d->logger->getOutput() << chrono::duration_cast<chrono::milliseconds>(end - d->start).count() << "ms.";
 }
 
 LINPHONE_END_NAMESPACE
