@@ -54,6 +54,7 @@ void CallSessionParamsPrivate::clone (const CallSessionParamsPrivate &src, CallS
 	/* The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient. */
 	if (src.customHeaders)
 		dst.customHeaders = sal_custom_header_clone(src.customHeaders);
+	dst.customContactParameters = src.customContactParameters;
 	dst.referer = src.referer;
 }
 
@@ -135,6 +136,30 @@ void CallSessionParams::clearCustomHeaders () {
 const char * CallSessionParams::getCustomHeader (const string &headerName) const {
 	L_D();
 	return sal_custom_header_find(d->customHeaders, headerName.c_str());
+}
+
+// -----------------------------------------------------------------------------
+
+void CallSessionParams::addCustomContactParameter (const std::string &paramName, const std::string &paramValue) {
+	L_D();
+	auto it = d->customContactParameters.find(paramName);
+	if (it != d->customContactParameters.end())
+		d->customContactParameters.erase(it);
+	pair<string, string> param(paramName, paramValue);
+	d->customContactParameters.insert(param);
+}
+
+void CallSessionParams::clearCustomContactParameters () {
+	L_D();
+	d->customContactParameters.clear();
+}
+
+std::string CallSessionParams::getCustomContactParameter (const std::string &paramName) const {
+	L_D();
+	auto it = d->customContactParameters.find(paramName);
+	if (it == d->customContactParameters.end())
+		return "";
+	return it->second;
 }
 
 LINPHONE_END_NAMESPACE

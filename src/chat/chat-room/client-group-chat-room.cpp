@@ -59,16 +59,13 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 
 	CallSessionParams csp;
 	csp.addCustomHeader("Require", "recipient-list-invite");
+	csp.addCustomContactParameter("text");
 
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, q);
 	const Address &myAddress = q->getMe()->getAddress();
 	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getContactAddress());
 	session->initiateOutgoing();
-
-	Address addr = myAddress;
-	addr.setParam("text");
-	session->getPrivate()->getOp()->set_contact_address(addr.getPrivate()->getInternalAddress());
 	return session;
 }
 

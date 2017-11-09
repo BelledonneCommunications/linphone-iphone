@@ -56,6 +56,10 @@ public:
 	void clearCustomHeaders ();
 	const char * getCustomHeader (const std::string &headerName) const;
 
+	void addCustomContactParameter (const std::string &paramName, const std::string &paramValue = "");
+	void clearCustomContactParameters ();
+	std::string getCustomContactParameter (const std::string &paramName) const;
+
 protected:
 	explicit CallSessionParams (CallSessionParamsPrivate &p);
 

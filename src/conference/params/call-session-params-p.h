@@ -20,6 +20,8 @@
 #ifndef _CALL_SESSION_PARAMS_P_H_
 #define _CALL_SESSION_PARAMS_P_H_
 
+#include <unordered_map>
+
 #include "object/clonable-object-p.h"
 
 #include "call-session-params.h"
@@ -48,6 +50,8 @@ public:
 	SalCustomHeader * getCustomHeaders () const;
 	void setCustomHeaders (const SalCustomHeader *ch);
 
+	const std::unordered_map<std::string, std::string> &getCustomContactParameters () const { return customContactParameters; }
+
 	LinphoneCall *getReferer () const { return referer; }
 	void setReferer (LinphoneCall *call) { referer = call; }
 
@@ -61,6 +65,7 @@ private:
 	bool internalCallUpdate = false;
 	bool noUserConsent = false; /* When set to true an UPDATE request will be used instead of reINVITE */
 	SalCustomHeader *customHeaders = nullptr;
+	std::unordered_map<std::string, std::string> customContactParameters;
 	LinphoneCall *referer = nullptr; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
 
 	L_DECLARE_PUBLIC(CallSessionParams);
