@@ -61,7 +61,7 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setState(ChatMessage::State state);
+	void setState(ChatMessage::State state, bool force = false);
 
 	void setTime(time_t time);
 
@@ -100,16 +100,16 @@ public:
 	void setAppdata (const std::string &appData);
 
 	const std::string &getExternalBodyUrl () const;
-	
+
 	bool hasTextContent() const;
 	const Content* getTextContent() const;
-	
+
 	bool hasFileTransferContent() const;
 	const Content* getFileTransferContent() const;
 
 	LinphoneContent *getFileTransferInformation() const;
 	void setFileTransferInformation(const LinphoneContent *content);
-	
+
 	int downloadFile ();
 
 	void sendImdn(Imdn::Type imdnType, LinphoneReason reason);
@@ -148,7 +148,7 @@ private:
 	std::string cText;
 
 	// -----------------------------------------------------------------------------
-	
+
 	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
 
 	L_DECLARE_PUBLIC(ChatMessage);

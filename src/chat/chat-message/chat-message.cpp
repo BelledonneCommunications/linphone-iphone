@@ -75,8 +75,11 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setState (ChatMessage::State s) {
+void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	L_Q();
+
+	if (force)
+		state = s;
 
 	if (s == state || !q->getChatRoom())
 		return;

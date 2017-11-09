@@ -300,18 +300,17 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		*session << "SELECT local_sip_address.value, remote_sip_address.value, imdn_message_id, state, direction, is_secured"
 			"  FROM event, conference_chat_message_event, sip_address AS local_sip_address,"
 			"  sip_address AS remote_sip_address"
-			"  WHERE event_id = event.id"
+			"  WHERE event_id = :eventId"
+			"  AND event_id = event.id"
 			"  AND local_sip_address_id = local_sip_address.id"
-			"  AND remote_sip_address_id = remote_sip_address.id"
-			"  AND remote_sip_address.value = :peerAddress", soci::into(localSipAddress), soci::into(remoteSipAddress),
-			soci::into(imdnMessageId), soci::into(state), soci::into(direction), soci::into(isSecured),
-			soci::use(peerAddress);
+			"  AND remote_sip_address_id = remote_sip_address.id", soci::into(localSipAddress), soci::into(remoteSipAddress),
+			soci::into(imdnMessageId), soci::into(state), soci::into(direction), soci::into(isSecured), soci::use(eventId);
 
 		// TODO: Create me.
 		// TODO: Use cache, do not fetch the same message twice.
 		shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(chatRoom);
 
-		chatMessage->getPrivate()->setState(static_cast<ChatMessage::State>(state));
+		chatMessage->getPrivate()->setState(static_cast<ChatMessage::State>(state), true);
 		chatMessage->getPrivate()->setDirection(static_cast<ChatMessage::Direction>(direction));
 		chatMessage->setIsSecured(static_cast<bool>(isSecured));
 
