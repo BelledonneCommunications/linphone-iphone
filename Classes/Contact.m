@@ -230,12 +230,20 @@
 	NSString *normSip = NULL;
         if (_person && ![sip isEqualToString:@" "]) {
           if ((index + 1) > [_person.instantMessageAddresses count]) {
-            normSip =
-                [FastAddressBook normalizeSipURI:[sip substringFromIndex:1]];
-            CNInstantMessageAddress *cNSipMsgAddr = [
-                [CNInstantMessageAddress alloc]
-                initWithUsername:[normSip componentsSeparatedByString:@"@"][0]
-                         service:[normSip componentsSeparatedByString:@"@"][1]];
+            if ([sip hasPrefix:@" "])
+              normSip = [sip substringFromIndex:1];
+            else
+              normSip = sip;
+            CNInstantMessageAddress *cNSipMsgAddr;
+            if ([normSip containsString:@"@"])
+              cNSipMsgAddr = [[CNInstantMessageAddress alloc]
+                  initWithUsername:[normSip componentsSeparatedByString:@"@"][0]
+                           service:[normSip
+                                       componentsSeparatedByString:@"@"][1]];
+            else
+              cNSipMsgAddr =
+                  [[CNInstantMessageAddress alloc] initWithUsername:normSip
+                                                            service:normSip];
             CNLabeledValue *sipAddress =
                 [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
             NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>
@@ -244,7 +252,8 @@
             [_person setValue:tmpSipAddress
                        forKey:CNContactInstantMessageAddressesKey];
             ret = TRUE;
-            _sipAddresses[index] = [sip substringFromIndex:1];
+            _sipAddresses[index] = normSip;
+            //_sipAddresses[index] = [sip substringFromIndex:1];
           } else {
             normSip = sip;
             CNInstantMessageAddress *cNSipMsgAddr;
@@ -272,7 +281,7 @@
         }
 
         if (ret) {
-          _sipAddresses[index] = sip;
+          _sipAddresses[index] = [FastAddressBook normalizeSipURI:sip];
         }
         return ret;
 }
@@ -389,7 +398,10 @@
           }
         }
         if (ret) {
-          [_sipAddresses addObject:sip];
+          if ([sip hasPrefix:@" "])
+            [_sipAddresses addObject:[sip substringFromIndex:1]];
+          else
+            [_sipAddresses addObject:[FastAddressBook normalizeSipURI:sip]];
         }
         return ret;
 }

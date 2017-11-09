@@ -196,7 +196,8 @@
           value = _contact.emails[indexPath.row];
           [cell.editTextfield setKeyboardType:UIKeyboardTypeEmailAddress];
         }
-
+        if ([value hasPrefix:@" "])
+          value = [value substringFromIndex:1];
         [cell setAddress:value];
 
         return cell;

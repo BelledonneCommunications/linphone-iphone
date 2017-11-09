@@ -52,12 +52,17 @@
 }
 
 + (Contact *)getContact:(NSString *)address {
-	if (LinphoneManager.instance.fastAddressBook != nil) {
-		@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
-			return [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
-		}
-	}
-	return nil;
+
+  for (id key in LinphoneManager.instance.fastAddressBook.addressBookMap) {
+    Contact *contact =
+        (Contact *)[LinphoneManager.instance.fastAddressBook.addressBookMap
+            objectForKey:key];
+    if ([contact.sipAddresses count]) {
+      if ([contact.sipAddresses containsObject:address])
+        return contact;
+    }
+  }
+  return nil;
 }
 
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address {
