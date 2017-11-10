@@ -1046,8 +1046,8 @@ void linphone_core_enable_logs(FILE *file){
 }
 
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
-	linphone_core_set_log_level(ORTP_MESSAGE);
 	linphone_core_set_log_handler(logfunc);
+	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
 void linphone_core_disable_logs(void){
