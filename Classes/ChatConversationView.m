@@ -717,30 +717,34 @@ void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *
 	view.addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController.tableView reloadData];
+	[view.tableController scrollToBottom:true];
 }
 
 void on_chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	[view updateParticipantLabel];
 	if (strcmp(linphone_chat_room_get_subject(view.chatRoom), "dummy subject") == 0) {
 		const LinphoneAddress *addr = linphone_participant_get_address(linphone_chat_room_get_participants(view.chatRoom)->data);
 		view.addressLabel.text = [FastAddressBook displayNameForAddress:addr];
 	}
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
+	[view updateParticipantLabel];
 	[view.tableController.tableView reloadData];
+	[view.tableController scrollToBottom:true];
 }
 
 void on_chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	[view updateParticipantLabel];
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
+	[view updateParticipantLabel];
 	[view.tableController.tableView reloadData];
+	[view.tableController scrollToBottom:true];
 }
 
 void on_chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController.tableView reloadData];
+	[view.tableController scrollToBottom:true];
 }
 
 void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
