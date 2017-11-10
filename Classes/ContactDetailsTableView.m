@@ -75,12 +75,16 @@
 - (void)addEntry:(UITableView *)tableview section:(NSInteger)section animated:(BOOL)animated value:(NSString *)value {
 	bool added = FALSE;
 	if (section == ContactSections_Number) {
+		if ([_contact.phones count] ==
+			[_contact.person.phoneNumbers count])
 		added = [_contact addPhoneNumber:value];
 	} else if (section == ContactSections_Sip) {
           if ([_contact.sipAddresses count] ==
               [_contact.person.instantMessageAddresses count])
             added = [_contact addSipAddress:value];
         } else if (section == ContactSections_Email) {
+			if ([_contact.emails count] ==
+				[_contact.person.emailAddresses count])
           added = [_contact addEmail:value];
         }
         if (added) {
