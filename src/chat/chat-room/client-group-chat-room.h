@@ -35,7 +35,7 @@ public:
 	ClientGroupChatRoom (
 		const std::shared_ptr<Core> &core,
 		const Address &me,
-		const std::string &uri,
+		const std::string &factoryUri,
 		const std::string &subject
 	);
 

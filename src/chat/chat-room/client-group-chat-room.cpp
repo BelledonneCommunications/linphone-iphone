@@ -69,7 +69,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	return session;
 }
 
-void ClientGroupChatRoomPrivate::notifyReceived (string body) {
+void ClientGroupChatRoomPrivate::notifyReceived (const string &body) {
 	L_Q_T(RemoteConference, qConference);
 	qConference->getPrivate()->eventHandler->notifyReceived(body);
 }
@@ -79,11 +79,11 @@ void ClientGroupChatRoomPrivate::notifyReceived (string body) {
 ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::shared_ptr<Core> &core,
 	const Address &me,
-	const std::string &uri,
+	const std::string &factoryUri,
 	const std::string &subject
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, Address()), RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
-	dConference->focus = make_shared<Participant>(Address(uri));
+	dConference->focus = make_shared<Participant>(Address(factoryUri));
 	RemoteConference::setSubject(subject);
 }
 

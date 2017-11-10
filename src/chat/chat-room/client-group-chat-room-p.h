@@ -33,7 +33,7 @@ public:
 
 	std::list<Address> cleanAddressesList (const std::list<Address> &addresses) const;
 	std::shared_ptr<CallSession> createSession ();
-	void notifyReceived (std::string body);
+	void notifyReceived (const std::string &body);
 
 private:
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
