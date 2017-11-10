@@ -1263,7 +1263,7 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 		md->streams[mainAudioStreamIndex].payloads = l;
 		if (audioStream && audioStream->ms.sessions.rtp_session) {
 			md->streams[mainAudioStreamIndex].rtp_ssrc = rtp_session_get_send_ssrc(audioStream->ms.sessions.rtp_session);
-			strncpy(md->streams[mainAudioStreamIndex].rtcp_cname, conference.getMe()->getAddress().asStringUriOnly().c_str(), sizeof(md->streams[mainAudioStreamIndex].rtcp_cname));
+			strncpy(md->streams[mainAudioStreamIndex].rtcp_cname, conference.getMe()->getAddress().asString().c_str(), sizeof(md->streams[mainAudioStreamIndex].rtcp_cname));
 		}
 		else
 			lWarning() << "Cannot get audio local ssrc for CallSession [" << q << "]";
@@ -1295,7 +1295,7 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 		md->streams[mainVideoStreamIndex].payloads = l;
 		if (videoStream && videoStream->ms.sessions.rtp_session) {
 			md->streams[mainVideoStreamIndex].rtp_ssrc = rtp_session_get_send_ssrc(videoStream->ms.sessions.rtp_session);
-			strncpy(md->streams[mainVideoStreamIndex].rtcp_cname, conference.getMe()->getAddress().asStringUriOnly().c_str(), sizeof(md->streams[mainVideoStreamIndex].rtcp_cname));
+			strncpy(md->streams[mainVideoStreamIndex].rtcp_cname, conference.getMe()->getAddress().asString().c_str(), sizeof(md->streams[mainVideoStreamIndex].rtcp_cname));
 		} else
 			lWarning() << "Cannot get video local ssrc for CallSession [" << q << "]";
 		if (mainVideoStreamIndex > maxIndex)
@@ -1327,7 +1327,7 @@ void MediaSessionPrivate::makeLocalMediaDescription () {
 		md->streams[mainTextStreamIndex].payloads = l;
 		if (textStream && textStream->ms.sessions.rtp_session) {
 			md->streams[mainTextStreamIndex].rtp_ssrc = rtp_session_get_send_ssrc(textStream->ms.sessions.rtp_session);
-			strncpy(md->streams[mainTextStreamIndex].rtcp_cname, conference.getMe()->getAddress().asStringUriOnly().c_str(), sizeof(md->streams[mainTextStreamIndex].rtcp_cname));
+			strncpy(md->streams[mainTextStreamIndex].rtcp_cname, conference.getMe()->getAddress().asString().c_str(), sizeof(md->streams[mainTextStreamIndex].rtcp_cname));
 		} else
 			lWarning() << "Cannot get text local ssrc for CallSession [" << q << "]";
 		if (mainTextStreamIndex > maxIndex)
@@ -2201,7 +2201,7 @@ void MediaSessionPrivate::initializeAudioStream () {
 		rtp_session_enable_network_simulation(audioStream->ms.sessions.rtp_session, &core->net_conf.netsim_params);
 		applyJitterBufferParams(audioStream->ms.sessions.rtp_session, LinphoneStreamTypeAudio);
 		string userAgent = linphone_core_get_user_agent(core);
-		audio_stream_set_rtcp_information(audioStream, conference.getMe()->getAddress().asStringUriOnly().c_str(), userAgent.c_str());
+		audio_stream_set_rtcp_information(audioStream, conference.getMe()->getAddress().asString().c_str(), userAgent.c_str());
 		rtp_session_set_symmetric_rtp(audioStream->ms.sessions.rtp_session, linphone_core_symmetric_rtp_enabled(core));
 		setupDtlsParams(&audioStream->ms);
 
@@ -2354,7 +2354,7 @@ void MediaSessionPrivate::initializeVideoStream () {
 		rtp_session_enable_network_simulation(videoStream->ms.sessions.rtp_session, &core->net_conf.netsim_params);
 		applyJitterBufferParams(videoStream->ms.sessions.rtp_session, LinphoneStreamTypeVideo);
 		string userAgent = linphone_core_get_user_agent(core);
-		video_stream_set_rtcp_information(videoStream, conference.getMe()->getAddress().asStringUriOnly().c_str(), userAgent.c_str());
+		video_stream_set_rtcp_information(videoStream, conference.getMe()->getAddress().asString().c_str(), userAgent.c_str());
 		rtp_session_set_symmetric_rtp(videoStream->ms.sessions.rtp_session, linphone_core_symmetric_rtp_enabled(core));
 		setupDtlsParams(&videoStream->ms);
 		/* Initialize zrtp even if we didn't explicitely set it, just in case peer offers it */

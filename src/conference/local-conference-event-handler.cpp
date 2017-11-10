@@ -97,7 +97,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) 
 		UserType::EndpointSequence endpoints;
 		user.setRoles(roles);
 		user.setEndpoint(endpoints);
-		user.setEntity(participant->getAddress().asStringUriOnly());
+		user.setEntity(participant->getAddress().asString());
 		user.getRoles()->getEntry().push_back(participant->isAdmin() ? "admin" : "participant");
 		user.setState(StateType::full);
 

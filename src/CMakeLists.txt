@@ -23,6 +23,8 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
+	address/gruu-address-p.h
+	address/gruu-address.h
 	address/simple-address-p.h
 	address/simple-address.h
 	c-wrapper/c-wrapper.h
@@ -143,6 +145,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 
 set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	address/address.cpp
+	address/gruu-address.cpp
 	address/simple-address.cpp
 	c-wrapper/api/c-address.cpp
 	c-wrapper/api/c-call-cbs.cpp

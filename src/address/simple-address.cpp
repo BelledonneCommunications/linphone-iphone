@@ -109,9 +109,4 @@ string SimpleAddress::asString () const {
 	return tmpAddress.asString();
 }
 
-string SimpleAddress::asStringUriOnly () const {
-	Address tmpAddress(*this);
-	return tmpAddress.asStringUriOnly();
-}
-
 LINPHONE_END_NAMESPACE
