@@ -317,6 +317,8 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 		return;
 	}
 
+	dConference->participants.remove(participant);
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
@@ -324,8 +326,6 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
-
-	dConference->participants.remove(participant);
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
