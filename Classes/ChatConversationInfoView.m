@@ -120,27 +120,44 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_set_subject(_room, _nameLabel.text.UTF8String);
 
 	// Add participants if necessary
+	bctbx_list_t *addedPartipants = NULL;
 	for (NSString *uri in _contacts.allKeys) {
 		if ([_oldContacts objectForKey:uri])
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
-		linphone_chat_room_add_participant(_room, addr);
-		linphone_address_unref(addr);
+		if (addedPartipants)
+			addedPartipants = bctbx_list_append(addedPartipants, addr);
+		else
+			addedPartipants = bctbx_list_new(addr);
+	}
+	if (addedPartipants) {
+		linphone_chat_room_add_participants(_room, addedPartipants);
+		bctbx_list_free_with_data(addedPartipants, (void (*)(void *))linphone_address_unref);
 	}
 
+
 	// Remove participants if necessary
+	bctbx_list_t *removedPartipants = NULL;
 	for (NSString *uri in _oldContacts.allKeys) {
 		if ([_contacts objectForKey:uri])
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
-		LinphoneParticipant *participant = linphone_chat_room_find_participant(_room, addr);
+		LinphoneParticipant *participant = linphone_participant_ref(linphone_chat_room_find_participant(_room, addr));
 		if (!participant)
 			continue;
 
-		linphone_chat_room_remove_participant(_room, participant);
+		if (removedPartipants)
+			removedPartipants = bctbx_list_append(removedPartipants, participant);
+		else
+			removedPartipants = bctbx_list_new(participant);
+
 		linphone_address_unref(addr);
+	}
+	if (removedPartipants) {
+		linphone_chat_room_remove_participants(_room, removedPartipants);
+		bctbx_list_free_with_data(removedPartipants, (void (*)(void *))linphone_participant_unref);
 	}
 
 	// add admins if necessary
