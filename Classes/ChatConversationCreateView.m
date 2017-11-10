@@ -58,6 +58,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	_waitView.hidden = YES;
 	if(_tableController.contactsGroup.count == 0) {
 		if (!_isForEditing)
 			_nextButton.enabled = FALSE;
@@ -76,12 +77,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - Chat room functions
 
 void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	ChatConversationCreateView *view = (__bridge ChatConversationCreateView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	switch (newState) {
 		case LinphoneChatRoomStateCreated:
 			LOGI(@"Chat room [%p] created on server.", cr);
-			[(__bridge ChatConversationCreateView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) onChatRoomCreated:cr];
+			[view onChatRoomCreated:cr];
 			break;
 		case LinphoneChatRoomStateCreationFailed:
+			view.waitView.hidden = YES;
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			break;
 		default:
@@ -91,11 +94,13 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 
 - (void)onChatRoomCreated:(LinphoneChatRoom *)cr {
 	ChatConversationView *view = VIEW(ChatConversationView);
+	_waitView.hidden = YES;
 	view.chatRoom = cr;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 - (void)createChatRoom {
+	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, "dummy subject");
 	NSString *addr = _tableController.contactsDict.allKeys[0];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);

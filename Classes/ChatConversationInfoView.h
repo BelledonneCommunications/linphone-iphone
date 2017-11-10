@@ -27,6 +27,7 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *addButton;
 @property (weak, nonatomic) IBOutlet UITextField *nameLabel;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 - (IBAction)onNextClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;

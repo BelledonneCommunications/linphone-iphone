@@ -59,6 +59,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	_waitView.hidden = YES;
 	_nameLabel.text = _room && linphone_chat_room_get_subject(_room)
 		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 		: @"";
@@ -90,6 +91,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - next functions
 
 - (void)onCreate {
+	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, _nameLabel.text.UTF8String);
 	if(!room) {
 		return;
@@ -282,23 +284,26 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - chat room callbacks
 
 - (void)goToChatRoom:(LinphoneChatRoom *)cr {
+	_waitView.hidden = YES;
 	ChatConversationView *view = VIEW(ChatConversationView);
 	view.chatRoom = cr;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	switch (newState) {
 		case LinphoneChatRoomStateCreated:
 			LOGI(@"Chat room [%p] created on server.", cr);
-			[(__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) goToChatRoom:cr];
+			[view goToChatRoom:cr];
 			break;
 		case LinphoneChatRoomStateCreationFailed:
+			view.waitView.hidden = YES;
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			break;
 		case LinphoneChatRoomStateTerminated:
 			LOGI(@"Chat room [%p] has been terminated.", cr);
-			[(__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) goToChatRoom:cr];
+			[view goToChatRoom:cr];
 			break;
 		default:
 			break;

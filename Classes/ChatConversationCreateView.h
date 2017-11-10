@@ -19,13 +19,12 @@
 @property(strong, nonatomic) IBOutlet ChatConversationCreateTableView *tableController;
 @property(strong, nonatomic) IBOutlet ChatConversationCreateCollectionViewController *collectionController;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
-
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
-
 @property (weak, nonatomic) IBOutlet UIIconButton *allButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *linphoneButton;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 @property(nonatomic) Boolean isForEditing;
 
