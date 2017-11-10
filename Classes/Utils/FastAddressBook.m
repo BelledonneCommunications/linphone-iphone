@@ -52,17 +52,12 @@
 }
 
 + (Contact *)getContact:(NSString *)address {
-
-  for (id key in LinphoneManager.instance.fastAddressBook.addressBookMap) {
-    Contact *contact =
-        (Contact *)[LinphoneManager.instance.fastAddressBook.addressBookMap
-            objectForKey:key];
-    if ([contact.sipAddresses count]) {
-      if ([contact.sipAddresses containsObject:address])
-        return contact;
-    }
-  }
-  return nil;
+	if (LinphoneManager.instance.fastAddressBook != nil) {
+		@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
+			return [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
+		}
+	}
+  	return nil;
 }
 
 + (Contact *)getContactWithAddress:(const LinphoneAddress *)address {
@@ -415,12 +410,12 @@ void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void 
   @try {
     NSLog(@"Success %d",
           [store executeSaveRequest:saveRequest error:&saveError]);
-    [_addressBookMap setObject:contact forKey:cNContact];
   } @catch (NSException *exception) {
     NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@",
           [exception description]);
     return FALSE;
   }
+	[self reloadAllContacts];
   return TRUE;
 }
 
