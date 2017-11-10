@@ -373,12 +373,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	_infoButton.hidden = (linphone_chat_room_get_nb_participants(_chatRoom) == 1) || !_backToCallButton.hidden || _tableController.tableView.isEditing;
+	_infoButton.hidden = (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") == 0) || !_backToCallButton.hidden || _tableController.tableView.isEditing;
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 
 - (void)updateParticipantLabel {
-	if (linphone_chat_room_get_nb_participants(_chatRoom) == 1) {
+	if (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") == 0) {
 		_particpantsLabel.hidden = TRUE;
 	} else {
 		_particpantsLabel.hidden = FALSE;

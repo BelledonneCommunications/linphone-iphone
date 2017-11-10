@@ -59,17 +59,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	if (_room) {
-		_nameLabel.text = linphone_chat_room_get_subject(_room)
-			? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
-			: @"";
-	}
-
+	_nameLabel.text = _room && linphone_chat_room_get_subject(_room)
+		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
+		: @"";
 	_nextButton.enabled = _nameLabel.text.length > 0 && _contacts.count > 0;
 	LinphoneParticipant *me = _room && (linphone_chat_room_get_state(_room) == LinphoneChatRoomStateCreated)
 		? linphone_chat_room_get_me(_room)
 		: NULL;
-
 	_imAdmin = me
 		? linphone_participant_is_admin(me)
 		: false;
@@ -81,7 +77,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	CGFloat height = _quitButton.hidden
 		? self.view.frame.size.height - _tableView.frame.origin.y
 		: _quitButton.frame.origin.y - _tableView.frame.origin.y - 10;
-
 	[_tableView setFrame:CGRectMake(
 		_tableView.frame.origin.x,
 		_tableView.frame.origin.y,

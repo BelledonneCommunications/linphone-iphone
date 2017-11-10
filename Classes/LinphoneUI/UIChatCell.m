@@ -64,14 +64,15 @@
 		return;
 	}
 
-	if(linphone_chat_room_get_nb_participants(chatRoom) > 1) {
-		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(chatRoom) ? linphone_chat_room_get_subject(chatRoom) : "dummy subject"];
+	const char *subject = linphone_chat_room_get_subject(chatRoom) ?: "dummy subject";
+	if (strcmp(subject, "dummy subject") != 0) {
+		_addressLabel.text = [NSString stringWithUTF8String:subject];
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	} else {
-		if(linphone_chat_room_get_participants(chatRoom) != NULL) {
+		if (linphone_chat_room_get_participants(chatRoom) != NULL) {
 			LinphoneParticipant *participant = linphone_chat_room_get_participants(chatRoom)->data;
 			const LinphoneAddress *addr = linphone_participant_get_address(participant);
-			if(addr) {
+			if (addr) {
 				[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 				[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 			}
