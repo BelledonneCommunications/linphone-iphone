@@ -77,6 +77,8 @@ private:
 	int type = Variant::Invalid;
 };
 
+// -----------------------------------------------------------------------------
+
 Variant::Variant () {
 	// Private can exist. (placement new)
 	if (!mPrivate)

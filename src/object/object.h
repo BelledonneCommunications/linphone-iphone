@@ -41,8 +41,6 @@ class LINPHONE_PUBLIC Object :
 	friend class ObjectFactory;
 
 public:
-	virtual ~Object () = default;
-
 	std::shared_ptr<Object> getSharedFromThis ();
 	std::shared_ptr<const Object> getSharedFromThis () const;
 

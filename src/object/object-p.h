@@ -20,12 +20,10 @@
 #ifndef _OBJECT_P_H_
 #define _OBJECT_P_H_
 
-#include <memory>
 #include <unordered_map>
 
 #include "base-object-p.h"
 #include "object.h"
-#include "variant/variant.h"
 
 // =============================================================================
 

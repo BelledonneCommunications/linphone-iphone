@@ -20,8 +20,6 @@
 #include "logger/logger.h"
 #include "object-p.h"
 
-#include "object.h"
-
 // =============================================================================
 
 using namespace std;

@@ -94,10 +94,10 @@ string Utils::toString (const void *val) {
 // -----------------------------------------------------------------------------
 
 #define STRING_TO_NUMBER_IMPL(TYPE, SUFFIX) \
-	TYPE Utils::sto ## SUFFIX(const string &str, size_t *idx, int base) { \
+	TYPE Utils::sto ## SUFFIX (const string &str, size_t *idx, int base) { \
 		return sto ## SUFFIX(str.c_str(), idx, base); \
 	} \
-	TYPE Utils::sto ## SUFFIX(const char *str, size_t *idx, int base) { \
+	TYPE Utils::sto ## SUFFIX (const char *str, size_t *idx, int base) { \
 		char *p; \
 		TYPE v = strto ## SUFFIX(str, &p, base); \
 		if (idx) \
