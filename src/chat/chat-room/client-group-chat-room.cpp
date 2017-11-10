@@ -81,7 +81,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const Address &me,
 	const std::string &uri,
 	const std::string &subject
-) : ChatRoom(*new ClientGroupChatRoomPrivate, core, me), RemoteConference(core->getCCore(), me, nullptr) {
+) : ChatRoom(*new ClientGroupChatRoomPrivate, core, Address()), RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = make_shared<Participant>(Address(uri));
 	RemoteConference::setSubject(subject);
