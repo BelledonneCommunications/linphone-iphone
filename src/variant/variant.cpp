@@ -108,8 +108,7 @@ Variant::Variant (const Variant &src) {
 Variant::Variant (Variant &&src) {
 	// Don't call placement new.
 	L_ASSERT(!mPrivate);
-	mPrivate = src.mPrivate;
-	src.mPrivate = nullptr;
+	::swap(mPrivate, src.mPrivate);
 }
 
 Variant::Variant (int value) : Variant(Int) {
@@ -220,13 +219,7 @@ Variant &Variant::operator= (const Variant &variant) {
 }
 
 Variant &Variant::operator= (Variant &&variant) {
-	// Unset old d.
-	delete mPrivate;
-
-	// Set new d.
-	mPrivate = variant.mPrivate;
-	variant.mPrivate = nullptr;
-
+	::swap(mPrivate, variant.mPrivate);
 	return *this;
 }
 
