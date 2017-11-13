@@ -432,7 +432,7 @@ class Translator:
 				else:
 					strPara += part.translate(self)
 			except TranslationError as e:
-				print('error: {0}'.format(e.msg()))
+				print('warning: {0}'.format(e.msg()))
 		
 		return strPara
 	
@@ -486,7 +486,7 @@ class ReferenceTranslationError(TranslationError):
 		Exception.__init__(self, refName)
 	
 	def msg(self):
-		return '{0} reference could not been translated'.format(self.args[0])
+		return '{0} reference could not be translated'.format(self.args[0])
 
 
 class DoxygenTranslator(Translator):
