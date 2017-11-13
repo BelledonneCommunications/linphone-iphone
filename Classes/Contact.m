@@ -468,12 +468,14 @@
 
 - (BOOL)removeSipAddressAtIndex:(NSInteger)index {
 	BOOL ret = FALSE;
-	if (_person) {
+	if (_person ) {
           NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>
               *tmpSipAddress = [_person.instantMessageAddresses mutableCopy];
-          [tmpSipAddress removeObjectAtIndex:index];
-          [_person setValue:tmpSipAddress
-                     forKey:CNContactInstantMessageAddressesKey];
+		if([tmpSipAddress count] > index){
+			  [tmpSipAddress removeObjectAtIndex:index];
+			  [_person setValue:tmpSipAddress
+						 forKey:CNContactInstantMessageAddressesKey];
+		}
           ret = TRUE;
         } else {
           LinphoneAddress *addr = linphone_core_interpret_url(
@@ -498,8 +500,10 @@
         if (_person && _person.phoneNumbers.count > 0) {
           NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *tmpPhoneNumbers =
               [_person.phoneNumbers mutableCopy];
-          [tmpPhoneNumbers removeObjectAtIndex:index];
-          [_person setValue:tmpPhoneNumbers forKey:CNContactPhoneNumbersKey];
+			if([tmpPhoneNumbers count] > index){
+			  [tmpPhoneNumbers removeObjectAtIndex:index];
+			  [_person setValue:tmpPhoneNumbers forKey:CNContactPhoneNumbersKey];
+			}
           ret = TRUE;
         } else {
           const char *phone = ((NSString *)_phones[index]).UTF8String;
@@ -517,12 +521,14 @@
 
 - (BOOL)removeEmailAtIndex:(NSInteger)index {
 	BOOL ret = FALSE;
-	if (_person) {
+	if (_person && _person.phoneNumbers.count > 0) {
           NSMutableArray<CNLabeledValue<NSString *> *> *tmpEmailAddresses =
               [_person.emailAddresses mutableCopy];
+		if([tmpEmailAddresses count] > index){
           [tmpEmailAddresses removeObjectAtIndex:index];
           [_person setValue:tmpEmailAddresses
                      forKey:CNContactEmailAddressesKey];
+		}
           ret = TRUE;
         } else {
           LOGW(@"%s: Cannot do it when using LinphoneFriend, skipping",

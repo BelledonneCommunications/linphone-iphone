@@ -388,16 +388,20 @@
       [[store unifiedContactWithIdentifier:contact.identifier
                                keysToFetch:keysToFetch
                                      error:nil] mutableCopy];
-  [mCNContact setGivenName:contact.firstName];
-  [mCNContact setFamilyName:contact.lastName];
-  [mCNContact setNickname:contact.displayName];
-  [mCNContact setPhoneNumbers:contact.person.phoneNumbers];
-  [mCNContact setEmailAddresses:contact.person.emailAddresses];
-  [mCNContact
-      setInstantMessageAddresses:contact.person.instantMessageAddresses];
-  [mCNContact setImageData:UIImageJPEGRepresentation(contact.avatar, 0.9f)];
+	if(mCNContact == NULL){
+		[saveRequest addContact:[cNContact mutableCopy] toContainerWithIdentifier:nil];
+	}else{
+	  [mCNContact setGivenName:contact.firstName];
+	  [mCNContact setFamilyName:contact.lastName];
+	  [mCNContact setNickname:contact.displayName];
+	  [mCNContact setPhoneNumbers:contact.person.phoneNumbers];
+	  [mCNContact setEmailAddresses:contact.person.emailAddresses];
+	  [mCNContact
+		  setInstantMessageAddresses:contact.person.instantMessageAddresses];
+	  [mCNContact setImageData:UIImageJPEGRepresentation(contact.avatar, 0.9f)];
 
-  [saveRequest updateContact:mCNContact];
+	  [saveRequest updateContact:mCNContact];
+	}
   NSError *saveError;
   @try {
     NSLog(@"Success %d",

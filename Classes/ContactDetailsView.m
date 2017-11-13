@@ -430,13 +430,10 @@ static UICompositeViewDescription *compositeDescription = nil;
                 if (_tmpContact.emails != NULL) {
                   while (_tmpContact.emails.count > nbEmail) {
                     [_contact addEmail:_tmpContact.emails[nbEmail]];
-                    //	[_contact
-                    // addPhoneNumber:((CNLabeledValue<CNPhoneNumber*>*)_tmpContact.phoneNumbers[nbPhone]).value.stringValue];
                     nbEmail++;
                   }
                 }
-                [self saveData];
-                //[self.tableController.tableView reloadData];
+     //           [self saveData];
         } else {
           [LinphoneManager.instance.fastAddressBook deleteContact:_contact];
         }
