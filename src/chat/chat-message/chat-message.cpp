@@ -489,7 +489,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 	}
 
 	if ((currentRecvStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
-		lInfo() << "File upload step already done, skipping";
+		lInfo() << "File download step already done, skipping";
 	} else {
 		// This will check if internal content is FileTransfer and make the appropriate changes
 		fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
