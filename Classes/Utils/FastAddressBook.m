@@ -28,9 +28,6 @@
 	CNContactStore* store;
 }
 
-// static void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef
-// info, void *context);
-
 + (UIImage *)imageForContact:(Contact *)contact {
 	@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
 		UIImage *retImage = [contact avatar];
@@ -236,11 +233,6 @@
     [_addressBookMap setObject:contact
                         forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
   }
-}
-
-void sync_address_book(ABAddressBookRef addressBook, CFDictionaryRef info, void *context) {
-	FastAddressBook *fastAddressBook = (__bridge FastAddressBook *)context;
-        [fastAddressBook reloadAllContacts];
 }
 
 #pragma mark - Tools
