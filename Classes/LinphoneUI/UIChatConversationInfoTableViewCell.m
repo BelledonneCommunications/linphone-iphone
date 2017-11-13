@@ -36,7 +36,7 @@
 }
 
 - (IBAction)onDelete:(id)sender {
-	[_controllerView.contacts removeObjectForKey:_uri];
+	[_controllerView.contacts removeObject:_uri];
 	if ([_controllerView.admins containsObject:_uri])
 	   [_controllerView.admins removeObject:_uri];
 

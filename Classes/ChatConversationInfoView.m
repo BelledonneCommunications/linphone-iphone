@@ -52,7 +52,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_tableView.delegate	= self;
 	_admins = [[NSMutableArray alloc] init];
 	_oldAdmins = [[NSMutableArray alloc] init];
-	_oldContacts = [[NSMutableDictionary alloc] init];
+	_oldContacts = [[NSMutableArray alloc] init];
 	_room = NULL;
 }
 
@@ -85,6 +85,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 		height
 	)];
 
+	if (_room) {
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
+		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
+		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
+		linphone_chat_room_cbs_set_participant_added(cbs, chat_room_participant_added);
+		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
+		linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, chat_room_participant_admin_status_changed);
+		linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+	}
+
 	[_tableView reloadData];
 }
 
@@ -100,7 +110,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
 	bctbx_list_t *addresses = NULL;
-	for(NSString *addr in _contacts.allKeys) {
+	for(NSString *addr in _contacts) {
 		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
 		if (!linphoneAddress)
 			continue;
@@ -123,8 +133,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Add participants if necessary
 	bctbx_list_t *addedPartipants = NULL;
-	for (NSString *uri in _contacts.allKeys) {
-		if ([_oldContacts objectForKey:uri])
+	for (NSString *uri in _contacts) {
+		if ([_oldContacts containsObject:uri])
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
@@ -141,8 +151,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	// Remove participants if necessary
 	bctbx_list_t *removedPartipants = NULL;
-	for (NSString *uri in _oldContacts.allKeys) {
-		if ([_contacts objectForKey:uri])
+	for (NSString *uri in _oldContacts) {
+		if ([_contacts containsObject:uri])
 			continue;
 
 		LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
@@ -204,8 +214,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (IBAction)onBackClick:(id)sender {
 	if(_create) {
 		ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
-		view.tableController.contactsDict = _contacts;
-		view.tableController.contactsGroup = [[_contacts allKeys] mutableCopy];
+		view.tableController.contactsGroup = [_contacts mutableCopy];
 		view.tableController.notFirstTime = TRUE;
 		view.isForEditing = FALSE;
 		[PhoneMainView.instance popToView:view.compositeViewDescription];
@@ -216,9 +225,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onQuitClick:(id)sender {
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
-	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
-	linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 	linphone_chat_room_leave(_room);
 }
 
@@ -226,8 +232,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.tableController.notFirstTime = TRUE;
 	view.isForEditing = !_create;
-	view.tableController.contactsDict = _contacts;
-	view.tableController.contactsGroup = [[_contacts allKeys] mutableCopy];
+	view.tableController.contactsGroup = [_contacts mutableCopy];
 	[PhoneMainView.instance popToView:view.compositeViewDescription];
 }
 
@@ -247,7 +252,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (cell == nil) {
 		cell = [[UIChatConversationInfoTableViewCell alloc] initWithIdentifier:kCellId];
 	}
-	cell.uri = _contacts.allKeys[indexPath.row];
+	cell.uri = _contacts[indexPath.row];
 	LinphoneAddress *addr = linphone_address_new(cell.uri.UTF8String);
 	cell.nameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	[cell.avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:YES withRoundedRadius:YES];
@@ -256,11 +261,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		cell.adminLabel.enabled	= FALSE;
 		cell.adminImage.image = [UIImage imageNamed:@"check_unselected.png"];
 	}
-	cell.adminButton.hidden = _create; // (linphone_chat_room_find_participant(_room, addr) == NULL) ?
-	linphone_address_unref(addr);
-
-	cell.adminButton.hidden = !_imAdmin;
+	cell.adminButton.hidden = _create || (!_imAdmin && !cell.adminLabel.enabled);
+	cell.adminButton.userInteractionEnabled = _imAdmin;
 	cell.removeButton.hidden = !_create && !_imAdmin;
+	linphone_address_unref(addr);
 
 	return cell;
 }
@@ -290,6 +294,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
+- (void)myAdminStatusChanged:(BOOL)admin {
+	NSString *message = admin
+		? NSLocalizedString(@"You are now an admin of the chat room", nil)
+		: NSLocalizedString(@"You are no longer an admin of the chat room", nil);
+
+	static UIAlertController *alertView;
+	// avoid having multiple popups
+	[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
+	alertView = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@", message]
+																	   message:nil
+											 preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	[alertView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:alertView animated:YES completion:nil];
+}
+
 void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	switch (newState) {
@@ -308,6 +331,48 @@ void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newStat
 		default:
 			break;
 	}
+}
+
+void chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	view.nameLabel.text = [NSString stringWithUTF8String:linphone_event_log_get_subject(event_log)];
+}
+
+void chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+	[view.oldContacts addObject:participantAddress];
+	[view.contacts addObject:participantAddress];
+	[view.tableView reloadData];
+}
+
+void chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+	[view.oldContacts removeObject:participantAddress];
+	[view.contacts removeObject:participantAddress];
+	[view.tableView reloadData];
+}
+
+void chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
+
+	LinphoneParticipant *me = linphone_chat_room_get_me(cr);
+	if (me && linphone_address_equal(linphone_participant_get_address(me), linphone_event_log_get_participant_address(event_log))) {
+		[view myAdminStatusChanged:(linphone_event_log_get_type(event_log) == LinphoneEventLogTypeConferenceParticipantSetAdmin)];
+		[view viewWillAppear:TRUE];
+		return;
+	}
+
+	if (linphone_event_log_get_type(event_log) == LinphoneEventLogTypeConferenceParticipantSetAdmin) {
+		[view.admins addObject:participantAddress];
+		[view.oldAdmins addObject:participantAddress];
+	} else { // linphone_event_log_get_type(event_log) == LinphoneEventLogTypeConferenceParticipantUnsetAdmin
+		[view.admins removeObject:participantAddress];
+		[view.oldAdmins removeObject:participantAddress];
+	}
+	[view.tableView reloadData];
 }
 
 @end

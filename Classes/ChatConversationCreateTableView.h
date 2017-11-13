@@ -13,7 +13,6 @@
 @property(nonatomic) Boolean allFilter;
 @property(nonatomic) Boolean notFirstTime;
 @property(nonatomic, strong) NSMutableArray *contactsGroup;
-@property(nonatomic, strong) NSMutableDictionary *contactsDict;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIIconButton *controllerNextButton;
 

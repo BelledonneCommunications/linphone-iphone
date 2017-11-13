@@ -12,13 +12,13 @@
 
 @interface ChatConversationInfoView : UIViewController <UICompositeViewDelegate, UIGestureRecognizerDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource>
 
-@property(nonatomic, strong) NSMutableDictionary *contacts;
-@property(nonatomic, strong) NSMutableArray *admins;
 @property(nonatomic) BOOL create;
 @property(nonatomic) BOOL imAdmin;
-@property(nonatomic) NSString *oldSubject;
-@property(nonatomic, strong) NSMutableDictionary *oldContacts;
+@property(nonatomic, strong) NSMutableArray *contacts;
+@property(nonatomic, strong) NSMutableArray *admins;
+@property(nonatomic, strong) NSMutableArray *oldContacts;
 @property(nonatomic, strong) NSMutableArray *oldAdmins;
+@property(nonatomic) NSString *oldSubject;
 @property(nonatomic) LinphoneChatRoom *room;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;

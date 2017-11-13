@@ -517,16 +517,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onInfoClick:(id)sender {
-	NSMutableDictionary *contactsDict = [[NSMutableDictionary alloc] init];
+	NSMutableArray *contactsArray = [[NSMutableArray alloc] init];
 	NSMutableArray *admins = [[NSMutableArray alloc] init];
 	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 	while (participants) {
 		LinphoneParticipant *participant = (LinphoneParticipant *)participants->data;
-		NSString *name = [NSString stringWithUTF8String:linphone_address_get_display_name(linphone_participant_get_address(participant))
-						  ? linphone_address_get_display_name(linphone_participant_get_address(participant))
-					      : linphone_address_get_username(linphone_participant_get_address(participant))];
 		NSString *uri = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_participant_get_address(participant))];
-		[contactsDict setObject:name forKey:uri];
+		[contactsArray addObject:uri];
 
 		if(linphone_participant_is_admin(participant))
 		   [admins addObject:uri];
@@ -534,8 +531,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
 	view.create = FALSE;
-	view.contacts = [contactsDict mutableCopy];
-	view.oldContacts = [contactsDict mutableCopy];
+	view.contacts = [contactsArray mutableCopy];
+	view.oldContacts = [contactsArray mutableCopy];
 	view.admins = [admins mutableCopy];
 	view.oldAdmins = [admins mutableCopy];
 	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];

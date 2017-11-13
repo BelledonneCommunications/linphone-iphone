@@ -383,9 +383,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)mailComposeController:(MFMailComposeViewController *)controller
 		  didFinishWithResult:(MFMailComposeResult)result
 						error:(NSError *)error {
-	[controller dismissViewControllerAnimated:TRUE
-								   completion:^{
-								   }];
+	[controller dismissViewControllerAnimated:TRUE completion:nil];
 	[self.navigationController setNavigationBarHidden:TRUE animated:FALSE];
 }
 

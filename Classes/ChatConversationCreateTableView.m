@@ -32,7 +32,6 @@
 	}
 	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
-	_contactsDict = [[NSMutableDictionary alloc] init];
 	_allFilter = TRUE;
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
@@ -146,14 +145,13 @@
 	if(cell.selectedImage.hidden) {
 		if(![_contactsGroup containsObject:cell.addressLabel.text]) {
 			[_contactsGroup addObject:cell.addressLabel.text];
-			_contactsDict[cell.addressLabel.text] = cell.displayNameLabel.text;
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:cell.addressLabel.text];
 		}
 	} else if([_contactsGroup containsObject:cell.addressLabel.text]) {
 		index = (NSInteger)[_contactsGroup indexOfObject:cell.addressLabel.text];
 		[_contactsGroup removeObject:cell.addressLabel.text];
-		if(index == _contactsGroup.count) index = index-1;
-		[_contactsDict removeObjectForKey:cell.addressLabel.text];
+		if(index == _contactsGroup.count)
+			index = index-1;
 	}
 	cell.selectedImage.hidden = !cell.selectedImage.hidden;
 	_controllerNextButton.enabled = (_contactsGroup.count > 0) || _isForEditing;

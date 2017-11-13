@@ -1011,9 +1011,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		static UIAlertController *alertView = nil;
 
 		// avoid having multiple popups
-		if ([alertView isBeingPresented]) {
-			[alertView dismissViewControllerAnimated:YES completion:nil];
-		}
+		[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
 
 		// dont pop up if we are in background, in any case we will refresh registers when entering
 		// the application again

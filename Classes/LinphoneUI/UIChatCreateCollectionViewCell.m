@@ -32,7 +32,6 @@
 
 - (void) onDelete {
 	[_controller.tableController.contactsGroup removeObject:_uri];
-	[_controller.tableController.contactsDict removeObjectForKey:_uri];
 	if (_controller.tableController.contactsGroup.count == 0) {
 		[UIView animateWithDuration:0.2
 							  delay:0

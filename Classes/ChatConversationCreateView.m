@@ -102,7 +102,7 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 - (void)createChatRoom {
 	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, "dummy subject");
-	NSString *addr = _tableController.contactsDict.allKeys[0];
+	NSString *addr = _tableController.contactsGroup[0];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
 	linphone_chat_room_cbs_set_state_changed(cbs, create_chat_room_state_changed);
@@ -115,7 +115,6 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 #pragma mark - Buttons signals
 
 - (IBAction)onBackClick:(id)sender {
-	[_tableController.contactsDict removeAllObjects];
 	[_tableController.contactsGroup removeAllObjects];
 	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 }
@@ -127,7 +126,7 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 	}
 
 	ChatConversationInfoView *view = VIEW(ChatConversationInfoView);
-	view.contacts = _tableController.contactsDict;
+	view.contacts = _tableController.contactsGroup;
 	view.create = !_isForEditing;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
