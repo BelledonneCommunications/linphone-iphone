@@ -132,8 +132,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = self.chatRoom;
-	if (linphone_chat_room_get_subject(_chatRoom) && strcmp(linphone_chat_room_get_subject(_chatRoom), "dummy subject") != 0)
+	if (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") != 0)
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+	else {
+		const LinphoneAddress *addr = linphone_participant_get_address(linphone_chat_room_get_participants(_chatRoom)->data);
+		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+	}
 
 	[self updateParticipantLabel];
 
@@ -247,8 +251,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self presentViewController:errView animated:YES completion:nil];
 		return;
 	}
-	[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	_addressLabel.accessibilityValue = _addressLabel.text;
 }
 
 - (BOOL)sendMessage:(NSString *)message withExterlBodyUrl:(NSURL *)externalUrl withInternalURL:(NSURL *)internalUrl {
@@ -719,10 +721,6 @@ void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *
 
 void on_chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	if (strcmp(linphone_chat_room_get_subject(view.chatRoom), "dummy subject") == 0) {
-		const LinphoneAddress *addr = linphone_participant_get_address(linphone_chat_room_get_participants(view.chatRoom)->data);
-		view.addressLabel.text = [FastAddressBook displayNameForAddress:addr];
-	}
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view updateParticipantLabel];
 	[view.tableController.tableView reloadData];
