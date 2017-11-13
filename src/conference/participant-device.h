@@ -20,27 +20,34 @@
 #ifndef _PARTICIPANT_DEVICE_H_
 #define _PARTICIPANT_DEVICE_H_
 
+#include <memory>
 #include <string>
 
-#include "address/address.h"
+#include "address/gruu-address.h"
 #include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallSession;
+
 class ParticipantDevice {
 public:
-	explicit ParticipantDevice (const Address &gruu);
+	ParticipantDevice ();
+	explicit ParticipantDevice (const GruuAddress &gruu);
 
 	bool operator== (const ParticipantDevice &device) const;
 
-	inline const Address &getGruu () const { 
-		return mGruu;
-	};
+	inline const GruuAddress &getGruu () const { return mGruu; }
+	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
+	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
+
+	bool isValid () const { return mGruu.isValid(); }
 
 private:
-	Address mGruu;
+	GruuAddress mGruu;
+	std::shared_ptr<CallSession> mSession;
 };
 
 LINPHONE_END_NAMESPACE

@@ -25,7 +25,9 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ParticipantDevice::ParticipantDevice (const Address &gruu) {
+ParticipantDevice::ParticipantDevice () {}
+
+ParticipantDevice::ParticipantDevice (const GruuAddress &gruu) {
 	mGruu = gruu;
 }
 

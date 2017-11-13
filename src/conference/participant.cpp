@@ -62,25 +62,42 @@ void ParticipantPrivate::setConferenceSubscribeEvent (LinphoneEvent *ev) {
 
 // -----------------------------------------------------------------------------
 
-const list<ParticipantDevice>::const_iterator ParticipantPrivate::findDevice (const Address &gruu) const {
-	ParticipantDevice device(gruu);
-	return find(devices.cbegin(), devices.cend(), device);
+shared_ptr<ParticipantDevice> ParticipantPrivate::findDevice (const GruuAddress &gruu) const {
+	for (const auto &device : devices) {
+		if (device->getGruu() == gruu)
+			return device;
+	}
+	return nullptr;
 }
 
-const list<ParticipantDevice> &ParticipantPrivate::getDevices () const {
+shared_ptr<ParticipantDevice> ParticipantPrivate::findDevice (const shared_ptr<const CallSession> &session) {
+	for (const auto &device : devices) {
+		if (device->getSession() == session)
+			return device;
+	}
+	return nullptr;
+}
+
+const list<shared_ptr<ParticipantDevice>> &ParticipantPrivate::getDevices () const {
 	return devices;
 }
 
-void ParticipantPrivate::addDevice (const Address &gruu) {
-	ParticipantDevice device(gruu);
-	if(findDevice(gruu) == devices.cend())
+shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const GruuAddress &gruu) {
+	if (!findDevice(gruu)) {
+		shared_ptr<ParticipantDevice> device = make_shared<ParticipantDevice>(gruu);
 		devices.push_back(device);
+		return device;
+	}
+	return nullptr;
 }
 
-void ParticipantPrivate::removeDevice (const Address &gruu) {
-	ParticipantDevice device(gruu);
-	if(findDevice(gruu) != devices.cend())
-		devices.remove(device);
+void ParticipantPrivate::removeDevice (const GruuAddress &gruu) {
+	for (auto it = devices.begin(); it != devices.end(); it++) {
+		if ((*it)->getGruu() == gruu) {
+			devices.erase(it);
+			return;
+		}
+	}
 }
 
 // =============================================================================

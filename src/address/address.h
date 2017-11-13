@@ -28,6 +28,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class AddressPrivate;
+class GruuAddress;
 class SimpleAddress;
 
 class LINPHONE_PUBLIC Address : public ClonableObject {
@@ -42,6 +43,7 @@ class LINPHONE_PUBLIC Address : public ClonableObject {
 public:
 	explicit Address (const std::string &address = "");
 	Address (const Address &src);
+	Address (const GruuAddress &src);
 	Address (const SimpleAddress &src);
 	~Address ();
 

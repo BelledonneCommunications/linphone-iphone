@@ -45,6 +45,9 @@ public:
 
 	bool isValid () const;
 
+	std::string getUrn () const;
+	void setUrn (const std::string &urn);
+
 	std::string asString () const override;
 
 private:

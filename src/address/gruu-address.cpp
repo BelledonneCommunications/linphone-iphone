@@ -31,28 +31,32 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-GruuAddress::GruuAddress (const string &address) : SimpleAddress(address) {
+GruuAddress::GruuAddress (const string &address) : SimpleAddress(*new GruuAddressPrivate) {
 	L_D();
 	Address tmpAddress(address);
 	if (tmpAddress.isValid()) {
 		if (!tmpAddress.hasUriParam("gr"))
 			return;
+		SimpleAddress base(address);
+		SimpleAddress::clone(base);
 		d->urn = tmpAddress.getUriParamValue("gr");
 		d->valid = true;
 	}
 }
 
-GruuAddress::GruuAddress (const GruuAddress &src) : SimpleAddress(src) {
+GruuAddress::GruuAddress (const GruuAddress &src) : SimpleAddress(*new GruuAddressPrivate) {
 	L_D();
+	SimpleAddress::clone(src);
 	d->urn = src.getPrivate()->urn;
 	d->valid = src.getPrivate()->valid;
 }
 
-GruuAddress::GruuAddress (const Address &src) : SimpleAddress(src) {
+GruuAddress::GruuAddress (const Address &src) : SimpleAddress(*new GruuAddressPrivate) {
 	L_D();
 	if (src.isValid()) {
 		if (!src.hasUriParam("gr"))
 			return;
+		SimpleAddress::clone(SimpleAddress(src));
 		d->urn = src.getUriParamValue("gr");
 		d->valid = true;
 	}
@@ -85,9 +89,19 @@ bool GruuAddress::isValid () const {
 	return d->valid;
 }
 
+string GruuAddress::getUrn () const {
+	L_D();
+	return d->urn;
+}
+
+void GruuAddress::setUrn (const string &urn) {
+	L_D();
+	d->urn = urn;
+}
+
 string GruuAddress::asString () const {
 	Address tmpAddress(*this);
-	return tmpAddress.asString();
+	return tmpAddress.asStringUriOnly();
 }
 
 LINPHONE_END_NAMESPACE

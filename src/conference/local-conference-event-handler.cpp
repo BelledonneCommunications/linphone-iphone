@@ -102,7 +102,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) 
 		user.setState(StateType::full);
 
 		for (const auto &device : participant->getPrivate()->getDevices()) {
-			const string &gruu = device.getGruu().asStringUriOnly();
+			const string &gruu = device->getGruu().asString();
 			EndpointType endpoint = EndpointType();
 			endpoint.setEntity(gruu);
 			endpoint.setState(StateType::full);
@@ -127,7 +127,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 	shared_ptr<Participant> p = conf->findParticipant(addr);
 	if (p) {
 		for (const auto &device : p->getPrivate()->getDevices()) {
-			const string &gruu = device.getGruu().asStringUriOnly();
+			const string &gruu = device->getGruu().asString();
 			EndpointType endpoint = EndpointType();
 			endpoint.setEntity(gruu);
 			endpoint.setState(StateType::full);

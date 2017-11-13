@@ -55,6 +55,10 @@ public:
 
 	virtual std::string asString () const;
 
+protected:
+	explicit SimpleAddress (SimpleAddressPrivate &p);
+	void clone (const SimpleAddress &src);
+
 private:
 	L_DECLARE_PRIVATE(SimpleAddress);
 };

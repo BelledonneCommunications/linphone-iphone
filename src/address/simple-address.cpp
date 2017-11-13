@@ -55,6 +55,8 @@ SimpleAddress::SimpleAddress (const Address &src) : ClonableObject(*new SimpleAd
 	d->domain = src.getDomain();
 }
 
+SimpleAddress::SimpleAddress (SimpleAddressPrivate &p) : ClonableObject(p) {}
+
 SimpleAddress &SimpleAddress::operator= (const SimpleAddress &src) {
 	L_D();
 	if (this != &src) {
@@ -106,7 +108,14 @@ bool SimpleAddress::setDomain (const string &domain) {
 
 string SimpleAddress::asString () const {
 	Address tmpAddress(*this);
-	return tmpAddress.asString();
+	return tmpAddress.asStringUriOnly();
+}
+
+void SimpleAddress::clone (const SimpleAddress &src) {
+	L_D();
+	d->scheme = src.getPrivate()->scheme;
+	d->username = src.getPrivate()->username;
+	d->domain = src.getPrivate()->domain;
 }
 
 LINPHONE_END_NAMESPACE

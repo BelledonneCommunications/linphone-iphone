@@ -48,10 +48,11 @@ public:
 	inline void setAddress (const SimpleAddress &newAddr) { addr = newAddr; }
 	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
 	inline void setContactAddress (const Address &contactAddr) { this->contactAddr = contactAddr; }
-	const std::list<ParticipantDevice>::const_iterator findDevice (const Address &gruu) const;
-	const std::list<ParticipantDevice> &getDevices () const;
-	void addDevice (const Address &gruu);
-	void removeDevice (const Address &gruu);
+	std::shared_ptr<ParticipantDevice> findDevice (const GruuAddress &gruu) const;
+	std::shared_ptr<ParticipantDevice> findDevice (const std::shared_ptr<const CallSession> &session);
+	const std::list<std::shared_ptr<ParticipantDevice>> &getDevices () const;
+	std::shared_ptr<ParticipantDevice> addDevice (const GruuAddress &gruu);
+	void removeDevice (const GruuAddress &gruu);
 
 private:
 	SimpleAddress addr;
@@ -59,7 +60,7 @@ private:
 	bool isAdmin = false;
 	LinphoneEvent *conferenceSubscribeEvent = nullptr;
 	std::shared_ptr<CallSession> session;
-	std::list<ParticipantDevice> devices;
+	std::list<std::shared_ptr<ParticipantDevice>> devices;
 
 	L_DECLARE_PUBLIC(Participant);
 };
