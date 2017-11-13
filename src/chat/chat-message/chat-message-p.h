@@ -139,6 +139,7 @@ private:
 	SalOp *salOp = nullptr;
 	SalCustomHeader *salCustomHeaders = nullptr;
 	unsigned char currentSendStep = Step::None;
+	unsigned char currentRecvStep = Step::None;
 	bool applyModifiers = true;
 	FileTransferChatMessageModifier fileTransferChatMessageModifier;
 

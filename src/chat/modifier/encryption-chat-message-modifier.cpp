@@ -93,6 +93,9 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::decode (
 		return ChatMessageModifier::Result::Skipped;
 
 	message->setIsSecured(true);
+	if (retval == 1)
+		return ChatMessageModifier::Result::Suspended;
+		
 	return ChatMessageModifier::Result::Done;
 }
 

@@ -450,27 +450,51 @@ LinphoneReason ChatMessagePrivate::receive () {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (internalContent.getContentType() == ContentType::Cpim) {
-		CpimChatMessageModifier ccmm;
-		ccmm.decode(q->getSharedFromThis(), errorCode);
+
+	if ((currentRecvStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
+		lInfo() << "Cpim step already done, skipping";
+	} else {
+		if (internalContent.getContentType() == ContentType::Cpim) {
+			CpimChatMessageModifier ccmm;
+			ccmm.decode(q->getSharedFromThis(), errorCode);
+		}
+		currentRecvStep |= ChatMessagePrivate::Step::Cpim;
 	}
 
-	EncryptionChatMessageModifier ecmm;
-	ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), errorCode);
-	if (result == ChatMessageModifier::Result::Error) {
-		/* Unable to decrypt message */
-		if (chatRoom)
-			chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
-		reason = linphone_error_code_to_reason(errorCode);
-		q->sendDeliveryNotification(reason);
-		return reason;
+	if ((currentRecvStep &ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
+		lInfo() << "Encryption step already done, skipping";
+	} else {
+		EncryptionChatMessageModifier ecmm;
+		ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), errorCode);
+		if (result == ChatMessageModifier::Result::Error) {
+			/* Unable to decrypt message */
+			if (chatRoom)
+				chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
+			reason = linphone_error_code_to_reason(errorCode);
+			q->sendDeliveryNotification(reason);
+			return reason;
+		} else if (result == ChatMessageModifier::Result::Suspended) {
+			currentRecvStep |= ChatMessagePrivate::Step::Encryption;
+			return LinphoneReasonNone;
+		}
+		currentRecvStep |= ChatMessagePrivate::Step::Encryption;
 	}
 
-	MultipartChatMessageModifier mcmm;
-	mcmm.decode(q->getSharedFromThis(), errorCode);
+	if ((currentRecvStep &ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
+		lInfo() << "Multipart step already done, skipping";
+	} else {
+		MultipartChatMessageModifier mcmm;
+		mcmm.decode(q->getSharedFromThis(), errorCode);
+		currentRecvStep |= ChatMessagePrivate::Step::Multipart;
+	}
 
-	// This will check if internal content is FileTransfer and make the appropriate changes
-	fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
+	if ((currentRecvStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
+		lInfo() << "File upload step already done, skipping";
+	} else {
+		// This will check if internal content is FileTransfer and make the appropriate changes
+		fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
+		currentRecvStep |= ChatMessagePrivate::Step::FileUpload;
+	}
 
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
