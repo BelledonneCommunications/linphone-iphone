@@ -24,6 +24,7 @@
 #include <string>
 
 #include "address/gruu-address.h"
+#include "linphone/types.h"
 #include "linphone/utils/general.h"
 
 // =============================================================================
@@ -36,6 +37,7 @@ class ParticipantDevice {
 public:
 	ParticipantDevice ();
 	explicit ParticipantDevice (const GruuAddress &gruu);
+	virtual ~ParticipantDevice ();
 
 	bool operator== (const ParticipantDevice &device) const;
 
@@ -43,11 +45,16 @@ public:
 	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
 	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
 
+	inline bool isSubscribedToConferenceEventPackage () const { return mConferenceSubscribeEvent != nullptr; }
+	LinphoneEvent *getConferenceSubscribeEvent () const { return mConferenceSubscribeEvent; }
+	void setConferenceSubscribeEvent (LinphoneEvent *ev);
+
 	bool isValid () const { return mGruu.isValid(); }
 
 private:
 	GruuAddress mGruu;
 	std::shared_ptr<CallSession> mSession;
+	LinphoneEvent *mConferenceSubscribeEvent = nullptr;
 };
 
 LINPHONE_END_NAMESPACE

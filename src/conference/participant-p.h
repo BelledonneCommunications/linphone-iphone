@@ -29,21 +29,14 @@
 #include "conference/session/call-session-listener.h"
 #include "conference/params/call-session-params.h"
 
-#include "linphone/types.h"
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ParticipantPrivate : public ObjectPrivate {
 public:
-	virtual ~ParticipantPrivate ();
-
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	inline std::shared_ptr<CallSession> getSession () const { return session; }
-	inline bool isSubscribedToConferenceEventPackage () const { return conferenceSubscribeEvent != nullptr; }
-	LinphoneEvent *getConferenceSubscribeEvent () const { return conferenceSubscribeEvent; }
-	void setConferenceSubscribeEvent (LinphoneEvent *ev);
 	inline void removeSession () { session.reset(); }
 	inline void setAddress (const SimpleAddress &newAddr) { addr = newAddr; }
 	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
@@ -58,7 +51,6 @@ private:
 	SimpleAddress addr;
 	Address contactAddr;
 	bool isAdmin = false;
-	LinphoneEvent *conferenceSubscribeEvent = nullptr;
 	std::shared_ptr<CallSession> session;
 	std::list<std::shared_ptr<ParticipantDevice>> devices;
 

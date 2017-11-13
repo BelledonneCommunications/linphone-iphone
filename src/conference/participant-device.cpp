@@ -19,6 +19,8 @@
 
 #include "participant-device.h"
 
+#include "linphone/event.h"
+
 using namespace std;
 
 // =============================================================================
@@ -31,8 +33,19 @@ ParticipantDevice::ParticipantDevice (const GruuAddress &gruu) {
 	mGruu = gruu;
 }
 
+ParticipantDevice::~ParticipantDevice () {
+	if (mConferenceSubscribeEvent)
+		linphone_event_unref(mConferenceSubscribeEvent);
+}
+
 bool ParticipantDevice::operator== (const ParticipantDevice &device) const {
 	return (mGruu == device.getGruu());
+}
+
+void ParticipantDevice::setConferenceSubscribeEvent (LinphoneEvent *ev) {
+	if (mConferenceSubscribeEvent)
+		linphone_event_unref(mConferenceSubscribeEvent);
+	mConferenceSubscribeEvent = linphone_event_ref(ev);
 }
 
 LINPHONE_END_NAMESPACE

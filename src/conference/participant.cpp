@@ -26,20 +26,11 @@
 #include "params/media-session-params.h"
 #include "session/media-session.h"
 
-#include "linphone/event.h"
-
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
-
-ParticipantPrivate::~ParticipantPrivate () {
-	if (conferenceSubscribeEvent)
-		linphone_event_unref(conferenceSubscribeEvent);
-}
-
-// -----------------------------------------------------------------------------
 
 shared_ptr<CallSession> ParticipantPrivate::createSession (
 	const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener
@@ -50,14 +41,6 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 		session = make_shared<CallSession>(conference, params, listener);
 	}
 	return session;
-}
-
-// -----------------------------------------------------------------------------
-
-void ParticipantPrivate::setConferenceSubscribeEvent (LinphoneEvent *ev) {
-	if (conferenceSubscribeEvent)
-		linphone_event_unref(conferenceSubscribeEvent);
-	conferenceSubscribeEvent = linphone_event_ref(ev);
 }
 
 // -----------------------------------------------------------------------------
@@ -83,12 +66,12 @@ const list<shared_ptr<ParticipantDevice>> &ParticipantPrivate::getDevices () con
 }
 
 shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const GruuAddress &gruu) {
-	if (!findDevice(gruu)) {
-		shared_ptr<ParticipantDevice> device = make_shared<ParticipantDevice>(gruu);
-		devices.push_back(device);
+	shared_ptr<ParticipantDevice> device = findDevice(gruu);
+	if (device)
 		return device;
-	}
-	return nullptr;
+	device = make_shared<ParticipantDevice>(gruu);
+	devices.push_back(device);
+	return device;
 }
 
 void ParticipantPrivate::removeDevice (const GruuAddress &gruu) {

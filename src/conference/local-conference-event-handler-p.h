@@ -35,7 +35,6 @@ public:
 	void notifyFullState (const std::string &notify, const std::shared_ptr<Participant> &participant);
 	void notifyAllExcept (const std::string &notify, const std::shared_ptr<Participant> &exceptParticipant);
 	void notifyAll (const std::string &notify);
-	void notifyParticipant (const std::string &notify, const std::shared_ptr<Participant> &participant);
 	std::string createNotifyFullState (int notifyId = -1);
 	std::string createNotifyParticipantAdded (const Address &addr, int notifyId = -1);
 	std::string createNotifyParticipantRemoved (const Address &addr, int notifyId = -1);
@@ -52,7 +51,7 @@ private:
 	unsigned int lastNotify = 0;
 
 	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
-	void sendNotify (const std::string &notify, const std::shared_ptr<Participant> &participant);
+	void notifyParticipant (const std::string &notify, const std::shared_ptr<Participant> &participant);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
 };
