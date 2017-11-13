@@ -442,6 +442,7 @@ static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->send_custom_headers) sal_custom_header_free(lev->send_custom_headers);
 	if (lev->to_address) linphone_address_unref(lev->to_address);
 	if (lev->from_address) linphone_address_unref(lev->from_address);
+	if (lev->remote_contact_address) linphone_address_unref(lev->remote_contact_address);
 
 	ms_free(lev->name);
 }
@@ -480,6 +481,15 @@ static const LinphoneAddress *_linphone_event_cache_from (const LinphoneEvent *l
 	return lev->from_address;
 }
 
+static const LinphoneAddress *_linphone_event_cache_remote_contact (const LinphoneEvent *lev) {
+	if (lev->remote_contact_address)
+		linphone_address_unref(lev->remote_contact_address);
+	char *buf = sal_address_as_string(lev->op->get_remote_contact_address());
+	((LinphoneEvent *)lev)->remote_contact_address = linphone_address_new(buf);
+	ms_free(buf);
+	return lev->remote_contact_address;
+}
+
 const LinphoneAddress *linphone_event_get_from (const LinphoneEvent *lev) {
 	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing)
 		return _linphone_event_cache_to(lev);
@@ -490,6 +500,10 @@ const LinphoneAddress *linphone_event_get_resource(const LinphoneEvent *lev){
 	if (lev->is_out_of_dialog_op && lev->dir == LinphoneSubscriptionOutgoing)
 		return _linphone_event_cache_from(lev);
 	return _linphone_event_cache_to(lev);
+}
+
+const LinphoneAddress *linphone_event_get_remote_contact (const LinphoneEvent *lev) {
+	return _linphone_event_cache_remote_contact(lev);
 }
 
 LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev){

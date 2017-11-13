@@ -972,6 +972,7 @@ struct _LinphoneEvent{
 	// Cache.
 	LinphoneAddress *to_address;
 	LinphoneAddress *from_address;
+	LinphoneAddress *remote_contact_address;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEvent);
