@@ -20,13 +20,18 @@
 #ifndef _FILE_TRANSFER_CHAT_MESSAGE_MODIFIER_H_
 #define _FILE_TRANSFER_CHAT_MESSAGE_MODIFIER_H_
 
+#include <belle-sip/belle-sip.h>
+
 #include "chat-message-modifier.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatRoom;
 class Core;
+class FileContent;
+class FileTransferContent;
 
 class FileTransferChatMessageModifier : public ChatMessageModifier {
 public:
@@ -37,7 +42,7 @@ public:
 
 	belle_http_request_t *getHttpRequest() const;
 	void setHttpRequest(belle_http_request_t *request);
-	
+
 	int onSendBody (belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t *size);
 	void onSendEnd (belle_sip_user_body_handler_t *bh);
 	void fileUploadBackgroundTaskEnded();

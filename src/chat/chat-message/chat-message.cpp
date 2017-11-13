@@ -35,36 +35,17 @@
 #include "content/file-content.h"
 #include "content/content.h"
 #include "core/core.h"
-
 #include "logger/logger.h"
+
 #include "ortp/b64.h"
 
 // =============================================================================
 
-LINPHONE_BEGIN_NAMESPACE
-
-using namespace B64_NAMESPACE;
 using namespace std;
 
-// =============================================================================
-// ChatMessagePrivate
-// =============================================================================
+using namespace B64_NAMESPACE;
 
-ChatMessagePrivate::ChatMessagePrivate () {}
-
-ChatMessagePrivate::~ChatMessagePrivate () {
-	for (Content *content : contents)
-		delete content;
-
-	if (salOp)
-		salOp->release();
-}
-
-// -----------------------------------------------------------------------------
-
-void ChatMessagePrivate::setChatRoom (shared_ptr<ChatRoom> cr) {
-	chatRoom = cr;
-}
+LINPHONE_BEGIN_NAMESPACE
 
 void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
 	direction = dir;
@@ -314,19 +295,17 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 		fileContent->setBody(linphone_content_get_string_buffer(c_content));
 	}
 
-	q->addContent(fileContent);
+	q->addContent(*fileContent);
 }
 
-int ChatMessagePrivate::downloadFile () {
+bool ChatMessagePrivate::downloadFile () {
 	L_Q();
 
-	for (Content *content : contents) {
-		if (content->getContentType() == ContentType::FileTransfer) {
-			return q->downloadFile((FileTransferContent*)content);
-		}
-	}
+	for (auto &content : contents)
+		if (content->getContentType() == ContentType::FileTransfer)
+			return q->downloadFile(*static_cast<FileTransferContent *>(content));
 
-	return 0;
+	return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -432,10 +411,9 @@ string ChatMessagePrivate::createImdnXml (Imdn::Type imdnType, LinphoneReason re
 }
 
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
-	L_Q();
-	shared_ptr<ChatRoom> chatRoom = q->getChatRoom();
-	if (chatRoom)
-		chatRoom->getPrivate()->sendImdn(createImdnXml(imdnType, reason), reason);
+	// FIXME: Add impl.
+	// L_Q();
+	// q->getChatRoom()->getPrivate()->sendImdn(createImdnXml(imdnType, reason), reason);
 }
 
 LinphoneReason ChatMessagePrivate::receive () {
@@ -523,11 +501,11 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	// Check if this is in fact an outgoing message (case where this is a message sent by us from an other device).
 	Address me(linphone_core_get_identity(core->getCCore()));
-	if (me.weakEqual(from))
+	if (me.weakEqual(q->getFromAddress()))
 		setDirection(ChatMessage::Direction::Outgoing);
 
 	// Check if this is a duplicate message.
-	if (chatRoom && chatRoom->findMessageWithDirection(q->getImdnMessageId(), q->getDirection()))
+	if (chatRoom && chatRoom->findMessageWithDirection(q->getImdnMessageId(), direction))
 		return core->getCCore()->chat_deny_code;
 
 	if (errorCode > 0) {
@@ -570,7 +548,7 @@ void ChatMessagePrivate::send () {
 
 	shared_ptr<Core> core = q->getCore();
 	if (lp_config_get_int(core->getCCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
-		call = linphone_core_get_call_by_remote_address(core->getCCore(), to.asString().c_str());
+		call = linphone_core_get_call_by_remote_address(core->getCCore(), q->getToAddress().asString().c_str());
 		if (call) {
 			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
 					linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
@@ -579,7 +557,7 @@ void ChatMessagePrivate::send () {
 				op = linphone_call_get_op(call);
 				string identity = linphone_core_find_best_identity(core->getCCore(), linphone_call_get_remote_address(call));
 				if (identity.empty()) {
-					LinphoneAddress *addr = linphone_address_new(to.asString().c_str());
+					LinphoneAddress *addr = linphone_address_new(q->getToAddress().asString().c_str());
 					LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core->getCCore(), addr);
 					if (proxy) {
 						identity = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
@@ -588,13 +566,12 @@ void ChatMessagePrivate::send () {
 					}
 					linphone_address_unref(addr);
 				}
-				q->setFromAddress(Address(identity));
 			}
 		}
 	}
 
 	if (!op) {
-		LinphoneAddress *peer = linphone_address_new(to.asString().c_str());
+		LinphoneAddress *peer = linphone_address_new(q->getToAddress().asString().c_str());
 		/* Sending out of call */
 		salOp = op = new SalMessageOp(core->getCCore()->sal);
 		linphone_configure_op(
@@ -659,18 +636,28 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (internalContent.getContentType().isValid()) {
-		msgOp->send_message(from.asString().c_str(), to.asString().c_str(), internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str(), to.asStringUriOnly().c_str());
+		msgOp->send_message(
+			q->getFromAddress().asString().c_str(),
+			q->getToAddress().asString().c_str(),
+			internalContent.getContentType().asString().c_str(),
+			internalContent.getBodyAsString().c_str(),
+			q->getToAddress().asString().c_str()
+		);
 	} else {
-		msgOp->send_message(from.asString().c_str(), to.asString().c_str(), internalContent.getBodyAsString().c_str());
+		msgOp->send_message(
+			q->getFromAddress().asString().c_str(),
+			q->getToAddress().asString().c_str(),
+			internalContent.getBodyAsString().c_str()
+		);
 	}
 
 	for (Content *content : contents) {
 		// Restore FileContents and remove FileTransferContents
 		if (content->getContentType() == ContentType::FileTransfer) {
 			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
-			q->removeContent(content);
-			free(fileTransferContent);
-			q->addContent(fileTransferContent->getFileContent());
+			q->removeContent(*content);
+			q->addContent(*fileTransferContent->getFileContent());
+			delete fileTransferContent;
 		}
 	}
 
@@ -683,7 +670,7 @@ void ChatMessagePrivate::send () {
 	}
 
 	/* If operation failed, we should not change message state */
-	if (q->getDirection() == ChatMessage::Direction::Outgoing) {
+	if (direction == ChatMessage::Direction::Outgoing) {
 		setIsReadOnly(true);
 		setState(ChatMessage::State::InProgress);
 	}
@@ -692,13 +679,34 @@ void ChatMessagePrivate::send () {
 // -----------------------------------------------------------------------------
 
 ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom) :
-	Object(*new ChatMessagePrivate),
-	CoreAccessor(chatRoom->getCore()) {
+	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
 	L_ASSERT(chatRoom);
 	L_D();
 
 	d->chatRoom = chatRoom;
-	d->peerAddress = chatRoom->getPeerAddress();
+	d->chatRoomId = chatRoom->getChatRoomId();
+	d->fromAddress = chatRoom->getLocalAddress();
+	d->direction = Direction::Outgoing;
+}
+
+ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom, const SimpleAddress &fromAddress) :
+	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
+	L_ASSERT(chatRoom);
+	L_D();
+
+	d->chatRoom = chatRoom;
+	d->chatRoomId = chatRoom->getChatRoomId();
+	d->fromAddress = fromAddress;
+	d->direction = Direction::Incoming;
+}
+
+ChatMessage::~ChatMessage () {
+	L_D();
+	for (Content *content : d->contents)
+		delete content;
+
+	if (d->salOp)
+		d->salOp->release();
 }
 
 shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
@@ -706,7 +714,7 @@ shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
 
 	shared_ptr<ChatRoom> chatRoom = d->chatRoom.lock();
 	if (!chatRoom)
-		chatRoom = getCore()->getOrCreateBasicChatRoom(d->peerAddress);
+		chatRoom = getCore()->getOrCreateBasicChatRoom(d->chatRoomId);
 
 	return chatRoom;
 }
@@ -764,32 +772,24 @@ bool ChatMessage::isRead () const {
 	return d->state == State::Delivered || d->state == State::Displayed || d->state == State::DeliveredToUser;
 }
 
-const Address &ChatMessage::getFromAddress () const {
+const SimpleAddress &ChatMessage::getFromAddress () const {
 	L_D();
-	return d->from;
+	return d->fromAddress;
 }
 
-void ChatMessage::setFromAddress (Address from) {
+const SimpleAddress &ChatMessage::getToAddress () const {
 	L_D();
-	d->from = from;
+	return d->direction == Direction::Outgoing ? d->chatRoomId.getPeerAddress() : d->chatRoomId.getLocalAddress();
 }
 
-const Address &ChatMessage::getToAddress () const {
+const SimpleAddress &ChatMessage::getLocalAddress () const {
 	L_D();
-	return d->to;
+	return d->chatRoomId.getLocalAddress();
 }
 
-void ChatMessage::setToAddress (Address to) {
+const SimpleAddress &ChatMessage::getRemoteAddress () const {
 	L_D();
-	d->to = to;
-}
-
-const Address &ChatMessage::getLocalAddress () const {
-	return getDirection() == Direction::Incoming ? getToAddress() : getFromAddress();
-}
-
-const Address &ChatMessage::getRemoteAddress () const {
-	return getDirection() != Direction::Incoming ? getToAddress() : getFromAddress();
+	return d->direction == Direction::Outgoing ? d->chatRoomId.getPeerAddress() : d->fromAddress;
 }
 
 // -----------------------------------------------------------------------------
@@ -811,18 +811,18 @@ const list<Content *> &ChatMessage::getContents () const {
 	return d->contents;
 }
 
-void ChatMessage::addContent (Content *content) {
+void ChatMessage::addContent (Content &content) {
 	L_D();
 	if (d->isReadOnly) return;
 
-	d->contents.push_back(content);
+	d->contents.push_back(&content);
 }
 
-void ChatMessage::removeContent (Content *content) {
+void ChatMessage::removeContent (const Content &content) {
 	L_D();
 	if (d->isReadOnly) return;
 
-	d->contents.remove(content);
+	d->contents.remove(&const_cast<Content &>(content));
 }
 
 const Content &ChatMessage::getInternalContent () const {
@@ -918,9 +918,9 @@ void ChatMessage::sendDisplayNotification () {
 		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
-int ChatMessage::downloadFile(FileTransferContent *fileTransferContent) {
+bool ChatMessage::downloadFile(FileTransferContent &fileTransferContent) {
 	L_D();
-	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), fileTransferContent);
+	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), &fileTransferContent);
 }
 
 void ChatMessage::cancelFileTransfer () {
@@ -957,14 +957,14 @@ int ChatMessage::putCharacter (uint32_t character) {
 
 		if (character == new_line || character == crlf || character == lf) {
 			if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
+				// TODO: History.
 				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
 				d->setTime(ms_time(0));
 				d->state = State::Displayed;
-				d->direction = Direction::Outgoing;
-				setFromAddress(LinphonePrivate::Address(
-					linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
-				));
-				// TODO: History.
+				// d->direction = Direction::Outgoing;
+				// setFromAddress(Address(
+				// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
+				// ));
 				// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
 				d->rttMessage = "";
 			}

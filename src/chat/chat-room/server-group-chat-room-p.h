@@ -54,10 +54,9 @@ private:
 	void designateAdmin ();
 	bool isAdminLeft () const;
 
-private:
-	L_DECLARE_PUBLIC(ServerGroupChatRoom);
-
 	std::list<std::shared_ptr<Participant>> removedParticipants;
+
+	L_DECLARE_PUBLIC(ServerGroupChatRoom);
 };
 
 LINPHONE_END_NAMESPACE

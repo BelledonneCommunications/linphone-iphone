@@ -20,6 +20,11 @@
 #include <algorithm>
 #include <ctime>
 
+// TODO: Remove me.
+#ifdef SOCI_ENABLED
+	#undef SOCI_ENABLED
+#endif
+
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
 #endif // ifdef SOCI_ENABLED
@@ -1545,31 +1550,31 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
-		const string &peerAddress,
-		unsigned int notifyId
+		const ChatRoomId &,
+		unsigned int
 	) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	int MainDb::getChatMessagesCount (const string &) const {
+	int MainDb::getChatMessagesCount (const ChatRoomId &) const {
 		return 0;
 	}
 
-	int MainDb::getUnreadChatMessagesCount (const string &) const {
+	int MainDb::getUnreadChatMessagesCount (const ChatRoomId &) const {
 		return 0;
 	}
 
-	void MainDb::markChatMessagesAsRead (const string &) const {}
+	void MainDb::markChatMessagesAsRead (const ChatRoomId &) const {}
 
-	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const std::string &) const {
+	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &) const {
 		return list<shared_ptr<ChatMessage>>();
 	}
 
-	list<shared_ptr<EventLog>> MainDb::getHistory (const string &, int, FilterMask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistory (const ChatRoomId &, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	list<shared_ptr<EventLog>> MainDb::getHistoryRange (const string &, int, int, FilterMask) const {
+	list<shared_ptr<EventLog>> MainDb::getHistoryRange (const ChatRoomId &, int, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
 	}
 
@@ -1577,11 +1582,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return list<shared_ptr<ChatRoom>>();
 	}
 
-	void MainDb::insertChatRoom (const string &, int) {}
+	void MainDb::insertChatRoom (const ChatRoomId &, int) {}
 
-	void MainDb::deleteChatRoom (const string &) {}
+	void MainDb::deleteChatRoom (const ChatRoomId &) {}
 
-	void MainDb::cleanHistory (const string &, FilterMask) {}
+	void MainDb::cleanHistory (const ChatRoomId &, FilterMask) {}
 
 	bool MainDb::import (Backend, const string &) {
 		return false;

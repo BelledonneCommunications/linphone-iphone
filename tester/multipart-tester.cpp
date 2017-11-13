@@ -39,8 +39,8 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 
-	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<ChatRoom> marieRoom = make_shared<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
+	SimpleAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
+	shared_ptr<ChatRoom> marieRoom = pauline->lc->cppCore->getOrCreateBasicChatRoom(paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage();
 	if (first_file_transfer) {
@@ -49,13 +49,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType("video/mkv");
 		content->setFilePath(send_filepath);
 		content->setFileName("sintel_trailer_opus_h264.mkv");
-		marieMessage->addContent(content);
+		marieMessage->addContent(*content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 1");
-		marieMessage->addContent(content);
+		marieMessage->addContent(*content);
 	}
 
 	if (second_file_transfer) {
@@ -64,13 +64,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType("file/vcf");
 		content->setFilePath(send_filepath);
 		content->setFileName("vcards.vcf");
-		marieMessage->addContent(content);
+		marieMessage->addContent(*content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
-		marieMessage->addContent(content);
+		marieMessage->addContent(*content);
 	}
 
 	linphone_core_set_file_transfer_server(marie->lc,"https://www.linphone.org:444/lft.php");

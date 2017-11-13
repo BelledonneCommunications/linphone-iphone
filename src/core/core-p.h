@@ -20,6 +20,7 @@
 #ifndef _CORE_P_H_
 #define _CORE_P_H_
 
+#include "chat/chat-room/chat-room-id.h"
 #include "core.h"
 #include "db/main-db.h"
 #include "object/object-p.h"
@@ -30,19 +31,19 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CorePrivate : public ObjectPrivate {
 public:
+	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
+	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
+	std::shared_ptr<ChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);
+
 	std::unique_ptr<MainDb> mainDb;
 	LinphoneCore *cCore = nullptr;
 
-	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
-	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
-	std::shared_ptr<ChatRoom> createBasicChatRoom (const Address &peerAddress, bool isRtt);
-
 private:
-	void deleteChatRoom (const std::string &peerAddress);
-	void deleteChatRoomWithDb (const std::string &peerAddress);
+	void deleteChatRoom (const ChatRoomId &chatRoomId);
+	void deleteChatRoomWithDb (const ChatRoomId &chatRoomId);
 
 	std::list<std::shared_ptr<ChatRoom>> chatRooms;
-	std::unordered_map<std::string, std::shared_ptr<ChatRoom>> chatRoomsByUri;
+	std::unordered_map<ChatRoomId, std::shared_ptr<ChatRoom>> chatRoomsById;
 
 	L_DECLARE_PUBLIC(Core);
 };

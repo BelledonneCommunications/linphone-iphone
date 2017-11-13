@@ -21,8 +21,8 @@
 #define _CHAT_ROOM_H_
 
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room-id.h"
 #include "conference/conference-interface.h"
-#include "core/core-accessor.h"
 
 // =============================================================================
 
@@ -47,8 +47,14 @@ public:
 
 	virtual ~ChatRoom () = default;
 
+	const ChatRoomId &getChatRoomId () const;
+
+	const SimpleAddress &getPeerAddress () const;
+	const SimpleAddress &getLocalAddress () const;
+
 	virtual CapabilitiesMask getCapabilities () const = 0;
 
+	// TODO: Remove useless functions.
 	void compose ();
 	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);
 	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
@@ -65,11 +71,10 @@ public:
 
 	virtual void markAsRead ();
 
-	const Address &getPeerAddress () const;
 	State getState () const;
 
 protected:
-	explicit ChatRoom (ChatRoomPrivate &p, const std::shared_ptr<Core> &core, const Address &address);
+	explicit ChatRoom (ChatRoomPrivate &p, const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
 
 	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) = 0;
 

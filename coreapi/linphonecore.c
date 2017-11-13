@@ -148,6 +148,8 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val);
 #define HOLD_MUSIC_WAV "toy-mono.wav"
 #define HOLD_MUSIC_MKV "dont_wait_too_long.mkv"
 
+using namespace std;
+
 using namespace LinphonePrivate;
 
 extern Sal::Callbacks linphone_sal_callbacks;
@@ -2133,9 +2135,16 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		}
 	} else if (strcmp(notified_event, "conference") == 0) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)));
-		if (cr)
-			L_GET_PRIVATE_FROM_C_OBJECT(cr, ClientGroupChatRoom)->notifyReceived(linphone_content_get_string_buffer(body));
+
+		// TODO: Ensure it is the good solution.
+		list<shared_ptr<ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
+			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
+		);
+
+		if (!chatRooms.empty())
+			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRooms.front()))->notifyReceived(
+				linphone_content_get_string_buffer(body)
+		);
 	}
 }
 
@@ -2145,10 +2154,15 @@ static void _linphone_core_conference_subscription_state_changed(LinphoneCore *l
 		state == LinphoneSubscriptionIncomingReceived
 	) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)));
-		if (cr) {
+
+		// TODO: Ensure it is the good solution.
+		list<shared_ptr<ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
+			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
+		);
+
+		if (!chatRooms.empty()) {
 			linphone_event_accept_subscription(lev);
-			L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->subscribeReceived(lev);
+			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRooms.front()))->subscribeReceived(lev);
 		} else
 			linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 	}

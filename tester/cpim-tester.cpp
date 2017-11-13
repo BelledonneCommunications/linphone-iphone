@@ -394,15 +394,15 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	LpConfig *config = linphone_core_get_config(marie->lc);
 	lp_config_set_int(config, "sip", "use_cpim", 1);
 
-	Address paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<ChatRoom> marieRoom = make_shared<BasicChatRoom>(marie->lc->cppCore, paulineAddress);
+	SimpleAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
+	shared_ptr<ChatRoom> marieRoom = marie->lc->cppCore->getOrCreateBasicChatRoom(paulineAddress);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createMessage("Hello CPIM");
 	if (use_multipart) {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
-		marieMessage->addContent(content);
+		marieMessage->addContent(*content);
 	}
 	marieMessage->send();
 

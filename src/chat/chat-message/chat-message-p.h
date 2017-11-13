@@ -23,12 +23,13 @@
 #include <belle-sip/types.h>
 
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room-id.h"
+#include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/notification/imdn.h"
+#include "content/content-type.h"
 #include "content/content.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
-#include "chat/modifier/file-transfer-chat-message-modifier.h"
-#include "content/content-type.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
 
@@ -50,12 +51,7 @@ public:
 		Cpim = 1 << 4
 	};
 
-	ChatMessagePrivate ();
-	~ChatMessagePrivate ();
-
-	void setChatRoom (std::shared_ptr<ChatRoom> chatRoom);
-
-	// -----------------------------------------------------------------------------
+	ChatMessagePrivate () = default;
 
 	void setApplyModifiers (bool value) { applyModifiers = value; }
 
@@ -66,6 +62,10 @@ public:
 	void setTime(time_t time);
 
 	void setIsReadOnly(bool readOnly);
+
+	inline void forceFromAddress (const SimpleAddress &fromAddress) {
+		this->fromAddress = fromAddress;
+	}
 
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
@@ -110,7 +110,7 @@ public:
 	LinphoneContent *getFileTransferInformation() const;
 	void setFileTransferInformation(const LinphoneContent *content);
 
-	int downloadFile ();
+	bool downloadFile ();
 
 	void sendImdn(Imdn::Type imdnType, LinphoneReason reason);
 
@@ -118,16 +118,9 @@ public:
 	void send();
 
 private:
-	std::weak_ptr<ChatRoom> chatRoom;
-	Address peerAddress;
-
 	// TODO: Clean attributes.
-	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
-	ChatMessage::State state = ChatMessage::State::Idle;
 	unsigned int storageId = 0;
-	Address from;
-	Address to;
-	time_t time = 0;
+	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string id;
 	std::string rttMessage;
 	bool isSecured = false;
@@ -148,9 +141,17 @@ private:
 	ContentType cContentType;
 	std::string cText;
 
-	// -----------------------------------------------------------------------------
-
 	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
+
+	// TODO: Remove my comment. VARIABLES OK.
+	// Do not expose.
+
+	std::weak_ptr<ChatRoom> chatRoom;
+	ChatRoomId chatRoomId;
+	SimpleAddress fromAddress;
+
+	ChatMessage::State state = ChatMessage::State::Idle;
+	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

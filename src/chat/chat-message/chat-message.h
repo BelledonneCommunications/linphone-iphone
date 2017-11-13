@@ -25,6 +25,9 @@
 #include "linphone/api/c-types.h"
 #include "linphone/enums/chat-message-enums.h"
 
+// TODO: Remove me later?
+#include "address/simple-address.h"
+
 #include "core/core-accessor.h"
 #include "object/object.h"
 
@@ -32,7 +35,6 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
 class ChatRoom;
 class Content;
 class FileTransferContent;
@@ -54,7 +56,14 @@ public:
 	L_DECLARE_ENUM(Direction, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
 	// TODO: Make me private.
+
+	// Build an outgoing message.
 	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom);
+
+	// Build and incoming message.
+	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom, const SimpleAddress &fromAddress);
+
+	~ChatMessage ();
 
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
@@ -64,8 +73,6 @@ public:
 	void sendDisplayNotification ();
 	void setImdnMessageId (const std::string &imdnMessageId);
 	void setIsSecured (bool isSecured);
-	void setFromAddress (Address from);
-	void setToAddress (Address to);
 	void store ();
 	// ----- TODO: Remove me.
 
@@ -81,19 +88,21 @@ public:
 
 	const std::string &getImdnMessageId () const;
 
-	const Address &getFromAddress () const;
-	const Address &getToAddress () const;
-	const Address &getLocalAddress () const;
-	const Address &getRemoteAddress () const;
+	const SimpleAddress &getFromAddress () const;
+	const SimpleAddress &getToAddress () const;
 
+	const SimpleAddress &getLocalAddress () const;
+	const SimpleAddress &getRemoteAddress () const;
+
+	// TODO: Return a cpp reference.
 	const LinphoneErrorInfo *getErrorInfo () const;
 
 	bool isRead () const;
 	bool isReadOnly () const;
 
 	const std::list<Content *> &getContents () const;
-	void addContent (Content *content);
-	void removeContent (Content *content);
+	void addContent (Content &content);
+	void removeContent (const Content &content);
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
@@ -102,7 +111,7 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-	int downloadFile (FileTransferContent *content);
+	bool downloadFile (FileTransferContent &content);
 
 private:
 	L_DECLARE_PRIVATE(ChatMessage);

@@ -29,34 +29,21 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const Address &peerAddress) :
-	ChatRoom(*new BasicChatRoomPrivate, core, peerAddress) {}
+BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
+	ChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
 
-// -----------------------------------------------------------------------------
+BasicChatRoom::BasicChatRoom (
+	BasicChatRoomPrivate &p,
+	const std::shared_ptr<Core> &core,
+	const ChatRoomId &chatRoomId
+) : ChatRoom(p, core, chatRoomId) {}
 
-void BasicChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
-
-}
-
-int BasicChatRoom::getCapabilities () const {
-	return static_cast<int>(Capabilities::Basic);
-}
-
-void BasicChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	lError() << "addParticipant() is not allowed on a BasicChatRoom";
-}
-
-void BasicChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	lError() << "addParticipants() is not allowed on a BasicChatRoom";
+BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
+	return static_cast<CapabilitiesMask>(Capabilities::Basic);
 }
 
 bool BasicChatRoom::canHandleParticipants () const {
 	return false;
-}
-
-shared_ptr<Participant> BasicChatRoom::findParticipant (const Address &addr) const {
-	lError() << "findParticipant() is not allowed on a BasicChatRoom";
-	return nullptr;
 }
 
 const Address &BasicChatRoom::getConferenceAddress () const {
@@ -64,8 +51,29 @@ const Address &BasicChatRoom::getConferenceAddress () const {
 	return Utils::getEmptyConstRefObject<Address>();
 }
 
+void BasicChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {
+	lError() << "addParticipant() is not allowed on a BasicChatRoom";
+}
+
+void BasicChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {
+	lError() << "addParticipants() is not allowed on a BasicChatRoom";
+}
+
+void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &) {
+	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
+}
+
+void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {
+	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
+}
+
+shared_ptr<Participant> BasicChatRoom::findParticipant (const Address &) const {
+	lError() << "findParticipant() is not allowed on a BasicChatRoom";
+	return nullptr;
+}
+
 shared_ptr<Participant> BasicChatRoom::getMe () const {
-	lError() << "a BasicChatRoom does not handle participants";
+	lError() << "getMe() is not allowed on a BasicChatRoom";
 	return nullptr;
 }
 
@@ -74,15 +82,21 @@ int BasicChatRoom::getNbParticipants () const {
 }
 
 list<shared_ptr<Participant>> BasicChatRoom::getParticipants () const {
-	L_D();
-	list<shared_ptr<Participant>> l;
-	l.push_back(make_shared<Participant>(d->peerAddress));
-	return l;
+	return { make_shared<Participant>(getPeerAddress()) };
+}
+
+void BasicChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {
+	lError() << "setParticipantAdminStatus() is not allowed on a BasicChatRoom";
 }
 
 const string &BasicChatRoom::getSubject () const {
 	L_D();
 	return d->subject;
+}
+
+void BasicChatRoom::setSubject (const string &subject) {
+	L_D();
+	d->subject = subject;
 }
 
 void BasicChatRoom::join () {
@@ -93,21 +107,7 @@ void BasicChatRoom::leave () {
 	lError() << "leave() is not allowed on a BasicChatRoom";
 }
 
-void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
-}
-
-void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
-}
-
-void BasicChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
-	lError() << "setParticipantAdminStatus() is not allowed on a BasicChatRoom";
-}
-
-void BasicChatRoom::setSubject (const string &subject) {
-	L_D();
-	d->subject = subject;
-}
+// TODO: Move me in BasicChatRoomPrivate.
+void BasicChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
 
 LINPHONE_END_NAMESPACE

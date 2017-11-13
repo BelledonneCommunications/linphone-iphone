@@ -29,30 +29,44 @@ LINPHONE_BEGIN_NAMESPACE
 class BasicChatRoomPrivate;
 
 class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
-public:
-	BasicChatRoom (const std::shared_ptr<Core> &core, const Address &peerAddress);
+	friend class CorePrivate;
 
+public:
 	CapabilitiesMask getCapabilities () const override;
 
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
-	/* ConferenceInterface. */
+	const Address &getConferenceAddress () const override;
+
+	bool canHandleParticipants () const override;
+
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
-	bool canHandleParticipants () const override;
+
+	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
+
 	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
-	const Address &getConferenceAddress () const override;
+
 	std::shared_ptr<Participant> getMe () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
-	const std::string &getSubject () const override;
-	void join () override;
-	void leave () override;
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
-	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
+
 	void setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) override;
+
+	const std::string &getSubject () const override;
 	void setSubject (const std::string &subject) override;
 
+	void join () override;
+	void leave () override;
+
+protected:
+	explicit BasicChatRoom (BasicChatRoomPrivate &p, const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
+
 private:
+	BasicChatRoom (const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
+
+	// TODO: Remove me. Move me in private object.
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
+
 	L_DECLARE_PRIVATE(BasicChatRoom);
 	L_DISABLE_COPY(BasicChatRoom);
 };

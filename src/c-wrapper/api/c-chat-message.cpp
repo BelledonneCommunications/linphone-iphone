@@ -102,7 +102,7 @@ const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessag
 }
 
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const char *url) {
-	
+
 }
 
 time_t linphone_chat_message_get_time(const LinphoneChatMessage *msg) {
@@ -180,23 +180,11 @@ const LinphoneAddress *linphone_chat_message_get_from_address(LinphoneChatMessag
 	return msg->from;
 }
 
-void linphone_chat_message_set_from_address(LinphoneChatMessage *msg, const LinphoneAddress *from) {
-	LinphonePrivate::Address addr;
-	if (from) addr = LinphonePrivate::Address(linphone_address_as_string(from));
-	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setFromAddress(addr);
-}
-
 const LinphoneAddress *linphone_chat_message_get_to_address(LinphoneChatMessage *msg) {
 	if (msg->to)
 		linphone_address_unref(msg->to);
 	msg->to = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getToAddress().asString().c_str());
 	return msg->to;
-}
-
-void linphone_chat_message_set_to_address(LinphoneChatMessage *msg, const LinphoneAddress *to) {
-	LinphonePrivate::Address addr;
-	if (to) addr = LinphonePrivate::Address(linphone_address_as_string(to));
-	else L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setToAddress(addr);
 }
 
 const char *linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg) {
@@ -278,7 +266,6 @@ void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMe
 
 void linphone_chat_message_deactivate(LinphoneChatMessage *msg){
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->cancelFileTransfer();
-	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setChatRoom(nullptr);
 }
 
 void linphone_chat_message_send_delivery_notification(LinphoneChatMessage *msg, LinphoneReason reason) {
@@ -298,7 +285,7 @@ void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const char
 	LinphonePrivate::ContentType contentType = LinphonePrivate::ContentType::PlainText;
 	content->setContentType(contentType);
 	content->setBody(L_C_TO_STRING(c_content));
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->addContent(content);
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->addContent(*content);
 }
 
 bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg) {

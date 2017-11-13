@@ -30,6 +30,7 @@ class ChatRoomIdPrivate;
 
 class LINPHONE_PUBLIC ChatRoomId : public ClonableObject {
 public:
+	ChatRoomId ();
 	ChatRoomId (const SimpleAddress &peerAddress, const SimpleAddress &localAddress);
 	ChatRoomId (const ChatRoomId &src);
 
@@ -37,6 +38,8 @@ public:
 
 	bool operator== (const ChatRoomId &chatRoomId) const;
 	bool operator!= (const ChatRoomId &chatRoomId) const;
+
+	bool operator< (const ChatRoomId &chatRoomId) const;
 
 	const SimpleAddress &getPeerAddress () const;
 	const SimpleAddress &getLocalAddress () const;
@@ -46,5 +49,14 @@ private:
 };
 
 LINPHONE_END_NAMESPACE
+
+// Add map key support.
+template<>
+struct std::hash<LinphonePrivate::ChatRoomId> {
+	std::size_t operator() (const LinphonePrivate::ChatRoomId &chatRoomId) const {
+		return hash<string>()(chatRoomId.getPeerAddress().asString()) ^
+			(hash<string>()(chatRoomId.getLocalAddress().asString()) << 1);
+	}
+};
 
 #endif // ifndef _CHAT_ROOM_ID_H_

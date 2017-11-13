@@ -58,20 +58,21 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 		cmc->has_been_read = FALSE;
 		receivedRttCharacters.push_back(cmc);
 
-		remoteIsComposing.insert(peerAddress.asStringUriOnly());
+		remoteIsComposing.insert(q->getPeerAddress().asString());
 		linphone_core_notify_is_composing_received(cCore, L_GET_C_BACK_PTR(q));
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
 			/* End of message */
 			lDebug() << "New line received, forge a message with content " << pendingMessage->getPrivate()->getText().c_str();
-			pendingMessage->setFromAddress(peerAddress);
-			pendingMessage->setToAddress(
-				Address(
-					linphone_call_get_dest_proxy(call)
-						? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
-						: linphone_core_get_identity(cCore)
-				)
-			);
+			// TODO: REPAIR ME.
+			// pendingMessage->setFromAddress(peerAddress);
+			// pendingMessage->setToAddress(
+			// 	Address(
+			// 		linphone_call_get_dest_proxy(call)
+			// 			? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
+			// 			: linphone_core_get_identity(cCore)
+			// 	)
+			// );
 			pendingMessage->getPrivate()->setState(ChatMessage::State::Delivered);
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 
@@ -93,7 +94,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 	}
 }
 
-void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage> &msg) {
+void RealTimeTextChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		uint32_t new_line = 0x2028;
 		msg->putCharacter(new_line);
@@ -102,11 +103,11 @@ void RealTimeTextChatRoomPrivate::sendMessage (const std::shared_ptr<ChatMessage
 
 // =============================================================================
 
-RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const Address &peerAddress) :
-	ChatRoom(*new RealTimeTextChatRoomPrivate, core, peerAddress) {}
+RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
+	BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
 
-int RealTimeTextChatRoom::getCapabilities () const {
-	return static_cast<int>(Capabilities::Basic) | static_cast<int>(Capabilities::RealTimeText);
+RealTimeTextChatRoom::CapabilitiesMask RealTimeTextChatRoom::getCapabilities () const {
+	return BasicChatRoom::getCapabilities() | static_cast<CapabilitiesMask>(Capabilities::RealTimeText);
 }
 
 uint32_t RealTimeTextChatRoom::getChar () const {
@@ -127,78 +128,6 @@ uint32_t RealTimeTextChatRoom::getChar () const {
 LinphoneCall *RealTimeTextChatRoom::getCall () const {
 	L_D();
 	return d->call;
-}
-
-// -----------------------------------------------------------------------------
-
-void RealTimeTextChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
-
-void RealTimeTextChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	lError() << "addParticipant() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	lError() << "addParticipants() is not allowed on a RealTimeTextChatRoom";
-}
-
-bool RealTimeTextChatRoom::canHandleParticipants () const {
-	return false;
-}
-
-shared_ptr<Participant> RealTimeTextChatRoom::findParticipant (const Address &addr) const {
-	lError() << "findParticipant() is not allowed on a RealTimeTextChatRoom";
-	return nullptr;
-}
-
-const Address &RealTimeTextChatRoom::getConferenceAddress () const {
-	lError() << "a RealTimeTextChatRoom does not have a conference address";
-	return Utils::getEmptyConstRefObject<Address>();
-}
-
-shared_ptr<Participant> RealTimeTextChatRoom::getMe () const {
-	lError() << "a RealTimeTextChatRoom does not handle participants";
-	return nullptr;
-}
-
-int RealTimeTextChatRoom::getNbParticipants () const {
-	return 1;
-}
-
-list<shared_ptr<Participant>> RealTimeTextChatRoom::getParticipants () const {
-	L_D();
-	list<shared_ptr<Participant>> l;
-	l.push_back(make_shared<Participant>(d->peerAddress));
-	return l;
-}
-
-const string &RealTimeTextChatRoom::getSubject () const {
-	L_D();
-	return d->subject;
-}
-
-void RealTimeTextChatRoom::join () {
-	lError() << "join() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::leave () {
-	lError() << "leave() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	lError() << "removeParticipant() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	lError() << "removeParticipants() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
-	lError() << "setParticipantAdminStatus() is not allowed on a RealTimeTextChatRoom";
-}
-
-void RealTimeTextChatRoom::setSubject (const string &subject) {
-	L_D();
-	d->subject = subject;
 }
 
 LINPHONE_END_NAMESPACE

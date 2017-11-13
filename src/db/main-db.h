@@ -23,6 +23,7 @@
 #include <list>
 
 #include "abstract/abstract-db.h"
+#include "chat/chat-room/chat-room-id.h"
 #include "core/core-accessor.h"
 
 // =============================================================================
@@ -63,7 +64,7 @@ public:
 	// ---------------------------------------------------------------------------
 
 	std::list<std::shared_ptr<EventLog>> getConferenceNotifiedEvents (
-		const std::string &peerAddress,
+		const ChatRoomId &chatRoomId,
 		unsigned int lastNotifyId
 	) const;
 
@@ -71,35 +72,35 @@ public:
 	// Conference chat message events.
 	// ---------------------------------------------------------------------------
 
-	int getChatMessagesCount (const std::string &peerAddress = "") const;
-	int getUnreadChatMessagesCount (const std::string &peerAddress = "") const;
-	void markChatMessagesAsRead (const std::string &peerAddress = "") const;
-	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const std::string &peerAddress = "") const;
+	int getChatMessagesCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	int getUnreadChatMessagesCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 
 	// ---------------------------------------------------------------------------
 	// Conference events.
 	// ---------------------------------------------------------------------------
 
 	std::list<std::shared_ptr<EventLog>> getHistory (
-		const std::string &peerAddress,
+		const ChatRoomId &chatRoomId,
 		int nLast,
 		FilterMask mask = NoFilter
 	) const;
 	std::list<std::shared_ptr<EventLog>> getHistoryRange (
-		const std::string &peerAddress,
+		const ChatRoomId &chatRoomId,
 		int begin,
 		int end,
 		FilterMask mask = NoFilter
 	) const;
-	void cleanHistory (const std::string &peerAddress = "", FilterMask mask = NoFilter);
+	void cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask = NoFilter);
 
 	// ---------------------------------------------------------------------------
 	// Chat rooms.
 	// ---------------------------------------------------------------------------
 
 	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
-	void insertChatRoom (const std::string &peerAddress, int capabilities);
-	void deleteChatRoom (const std::string &peerAddress);
+	void insertChatRoom (const ChatRoomId &chatRoomId, int capabilities);
+	void deleteChatRoom (const ChatRoomId &chatRoomId);
 
 	// ---------------------------------------------------------------------------
 	// Other.

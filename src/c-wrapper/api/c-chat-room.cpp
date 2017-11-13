@@ -117,20 +117,10 @@ LinphoneChatMessage *linphone_chat_room_create_message_2 (
 	bool_t is_incoming
 ) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, message);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
 	linphone_chat_message_set_external_body_url(msg, external_body_url ? ms_strdup(external_body_url) : NULL);
 	linphone_chat_message_set_time(msg, time);
 	linphone_chat_message_set_is_secured(msg, FALSE);
 	linphone_chat_message_set_state(msg, state);
-	if (is_incoming) {
-		linphone_chat_message_set_incoming(msg);
-		linphone_chat_message_set_from_address(msg, linphone_chat_room_get_peer_address(cr));
-		linphone_chat_message_set_to_address(msg, linphone_address_new(linphone_core_get_identity(lc)));
-	} else {
-		linphone_chat_message_set_outgoing(msg);
-		linphone_chat_message_set_to_address(msg, linphone_chat_room_get_peer_address(cr));
-		linphone_chat_message_set_from_address(msg, linphone_address_new(linphone_core_get_identity(lc)));
-	}
 	return msg;
 }
 
@@ -172,7 +162,7 @@ LinphoneCall *linphone_chat_room_get_call (const LinphoneChatRoom *cr) {
 
 void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
-		L_GET_PRIVATE_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->setCall(call);
+		L_GET_PRIVATE_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->call = call;
 }
 
 bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
@@ -210,7 +200,7 @@ bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_messa
 bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
 		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
-			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
+			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatRoomId(),
 			nb_events
 		)
 	);
@@ -219,7 +209,7 @@ bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int n
 bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
 		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
-			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asStringUriOnly(),
+			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatRoomId(),
 			begin,
 			end
 		)
@@ -344,13 +334,6 @@ void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
 // Constructor and destructor functions.
 // =============================================================================
 
-LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
-	return L_GET_C_BACK_PTR(core->cppCore->getOrCreateBasicChatRoom(
-		*L_GET_CPP_PTR_FROM_C_OBJECT(addr),
-		linphone_core_realtime_text_enabled(core)
-	));
-}
-
 LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject) {
 	LinphoneAddress *addr = linphone_address_new(uri);
 	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, addr);
@@ -363,7 +346,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 	LinphonePrivate::Address me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(
-		core->cppCore, me, L_C_TO_STRING(uri), L_C_TO_STRING(subject))
+		core->cppCore, L_C_TO_STRING(uri), me, L_C_TO_STRING(subject))
 	);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;

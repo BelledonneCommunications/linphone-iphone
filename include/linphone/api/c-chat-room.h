@@ -78,6 +78,7 @@ LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message(LinphoneC
  * @param is_read TRUE if the message should be flagged as read, FALSE otherwise.
  * @param is_incoming TRUE if the message has been received, FALSE otherwise.
  * @return a new #LinphoneChatMessage
+ * @deprecated Use #linphone_chat_room_create_message() instead. Deprecated since 2017-11-14.
  * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);

@@ -64,6 +64,13 @@ const bctbx_list_t *linphone_core_get_chat_rooms (LinphoneCore *lc) {
 	return lc->chat_rooms;
 }
 
+static LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
+	return L_GET_C_BACK_PTR(core->cppCore->getOrCreateBasicChatRoom(
+		*L_GET_CPP_PTR_FROM_C_OBJECT(addr),
+		linphone_core_realtime_text_enabled(core)
+	));
+}
+
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call){
 	LinphoneChatRoom *cr = linphone_chat_room_new(linphone_call_get_core(call),
 		linphone_address_clone(linphone_call_get_remote_address(call)));
@@ -99,20 +106,24 @@ void linphone_core_delete_chat_room (LinphoneCore *, LinphoneChatRoom *cr) {
 }
 
 LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {
-	return L_GET_C_BACK_PTR(lc->cppCore->getOrCreateBasicChatRoom(L_C_TO_STRING(to)));
+	return L_GET_C_BACK_PTR(lc->cppCore->getOrCreateBasicChatRoomFromUri(L_C_TO_STRING(to)));
 }
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
 	const char *peerAddress = linphone_core_conference_server_enabled(lc) ? op->get_to() : op->get_from();
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(LinphonePrivate::Address(peerAddress)));
 
-	if (cr)
-		reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
+	// TODO: Use local address.
+	list<shared_ptr<LinphonePrivate::ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
+		LinphonePrivate::SimpleAddress(peerAddress)
+	);
+
+	if (!chatRooms.empty())
+		reason = L_GET_PRIVATE(chatRooms.front())->messageReceived(op, sal_msg);
 	else {
 		LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 		linphone_address_clean(addr);
-		cr = linphone_core_get_chat_room(lc, addr);
+		LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
 		if (cr)
 			reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
 		linphone_address_unref(addr);

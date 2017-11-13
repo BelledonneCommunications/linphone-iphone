@@ -30,16 +30,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+// TODO: clean and order methods!
 class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
-	friend class ChatMessagePrivate;
-
 public:
 	ChatRoomPrivate () = default;
 
-private:
 	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
 
-public:
 	void addTransientMessage (const std::shared_ptr<ChatMessage> &msg);
 	void addWeakMessage (const std::shared_ptr<ChatMessage> &msg);
 	std::list<std::shared_ptr<ChatMessage>> getTransientMessages () const {
@@ -56,40 +53,36 @@ public:
 
 	virtual void sendMessage (const std::shared_ptr<ChatMessage> &msg);
 
-protected:
 	void sendIsComposingNotification ();
 
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
 	std::shared_ptr<ChatMessage> getTransientMessage (unsigned int storageId) const;
 	std::shared_ptr<ChatMessage> getWeakMessage (unsigned int storageId) const;
 	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
+
 	virtual void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
-public:
 	virtual LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 
-protected:
 	void chatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 	void imdnReceived (const std::string &text);
 	void isComposingReceived (const Address &remoteAddr, const std::string &text);
 
-private:
 	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 	void notifyIsComposingReceived (const Address &remoteAddr, bool isComposing);
 	void notifyStateChanged ();
 	void notifyUndecryptableMessageReceived (const std::shared_ptr<ChatMessage> &msg);
 
-private:
 	/* IsComposingListener */
 	void onIsComposingStateChanged (bool isComposing) override;
 	void onIsRemoteComposingStateChanged (const Address &remoteAddr, bool isComposing) override;
 	void onIsComposingRefreshNeeded () override;
 
-public:
+	std::shared_ptr<ChatMessage> createChatMessage (ChatMessage::Direction direction);
+
 	LinphoneCall *call = nullptr;
 	ChatRoom::State state = ChatRoom::State::None;
-	Address peerAddress;
 	bool isComposing = false;
 	std::unordered_set<std::string> remoteIsComposing;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
@@ -101,6 +94,8 @@ public:
 
 	// TODO: Use CoreAccessor on IsComposing. And avoid pointer if possible.
 	std::unique_ptr<IsComposing> isComposingHandler;
+
+	ChatRoomId chatRoomId;
 
 private:
 	L_DECLARE_PUBLIC(ChatRoom);

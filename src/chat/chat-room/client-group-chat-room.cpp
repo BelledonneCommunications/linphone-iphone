@@ -78,17 +78,27 @@ void ClientGroupChatRoomPrivate::notifyReceived (const string &body) {
 
 ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::shared_ptr<Core> &core,
-	const Address &me,
 	const std::string &factoryUri,
+	const SimpleAddress &me,
 	const std::string &subject
-) : ChatRoom(*new ClientGroupChatRoomPrivate, core, Address()), RemoteConference(core->getCCore(), me, nullptr) {
+) :
+ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(SimpleAddress(), me)),
+RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = make_shared<Participant>(Address(factoryUri));
 	RemoteConference::setSubject(subject);
 }
 
-int ClientGroupChatRoom::getCapabilities () const {
-	return static_cast<int>(Capabilities::Conference);
+ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () const {
+	return static_cast<CapabilitiesMask>(Capabilities::Conference);
+}
+
+bool ClientGroupChatRoom::canHandleParticipants () const {
+	return RemoteConference::canHandleParticipants();
+}
+
+const Address &ClientGroupChatRoom::getConferenceAddress () const {
+	return RemoteConference::getConferenceAddress();
 }
 
 void ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
@@ -130,16 +140,26 @@ void ClientGroupChatRoom::addParticipants (
 	}
 }
 
-bool ClientGroupChatRoom::canHandleParticipants () const {
-	return RemoteConference::canHandleParticipants();
+void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
+	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+
+	SalReferOp *referOp = new SalReferOp(cCore->sal);
+	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
+	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
+	linphone_address_unref(lAddr);
+	Address referToAddr = participant->getAddress();
+	referToAddr.setParam("text");
+	referToAddr.setUriParam("method", "BYE");
+	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->unref();
+}
+
+void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
+	RemoteConference::removeParticipants(participants);
 }
 
 shared_ptr<Participant> ClientGroupChatRoom::findParticipant (const Address &addr) const {
 	return RemoteConference::findParticipant(addr);
-}
-
-const Address &ClientGroupChatRoom::getConferenceAddress () const {
-	return RemoteConference::getConferenceAddress();
 }
 
 shared_ptr<Participant> ClientGroupChatRoom::getMe () const {
@@ -154,8 +174,53 @@ list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
 	return RemoteConference::getParticipants();
 }
 
+void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+	if (isAdmin == participant->isAdmin())
+		return;
+
+	if (!getMe()->isAdmin()) {
+		lError() << "Cannot change the participant admin status because I am not admin";
+		return;
+	}
+
+	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+
+	SalReferOp *referOp = new SalReferOp(cCore->sal);
+	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
+	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
+	linphone_address_unref(lAddr);
+	Address referToAddr = participant->getAddress();
+	referToAddr.setParam("text");
+	referToAddr.setParam("admin", Utils::toString(isAdmin));
+	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->unref();
+}
+
 const string &ClientGroupChatRoom::getSubject () const {
 	return RemoteConference::getSubject();
+}
+
+void ClientGroupChatRoom::setSubject (const string &subject) {
+	L_D();
+	L_D_T(RemoteConference, dConference);
+
+	if (d->state != ChatRoom::State::Created) {
+		lError() << "Cannot change the ClientGroupChatRoom subject in a state other than Created";
+		return;
+	}
+
+	if (!getMe()->isAdmin()) {
+		lError() << "Cannot change the ClientGroupChatRoom subject because I am not admin";
+		return;
+	}
+
+	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
+	if (session)
+		session->update(nullptr, subject);
+	else {
+		session = d->createSession();
+		session->startInvite(nullptr, subject, nullptr);
+	}
 }
 
 void ClientGroupChatRoom::join () {
@@ -187,80 +252,15 @@ void ClientGroupChatRoom::leave () {
 	d->setState(ChatRoom::State::TerminationPending);
 }
 
-void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
-
-	SalReferOp *referOp = new SalReferOp(cCore->sal);
-	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
-	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
-	linphone_address_unref(lAddr);
-	Address referToAddr = participant->getAddress();
-	referToAddr.setParam("text");
-	referToAddr.setUriParam("method", "BYE");
-	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
-	referOp->unref();
-}
-
-void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &participants) {
-	RemoteConference::removeParticipants(participants);
-}
-
-void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
-	if (isAdmin == participant->isAdmin())
-		return;
-
-	if (!getMe()->isAdmin()) {
-		lError() << "Cannot change the participant admin status because I am not admin";
-		return;
-	}
-
-	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
-
-	SalReferOp *referOp = new SalReferOp(cCore->sal);
-	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
-	linphone_configure_op(cCore, referOp, lAddr, nullptr, false);
-	linphone_address_unref(lAddr);
-	Address referToAddr = participant->getAddress();
-	referToAddr.setParam("text");
-	referToAddr.setParam("admin", Utils::toString(isAdmin));
-	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
-	referOp->unref();
-}
-
-void ClientGroupChatRoom::setSubject (const string &subject) {
-	L_D();
-	L_D_T(RemoteConference, dConference);
-
-	if (d->state != ChatRoom::State::Created) {
-		lError() << "Cannot change the ClientGroupChatRoom subject in a state other than Created";
-		return;
-	}
-
-	if (!getMe()->isAdmin()) {
-		lError() << "Cannot change the ClientGroupChatRoom subject because I am not admin";
-		return;
-	}
-
-	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
-	if (session)
-		session->update(nullptr, subject);
-	else {
-		session = d->createSession();
-		session->startInvite(nullptr, subject, nullptr);
-	}
-}
-
 // -----------------------------------------------------------------------------
 
-void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
-
-}
+void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {}
 
 void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
-	d->peerAddress = addr;
+	d->chatRoomId = ChatRoomId(addr, d->chatRoomId.getLocalAddress());
 	CoreAccessor::getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 }
 

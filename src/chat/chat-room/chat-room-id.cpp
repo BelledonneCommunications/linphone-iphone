@@ -35,6 +35,8 @@ public:
 
 // -----------------------------------------------------------------------------
 
+ChatRoomId::ChatRoomId () : ClonableObject(*new ChatRoomIdPrivate) {}
+
 ChatRoomId::ChatRoomId (
 	const SimpleAddress &peerAddress,
 	const SimpleAddress &localAddress
@@ -54,6 +56,12 @@ bool ChatRoomId::operator== (const ChatRoomId &chatRoomId) const {
 
 bool ChatRoomId::operator!= (const ChatRoomId &chatRoomId) const {
 	return !(*this == chatRoomId);
+}
+
+bool ChatRoomId::operator< (const ChatRoomId &chatRoomId) const {
+	L_D();
+	const ChatRoomIdPrivate *dChatRoomId = chatRoomId.getPrivate();
+	return d->peerAddress < dChatRoomId->peerAddress || d->localAddress < dChatRoomId->localAddress;
 }
 
 const SimpleAddress &ChatRoomId::getPeerAddress () const {

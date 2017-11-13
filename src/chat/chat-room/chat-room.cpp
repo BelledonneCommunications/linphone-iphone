@@ -74,72 +74,61 @@ void ChatRoomPrivate::removeTransientMessage (const shared_ptr<ChatMessage> &msg
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::release () {
-	L_Q();
 	isComposingHandler->stopTimers();
 
-	// TODO: Remove me?
-	// Why chat room is set to nullptr? Avoid shared ptr lock?! Wtf?!
-	for (auto &message : weakMessages) {
-		try {
-			shared_ptr<ChatMessage> msg(message);
-			msg->cancelFileTransfer();
-			msg->getPrivate()->setChatRoom(nullptr);
-		} catch (const bad_weak_ptr &) {}
-	}
-	for (auto &message : transientMessages) {
-		message->cancelFileTransfer();
-		message->getPrivate()->setChatRoom(nullptr);
-	}
+	for (auto &message : weakMessages)
+		message.lock()->cancelFileTransfer();
 
-	linphone_chat_room_unref(L_GET_C_BACK_PTR(q));
+	for (auto &message : transientMessages)
+		message->cancelFileTransfer();
 }
 
 void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
-	L_Q();
-
-	shared_ptr<Core> core = q->getCore();
-	if (!core)
-		return;
-	LinphoneCore *cCore = core->getCCore();
-
-	const char *identity = nullptr;
-	LinphoneAddress *peer = linphone_address_new(peerAddress.asString().c_str());
-	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cCore, peer);
-	if (proxy)
-		identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
-	else
-		identity = linphone_core_get_primary_contact(cCore);
-
-	/* Sending out of call */
-	SalMessageOp *op = new SalMessageOp(cCore->sal);
-	linphone_configure_op(cCore, op, peer, nullptr, !!lp_config_get_int(cCore->config, "sip", "chat_msg_with_contact", 0));
-
-	shared_ptr<ChatMessage> msg = q->createMessage();
-	msg->setFromAddress(Address(identity));
-	msg->setToAddress(peerAddress);
-
-	Content *content = new Content();
-	content->setContentType("message/imdn+xml");
-	content->setBody(payload);
-	msg->addContent(content);
-
-	/* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
-	int retval = -1;
-	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cCore);
-	if (imee && (reason == LinphoneReasonNone)) {
-		LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-		LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
-		if (cbProcessOutgoingMessage) {
-			retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(q), L_GET_C_BACK_PTR(msg));
-		}
-	}
-
-	if (retval <= 0) {
-		op->send_message(identity, peerAddress.asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
-	}
-
-	linphone_address_unref(peer);
-	op->unref();
+	// L_Q();
+	//
+	// shared_ptr<Core> core = q->getCore();
+	// LinphoneCore *cCore = core->getCCore();
+	//
+	// // TODO: Use ChatRoomId.
+	// const char *identity = nullptr;
+	// LinphoneAddress *peer = linphone_address_new(q->getPeerAddress().asString().c_str());
+	// LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cCore, peer);
+	// if (proxy)
+	// 	identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
+	// else
+	// 	identity = linphone_core_get_primary_contact(cCore);
+	//
+	// /* Sending out of call */
+	// SalMessageOp *op = new SalMessageOp(cCore->sal);
+	// linphone_configure_op(cCore, op, peer, nullptr, !!lp_config_get_int(cCore->config, "sip", "chat_msg_with_contact", 0));
+	//
+	// // shared_ptr<ChatMessage> msg = createChatMessage(
+	// // 	ChatMessage::Direction::Outgoing,
+	// // 	ChatRoomId(q->getPeerAddress(), Address(identity))
+	// // );
+	//
+	// Content *content = new Content();
+	// content->setContentType("message/imdn+xml");
+	// content->setBody(payload);
+	// msg->addContent(*content);
+	//
+	// /* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
+	// int retval = -1;
+	// LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cCore);
+	// if (imee && (reason == LinphoneReasonNone)) {
+	// 	LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
+	// 	LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
+	// 	if (cbProcessOutgoingMessage) {
+	// 		retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(q), L_GET_C_BACK_PTR(msg));
+	// 	}
+	// }
+	//
+	// if (retval <= 0) {
+	// 	op->send_message(identity, q->getPeerAddress().asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
+	// }
+	//
+	// linphone_address_unref(peer);
+	// op->unref();
 }
 
 // -----------------------------------------------------------------------------
@@ -164,12 +153,36 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 		if (!payload.empty()) {
 			shared_ptr<ChatMessage> msg = q->createMessage();
 			Content *content = new Content();
-			content->setContentType("application/im-iscomposing+xml");
+			content->setContentType(ContentType::ImIsComposing);
 			content->setBody(payload);
-			msg->addContent(content);
+			msg->addContent(*content);
 			msg->getPrivate()->send();
 		}
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Direction direction) {
+	// TODO: Create me.
+	return nullptr;
+}
+
+// -----------------------------------------------------------------------------
+
+const ChatRoomId &ChatRoom::getChatRoomId () const {
+	L_D();
+	return d->chatRoomId;
+}
+
+const SimpleAddress &ChatRoom::getPeerAddress () const {
+	L_D();
+	return d->chatRoomId.getPeerAddress();
+}
+
+const SimpleAddress &ChatRoom::getLocalAddress () const {
+	L_D();
+	return d->chatRoomId.getLocalAddress();
 }
 
 // -----------------------------------------------------------------------------
@@ -229,7 +242,7 @@ void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) 
 void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 
-	msg->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
+	// TODO: Check direction.
 
 	/* Add to transient list */
 	addTransientMessage(msg);
@@ -267,25 +280,24 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 		return reason;
 	LinphoneCore *cCore = core->getCCore();
 
-	msg = q->createMessage();
+	msg = createChatMessage(
+		SimpleAddress(op->get_from()) == q->getLocalAddress()
+			? ChatMessage::Direction::Outgoing
+			: ChatMessage::Direction::Incoming
+	);
 
 	Content content;
 	content.setContentType(salMsg->content_type);
 	content.setBody(salMsg->text ? salMsg->text : "");
 	msg->setInternalContent(content);
 
-	msg->setToAddress(Address(op->get_to() ? op->get_to() : linphone_core_get_identity(cCore)));
-	msg->setFromAddress(peerAddress);
 	msg->getPrivate()->setTime(salMsg->time);
 	msg->getPrivate()->setState(ChatMessage::State::Delivered);
-	msg->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 	msg->setImdnMessageId(op->get_call_id());
 
 	const SalCustomHeader *ch = op->get_recv_custom_header();
 	if (ch)
 		msg->getPrivate()->setSalCustomHeaders(sal_custom_header_clone(ch));
-	/*if (salMsg->url)
-		msg->getPrivate()->setExternalBodyUrl(salMsg->url);*/
 
 	reason = msg->getPrivate()->receive();
 
@@ -342,8 +354,9 @@ void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 		// Legacy
 		notifyChatMessageReceived(msg);
 
-		remoteIsComposing.erase(msg->getFromAddress().asStringUriOnly());
-		isComposingHandler->stopRemoteRefreshTimer(msg->getFromAddress().asStringUriOnly());
+		const string fromAddress = msg->getFromAddress().asString();
+		remoteIsComposing.erase(fromAddress);
+		isComposingHandler->stopRemoteRefreshTimer(fromAddress);
 		notifyIsComposingReceived(msg->getFromAddress(), false);
 		msg->sendDeliveryNotification(LinphoneReasonNone);
 	}
@@ -365,12 +378,14 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	if (!msg->getPrivate()->getText().empty()) {
 		/* Legacy API */
+		LinphoneAddress *fromAddress = linphone_address_new(msg->getFromAddress().asString().c_str());
 		linphone_core_notify_text_message_received(
 			q->getCore()->getCCore(),
 			cr,
-			L_GET_C_BACK_PTR(&msg->getFromAddress()),
+			fromAddress,
 			msg->getPrivate()->getText().c_str()
 		);
+		linphone_address_unref(fromAddress);
 	}
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsMessageReceivedCb cb = linphone_chat_room_cbs_get_message_received(cbs);
@@ -433,13 +448,11 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 
 // =============================================================================
 
-ChatRoom::ChatRoom (
-	ChatRoomPrivate &p,
-	const shared_ptr<Core> &core,
-	const Address &peerAddress
-) : Object(p), CoreAccessor(core) {
+ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
+	Object(p), CoreAccessor(core) {
 	L_D();
-	d->peerAddress = peerAddress;
+
+	d->chatRoomId = chatRoomId;
 	d->isComposingHandler.reset(new IsComposing(core->getCCore(), d));
 }
 
@@ -457,8 +470,6 @@ void ChatRoom::compose () {
 
 shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
 	shared_ptr<ChatMessage> chatMessage = createMessage();
-
-	chatMessage->getPrivate()->setDirection(ChatMessage::Direction::Outgoing);
 	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
 	return chatMessage;
 }
@@ -468,17 +479,13 @@ shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
 	Content *content = new Content();
 	content->setContentType(ContentType::PlainText);
 	content->setBody(message);
-	chatMessage->addContent(content);
+	chatMessage->addContent(*content);
 	return chatMessage;
 }
 
 shared_ptr<ChatMessage> ChatRoom::createMessage () {
 	L_D();
-	shared_ptr<ChatMessage> chatMessage = make_shared<ChatMessage>(getSharedFromThis());
-	chatMessage->setToAddress(d->peerAddress);
-	chatMessage->setFromAddress(Address(linphone_core_get_identity(getCore()->getCCore())));
-	chatMessage->getPrivate()->setTime(ms_time(0));
-	return chatMessage;
+	return d->createChatMessage(ChatMessage::Direction::Outgoing);
 }
 
 void ChatRoom::deleteHistory () {
@@ -517,9 +524,7 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistory (int nbMessages) {
 }
 
 int ChatRoom::getHistorySize () {
-	L_D();
-	shared_ptr<Core> core = getCore();
-	return core ? core->getPrivate()->mainDb->getChatMessagesCount(d->peerAddress.asStringUriOnly()) : 0;
+	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
 }
 
 list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) {
@@ -528,9 +533,7 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) 
 }
 
 int ChatRoom::getUnreadChatMessagesCount () {
-	L_D();
-	shared_ptr<Core> core = getCore();
-	return core ? core->getPrivate()->mainDb->getUnreadChatMessagesCount(d->peerAddress.asStringUriOnly()) : 0;
+	return getCore()->getPrivate()->mainDb->getUnreadChatMessagesCount(getChatRoomId());
 }
 
 bool ChatRoom::isRemoteComposing () const {
@@ -549,13 +552,13 @@ void ChatRoom::markAsRead () {
 		return;
 
 	CorePrivate *dCore = core->getPrivate();
-	const string peerAddress = d->peerAddress.asStringUriOnly();
-	list<shared_ptr<ChatMessage>> chatMessages = dCore->mainDb->getUnreadChatMessages(peerAddress);
+	const string peerAddress = getPeerAddress().asString();
+	list<shared_ptr<ChatMessage>> chatMessages = dCore->mainDb->getUnreadChatMessages(d->chatRoomId);
 
 	for (auto &chatMessage : chatMessages)
 		chatMessage->sendDisplayNotification();
 
-	dCore->mainDb->markChatMessagesAsRead(peerAddress);
+	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
 
 	if (d->pendingMessage) {
 		d->pendingMessage->updateState(ChatMessage::State::Displayed);
@@ -564,11 +567,6 @@ void ChatRoom::markAsRead () {
 }
 
 // -----------------------------------------------------------------------------
-
-const Address& ChatRoom::getPeerAddress () const {
-	L_D();
-	return d->peerAddress;
-}
 
 ChatRoom::State ChatRoom::getState () const {
 	L_D();

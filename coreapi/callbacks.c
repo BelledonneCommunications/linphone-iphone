@@ -48,6 +48,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "conference/session/media-session.h"
 #include "core/core-p.h"
 
+using namespace std;
+
 using namespace LinphonePrivate;
 
 static void register_failure(SalOp *op);
@@ -126,13 +128,12 @@ static void call_received(SalCallOp *h) {
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
 		linphone_address_unref(toAddr);
 		linphone_address_unref(fromAddr);
-		LinphonePrivate::Address addr(h->get_to());
-		if (addr.isValid()) {
-			LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(addr));
-			if (cr) {
-				L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmJoining(h);
-				return;
-			}
+		shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
+			ChatRoomId(SimpleAddress(h->get_to()), SimpleAddress(h->get_from()))
+		);
+		if (chatRoom) {
+			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
+			return;
 		}
 	} else {
 		// TODO: handle media conference joining if the "text" feature tag is not present
@@ -751,26 +752,25 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
-					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
-						lc->cppCore->findChatRoom(Address(op->get_to()))
+					shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
+						ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_from()))
 					);
-					if (cr) {
-						Address fromAddr(op->get_from());
-						std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
+					if (chatRoom) {
+						std::shared_ptr<Participant> participant = chatRoom->findParticipant(chatRoom->getLocalAddress());
 						if (!participant || !participant->isAdmin()) {
 							static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 							return;
 						}
-						participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
+						participant = chatRoom->findParticipant(addr);
 						if (participant)
-							L_GET_CPP_PTR_FROM_C_OBJECT(cr)->removeParticipant(participant);
+							chatRoom->removeParticipant(participant);
 						static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 						return;
 					}
 				} else {
 					// The server asks a participant to leave a chat room
 					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
-						lc->cppCore->findChatRoom(addr)
+						lc->cppCore->findChatRoom(ChatRoomId(addr, SimpleAddress(op->get_from())))
 					);
 					if (cr) {
 						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
@@ -780,7 +780,9 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 				}
 			} else if (addr.hasParam("admin")) {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(Address(op->get_to())));
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(
+					ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_from()))
+				));
 				if (cr) {
 					Address fromAddr(op->get_from());
 					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
@@ -797,16 +799,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(addr));
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(
+					ChatRoomId(addr, SimpleAddress(op->get_from()))
+				));
 				if (!cr)
 					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
-				/* The following causes a crash because chat room hasn't yet a peer address.
-				The above call to join() will create a CallSession which will call onConferenceCreated when it'll reach the Connected state.
-				onConferenceCreated will then call the following commented lines, no need for them here. */
-				/*L_GET_PRIVATE(lc->cppCore)->insertChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
-				L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Created);
-				L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));*/
 				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 				return;
 			}

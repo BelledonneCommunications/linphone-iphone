@@ -133,9 +133,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	// Modify the initial message since there was no error
 	message->setInternalContent(newContent);
 	if (cpimFromAddress.isValid())
-		message->setFromAddress(cpimFromAddress);
-	if (cpimToAddress.isValid())
-		message->setToAddress(cpimToAddress);
+		message->getPrivate()->forceFromAddress(cpimFromAddress);
 
 	return ChatMessageModifier::Result::Done;
 }

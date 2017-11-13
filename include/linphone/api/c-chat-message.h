@@ -97,25 +97,11 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_outgoing(LinphoneChatMessage* ms
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_from_address(LinphoneChatMessage* msg);
 
 /**
- * Set origin of the message
- * @param[in] message #LinphoneChatMessage obj
- * @param[in] from #LinphoneAddress origin of this message (copied)
- */
-LINPHONE_PUBLIC void linphone_chat_message_set_from_address(LinphoneChatMessage* msg, const LinphoneAddress* from);
-
-/**
  * Get destination of the message
  * @param[in] message #LinphoneChatMessage obj
  * @return #LinphoneAddress
  */
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(LinphoneChatMessage* msg);
-
-/**
- * Set destination of the message
- * @param[in] message #LinphoneChatMessage obj
- * @param[in] addr #LinphoneAddress destination of this message (copied)
- */
-LINPHONE_PUBLIC void linphone_chat_message_set_to_address(LinphoneChatMessage* msg, const LinphoneAddress* addr);
 
 /**
  * Get the content type of a chat message.

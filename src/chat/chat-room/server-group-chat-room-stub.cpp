@@ -74,31 +74,31 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
-  ChatRoom(*new ServerGroupChatRoomPrivate, core, Address(op->get_to())),
+	ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress())),
 	LocalConference(core->getCCore(), Address(op->get_to()), nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
-// -----------------------------------------------------------------------------
-
-void ServerGroupChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
+bool ServerGroupChatRoom::canHandleParticipants () const {
+	return false;
+}
 
 void ServerGroupChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {}
 
 void ServerGroupChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {}
 
-bool ServerGroupChatRoom::canHandleParticipants () const {
-	return false;
+const Address &ServerGroupChatRoom::getConferenceAddress () const {
+	return LocalConference::getConferenceAddress();
 }
+
+void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
+
+void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
 
 shared_ptr<Participant> ServerGroupChatRoom::findParticipant (const Address &) const {
 	return nullptr;
-}
-
-const Address &ServerGroupChatRoom::getConferenceAddress () const {
-	return LocalConference::getConferenceAddress();
 }
 
 shared_ptr<Participant> ServerGroupChatRoom::getMe () const {
@@ -113,23 +113,21 @@ list<shared_ptr<Participant>> ServerGroupChatRoom::getParticipants () const {
 	return LocalConference::getParticipants();
 }
 
+void ServerGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {}
+
 const string &ServerGroupChatRoom::getSubject () const {
 	return LocalConference::getSubject();
 }
+
+void ServerGroupChatRoom::setSubject (const string &) {}
 
 void ServerGroupChatRoom::join () {}
 
 void ServerGroupChatRoom::leave () {}
 
-void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
-
-void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
-
-void ServerGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {}
-
-void ServerGroupChatRoom::setSubject (const string &) {}
-
 // -----------------------------------------------------------------------------
+
+void ServerGroupChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
 
 void ServerGroupChatRoom::onCallSessionStateChanged (
 	const shared_ptr<const CallSession> &,

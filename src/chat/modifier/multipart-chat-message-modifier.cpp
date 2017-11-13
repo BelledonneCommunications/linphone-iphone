@@ -120,7 +120,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 				}
 				content->setContentType(contentType);
 				content->setBody(contentBody);
-				message->addContent(content);
+				message->addContent(*content);
 
 				lInfo() << "Parsed and added content with type " << contentType.asString();
 			}

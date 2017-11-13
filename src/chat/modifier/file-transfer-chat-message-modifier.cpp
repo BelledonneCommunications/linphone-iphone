@@ -370,8 +370,8 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				fileTransferContent->setFileContent(fileContent);
 				fileTransferContent->setBody(body);
 
-				chatMessage->removeContent(fileContent);
-				chatMessage->addContent(fileTransferContent);
+				chatMessage->removeContent(*fileContent);
+				chatMessage->addContent(*fileTransferContent);
 
 				chatMessage->updateState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
@@ -525,7 +525,7 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							fileTransferContent->setFileName((char *)filename);
-							
+
 							xmlFree(filename);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
@@ -558,7 +558,7 @@ ChatMessageModifier::Result FileTransferChatMessageModifier::decode (const share
 		fileTransferContent->setContentType(internalContent.getContentType());
 		fileTransferContent->setBody(internalContent.getBody());
 		fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
-		chatMessage->addContent(fileTransferContent);
+		chatMessage->addContent(*fileTransferContent);
 		return ChatMessageModifier::Result::Done;
 	} else {
 		for (Content *content : chatMessage->getContents()) {
@@ -603,7 +603,7 @@ static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferC
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							fileContent->setFileName((char *)filename);
-							
+
 							xmlFree(filename);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
@@ -765,12 +765,12 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 	if (retval <= 0 && chatMessage->getState() != ChatMessage::State::FileTransferError) {
 		// Remove the FileTransferContent from the message and store the FileContent
 		FileContent *fileContent = currentFileContentToTransfer;
-		chatMessage->addContent(fileContent);
+		chatMessage->addContent(*fileContent);
 		for (Content *content : chatMessage->getContents()) {
 			if (content->getContentType() == ContentType::FileTransfer) {
 				FileTransferContent *fileTransferContent = (FileTransferContent*)content;
 				if (fileTransferContent->getFileContent() == fileContent) {
-					chatMessage->removeContent(content);
+					chatMessage->removeContent(*content);
 					free(fileTransferContent);
 					break;
 				}
@@ -818,7 +818,7 @@ void FileTransferChatMessageModifier::processResponseHeadersFromGetFile (const b
 		if (currentFileContentToTransfer == nullptr) {
 			lWarning() << "No file transfer information for msg [" << this << "]: creating...";
 			FileContent *content = createFileTransferInformationFromHeaders(response);
-			chatMessage->addContent(content);
+			chatMessage->addContent(*content);
 		} else {
 			belle_sip_header_content_length_t *content_length_hdr = BELLE_SIP_HEADER_CONTENT_LENGTH(belle_sip_message_get_header(response, "Content-Length"));
 			currentFileContentToTransfer->setFileSize(belle_sip_header_content_length_get_content_length(content_length_hdr));
@@ -889,7 +889,7 @@ void FileTransferChatMessageModifier::processResponseFromGetFile (const belle_ht
 
 int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> &message, FileTransferContent *fileTransferContent) {
 	chatMessage = message;
-	
+
 	if (httpRequest) {
 		lError() << "linphone_chat_message_download_file(): there is already a download in progress";
 		return -1;
@@ -906,12 +906,12 @@ int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> 
 	if (currentFileContentToTransfer == nullptr) {
 		return -1;
 	}
-	
+
 	// THIS IS ONLY FOR BACKWARD C API COMPAT
 	if (currentFileContentToTransfer->getFilePath().empty() && !chatMessage->getPrivate()->getFileTransferFilepath().empty()) {
 		currentFileContentToTransfer->setFilePath(chatMessage->getPrivate()->getFileTransferFilepath());
 	}
-	
+
 	belle_http_request_listener_callbacks_t cbs = { 0 };
 	cbs.process_response_headers = _chat_process_response_headers_from_get_file;
 	cbs.process_response = _chat_message_process_response_from_get_file;

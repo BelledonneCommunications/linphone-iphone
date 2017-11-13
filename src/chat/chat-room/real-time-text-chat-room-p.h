@@ -20,35 +20,26 @@
 #ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_
 #define _REAL_TIME_TEXT_CHAT_ROOM_P_H_
 
-#include "chat/chat-room/chat-room-p.h"
+#include "chat/chat-room/basic-chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RealTimeTextChatRoomPrivate : public ChatRoomPrivate {
+class RealTimeTextChatRoomPrivate : public BasicChatRoomPrivate {
 public:
 	RealTimeTextChatRoomPrivate () = default;
 	~RealTimeTextChatRoomPrivate ();
 
-public:
-	void setCall (LinphoneCall *call) {
-		this->call = call;
-	}
-
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
-
 	void sendMessage (const std::shared_ptr<ChatMessage> &msg) override;
 
-public:
 	LinphoneCall *call = nullptr;
 	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
 	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 
 private:
-	std::string subject;
-
 	L_DECLARE_PUBLIC(RealTimeTextChatRoom);
 };
 

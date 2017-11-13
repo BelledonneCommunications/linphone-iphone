@@ -20,7 +20,7 @@
 #ifndef _REAL_TIME_TEXT_CHAT_ROOM_H_
 #define _REAL_TIME_TEXT_CHAT_ROOM_H_
 
-#include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/basic-chat-room.h"
 
 // =============================================================================
 
@@ -28,35 +28,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RealTimeTextChatRoomPrivate;
 
-class LINPHONE_PUBLIC RealTimeTextChatRoom : public ChatRoom {
-public:
-	// TODO: Make me private.
-	RealTimeTextChatRoom (const std::shared_ptr<Core> &core, const Address &peerAddress);
+class LINPHONE_PUBLIC RealTimeTextChatRoom : public BasicChatRoom {
+	friend class CorePrivate;
 
+public:
 	CapabilitiesMask getCapabilities () const override;
 
 	uint32_t getChar () const;
 	LinphoneCall *getCall () const;
 
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
-	/* ConferenceInterface */
-	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
-	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
-	bool canHandleParticipants () const override;
-	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
-	const Address &getConferenceAddress () const override;
-	std::shared_ptr<Participant> getMe () const override;
-	int getNbParticipants () const override;
-	std::list<std::shared_ptr<Participant>> getParticipants () const override;
-	const std::string &getSubject () const override;
-	void join () override;
-	void leave () override;
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
-	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
-	void setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) override;
-	void setSubject (const std::string &subject) override;
-
 private:
+	RealTimeTextChatRoom (const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
+
 	L_DECLARE_PRIVATE(RealTimeTextChatRoom);
 	L_DISABLE_COPY(RealTimeTextChatRoom);
 };
