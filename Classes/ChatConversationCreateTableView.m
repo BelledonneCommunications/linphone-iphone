@@ -206,6 +206,8 @@
 	});
 }
 
+#pragma mark - Searchbar delegates
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
 	searchBar.showsCancelButton = (searchText.length > 0);
 	[self reloadDataWithFilter:searchText];
@@ -228,4 +230,5 @@
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	[searchBar resignFirstResponder];
 }
+
 @end
