@@ -36,6 +36,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
++ (void)displayCreationError {
+	static UIAlertController *errorView = nil;
+	// avoid having multiple popups
+	[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
+	errorView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Chat room creation error", nil)
+													message:NSLocalizedString(@"Chat room could not be created on server", nil)
+											 preferredStyle:UIAlertControllerStyleAlert];
+
+	UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+															style:UIAlertActionStyleDefault
+														  handler:^(UIAlertAction * action) {}];
+	[errorView addAction:defaultAction];
+	[PhoneMainView.instance presentViewController:errorView animated:YES completion:nil];
+}
+
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	// if we use fragments, remove back button
@@ -299,7 +314,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		? NSLocalizedString(@"You are now an admin of the chat room", nil)
 		: NSLocalizedString(@"You are no longer an admin of the chat room", nil);
 
-	static UIAlertController *alertView;
+	static UIAlertController *alertView = nil;
 	// avoid having multiple popups
 	[PhoneMainView.instance dismissViewControllerAnimated:YES completion:nil];
 	alertView = [UIAlertController alertControllerWithTitle:[NSString stringWithFormat:@"%@", message]
@@ -322,6 +337,7 @@ void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newStat
 			break;
 		case LinphoneChatRoomStateCreationFailed:
 			view.waitView.hidden = YES;
+			[ChatConversationInfoView displayCreationError];
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			break;
 		case LinphoneChatRoomStateTerminated:

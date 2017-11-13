@@ -29,6 +29,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 
++ (void)displayCreationError;
+
 - (IBAction)onNextClick:(id)sender;
 - (IBAction)onBackClick:(id)sender;
 - (IBAction)onQuitClick:(id)sender;

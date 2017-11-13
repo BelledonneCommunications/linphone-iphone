@@ -85,6 +85,7 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 			break;
 		case LinphoneChatRoomStateCreationFailed:
 			view.waitView.hidden = YES;
+			[ChatConversationInfoView displayCreationError];
 			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			break;
 		default:
@@ -116,7 +117,10 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsGroup removeAllObjects];
-	[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+	if (_tableController.notFirstTime)
+		[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
+	else
+		[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
 }
 
 - (IBAction)onNextClick:(id)sender {
