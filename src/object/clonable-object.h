@@ -25,6 +25,16 @@
 
 // =============================================================================
 
+#define L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(CLASS) \
+	CLASS::CLASS (const CLASS &src) : ClonableObject( \
+		const_cast<std::decay<decltype(*src.getPrivate())>::type &>(*src.getPrivate()) \
+	) {} \
+	CLASS &CLASS::operator= (const CLASS &src) { \
+		if (this != &src) \
+			setRef(*src.getPrivate()); \
+		return *this; \
+	}
+
 LINPHONE_BEGIN_NAMESPACE
 
 /*
@@ -38,13 +48,9 @@ public:
 	virtual ~ClonableObject ();
 
 protected:
-	// Use a new ClonableObjectPrivate without owner.
 	explicit ClonableObject (ClonableObjectPrivate &p);
 
-	// If you want share an existing ClonableObjectPrivate, call this function.
-	explicit ClonableObject (const ClonableObjectPrivate &p);
-
-	// Change the ClonableObjectPrivate, it can be shared.
+	// Change the ClonableObjectPrivate. Unref previous.
 	void setRef (const ClonableObjectPrivate &p);
 
 	ClonableObjectPrivate *mPrivate = nullptr;

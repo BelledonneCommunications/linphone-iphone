@@ -1,5 +1,5 @@
 /*
- * chat-room-id.h
+ * traits.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,34 +17,41 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CHAT_ROOM_ID_H_
-#define _CHAT_ROOM_ID_H_
+#ifndef _TRAITS_H_
+#define _TRAITS_H_
 
-#include "address/simple-address.h"
+#include "general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatRoomIdPrivate;
+namespace Private {
+	// See: http://en.cppreference.com/w/cpp/types/void_t
+	template<typename... T> struct MakeVoid {
+		typedef void type;
+	};
+	template<typename... T>
+	using void_t = typename MakeVoid<T...>::type;
 
-class LINPHONE_PUBLIC ChatRoomId : public ClonableObject {
-public:
-	ChatRoomId (const SimpleAddress &peerAddress, const SimpleAddress &localAddress);
-	ChatRoomId (const ChatRoomId &src);
+	template<typename T, typename U = void>
+	struct IsMapContainerImpl : std::false_type {};
 
-	ChatRoomId &operator= (const ChatRoomId &src);
-
-	bool operator== (const ChatRoomId &chatRoomId) const;
-	bool operator!= (const ChatRoomId &chatRoomId) const;
-
-	const SimpleAddress &getPeerAddress () const;
-	const SimpleAddress &getLocalAddress () const;
-
-private:
-	L_DECLARE_PRIVATE(ChatRoomId);
+	template<typename T>
+	struct IsMapContainerImpl<
+		T,
+		void_t<
+			typename T::key_type,
+			typename T::mapped_type,
+			decltype(std::declval<T&>()[std::declval<const typename T::key_type&>()])
+		>
+	> : std::true_type {};
 };
+
+// Check if a type is a std container like map, unordered_map...
+template<typename T>
+struct IsMapContainer : Private::IsMapContainerImpl<T>::type {};
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CHAT_ROOM_ID_H_
+#endif // ifndef _TRAITS_H_

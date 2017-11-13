@@ -20,7 +20,7 @@
 #ifndef _CLONABLE_OBJECT_P_H_
 #define _CLONABLE_OBJECT_P_H_
 
-#include <unordered_map>
+#include <set>
 
 #include "linphone/utils/general.h"
 
@@ -38,14 +38,9 @@ public:
 	virtual ~ClonableObjectPrivate () = default;
 
 protected:
-	std::unordered_map<const ClonableObjectPrivate *, ClonableObject *> *mPublic = nullptr;
+	std::set<ClonableObject *> mPublic;
 
 private:
-	void ref ();
-	void unref ();
-
-	int nRefs = 0;
-
 	L_DECLARE_PUBLIC(ClonableObject);
 
 	// It's forbidden to copy directly one Clonable object private.

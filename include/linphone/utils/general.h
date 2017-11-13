@@ -132,38 +132,11 @@ class ObjectPrivate;
 		friend class Tester;
 #endif
 
-namespace Private {
-	// See: http://en.cppreference.com/w/cpp/types/void_t
-	template<typename... T> struct MakeVoid {
-		typedef void type;
-	};
-	template<typename... T>
-	using void_t = typename MakeVoid<T...>::type;
-
-	template<typename T, typename U = void>
-	struct IsMapContainerImpl : std::false_type {};
-
-	template<typename T>
-	struct IsMapContainerImpl<
-		T,
-		void_t<
-			typename T::key_type,
-			typename T::mapped_type,
-			decltype(std::declval<T&>()[std::declval<const typename T::key_type&>()])
-		>
-	> : std::true_type {};
-};
-
-// Check if a type is a std container like map, unordered_map...
-template<typename T>
-struct IsMapContainer : Private::IsMapContainerImpl<T>::type {};
-
 // Generic public helper.
 template<
 	typename R,
 	typename P,
-	typename C,
-	typename = typename std::enable_if<!IsMapContainer<P>::value, P>::type
+	typename C
 >
 constexpr R *getPublicHelper (P *object, const C *) {
 	return static_cast<R *>(object);
@@ -173,22 +146,19 @@ constexpr R *getPublicHelper (P *object, const C *) {
 template<
 	typename R,
 	typename P,
-	typename C,
-	typename = typename std::enable_if<IsMapContainer<P>::value, P>::type
+	typename C
 >
-inline R *getPublicHelper (const P *map, const C *context) {
-	auto it = map->find(context);
-	L_ASSERT(it != map->cend());
-	return static_cast<R *>(it->second);
+inline R *getPublicHelper (const P &objectSet, const C *) {
+	auto it = objectSet.cbegin();
+	L_ASSERT(it != objectSet.cend());
+	return static_cast<R *>(*it);
 }
 
 #define L_DECLARE_PUBLIC(CLASS) \
 	inline CLASS *getPublic () { \
-		L_ASSERT(mPublic); \
 		return getPublicHelper<CLASS>(mPublic, this); \
 	} \
 	inline const CLASS *getPublic () const { \
-		L_ASSERT(mPublic); \
 		return getPublicHelper<const CLASS>(mPublic, this); \
 	} \
 	friend class CLASS;
@@ -239,14 +209,6 @@ struct AddConstMirror<const T, U> {
 		return std::static_pointer_cast<const CLASS>(Object::getSharedFromThis()); \
 	}
 
-#define L_USE_DEFAULT_SHARE_IMPL(CLASS, PARENT_CLASS) \
-	CLASS::CLASS (const CLASS &src) : PARENT_CLASS(*src.getPrivate()) {} \
-	CLASS &CLASS::operator= (const CLASS &src) { \
-		if (this != &src) \
-			setRef(*src.getPrivate()); \
-		return *this; \
-	}
-
 // -----------------------------------------------------------------------------
 // Wrapper public.
 // -----------------------------------------------------------------------------
@@ -254,7 +216,7 @@ struct AddConstMirror<const T, U> {
 #define L_DECL_C_STRUCT(STRUCT) typedef struct _ ## STRUCT STRUCT;
 #define L_DECL_C_STRUCT_PREFIX_LESS(STRUCT) typedef struct STRUCT STRUCT;
 
-#endif
+#endif // ifdef __cplusplus
 
 LINPHONE_END_NAMESPACE
 

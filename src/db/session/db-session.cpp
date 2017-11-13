@@ -30,12 +30,12 @@ DbSession::DbSession (Type type) : ClonableObject(*new DbSessionPrivate) {
 	d->type = type;
 }
 
-L_USE_DEFAULT_SHARE_IMPL(DbSession, ClonableObject);
-
 DbSession::operator bool () const {
 	L_D();
 	return d->isValid;
 }
+
+L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(DbSession);
 
 DbSession::Type DbSession::getBackendType () const {
 	L_D();

@@ -44,6 +44,8 @@ ChatRoomId::ChatRoomId (
 	d->localAddress = localAddress;
 }
 
+L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(ChatRoomId);
+
 bool ChatRoomId::operator== (const ChatRoomId &chatRoomId) const {
 	L_D();
 	const ChatRoomIdPrivate *dChatRoomId = chatRoomId.getPrivate();

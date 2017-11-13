@@ -20,6 +20,8 @@
 #ifndef _ADDRESS_P_H_
 #define _ADDRESS_P_H_
 
+#include <unordered_map>
+
 #include "address.h"
 #include "object/clonable-object-p.h"
 
