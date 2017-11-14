@@ -172,7 +172,7 @@
 	} else if (_cancelButton.hidden == NO) {
 		[self onCancelClick:event];
 	} else {
-		[super onResendClick:event];
+		[super onResend];
 	}
 }
 

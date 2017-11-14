@@ -29,7 +29,6 @@
 @property(nonatomic, weak) IBOutlet UIImageView *backgroundColorImage;
 @property(nonatomic, weak) IBOutlet UIRoundedImageView *avatarImage;
 @property(nonatomic, weak) IBOutlet UILabel *contactDateLabel;
-@property(nonatomic, weak) IBOutlet UIImageView *statusErrorImage;
 @property(weak, nonatomic) IBOutlet UIActivityIndicatorView *statusInProgressSpinner;
 @property(nonatomic, weak) IBOutlet UITextViewNoDefine *messageText;
 @property(weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
@@ -44,8 +43,9 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 
-- (IBAction)onDeleteClick:(id)event;
-- (IBAction)onResendClick:(id)event;
+- (void)onDelete;
+- (void)onResend;
+- (void)onLime;
 - (void)update;
 
 - (void)displayImdmStatus:(LinphoneChatMessageState)state;
