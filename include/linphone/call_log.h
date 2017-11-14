@@ -206,6 +206,23 @@ LINPHONE_PUBLIC LinphoneCallLog * linphone_call_log_ref(LinphoneCallLog *cl);
 **/
 LINPHONE_PUBLIC void linphone_call_log_unref(LinphoneCallLog *cl);
 
+/**
+ * Creates a fake LinphoneCallLog.
+ * @param[in] lc LinphoneCore object
+ * @param[in] from LinphoneAddress of caller
+ * @param[in] to LinphoneAddress of callee
+ * @param[in] dir LinphoneCallDir of call
+ * @param[in] duration call length in seconds
+ * @param[in] start_time timestamp of call start time
+ * @param[in] connected_time timestamp of call connection
+ * @param[in] status LinphoneCallStatus of call
+ * @param[in] video_enabled whether video was enabled or not for this call
+ * @param[in] quality call quality
+ * @return LinphoneCallLog object
+**/
+LINPHONE_PUBLIC LinphoneCallLog *linphone_core_create_call_log(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, LinphoneCallDir dir, 
+		int duration, time_t start_time, time_t connected_time, LinphoneCallStatus status, bool_t video_enabled, float quality);
+
 
 /*******************************************************************************
  * DEPRECATED                                                                  *

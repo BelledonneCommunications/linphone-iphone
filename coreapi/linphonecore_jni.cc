@@ -8913,3 +8913,15 @@ extern "C" jstring Java_org_linphone_core_LinphoneCoreImpl_getTlsKeyPath(JNIEnv 
 		return NULL;
 	}
 }
+
+extern "C" jlong Java_org_linphone_core_LinphoneCoreImpl_createCallLog(JNIEnv *env, jobject, jlong jcore, jlong jfrom, jlong jto, jint jdir, jint duration, jlong start_time, jlong connected_time, jint jstatus, jboolean video_enabled, jfloat quality) {
+	LinphoneCore *core = (LinphoneCore*)jcore;
+	LinphoneAddress *from = (LinphoneAddress *)jfrom;
+	LinphoneAddress *to = (LinphoneAddress *)jto;
+	LinphoneCallDir dir = (LinphoneCallDir)jdir;
+	time_t start = (time_t) start_time;
+	time_t connected = (time_t) connected_time;
+	LinphoneCallStatus status = (LinphoneCallStatus)jstatus;
+	LinphoneCallLog *log = linphone_core_create_call_log(core, from, to, dir, duration, start, connected, status, video_enabled, quality);
+	return (jlong) log;
+}

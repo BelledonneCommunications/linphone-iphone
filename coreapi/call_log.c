@@ -170,6 +170,23 @@ bctbx_list_t * linphone_core_read_call_logs_from_config_file(LinphoneCore *lc){
  * Public functions                                                            *
  ******************************************************************************/
 
+LinphoneCallLog *linphone_core_create_call_log(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, LinphoneCallDir dir, 
+		int duration, time_t start_time, time_t connected_time, LinphoneCallStatus status, bool_t video_enabled, float quality) {
+	LinphoneCallLog *log = linphone_call_log_new(dir, linphone_address_ref(from), linphone_address_ref(to));
+
+	log->duration = duration;
+	log->start_date_time = start_time;
+	set_call_log_date(log,log->start_date_time);
+	log->connected_date_time = connected_time;
+	log->status = status;
+	log->video_enabled = video_enabled;
+	log->quality = quality;
+
+	linphone_core_store_call_log(lc, log);
+
+	return log;
+}
+
 const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
 	return cl->call_id;
 }

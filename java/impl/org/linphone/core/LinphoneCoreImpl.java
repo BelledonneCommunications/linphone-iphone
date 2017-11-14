@@ -1828,4 +1828,12 @@ class LinphoneCoreImpl implements LinphoneCore {
 	public LinphoneFriend createFriendWithAddress(String address) {
 		return (LinphoneFriend) createFriendWithAddress(nativePtr, address);
 	}
+
+	private native long createCallLog(long ptr, long from, long to, int dir, int duration, long start, long connected, int status, boolean videoEnabled, float quality);
+	@Override
+	public LinphoneCallLog createCallLog(LinphoneAddress from, LinphoneAddress to, CallDirection dir, int duration, long start, long connected, LinphoneCallLog.CallStatus status, boolean videoEnabled, float quality) {
+		long logPtr = createCallLog(nativePtr, ((LinphoneAddressImpl) from).nativePtr, ((LinphoneAddressImpl) to).nativePtr, dir == CallDirection.Incoming ? 1 : 0, duration, start, connected, status.toInt(), videoEnabled, quality);
+		LinphoneCallLog log = new LinphoneCallLogImpl(logPtr);
+		return log;
+	}
 }
