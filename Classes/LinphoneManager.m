@@ -828,8 +828,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			// furthermore it introduces a bug when calling multiple times since route may not be
 			// reconfigured between cause leading to bluetooth being disabled while it should not
 			_bluetoothEnabled = FALSE;
-			/*IOS specific*/
-			linphone_core_start_dtmf_stream(theLinphoneCore);
 		}
 
 		if (incallBgTask) {

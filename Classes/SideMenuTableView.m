@@ -6,6 +6,8 @@
 //
 //
 
+#import "linphone/core_utils.h"
+
 #import "SideMenuTableView.h"
 #import "Utils.h"
 
@@ -37,7 +39,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	linphone_core_stop_dtmf(LC);
+	linphone_core_stop_dtmf_stream(LC);
 	[super viewWillAppear:animated];
 
 	_sideMenuEntries = [[NSMutableArray alloc] init];
