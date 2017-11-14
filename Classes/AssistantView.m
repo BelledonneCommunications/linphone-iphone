@@ -1324,8 +1324,10 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 		NSString *pwd = [self findTextField:ViewElement_Password].text;
 		LinphoneProxyConfig *config = linphone_core_create_proxy_config(LC);
 		LinphoneAddress *addr = linphone_address_new(NULL);
+		LinphoneAddress *tmpAddr = linphone_address_new([NSString stringWithFormat:@"sip:%@",domain].UTF8String);
 		linphone_address_set_username(addr, username.UTF8String);
-		linphone_address_set_domain(addr, domain.UTF8String);
+		linphone_address_set_port(addr, linphone_address_get_port(tmpAddr));
+		linphone_address_set_domain(addr, linphone_address_get_domain(tmpAddr));
 		if (displayName && ![displayName isEqualToString:@""]) {
 			linphone_address_set_display_name(addr, displayName.UTF8String);
 		}
@@ -1359,6 +1361,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 								   );
 		linphone_core_add_auth_info(LC, info);
 		linphone_address_unref(addr);
+		linphone_address_unref(tmpAddr);
 
 		if (config) {
 			[[LinphoneManager instance] configurePushTokenForProxyConfig:config];
