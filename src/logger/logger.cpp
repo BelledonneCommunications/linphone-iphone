@@ -32,6 +32,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class LoggerPrivate : public BaseObjectPrivate {
 public:
 	Logger::Level level;

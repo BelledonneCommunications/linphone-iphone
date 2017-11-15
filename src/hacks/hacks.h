@@ -20,22 +20,21 @@
 #ifndef _HACKS_H_
 #define _HACKS_H_
 
-#include <string>
-
 #include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-// This class has the purpose to centralize the temporary hacks so that they
-// can be located more easily.
+/*
+ * This class has the purpose to centralize the TEMPORARY (!!!) hacks so that they
+ * can be located more easily. Useful for dev cpp refactoring.
+ */
 class Hacks {
 public:
 	Hacks () = delete;
 
 private:
-
 	L_DISABLE_COPY(Hacks);
 };
 

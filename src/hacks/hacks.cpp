@@ -25,4 +25,6 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// Place your hacks here.
+
 LINPHONE_END_NAMESPACE
