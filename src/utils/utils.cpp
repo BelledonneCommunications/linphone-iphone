@@ -31,6 +31,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 bool Utils::iequals (const string &a, const string &b) {
 	size_t size = a.size();
 	if (b.size() != size)

@@ -38,7 +38,6 @@ class LINPHONE_PUBLIC Object :
 	public std::enable_shared_from_this<Object>,
 	public BaseObject,
 	public PropertyContainer {
-	friend class ObjectFactory;
 
 public:
 	std::shared_ptr<Object> getSharedFromThis ();

@@ -27,6 +27,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class VariantPrivate {
 public:
 	union Value {

@@ -27,6 +27,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class AppDataContainerPrivate {
 public:
 	shared_ptr<unordered_map<string, string>> appData;

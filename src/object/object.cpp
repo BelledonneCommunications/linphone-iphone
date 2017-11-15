@@ -26,6 +26,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 Object::Object (ObjectPrivate &p) : BaseObject(p) {}
 
 shared_ptr<Object> Object::getSharedFromThis () {
@@ -39,6 +41,8 @@ shared_ptr<const Object> Object::getSharedFromThis () const {
 		lFatal() << "Object " << this << " was not created with make_shared.";
 	}
 
+	// Unable to reach this point.
+	L_ASSERT(false);
 	return nullptr;
 }
 
