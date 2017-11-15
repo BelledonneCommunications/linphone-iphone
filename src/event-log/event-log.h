@@ -43,10 +43,10 @@ public:
 	EventLog ();
 
 	Type getType () const;
-	std::time_t getTime () const;
+	time_t getTime () const;
 
 protected:
-	EventLog (EventLogPrivate &p, Type type, std::time_t time);
+	EventLog (EventLogPrivate &p, Type type, time_t time);
 
 private:
 	L_DECLARE_PRIVATE(EventLog);

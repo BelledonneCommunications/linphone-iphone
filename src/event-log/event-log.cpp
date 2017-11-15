@@ -26,7 +26,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 EventLog::EventLog () : BaseObject(*new EventLogPrivate) {}
 
-EventLog::EventLog (EventLogPrivate &p, Type type, std::time_t time) : BaseObject(p) {
+EventLog::EventLog (EventLogPrivate &p, Type type, time_t time) : BaseObject(p) {
 	L_D();
 	d->type = type;
 	d->time = time;
@@ -37,7 +37,7 @@ EventLog::Type EventLog::getType () const {
 	return d->type;
 }
 
-std::time_t EventLog::getTime () const {
+time_t EventLog::getTime () const {
 	L_D();
 	return d->time;
 }

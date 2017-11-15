@@ -35,7 +35,7 @@ public:
 
 private:
 	EventLog::Type type = EventLog::Type::None;
-	std::time_t time = -1;
+	time_t time = -1;
 
 	L_DECLARE_PUBLIC(EventLog);
 };

@@ -32,7 +32,7 @@ class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceNotifiedEven
 public:
 	ConferenceParticipantEvent (
 		Type type,
-		std::time_t time,
+		time_t time,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const Address &participantAddress
@@ -44,7 +44,7 @@ protected:
 	ConferenceParticipantEvent (
 		ConferenceParticipantEventPrivate &p,
 		Type type,
-		std::time_t time,
+		time_t time,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const Address &participantAddress

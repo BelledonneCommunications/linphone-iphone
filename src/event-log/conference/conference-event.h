@@ -31,12 +31,12 @@ class ConferenceEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceEvent (Type type, time_t time, const Address &conferenceAddress);
 
 	const Address &getConferenceAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, std::time_t time, const Address &conferenceAddress);
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, time_t time, const Address &conferenceAddress);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);

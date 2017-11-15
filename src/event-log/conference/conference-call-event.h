@@ -33,7 +33,7 @@ class ConferenceCallEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceCallEvent : public EventLog {
 public:
-	ConferenceCallEvent (Type type, std::time_t time, const std::shared_ptr<Call> &call);
+	ConferenceCallEvent (Type type, time_t time, const std::shared_ptr<Call> &call);
 
 	std::shared_ptr<Call> getCall () const;
 

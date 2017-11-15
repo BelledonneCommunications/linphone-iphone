@@ -33,7 +33,7 @@ class ConferenceSubjectEventPrivate;
 class LINPHONE_PUBLIC ConferenceSubjectEvent : public ConferenceNotifiedEvent {
 public:
 	ConferenceSubjectEvent (
-		std::time_t time,
+		time_t time,
 		const Address &conferenceAddress,
 		unsigned int notifyId,
 		const std::string &subject

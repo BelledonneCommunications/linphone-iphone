@@ -33,7 +33,7 @@ class ConferenceChatMessageEventPrivate;
 
 class LINPHONE_PUBLIC ConferenceChatMessageEvent : public ConferenceEvent {
 public:
-	ConferenceChatMessageEvent (std::time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
+	ConferenceChatMessageEvent (time_t time, const std::shared_ptr<ChatMessage> &chatMessage);
 
 	std::shared_ptr<ChatMessage> getChatMessage () const;
 
