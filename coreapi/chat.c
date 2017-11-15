@@ -1676,33 +1676,32 @@ void linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	belle_sip_object_unref(msg);
 }
 
+#define strfree0(str) \
+	if (str) { \
+		memset(str, 0, strlen(str)); \
+		ms_free(str); \
+	}
+
 static void _linphone_chat_message_destroy(LinphoneChatMessage *msg) {
 	if (msg->op)
 		sal_op_release(msg->op);
 	if (msg->ei)
 		linphone_error_info_unref(msg->ei);
-	if (msg->message)
-		ms_free(msg->message);
-	if (msg->external_body_url)
-		ms_free(msg->external_body_url);
-	if (msg->appdata)
-		ms_free(msg->appdata);
+	strfree0(msg->message);
+	strfree0(msg->external_body_url);
+	strfree0(msg->appdata);
 	if (msg->from)
 		linphone_address_unref(msg->from);
 	if (msg->to)
 		linphone_address_unref(msg->to);
-	if (msg->message_id)
-		ms_free(msg->message_id);
+	strfree0(msg->message_id);
 	if (msg->custom_headers)
 		sal_custom_header_free(msg->custom_headers);
-	if (msg->content_type)
-		ms_free(msg->content_type);
+	strfree0(msg->content_type);
 	if (msg->file_transfer_information) {
 		linphone_content_unref(msg->file_transfer_information);
 	}
-	if (msg->file_transfer_filepath != NULL) {
-		ms_free(msg->file_transfer_filepath);
-	}
+	strfree0(msg->file_transfer_filepath);
 	if (msg->callbacks) {
 		linphone_chat_message_cbs_unref(msg->callbacks);
 	}
