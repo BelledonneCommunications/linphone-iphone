@@ -20,7 +20,7 @@
 #include <chrono>
 #include <memory>
 
-#include "linphone/core.h"
+#include <bctoolbox/logging.h>
 
 #include "object/base-object-p.h"
 
@@ -53,20 +53,20 @@ Logger::~Logger () {
 	switch (d->level) {
 		case Debug:
 			#if DEBUG_LOGS
-				ms_debug("%s", str.c_str());
+				bctbx_debug("%s", str.c_str());
 			#endif // if DEBUG_LOGS
 			break;
 		case Info:
-			ms_message("%s", str.c_str());
+			bctbx_message("%s", str.c_str());
 			break;
 		case Warning:
-			ms_warning("%s", str.c_str());
+			bctbx_warning("%s", str.c_str());
 			break;
 		case Error:
-			ms_error("%s", str.c_str());
+			bctbx_error("%s", str.c_str());
 			break;
 		case Fatal:
-			ms_fatal("%s", str.c_str());
+			bctbx_fatal("%s", str.c_str());
 			break;
 	}
 }
