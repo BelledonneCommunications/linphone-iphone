@@ -32,12 +32,12 @@ LINPHONE_BEGIN_NAMESPACE
 
 // Declare one enum value. `value` is optional, it can be generated.
 // It's useful to force value in the case of mask.
-#define L_DECLARE_ENUM_VALUE_1_ARGS(NAME) NAME,
+#define L_DECLARE_ENUM_VALUE_1_ARG(NAME) NAME,
 #define L_DECLARE_ENUM_VALUE_2_ARGS(NAME, VALUE) NAME = VALUE,
 
 // Call the right macro. (With or without value.)
 #define L_DECLARE_ENUM_MACRO_CHOOSER(...) \
-	L_GET_ARG_3(__VA_ARGS__, L_DECLARE_ENUM_VALUE_2_ARGS, L_DECLARE_ENUM_VALUE_1_ARGS)
+	L_GET_ARG_3(__VA_ARGS__, L_DECLARE_ENUM_VALUE_2_ARGS, L_DECLARE_ENUM_VALUE_1_ARG)
 
 // Enum value declaration.
 #define L_DECLARE_ENUM_VALUE(...) L_DECLARE_ENUM_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
@@ -53,10 +53,24 @@ LINPHONE_BEGIN_NAMESPACE
 
 #define L_C_ENUM_PREFIX Linphone
 
+// TODO: This macro should be used but it is triggering a bug in doxygen that
+// has been fixed in the 1.8.8 version. See https://bugzilla.gnome.org/show_bug.cgi?id=731985
+// Meanwhile use 2 different macros
+#if 0
 #define L_DECLARE_C_ENUM(NAME, VALUES) \
 	typedef enum L_CONCAT(_, L_CONCAT(L_C_ENUM_PREFIX, NAME)) { \
 		L_APPLY(L_CONCAT, L_CONCAT(L_C_ENUM_PREFIX, NAME), L_GET_HEAP(VALUES(L_DECLARE_ENUM_VALUE))) \
 	} L_CONCAT(L_C_ENUM_PREFIX, NAME)
+#else
+#define L_DECLARE_C_ENUM(NAME, VALUES) \
+	typedef enum L_CONCAT(_, L_CONCAT(L_C_ENUM_PREFIX, NAME)) { \
+		L_APPLY(L_CONCAT, L_CONCAT(L_C_ENUM_PREFIX, NAME), L_GET_HEAP(VALUES(L_DECLARE_ENUM_VALUE_1_ARG))) \
+	} L_CONCAT(L_C_ENUM_PREFIX, NAME)
+#define L_DECLARE_C_ENUM_FIXED_VALUES(NAME, VALUES) \
+	typedef enum L_CONCAT(_, L_CONCAT(L_C_ENUM_PREFIX, NAME)) { \
+		L_APPLY(L_CONCAT, L_CONCAT(L_C_ENUM_PREFIX, NAME), L_GET_HEAP(VALUES(L_DECLARE_ENUM_VALUE_2_ARGS))) \
+	} L_CONCAT(L_C_ENUM_PREFIX, NAME)
+#endif
 
 LINPHONE_END_NAMESPACE
 
