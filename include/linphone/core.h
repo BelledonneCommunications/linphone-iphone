@@ -206,10 +206,10 @@ typedef struct _LinphoneCoreVTable{
 															 @deprecated Deprecated since 2015-11-19. */
 	LINPHONE_DEPRECATED DisplayMessageCb display_message;/**< @brief Callback to display a message to the user.
 															  @deprecated Deprecated since 2015-11-19. */
-	LINPHONE_DEPRECATED DisplayMessageCb display_warning;/**< @brief Callback to display a warning to the user. 
+	LINPHONE_DEPRECATED DisplayMessageCb display_warning;/**< @brief Callback to display a warning to the user.
 															  @deprecated Deprecated since 2015-11-19. */
 	LINPHONE_DEPRECATED DisplayUrlCb display_url; /**< @deprecated Deprecated since 2015-11-19. */
-	LINPHONE_DEPRECATED ShowInterfaceCb show; /**< @brief Notifies the application that it should show up. 
+	LINPHONE_DEPRECATED ShowInterfaceCb show; /**< @brief Notifies the application that it should show up.
 	                                               @deprecated Deprecated since 2015-11-19. */
 	LINPHONE_DEPRECATED LinphoneCoreTextMessageReceivedCb text_received; /**< @brief A text message has been received.
 	                                                                          @deprecated Use #message_received instead. Deprecated since 2015-11-19.  */
@@ -1028,10 +1028,10 @@ LINPHONE_PUBLIC LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, 
 
 /**
  * @brief Initiates an outgoing call.
- * 
+ *
  * The application doesn't own a reference to the returned LinphoneCall object.
  * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
- * 
+ *
  * @param[in] lc LinphoneCore object
  * @param[in] url The destination of the call (sip address, or phone number).
  * @return A LinphoneCall object or NULL in case of failure
@@ -1080,7 +1080,7 @@ LINPHONE_PUBLIC LinphoneCall * linphone_core_invite_address_with_params(Linphone
 
 /**
  * @brief Performs a simple call transfer to the specified destination.
- * 
+ *
  * The remote endpoint is expected to issue a new call to the specified destination.
  * The current call remains active and thus can be later paused or terminated.
  * It is possible to follow the progress of the transfer provided that transferee sends notification about it.
@@ -1097,7 +1097,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_transfer_call(L
 
 /**
  * @brief Transfers a call to destination of another running call. This is used for "attended transfer" scenarios.
- * 
+ *
  * The transfered call is supposed to be in paused state, so that it is able to accept the transfer immediately.
  * The destination call is a call previously established to introduce the transfered person.
  * This method will send a transfer request to the transfered person. The phone of the transfered is then
@@ -1117,7 +1117,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_transfer_call_t
 
 /**
  * @brief Start a new call as a consequence of a transfer request received from a call.
- * 
+ *
  * This function is for advanced usage: the execution of transfers is automatically managed by the LinphoneCore. However if an application
  * wants to have control over the call parameters for the new call, it should call this function immediately during the LinphoneCallRefered notification.
  * @see LinphoneCoreVTable::call_state_changed
@@ -1133,7 +1133,7 @@ LINPHONE_PUBLIC LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc
 
 /**
  * @brief Tells whether there is an incoming invite pending.
- * 
+ *
  * @ingroup call_control
  * @param[in] lc LinphoneCore object
  * @return A boolean telling whether an incoming invite is pending or not.
@@ -1189,7 +1189,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_call_wit
 
 /**
  * @brief When receiving an incoming, accept to start a media session as early-media.
- * 
+ *
  * This means the call is not accepted but audio & video streams can be established if the remote party supports early media.
  * However, unlike after call acceptance, mic and camera input are not sent during early-media, though received audio & video are played normally.
  * The call can then later be fully accepted using linphone_core_accept_call() or linphone_core_accept_call_with_params().
@@ -1198,13 +1198,13 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_call_wit
  * @param[in] params The call parameters to use (can be NULL)
  * @return 0 if successful, -1 otherwise
  * @ingroup call_control
- * @deprecated Use linphone_call_accept_early_media_with_params() instead. 
+ * @deprecated Use linphone_call_accept_early_media_with_params() instead.
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_early_media_with_params(LinphoneCore* lc, LinphoneCall* call, const LinphoneCallParams* params);
 
 /**
  * @brief Accept an early media session for an incoming call.
- * 
+ *
  * This is identical as calling linphone_core_accept_early_media_with_params() with NULL call parameters.
  * @param[in] lc LinphoneCore object
  * @param[in] call The incoming call to accept
@@ -1217,7 +1217,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_early_me
 
 /**
  * @brief Terminates a call.
- * 
+ *
  * @param[in] lc LinphoneCore object
  * @param[in] call The LinphoneCall object representing the call to be terminated
  * @return 0 on success, -1 on failure
@@ -1259,7 +1259,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_terminate_all_calls(LinphoneCore *l
 /**
  * @biref Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
  * this file will be played to the remote user.
- * 
+ *
  * The only way to resume a paused call is to call linphone_core_resume_call().
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to pause
@@ -1280,7 +1280,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_pause_all_calls(LinphoneCore *lc);
 
 /**
  * @brief Resumes a call.
- * 
+ *
  * The call needs to have been paused previously with linphone_core_pause_call().
  * @param[in] lc LinphoneCore object
  * @param[in] call The call to resume
@@ -1293,7 +1293,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_resume_call(Lin
 
 /**
  * @brief Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
- * 
+ *
  * In this version this is limited to the following use cases:
  * - setting up/down the video stream according to the video parameter of the LinphoneCallParams (see linphone_call_params_enable_video() ).
  * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
@@ -1655,6 +1655,25 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t en
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc);
+
+/**
+ * Tells if the DNS was set by an application
+ * @param[in] lc #LinphoneCore object.
+ * @return TRUE if DNS was set by app, FALSE otherwise.
+ *@ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc);
+
+/**
+ * Forces liblinphone to use the supplied list of dns servers, instead of system's ones
+ * and set dns_set_by_app at true or false according to value of servers list.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] servers \bctbx_list{const char *} A list of strings containing the IP addresses of DNS servers to be used.
+ * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
+ * The list is copied internally.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *servers);
 
 /**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.

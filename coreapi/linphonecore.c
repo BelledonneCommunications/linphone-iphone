@@ -1831,6 +1831,15 @@ int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
 	return sal_get_transport_timeout(lc->sal);
 }
 
+bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc) {
+	return lc->dns_set_by_app;
+}
+
+void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *servers){
+	lc->dns_set_by_app = (servers != NULL);
+	linphone_core_set_dns_servers(lc, servers);
+}
+
 void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers){
 	sal_set_dns_servers(lc->sal, servers);
 }
@@ -2151,7 +2160,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->config=lp_config_ref(config);
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
-	
+
 #ifdef __ANDROID__
 	if (system_context)
 		lc->platform_helper = LinphonePrivate::createAndroidPlatformHelpers(lc, system_context);
@@ -2159,7 +2168,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	if (lc->platform_helper == NULL)
 		lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
 
-	
+
 	linphone_task_list_init(&lc->hooks);
 
 	_linphone_core_init_account_creator_service(lc);
@@ -2226,7 +2235,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
-	
+
 	getPlatformHelpers(lc)->setDnsServers();
 
 	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
@@ -6185,11 +6194,11 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 	if (lc->sip_network_reachable==is_sip_reachable) return; // no change, ignore.
 	lc->network_reachable_to_be_notified=TRUE;
-	
+
 	if (is_sip_reachable){
 		getPlatformHelpers(lc)->setDnsServers();
 	}
-	
+
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
 	for(elem=linphone_core_get_proxy_config_list(lc);elem!=NULL;elem=elem->next){
 		LinphoneProxyConfig *cfg=(LinphoneProxyConfig*)elem->data;

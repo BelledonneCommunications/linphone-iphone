@@ -52,7 +52,7 @@ private:
 	jmethodID mCpuLockReleaseId;
 	jmethodID mGetDnsServersId;
 	jmethodID mGetPowerManagerId;
-	
+
 };
 
 jmethodID AndroidPlatformHelpers::getMethodId(JNIEnv *env, jclass klass, const char *method, const char *signature){
@@ -77,7 +77,7 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 		return;
 	}
 	mJavaHelper = (jobject) env->NewGlobalRef(mJavaHelper);
-	
+
 	mWifiLockAcquireId = getMethodId(env, klass, "acquireWifiLock", "()V");
 	mWifiLockReleaseId = getMethodId(env, klass, "releaseWifiLock", "()V");
 	mMcastLockAcquireId = getMethodId(env, klass, "acquireMcastLock", "()V");
@@ -86,10 +86,10 @@ AndroidPlatformHelpers::AndroidPlatformHelpers(LinphoneCore *lc, void *system_co
 	mCpuLockReleaseId = getMethodId(env, klass, "releaseCpuLock", "()V");
 	mGetDnsServersId = getMethodId(env, klass, "getDnsServers", "()[Ljava/lang/String;");
 	mGetPowerManagerId = getMethodId(env, klass, "getPowerManager", "()Ljava/lang/Object;");
-	
+
 	jobject pm = env->CallObjectMethod(mJavaHelper,mGetPowerManagerId);
 	belle_sip_wake_lock_init(env, pm);
-	
+
 	ms_message("AndroidPlatformHelpers is fully initialised");
 }
 
@@ -104,7 +104,7 @@ AndroidPlatformHelpers::~AndroidPlatformHelpers(){
 
 
 void AndroidPlatformHelpers::setDnsServers(){
-	if (!mJavaHelper) return;
+	if (!mJavaHelper || linphone_core_get_dns_set_by_app(mCore)) return;
 	JNIEnv *env=ms_get_jni_env();
 	if (env && mJavaHelper) {
 		jobjectArray jservers = (jobjectArray)env->CallObjectMethod(mJavaHelper,mGetDnsServersId);
@@ -179,4 +179,3 @@ PlatformHelpers *createAndroidPlatformHelpers(LinphoneCore *lc, void *system_con
 
 
 #endif
-

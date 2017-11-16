@@ -1150,6 +1150,7 @@ struct _LinphoneCore
 	LinphoneImEncryptionEngine *im_encryption_engine;
 	struct _LinphoneAccountCreatorService *default_ac_service;
 	MSBandwidthController *bw_controller;
+	bool_t dns_set_by_app;
 };
 
 #ifdef __cplusplus
