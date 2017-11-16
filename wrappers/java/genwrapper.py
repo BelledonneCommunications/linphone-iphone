@@ -90,7 +90,7 @@ class JavaTranslator(object):
             self.jni_package += directory + '_'
             self.jni_path += directory + '/'
 
-        self.docTranslator = metadoc.SandcastleJavaTranslator()
+        self.docTranslator = metadoc.JavaDocTranslator()
 
     def throws_exception(self, _type):
         if not self.exceptions:
@@ -353,7 +353,7 @@ class JavaTranslator(object):
                 methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
 
         methodDict['deprecated'] = _method.deprecated
-        methodDict['doc'] = self.docTranslator.translate(_method.briefDescription) if _method.briefDescription is not None else None
+        methodDict['doc'] = _method.briefDescription.translate(self.docTranslator) if _method.briefDescription is not None else None
 
         return methodDict
 
@@ -449,7 +449,7 @@ class JavaTranslator(object):
 
         classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
         classDict['isLinphoneCore'] = _class.name.to_camel_case() == "Core"
-        classDict['doc'] = self.docTranslator.translate(_class.briefDescription) if _class.briefDescription is not None else None
+        classDict['doc'] = _class.briefDescription.translate(self.docTranslator) if _class.briefDescription is not None else None
 
         for _property in _class.properties:
             try:
@@ -572,7 +572,7 @@ class JavaTranslator(object):
             'jniMethods': [],
         }
 
-        interfaceDict['doc'] = self.docTranslator.translate(_class.briefDescription)
+        interfaceDict['doc'] = _class.briefDescription.translate(self.docTranslator)
 
         for method in _class.methods:
             interfaceDict['methods'].append(self.translate_method(method))
@@ -580,23 +580,23 @@ class JavaTranslator(object):
 
         return interfaceDict
 
-    def translate_enum(self, _class):
+    def translate_enum(self, enum):
         enumDict = {
             'jniMethods': [],
         }
 
-        enumDict['name'] = _class.name.to_camel_case()
-        enumDict['doc'] = self.docTranslator.translate(_class.briefDescription)
+        enumDict['name'] = enum.name.to_camel_case()
+        enumDict['doc'] = enum.briefDescription.translate(self.docTranslator)
         enumDict['values'] = []
         i = 0
         lastValue = None
 
         enumDict['jniPath'] = self.jni_path
 
-        for enumValue in _class.values:
+        for enumValue in enum.enumerators:
             enumValDict = {}
             enumValDict['name'] = enumValue.name.to_camel_case()
-            enumValDict['doc'] = self.docTranslator.translate(enumValue.briefDescription)
+            enumValDict['doc'] = enumValue.briefDescription.translate(self.docTranslator)
             if type(enumValue.value) is int:
                 lastValue = enumValue.value
                 enumValDict['value'] = str(enumValue.value)
@@ -609,7 +609,7 @@ class JavaTranslator(object):
                 else:
                     enumValDict['value'] = i
             i += 1
-            enumValDict['commarorsemicolon'] = ';' if i == len(_class.values) else ','
+            enumValDict['commarorsemicolon'] = ';' if i == len(enum.enumerators) else ','
             enumDict['values'].append(enumValDict)
 
         return enumDict
@@ -805,22 +805,22 @@ class GenWrapper(object):
             if _enum[1] is not None:
                 self.render_java_enum(_enum[1])
 
-        for name, value in self.enums.iteritems():
+        for name, value in self.enums.items():
             self.jni.add_enum(value)
             if name in ENUMS_LIST:
                 className = ENUMS_LIST[name]
-                print 'Enum ' + name + ' belongs to class ' + className
+                print('Enum ' + name + ' belongs to class ' + className)
                 self.classes[className].add_enum(value)
                 self.enums_to_remove.append(name)
 
         for enum in self.enums_to_remove:
             self.enums.pop(enum, None)
 
-        for name, value in self.enums.iteritems():
+        for name, value in self.enums.items():
             self.render(value, self.javadir + '/' + value.filename)
-        for name, value in self.interfaces.iteritems():
+        for name, value in self.interfaces.items():
             self.render(value, self.javadir + '/' + value.filename)
-        for name, value in self.classes.iteritems():
+        for name, value in self.classes.items():
             self.render(value, self.javadir + '/' + value.filename)
             self.jni.add_object(value)
 

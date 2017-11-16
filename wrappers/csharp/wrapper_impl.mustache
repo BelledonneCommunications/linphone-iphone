@@ -484,7 +484,7 @@ namespace Linphone
 				{{#exception}}if (exception_result != 0) throw new LinphoneException("{{property_name}} setter returned value " + exception_result);{{/exception}}
 				{{/is_string}}
 				{{#is_bool}}
-				{{#exception}}int exception_result = {{/exception}}{{setter_c_name}}({{setter_nativePtr}}value ? 1 : 0);
+				{{#exception}}int exception_result = {{/exception}}{{setter_c_name}}({{setter_nativePtr}}value ? (char)1 : (char)0);
 				{{#exception}}if (exception_result != 0) throw new LinphoneException("{{property_name}} setter returned value " + exception_result);{{/exception}}
 				{{/is_bool}}
 				{{#is_class}}
@@ -525,7 +525,7 @@ namespace Linphone
 			return Marshal.PtrToStringAnsi(stringPtr);
 			{{/is_string}}
 			{{#is_bool}}
-			{{return}}{{c_name}}({{nativePtr}}{{c_args}}) == 0 ? false : true;
+			{{return}}{{c_name}}({{nativePtr}}{{c_args}}) == (char)0 ? false : true;
 			{{/is_bool}}
 			{{#is_class}}
 			IntPtr ptr = {{c_name}}({{nativePtr}}{{c_args}});

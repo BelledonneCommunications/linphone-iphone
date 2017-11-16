@@ -1,0 +1,151 @@
+{{#make_chapter}}{{{className}}} class{{/make_chapter}}
+
+.. {{#write_declarator}}class{{/write_declarator}}:: {{{fullClassName}}}
+	
+	{{#briefDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDoc}}
+	
+	{{#detailedDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/detailedDoc}}
+	
+	{{{selector}}}
+
+
+Summary
+=======
+
+{{#hasProperties}}
+Properties
+----------
+
+{{{propertiesSummary}}}
+{{/hasProperties}}
+
+{{#hasMethods}}
+Methods
+-------
+
+{{{instanceMethodsSummary}}}
+{{/hasMethods}}
+
+{{#hasClassMethods}}
+Class methods
+-------------
+
+{{{classMethodsSummary}}}
+{{/hasClassMethods}}
+
+Detailed descriptions
+=====================
+
+{{#hasProperties}}
+Properties
+----------
+
+{{#properties}}
+{{{title}}}
+
+{{#hasNamespaceDeclarator}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+{{/hasNamespaceDeclarator}}
+
+{{#getter}}
+.. {{#write_declarator}}method{{/write_declarator}}:: {{{prototype}}}
+	
+	{{#briefDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDoc}}
+	
+	{{#detailedDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/detailedDoc}}
+	
+	{{{selector}}}
+{{/getter}}
+
+{{#setter}}
+.. {{#write_declarator}}method{{/write_declarator}}:: {{{prototype}}}
+	
+	{{#briefDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDoc}}
+	
+	{{#detailedDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/detailedDoc}}
+	
+	{{{selector}}}
+{{/setter}}
+
+{{/properties}}
+{{/hasProperties}}
+
+{{#hasMethods}}
+Public methods
+--------------
+
+{{#hasNamespaceDeclarator}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+{{/hasNamespaceDeclarator}}
+
+{{#methods}}
+.. {{#write_declarator}}method{{/write_declarator}}:: {{{prototype}}}
+	
+	{{#briefDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDoc}}
+	
+	{{#detailedDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/detailedDoc}}
+	
+	{{{selector}}}
+
+{{/methods}}
+
+{{/hasMethods}}
+{{#hasClassMethods}}
+Class methods
+-------------
+
+{{#hasNamespaceDeclarator}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+{{/hasNamespaceDeclarator}}
+
+{{#classMethods}}
+.. {{#write_declarator}}method{{/write_declarator}}:: static {{{prototype}}}
+	
+	{{#briefDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDoc}}
+	
+	{{#detailedDoc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/detailedDoc}}
+	
+	{{{selector}}}
+
+{{/classMethods}}
+{{/hasClassMethods}}

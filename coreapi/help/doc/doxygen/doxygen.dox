@@ -35,6 +35,11 @@
 **/
 
 /**
+ * @defgroup logging Logging
+ * @brief Logging service of Linphone.
+ */
+
+/**
  * @defgroup call_control Call control
  * @brief Placing and receiving calls.
  *

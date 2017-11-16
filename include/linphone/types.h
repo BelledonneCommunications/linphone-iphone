@@ -1055,6 +1055,10 @@ typedef enum _LinphoneTransportType {
  */
 typedef struct _LinphoneTunnel LinphoneTunnel;
 
+/**
+ * @brief Tunnel settings.
+ * @ingroup tunnel
+ */
 typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
 
 /**
