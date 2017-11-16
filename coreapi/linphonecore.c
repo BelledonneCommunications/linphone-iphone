@@ -2135,16 +2135,17 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		}
 	} else if (strcmp(notified_event, "conference") == 0) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
+		const LinphoneAddress *from = linphone_event_get_from(lev);
 
-		// TODO: Ensure it is the good solution.
-		list<shared_ptr<ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
-			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
-		);
+		shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(LinphonePrivate::ChatRoomId(
+			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
+			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
+		));
 
-		if (!chatRooms.empty())
-			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRooms.front()))->notifyReceived(
+		if (chatRoom)
+			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->notifyReceived(
 				linphone_content_get_string_buffer(body)
-		);
+			);
 	}
 }
 
@@ -2154,15 +2155,13 @@ static void _linphone_core_conference_subscription_state_changed(LinphoneCore *l
 		state == LinphoneSubscriptionIncomingReceived
 	) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-
-		// TODO: Ensure it is the good solution.
-		list<shared_ptr<ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
+		shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(LinphonePrivate::ChatRoomId(
+			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
 			SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
-		);
-
-		if (!chatRooms.empty()) {
+		));
+		if (chatRoom) {
 			linphone_event_accept_subscription(lev);
-			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRooms.front()))->subscribeReceived(lev);
+			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->subscribeReceived(lev);
 		} else
 			linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 	}

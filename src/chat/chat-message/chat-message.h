@@ -55,14 +55,6 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 	L_DECLARE_ENUM(Direction, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
-	// TODO: Make me private.
-
-	// Build an outgoing message.
-	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom);
-
-	// Build and incoming message.
-	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom, const SimpleAddress &fromAddress);
-
 	~ChatMessage ();
 
 	// ----- TODO: Remove me.
@@ -114,6 +106,8 @@ public:
 	bool downloadFile (FileTransferContent &content);
 
 private:
+	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom, ChatMessage::Direction direction);
+
 	L_DECLARE_PRIVATE(ChatMessage);
 	L_DISABLE_COPY(ChatMessage);
 };

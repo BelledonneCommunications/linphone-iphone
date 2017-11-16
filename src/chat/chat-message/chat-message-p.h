@@ -67,6 +67,10 @@ public:
 		this->fromAddress = fromAddress;
 	}
 
+	inline void forceToAddress (const SimpleAddress &toAddress) {
+		this->toAddress = toAddress;
+	}
+
 	unsigned int getStorageId() const;
 	void setStorageId(unsigned int id);
 
@@ -149,6 +153,7 @@ private:
 	std::weak_ptr<ChatRoom> chatRoom;
 	ChatRoomId chatRoomId;
 	SimpleAddress fromAddress;
+	SimpleAddress toAddress;
 
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;

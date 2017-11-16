@@ -111,15 +111,21 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
-	const char *peerAddress = linphone_core_conference_server_enabled(lc) ? op->get_to() : op->get_from();
+	const char *peerAddress;
+	const char *localAddress;
+	if (linphone_core_conference_server_enabled(lc)) {
+		localAddress = peerAddress = op->get_to();
+	} else {
+		peerAddress = op->get_from();
+		localAddress = op->get_to();
+	}
 
-	// TODO: Use local address.
-	list<shared_ptr<LinphonePrivate::ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
-		LinphonePrivate::SimpleAddress(peerAddress)
+	shared_ptr<LinphonePrivate::ChatRoom> chatRoom = lc->cppCore->findChatRoom(
+		LinphonePrivate::ChatRoomId(LinphonePrivate::SimpleAddress(peerAddress), LinphonePrivate::SimpleAddress(localAddress))
 	);
 
-	if (!chatRooms.empty())
-		reason = L_GET_PRIVATE(chatRooms.front())->messageReceived(op, sal_msg);
+	if (chatRoom)
+		reason = L_GET_PRIVATE(chatRoom)->messageReceived(op, sal_msg);
 	else {
 		LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 		linphone_address_clean(addr);

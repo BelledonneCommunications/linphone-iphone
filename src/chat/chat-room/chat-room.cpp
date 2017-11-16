@@ -151,7 +151,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	if (linphone_im_notif_policy_get_send_is_composing(policy)) {
 		string payload = isComposingHandler->marshal(isComposing);
 		if (!payload.empty()) {
-			shared_ptr<ChatMessage> msg = q->createMessage();
+			shared_ptr<ChatMessage> msg = createChatMessage(ChatMessage::Direction::Outgoing);
 			Content *content = new Content();
 			content->setContentType(ContentType::ImIsComposing);
 			content->setBody(payload);
@@ -164,8 +164,8 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 // -----------------------------------------------------------------------------
 
 shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Direction direction) {
-	// TODO: Create me.
-	return nullptr;
+	L_Q();
+	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
 }
 
 // -----------------------------------------------------------------------------

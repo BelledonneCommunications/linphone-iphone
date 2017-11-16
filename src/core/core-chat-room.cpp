@@ -50,7 +50,9 @@ static inline ChatRoomId resolveWorkaroundClientGroupChatRoomId (
 
 	SimpleAddress peerAddress = chatRoomId.getPeerAddress();
 	peerAddress.setDomain(Address(uri).getDomain());
-	return ChatRoomId(peerAddress, chatRoomId.getLocalAddress());
+	SimpleAddress localAddress = chatRoomId.getLocalAddress();
+	localAddress.setDomain(Address(uri).getDomain());
+	return ChatRoomId(peerAddress, localAddress);
 }
 
 // TODO: Remove me later.

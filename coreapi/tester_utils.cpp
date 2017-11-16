@@ -56,13 +56,14 @@ bctbx_list_t **linphone_core_get_call_logs_attribute(LinphoneCore *lc) {
 	return &lc->call_logs;
 }
 
-LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *addr) {
-	list<shared_ptr<ChatRoom>> chatRooms = lc->cppCore->findChatRooms(
-		SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(addr))
-	);
+LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *peerAddr, const LinphoneAddress *localAddr) {
+	shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(ChatRoomId(
+		SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(peerAddr)),
+		SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(localAddr))
+	));
 
-	if (!chatRooms.empty())
-		return L_GET_C_BACK_PTR(chatRooms.front());
+	if (chatRoom)
+		return L_GET_C_BACK_PTR(chatRoom);
 	return nullptr;
 }
 

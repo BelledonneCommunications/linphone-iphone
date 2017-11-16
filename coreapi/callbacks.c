@@ -129,7 +129,7 @@ static void call_received(SalCallOp *h) {
 		linphone_address_unref(toAddr);
 		linphone_address_unref(fromAddr);
 		shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
-			ChatRoomId(SimpleAddress(h->get_to()), SimpleAddress(h->get_from()))
+			ChatRoomId(SimpleAddress(h->get_to()), SimpleAddress(h->get_to()))
 		);
 		if (chatRoom) {
 			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
@@ -753,10 +753,10 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
 					shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
-						ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_from()))
+						ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_to()))
 					);
 					if (chatRoom) {
-						std::shared_ptr<Participant> participant = chatRoom->findParticipant(chatRoom->getLocalAddress());
+						std::shared_ptr<Participant> participant = chatRoom->findParticipant(SimpleAddress(op->get_from()));
 						if (!participant || !participant->isAdmin()) {
 							static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 							return;
@@ -770,7 +770,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 				} else {
 					// The server asks a participant to leave a chat room
 					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
-						lc->cppCore->findChatRoom(ChatRoomId(addr, SimpleAddress(op->get_from())))
+						lc->cppCore->findChatRoom(ChatRoomId(addr, SimpleAddress(op->get_to())))
 					);
 					if (cr) {
 						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
@@ -781,7 +781,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 				}
 			} else if (addr.hasParam("admin")) {
 				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(
-					ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_from()))
+					ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress(op->get_to()))
 				));
 				if (cr) {
 					Address fromAddr(op->get_from());
@@ -799,9 +799,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(
-					ChatRoomId(addr, SimpleAddress(op->get_from()))
-				));
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(ChatRoomId(addr, SimpleAddress(op->get_to()))));
 				if (!cr)
 					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();

@@ -678,26 +678,21 @@ void ChatMessagePrivate::send () {
 
 // -----------------------------------------------------------------------------
 
-ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom) :
+ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom, ChatMessage::Direction direction) :
 	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
 	L_ASSERT(chatRoom);
 	L_D();
 
 	d->chatRoom = chatRoom;
 	d->chatRoomId = chatRoom->getChatRoomId();
-	d->fromAddress = chatRoom->getLocalAddress();
-	d->direction = Direction::Outgoing;
-}
-
-ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom, const SimpleAddress &fromAddress) :
-	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
-	L_ASSERT(chatRoom);
-	L_D();
-
-	d->chatRoom = chatRoom;
-	d->chatRoomId = chatRoom->getChatRoomId();
-	d->fromAddress = fromAddress;
-	d->direction = Direction::Incoming;
+	if (direction == Direction::Outgoing) {
+		d->fromAddress = chatRoom->getLocalAddress();
+		d->toAddress = chatRoom->getPeerAddress();
+	} else {
+		d->fromAddress = chatRoom->getPeerAddress();
+		d->toAddress = chatRoom->getLocalAddress();
+	}
+	d->direction = direction;
 }
 
 ChatMessage::~ChatMessage () {
@@ -779,7 +774,7 @@ const SimpleAddress &ChatMessage::getFromAddress () const {
 
 const SimpleAddress &ChatMessage::getToAddress () const {
 	L_D();
-	return d->direction == Direction::Outgoing ? d->chatRoomId.getPeerAddress() : d->chatRoomId.getLocalAddress();
+	return d->toAddress;
 }
 
 const SimpleAddress &ChatMessage::getLocalAddress () const {
