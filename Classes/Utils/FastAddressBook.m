@@ -406,11 +406,11 @@
   @try {
     NSLog(@"Success %d",
           [store executeSaveRequest:saveRequest error:&saveError]);
+	   [self updateFriend:contact];
   } @catch (NSException *exception) {
     NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@",
           [exception description]);
-	  [self updateFriend:contact];
-    return FALSE;
+	return FALSE;
   }
 	[self reloadAllContacts];
   return TRUE;
