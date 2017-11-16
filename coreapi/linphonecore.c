@@ -1861,6 +1861,15 @@ int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
 	return lc->sal->get_transport_timeout();
 }
 
+bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc) {
+	return lc->dns_set_by_app;
+}
+
+void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *servers){
+	lc->dns_set_by_app = (servers != NULL);
+	linphone_core_set_dns_servers(lc, servers);
+}
+
 void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers){
 	lc->sal->set_dns_servers(servers);
 }

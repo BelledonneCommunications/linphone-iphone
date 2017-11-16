@@ -4909,7 +4909,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIE
 																		,jlong chatroom_ptr
 																		,jobject message
 																		,jlong messagePtr) {
-	
+
 	linphone_chat_room_send_chat_message_2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
 }
 
@@ -7693,7 +7693,7 @@ extern "C" void  Java_org_linphone_core_LinphoneCoreImpl_setDnsServers(JNIEnv *e
 			}
 		}
 	}
-	linphone_core_set_dns_servers((LinphoneCore*)lc, l);
+	linphone_core_set_dns_servers_app((LinphoneCore*)lc, l);
 	bctbx_list_free_with_data(l, ms_free);
 }
 
@@ -7792,7 +7792,7 @@ JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEn
 	linphone_call_cbs_set_user_data(cbs, env->NewWeakGlobalRef(jlistener));
 	linphone_call_cbs_set_tmmbr_received(cbs, _on_tmmbr_received);
 	linphone_call_add_callbacks(call, cbs);
-	
+
 	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, env->NewWeakGlobalRef(jlistener));
 }
 

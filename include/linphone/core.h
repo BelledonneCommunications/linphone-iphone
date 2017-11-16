@@ -183,8 +183,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
 	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
-	LinphoneCoreConfiguringStatusCb configuring_status; /**< Notifies configuring status changes
-	                                                         @deprecated Deprecated since 2015-11-19. */
+	LinphoneCoreConfiguringStatusCb configuring_status; /** Notifies configuring status changes */
 	LINPHONE_DEPRECATED LinphoneCoreTextMessageReceivedCb text_received; /**< @brief A text message has been received.
 	                                                                          @deprecated Use #message_received instead. Deprecated since 2015-11-19.  */
 	LINPHONE_DEPRECATED LinphoneCoreFileTransferRecvCb file_transfer_recv; /**< @brief Callback to store file received attached to a #LinphoneChatMessage.
@@ -1045,10 +1044,12 @@ LINPHONE_PUBLIC void linphone_core_set_user_agent(LinphoneCore *lc, const char *
 LINPHONE_PUBLIC LinphoneAddress * linphone_core_interpret_url(LinphoneCore *lc, const char *url);
 
 /**
- * Initiates an outgoing call
- * The application doesn't own a reference to the returned #LinphoneCall object.
- * Use linphone_call_ref() to safely keep the #LinphoneCall pointer valid within your application.
- * @param[in] lc #LinphoneCore object
+ * @brief Initiates an outgoing call.
+ *
+ * The application doesn't own a reference to the returned LinphoneCall object.
+ * Use linphone_call_ref() to safely keep the LinphoneCall pointer valid within your application.
+ *
+ * @param[in] lc LinphoneCore object
  * @param[in] url The destination of the call (sip address, or phone number).
  * @return A #LinphoneCall object or NULL in case of failure
  * @ingroup call_control
@@ -1235,8 +1236,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_accept_early_me
 /**
  * @brief Terminates a call.
  *
- * @param[in] lc #LinphoneCore object
- * @param[in] call The #LinphoneCall object representing the call to be terminated
+ * @param[in] lc LinphoneCore object
+ * @param[in] call The LinphoneCall object representing the call to be terminated
  * @return 0 on success, -1 on failure
  * @ingroup call_control
  * @deprecated Use #linphone_call_terminate() instead. Deprecated since 2017-02-13.
@@ -1674,6 +1675,25 @@ LINPHONE_PUBLIC void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t en
  * @ingroup media_parameters
  */
 LINPHONE_PUBLIC bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc);
+
+/**
+ * Tells if the DNS was set by an application
+ * @param[in] lc #LinphoneCore object.
+ * @return TRUE if DNS was set by app, FALSE otherwise.
+ *@ingroup media_parameters
+ */
+LINPHONE_PUBLIC bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc);
+
+/**
+ * Forces liblinphone to use the supplied list of dns servers, instead of system's ones
+ * and set dns_set_by_app at true or false according to value of servers list.
+ * @param[in] lc #LinphoneCore object.
+ * @param[in] servers \bctbx_list{const char *} A list of strings containing the IP addresses of DNS servers to be used.
+ * Setting to NULL restores default behaviour, which is to use the DNS server list provided by the system.
+ * The list is copied internally.
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *servers);
 
 /**
  * Forces liblinphone to use the supplied list of dns servers, instead of system's ones.

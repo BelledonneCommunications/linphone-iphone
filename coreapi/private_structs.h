@@ -822,6 +822,7 @@ namespace LinphonePrivate {
 	char *update_check_current_version; \
 	bctbx_list_t *chat_rooms; \
 	bctbx_list_t *callsCache; \
+	bool_t dns_set_by_app; \
 
 #ifdef SQLITE_STORAGE_ENABLED
 #define LINPHONE_CORE_STRUCT_FIELDS \

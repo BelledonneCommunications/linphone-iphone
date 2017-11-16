@@ -123,7 +123,7 @@ AndroidPlatformHelpers::~AndroidPlatformHelpers () {
 }
 
 void AndroidPlatformHelpers::setDnsServers () {
-	if (!mJavaHelper) {
+	if (!mJavaHelper || linphone_core_get_dns_set_by_app(mCore)) {
 		lError() << "AndroidPlatformHelpers' mJavaHelper is null.";
 		return;
 	}
