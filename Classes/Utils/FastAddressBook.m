@@ -409,10 +409,31 @@
   } @catch (NSException *exception) {
     NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@",
           [exception description]);
+	  [self updateFriend:contact];
     return FALSE;
   }
 	[self reloadAllContacts];
   return TRUE;
 }
 
+-(void)updateFriend:(Contact*) contact{
+	bctbx_list_t *phonesList = linphone_friend_get_phone_numbers(contact.friend);
+	for (NSString *phone in contact.phones) {
+		if(!(bctbx_list_find(phonesList, [phone UTF8String]))){
+			linphone_friend_edit(contact.friend);
+			linphone_friend_add_phone_number(contact.friend, [phone UTF8String]);
+			linphone_friend_enable_subscribes(contact.friend, TRUE);
+			linphone_friend_done(contact.friend);
+		}
+	}
+	
+	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		linphone_friend_list_enable_subscriptions(lists->data, FALSE);
+		linphone_friend_list_enable_subscriptions(lists->data, enabled);
+		linphone_friend_list_update_subscriptions(lists->data);
+		lists = lists->next;
+	}
+}
 @end
