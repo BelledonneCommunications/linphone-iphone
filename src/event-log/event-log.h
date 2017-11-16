@@ -43,10 +43,10 @@ public:
 	EventLog ();
 
 	Type getType () const;
-	time_t getTime () const;
+	time_t getCreationTime () const;
 
 protected:
-	EventLog (EventLogPrivate &p, Type type, time_t time);
+	EventLog (EventLogPrivate &p, Type type, time_t creationTime);
 
 private:
 	L_DECLARE_PRIVATE(EventLog);

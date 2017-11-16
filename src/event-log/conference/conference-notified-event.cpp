@@ -29,10 +29,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 ConferenceNotifiedEvent::ConferenceNotifiedEvent (
 	Type type,
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId
-) : ConferenceEvent(*new ConferenceNotifiedEventPrivate, type, time, conferenceAddress) {
+) : ConferenceEvent(*new ConferenceNotifiedEventPrivate, type, creationTime, conferenceAddress) {
 	L_D();
 	d->notifyId = notifyId;
 }
@@ -40,10 +40,10 @@ ConferenceNotifiedEvent::ConferenceNotifiedEvent (
 ConferenceNotifiedEvent::ConferenceNotifiedEvent (
 	ConferenceNotifiedEventPrivate &p,
 	Type type,
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId
-) : ConferenceEvent(p, type, time, conferenceAddress) {
+) : ConferenceEvent(p, type, creationTime, conferenceAddress) {
 	L_D();
 	d->notifyId = notifyId;
 }

@@ -26,17 +26,17 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
 class ConferenceEventPrivate;
+class IdentityAddress;
 
 class LINPHONE_PUBLIC ConferenceEvent : public EventLog {
 public:
-	ConferenceEvent (Type type, time_t time, const Address &conferenceAddress);
+	ConferenceEvent (Type type, time_t creationTime, const IdentityAddress &conferenceAddress);
 
-	const Address &getConferenceAddress () const;
+	const IdentityAddress &getConferenceAddress () const;
 
 protected:
-	ConferenceEvent (ConferenceEventPrivate &p, Type type, time_t time, const Address &conferenceAddress);
+	ConferenceEvent (ConferenceEventPrivate &p, Type type, time_t creationTime, const IdentityAddress &conferenceAddress);
 
 private:
 	L_DECLARE_PRIVATE(ConferenceEvent);

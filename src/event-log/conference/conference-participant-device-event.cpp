@@ -26,24 +26,26 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class ConferenceParticipantDeviceEventPrivate : public ConferenceParticipantEventPrivate {
 public:
-	Address gruuAddress;
+	IdentityAddress deviceAddress;
 };
 
 // -----------------------------------------------------------------------------
 
 ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 	Type type,
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId,
-	const Address &participantAddress,
-	const Address &gruuAddress
+	const IdentityAddress &participantAddress,
+	const IdentityAddress &deviceAddress
 ) : ConferenceParticipantEvent(
 	*new ConferenceParticipantDeviceEventPrivate,
 	type,
-	time,
+	creationTime,
 	conferenceAddress,
 	notifyId,
 	participantAddress
@@ -53,12 +55,12 @@ ConferenceParticipantDeviceEvent::ConferenceParticipantDeviceEvent (
 		type == Type::ConferenceParticipantDeviceAdded ||
 		type == Type::ConferenceParticipantDeviceRemoved
 	);
-	d->gruuAddress = gruuAddress;
+	d->deviceAddress = deviceAddress;
 }
 
-const Address &ConferenceParticipantDeviceEvent::getGruuAddress () const {
+const IdentityAddress &ConferenceParticipantDeviceEvent::getDeviceAddress () const {
 	L_D();
-	return d->gruuAddress;
+	return d->deviceAddress;
 }
 
 LINPHONE_END_NAMESPACE

@@ -29,14 +29,14 @@ LINPHONE_BEGIN_NAMESPACE
 
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId,
-	const Address &participantAddress
+	const IdentityAddress &participantAddress
 ) : ConferenceNotifiedEvent(
 	*new ConferenceParticipantEventPrivate,
 	type,
-	time,
+	creationTime,
 	conferenceAddress,
 	notifyId
 ) {
@@ -53,14 +53,14 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId,
-	const Address &participantAddress
+	const IdentityAddress &participantAddress
 ) : ConferenceNotifiedEvent(
 	p,
 	type,
-	time,
+	creationTime,
 	conferenceAddress,
 	notifyId
 ) {
@@ -68,7 +68,7 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	d->participantAddress = participantAddress;
 }
 
-const Address &ConferenceParticipantEvent::getParticipantAddress () const {
+const IdentityAddress &ConferenceParticipantEvent::getParticipantAddress () const {
 	L_D();
 	return d->participantAddress;
 }

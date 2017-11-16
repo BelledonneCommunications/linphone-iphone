@@ -26,6 +26,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class ConferenceCallEventPrivate : public EventLogPrivate {
 public:
 	shared_ptr<Call> call;
@@ -33,8 +35,8 @@ public:
 
 // -----------------------------------------------------------------------------
 
-ConferenceCallEvent::ConferenceCallEvent (Type type, time_t time, const shared_ptr<Call> &call) :
-	EventLog(*new ConferenceCallEventPrivate, type, time) {
+ConferenceCallEvent::ConferenceCallEvent (Type type, time_t creationTime, const shared_ptr<Call> &call) :
+	EventLog(*new ConferenceCallEventPrivate, type, creationTime) {
 	L_D();
 	L_ASSERT(call);
 	L_ASSERT(type == Type::ConferenceCallStart || type == Type::ConferenceCallEnd);

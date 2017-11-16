@@ -26,9 +26,30 @@
 
 // =============================================================================
 
-L_DECLARE_C_OBJECT_IMPL(EventLog);
-
 using namespace std;
+
+static void _linphone_event_log_constructor (LinphoneEventLog *event_log);
+static void _linphone_event_log_destructor (LinphoneEventLog *event_log);
+
+L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
+	EventLog,
+	_linphone_event_log_constructor,
+	_linphone_event_log_destructor,
+	mutable LinphoneAddress *conferenceAddressCache;
+	mutable LinphoneAddress *participantAddressCache;
+	mutable LinphoneAddress *deviceAddressCache;
+);
+
+void _linphone_event_log_constructor (LinphoneEventLog *) {}
+
+void _linphone_event_log_destructor (LinphoneEventLog *event_log) {
+	if (event_log->conferenceAddressCache)
+		linphone_address_unref(event_log->conferenceAddressCache);
+	if (event_log->participantAddressCache)
+		linphone_address_unref(event_log->participantAddressCache);
+	if (event_log->deviceAddressCache)
+		linphone_address_unref(event_log->deviceAddressCache);
+}
 
 // -----------------------------------------------------------------------------
 // Helpers.
@@ -161,8 +182,8 @@ LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_
 	);
 }
 
-time_t linphone_event_log_get_time (const LinphoneEventLog *event_log) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(event_log)->getTime();
+time_t linphone_event_log_get_creation_time (const LinphoneEventLog *event_log) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(event_log)->getCreationTime();
 }
 
 // -----------------------------------------------------------------------------
@@ -173,11 +194,14 @@ const LinphoneAddress *linphone_event_log_get_conference_address (const Linphone
 	if (!isConferenceType(linphone_event_log_get_type(event_log)))
 		return nullptr;
 
-	return L_GET_C_BACK_PTR(
-		&static_pointer_cast<const LinphonePrivate::ConferenceEvent>(
-			L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
-		)->getConferenceAddress()
-	);
+	if (!event_log->conferenceAddressCache)
+		event_log->conferenceAddressCache = linphone_address_new(
+			static_pointer_cast<const LinphonePrivate::ConferenceEvent>(
+				L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
+			)->getConferenceAddress().asString().c_str()
+		);
+
+	return event_log->conferenceAddressCache;
 }
 
 // -----------------------------------------------------------------------------
@@ -231,26 +255,32 @@ const LinphoneAddress *linphone_event_log_get_participant_address (const Linphon
 	if (!isConferenceParticipantType(linphone_event_log_get_type(event_log)))
 		return nullptr;
 
-	return L_GET_C_BACK_PTR(
-		&static_pointer_cast<const LinphonePrivate::ConferenceParticipantEvent>(
-			L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
-		)->getParticipantAddress()
-	);
+	if (!event_log->participantAddressCache)
+		event_log->participantAddressCache = linphone_address_new(
+			static_pointer_cast<const LinphonePrivate::ConferenceParticipantEvent>(
+				L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
+			)->getParticipantAddress().asString().c_str()
+		);
+
+	return event_log->participantAddressCache;
 }
 
 // -----------------------------------------------------------------------------
 // ConferenceParticipantDeviceEvent.
 // -----------------------------------------------------------------------------
 
-const LinphoneAddress *linphone_event_log_get_gruu_address (const LinphoneEventLog *event_log) {
+const LinphoneAddress *linphone_event_log_get_device_address (const LinphoneEventLog *event_log) {
 	if (!isConferenceParticipantDeviceType(linphone_event_log_get_type(event_log)))
 		return nullptr;
 
-	return L_GET_C_BACK_PTR(
-		&static_pointer_cast<const LinphonePrivate::ConferenceParticipantDeviceEvent>(
-			L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
-		)->getGruuAddress()
-	);
+	if (!event_log->deviceAddressCache)
+		event_log->deviceAddressCache = linphone_address_new(
+			static_pointer_cast<const LinphonePrivate::ConferenceParticipantDeviceEvent>(
+				L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
+			)->getDeviceAddress().asString().c_str()
+		);
+
+	return event_log->deviceAddressCache;
 }
 
 // -----------------------------------------------------------------------------

@@ -20,7 +20,7 @@
 #ifndef _CONFERENCE_EVENT_P_H_
 #define _CONFERENCE_EVENT_P_H_
 
-#include "address/address.h"
+#include "address/identity-address.h"
 #include "conference-event.h"
 #include "event-log/event-log-p.h"
 
@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceEventPrivate : public EventLogPrivate {
 private:
-	Address conferenceAddress;
+	IdentityAddress conferenceAddress;
 
 	L_DECLARE_PUBLIC(ConferenceEvent);
 };

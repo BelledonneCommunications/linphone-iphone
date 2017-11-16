@@ -27,6 +27,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class ConferenceChatMessageEventPrivate : public ConferenceEventPrivate {
 public:
 	shared_ptr<ChatMessage> chatMessage;
@@ -35,12 +37,12 @@ public:
 // -----------------------------------------------------------------------------
 
 ConferenceChatMessageEvent::ConferenceChatMessageEvent (
-	time_t time,
+	time_t creationTime,
 	const shared_ptr<ChatMessage> &chatMessage
 ) : ConferenceEvent(
 	*new ConferenceChatMessageEventPrivate,
 	EventLog::Type::ConferenceChatMessage,
-	time,
+	creationTime,
 	chatMessage->getRemoteAddress()
 ) {
 	L_D();

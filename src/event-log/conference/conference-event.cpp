@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "address/address.h"
 #include "conference-event-p.h"
 
 // =============================================================================
@@ -26,8 +25,10 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ConferenceEvent::ConferenceEvent (Type type, time_t time, const Address &conferenceAddress) :
-	EventLog(*new ConferenceEventPrivate, type, time) {
+// -----------------------------------------------------------------------------
+
+ConferenceEvent::ConferenceEvent (Type type, time_t creationTime, const IdentityAddress &conferenceAddress) :
+	EventLog(*new ConferenceEventPrivate, type, creationTime) {
 	L_D();
 	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
 	d->conferenceAddress = conferenceAddress;
@@ -36,14 +37,14 @@ ConferenceEvent::ConferenceEvent (Type type, time_t time, const Address &confere
 ConferenceEvent::ConferenceEvent (
 	ConferenceEventPrivate &p,
 	Type type,
-	time_t time,
-	const Address &conferenceAddress
-) : EventLog(p, type, time) {
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress
+) : EventLog(p, type, creationTime) {
 	L_D();
 	d->conferenceAddress = conferenceAddress;
 }
 
-const Address &ConferenceEvent::getConferenceAddress () const {
+const IdentityAddress &ConferenceEvent::getConferenceAddress () const {
 	L_D();
 	return d->conferenceAddress;
 }

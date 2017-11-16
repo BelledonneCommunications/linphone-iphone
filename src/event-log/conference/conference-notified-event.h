@@ -31,8 +31,8 @@ class ConferenceNotifiedEventPrivate;
 class LINPHONE_PUBLIC ConferenceNotifiedEvent : public ConferenceEvent {
 public:
 	ConferenceNotifiedEvent (
-		Type type, time_t time,
-		const Address &conferenceAddress,
+		Type type, time_t creationTime,
+		const IdentityAddress &conferenceAddress,
 		unsigned int notifiyId
 	);
 
@@ -42,8 +42,8 @@ protected:
 	ConferenceNotifiedEvent (
 		ConferenceNotifiedEventPrivate &p,
 		Type type,
-		time_t time,
-		const Address &conferenceAddress,
+		time_t creationTime,
+		const IdentityAddress &conferenceAddress,
 		unsigned int notifyId
 	);
 

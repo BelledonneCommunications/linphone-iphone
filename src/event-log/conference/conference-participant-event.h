@@ -32,22 +32,22 @@ class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceNotifiedEven
 public:
 	ConferenceParticipantEvent (
 		Type type,
-		time_t time,
-		const Address &conferenceAddress,
+		time_t creationTime,
+		const IdentityAddress &conferenceAddress,
 		unsigned int notifyId,
-		const Address &participantAddress
+		const IdentityAddress &participantAddress
 	);
 
-	const Address &getParticipantAddress () const;
+	const IdentityAddress &getParticipantAddress () const;
 
 protected:
 	ConferenceParticipantEvent (
 		ConferenceParticipantEventPrivate &p,
 		Type type,
-		time_t time,
-		const Address &conferenceAddress,
+		time_t creationTime,
+		const IdentityAddress &conferenceAddress,
 		unsigned int notifyId,
-		const Address &participantAddress
+		const IdentityAddress &participantAddress
 	);
 
 private:

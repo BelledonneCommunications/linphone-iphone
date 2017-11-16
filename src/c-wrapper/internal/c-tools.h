@@ -613,7 +613,7 @@ LINPHONE_END_NAMESPACE
 		CONSTRUCTOR(object); \
 		return object; \
 	} \
-	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
+	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE *object) { \
 		DESTRUCTOR(object); \
 		LinphonePrivate::Wrapper::uninitBaseCppObject(object); \
 	} \

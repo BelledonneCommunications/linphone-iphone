@@ -55,11 +55,11 @@ LINPHONE_PUBLIC void linphone_event_log_unref (LinphoneEventLog *event_log);
 LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const LinphoneEventLog *event_log);
 
 /**
- * Returns the time of a event log.
+ * Returns the creation time of a event log.
  * @param[in] event_log A #LinphoneEventLog object
- * @return The event time
+ * @return The event creation time
  */
-LINPHONE_PUBLIC time_t linphone_event_log_get_time (const LinphoneEventLog *event_log);
+LINPHONE_PUBLIC time_t linphone_event_log_get_creation_time (const LinphoneEventLog *event_log);
 
 // -----------------------------------------------------------------------------
 // ConferenceEvent.
@@ -121,11 +121,11 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_participant_addres
 // -----------------------------------------------------------------------------
 
 /**
- * Returns the gruu address of a conference participant device event.
+ * Returns the device address of a conference participant device event.
  * @param[in] event_log A #LinphoneEventLog object.
- * @return The conference gruu address.
+ * @return The conference device address.
  */
-LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_gruu_address (const LinphoneEventLog *event_log);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_device_address (const LinphoneEventLog *event_log);
 
 // -----------------------------------------------------------------------------
 // ConferenceSubjectEvent.

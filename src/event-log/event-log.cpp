@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "core/core-p.h"
 #include "event-log-p.h"
 
 // =============================================================================
@@ -26,10 +25,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 EventLog::EventLog () : BaseObject(*new EventLogPrivate) {}
 
-EventLog::EventLog (EventLogPrivate &p, Type type, time_t time) : BaseObject(p) {
+EventLog::EventLog (EventLogPrivate &p, Type type, time_t creationTime) : BaseObject(p) {
 	L_D();
 	d->type = type;
-	d->time = time;
+	d->creationTime = creationTime;
 }
 
 EventLog::Type EventLog::getType () const {
@@ -37,9 +36,9 @@ EventLog::Type EventLog::getType () const {
 	return d->type;
 }
 
-time_t EventLog::getTime () const {
+time_t EventLog::getCreationTime () const {
 	L_D();
-	return d->time;
+	return d->creationTime;
 }
 
 LINPHONE_END_NAMESPACE

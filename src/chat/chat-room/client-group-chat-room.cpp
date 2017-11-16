@@ -385,7 +385,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 		lWarning() << "Participant " << participant << " added a device but is not in the list of participants!";
 		return;
 	}
-	participant->getPrivate()->addDevice(event->getGruuAddress());
+	participant->getPrivate()->addDevice(event->getDeviceAddress());
 
 	if (isFullState)
 		return;
@@ -412,7 +412,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 		lWarning() << "Participant " << participant << " removed a device but is not in the list of participants!";
 		return;
 	}
-	participant->getPrivate()->removeDevice(event->getGruuAddress());
+	participant->getPrivate()->removeDevice(event->getDeviceAddress());
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceRemovedCb cb = linphone_chat_room_cbs_get_participant_device_removed(cbs);

@@ -26,6 +26,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 class ConferenceSubjectEventPrivate : public ConferenceNotifiedEventPrivate {
 public:
 	string subject;
@@ -34,14 +36,14 @@ public:
 // -----------------------------------------------------------------------------
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (
-	time_t time,
-	const Address &conferenceAddress,
+	time_t creationTime,
+	const IdentityAddress &conferenceAddress,
 	unsigned int notifyId,
 	const string &subject
 ) : ConferenceNotifiedEvent(
 	*new ConferenceSubjectEventPrivate,
 	Type::ConferenceSubjectChanged,
-	time,
+	creationTime,
 	conferenceAddress,
 	notifyId
 ) {

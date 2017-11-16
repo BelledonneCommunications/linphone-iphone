@@ -32,14 +32,14 @@ class LINPHONE_PUBLIC ConferenceParticipantDeviceEvent : public ConferencePartic
 public:
 	ConferenceParticipantDeviceEvent (
 		Type type,
-		time_t time,
-		const Address &conferenceAddress,
+		time_t creationTime,
+		const IdentityAddress &conferenceAddress,
 		unsigned int notifyId,
-		const Address &participantAddress,
-		const Address &gruuAddress
+		const IdentityAddress &participantAddress,
+		const IdentityAddress &deviceAddress
 	);
 
-	const Address &getGruuAddress () const;
+	const IdentityAddress &getDeviceAddress () const;
 
 private:
 	L_DECLARE_PRIVATE(ConferenceParticipantDeviceEvent);
