@@ -24,6 +24,7 @@
 #include "linphone/wrapper_utils.h"
 
 #include "c-wrapper/c-wrapper.h"
+#include "address/identity-address.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
@@ -307,6 +308,14 @@ LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneCha
 	LinphoneChatMessage *object = L_INIT(ChatMessage);
 	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
 	return object;
+}
+
+void linphone_chat_room_set_conference_address (LinphoneChatRoom *cr, const LinphoneAddress *confAddr) {
+	char *addrStr = linphone_address_as_string(confAddr);
+	LinphonePrivate::ServerGroupChatRoomPrivate *sgcr = dynamic_cast<LinphonePrivate::ServerGroupChatRoomPrivate *>(L_GET_PRIVATE_FROM_C_OBJECT(cr));
+	if (sgcr)
+		sgcr->setConferenceAddress(LinphonePrivate::IdentityAddress(addrStr));
+	bctbx_free(addrStr);
 }
 
 // =============================================================================

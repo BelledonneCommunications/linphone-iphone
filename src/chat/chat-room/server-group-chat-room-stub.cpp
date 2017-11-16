@@ -63,9 +63,13 @@ LinphoneReason ServerGroupChatRoomPrivate::messageReceived (SalOp *, const SalMe
 	return LinphoneReasonNone;
 }
 
+void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &confAddr) {}
+
 // -----------------------------------------------------------------------------
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
+
+void ServerGroupChatRoomPrivate::finalizeCreation () {}
 
 bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;

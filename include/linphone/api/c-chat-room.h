@@ -367,6 +367,14 @@ LINPHONE_PUBLIC void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const
 LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr);
 
 /**
+ * Set the conference address of a group chat room. This function needs to be called from the
+ * LinphoneChatRoomCbsConferenceAddressGenerationCb callback and only there.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] confAddr The conference address to be used by the group chat room
+ */
+LINPHONE_PUBLIC void linphone_chat_room_set_conference_address (LinphoneChatRoom *cr, const LinphoneAddress *confAddr);
+
+/**
  * Returns back pointer to #LinphoneCore object.
  * @deprecated use linphone_chat_room_get_core()
  * @donotwrap

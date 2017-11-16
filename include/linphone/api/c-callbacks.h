@@ -226,6 +226,14 @@ typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *c
  * @param[in] participant The #LinphoneParticipant that has been removed from the chat room
  */
 typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
+
+/**
+ * Callback used when a group chat room is created server-side to generate the address of the chat room.
+ * The function linphone_chat_room_set_conference_address() needs to be called by this callback.
+ * @param[in] cr #LinphoneChatRoom object
+ */
+typedef void (*LinphoneChatRoomCbsConferenceAddressGenerationCb) (LinphoneChatRoom *cr);
+
 /**
  * @}
 **/

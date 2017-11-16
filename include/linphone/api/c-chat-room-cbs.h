@@ -228,6 +228,21 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceRemovedCb linphone_chat_room
  * @param[in] cb The participant device removed callback to be used.
  */
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceRemovedCb cb);
+
+/**
+ * Get the conference address generation callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The current conference address generation callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsConferenceAddressGenerationCb linphone_chat_room_cbs_get_conference_address_generation (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the conference address generation callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The conference address generation callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_conference_address_generation (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceAddressGenerationCb cb);
+
 /**
  * @}
  */

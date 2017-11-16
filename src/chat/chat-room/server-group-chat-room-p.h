@@ -49,9 +49,11 @@ public:
 	void dispatchMessage (const Address &fromAddr, const Content &content);
 	void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg) override;
 	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg) override;
+	void setConferenceAddress (const IdentityAddress &confAddr);
 
 private:
 	void designateAdmin ();
+	void finalizeCreation ();
 	bool isAdminLeft () const;
 
 	std::list<std::shared_ptr<Participant>> removedParticipants;
