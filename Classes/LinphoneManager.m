@@ -2359,12 +2359,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	}
 
 	const MSList *lists = linphone_core_get_friends_lists(LC);
-	if(lists != nil){
-		while (lists) {
-			linphone_friend_list_enable_subscriptions(
-				lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
-			lists = lists->next;
-		}
+	while (lists) {
+		linphone_friend_list_enable_subscriptions(
+			lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+		lists = lists->next;
 	}
 }
 
