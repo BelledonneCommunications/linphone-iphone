@@ -175,12 +175,12 @@ const ChatRoomId &ChatRoom::getChatRoomId () const {
 	return d->chatRoomId;
 }
 
-const SimpleAddress &ChatRoom::getPeerAddress () const {
+const IdentityAddress &ChatRoom::getPeerAddress () const {
 	L_D();
 	return d->chatRoomId.getPeerAddress();
 }
 
-const SimpleAddress &ChatRoom::getLocalAddress () const {
+const IdentityAddress &ChatRoom::getLocalAddress () const {
 	L_D();
 	return d->chatRoomId.getLocalAddress();
 }
@@ -281,7 +281,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	LinphoneCore *cCore = core->getCCore();
 
 	msg = createChatMessage(
-		SimpleAddress(op->get_from()) == q->getLocalAddress()
+		IdentityAddress(op->get_from()) == q->getLocalAddress()
 			? ChatMessage::Direction::Outgoing
 			: ChatMessage::Direction::Incoming
 	);

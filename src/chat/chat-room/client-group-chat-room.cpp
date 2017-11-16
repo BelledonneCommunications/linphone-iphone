@@ -45,7 +45,7 @@ list<Address> ClientGroupChatRoomPrivate::cleanAddressesList (const list<Address
 	cleanedList.sort();
 	cleanedList.unique();
 	for (auto it = cleanedList.begin(); it != cleanedList.end();) {
-		if (q->findParticipant(*it) || (q->getMe()->getAddress() == SimpleAddress(*it)))
+		if (q->findParticipant(*it) || (q->getMe()->getAddress() == IdentityAddress(*it)))
 			it = cleanedList.erase(it);
 		else
 			it++;
@@ -79,10 +79,10 @@ void ClientGroupChatRoomPrivate::notifyReceived (const string &body) {
 ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::shared_ptr<Core> &core,
 	const std::string &factoryUri,
-	const SimpleAddress &me,
+	const IdentityAddress &me,
 	const std::string &subject
 ) :
-ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(SimpleAddress(), me)),
+ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
 RemoteConference(core->getCCore(), me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = make_shared<Participant>(Address(factoryUri));

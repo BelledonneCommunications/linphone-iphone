@@ -22,8 +22,7 @@
 #include "address-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
-#include "address/gruu-address.h"
-#include "address/simple-address.h"
+#include "address/identity-address.h"
 
 // =============================================================================
 
@@ -47,28 +46,17 @@ Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 		d->internalAddress = sal_address_clone(salAddress);
 }
 
-Address::Address (const GruuAddress &src) : ClonableObject(*new AddressPrivate) {
+Address::Address (const IdentityAddress &src) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	string uri = src.getScheme() + ":" + src.getUsername() + "@";
+	string uri = "sip:" + src.getUsername() + "@";
 	if (src.getDomain().find(':') != string::npos)
 		uri += "[" + src.getDomain() + "]";
 	else
 		uri += src.getDomain();
-	uri += "?gr=" + src.getUrn();
+	if (src.hasGruu())
+		uri += "?gr=" + src.getGruu();
 	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(uri)))) {
-		lWarning() << "Cannot create Address, bad GruuAddress source";
-	}
-}
-
-Address::Address (const SimpleAddress &src) : ClonableObject(*new AddressPrivate) {
-	L_D();
-	string uri = src.getScheme() + ":" + src.getUsername() + "@";
-	if (src.getDomain().find(':') != string::npos)
-		uri += "[" + src.getDomain() + "]";
-	else
-		uri += src.getDomain();
-	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(uri)))) {
-		lWarning() << "Cannot create Address, bad SimpleAddress source";
+		lWarning() << "Cannot create Address, bad IdentityAddress source";
 	}
 }
 

@@ -49,8 +49,8 @@ public:
 
 	const ChatRoomId &getChatRoomId () const;
 
-	const SimpleAddress &getPeerAddress () const;
-	const SimpleAddress &getLocalAddress () const;
+	const IdentityAddress &getPeerAddress () const;
+	const IdentityAddress &getLocalAddress () const;
 
 	virtual CapabilitiesMask getCapabilities () const = 0;
 

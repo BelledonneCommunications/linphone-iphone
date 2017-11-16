@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-#include "address/gruu-address.h"
+#include "address/identity-address.h"
 #include "linphone/types.h"
 #include "linphone/utils/general.h"
 
@@ -36,12 +36,12 @@ class CallSession;
 class ParticipantDevice {
 public:
 	ParticipantDevice ();
-	explicit ParticipantDevice (const GruuAddress &gruu);
+	explicit ParticipantDevice (const IdentityAddress &gruu);
 	virtual ~ParticipantDevice ();
 
 	bool operator== (const ParticipantDevice &device) const;
 
-	inline const GruuAddress &getGruu () const { return mGruu; }
+	inline const IdentityAddress &getGruu () const { return mGruu; }
 	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
 	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
 
@@ -52,7 +52,7 @@ public:
 	bool isValid () const { return mGruu.isValid(); }
 
 private:
-	GruuAddress mGruu;
+	IdentityAddress mGruu;
 	std::shared_ptr<CallSession> mSession;
 	LinphoneEvent *mConferenceSubscribeEvent = nullptr;
 };

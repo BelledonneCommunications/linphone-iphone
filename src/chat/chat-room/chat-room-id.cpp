@@ -29,8 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomIdPrivate : public ClonableObjectPrivate {
 public:
-	SimpleAddress peerAddress;
-	SimpleAddress localAddress;
+	IdentityAddress peerAddress;
+	IdentityAddress localAddress;
 };
 
 // -----------------------------------------------------------------------------
@@ -38,8 +38,8 @@ public:
 ChatRoomId::ChatRoomId () : ClonableObject(*new ChatRoomIdPrivate) {}
 
 ChatRoomId::ChatRoomId (
-	const SimpleAddress &peerAddress,
-	const SimpleAddress &localAddress
+	const IdentityAddress &peerAddress,
+	const IdentityAddress &localAddress
 ) : ClonableObject(*new ChatRoomIdPrivate) {
 	L_D();
 	d->peerAddress = peerAddress;
@@ -64,12 +64,12 @@ bool ChatRoomId::operator< (const ChatRoomId &chatRoomId) const {
 	return d->peerAddress < dChatRoomId->peerAddress || d->localAddress < dChatRoomId->localAddress;
 }
 
-const SimpleAddress &ChatRoomId::getPeerAddress () const {
+const IdentityAddress &ChatRoomId::getPeerAddress () const {
 	L_D();
 	return d->peerAddress;
 }
 
-const SimpleAddress &ChatRoomId::getLocalAddress () const {
+const IdentityAddress &ChatRoomId::getLocalAddress () const {
 	L_D();
 	return d->localAddress;
 }

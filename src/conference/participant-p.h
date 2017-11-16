@@ -38,17 +38,17 @@ public:
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	inline std::shared_ptr<CallSession> getSession () const { return session; }
 	inline void removeSession () { session.reset(); }
-	inline void setAddress (const SimpleAddress &newAddr) { addr = newAddr; }
+	inline void setAddress (const IdentityAddress &newAddr) { addr = newAddr; }
 	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
 	inline void setContactAddress (const Address &contactAddr) { this->contactAddr = contactAddr; }
-	std::shared_ptr<ParticipantDevice> findDevice (const GruuAddress &gruu) const;
+	std::shared_ptr<ParticipantDevice> findDevice (const IdentityAddress &gruu) const;
 	std::shared_ptr<ParticipantDevice> findDevice (const std::shared_ptr<const CallSession> &session);
 	const std::list<std::shared_ptr<ParticipantDevice>> &getDevices () const;
-	std::shared_ptr<ParticipantDevice> addDevice (const GruuAddress &gruu);
-	void removeDevice (const GruuAddress &gruu);
+	std::shared_ptr<ParticipantDevice> addDevice (const IdentityAddress &gruu);
+	void removeDevice (const IdentityAddress &gruu);
 
 private:
-	SimpleAddress addr;
+	IdentityAddress addr;
 	Address contactAddr;
 	bool isAdmin = false;
 	std::shared_ptr<CallSession> session;

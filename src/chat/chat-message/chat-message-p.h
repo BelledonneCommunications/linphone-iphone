@@ -63,11 +63,11 @@ public:
 
 	void setIsReadOnly(bool readOnly);
 
-	inline void forceFromAddress (const SimpleAddress &fromAddress) {
+	inline void forceFromAddress (const IdentityAddress &fromAddress) {
 		this->fromAddress = fromAddress;
 	}
 
-	inline void forceToAddress (const SimpleAddress &toAddress) {
+	inline void forceToAddress (const IdentityAddress &toAddress) {
 		this->toAddress = toAddress;
 	}
 
@@ -152,8 +152,8 @@ private:
 
 	std::weak_ptr<ChatRoom> chatRoom;
 	ChatRoomId chatRoomId;
-	SimpleAddress fromAddress;
-	SimpleAddress toAddress;
+	IdentityAddress fromAddress;
+	IdentityAddress toAddress;
 
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;

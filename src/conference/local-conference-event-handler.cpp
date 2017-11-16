@@ -274,7 +274,7 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	bctbx_free(contactAddrStr);
 	if (contactAddr.getUriParamValue("gr").empty())
 		return;
-	GruuAddress gruu(contactAddr);
+	IdentityAddress gruu(contactAddr);
 	shared_ptr<ParticipantDevice> device = participant->getPrivate()->addDevice(gruu);
 
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {

@@ -121,7 +121,7 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 	}
 
 	shared_ptr<LinphonePrivate::ChatRoom> chatRoom = lc->cppCore->findChatRoom(
-		LinphonePrivate::ChatRoomId(LinphonePrivate::SimpleAddress(peerAddress), LinphonePrivate::SimpleAddress(localAddress))
+		LinphonePrivate::ChatRoomId(LinphonePrivate::IdentityAddress(peerAddress), LinphonePrivate::IdentityAddress(localAddress))
 	);
 
 	if (chatRoom)

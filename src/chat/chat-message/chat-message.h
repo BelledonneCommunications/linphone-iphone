@@ -26,7 +26,7 @@
 #include "linphone/enums/chat-message-enums.h"
 
 // TODO: Remove me later?
-#include "address/simple-address.h"
+#include "address/identity-address.h"
 
 #include "core/core-accessor.h"
 #include "object/object.h"
@@ -80,11 +80,11 @@ public:
 
 	const std::string &getImdnMessageId () const;
 
-	const SimpleAddress &getFromAddress () const;
-	const SimpleAddress &getToAddress () const;
+	const IdentityAddress &getFromAddress () const;
+	const IdentityAddress &getToAddress () const;
 
-	const SimpleAddress &getLocalAddress () const;
-	const SimpleAddress &getRemoteAddress () const;
+	const IdentityAddress &getLocalAddress () const;
+	const IdentityAddress &getRemoteAddress () const;
 
 	// TODO: Return a cpp reference.
 	const LinphoneErrorInfo *getErrorInfo () const;

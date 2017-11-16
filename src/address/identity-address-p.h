@@ -1,5 +1,5 @@
 /*
- * gruu-address-p.h
+ * identity-address-p.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,24 +17,25 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _GRUU_ADDRESS_P_H_
-#define _GRUU_ADDRESS_P_H_
+#ifndef _IDENTITY_ADDRESS_P_H_
+#define _IDENTITY_ADDRESS_P_H_
 
-#include "gruu-address.h"
-#include "address/simple-address-p.h"
+#include "identity-address.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class GruuAddressPrivate : public SimpleAddressPrivate {
+class IdentityAddressPrivate : public ClonableObjectPrivate {
 private:
-	std::string urn;
-	bool valid = false;
+	std::string username;
+	std::string domain;
+	std::string gruu;
 
-	L_DECLARE_PUBLIC(GruuAddress);
+	L_DECLARE_PUBLIC(IdentityAddress);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _GRUU_ADDRESS_P_H_
+#endif // ifndef _IDENTITY_ADDRESS_P_H_

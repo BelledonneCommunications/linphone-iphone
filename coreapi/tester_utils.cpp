@@ -58,8 +58,8 @@ bctbx_list_t **linphone_core_get_call_logs_attribute(LinphoneCore *lc) {
 
 LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *peerAddr, const LinphoneAddress *localAddr) {
 	shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(ChatRoomId(
-		SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(peerAddr)),
-		SimpleAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(localAddr))
+		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(peerAddr)),
+		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(localAddr))
 	));
 
 	if (chatRoom)

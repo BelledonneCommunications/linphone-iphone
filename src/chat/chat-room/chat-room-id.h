@@ -20,7 +20,7 @@
 #ifndef _CHAT_ROOM_ID_H_
 #define _CHAT_ROOM_ID_H_
 
-#include "address/simple-address.h"
+#include "address/identity-address.h"
 
 // =============================================================================
 
@@ -31,7 +31,7 @@ class ChatRoomIdPrivate;
 class LINPHONE_PUBLIC ChatRoomId : public ClonableObject {
 public:
 	ChatRoomId ();
-	ChatRoomId (const SimpleAddress &peerAddress, const SimpleAddress &localAddress);
+	ChatRoomId (const IdentityAddress &peerAddress, const IdentityAddress &localAddress);
 	ChatRoomId (const ChatRoomId &src);
 
 	ChatRoomId &operator= (const ChatRoomId &src);
@@ -41,8 +41,8 @@ public:
 
 	bool operator< (const ChatRoomId &chatRoomId) const;
 
-	const SimpleAddress &getPeerAddress () const;
-	const SimpleAddress &getLocalAddress () const;
+	const IdentityAddress &getPeerAddress () const;
+	const IdentityAddress &getLocalAddress () const;
 
 private:
 	L_DECLARE_PRIVATE(ChatRoomId);

@@ -212,7 +212,7 @@ void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSessi
 shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
 	L_D();
 
-	SimpleAddress simpleAddr(addr);
+	IdentityAddress simpleAddr(addr);
 	for (const auto &participant : d->participants) {
 		if (participant->getAddress() == simpleAddr)
 			return participant;
@@ -234,7 +234,7 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 
 bool Conference::isMe (const Address &addr) const {
 	L_D();
-	SimpleAddress simpleAddr(addr);
+	IdentityAddress simpleAddr(addr);
 	return d->me->getAddress() == simpleAddr;
 }
 

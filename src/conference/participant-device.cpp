@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 ParticipantDevice::ParticipantDevice () {}
 
-ParticipantDevice::ParticipantDevice (const GruuAddress &gruu) {
+ParticipantDevice::ParticipantDevice (const IdentityAddress &gruu) {
 	mGruu = gruu;
 }
 

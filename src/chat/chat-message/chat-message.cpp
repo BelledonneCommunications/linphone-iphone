@@ -767,22 +767,22 @@ bool ChatMessage::isRead () const {
 	return d->state == State::Delivered || d->state == State::Displayed || d->state == State::DeliveredToUser;
 }
 
-const SimpleAddress &ChatMessage::getFromAddress () const {
+const IdentityAddress &ChatMessage::getFromAddress () const {
 	L_D();
 	return d->fromAddress;
 }
 
-const SimpleAddress &ChatMessage::getToAddress () const {
+const IdentityAddress &ChatMessage::getToAddress () const {
 	L_D();
 	return d->toAddress;
 }
 
-const SimpleAddress &ChatMessage::getLocalAddress () const {
+const IdentityAddress &ChatMessage::getLocalAddress () const {
 	L_D();
 	return d->chatRoomId.getLocalAddress();
 }
 
-const SimpleAddress &ChatMessage::getRemoteAddress () const {
+const IdentityAddress &ChatMessage::getRemoteAddress () const {
 	L_D();
 	return d->direction == Direction::Outgoing ? d->chatRoomId.getPeerAddress() : d->fromAddress;
 }

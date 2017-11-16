@@ -1,5 +1,5 @@
 /*
- * simple-address.h
+ * identity-address.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _SIMPLE_ADDRESS_H_
-#define _SIMPLE_ADDRESS_H_
+#ifndef _IDENTITY_ADDRESS_H_
+#define _IDENTITY_ADDRESS_H_
 
 #include "object/clonable-object.h"
 
@@ -27,23 +27,23 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Address;
-class SimpleAddressPrivate;
+class IdentityAddressPrivate;
 
-class LINPHONE_PUBLIC SimpleAddress : public ClonableObject {
+class LINPHONE_PUBLIC IdentityAddress : public ClonableObject {
 public:
-	explicit SimpleAddress (const std::string &address = "");
-	SimpleAddress (const SimpleAddress &src);
-	SimpleAddress (const Address &src);
-	~SimpleAddress () = default;
+	explicit IdentityAddress (const std::string &address = "");
+	IdentityAddress (const IdentityAddress &src);
+	IdentityAddress (const Address &src);
+	~IdentityAddress () = default;
 
-	SimpleAddress &operator= (const SimpleAddress &src);
+	IdentityAddress &operator= (const IdentityAddress &src);
 
-	bool operator== (const SimpleAddress &address) const;
-	bool operator!= (const SimpleAddress &address) const;
+	bool operator== (const IdentityAddress &address) const;
+	bool operator!= (const IdentityAddress &address) const;
 
-	bool operator< (const SimpleAddress &address) const;
+	bool operator< (const IdentityAddress &address) const;
 
-	const std::string &getScheme () const;
+	bool isValid () const;
 
 	const std::string &getUsername () const;
 	bool setUsername (const std::string &username);
@@ -51,18 +51,16 @@ public:
 	const std::string &getDomain () const;
 	bool setDomain (const std::string &domain);
 
-	bool isSip () const;
+	bool hasGruu () const;
+	const std::string &getGruu () const;
+	bool setGruu (const std::string &gruu);
 
 	virtual std::string asString () const;
 
-protected:
-	explicit SimpleAddress (SimpleAddressPrivate &p);
-	void clone (const SimpleAddress &src);
-
 private:
-	L_DECLARE_PRIVATE(SimpleAddress);
+	L_DECLARE_PRIVATE(IdentityAddress);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _SIMPLE_ADDRESS_H_
+#endif // ifndef _IDENTITY_ADDRESS_H_

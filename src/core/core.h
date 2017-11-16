@@ -34,7 +34,7 @@ class Address;
 class ChatRoom;
 class ChatRoomId;
 class CorePrivate;
-class SimpleAddress;
+class IdentityAddress;
 
 class LINPHONE_PUBLIC Core : public Object {
 	friend class ChatRoom;
@@ -71,13 +71,13 @@ public:
 	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
 
 	std::shared_ptr<ChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
-	std::list<std::shared_ptr<ChatRoom>> findChatRooms (const SimpleAddress &peerAddress) const;
+	std::list<std::shared_ptr<ChatRoom>> findChatRooms (const IdentityAddress &peerAddress) const;
 
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
-	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject, const SimpleAddress &localAddress);
+	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject, const IdentityAddress &localAddress);
 
 	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt = false);
-	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const SimpleAddress &peerAddress, bool isRtt = false);
+	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt = false);
 
 	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoomFromUri (const std::string &uri, bool isRtt = false);
 

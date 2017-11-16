@@ -74,7 +74,7 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
-	ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(SimpleAddress(op->get_to()), SimpleAddress())),
+	ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
 	LocalConference(core->getCCore(), Address(op->get_to()), nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {

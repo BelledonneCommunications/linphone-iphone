@@ -1,5 +1,5 @@
 /*
- * simple-address.cpp
+ * identity-address.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
 
 #include "linphone/utils/utils.h"
 
-#include "simple-address-p.h"
+#include "identity-address-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
 
@@ -31,91 +31,102 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-SimpleAddress::SimpleAddress (const string &address) : ClonableObject(*new SimpleAddressPrivate) {
+IdentityAddress::IdentityAddress (const string &address) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
 	Address tmpAddress(address);
-	if (tmpAddress.isValid()) {
-		d->scheme = tmpAddress.getScheme();
+	if (tmpAddress.isValid() && (tmpAddress.getScheme() == "sip")) {
 		d->username = tmpAddress.getUsername();
 		d->domain = tmpAddress.getDomain();
+		if (tmpAddress.hasUriParam("gr")) {
+			d->gruu = tmpAddress.getUriParamValue("gr");
+		}
 	}
 }
 
-SimpleAddress::SimpleAddress (const SimpleAddress &src) : ClonableObject(*new SimpleAddressPrivate) {
+IdentityAddress::IdentityAddress (const IdentityAddress &src) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
-	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
+	d->gruu = src.getGruu();
 }
 
-SimpleAddress::SimpleAddress (const Address &src) : ClonableObject(*new SimpleAddressPrivate) {
+IdentityAddress::IdentityAddress (const Address &src) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
-	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
+	if (src.hasUriParam("gr")) {
+		d->gruu = src.getUriParamValue("gr");
+	}
 }
 
-SimpleAddress::SimpleAddress (SimpleAddressPrivate &p) : ClonableObject(p) {}
-
-SimpleAddress &SimpleAddress::operator= (const SimpleAddress &src) {
+IdentityAddress &IdentityAddress::operator= (const IdentityAddress &src) {
 	L_D();
 	if (this != &src) {
-		d->scheme = src.getScheme();
 		d->username = src.getUsername();
 		d->domain = src.getDomain();
+		d->gruu = src.getGruu();
 	}
 	return *this;
 }
 
-bool SimpleAddress::operator== (const SimpleAddress &address) const {
+bool IdentityAddress::operator== (const IdentityAddress &address) const {
 	return asString() == address.asString();
 }
 
-bool SimpleAddress::operator!= (const SimpleAddress &address) const {
+bool IdentityAddress::operator!= (const IdentityAddress &address) const {
 	return !(*this == address);
 }
 
-bool SimpleAddress::operator< (const SimpleAddress &address) const {
+bool IdentityAddress::operator< (const IdentityAddress &address) const {
 	return asString() < address.asString();
 }
 
-const string &SimpleAddress::getScheme () const {
-	L_D();
-	return d->scheme;
+bool IdentityAddress::isValid () const {
+	Address tmpAddress(*this);
+	return tmpAddress.isValid();
 }
 
-const string &SimpleAddress::getUsername () const {
+const string &IdentityAddress::getUsername () const {
 	L_D();
 	return d->username;
 }
 
-bool SimpleAddress::setUsername (const string &username) {
+bool IdentityAddress::setUsername (const string &username) {
 	L_D();
 	d->username = username;
 	return true;
 }
 
-const string &SimpleAddress::getDomain () const {
+const string &IdentityAddress::getDomain () const {
 	L_D();
 	return d->domain;
 }
 
-bool SimpleAddress::setDomain (const string &domain) {
+bool IdentityAddress::setDomain (const string &domain) {
 	L_D();
 	d->domain = domain;
 	return true;
 }
 
-string SimpleAddress::asString () const {
-	Address tmpAddress(*this);
-	return tmpAddress.asStringUriOnly();
+bool IdentityAddress::hasGruu () const {
+	L_D();
+	return !d->gruu.empty();
 }
 
-void SimpleAddress::clone (const SimpleAddress &src) {
+const string &IdentityAddress::getGruu () const {
 	L_D();
-	d->scheme = src.getPrivate()->scheme;
-	d->username = src.getPrivate()->username;
-	d->domain = src.getPrivate()->domain;
+	return d->gruu;
+}
+
+bool IdentityAddress::setGruu (const string &gruu) {
+	L_D();
+	d->gruu = gruu;
+	return true;
+}
+
+string IdentityAddress::asString () const {
+	Address tmpAddress(*this);
+	return tmpAddress.asStringUriOnly();
 }
 
 LINPHONE_END_NAMESPACE

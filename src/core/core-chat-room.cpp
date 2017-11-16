@@ -19,7 +19,7 @@
 
 #include <algorithm>
 
-#include "address/simple-address.h"
+#include "address/identity-address.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
@@ -48,9 +48,9 @@ static inline ChatRoomId resolveWorkaroundClientGroupChatRoomId (
 	if (!uri)
 		return ChatRoomId();
 
-	SimpleAddress peerAddress = chatRoomId.getPeerAddress();
+	IdentityAddress peerAddress = chatRoomId.getPeerAddress();
 	peerAddress.setDomain(Address(uri).getDomain());
-	SimpleAddress localAddress = chatRoomId.getLocalAddress();
+	IdentityAddress localAddress = chatRoomId.getLocalAddress();
 	localAddress.setDomain(Address(uri).getDomain());
 	return ChatRoomId(peerAddress, localAddress);
 }
@@ -66,20 +66,20 @@ static inline ChatRoomId resolveWorkaroundClientGroupChatRoomId (
 }
 
 // Return the better local address to talk with peer address.
-static SimpleAddress getDefaultLocalAddress (const shared_ptr<Core> &core, const SimpleAddress &peerAddress) {
+static IdentityAddress getDefaultLocalAddress (const shared_ptr<Core> &core, const IdentityAddress &peerAddress) {
 	LinphoneCore *cCore = core->getCCore();
 
 	LinphoneAddress *cPeerAddress = linphone_address_new(peerAddress.asString().c_str());
 	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cCore, cPeerAddress);
 	linphone_address_unref(cPeerAddress);
 
-	SimpleAddress localAddress;
+	IdentityAddress localAddress;
 	if (proxy) {
 		char *identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
-		localAddress = SimpleAddress(identity);
+		localAddress = IdentityAddress(identity);
 		bctbx_free(identity);
 	} else
-		localAddress = SimpleAddress(linphone_core_get_primary_contact(cCore));
+		localAddress = IdentityAddress(linphone_core_get_primary_contact(cCore));
 
 	return localAddress;
 }
@@ -169,7 +169,7 @@ shared_ptr<ChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
 	return it == d->chatRoomsById.cend() ? shared_ptr<ChatRoom>() : it->second;
 }
 
-list<shared_ptr<ChatRoom>> Core::findChatRooms (const SimpleAddress &peerAddress) const {
+list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {
 	// TODO: DEV GROUP CHAT.
 	return list<shared_ptr<ChatRoom>>();
 }
@@ -199,7 +199,7 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomI
 	return chatRoom;
 }
 
-shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const SimpleAddress &peerAddress, bool isRtt) {
+shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt) {
 	L_D();
 
 	list<shared_ptr<ChatRoom>> chatRooms = findChatRooms(peerAddress);
