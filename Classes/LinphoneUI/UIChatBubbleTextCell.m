@@ -46,13 +46,15 @@
 	limeRecognizer.numberOfTapsRequired = 1;
 	[_LIMEKO addGestureRecognizer:limeRecognizer];
 	_LIMEKO.userInteractionEnabled = YES;
-
 	UITapGestureRecognizer *resendRecognizer =
 	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
 	resendRecognizer.numberOfTapsRequired = 1;
 	[_imdmIcon addGestureRecognizer:resendRecognizer];
 	_imdmIcon.userInteractionEnabled = YES;
-	[_imdmLabel addGestureRecognizer:resendRecognizer];
+	UITapGestureRecognizer *resendRecognizer2 =
+	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
+	resendRecognizer2.numberOfTapsRequired = 1;
+	[_imdmLabel addGestureRecognizer:resendRecognizer2];
 	_imdmLabel.userInteractionEnabled = YES;
 
 	return self;

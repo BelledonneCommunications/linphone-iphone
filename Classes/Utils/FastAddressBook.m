@@ -367,7 +367,7 @@
       NSLog(@"description = %@", [exception description]);
       return FALSE;
     }
-    NSLog(@"Deleted contacts %lu", cnContacts.count);
+	  NSLog(@"Deleted contacts %lu", (unsigned long)cnContacts.count);
   }
   return TRUE;
 }
