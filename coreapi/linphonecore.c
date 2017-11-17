@@ -3542,9 +3542,11 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 
 void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
+	const LinphoneAddress *contactAddr = nullptr;
 	const char *identity;
 
 	if (proxy){
+		contactAddr = linphone_proxy_config_get_contact(proxy);
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
 			op->set_privacy(linphone_proxy_config_get_privacy(proxy));
@@ -3569,7 +3571,12 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		ms_free(addr);
 	}
 
-	op->set_from(identity);
+	if (op->getUseGruuInFrom() && contactAddr && linphone_address_has_uri_param(contactAddr, "gr")) {
+		char *contactAddrStr = linphone_address_as_string_uri_only(contactAddr);
+		op->set_from(contactAddrStr);
+		bctbx_free(contactAddrStr);
+	} else
+		op->set_from(identity);
 	op->set_sent_custom_header(headers);
 	op->set_realm(linphone_proxy_config_get_realm(proxy));
 

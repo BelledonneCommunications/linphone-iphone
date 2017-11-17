@@ -574,6 +574,7 @@ void ChatMessagePrivate::send () {
 		LinphoneAddress *peer = linphone_address_new(q->getToAddress().asString().c_str());
 		/* Sending out of call */
 		salOp = op = new SalMessageOp(core->getCCore()->sal);
+		op->setUseGruuInFrom(true);
 		linphone_configure_op(
 			core->getCCore(), op, peer, getSalCustomHeaders(),
 			!!lp_config_get_int(core->getCCore()->config, "sip", "chat_msg_with_contact", 0)
@@ -630,26 +631,14 @@ void ChatMessagePrivate::send () {
 	// End of message modification
 	// ---------------------------------------
 
-	if (internalContent.isEmpty()) {
+	if (internalContent.isEmpty())
 		internalContent = *(contents.front());
-	}
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (internalContent.getContentType().isValid()) {
-		msgOp->send_message(
-			q->getFromAddress().asString().c_str(),
-			q->getToAddress().asString().c_str(),
-			internalContent.getContentType().asString().c_str(),
-			internalContent.getBodyAsString().c_str(),
-			q->getToAddress().asString().c_str()
-		);
-	} else {
-		msgOp->send_message(
-			q->getFromAddress().asString().c_str(),
-			q->getToAddress().asString().c_str(),
-			internalContent.getBodyAsString().c_str()
-		);
-	}
+		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str());
+	} else
+		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsString().c_str());
 
 	for (Content *content : contents) {
 		// Restore FileContents and remove FileTransferContents

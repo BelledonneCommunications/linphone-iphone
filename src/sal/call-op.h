@@ -65,7 +65,7 @@ public:
 	void set_sdp_handling(SalOpSDPHandling handling);
 
 	// Implementation of SalMessageOpInterface
-	int send_message(const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri) override;
+	int send_message(const char* content_type, const char *msg) override;
 	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
 
 private:

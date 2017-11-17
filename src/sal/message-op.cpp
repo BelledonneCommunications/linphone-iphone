@@ -77,7 +77,7 @@ void SalMessageOp::fill_cbs() {
 	this->type=Type::Message;
 }
 
-void SalMessageOpInterface::prepare_message_request(belle_sip_request_t *req, const char* content_type, const char *msg, const char *peer_uri) {
+void SalMessageOpInterface::prepare_message_request(belle_sip_request_t *req, const char* content_type, const char *msg) {
 	char content_type_raw[256];
 	size_t content_length = msg?strlen(msg):0;
 	time_t curtime = ms_time(NULL);
@@ -91,16 +91,13 @@ void SalMessageOpInterface::prepare_message_request(belle_sip_request_t *req, co
 	}
 }
 
-int SalMessageOp::send_message(const char *from, const char *to, const char* content_type, const char *msg, const char *peer_uri) {
+int SalMessageOp::send_message(const char* content_type, const char *msg) {
 	fill_cbs();
-	if (from) set_from(from);
-	if (to) set_to(to);
-	this->dir=Dir::Outgoing;
-
-	belle_sip_request_t* req=build_request("MESSAGE");
-	if (req == NULL ) return -1;
-	if (get_contact_address()) belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(create_contact()));
-	prepare_message_request(req, content_type, msg, peer_uri);
+	this->dir = Dir::Outgoing;
+	belle_sip_request_t *req = build_request("MESSAGE");
+	if (!req)
+		return -1;
+	prepare_message_request(req, content_type, msg);
 	return send_request(req);
 }
 
