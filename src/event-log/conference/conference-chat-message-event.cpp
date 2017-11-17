@@ -18,6 +18,7 @@
  */
 
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room.h"
 #include "conference-chat-message-event.h"
 #include "conference-event-p.h"
 
@@ -43,7 +44,7 @@ ConferenceChatMessageEvent::ConferenceChatMessageEvent (
 	*new ConferenceChatMessageEventPrivate,
 	EventLog::Type::ConferenceChatMessage,
 	creationTime,
-	chatMessage->getRemoteAddress()
+	chatMessage->getChatRoom()->getChatRoomId()
 ) {
 	L_D();
 	L_ASSERT(chatMessage);

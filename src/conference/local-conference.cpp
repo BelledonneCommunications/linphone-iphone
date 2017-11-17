@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "local-conference-event-handler.h"
+#include "handlers/local-conference-event-handler.h"
 #include "local-conference-p.h"
 #include "participant-p.h"
 #include "xml/resource-lists.h"
@@ -28,10 +28,10 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-LocalConference::LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {
+LocalConference::LocalConference (const shared_ptr<Core> &core, const Address &myAddress, CallListener *listener)
+	: CoreAccessor(core), Conference(*new LocalConferencePrivate, core, myAddress, listener) {
 	L_D();
-	d->eventHandler.reset(new LocalConferenceEventHandler(core, this));
+	d->eventHandler.reset(new LocalConferenceEventHandler(this));
 }
 
 // -----------------------------------------------------------------------------

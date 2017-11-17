@@ -20,11 +20,6 @@
 #ifndef _CONFERENCE_P_H_
 #define _CONFERENCE_P_H_
 
-#include <list>
-#include <memory>
-
-#include "linphone/types.h"
-
 #include "address/address.h"
 #include "conference.h"
 
@@ -41,7 +36,6 @@ public:
 	std::list<std::shared_ptr<Participant>> participants;
 
 protected:
-	LinphoneCore *core = nullptr;
 	CallListener *callListener = nullptr;
 
 	std::shared_ptr<Participant> activeParticipant;

@@ -449,7 +449,7 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 // =============================================================================
 
 ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
-	Object(p), CoreAccessor(core) {
+	CoreAccessor(core), Object(p) {
 	L_D();
 
 	d->chatRoomId = chatRoomId;

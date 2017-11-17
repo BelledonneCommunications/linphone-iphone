@@ -27,13 +27,14 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ConferenceParticipantEventPrivate;
+class IdentityAddress;
 
 class LINPHONE_PUBLIC ConferenceParticipantEvent : public ConferenceNotifiedEvent {
 public:
 	ConferenceParticipantEvent (
 		Type type,
 		time_t creationTime,
-		const IdentityAddress &conferenceAddress,
+		const ChatRoomId &ChatRoomId,
 		unsigned int notifyId,
 		const IdentityAddress &participantAddress
 	);
@@ -45,7 +46,7 @@ protected:
 		ConferenceParticipantEventPrivate &p,
 		Type type,
 		time_t creationTime,
-		const IdentityAddress &conferenceAddress,
+		const ChatRoomId &ChatRoomId,
 		unsigned int notifyId,
 		const IdentityAddress &participantAddress
 	);

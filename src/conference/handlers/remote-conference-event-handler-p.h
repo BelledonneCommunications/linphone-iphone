@@ -20,7 +20,9 @@
 #ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
 #define _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
 
-#include "address/address.h"
+#include "linphone/types.h"
+
+#include "chat/chat-room/chat-room-id.h"
 #include "object/object-p.h"
 #include "remote-conference-event-handler.h"
 
@@ -30,10 +32,11 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
 private:
-	LinphoneCore *core = nullptr;
-	ConferenceListener *listener = nullptr;
-	Address confAddress;
+	ChatRoomId chatRoomId;
+
+	RemoteConference *conf = nullptr;
 	LinphoneEvent *lev = nullptr;
+
 	unsigned int lastNotify = 0;
 
 	L_DECLARE_PUBLIC(RemoteConferenceEventHandler);

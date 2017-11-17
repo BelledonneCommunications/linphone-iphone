@@ -30,14 +30,14 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceParticipantEvent::ConferenceParticipantEvent (
 	Type type,
 	time_t creationTime,
-	const IdentityAddress &conferenceAddress,
+	const ChatRoomId &chatRoomId,
 	unsigned int notifyId,
 	const IdentityAddress &participantAddress
 ) : ConferenceNotifiedEvent(
 	*new ConferenceParticipantEventPrivate,
 	type,
 	creationTime,
-	conferenceAddress,
+	chatRoomId,
 	notifyId
 ) {
 	L_D();
@@ -54,14 +54,14 @@ ConferenceParticipantEvent::ConferenceParticipantEvent (
 	ConferenceParticipantEventPrivate &p,
 	Type type,
 	time_t creationTime,
-	const IdentityAddress &conferenceAddress,
+	const ChatRoomId &chatRoomId,
 	unsigned int notifyId,
 	const IdentityAddress &participantAddress
 ) : ConferenceNotifiedEvent(
 	p,
 	type,
 	creationTime,
-	conferenceAddress,
+	chatRoomId,
 	notifyId
 ) {
 	L_D();

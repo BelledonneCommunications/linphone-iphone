@@ -24,6 +24,7 @@
 
 #include "conference/conference-interface.h"
 #include "conference/session/call-session-listener.h"
+#include "core/core-accessor.h"
 
 // =============================================================================
 
@@ -33,15 +34,16 @@ class CallListener;
 class CallSessionPrivate;
 class ConferencePrivate;
 
-class LINPHONE_PUBLIC Conference : public ConferenceInterface, public CallSessionListener {
+class LINPHONE_PUBLIC Conference :
+	public ConferenceInterface,
+	public CallSessionListener,
+	virtual public CoreAccessor {
 	friend class CallSessionPrivate;
 
 public:
 	virtual ~Conference();
 
 	std::shared_ptr<Participant> getActiveParticipant () const;
-
-	LinphoneCore * getCore () const;
 
 	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 
@@ -82,7 +84,7 @@ private:
 protected:
 	explicit Conference (
 		ConferencePrivate &p,
-		LinphoneCore *core,
+		const std::shared_ptr<Core> &core,
 		const Address &myAddress,
 		CallListener *listener = nullptr
 	);

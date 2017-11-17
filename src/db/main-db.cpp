@@ -20,10 +20,7 @@
 #include <algorithm>
 #include <ctime>
 
-// TODO: Remove me.
-#ifdef SOCI_ENABLED
-	#undef SOCI_ENABLED
-#endif
+#undef SOCI_ENABLED
 
 #ifdef SOCI_ENABLED
 	#include <soci/soci.h>
@@ -635,7 +632,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room ("
 			// Server (for conference) or user sip address.
-			"  peer_sip_address_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
+			"  peer_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+
+			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			// Dialog creation date.
 			"  creation_date DATE NOT NULL,"
@@ -651,7 +650,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			"  last_notify_id INT UNSIGNED,"
 
+			"  PRIMARY KEY (peer_sip_address_id, local_sip_address_id),"
 			"  FOREIGN KEY (peer_sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			"  FOREIGN KEY (local_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;

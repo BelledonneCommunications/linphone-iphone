@@ -32,7 +32,7 @@ class LocalConference : public Conference {
 	friend class ServerGroupChatRoomPrivate;
 
 public:
-	LocalConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	LocalConference (const std::shared_ptr<Core> &core, const Address &myAddress, CallListener *listener = nullptr);
 
 	/* ConferenceInterface */
 	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;

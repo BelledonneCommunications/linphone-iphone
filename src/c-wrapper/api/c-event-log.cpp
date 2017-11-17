@@ -22,6 +22,7 @@
 #include "c-wrapper/c-wrapper.h"
 #include "call/call.h"
 #include "chat/chat-message/chat-message.h"
+#include "chat/chat-room/chat-room-id.h"
 #include "event-log/events.h"
 
 // =============================================================================
@@ -35,7 +36,8 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
 	EventLog,
 	_linphone_event_log_constructor,
 	_linphone_event_log_destructor,
-	mutable LinphoneAddress *conferenceAddressCache;
+	mutable LinphoneAddress *peerAddressCache;
+	mutable LinphoneAddress *localAddressCache;
 	mutable LinphoneAddress *participantAddressCache;
 	mutable LinphoneAddress *deviceAddressCache;
 );
@@ -43,8 +45,10 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
 void _linphone_event_log_constructor (LinphoneEventLog *) {}
 
 void _linphone_event_log_destructor (LinphoneEventLog *event_log) {
-	if (event_log->conferenceAddressCache)
-		linphone_address_unref(event_log->conferenceAddressCache);
+	if (event_log->peerAddressCache)
+		linphone_address_unref(event_log->peerAddressCache);
+	if (event_log->localAddressCache)
+		linphone_address_unref(event_log->localAddressCache);
 	if (event_log->participantAddressCache)
 		linphone_address_unref(event_log->participantAddressCache);
 	if (event_log->deviceAddressCache)
@@ -190,18 +194,32 @@ time_t linphone_event_log_get_creation_time (const LinphoneEventLog *event_log) 
 // ConferenceEvent.
 // -----------------------------------------------------------------------------
 
-const LinphoneAddress *linphone_event_log_get_conference_address (const LinphoneEventLog *event_log) {
+const LinphoneAddress *linphone_event_log_get_peer_address (const LinphoneEventLog *event_log) {
 	if (!isConferenceType(linphone_event_log_get_type(event_log)))
 		return nullptr;
 
-	if (!event_log->conferenceAddressCache)
-		event_log->conferenceAddressCache = linphone_address_new(
+	if (!event_log->peerAddressCache)
+		event_log->peerAddressCache = linphone_address_new(
 			static_pointer_cast<const LinphonePrivate::ConferenceEvent>(
 				L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
-			)->getConferenceAddress().asString().c_str()
+			)->getChatRoomId().getPeerAddress().asString().c_str()
 		);
 
-	return event_log->conferenceAddressCache;
+	return event_log->peerAddressCache;
+}
+
+const LinphoneAddress *linphone_event_log_get_local_address (const LinphoneEventLog *event_log) {
+	if (!isConferenceType(linphone_event_log_get_type(event_log)))
+		return nullptr;
+
+	if (!event_log->localAddressCache)
+		event_log->localAddressCache = linphone_address_new(
+			static_pointer_cast<const LinphonePrivate::ConferenceEvent>(
+				L_GET_CPP_PTR_FROM_C_OBJECT(event_log)
+			)->getChatRoomId().getLocalAddress().asString().c_str()
+		);
+
+	return event_log->localAddressCache;
 }
 
 // -----------------------------------------------------------------------------

@@ -20,31 +20,33 @@
 #ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_H_
 #define _REMOTE_CONFERENCE_EVENT_HANDLER_H_
 
-#include <string>
-
-#include "conference-listener.h"
 #include "object/object.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatRoomId;
+class RemoteConference;
 class RemoteConferenceEventHandlerPrivate;
 
 class RemoteConferenceEventHandler : public Object {
-	public:
-		RemoteConferenceEventHandler (LinphoneCore *core, ConferenceListener *listener);
-		~RemoteConferenceEventHandler ();
+public:
+	RemoteConferenceEventHandler (RemoteConference *remoteConference);
+	~RemoteConferenceEventHandler ();
 
-		void subscribe (const Address &confAddress);
-		void notifyReceived (const std::string &xmlBody);
-		void unsubscribe ();
+	void subscribe (const ChatRoomId &chatRoomId);
+	void notifyReceived (const std::string &xmlBody);
+	void unsubscribe ();
 
-		const Address &getConfAddress () const;
-		unsigned int getLastNotify () const;
-		void resetLastNotify ();
+	const ChatRoomId &getChatRoomId () const;
 
-	private:
-		L_DECLARE_PRIVATE(RemoteConferenceEventHandler);
-		L_DISABLE_COPY(RemoteConferenceEventHandler);
+	unsigned int getLastNotify () const;
+	void resetLastNotify ();
+
+private:
+	L_DECLARE_PRIVATE(RemoteConferenceEventHandler);
+	L_DISABLE_COPY(RemoteConferenceEventHandler);
 };
 
 LINPHONE_END_NAMESPACE

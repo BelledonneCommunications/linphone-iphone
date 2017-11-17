@@ -30,13 +30,13 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
-	ChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
+	BasicChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
 
 BasicChatRoom::BasicChatRoom (
 	BasicChatRoomPrivate &p,
 	const std::shared_ptr<Core> &core,
 	const ChatRoomId &chatRoomId
-) : ChatRoom(p, core, chatRoomId) {}
+) : CoreAccessor(core), ChatRoom(p, core, chatRoomId) {}
 
 BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
 	return static_cast<CapabilitiesMask>(Capabilities::Basic);

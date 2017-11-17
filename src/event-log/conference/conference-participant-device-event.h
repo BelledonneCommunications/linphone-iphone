@@ -33,7 +33,7 @@ public:
 	ConferenceParticipantDeviceEvent (
 		Type type,
 		time_t creationTime,
-		const IdentityAddress &conferenceAddress,
+		const ChatRoomId &chatRoomId,
 		unsigned int notifyId,
 		const IdentityAddress &participantAddress,
 		const IdentityAddress &deviceAddress

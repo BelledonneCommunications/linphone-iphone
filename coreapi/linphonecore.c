@@ -50,7 +50,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "chat/chat-room/client-group-chat-room-p.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
-#include "conference/remote-conference-event-handler.h"
+#include "conference/handlers/remote-conference-event-handler.h"
 #include "core/core.h"
 
 // For migration purpose.

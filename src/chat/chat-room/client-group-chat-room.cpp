@@ -22,8 +22,8 @@
 #include "address/address-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "client-group-chat-room-p.h"
+#include "conference/handlers/remote-conference-event-handler.h"
 #include "conference/participant-p.h"
-#include "conference/remote-conference-event-handler.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
 #include "core/core-p.h"
@@ -81,9 +81,9 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::string &factoryUri,
 	const IdentityAddress &me,
 	const std::string &subject
-) :
+) : CoreAccessor(core),
 ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
-RemoteConference(core->getCCore(), me, nullptr) {
+RemoteConference(core, me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = make_shared<Participant>(Address(factoryUri));
 	RemoteConference::setSubject(subject);
@@ -141,7 +141,7 @@ void ClientGroupChatRoom::addParticipants (
 }
 
 void ClientGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
-	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+	LinphoneCore *cCore = getCore()->getCCore();
 
 	SalReferOp *referOp = new SalReferOp(cCore->sal);
 	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
@@ -183,7 +183,7 @@ void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &pa
 		return;
 	}
 
-	LinphoneCore *cCore = CoreAccessor::getCore()->getCCore();
+	LinphoneCore *cCore = getCore()->getCCore();
 
 	SalReferOp *referOp = new SalReferOp(cCore->sal);
 	LinphoneAddress *lAddr = linphone_address_new(getConferenceAddress().asString().c_str());
@@ -261,7 +261,7 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
 	d->chatRoomId = ChatRoomId(addr, d->chatRoomId.getLocalAddress());
-	CoreAccessor::getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
+	getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
@@ -274,7 +274,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
 void ClientGroupChatRoom::onFirstNotifyReceived (const Address &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Created);
-	CoreAccessor::getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
+	getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
@@ -299,7 +299,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -322,7 +322,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -351,7 +351,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -368,7 +368,7 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -393,7 +393,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceAddedCb cb = linphone_chat_room_cbs_get_participant_device_added(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -416,7 +416,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantDeviceRemovedCb cb = linphone_chat_room_cbs_get_participant_device_removed(cbs);
-	Conference::getCore()->cppCore->getPrivate()->mainDb->addEvent(event);
+	getCore()->getPrivate()->mainDb->addEvent(event);
 
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
@@ -445,7 +445,7 @@ void ClientGroupChatRoom::onCallSessionStateChanged (
 			Address addr(session->getRemoteContactAddress()->asStringUriOnly());
 			onConferenceCreated(addr);
 			if (session->getRemoteContactAddress()->hasParam("isfocus"))
-				dConference->eventHandler->subscribe(getConferenceAddress());
+				dConference->eventHandler->subscribe(getChatRoomId());
 		} else if (d->state == ChatRoom::State::TerminationPending)
 			dConference->focus->getPrivate()->getSession()->terminate();
 	} else if ((state == LinphoneCallReleased) && (d->state == ChatRoom::State::TerminationPending)) {

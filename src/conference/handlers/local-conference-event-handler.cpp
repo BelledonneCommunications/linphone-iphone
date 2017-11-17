@@ -19,12 +19,15 @@
 
 #include <ctime>
 
+#include "linphone/utils/utils.h"
+
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
-#include "linphone/utils/utils.h"
 #include "local-conference-event-handler-p.h"
 #include "logger/logger.h"
 #include "object/object-p.h"
+
+// TODO: remove me.
 #include "private.h"
 
 // =============================================================================
@@ -247,12 +250,11 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 
 // =============================================================================
 
-LocalConferenceEventHandler::LocalConferenceEventHandler (LinphoneCore *core, LocalConference *localConf) :
+LocalConferenceEventHandler::LocalConferenceEventHandler (LocalConference *localConference) :
 	Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
-	d->conf = localConf;
-	d->core = core;
+	d->conf = localConference;
 	// TODO : init d->lastNotify = last notify
 }
 

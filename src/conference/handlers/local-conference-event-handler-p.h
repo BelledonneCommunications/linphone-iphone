@@ -47,7 +47,6 @@ public:
 	inline unsigned int getLastNotify () const { return lastNotify; };
 
 private:
-	LinphoneCore *core = nullptr;
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 0;
 

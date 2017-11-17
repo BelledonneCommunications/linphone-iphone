@@ -20,9 +20,13 @@
 #ifndef _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 #define _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
-#include "address/address.h"
 #include "linphone/types.h"
+
+#include "address/address.h"
+#include "core/core-accessor.h"
 #include "object/object.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -30,21 +34,21 @@ class LocalConference;
 class LocalConferenceEventHandlerPrivate;
 
 class LocalConferenceEventHandler : public Object {
-	public:
-		LocalConferenceEventHandler (LinphoneCore *core, LocalConference *localConf);
-		~LocalConferenceEventHandler ();
+public:
+	LocalConferenceEventHandler (LocalConference *localConference);
+	~LocalConferenceEventHandler ();
 
-		void subscribeReceived (LinphoneEvent *lev);
-		void notifyParticipantAdded (const Address &addr);
-		void notifyParticipantRemoved (const Address &addr);
-		void notifyParticipantSetAdmin (const Address &addr, bool isAdmin);
-		void notifySubjectChanged ();
-		void notifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
-		void notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
+	void subscribeReceived (LinphoneEvent *lev);
+	void notifyParticipantAdded (const Address &addr);
+	void notifyParticipantRemoved (const Address &addr);
+	void notifyParticipantSetAdmin (const Address &addr, bool isAdmin);
+	void notifySubjectChanged ();
+	void notifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
+	void notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
 
-	private:
-		L_DECLARE_PRIVATE(LocalConferenceEventHandler);
-		L_DISABLE_COPY(LocalConferenceEventHandler);
+private:
+	L_DECLARE_PRIVATE(LocalConferenceEventHandler);
+	L_DISABLE_COPY(LocalConferenceEventHandler);
 };
 
 LINPHONE_END_NAMESPACE

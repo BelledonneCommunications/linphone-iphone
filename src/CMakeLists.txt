@@ -63,8 +63,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference-listener.h
 	conference/conference-p.h
 	conference/conference.h
-	conference/local-conference-event-handler-p.h
-	conference/local-conference-event-handler.h
+	conference/handlers/local-conference-event-handler-p.h
+	conference/handlers/local-conference-event-handler.h
+	conference/handlers/remote-conference-event-handler-p.h
+	conference/handlers/remote-conference-event-handler.h
 	conference/local-conference-p.h
 	conference/local-conference.h
 	conference/params/call-session-params-p.h
@@ -74,8 +76,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/participant-device.h
 	conference/participant-p.h
 	conference/participant.h
-	conference/remote-conference-event-handler-p.h
-	conference/remote-conference-event-handler.h
 	conference/remote-conference-p.h
 	conference/remote-conference.h
 	conference/session/call-session-listener.h
@@ -178,13 +178,13 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/notification/imdn.cpp
 	chat/notification/is-composing.cpp
 	conference/conference.cpp
-	conference/local-conference-event-handler.cpp
+	conference/handlers/local-conference-event-handler.cpp
+	conference/handlers/remote-conference-event-handler.cpp
 	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
 	conference/participant-device.cpp
 	conference/participant.cpp
-	conference/remote-conference-event-handler.cpp
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp

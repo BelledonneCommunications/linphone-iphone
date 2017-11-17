@@ -17,12 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "address/identity-address.h"
-#include "private.h"
+#include "linphone/utils/utils.h"
+
+#include "conference/remote-conference.h"
+#include "core/core.h"
 #include "logger/logger.h"
 #include "remote-conference-event-handler-p.h"
-#include "linphone/utils/utils.h"
 #include "xml/conference-info.h"
+
+// TODO: Remove me later.
+#include "private.h"
 
 // =============================================================================
 
@@ -34,12 +38,11 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
-RemoteConferenceEventHandler::RemoteConferenceEventHandler (LinphoneCore *core, ConferenceListener *listener)
-	: Object(*new RemoteConferenceEventHandlerPrivate) {
+RemoteConferenceEventHandler::RemoteConferenceEventHandler (RemoteConference *remoteConference) :
+Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
-	d->core = core;
-	d->listener = listener;
+	d->conf = remoteConference;
 	// TODO : d->lastNotify = lastNotify
 }
 
@@ -49,11 +52,11 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 
 // -----------------------------------------------------------------------------
 
-void RemoteConferenceEventHandler::subscribe (const Address &addr) {
+void RemoteConferenceEventHandler::subscribe (const ChatRoomId &chatRoomId) {
 	L_D();
-	d->confAddress = addr;
-	LinphoneAddress *lAddr = linphone_address_new(d->confAddress.asString().c_str());
-	d->lev = linphone_core_create_subscribe(d->core, lAddr, "conference", 600);
+	d->chatRoomId = chatRoomId;
+	LinphoneAddress *lAddr = linphone_address_new(d->chatRoomId.getPeerAddress().asString().c_str());
+	d->lev = linphone_core_create_subscribe(d->conf->getCore()->getCCore(), lAddr, "conference", 600);
 	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", Utils::toString(d->lastNotify).c_str());
 	linphone_address_unref(lAddr);
 	linphone_event_set_internal(d->lev, TRUE);
@@ -71,7 +74,10 @@ void RemoteConferenceEventHandler::unsubscribe () {
 
 void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	L_D();
-	lInfo() << "NOTIFY received for conference " << d->confAddress.asString();
+
+	lInfo() << "NOTIFY received for conference: (remote=" << d->chatRoomId.getPeerAddress().asString() <<
+		", local=" << d->chatRoomId.getLocalAddress().asString() << ").";
+
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
 	time_t tm = time(nullptr);
@@ -79,20 +85,23 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
 
 	bool isFullState = (confInfo->getState() == StateType::full);
-	IdentityAddress simpleConfAddress(d->confAddress);
-	// Temporary workaround
+
+	ConferenceListener *confListener = static_cast<ConferenceListener *>(d->conf);
+
+	// TODO: Temporary workaround, remove me.
+	const IdentityAddress &peerAddress = d->chatRoomId.getPeerAddress();
 	IdentityAddress entityAddress(confInfo->getEntity().c_str());
-	IdentityAddress simpleConfAddress2(simpleConfAddress);
-	simpleConfAddress2.setDomain(entityAddress.getDomain());
-	if ((entityAddress == simpleConfAddress) || (entityAddress == simpleConfAddress2)) {
+	IdentityAddress peerAddressWorkaround = peerAddress;
+	peerAddressWorkaround.setDomain(entityAddress.getDomain());
+	if ((entityAddress == peerAddress) || (entityAddress == peerAddressWorkaround)) {
 		if (
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
 		)
-			d->listener->onSubjectChanged(
+			confListener->onSubjectChanged(
 				make_shared<ConferenceSubjectEvent>(
 					tm,
-					d->confAddress,
+					d->chatRoomId,
 					d->lastNotify,
 					confInfo->getConferenceDescription().get().getSubject().get()
 				),
@@ -105,16 +114,16 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 			return;
 
 		for (const auto &user : confInfo->getUsers()->getUser()) {
-			LinphoneAddress *cAddr = linphone_core_interpret_url(d->core, user.getEntity()->c_str());
+			LinphoneAddress *cAddr = linphone_core_interpret_url(d->conf->getCore()->getCCore(), user.getEntity()->c_str());
 			char *cAddrStr = linphone_address_as_string(cAddr);
 			Address addr(cAddrStr);
 			bctbx_free(cAddrStr);
 			if (user.getState() == StateType::deleted) {
-				d->listener->onParticipantRemoved(
+				confListener->onParticipantRemoved(
 					make_shared<ConferenceParticipantEvent>(
 						EventLog::Type::ConferenceParticipantRemoved,
 						tm,
-						d->confAddress,
+						d->chatRoomId,
 						d->lastNotify,
 						addr
 					),
@@ -132,11 +141,11 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 				}
 
 				if (user.getState() == StateType::full) {
-					d->listener->onParticipantAdded(
+					confListener->onParticipantAdded(
 						make_shared<ConferenceParticipantEvent>(
 							EventLog::Type::ConferenceParticipantAdded,
 							tm,
-							d->confAddress,
+							d->chatRoomId,
 							d->lastNotify,
 							addr
 						),
@@ -144,11 +153,11 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 					);
 				}
 
-				d->listener->onParticipantSetAdmin(
+				confListener->onParticipantSetAdmin(
 					make_shared<ConferenceParticipantEvent>(
 						isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
 						tm,
-						d->confAddress,
+						d->chatRoomId,
 						d->lastNotify,
 						addr
 					),
@@ -161,11 +170,11 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 
 					Address gruu(endpoint.getEntity().get());
 					if (endpoint.getState() == StateType::deleted) {
-						d->listener->onParticipantDeviceRemoved(
+						confListener->onParticipantDeviceRemoved(
 							make_shared<ConferenceParticipantDeviceEvent>(
 								EventLog::Type::ConferenceParticipantDeviceRemoved,
 								tm,
-								d->confAddress,
+								d->chatRoomId,
 								d->lastNotify,
 								addr,
 								gruu
@@ -173,11 +182,11 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 							isFullState
 						);
 					} else if (endpoint.getState() == StateType::full) {
-						d->listener->onParticipantDeviceAdded(
+						confListener->onParticipantDeviceAdded(
 							make_shared<ConferenceParticipantDeviceEvent>(
 								EventLog::Type::ConferenceParticipantDeviceAdded,
 								tm,
-								d->confAddress,
+								d->chatRoomId,
 								d->lastNotify,
 								addr,
 								gruu
@@ -191,15 +200,15 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 		}
 
 		if (isFullState)
-			d->listener->onFirstNotifyReceived(d->confAddress);
+			confListener->onFirstNotifyReceived(d->chatRoomId.getPeerAddress());
 	}
 }
 
 // -----------------------------------------------------------------------------
 
-const Address &RemoteConferenceEventHandler::getConfAddress () const {
+const ChatRoomId &RemoteConferenceEventHandler::getChatRoomId () const {
 	L_D();
-	return d->confAddress;
+	return d->chatRoomId;
 }
 
 unsigned int RemoteConferenceEventHandler::getLastNotify () const {

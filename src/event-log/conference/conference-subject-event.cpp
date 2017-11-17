@@ -37,14 +37,14 @@ public:
 
 ConferenceSubjectEvent::ConferenceSubjectEvent (
 	time_t creationTime,
-	const IdentityAddress &conferenceAddress,
+	const ChatRoomId &chatRoomId,
 	unsigned int notifyId,
 	const string &subject
 ) : ConferenceNotifiedEvent(
 	*new ConferenceSubjectEventPrivate,
 	Type::ConferenceSubjectChanged,
 	creationTime,
-	conferenceAddress,
+	chatRoomId,
 	notifyId
 ) {
 	L_D();

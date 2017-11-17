@@ -22,11 +22,11 @@
 #include "c-wrapper/c-wrapper.h"
 
 #include "address/address-p.h"
-#include "conference/session/call-session-p.h"
 #include "call/call-p.h"
 #include "conference/params/call-session-params-p.h"
-
+#include "conference/session/call-session-p.h"
 #include "conference/session/call-session.h"
+#include "core/core.h"
 
 #include "logger/logger.h"
 
@@ -45,7 +45,7 @@ CallSessionPrivate::CallSessionPrivate (const Conference &conference, const Call
 	if (params)
 		this->params = new CallSessionParams(*params);
 	currentParams = new CallSessionParams();
-	core = conference.getCore();
+	core = conference.getCore()->getCCore();
 	ei = linphone_error_info_new();
 }
 

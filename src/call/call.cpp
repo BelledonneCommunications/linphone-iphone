@@ -227,9 +227,9 @@ Call::Call (
 	const Address *myAddress = (direction == LinphoneCallIncoming) ? &to : &from;
 	string confType = lp_config_get_string(linphone_core_get_config(core), "misc", "conference_type", "local");
 	if (confType == "remote") {
-		d->conference = new RemoteConference(core, *myAddress, d);
+		d->conference = new RemoteConference(core->cppCore, *myAddress, d);
 	} else {
-		d->conference = new LocalConference(core, *myAddress, d);
+		d->conference = new LocalConference(core->cppCore, *myAddress, d);
 	}
 	const Address *remoteAddress = (direction == LinphoneCallIncoming) ? &from : &to;
 	d->conference->addParticipant(*remoteAddress, msp, true);

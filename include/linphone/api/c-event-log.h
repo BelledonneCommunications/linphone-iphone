@@ -66,11 +66,18 @@ LINPHONE_PUBLIC time_t linphone_event_log_get_creation_time (const LinphoneEvent
 // -----------------------------------------------------------------------------
 
 /**
- * Returns the conference address of a conference event.
+ * Returns the peer address of a conference event.
  * @param[in] event_log A #LinphoneEventLog object.
- * @return The conference address.
+ * @return The peer address.
  */
-LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_conference_address (const LinphoneEventLog *event_log);
+LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_peer_address (const LinphoneEventLog *event_log);
+
+/**
+ * Returns the local address of a conference event.
+ * @param[in] event_log A #LinphoneEventLog object.
+ * @return The local address.
+ */
+LINPHONE_PUBLIC const LinphoneAddress *linphone_event_log_get_local_address (const LinphoneEventLog *event_log);
 
 // -----------------------------------------------------------------------------
 // ConferenceNotifiedEvent.

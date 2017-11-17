@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "handlers/remote-conference-event-handler.h"
 #include "participant-p.h"
-#include "remote-conference-event-handler.h"
 #include "remote-conference-p.h"
 #include "xml/resource-lists.h"
 
@@ -28,10 +28,13 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-RemoteConference::RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener)
-	: Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
+RemoteConference::RemoteConference (
+	const shared_ptr<Core> &core,
+	const Address &myAddress,
+	CallListener *listener
+) : CoreAccessor(core), Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
 	L_D();
-	d->eventHandler.reset(new RemoteConferenceEventHandler(core, this));
+	d->eventHandler.reset(new RemoteConferenceEventHandler(this));
 }
 
 RemoteConference::~RemoteConference () {

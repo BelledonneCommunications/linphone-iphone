@@ -22,6 +22,7 @@
 
 #include "conference-listener.h"
 #include "conference.h"
+#include "core/core-accessor.h"
 
 // =============================================================================
 
@@ -33,7 +34,7 @@ class LINPHONE_PUBLIC RemoteConference : public Conference, public ConferenceLis
 	friend class ClientGroupChatRoomPrivate;
 
 public:
-	RemoteConference (LinphoneCore *core, const Address &myAddress, CallListener *listener = nullptr);
+	RemoteConference (const std::shared_ptr<Core> &core, const Address &myAddress, CallListener *listener = nullptr);
 	virtual ~RemoteConference();
 
 	/* ConferenceInterface */

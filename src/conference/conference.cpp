@@ -29,10 +29,14 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-Conference::Conference (ConferencePrivate &p, LinphoneCore *core, const Address &myAddress, CallListener *listener) : mPrivate(&p) {
+Conference::Conference (
+	ConferencePrivate &p,
+	const shared_ptr<Core> &core,
+	const Address &myAddress,
+	CallListener *listener
+) : CoreAccessor(core), mPrivate(&p) {
 	L_D();
 	d->mPublic = this;
-	d->core = core;
 	d->callListener = listener;
 	d->me = make_shared<Participant>(myAddress);
 }
@@ -46,11 +50,6 @@ Conference::~Conference () {
 shared_ptr<Participant> Conference::getActiveParticipant () const {
 	L_D();
 	return d->activeParticipant;
-}
-
-LinphoneCore *Conference::getCore () const {
-	L_D();
-	return d->core;
 }
 
 // -----------------------------------------------------------------------------

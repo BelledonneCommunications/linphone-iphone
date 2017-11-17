@@ -34,7 +34,7 @@ class LINPHONE_PUBLIC ConferenceSubjectEvent : public ConferenceNotifiedEvent {
 public:
 	ConferenceSubjectEvent (
 		time_t creationTime,
-		const IdentityAddress &conferenceAddress,
+		const ChatRoomId &chatRoomId,
 		unsigned int notifyId,
 		const std::string &subject
 	);
