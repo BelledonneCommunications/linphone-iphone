@@ -27,6 +27,7 @@
 
 // TODO: Remove me later.
 #include "c-wrapper/c-wrapper.h"
+#include "conference_private.h"
 
 #include <mediastreamer2/msvolume.h>
 
@@ -301,6 +302,10 @@ void Core::soundcardHintCheck () {
 	LinphoneConfig *config = linphone_core_get_config(L_GET_C_BACK_PTR(this));
 	bool useRtpIo = !!lp_config_get_int(config, "sound", "rtp_io", FALSE);
 	bool useRtpIoEnableLocalOutput = !!lp_config_get_int(config, "sound", "rtp_io_enable_local_output", FALSE);
+	
+	LinphoneConference *conf_ctx = getCCore()->conf_ctx;
+	if (conf_ctx && linphone_conference_get_size(conf_ctx) >= 1) return;
+	
 	bool useFiles = L_GET_C_BACK_PTR(getSharedFromThis())->use_files;
 	if ((!d->hasCalls() || noNeedForSound)
 		&& (!useFiles && (!useRtpIo || (useRtpIo && useRtpIoEnableLocalOutput)))) {

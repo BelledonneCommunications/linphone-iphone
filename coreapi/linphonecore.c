@@ -6225,6 +6225,7 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc) {
 	return (int)L_GET_CPP_PTR_FROM_C_OBJECT(lc)->getCallCount();
 }
 
+
 void linphone_core_soundcard_hint_check(LinphoneCore* lc) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(lc)->soundcardHintCheck();
 }
