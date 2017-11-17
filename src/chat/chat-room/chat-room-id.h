@@ -51,12 +51,14 @@ private:
 LINPHONE_END_NAMESPACE
 
 // Add map key support.
-template<>
-struct std::hash<LinphonePrivate::ChatRoomId> {
-	std::size_t operator() (const LinphonePrivate::ChatRoomId &chatRoomId) const {
-		return hash<string>()(chatRoomId.getPeerAddress().asString()) ^
-			(hash<string>()(chatRoomId.getLocalAddress().asString()) << 1);
-	}
-};
+namespace std {
+	template<>
+	struct hash<LinphonePrivate::ChatRoomId> {
+		std::size_t operator() (const LinphonePrivate::ChatRoomId &chatRoomId) const {
+			return hash<string>()(chatRoomId.getPeerAddress().asString()) ^
+				(hash<string>()(chatRoomId.getLocalAddress().asString()) << 1);
+		}
+	};
+}
 
 #endif // ifndef _CHAT_ROOM_ID_H_
