@@ -6342,6 +6342,8 @@ void linphone_core_soundcard_hint_check( LinphoneCore* lc){
 	bool_t use_rtp_io = lp_config_get_int(lc->config, "sound", "rtp_io", FALSE);
 	bool_t use_rtp_io_enable_local_output = lp_config_get_int(lc->config, "sound", "rtp_io_enable_local_output", FALSE);
 
+	if (lc->conf_ctx && linphone_conference_get_size(lc->conf_ctx) >= 1) return;
+	
 	/* check if the remaining calls are paused */
 	while( the_calls ){
 		call = reinterpret_cast<LinphoneCall *>(the_calls->data);
