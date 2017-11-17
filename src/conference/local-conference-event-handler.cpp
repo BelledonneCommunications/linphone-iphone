@@ -37,8 +37,8 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, const shared_ptr<Participant> &participant) {
-	notifyParticipant(notify, participant);
+void LocalConferenceEventHandlerPrivate::notifyFullState (const string &notify, const shared_ptr<ParticipantDevice> &device) {
+	notifyParticipantDevice(notify, device);
 }
 
 void LocalConferenceEventHandlerPrivate::notifyAllExcept (const string &notify, const shared_ptr<Participant> &exceptParticipant) {
@@ -54,14 +54,17 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 }
 
 void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const shared_ptr<Participant> &participant) {
-	for (const auto &device : participant->getPrivate()->getDevices()) {
-		if (device->isSubscribedToConferenceEventPackage()) {
-			LinphoneEvent *ev = device->getConferenceSubscribeEvent();
-			LinphoneContent *content = linphone_core_create_content(ev->lc);
-			linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
-			linphone_event_notify(ev, content);
-			linphone_content_unref(content);
-		}
+	for (const auto &device : participant->getPrivate()->getDevices())
+		notifyParticipantDevice(notify, device);
+}
+
+void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &notify, const shared_ptr<ParticipantDevice> &device) {
+	if (device->isSubscribedToConferenceEventPackage()) {
+		LinphoneEvent *ev = device->getConferenceSubscribeEvent();
+		LinphoneContent *content = linphone_core_create_content(ev->lc);
+		linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
+		linphone_event_notify(ev, content);
+		linphone_content_unref(content);
 	}
 }
 
@@ -280,9 +283,9 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
 		unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
 		if (lastNotify == 0) {
-			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asStringUriOnly() << " to: " << participant->getAddress().asString();
+			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asStringUriOnly() << " to: " << device->getGruu().asString();
 			device->setConferenceSubscribeEvent(lev);
-			d->notifyFullState(d->createNotifyFullState(), participant);
+			d->notifyFullState(d->createNotifyFullState(), device);
 		} else if (lastNotify < d->lastNotify) {
 			lInfo() << "Sending all missed notify for conference:" << d->conf->getConferenceAddress().asStringUriOnly() <<
 				" from: " << lastNotify << " to: " << participant->getAddress().asString();

@@ -29,10 +29,11 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Participant;
+class ParticipantDevice;
 
 class LocalConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
-	void notifyFullState (const std::string &notify, const std::shared_ptr<Participant> &participant);
+	void notifyFullState (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
 	void notifyAllExcept (const std::string &notify, const std::shared_ptr<Participant> &exceptParticipant);
 	void notifyAll (const std::string &notify);
 	std::string createNotifyFullState (int notifyId = -1);
@@ -52,6 +53,7 @@ private:
 
 	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
 	void notifyParticipant (const std::string &notify, const std::shared_ptr<Participant> &participant);
+	void notifyParticipantDevice (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
 };
