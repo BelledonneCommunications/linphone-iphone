@@ -72,13 +72,11 @@
 		63058ACF1B4E922500EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
 		63058AD01B4E922500EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
 		63058AD11B4E922500EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
-		63058AD31B4E922500EFAE36 /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACC1B4E922500EFAE36 /* messages.db */; };
 		63058AD41B4E922500EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
 		63058AD51B4E922500EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
 		63058ADA1B4E937300EFAE36 /* certificates in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC81B4E922500EFAE36 /* certificates */; };
 		63058ADB1B4E937300EFAE36 /* flexisip in Resources */ = {isa = PBXBuildFile; fileRef = 63058AC91B4E922500EFAE36 /* flexisip */; };
 		63058ADC1B4E937300EFAE36 /* images in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACA1B4E922500EFAE36 /* images */; };
-		63058ADE1B4E937300EFAE36 /* messages.db in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACC1B4E922500EFAE36 /* messages.db */; };
 		63058ADF1B4E937300EFAE36 /* rcfiles in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACD1B4E922500EFAE36 /* rcfiles */; };
 		63058AE01B4E937300EFAE36 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 63058ACE1B4E922500EFAE36 /* sounds */; };
 		63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */ = {isa = PBXBuildFile; fileRef = 63058AE11B4E93A100EFAE36 /* tester_hosts */; };
@@ -1042,7 +1040,6 @@
 		63058AC81B4E922500EFAE36 /* certificates */ = {isa = PBXFileReference; lastKnownFileType = folder; name = certificates; path = ../submodules/linphone/tester/certificates; sourceTree = "<group>"; };
 		63058AC91B4E922500EFAE36 /* flexisip */ = {isa = PBXFileReference; lastKnownFileType = folder; name = flexisip; path = ../submodules/linphone/tester/flexisip; sourceTree = "<group>"; };
 		63058ACA1B4E922500EFAE36 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../submodules/linphone/tester/images; sourceTree = "<group>"; };
-		63058ACC1B4E922500EFAE36 /* messages.db */ = {isa = PBXFileReference; lastKnownFileType = file; name = messages.db; path = ../submodules/linphone/tester/messages.db; sourceTree = "<group>"; };
 		63058ACD1B4E922500EFAE36 /* rcfiles */ = {isa = PBXFileReference; lastKnownFileType = folder; name = rcfiles; path = ../submodules/linphone/tester/rcfiles; sourceTree = "<group>"; };
 		63058ACE1B4E922500EFAE36 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../submodules/linphone/tester/sounds; sourceTree = "<group>"; };
 		63058AE11B4E93A100EFAE36 /* tester_hosts */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = tester_hosts; path = submodules/linphone/tester/tester_hosts; sourceTree = SOURCE_ROOT; };
@@ -2408,7 +2405,6 @@
 				63058AC81B4E922500EFAE36 /* certificates */,
 				63058AC91B4E922500EFAE36 /* flexisip */,
 				63058ACA1B4E922500EFAE36 /* images */,
-				63058ACC1B4E922500EFAE36 /* messages.db */,
 				63058ACD1B4E922500EFAE36 /* rcfiles */,
 				63058ACE1B4E922500EFAE36 /* sounds */,
 				63058A0D1B4E821E00EFAE36 /* AppDelegate.h */,
@@ -3901,7 +3897,6 @@
 				63058ACF1B4E922500EFAE36 /* certificates in Resources */,
 				63058AD01B4E922500EFAE36 /* flexisip in Resources */,
 				63058AD11B4E922500EFAE36 /* images in Resources */,
-				63058AD31B4E922500EFAE36 /* messages.db in Resources */,
 				63058AD41B4E922500EFAE36 /* rcfiles in Resources */,
 				63058AD51B4E922500EFAE36 /* sounds in Resources */,
 				63058A3B1B4E822F00EFAE36 /* InfoPlist.strings in Resources */,
@@ -3917,7 +3912,6 @@
 				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,
 				63058ADB1B4E937300EFAE36 /* flexisip in Resources */,
 				63058ADC1B4E937300EFAE36 /* images in Resources */,
-				63058ADE1B4E937300EFAE36 /* messages.db in Resources */,
 				63058ADF1B4E937300EFAE36 /* rcfiles in Resources */,
 				63058AE01B4E937300EFAE36 /* sounds in Resources */,
 				63058AE21B4E93A100EFAE36 /* tester_hosts in Resources */,
