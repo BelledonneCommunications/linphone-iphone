@@ -170,8 +170,18 @@ shared_ptr<ChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
 }
 
 list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {
-	// TODO: DEV GROUP CHAT.
-	return list<shared_ptr<ChatRoom>>();
+	L_D();
+
+	// TODO: Improve performance if necessary.
+	list<shared_ptr<ChatRoom>> output;
+	copy_if(
+		d->chatRooms.begin(), d->chatRooms.end(),
+		back_inserter(output), [&peerAddress](const shared_ptr<ChatRoom> &chatRoom) {
+			return chatRoom->getPeerAddress() == peerAddress;
+		}
+	);
+
+	return output;
 }
 
 shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
