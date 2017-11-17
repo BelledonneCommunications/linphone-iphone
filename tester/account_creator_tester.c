@@ -17,6 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include <ctype.h>
 
 static const char XMLRPC_URL[] = "https://sip2.linphone.org:446/xmlrpc.php";

@@ -19,6 +19,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
@@ -193,7 +194,7 @@ int liblinphone_tester_set_log_file(const char *filename) {
 		return -1;
 	}
 	ms_message("Redirecting traces to file [%s]", filename);
-	linphone_core_set_log_file(log_file); 
+	linphone_core_set_log_file(log_file);
 	return 0;
 }
 

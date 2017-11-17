@@ -19,6 +19,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 void linphone_configuration_status(LinphoneCore *lc, LinphoneConfiguringState status, const char *message) {
 	stats* counters;

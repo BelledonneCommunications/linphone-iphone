@@ -18,6 +18,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 #ifdef VIDEO_ENABLED
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {

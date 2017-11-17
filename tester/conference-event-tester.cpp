@@ -28,6 +28,7 @@
 #include "liblinphone_tester.h"
 #include "linphone/core.h"
 #include "private.h"
+#include "tester_utils.h"
 #include "tools/private-access.h"
 #include "tools/tester.h"
 

@@ -17,6 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "audio_bypass_wav_header.h" // This is a copy of mediastreamer2/src/audiofilters/wav_header.h
 
 /**********************************************************************

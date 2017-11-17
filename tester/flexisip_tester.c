@@ -20,6 +20,7 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static void setPublish(LinphoneProxyConfig * proxy_config, bool_t enable) {
 	linphone_proxy_config_edit(proxy_config);
@@ -1208,11 +1209,11 @@ static void redis_publish_subscribe(void) {
 	linphone_call_accept(linphone_core_get_current_call(marie2->lc));
 	BC_ASSERT_TRUE(wait_for_until(marie2->lc, pauline->lc, &marie2->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_until(marie2->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 3000));
-	
+
 	liblinphone_tester_check_rtcp(marie2, pauline);
 
 	linphone_call_terminate(linphone_core_get_current_call(marie2->lc));
-	
+
 	BC_ASSERT_TRUE(wait_for_until(marie2->lc, pauline->lc, &marie2->stat.number_of_LinphoneCallEnd, 1, 3000));
 	BC_ASSERT_TRUE(wait_for_until(marie2->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallEnd, 1, 3000));
 

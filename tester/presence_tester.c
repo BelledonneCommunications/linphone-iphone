@@ -19,6 +19,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static LinphoneCoreManager* presence_linphone_core_manager_new_with_rc_name(char* username, char * rc_name) {
 	LinphoneCoreManager* mgr= linphone_core_manager_new2( rc_name, FALSE);
@@ -146,7 +147,7 @@ static void simple_publish_with_expire(int expires) {
 	LinphoneProxyConfig* proxy;
 	LinphonePresenceModel* presence;
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
-	
+
 	linphone_core_cbs_set_publish_state_changed(cbs, linphone_publish_state_changed);
 	_linphone_core_add_callbacks(marie->lc, cbs, TRUE);
 	linphone_core_cbs_unref(cbs);
@@ -215,26 +216,26 @@ static void publish_with_dual_identity(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new("multi_account_rc");
 	const bctbx_list_t* proxies;
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
-	
+
 	linphone_core_cbs_set_publish_state_changed(cbs, linphone_publish_state_changed);
 	_linphone_core_add_callbacks(pauline->lc, cbs, TRUE);
 	linphone_core_cbs_unref(cbs);
-	
+
 	for (proxies = linphone_core_get_proxy_config_list(pauline->lc); proxies!=NULL; proxies = proxies->next) {
 		LinphoneProxyConfig *proxy = (LinphoneProxyConfig *) proxies->data;
 		linphone_proxy_config_edit(proxy);
 		linphone_proxy_config_enable_publish(proxy,TRUE);
 		linphone_proxy_config_done(proxy);
 	}
-	
+
 	BC_ASSERT_TRUE(wait_for(pauline->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishProgress,4));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,pauline->lc,&pauline->stat.number_of_LinphonePublishOk,4));
-	
+
 	linphone_core_manager_stop(pauline);
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishCleared,4,int,"%i");
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphonePublishOk,4,int,"%i");
 	linphone_core_manager_destroy(pauline);
-	
+
 }
 static bool_t subscribe_to_callee_presence(LinphoneCoreManager* caller_mgr,LinphoneCoreManager* callee_mgr) {
 	stats initial_caller=caller_mgr->stat;
@@ -309,30 +310,30 @@ static void publish_with_network_state_changes(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneProxyConfig* proxy;
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
-		
+
 	linphone_core_cbs_set_publish_state_changed(cbs, linphone_publish_state_changed);
 	_linphone_core_add_callbacks(marie->lc, cbs,TRUE);
 	linphone_core_cbs_unref(cbs);
-		
+
 	proxy = linphone_core_get_default_proxy_config(marie->lc);
 	linphone_proxy_config_edit(proxy);
 	linphone_proxy_config_enable_publish(proxy,TRUE);
 	linphone_proxy_config_done(proxy);
-		
+
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,1));
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishOk,1));
-		
+
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationNone,1));
 	BC_ASSERT_FALSE(wait_for_until(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,2,1000));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,1,int,"%i");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishError,0,int,"%i");
-	
+
 	linphone_core_set_network_reachable(marie->lc, TRUE);
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishProgress,2));
 	BC_ASSERT_TRUE(wait_for(marie->lc,marie->lc,&marie->stat.number_of_LinphonePublishOk,2));
-	
-		
+
+
 	linphone_core_manager_stop(marie);
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishCleared,1,int,"%i"); /*yes it is 3 because when we change the expires, a new LinphoneEvent is created*/
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphonePublishOk,2,int,"%i");

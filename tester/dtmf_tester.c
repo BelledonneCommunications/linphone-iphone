@@ -17,6 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	stats* counters = get_stats(lc);

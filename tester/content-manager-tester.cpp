@@ -21,6 +21,7 @@
 #include "content/content-manager.h"
 #include "content/content-type.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 using namespace LinphonePrivate;
 using namespace std;
@@ -161,7 +162,7 @@ static const char* part4 = \
 void multipart_to_list () {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	ContentManager manager(marie->lc);
-	
+
 	Content multipartContent = Content();
 	multipartContent.setBody(multipart);
 	multipartContent.setContentType(ContentType("multipart", "related"));

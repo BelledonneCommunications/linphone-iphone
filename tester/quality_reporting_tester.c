@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "quality_reporting.h"
 
 /*avoid crash if x is NULL on libc versions <4.5.26 */
@@ -133,7 +134,7 @@ static void quality_reporting_not_used_without_config(void) {
 	LinphoneCall* call_marie = NULL;
 	LinphoneCall* call_pauline = NULL;
 	reporting_session_report_t **quality_reports = NULL;
-	
+
 
 	if (create_call_for_quality_reporting_tests(marie, pauline, &call_marie, &call_pauline, NULL, NULL))  {
 		// marie has stats collection enabled but pauline has not
@@ -329,7 +330,7 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,2,5000));
 	}
 	linphone_call_params_unref(marie_params);
-	
+
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -420,7 +421,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 		}
-		
+
 		end_call(marie, pauline);
 		/*wait that all publish complete*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,marie->stat.number_of_LinphonePublishProgress,60000));
@@ -439,30 +440,30 @@ static void video_bandwidth_estimation(void){
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneVideoPolicy pol = {0};
 	OrtpNetworkSimulatorParams simparams = { 0 };
-	
+
 	linphone_core_set_video_device(marie->lc, "Mire: Mire (synthetic moving picture)");
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, TRUE);
 	linphone_core_enable_video_capture(pauline->lc, TRUE);
 	linphone_core_enable_video_display(pauline->lc, TRUE);
-	
+
 	pol.automatically_accept = TRUE;
 	pol.automatically_initiate = TRUE;
 	linphone_core_set_video_policy(marie->lc, &pol);
 	linphone_core_set_video_policy(pauline->lc, &pol);
-	
+
 	linphone_core_set_preferred_video_size_by_name(marie->lc, "vga");
 	simparams.mode = OrtpNetworkSimulatorOutbound;
 	simparams.enabled = TRUE;
 	simparams.max_bandwidth = 300000;
 	linphone_core_set_network_simulator_params(marie->lc, &simparams);
-	
+
 	if (BC_ASSERT_TRUE(call(marie, pauline))){
 		/*wait for the first TMMBR*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_tmmbr_received, 1, 50000));
 		BC_ASSERT_GREATER((float)marie->stat.last_tmmbr_value_received, 270000.f, float, "%f");
 		BC_ASSERT_LOWER((float)marie->stat.last_tmmbr_value_received, 330000.f, float, "%f");
-		
+
 		end_call(marie, pauline);
 	}
 	linphone_core_manager_destroy(marie);

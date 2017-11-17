@@ -229,7 +229,7 @@ if(ENABLE_SHARED)
 		set_target_properties(linphone PROPERTIES
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
-  			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
+			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
 			PUBLIC_HEADER "${LINPHONE_HEADER_FILES}"
 		)
 	endif()

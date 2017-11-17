@@ -19,6 +19,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 
 static void authentication_requested(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method) {
@@ -1205,14 +1206,14 @@ static void multi_devices_register_with_gruu(void) {
 	linphone_core_add_supported_tag(marie->lc,"gruu");
 	linphone_core_manager_start(marie,TRUE);
 	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
-	
+
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
 		BC_ASSERT_PTR_NOT_NULL(addr);
 		BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(addr),linphone_proxy_config_get_domain(cfg));
 		BC_ASSERT_TRUE(linphone_address_has_uri_param(addr,"gr"));
 	}
-	
+
 	linphone_core_set_network_reachable(marie->lc,FALSE); /*to make sure first instance is not unregistered*/
 	linphone_core_manager_destroy(marie);
 
@@ -1224,7 +1225,7 @@ static void multi_devices_register_with_gruu(void) {
 		BC_ASSERT_STRING_EQUAL(linphone_address_get_domain(addr),linphone_proxy_config_get_domain(cfg));
 		BC_ASSERT_TRUE(linphone_address_has_uri_param(addr,"gr"));
 	}
-	
+
 	linphone_core_manager_destroy(marie);
 }
 

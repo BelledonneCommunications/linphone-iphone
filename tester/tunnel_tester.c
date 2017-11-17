@@ -21,6 +21,7 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 /* Retrieve the public IP from a given hostname */
 int get_ip_from_hostname(const char * tunnel_hostname, char *ip, size_t ip_size){
@@ -59,7 +60,7 @@ static void call_with_tunnel_base(LinphoneTunnelMode tunnel_mode, bool_t with_si
 		BC_ASSERT_FALSE(get_ip_from_hostname("tunnel.linphone.org",tunnel_ip,sizeof(tunnel_ip)));
 		linphone_core_remove_supported_tag(pauline->lc,"gruu"); /*with gruu, we have no access to the "public IP from contact*/
 		linphone_core_remove_supported_tag(marie->lc,"gruu");
-		
+
 		BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_LinphoneRegistrationOk,1));
 		public_ip = get_public_contact_ip(pauline->lc);
 		BC_ASSERT_STRING_NOT_EQUAL(public_ip, tunnel_ip);
@@ -263,7 +264,7 @@ static void register_on_second_tunnel(void) {
 		LinphoneTunnelConfig *config2 = linphone_tunnel_config_new();
 		char tunnel_ip[64];
 		char* public_ip;
-		
+
 		BC_ASSERT_FALSE(get_ip_from_hostname("tunnel.linphone.org",tunnel_ip,sizeof(tunnel_ip)));
 		linphone_tunnel_simulate_udp_loss(tunnel, TRUE);
 

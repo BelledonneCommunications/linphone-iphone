@@ -20,6 +20,7 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "lime.h"
 #include "bctoolbox/crypto.h"
 #include <belle-sip/object.h>
@@ -2336,7 +2337,7 @@ void file_and_text_message(void) {
 	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(msg), "Text message");
 
 	linphone_chat_room_send_chat_message(chat_room, msg);
-	
+
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1, 60000));
 
 	if (marie->stat.last_received_chat_message) {

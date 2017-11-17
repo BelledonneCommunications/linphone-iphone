@@ -19,7 +19,9 @@
 
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "linphone/lpconfig.h"
+#include "tester_utils.h"
 
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();

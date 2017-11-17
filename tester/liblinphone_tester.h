@@ -25,7 +25,6 @@
 #include <bctoolbox/tester.h>
 #include "linphone/core.h"
 #include <mediastreamer2/msutils.h>
-#include "tester_utils.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

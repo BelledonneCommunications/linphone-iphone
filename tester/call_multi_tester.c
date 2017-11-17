@@ -22,6 +22,7 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "mediastreamer2/msutils.h"
 #include "belle-sip/sipstack.h"
 

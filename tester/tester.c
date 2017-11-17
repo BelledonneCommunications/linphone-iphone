@@ -21,6 +21,7 @@
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
 #include <bctoolbox/tester.h>
+#include "tester_utils.h"
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push

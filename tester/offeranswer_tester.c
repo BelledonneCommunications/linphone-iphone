@@ -21,6 +21,7 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static int get_codec_position(const MSList *l, const char *mime_type, int rate){
 	const MSList *elem;
@@ -446,7 +447,7 @@ static void compatible_avpf_features(void) {
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	
+
 	pt = configure_core_for_avpf_and_video(pauline->lc);
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
@@ -470,7 +471,7 @@ static void incompatible_avpf_features(void) {
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	
+
 	pt = configure_core_for_avpf_and_video(pauline->lc);
 	pt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
 

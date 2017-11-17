@@ -18,10 +18,12 @@
 
 #include "linphone/core.h"
 
+
 #ifdef VCARD_ENABLED
 
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "carddav.h"
 #include <bctoolbox/map.h>
 
@@ -37,7 +39,7 @@ static void linphone_vcard_import_export_friends_test(void) {
 	char *export_filepath = bc_tester_file("export_vcards.vcf");
 	int count = 0;
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 0, unsigned int, "%u");
-	
+
 	count = linphone_friend_list_import_friends_from_vcard4_file(lfl, import_filepath);
 	BC_ASSERT_EQUAL(count, 3, int, "%d");
 	friends = linphone_friend_list_get_friends(lfl);
@@ -344,7 +346,7 @@ static void friends_sqlite_storage(void) {
 	laddress2 = linphone_friend_get_address(lf2);
 	address2 = linphone_address_as_string(laddress2);
 	BC_ASSERT_STRING_EQUAL(address2, address);
-	
+
 	ms_free(address);
 	ms_free(address2);
 
@@ -392,7 +394,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,
 					   "CREATE TABLE IF NOT EXISTS friends ("
 					   "id                INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -430,12 +432,12 @@ static void friends_sqlite_store_lot_of_friends(void) {
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 	}
-	
+
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ms_message("End :\n");
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db, "DELETE FROM friends;",0,0,&errmsg);
@@ -460,7 +462,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,
 					   "CREATE TABLE IF NOT EXISTS friends ("
 					   "id                INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -477,7 +479,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	for (i = 0; i < 20000; i++) {
@@ -492,30 +494,30 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 							  NULL,
 							  0
 							  );
-		
+
 		ret = sqlite3_exec(db,buf,0,0,&errmsg);
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 		//ms_message("%i",i);
 	}
-	
+
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	bctbx_get_cur_time(&t1);
 	ms_message("Start : %li : %li\n", (long int)t1.tv_sec, (long int)t1.tv_nsec);
 	for (i = 0; i < 20000; i++) {
 		buf = sqlite3_mprintf("SELECT * FROM friends WHERE ref_key LIKE 'key_%i';",
 							  i);
-		
+
 		ret = sqlite3_exec(db,buf,0,0,&errmsg);
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 	}
-	
+
 	bctbx_get_cur_time(&t2);
 	ms_message("End : %li : %li\n", (long int)t2.tv_sec, (long int)t2.tv_nsec);
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db, "DELETE FROM friends;",0,0,&errmsg);
@@ -977,7 +979,7 @@ static void insert_lot_of_friends_map_test(void) {
 	int i;
 	bctbx_map_t *friends_map = bctbx_mmap_cchar_new();
 	bctbx_pair_cchar_t *pair;
-	
+
 	char key[64];
 	ms_message("Start\n");
 	for(i = 0; i < 20000; i++) {

@@ -20,6 +20,7 @@
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
 #include "linphone/lpconfig.h"
+#include "tester_utils.h"
 
 
 #if HAVE_SIPP
@@ -99,16 +100,16 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	int err;
 	int port = linphone_address_get_port(source);
 	LinphoneAddress * dest;
-	
+
 	sal_resolve_a(linphone_core_get_sal(mgr->lc)
 	 ,linphone_address_get_domain(source)
 	 ,linphone_address_get_port(source)
 	 ,AF_INET
 	 ,dest_server_server_resolved
 	 ,&addrinfo);
-	
+
 	 dest=linphone_address_new(NULL);
-	 
+
 	 wait_for(mgr->lc, mgr->lc, (int*)&addrinfo, 1);
 	 err=bctbx_getnameinfo((struct sockaddr*)addrinfo->ai_addr,addrinfo->ai_addrlen,ipstring,INET6_ADDRSTRLEN,NULL,0,NI_NUMERICHOST);
 	 if (err !=0 ){
@@ -117,7 +118,7 @@ LinphoneAddress * linphone_core_manager_resolve(LinphoneCoreManager *mgr, const 
 	 linphone_address_set_domain(dest, ipstring);
 	 if (port > 0)
 		linphone_address_set_port(dest, port);
-	
+
 	return dest;
 }
 
