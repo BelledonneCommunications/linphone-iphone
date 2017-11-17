@@ -53,6 +53,13 @@ Content::Content (ContentPrivate &p) : ClonableObject(p) {
 
 }
 
+Content::~Content () {
+	L_D();
+	/* Fills the body with zeros before releasing since it may contain
+	   private data like cipher keys or decoded messages. */
+	d->body.assign(d->body.size(), 0);
+}
+
 Content &Content::operator= (const Content &src) {
 	L_D();
 	if (this != &src) {

@@ -40,6 +40,7 @@ public:
 	Content ();
 	Content (const Content &src);
 	Content (Content &&src);
+	~Content ();
 
 	Content &operator= (const Content &src);
 	Content &operator= (Content &&src);
