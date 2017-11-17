@@ -37,7 +37,7 @@ class ConferencePrivate;
 class LINPHONE_PUBLIC Conference :
 	public ConferenceInterface,
 	public CallSessionListener,
-	virtual public CoreAccessor {
+	public CoreAccessor {
 	friend class CallSessionPrivate;
 
 public:

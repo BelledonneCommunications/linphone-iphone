@@ -29,7 +29,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 LocalConference::LocalConference (const shared_ptr<Core> &core, const Address &myAddress, CallListener *listener)
-	: CoreAccessor(core), Conference(*new LocalConferencePrivate, core, myAddress, listener) {
+	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {
 	L_D();
 	d->eventHandler.reset(new LocalConferenceEventHandler(this));
 }

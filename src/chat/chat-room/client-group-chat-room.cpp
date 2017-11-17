@@ -81,12 +81,15 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const std::string &factoryUri,
 	const IdentityAddress &me,
 	const std::string &subject
-) : CoreAccessor(core),
-ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
+) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
 RemoteConference(core, me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->focus = make_shared<Participant>(Address(factoryUri));
 	RemoteConference::setSubject(subject);
+}
+
+shared_ptr<Core> ClientGroupChatRoom::getCore () const {
+	return ChatRoom::getCore();
 }
 
 ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () const {

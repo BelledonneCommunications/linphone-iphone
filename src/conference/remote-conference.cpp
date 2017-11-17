@@ -32,7 +32,7 @@ RemoteConference::RemoteConference (
 	const shared_ptr<Core> &core,
 	const Address &myAddress,
 	CallListener *listener
-) : CoreAccessor(core), Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
+) : Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
 	L_D();
 	d->eventHandler.reset(new RemoteConferenceEventHandler(this));
 }

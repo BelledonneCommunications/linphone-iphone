@@ -39,6 +39,8 @@ public:
 		const std::string &subject
 	);
 
+	std::shared_ptr<Core> getCore () const;
+
 	CapabilitiesMask getCapabilities () const override;
 
 	const Address &getConferenceAddress () const override;

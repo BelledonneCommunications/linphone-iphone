@@ -104,7 +104,7 @@ void RealTimeTextChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &ms
 // =============================================================================
 
 RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
-	CoreAccessor(core), BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
+	BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
 
 RealTimeTextChatRoom::CapabilitiesMask RealTimeTextChatRoom::getCapabilities () const {
 	return BasicChatRoom::getCapabilities() | static_cast<CapabilitiesMask>(Capabilities::RealTimeText);
