@@ -29,6 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class IdentityAddressPrivate : public ClonableObjectPrivate {
 private:
+	std::string scheme;
 	std::string username;
 	std::string domain;
 	std::string gruu;

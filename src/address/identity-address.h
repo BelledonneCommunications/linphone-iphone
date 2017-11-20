@@ -45,6 +45,8 @@ public:
 
 	bool isValid () const;
 
+	const std::string &getScheme () const;
+
 	const std::string &getUsername () const;
 	bool setUsername (const std::string &username);
 

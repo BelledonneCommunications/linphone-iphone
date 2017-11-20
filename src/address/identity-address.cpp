@@ -34,7 +34,8 @@ LINPHONE_BEGIN_NAMESPACE
 IdentityAddress::IdentityAddress (const string &address) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
 	Address tmpAddress(address);
-	if (tmpAddress.isValid() && (tmpAddress.getScheme() == "sip")) {
+	if (tmpAddress.isValid() && ((tmpAddress.getScheme() == "sip") || (tmpAddress.getScheme() == "sips"))) {
+		d->scheme = tmpAddress.getScheme();
 		d->username = tmpAddress.getUsername();
 		d->domain = tmpAddress.getDomain();
 		if (tmpAddress.hasUriParam("gr")) {
@@ -45,6 +46,7 @@ IdentityAddress::IdentityAddress (const string &address) : ClonableObject(*new I
 
 IdentityAddress::IdentityAddress (const IdentityAddress &src) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
+	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
 	d->gruu = src.getGruu();
@@ -52,6 +54,7 @@ IdentityAddress::IdentityAddress (const IdentityAddress &src) : ClonableObject(*
 
 IdentityAddress::IdentityAddress (const Address &src) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
+	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
 	if (src.hasUriParam("gr")) {
@@ -62,6 +65,7 @@ IdentityAddress::IdentityAddress (const Address &src) : ClonableObject(*new Iden
 IdentityAddress &IdentityAddress::operator= (const IdentityAddress &src) {
 	L_D();
 	if (this != &src) {
+		d->scheme = src.getScheme();
 		d->username = src.getUsername();
 		d->domain = src.getDomain();
 		d->gruu = src.getGruu();
@@ -84,6 +88,11 @@ bool IdentityAddress::operator< (const IdentityAddress &address) const {
 bool IdentityAddress::isValid () const {
 	Address tmpAddress(*this);
 	return tmpAddress.isValid();
+}
+
+const string &IdentityAddress::getScheme () const {
+	L_D();
+	return d->scheme;
 }
 
 const string &IdentityAddress::getUsername () const {

@@ -48,7 +48,7 @@ Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 
 Address::Address (const IdentityAddress &src) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	string uri = "sip:" + src.getUsername() + "@";
+	string uri = src.getScheme() + ":" + src.getUsername() + "@";
 	if (src.getDomain().find(':') != string::npos)
 		uri += "[" + src.getDomain() + "]";
 	else
