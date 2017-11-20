@@ -119,6 +119,7 @@ extern void liblinphone_tester_clear_accounts(void);
 extern const char* test_domain;
 extern const char* auth_domain;
 extern const char* test_username;
+extern const char* test_sha_username;
 extern const char* test_password;
 extern const char* test_route;
 extern const char* userhostsfile;
@@ -339,6 +340,7 @@ void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf);
 void call_stats_updated(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallStats *stats);
 
 LinphoneAddress * create_linphone_address(const char * domain);
+LinphoneAddress * create_linphone_address_for_algo(const char * domain, const char * username);
 bool_t wait_for(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value);
 bool_t wait_for_list(MSList* lcs,int* counter,int value,int timeout_ms);
 bool_t wait_for_until(LinphoneCore* lc_1, LinphoneCore* lc_2,int* counter,int value,int timout_ms);

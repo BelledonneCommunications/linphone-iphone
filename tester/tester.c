@@ -55,6 +55,7 @@ const MSAudioDiffParams audio_cmp_params = {10,2000};
 const char* test_domain="sipopen.example.org";
 const char* auth_domain="sip.example.org";
 const char* test_username="liblinphone_tester";
+const char* test_sha_username="liblinphone_sha_tester";
 const char* test_password="secret";
 const char* test_route="sip2.linphone.org";
 const char *userhostsfile = "tester_hosts";
@@ -89,17 +90,24 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
 
 
 LinphoneAddress * create_linphone_address(const char * domain) {
-	LinphoneAddress *addr = linphone_address_new(NULL);
-	if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
-	linphone_address_set_username(addr,test_username);
-	BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
-	if (!domain) domain= test_route;
-	linphone_address_set_domain(addr,domain);
-	BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
-	linphone_address_set_display_name(addr, NULL);
-	linphone_address_set_display_name(addr, "Mr Tester");
-	BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
-	return addr;
+	return create_linphone_address_for_algo(domain,NULL);
+}
+
+LinphoneAddress * create_linphone_address_for_algo(const char * domain, const char* username) {
+    LinphoneAddress *addr = linphone_address_new(NULL);
+    if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
+    /* For clients who support different algorithms, their usernames must be differnet for having diffrent forms of password */
+    if(username) linphone_address_set_username(addr,username);
+    else linphone_address_set_username(addr,test_username);
+    if(username) BC_ASSERT_STRING_EQUAL(username,linphone_address_get_username(addr));
+    else BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
+    if (!domain) domain= test_route;
+    linphone_address_set_domain(addr,domain);
+    BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
+    linphone_address_set_display_name(addr, NULL);
+    linphone_address_set_display_name(addr, "Mr Tester");
+    BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
+    return addr;
 }
 
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
