@@ -365,12 +365,23 @@ static test_t tests[] = {
 };
 #endif
 
+static bool_t previous_liblinphonetester_ipv6;
+static void before_each(void) {
+	previous_liblinphonetester_ipv6=liblinphonetester_ipv6;
+	liblinphonetester_ipv6=FALSE; /*sipp  do not support ipv6 and remote port*/
+	liblinphone_tester_before_each();
+}
+static void after_each(void) {
+	liblinphonetester_ipv6=previous_liblinphonetester_ipv6;
+	liblinphone_tester_after_each();
+}
+
 test_suite_t complex_sip_call_test_suite = {
 	"Complex SIP Case",
 	NULL,
 	NULL,
-	liblinphone_tester_before_each,
-	liblinphone_tester_after_each,
+	before_each,
+	after_each,
 #if HAVE_SIPP
 	sizeof(tests) / sizeof(tests[0]),
 	tests
