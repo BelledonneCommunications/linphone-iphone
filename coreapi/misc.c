@@ -698,7 +698,12 @@ void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
 	IceCheckList *text_check_list;
 	IceSessionState session_state;
 
-	if (call->ice_session == NULL) return;
+	if (call->ice_session == NULL) {
+		call->audio_stats->ice_state = LinphoneIceStateNotActivated;
+		call->video_stats->ice_state = LinphoneIceStateNotActivated;
+		call->text_stats->ice_state = LinphoneIceStateNotActivated;
+		return;
+	}
 	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
 	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
 	text_check_list = ice_session_check_list(call->ice_session, call->main_text_stream_index);

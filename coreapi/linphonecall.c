@@ -4710,6 +4710,15 @@ static void handle_ice_events(LinphoneCall *call, OrtpEvent *ev){
 	} else if (evt == ORTP_EVENT_ICE_RESTART_NEEDED) {
 		ice_session_restart(call->ice_session, IR_Controlling);
 		linphone_call_update(call, call->current_params);
+	} else if (evt == ORTP_EVENT_ICE_DEACTIVATION_NEEDED) {
+		if (ice_session_role(call->ice_session) == IR_Controlling) {
+			ice_session_destroy(call->ice_session);
+			call->ice_session = NULL;
+			LinphoneCallParams *params = linphone_core_create_call_params(call->core, call);
+			params->internal_call_update = TRUE;
+			linphone_call_update(call, params);
+			linphone_call_params_unref(params);
+		}
 	}
 }
 
@@ -4875,7 +4884,8 @@ void linphone_call_handle_stream_events(LinphoneCall *call, int stream_index){
 			else if (stream_index == call->main_video_stream_index)
 				propagate_encryption_changed(call);
 		}else if ((evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) || (evt == ORTP_EVENT_ICE_GATHERING_FINISHED)
-			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)) {
+			|| (evt == ORTP_EVENT_ICE_LOSING_PAIRS_COMPLETED) || (evt == ORTP_EVENT_ICE_RESTART_NEEDED)
+			|| (evt == ORTP_EVENT_ICE_DEACTIVATION_NEEDED)) {
 			if (ms) handle_ice_events(call, ev);
 		} else if (evt==ORTP_EVENT_TELEPHONE_EVENT){
 			linphone_core_dtmf_received(call,evd->info.telephone_event);
