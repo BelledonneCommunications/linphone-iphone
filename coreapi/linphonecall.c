@@ -2698,6 +2698,8 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	char* cname;
 
 	if (call->audiostream != NULL) return;
+	ms_snd_card_set_stream_type(lc->sound_conf.play_sndcard, MS_SND_CARD_STREAM_VOICE);
+	
 	if (call->sessions[call->main_audio_stream_index].rtp_session==NULL){
 		SalMulticastRole multicast_role = linphone_call_get_multicast_role(call,SalAudio);
 		SalMediaDescription *remotedesc=NULL;
