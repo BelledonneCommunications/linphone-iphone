@@ -160,10 +160,9 @@ static const char* part4 = \
 "</presence>";
 
 void multipart_to_list () {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	ContentManager manager(marie->lc);
+	ContentManager manager;
 
-	Content multipartContent = Content();
+	Content multipartContent;
 	multipartContent.setBody(multipart);
 	multipartContent.setContentType(ContentType("multipart", "related"));
 
@@ -240,31 +239,24 @@ void multipart_to_list () {
 	ms_message("\n\n----- Original part 4 -----");
 	ms_message("%s", originalStr4.c_str());
 	BC_ASSERT_TRUE(originalStr4 == generatedStr4);
-
-	linphone_core_manager_destroy(marie);
 }
 
 void list_to_multipart () {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	ContentManager manager(marie->lc);
+	ContentManager manager;
 
-	Content content1 = Content();
+	Content content1;
 	content1.setBody(part1);
 	content1.setContentType(ContentType("application", "rlmi+xml"));
-	Content content2 = Content();
+	Content content2;
 	content2.setBody(part2);
 	content2.setContentType(ContentType("application", "pidf+xml"));
-	Content content3 = Content();
+	Content content3;
 	content3.setBody(part3);
 	content3.setContentType(ContentType("application", "pidf+xml"));
-	Content content4 = Content();
+	Content content4;
 	content4.setBody(part4);
 	content4.setContentType(ContentType("application", "pidf+xml"));
-	list<Content> contents;
-	contents.push_back(content1);
-	contents.push_back(content2);
-	contents.push_back(content3);
-	contents.push_back(content4);
+	list<Content> contents = {content1, content2, content3, content4};
 
 	Content multipartContent = manager.contentsListToMultipart(contents);
 	string originalStr(multipart);
@@ -285,8 +277,6 @@ void list_to_multipart () {
 	ms_message("\n\n----- Original multipart -----");
 	ms_message("%s", originalStr.c_str());
 	BC_ASSERT_TRUE(originalStr == generatedStr);
-
-	linphone_core_manager_destroy(marie);
 }
 
 test_t content_manager_tests[] = {

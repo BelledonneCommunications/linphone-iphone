@@ -37,6 +37,7 @@ public:
 
 	void subscribe (const ChatRoomId &chatRoomId);
 	void notifyReceived (const std::string &xmlBody);
+	void multipartNotifyReceived (const std::string &xmlBody);
 	void unsubscribe ();
 
 	const ChatRoomId &getChatRoomId () const;

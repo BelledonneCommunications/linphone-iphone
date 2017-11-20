@@ -2142,10 +2142,16 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
 		));
 
-		if (chatRoom)
-			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->notifyReceived(
-				linphone_content_get_string_buffer(body)
-			);
+		if (chatRoom) {
+			if (linphone_content_is_multipart(body))
+				L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->multipartNotifyReceived(
+					linphone_content_get_string_buffer(body)
+				);
+			else
+				L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->notifyReceived(
+					linphone_content_get_string_buffer(body)
+				);
+		}
 	}
 }
 

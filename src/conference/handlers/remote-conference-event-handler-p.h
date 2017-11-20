@@ -32,6 +32,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
 private:
+	void simpleNotifyReceived (const std::string &xmlBody);
+
 	ChatRoomId chatRoomId;
 
 	RemoteConference *conf = nullptr;

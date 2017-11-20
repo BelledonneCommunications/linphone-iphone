@@ -22,8 +22,9 @@
 
 #include <list>
 
+#include "linphone/utils/general.h"
+
 #include "content.h"
-#include "linphone/types.h"
 
 // =============================================================================
 
@@ -31,13 +32,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ContentManager {
 public:
-	ContentManager (LinphoneCore *core);
+	ContentManager () = default;
 
-	std::list<Content> multipartToContentLists (Content content) const;
-	Content contentsListToMultipart (std::list<Content> contents) const;
-
-private:
-	LinphoneCore *mCore = nullptr;
+	std::list<Content> multipartToContentLists (const Content &content) const;
+	Content contentsListToMultipart (const std::list<Content> &contents) const;
 };
 
 LINPHONE_END_NAMESPACE

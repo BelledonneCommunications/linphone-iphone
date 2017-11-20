@@ -438,7 +438,7 @@ static const char *participant_unadmined_notify = \
 static const char *bobUri = "sip:bob@example.com";
 static const char *aliceUri = "sip:alice@example.com";
 static const char *frankUri = "sip:frank@example.com";
-static const char *confUri = "sips:conf233@example.com";
+static const char *confUri = "sip:conf233@example.com";
 
 L_ENABLE_ATTR_ACCESS(LocalConferencePrivate, unique_ptr<LocalConferenceEventHandler>, eventHandler);
 
@@ -561,7 +561,7 @@ void first_notify_parsing() {
 
 void first_notify_parsing_wrong_conf() {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneAddress *confAddress = linphone_core_interpret_url(marie->lc, "sips:conf322@example.com");
+	LinphoneAddress *confAddress = linphone_core_interpret_url(marie->lc, "sip:conf322@example.com");
 	char *confAddressStr = linphone_address_as_string(confAddress);
 	Address addr(confAddressStr);
 	bctbx_free(confAddressStr);

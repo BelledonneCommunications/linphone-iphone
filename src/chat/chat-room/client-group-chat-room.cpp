@@ -74,6 +74,11 @@ void ClientGroupChatRoomPrivate::notifyReceived (const string &body) {
 	qConference->getPrivate()->eventHandler->notifyReceived(body);
 }
 
+void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
+	L_Q_T(RemoteConference, qConference);
+	qConference->getPrivate()->eventHandler->multipartNotifyReceived(body);
+}
+
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (

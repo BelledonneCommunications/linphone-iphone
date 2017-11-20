@@ -20,12 +20,11 @@
 #include <sstream>
 
 #include "belle-sip/belle-sip.h"
+
 #include "content-manager.h"
 #include "content-type.h"
 #include "linphone/content.h"
-#include "linphone/core.h"
 #include "logger/logger.h"
-#include "private.h"
 
 // =============================================================================
 
@@ -35,11 +34,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-ContentManager::ContentManager (LinphoneCore *core) {
-	mCore = core;
-}
-
-list<Content> ContentManager::multipartToContentLists (Content content) const {
+list<Content> ContentManager::multipartToContentLists (const Content &content) const {
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new_from_buffer((void *)content.getBodyAsString().c_str(), content.getBodyAsString().length(), MULTIPART_BOUNDARY);
 	belle_sip_object_ref(mpbh);
 
@@ -71,7 +66,7 @@ list<Content> ContentManager::multipartToContentLists (Content content) const {
 	return contentsList;
 }
 
-Content ContentManager::contentsListToMultipart (list<Content> contents) const {
+Content ContentManager::contentsListToMultipart (const list<Content> &contents) const {
 	char *desc;
 	string sub;
 	belle_sip_memory_body_handler_t *mbh = NULL;
@@ -99,7 +94,6 @@ Content ContentManager::contentsListToMultipart (list<Content> contents) const {
 	}
 	desc = belle_sip_object_to_string(mpbh);
 	belle_sip_object_unref(mpbh);
-	belle_sip_object_ref(mbh);
 
 	Content retContent = Content();
 	ContentType type("application", sub);

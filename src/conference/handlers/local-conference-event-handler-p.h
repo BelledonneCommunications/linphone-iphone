@@ -37,6 +37,7 @@ public:
 	void notifyAllExcept (const std::string &notify, const std::shared_ptr<Participant> &exceptParticipant);
 	void notifyAll (const std::string &notify);
 	std::string createNotifyFullState (int notifyId = -1);
+	std::string createNotifyMultipart (int notifyId);
 	std::string createNotifyParticipantAdded (const Address &addr, int notifyId = -1);
 	std::string createNotifyParticipantRemoved (const Address &addr, int notifyId = -1);
 	std::string createNotifyParticipantAdmined (const Address &addr, bool isAdmin, int notifyId = -1);
@@ -51,6 +52,7 @@ private:
 	unsigned int lastNotify = 0;
 
 	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
+	std::string createNotifySubjectChanged (const std::string &subject, int notifyId = -1);
 	void notifyParticipant (const std::string &notify, const std::shared_ptr<Participant> &participant);
 	void notifyParticipantDevice (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
 

@@ -57,7 +57,7 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 	}
 }
 
-list<Address> LocalConference::parseResourceLists (string xmlBody) {
+list<Address> LocalConference::parseResourceLists (const string &xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::ResourceLists::ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(
 		data,
