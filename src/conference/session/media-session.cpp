@@ -2584,6 +2584,11 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				captcard = playcard = nullptr;
 			}
 #endif
+
+			if (playcard) {
+				ms_snd_card_set_stream_type(playcard, MS_SND_CARD_STREAM_VOICE);
+			}
+
 			bool useEc = captcard && linphone_core_echo_cancellation_enabled(core);
 			audio_stream_enable_echo_canceller(audioStream, useEc);
 			if (playcard && (stream->max_rate > 0))
