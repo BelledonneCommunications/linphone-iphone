@@ -710,9 +710,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
 			// Server (for conference) or user sip address.
-			"  peer_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  peer_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
-			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			// Dialog creation date.
 			"  creation_date DATE NOT NULL,"
@@ -721,12 +721,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  last_update_date DATE NOT NULL,"
 
 			// ConferenceChatRoom, BasicChatRoom, RTT...
-			"  capabilities TINYINT UNSIGNED,"
+			"  capabilities TINYINT UNSIGNED NOT NULL,"
 
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
 
 			"  last_notify_id INT UNSIGNED,"
+
+			"  UNIQUE (peer_sip_address_id, local_sip_address_id),"
 
 			"  FOREIGN KEY (peer_sip_address_id)"
 			"    REFERENCES sip_address(id)"
