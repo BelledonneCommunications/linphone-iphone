@@ -2655,7 +2655,7 @@ static void apply_jitter_buffer_params(LinphoneCore *lc, RtpSession *session, Li
 
 	rtp_session_get_jitter_buffer_params(session, &params);
 	params.min_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_min_size", 40);
-	params.max_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_max_size", 250);
+	params.max_size = lp_config_get_int(lc->config, "rtp", "jitter_buffer_max_size", 500);
 	params.max_packets = params.max_size * 200 / 1000; /*allow 200 packet per seconds, quite large*/
 	params.buffer_algorithm = name_to_jb_algo(lp_config_get_string(lc->config, "rtp", "jitter_buffer_algorithm", "rls"));
 	params.refresh_ms = lp_config_get_int(lc->config, "rtp", "jitter_buffer_refresh_period", 5000);
