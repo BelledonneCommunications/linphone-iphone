@@ -1439,6 +1439,8 @@ const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyCon
 	}
 
 	// Warning : Do not remove, the op can change its contact_address
+	if (!cfg->op)
+		return NULL;
 	const SalAddress *salAddr = cfg->op->get_contact_address();
 	if (!salAddr)
 		return NULL;
