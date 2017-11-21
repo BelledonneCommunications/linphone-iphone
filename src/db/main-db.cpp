@@ -205,13 +205,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
-				"  WHERE chat_room_id = :chatRoomId AND sip_address_id = :sipAddressId",
+				"  WHERE chat_room_id = :chatRoomId AND participant_address_id = :sipAddressId",
 				soci::use(static_cast<int>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0) {
 			lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
-			*session << "INSERT INTO chat_room_participant (chat_room_id, sip_address_id, is_admin)"
+			*session << "INSERT INTO chat_room_participant (chat_room_id, participant_address_id, is_admin)"
 				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
 				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
 		}
@@ -221,12 +221,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_message_participant SET state = :state"
-				"  WHERE event_id = :eventId AND sip_address_id = :sipAddressId",
+				"  WHERE event_id = :eventId AND participant_address_id = :sipAddressId",
 				soci::use(state), soci::use(eventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
-			*session << "INSERT INTO chat_message_participant (event_id, sip_address_id, state)"
+			*session << "INSERT INTO chat_message_participant (event_id, participant_address_id, state)"
 				"  VALUES (:eventId, :sipAddressId, :state)",
 				soci::use(eventId), soci::use(sipAddressId), soci::use(state);
 	}
@@ -741,26 +741,25 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
 			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  is_admin BOOLEAN NOT NULL,"
 
-			"  PRIMARY KEY (chat_room_id, sip_address_id),"
+			"  PRIMARY KEY (chat_room_id, participant_address_id),"
 
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (sip_address_id)"
+			"  FOREIGN KEY (participant_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_event ("
-			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  PRIMARY KEY (event_id, chat_room_id),"
+			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
@@ -785,7 +784,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
 			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
@@ -799,7 +798,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
 			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  device_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  device_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_participant_event(event_id)"
@@ -824,8 +823,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_chat_message_event ("
 			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  from_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  to_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  from_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+			"  to_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
@@ -847,15 +846,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_participant ("
-			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
+			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  state TINYINT UNSIGNED NOT NULL,"
 
-			"  PRIMARY KEY (event_id, sip_address_id),"
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_chat_message_event(event_id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (sip_address_id)"
+			"  FOREIGN KEY (participant_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -864,8 +862,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS chat_message_content ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  content_type_id" + primaryKeyRefStr("SMALLINT UNSIGNED") + ","
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+			"  content_type_id" + primaryKeyRefStr("SMALLINT UNSIGNED") + " NOT NULL,"
 			"  body TEXT NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
@@ -894,7 +892,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  chat_message_content_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  name VARCHAR(255),"
-			"  data BLOB,"
+			"  data BLOB NOT NULL,"
 
 			"  PRIMARY KEY (chat_message_content_id, name),"
 			"  FOREIGN KEY (chat_message_content_id)"
@@ -907,7 +905,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  name VARCHAR(255),"
-			"  data BLOB,"
+			"  data BLOB NOT NULL,"
 
 			"  PRIMARY KEY (event_id, name),"
 			"  FOREIGN KEY (event_id)"
