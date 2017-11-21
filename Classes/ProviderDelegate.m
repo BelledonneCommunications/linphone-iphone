@@ -209,11 +209,12 @@
 			LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 			linphone_call_pause((LinphoneCall *)call);
 		} else {
-			[self configAudioSession:[AVAudioSession sharedInstance]];
+			
 			if (linphone_core_get_conference(LC)) {
 				linphone_core_enter_conference(LC);
 				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			} else {
+				[self configAudioSession:[AVAudioSession sharedInstance]]; 
 				self.pendingCall = call;
 			}
 		}
