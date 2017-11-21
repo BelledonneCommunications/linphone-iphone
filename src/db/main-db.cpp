@@ -745,7 +745,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			"  PRIMARY KEY (chat_room_id, sip_address_id),"
 			"  FOREIGN KEY (chat_room_id)"
-			"    REFERENCES chat_room(peer_sip_address_id)"
+			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (sip_address_id)"
 			"    REFERENCES sip_address(id)"
@@ -762,7 +762,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"    REFERENCES event(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (chat_room_id)"
-			"    REFERENCES chat_room(peer_sip_address_id)"
+			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
 
