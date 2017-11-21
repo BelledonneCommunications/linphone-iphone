@@ -5647,10 +5647,11 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 		if (rtype==LinphoneLocalPlayer) return stream->local_player;
 		return NULL;
 	}
-	if (card || lc->ringstream == NULL) {
-		if (lc->ringstream)
+	if (card && lc->ringstream && card != lc->ringstream->card){
 			ring_stop(lc->ringstream);
-
+			lc->ringstream = NULL;
+	}
+	if (lc->ringstream  == NULL) {
 		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1f);
 		MSSndCard *ringcard=lc->sound_conf.lsd_card
 													? lc->sound_conf.lsd_card
