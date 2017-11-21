@@ -150,7 +150,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)bluetoothAvailabilityUpdateEvent:(NSNotification *)notif {
 	bool available = [[notif.userInfo objectForKey:@"available"] intValue];
-	[self hideSpeaker:available];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self hideSpeaker:available];
+	});
 }
 
 @end
