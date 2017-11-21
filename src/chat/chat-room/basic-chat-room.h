@@ -34,17 +34,17 @@ class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
 public:
 	CapabilitiesMask getCapabilities () const override;
 
-	const Address &getConferenceAddress () const override;
+	const IdentityAddress &getConferenceAddress () const override;
 
 	bool canHandleParticipants () const override;
 
-	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
-	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipants (const std::list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) override;
 
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
-	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
+	std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const override;
 
 	std::shared_ptr<Participant> getMe () const override;
 	int getNbParticipants () const override;

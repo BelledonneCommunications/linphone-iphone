@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 Conference::Conference (
 	ConferencePrivate &p,
 	const shared_ptr<Core> &core,
-	const Address &myAddress,
+	const IdentityAddress &myAddress,
 	CallListener *listener
 ) : CoreAccessor(core), mPrivate(&p) {
 	L_D();
@@ -54,12 +54,12 @@ shared_ptr<Participant> Conference::getActiveParticipant () const {
 
 // -----------------------------------------------------------------------------
 
-void Conference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void Conference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
 	lError() << "Conference class does not handle addParticipant() generically";
 }
 
-void Conference::addParticipants (const list<Address> &addresses, const CallSessionParams *params, bool hasMedia) {
-	list<Address> sortedAddresses(addresses);
+void Conference::addParticipants (const list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) {
+	list<IdentityAddress> sortedAddresses(addresses);
 	sortedAddresses.sort();
 	sortedAddresses.unique();
 	for (const auto &addr: sortedAddresses) {
@@ -73,7 +73,7 @@ bool Conference::canHandleParticipants () const {
 	return true;
 }
 
-const Address &Conference::getConferenceAddress () const {
+const IdentityAddress &Conference::getConferenceAddress () const {
 	L_D();
 	return d->conferenceAddress;
 }
@@ -208,12 +208,13 @@ void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSessi
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> Conference::findParticipant (const Address &addr) const {
+shared_ptr<Participant> Conference::findParticipant (const IdentityAddress &addr) const {
 	L_D();
 
-	IdentityAddress simpleAddr(addr);
+	IdentityAddress searchedAddr(addr);
+	searchedAddr.setGruu("");
 	for (const auto &participant : d->participants) {
-		if (participant->getAddress() == simpleAddr)
+		if (participant->getAddress() == searchedAddr)
 			return participant;
 	}
 
@@ -231,7 +232,7 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 	return nullptr;
 }
 
-bool Conference::isMe (const Address &addr) const {
+bool Conference::isMe (const IdentityAddress &addr) const {
 	L_D();
 	IdentityAddress simpleAddr(addr);
 	return d->me->getAddress() == simpleAddr;

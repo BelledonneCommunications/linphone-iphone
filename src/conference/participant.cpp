@@ -47,7 +47,7 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 
 shared_ptr<ParticipantDevice> ParticipantPrivate::findDevice (const IdentityAddress &gruu) const {
 	for (const auto &device : devices) {
-		if (device->getGruu() == gruu)
+		if (device->getAddress() == gruu)
 			return device;
 	}
 	return nullptr;
@@ -76,7 +76,7 @@ shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const IdentityAddre
 
 void ParticipantPrivate::removeDevice (const IdentityAddress &gruu) {
 	for (auto it = devices.begin(); it != devices.end(); it++) {
-		if ((*it)->getGruu() == gruu) {
+		if ((*it)->getAddress() == gruu) {
 			devices.erase(it);
 			return;
 		}
@@ -85,16 +85,14 @@ void ParticipantPrivate::removeDevice (const IdentityAddress &gruu) {
 
 // =============================================================================
 
-Participant::Participant (const Address &address) : Object(*new ParticipantPrivate) {
+Participant::Participant (const IdentityAddress &address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->contactAddr = address;
-	d->addr = IdentityAddress(address);
+	d->addr = address;
 }
 
-Participant::Participant (Address &&address) : Object(*new ParticipantPrivate) {
+Participant::Participant (IdentityAddress &&address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->contactAddr = move(address);
-	d->addr = IdentityAddress(address);
+	d->addr = address;
 }
 
 // -----------------------------------------------------------------------------
@@ -102,11 +100,6 @@ Participant::Participant (Address &&address) : Object(*new ParticipantPrivate) {
 const IdentityAddress& Participant::getAddress () const {
 	L_D();
 	return d->addr;
-}
-
-const Address& Participant::getContactAddress () const {
-	L_D();
-	return d->contactAddr;
 }
 
 // -----------------------------------------------------------------------------

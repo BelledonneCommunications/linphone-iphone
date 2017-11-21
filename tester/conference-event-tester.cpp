@@ -448,9 +448,9 @@ public:
 	~ConferenceEventTester ();
 
 private:
-	void onConferenceCreated (const Address &addr) override;
-	void onConferenceTerminated (const Address &addr) override;
-	void onFirstNotifyReceived (const Address &addr) override;
+	void onConferenceCreated (const IdentityAddress &addr) override;
+	void onConferenceTerminated (const IdentityAddress &addr) override;
+	void onFirstNotifyReceived (const IdentityAddress &addr) override;
 	void onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
 	void onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
 	void onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
@@ -473,28 +473,28 @@ ConferenceEventTester::~ConferenceEventTester () {
 	delete handler;
 }
 
-void ConferenceEventTester::onConferenceCreated (const Address &addr) {}
+void ConferenceEventTester::onConferenceCreated (const IdentityAddress &addr) {}
 
-void ConferenceEventTester::onConferenceTerminated (const Address &addr) {}
+void ConferenceEventTester::onConferenceTerminated (const IdentityAddress &addr) {}
 
-void ConferenceEventTester::onFirstNotifyReceived (const Address &addr) {}
+void ConferenceEventTester::onFirstNotifyReceived (const IdentityAddress &addr) {}
 
 void ConferenceEventTester::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
-	const Address addr = event->getParticipantAddress();
+	const IdentityAddress addr = event->getParticipantAddress();
 	participants.insert(pair<string, bool>(addr.asString(), FALSE));
 	participantDevices.insert(pair<string, int>(addr.asString(), 0));
 }
 void ConferenceEventTester::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
-	const Address addr = event->getParticipantAddress();
+	const IdentityAddress addr = event->getParticipantAddress();
 	participants.erase(addr.asString());
 	participantDevices.erase(addr.asString());
 }
 
 void ConferenceEventTester::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
-	const Address addr = event->getParticipantAddress();
+	const IdentityAddress addr = event->getParticipantAddress();
 	auto it = participants.find(addr.asString());
 	if (it != participants.end())
 		it->second = (event->getType() == EventLog::Type::ConferenceParticipantSetAdmin);
@@ -507,7 +507,7 @@ void ConferenceEventTester::onSubjectChanged(const shared_ptr<ConferenceSubjectE
 
 void ConferenceEventTester::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
-	const Address addr = event->getParticipantAddress();
+	const IdentityAddress addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end())
 		it->second++;
@@ -516,7 +516,7 @@ void ConferenceEventTester::onParticipantDeviceAdded (const shared_ptr<Conferenc
 
 void ConferenceEventTester::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
-	const Address addr = event->getParticipantAddress();
+	const IdentityAddress addr = event->getParticipantAddress();
 	auto it = participantDevices.find(addr.asString());
 	if (it != participantDevices.end() && it->second > 0)
 		it->second--;
@@ -827,7 +827,7 @@ void send_first_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -876,7 +876,7 @@ void send_added_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -932,7 +932,7 @@ void send_removed_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -985,7 +985,7 @@ void send_admined_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -1037,7 +1037,7 @@ void send_unadmined_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -1091,7 +1091,7 @@ void send_subject_changed_notify () {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -1150,7 +1150,7 @@ void send_device_added_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;
@@ -1203,7 +1203,7 @@ void send_device_removed_notify() {
 	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
 		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
 	);
-	const_cast<Address &>(localConf.getConferenceAddress()) = addr;
+	const_cast<IdentityAddress &>(localConf.getConferenceAddress()) = addr;
 	string notify = localHandlerPrivate->createNotifyFullState();
 
 	const_cast<IdentityAddress &>(tester.handler->getChatRoomId().getPeerAddress()) = addr;

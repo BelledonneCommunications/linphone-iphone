@@ -31,13 +31,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
+class IdentityAddress;
 
 class ConferenceListener {
 public:
-	virtual void onConferenceCreated (const Address &addr) = 0;
-	virtual void onConferenceTerminated (const Address &addr) = 0;
-	virtual void onFirstNotifyReceived (const Address &addr) = 0;
+	virtual void onConferenceCreated (const IdentityAddress &addr) = 0;
+	virtual void onConferenceTerminated (const IdentityAddress &addr) = 0;
+	virtual void onFirstNotifyReceived (const IdentityAddress &addr) = 0;
 	virtual void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
 	virtual void onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
 	virtual void onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;

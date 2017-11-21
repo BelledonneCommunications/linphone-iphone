@@ -39,7 +39,7 @@ ParticipantDevice::~ParticipantDevice () {
 }
 
 bool ParticipantDevice::operator== (const ParticipantDevice &device) const {
-	return (mGruu == device.getGruu());
+	return (mGruu == device.getAddress());
 }
 
 void ParticipantDevice::setConferenceSubscribeEvent (LinphoneEvent *ev) {

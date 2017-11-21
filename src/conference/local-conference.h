@@ -32,13 +32,13 @@ class LocalConference : public Conference {
 	friend class ServerGroupChatRoomPrivate;
 
 public:
-	LocalConference (const std::shared_ptr<Core> &core, const Address &myAddress, CallListener *listener = nullptr);
+	LocalConference (const std::shared_ptr<Core> &core, const IdentityAddress &myAddress, CallListener *listener = nullptr);
 
 	/* ConferenceInterface */
-	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 
-	std::list<Address> parseResourceLists (const std::string &xmlBody);
+	std::list<IdentityAddress> parseResourceLists (const std::string &xmlBody);
 
 private:
 	L_DECLARE_PRIVATE(LocalConference);

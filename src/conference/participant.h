@@ -22,7 +22,6 @@
 
 #include <list>
 
-#include "address/address.h"
 #include "address/identity-address.h"
 #include "object/object.h"
 #include "conference/params/call-session-params.h"
@@ -50,11 +49,10 @@ class Participant : public Object {
 	friend class ServerGroupChatRoomPrivate;
 
 public:
-	explicit Participant (const Address &address);
-	explicit Participant (Address &&address);
+	explicit Participant (const IdentityAddress &address);
+	explicit Participant (IdentityAddress &&address);
 
 	const IdentityAddress& getAddress () const;
-	const Address& getContactAddress () const;
 	bool isAdmin () const;
 
 private:

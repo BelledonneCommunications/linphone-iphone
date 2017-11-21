@@ -28,7 +28,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-LocalConference::LocalConference (const shared_ptr<Core> &core, const Address &myAddress, CallListener *listener)
+LocalConference::LocalConference (const shared_ptr<Core> &core, const IdentityAddress &myAddress, CallListener *listener)
 	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {
 	L_D();
 	d->eventHandler.reset(new LocalConferenceEventHandler(this));
@@ -36,7 +36,7 @@ LocalConference::LocalConference (const shared_ptr<Core> &core, const Address &m
 
 // -----------------------------------------------------------------------------
 
-void LocalConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void LocalConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
 	L_D();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
@@ -57,18 +57,16 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 	}
 }
 
-list<Address> LocalConference::parseResourceLists (const string &xmlBody) {
+list<IdentityAddress> LocalConference::parseResourceLists (const string &xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::ResourceLists::ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(
 		data,
 		Xsd::XmlSchema::Flags::dont_validate
 	);
-	list<Address> addresses = list<Address>();
+	list<IdentityAddress> addresses = list<IdentityAddress>();
 	for (const auto &l : rl->getList()) {
 		for (const auto &entry : l.getEntry()) {
-			Address addr(entry.getUri());
-			if (entry.getDisplayName().present())
-				addr.setDisplayName(entry.getDisplayName().get());
+			IdentityAddress addr(entry.getUri());
 			addresses.push_back(addr);
 		}
 	}

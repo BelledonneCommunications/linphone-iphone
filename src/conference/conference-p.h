@@ -20,7 +20,7 @@
 #ifndef _CONFERENCE_P_H_
 #define _CONFERENCE_P_H_
 
-#include "address/address.h"
+#include "address/identity-address.h"
 #include "conference.h"
 
 // =============================================================================
@@ -32,7 +32,7 @@ class Participant;
 
 class ConferencePrivate {
 public:
-	Address conferenceAddress;
+	IdentityAddress conferenceAddress;
 	std::list<std::shared_ptr<Participant>> participants;
 
 protected:

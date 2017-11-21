@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 RemoteConference::RemoteConference (
 	const shared_ptr<Core> &core,
-	const Address &myAddress,
+	const IdentityAddress &myAddress,
 	CallListener *listener
 ) : Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
 	L_D();
@@ -44,7 +44,7 @@ RemoteConference::~RemoteConference () {
 
 // -----------------------------------------------------------------------------
 
-void RemoteConference::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
+void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
 	L_D();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (participant)
@@ -66,13 +66,11 @@ void RemoteConference::removeParticipant (const shared_ptr<const Participant> &p
 	}
 }
 
-string RemoteConference::getResourceLists (const list<Address> &addresses) const {
+string RemoteConference::getResourceLists (const list<IdentityAddress> &addresses) const {
 	Xsd::ResourceLists::ResourceLists rl = Xsd::ResourceLists::ResourceLists();
 	Xsd::ResourceLists::ListType l = Xsd::ResourceLists::ListType();
 	for (const auto &addr : addresses) {
-		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asStringUriOnly());
-		if (!addr.getDisplayName().empty())
-			entry.setDisplayName(Xsd::ResourceLists::DisplayName(addr.getDisplayName()));
+		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asString());
 		l.getEntry().push_back(entry);
 	}
 	rl.getList().push_back(l);
@@ -85,14 +83,14 @@ string RemoteConference::getResourceLists (const list<Address> &addresses) const
 
 // -----------------------------------------------------------------------------
 
-void RemoteConference::onConferenceCreated (const Address &addr) {}
+void RemoteConference::onConferenceCreated (const IdentityAddress &addr) {}
 
-void RemoteConference::onConferenceTerminated (const Address &addr) {
+void RemoteConference::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	d->eventHandler->unsubscribe();
 }
 
-void RemoteConference::onFirstNotifyReceived (const Address &addr) {}
+void RemoteConference::onFirstNotifyReceived (const IdentityAddress &addr) {}
 
 void RemoteConference::onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)event;

@@ -41,7 +41,7 @@ public:
 
 	bool operator== (const ParticipantDevice &device) const;
 
-	inline const IdentityAddress &getGruu () const { return mGruu; }
+	inline const IdentityAddress &getAddress () const { return mGruu; }
 	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
 	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
 

@@ -39,13 +39,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-list<Address> ClientGroupChatRoomPrivate::cleanAddressesList (const list<Address> &addresses) const {
+list<IdentityAddress> ClientGroupChatRoomPrivate::cleanAddressesList (const list<IdentityAddress> &addresses) const {
 	L_Q();
-	list<Address> cleanedList(addresses);
+	list<IdentityAddress> cleanedList(addresses);
 	cleanedList.sort();
 	cleanedList.unique();
 	for (auto it = cleanedList.begin(); it != cleanedList.end();) {
-		if (q->findParticipant(*it) || (q->getMe()->getAddress() == IdentityAddress(*it)))
+		if (q->findParticipant(*it) || (q->getMe()->getAddress() == *it))
 			it = cleanedList.erase(it);
 		else
 			it++;
@@ -64,7 +64,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, q);
 	const Address &myAddress = q->getMe()->getAddress();
-	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getContactAddress());
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myAddress, focus->getAddress());
 	session->initiateOutgoing();
 	return session;
 }
@@ -105,25 +105,25 @@ bool ClientGroupChatRoom::canHandleParticipants () const {
 	return RemoteConference::canHandleParticipants();
 }
 
-const Address &ClientGroupChatRoom::getConferenceAddress () const {
+const IdentityAddress &ClientGroupChatRoom::getConferenceAddress () const {
 	return RemoteConference::getConferenceAddress();
 }
 
-void ClientGroupChatRoom::addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) {
-	list<Address> addresses;
+void ClientGroupChatRoom::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
+	list<IdentityAddress> addresses;
 	addresses.push_back(addr);
 	addParticipants(addresses, params, hasMedia);
 }
 
 void ClientGroupChatRoom::addParticipants (
-	const list<Address> &addresses,
+	const list<IdentityAddress> &addresses,
 	const CallSessionParams *params,
 	bool hasMedia
 ) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	list<Address> addressesList = d->cleanAddressesList(addresses);
+	list<IdentityAddress> addressesList = d->cleanAddressesList(addresses);
 	if (addressesList.empty())
 		return;
 
@@ -166,7 +166,7 @@ void ClientGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>
 	RemoteConference::removeParticipants(participants);
 }
 
-shared_ptr<Participant> ClientGroupChatRoom::findParticipant (const Address &addr) const {
+shared_ptr<Participant> ClientGroupChatRoom::findParticipant (const IdentityAddress &addr) const {
 	return RemoteConference::findParticipant(addr);
 }
 
@@ -264,7 +264,7 @@ void ClientGroupChatRoom::leave () {
 
 void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {}
 
-void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
+void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
@@ -272,14 +272,14 @@ void ClientGroupChatRoom::onConferenceCreated (const Address &addr) {
 	getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 }
 
-void ClientGroupChatRoom::onConferenceTerminated (const Address &addr) {
+void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
 }
 
-void ClientGroupChatRoom::onFirstNotifyReceived (const Address &addr) {
+void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Created);
 	getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
@@ -288,7 +288,7 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const Address &addr) {
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	L_D_T(RemoteConference, dConference);
 
-	const Address &addr = event->getParticipantAddress();
+	const IdentityAddress &addr = event->getParticipantAddress();
 	if (isMe(addr))
 		return;
 
@@ -318,7 +318,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 
 	L_D_T(RemoteConference, dConference);
 
-	const Address &addr = event->getParticipantAddress();
+	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant = findParticipant(addr);
 	if (!participant) {
 		lWarning() << "Participant " << addr.asString() << " removed but not in the list of participants!";
@@ -337,7 +337,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
-	const Address &addr = event->getParticipantAddress();
+	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -383,7 +383,7 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 }
 
 void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
-	const Address &addr = event->getParticipantAddress();
+	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -410,7 +410,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
 	(void)isFullState;
 
-	const Address &addr = event->getParticipantAddress();
+	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
 		participant = getMe();
@@ -450,7 +450,7 @@ void ClientGroupChatRoom::onCallSessionStateChanged (
 
 	if (state == LinphoneCallConnected) {
 		if (d->state == ChatRoom::State::CreationPending) {
-			Address addr(session->getRemoteContactAddress()->asStringUriOnly());
+			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
 			onConferenceCreated(addr);
 			if (session->getRemoteContactAddress()->hasParam("isfocus"))
 				dConference->eventHandler->subscribe(getChatRoomId());

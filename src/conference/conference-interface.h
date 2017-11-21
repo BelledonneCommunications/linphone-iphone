@@ -29,7 +29,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Address;
+class IdentityAddress;
 class CallSessionParams;
 class Participant;
 
@@ -37,11 +37,11 @@ class LINPHONE_PUBLIC ConferenceInterface {
 public:
 	virtual ~ConferenceInterface() = default;
 
-	virtual void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) = 0;
-	virtual void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) = 0;
+	virtual void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) = 0;
+	virtual void addParticipants (const std::list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) = 0;
 	virtual bool canHandleParticipants () const = 0;
-	virtual std::shared_ptr<Participant> findParticipant (const Address &addr) const = 0;
-	virtual const Address &getConferenceAddress () const = 0;
+	virtual std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const = 0;
+	virtual const IdentityAddress &getConferenceAddress () const = 0;
 	virtual std::shared_ptr<Participant> getMe () const = 0;
 	virtual int getNbParticipants () const = 0;
 	virtual std::list<std::shared_ptr<Participant>> getParticipants () const = 0;

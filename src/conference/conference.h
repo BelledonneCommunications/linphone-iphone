@@ -48,11 +48,11 @@ public:
 	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 
 	/* ConferenceInterface */
-	void addParticipant (const Address &addr, const CallSessionParams *params, bool hasMedia) override;
-	void addParticipants (const std::list<Address> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipants (const std::list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) override;
 	bool canHandleParticipants () const override;
-	std::shared_ptr<Participant> findParticipant (const Address &addr) const override;
-	const Address &getConferenceAddress () const override;
+	std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const override;
+	const IdentityAddress &getConferenceAddress () const override;
 	std::shared_ptr<Participant> getMe () const override;
 	int getNbParticipants () const override;
 	std::list<std::shared_ptr<Participant>> getParticipants () const override;
@@ -85,11 +85,11 @@ protected:
 	explicit Conference (
 		ConferencePrivate &p,
 		const std::shared_ptr<Core> &core,
-		const Address &myAddress,
+		const IdentityAddress &myAddress,
 		CallListener *listener = nullptr
 	);
 
-	bool isMe (const Address &addr) const;
+	bool isMe (const IdentityAddress &addr) const;
 
 	ConferencePrivate *mPrivate = nullptr;
 

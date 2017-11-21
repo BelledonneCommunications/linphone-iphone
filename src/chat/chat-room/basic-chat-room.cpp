@@ -46,16 +46,16 @@ bool BasicChatRoom::canHandleParticipants () const {
 	return false;
 }
 
-const Address &BasicChatRoom::getConferenceAddress () const {
+const IdentityAddress &BasicChatRoom::getConferenceAddress () const {
 	lError() << "a BasicChatRoom does not have a conference address";
-	return Utils::getEmptyConstRefObject<Address>();
+	return Utils::getEmptyConstRefObject<IdentityAddress>();
 }
 
-void BasicChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {
+void BasicChatRoom::addParticipant (const IdentityAddress &, const CallSessionParams *, bool) {
 	lError() << "addParticipant() is not allowed on a BasicChatRoom";
 }
 
-void BasicChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {
+void BasicChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {
 	lError() << "addParticipants() is not allowed on a BasicChatRoom";
 }
 
@@ -67,7 +67,7 @@ void BasicChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {
 	lError() << "removeParticipants() is not allowed on a BasicChatRoom";
 }
 
-shared_ptr<Participant> BasicChatRoom::findParticipant (const Address &) const {
+shared_ptr<Participant> BasicChatRoom::findParticipant (const IdentityAddress &) const {
 	lError() << "findParticipant() is not allowed on a BasicChatRoom";
 	return nullptr;
 }

@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const Address &) {
+shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const IdentityAddress &) {
 	return nullptr;
 }
 
@@ -55,7 +55,7 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::dispatchMessage (const Address &, const Content &) {}
+void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
 
 void ServerGroupChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &) {}
 
@@ -79,7 +79,7 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
 ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
-LocalConference(core, Address(op->get_to()), nullptr) {}
+LocalConference(core, IdentityAddress(op->get_to()), nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
@@ -89,11 +89,11 @@ bool ServerGroupChatRoom::canHandleParticipants () const {
 	return false;
 }
 
-void ServerGroupChatRoom::addParticipant (const Address &, const CallSessionParams *, bool) {}
+void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSessionParams *, bool) {}
 
-void ServerGroupChatRoom::addParticipants (const list<Address> &, const CallSessionParams *, bool) {}
+void ServerGroupChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {}
 
-const Address &ServerGroupChatRoom::getConferenceAddress () const {
+const IdentityAddress &ServerGroupChatRoom::getConferenceAddress () const {
 	return LocalConference::getConferenceAddress();
 }
 
@@ -101,7 +101,7 @@ void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant>
 
 void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
 
-shared_ptr<Participant> ServerGroupChatRoom::findParticipant (const Address &) const {
+shared_ptr<Participant> ServerGroupChatRoom::findParticipant (const IdentityAddress &) const {
 	return nullptr;
 }
 
