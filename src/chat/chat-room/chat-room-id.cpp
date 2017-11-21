@@ -74,4 +74,9 @@ const IdentityAddress &ChatRoomId::getLocalAddress () const {
 	return d->localAddress;
 }
 
+bool ChatRoomId::isValid () const {
+	L_D();
+	return d->peerAddress.isValid() && d->localAddress.isValid();
+}
+
 LINPHONE_END_NAMESPACE

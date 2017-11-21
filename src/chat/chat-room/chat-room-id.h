@@ -44,6 +44,8 @@ public:
 	const IdentityAddress &getPeerAddress () const;
 	const IdentityAddress &getLocalAddress () const;
 
+	bool isValid () const;
+
 private:
 	L_DECLARE_PRIVATE(ChatRoomId);
 };

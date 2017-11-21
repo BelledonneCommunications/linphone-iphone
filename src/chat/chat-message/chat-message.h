@@ -83,9 +83,6 @@ public:
 	const IdentityAddress &getFromAddress () const;
 	const IdentityAddress &getToAddress () const;
 
-	const IdentityAddress &getLocalAddress () const;
-	const IdentityAddress &getRemoteAddress () const;
-
 	// TODO: Return a cpp reference.
 	const LinphoneErrorInfo *getErrorInfo () const;
 
