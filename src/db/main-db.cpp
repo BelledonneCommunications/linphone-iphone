@@ -746,6 +746,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  is_admin BOOLEAN NOT NULL,"
 
 			"  PRIMARY KEY (chat_room_id, sip_address_id),"
+
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE,"
@@ -756,9 +757,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_event ("
-			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
-
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+
+			"  PRIMARY KEY (event_id, chat_room_id),"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES event(id)"
