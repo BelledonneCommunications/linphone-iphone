@@ -31,7 +31,20 @@
 #include "linphone/friend.h"
 #include "linphone/friendlist.h"
 #include "linphone/tunnel.h"
+
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #include "linphone/core_utils.h"
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
+
 #include "linphone/conference.h"
 
 #include "address/address.h"
@@ -1011,10 +1024,21 @@ struct _EcCalibrator{
 	MSFilter *play, *gen, *sndwrite;
 	MSFilter *read_resampler,*write_resampler;
 	MSTicker *ticker;
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 	LinphoneEcCalibrationCallback cb;
 	void *cb_data;
 	LinphoneEcCalibrationAudioInit audio_init_cb;
 	LinphoneEcCalibrationAudioUninit audio_uninit_cb;
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic pop
+#endif
 	int64_t acc;
 	int delay;
 	unsigned int rate;
