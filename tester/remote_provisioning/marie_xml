@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
+  <section name="sip">
+    <entry name="sip_port">-1</entry>
+    <entry name="sip_tcp_port">-1</entry>
+    <entry name="sip_tls_port">-1</entry>
+    <entry name="default_proxy">0</entry>
+    <entry name="ping_with_options">0</entry>
+    <entry name="register_only_when_network_is_up">0</entry>
+    <entry name="composing_idle_timeout">1</entry>
+  </section>
+  <section name="auth_info_0">
+    <entry name="username">marie</entry>
+    <entry name="userid">marie</entry>
+    <entry name="passwd">secret</entry>
+    <!--entry name="ha1">c4ce0fe4c1c82e4b700726e085aee9b3</entry-->
+    <entry name="realm">sip.example.org</entry>
+  </section>
+  <section name="proxy_0">
+    <entry name="reg_proxy">sip.example.org;transport=tcp</entry>
+    <entry name="reg_route">sip.example.org;transport=tcp;lr</entry>
+    <entry name="reg_identity">sip:marie@sip.example.org</entry>
+    <entry name="reg_expires">3600</entry>
+    <entry name="reg_sendregister">1</entry>
+    <entry name="publish">0</entry>
+    <entry name="dial_escape_plus">0</entry>
+  </section>
+  <section name="friend_0">
+    <entry name="url">"Paupoche" &lt;sip:pauline@sip.example.org&gt;</entry>
+    <entry name="pol">accept</entry>
+    <entry name="subscribe">0</entry>
+  </section>
+  <section name="rtp">
+    <entry name="audio_rtp_port">8070</entry>
+    <entry name="video_rtp_port">9072</entry>
+  </section>
+  <section name="video">
+    <entry name="display">0</entry>
+    <entry name="capture">0</entry>
+    <entry name="show_local">0</entry>
+    <entry name="size">vga</entry>
+    <entry name="enabled">0</entry>
+    <entry name="self_view">0</entry>
+    <entry name="automatically_initiate">0</entry>
+    <entry name="automatically_accept">0</entry>
+    <entry name="device">StaticImage: Static picture</entry>
+  </section>
+  <section name="sound">
+    <entry name="echocancellation">0 #to not overload cpu in case of VG</entry>
+  </section>
+</config>
