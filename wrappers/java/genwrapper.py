@@ -760,6 +760,19 @@ class Jni(object):
         for method in methods:
             self.methods.append(method)
 
+class Proguard(object):
+    def __init__(self, package):
+        self.package = package
+        self.classes = []
+
+    def add_class(self, javaClass):
+        obj = {
+            'package': self.package,
+            'className': javaClass.className,
+            'classImplName': javaClass.classImplName,
+        }
+        self.classes.append(obj)
+
 ##########################################################################
 
 class GenWrapper(object):
@@ -790,6 +803,7 @@ class GenWrapper(object):
         self.translator = JavaTranslator(package, exceptions)
         self.renderer = pystache.Renderer()
         self.jni = Jni(package)
+        self.proguard = Proguard(package)
 
         self.enums = {}
         self.interfaces = {}
@@ -823,8 +837,10 @@ class GenWrapper(object):
         for name, value in self.classes.items():
             self.render(value, self.javadir + '/' + value.filename)
             self.jni.add_object(value)
+            self.proguard.add_class(value)
 
         self.render(self.jni, self.srcdir + '/linphone_jni.cc')
+        self.render(self.proguard, self.srcdir + '/proguard.txt')
 
     def render(self, item, path):
         tmppath = path + '.tmp'

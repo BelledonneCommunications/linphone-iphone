@@ -1,0 +1,17 @@
+# Don't warn stuff that we are not "proguarding", warnings would make the build fail.
+-dontwarn org.linphone.**
+
+# The following intefaces are referenced from JNI
+{{#classes}}
+-keep interface {{package}}.{{className}} {*;}
+-keep class {{package}}.{{classImplName}} {*;}
+{{/classes}}
+
+# Mediastreamer classes
+-keep class org.linphone.mediastream.Factory {*;}
+-keep class org.linphone.mediastream.MediastreamerAndroidContext {*;}
+-keep class org.linphone.mediastream.video.capture.AndroidVideoApi9JniWrapper {*;}
+-keep class org.linphone.mediastream.video.capture.AndroidVideoApi8JniWrapper {*;}
+-keep class org.linphone.mediastream.video.capture.AndroidVideoApi5JniWrapper {*;}
+-keep class org.linphone.mediastream.video.AndroidVideoWindowImpl {*;}
+-keep class org.linphone.mediastream.Version {*;}
