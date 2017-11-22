@@ -1013,15 +1013,16 @@ static void _imdn_notifications(bool_t with_lime) {
 	marie_chat_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 	history = linphone_chat_room_get_history(marie_chat_room, 1);
 	BC_ASSERT_EQUAL((int)bctbx_list_size(history), 1, int, "%d");
-	received_cm = (LinphoneChatMessage *)bctbx_list_nth_data(history, 0);
-	BC_ASSERT_PTR_NOT_NULL(received_cm);
-	if (received_cm != NULL) {
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
-		linphone_chat_room_mark_as_read(marie_chat_room); /* This sends the display notification */
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDisplayed, 1));
-		bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
+	if (bctbx_list_size(history) > 0) {
+		received_cm = (LinphoneChatMessage *)bctbx_list_nth_data(history, 0);
+		BC_ASSERT_PTR_NOT_NULL(received_cm);
+		if (received_cm != NULL) {
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
+			linphone_chat_room_mark_as_read(marie_chat_room); /* This sends the display notification */
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDisplayed, 1));
+			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
+		}
 	}
-
 	linphone_chat_message_unref(sent_cm);
 
 end:
