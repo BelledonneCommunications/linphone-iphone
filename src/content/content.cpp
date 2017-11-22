@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "content-type.h"
+// TODO: Remove me later.
+#include "linphone/core.h"
 
 #include "content-p.h"
-#include "content.h"
-#include "linphone/core.h"
+#include "content-type.h"
 
 // =============================================================================
 
@@ -151,14 +151,13 @@ bool Content::isEmpty () const {
 	return getSize() == 0;
 }
 
-bool Content::isValid() const {
+bool Content::isValid () const {
 	L_D();
 	return d->contentType.isValid() || d->body.empty();
 }
 
-LinphoneContent * Content::toLinphoneContent() const {
-	LinphoneContent* content;
-	content = linphone_core_create_content(NULL);
+LinphoneContent *Content::toLinphoneContent () const {
+	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
 	return content;

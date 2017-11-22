@@ -19,15 +19,16 @@
 
 #include "linphone/utils/utils.h"
 
-#include "object/clonable-object-p.h"
-#include "logger/logger.h"
 #include "content-type.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+// -----------------------------------------------------------------------------
 
 class ContentTypePrivate : public ClonableObjectPrivate {
 public:
@@ -60,34 +61,32 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 		return;
 
 	if (setType(contentType.substr(0, pos))) {
-		if (posParam != string::npos) {
+		if (posParam != string::npos)
 			end = posParam;
-		}
 		if (!setSubType(contentType.substr(pos + 1, end - (pos + 1))))
 			d->type.clear();
 	}
 
-	if (posParam != string::npos) {
-		setParameter(contentType.substr(posParam + 2)); // We remove the blankspace after the ;
-	}
+	if (posParam != string::npos)
+		setParameter(contentType.substr(posParam + 2)); // We remove the blankspace after the ;.
 }
 
 ContentType::ContentType (const string &type, const string &subType) : ClonableObject(*new ContentTypePrivate) {
 	L_D();
 
-	if (setType(type)) {
-		if (!setSubType(subType))
-			d->type.clear();
-	}
+	if (setType(type) && !setSubType(subType))
+		d->type.clear();
 }
 
-ContentType::ContentType (const string &type, const string &subType, const string &parameter) : ClonableObject(*new ContentTypePrivate) {
+ContentType::ContentType (
+	const string &type,
+	const string &subType,
+	const string &parameter
+) : ClonableObject(*new ContentTypePrivate) {
 	L_D();
 
-	if (setType(type)) {
-		if (!setSubType(subType))
-			d->type.clear();
-	}
+	if (setType(type) && !setSubType(subType))
+		d->type.clear();
 	setParameter(parameter);
 }
 
@@ -104,11 +103,13 @@ ContentType &ContentType::operator= (const ContentType &src) {
 }
 
 bool ContentType::operator== (const ContentType &contentType) const {
-	return getType() == contentType.getType() && getSubType() == contentType.getSubType() && getParameter() == contentType.getParameter();
+	return getType() == contentType.getType() &&
+		getSubType() == contentType.getSubType() &&
+		getParameter() == contentType.getParameter();
 }
 
 bool ContentType::operator!= (const ContentType &contentType) const {
-	return !operator==(contentType);
+	return !(*this == contentType);
 }
 
 const string &ContentType::getType () const {
@@ -162,9 +163,8 @@ string ContentType::asString () const {
 	L_D();
 	if (isValid()) {
 		string asString = d->type + "/" + d->subType;
-		if (!d->parameter.empty()) {
+		if (!d->parameter.empty())
 			asString += "; " + d->parameter;
-		}
 		return asString;
 	}
 	return "";

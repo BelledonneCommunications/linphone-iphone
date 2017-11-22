@@ -62,12 +62,12 @@ public:
 
 	size_t getSize () const;
 
-	bool isValid() const;
+	bool isValid () const;
 
 	bool isEmpty () const;
 
 	// TODO: Remove me later.
-	virtual LinphoneContent *toLinphoneContent() const;
+	virtual LinphoneContent *toLinphoneContent () const;
 
 protected:
 	explicit Content (ContentPrivate &p);

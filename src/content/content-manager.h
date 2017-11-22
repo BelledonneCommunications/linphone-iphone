@@ -33,7 +33,7 @@ class Content;
 namespace ContentManager {
 	std::list<Content> multipartToContentList (const Content &content);
 	Content contentListToMultipart (const std::list<Content> &contents);
-};
+}
 
 LINPHONE_END_NAMESPACE
 

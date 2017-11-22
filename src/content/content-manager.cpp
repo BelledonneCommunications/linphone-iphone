@@ -31,6 +31,8 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
 list<Content> ContentManager::multipartToContentList (const Content &content) {
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new_from_buffer(
 		(void *)content.getBodyAsString().c_str(),

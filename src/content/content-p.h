@@ -22,20 +22,21 @@
 
 #include <vector>
 
-#include "object/clonable-object-p.h"
-#include "object/object-p.h"
 #include "content-type.h"
 #include "content.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ContentPrivate : public ClonableObjectPrivate {
-public:
+private:
 	std::vector<char> body;
 	ContentType contentType;
 	std::string contentDisposition;
+
+	L_DECLARE_PUBLIC(Content);
 };
 
 LINPHONE_END_NAMESPACE
