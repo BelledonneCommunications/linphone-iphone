@@ -50,14 +50,14 @@ public:
 	virtual std::string getConfigPath () = 0;
 
 protected:
-	inline PlatformHelpers (LinphoneCore *lc) : mCore(lc) {}
+	inline explicit PlatformHelpers (LinphoneCore *lc) : mCore(lc) {}
 
 	LinphoneCore *mCore;
 };
 
 class StubbedPlatformHelpers : public PlatformHelpers {
 public:
-	StubbedPlatformHelpers (LinphoneCore *lc);
+	explicit StubbedPlatformHelpers (LinphoneCore *lc);
 	virtual ~StubbedPlatformHelpers () = default;
 
 	void setDnsServers () override;

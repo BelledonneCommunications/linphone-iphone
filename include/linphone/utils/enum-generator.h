@@ -55,7 +55,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // TODO: This macro should be used but it is triggering a bug in doxygen that
 // has been fixed in the 1.8.8 version. See https://bugzilla.gnome.org/show_bug.cgi?id=731985
-// Meanwhile use 2 different macros
+// Meanwhile use 2 different macros.
 #if 0
 #define L_DECLARE_C_ENUM(NAME, VALUES) \
 	typedef enum L_CONCAT(_, L_CONCAT(L_C_ENUM_PREFIX, NAME)) { \

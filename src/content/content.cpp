@@ -49,14 +49,14 @@ Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataC
 	d->contentDisposition = move(src.getPrivate()->contentDisposition);
 }
 
-Content::Content (ContentPrivate &p) : ClonableObject(p) {
-
-}
+Content::Content (ContentPrivate &p) : ClonableObject(p) {}
 
 Content::~Content () {
 	L_D();
-	/* Fills the body with zeros before releasing since it may contain
-	   private data like cipher keys or decoded messages. */
+	/*
+	 * Fills the body with zeros before releasing since it may contain
+	 * private data like cipher keys or decoded messages.
+	 */
 	d->body.assign(d->body.size(), 0);
 }
 

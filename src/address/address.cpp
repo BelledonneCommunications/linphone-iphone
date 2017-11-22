@@ -39,31 +39,31 @@ Address::Address (const string &address) : ClonableObject(*new AddressPrivate) {
 	}
 }
 
+Address::Address (const IdentityAddress &identityAddress) : ClonableObject(*new AddressPrivate) {
+	L_D();
+
+	const string &username = identityAddress.getUsername();
+	if (username.empty())
+		return;
+	const string &domain = identityAddress.getDomain();
+	if (domain.empty())
+		return;
+
+	string uri = identityAddress.getScheme() + ":" + username + "@" + (
+		domain.find(':') != string::npos ? "[" + domain + "]" : domain
+	);
+
+	if (identityAddress.hasGruu())
+		uri += ";gr=" + identityAddress.getGruu();
+
+	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
+}
+
 Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 	L_D();
 	SalAddress *salAddress = src.getPrivate()->internalAddress;
 	if (salAddress)
 		d->internalAddress = sal_address_clone(salAddress);
-}
-
-Address::Address (const IdentityAddress &src) : ClonableObject(*new AddressPrivate) {
-	L_D();
-
-	const string &username = src.getUsername();
-	if (username.empty())
-		return;
-	const string &domain = src.getDomain();
-	if (domain.empty())
-		return;
-
-	string uri = src.getScheme() + ":" + username + "@" + (
-		domain.find(':') != string::npos ? "[" + domain + "]" : domain
-	);
-
-	if (src.hasGruu())
-		uri += ";gr=" + src.getGruu();
-
-	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
 }
 
 Address::~Address () {

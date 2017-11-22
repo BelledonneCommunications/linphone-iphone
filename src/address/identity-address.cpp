@@ -42,20 +42,21 @@ IdentityAddress::IdentityAddress (const string &address) : ClonableObject(*new I
 	}
 }
 
+IdentityAddress::IdentityAddress (const Address &address) : ClonableObject(*new IdentityAddressPrivate) {
+	L_D();
+	d->scheme = address.getScheme();
+	d->username = address.getUsername();
+	d->domain = address.getDomain();
+	if (address.hasUriParam("gr"))
+		d->gruu = address.getUriParamValue("gr");
+}
+
 IdentityAddress::IdentityAddress (const IdentityAddress &src) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
 	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
 	d->gruu = src.getGruu();
-}
-
-IdentityAddress::IdentityAddress (const Address &src) : ClonableObject(*new IdentityAddressPrivate) {
-	L_D();
-	d->scheme = src.getScheme();
-	d->username = src.getUsername();
-	d->domain = src.getDomain();
-	d->gruu = src.getUriParamValue("gr");
 }
 
 IdentityAddress &IdentityAddress::operator= (const IdentityAddress &src) {

@@ -32,8 +32,8 @@ class IdentityAddressPrivate;
 class LINPHONE_PUBLIC IdentityAddress : public ClonableObject {
 public:
 	explicit IdentityAddress (const std::string &address = "");
+	IdentityAddress (const Address &address);
 	IdentityAddress (const IdentityAddress &src);
-	IdentityAddress (const Address &src);
 	~IdentityAddress () = default;
 
 	IdentityAddress &operator= (const IdentityAddress &src);

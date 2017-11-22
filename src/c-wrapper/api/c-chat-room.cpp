@@ -230,7 +230,9 @@ LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) 
 }
 
 void linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipant(*L_GET_CPP_PTR_FROM_C_OBJECT(addr), nullptr, false);
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->addParticipant(
+		LinphonePrivate::IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(addr)), nullptr, false
+	);
 }
 
 void linphone_chat_room_add_participants (LinphoneChatRoom *cr, const bctbx_list_t *addresses) {
@@ -246,14 +248,16 @@ bool_t linphone_chat_room_can_handle_participants (const LinphoneChatRoom *cr) {
 }
 
 LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom *cr, const LinphoneAddress *addr) {
-	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(*L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(
+		LinphonePrivate::IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(addr))
+	));
 }
 
 const LinphoneAddress *linphone_chat_room_get_conference_address (const LinphoneChatRoom *cr) {
 	if (cr->conferenceAddressCache)
 		linphone_address_unref(cr->conferenceAddressCache);
 
-	const LinphonePrivate::Address &address = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress();
+	const LinphonePrivate::IdentityAddress &address = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getConferenceAddress();
 	if (address.isValid())
 		cr->conferenceAddressCache = linphone_address_new(address.asString().c_str());
 	else
@@ -356,7 +360,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 		from = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
 	if (from.empty())
 		from = linphone_core_get_primary_contact(core);
-	LinphonePrivate::Address me(from);
+	LinphonePrivate::IdentityAddress me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(
 		core->cppCore, L_C_TO_STRING(uri), me, L_C_TO_STRING(subject))
