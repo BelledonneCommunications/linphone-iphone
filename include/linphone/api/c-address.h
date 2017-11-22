@@ -202,18 +202,54 @@ LINPHONE_PUBLIC const char *linphone_address_get_header (const LinphoneAddress *
  **/
 LINPHONE_PUBLIC void linphone_address_set_header (LinphoneAddress *address, const char *header_name, const char *header_value);
 
+/**
+ * Tell whether a parameter is present in the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] param_name The name of the parameter
+ * @return A boolean value telling whether the parameter is present in the address
+ */
 LINPHONE_PUBLIC bool_t linphone_address_has_param (const LinphoneAddress *address, const char *param_name);
 
+/**
+ * Get the value of a parameter of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] param_name The name of the parameter
+ * @return The value of the parameter
+ */
 LINPHONE_PUBLIC const char *linphone_address_get_param (const LinphoneAddress *address, const char *param_name);
 
+/**
+ * Set the value of a parameter of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] param_name The name of the parameter
+ * @param[in] param_value The new value of the parameter
+ */
 LINPHONE_PUBLIC void linphone_address_set_param (LinphoneAddress *address, const char *param_name, const char *param_value);
 
 LINPHONE_PUBLIC void linphone_address_set_params (LinphoneAddress *address, const char *params);
 
+/**
+ * Tell whether a parameter is present in the URI of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] uri_param_name The name of the parameter
+ * @return A boolean value telling whether the parameter is present in the URI of the address
+ */
 LINPHONE_PUBLIC bool_t linphone_address_has_uri_param (const LinphoneAddress *address, const char *uri_param_name);
 
+/**
+ * Get the value of a parameter of the URI of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] uri_param_name The name of the parameter
+ * @return The value of the parameter
+ */
 LINPHONE_PUBLIC const char *linphone_address_get_uri_param (const LinphoneAddress *address, const char *uri_param_name);
 
+/**
+ * Set the value of a parameter of the URI of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] uri_param_name The name of the parameter
+ * @param[in] uri_param_value The new value of the parameter
+ */
 LINPHONE_PUBLIC void linphone_address_set_uri_param (LinphoneAddress *address, const char *uri_param_name, const char *uri_param_value);
 
 LINPHONE_PUBLIC void linphone_address_set_uri_params (LinphoneAddress *address, const char *params);
