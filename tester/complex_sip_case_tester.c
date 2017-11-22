@@ -58,15 +58,18 @@ FILE *sip_start(const char *senario, const char* dest_username, const char *pass
 	char *dest;
 	char *command;
 	FILE *file;
-
+	char local_ip[64];
 	if (linphone_address_get_port(dest_addres)>0)
 		dest = ms_strdup_printf("%s:%i",linphone_address_get_domain(dest_addres),linphone_address_get_port(dest_addres));
 	else
 		dest = ms_strdup_printf("%s",linphone_address_get_domain(dest_addres));
+	
+	linphone_core_get_local_ip_for(AF_INET, linphone_address_get_domain(dest_addres), local_ip);
 	//until errors logs are handled correctly and stop breaks output, they will be DISABLED
-	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 -ap %s 2>/dev/null",senario
+	command = ms_strdup_printf(SIPP_COMMAND" -sf %s -s %s %s -i %s -trace_err -trace_msg -rtp_echo -m 1 -d 1000 -ap %s 2>/dev/null",senario
 								,dest_username
 								,dest
+							    ,local_ip
 								,(passwd?passwd:"none"));
 
 	ms_message("Starting sipp command [%s]",command);
@@ -168,7 +171,7 @@ static void call_with_audio_mline_before_video_in_sdp(void) {
 	linphone_core_iterate(mgr->lc);
 
 	scen = bc_tester_res("sipp/call_with_audio_mline_before_video_in_sdp.xml");
-
+	
 	sipp_out = sip_start(scen, linphone_address_get_username(mgr->identity), NULL,  mgr->identity);
 
 	if (sipp_out) {
