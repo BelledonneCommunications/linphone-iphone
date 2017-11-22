@@ -89,16 +89,11 @@ LinphoneChatRoom *linphone_core_create_client_group_chat_room (LinphoneCore *lc,
 LinphoneChatRoom *_linphone_core_join_client_group_chat_room (LinphoneCore *lc, const LinphonePrivate::Address &addr) {
 	LinphoneChatRoom *cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
-	L_GET_PRIVATE(lc->cppCore)->insertChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
-	L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
 	return cr;
 }
 
 LinphoneChatRoom *_linphone_core_create_server_group_chat_room (LinphoneCore *lc, LinphonePrivate::SalCallOp *op) {
-	LinphoneChatRoom *cr = _linphone_server_group_chat_room_new(lc, op);
-	//L_GET_PRIVATE(lc->cppCore)->insertChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
-	//L_GET_PRIVATE(lc->cppCore)->insertChatRoomWithDb(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
-	return cr;
+	return _linphone_server_group_chat_room_new(lc, op);
 }
 
 void linphone_core_delete_chat_room (LinphoneCore *, LinphoneChatRoom *cr) {
