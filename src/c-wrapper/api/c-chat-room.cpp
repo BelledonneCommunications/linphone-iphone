@@ -301,8 +301,8 @@ void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) 
 bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) {
 	LinphonePrivate::ChatRoomPrivate *room = L_GET_PRIVATE_FROM_C_OBJECT(cr);
 	bctbx_list_t *result = NULL;
-	for (auto i = room->remoteIsComposing.begin(); i != room->remoteIsComposing.end(); ++i) {
-		result = bctbx_list_append(result, linphone_address_new((*i).c_str()));
+	for (const auto &uri : room->remoteIsComposing) {
+		result = bctbx_list_append(result, linphone_address_new(uri.c_str()));
 	}
 	return result;
 }
