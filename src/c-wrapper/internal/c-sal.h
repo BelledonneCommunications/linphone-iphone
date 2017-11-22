@@ -23,11 +23,11 @@
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 
-#ifndef sal_h
-#define sal_h
+#ifndef _C_SAL_H_
+#define _C_SAL_H_
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+	#include "config.h"
 #endif
 
 #include "mediastreamer2/mediastream.h"
@@ -263,7 +263,7 @@ typedef struct SalStreamDescription{
 	SalSrtpCryptoAlgo crypto[SAL_CRYPTO_ALGO_MAX];
 	unsigned int crypto_local_tag;
 	int max_rate;
-	bool_t  implicit_rtcp_fb;
+	bool_t implicit_rtcp_fb;
 	OrtpRtcpFbConfiguration rtcp_fb;
 	OrtpRtcpXrConfiguration rtcp_xr;
 	SalCustomSdpAttribute *custom_sdp_attributes;
@@ -474,7 +474,7 @@ typedef struct SalAuthInfo{
 	char *realm;
 	char *domain;
 	char *ha1;
-    char *algorithm;
+	char *algorithm;
 	SalAuthMode mode;
 	belle_sip_signing_key_t *key;
 	belle_sip_certificates_chain_t *certificates;
@@ -488,10 +488,8 @@ extern "C" {
 SalAuthInfo* sal_auth_info_new(void);
 SalAuthInfo* sal_auth_info_clone(const SalAuthInfo* auth_info);
 void sal_auth_info_delete(SalAuthInfo* auth_info);
-LINPHONE_PUBLIC int sal_auth_compute_ha1(const char* userid,const char* realm,const char* password, char ha1[33]);
-LINPHONE_PUBLIC int sal_auth_compute_ha1_for_algorithm(const char* userid,const char* realm,const char* password, char *ha1,size_t size,const char* algo);
-/*LINPHONE_PUBLIC int sal_auth_compute_ha1_for_algorithm(const char* userid,const char* realm,const char* password, char *ha1,
-                                                       size_t size, const char* algo);*/
+LINPHONE_PUBLIC int sal_auth_compute_ha1(const char *userid, const char *realm, const char *password, char ha1[33]);
+LINPHONE_PUBLIC int sal_auth_compute_ha1_for_algorithm(const char *userid, const char *realm, const char *password, char *ha1, size_t size, const char *algo);
 SalAuthMode sal_auth_info_get_mode(const SalAuthInfo* auth_info);
 belle_sip_signing_key_t *sal_auth_info_get_signing_key(const SalAuthInfo* auth_info);
 belle_sip_certificates_chain_t *sal_auth_info_get_certificates_chain(const SalAuthInfo* auth_info);
@@ -579,13 +577,13 @@ typedef enum _SalPrivacy {
 	SalPrivacyCritical=0x10,
 	SalPrivacyDefault=0x8000
 } SalPrivacy;
-typedef  unsigned int SalPrivacyMask;
+typedef unsigned int SalPrivacyMask;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-const char* sal_privacy_to_string(SalPrivacy  privacy);
+const char* sal_privacy_to_string(SalPrivacy privacy);
 
 #ifdef __cplusplus
 }
@@ -593,8 +591,8 @@ const char* sal_privacy_to_string(SalPrivacy  privacy);
 
 
 
-#define payload_type_set_number(pt,n)		(pt)->user_data=(void*)((intptr_t)n);
-#define payload_type_get_number(pt)		((int)(intptr_t)(pt)->user_data)
+#define payload_type_set_number(pt,n) (pt)->user_data=(void*)((intptr_t)n);
+#define payload_type_get_number(pt) ((int)(intptr_t)(pt)->user_data)
 
 #ifdef __cplusplus
 extern "C" {

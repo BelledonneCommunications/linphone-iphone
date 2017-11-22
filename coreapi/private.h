@@ -562,7 +562,7 @@ struct _LinphoneAuthInfo
 	char *tls_key;
 	char *tls_cert_path;
 	char *tls_key_path;
-    char *algorithm;
+	char *algorithm;
 };
 
 typedef enum _LinphoneIsComposingState {
