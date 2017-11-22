@@ -38,9 +38,7 @@ IdentityAddress::IdentityAddress (const string &address) : ClonableObject(*new I
 		d->scheme = tmpAddress.getScheme();
 		d->username = tmpAddress.getUsername();
 		d->domain = tmpAddress.getDomain();
-		if (tmpAddress.hasUriParam("gr")) {
-			d->gruu = tmpAddress.getUriParamValue("gr");
-		}
+		d->gruu = tmpAddress.getUriParamValue("gr");
 	}
 }
 
@@ -57,9 +55,7 @@ IdentityAddress::IdentityAddress (const Address &src) : ClonableObject(*new Iden
 	d->scheme = src.getScheme();
 	d->username = src.getUsername();
 	d->domain = src.getDomain();
-	if (src.hasUriParam("gr")) {
-		d->gruu = src.getUriParamValue("gr");
-	}
+	d->gruu = src.getUriParamValue("gr");
 }
 
 IdentityAddress &IdentityAddress::operator= (const IdentityAddress &src) {

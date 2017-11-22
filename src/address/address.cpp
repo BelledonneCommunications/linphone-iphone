@@ -61,7 +61,7 @@ Address::Address (const IdentityAddress &src) : ClonableObject(*new AddressPriva
 	);
 
 	if (src.hasGruu())
-		uri += "?gr=" + src.getGruu();
+		uri += ";gr=" + src.getGruu();
 
 	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
 }
