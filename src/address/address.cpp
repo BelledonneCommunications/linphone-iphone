@@ -48,16 +48,22 @@ Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
 
 Address::Address (const IdentityAddress &src) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	string uri = src.getScheme() + ":" + src.getUsername() + "@";
-	if (src.getDomain().find(':') != string::npos)
-		uri += "[" + src.getDomain() + "]";
-	else
-		uri += src.getDomain();
+
+	const string &username = src.getUsername();
+	if (username.empty())
+		return;
+	const string &domain = src.getDomain();
+	if (domain.empty())
+		return;
+
+	string uri = src.getScheme() + ":" + username + "@" + (
+		domain.find(':') != string::npos ? "[" + domain + "]" : domain
+	);
+
 	if (src.hasGruu())
 		uri += "?gr=" + src.getGruu();
-	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(uri)))) {
-		lWarning() << "Cannot create Address, bad IdentityAddress source";
-	}
+
+	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
 }
 
 Address::~Address () {
