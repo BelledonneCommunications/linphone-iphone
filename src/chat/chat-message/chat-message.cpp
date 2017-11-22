@@ -420,7 +420,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	content->setBody(createImdnXml(imdnType, reason));
 	msg->addContent(*content);
 
-	msg->send();
+	msg->getPrivate()->send();
 }
 
 LinphoneReason ChatMessagePrivate::receive () {
