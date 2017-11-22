@@ -139,6 +139,18 @@ const IdentityAddress &ChatRoom::getLocalAddress () const {
 
 // -----------------------------------------------------------------------------
 
+time_t ChatRoom::getCreationTime () const {
+	L_D();
+	return d->creationTime;
+}
+
+time_t ChatRoom::getLastUpdateTime () const {
+	L_D();
+	return d->lastUpdateTime;
+}
+
+// -----------------------------------------------------------------------------
+
 /**
  * DB layout:
  *

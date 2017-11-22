@@ -73,11 +73,11 @@ static void open_database () {
 static void get_events_count () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(), 4994, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(), 5175, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceInfoFilter), 18, int, "%d");
 	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceChatMessageFilter), 5157, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::NoFilter), 4994, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::NoFilter), 5175, int, "%d");
 }
 
 static void get_messages_count () {
@@ -86,9 +86,9 @@ static void get_messages_count () {
 	BC_ASSERT_EQUAL(mainDb.getChatMessagesCount(), 5157, int, "%d");
 	BC_ASSERT_EQUAL(
 		mainDb.getChatMessagesCount(
-			ChatRoomId(IdentityAddress("sip:test-39@sip.linphone.org"), IdentityAddress("sip:test-39@sip.linphone.org"))
+			ChatRoomId(IdentityAddress("sip:test-3@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org"))
 		),
-		3, int, "%d"
+		861, int, "%d"
 	);
 }
 
@@ -98,7 +98,7 @@ static void get_unread_messages_count () {
 	BC_ASSERT_EQUAL(mainDb.getUnreadChatMessagesCount(), 2, int, "%d");
 	BC_ASSERT_EQUAL(
 		mainDb.getUnreadChatMessagesCount(
-			ChatRoomId(IdentityAddress("sip:test-39@sip.linphone.org"), IdentityAddress("sip:test-39@sip.linphone.org"))
+			ChatRoomId(IdentityAddress("sip:test-3@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org"))
 		),
 		0, int, "%d"
 	);
@@ -109,10 +109,10 @@ static void get_history () {
 	const MainDb &mainDb = provider.getMainDb();
 	BC_ASSERT_EQUAL(
 		mainDb.getHistoryRange(
-			ChatRoomId(IdentityAddress("sip:test-39@sip.linphone.org"), IdentityAddress("sip:test-39@sip.linphone.org")),
+			ChatRoomId(IdentityAddress("sip:test-4@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org")),
 			0, -1, MainDb::Filter::ConferenceChatMessageFilter
 		).size(),
-		3,
+		54,
 		int,
 		"%d"
 	);
@@ -177,7 +177,7 @@ static void get_conference_notified_events () {
 		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:fake-group-2@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getParticipantAddress().asString() == "sip:test-11@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getNotifyId() == 3);
-		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:gruu-address-1@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:device-address-1@sip.linphone.org");
 	}
 
 	event = *++it;
@@ -189,7 +189,7 @@ static void get_conference_notified_events () {
 		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:fake-group-2@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getParticipantAddress().asString() == "sip:test-11@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getNotifyId() == 4);
-		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:gruu-address-1@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:device-address-1@sip.linphone.org");
 	}
 }
 

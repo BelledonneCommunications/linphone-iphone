@@ -28,6 +28,7 @@
 
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/client-group-chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "conference/participant.h"
 #include "content/content-type.h"
 #include "content/content.h"
@@ -205,13 +206,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
-				"  WHERE chat_room_id = :chatRoomId AND participant_address_id = :sipAddressId",
+				"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
 				soci::use(static_cast<int>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0) {
 			lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
-			*session << "INSERT INTO chat_room_participant (chat_room_id, participant_address_id, is_admin)"
+			*session << "INSERT INTO chat_room_participant (chat_room_id, participant_sip_address_id, is_admin)"
 				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
 				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
 		}
@@ -221,12 +222,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_message_participant SET state = :state"
-				"  WHERE event_id = :eventId AND participant_address_id = :sipAddressId",
+				"  WHERE event_id = :eventId AND participant_sip_address_id = :sipAddressId",
 				soci::use(state), soci::use(eventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
-			*session << "INSERT INTO chat_message_participant (event_id, participant_address_id, state)"
+			*session << "INSERT INTO chat_message_participant (event_id, participant_sip_address_id, state)"
 				"  VALUES (:eventId, :sipAddressId, :state)",
 				soci::use(eventId), soci::use(sipAddressId), soci::use(state);
 	}
@@ -432,7 +433,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  FROM conference_notified_event, conference_participant_event, sip_address as participant_address"
 			"  WHERE conference_participant_event.event_id = :eventId"
 			"    AND conference_notified_event.event_id = conference_participant_event.event_id"
-			"    AND participant_address.id = participant_address_id",
+			"    AND participant_address.id = participant_sip_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::use(eventId);
 
 		return make_shared<ConferenceParticipantEvent>(
@@ -461,8 +462,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  WHERE conference_participant_device_event.event_id = :eventId"
 			"    AND conference_participant_event.event_id = conference_participant_device_event.event_id"
 			"    AND conference_notified_event.event_id = conference_participant_event.event_id"
-			"    AND participant_address.id = participant_address_id"
-			"    AND device_address.id = device_address_id",
+			"    AND participant_address.id = participant_sip_address_id"
+			"    AND device_address.id = device_sip_address_id",
 			soci::into(notifyId), soci::into(participantAddress), soci::into(deviceAddress), soci::use(eventId);
 
 		return make_shared<ConferenceParticipantDeviceEvent>(
@@ -608,7 +609,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_participant_event (event_id, participant_address_id)"
+		*session << "INSERT INTO conference_participant_event (event_id, participant_sip_address_id)"
 			"  VALUES (:eventId, :participantAddressId)", soci::use(eventId), soci::use(participantAddressId);
 
 		return eventId;
@@ -624,7 +625,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "INSERT INTO conference_participant_device_event (event_id, device_address_id)"
+		*session << "INSERT INTO conference_participant_device_event (event_id, device_sip_address_id)"
 			"  VALUES (:eventId, :deviceAddressId)", soci::use(eventId), soci::use(deviceAddressId);
 
 		return eventId;
@@ -741,16 +742,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
 			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
-			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  participant_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  is_admin BOOLEAN NOT NULL,"
 
-			"  PRIMARY KEY (chat_room_id, participant_address_id),"
+			"  PRIMARY KEY (chat_room_id, participant_sip_address_id),"
 
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (participant_address_id)"
+			"  FOREIGN KEY (participant_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -784,12 +785,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_participant_event ("
 			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+			"  participant_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_notified_event(event_id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (participant_address_id)"
+			"  FOREIGN KEY (participant_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -798,12 +799,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS conference_participant_device_event ("
 			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
-			"  device_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+			"  device_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_participant_event(event_id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (device_address_id)"
+			"  FOREIGN KEY (device_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -846,14 +847,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_message_participant ("
-			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
-			"  participant_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  participant_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  state TINYINT UNSIGNED NOT NULL,"
+
+			"  PRIMARY KEY (event_id, participant_sip_address_id),"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_chat_message_event(event_id)"
 			"    ON DELETE CASCADE,"
-			"  FOREIGN KEY (participant_address_id)"
+			"  FOREIGN KEY (participant_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -865,6 +868,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  event_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 			"  content_type_id" + primaryKeyRefStr("SMALLINT UNSIGNED") + " NOT NULL,"
 			"  body TEXT NOT NULL,"
+
+			"  UNIQUE (id, event_id),"
 
 			"  FOREIGN KEY (event_id)"
 			"    REFERENCES conference_chat_message_event(event_id)"
@@ -1385,8 +1390,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(6, 0));
 
 			// TODO: Use me.
-			(void)creationDate;
-			(void)lastUpdateDate;
 			(void)lastNotifyId;
 
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
@@ -1394,6 +1397,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					chatRoomId,
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				);
+				chatRoom->setSubject(subject);
+
+				ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
+				dChatRoom->creationTime = Utils::getTmAsTimeT(creationDate);
+				dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateDate);
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
 				// TODO: Fetch!
 				// chatRoom = make_shared<ClientGroupChatRoom>(

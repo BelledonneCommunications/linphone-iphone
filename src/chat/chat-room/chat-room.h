@@ -31,11 +31,12 @@ LINPHONE_BEGIN_NAMESPACE
 class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
-	friend class Core;
-	friend class CorePrivate;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
+	friend class Core;
+	friend class CorePrivate;
 	friend class FileTransferChatMessageModifier;
+	friend class MainDb;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
@@ -51,6 +52,9 @@ public:
 
 	const IdentityAddress &getPeerAddress () const;
 	const IdentityAddress &getLocalAddress () const;
+
+	time_t getCreationTime () const;
+	time_t getLastUpdateTime () const;
 
 	virtual CapabilitiesMask getCapabilities () const = 0;
 
