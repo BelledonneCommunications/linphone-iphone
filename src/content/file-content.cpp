@@ -17,15 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+// TODO: Remove me later.
+#include "linphone/core.h"
+
 #include "content-p.h"
 #include "file-content.h"
-#include "linphone/core.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+// -----------------------------------------------------------------------------
 
 class FileContentPrivate : public ContentPrivate {
 public:
@@ -36,7 +40,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
-FileContent::FileContent() : Content(*new FileContentPrivate()) {}
+FileContent::FileContent () : Content(*new FileContentPrivate) {}
 
 FileContent::FileContent (const FileContent &src) : Content(*new FileContentPrivate) {
 	L_D();
@@ -81,22 +85,22 @@ bool FileContent::operator== (const FileContent &content) const {
 		d->fileSize == content.getFileSize();
 }
 
-void FileContent::setFileSize(size_t size) {
+void FileContent::setFileSize (size_t size) {
 	L_D();
 	d->fileSize = size;
 }
 
-size_t FileContent::getFileSize() const {
+size_t FileContent::getFileSize () const {
 	L_D();
 	return d->fileSize;
 }
 
-void FileContent::setFileName(const string &name) {
+void FileContent::setFileName (const string &name) {
 	L_D();
 	d->fileName = name;
 }
 
-const string& FileContent::getFileName() const {
+const string &FileContent::getFileName () const {
 	L_D();
 	return d->fileName;
 }
@@ -106,12 +110,12 @@ void FileContent::setFilePath (const string &path) {
 	d->filePath = path;
 }
 
-const string& FileContent::getFilePath () const {
+const string &FileContent::getFilePath () const {
 	L_D();
 	return d->filePath;
 }
 
-LinphoneContent *FileContent::toLinphoneContent() const {
+LinphoneContent *FileContent::toLinphoneContent () const {
 	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());

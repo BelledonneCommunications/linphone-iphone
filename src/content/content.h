@@ -43,6 +43,7 @@ public:
 
 	Content &operator= (const Content &src);
 	Content &operator= (Content &&src);
+
 	bool operator== (const Content &content) const;
 
 	const ContentType &getContentType () const;

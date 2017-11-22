@@ -36,18 +36,20 @@ public:
 
 	FileContent &operator= (const FileContent &src);
 	FileContent &operator= (FileContent &&src);
+
 	bool operator== (const FileContent &content) const;
 
 	void setFileSize (size_t size);
 	size_t getFileSize () const;
 
 	void setFileName (const std::string &name);
-	const std::string &getFileName() const;
+	const std::string &getFileName () const;
 
 	void setFilePath (const std::string &path);
-	const std::string &getFilePath() const;
+	const std::string &getFilePath () const;
 
-	LinphoneContent *toLinphoneContent() const override;
+	// TODO: Remove me later.
+	LinphoneContent *toLinphoneContent () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileContent);

@@ -21,37 +21,39 @@
 #define _FILE_TRANSFER_CONTENT_H_
 
 #include "content.h"
-#include "file-content.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class FileContent;
 class FileTransferContentPrivate;
 
 class LINPHONE_PUBLIC FileTransferContent : public Content {
 public:
-	FileTransferContent();
+	FileTransferContent ();
 	FileTransferContent (const FileTransferContent &src);
 	FileTransferContent (FileTransferContent &&src);
 
 	FileTransferContent &operator= (const FileTransferContent &src);
 	FileTransferContent &operator= (FileTransferContent &&src);
+
 	bool operator== (const FileTransferContent &content) const;
-	
-	void setFileName(const std::string &name);
-	const std::string& getFileName() const;
-	
-	void setFileUrl(const std::string &url);
-	const std::string& getFileUrl() const;
-	
-	void setFilePath(const std::string &path);
-	const std::string& getFilePath() const;
 
-	void setFileContent(FileContent *content);
-	FileContent* getFileContent() const;
+	void setFileName (const std::string &name);
+	const std::string &getFileName () const;
 
-	LinphoneContent * toLinphoneContent() const override;
+	void setFileUrl (const std::string &url);
+	const std::string &getFileUrl () const;
+
+	void setFilePath (const std::string &path);
+	const std::string &getFilePath () const;
+
+	void setFileContent (FileContent *content);
+	FileContent *getFileContent () const;
+
+	// TODO: Remove me later.
+	LinphoneContent *toLinphoneContent () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileTransferContent);

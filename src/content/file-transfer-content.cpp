@@ -17,15 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+// TODO: Remove me later.
+#include "linphone/core.h"
+
 #include "content-p.h"
 #include "file-transfer-content.h"
-#include "linphone/core.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+// -----------------------------------------------------------------------------
 
 class FileTransferContentPrivate : public ContentPrivate {
 public:
@@ -37,9 +41,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
-FileTransferContent::FileTransferContent() : Content(*new FileTransferContentPrivate()) {
-
-}
+FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {}
 
 FileTransferContent::FileTransferContent (const FileTransferContent &src) : Content(*new FileTransferContentPrivate) {
 	L_D();
@@ -88,49 +90,48 @@ bool FileTransferContent::operator== (const FileTransferContent &content) const 
 		d->filePath == content.getFilePath();
 }
 
-void FileTransferContent::setFileName(const string &name) {
+void FileTransferContent::setFileName (const string &name) {
 	L_D();
 	d->fileName = name;
 }
 
-const string& FileTransferContent::getFileName() const {
+const string &FileTransferContent::getFileName () const {
 	L_D();
 	return d->fileName;
 }
 
-void FileTransferContent::setFileUrl(const string &url) {
+void FileTransferContent::setFileUrl (const string &url) {
 	L_D();
 	d->fileUrl = url;
 }
 
-const string& FileTransferContent::getFileUrl() const {
+const string &FileTransferContent::getFileUrl () const {
 	L_D();
 	return d->fileUrl;
 }
 
-void FileTransferContent::setFilePath(const string &path) {
+void FileTransferContent::setFilePath (const string &path) {
 	L_D();
 	d->filePath = path;
 }
 
-const string& FileTransferContent::getFilePath() const {
+const string &FileTransferContent::getFilePath () const {
 	L_D();
 	return d->filePath;
 }
 
-void FileTransferContent::setFileContent(FileContent *content) {
+void FileTransferContent::setFileContent (FileContent *content) {
 	L_D();
 	d->fileContent = content;
 }
 
-FileContent* FileTransferContent::getFileContent() const {
+FileContent *FileTransferContent::getFileContent () const {
 	L_D();
 	return d->fileContent;
 }
 
-LinphoneContent * FileTransferContent::toLinphoneContent() const {
-	LinphoneContent* content;
-	content = linphone_core_create_content(NULL);
+LinphoneContent *FileTransferContent::toLinphoneContent () const {
+	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
 	linphone_content_set_name(content, getFileName().c_str());
