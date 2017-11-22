@@ -343,7 +343,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		// pull up the composing frame and shrink the table view
 		newTableFrame.size.height -= newComposingFrame.size.height;
 		newComposingFrame.origin.y = keyboardFrame.origin.y - newComposingFrame.size.height;
-		bctbx_list_t *addresses = linphone_chat_room_get_composing_addresses(_chatRoom);
+		const bctbx_list_t *addresses = linphone_chat_room_get_composing_addresses(_chatRoom);
 		NSString *composingAddresses = @"";
 		if (bctbx_list_size(addresses) == 1) {
 			composingAddresses = [NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)];
