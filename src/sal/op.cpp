@@ -620,7 +620,6 @@ belle_sip_request_t* SalOp::build_request(const char* method) {
 	belle_sip_uri_set_secure(req_uri,is_secure());
 
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(to_address),NULL);
-	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to_header))), "gr"); /*remove gruu in any case*/
 	call_id_header = belle_sip_provider_create_call_id(prov);
 	if (get_call_id()) {
 		belle_sip_header_call_id_set_call_id(call_id_header, get_call_id());

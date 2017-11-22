@@ -3564,19 +3564,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		linphone_transfer_routes_to_op(routes,op);
 	}
 
-	const SalAddress *sal_dest = L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress();
-	if (sal_address_has_uri_param(sal_dest,"gr")) {
-		/*in case of gruu destination remove gruu parram from to*/
-		SalAddress *dest_copy = sal_address_clone(sal_dest);
-		sal_address_remove_uri_param(dest_copy,"gr");
-		op->set_to_address(dest_copy);
-		sal_address_unref(dest_copy);
-	} else {
-		char *addr = linphone_address_as_string(dest);
-		op->set_to(addr);
-		ms_free(addr);
-	}
-
+	op->set_to_address(L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress());
 	if (op->getUseGruuInFrom() && contactAddr && linphone_address_has_uri_param(contactAddr, "gr")) {
 		char *contactAddrStr = linphone_address_as_string_uri_only(contactAddr);
 		op->set_from(contactAddrStr);
