@@ -20,6 +20,7 @@
 
 #include "content/content-manager.h"
 #include "content/content-type.h"
+#include "content/content.h"
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
 
