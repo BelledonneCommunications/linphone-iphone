@@ -67,7 +67,6 @@ public:
 
 private:
 	// TODO: Move me in ServerGroupChatRoomPrivate.
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 
 	L_DECLARE_PRIVATE(ServerGroupChatRoom);

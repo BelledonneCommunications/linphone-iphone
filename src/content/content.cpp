@@ -29,8 +29,6 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-const Content Content::Empty;
-
 // -----------------------------------------------------------------------------
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}

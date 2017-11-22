@@ -29,6 +29,12 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+
+void BasicChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
+
+// -----------------------------------------------------------------------------
+
 BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
 	ChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
 
@@ -106,8 +112,5 @@ void BasicChatRoom::join () {
 void BasicChatRoom::leave () {
 	lError() << "leave() is not allowed on a BasicChatRoom";
 }
-
-// TODO: Move me in BasicChatRoomPrivate.
-void BasicChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
 
 LINPHONE_END_NAMESPACE

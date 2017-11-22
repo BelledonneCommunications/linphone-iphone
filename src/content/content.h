@@ -67,9 +67,8 @@ public:
 
 	bool isEmpty () const;
 
-	virtual LinphoneContent * toLinphoneContent() const;
-
-	static const Content Empty;
+	// TODO: Remove me later.
+	virtual LinphoneContent *toLinphoneContent() const;
 
 protected:
 	explicit Content (ContentPrivate &p);

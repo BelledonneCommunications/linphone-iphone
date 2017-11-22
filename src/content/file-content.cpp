@@ -36,9 +36,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
-FileContent::FileContent() : Content(*new FileContentPrivate()) {
-
-}
+FileContent::FileContent() : Content(*new FileContentPrivate()) {}
 
 FileContent::FileContent (const FileContent &src) : Content(*new FileContentPrivate) {
 	L_D();
@@ -102,20 +100,19 @@ const string& FileContent::getFileName() const {
 	L_D();
 	return d->fileName;
 }
-	
-void FileContent::setFilePath(const string &path) {
+
+void FileContent::setFilePath (const string &path) {
 	L_D();
 	d->filePath = path;
 }
 
-const string& FileContent::getFilePath() const {
+const string& FileContent::getFilePath () const {
 	L_D();
 	return d->filePath;
 }
 
-LinphoneContent * FileContent::toLinphoneContent() const {
-	LinphoneContent* content;
-	content = linphone_core_create_content(NULL);
+LinphoneContent *FileContent::toLinphoneContent() const {
+	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
 	linphone_content_set_name(content, getFileName().c_str());

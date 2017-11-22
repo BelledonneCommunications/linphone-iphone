@@ -37,6 +37,8 @@ public:
 	void multipartNotifyReceived (const std::string &body);
 
 private:
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
+
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

@@ -56,6 +56,8 @@ private:
 	void finalizeCreation ();
 	bool isAdminLeft () const;
 
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &) override;
+
 	std::list<std::shared_ptr<Participant>> removedParticipants;
 
 	L_DECLARE_PUBLIC(ServerGroupChatRoom);

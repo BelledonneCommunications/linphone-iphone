@@ -79,6 +79,8 @@ void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
 	qConference->getPrivate()->eventHandler->multipartNotifyReceived(body);
 }
 
+void ClientGroupChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
+
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (
@@ -261,8 +263,6 @@ void ClientGroupChatRoom::leave () {
 }
 
 // -----------------------------------------------------------------------------
-
-void ClientGroupChatRoom::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {}
 
 void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	L_D();

@@ -64,9 +64,6 @@ protected:
 private:
 	BasicChatRoom (const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
 
-	// TODO: Remove me. Move me in private object.
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
-
 	L_DECLARE_PRIVATE(BasicChatRoom);
 	L_DISABLE_COPY(BasicChatRoom);
 };

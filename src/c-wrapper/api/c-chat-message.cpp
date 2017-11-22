@@ -292,11 +292,10 @@ bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->hasTextContent();
 }
 
-const char * linphone_chat_message_get_text_content(const LinphoneChatMessage *msg) {
+const char *linphone_chat_message_get_text_content(const LinphoneChatMessage *msg) {
 	const LinphonePrivate::Content *content = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getTextContent();
-	if (*content == LinphonePrivate::Content::Empty) {
-		return NULL;
-	}
+	if (content->isEmpty())
+		return nullptr;
 	return L_STRING_TO_C(content->getBodyAsString());
 }
 

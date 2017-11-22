@@ -159,7 +159,7 @@ const Content* ChatMessagePrivate::getTextContent() const {
 			return c;
 		}
 	}
-	return &Content::Empty;
+	return &Utils::getEmptyConstRefObject<Content>();
 }
 
 bool ChatMessagePrivate::hasFileTransferContent() const {
@@ -177,7 +177,7 @@ const Content* ChatMessagePrivate::getFileTransferContent() const {
 			return c;
 		}
 	}
-	return &Content::Empty;
+	return &Utils::getEmptyConstRefObject<Content>();
 }
 
 const string &ChatMessagePrivate::getFileTransferFilepath () const {
@@ -414,7 +414,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	L_Q();
 
 	shared_ptr<ChatMessage> msg = q->getChatRoom()->createMessage();
-	
+
 	Content *content = new Content();
 	content->setContentType("message/imdn+xml");
 	content->setBody(createImdnXml(imdnType, reason));

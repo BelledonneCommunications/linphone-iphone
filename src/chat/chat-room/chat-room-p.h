@@ -97,6 +97,8 @@ public:
 	// TODO: Check all fields before this point.
 
 public:
+	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
+
 	ChatRoomId chatRoomId;
 
 	time_t creationTime = -1;

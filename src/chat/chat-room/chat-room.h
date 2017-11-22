@@ -81,8 +81,6 @@ public:
 protected:
 	explicit ChatRoom (ChatRoomPrivate &p, const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);
 
-	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) = 0;
-
 private:
 	L_DECLARE_PRIVATE(ChatRoom);
 	L_DISABLE_COPY(ChatRoom);

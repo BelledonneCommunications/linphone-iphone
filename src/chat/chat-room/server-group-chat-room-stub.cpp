@@ -75,6 +75,8 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
 }
 
+void ServerGroupChatRoomPrivate::onChatMessageReceived(const shared_ptr<ChatMessage> &) {}
+
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
@@ -130,8 +132,6 @@ void ServerGroupChatRoom::join () {}
 void ServerGroupChatRoom::leave () {}
 
 // -----------------------------------------------------------------------------
-
-void ServerGroupChatRoom::onChatMessageReceived(const shared_ptr<ChatMessage> &msg) {}
 
 void ServerGroupChatRoom::onCallSessionStateChanged (
 	const shared_ptr<const CallSession> &,

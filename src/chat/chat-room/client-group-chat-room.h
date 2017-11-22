@@ -71,8 +71,6 @@ private:
 	// TODO: Move me in ClientGroupChatRoomPrivate.
 	// ALL METHODS AFTER THIS POINT.
 
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &msg) override;
-
 	void onConferenceCreated (const IdentityAddress &addr) override;
 	void onConferenceTerminated (const IdentityAddress &addr) override;
 	void onFirstNotifyReceived (const IdentityAddress &addr) override;

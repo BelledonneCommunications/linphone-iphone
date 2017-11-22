@@ -32,6 +32,8 @@ public:
 	BasicChatRoomPrivate () = default;
 
 private:
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
+
 	std::string subject;
 
 	L_DECLARE_PUBLIC(BasicChatRoom);

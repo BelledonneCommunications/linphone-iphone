@@ -30,7 +30,7 @@ class FileContentPrivate;
 
 class LINPHONE_PUBLIC FileContent : public Content {
 public:
-	FileContent();
+	FileContent ();
 	FileContent (const FileContent &src);
 	FileContent (FileContent &&src);
 
@@ -38,16 +38,16 @@ public:
 	FileContent &operator= (FileContent &&src);
 	bool operator== (const FileContent &content) const;
 
-	void setFileSize(size_t size);
-	size_t getFileSize() const;
-	
-	void setFileName(const std::string &name);
-	const std::string& getFileName() const;
-		
-	void setFilePath(const std::string &path);
-	const std::string& getFilePath() const;
+	void setFileSize (size_t size);
+	size_t getFileSize () const;
 
-	LinphoneContent * toLinphoneContent() const override;
+	void setFileName (const std::string &name);
+	const std::string &getFileName() const;
+
+	void setFilePath (const std::string &path);
+	const std::string &getFilePath() const;
+
+	LinphoneContent *toLinphoneContent() const override;
 
 private:
 	L_DECLARE_PRIVATE(FileContent);
