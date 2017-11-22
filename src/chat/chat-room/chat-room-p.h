@@ -83,7 +83,7 @@ public:
 	LinphoneCall *call = nullptr;
 	ChatRoom::State state = ChatRoom::State::None;
 	bool isComposing = false;
-	std::unordered_set<std::string> remoteIsComposing;
+	std::list<Address> remoteIsComposing;
 	std::list<std::shared_ptr<ChatMessage>> transientMessages;
 
 	std::list<std::weak_ptr<ChatMessage>> weakMessages;

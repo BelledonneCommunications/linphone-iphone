@@ -319,7 +319,6 @@ void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 		notifyChatMessageReceived(msg);
 
 		const string fromAddress = msg->getFromAddress().asString();
-		remoteIsComposing.erase(fromAddress);
 		isComposingHandler->stopRemoteRefreshTimer(fromAddress);
 		notifyIsComposingReceived(msg->getFromAddress(), false);
 		msg->sendDeliveryNotification(LinphoneReasonNone);
@@ -360,6 +359,12 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 
 void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddr, bool isComposing) {
 	L_Q();
+
+	if (isComposing)
+		remoteIsComposing.push_back(remoteAddr);
+	else
+		remoteIsComposing.remove(remoteAddr);
+
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsIsComposingReceivedCb cb = linphone_chat_room_cbs_get_is_composing_received(cbs);
@@ -399,10 +404,6 @@ void ChatRoomPrivate::onIsComposingStateChanged (bool isComposing) {
 }
 
 void ChatRoomPrivate::onIsRemoteComposingStateChanged (const Address &remoteAddr, bool isComposing) {
-	if (isComposing)
-		remoteIsComposing.insert(remoteAddr.asStringUriOnly());
-	else
-		remoteIsComposing.erase(remoteAddr.asStringUriOnly());
 	notifyIsComposingReceived(remoteAddr, isComposing);
 }
 
@@ -503,6 +504,11 @@ int ChatRoom::getUnreadChatMessagesCount () {
 bool ChatRoom::isRemoteComposing () const {
 	L_D();
 	return d->remoteIsComposing.size() > 0;
+}
+
+std::list<Address> ChatRoom::getComposingAddresses () const {
+	L_D();
+	return d->remoteIsComposing;
 }
 
 void ChatRoom::markAsRead () {

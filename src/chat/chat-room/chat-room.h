@@ -72,6 +72,7 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> getHistoryRange (int startm, int endm);
 	int getUnreadChatMessagesCount ();
 	bool isRemoteComposing () const;
+	std::list<Address> getComposingAddresses () const;
 
 	virtual void markAsRead ();
 

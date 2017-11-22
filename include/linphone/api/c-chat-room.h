@@ -364,7 +364,7 @@ LINPHONE_PUBLIC void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const
  * @param[in] cr A LinphoneChatRoom object
  * @return \bctbx_list{LinphoneAddress} list of addresses that are in the is_composing state
  */
-LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr);
+LINPHONE_PUBLIC const bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr);
 
 /**
  * Set the conference address of a group chat room. This function needs to be called from the

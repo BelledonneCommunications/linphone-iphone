@@ -302,13 +302,8 @@ void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) 
 	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setSubject(L_C_TO_STRING(subject));
 }
 
-bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) {
-	LinphonePrivate::ChatRoomPrivate *room = L_GET_PRIVATE_FROM_C_OBJECT(cr);
-	bctbx_list_t *result = NULL;
-	for (const auto &uri : room->remoteIsComposing) {
-		result = bctbx_list_append(result, linphone_address_new(uri.c_str()));
-	}
-	return result;
+const bctbx_list_t * linphone_chat_room_get_composing_addresses(LinphoneChatRoom *cr) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getComposingAddresses());
 }
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {

@@ -942,8 +942,10 @@ static int enable_lime_for_message_test(LinphoneCoreManager *marie, LinphoneCore
 }
 
 static void _is_composing_notification(bool_t lime_enabled) {
-	LinphoneChatRoom* chat_room;
+	LinphoneChatRoom* pauline_chat_room;
+	LinphoneChatRoom* marie_chat_room;
 	int dummy = 0;
+	const bctbx_list_t *composing_addresses = NULL;
 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -952,13 +954,22 @@ static void _is_composing_notification(bool_t lime_enabled) {
 		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 	}
 
-	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	pauline_chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
+	marie_chat_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 	linphone_core_get_chat_room(marie->lc, pauline->identity); /*make marie create the chatroom with pauline, which is necessary for receiving the is-composing*/
-	linphone_chat_room_compose(chat_room);
+	linphone_chat_room_compose(pauline_chat_room);
 	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 1500); /*just to sleep while iterating*/
-	linphone_chat_room_send_message(chat_room, "Composing a msg");
+	linphone_chat_room_send_message(pauline_chat_room, "Composing a msg");
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
+	composing_addresses = linphone_chat_room_get_composing_addresses(marie_chat_room);
+	BC_ASSERT_GREATER(bctbx_list_size(composing_addresses), 0, int, "%i");
+	if (bctbx_list_size(composing_addresses) > 0) {
+		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+		BC_ASSERT_STRING_EQUAL(linphone_address_as_string(addr), linphone_address_as_string(pauline->identity));
+	}
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
+	composing_addresses = linphone_chat_room_get_composing_addresses(marie_chat_room);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
 
 end:
 	linphone_core_manager_destroy(marie);
