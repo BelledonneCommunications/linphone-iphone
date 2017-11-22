@@ -14,8 +14,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import metaname
+
 import abstractapi
+import logging
+import metaname
 import re
 
 
@@ -146,7 +148,7 @@ class ClassReference(Reference):
 		try:
 			self.relatedObject = api.classesIndex[self.cname]
 		except KeyError:
-			print('doc reference pointing on an unknown object ({0})'.format(self.cname))
+			logging.warning('doc reference pointing on an unknown object ({0})'.format(self.cname))
 
 
 class FunctionReference(Reference):
@@ -154,7 +156,7 @@ class FunctionReference(Reference):
 		try:
 			self.relatedObject = api.methodsIndex[self.cname]
 		except KeyError:
-			print('doc reference pointing on an unknown object ({0})'.format(self.cname))
+			logging.warning('doc reference pointing on an unknown object ({0})'.format(self.cname))
 
 
 class Paragraph(MultiChildTreeNode):
@@ -443,8 +445,8 @@ class Translator:
 					strPara += part
 				else:
 					strPara += part.translate(self)
-			except TranslationError as e:
-				print('error: {0}'.format(e.msg()))
+			except ReferenceTranslationError:
+				strPara += part.cname
 		
 		return strPara
 	

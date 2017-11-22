@@ -19,13 +19,65 @@
 import re
 import genapixml as CApi
 import metaname
+import logging
 
 
-class Error(RuntimeError):
-	pass
+logger = logging.getLogger(__name__)
 
 
-class BlacklistedException(Error):
+class Error(Exception):
+	@property
+	def reason(self):
+		return self.args[0]
+	
+	def __str__(self):
+		return str(self.reason)
+	
+	@staticmethod
+	def _name_get_type_as_string(name):
+		if type(name) is metaname.ClassName:
+			return 'class'
+		elif type(name) is metaname.EnumName:
+			return 'enum'
+		elif type(name) is metaname.EnumeratorName:
+			return 'enumerator'
+		elif type(name) is metaname.MethodName:
+			return 'function'
+		else:
+			raise TypeError('{0} not handled'.format(type(name)))
+
+
+class ParsingError(Error):
+	@property
+	def context(self):
+		return self.args[1] if len(self.args) >= 2 else None
+	
+	def __str__(self):
+		if self.context is None:
+			return Error.__str__(self)
+		else:
+			params = {
+				'reason': self.reason,
+				'name': self.context.to_c(addBrackets=True),
+				'type_': Error._name_get_type_as_string(self.context)
+			}
+			return "error while parsing {name} {type_}: {reason}".format(**params)
+
+
+class BlacklistedSymbolError(Error):
+	@property
+	def name(self):
+		return self.args[0]
+	
+	def __str__(self):
+		params = {
+			'name': self.name.to_c(addBrackets=True),
+			'type_': Error._name_get_type_as_string(self.name)
+		}
+		return "{name} {type_} has been blacklisted".format(**params)
+
+
+class TranslationError(Error):
 	pass
 
 
@@ -154,7 +206,7 @@ class DocumentableObject(Object):
 		if isinstance(self, (Namespace,Enum,Class)):
 			return self
 		elif self.parent is None:
-			raise Error('{0} is not attached to a namespace object'.format(self))
+			return None
 		else:
 			return self.parent.get_namespace_object()
 
@@ -424,17 +476,14 @@ class CParser(object):
 		for enum in self.cProject.enums:
 			try:
 				self.parse_enum(enum)
-			except Error as e:
-				print('Could not parse \'{0}\' enum: {1}'.format(enum.name, e.args[0]))
+			except BlacklistedSymbolError as e:
+				logger.debug(e)
 		
-		for _class in self.cProject.classes:
+		for class_ in self.cProject.classes:
 			try:
-				self.parse_class(_class)
-			except BlacklistedException:
-				pass
-			except Error as e:
-				print('Could not parse \'{0}\' class: {1}'.format(_class.name, e.args[0]))
-		
+				self.parse_class(class_)
+			except BlacklistedSymbolError as e:
+				logger.debug(e)
 		
 		self._clean_all_indexes()
 		self._sortall()
@@ -504,8 +553,8 @@ class CParser(object):
 			self._fix_type(method.returnType)
 			for arg in method.args:
 				self._fix_type(arg.type)
-		except Error as e:
-			print('warning: some types could not be fixed in {0}() function: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+		except ParsingError as e:
+			raise ParsingError(e, method.name)
 		
 	def _fix_type(self, _type):
 		if isinstance(_type, EnumType) and _type.desc is None:
@@ -526,7 +575,7 @@ class CParser(object):
 				if _type.containedTypeName is not None:
 					_type.containedTypeDesc = self.parse_c_base_type(_type.containedTypeName)
 				else:
-					raise Error('bctbx_list_t type without specified contained type')
+					raise ParsingError('bctbx_list_t type without specified contained type')
 	
 	def _fix_all_docs(self):
 		for _class in self.classesIndex.values():
@@ -545,13 +594,8 @@ class CParser(object):
 			obj.detailedDescription.resolve_all_references(self)
 	
 	def parse_enum(self, cenum):
-		if 'associatedTypedef' in dir(cenum):
-			nameStr = cenum.associatedTypedef.name
-		else:
-			nameStr = cenum.name
-		
 		name = metaname.EnumName()
-		name.from_camel_case(nameStr, namespace=self.namespace.name)
+		name.from_camel_case(cenum.publicName, namespace=self.namespace.name)
 		enum = Enum(name)
 		enum.briefDescription = cenum.briefDoc
 		enum.detailedDescription = cenum.detailedDoc
@@ -567,16 +611,21 @@ class CParser(object):
 				try:
 					aEnumValue.value_from_string(cEnumValue.value)
 				except ValueError:
-					raise Error('{0} enum value has an invalid definition ({1})'.format(cEnumValue.name, cEnumValue.value))
+					reason = '{0} enum value has an invalid definition ({1})'.format(cEnumValue.name, cEnumValue.value)
+					context = metaname.EnumeratorName()
+					context.from_camel_case(cEnumValue.name)
+					raise ParsingError(reason, context)
 			enum.add_enumerator(aEnumValue)
 		
-		self.enumsIndex[nameStr] = enum
+		self.enumsIndex[cenum.publicName] = enum
 		self.enums.append(enum)
 		return enum
 	
 	def parse_class(self, cclass):
 		if cclass.name in self.classBl:
-			raise BlacklistedException('{0} is blacklisted'.format(cclass.name));
+			name = metaname.ClassName()
+			name.from_snake_case(cclass.name)
+			raise BlacklistedSymbolError(name)
 		
 		if cclass.name.endswith('Cbs'):
 			_class = self._parse_listener(cclass)
@@ -603,8 +652,8 @@ class CParser(object):
 					_class.add_property(absProperty)
 				else:
 					_class.listenerInterface = self.interfacesIndex[cproperty.getter.returnArgument.ctype]
-			except Error as e:
-				print('Could not parse {0} property in {1}: {2}'.format(cproperty.name, cclass.name, e.args[0]))
+			except BlacklistedSymbolError as e:
+				logger.debug(e)
 		
 		for cMethod in cclass.instanceMethods.values():
 			try:
@@ -617,20 +666,15 @@ class CParser(object):
 					pass
 				else:
 					_class.add_instance_method(method)
-					
-			except BlacklistedException:
-				pass
-			except Error as e:
-				print('Could not parse {0} function: {1}'.format(cMethod.name, e.args[0]))
-				
+			except BlacklistedSymbolError as e:
+				logger.debug(e)
+		
 		for cMethod in cclass.classMethods.values():
 			try:
 				method = self.parse_method(cMethod, type=Method.Type.Class, namespace=name)
 				_class.add_class_method(method)
-			except BlacklistedException:
-				pass
-			except Error as e:
-				print('Could not parse {0} function: {1}'.format(cMethod.name, e.args[0]))
+			except BlacklistedSymbolError as e:
+				logger.debug(e)
 		
 		return _class
 	
@@ -652,27 +696,28 @@ class CParser(object):
 	
 	
 	def _parse_listener(self, cclass):
-		name = metaname.InterfaceName()
-		name.from_camel_case(cclass.name, namespace=self.namespace.name)
-		
-		if name.words[len(name.words)-1] == 'cbs':
-			name.words[len(name.words)-1] = 'listener'
-		else:
-			raise Error('{0} is not a listener'.format(cclass.name))
-		
-		listener = Interface(name)
-		listener.briefDescription = cclass.briefDoc
-		listener.detailedDescription = cclass.detailedDoc
-		
-		for property in cclass.properties.values():
-			if property.name != 'user_data':
-				try:
-					method = self._parse_listener_property(property, listener, cclass.events)
-					listener.add_method(method)
-				except Error as e:
-					print('Could not parse property \'{0}\' of listener \'{1}\': {2}'.format(property.name, cclass.name, e.args[0]))
-		
-		return listener
+		try:
+			name = metaname.InterfaceName()
+			name.from_camel_case(cclass.name, namespace=self.namespace.name)
+			name.words[-1] = 'listener'
+			
+			listener = Interface(name)
+			listener.briefDescription = cclass.briefDoc
+			listener.detailedDescription = cclass.detailedDoc
+			
+			for property in cclass.properties.values():
+				if property.name != 'user_data':
+					try:
+						method = self._parse_listener_property(property, listener, cclass.events)
+						listener.add_method(method)
+					except BlacklistedSymbolError as e:
+						logger.debug(e)
+			
+			return listener
+		except ParsingError as e:
+			context = metaname.ClassName()
+			context.from_camel_case(cclass.name)
+			raise ParsingError(e, context)
 	
 	def _parse_listener_property(self, property, listener, events):
 		methodName = metaname.MethodName()
@@ -685,12 +730,12 @@ class CParser(object):
 		elif property.setter is not None and len(property.setter.arguments) == 2:
 			eventName = property.setter.arguments[1].ctype
 		else:
-			raise Error('event name for {0} property of {1} listener not found'.format(property.name, listener.name.to_snake_case(fullName=True)))
+			raise ParsingError('event name for {0} property of {1} listener not found'.format(property.name, listener.name.to_c()))
 		
 		try:
 			event = events[eventName]
 		except KeyError:
-			raise Error('invalid event name \'{0}\''.format(eventName))
+			raise ParsingError('invalid event name \'{0}\''.format(eventName))
 		
 		method = Method(methodName)
 		method.returnType = self.parse_type(event.returnArgument)
@@ -706,27 +751,30 @@ class CParser(object):
 		name = metaname.MethodName()
 		name.from_snake_case(cfunction.name, namespace=namespace)
 		
-		if self._is_blacklisted(name):
-			raise BlacklistedException('{0} is blacklisted'.format(name.to_c()));
-		
-		method = Method(name, type=type)
-		method.briefDescription = cfunction.briefDoc
-		method.detailedDescription = cfunction.detailedDoc
-		method.deprecated = cfunction.deprecated
-		method.returnType = self.parse_type(cfunction.returnArgument)
-		
-		for arg in cfunction.arguments:
-			if type == Method.Type.Instance and arg is cfunction.arguments[0]:
-				method.isconst = ('const' in arg.completeType.split(' '))
-			else:
-				aType = self.parse_type(arg)
-				argName = metaname.ArgName()
-				argName.from_snake_case(arg.name)
-				absArg = Argument(argName, aType)
-				method.add_arguments(absArg)
-		
-		self.methodsIndex[cfunction.name] = method
-		return method
+		try:
+			if self._is_blacklisted(name):
+				raise BlacklistedSymbolError(name)
+			
+			method = Method(name, type=type)
+			method.briefDescription = cfunction.briefDoc
+			method.detailedDescription = cfunction.detailedDoc
+			method.deprecated = cfunction.deprecated
+			method.returnType = self.parse_type(cfunction.returnArgument)
+			
+			for arg in cfunction.arguments:
+				if type == Method.Type.Instance and arg is cfunction.arguments[0]:
+					method.isconst = ('const' in arg.completeType.split(' '))
+				else:
+					aType = self.parse_type(arg)
+					argName = metaname.ArgName()
+					argName.from_snake_case(arg.name)
+					absArg = Argument(argName, aType)
+					method.add_arguments(absArg)
+			
+			self.methodsIndex[cfunction.name] = method
+			return method
+		except ParsingError as e:
+			raise ParsingError(e, name)
 	
 	def parse_type(self, cType):
 		if cType.ctype in self.cBaseType or re.match(self.regexFixedSizeInteger, cType.ctype):
@@ -742,7 +790,7 @@ class CParser(object):
 		elif cType.ctype.endswith('Mask'):
 			absType = BaseType('integer', isUnsigned=True)
 		else:
-			raise Error('Unknown C type \'{0}\''.format(cType.ctype))
+			raise ParsingError('Unknown C type \'{0}\''.format(cType.ctype))
 		
 		absType.cDecl = cType.completeType
 		return absType
@@ -791,7 +839,7 @@ class CParser(object):
 					elif 'isref' not in param or param['isref'] is False:
 						param['isref'] = True
 					else:
-						raise Error('Unhandled double-pointer')
+						raise ParsingError('Unhandled double-pointer')
 			else:
 				matchCtx = re.match(self.regexFixedSizeInteger, elem)
 				if matchCtx:
@@ -801,13 +849,13 @@ class CParser(object):
 					
 					param['size'] = int(matchCtx.group(2))
 					if param['size'] not in [8, 16, 32, 64]:
-						raise Error('{0} C basic type has an invalid size ({1})'.format(cDecl, param['size']))
+						raise ParsingError('{0} C basic type has an invalid size ({1})'.format(cDecl, param['size']))
 		
 		
 		if name is not None:
 			return BaseType(name, **param)
 		else:
-			raise Error('could not find type in \'{0}\''.format(cDecl))
+			raise ParsingError('could not find type in \'{0}\''.format(cDecl))
 
 
 class Translator:
@@ -935,7 +983,7 @@ class CppLangTranslator(CLikeLangTranslator):
 			if type(_type.parent) is Argument:
 				res += ' &'
 		else:
-			raise Error('\'{0}\' is not a base abstract type'.format(_type.name))
+			raise TranslationError('\'{0}\' is not a base abstract type'.format(_type.name))
 		
 		if _type.isUnsigned:
 			if _type.name == 'integer' and isinstance(_type.size, int):
@@ -953,7 +1001,7 @@ class CppLangTranslator(CLikeLangTranslator):
 	
 	def translate_enum_type(self, _type, showStdNs=True, namespace=None):
 		if _type.desc is None:
-			raise Error('{0} has not been fixed'.format(_type.name))
+			raise TranslationError('{0} has not been fixed'.format(_type.name))
 		
 		if namespace is not None:
 			nsName = namespace.name if namespace is not GlobalNs else None
@@ -965,7 +1013,7 @@ class CppLangTranslator(CLikeLangTranslator):
 	
 	def translate_class_type(self, _type, showStdNs=True, namespace=None):
 		if _type.desc is None:
-			raise Error('{0} has not been fixed'.format(_type.name))
+			raise TranslationError('{0} has not been fixed'.format(_type.name))
 		
 		if namespace is not None:
 			nsName = namespace.name if namespace is not GlobalNs else None
@@ -999,7 +1047,7 @@ class CppLangTranslator(CLikeLangTranslator):
 	
 	def translate_list_type(self, _type, showStdNs=True, namespace=None):
 		if _type.containedTypeDesc is None:
-			raise Error('{0} has not been fixed'.format(_type.containedTypeName))
+			raise TranslationError('{0} has not been fixed'.format(_type.containedTypeName))
 		elif isinstance(_type.containedTypeDesc, BaseType):
 			res = _type.containedTypeDesc.translate(self)
 		else:
@@ -1096,7 +1144,7 @@ class CSharpLangTranslator(CLikeLangTranslator):
 			else:
 				return 'IEnumerable<string>'
 		else:
-			raise Error('\'{0}\' is not a base abstract type'.format(_type.name))
+			raise TranslationError('\'{0}\' is not a base abstract type'.format(_type.name))
 		
 		return res
 	
@@ -1117,15 +1165,15 @@ class CSharpLangTranslator(CLikeLangTranslator):
 				if _type.containedTypeDesc.name == 'string':
 					return 'IEnumerable<string>'
 				else:
-					raise Error('translation of bctbx_list_t of basic C types is not supported')
+					raise TranslationError('translation of bctbx_list_t of basic C types is not supported')
 			elif type(_type.containedTypeDesc) is ClassType:
 				ptrType = _type.containedTypeDesc.desc.name.translate(self.nameTranslator)
 				return 'IEnumerable<' + ptrType + '>'
 			else:
 				if _type.containedTypeDesc:
-					raise Error('translation of bctbx_list_t of enums')
+					raise TranslationError('translation of bctbx_list_t of enums')
 				else:
-					raise Error('translation of bctbx_list_t of unknow type !')
+					raise TranslationError('translation of bctbx_list_t of unknow type !')
 	
 	def translate_argument(self, arg, dllImport=True):
 		return '{0} {1}'.format(

@@ -193,22 +193,25 @@ typedef struct _LinphoneCoreVTable{
 } LinphoneCoreVTable;
 
 /**
- * Instantiate a vtable with all arguments set to NULL
- * @return newly allocated vtable
+ * @brief Instantiate a vtable with all arguments set to NULL.
+ * @return newly allocated vtable.
+ * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_v_table_new(void);
 
 /**
- * Sets a user data pointer in the vtable.
- * @param table the vtable
- * @param data the user data to attach
+ * @brief Sets a user data pointer in the vtable.
+ * @param table the vtable.
+ * @param data the user data to attach.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_v_table_set_user_data(LinphoneCoreVTable *table, void *data);
 
 /**
- * Gets a user data pointer in the vtable.
- * @param table the vtable
- * @return the data attached to the vtable
+ * @brief Gets a user data pointer in the vtable.
+ * @param table the vtable.
+ * @return the data attached to the vtable.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(const LinphoneCoreVTable *table);
 
@@ -222,8 +225,9 @@ LINPHONE_PUBLIC void* linphone_core_v_table_get_user_data(const LinphoneCoreVTab
 LINPHONE_PUBLIC LinphoneCoreVTable *linphone_core_get_current_vtable(LinphoneCore *lc);
 
 /**
- * Destroy a vtable.
- * @param table to be destroyed
+ * @brief Destroy a vtable.
+ * @param table to be destroyed.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_v_table_destroy(LinphoneCoreVTable* table);
 
@@ -786,25 +790,25 @@ LINPHONE_PUBLIC char * linphone_core_compress_log_collection(void);
 LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
 
 /**
- * Define a log handler.
- *
+ * @bref Define a log handler.
  * @param logfunc The function pointer of the log handler.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 
 /**
- * Define a log file.
+ * @brief Define a log file.
  *
  * If the file pointer passed as an argument is NULL, stdout is used instead.
- *
  * @param file A pointer to the FILE structure of the file to write to.
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_set_log_file(FILE *file);
 
 /**
- * Define the minimum level for logging.
- *
+ * @brief Define the minimum level for logging.
  * @param loglevel Minimum level for logging messages.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_core_set_log_level(OrtpLogLevel loglevel);
 
@@ -3303,7 +3307,8 @@ LINPHONE_PUBLIC bool_t linphone_core_video_display_enabled(LinphoneCore *lc);
  * @param[in] lc LinphoneCore object
  * @param[in] policy The video policy to use
  * @ingroup media_parameters
- * @deprecated
+ * @deprecated Deprecated since 2017-04-19.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_video_policy(LinphoneCore *lc, const LinphoneVideoPolicy *policy);
 
@@ -3313,7 +3318,8 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_video_policy(Linphone
  * @param[in] lc LinphoneCore object
  * @return The video policy being used
  * @ingroup media_parameters
- * @deprecated
+ * @deprecated Deprecated since 2017-04-19.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED const LinphoneVideoPolicy *linphone_core_get_video_policy(const LinphoneCore *lc);
 
@@ -3400,9 +3406,10 @@ LINPHONE_PUBLIC void linphone_core_set_video_activation_policy(LinphoneCore *lc,
 LINPHONE_PUBLIC LinphoneVideoActivationPolicy *linphone_core_get_video_activation_policy(const LinphoneCore *lc);
 
 /**
- * Returns the zero terminated table of supported video resolutions.
+ * @brief Returns the zero terminated table of supported video resolutions.
  * @ingroup media_parameters
- * @deprecated Use linphone_factory_get_supported_video_definitions() instead
+ * @deprecated Use #linphone_factory_get_supported_video_definitions() instead. Deprecated since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED const MSVideoSizeDef *linphone_core_get_supported_video_sizes(LinphoneCore *lc);
 
@@ -3416,12 +3423,13 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED const MSVideoSizeDef *linphone_core_get_supp
 LINPHONE_PUBLIC void linphone_core_set_preferred_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
- * Sets the preferred video size.
+ * @brief Sets the preferred video size.
  *
  * This applies only to the stream that is captured and sent to the remote party,
  * since we accept all standard video size on the receive path.
  * @ingroup media_parameters
- * @deprecated Use linphone_core_set_preferred_video_definition() instead
+ * @deprecated Use linphone_core_set_preferred_video_definition() instead. Deprecated since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preferred_video_size(LinphoneCore *lc, MSVideoSize vsize);
 
@@ -3437,14 +3445,16 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preferred_video_size(
 LINPHONE_PUBLIC void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
- * Sets the video size for the captured (preview) video.
+ * @biref Sets the video size for the captured (preview) video.
+ * 
  * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
  * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
  * Using this feature increases the CPU consumption, since a rescaling will be done internally.
  * @ingroup media_parameters
  * @param lc the linphone core
  * @param vsize the video resolution choosed for capuring and previewing. It can be (0,0) to not request any specific preview size and let the core optimize the processing.
- * @deprecated Use linphone_core_set_preview_video_definition() instead
+ * @deprecated Use #linphone_core_set_preview_video_definition() instead. Deprecated since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preview_video_size(LinphoneCore *lc, MSVideoSize vsize);
 
@@ -3467,12 +3477,13 @@ LINPHONE_PUBLIC void linphone_core_set_preview_video_size_by_name(LinphoneCore *
 LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preview_video_definition(const LinphoneCore *lc);
 
 /**
- * Returns video size for the captured video if it was previously set by linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
- * @see linphone_core_set_preview_video_size()
+ * @brief Returns video size for the captured video if it was previously set by #linphone_core_set_preview_video_size(), otherwise returns a 0,0 size.
+ * @see #linphone_core_set_preview_video_size()
  * @ingroup media_parameters
  * @param lc the core
- * @return a MSVideoSize
- * @deprecated Use linphone_core_get_preview_video_definition() instead
+ * @return a #MSVideoSize
+ * @deprecated Use #linphone_core_get_preview_video_definition() instead. Since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preview_video_size(const LinphoneCore *lc);
 
@@ -3487,13 +3498,15 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preview_video_
 LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_core_get_current_preview_video_definition(const LinphoneCore *lc);
 
 /**
- * Returns the effective video size for the captured video as provided by the camera.
+ * @brief Returns the effective video size for the captured video as provided by the camera.
+ * 
  * When preview is disabled or not yet started, this function returns a zeroed video size.
- * @see linphone_core_set_preview_video_size()
+ * @see #linphone_core_set_preview_video_size()
  * @ingroup media_parameters
  * @param lc the core
- * @return a MSVideoSize
- * @deprecated Use linphone_core_get_current_preview_video_definition() instead
+ * @return a #MSVideoSize
+ * @deprecated Use #linphone_core_get_current_preview_video_definition() instead. Deprecated since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_current_preview_video_size(const LinphoneCore *lc);
 
@@ -3506,9 +3519,10 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_current_previe
 LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_core_get_preferred_video_definition(const LinphoneCore *lc);
 
 /**
- * Returns the current preferred video size for sending.
+ * @brief Returns the current preferred video size for sending.
  * @ingroup media_parameters
- * @deprecated Use linphone_core_get_preferred_video_definition() instead
+ * @deprecated Use linphone_core_get_preferred_video_definition() instead. Deprecated since 2017-03-28.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED MSVideoSize linphone_core_get_preferred_video_size(const LinphoneCore *lc);
 
@@ -4708,24 +4722,27 @@ LINPHONE_PUBLIC void linphone_core_enable_video_multicast(LinphoneCore *core, bo
 LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore *core);
 
 /**
- * Set the network simulator parameters.
+ * @brief Set the network simulator parameters.
+ * 
  * Liblinphone has the capabability of simulating the effects of a network (latency, lost packets, jitter, max bandwidth).
  * Please refer to the oRTP documentation for the meaning of the parameters of the OrtpNetworkSimulatorParams structure.
  * This function has effect for future calls, but not for currently running calls, though this behavior may be changed in future versions.
  * @warning Due to design of network simulation in oRTP, simulation is applied independently for audio and video stream. This means for example that a bandwidth
  * limit of 250kbit/s will have no effect on an audio stream running at 40kbit/s while a videostream targetting 400kbit/s will be highly affected.
- * @param lc the LinphoneCore
+ * @param lc the #LinphoneCore
  * @param params the parameters used for the network simulation.
  * @return 0 if successful, -1 otherwise.
  * @ingroup media_parameters
+ * @donotwrap
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params);
 
 /**
- * Get the previously set network simulation parameters.
+ * @brief Get the previously set network simulation parameters.
  * @see linphone_core_set_network_simulator_params
- * @return a OrtpNetworkSimulatorParams structure.
+ * @return a #OrtpNetworkSimulatorParams structure.
  * @ingroup media_parameters
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const OrtpNetworkSimulatorParams *linphone_core_get_network_simulator_params(const LinphoneCore *lc);
 
@@ -4862,6 +4879,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_tls_key_path(const LinphoneCore *l
  * @param lc LinphoneCore object
  * @param imee LinphoneImEncryptionEngine object
  * @ingroup chatroom
+ * @donotwrap
  */
 LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, LinphoneImEncryptionEngine *imee);
 
@@ -4870,6 +4888,7 @@ LINPHONE_PUBLIC void linphone_core_set_im_encryption_engine(LinphoneCore *lc, Li
  * @param lc LinphoneCore object
  * @return the IM Encryption Engine in the core or NULL
  * @ingroup chatroom
+ * @donotwrap
  */
 LINPHONE_PUBLIC LinphoneImEncryptionEngine * linphone_core_get_im_encryption_engine(const LinphoneCore *lc);
 

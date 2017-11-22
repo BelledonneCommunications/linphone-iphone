@@ -172,6 +172,7 @@ LINPHONE_PUBLIC void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *
  * WARNING: This function may block for up to 1 second.
  * @param[in] policy LinphoneNatPolicy object
  * @return addrinfo representation of the STUN server address.
+ * @donotwrap
  */
 LINPHONE_PUBLIC const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNatPolicy *policy);
 

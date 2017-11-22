@@ -68,6 +68,7 @@ LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_from_address(const
  * Get the RTP statistics computed locally regarding the call.
  * @param[in] cl LinphoneCallLog object
  * @return The RTP statistics that have been computed locally for the call.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const rtp_stats_t * linphone_call_log_get_local_stats(const LinphoneCallLog *cl);
 
@@ -101,6 +102,7 @@ LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_remote_address(const Lin
  * @note Not implemented yet.
  * @param[in] cl LinphoneCallLog object
  * @return The RTP statistics that have been computed by the remote end for the call.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC const rtp_stats_t * linphone_call_log_get_remote_stats(const LinphoneCallLog *cl);
 

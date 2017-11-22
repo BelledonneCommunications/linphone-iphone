@@ -350,26 +350,23 @@ LINPHONE_PUBLIC void linphone_call_set_audio_route (LinphoneCall *call, Linphone
 LINPHONE_PUBLIC int linphone_call_get_stream_count (const LinphoneCall *call);
 
 /**
- * Returns the type of stream for the given stream index.
- * @param call
- * @param stream_index
+ * @brief Returns the type of stream for the given stream index.
  * @return the type (MSAudio, MSVideo, MSText) of the stream of given index.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC MSFormatType linphone_call_get_stream_type (const LinphoneCall *call, int stream_index);
 
 /**
- * Returns the meta rtp transport for the given stream index.
- * @param call
- * @param stream_index
- * @return a pointer to the meta rtp transport if it exists, NULL otherwise
+ * @brief Returns the meta rtp transport for the given stream index.
+ * @return a pointer to the meta rtp transport if it exists, NULL otherwise.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC RtpTransport *linphone_call_get_meta_rtp_transport (const LinphoneCall *call, int stream_index);
 
 /**
- * Returns the meta rtcp transport for the given stream index.
- * @param call
- * @param stream_index
- * @return a pointer to the meta rtcp transport if it exists, NULL otherwise
+ * @brief Returns the meta rtcp transport for the given stream index.
+ * @return a pointer to the meta rtcp transport if it exists, NULL otherwise.
+ * @donotwrap
 **/
 LINPHONE_PUBLIC RtpTransport *linphone_call_get_meta_rtcp_transport (const LinphoneCall *call, int stream_index);
 

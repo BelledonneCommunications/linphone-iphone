@@ -144,7 +144,7 @@ class Name(object):
 
 
 class ClassName(Name):
-	def to_c(self):
+	def to_c(self, addBrackets=False):
 		return self.to_camel_case(fullName=True)
 	
 	def translate(self, translator, **params):
@@ -152,7 +152,7 @@ class ClassName(Name):
 
 
 class InterfaceName(ClassName):
-	def to_c(self):
+	def to_c(self, addBrackets=False):
 		return ClassName.to_c(self)[:-8] + 'Cbs'
 	
 	def translate(self, translator, **params):
@@ -183,16 +183,19 @@ class MethodName(Name):
 				self.overloadRef = int(suffix)
 				del self.words[-1]
 	
-	def to_c(self):
+	def to_c(self, addBrackets=False):
 		suffix = ('_' + str(self.overloadRef)) if self.overloadRef > 0 else ''
-		return self.to_snake_case(fullName=True) + suffix
+		cName = self.to_snake_case(fullName=True) + suffix
+		if addBrackets:
+			cName += '()'
+		return cName
 	
 	def translate(self, translator, **params):
 		return translator.translate_method_name(self, **params)
 
 
 class ArgName(Name):
-	def to_c(self):
+	def to_c(self, addBrackets=False):
 		return self.to_snake_case()
 	
 	def translate(self, translator, **params):

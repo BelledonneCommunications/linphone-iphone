@@ -21,8 +21,10 @@ import pystache
 import re
 import argparse
 import os
+import os.path
 import sys
 import errno
+import logging
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 import genapixml as CApi
@@ -58,9 +60,12 @@ class CppTranslator(object):
 	def translate_enumerator(self, enumerator):
 		enumeratorDict = {
 			'name'  : enumerator.name.translate(self.nameTranslator),
-			'doc'   : enumerator.briefDescription.translate(self.docTranslator),
 			'value' : enumerator.translate_value(self.langTranslator)
 		}
+		try:
+			enumeratorDict['doc'] = enumerator.briefDescription.translate(self.docTranslator)
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		return enumeratorDict
 	
 	def translate_class(self, _class):
@@ -92,8 +97,11 @@ class CppTranslator(object):
 		if _class.name.to_c() == 'LinphoneCore':
 			classDict['friendClasses'].append({'name': 'Factory'});
 		
-		classDict['briefDoc'] = _class.briefDescription.translate(self.docTranslator, tagAsBrief=True)
-		classDict['detailedDoc'] = _class.detailedDescription.translate(self.docTranslator)
+		try:
+			classDict['briefDoc'] = _class.briefDescription.translate(self.docTranslator, tagAsBrief=True)
+			classDict['detailedDoc'] = _class.detailedDescription.translate(self.docTranslator)
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		
 		if islistenable:
 			classDict['listenerClassName'] = _class.listenerInterface.name.translate(self.nameTranslator)
@@ -115,24 +123,15 @@ class CppTranslator(object):
 			classDict['currentCallbacksGetter'] = _class.name.to_snake_case(fullName=True) + '_get_current_callbacks'
 		
 		for _property in _class.properties:
-			try:
-				classDict['methods'] += self.translate_property(_property)
-			except AbsApi.Error as e:
-				print('error while translating {0} property: {1}'.format(_property.name.to_snake_case(), e.args[0]))
+			classDict['methods'] += self.translate_property(_property)
 		
 		for method in _class.instanceMethods:
-			try:
-				methodDict = self.translate_method(method)
-				classDict['methods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
-				
+			methodDict = self.translate_method(method)
+			classDict['methods'].append(methodDict)
+		
 		for method in _class.classMethods:
-			try:
-				methodDict = self.translate_method(method)
-				classDict['staticMethods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+			methodDict = self.translate_method(method)
+			classDict['staticMethods'].append(methodDict)
 		
 		return classDict
 	
@@ -175,11 +174,8 @@ class CppTranslator(object):
 			'methods'         : []
 		}
 		for method in interface.methods:
-			try:
-				methodDict = self.translate_method(method, genImpl=False)
-				intDict['methods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+			methodDict = self.translate_method(method, genImpl=False)
+			intDict['methods'].append(methodDict)
 		
 		return intDict
 	
@@ -199,9 +195,13 @@ class CppTranslator(object):
 			'implPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
 			'deprecated': method.deprecated,
 			'suffix': '',
-			'briefDoc': method.briefDescription.translate(self.docTranslator, tagAsBrief=True) if method.briefDescription is not None else None,
-			'detailedDoc': method.detailedDescription.translate(self.docTranslator) if method.detailedDescription is not None else None
 		}
+		
+		try:
+			methodDict['briefDoc'] = method.briefDescription.translate(self.docTranslator, tagAsBrief=True) if method.briefDescription is not None else None
+			methodDict['detailedDoc'] = method.detailedDescription.translate(self.docTranslator) if method.detailedDescription is not None else None
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		
 		if type(method.parent) is AbsApi.Interface:
 			if isinstance(method.returnType, AbsApi.BaseType) and method.returnType.name == 'void':
@@ -465,7 +465,7 @@ class GenWrapper(object):
 			if item[1] is not None:
 				header.add_enum(item[1])
 			else:
-				print('warning: {0} enum won\'t be translated because of parsing errors'.format(item[0]))
+				logging.info('{0} enum won\'t be translated because of parsing errors'.format(item[0]))
 		
 		self.render(header, self.includedir + '/enums.hh')
 		self.mainHeader.add_include('enums.hh')
@@ -491,44 +491,40 @@ class GenWrapper(object):
 
 	def render_header(self, _class):
 		if _class is not None:
-			try:
-				header = ClassHeader(_class, self.translator)
-				headerName = _class.name.to_snake_case() + '.hh'
-				self.mainHeader.add_include(headerName)
-				self.render(header, self.includedir + '/' + header.filename)
-				
-				if type(_class) is not AbsApi.Interface:
-					self.impl.classes.append(header._class)
-				
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-
-def main():
-	argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
-	argparser.add_argument('xmldir', type=str, help='Directory where the XML documentation of the Linphone\'s API generated by Doxygen is placed')
-	argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
-	args = argparser.parse_args()
-	
-	includedir = args.outputdir + '/include/linphone++'
-	srcdir = args.outputdir + '/src'
-	
-	try:
-		os.makedirs(includedir)
-	except OSError as e:
-		if e.errno != errno.EEXIST:
-			print("Cannot create '{0}' directory: {1}".format(includedir, e.strerror))
-			sys.exit(1)
-	
-	try:
-		os.makedirs(srcdir)
-	except OSError as e:
-		if e.errno != errno.EEXIST:
-			print("Cannot create '{0}' directory: {1}".format(srcdir, e.strerror))
-			sys.exit(1)
-	
-	genwrapper = GenWrapper(includedir, srcdir, args.xmldir)
-	genwrapper.render_all()
+			header = ClassHeader(_class, self.translator)
+			headerName = _class.name.to_snake_case() + '.hh'
+			self.mainHeader.add_include(headerName)
+			self.render(header, self.includedir + '/' + header.filename)
+			
+			if type(_class) is not AbsApi.Interface:
+				self.impl.classes.append(header._class)
 
 
 if __name__ == '__main__':
-	main()
+	try:
+		argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
+		argparser.add_argument('xmldir', type=str, help='Directory where the XML documentation of the Linphone\'s API generated by Doxygen is placed')
+		argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
+		argparser.add_argument('-v --verbose', help='Show warning and info traces.', action='store_true', default=False, dest='verbose_mode')
+		argparser.add_argument('-d --debug', help='Show all traces.', action='store_true', default=False, dest='debug_mode')
+		args = argparser.parse_args()
+
+		if args.debug_mode:
+			loglevel = logging.DEBUG
+		elif args.verbose_mode:
+			loglevel = logging.INFO
+		else:
+			loglevel = logging.ERROR
+		logging.basicConfig(format='%(levelname)s[%(name)s]: %(message)s', level=loglevel)
+
+		includedir = args.outputdir + '/include/linphone++'
+		srcdir = args.outputdir + '/src'
+		if not os.path.exists(includedir):
+			os.makedirs(includedir)
+		if not os.path.exists(srcdir):
+			os.makedirs(srcdir)
+
+		genwrapper = GenWrapper(includedir, srcdir, args.xmldir)
+		genwrapper.render_all()
+	except AbsApi.Error as e:
+		logging.critical(e)

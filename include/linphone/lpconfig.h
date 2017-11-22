@@ -245,12 +245,14 @@ LINPHONE_PUBLIC const char** linphone_config_get_sections_names(LinphoneConfig *
 LINPHONE_PUBLIC const bctbx_list_t * linphone_config_get_sections_names_list(LpConfig *lpconfig);
 
 /**
- * Call a function for each section present in the configuration.
+ * @brief Call a function for each section present in the configuration.
+ * @donotwrap
 **/
 void linphone_config_for_each_section(const LinphoneConfig *lpconfig, void (*callback)(const char *section, void *ctx), void *ctx);
 
 /**
- * Call a function for each entry present in a section configuration.
+ * @brief Call a function for each entry present in a section configuration.
+ * @donotwrap
 **/
 void linphone_config_for_each_entry(const LinphoneConfig *lpconfig, const char *section, void (*callback)(const char *entry, void *ctx), void *ctx);
 

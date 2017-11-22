@@ -17,13 +17,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import argparse
+import logging
 import os
 import six
 import string
 import sys
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as minidom
+
 import metadoc
+
+
+logger = logging.getLogger(__name__)
 
 
 class CObject:
@@ -47,6 +52,10 @@ class CEnum(CObject):
 		CObject.__init__(self, name)
 		self.values = []
 		self.associatedTypedef = None
+	
+	@property
+	def publicName(self):
+		return self.associatedTypedef.name if self.associatedTypedef is not None else self.name
 
 	def addValue(self, value):
 		self.values.append(value)
@@ -239,7 +248,6 @@ class CClass(CObject):
 
 class Project:
 	def __init__(self):
-		self.verbose = False
 		self.prettyPrint = False
 		self.enums = []
 		self.__structs = []
@@ -251,37 +259,28 @@ class Project:
 
 	def add(self, elem):
 		if isinstance(elem, CClass):
-			if self.verbose:
-				print("Adding class " + elem.name)
+			logger.debug("Adding class " + elem.name)
 			self.classes.append(elem)
 		elif isinstance(elem, CEnum):
-			if self.verbose:
-				print("Adding enum " + elem.name)
-				for ev in elem.values:
-					print("\t" + ev.name)
+			msg = 'Adding enum {0}'.format(elem.name)
+			for value in elem.values:
+				msg += ('\t{0}'.format(value))
+			logger.debug(msg)
 			self.enums.append(elem)
 		elif isinstance(elem, CStruct):
-			if self.verbose:
-				print("Adding struct " + elem.name)
-				for sm in elem.members:
-					print("\t" + sm.ctype + " " + sm.name)
+			msg = "Adding struct " + elem.name
+			for sm in elem.members:
+				msg += ('\t{0} {1}'.format(sm.ctype, sm.name))
+			logger.debug(msg)
 			self.__structs.append(elem)
 		elif isinstance(elem, CTypedef):
-			if self.verbose:
-				print("Adding typedef " + elem.name)
-				print("\t" + elem.definition)
+			logger.debug('Adding typedef {0}\t{1}'.format(elem.name, elem.definition))
 			self.__typedefs.append(elem)
 		elif isinstance(elem, CEvent):
-			if self.verbose:
-				print("Adding event " + elem.name)
-				print("\tReturns: " + elem.returnArgument.ctype)
-				print("\tArguments: " + str(elem.arguments))
+			logger.debug('Adding event {0}\tReturns: {1}\tArguments: {2}'.format(elem.name, elem.returnArgument.ctype, elem.arguments))
 			self.__events.append(elem)
 		elif isinstance(elem, CFunction):
-			if self.verbose:
-				print("Adding function " + elem.name)
-				print("\tReturns: " + elem.returnArgument.ctype)
-				print("\tArguments: " + str(elem.arguments))
+			logger.debug('Adding event {0}\tReturns: {1}\tArguments: {2}'.format(elem.name, elem.returnArgument.ctype, elem.arguments))
 			self.__functions.append(elem)
 
 	def __cleanDescription(self, descriptionNode):
@@ -330,7 +329,7 @@ class Project:
 						break
 				if not structFound:
 					name = td.definition[7:]
-					print("Structure with no associated typedef: " + name)
+					logger.warning("Structure with no associated typedef: " + name)
 					st = CStruct(name)
 					st.associatedTypedef = td
 					self.add(st)
@@ -503,7 +502,7 @@ class Project:
 						if arg.description == None:
 							missingDocWarning += "\t'" + arg.name + "' parameter not documented\n";
 					if missingDocWarning != '':
-						print(name + ":\n" + missingDocWarning)
+						logger.warning(name + ":\n" + missingDocWarning)
 			f = CEvent(name, returnarg, argslist)
 			deprecatedNode = node.find(".//xrefsect[xreftitle='Deprecated']")
 			if deprecatedNode is not None:
@@ -599,7 +598,7 @@ class Project:
 			if not f.location.endswith('.h'):
 				missingDocWarning += "\tNot documented in a header file ('" + f.location + "')\n";
 		if missingDocWarning != '':
-			print(name + ":\n" + missingDocWarning)
+			logger.warning(name + ":\n" + missingDocWarning)
 		return f
 
 	def __findCFunction(self, tree):
@@ -614,11 +613,10 @@ class Project:
 		for f in xmlfiles:
 			tree = None
 			try:
-				if self.verbose:
-					print("Parsing XML file: " + f.name)
+				logger.debug("Parsing XML file: " + f)
 				tree = ET.parse(f)
 			except ET.ParseError as e:
-				print(e)
+				logger.error(e)
 			if tree is not None:
 				trees.append(tree)
 		for tree in trees:
@@ -639,7 +637,7 @@ class Project:
 		for c in self.classes:
 			for name, p in six.iteritems(c.properties):
 				if p.getter is None and p.setter is not None:
-					print("Property '" + name + "' of class '" + c.name + "' has a setter but no getter")
+					logger.warning("Property '" + name + "' of class '" + c.name + "' has a setter but no getter")
 
 
 class Generator:
@@ -764,7 +762,7 @@ class Generator:
 		classNode.append(cclass.detailedDescription)
 
 	def generate(self, project):
-		print("Generating XML document of Linphone API to '" + self.__outputfile.name + "'")
+		logger.info("Generating XML document of Linphone API to '" + self.__outputfile.name + "'")
 		apiNode = ET.Element('api')
 		project.enums.sort(key = lambda e: e.name)
 		if len(project.enums) > 0:
@@ -797,7 +795,9 @@ def main(argv = None):
 		args.outputfile = open('api.xml', 'w')
 	project = Project()
 	if args.verbose:
-		project.verbose = True
+		logger.setLogLevel(logging.DEBUG)
+	else:
+		logger.setLogLevel(logging.INFO)
 	if args.pretty:
 		project.prettyPrint = True
 	project.initFromDir(args.xmldir)

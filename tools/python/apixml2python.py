@@ -42,16 +42,12 @@ blacklisted_events = [
 	'LinphoneCoreTextMessageReceivedCb'	# not respecting naming convention
 ]
 blacklisted_functions = [
-	'linphone_call_log_get_local_stats',	# missing rtp_stats_t
-	'linphone_call_log_get_remote_stats',	# missing rtp_stats_t
 	'linphone_call_params_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_call_params_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_chat_message_start_file_download',	# callback function in parameter
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
 	'linphone_chat_room_send_chat_message',	# Use linphone_chat_room_send_chat_message_2 instead
 	'linphone_chat_room_send_message2',	# callback function in parameter
-	'linphone_config_for_each_entry',	# to be handwritten because of callback
-	'linphone_config_for_each_section',	# to be handwritten because of callback
 	'linphone_config_get_range',	# to be handwritten because of result via arguments
 	'linphone_config_load_dict_to_section',	# missing LinphoneDictionary
 	'linphone_config_section_to_dict',	# missing LinphoneDictionary
@@ -62,10 +58,7 @@ blacklisted_functions = [
 	'linphone_core_enable_logs_with_cb',	# callback function in parameter
 	'linphone_core_get_audio_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_get_default_proxy',
-	'linphone_core_get_network_simulator_params',	# missing OrtpNetworkSimulatorParams
-	'linphone_core_get_supported_video_sizes',	# missing MSVideoSizeDef
 	'linphone_core_get_tunnel', # blacklisted LinphoneTunnel
-	'linphone_core_get_video_policy',	# missing LinphoneVideoPolicy
 	'linphone_core_get_video_port_range',	# to be handwritten because of result via arguments
 	'linphone_core_new', # replaced by linphone_factory_create_core
 	'linphone_core_new_with_config', # replaced by linphone_factory_create_core_with_config
@@ -75,13 +68,7 @@ blacklisted_functions = [
 	'linphone_core_set_log_collection_max_file_size',	# need to handle class properties
 	'linphone_core_set_log_collection_path',	# need to handle class properties
 	'linphone_core_set_log_collection_prefix',	# need to handle class properties
-	'linphone_core_set_log_file',	# There is no use to wrap this function
-	'linphone_core_set_log_handler',	# Hand-written but put directly in the linphone module
-	'linphone_core_set_log_level',	# There is no use to wrap this function
 	'linphone_core_set_log_level_mask',	# There is no use to wrap this function
-	'linphone_core_set_network_simulator_params',	# missing OrtpNetworkSimulatorParams
-	'linphone_core_set_video_policy',	# missing LinphoneVideoPolicy
-	'linphone_nat_policy_get_stun_server_addrinfo',
 	'linphone_proxy_config_get_privacy',	# missing LinphonePrivacyMask
 	'linphone_proxy_config_normalize_number',	# to be handwritten because of result via arguments
 	'linphone_proxy_config_set_file_transfer_server',	# defined but not implemented in linphone core
