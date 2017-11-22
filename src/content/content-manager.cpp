@@ -68,8 +68,6 @@ list<Content> ContentManager::multipartToContentList (const Content &content) {
 }
 
 Content ContentManager::contentListToMultipart (const list<Content> &contents) {
-	string sub;
-
 	belle_sip_memory_body_handler_t *mbh = nullptr;
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new(
 		nullptr, nullptr, nullptr, MULTIPART_BOUNDARY
@@ -79,8 +77,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 	for (const auto &content : contents) {
 		const ContentType &contentType = content.getContentType();
 		stringstream subtype;
-		sub = contentType.getSubType();
-		subtype << sub << "; charset=\"UTF-8\"";
+		subtype << contentType.getSubType() << "; charset=\"UTF-8\"";
 		belle_sip_header_t *cContentType = BELLE_SIP_HEADER(
 			belle_sip_header_content_type_create(
 				contentType.getType().c_str(),
@@ -99,7 +96,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 
 	Content content;
 	content.setBody(desc);
-	content.setContentType(ContentType("application", sub));
+	content.setContentType(ContentType::Multipart);
 
 	belle_sip_free(desc);
 	belle_sip_object_unref(mpbh);
