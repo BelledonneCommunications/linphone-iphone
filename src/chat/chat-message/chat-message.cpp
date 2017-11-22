@@ -411,9 +411,16 @@ string ChatMessagePrivate::createImdnXml (Imdn::Type imdnType, LinphoneReason re
 }
 
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
-	// FIXME: Add impl.
-	// L_Q();
-	// q->getChatRoom()->getPrivate()->sendImdn(createImdnXml(imdnType, reason), reason);
+	L_Q();
+
+	shared_ptr<ChatMessage> msg = q->getChatRoom()->createMessage();
+	
+	Content *content = new Content();
+	content->setContentType("message/imdn+xml");
+	content->setBody(createImdnXml(imdnType, reason));
+	msg->addContent(*content);
+
+	msg->send();
 }
 
 LinphoneReason ChatMessagePrivate::receive () {

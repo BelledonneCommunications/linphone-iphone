@@ -83,54 +83,6 @@ void ChatRoomPrivate::release () {
 		message->cancelFileTransfer();
 }
 
-void ChatRoomPrivate::sendImdn (const string &payload, LinphoneReason reason) {
-	// L_Q();
-	//
-	// shared_ptr<Core> core = q->getCore();
-	// LinphoneCore *cCore = core->getCCore();
-	//
-	// // TODO: Use ChatRoomId.
-	// const char *identity = nullptr;
-	// LinphoneAddress *peer = linphone_address_new(q->getPeerAddress().asString().c_str());
-	// LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(cCore, peer);
-	// if (proxy)
-	// 	identity = linphone_address_as_string(linphone_proxy_config_get_identity_address(proxy));
-	// else
-	// 	identity = linphone_core_get_primary_contact(cCore);
-	//
-	// /* Sending out of call */
-	// SalMessageOp *op = new SalMessageOp(cCore->sal);
-	// linphone_configure_op(cCore, op, peer, nullptr, !!lp_config_get_int(cCore->config, "sip", "chat_msg_with_contact", 0));
-	//
-	// // shared_ptr<ChatMessage> msg = createChatMessage(
-	// // 	ChatMessage::Direction::Outgoing,
-	// // 	ChatRoomId(q->getPeerAddress(), Address(identity))
-	// // );
-	//
-	// Content *content = new Content();
-	// content->setContentType("message/imdn+xml");
-	// content->setBody(payload);
-	// msg->addContent(*content);
-	//
-	// /* Do not try to encrypt the notification when it is reporting an error (maybe it should be bypassed only for some reasons). */
-	// int retval = -1;
-	// LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(cCore);
-	// if (imee && (reason == LinphoneReasonNone)) {
-	// 	LinphoneImEncryptionEngineCbs *imeeCbs = linphone_im_encryption_engine_get_callbacks(imee);
-	// 	LinphoneImEncryptionEngineCbsOutgoingMessageCb cbProcessOutgoingMessage = linphone_im_encryption_engine_cbs_get_process_outgoing_message(imeeCbs);
-	// 	if (cbProcessOutgoingMessage) {
-	// 		retval = cbProcessOutgoingMessage(imee, L_GET_C_BACK_PTR(q), L_GET_C_BACK_PTR(msg));
-	// 	}
-	// }
-	//
-	// if (retval <= 0) {
-	// 	op->send_message(identity, q->getPeerAddress().asString().c_str(), msg->getPrivate()->getContentType().asString().c_str(), msg->getPrivate()->getText().c_str(), nullptr);
-	// }
-	//
-	// linphone_address_unref(peer);
-	// op->unref();
-}
-
 // -----------------------------------------------------------------------------
 
 void ChatRoomPrivate::setState (ChatRoom::State newState) {

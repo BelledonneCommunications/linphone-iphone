@@ -47,7 +47,6 @@ public:
 	void removeTransientMessage (const std::shared_ptr<ChatMessage> &msg);
 
 	void release ();
-	void sendImdn (const std::string &content, LinphoneReason reason);
 
 	void setState (ChatRoom::State newState);
 
