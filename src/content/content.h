@@ -22,13 +22,12 @@
 
 #include <vector>
 
-// TODO: Remove me.
-#include "linphone/content.h"
-
 #include "object/app-data-container.h"
 #include "object/clonable-object.h"
 
 // =============================================================================
+
+L_DECL_C_STRUCT(LinphoneContent);
 
 LINPHONE_BEGIN_NAMESPACE
 

@@ -220,11 +220,9 @@ void RemoteConferenceEventHandler::multipartNotifyReceived (const string &xmlBod
 
 	Content multipart;
 	multipart.setBody(xmlBody);
-	ContentManager manager;
-	list<Content> contents = manager.multipartToContentLists(multipart);
-	for (const auto &content : contents) {
+
+	for (const auto &content : ContentManager::multipartToContentList(multipart))
 		d->simpleNotifyReceived(content.getBodyAsString());
-	}
 }
 
 // -----------------------------------------------------------------------------

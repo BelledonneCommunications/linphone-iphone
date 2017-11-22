@@ -24,18 +24,15 @@
 
 #include "linphone/utils/general.h"
 
-#include "content.h"
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ContentManager {
-public:
-	ContentManager () = default;
+class Content;
 
-	std::list<Content> multipartToContentLists (const Content &content) const;
-	Content contentsListToMultipart (const std::list<Content> &contents) const;
+namespace ContentManager {
+	std::list<Content> multipartToContentList (const Content &content);
+	Content contentListToMultipart (const std::list<Content> &contents);
 };
 
 LINPHONE_END_NAMESPACE

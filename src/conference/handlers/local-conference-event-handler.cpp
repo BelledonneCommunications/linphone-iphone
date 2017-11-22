@@ -218,9 +218,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 		contents.push_back(content);
 	}
 
-	ContentManager contentManager;
-	Content multipart = contentManager.contentsListToMultipart(contents);
-	return multipart.getBodyAsString();
+	return ContentManager::contentListToMultipart(contents).getBodyAsString();
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr, int notifyId) {

@@ -160,13 +160,11 @@ static const char* part4 = \
 "</presence>";
 
 void multipart_to_list () {
-	ContentManager manager;
-
 	Content multipartContent;
 	multipartContent.setBody(multipart);
 	multipartContent.setContentType(ContentType("multipart", "related"));
 
-	list<Content> contents = manager.multipartToContentLists(multipartContent);
+	list<Content> contents = ContentManager::multipartToContentList(multipartContent);
 	BC_ASSERT_EQUAL(contents.size(), 4, int, "%d");
 	Content content1 = contents.front();
 	contents.pop_front();
@@ -242,8 +240,6 @@ void multipart_to_list () {
 }
 
 void list_to_multipart () {
-	ContentManager manager;
-
 	Content content1;
 	content1.setBody(part1);
 	content1.setContentType(ContentType("application", "rlmi+xml"));
@@ -258,7 +254,7 @@ void list_to_multipart () {
 	content4.setContentType(ContentType("application", "pidf+xml"));
 	list<Content> contents = {content1, content2, content3, content4};
 
-	Content multipartContent = manager.contentsListToMultipart(contents);
+	Content multipartContent = ContentManager::contentListToMultipart(contents);
 	string originalStr(multipart);
 	originalStr.erase(std::remove(originalStr.begin(), originalStr.end(), ' '), originalStr.end());
 	originalStr.erase(std::remove(originalStr.begin(), originalStr.end(), '\t'), originalStr.end());
