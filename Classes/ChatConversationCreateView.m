@@ -102,7 +102,7 @@ void create_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState 
 
 - (void)createChatRoom {
 	_waitView.hidden = NO;
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, "dummy subject");
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, LINPHONE_DUMMY_SUBJECT);
 	NSString *addr = _tableController.contactsGroup[0];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);

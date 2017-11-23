@@ -57,6 +57,8 @@
 #define VIEW(x)                                                                                                        \
 	DYNAMIC_CAST([PhoneMainView.instance.mainViewController getCachedController:x.compositeViewDescription.name], x)
 
+#define LINPHONE_DUMMY_SUBJECT "dummy subject"
+
 @class PhoneMainView;
 
 @interface RootViewManager : NSObject

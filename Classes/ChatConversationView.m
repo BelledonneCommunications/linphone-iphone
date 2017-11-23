@@ -131,8 +131,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_pictureButton setEnabled:fileSharingEnabled];
 
 	[self callUpdateEvent:nil];
-	PhoneMainView.instance.currentRoom = self.chatRoom;
-	if (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") != 0)
+	PhoneMainView.instance.currentRoom = _chatRoom;
+	if (linphone_chat_room_can_handle_participants(_chatRoom)
+		&& (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) != 0 || linphone_chat_room_get_nb_participants(_chatRoom) > 1))
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 	else {
 		const LinphoneAddress *addr = linphone_participant_get_address(linphone_chat_room_get_participants(_chatRoom)->data);
@@ -375,12 +376,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	_infoButton.hidden = (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") == 0) || !_backToCallButton.hidden || _tableController.tableView.isEditing;
+	_infoButton.hidden = (!linphone_chat_room_can_handle_participants(_chatRoom)
+						|| (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) == 0 && linphone_chat_room_get_nb_participants(_chatRoom) == 1)
+						|| !_backToCallButton.hidden
+						|| _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 
 - (void)updateParticipantLabel {
-	if (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: "dummy subject", "dummy subject") == 0) {
+	if (!linphone_chat_room_can_handle_participants(_chatRoom)
+		|| (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) == 0 && linphone_chat_room_get_nb_participants(_chatRoom) == 1)) {
 		_particpantsLabel.hidden = TRUE;
 	} else {
 		_particpantsLabel.hidden = FALSE;

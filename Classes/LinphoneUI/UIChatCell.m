@@ -64,8 +64,8 @@
 		return;
 	}
 
-	const char *subject = linphone_chat_room_get_subject(chatRoom) ?: "dummy subject";
-	if (strcmp(subject, "dummy subject") != 0) {
+	const char *subject = linphone_chat_room_get_subject(chatRoom) ?: LINPHONE_DUMMY_SUBJECT;
+	if (linphone_chat_room_can_handle_participants(chatRoom) && (strcmp(subject, LINPHONE_DUMMY_SUBJECT) != 0 || linphone_chat_room_get_nb_participants(chatRoom) > 1)) {
 		_addressLabel.text = [NSString stringWithUTF8String:subject];
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	} else {
@@ -77,7 +77,7 @@
 				[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 			}
 		} else {
-			_addressLabel.text = [NSString stringWithUTF8String:"dummy subject"];
+			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}
 	}
 
