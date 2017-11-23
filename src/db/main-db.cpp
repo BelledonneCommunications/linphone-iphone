@@ -179,7 +179,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 			*session << "INSERT INTO chat_room ("
 				"  peer_sip_address_id, local_sip_address_id, creation_date, last_update_date, capabilities, subject"
-				") VALUES (:peerSipAddressId, :localSipAddressId, :creationDate, :lastUpdateDate, :capabilities, subject)",
+				") VALUES (:peerSipAddressId, :localSipAddressId, :creationDate, :lastUpdateDate, :capabilities, :subject)",
 				soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(date), soci::use(date),
 				soci::use(capabilities), soci::use(subject);
 
