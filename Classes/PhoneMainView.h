@@ -79,6 +79,7 @@
 @property(nonatomic, strong) IBOutlet UICompositeView *mainViewController;
 
 @property(nonatomic, strong) NSString *currentName;
+@property(nonatomic, strong) NSString *previousView;
 @property(nonatomic, strong) NSString *name;
 @property(weak, readonly) UICompositeViewDescription *currentView;
 @property LinphoneChatRoom* currentRoom;
@@ -87,6 +88,9 @@
 - (void)changeCurrentView:(UICompositeViewDescription *)view;
 - (UIViewController*)popCurrentView;
 - (UIViewController *)popToView:(UICompositeViewDescription *)currentView;
+- (void) setPreviousViewName:(NSString*)previous;
+- (NSString*) getPreviousViewName;
++ (NSString*) getPreviousViewName;
 - (UICompositeViewDescription *)firstView;
 - (void)hideStatusBar:(BOOL)hide;
 - (void)hideTabBar:(BOOL)hide;

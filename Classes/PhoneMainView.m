@@ -128,6 +128,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	currentView = nil;
 	_currentRoom = NULL;
 	_currentName = NULL;
+	_previousView = nil;
 	inhibitedEvents = [[NSMutableArray alloc] init];
 }
 
@@ -657,6 +658,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	PhoneMainView *vc = [[RootViewManager instance] setViewControllerForDescription:view];
 	if (![view equal:vc.currentView] || vc != self) {
 		LOGI(@"Change current view to %@", view.name);
+		[self setPreviousViewName:vc.currentView.name];
 		NSMutableArray *viewStack = [RootViewManager instance].viewDescriptionStack;
 		[viewStack addObject:view];
 		if (animated && transition == nil)
@@ -682,6 +684,19 @@ static RootViewManager *rootViewManagerInstance = nil;
 	}
 	return [self _changeCurrentView:view transition:[PhoneMainView getBackwardTransition] animated:ANIMATED];
 }
+
+- (void) setPreviousViewName:(NSString*)previous{
+	_previousView = previous;
+}
+
+- (NSString*) getPreviousViewName {
+	return _previousView;
+}
+
++ (NSString*) getPreviousViewName {
+	return [self getPreviousViewName];
+}
+
 
 - (UICompositeViewDescription *)firstView {
 	UICompositeViewDescription *view = nil;

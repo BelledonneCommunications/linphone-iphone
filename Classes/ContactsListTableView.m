@@ -110,7 +110,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 }
 
 - (NSString *)displayNameForContact:(Contact *)person {
-	NSString *name = [FastAddressBook displayNameForContact:person];
+	NSString *name = person.displayName;
 	if (name != nil && [name length] > 0 && ![name isEqualToString:NSLocalizedString(@"Unknown", nil)]) {
 		// Add the contact only if it fuzzy match filter too (if any)
 		if ([ContactSelection getNameOrEmailFilter] == nil ||
@@ -119,18 +119,22 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 			// Sort contacts by first letter. We need to translate the name to ASCII first, because of UTF-8
 			// issues. For instance expected order would be:  Alberta(A tilde) before ASylvano.
-			NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+	/*		NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 			NSString *name2ASCII = [[NSString alloc] initWithData:name2ASCIIdata encoding:NSASCIIStringEncoding];
-			return name2ASCII;
+	*/		return name;
 		}
 	}
 	return nil;
 }
 
-// TODO - check this
 - (void)loadData {
 	_ongoing = TRUE;
 	LOGI(@"Load contact list");
+	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
+	addressBookMap = [LinphoneManager.instance getLinphoneManagerAddressBookMap];
+	BOOL updated = [LinphoneManager.instance getContactsUpdated];
+	if(([previous isEqualToString:@"ContactsDetailsView"] && updated)|| [addressBookMap count] == 0){
+	[LinphoneManager.instance setContactsUpdated:FALSE];
 	@synchronized(addressBookMap) {
 		//Set all contacts from ContactCell to nil
 		for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j)
@@ -224,6 +228,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
                   }
                 });
         }
+		[LinphoneManager.instance setLinphoneManagerAddressBookMap:addressBookMap];
+	}
         _ongoing = FALSE;
 }
 
@@ -433,7 +439,10 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
                        selector:@selector(onAddressBookUpdate:)
                            name:kLinphoneAddressBookUpdate
                          object:nil];
-                [self loadData];
+		dispatch_async(dispatch_get_main_queue(),
+					   ^{
+						   [self loadData];
+							});
         }
 }
 

@@ -91,8 +91,7 @@
 
 + (NSString *)normalizeSipURI:(NSString *)address {
 	// replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace
-	NSString *normalizedSipAddress = [[address
-		componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@" "];
+	NSString *normalizedSipAddress = nil;
 	LinphoneAddress *addr = linphone_core_interpret_url(LC, [address UTF8String]);
 	if (addr != NULL) {
 		linphone_address_clean(addr);
@@ -100,8 +99,11 @@
 		normalizedSipAddress = [NSString stringWithUTF8String:tmp];
 		ms_free(tmp);
 		linphone_address_destroy(addr);
+		return normalizedSipAddress;
+	}else {
+		normalizedSipAddress = [[address componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] componentsJoinedByString:@" "];
+		return normalizedSipAddress;
 	}
-	return normalizedSipAddress;
 }
 
 + (BOOL)isAuthorized {
@@ -112,8 +114,10 @@
 	if ((self = [super init]) != nil) {
           store = [[CNContactStore alloc] init];
           _addressBookMap = [NSMutableDictionary dictionary];
-          [self reloadAllContacts];
-        }
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self reloadAllContacts];
+	   	});
+	}
         self.needToUpdate = FALSE;
         if (floor(NSFoundationVersionNumber) >=
             NSFoundationVersionNumber_iOS_9_x_Max) {
@@ -167,13 +171,14 @@
                               error:&contactError];
     NSArray *keysToFetch = @[
       CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-      CNContactFamilyNameKey, CNContactGivenNameKey,
+      CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
       CNContactPostalAddressesKey, CNContactIdentifierKey,
       CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
       CNInstantMessageAddressUsernameKey, CNContactImageDataKey
     ];
     CNContactFetchRequest *request =
         [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
+	  
     success =
         [store enumerateContactsWithFetchRequest:request
                                            error:&contactError
@@ -183,10 +188,10 @@
                                           NSLog(@"error fetching contacts %@",
                                                 contactError);
                                         } else {
-                                          Contact *newContact = [[Contact alloc]
+										  Contact *newContact = [[Contact alloc]
                                               initWithCNContact:contact];
                                           [self registerAddrsFor:newContact];
-                                        }
+										 }
                                       }];
     // load Linphone friends
     const MSList *lists = linphone_core_get_friends_lists(LC);
@@ -214,25 +219,18 @@
 }
 
 - (void)registerAddrsFor:(Contact *)contact {
-  for (NSString *phone in contact.phones) {
-    char *normalizedPhone = linphone_proxy_config_normalize_phone_number(
-        linphone_core_get_default_proxy_config(LC), phone.UTF8String);
-    NSString *name = [FastAddressBook
-        normalizeSipURI:normalizedPhone
-                            ? [NSString stringWithUTF8String:normalizedPhone]
-                            : phone];
-    if (phone != NULL) {
-      [_addressBookMap
-          setObject:contact
-             forKey:(name ?: [FastAddressBook localizedLabel:phone])];
-    }
-    if (normalizedPhone)
-      ms_free(normalizedPhone);
-  }
-  for (NSString *sip in contact.sipAddresses) {
-    [_addressBookMap setObject:contact
-                        forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
-  }
+		for (NSString *phone in contact.phones) {
+			char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
+			NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+			if (phone != NULL) {
+				[_addressBookMap setObject:contact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
+			}
+			if (normalizedPhone)
+				ms_free(normalizedPhone);
+		}
+		for (NSString *sip in contact.sipAddresses) {
+			[_addressBookMap setObject:contact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+		}
 }
 
 #pragma mark - Tools
@@ -407,6 +405,7 @@
     NSLog(@"Success %d",
           [store executeSaveRequest:saveRequest error:&saveError]);
 	   [self updateFriend:contact];
+	  [LinphoneManager.instance setContactsUpdated:TRUE];
   } @catch (NSException *exception) {
     NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@",
           [exception description]);

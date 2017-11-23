@@ -33,7 +33,7 @@
 
 #include "linphone/linphonecore.h"
 #include "bctoolbox/list.h"
-
+#import "OrderedDictionary.h"
 #import "ProviderDelegate.h"
 
 extern NSString *const LINPHONERC_APPLICATION_KEY;
@@ -197,6 +197,13 @@ typedef struct _LinphoneManagerSounds {
 - (void)shouldPresentLinkPopup;
 
 - (void)setProviderDelegate:(ProviderDelegate *)del;
+
+- (void) setLinphoneManagerAddressBookMap:(OrderedDictionary*) addressBook;
+- (OrderedDictionary*) getLinphoneManagerAddressBookMap;
+
+- (void) setContactsUpdated:(BOOL) updated;
+- (BOOL) getContactsUpdated;
+
 @property ProviderDelegate *providerDelegate;
 
 @property (readonly) BOOL isTesting;
@@ -225,5 +232,7 @@ typedef struct _LinphoneManagerSounds {
 @property BOOL nextCallIsTransfer;
 @property BOOL conf;
 @property NSDictionary *pushDict;
+@property(strong, nonatomic) OrderedDictionary *linphoneManagerAddressBookMap;
+@property (nonatomic, assign) BOOL contactsUpdated;
 
 @end

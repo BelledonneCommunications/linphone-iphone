@@ -257,7 +257,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_bluetoothEnabled = FALSE;
 		_conf = FALSE;
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
-
+		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
 		_photoLibrary = [[ALAssetsLibrary alloc] init];
 		_isTesting = [LinphoneManager isRunningTests];
@@ -290,6 +290,23 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (void)dealloc {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+#pragma mark - AddressBookMap
+
+- (void) setLinphoneManagerAddressBookMap:(OrderedDictionary*) addressBook{
+	_linphoneManagerAddressBookMap = addressBook;
+}
+
+- (OrderedDictionary*) getLinphoneManagerAddressBookMap{
+	return _linphoneManagerAddressBookMap;
+}
+
+- (void) setContactsUpdated:(BOOL) updated{
+	_contactsUpdated = updated;
+}
+- (BOOL) getContactsUpdated{
+	return _contactsUpdated;
 }
 
 #pragma deploymate push "ignored-api-availability"
