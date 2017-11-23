@@ -35,6 +35,8 @@
 #include "content/file-content.h"
 #include "content/content.h"
 #include "core/core.h"
+#include "core/core-p.h"
+#include "event-log/conference/conference-chat-message-event.h"
 #include "logger/logger.h"
 #include "chat/notification/imdn.h"
 
@@ -428,8 +430,9 @@ LinphoneReason ChatMessagePrivate::receive () {
 			messageToBeStored = true;
 		}
 	}
-	if (messageToBeStored)
-		q->store();
+	if (messageToBeStored) {
+		store();
+	}
 
 	return reason;
 }
@@ -560,6 +563,8 @@ void ChatMessagePrivate::send () {
 
 	q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
+	store();
+
 	if (call && linphone_call_get_op(call) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
 		/* Might be better fixed by delivering status, but too costly for now */
@@ -571,6 +576,12 @@ void ChatMessagePrivate::send () {
 		setIsReadOnly(true);
 		setState(ChatMessage::State::InProgress);
 	}
+}
+
+void ChatMessagePrivate::store() {
+	L_Q();
+	shared_ptr<ConferenceChatMessageEvent> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
+	q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
 }
 
 // -----------------------------------------------------------------------------

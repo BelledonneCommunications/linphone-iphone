@@ -121,6 +121,8 @@ public:
 	LinphoneReason receive();
 	void send();
 
+	void store();
+
 private:
 	// TODO: Clean attributes.
 	unsigned int storageId = 0;
