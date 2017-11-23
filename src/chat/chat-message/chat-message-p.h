@@ -30,6 +30,7 @@
 #include "content/content.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
+#include "event-log/conference/conference-chat-message-event.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
 
@@ -153,6 +154,7 @@ private:
 	// Do not expose.
 
 	std::weak_ptr<ChatRoom> chatRoom;
+	std::weak_ptr<ConferenceChatMessageEvent> chatEvent;
 	ChatRoomId chatRoomId;
 	IdentityAddress fromAddress;
 	IdentityAddress toAddress;

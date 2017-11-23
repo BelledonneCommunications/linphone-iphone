@@ -36,7 +36,6 @@
 #include "content/content.h"
 #include "core/core.h"
 #include "core/core-p.h"
-#include "event-log/conference/conference-chat-message-event.h"
 #include "logger/logger.h"
 #include "chat/notification/imdn.h"
 
@@ -97,6 +96,8 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
 		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
+
+	store();
 }
 
 unsigned int ChatMessagePrivate::getStorageId () const {
@@ -580,8 +581,15 @@ void ChatMessagePrivate::send () {
 
 void ChatMessagePrivate::store() {
 	L_Q();
-	shared_ptr<ConferenceChatMessageEvent> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
-	q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+
+	shared_ptr<ConferenceChatMessageEvent> eventLog = chatEvent.lock();
+	if (eventLog) {
+		q->getChatRoom()->getCore()->getPrivate()->mainDb->updateEvent(eventLog);
+	} else {
+		eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
+		chatEvent = eventLog;
+		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+	}
 }
 
 // -----------------------------------------------------------------------------
