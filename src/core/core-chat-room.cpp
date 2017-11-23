@@ -39,32 +39,6 @@ LINPHONE_BEGIN_NAMESPACE
 // Helpers.
 // -----------------------------------------------------------------------------
 
-// TODO: Remove me later.
-static inline ChatRoomId resolveWorkaroundClientGroupChatRoomId (
-	const CorePrivate &corePrivate,
-	const ChatRoomId &chatRoomId
-) {
-	const char *uri = linphone_core_get_conference_factory_uri(corePrivate.cCore);
-	if (!uri)
-		return ChatRoomId();
-
-	IdentityAddress peerAddress = chatRoomId.getPeerAddress();
-	peerAddress.setDomain(Address(uri).getDomain());
-	IdentityAddress localAddress = chatRoomId.getLocalAddress();
-	localAddress.setDomain(Address(uri).getDomain());
-	return ChatRoomId(peerAddress, localAddress);
-}
-
-// TODO: Remove me later.
-static inline ChatRoomId resolveWorkaroundClientGroupChatRoomId (
-	const CorePrivate &corePrivate,
-	const shared_ptr<ChatRoom> &chatRoom
-) {
-	if (!(chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Conference)))
-		return chatRoom->getChatRoomId();
-	return resolveWorkaroundClientGroupChatRoomId(corePrivate, chatRoom->getChatRoomId());
-}
-
 // Return the better local address to talk with peer address.
 static IdentityAddress getDefaultLocalAddress (const shared_ptr<Core> &core, const IdentityAddress &peerAddress) {
 	LinphoneCore *cCore = core->getCCore();
@@ -107,8 +81,7 @@ shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoo
 void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
 
-	const ChatRoomId &chatRoomId = resolveWorkaroundClientGroupChatRoomId(*this, chatRoom);
-
+	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
 	deleteChatRoom(chatRoomId);
 	chatRooms.push_back(chatRoom);
 	chatRoomsById[chatRoomId] = chatRoom;
@@ -132,8 +105,7 @@ void CorePrivate::deleteChatRoom (const ChatRoomId &chatRoomId) {
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 
-	const ChatRoomId &chatRoomId = resolveWorkaroundClientGroupChatRoomId(*this, chatRoom);
-
+	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
 	ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
 	mainDb->insertChatRoom(chatRoomId, capabilities);
 }
@@ -160,13 +132,7 @@ shared_ptr<ChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
 	lInfo() << "Unable to find chat room: (peer=" <<
 		chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
 
-	// TODO: Remove me, temp workaround.
-	ChatRoomId workaroundChatRoomId = resolveWorkaroundClientGroupChatRoomId(*d, chatRoomId);
-	lWarning() << "Workaround: searching chat room with: (peer=" <<
-		chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
-
-	it = d->chatRoomsById.find(workaroundChatRoomId);
-	return it == d->chatRoomsById.cend() ? shared_ptr<ChatRoom>() : it->second;
+	return shared_ptr<ChatRoom>();
 }
 
 list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {
@@ -242,9 +208,7 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoomFromUri (const string &peerAd
 
 void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
 	CorePrivate *d = chatRoom->getCore()->getPrivate();
-	d->deleteChatRoomWithDb(
-		resolveWorkaroundClientGroupChatRoomId(*d, chatRoom->getChatRoomId())
-	);
+	d->deleteChatRoomWithDb(chatRoom->getChatRoomId());
 }
 
 LINPHONE_END_NAMESPACE

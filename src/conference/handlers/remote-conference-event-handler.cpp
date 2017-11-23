@@ -51,12 +51,8 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 
 	ConferenceListener *confListener = static_cast<ConferenceListener *>(conf);
 
-	// TODO: Temporary workaround, remove me.
-	const IdentityAddress &peerAddress = chatRoomId.getPeerAddress();
 	IdentityAddress entityAddress(confInfo->getEntity().c_str());
-	IdentityAddress peerAddressWorkaround = peerAddress;
-	peerAddressWorkaround.setDomain(entityAddress.getDomain());
-	if ((entityAddress == peerAddress) || (entityAddress == peerAddressWorkaround)) {
+	if (entityAddress == chatRoomId.getPeerAddress()) {
 		if (
 			confInfo->getConferenceDescription().present() &&
 			confInfo->getConferenceDescription().get().getSubject().present()
