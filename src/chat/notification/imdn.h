@@ -37,6 +37,7 @@ public:
 		Display
 	};
 
+	static std::string createXml(std::string id, time_t time, Imdn::Type imdnType, LinphoneReason reason);
 	static void parse (ChatRoom &cr, const std::string &content);
 
 private:

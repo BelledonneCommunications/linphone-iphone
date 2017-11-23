@@ -36,6 +36,7 @@
 #include "content/content.h"
 #include "core/core.h"
 #include "logger/logger.h"
+#include "chat/notification/imdn.h"
 
 #include "ortp/b64.h"
 
@@ -310,106 +311,6 @@ bool ChatMessagePrivate::downloadFile () {
 
 // -----------------------------------------------------------------------------
 
-string ChatMessagePrivate::createImdnXml (Imdn::Type imdnType, LinphoneReason reason) {
-	xmlBufferPtr buf;
-	xmlTextWriterPtr writer;
-	int err;
-	string content;
-	char *datetime = nullptr;
-
-	// Check that the chat message has a message id.
-	if (id.empty()) return nullptr;
-
-	buf = xmlBufferCreate();
-	if (buf == nullptr) {
-		lError() << "Error creating the XML buffer";
-		return content;
-	}
-	writer = xmlNewTextWriterMemory(buf, 0);
-	if (writer == nullptr) {
-		lError() << "Error creating the XML writer";
-		return content;
-	}
-
-	datetime = linphone_timestamp_to_rfc3339_string(time);
-	err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", nullptr);
-	if (err >= 0) {
-		err = xmlTextWriterStartElementNS(writer, nullptr, (const xmlChar *)"imdn",
-				(const xmlChar *)"urn:ietf:params:xml:ns:imdn");
-	}
-	if ((err >= 0) && (reason != LinphoneReasonNone)) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"linphoneimdn", nullptr, (const xmlChar *)"http://www.linphone.org/xsds/imdn.xsd");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"message-id", (const xmlChar *)id.c_str());
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"datetime", (const xmlChar *)datetime);
-	}
-	if (err >= 0) {
-		if (imdnType == Imdn::Type::Delivery) {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivery-notification");
-		} else {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"display-notification");
-		}
-	}
-	if (err >= 0) {
-		err = xmlTextWriterStartElement(writer, (const xmlChar *)"status");
-	}
-	if (err >= 0) {
-		if (reason == LinphoneReasonNone) {
-			if (imdnType == Imdn::Type::Delivery) {
-				err = xmlTextWriterStartElement(writer, (const xmlChar *)"delivered");
-			} else {
-				err = xmlTextWriterStartElement(writer, (const xmlChar *)"displayed");
-			}
-		} else {
-			err = xmlTextWriterStartElement(writer, (const xmlChar *)"error");
-		}
-	}
-	if (err >= 0) {
-		// Close the "delivered", "displayed" or "error" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if ((err >= 0) && (reason != LinphoneReasonNone)) {
-		err = xmlTextWriterStartElementNS(writer, (const xmlChar *)"linphoneimdn", (const xmlChar *)"reason", nullptr);
-		if (err >= 0) {
-			char codestr[16];
-			snprintf(codestr, 16, "%d", linphone_reason_to_error_code(reason));
-			err = xmlTextWriterWriteAttribute(writer, (const xmlChar *)"code", (const xmlChar *)codestr);
-		}
-		if (err >= 0) {
-			err = xmlTextWriterWriteString(writer, (const xmlChar *)linphone_reason_to_string(reason));
-		}
-		if (err >= 0) {
-			err = xmlTextWriterEndElement(writer);
-		}
-	}
-	if (err >= 0) {
-		// Close the "status" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		// Close the "delivery-notification" or "display-notification" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		// Close the "imdn" element.
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterEndDocument(writer);
-	}
-	if (err > 0) {
-		// xmlTextWriterEndDocument returns the size of the content.
-		content = string((char *)buf->content);
-	}
-	xmlFreeTextWriter(writer);
-	xmlBufferFree(buf);
-	ms_free(datetime);
-	return content;
-}
-
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	L_Q();
 
@@ -417,7 +318,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 
 	Content *content = new Content();
 	content->setContentType("message/imdn+xml");
-	content->setBody(createImdnXml(imdnType, reason));
+	content->setBody(Imdn::createXml(id, time, imdnType, reason));
 	msg->addContent(*content);
 
 	msg->getPrivate()->send();
