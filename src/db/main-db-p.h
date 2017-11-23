@@ -41,6 +41,7 @@ private:
 
 	long long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long long messageEventId, const Content &content);
+	void updateContent (long long messageEventId, long long messageContentId, const Content &content);
 	long long insertContentType (const std::string &contentType);
 	long long insertChatRoom (
 		long long peerSipAddressId,
@@ -114,6 +115,7 @@ private:
 	long long insertConferenceEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
 	long long insertConferenceCallEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceChatMessageEvent (const std::shared_ptr<EventLog> &eventLog);
+	void updateConferenceChatMessageEvent(const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceNotifiedEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
 	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);

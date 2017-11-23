@@ -33,6 +33,7 @@ class MainDbEventKeyPrivate;
 
 class MainDbEventKey : public ClonableObject {
 	friend class MainDb;
+	friend class MainDbPrivate;
 
 public:
 	MainDbEventKey ();

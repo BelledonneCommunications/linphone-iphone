@@ -148,6 +148,18 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
+	void MainDbPrivate::updateContent (long long eventId, long long messageContentId, const Content &content) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		long long contentTypeId = insertContentType(content.getContentType().asString());
+		*session << "UPDATE chat_message_content SET content_type_id=:contentTypeId, body=:body WHERE event_id=:eventId",
+			soci::use(contentTypeId), soci::use(content.getBodyAsString()), soci::use(eventId);
+
+		for (const auto &appData : content.getAppDataMap())
+			*session << "UPDATE chat_message_content_app_data SET name=:name, data=:data WHERE chat_message_content_id=:messageContentId",
+				soci::use(appData.first), soci::use(appData.second), soci::use(messageContentId);
+	}
+
 	long long MainDbPrivate::insertContentType (const string &contentType) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -581,6 +593,27 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return eventId;
 	}
 
+	void MainDbPrivate::updateConferenceChatMessageEvent(const std::shared_ptr<EventLog> &eventLog) {
+		shared_ptr<ChatMessage> chatMessage = static_pointer_cast<ConferenceChatMessageEvent>(eventLog)->getChatMessage();
+		shared_ptr<ChatRoom> chatRoom = chatMessage->getChatRoom();
+		if (!chatRoom) {
+			lError() << "Unable to get a valid chat room. It was removed from database.";
+			return;
+		}
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		MainDbEventKeyPrivate *dEventKey = dEventLog->dbKey.getPrivate();
+		long long eventId = dEventKey->storageId;
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "UPDATE conference_chat_message_event SET state=:state WHERE event_id=:eventId"
+			, soci::use(static_cast<int>(chatMessage->getState())), soci::use(eventId);
+
+		/*for (const Content *content : chatMessage->getContents())
+			updateContent(eventId, *content);*/
+		//TODO check if content needs to be inserted, updated or removed
+	}
+
 	long long MainDbPrivate::insertConferenceNotifiedEvent (const shared_ptr<EventLog> &eventLog, long long *chatRoomId) {
 		long long curChatRoomId;
 		long long eventId = insertConferenceEvent(eventLog, &curChatRoomId);
@@ -1012,6 +1045,53 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		return soFarSoGood;
+	}
+
+	bool MainDb::updateEvent (const shared_ptr<EventLog> &eventLog) {
+		L_D();
+
+		if (!isConnected()) {
+			lWarning() << "Unable to update event. Not connected.";
+			return false;
+		}
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		if (!dEventLog->dbKey.isValid()) {
+			lWarning() << "Unable to update an event that wasn't inserted yet!!!";
+			return false;
+		}
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
+
+		switch (eventLog->getType()) {
+			case EventLog::Type::None:
+				return false;
+
+			case EventLog::Type::ConferenceChatMessage:
+				d->updateConferenceChatMessageEvent(eventLog);
+				break;
+
+			case EventLog::Type::ConferenceCreated:
+			case EventLog::Type::ConferenceDestroyed:
+			case EventLog::Type::ConferenceCallStart:
+			case EventLog::Type::ConferenceCallEnd:
+			case EventLog::Type::ConferenceParticipantAdded:
+			case EventLog::Type::ConferenceParticipantRemoved:
+			case EventLog::Type::ConferenceParticipantSetAdmin:
+			case EventLog::Type::ConferenceParticipantUnsetAdmin:
+			case EventLog::Type::ConferenceParticipantDeviceAdded:
+			case EventLog::Type::ConferenceParticipantDeviceRemoved:
+			case EventLog::Type::ConferenceSubjectChanged:
+				return false;
+		}
+
+		tr.commit();
+
+		L_END_LOG_EXCEPTION
+
+		return true;
 	}
 
 	bool MainDb::deleteEvent (const shared_ptr<EventLog> &eventLog) {
