@@ -100,6 +100,14 @@ LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_file_transfer_mes
 LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_room_get_peer_address(LinphoneChatRoom *cr);
 
 /**
+ * get local address \link linphone_core_get_chat_room() associated to \endlink this #LinphoneChatRoom
+ * @param cr #LinphoneChatRoom object
+ * @return #LinphoneAddress local address
+ */
+LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_room_get_local_address(LinphoneChatRoom *cr);
+
+
+/**
  * Send a message to peer member of this chat room.
  * @deprecated Use linphone_chat_message_send() instead.
  * @param cr #LinphoneChatRoom object

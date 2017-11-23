@@ -45,7 +45,8 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
 	_linphone_chat_room_constructor, _linphone_chat_room_destructor,
 	LinphoneChatRoomCbs *cbs;
 	mutable LinphoneAddress *conferenceAddressCache;
-	LinphoneAddress *peerAddressCache;
+	mutable LinphoneAddress *peerAddressCache;
+	mutable LinphoneAddress *localAddressCache;
 )
 
 static void _linphone_chat_room_constructor (LinphoneChatRoom *cr) {
@@ -54,15 +55,12 @@ static void _linphone_chat_room_constructor (LinphoneChatRoom *cr) {
 
 static void _linphone_chat_room_destructor (LinphoneChatRoom *cr) {
 	linphone_chat_room_cbs_unref(cr->cbs);
-	cr->cbs = nullptr;
-	if (cr->conferenceAddressCache) {
+	if (cr->conferenceAddressCache)
 		linphone_address_unref(cr->conferenceAddressCache);
-		cr->conferenceAddressCache = nullptr;
-	}
-	if (cr->peerAddressCache) {
+	if (cr->peerAddressCache)
 		linphone_address_unref(cr->peerAddressCache);
-		cr->peerAddressCache = nullptr;
-	}
+	if (cr->localAddressCache)
+		linphone_address_unref(cr->localAddressCache);
 }
 
 // =============================================================================
@@ -97,8 +95,18 @@ const LinphoneAddress *linphone_chat_room_get_peer_address (LinphoneChatRoom *cr
 	if (cr->peerAddressCache) {
 		linphone_address_unref(cr->peerAddressCache);
 	}
+
 	cr->peerAddressCache = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getPeerAddress().asString().c_str());
 	return cr->peerAddressCache;
+}
+
+const LinphoneAddress *linphone_chat_room_get_local_address (LinphoneChatRoom *cr) {
+	if (cr->localAddressCache) {
+		linphone_address_unref(cr->localAddressCache);
+	}
+
+	cr->localAddressCache = linphone_address_new(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getLocalAddress().asString().c_str());
+	return cr->localAddressCache;
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message (LinphoneChatRoom *cr, const char *message) {
