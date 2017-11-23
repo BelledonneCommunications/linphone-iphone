@@ -47,6 +47,7 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(ChatMessage,
 	LinphoneChatMessageStateChangedCb message_state_changed_cb;
 	void* message_state_changed_user_data;
 	mutable char *contentTypeCache;
+	mutable std::string textContentBody;
 )
 
 static void _linphone_chat_message_constructor (LinphoneChatMessage *msg) {
@@ -296,7 +297,8 @@ const char *linphone_chat_message_get_text_content(const LinphoneChatMessage *ms
 	const LinphonePrivate::Content *content = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getTextContent();
 	if (content->isEmpty())
 		return nullptr;
-	return L_STRING_TO_C(content->getBodyAsString());
+	msg->textContentBody = content->getBodyAsString();
+	return L_STRING_TO_C(msg->textContentBody);
 }
 
 // =============================================================================
