@@ -713,10 +713,13 @@ void on_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newS
 
 void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	view.addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
-	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	[view.tableController.tableView reloadData];
-	[view.tableController scrollToBottom:true];
+	const char *subject = linphone_chat_room_get_subject(cr) ?: linphone_event_log_get_subject(event_log);
+	if (subject) {
+		view.addressLabel.text = [NSString stringWithUTF8String:subject];
+		[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
+		[view.tableController.tableView reloadData];
+		[view.tableController scrollToBottom:true];
+	}
 }
 
 void on_chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
@@ -748,13 +751,12 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 
-	if (from == NULL || chat == NULL) {
+	if (from == NULL || chat == NULL)
 		return;
-	}
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 		linphone_chat_room_mark_as_read(view.chatRoom);
-	}
+
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view setComposingVisible:FALSE withDelay:0];
