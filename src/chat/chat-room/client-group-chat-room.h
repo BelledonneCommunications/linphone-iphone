@@ -39,6 +39,12 @@ public:
 		const std::string &subject
 	);
 
+	ClientGroupChatRoom (
+		const std::shared_ptr<Core> &core,
+		const ChatRoomId &chatRoomId,
+		const std::string &subject
+	);
+
 	std::shared_ptr<Core> getCore () const;
 
 	CapabilitiesMask getCapabilities () const override;

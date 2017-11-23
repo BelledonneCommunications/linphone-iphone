@@ -1398,22 +1398,15 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				);
 				chatRoom->setSubject(subject);
-
-				ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
-				dChatRoom->creationTime = Utils::getTmAsTimeT(creationDate);
-				dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateDate);
-			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
-				// TODO: Fetch!
-				// chatRoom = make_shared<ClientGroupChatRoom>(
-				// 	getCore(),
-				// 	Address("sip:titi@sip.linphone.org"), // TODO: Fix me!!!
-				// 	chatRoomId,
-				// 	subject
-				// );
-			}
+			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference))
+				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId, subject);
 
 			if (!chatRoom)
 				continue; // Not fetched.
+
+			ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
+			dChatRoom->creationTime = Utils::getTmAsTimeT(creationDate);
+			dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateDate);
 
 			chatRooms.push_back(chatRoom);
 		}

@@ -34,17 +34,18 @@ class ConferencePrivate {
 public:
 	IdentityAddress conferenceAddress;
 	std::list<std::shared_ptr<Participant>> participants;
-
-protected:
-	CallListener *callListener = nullptr;
-
-	std::shared_ptr<Participant> activeParticipant;
-	std::shared_ptr<Participant> me;
 	std::string subject;
 
+protected:
 	Conference *mPublic = nullptr;
 
+	std::shared_ptr<Participant> activeParticipant;
+
 private:
+	CallListener *callListener = nullptr;
+
+	std::shared_ptr<Participant> me;
+
 	L_DECLARE_PUBLIC(Conference);
 };
 
