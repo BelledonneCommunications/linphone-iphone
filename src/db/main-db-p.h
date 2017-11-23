@@ -46,9 +46,10 @@ private:
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		int capabilities,
-		const tm &date
+		const tm &date,
+		const std::string &subject
 	);
-	long long insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const tm &date);
+	long long insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const tm &date, const std::string &subject);
 	void insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin);
 	void insertChatMessageParticipant (long long messageEventId, long long sipAddressId, int state);
 

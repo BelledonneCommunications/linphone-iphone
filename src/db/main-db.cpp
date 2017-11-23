@@ -166,7 +166,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		int capabilities,
-		const tm &date
+		const tm &date,
+		const string &subject
 	) {
 		L_Q();
 
@@ -178,27 +179,28 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 			*session << "INSERT INTO chat_room ("
 				"  peer_sip_address_id, local_sip_address_id, creation_date, last_update_date, capabilities, subject"
-				") VALUES (:peerSipAddressId, :localSipAddressId, :creationDate, :lastUpdateDate, :capabilities, '')",
+				") VALUES (:peerSipAddressId, :localSipAddressId, :creationDate, :lastUpdateDate, :capabilities, subject)",
 				soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(date), soci::use(date),
-				soci::use(capabilities);
+				soci::use(capabilities), soci::use(subject);
 
 			return q->getLastInsertId();
 		}
 
-		// Update date if chat room exists. Do not touch capabilities.
-		*session << "UPDATE chat_room SET last_update_date = :lastUpdateDate"
-			"  WHERE id = :chatRoomId",
-			soci::use(date), soci::use(id);
-
 		return id;
 	}
 
-	long long MainDbPrivate::insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const tm &date) {
+	long long MainDbPrivate::insertChatRoom (
+		const ChatRoomId &chatRoomId,
+		int capabilities,
+		const tm &date,
+		const string &subject
+	) {
 		return insertChatRoom (
 			insertSipAddress(chatRoomId.getPeerAddress().asString()),
 			insertSipAddress(chatRoomId.getLocalAddress().asString()),
 			capabilities,
-			date
+			date,
+			subject
 		);
 	}
 
@@ -1416,7 +1418,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return chatRooms;
 	}
 
-	void MainDb::insertChatRoom (const ChatRoomId &chatRoomId, int capabilities) {
+	void MainDb::insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const string &subject) {
 		L_D();
 
 		if (!isConnected()) {
@@ -1427,14 +1429,15 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		DurationLogger durationLogger(
 			"Insert chat room: peer=" + chatRoomId.getPeerAddress().asString() +
 			", local=" + chatRoomId.getLocalAddress().asString() +
-			", capabilities=" + Utils::toString(capabilities) + ")."
+			", capabilities=" + Utils::toString(capabilities) +
+			", subject=" + subject + ")."
 		);
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
 
-		d->insertChatRoom(chatRoomId, capabilities, Utils::getTimeTAsTm(time(0)));
+		d->insertChatRoom(chatRoomId, capabilities, Utils::getTimeTAsTm(time(0)), subject);
 
 		tr.commit();
 
@@ -1589,7 +1592,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						remoteSipAddressId,
 						localSipAddressId,
 						static_cast<int>(ChatRoom::Capabilities::Basic),
-						date
+						date,
+						""
 					);
 
 					*session << "INSERT INTO conference_event (event_id, chat_room_id)"
@@ -1678,7 +1682,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return list<shared_ptr<ChatRoom>>();
 	}
 
-	void MainDb::insertChatRoom (const ChatRoomId &, int) {}
+	void MainDb::insertChatRoom (const ChatRoomId &, int, const string &) {}
 
 	void MainDb::deleteChatRoom (const ChatRoomId &) {}
 

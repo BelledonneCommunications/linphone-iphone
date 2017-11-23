@@ -104,10 +104,11 @@ void CorePrivate::deleteChatRoom (const ChatRoomId &chatRoomId) {
 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
-
-	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
-	ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
-	mainDb->insertChatRoom(chatRoomId, capabilities);
+	mainDb->insertChatRoom(
+		chatRoom->getChatRoomId(),
+		chatRoom->getCapabilities(),
+		chatRoom->getSubject()
+	);
 }
 
 void CorePrivate::deleteChatRoomWithDb (const ChatRoomId &chatRoomId) {
