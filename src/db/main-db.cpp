@@ -1410,6 +1410,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			dChatRoom->creationTime = Utils::getTmAsTimeT(creationDate);
 			dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateDate);
 
+			lInfo() << "Found chat room in DB: (peer=" <<
+				chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
+
 			chatRooms.push_back(chatRoom);
 		}
 
