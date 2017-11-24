@@ -509,8 +509,7 @@ void ChatMessagePrivate::send () {
 			ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
 			if (result == ChatMessageModifier::Result::Error) {
 				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
-				q->updateState(ChatMessage::State::NotDelivered);
-				store();
+				setState(ChatMessage::State::NotDelivered);
 				return;
 			} else if (result == ChatMessageModifier::Result::Suspended) {
 				currentSendStep |= ChatMessagePrivate::Step::Encryption;
