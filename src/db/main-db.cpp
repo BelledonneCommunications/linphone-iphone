@@ -453,7 +453,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					content = new Content();
 
 				content->setContentType(contentType);
-				content->setBody(row.get<string>(2));
+				content->setBody(row.get<string>(3));
 				chatMessage->addContent(*content);
 			}
 		}
