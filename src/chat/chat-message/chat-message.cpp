@@ -552,6 +552,13 @@ void ChatMessagePrivate::send () {
 	} else
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsString().c_str());
 
+	bool messageToBeStored = false;
+	for (Content *c : contents) {
+		if (c->getContentType() == ContentType::FileTransfer || c->getContentType() == ContentType::PlainText) {
+			messageToBeStored = true;
+		}
+	}
+
 	for (Content *content : contents) {
 		// Restore FileContents and remove FileTransferContents
 		if (content->getContentType() == ContentType::FileTransfer) {
@@ -564,7 +571,9 @@ void ChatMessagePrivate::send () {
 
 	q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
-	store();
+	if (messageToBeStored) {
+		store();
+	}
 
 	if (call && linphone_call_get_op(call) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
