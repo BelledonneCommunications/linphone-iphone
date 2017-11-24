@@ -285,7 +285,7 @@ void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
-	dConference->focus = make_shared<Participant>(addr);
+	dConference->focus->getPrivate()->setAddress(addr);
 	d->chatRoomId = ChatRoomId(addr, d->chatRoomId.getLocalAddress());
 	getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 }
