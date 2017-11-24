@@ -389,7 +389,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// 2 - Fetch contents.
 		{
 			soci::session *session = dbSession.getBackendSession<soci::session>();
-			const string query = "SELECT content_type.value, body FROM chat_message_content, content_type"
+			const string query = "SELECT content_type.id, content_type.value, body FROM chat_message_content, content_type"
 				"  WHERE event_id = :eventId AND content_type_id = content_type.id";
 			soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 			for (const auto &row : rows) {
@@ -1345,22 +1345,23 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return events;
 		}
 
-		string query = "SELECT id, type, date FROM event"
-			"  WHERE id IN ("
-			"    SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
-			"  )";
-		query += buildSqlEventFilter({
+		stringstream query;
+		query << 	"SELECT id, type, date FROM event"
+					"  WHERE id IN ("
+					"    SELECT event_id FROM conference_event WHERE chat_room_id = " << d->selectChatRoomId(chatRoomId) <<
+					"  )";
+		query << buildSqlEventFilter({
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 		}, mask, "AND");
-		query += "  ORDER BY date DESC";
+		query << "  ORDER BY date DESC";
 
-		if (end >= 0)
-			query += "  LIMIT " + Utils::toString(end + 1 - begin);
+		if (end > 0)
+			query << "  LIMIT " << Utils::toString(end - begin);
 		else
-			query += "  LIMIT -1";
+			query << "  LIMIT -1";
 
 		if (begin > 0)
-			query += "  OFFSET " + Utils::toString(begin);
+			query << "  OFFSET " << Utils::toString(begin);
 
 		DurationLogger durationLogger(
 			"Get history range of: (peer=" + chatRoomId.getPeerAddress().asString() +
@@ -1373,7 +1374,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
-		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(d->selectChatRoomId(chatRoomId)));
+		soci::rowset<soci::row> rows = (session->prepare << query.str());//, soci::use(static_cast<int>(d->selectChatRoomId(chatRoomId))));
 		for (const auto &row : rows) {
 			// See: http://soci.sourceforge.net/doc/master/backends/
 			// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
