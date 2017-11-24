@@ -404,11 +404,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// 2 - Fetch contents.
 		{
 			soci::session *session = dbSession.getBackendSession<soci::session>();
-			const string query = "SELECT content_type.id, content_type.value, body FROM chat_message_content, content_type"
+			const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body FROM chat_message_content, content_type"
 				"  WHERE event_id = :eventId AND content_type_id = content_type.id";
 			soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 			for (const auto &row : rows) {
-				ContentType contentType(row.get<string>(1));
+				ContentType contentType(row.get<string>(2));
 				Content *content;
 
 				if (contentType == ContentType::FileTransfer)
