@@ -1345,23 +1345,23 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return events;
 		}
 
-		stringstream query;
-		query << 	"SELECT id, type, date FROM event"
-					"  WHERE id IN ("
-					"    SELECT event_id FROM conference_event WHERE chat_room_id = " << d->selectChatRoomId(chatRoomId) <<
-					"  )";
-		query << buildSqlEventFilter({
+		string query = "SELECT id, type, date FROM event"
+			"  WHERE id IN ("
+			"    SELECT event_id FROM conference_event WHERE chat_room_id = " +
+			Utils::toString(d->selectChatRoomId(chatRoomId)) +
+			"  )";
+		query += buildSqlEventFilter({
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 		}, mask, "AND");
-		query << "  ORDER BY date DESC";
+		query += "  ORDER BY date DESC";
 
 		if (end > 0)
-			query << "  LIMIT " << Utils::toString(end - begin);
+			query += "  LIMIT " + Utils::toString(end - begin);
 		else
-			query << "  LIMIT -1";
+			query += "  LIMIT -1";
 
 		if (begin > 0)
-			query << "  OFFSET " << Utils::toString(begin);
+			query += "  OFFSET " + Utils::toString(begin);
 
 		DurationLogger durationLogger(
 			"Get history range of: (peer=" + chatRoomId.getPeerAddress().asString() +
@@ -1374,7 +1374,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
-		soci::rowset<soci::row> rows = (session->prepare << query.str());//, soci::use(static_cast<int>(d->selectChatRoomId(chatRoomId))));
+		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
 			// See: http://soci.sourceforge.net/doc/master/backends/
 			// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
