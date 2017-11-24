@@ -186,7 +186,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		int capabilities,
-		const tm &date,
+		const tm &creationTime,
 		const string &subject
 	) {
 		L_Q();
@@ -198,9 +198,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
 				", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 			*session << "INSERT INTO chat_room ("
-				"  peer_sip_address_id, local_sip_address_id, creation_date, last_update_date, capabilities, subject"
-				") VALUES (:peerSipAddressId, :localSipAddressId, :creationDate, :lastUpdateDate, :capabilities, :subject)",
-				soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(date), soci::use(date),
+				"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject"
+				") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject)",
+				soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
 				soci::use(capabilities), soci::use(subject);
 
 			return q->getLastInsertId();
@@ -212,14 +212,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	long long MainDbPrivate::insertChatRoom (
 		const ChatRoomId &chatRoomId,
 		int capabilities,
-		const tm &date,
+		const tm &creationTime,
 		const string &subject
 	) {
 		return insertChatRoom (
 			insertSipAddress(chatRoomId.getPeerAddress().asString()),
 			insertSipAddress(chatRoomId.getLocalAddress().asString()),
 			capabilities,
-			date,
+			creationTime,
 			subject
 		);
 	}
@@ -289,7 +289,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectGenericConferenceEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		switch (type) {
@@ -298,27 +298,27 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
-				return selectConferenceEvent(eventId, type, date, chatRoomId);
+				return selectConferenceEvent(eventId, type, creationTime, chatRoomId);
 
 			case EventLog::Type::ConferenceCallStart:
 			case EventLog::Type::ConferenceCallEnd:
-				return selectConferenceCallEvent(eventId, type, date, chatRoomId);
+				return selectConferenceCallEvent(eventId, type, creationTime, chatRoomId);
 
 			case EventLog::Type::ConferenceChatMessage:
-				return selectConferenceChatMessageEvent(eventId, type, date, chatRoomId);
+				return selectConferenceChatMessageEvent(eventId, type, creationTime, chatRoomId);
 
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
-				return selectConferenceParticipantEvent(eventId, type, date, chatRoomId);
+				return selectConferenceParticipantEvent(eventId, type, creationTime, chatRoomId);
 
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
 			case EventLog::Type::ConferenceParticipantDeviceRemoved:
-				return selectConferenceParticipantDeviceEvent(eventId, type, date, chatRoomId);
+				return selectConferenceParticipantDeviceEvent(eventId, type, creationTime, chatRoomId);
 
 			case EventLog::Type::ConferenceSubjectChanged:
-				return selectConferenceSubjectEvent(eventId, type, date, chatRoomId);
+				return selectConferenceSubjectEvent(eventId, type, creationTime, chatRoomId);
 		}
 
 		return nullptr;
@@ -327,12 +327,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceEvent (
 		long long,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		return make_shared<ConferenceEvent>(
 			type,
-			date,
+			creationTime,
 			chatRoomId
 		);
 	}
@@ -340,7 +340,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceCallEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		// TODO.
@@ -350,7 +350,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		L_Q();
@@ -368,20 +368,25 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		{
 			string fromSipAddress;
 			string toSipAddress;
+
+			tm messageTime;
+
 			string imdnMessageId;
+
 			int state;
 			int direction;
 			int isSecured;
 
 			soci::session *session = dbSession.getBackendSession<soci::session>();
-			*session << "SELECT from_sip_address.value, to_sip_address.value, imdn_message_id, state, direction, is_secured"
+			*session << "SELECT from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured"
 				"  FROM event, conference_chat_message_event, sip_address AS from_sip_address,"
 				"  sip_address AS to_sip_address"
 				"  WHERE event_id = :eventId"
 				"  AND event_id = event.id"
 				"  AND from_sip_address_id = from_sip_address.id"
 				"  AND to_sip_address_id = to_sip_address.id", soci::into(fromSipAddress), soci::into(toSipAddress),
-				soci::into(imdnMessageId), soci::into(state), soci::into(direction), soci::into(isSecured), soci::use(eventId);
+				soci::into(messageTime), soci::into(imdnMessageId), soci::into(state), soci::into(direction),
+				soci::into(isSecured), soci::use(eventId);
 
 			chatMessage = shared_ptr<ChatMessage>(new ChatMessage(
 				chatRoom,
@@ -392,6 +397,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			chatMessage->getPrivate()->forceFromAddress(IdentityAddress(fromSipAddress));
 			chatMessage->getPrivate()->forceToAddress(IdentityAddress(toSipAddress));
+
+			chatMessage->getPrivate()->setTime(Utils::getTmAsTimeT(messageTime));
 		}
 
 		// 2 - Fetch contents.
@@ -436,7 +443,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		// TODO: Use cache.
 		return make_shared<ConferenceChatMessageEvent>(
-			date,
+			creationTime,
 			chatMessage
 		);
 	}
@@ -444,7 +451,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		unsigned int notifyId;
@@ -460,7 +467,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		return make_shared<ConferenceParticipantEvent>(
 			type,
-			date,
+			creationTime,
 			chatRoomId,
 			notifyId,
 			IdentityAddress(participantAddress)
@@ -470,7 +477,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceParticipantDeviceEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		unsigned int notifyId;
@@ -490,7 +497,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		return make_shared<ConferenceParticipantDeviceEvent>(
 			type,
-			date,
+			creationTime,
 			chatRoomId,
 			notifyId,
 			IdentityAddress(participantAddress),
@@ -501,7 +508,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceSubjectEvent (
 		long long eventId,
 		EventLog::Type type,
-		time_t date,
+		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
 		unsigned int notifyId;
@@ -515,7 +522,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::into(notifyId), soci::into(subject), soci::use(eventId);
 
 		return make_shared<ConferenceSubjectEvent>(
-			date,
+			creationTime,
 			chatRoomId,
 			notifyId,
 			subject
@@ -528,7 +535,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		*session << "INSERT INTO event (type, date) VALUES (:type, :date)",
+		*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
 			soci::use(static_cast<int>(eventLog->getType())),
 			soci::use(Utils::getTimeTAsTm(eventLog->getCreationTime()));
 		return q->getLastInsertId();
@@ -553,7 +560,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 				"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(curChatRoomId);
 
-			*session << "UPDATE chat_room SET last_update_date = :lastUpdateDate"
+			*session << "UPDATE chat_room SET last_update_time = :lastUpdateTime"
 				"  WHERE id = :chatRoomId", soci::use(Utils::getTimeTAsTm(eventLog->getCreationTime())),
 				soci::use(curChatRoomId);
 		}
@@ -587,13 +594,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_chat_message_event ("
 			"  event_id, from_sip_address_id, to_sip_address_id,"
-			"  state, direction, imdn_message_id, is_secured"
+			"  time, state, direction, imdn_message_id, is_secured"
 			") VALUES ("
 			"  :eventId, :localSipaddressId, :remoteSipaddressId,"
-			"  :state, :direction, :imdnMessageId, :isSecured"
+			"  :time, :state, :direction, :imdnMessageId, :isSecured"
 			")", soci::use(eventId), soci::use(fromSipAddressId), soci::use(toSipAddressId),
-			soci::use(static_cast<int>(chatMessage->getState())), soci::use(static_cast<int>(chatMessage->getDirection())),
-			soci::use(chatMessage->getImdnMessageId()), soci::use(chatMessage->isSecured() ? 1 : 0);
+			soci::use(Utils::getTimeTAsTm(chatMessage->getTime())), soci::use(static_cast<int>(chatMessage->getState())),
+			soci::use(static_cast<int>(chatMessage->getDirection())), soci::use(chatMessage->getImdnMessageId()),
+			soci::use(chatMessage->isSecured() ? 1 : 0);
 
 		for (const Content *content : chatMessage->getContents())
 			insertContent(eventId, *content);
@@ -746,7 +754,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS event ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  type TINYINT UNSIGNED NOT NULL,"
-			"  date DATE NOT NULL"
+			"  creation_time DATE NOT NULL"
 			") " + charset;
 
 		*session <<
@@ -758,11 +766,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
-			// Dialog creation date.
-			"  creation_date DATE NOT NULL,"
+			// Dialog creation time.
+			"  creation_time DATE NOT NULL,"
 
-			// Last event date (call, message...).
-			"  last_update_date DATE NOT NULL,"
+			// Last event time (call, message...).
+			"  last_update_time DATE NOT NULL,"
 
 			// ConferenceChatRoom, BasicChatRoom, RTT...
 			"  capabilities TINYINT UNSIGNED NOT NULL,"
@@ -784,17 +792,34 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS chat_room_participant ("
+			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
+
 			"  chat_room_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 			"  participant_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
 
 			"  is_admin BOOLEAN NOT NULL,"
 
-			"  PRIMARY KEY (chat_room_id, participant_sip_address_id),"
+			"  UNIQUE (chat_room_id, participant_sip_address_id),"
 
 			"  FOREIGN KEY (chat_room_id)"
 			"    REFERENCES chat_room(id)"
 			"    ON DELETE CASCADE,"
 			"  FOREIGN KEY (participant_sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			") " + charset;
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS chat_room_participant_device ("
+			"  chat_room_participant_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+			"  participant_device_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + ","
+
+			"  PRIMARY KEY (chat_room_participant_id, participant_device_sip_address_id),"
+
+			"  FOREIGN KEY (chat_room_participant_id)"
+			"    REFERENCES chat_room_participant(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (participant_device_sip_address_id)"
 			"    REFERENCES sip_address(id)"
 			"    ON DELETE CASCADE"
 			") " + charset;
@@ -869,6 +894,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			"  from_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 			"  to_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+
+			"  time DATE,"
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
@@ -1161,7 +1188,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		const ChatRoomId &chatRoomId,
 		unsigned int lastNotifyId
 	) const {
-		static const string query = "SELECT id, type, date FROM event"
+		static const string query = "SELECT id, type, creation_time FROM event"
 			"  WHERE id IN ("
 			"    SELECT event_id FROM conference_notified_event WHERE event_id IN ("
 			"      SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
@@ -1353,7 +1380,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return events;
 		}
 
-		string query = "SELECT id, type, date FROM event"
+		string query = "SELECT id, type, creation_time FROM event"
 			"  WHERE id IN ("
 			"    SELECT event_id FROM conference_event WHERE chat_room_id = " +
 			Utils::toString(d->selectChatRoomId(chatRoomId)) +
@@ -1361,7 +1388,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		query += buildSqlEventFilter({
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 		}, mask, "AND");
-		query += "  ORDER BY date DESC";
+		query += "  ORDER BY creation_time DESC";
 
 		if (end > 0)
 			query += "  LIMIT " + Utils::toString(end - begin);
@@ -1441,10 +1468,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 // -----------------------------------------------------------------------------
 
 	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
-		static const string query = "SELECT peer_sip_address.value, local_sip_address.value, creation_date, last_update_date, capabilities, subject, last_notify_id"
+		static const string query = "SELECT peer_sip_address.value, local_sip_address.value, creation_time, last_update_time, capabilities, subject, last_notify_id"
 			"  FROM chat_room, sip_address AS peer_sip_address, sip_address AS local_sip_address"
 			"  WHERE chat_room.peer_sip_address_id = peer_sip_address.id AND chat_room.local_sip_address_id = local_sip_address.id"
-			"  ORDER BY last_update_date DESC";
+			"  ORDER BY last_update_time DESC";
 
 		L_D();
 
@@ -1474,8 +1501,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				continue;
 			}
 
-			tm creationDate = row.get<tm>(2);
-			tm lastUpdateDate = row.get<tm>(3);
+			tm creationTime = row.get<tm>(2);
+			tm lastUpdateTime = row.get<tm>(3);
 			int capabilities = row.get<int>(4);
 			string subject = row.get<string>(5);
 			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(6, 0));
@@ -1496,8 +1523,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				continue; // Not fetched.
 
 			ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
-			dChatRoom->creationTime = Utils::getTmAsTimeT(creationDate);
-			dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateDate);
+			dChatRoom->creationTime = Utils::getTmAsTimeT(creationTime);
+			dChatRoom->lastUpdateTime = Utils::getTmAsTimeT(lastUpdateTime);
 
 			lInfo() << "Found chat room in DB: (peer=" <<
 				chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
@@ -1632,7 +1659,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						continue;
 					}
 
-					const tm date = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
+					const tm creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
 
 					bool isNull;
 					const string url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
@@ -1674,8 +1701,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					}
 
 					soci::session *session = d->dbSession.getBackendSession<soci::session>();
-					*session << "INSERT INTO event (type, date) VALUES (:type, :date)",
-					soci::use(static_cast<int>(EventLog::Type::ConferenceChatMessage)), soci::use(date);
+					*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
+					soci::use(static_cast<int>(EventLog::Type::ConferenceChatMessage)), soci::use(creationTime);
 
 					long long eventId = getLastInsertId();
 					long long localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
@@ -1684,7 +1711,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						remoteSipAddressId,
 						localSipAddressId,
 						static_cast<int>(ChatRoom::Capabilities::Basic),
-						date,
+						creationTime,
 						""
 					);
 
@@ -1693,12 +1720,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 					*session << "INSERT INTO conference_chat_message_event ("
 						"  event_id, from_sip_address_id, to_sip_address_id,"
-						"  state, direction, imdn_message_id, is_secured"
+						"  time, state, direction, imdn_message_id, is_secured"
 						") VALUES ("
 						"  :eventId, :localSipAddressId, :remoteSipAddressId,"
-						"  :state, :direction, '', :isSecured"
+						"  :creationTime, :state, :direction, '', :isSecured"
 						")", soci::use(eventId), soci::use(localSipAddressId), soci::use(remoteSipAddressId),
-						soci::use(state), soci::use(direction), soci::use(message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0));
+						soci::use(creationTime), soci::use(state), soci::use(direction),
+						soci::use(message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0));
 
 					d->insertContent(eventId, content);
 					d->insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
