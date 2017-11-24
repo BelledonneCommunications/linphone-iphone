@@ -27,9 +27,9 @@
 #include "linphone/utils/utils.h"
 
 #include "chat/chat-message/chat-message-p.h"
-#include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
-#include "conference/participant.h"
+#include "chat/chat-room/client-group-chat-room.h"
+#include "conference/participant-p.h"
 #include "content/content-type.h"
 #include "content/content.h"
 #include "core/core-p.h"
@@ -1553,8 +1553,22 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				);
 				chatRoom->setSubject(subject);
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
+				list<shared_ptr<Participant>> participants;
 
-				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId, subject);
+				string query = "SELECT sip_address.value, is_admin"
+					"  FROM sip_address, chat_room, chat_room_participant"
+					"  WHERE chat_room.id = :chatRoomId"
+					"  AND sip_address.id = chat_room_participant.participant_sip_address_id"
+					"  AND chat_room_participant.chat_room_id = chat_room.id";
+
+				soci::rowset<soci::row> rows = (session->prepare << query);
+				for (const auto &row : rows) {
+					shared_ptr<Participant> participant = make_shared<Participant>(IdentityAddress(row.get<string>(0)));
+					participant->getPrivate()->setAdmin(!!row.get<int>(1));
+					participants.push_back(participant);
+				}
+
+				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId, subject, move(participants));
 			}
 
 			if (!chatRoom)

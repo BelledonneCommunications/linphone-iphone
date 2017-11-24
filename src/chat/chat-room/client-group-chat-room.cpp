@@ -100,7 +100,8 @@ RemoteConference(core, me, nullptr) {
 ClientGroupChatRoom::ClientGroupChatRoom (
 	const shared_ptr<Core> &core,
 	const ChatRoomId &chatRoomId,
-	const string &subject
+	const string &subject,
+	list<shared_ptr<Participant>> &&participants
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, chatRoomId),
 RemoteConference(core, chatRoomId.getLocalAddress(), nullptr) {
 	L_D();
@@ -109,6 +110,7 @@ RemoteConference(core, chatRoomId.getLocalAddress(), nullptr) {
 	dConference->focus = make_shared<Participant>(peerAddress);
 	dConference->conferenceAddress = peerAddress;
 	dConference->subject = subject;
+	dConference->participants = move(participants);
 	d->state = ChatRoom::State::Created;
 }
 

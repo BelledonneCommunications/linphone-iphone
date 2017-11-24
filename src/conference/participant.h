@@ -43,6 +43,7 @@ class Participant : public Object {
 	friend class LocalConference;
 	friend class LocalConferenceEventHandler;
 	friend class LocalConferenceEventHandlerPrivate;
+	friend class MainDb;
 	friend class MediaSessionPrivate;
 	friend class RemoteConference;
 	friend class ServerGroupChatRoom;
