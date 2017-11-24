@@ -52,7 +52,7 @@ public:
 	explicit Participant (const IdentityAddress &address);
 	explicit Participant (IdentityAddress &&address);
 
-	const IdentityAddress& getAddress () const;
+	const IdentityAddress &getAddress () const;
 	bool isAdmin () const;
 
 private:

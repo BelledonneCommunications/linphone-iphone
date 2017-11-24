@@ -80,40 +80,16 @@ shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoo
 
 void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
+	L_Q();
 
-	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
-	deleteChatRoom(chatRoomId);
+	q->deleteChatRoom(chatRoom);
 	chatRooms.push_back(chatRoom);
-	chatRoomsById[chatRoomId] = chatRoom;
-}
-
-void CorePrivate::deleteChatRoom (const ChatRoomId &chatRoomId) {
-	auto it = chatRoomsById.find(chatRoomId);
-	if (it != chatRoomsById.end()) {
-		auto it = find_if(chatRooms.begin(), chatRooms.end(), [&chatRoomId](const shared_ptr<ChatRoom> &chatRoom) {
-			return chatRoomId == chatRoom->getChatRoomId();
-		});
-		if (it != chatRooms.end()) {
-			chatRooms.erase(it);
-			return;
-		}
-		lError() << "Unable to remove chat room: (peer=" <<
-			chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
-	}
+	chatRoomsById[chatRoom->getChatRoomId()] = chatRoom;
 }
 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
-	mainDb->insertChatRoom(
-		chatRoom->getChatRoomId(),
-		chatRoom->getCapabilities(),
-		chatRoom->getSubject()
-	);
-}
-
-void CorePrivate::deleteChatRoomWithDb (const ChatRoomId &chatRoomId) {
-	deleteChatRoom(chatRoomId);
-	mainDb->deleteChatRoom(chatRoomId);
+	mainDb->insertChatRoom(chatRoom);
 }
 
 // -----------------------------------------------------------------------------
@@ -209,7 +185,21 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoomFromUri (const string &peerAd
 
 void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
 	CorePrivate *d = chatRoom->getCore()->getPrivate();
-	d->deleteChatRoomWithDb(chatRoom->getChatRoomId());
+
+	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
+	auto it = d->chatRoomsById.find(chatRoomId);
+	if (it != d->chatRoomsById.end()) {
+		auto it = find(d->chatRooms.begin(), d->chatRooms.end(), chatRoom);
+		if (it != d->chatRooms.end()) {
+			d->chatRooms.erase(it);
+			return;
+		}
+		lError() << "Unable to remove chat room: (peer=" <<
+			chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
+	}
+
+	d->mainDb->deleteChatRoom(chatRoomId);
 }
+
 
 LINPHONE_END_NAMESPACE

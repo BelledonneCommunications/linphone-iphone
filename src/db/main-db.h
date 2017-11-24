@@ -100,7 +100,7 @@ public:
 	// ---------------------------------------------------------------------------
 
 	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
-	void insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const std::string &subject);
+	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void deleteChatRoom (const ChatRoomId &chatRoomId);
 
 	// ---------------------------------------------------------------------------

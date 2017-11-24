@@ -39,9 +39,6 @@ public:
 	LinphoneCore *cCore = nullptr;
 
 private:
-	void deleteChatRoom (const ChatRoomId &chatRoomId);
-	void deleteChatRoomWithDb (const ChatRoomId &chatRoomId);
-
 	std::list<std::shared_ptr<ChatRoom>> chatRooms;
 	std::unordered_map<ChatRoomId, std::shared_ptr<ChatRoom>> chatRoomsById;
 

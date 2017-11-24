@@ -186,42 +186,59 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		int capabilities,
-		const tm &creationTime,
-		const string &subject
+		const tm &creationTime
 	) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
-		if (id < 0) {
-			lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
-				", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
-			*session << "INSERT INTO chat_room ("
-				"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject"
-				") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject)",
-				soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
-				soci::use(capabilities), soci::use(subject);
+		if (id >= 0)
+			return id;
 
-			return q->getLastInsertId();
-		}
+		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
+			", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
+		*session << "INSERT INTO chat_room ("
+			"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities"
+			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities)",
+			soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
+			soci::use(capabilities);
 
-		return id;
+		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertChatRoom (
-		const ChatRoomId &chatRoomId,
-		int capabilities,
-		const tm &creationTime,
-		const string &subject
-	) {
-		return insertChatRoom (
-			insertSipAddress(chatRoomId.getPeerAddress().asString()),
-			insertSipAddress(chatRoomId.getLocalAddress().asString()),
-			capabilities,
-			creationTime,
-			subject
-		);
+	long long MainDbPrivate::insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom) {
+		L_Q();
+
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
+		long long peerSipAddressId = selectSipAddressId(chatRoomId.getPeerAddress().asString());
+		long long localSipAddressId = selectSipAddressId(chatRoomId.getLocalAddress().asString());
+
+		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
+		if (id >= 0) {
+			lWarning() << "Unable to insert chat room (it already exists): (peer=" << peerSipAddressId <<
+				", local=" << localSipAddressId << ").";
+			return id;
+		}
+
+		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
+			", local=" << localSipAddressId << ").";
+
+		tm creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
+
+		*session << "INSERT INTO chat_room ("
+			"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject"
+			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject)",
+			soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
+			soci::use(static_cast<int>(chatRoom->getCapabilities())), soci::use(chatRoom->getSubject());
+
+		id = q->getLastInsertId();
+		for (const auto &participant : chatRoom->getParticipants())
+			insertChatRoomParticipant(id, selectSipAddressId(participant->getAddress().asString()), participant->isAdmin());
+
+		return id;
 	}
 
 	void MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
@@ -651,17 +668,36 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	long long MainDbPrivate::insertConferenceParticipantEvent (const shared_ptr<EventLog> &eventLog) {
-		long long eventId = insertConferenceNotifiedEvent(eventLog);
+		long long chatRoomId;
+		long long eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
 		if (eventId < 0)
 			return -1;
 
+		shared_ptr<ConferenceParticipantEvent> participantEvent =
+			static_pointer_cast<ConferenceParticipantEvent>(eventLog);
+
 		long long participantAddressId = insertSipAddress(
-			static_pointer_cast<ConferenceParticipantEvent>(eventLog)->getParticipantAddress().asString()
+			participantEvent->getParticipantAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_participant_event (event_id, participant_sip_address_id)"
 			"  VALUES (:eventId, :participantAddressId)", soci::use(eventId), soci::use(participantAddressId);
+
+		bool isAdmin = eventLog->getType() == EventLog::Type::ConferenceParticipantSetAdmin;
+		switch (eventLog->getType()) {
+			case EventLog::Type::ConferenceParticipantAdded:
+			case EventLog::Type::ConferenceParticipantSetAdmin:
+			case EventLog::Type::ConferenceParticipantUnsetAdmin:
+				insertChatRoomParticipant(chatRoomId, participantAddressId, isAdmin);
+				break;
+
+			case EventLog::Type::ConferenceParticipantRemoved:
+				// TODO: Deal with remove.
+
+			default:
+				break;
+		}
 
 		return eventId;
 	}
@@ -1537,7 +1573,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return chatRooms;
 	}
 
-	void MainDb::insertChatRoom (const ChatRoomId &chatRoomId, int capabilities, const string &subject) {
+	void MainDb::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 		L_D();
 
 		if (!isConnected()) {
@@ -1545,18 +1581,17 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return;
 		}
 
+		const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
 		DurationLogger durationLogger(
-			"Insert chat room: peer=" + chatRoomId.getPeerAddress().asString() +
-			", local=" + chatRoomId.getLocalAddress().asString() +
-			", capabilities=" + Utils::toString(capabilities) +
-			", subject=" + subject + ")."
+			"Insert chat room: (peer=" + chatRoomId.getPeerAddress().asString() +
+			", local=" + chatRoomId.getLocalAddress().asString() + ")."
 		);
 
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
 
-		d->insertChatRoom(chatRoomId, capabilities, Utils::getTimeTAsTm(time(0)), subject);
+		d->insertChatRoom(chatRoom);
 
 		tr.commit();
 
@@ -1711,8 +1746,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						remoteSipAddressId,
 						localSipAddressId,
 						static_cast<int>(ChatRoom::Capabilities::Basic),
-						creationTime,
-						""
+						creationTime
 					);
 
 					*session << "INSERT INTO conference_event (event_id, chat_room_id)"
