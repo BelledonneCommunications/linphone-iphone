@@ -1390,7 +1390,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				);
 
 			if (event)
-				events.push_back(event);
+				events.push_front(event);
 			else
 				lWarning() << "Unable to fetch event: " << eventId;
 		}
