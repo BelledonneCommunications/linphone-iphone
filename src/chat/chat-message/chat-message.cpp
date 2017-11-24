@@ -556,7 +556,7 @@ void ChatMessagePrivate::send () {
 
 	q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
-	store();
+	//store(); // Store will be done right below in the setState(InProgress)
 
 	if (call && linphone_call_get_op(call) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
