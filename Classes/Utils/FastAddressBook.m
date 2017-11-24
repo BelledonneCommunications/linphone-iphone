@@ -112,44 +112,79 @@
 
 - (FastAddressBook *)init {
 	if ((self = [super init]) != nil) {
-          store = [[CNContactStore alloc] init];
-          _addressBookMap = [NSMutableDictionary dictionary];
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[self reloadAllContacts];
-	   	});
+		store = [[CNContactStore alloc] init];
+		_addressBookMap = [NSMutableDictionary dictionary];
 	}
-        self.needToUpdate = FALSE;
-        if (floor(NSFoundationVersionNumber) >=
-            NSFoundationVersionNumber_iOS_9_x_Max) {
-          if ([CNContactStore class]) {
-            // ios9 or later
-            if (store == NULL)
-              store = [[CNContactStore alloc] init];
-            CNEntityType entityType = CNEntityTypeContacts;
-            if ([CNContactStore authorizationStatusForEntityType:entityType] ==
-                CNAuthorizationStatusNotDetermined) {
-              LOGD(@"CNContactStore requesting authorization");
-              [store requestAccessForEntityType:entityType
-                              completionHandler:^(BOOL granted,
-                                                  NSError *_Nullable error) {
-                                LOGD(@"CNContactStore authorization granted");
-                              }];
-            } else if ([CNContactStore
-                           authorizationStatusForEntityType:entityType] ==
-                       CNAuthorizationStatusAuthorized) {
-              LOGD(@"CNContactStore authorization granted");
-            }
-            [[NSNotificationCenter defaultCenter]
-                addObserver:self
-                   selector:@selector(updateAddressBook:)
-                       name:CNContactStoreDidChangeNotification
-                     object:nil];
-            //[self reload];
-            store = [[CNContactStore alloc] init];
-            [self reloadAllContacts];
-          }
-        }
-        return self;
+	self.needToUpdate = FALSE;
+	if (floor(NSFoundationVersionNumber) >= NSFoundationVersionNumber_iOS_9_x_Max) {
+		if ([CNContactStore class]) {
+			// ios9 or later
+			if (store == NULL)
+				store = [[CNContactStore alloc] init];
+			[self fetchContactsInBackGroundThread];
+			[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateAddressBook:) name:CNContactStoreDidChangeNotification object:nil];
+		}
+	}
+	return self;
+}
+
+- (void) fetchContactsInBackGroundThread{
+	
+	CNEntityType entityType = CNEntityTypeContacts;
+	[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
+		BOOL success = FALSE;
+		if(granted){
+			LOGD(@"CNContactStore authorization granted");
+			
+			NSError *contactError;
+			CNContactStore* store = [[CNContactStore alloc] init];
+			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
+			NSArray *keysToFetch = @[
+									 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+									 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
+									 CNContactPostalAddressesKey, CNContactIdentifierKey,
+									 CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
+									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey
+									 ];
+			CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
+			
+			success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact *__nonnull contact, BOOL *__nonnull stop) {
+				if (contactError) {
+				  NSLog(@"error fetching contacts %@",
+						contactError);
+				} else {
+					
+					dispatch_async(dispatch_get_main_queue(), ^{
+						Contact *newContact = [[Contact alloc] initWithCNContact:contact];
+						[self registerAddrsFor:newContact];
+					});
+					
+				}
+			}];
+		}
+
+	}];
+	// load Linphone friends
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		LinphoneFriendList *fl = lists->data;
+		const MSList *friends = linphone_friend_list_get_friends(fl);
+		while (friends) {
+			LinphoneFriend *f = friends->data;
+			// only append friends that are not native contacts (already added
+			// above)
+			if (linphone_friend_get_ref_key(f) == NULL) {
+				Contact *contact = [[Contact alloc] initWithFriend:f];
+				[self registerAddrsFor:contact];
+			}
+			friends = friends->next;
+		}
+		linphone_friend_list_update_subscriptions(fl);
+		lists = lists->next;
+	}
+	[NSNotificationCenter.defaultCenter
+	 postNotificationName:kLinphoneAddressBookUpdate
+	 object:self];
 }
 
 -(void) updateAddressBook:(NSNotification*) notif {
@@ -163,6 +198,7 @@
     [_addressBookMap removeAllObjects];
     // iOS 9 or later
     NSError *contactError;
+	CNContactStore* store = [[CNContactStore alloc] init];
     [store
         containersMatchingPredicate:[CNContainer
                                         predicateForContainersWithIdentifiers:@[
@@ -219,17 +255,26 @@
 }
 
 - (void)registerAddrsFor:(Contact *)contact {
-		for (NSString *phone in contact.phones) {
+	Contact* mContact = contact;
+		for (NSString *phone in mContact.phones) {
 			char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
 			NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
 			if (phone != NULL) {
-				[_addressBookMap setObject:contact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
+				if(_addressBookMap){
+					if(mContact){
+						[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
+					}else{
+						// Dosomte
+					}
+				
+				}
+					
 			}
 			if (normalizedPhone)
 				ms_free(normalizedPhone);
 		}
-		for (NSString *sip in contact.sipAddresses) {
-			[_addressBookMap setObject:contact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+		for (NSString *sip in mContact.sipAddresses) {
+			[_addressBookMap setObject:mContact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
 		}
 }
 
@@ -333,12 +378,11 @@
   [saveRequest deleteContact:[contact mutableCopy]];
   @try {
     NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:nil]);
-    [self reloadAllContacts];
+    [self fetchContactsInBackGroundThread];
   } @catch (NSException *exception) {
     NSLog(@"description = %@", [exception description]);
     return FALSE;
   }
-  [self reloadAllContacts];
   return TRUE;
 }
 
@@ -411,7 +455,7 @@
           [exception description]);
 	return FALSE;
   }
-	[self reloadAllContacts];
+	[self fetchContactsInBackGroundThread];
   return TRUE;
 }
 
