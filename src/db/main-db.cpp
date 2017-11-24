@@ -213,8 +213,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
-		long long peerSipAddressId = selectSipAddressId(chatRoomId.getPeerAddress().asString());
-		long long localSipAddressId = selectSipAddressId(chatRoomId.getLocalAddress().asString());
+		long long peerSipAddressId = insertSipAddress(chatRoomId.getPeerAddress().asString());
+		long long localSipAddressId = insertSipAddress(chatRoomId.getLocalAddress().asString());
 
 		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
 		if (id >= 0) {
@@ -236,7 +236,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		id = q->getLastInsertId();
 		for (const auto &participant : chatRoom->getParticipants())
-			insertChatRoomParticipant(id, selectSipAddressId(participant->getAddress().asString()), participant->isAdmin());
+			insertChatRoomParticipant(id, insertSipAddress(participant->getAddress().asString()), participant->isAdmin());
 
 		return id;
 	}
@@ -1552,8 +1552,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
 				);
 				chatRoom->setSubject(subject);
-			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference))
+			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
+
 				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId, subject);
+			}
 
 			if (!chatRoom)
 				continue; // Not fetched.
