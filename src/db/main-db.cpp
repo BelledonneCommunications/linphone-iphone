@@ -142,6 +142,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(content.getBodyAsString());
 
 		long long messageContentId = q->getLastInsertId();
+		if (content.getContentType().isFile()) {
+			const FileContent *fileContent = (const FileContent *)&content;
+			*session << "INSERT INTO chat_message_file_content (chat_message_content_id, name, size, path) VALUES "
+				" (:contentId, :name, :size, :path)",
+				soci::use(messageContentId), soci::use(fileContent->getFileName()), 
+				soci::use(fileContent->getFileSize()), soci::use(fileContent->getFilePath());
+		}
+
 		for (const auto &appData : content.getAppDataMap())
 			*session << "INSERT INTO chat_message_content_app_data (chat_message_content_id, name, data) VALUES"
 				"  (:messageContentId, :name, :data)",
