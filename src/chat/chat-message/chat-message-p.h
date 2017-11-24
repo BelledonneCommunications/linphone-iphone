@@ -148,8 +148,6 @@ private:
 	ContentType cContentType;
 	std::string cText;
 
-	std::string createImdnXml(Imdn::Type imdnType, LinphoneReason reason);
-
 	// TODO: Remove my comment. VARIABLES OK.
 	// Do not expose.
 
