@@ -42,32 +42,16 @@ int ChatRoomPrivate::createChatMessageFromDb (void *data, int argc, char **argv,
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::addTransientMessage (const shared_ptr<ChatMessage> &msg) {
-	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
-	if (iter == transientMessages.end())
-		transientMessages.push_back(msg);
+void ChatRoomPrivate::addTransientEvent (const shared_ptr<EventLog> &log) {
+	auto iter = find(transientEvents.begin(), transientEvents.end(), log);
+	if (iter == transientEvents.end())
+		transientEvents.push_back(log);
 }
 
-void ChatRoomPrivate::addWeakMessage (const shared_ptr<ChatMessage> &msg) {
-	weak_ptr<ChatMessage> weakptr(msg);
-	weakMessages.push_back(weakptr);
-}
-
-void ChatRoomPrivate::moveTransientMessageToWeakMessages (const shared_ptr<ChatMessage> &msg) {
-	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
-	if (iter != transientMessages.end()) {
-		/* msg is not transient anymore, we can remove it from our transient list and unref it */
-		addWeakMessage(msg);
-		removeTransientMessage(msg);
-	} else {
-		/* msg has already been removed from the transient messages, do nothing */
-	}
-}
-
-void ChatRoomPrivate::removeTransientMessage (const shared_ptr<ChatMessage> &msg) {
-	auto iter = find(transientMessages.begin(), transientMessages.end(), msg);
-	if (iter != transientMessages.end()) {
-		transientMessages.erase(iter);
+void ChatRoomPrivate::removeTransientEvent (const shared_ptr<EventLog> &log) {
+	auto iter = find(transientEvents.begin(), transientEvents.end(), log);
+	if (iter != transientEvents.end()) {
+		transientEvents.erase(iter);
 	}
 }
 
@@ -75,12 +59,6 @@ void ChatRoomPrivate::removeTransientMessage (const shared_ptr<ChatMessage> &msg
 
 void ChatRoomPrivate::release () {
 	isComposingHandler->stopTimers();
-
-	for (auto &message : weakMessages)
-		message.lock()->cancelFileTransfer();
-
-	for (auto &message : transientMessages)
-		message->cancelFileTransfer();
 }
 
 // -----------------------------------------------------------------------------
@@ -175,41 +153,15 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 	return 0;
 }
 
-shared_ptr<ChatMessage> ChatRoomPrivate::getTransientMessage (unsigned int storageId) const {
-	for (auto &message : transientMessages) {
-		if (message->getPrivate()->getStorageId() == storageId)
-			return message;
-	}
-	return nullptr;
-}
-
-std::shared_ptr<ChatMessage> ChatRoomPrivate::getWeakMessage (unsigned int storageId) const {
-	for (auto &message : weakMessages) {
-		try {
-			shared_ptr<ChatMessage> msg(message);
-			if (msg->getPrivate()->getStorageId() == storageId)
-				return msg;
-		} catch(const std::bad_weak_ptr& e) {}
-	}
-	return nullptr;
-}
-
 list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) {
 	// TODO: history.
 	return list<shared_ptr<ChatMessage>>();
-}
-
-void ChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &msg) {
-	msg->store();
 }
 
 void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 
 	// TODO: Check direction.
-
-	/* Add to transient list */
-	addTransientMessage(msg);
 
 	msg->getPrivate()->setTime(ms_time(0));
 	msg->getPrivate()->send();
@@ -221,8 +173,6 @@ void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 	if (cb) {
 		cb(cr, L_GET_C_BACK_PTR(event));
 	}
-
-	storeOrUpdateMessage(msg);
 
 	if (isComposing)
 		isComposing = false;

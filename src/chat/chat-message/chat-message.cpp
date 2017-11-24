@@ -518,7 +518,7 @@ void ChatMessagePrivate::send () {
 			if (result == ChatMessageModifier::Result::Error) {
 				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
 				q->updateState(ChatMessage::State::NotDelivered);
-				q->store();
+				store();
 				return;
 			} else if (result == ChatMessageModifier::Result::Suspended) {
 				currentSendStep |= ChatMessagePrivate::Step::Encryption;
@@ -585,10 +585,32 @@ void ChatMessagePrivate::store() {
 	shared_ptr<ConferenceChatMessageEvent> eventLog = chatEvent.lock();
 	if (eventLog) {
 		q->getChatRoom()->getCore()->getPrivate()->mainDb->updateEvent(eventLog);
+
+		if (direction == ChatMessage::Direction::Incoming) {
+			if (!hasFileTransferContent()) {
+				// Incoming message doesn't have any download waiting anymore, we can remove it's event from the transients
+				q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
+			}
+		} else {
+			if (state == ChatMessage::State::Delivered || state == ChatMessage::State::NotDelivered) {
+				// Once message has reached this state it won't change anymore so we can remove the event from the transients
+				q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
+			}
+		}
 	} else {
 		eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
 		chatEvent = eventLog;
 		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+
+		if (direction == ChatMessage::Direction::Incoming) {
+			if (hasFileTransferContent()) {
+				// Keep the event in the transient list, message storage can be updated in near future
+				q->getChatRoom()->getPrivate()->addTransientEvent(eventLog);
+			}
+		} else {
+			// Keep event in transient to be able to store in database state changes
+			q->getChatRoom()->getPrivate()->addTransientEvent(eventLog);
+		}
 	}
 }
 
@@ -760,32 +782,10 @@ void ChatMessage::removeCustomHeader (const string &headerName) {
 	d->customHeaders.erase(headerName);
 }
 
-void ChatMessage::store () {
-	L_D();
-
-	if (d->storageId != 0) {
-		/* The message has already been stored (probably because of file transfer), update it */
-		// TODO: history.
-		// linphone_chat_message_store_update(L_GET_C_BACK_PTR(this));
-	} else {
-		/* Store the new message */
-		// TODO: history.
-		// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
-	}
-}
-
 void ChatMessage::updateState (State state) {
 	L_D();
 
 	d->setState(state);
-	// TODO: history.
-	// linphone_chat_message_store_state(L_GET_C_BACK_PTR(this));
-
-	if (state == State::Delivered || state == State::NotDelivered) {
-		shared_ptr<ChatRoom> chatRoom = getChatRoom();
-		if (chatRoom)
-			chatRoom->getPrivate()->moveTransientMessageToWeakMessages(getSharedFromThis());
-	}
 }
 
 void ChatMessage::send () {

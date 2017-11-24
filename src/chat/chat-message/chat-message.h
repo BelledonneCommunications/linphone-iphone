@@ -65,7 +65,6 @@ public:
 	void sendDisplayNotification ();
 	void setImdnMessageId (const std::string &imdnMessageId);
 	void setIsSecured (bool isSecured);
-	void store ();
 	// ----- TODO: Remove me.
 
 	std::shared_ptr<ChatRoom> getChatRoom () const;

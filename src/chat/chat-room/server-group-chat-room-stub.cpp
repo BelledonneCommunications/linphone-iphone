@@ -57,8 +57,6 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
 
-void ServerGroupChatRoomPrivate::storeOrUpdateMessage (const shared_ptr<ChatMessage> &) {}
-
 LinphoneReason ServerGroupChatRoomPrivate::messageReceived (SalOp *, const SalMessage *) {
 	return LinphoneReasonNone;
 }

@@ -93,7 +93,6 @@ LINPHONE_PUBLIC mblk_t *_linphone_call_stats_get_received_rtcp (const LinphoneCa
 LINPHONE_PUBLIC LinphoneQualityReporting *linphone_call_log_get_quality_reporting(LinphoneCallLog *call_log);
 LINPHONE_PUBLIC reporting_session_report_t **linphone_quality_reporting_get_reports(LinphoneQualityReporting *qreporting);
 
-LINPHONE_PUBLIC bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *peerAddr, const LinphoneAddress *localAddr);
 
 LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);

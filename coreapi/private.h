@@ -489,7 +489,6 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, LinphonePrivate::SalCallOp *op);
 void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
-bctbx_list_t * linphone_chat_room_get_transient_messages(const LinphoneChatRoom *cr);
 LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void);
 /**/
 

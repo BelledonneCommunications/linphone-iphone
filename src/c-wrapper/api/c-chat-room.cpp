@@ -71,10 +71,6 @@ void linphone_chat_room_release (LinphoneChatRoom *cr) {
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->release();
 }
 
-void linphone_chat_room_remove_transient_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_PRIVATE_FROM_C_OBJECT(cr)->removeTransientMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
-}
-
 void linphone_chat_room_send_message (LinphoneChatRoom *cr, const char *msg) {
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createMessage(msg));
 }
@@ -172,10 +168,6 @@ LinphoneCall *linphone_chat_room_get_call (const LinphoneChatRoom *cr) {
 void linphone_chat_room_set_call (LinphoneChatRoom *cr, LinphoneCall *call) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
 		L_GET_PRIVATE_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->call = call;
-}
-
-bctbx_list_t *linphone_chat_room_get_transient_messages (const LinphoneChatRoom *cr) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE_FROM_C_OBJECT(cr)->getTransientMessages());
 }
 
 void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {

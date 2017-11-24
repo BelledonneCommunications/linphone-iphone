@@ -25,6 +25,7 @@
 #include "chat/notification/is-composing.h"
 #include "chat-room.h"
 #include "object/object-p.h"
+#include "event-log/event-log.h"
 
 // =============================================================================
 
@@ -37,14 +38,8 @@ public:
 
 	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
 
-	void addTransientMessage (const std::shared_ptr<ChatMessage> &msg);
-	void addWeakMessage (const std::shared_ptr<ChatMessage> &msg);
-	std::list<std::shared_ptr<ChatMessage>> getTransientMessages () const {
-		return transientMessages;
-	}
-
-	void moveTransientMessageToWeakMessages (const std::shared_ptr<ChatMessage> &msg);
-	void removeTransientMessage (const std::shared_ptr<ChatMessage> &msg);
+	void addTransientEvent (const std::shared_ptr<EventLog> &log);
+	void removeTransientEvent (const std::shared_ptr<EventLog> &log);
 
 	void release ();
 
@@ -55,11 +50,7 @@ public:
 	void sendIsComposingNotification ();
 
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
-	std::shared_ptr<ChatMessage> getTransientMessage (unsigned int storageId) const;
-	std::shared_ptr<ChatMessage> getWeakMessage (unsigned int storageId) const;
 	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
-
-	virtual void storeOrUpdateMessage (const std::shared_ptr<ChatMessage> &msg);
 
 	virtual LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
@@ -84,9 +75,7 @@ public:
 	ChatRoom::State state = ChatRoom::State::None;
 	bool isComposing = false;
 	std::list<Address> remoteIsComposing;
-	std::list<std::shared_ptr<ChatMessage>> transientMessages;
-
-	std::list<std::weak_ptr<ChatMessage>> weakMessages;
+	std::list<std::shared_ptr<EventLog>> transientEvents;
 
 	// TODO: Remove me. Must be present only in rtt chat room.
 	std::shared_ptr<ChatMessage> pendingMessage;

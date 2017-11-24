@@ -77,7 +77,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 
 			if (lp_config_get_int(cCore->config, "misc", "store_rtt_messages", 1) == 1)
-				storeOrUpdateMessage(pendingMessage);
+				 pendingMessage->getPrivate()->store();
 
 			chatMessageReceived(pendingMessage);
 			pendingMessage = nullptr;

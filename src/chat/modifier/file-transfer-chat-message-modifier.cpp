@@ -401,9 +401,6 @@ void FileTransferChatMessageModifier::processIoErrorUpload (const belle_sip_io_e
 	lError() << "I/O Error during file upload of msg [" << this << "]";
 	chatMessage->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-
-	if (chatRoom)
-		chatRoom->getPrivate()->removeTransientMessage(chatMessage);
 }
 
 static void _chat_message_process_auth_requested_upload (void *data, belle_sip_auth_event *event) {
@@ -415,9 +412,6 @@ void FileTransferChatMessageModifier::processAuthRequestedUpload (const belle_si
 	lError() << "Error during file upload: auth requested for msg [" << this << "]";
 	chatMessage->updateState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
-
-	if (chatRoom)
-		chatRoom->getPrivate()->removeTransientMessage(chatMessage);
 }
 
 int FileTransferChatMessageModifier::uploadFile () {
