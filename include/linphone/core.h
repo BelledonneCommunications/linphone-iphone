@@ -1403,6 +1403,8 @@ LINPHONE_PUBLIC const char *linphone_core_get_primary_contact(LinphoneCore *lc);
 **/
 LINPHONE_PUBLIC const char * linphone_core_get_identity(LinphoneCore *lc);
 
+LINPHONE_PUBLIC char * linphone_core_get_device_identity(LinphoneCore *lc);
+
 /**
  * Tells LinphoneCore to guess local hostname automatically in primary contact.
  * @ingroup proxies

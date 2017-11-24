@@ -234,8 +234,11 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 
 bool Conference::isMe (const IdentityAddress &addr) const {
 	L_D();
-	IdentityAddress simpleAddr(addr);
-	return d->me->getAddress() == simpleAddr;
+	IdentityAddress cleanedAddr(addr);
+	cleanedAddr.setGruu("");
+	IdentityAddress cleanedMeAddr(d->me->getAddress());
+	cleanedMeAddr.setGruu("");
+	return cleanedMeAddr == cleanedAddr;
 }
 
 LINPHONE_END_NAMESPACE

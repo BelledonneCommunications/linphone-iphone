@@ -184,6 +184,7 @@ void RemoteConferenceEventHandler::subscribe (const ChatRoomId &chatRoomId) {
 	d->chatRoomId = chatRoomId;
 	LinphoneAddress *lAddr = linphone_address_new(d->chatRoomId.getPeerAddress().asString().c_str());
 	d->lev = linphone_core_create_subscribe(d->conf->getCore()->getCCore(), lAddr, "conference", 600);
+	d->lev->op->set_from(d->chatRoomId.getLocalAddress().asString().c_str());
 	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", Utils::toString(d->lastNotify).c_str());
 	linphone_address_unref(lAddr);
 	linphone_event_set_internal(d->lev, TRUE);

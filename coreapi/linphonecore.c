@@ -3368,6 +3368,21 @@ const char * linphone_core_get_identity(LinphoneCore *lc){
 	return from;
 }
 
+char * linphone_core_get_device_identity(LinphoneCore *lc) {
+	char *identity = NULL;
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
+	if (proxy) {
+		const LinphoneAddress *contactAddr = linphone_proxy_config_get_contact(proxy);
+		if (contactAddr)
+			identity = linphone_address_as_string(contactAddr);
+		else
+			identity = bctbx_strdup(linphone_proxy_config_get_identity(proxy));
+	} else {
+		identity = bctbx_strdup(linphone_core_get_primary_contact(lc));
+	}
+	return identity;
+}
+
 const char * linphone_core_get_route(LinphoneCore *lc){
 	LinphoneProxyConfig *proxy=linphone_core_get_default_proxy_config(lc);
 	const char *route=NULL;
@@ -3548,11 +3563,9 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 
 void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy){
 	bctbx_list_t *routes=NULL;
-	const LinphoneAddress *contactAddr = nullptr;
 	const char *identity;
 
 	if (proxy){
-		contactAddr = linphone_proxy_config_get_contact(proxy);
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
 			op->set_privacy(linphone_proxy_config_get_privacy(proxy));
@@ -3565,12 +3578,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 	}
 
 	op->set_to_address(L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress());
-	if (op->getUseGruuInFrom() && contactAddr && linphone_address_has_uri_param(contactAddr, "gr")) {
-		char *contactAddrStr = linphone_address_as_string_uri_only(contactAddr);
-		op->set_from(contactAddrStr);
-		bctbx_free(contactAddrStr);
-	} else
-		op->set_from(identity);
+	op->set_from(identity);
 	op->set_sent_custom_header(headers);
 	op->set_realm(linphone_proxy_config_get_realm(proxy));
 

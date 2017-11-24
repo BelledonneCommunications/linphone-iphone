@@ -478,7 +478,6 @@ void ChatMessagePrivate::send () {
 		LinphoneAddress *peer = linphone_address_new(q->getToAddress().asString().c_str());
 		/* Sending out of call */
 		salOp = op = new SalMessageOp(core->getCCore()->sal);
-		op->setUseGruuInFrom(true);
 		linphone_configure_op(
 			core->getCCore(), op, peer, getSalCustomHeaders(),
 			!!lp_config_get_int(core->getCCore()->config, "sip", "chat_msg_with_contact", 0)
@@ -486,6 +485,8 @@ void ChatMessagePrivate::send () {
 		op->set_user_pointer(L_GET_C_BACK_PTR(q));     /* If out of call, directly store msg */
 		linphone_address_unref(peer);
 	}
+	op->set_from(q->getFromAddress().asString().c_str());
+	op->set_to(q->getToAddress().asString().c_str());
 
 	// ---------------------------------------
 	// Start of message modification

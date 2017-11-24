@@ -452,7 +452,6 @@ void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
 void linphone_call_delete_upnp_session(LinphoneCall *call);
 int _linphone_core_apply_transports(LinphoneCore *lc);
-const char * linphone_core_get_identity(LinphoneCore *lc);
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);

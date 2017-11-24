@@ -84,9 +84,6 @@ public:
 
 	void set_sent_custom_header(SalCustomHeader* ch);
 
-	bool getUseGruuInFrom () { return useGruuInFrom; }
-	void setUseGruuInFrom (bool value) { useGruuInFrom = value; }
-
 	void enable_cnx_ip_to_0000_if_sendonly(bool_t yesno) {this->_cnx_ip_to_0000_if_sendonly_enabled = yesno;}
 	bool_t cnx_ip_to_0000_if_sendonly_enabled() const {return this->_cnx_ip_to_0000_if_sendonly_enabled;}
 
@@ -256,7 +253,6 @@ protected:
 	bool_t has_auth_pending = FALSE;
 	bool_t supports_session_timers = FALSE;
 	bool_t op_released = FALSE;
-	bool useGruuInFrom = false;
 
 	friend class Sal;
 };

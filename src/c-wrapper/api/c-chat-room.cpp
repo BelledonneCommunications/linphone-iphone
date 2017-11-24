@@ -351,8 +351,16 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, addr);
 	linphone_address_unref(addr);
 	string from;
-	if (proxy)
-		from = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
+	if (proxy) {
+		const LinphoneAddress *contactAddr = linphone_proxy_config_get_contact(proxy);
+		if (contactAddr) {
+			char *cFrom = linphone_address_as_string(contactAddr);
+			from = string(cFrom);
+			bctbx_free(cFrom);
+		} else {
+			from = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_proxy_config_get_identity_address(proxy))->asString();
+		}
+	}
 	if (from.empty())
 		from = linphone_core_get_primary_contact(core);
 	LinphonePrivate::IdentityAddress me(from);
