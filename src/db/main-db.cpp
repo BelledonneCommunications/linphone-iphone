@@ -235,6 +235,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(static_cast<int>(chatRoom->getCapabilities())), soci::use(chatRoom->getSubject());
 
 		id = q->getLastInsertId();
+
+		if (!chatRoom->canHandleParticipants())
+			return id;
+
 		shared_ptr<Participant> me = chatRoom->getMe();
 		insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
 		for (const auto &participant : chatRoom->getParticipants())

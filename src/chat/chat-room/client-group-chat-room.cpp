@@ -107,12 +107,17 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 RemoteConference(core, me->getAddress(), nullptr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
+
 	dConference->focus = make_shared<Participant>(peerAddress);
 	dConference->conferenceAddress = peerAddress;
 	dConference->subject = subject;
 	dConference->participants = move(participants);
+
 	d->state = ChatRoom::State::Created;
+
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
+
+	dConference->eventHandler->subscribe(getChatRoomId());
 }
 
 shared_ptr<Core> ClientGroupChatRoom::getCore () const {
