@@ -430,7 +430,8 @@ int FileTransferChatMessageModifier::uploadFile () {
 	cbs.process_io_error = _chat_message_process_io_error_upload;
 	cbs.process_auth_requested = _chat_message_process_auth_requested_upload;
 
-	int err = startHttpTransfer(linphone_core_get_file_transfer_server(chatMessage->getCore()->getCCore()), "POST", &cbs);
+	const char *url = linphone_core_get_file_transfer_server(chatMessage->getCore()->getCCore());
+	int err = startHttpTransfer(url ? url : "", "POST", &cbs);
 	return err;
 }
 
