@@ -1158,7 +1158,7 @@ void MediaSessionPrivate::forceStreamsDirAccordingToState (SalMediaDescription *
 
 bool MediaSessionPrivate::generateB64CryptoKey (size_t keyLength, char *keyOut, size_t keyOutSize) {
 	uint8_t *tmp = (uint8_t *)ms_malloc0(keyLength);
-	if (sal_get_random_bytes(tmp, keyLength)) {
+	if (!sal_get_random_bytes(tmp, keyLength)) {
 		lError() << "Failed to generate random key";
 		ms_free(tmp);
 		return false;
