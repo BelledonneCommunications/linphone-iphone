@@ -119,9 +119,9 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 			// Sort contacts by first letter. We need to translate the name to ASCII first, because of UTF-8
 			// issues. For instance expected order would be:  Alberta(A tilde) before ASylvano.
-	/*		NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+			NSData *name2ASCIIdata = [name dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
 			NSString *name2ASCII = [[NSString alloc] initWithData:name2ASCIIdata encoding:NSASCIIStringEncoding];
-	*/		return name;
+			return name2ASCII;
 		}
 	}
 	return nil;
@@ -133,7 +133,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
 	addressBookMap = [LinphoneManager.instance getLinphoneManagerAddressBookMap];
 	BOOL updated = [LinphoneManager.instance getContactsUpdated];
-	if(([previous isEqualToString:@"ContactsDetailsView"] && updated)|| [addressBookMap count] == 0){
+	if(([previous isEqualToString:@"ContactsDetailsView"] && updated) || updated || [addressBookMap count] == 0){
 	[LinphoneManager.instance setContactsUpdated:FALSE];
 	@synchronized(addressBookMap) {
 		//Set all contacts from ContactCell to nil

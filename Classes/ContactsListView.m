@@ -165,6 +165,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphoneButton.selected = FALSE;
 		[tableController loadData];
 	} else if (view == ContactsLinphone && !linphoneButton.selected) {
+		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = linphoneButton.frame.origin.x;
 		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
