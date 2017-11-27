@@ -81,17 +81,19 @@
 		}
 	}
 
-	LinphoneChatMessage *last_message = linphone_chat_room_get_user_data(chatRoom);
-	if (last_message) {
-		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_message];
+	LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
+	if (last_msg) {
+		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_msg];
 		// shorten long messages
 		if ([message length] > 50) {
 			message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
 		}
 		_chatContentLabel.text = message;
 		_chatLatestTimeLabel.text =
-			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_message) withFormat:LinphoneDateChatList];
+			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_msg) withFormat:LinphoneDateChatList];
 		_chatLatestTimeLabel.hidden = NO;
+		linphone_chat_message_unref(last_msg);
+		linphone_chat_room_set_user_data(chatRoom, NULL);
 	} else {
 		_chatContentLabel.text = nil;
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);

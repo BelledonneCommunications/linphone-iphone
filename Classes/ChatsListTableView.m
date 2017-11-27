@@ -96,19 +96,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		bctbx_list_t *history = linphone_chat_room_get_history_events(iter->data, 1);
-		LinphoneChatMessage *last_msg = NULL;
-		// TODO [2017/11/07]: get_last_message directly via chat room API
-		while (history) {
-			LinphoneEventLog *event = history->data;
-			if (linphone_event_log_get_type(event) != LinphoneEventLogTypeConferenceChatMessage) {
-				history = history->next;
-				continue;
-			}
-			last_msg = linphone_chat_message_ref(linphone_event_log_get_chat_message(event));
-			bctbx_list_free(history);
-			break;
-		}
+		LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chat_room);
 		linphone_chat_room_set_user_data(chat_room, last_msg);
 		sorted = bctbx_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room),
 										  (bctbx_compare_func)sorted_history_comparison);
@@ -118,9 +106,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 static void chatTable_free_chatrooms(void *data) {
-	LinphoneChatMessage *lastMsg = linphone_chat_room_get_user_data(data);
-	if (lastMsg) {
-		linphone_chat_message_unref(lastMsg);
+	LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(data);
+	if (last_msg) {
+		linphone_chat_message_unref(last_msg);
 		linphone_chat_room_set_user_data(data, NULL);
 	}
 	linphone_chat_room_unref(data);
