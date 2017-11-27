@@ -1504,7 +1504,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 // -----------------------------------------------------------------------------
 
 	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
-		static const string query = "SELECT peer_sip_address.value, local_sip_address.value, creation_time, last_update_time, capabilities, subject, last_notify_id"
+		static const string query = "SELECT chat_room.id, peer_sip_address.value, local_sip_address.value, creation_time, last_update_time, capabilities, subject, last_notify_id"
 			"  FROM chat_room, sip_address AS peer_sip_address, sip_address AS local_sip_address"
 			"  WHERE chat_room.peer_sip_address_id = peer_sip_address.id AND chat_room.local_sip_address_id = local_sip_address.id"
 			"  ORDER BY last_update_time DESC";
@@ -1528,8 +1528,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
 			ChatRoomId chatRoomId = ChatRoomId(
-				IdentityAddress(row.get<string>(0)),
-				IdentityAddress(row.get<string>(1))
+				IdentityAddress(row.get<string>(1)),
+				IdentityAddress(row.get<string>(2))
 			);
 			shared_ptr<ChatRoom> chatRoom = core->findChatRoom(chatRoomId);
 			if (chatRoom) {
@@ -1537,11 +1537,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				continue;
 			}
 
-			tm creationTime = row.get<tm>(2);
-			tm lastUpdateTime = row.get<tm>(3);
-			int capabilities = row.get<int>(4);
-			string subject = row.get<string>(5);
-			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(6, 0));
+			tm creationTime = row.get<tm>(3);
+			tm lastUpdateTime = row.get<tm>(4);
+			int capabilities = row.get<int>(5);
+			string subject = row.get<string>(6);
+			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(7, 0));
 
 			// TODO: Use me.
 			(void)lastNotifyId;
@@ -1555,9 +1555,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
 				list<shared_ptr<Participant>> participants;
 
+				long long dbChatRoomId = getBackend() == AbstractDb::Sqlite3
+					? static_cast<long long>(row.get<int>(0))
+					: row.get<long long>(0);
+
 				string query = "SELECT sip_address.value, is_admin"
 					"  FROM sip_address, chat_room, chat_room_participant"
-					"  WHERE chat_room.id = :chatRoomId"
+					"  WHERE chat_room.id = " + Utils::toString(dbChatRoomId) +
 					"  AND sip_address.id = chat_room_participant.participant_sip_address_id"
 					"  AND chat_room_participant.chat_room_id = chat_room.id";
 
