@@ -128,7 +128,6 @@
 
 - (IBAction)onCallClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-	LOGE(@"=====>>>> onCallClick() : %@ ",  [NSString stringWithUTF8String:linphone_address_as_string(addr)] );
 	[LinphoneManager.instance call:addr];
 	if (addr)
 		linphone_address_destroy(addr);

@@ -199,10 +199,10 @@ void assistant_activate_phone_number_link(LinphoneAccountCreator *creator, Linph
 		}
 		[PhoneMainView.instance popToView:DialerView.compositeViewDescription];
 		[[NSNotificationCenter defaultCenter] postNotificationName:kLinphoneAddressBookUpdate object:NULL];
-                [LinphoneManager.instance.fastAddressBook reloadAllContacts];
-        } else {
-          [thiz showErrorPopup:resp];
-        }
+		[LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
+	} else {
+		[thiz showErrorPopup:resp];
+	}
 }
 
 #pragma mark - other

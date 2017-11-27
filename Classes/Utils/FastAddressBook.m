@@ -192,68 +192,6 @@
 	self.needToUpdate = TRUE;
 }
 
-- (BOOL)reloadAllContacts {
-  BOOL success = FALSE;
-  if ([CNContactStore class]) {
-    [_addressBookMap removeAllObjects];
-    // iOS 9 or later
-    NSError *contactError;
-	CNContactStore* store = [[CNContactStore alloc] init];
-    [store
-        containersMatchingPredicate:[CNContainer
-                                        predicateForContainersWithIdentifiers:@[
-                                          store.defaultContainerIdentifier
-                                        ]]
-                              error:&contactError];
-    NSArray *keysToFetch = @[
-      CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
-      CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
-      CNContactPostalAddressesKey, CNContactIdentifierKey,
-      CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-      CNInstantMessageAddressUsernameKey, CNContactImageDataKey
-    ];
-    CNContactFetchRequest *request =
-        [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
-	  
-    success =
-        [store enumerateContactsWithFetchRequest:request
-                                           error:&contactError
-                                      usingBlock:^(CNContact *__nonnull contact,
-                                                   BOOL *__nonnull stop) {
-                                        if (contactError) {
-                                          NSLog(@"error fetching contacts %@",
-                                                contactError);
-                                        } else {
-										  Contact *newContact = [[Contact alloc]
-                                              initWithCNContact:contact];
-                                          [self registerAddrsFor:newContact];
-										 }
-                                      }];
-    // load Linphone friends
-    const MSList *lists = linphone_core_get_friends_lists(LC);
-    while (lists) {
-      LinphoneFriendList *fl = lists->data;
-      const MSList *friends = linphone_friend_list_get_friends(fl);
-      while (friends) {
-        LinphoneFriend *f = friends->data;
-        // only append friends that are not native contacts (already added
-        // above)
-        if (linphone_friend_get_ref_key(f) == NULL) {
-          Contact *contact = [[Contact alloc] initWithFriend:f];
-          [self registerAddrsFor:contact];
-        }
-        friends = friends->next;
-      }
-      linphone_friend_list_update_subscriptions(fl);
-      lists = lists->next;
-    }
-  }
-  [NSNotificationCenter.defaultCenter
-      postNotificationName:kLinphoneAddressBookUpdate
-                    object:self];
-  return success;
-}
-
 - (void)registerAddrsFor:(Contact *)contact {
 	Contact* mContact = contact;
 		for (NSString *phone in mContact.phones) {
@@ -374,44 +312,45 @@
 }
 
 - (BOOL)deleteCNContact:(CNContact *)contact {
-  CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-  [saveRequest deleteContact:[contact mutableCopy]];
-  @try {
-    NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:nil]);
-    [self fetchContactsInBackGroundThread];
-  } @catch (NSException *exception) {
-    NSLog(@"description = %@", [exception description]);
-    return FALSE;
-  }
-  return TRUE;
+	CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
+	[saveRequest deleteContact:[contact mutableCopy]];
+	@try {
+		BOOL success = [store executeSaveRequest:saveRequest error:nil];
+		NSLog(@"Success %d", success);
+		if(success)
+			[self fetchContactsInBackGroundThread];
+	} @catch (NSException *exception) {
+		NSLog(@"description = %@", [exception description]);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 - (BOOL)deleteAllContacts {
   NSArray *keys = @[ CNContactPhoneNumbersKey ];
   NSString *containerId = store.defaultContainerIdentifier;
-  NSPredicate *predicate =
-      [CNContact predicateForContactsInContainerWithIdentifier:containerId];
+  NSPredicate *predicate = [CNContact predicateForContactsInContainerWithIdentifier:containerId];
   NSError *error;
   NSArray *cnContacts = [store unifiedContactsMatchingPredicate:predicate
                                                     keysToFetch:keys
-                                                          error:&error];
-  if (error) {
-    NSLog(@"error fetching contacts %@", error);
-    return FALSE;
-  } else {
-    CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-    for (CNContact *contact in cnContacts) {
-      [saveRequest deleteContact:[contact mutableCopy]];
-    }
-    @try {
-      NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:nil]);
-    } @catch (NSException *exception) {
-      NSLog(@"description = %@", [exception description]);
-      return FALSE;
-    }
+														  error:&error];
+	if (error) {
+		NSLog(@"error fetching contacts %@", error);
+		return FALSE;
+	} else {
+		CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
+		for (CNContact *contact in cnContacts) {
+		  [saveRequest deleteContact:[contact mutableCopy]];
+		}
+		@try {
+			NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:nil]);
+		} @catch (NSException *exception) {
+			NSLog(@"description = %@", [exception description]);
+			return FALSE;
+		}
 	  NSLog(@"Deleted contacts %lu", (unsigned long)cnContacts.count);
-  }
-  return TRUE;
+	}
+	return TRUE;
 }
 
 - (BOOL)saveContact:(Contact *)contact {
@@ -446,14 +385,12 @@
 	}
   NSError *saveError;
   @try {
-    NSLog(@"Success %d",
-          [store executeSaveRequest:saveRequest error:&saveError]);
-	   [self updateFriend:contact];
+	  NSLog(@"Success %d", [store executeSaveRequest:saveRequest error:&saveError]);
+	  [self updateFriend:contact];
 	  [LinphoneManager.instance setContactsUpdated:TRUE];
   } @catch (NSException *exception) {
-    NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@",
-          [exception description]);
-	return FALSE;
+	  NSLog(@"=====>>>>> CNContact SaveRequest failed : description = %@", [exception description]);
+	  return FALSE;
   }
 	[self fetchContactsInBackGroundThread];
   return TRUE;

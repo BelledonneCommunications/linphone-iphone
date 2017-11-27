@@ -2181,7 +2181,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
 	// reload friends
-        [self.fastAddressBook reloadAllContacts];
+        [self.fastAddressBook fetchContactsInBackGroundThread];
 
         // reset network state to trigger a new network connectivity assessment
         linphone_core_set_network_reachable(theLinphoneCore, FALSE);

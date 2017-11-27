@@ -91,7 +91,7 @@
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
-                [instance.fastAddressBook reloadAllContacts];
+                [instance.fastAddressBook fetchContactsInBackGroundThread];
                 instance.fastAddressBook.needToUpdate = FALSE;
                 const MSList *lists = linphone_core_get_friends_lists(LC);
                 while (lists) {
@@ -968,7 +968,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
 	[LinphoneManager.instance startLinphoneCore];
-        [LinphoneManager.instance.fastAddressBook reloadAllContacts];
+        [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 #pragma mark - Prevent ImagePickerView from rotating
