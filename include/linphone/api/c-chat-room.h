@@ -202,6 +202,13 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_events (LinphoneCha
  */
 LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end);
 
+/**
+ * Gets the last chat message sent or received in this chat room
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which last message should be retrieved
+ * @return the latest #LinphoneChatMessage
+ */
+LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_room_get_last_message_in_history(LinphoneChatRoom *cr);
+
 LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id);
 
 /**

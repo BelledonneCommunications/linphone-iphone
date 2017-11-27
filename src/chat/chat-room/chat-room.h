@@ -58,6 +58,8 @@ public:
 
 	virtual CapabilitiesMask getCapabilities () const = 0;
 
+	std::shared_ptr<ChatMessage> getLastMessageInHistory() const;
+
 	// TODO: Remove useless functions.
 	void compose ();
 	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);

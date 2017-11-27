@@ -447,6 +447,10 @@ list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) 
 	return list<shared_ptr<ChatMessage>>();
 }
 
+shared_ptr<ChatMessage> ChatRoom::getLastMessageInHistory() const {
+	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
+}
+
 int ChatRoom::getUnreadChatMessagesCount () {
 	return getCore()->getPrivate()->mainDb->getUnreadChatMessagesCount(getChatRoomId());
 }
