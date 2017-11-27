@@ -1049,7 +1049,7 @@ LinphoneCallState CallSession::getState () const {
 
 string CallSession::getRemoteUserAgent () const {
 	L_D();
-	if (d->op)
+	if (d->op && d->op->get_remote_ua())
 		return d->op->get_remote_ua();
 	return string();
 }

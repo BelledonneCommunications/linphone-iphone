@@ -4317,7 +4317,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string
 	if (d->currentParams == msp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
 	d->iceAgent->checkSession(IR_Controlling, true);
-	if (d->params) {
+	if (msp) {
 #if 0
 		call->broken = FALSE;
 #endif
