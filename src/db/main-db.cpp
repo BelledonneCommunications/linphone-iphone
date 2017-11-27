@@ -1581,7 +1581,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					shared_ptr<Participant> participant = make_shared<Participant>(IdentityAddress(row.get<string>(0)));
 					participant->getPrivate()->setAdmin(!!row.get<int>(1));
 
-					if (participant->getAddress() == chatRoomId.getPeerAddress())
+					if (participant->getAddress() == chatRoomId.getLocalAddress())
 						me = participant;
 					else
 						participants.push_back(participant);

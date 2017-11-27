@@ -90,8 +90,8 @@ public:
 
 	ChatRoomId chatRoomId;
 
-	time_t creationTime = -1;
-	time_t lastUpdateTime = -1;
+	time_t creationTime = std::time(nullptr);
+	time_t lastUpdateTime = std::time(nullptr);
 
 private:
 	L_DECLARE_PUBLIC(ChatRoom);
