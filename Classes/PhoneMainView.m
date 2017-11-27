@@ -261,12 +261,12 @@ static RootViewManager *rootViewManagerInstance = nil;
 #pragma mark - Event Functions
 
 - (void)textReceived:(NSNotification *)notif {
-	LinphoneAddress *from = [[notif.userInfo objectForKey:@"from_address"] pointerValue];
+	LinphoneChatMessage *msg = [[notif.userInfo objectForKey:@"message"] pointerValue];
 	NSString *callID = [notif.userInfo objectForKey:@"call-id"];
 	[self updateApplicationBadgeNumber];
-	LinphoneChatRoom *room = from ? linphone_core_get_chat_room(LC, from) : NULL;
+	LinphoneChatRoom *room = msg ? linphone_chat_message_get_chat_room(msg) : NULL;
 
-	if (from == nil || room == NULL)
+	if (!room)
 		return;
 
 	ChatConversationView *view = VIEW(ChatConversationView);
