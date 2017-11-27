@@ -96,6 +96,7 @@ public:
 	std::string getRemoteAddressAsString () const;
 	std::string getRemoteContact () const;
 	const MediaSessionParams *getRemoteParams () const;
+	std::string getRemoteUserAgent () const;
 	float getSpeakerVolumeGain () const;
 	LinphoneCallState getState () const;
 	LinphoneCallStats *getStats (LinphoneStreamType type) const;

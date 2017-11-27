@@ -38,11 +38,13 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	_linphone_call_constructor, _linphone_call_destructor,
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *currentCbs; /* The current LinphoneCallCbs object used to call a callback */
+	char *authenticationTokenCache;
 	LinphoneCallParams *currentParamsCache;
 	LinphoneCallParams *paramsCache;
 	LinphoneCallParams *remoteParamsCache;
 	LinphoneAddress *remoteAddressCache;
 	char *remoteContactCache;
+	char *remoteUserAgentCache;
 	/* TODO: all the fields need to be removed */
 	struct _LinphoneCore *core;
 	LinphoneErrorInfo *ei;
@@ -713,14 +715,13 @@ const LinphoneErrorInfo *linphone_call_get_error_info (const LinphoneCall *call)
 }
 
 const char *linphone_call_get_remote_user_agent (LinphoneCall *call) {
-#if 0
-	if (call->op){
-		return sal_op_get_remote_ua (call->op);
-	}
-	return nullptr;
-#else
-	return nullptr;
-#endif
+	string ua = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteUserAgent();
+	if (ua.empty())
+		return nullptr;
+	if (call->remoteUserAgentCache)
+		bctbx_free(call->remoteUserAgentCache);
+	call->remoteUserAgentCache = bctbx_strdup(ua.c_str());
+	return call->remoteUserAgentCache;
 }
 
 const char * linphone_call_get_remote_contact (LinphoneCall *call) {
@@ -734,7 +735,13 @@ const char * linphone_call_get_remote_contact (LinphoneCall *call) {
 }
 
 const char *linphone_call_get_authentication_token (LinphoneCall *call) {
-	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken());
+	string token = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getAuthenticationToken();
+	if (token.empty())
+		return nullptr;
+	if (call->authenticationTokenCache)
+		bctbx_free(call->authenticationTokenCache);
+	call->authenticationTokenCache = bctbx_strdup(token.c_str());
+	return call->authenticationTokenCache;
 }
 
 bool_t linphone_call_get_authentication_token_verified (const LinphoneCall *call) {

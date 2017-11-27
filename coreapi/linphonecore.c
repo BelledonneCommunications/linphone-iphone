@@ -532,6 +532,7 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 void linphone_core_set_log_level_mask(unsigned int loglevel) {
 	//we only have 2 domain for now ortp and belle-sip
 	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, (int)loglevel);
+	bctbx_set_log_level_mask("mediastreamer", (int)loglevel);
 	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log lvel for all domains*/
 	sal_set_log_level((OrtpLogLevel)loglevel);
 }

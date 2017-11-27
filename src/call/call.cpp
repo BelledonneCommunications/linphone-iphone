@@ -475,6 +475,11 @@ const MediaSessionParams *Call::getRemoteParams () const {
 	return static_cast<MediaSession *>(d->getActiveSession().get())->getRemoteParams();
 }
 
+string Call::getRemoteUserAgent () const {
+	L_D();
+	return d->getActiveSession()->getRemoteUserAgent();
+}
+
 float Call::getSpeakerVolumeGain () const {
 	L_D();
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getSpeakerVolumeGain();

@@ -926,7 +926,7 @@ int MediaSessionPrivate::selectFixedPort (int streamIndex, pair<int, int> portRa
 int MediaSessionPrivate::selectRandomPort (int streamIndex, pair<int, int> portRange) {
 	for (int nbTries = 0; nbTries < 100; nbTries++) {
 		bool alreadyUsed = false;
-		int triedPort = (static_cast<int>(ortp_random()) % (portRange.second - portRange.first) + portRange.first) & ~0x1;
+		int triedPort = static_cast<int>((ortp_random() % (portRange.second - portRange.first) + portRange.first) & ~0x1);
 		if (triedPort < portRange.first) triedPort = portRange.first + 2;
 		for (const bctbx_list_t *elem = linphone_core_get_calls(core); elem != nullptr; elem = bctbx_list_next(elem)) {
 			LinphoneCall *lcall = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(elem));
