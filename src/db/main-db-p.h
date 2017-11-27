@@ -57,6 +57,8 @@ private:
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
 	long long selectChatRoomId (const ChatRoomId &chatRoomId) const;
 
+	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);
+
 	// ---------------------------------------------------------------------------
 	// Events API.
 	// ---------------------------------------------------------------------------

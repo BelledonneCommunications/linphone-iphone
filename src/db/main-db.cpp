@@ -303,6 +303,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return selectChatRoomId(peerSipAddressId, localSipAddressId);
 	}
 
+	void MainDbPrivate::deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM chat_room_participant"
+			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :participantSipAddressId",
+			soci::use(chatRoomId), soci::use(participantSipAddressId);
+	}
+
 // -----------------------------------------------------------------------------
 
 	shared_ptr<EventLog> MainDbPrivate::selectGenericConferenceEvent (
@@ -695,7 +702,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				break;
 
 			case EventLog::Type::ConferenceParticipantRemoved:
-				// TODO: Deal with remove.
+				deleteChatRoomParticipant(chatRoomId, participantAddressId);
+				break;
 
 			default:
 				break;
