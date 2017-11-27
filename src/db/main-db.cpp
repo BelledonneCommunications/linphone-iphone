@@ -1391,19 +1391,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return list<shared_ptr<ChatMessage>>();
 	}
 
-	shared_ptr<ChatMessage> MainDb::getLastChatMessage(const ChatRoomId &chatRoomId) const {
-		list<shared_ptr<EventLog>> chatList = getHistory (chatRoomId, 1, Filter::ConferenceChatMessageFilter);
-		if (chatList.size() == 0)
+	shared_ptr<ChatMessage> MainDb::getLastChatMessage (const ChatRoomId &chatRoomId) const {
+		list<shared_ptr<EventLog>> chatList = getHistory(chatRoomId, 1, Filter::ConferenceChatMessageFilter);
+		if (chatList.empty())
 			return nullptr;
 
-		L_ASSERT(chatList.size() == 1);
-		shared_ptr<EventLog> chatEvent = chatList.front();
-		L_ASSERT(chatEvent->getType() == EventLog::Type::ConferenceChatMessage);
-		return static_pointer_cast<ConferenceChatMessageEvent>(chatEvent)->getChatMessage();
+		return static_pointer_cast<ConferenceChatMessageEvent>(chatList.front())->getChatMessage();
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const ChatRoomId &chatRoomId, int nLast, FilterMask mask) const {
-		return getHistoryRange(chatRoomId, 0, nLast - 1, mask);
+		return getHistoryRange(chatRoomId, 0, nLast, mask);
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistoryRange (
