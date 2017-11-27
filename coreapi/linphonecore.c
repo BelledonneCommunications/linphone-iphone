@@ -2019,6 +2019,10 @@ static void linphone_core_start(LinphoneCore * lc) {
 #endif
 
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
+
+	new(&lc->cppCore) std::shared_ptr<Core>();
+	lc->cppCore = Core::create(lc);
+
 	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
@@ -2276,9 +2280,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	lc->sal->set_user_pointer(lc);
 	lc->sal->set_callbacks(&linphone_sal_callbacks);
-
-	new(&lc->cppCore) std::shared_ptr<Core>();
-	lc->cppCore = Core::create(lc);
 
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
