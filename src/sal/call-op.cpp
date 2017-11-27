@@ -255,7 +255,10 @@ int SalCallOp::parse_sdp_body(const Content &body,belle_sdp_session_description_
 		return 0;
 	}
 
-	*session_desc = belle_sdp_session_description_parse(body.getBodyAsString().c_str());
+	string strBody = body.getBodyAsString();
+	if (strBody.empty())
+		return 0;
+	*session_desc = belle_sdp_session_description_parse(strBody.c_str());
 	if (*session_desc == NULL) {
 		ms_error("Failed to parse SDP message.");
 		*error = SalReasonNotAcceptable;
@@ -330,7 +333,7 @@ void SalCallOp::sdp_process(){
 
 void SalCallOp::handle_body_from_response(belle_sip_response_t* response) {
 	SalReason reason;
-	belle_sdp_session_description_t* sdp;
+	belle_sdp_session_description_t* sdp = nullptr;
 	Content body = extract_body(BELLE_SIP_MESSAGE(response));
 	if (this->remote_media){
 		sal_media_description_unref(this->remote_media);
@@ -568,7 +571,7 @@ SalReason SalCallOp::process_body_for_invite(belle_sip_request_t* invite) {
 	Content body = extract_body(BELLE_SIP_MESSAGE(invite));
 	if (!body.isValid()) return SalReasonUnsupportedContent;
 
-	if (body.getContentType() == ContentType::Sdp) {
+	if ((body.getContentType() == ContentType::Sdp) || (body.getContentType().isEmpty() && body.isEmpty())) {
 		belle_sdp_session_description_t* sdp;
 		if (parse_sdp_body(body, &sdp, &reason) == 0) {
 			if (sdp) {

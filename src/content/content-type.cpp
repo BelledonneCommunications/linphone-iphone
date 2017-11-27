@@ -151,6 +151,11 @@ void ContentType::setParameter (const string &parameter) {
 	d->parameter = parameter;
 }
 
+bool ContentType::isEmpty () const {
+	L_D();
+	return d->type.empty() && d->subType.empty();
+}
+
 bool ContentType::isValid () const {
 	L_D();
 	return !d->type.empty() && !d->subType.empty();

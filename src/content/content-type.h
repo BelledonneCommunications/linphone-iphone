@@ -45,6 +45,7 @@ public:
 	bool operator== (const std::string &contentType) const = delete;
 	bool operator!= (const std::string &contentType) const = delete;
 
+	bool isEmpty () const;
 	bool isValid () const;
 	bool isFile () const;
 

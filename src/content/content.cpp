@@ -153,7 +153,7 @@ bool Content::isEmpty () const {
 
 bool Content::isValid () const {
 	L_D();
-	return d->contentType.isValid() || d->body.empty();
+	return d->contentType.isValid() || (d->contentType.isEmpty() && d->body.empty());
 }
 
 LinphoneContent *Content::toLinphoneContent () const {

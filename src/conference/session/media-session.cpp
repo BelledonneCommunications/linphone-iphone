@@ -3143,19 +3143,17 @@ void MediaSessionPrivate::updateStreams (SalMediaDescription *newMd, LinphoneCal
 				ms_message("Playing ringback tone, will restart the streams.");
 #endif
 			else {
-#if 0
-				if (call->all_muted && (targetState == LinphoneCallStreamsRunning)) {
+				if (allMuted && (targetState == LinphoneCallStreamsRunning)) {
 					lInfo() << "Early media finished, unmuting inputs...";
 					/* We were in early media, now we want to enable real media */
-					call->all_muted = FALSE;
+					allMuted = false;
 					if (audioStream)
 						linphone_core_enable_mic(core, linphone_core_mic_enabled(core));
 #ifdef VIDEO_ENABLED
 					if (videoStream && cameraEnabled)
-						linphone_call_enable_camera(call, linphone_call_camera_enabled(call));
+						q->enableCamera(q->cameraEnabled());
 #endif
 				}
-#endif
 				if (mdChanged == SAL_MEDIA_DESCRIPTION_UNCHANGED) {
 					/* FIXME ZRTP, might be restarted in any cases? */
 					lInfo() << "No need to restart streams, SDP is unchanged";
@@ -4201,11 +4199,11 @@ LinphoneStatus MediaSession::resume () {
 	if (d->audioStream)
 		audio_stream_play(d->audioStream, nullptr);
 	d->makeLocalMediaDescription();
+	sal_media_description_set_dir(d->localDesc, SalStreamSendRecv);
 	if (!d->core->sip_conf.sdp_200_ack)
 		d->op->set_local_media_description(d->localDesc);
 	else
 		d->op->set_local_media_description(nullptr);
-	sal_media_description_set_dir(d->localDesc, SalStreamSendRecv);
 	string subject = "Call resuming";
 	if (d->params->getPrivate()->getInConference() && !getCurrentParams()->getPrivate()->getInConference())
 		subject = "Conference";
