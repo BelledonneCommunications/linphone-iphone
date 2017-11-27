@@ -333,9 +333,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
-	if (composingVisible == visible)
-		return;
-
 	CGRect keyboardFrame = [_messageView frame];
 	CGRect newComposingFrame = [_composeIndicatorView frame];
 	CGRect newTableFrame = [_tableController.tableView frame];
@@ -351,7 +348,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), composingAddresses];
 		} else {
 			while (addresses) {
-				composingAddresses = [composingAddresses stringByAppendingString:@", "];
+				if (![composingAddresses isEqualToString:@""])
+					composingAddresses = [composingAddresses stringByAppendingString:@", "];
 				composingAddresses = [composingAddresses stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)]];
 				addresses = addresses->next;
 			}
