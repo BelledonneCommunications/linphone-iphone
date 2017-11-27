@@ -37,14 +37,13 @@ public:
 	std::string subject;
 
 protected:
-	Conference *mPublic = nullptr;
-
 	std::shared_ptr<Participant> activeParticipant;
+	std::shared_ptr<Participant> me;
+
+	Conference *mPublic = nullptr;
 
 private:
 	CallListener *callListener = nullptr;
-
-	std::shared_ptr<Participant> me;
 
 	L_DECLARE_PUBLIC(Conference);
 };

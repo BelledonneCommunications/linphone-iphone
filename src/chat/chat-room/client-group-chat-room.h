@@ -41,7 +41,8 @@ public:
 
 	ClientGroupChatRoom (
 		const std::shared_ptr<Core> &core,
-		const ChatRoomId &chatRoomId,
+		const IdentityAddress &peerAddress,
+		std::shared_ptr<Participant> &me,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants
 	);

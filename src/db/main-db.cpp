@@ -235,6 +235,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(static_cast<int>(chatRoom->getCapabilities())), soci::use(chatRoom->getSubject());
 
 		id = q->getLastInsertId();
+		shared_ptr<Participant> me = chatRoom->getMe();
+		insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
 		for (const auto &participant : chatRoom->getParticipants())
 			insertChatRoomParticipant(id, insertSipAddress(participant->getAddress().asString()), participant->isAdmin());
 
@@ -1577,13 +1579,24 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					"  AND chat_room_participant.chat_room_id = chat_room.id";
 
 				soci::rowset<soci::row> rows = (session->prepare << query);
+				shared_ptr<Participant> me;
 				for (const auto &row : rows) {
 					shared_ptr<Participant> participant = make_shared<Participant>(IdentityAddress(row.get<string>(0)));
 					participant->getPrivate()->setAdmin(!!row.get<int>(1));
-					participants.push_back(participant);
+
+					if (participant->getAddress() == chatRoomId.getPeerAddress())
+						me = participant;
+					else
+						participants.push_back(participant);
 				}
 
-				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId, subject, move(participants));
+				if (!me) {
+					lError() << "Unable to find me in: (peer=" + chatRoomId.getPeerAddress().asString() +
+						", local=" + chatRoomId.getLocalAddress().asString() + ").";
+					continue;
+				}
+
+				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId.getPeerAddress(), me, subject, move(participants));
 			}
 
 			if (!chatRoom)
