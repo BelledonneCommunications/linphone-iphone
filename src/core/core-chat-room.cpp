@@ -190,16 +190,10 @@ void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
 	auto it = d->chatRoomsById.find(chatRoomId);
 	if (it != d->chatRoomsById.end()) {
 		auto it = find(d->chatRooms.begin(), d->chatRooms.end(), chatRoom);
-		if (it != d->chatRooms.end()) {
-			d->chatRooms.erase(it);
-			return;
-		}
-		lError() << "Unable to remove chat room: (peer=" <<
-			chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
+		L_ASSERT(it != d->chatRooms.end());
+		d->chatRooms.erase(it);
+		d->mainDb->deleteChatRoom(chatRoomId);
 	}
-
-	d->mainDb->deleteChatRoom(chatRoomId);
 }
-
 
 LINPHONE_END_NAMESPACE
