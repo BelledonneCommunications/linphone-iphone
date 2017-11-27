@@ -200,7 +200,7 @@ int ClientGroupChatRoom::getNbParticipants () const {
 	return RemoteConference::getNbParticipants();
 }
 
-list<shared_ptr<Participant>> ClientGroupChatRoom::getParticipants () const {
+const list<shared_ptr<Participant>> &ClientGroupChatRoom::getParticipants () const {
 	return RemoteConference::getParticipants();
 }
 

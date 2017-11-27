@@ -610,7 +610,7 @@ float MediaSessionPrivate::aggregateQualityRatings (float audioRating, float vid
 void MediaSessionPrivate::setState (LinphoneCallState newState, const string &message) {
 	L_Q();
 	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
-	shared_ptr<CallSession> session = q->getSharedFromThis();
+	shared_ptr<CallSession> sessionRef = q->getSharedFromThis();
 	CallSessionPrivate::setState(newState, message);
 	updateReportingCallState();
 }
@@ -2092,7 +2092,7 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 				updateLocalMediaDescriptionFromIce();
 				op->set_local_media_description(localDesc);
 				deferIncomingNotification = false;
-				static_cast<CallSession *>(q)->startIncomingNotification();
+				startIncomingNotification();
 				break;
 			default:
 				break;

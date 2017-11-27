@@ -37,6 +37,7 @@ public:
 	int computeDuration () const;
 	virtual void initializeParamsAccordingToIncomingCallParams ();
 	virtual void setState (LinphoneCallState newState, const std::string &message);
+	void startIncomingNotification ();
 	bool startPing ();
 	void setPingTime (int value) { pingTime = value; }
 

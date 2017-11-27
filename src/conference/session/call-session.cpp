@@ -177,6 +177,27 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 	}
 }
 
+void CallSessionPrivate::startIncomingNotification () {
+	L_Q();
+	if (listener)
+		listener->onIncomingCallSessionStarted(q->getSharedFromThis());
+
+	setState(LinphoneCallIncomingReceived, "Incoming CallSession");
+
+	/* From now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
+	 * We can then drop our background task. */
+#if 0
+	if (call->bg_task_id!=0) {
+		sal_end_background_task(call->bg_task_id);
+		call->bg_task_id=0;
+	}
+#endif
+
+	if (state == LinphoneCallIncomingReceived) {
+		handleIncomingReceivedStateInIncomingNotification();
+	}
+}
+
 bool CallSessionPrivate::startPing () {
 	if (core->sip_conf.ping_with_options) {
 		/* Defer the start of the call after the OPTIONS ping for outgoing call or
@@ -850,23 +871,7 @@ void CallSession::startIncomingNotification () {
 		return;
 	}
 
-	if (d->listener)
-		d->listener->onIncomingCallSessionStarted(getSharedFromThis());
-
-	d->setState(LinphoneCallIncomingReceived, "Incoming CallSession");
-
-	/* From now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
-	 * We can then drop our background task. */
-#if 0
-	if (call->bg_task_id!=0) {
-		sal_end_background_task(call->bg_task_id);
-		call->bg_task_id=0;
-	}
-#endif
-
-	if (d->state == LinphoneCallIncomingReceived) {
-		d->handleIncomingReceivedStateInIncomingNotification();
-	}
+	d->startIncomingNotification();
 }
 
 int CallSession::startInvite (const Address *destination, const string &subject, const Content *content) {

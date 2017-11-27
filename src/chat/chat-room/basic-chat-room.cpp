@@ -42,7 +42,10 @@ BasicChatRoom::BasicChatRoom (
 	BasicChatRoomPrivate &p,
 	const std::shared_ptr<Core> &core,
 	const ChatRoomId &chatRoomId
-) : ChatRoom(p, core, chatRoomId) {}
+) : ChatRoom(p, core, chatRoomId) {
+	L_D();
+	d->participants.push_back(make_shared<Participant>(getPeerAddress()));
+}
 
 BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
 	return static_cast<CapabilitiesMask>(Capabilities::Basic);
@@ -87,8 +90,9 @@ int BasicChatRoom::getNbParticipants () const {
 	return 1;
 }
 
-list<shared_ptr<Participant>> BasicChatRoom::getParticipants () const {
-	return { make_shared<Participant>(getPeerAddress()) };
+const list<shared_ptr<Participant>> &BasicChatRoom::getParticipants () const {
+	L_D();
+	return d->participants;
 }
 
 void BasicChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {

@@ -55,7 +55,7 @@ public:
 	const IdentityAddress &getConferenceAddress () const override;
 	std::shared_ptr<Participant> getMe () const override;
 	int getNbParticipants () const override;
-	std::list<std::shared_ptr<Participant>> getParticipants () const override;
+	const std::list<std::shared_ptr<Participant>> &getParticipants () const override;
 	const std::string &getSubject () const override;
 	void join () override;
 	void leave () override;

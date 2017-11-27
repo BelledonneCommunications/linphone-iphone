@@ -35,6 +35,7 @@ private:
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 
 	std::string subject;
+	std::list<std::shared_ptr<Participant>> participants;
 
 	L_DECLARE_PUBLIC(BasicChatRoom);
 };

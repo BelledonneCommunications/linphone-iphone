@@ -88,7 +88,7 @@ int Conference::getNbParticipants () const {
 	return static_cast<int>(d->participants.size());
 }
 
-list<shared_ptr<Participant>> Conference::getParticipants () const {
+const list<shared_ptr<Participant>> &Conference::getParticipants () const {
 	L_D();
 	return d->participants;
 }
