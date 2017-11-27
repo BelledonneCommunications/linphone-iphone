@@ -1371,7 +1371,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return;
 
 		string query = "UPDATE FROM conference_chat_message_event"
-			"  SET state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+			"  SET state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed)) + " ";
 		query += "WHERE";
 		if (chatRoomId.isValid())
 			query += " event_id IN ("
