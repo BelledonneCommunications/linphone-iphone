@@ -1,5 +1,5 @@
 /*
- * main-db-event-key.cpp
+ * main-db-key.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -18,7 +18,6 @@
  */
 
 #include "core/core-p.h"
-#include "main-db-event-key.h"
 #include "main-db-key-p.h"
 #include "main-db-p.h"
 
@@ -30,15 +29,39 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-MainDbEventKey::MainDbEventKey () : MainDbKey() {};
+MainDbKey::MainDbKey () : ClonableObject(*new MainDbKeyPrivate) {}
 
-MainDbEventKey::MainDbEventKey (const shared_ptr<Core> &core, long long storageId) : MainDbKey(core, storageId) {}
+MainDbKey::MainDbKey (const shared_ptr<Core> &core, long long storageId) : MainDbKey() {
+	L_D();
+	d->core = core;
+	d->storageId = storageId;
+}
 
-MainDbEventKey::~MainDbEventKey () {
+MainDbKey::MainDbKey (const MainDbKey &src) : MainDbKey() {
+	L_D();
+	const MainDbKeyPrivate *dSrc = src.getPrivate();
+
+	d->core = dSrc->core;
+	d->storageId = dSrc->storageId;
+}
+
+MainDbKey::~MainDbKey () {}
+
+MainDbKey &MainDbKey::operator= (const MainDbKey &src) {
 	L_D();
 
-	if (isValid())
-		d->core.lock()->getPrivate()->mainDb->getPrivate()->storageIdToEvent.erase(d->storageId);
+	if (this != &src) {
+		const MainDbKeyPrivate *dSrc = src.getPrivate();
+		d->core = dSrc->core;
+		d->storageId = dSrc->storageId;
+	}
+
+	return *this;
+}
+
+bool MainDbKey::isValid () const {
+	L_D();
+	return !d->core.expired() && d->storageId >= 0;
 }
 
 LINPHONE_END_NAMESPACE

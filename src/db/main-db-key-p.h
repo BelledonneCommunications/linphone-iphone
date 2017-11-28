@@ -1,5 +1,5 @@
 /*
- * main-db-event-key.h
+ * main-db-key-p.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,25 +17,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _MAIN_DB_EVENT_KEY_H_
-#define _MAIN_DB_EVENT_KEY_H_
+#ifndef _MAIN_DB_KEY_P_H_
+#define _MAIN_DB_KEY_P_H_
 
 #include "main-db-key.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class MainDbEventKey : public MainDbKey {
+class MainDbKeyPrivate : public ClonableObjectPrivate {
 public:
-	MainDbEventKey ();
-	MainDbEventKey (const std::shared_ptr<Core> &core, long long storageId);
-	~MainDbEventKey ();
-
-private:
-	L_DECLARE_PRIVATE(MainDbKey);
+	std::weak_ptr<Core> core;
+	long long storageId = -1;
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _MAIN_DB_EVENT_KEY_H_
+#endif // ifndef _MAIN_DB_KEY_P_H_

@@ -37,7 +37,7 @@
 #include "event-log/event-log-p.h"
 #include "event-log/events.h"
 #include "logger/logger.h"
-#include "main-db-event-key-p.h"
+#include "main-db-key-p.h"
 #include "main-db-p.h"
 
 // =============================================================================
@@ -676,7 +676,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbEventKeyPrivate *dEventKey = dEventLog->dbKey.getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
 		const long long &eventId = dEventKey->storageId;
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -1143,9 +1143,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				break;
 		}
 
-		tr.commit();
-
-		soFarSoGood = storageId >= 0;
+		if ((soFarSoGood = storageId >= 0))
+			tr.commit();
 
 		L_END_LOG_EXCEPTION
 
@@ -1211,7 +1210,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return false;
 		}
 
-		MainDbEventKeyPrivate *dEventKey = dEventLog->dbKey.getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
 		shared_ptr<Core> core = dEventKey->core.lock();
 		L_ASSERT(core);
 
