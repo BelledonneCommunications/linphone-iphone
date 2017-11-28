@@ -170,7 +170,6 @@ Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = remoteConference;
-	// TODO : d->lastNotify = lastNotify
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
@@ -182,13 +181,16 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 void RemoteConferenceEventHandler::subscribe (const ChatRoomId &chatRoomId) {
 	L_D();
 	d->chatRoomId = chatRoomId;
-	LinphoneAddress *lAddr = linphone_address_new(d->chatRoomId.getPeerAddress().asString().c_str());
+	const string &peerAddress = d->chatRoomId.getPeerAddress().asString();
+	LinphoneAddress *lAddr = linphone_address_new(peerAddress.c_str());
 	d->lev = linphone_core_create_subscribe(d->conf->getCore()->getCCore(), lAddr, "conference", 600);
 	d->lev->op->set_from(d->chatRoomId.getLocalAddress().asString().c_str());
-	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", Utils::toString(d->lastNotify).c_str());
+	const string &lastNotify = Utils::toString(d->lastNotify);
+	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", lastNotify.c_str());
 	linphone_address_unref(lAddr);
 	linphone_event_set_internal(d->lev, TRUE);
 	linphone_event_set_user_data(d->lev, this);
+	lInfo() << "Subscribing to chat room: " << peerAddress << "with last notify: " << lastNotify;
 	linphone_event_send_subscribe(d->lev, nullptr);
 }
 
@@ -234,9 +236,14 @@ unsigned int RemoteConferenceEventHandler::getLastNotify () const {
 	return d->lastNotify;
 };
 
-void RemoteConferenceEventHandler::resetLastNotify () {
+void RemoteConferenceEventHandler::setLastNotify (unsigned int lastNotify) {
 	L_D();
-	d->lastNotify = 0;
+	d->lastNotify = lastNotify;
 }
+
+void RemoteConferenceEventHandler::resetLastNotify () {
+	setLastNotify(0);
+}
+
 
 LINPHONE_END_NAMESPACE

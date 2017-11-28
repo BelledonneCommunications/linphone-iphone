@@ -700,7 +700,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
 			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(lastNotifyId);
-		*session << "UPDATE chat_room SET last_notify_id = :lastNotifyId WHERE peer_sip_address_id = :chatRoomId",
+		*session << "UPDATE chat_room SET last_notify_id = :lastNotifyId WHERE id = :chatRoomId",
 			soci::use(lastNotifyId), soci::use(curChatRoomId);
 
 		if (chatRoomId)
@@ -1650,9 +1650,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			string subject = row.get<string>(6);
 			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(7, 0));
 
-			// TODO: Use me.
-			(void)lastNotifyId;
-
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
 				chatRoom = core->getPrivate()->createBasicChatRoom(
 					chatRoomId,
@@ -1687,7 +1684,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					continue;
 				}
 
-				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId.getPeerAddress(), me, subject, move(participants));
+				chatRoom = make_shared<ClientGroupChatRoom>(core, chatRoomId.getPeerAddress(), me, subject, move(participants), lastNotifyId);
 			}
 
 			if (!chatRoom)

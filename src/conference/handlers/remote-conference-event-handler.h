@@ -43,6 +43,7 @@ public:
 	const ChatRoomId &getChatRoomId () const;
 
 	unsigned int getLastNotify () const;
+	void setLastNotify (unsigned int lastNotify);
 	void resetLastNotify ();
 
 private:

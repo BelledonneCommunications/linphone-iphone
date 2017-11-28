@@ -102,7 +102,8 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const IdentityAddress &peerAddress,
 	shared_ptr<Participant> &me,
 	const string &subject,
-	list<shared_ptr<Participant>> &&participants
+	list<shared_ptr<Participant>> &&participants,
+	unsigned int lastNotifyId
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(peerAddress, me->getAddress())),
 RemoteConference(core, me->getAddress(), nullptr) {
 	L_D();
@@ -117,6 +118,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
+	dConference->eventHandler->setLastNotify(lastNotifyId);
 	dConference->eventHandler->subscribe(getChatRoomId());
 }
 
