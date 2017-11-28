@@ -640,9 +640,11 @@ static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status){
 	}
 }
 
-static void info_received(SalOp *op, SalBodyHandler *body_handler){
-	LinphoneCore *lc=(LinphoneCore *)op->get_sal()->get_user_pointer();
-	linphone_core_notify_info_message(lc,op,body_handler);
+static void info_received(SalOp *op, SalBodyHandler *body_handler) {
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	if (!session)
+		return;
+	L_GET_PRIVATE(session)->infoReceived(body_handler);
 }
 
 static void subscribe_response(SalOp *op, SalSubscribeStatus status, int will_retry){

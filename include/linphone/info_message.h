@@ -57,7 +57,7 @@ LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoM
  * @param content the content described as a #LinphoneContent structure.
  * All fields of the LinphoneContent are copied, thus the application can destroy/modify/recycloe the content object freely ater the function returns.
 **/
-LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
+LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im, const LinphoneContent *content);
 
 /**
  * Returns the info message's content as a #LinphoneContent structure.

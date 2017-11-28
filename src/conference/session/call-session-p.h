@@ -49,6 +49,7 @@ public:
 	void ackBeingSent (LinphoneHeaders *headers);
 	virtual void ackReceived (LinphoneHeaders *headers);
 	virtual bool failure ();
+	void infoReceived (SalBodyHandler *bodyHandler);
 	void pingReply ();
 	virtual void remoteRinging ();
 	virtual void terminated ();

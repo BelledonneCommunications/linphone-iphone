@@ -170,6 +170,12 @@ void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSessio
 		d->callListener->onIncomingCallStarted();
 }
 
+void Conference::onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onInfoReceived(im);
+}
+
 void Conference::onEncryptionChanged (const shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
 	L_D();
 	if (d->callListener)

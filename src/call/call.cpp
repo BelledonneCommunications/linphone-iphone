@@ -177,6 +177,11 @@ void CallPrivate::onIncomingCallToBeAdded () {
 		linphone_core_add_call(core, lcall);
 }
 
+void CallPrivate::onInfoReceived (const LinphoneInfoMessage *im) {
+	if (lcall)
+		linphone_call_notify_info_message_received(lcall, im);
+}
+
 void CallPrivate::onEncryptionChanged (bool activated, const string &authToken) {
 	if (lcall)
 		linphone_call_notify_encryption_changed(lcall, activated, authToken.empty() ? nullptr : authToken.c_str());

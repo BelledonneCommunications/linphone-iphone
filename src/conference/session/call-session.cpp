@@ -322,6 +322,20 @@ bool CallSessionPrivate::failure () {
 	return false;
 }
 
+void CallSessionPrivate::infoReceived (SalBodyHandler *bodyHandler) {
+	L_Q();
+	LinphoneInfoMessage *info = linphone_core_create_info_message(core);
+	linphone_info_message_set_headers(info, op->get_recv_custom_header());
+	if (bodyHandler) {
+		LinphoneContent *content = linphone_content_from_sal_body_handler(bodyHandler);
+		linphone_info_message_set_content(info, content);
+		linphone_content_unref(content);
+	}
+	if (listener)
+		listener->onInfoReceived(q->getSharedFromThis(), info);
+	linphone_info_message_unref(info);
+}
+
 void CallSessionPrivate::pingReply () {
 	L_Q();
 	if (state == LinphoneCallOutgoingInit) {

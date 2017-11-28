@@ -77,6 +77,7 @@ private:
 	void onCheckForAcceptation () override;
 	void onIncomingCallStarted () override;
 	void onIncomingCallToBeAdded () override;
+	void onInfoReceived (const LinphoneInfoMessage *im) override;
 	void onEncryptionChanged (bool activated, const std::string &authToken) override;
 	void onStatsUpdated (const LinphoneCallStats *stats) override;
 	void onResetCurrentCall () override;

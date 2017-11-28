@@ -1152,7 +1152,6 @@ const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, LinphonePrivate::SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_configure_op_with_proxy(LinphoneCore *lc, LinphonePrivate::SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy);
 void linphone_call_create_op(LinphoneCall *call);
-void linphone_core_notify_info_message(LinphoneCore* lc,LinphonePrivate::SalOp *op, SalBodyHandler *body);
 LinphoneContent * linphone_content_new(void);
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
 SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
@@ -1586,6 +1585,7 @@ LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const Linphon
 
 
 SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *im);
+void linphone_info_message_set_headers (LinphoneInfoMessage *im, const SalCustomHeader *headers);
 
 
 #ifdef __cplusplus

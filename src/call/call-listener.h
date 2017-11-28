@@ -38,6 +38,7 @@ public:
 	virtual void onCheckForAcceptation () = 0;
 	virtual void onIncomingCallStarted () = 0;
 	virtual void onIncomingCallToBeAdded () = 0;
+	virtual void onInfoReceived (const LinphoneInfoMessage *im) = 0;
 
 	virtual void onEncryptionChanged (bool activated, const std::string &authToken) = 0;
 

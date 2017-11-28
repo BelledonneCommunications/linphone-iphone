@@ -38,6 +38,7 @@ public:
 	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) = 0;
 	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) = 0;
 	virtual void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) = 0;
 
 	virtual void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) = 0;
 

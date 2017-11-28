@@ -84,8 +84,10 @@ const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, cons
 	return sal_custom_header_find(im->headers,name);
 }
 
-void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content){
-	im->content=linphone_content_copy(content);
+void linphone_info_message_set_content (LinphoneInfoMessage *im, const LinphoneContent *content) {
+	if (im->content)
+		linphone_content_unref(im->content);
+	im->content = linphone_content_copy(content);
 }
 
 const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im){
@@ -96,17 +98,11 @@ SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *i
 	return im->headers;
 }
 
-void linphone_core_notify_info_message (
-	LinphoneCore* lc,
-	LinphonePrivate::SalOp *op,
-	SalBodyHandler *body_handler
-) {
-	LinphoneCall *call=(LinphoneCall*)op->get_user_pointer();
-	if (call){
-		LinphoneInfoMessage *info=linphone_core_create_info_message(lc);
-		info->headers=sal_custom_header_clone(op->get_recv_custom_header());
-		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
-		linphone_call_notify_info_message_received(call, info);
-		linphone_info_message_unref(info);
+void linphone_info_message_set_headers (LinphoneInfoMessage *im, const SalCustomHeader *headers) {
+	if (im->headers) {
+		sal_custom_header_free(im->headers);
+		im->headers = nullptr;
 	}
+	if (headers)
+		im->headers = sal_custom_header_clone(headers);
 }
