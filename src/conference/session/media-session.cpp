@@ -4313,6 +4313,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string
 	L_D();
 	LinphoneCallState nextState;
 	LinphoneCallState initialState = d->state;
+	LinphoneStatus result = 0;
 	if (!d->isUpdateAllowed(nextState))
 		return -1;
 	if (d->currentParams == msp)
@@ -4328,7 +4329,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string
 			lInfo() << "Defer CallSession update to gather ICE candidates";
 			return 0;
 		}
-		LinphoneStatus result = d->startUpdate(subject);
+		result = d->startUpdate(subject);
 		if (result && (d->state != initialState)) {
 			/* Restore initial state */
 			d->setState(initialState, "Restore initial state");
@@ -4349,7 +4350,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string
 		}
 #endif
 	}
-	return 0;
+	return result;
 }
 
 // -----------------------------------------------------------------------------
