@@ -89,6 +89,7 @@ public:
 	float getMicrophoneVolumeGain () const;
 	void *getNativeVideoWindowId () const;
 	const MediaSessionParams *getParams () const;
+	LinphonePlayer *getPlayer () const;
 	float getPlayVolume () const;
 	LinphoneReason getReason () const;
 	float getRecordVolume () const;

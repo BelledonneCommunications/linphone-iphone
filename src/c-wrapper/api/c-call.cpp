@@ -1048,13 +1048,7 @@ void linphone_call_stop_recording (LinphoneCall *call) {
 }
 
 LinphonePlayer *linphone_call_get_player (LinphoneCall *call) {
-#if 0
-	if (!call->player)
-		call->player=linphone_call_build_player(call);
-	return call->player;
-#else
-	return nullptr;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getPlayer();
 }
 
 bool_t linphone_call_media_in_progress (const LinphoneCall *call) {

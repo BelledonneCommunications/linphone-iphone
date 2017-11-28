@@ -103,6 +103,13 @@ int CallPrivate::startInvite (const Address *destination) {
 
 // -----------------------------------------------------------------------------
 
+void CallPrivate::createPlayer () const {
+	L_Q();
+	player = linphone_call_build_player(L_GET_C_BACK_PTR(q));
+}
+
+// -----------------------------------------------------------------------------
+
 void CallPrivate::onAckBeingSent (LinphoneHeaders *headers) {
 	if (lcall)
 		linphone_call_notify_ack_processing(lcall, headers, false);
@@ -443,6 +450,13 @@ void *Call::getNativeVideoWindowId () const {
 const MediaSessionParams *Call::getParams () const {
 	L_D();
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getMediaParams();
+}
+
+LinphonePlayer *Call::getPlayer () const {
+	L_D();
+	if (!d->player)
+		d->createPlayer();
+	return d->player;
 }
 
 float Call::getPlayVolume () const {

@@ -67,6 +67,8 @@ public:
 		SalCallOp *getOp () const;
 	void setAudioMuted (bool value);
 
+	void createPlayer () const;
+
 private:
 	/* CallListener */
 	void onAckBeingSent (LinphoneHeaders *headers) override;
@@ -89,6 +91,7 @@ private:
 
 	LinphoneCore *core = nullptr;
 	Conference *conference = nullptr;
+	mutable LinphonePlayer *player = nullptr;
 
 	CallCallbackObj nextVideoFrameDecoded;
 
