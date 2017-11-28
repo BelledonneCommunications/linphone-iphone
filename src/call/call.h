@@ -53,6 +53,7 @@ public:
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
+	void oglRender () const;
 	LinphoneStatus pause ();
 	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus resume ();

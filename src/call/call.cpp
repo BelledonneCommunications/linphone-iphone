@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "c-wrapper/c-wrapper.h"
 #include "call-p.h"
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
@@ -274,6 +275,11 @@ LinphoneStatus Call::decline (LinphoneReason reason) {
 LinphoneStatus Call::decline (const LinphoneErrorInfo *ei) {
 	L_D();
 	return d->getActiveSession()->decline(ei);
+}
+
+void Call::oglRender () const {
+	L_D();
+	static_pointer_cast<MediaSession>(d->getActiveSession())->getPrivate()->oglRender();
 }
 
 LinphoneStatus Call::pause () {

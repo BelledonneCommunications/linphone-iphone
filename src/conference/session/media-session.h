@@ -32,6 +32,7 @@ class IceAgent;
 class MediaSessionPrivate;
 
 class LINPHONE_PUBLIC MediaSession : public CallSession {
+	friend class Call;
 	friend class CallPrivate;
 	friend class IceAgent;
 

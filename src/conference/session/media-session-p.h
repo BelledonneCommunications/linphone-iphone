@@ -54,6 +54,7 @@ public:
 	void updating (bool isUpdate) override;
 
 	void enableSymmetricRtp (bool value);
+	void oglRender () const;
 	void sendVfu ();
 
 	void clearIceCheckList (IceCheckList *cl);
