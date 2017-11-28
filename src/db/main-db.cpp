@@ -1470,10 +1470,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return events;
 		}
 
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		string query = "SELECT id, type, creation_time FROM event"
 			"  WHERE id IN ("
-			"    SELECT event_id FROM conference_event WHERE chat_room_id = " +
-			Utils::toString(d->selectChatRoomId(chatRoomId)) +
+			"    SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
 			"  )";
 		query += buildSqlEventFilter({
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
@@ -1499,7 +1499,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
-		soci::rowset<soci::row> rows = (session->prepare << query);
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
 			long long eventId = d->resolveId(row, 0);
 			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
@@ -1607,13 +1607,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
 				list<shared_ptr<Participant>> participants;
 
+				const long long &dbChatRoomId = d->resolveId(row, 0);
 				string query = "SELECT sip_address.value, is_admin"
 					"  FROM sip_address, chat_room, chat_room_participant"
-					"  WHERE chat_room.id = " + Utils::toString(d->resolveId(row, 0)) +
+					"  WHERE chat_room.id = :chatRoomId"
 					"  AND sip_address.id = chat_room_participant.participant_sip_address_id"
 					"  AND chat_room_participant.chat_room_id = chat_room.id";
 
-				soci::rowset<soci::row> rows = (session->prepare << query);
+				soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 				shared_ptr<Participant> me;
 				for (const auto &row : rows) {
 					shared_ptr<Participant> participant = make_shared<Participant>(IdentityAddress(row.get<string>(0)));
@@ -1776,7 +1777,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					const tm &creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
 
 					bool isNull;
-					const string &url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
+					getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
 
 					const int &contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
 					ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
