@@ -20,7 +20,6 @@
 #ifndef _CORE_P_H_
 #define _CORE_P_H_
 
-#include "chat/chat-room/chat-room-id.h"
 #include "core.h"
 #include "db/main-db.h"
 #include "object/object-p.h"
