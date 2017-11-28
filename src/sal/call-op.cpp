@@ -36,17 +36,21 @@ SalCallOp::~SalCallOp() {
 }
 
 int SalCallOp::set_local_media_description(SalMediaDescription *desc) {
-	if (desc) sal_media_description_ref(desc);
+	if (desc) {
+		sal_media_description_ref(desc);
+		belle_sip_error_code error;
+		belle_sdp_session_description_t *sdp = media_description_to_sdp(desc);
+		vector<char> buffer = marshal_media_description(sdp, error);
+		if (error != BELLE_SIP_OK) return -1;
 
-	belle_sip_error_code error;
-	belle_sdp_session_description_t *sdp = media_description_to_sdp(desc);
-	vector<char> buffer = marshal_media_description(sdp, error);
-	if (error != BELLE_SIP_OK) return -1;
+		this->local_body.setContentType(ContentType::Sdp);
+		this->local_body.setBody(move(buffer));
+	} else {
+		this->local_body = Content();
+	}
 
-	this->local_body.setContentType(ContentType::Sdp);
-	this->local_body.setBody(move(buffer));
-
-	if (this->local_media) sal_media_description_unref(this->local_media);
+	if (this->local_media)
+		sal_media_description_unref(this->local_media);
 	this->local_media=desc;
 
 	if (this->remote_media){
