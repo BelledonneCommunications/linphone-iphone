@@ -133,7 +133,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 				cpimFromAddress = Address(header->getValue());
 			else if (header->getName() == "To")
 				cpimToAddress = Address(header->getValue());
-			else if (header->getName() == "Message-Id")
+			else if (header->getName() == "Message-ID")
 				message->setImdnMessageId(header->getValue());
 		}
 	}
