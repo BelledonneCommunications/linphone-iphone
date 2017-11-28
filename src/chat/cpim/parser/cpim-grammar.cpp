@@ -53,6 +53,8 @@ To-header-value = [ Formal-name ] "<" URI ">"
 DateTime-header = %d68.97.116.101.84.105.109.101 ": " DateTime-header-value
 DateTime-header-value = date-time
 
+Message-ID-header = %d77.101.115.115.97.103.101.45.73.68 ": " Token
+
 cc-header = %d99.99 ": " cc-header-value
 cc-header-value = [ Formal-name ] "<" URI ">"
 

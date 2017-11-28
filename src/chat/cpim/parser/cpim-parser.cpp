@@ -130,6 +130,7 @@ namespace Cpim {
 			{ "To", &HeaderNode::createCoreHeader<ToHeader> },
 			{ "cc", &HeaderNode::createCoreHeader<CcHeader> },
 			{ "DateTime", &HeaderNode::createCoreHeader<DateTimeHeader> },
+			{ "Message-ID", &HeaderNode::createCoreHeader<MessageIdHeader> },
 			{ "Subject", &HeaderNode::createCoreHeader<SubjectHeader> },
 			{ "NS", &HeaderNode::createCoreHeader<NsHeader> },
 			{ "Require", &HeaderNode::createCoreHeader<RequireHeader> }
@@ -392,6 +393,12 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 	}
 
 	return true;
+}
+
+template<>
+bool Cpim::Parser::coreHeaderIsValid<Cpim::MessageIdHeader>(const string &headerValue) const {
+	L_D();
+	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Message-ID", headerValue);
 }
 
 template<>

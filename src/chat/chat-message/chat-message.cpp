@@ -554,7 +554,8 @@ void ChatMessagePrivate::send () {
 		}
 	}
 
-	q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
+	if (q->getImdnMessageId().empty())
+		q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
 	//store(); // Store will be done right below in the setState(InProgress)
 

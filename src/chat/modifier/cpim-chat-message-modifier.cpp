@@ -45,6 +45,12 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	Cpim::ToHeader cpimToHeader;
 	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
 	cpimMessage.addMessageHeader(cpimToHeader);
+	char token[13];
+	belle_sip_random_token(token, sizeof(token));
+	Cpim::MessageIdHeader cpimMessageIdHeader;
+	cpimMessageIdHeader.setValue(token);
+	cpimMessage.addMessageHeader(cpimMessageIdHeader);
+	message->setImdnMessageId(token);
 
 	const Content *content;
 	if (!message->getInternalContent().isEmpty()) {
@@ -127,6 +133,8 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 				cpimFromAddress = Address(header->getValue());
 			else if (header->getName() == "To")
 				cpimToAddress = Address(header->getValue());
+			else if (header->getName() == "Message-Id")
+				message->setImdnMessageId(header->getValue());
 		}
 	}
 

@@ -72,6 +72,7 @@ namespace Cpim {
 	MAKE_CORE_HEADER(To, "To");
 	MAKE_CORE_HEADER(Cc, "cc");
 	MAKE_CORE_HEADER(DateTime, "DateTime");
+	MAKE_CORE_HEADER(MessageId, "Message-ID");
 	MAKE_CORE_HEADER(Ns, "NS");
 	MAKE_CORE_HEADER(Require, "Require");
 
