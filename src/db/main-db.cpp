@@ -42,6 +42,11 @@
 
 // =============================================================================
 
+// See: http://soci.sourceforge.net/doc/3.2/exchange.html
+// Part: Object lifetime and immutability
+
+// -----------------------------------------------------------------------------
+
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
@@ -145,18 +150,21 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long long contentTypeId = insertContentType(content.getContentType().asString());
+		const long long &contentTypeId = insertContentType(content.getContentType().asString());
+		const string &body = content.getBodyAsString();
 		*session << "INSERT INTO chat_message_content (event_id, content_type_id, body) VALUES"
 			"  (:eventId, :contentTypeId, :body)", soci::use(eventId), soci::use(contentTypeId),
-			soci::use(content.getBodyAsString());
+			soci::use(body);
 
-		long long messageContentId = q->getLastInsertId();
+		const long long &messageContentId = q->getLastInsertId();
 		if (content.getContentType().isFile()) {
 			const FileContent &fileContent = static_cast<const FileContent &>(content);
+			const string &fileName = fileContent.getFileName();
+			const size_t &fileSize = fileContent.getFileSize();
+			const string &filePath = fileContent.getFilePath();
 			*session << "INSERT INTO chat_message_file_content (chat_message_content_id, name, size, path) VALUES "
 				" (:contentId, :name, :size, :path)",
-				soci::use(messageContentId), soci::use(fileContent.getFileName()),
-				soci::use(fileContent.getFileSize()), soci::use(fileContent.getFilePath());
+				soci::use(messageContentId), soci::use(fileName), soci::use(fileSize), soci::use(filePath);
 		}
 
 		for (const auto &appData : content.getAppDataMap())
@@ -168,9 +176,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	void MainDbPrivate::updateContent (long long eventId, long long messageContentId, const Content &content) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
-		long long contentTypeId = insertContentType(content.getContentType().asString());
+		const long long &contentTypeId = insertContentType(content.getContentType().asString());
+		const string &body = content.getBodyAsString();
 		*session << "UPDATE chat_message_content SET content_type_id=:contentTypeId, body=:body WHERE event_id=:eventId",
-			soci::use(contentTypeId), soci::use(content.getBodyAsString()), soci::use(eventId);
+			soci::use(contentTypeId), soci::use(body), soci::use(eventId);
 
 		for (const auto &appData : content.getAppDataMap())
 			*session << "UPDATE chat_message_content_app_data SET name=:name, data=:data WHERE chat_message_content_id=:messageContentId",
@@ -222,8 +231,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
-		long long peerSipAddressId = insertSipAddress(chatRoomId.getPeerAddress().asString());
-		long long localSipAddressId = insertSipAddress(chatRoomId.getLocalAddress().asString());
+		const long long &peerSipAddressId = insertSipAddress(chatRoomId.getPeerAddress().asString());
+		const long long &localSipAddressId = insertSipAddress(chatRoomId.getLocalAddress().asString());
 
 		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
 		if (id >= 0) {
@@ -235,13 +244,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
 			", local=" << localSipAddressId << ").";
 
-		tm creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
-
+		const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
+		const int &capabilities = static_cast<int>(chatRoom->getCapabilities());
+		const string &subject = chatRoom->getSubject();
 		*session << "INSERT INTO chat_room ("
 			"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject"
 			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject)",
 			soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
-			soci::use(static_cast<int>(chatRoom->getCapabilities())), soci::use(chatRoom->getSubject());
+			soci::use(capabilities), soci::use(subject);
 
 		id = q->getLastInsertId();
 
@@ -257,18 +267,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	void MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
+		// See: https://stackoverflow.com/a/15299655 (cast to reference)
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
 				"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
-				soci::use(static_cast<int>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
+				soci::use(static_cast<const int &>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0) {
 			lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
 			*session << "INSERT INTO chat_room_participant (chat_room_id, participant_sip_address_id, is_admin)"
 				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
-				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<int>(isAdmin));
+				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<const int &>(isAdmin));
 		}
 	}
 
@@ -453,7 +465,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				if (contentType == ContentType::FileTransfer)
 					content = new FileTransferContent();
 				else if (contentType.isFile()) {
-					long long contentId = resolveId(row, 0);
+					const long long &contentId = resolveId(row, 0);
 
 					string name;
 					int size;
@@ -572,9 +584,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
+		const int &type = static_cast<int>(eventLog->getType());
+		const tm &creationTime = Utils::getTimeTAsTm(eventLog->getCreationTime());
 		*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
-			soci::use(static_cast<int>(eventLog->getType())),
-			soci::use(Utils::getTimeTAsTm(eventLog->getCreationTime()));
+			soci::use(type),
+			soci::use(creationTime);
+
 		return q->getLastInsertId();
 	}
 
@@ -582,7 +597,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		shared_ptr<ConferenceEvent> conferenceEvent = static_pointer_cast<ConferenceEvent>(eventLog);
 
 		long long eventId = -1;
-		long long curChatRoomId = selectChatRoomId(conferenceEvent->getChatRoomId());
+		const long long &curChatRoomId = selectChatRoomId(conferenceEvent->getChatRoomId());
 		if (curChatRoomId < 0) {
 			// A conference event can be inserted in database only if chat room exists.
 			// Otherwise it's an error.
@@ -597,8 +612,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 				"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(curChatRoomId);
 
+			const tm &lastUpdateTime = Utils::getTimeTAsTm(eventLog->getCreationTime());
 			*session << "UPDATE chat_room SET last_update_time = :lastUpdateTime"
-				"  WHERE id = :chatRoomId", soci::use(Utils::getTimeTAsTm(eventLog->getCreationTime())),
+				"  WHERE id = :chatRoomId", soci::use(lastUpdateTime),
 				soci::use(curChatRoomId);
 		}
 
@@ -621,14 +637,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return -1;
 		}
 
-		long long eventId = insertConferenceEvent(eventLog);
+		const long long &eventId = insertConferenceEvent(eventLog);
 		if (eventId < 0)
 			return -1;
 
-		long long fromSipAddressId = insertSipAddress(chatMessage->getFromAddress().asString());
-		long long toSipAddressId = insertSipAddress(chatMessage->getToAddress().asString());
-
 		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		const long long &fromSipAddressId = insertSipAddress(chatMessage->getFromAddress().asString());
+		const long long &toSipAddressId = insertSipAddress(chatMessage->getToAddress().asString());
+		const tm &messageTime = Utils::getTimeTAsTm(chatMessage->getTime());
+		const int &state = static_cast<int>(chatMessage->getState());
+		const int &direction = static_cast<int>(chatMessage->getDirection());
+		const string &imdnMessageId = chatMessage->getImdnMessageId();
+		const int &isSecured = chatMessage->isSecured() ? 1 : 0;
+
 		*session << "INSERT INTO conference_chat_message_event ("
 			"  event_id, from_sip_address_id, to_sip_address_id,"
 			"  time, state, direction, imdn_message_id, is_secured"
@@ -636,9 +658,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  :eventId, :localSipaddressId, :remoteSipaddressId,"
 			"  :time, :state, :direction, :imdnMessageId, :isSecured"
 			")", soci::use(eventId), soci::use(fromSipAddressId), soci::use(toSipAddressId),
-			soci::use(Utils::getTimeTAsTm(chatMessage->getTime())), soci::use(static_cast<int>(chatMessage->getState())),
-			soci::use(static_cast<int>(chatMessage->getDirection())), soci::use(chatMessage->getImdnMessageId()),
-			soci::use(chatMessage->isSecured() ? 1 : 0);
+			soci::use(messageTime), soci::use(state), soci::use(direction),
+			soci::use(imdnMessageId), soci::use(isSecured);
 
 		for (const Content *content : chatMessage->getContents())
 			insertContent(eventId, *content);
@@ -656,11 +677,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		const EventLogPrivate *dEventLog = eventLog->getPrivate();
 		MainDbEventKeyPrivate *dEventKey = dEventLog->dbKey.getPrivate();
-		long long eventId = dEventKey->storageId;
+		const long long &eventId = dEventKey->storageId;
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "UPDATE conference_chat_message_event SET state=:state WHERE event_id=:eventId"
-			, soci::use(static_cast<int>(chatMessage->getState())), soci::use(eventId);
+		const int &state = static_cast<int>(chatMessage->getState());
+		*session << "UPDATE conference_chat_message_event SET state = :state WHERE event_id = :eventId",
+			soci::use(state), soci::use(eventId);
 
 		/*for (const Content *content : chatMessage->getContents())
 			updateContent(eventId, *content);*/
@@ -669,11 +691,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	long long MainDbPrivate::insertConferenceNotifiedEvent (const shared_ptr<EventLog> &eventLog, long long *chatRoomId) {
 		long long curChatRoomId;
-		long long eventId = insertConferenceEvent(eventLog, &curChatRoomId);
+		const long long &eventId = insertConferenceEvent(eventLog, &curChatRoomId);
 		if (eventId < 0)
 			return -1;
 
-		unsigned int lastNotifyId = static_pointer_cast<ConferenceNotifiedEvent>(eventLog)->getNotifyId();
+		const unsigned int &lastNotifyId = static_pointer_cast<ConferenceNotifiedEvent>(eventLog)->getNotifyId();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
@@ -689,14 +711,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	long long MainDbPrivate::insertConferenceParticipantEvent (const shared_ptr<EventLog> &eventLog) {
 		long long chatRoomId;
-		long long eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
+		const long long &eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
 		if (eventId < 0)
 			return -1;
 
 		shared_ptr<ConferenceParticipantEvent> participantEvent =
 			static_pointer_cast<ConferenceParticipantEvent>(eventLog);
 
-		long long participantAddressId = insertSipAddress(
+		const long long &participantAddressId = insertSipAddress(
 			participantEvent->getParticipantAddress().asString()
 		);
 
@@ -724,11 +746,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	long long MainDbPrivate::insertConferenceParticipantDeviceEvent (const shared_ptr<EventLog> &eventLog) {
-		long long eventId = insertConferenceParticipantEvent(eventLog);
+		const long long &eventId = insertConferenceParticipantEvent(eventLog);
 		if (eventId < 0)
 			return -1;
 
-		long long deviceAddressId = insertSipAddress(
+		const long long &deviceAddressId = insertSipAddress(
 			static_pointer_cast<ConferenceParticipantDeviceEvent>(eventLog)->getDeviceAddress().asString()
 		);
 
@@ -741,7 +763,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	long long MainDbPrivate::insertConferenceSubjectEvent (const shared_ptr<EventLog> &eventLog) {
 		long long chatRoomId;
-		long long eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
+		const long long &eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
 		if (eventId < 0)
 			return -1;
 
@@ -1268,7 +1290,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
-		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(d->selectChatRoomId(chatRoomId)), soci::use(lastNotifyId));
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId), soci::use(lastNotifyId));
 		for (const auto &row : rows) {
 			long long eventId = d->resolveId(row, 0);
 			shared_ptr<EventLog> eventLog = d->getEventFromCache(eventId);
@@ -1313,7 +1337,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				"  SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
 				")";
 
-			*session << query, soci::use(d->selectChatRoomId(chatRoomId)), soci::into(count);
+			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+			*session << query, soci::use(dbChatRoomId), soci::into(count);
 		}
 
 		L_END_LOG_EXCEPTION
@@ -1351,8 +1376,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		if (!chatRoomId.isValid())
 			*session << query, soci::into(count);
-		else
-			*session << query, soci::use(d->selectChatRoomId(chatRoomId)), soci::into(count);
+		else {
+			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+			*session << query, soci::use(dbChatRoomId), soci::into(count);
+		}
 
 		L_END_LOG_EXCEPTION
 
@@ -1390,8 +1417,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		if (!chatRoomId.isValid())
 			*session << query;
-		else
-			*session << query, soci::use(d->selectChatRoomId(chatRoomId));
+		else {
+			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+			*session << query, soci::use(dbChatRoomId);
+		}
 
 		L_END_LOG_EXCEPTION
 	}
@@ -1515,7 +1544,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_BEGIN_LOG_EXCEPTION
 
-		long long dbChatRoomId = d->selectChatRoomId(chatRoomId);
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
 		d->invalidConferenceEventsFromQuery(query, dbChatRoomId);
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
@@ -1663,7 +1692,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_BEGIN_LOG_EXCEPTION
 
-		long long dbChatRoomId = d->selectChatRoomId(chatRoomId);
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
 		d->invalidConferenceEventsFromQuery(
 			"SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId",
@@ -1736,7 +1765,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						continue;
 					}
 
-					const int state = message.get<int>(
+					const int &state = message.get<int>(
 						LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
 					);
 					if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
@@ -1744,12 +1773,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						continue;
 					}
 
-					const tm creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
+					const tm &creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
 
 					bool isNull;
-					const string url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
+					const string &url = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
 
-					const int contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
+					const int &contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
 					ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
 					if (!contentType.isValid())
 						contentType = contentId != -1
@@ -1760,7 +1789,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						continue;
 					}
 
-					const string text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
+					const string &text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
 
 					Content content;
 					content.setContentType(contentType);
@@ -1786,18 +1815,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					}
 
 					soci::session *session = d->dbSession.getBackendSession<soci::session>();
+					const int &eventType = static_cast<int>(EventLog::Type::ConferenceChatMessage);
 					*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
-					soci::use(static_cast<int>(EventLog::Type::ConferenceChatMessage)), soci::use(creationTime);
+						soci::use(eventType), soci::use(creationTime);
 
-					long long eventId = getLastInsertId();
-					long long localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
-					long long remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-					long long chatRoomId = d->insertChatRoom(
+					const long long &eventId = getLastInsertId();
+					const long long &localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
+					const long long &remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
+					const long long &chatRoomId = d->insertChatRoom(
 						remoteSipAddressId,
 						localSipAddressId,
 						static_cast<int>(ChatRoom::Capabilities::Basic),
 						creationTime
 					);
+					const int &isSecured = message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0);
 
 					*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 						"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
@@ -1810,7 +1841,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						"  :creationTime, :state, :direction, '', :isSecured"
 						")", soci::use(eventId), soci::use(localSipAddressId), soci::use(remoteSipAddressId),
 						soci::use(creationTime), soci::use(state), soci::use(direction),
-						soci::use(message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0));
+						soci::use(isSecured);
 
 					d->insertContent(eventId, content);
 					d->insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
