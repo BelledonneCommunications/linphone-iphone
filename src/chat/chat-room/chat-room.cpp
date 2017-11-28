@@ -153,9 +153,9 @@ int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colN
 	return 0;
 }
 
-list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) {
-	// TODO: history.
-	return list<shared_ptr<ChatMessage>>();
+list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) const {
+	L_Q();
+	return q->getCore()->getPrivate()->mainDb->findChatMessages(q->getChatRoomId(), messageId);
 }
 
 void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {

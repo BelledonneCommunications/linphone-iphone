@@ -50,7 +50,7 @@ public:
 	void sendIsComposingNotification ();
 
 	int createChatMessageFromDb (int argc, char **argv, char **colName);
-	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId);
+	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId) const;
 
 	virtual LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
