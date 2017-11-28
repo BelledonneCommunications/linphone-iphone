@@ -225,7 +225,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom) {
+	long long MainDbPrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -298,7 +298,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				soci::use(eventId), soci::use(sipAddressId), soci::use(state);
 	}
 
-	long long MainDbPrivate::selectSipAddressId (const std::string &sipAddress) const {
+	long long MainDbPrivate::selectSipAddressId (const string &sipAddress) const {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long long id;
@@ -667,7 +667,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return eventId;
 	}
 
-	void MainDbPrivate::updateConferenceChatMessageEvent(const std::shared_ptr<EventLog> &eventLog) {
+	void MainDbPrivate::updateConferenceChatMessageEvent (const shared_ptr<EventLog> &eventLog) {
 		shared_ptr<ChatMessage> chatMessage = static_pointer_cast<ConferenceChatMessageEvent>(eventLog)->getChatMessage();
 		shared_ptr<ChatRoom> chatRoom = chatMessage->getChatRoom();
 		if (!chatRoom) {
@@ -1441,6 +1441,62 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return nullptr;
 
 		return static_pointer_cast<ConferenceChatMessageEvent>(chatList.front())->getChatMessage();
+	}
+
+	list<shared_ptr<ChatMessage>> MainDb::findChatMessages (
+		const ChatRoomId &chatRoomId,
+		const string &imdnMessageId
+	) const {
+		L_D();
+
+		list<shared_ptr<ChatMessage>> chatMessages;
+
+		if (!isConnected()) {
+			lWarning() << "Unable to find chat messages. Not connected.";
+			return chatMessages;
+		}
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+		string query = "SELECT id, type, creation_time FROM event"
+			"  WHERE id IN ("
+			"    SELECT event_id FROM conference_event"
+			"    WHERE event_id IN (SELECT event_id FROM conference_chat_message_event WHERE imdn_message_id = :imdnMessageId)"
+			"    AND chat_room_id = :chatRoomId"
+			"  )";
+
+		DurationLogger durationLogger(
+			"Find chat messages: (peer=" + chatRoomId.getPeerAddress().asString() +
+			", local=" + chatRoomId.getLocalAddress().asString() + ")."
+		);
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(imdnMessageId), soci::use(dbChatRoomId));
+		for (const auto &row : rows) {
+			long long eventId = d->resolveId(row, 0);
+			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
+
+			if (!event)
+				event = d->selectGenericConferenceEvent(
+					eventId,
+					static_cast<EventLog::Type>(row.get<int>(1)),
+					Utils::getTmAsTimeT(row.get<tm>(2)),
+					chatRoomId
+				);
+
+			if (event) {
+				L_ASSERT(event->getType() == EventLog::Type::ConferenceChatMessage);
+				chatMessages.push_back(static_pointer_cast<ConferenceChatMessageEvent>(event)->getChatMessage());
+			} else
+				lWarning() << "Unable to fetch event: " << eventId;
+		}
+
+		L_END_LOG_EXCEPTION
+
+		return chatMessages;
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const ChatRoomId &chatRoomId, int nLast, FilterMask mask) const {

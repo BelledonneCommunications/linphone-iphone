@@ -77,7 +77,13 @@ public:
 	int getUnreadChatMessagesCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+
+	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId) const;
+
+	std::list<std::shared_ptr<ChatMessage>> findChatMessages (
+		const ChatRoomId &chatRoomId,
+		const std::string &imdnMessageId
+	) const;
 
 	// ---------------------------------------------------------------------------
 	// Conference events.
