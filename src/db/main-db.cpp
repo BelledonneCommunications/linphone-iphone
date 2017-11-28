@@ -343,33 +343,52 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		time_t creationTime,
 		const ChatRoomId &chatRoomId
 	) const {
+		L_Q();
+
+		shared_ptr<EventLog> eventLog;
+
 		switch (type) {
 			case EventLog::Type::None:
 				return nullptr;
 
 			case EventLog::Type::ConferenceCreated:
 			case EventLog::Type::ConferenceDestroyed:
-				return selectConferenceEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceEvent(eventId, type, creationTime, chatRoomId);
+				break;
 
 			case EventLog::Type::ConferenceCallStart:
 			case EventLog::Type::ConferenceCallEnd:
-				return selectConferenceCallEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceCallEvent(eventId, type, creationTime, chatRoomId);
+				break;
 
 			case EventLog::Type::ConferenceChatMessage:
-				return selectConferenceChatMessageEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceChatMessageEvent(eventId, type, creationTime, chatRoomId);
+				break;
 
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantRemoved:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
-				return selectConferenceParticipantEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceParticipantEvent(eventId, type, creationTime, chatRoomId);
+				break;
 
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
 			case EventLog::Type::ConferenceParticipantDeviceRemoved:
-				return selectConferenceParticipantDeviceEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceParticipantDeviceEvent(eventId, type, creationTime, chatRoomId);
+				break;
 
 			case EventLog::Type::ConferenceSubjectChanged:
-				return selectConferenceSubjectEvent(eventId, type, creationTime, chatRoomId);
+				eventLog = selectConferenceSubjectEvent(eventId, type, creationTime, chatRoomId);
+				break;
+		}
+
+		if (eventLog) {
+			EventLogPrivate *dEventLog = eventLog->getPrivate();
+			L_ASSERT(!dEventLog->dbKey.isValid());
+			dEventLog->dbKey = MainDbEventKey(q->getCore(), eventId);
+			storageIdToEvent[eventId] = eventLog;
+			L_ASSERT(dEventLog->dbKey.isValid());
+			return eventLog;
 		}
 
 		return nullptr;
@@ -1149,8 +1168,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		L_END_LOG_EXCEPTION
 
 		if (soFarSoGood) {
+			L_ASSERT(!dEventLog->dbKey.isValid());
 			dEventLog->dbKey = MainDbEventKey(getCore(), storageId);
 			d->storageIdToEvent[storageId] = eventLog;
+			L_ASSERT(dEventLog->dbKey.isValid());
 		}
 
 		return soFarSoGood;
