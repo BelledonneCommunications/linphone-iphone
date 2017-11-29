@@ -61,7 +61,7 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 	NSString *eventString;
 	switch (linphone_event_log_get_type(event)) {
 		case LinphoneEventLogTypeConferenceSubjectChanged: {
-			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event)];
+			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event) ?: LINPHONE_DUMMY_SUBJECT];
 			NSString *formatedString = [NSString stringWithFormat:@"Chat room subject has changed to : %@", subject];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
