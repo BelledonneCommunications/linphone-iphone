@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core.tools;
 
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
 
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
@@ -50,7 +51,7 @@ public class AndroidPlatformHelper {
 
 	public AndroidPlatformHelper(Object ctx_obj) {
 		mContext = (Context) ctx_obj;
-		WifiManager wifiMgr = mContext.getSystemService(WifiManager.class);
+		WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
 		mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
 		mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 		
@@ -67,7 +68,7 @@ public class AndroidPlatformHelper {
 	}
 	
 	public String[] getDnsServers() {
-		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+		if (mConnectivityManager == null || Build.VERSION.SDK_BuildINT < Version.API23_MARSHMALLOW_60)
 			return null;
 
 		if (mConnectivityManager.getActiveNetwork() == null
