@@ -1311,6 +1311,60 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return count;
 	}
 
+	shared_ptr<EventLog> MainDb::getEventFromKey (const MainDbKey &dbKey) {
+		shared_ptr<EventLog> event;
+
+		if (!dbKey.isValid()) {
+			lWarning() << "Unable to get event from invalid key.";
+			return event;
+		}
+
+		unique_ptr<MainDb> &q = dbKey.getPrivate()->core.lock()->getPrivate()->mainDb;
+		MainDbPrivate *d = q->getPrivate();
+
+		if (!q->isConnected()) {
+			lWarning() << "Unable to get event from key. Not connected.";
+			return event;
+		}
+
+		const long long &storageId = dbKey.getPrivate()->storageId;
+		event = d->getEventFromCache(storageId);
+		if (event)
+			return event;
+
+		// TODO: Improve. Deal with all events in the future.
+		static string query = "SELECT peer_sip_address.value, local_sip_address.value, type, event.creation_time"
+			"  FROM event, conference_event, chat_room, sip_address AS peer_sip_address, sip_address as local_sip_address"
+			"  WHERE event.id = :eventId"
+			"  AND conference_event.event_id = event.id"
+			"  AND conference_event.chat_room_id = chat_room.id"
+			"  AND chat_room.peer_sip_address_id = peer_sip_address.id"
+			"  AND chat_room.local_sip_address_id = local_sip_address.id";
+
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
+		string peerSipAddress;
+		string localSipAddress;
+		int type;
+		tm creationTime;
+		*session << query, soci::into(peerSipAddress), soci::into(localSipAddress), soci::into(type),
+			soci::into(creationTime), soci::use(storageId);
+
+		event = d->selectGenericConferenceEvent(
+			storageId,
+			static_cast<EventLog::Type>(type),
+			Utils::getTmAsTimeT(creationTime),
+			ChatRoomId(IdentityAddress(peerSipAddress), IdentityAddress(localSipAddress))
+		);
+
+		L_END_LOG_EXCEPTION
+
+		return event;
+	}
+
 	list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
 		const ChatRoomId &chatRoomId,
 		unsigned int lastNotifyId
@@ -1449,7 +1503,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		if (getUnreadChatMessagesCount(chatRoomId) == 0)
 			return;
 
-		string query = "UPDATE FROM conference_chat_message_event"
+		string query = "UPDATE conference_chat_message_event"
 			"  SET state = " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed)) + " ";
 		query += "WHERE";
 		if (chatRoomId.isValid())

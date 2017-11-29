@@ -149,8 +149,6 @@ private:
 	ContentType cContentType;
 	std::string cText;
 
-	std::weak_ptr<ConferenceChatMessageEvent> chatEvent;
-
 	// TODO: Remove my comment. VARIABLES OK.
 	// Do not expose.
 

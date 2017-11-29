@@ -586,9 +586,10 @@ void ChatMessagePrivate::store() {
 		return;
 	}
 
-	shared_ptr<ConferenceChatMessageEvent> eventLog = chatEvent.lock();
-	if (eventLog) {
-		q->getChatRoom()->getCore()->getPrivate()->mainDb->updateEvent(eventLog);
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	if (dbKey.isValid()) {
+		shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+		mainDb->updateEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
 			if (!hasFileTransferContent()) {
@@ -602,9 +603,8 @@ void ChatMessagePrivate::store() {
 			}
 		}
 	} else {
-		eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
-		chatEvent = eventLog;
-		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+		shared_ptr<EventLog> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
+		mainDb->addEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
 			if (hasFileTransferContent()) {

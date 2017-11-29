@@ -34,6 +34,7 @@ class ChatMessage;
 class ChatRoom;
 class Core;
 class EventLog;
+class MainDbKey;
 class MainDbPrivate;
 
 class MainDb : public AbstractDb, public CoreAccessor {
@@ -60,6 +61,8 @@ public:
 	bool updateEvent (const std::shared_ptr<EventLog> &eventLog);
 	static bool deleteEvent (const std::shared_ptr<EventLog> &eventLog);
 	int getEventsCount (FilterMask mask = NoFilter) const;
+
+	static std::shared_ptr<EventLog> getEventFromKey (const MainDbKey &dbKey);
 
 	// ---------------------------------------------------------------------------
 	// Conference notified events.
