@@ -480,6 +480,7 @@ static void call_ringing(SalOp *h){
 		linphone_core_notify_display_status(lc,_("Remote ringing..."));
 		linphone_call_set_state(call,LinphoneCallOutgoingRinging,"Remote ringing");
 	}else{
+		SalMediaDescription *rmd = sal_call_get_remote_media_description(call->op);
 		/*initialize the remote call params by invoking linphone_call_get_remote_params(). This is useful as the SDP may not be present in the 200Ok*/
 		linphone_call_get_remote_params(call);
 		/*accept early media */
@@ -496,7 +497,7 @@ static void call_ringing(SalOp *h){
 				video_stream_send_vfu(call->videostream);
 			}
 			#endif
-		return;
+			return;
 		}
 
 		linphone_core_notify_show_interface(lc);
@@ -504,6 +505,9 @@ static void call_ringing(SalOp *h){
 		linphone_call_set_state(call,LinphoneCallOutgoingEarlyMedia,"Early media");
 		linphone_core_stop_ringing(lc);
 		ms_message("Doing early media...");
+		if (call->ice_session != NULL && rmd) {
+			linphone_call_update_ice_from_remote_media_description(call, rmd, !sal_call_is_offerer(call->op));
+		}
 		linphone_call_update_streams(call, md, call->state);
 		if ((linphone_call_params_get_audio_direction(linphone_call_get_current_params(call)) == LinphoneMediaDirectionInactive) && call->audiostream) {
 			if (lc->ringstream != NULL) return; /* Already ringing! */
