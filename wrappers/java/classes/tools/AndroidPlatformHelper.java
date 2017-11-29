@@ -68,7 +68,7 @@ public class AndroidPlatformHelper {
 	}
 	
 	public String[] getDnsServers() {
-		if (mConnectivityManager == null || Build.VERSION.SDK_BuildINT < Version.API23_MARSHMALLOW_60)
+		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Version.API23_MARSHMALLOW_60)
 			return null;
 
 		if (mConnectivityManager.getActiveNetwork() == null
