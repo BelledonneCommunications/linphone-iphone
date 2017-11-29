@@ -17,9 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "db/main-db.h"
 #include "event-log-p.h"
 
 // =============================================================================
+
+using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -39,6 +42,10 @@ EventLog::Type EventLog::getType () const {
 time_t EventLog::getCreationTime () const {
 	L_D();
 	return d->creationTime;
+}
+
+void EventLog::deleteFromDatabase (const shared_ptr<EventLog> &eventLog) {
+	MainDb::deleteEvent(eventLog);
 }
 
 LINPHONE_END_NAMESPACE

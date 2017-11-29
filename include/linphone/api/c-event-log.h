@@ -61,6 +61,12 @@ LINPHONE_PUBLIC LinphoneEventLogType linphone_event_log_get_type (const Linphone
  */
 LINPHONE_PUBLIC time_t linphone_event_log_get_creation_time (const LinphoneEventLog *event_log);
 
+/**
+ * Delete event log from database.
+ * @param[in] event_log A #LinphoneEventLog object
+ */
+LINPHONE_PUBLIC void linphone_event_log_delete_from_database (LinphoneEventLog *event_log);
+
 // -----------------------------------------------------------------------------
 // ConferenceEvent.
 // -----------------------------------------------------------------------------

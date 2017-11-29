@@ -21,6 +21,7 @@
 #define _EVENT_LOG_H_
 
 #include <ctime>
+#include <memory>
 
 #include "linphone/enums/event-log-enums.h"
 #include "linphone/utils/enum-generator.h"
@@ -44,6 +45,8 @@ public:
 
 	Type getType () const;
 	time_t getCreationTime () const;
+
+	static void deleteFromDatabase (const std::shared_ptr<EventLog> &eventLog);
 
 protected:
 	EventLog (EventLogPrivate &p, Type type, time_t creationTime);
