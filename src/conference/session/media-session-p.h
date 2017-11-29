@@ -62,30 +62,21 @@ public:
 	void prepareStreamsForIceGathering (bool hasVideo);
 	void stopStreamsForIceGathering ();
 
-	int getAf () const {
-		return af;
-	}
+	int getAf () const { return af; }
 
-	bool getAudioMuted () const {
-		return audioMuted;
-	}
+	bool getAudioMuted () const { return audioMuted; }
 
-	LinphoneCore *getCore () const {
-		return core;
-	}
+	MediaSessionParams *getCurrentParams () const { return static_cast<MediaSessionParams *>(currentParams); }
+	MediaSessionParams *getParams () const { return static_cast<MediaSessionParams *>(params); }
+	MediaSessionParams *getRemoteParams () const { return static_cast<MediaSessionParams *>(remoteParams); }
+	void setParams (MediaSessionParams *msp);
 
-	IceSession *getIceSession () const {
-		return iceAgent->getIceSession();
-	}
+	IceSession *getIceSession () const { return iceAgent->getIceSession(); }
 
-	SalMediaDescription *getLocalDesc () const {
-		return localDesc;
-	}
+	SalMediaDescription *getLocalDesc () const { return localDesc; }
 
 	MediaStream *getMediaStream (LinphoneStreamType type) const;
-	LinphoneNatPolicy *getNatPolicy () const {
-		return natPolicy;
-	}
+	LinphoneNatPolicy *getNatPolicy () const { return natPolicy; }
 
 	int getRtcpPort (LinphoneStreamType type) const;
 	int getRtpPort (LinphoneStreamType type) const;
@@ -252,10 +243,6 @@ private:
 private:
 	static const std::string ecStateStore;
 	static const int ecStateMaxLen;
-
-	MediaSessionParams *params = nullptr;
-	mutable MediaSessionParams *currentParams = nullptr;
-	MediaSessionParams *remoteParams = nullptr;
 
 	AudioStream *audioStream = nullptr;
 	OrtpEvQueue *audioStreamEvQueue = nullptr;

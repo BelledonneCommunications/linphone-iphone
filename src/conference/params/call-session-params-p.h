@@ -33,12 +33,8 @@ LINPHONE_BEGIN_NAMESPACE
 class CallSessionParamsPrivate : public ClonableObjectPrivate {
 public:
 	CallSessionParamsPrivate () = default;
-	CallSessionParamsPrivate (const CallSessionParamsPrivate &src);
-	virtual ~CallSessionParamsPrivate ();
 
-	CallSessionParamsPrivate &operator= (const CallSessionParamsPrivate &src);
-
-	static void clone (const CallSessionParamsPrivate &src, CallSessionParamsPrivate &dst);
+	void clone (const CallSessionParamsPrivate *src);
 
 	bool getInConference () const { return inConference; }
 	void setInConference (bool value) { inConference = value; }

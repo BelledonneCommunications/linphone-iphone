@@ -27,35 +27,21 @@ LINPHONE_BEGIN_NAMESPACE
 
 // =============================================================================
 
-CallSessionParamsPrivate::CallSessionParamsPrivate (const CallSessionParamsPrivate &src) : ClonableObjectPrivate () {
-	clone(src, *this);
-}
-
-CallSessionParamsPrivate::~CallSessionParamsPrivate () {
-	if (customHeaders)
-		sal_custom_header_free(customHeaders);
-}
-
-CallSessionParamsPrivate &CallSessionParamsPrivate::operator= (const CallSessionParamsPrivate &src) {
-	if (this != &src) {
-		if (customHeaders)
-			sal_custom_header_free(customHeaders);
-		clone(src, *this);
-	}
-	return *this;
-}
-
-void CallSessionParamsPrivate::clone (const CallSessionParamsPrivate &src, CallSessionParamsPrivate &dst) {
-	dst.sessionName = src.sessionName;
-	dst.privacy = src.privacy;
-	dst.inConference = src.inConference;
-	dst.internalCallUpdate = src.internalCallUpdate;
-	dst.noUserConsent = src.noUserConsent;
+void CallSessionParamsPrivate::clone (const CallSessionParamsPrivate *src) {
+	sessionName = src->sessionName;
+	privacy = src->privacy;
+	inConference = src->inConference;
+	internalCallUpdate = src->internalCallUpdate;
+	noUserConsent = src->noUserConsent;
 	/* The management of the custom headers is not optimal. We copy everything while ref counting would be more efficient. */
-	if (src.customHeaders)
-		dst.customHeaders = sal_custom_header_clone(src.customHeaders);
-	dst.customContactParameters = src.customContactParameters;
-	dst.referer = src.referer;
+	if (customHeaders) {
+		sal_custom_header_free(customHeaders);
+		customHeaders = nullptr;
+	}
+	if (src->customHeaders)
+		customHeaders = sal_custom_header_clone(src->customHeaders);
+	customContactParameters = src->customContactParameters;
+	referer = src->referer;
 }
 
 // -----------------------------------------------------------------------------
@@ -80,12 +66,21 @@ CallSessionParams::CallSessionParams () : ClonableObject(*new CallSessionParamsP
 CallSessionParams::CallSessionParams (CallSessionParamsPrivate &p) : ClonableObject(p) {}
 
 CallSessionParams::CallSessionParams (const CallSessionParams &src)
-	: ClonableObject(*new CallSessionParamsPrivate(*src.getPrivate())) {}
+	: ClonableObject(*new CallSessionParamsPrivate) {
+	L_D();
+	d->clone(src.getPrivate());
+}
+
+CallSessionParams::~CallSessionParams () {
+	L_D();
+	if (d->customHeaders)
+		sal_custom_header_free(d->customHeaders);
+}
 
 CallSessionParams &CallSessionParams::operator= (const CallSessionParams &src) {
 	L_D();
 	if (this != &src)
-		*d = *src.getPrivate();
+		d->clone(src.getPrivate());
 	return *this;
 }
 

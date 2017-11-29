@@ -43,7 +43,7 @@ LINPHONE_BEGIN_NAMESPACE
 CallSessionPrivate::CallSessionPrivate (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener)
 	: conference(conference), listener(listener) {
 	if (params)
-		this->params = new CallSessionParams(*params);
+		setParams(new CallSessionParams(*params));
 	currentParams = new CallSessionParams();
 	core = conference.getCore()->getCCore();
 	ei = linphone_error_info_new();
@@ -226,6 +226,14 @@ bool CallSessionPrivate::startPing () {
 
 // -----------------------------------------------------------------------------
 
+void CallSessionPrivate::setParams (CallSessionParams *csp) {
+	if (params)
+		delete params;
+	params = csp;
+}
+
+// -----------------------------------------------------------------------------
+
 void CallSessionPrivate::abort (const string &errorMsg) {
 	op->terminate();
 	setState(LinphoneCallError, errorMsg);
@@ -346,9 +354,8 @@ void CallSessionPrivate::pingReply () {
 }
 
 void CallSessionPrivate::remoteRinging () {
-	L_Q();
 	/* Set privacy */
-	q->getCurrentParams()->setPrivacy((LinphonePrivacyMask)op->get_privacy());
+	currentParams->setPrivacy((LinphonePrivacyMask)op->get_privacy());
 #if 0
 	if (lc->ringstream == NULL) start_remote_ring(lc, call);
 #endif
@@ -452,14 +459,14 @@ void CallSessionPrivate::updating (bool isUpdate) {
 
 // -----------------------------------------------------------------------------
 
-void CallSessionPrivate::accept (const CallSessionParams *params) {
+void CallSessionPrivate::accept (const CallSessionParams *csp) {
 	L_Q();
 	/* Try to be best-effort in giving real local or routable contact address */
 	setContactOp();
-	if (params) {
-		this->params = new CallSessionParams(*params);
-		op->set_sent_custom_header(this->params->getPrivate()->getCustomHeaders());
-	}
+	if (csp)
+		setParams(new CallSessionParams(*csp));
+	if (params)
+		op->set_sent_custom_header(params->getPrivate()->getCustomHeaders());
 
 	op->accept();
 	if (listener)
@@ -759,7 +766,7 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 	if (direction == LinphoneCallOutgoing) {
 		d->startPing();
 	} else if (direction == LinphoneCallIncoming) {
-		d->params = new CallSessionParams();
+		d->setParams(new CallSessionParams());
 		d->params->initDefault(d->core);
 	}
 }
@@ -964,7 +971,7 @@ LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &
 	if (d->currentParams == csp)
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
 	if (csp)
-		d->params = new CallSessionParams(*csp);
+		d->setParams(new CallSessionParams(*csp));
 	d->op->set_local_body(content ? *content : Content());
 	LinphoneStatus result = d->startUpdate(subject);
 	if (result && (d->state != initialState)) {

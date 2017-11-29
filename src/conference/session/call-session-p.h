@@ -41,8 +41,11 @@ public:
 	bool startPing ();
 	void setPingTime (int value) { pingTime = value; }
 
+	LinphoneCore *getCore () const { return core; }
+	CallSessionParams *getCurrentParams () const { return currentParams; }
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
 	SalCallOp * getOp () const { return op; }
+	void setParams (CallSessionParams *csp);
 
 	virtual void abort (const std::string &errorMsg);
 	virtual void accepted ();

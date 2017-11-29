@@ -36,13 +36,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class MediaSessionParamsPrivate : public CallSessionParamsPrivate {
 public:
-	MediaSessionParamsPrivate ();
-	MediaSessionParamsPrivate (const MediaSessionParamsPrivate &src);
-	virtual ~MediaSessionParamsPrivate ();
-
-	MediaSessionParamsPrivate &operator= (const MediaSessionParamsPrivate &src);
-
-	static void clone (const MediaSessionParamsPrivate &src, MediaSessionParamsPrivate &dst);
+	void clone (const MediaSessionParamsPrivate *src);
 	void clean ();
 
 	static SalStreamDir mediaDirectionToSalStreamDir (LinphoneMediaDirection direction);

@@ -39,7 +39,7 @@ class MediaSessionParams : public CallSessionParams {
 public:
 	MediaSessionParams ();
 	MediaSessionParams (const MediaSessionParams &src);
-	virtual ~MediaSessionParams () = default;
+	virtual ~MediaSessionParams ();
 
 	MediaSessionParams &operator= (const MediaSessionParams &src);
 

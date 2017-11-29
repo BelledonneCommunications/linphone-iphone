@@ -40,7 +40,7 @@ class CallSessionParams : public ClonableObject {
 public:
 	CallSessionParams ();
 	CallSessionParams (const CallSessionParams &src);
-	virtual ~CallSessionParams () = default;
+	virtual ~CallSessionParams ();
 
 	CallSessionParams &operator= (const CallSessionParams &src);
 
