@@ -163,14 +163,21 @@ void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 
 	// TODO: Check direction.
 
-	msg->getPrivate()->setTime(ms_time(0));
-	msg->getPrivate()->send();
+	ChatMessagePrivate *dChatMessage = msg->getPrivate();
+	dChatMessage->setTime(ms_time(0));
+	dChatMessage->send();
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_sent(cbs);
-	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(msg->getTime(), msg);
+
 	if (cb) {
+		shared_ptr<ConferenceChatMessageEvent> event = static_pointer_cast<ConferenceChatMessageEvent>(
+			q->getCore()->getPrivate()->mainDb->getEventFromKey(dChatMessage->dbKey)
+		);
+		if (!event)
+			event = make_shared<ConferenceChatMessageEvent>(msg->getTime(), msg);
+
 		cb(cr, L_GET_C_BACK_PTR(event));
 	}
 
