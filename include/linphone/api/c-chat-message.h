@@ -126,13 +126,6 @@ LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage 
 LINPHONE_PUBLIC const char* linphone_chat_message_get_text(LinphoneChatMessage* msg);
 
 /**
- * Returns the id used to identify this message in the storage database
- * @param message the message
- * @return the id
- */
-LINPHONE_PUBLIC unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage* msg);
-
-/**
  * Get the message identifier.
  * It is used to identify a message so that it can be notified as delivered and/or displayed.
  * @param[in] cm LinphoneChatMessage object
