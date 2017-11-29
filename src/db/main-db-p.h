@@ -37,6 +37,7 @@ class Content;
 class MainDbPrivate : public AbstractDbPrivate {
 public:
 	mutable std::unordered_map<long long, std::weak_ptr<EventLog>> storageIdToEvent;
+	mutable std::unordered_map<long long, std::weak_ptr<ChatMessage>> storageIdToChatMessage;
 
 private:
 	// ---------------------------------------------------------------------------
@@ -136,7 +137,12 @@ private:
 	// Cache API.
 	// ---------------------------------------------------------------------------
 
-	std::shared_ptr<EventLog> getEventFromCache (long long eventId) const;
+	void cache (const std::shared_ptr<EventLog> &eventLog, long long storageId) const;
+	void cache (const std::shared_ptr<ChatMessage> &chatMessage, long long storageId) const;
+
+	std::shared_ptr<EventLog> getEventFromCache (long long storageId) const;
+	std::shared_ptr<ChatMessage> getChatMessageFromCache (long long storageId) const;
+
 	void invalidConferenceEventsFromQuery (const std::string &query, long long chatRoomId);
 
 	L_DECLARE_PUBLIC(MainDb);

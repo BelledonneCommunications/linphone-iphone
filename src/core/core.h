@@ -36,12 +36,13 @@ class CorePrivate;
 class IdentityAddress;
 
 class LINPHONE_PUBLIC Core : public Object {
+	friend class ChatMessagePrivate;
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;
-	friend class ChatMessagePrivate;
 	friend class ClientGroupChatRoom;
 	friend class LocalConferenceEventHandlerPrivate;
 	friend class MainDb;
+	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 	friend class ServerGroupChatRoomPrivate;
 

@@ -37,6 +37,7 @@ class EventLog;
 class MainDbPrivate;
 
 class MainDb : public AbstractDb, public CoreAccessor {
+	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 
 public:

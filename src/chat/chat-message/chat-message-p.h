@@ -30,6 +30,7 @@
 #include "content/content.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
+#include "db/main-db-chat-message-key.h"
 #include "event-log/conference/conference-chat-message-event.h"
 #include "object/object-p.h"
 #include "sal/sal.h"
@@ -148,11 +149,16 @@ private:
 	ContentType cContentType;
 	std::string cText;
 
+	std::weak_ptr<ConferenceChatMessageEvent> chatEvent;
+
 	// TODO: Remove my comment. VARIABLES OK.
 	// Do not expose.
 
+public:
+	mutable MainDbChatMessageKey dbKey;
+
+private:
 	std::weak_ptr<ChatRoom> chatRoom;
-	std::weak_ptr<ConferenceChatMessageEvent> chatEvent;
 	ChatRoomId chatRoomId;
 	IdentityAddress fromAddress;
 	IdentityAddress toAddress;
