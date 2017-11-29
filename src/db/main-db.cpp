@@ -500,6 +500,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			}
 		}
 
+		cache(chatMessage, eventId);
+
 	end:
 		return make_shared<ConferenceChatMessageEvent>(
 			creationTime,
