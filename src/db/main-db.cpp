@@ -1145,7 +1145,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		}
 
 		bool soFarSoGood = false;
-		long long storageId;
+		long long storageId = 0;
 
 		L_BEGIN_LOG_EXCEPTION
 
