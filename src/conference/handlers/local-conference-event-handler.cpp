@@ -380,9 +380,9 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
 		unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
+		device->setConferenceSubscribeEvent(lev);
 		if (lastNotify == 0) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
-			device->setConferenceSubscribeEvent(lev);
 			d->notifyFullState(d->createNotifyFullState(), device);
 		} else if (lastNotify < d->lastNotify) {
 			lInfo() << "Sending all missed notify for conference:" << d->conf->getConferenceAddress().asString() <<
