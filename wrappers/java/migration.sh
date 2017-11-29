@@ -302,6 +302,7 @@ s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /Lin
 # ChatMessageListener onFileTransferSend now returns the Buffer instead of having it as part of his arguments
 # Core.startEchoCancellerCalibration no longer takes a parameter
 # XmlRpcSession.createRequest takes first the return arg type and then the name of the method, until now it was the other way around
+# ProxyConfig.normalizePhoneNumber returns null if it fails instead of the value given as parameter in the previous version !
 
 # # Factory
 #Factory.createAccountCreator() => Core.createAccountCreator()
