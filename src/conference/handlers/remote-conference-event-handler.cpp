@@ -55,7 +55,8 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 	if (entityAddress == chatRoomId.getPeerAddress()) {
 		if (
 			confInfo->getConferenceDescription().present() &&
-			confInfo->getConferenceDescription().get().getSubject().present()
+			confInfo->getConferenceDescription().get().getSubject().present() &&
+			!confInfo->getConferenceDescription().get().getSubject().get().empty()
 		)
 			confListener->onSubjectChanged(
 				make_shared<ConferenceSubjectEvent>(
