@@ -10,6 +10,21 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [3.16.5] - 2017-11-28
+
+### Added
+- Support of IOS 11
+
+### Changed
+- Contact, CNContact implmentation.
+- Contacts loading optimization.
+- Sound management updated
+
+### Fixed
+- Chat file resend fixed
+- Minor bugs fixes
+- Audio fixed on conference call
+
 ## [3.16.3] - 2017-05-03
 
 ### Added

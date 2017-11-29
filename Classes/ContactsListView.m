@@ -158,6 +158,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)changeView:(ContactsCategory)view {
 	CGRect frame = _selectedButtonImage.frame;
 	if (view == ContactsAll && !allButton.selected) {
+		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = allButton.frame.origin.x;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
