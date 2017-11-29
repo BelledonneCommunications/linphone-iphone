@@ -672,11 +672,9 @@ didInvalidatePushTokenForType:(NSString *)type {
   } else if ([response.actionIdentifier isEqual:@"Reply"]) {
     NSString *replyText =
         [(UNTextInputNotificationResponse *)response userText];
-    NSString *chat_room_address = [response.notification.request.content.userInfo
-        objectForKey:@"chat_room_address"];
 	NSString *from_address = [response.notification.request.content.userInfo
 					objectForKey:@"from_addr"];
-	  [LinphoneManager.instance send:replyText to:[chat_room_address isEqualToString:@""] ? from_address : chat_room_address];
+	  [LinphoneManager.instance send:replyText to:from_address];
   } else if ([response.actionIdentifier isEqual:@"Seen"]) {
     NSString *from = [response.notification.request.content.userInfo
         objectForKey:@"chat_room_address"];
@@ -893,9 +891,8 @@ didInvalidatePushTokenForType:(NSString *)type {
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {
 		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
-		NSString *chat_room_address = [notification.userInfo objectForKey:@"chat_room_address"];
 		NSString *from_address = [notification.userInfo objectForKey:@"from_addr"];
-		[LinphoneManager.instance send:replyText to:[chat_room_address isEqualToString:@""] ? from_address : chat_room_address];
+		[LinphoneManager.instance send:replyText to:from_address];
 	}
 	completionHandler();
 }
