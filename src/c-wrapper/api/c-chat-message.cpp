@@ -138,10 +138,6 @@ void linphone_chat_message_set_outgoing(LinphoneChatMessage *msg) {
 	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setDirection(LinphonePrivate::ChatMessage::Direction::Outgoing);
 }
 
-unsigned int linphone_chat_message_get_storage_id(LinphoneChatMessage *msg) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getStorageId();
-}
-
 LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessage *msg) {
 	return ((LinphoneChatMessageState)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getState());
 }
@@ -156,10 +152,6 @@ const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg)
 
 void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setImdnMessageId(L_C_TO_STRING(id));
-}
-
-void linphone_chat_message_set_storage_id(LinphoneChatMessage *msg, unsigned int id) {
-	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setStorageId(id);
 }
 
 bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {

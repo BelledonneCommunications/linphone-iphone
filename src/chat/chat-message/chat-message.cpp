@@ -100,14 +100,6 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	store();
 }
 
-unsigned int ChatMessagePrivate::getStorageId () const {
-	return storageId;
-}
-
-void ChatMessagePrivate::setStorageId (unsigned int id) {
-	storageId = id;
-}
-
 belle_http_request_t *ChatMessagePrivate::getHttpRequest () const {
 	return fileTransferChatMessageModifier.getHttpRequest();
 }

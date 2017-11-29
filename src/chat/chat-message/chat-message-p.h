@@ -73,9 +73,6 @@ public:
 		this->toAddress = toAddress;
 	}
 
-	unsigned int getStorageId() const;
-	void setStorageId(unsigned int id);
-
 	belle_http_request_t *getHttpRequest() const;
 	void setHttpRequest(belle_http_request_t *request);
 
@@ -127,7 +124,6 @@ public:
 
 private:
 	// TODO: Clean attributes.
-	unsigned int storageId = 0;
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string id;
 	std::string rttMessage;

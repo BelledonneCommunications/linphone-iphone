@@ -58,7 +58,7 @@ public:
 
 	virtual CapabilitiesMask getCapabilities () const = 0;
 
-	std::shared_ptr<ChatMessage> getLastMessageInHistory() const;
+	std::shared_ptr<ChatMessage> getLastMessageInHistory () const;
 
 	// TODO: Remove useless functions.
 	void compose ();
