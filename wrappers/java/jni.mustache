@@ -419,6 +419,7 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#methods}}
+{{#notEmpty}}
 {{return}} {{name}}({{params}}) {
 	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}{{#strings}}
 	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
@@ -482,8 +483,66 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 	env->ReleaseByteArrayElements({{bytesargname}}, (jbyte*)c_{{bytesargname}}, JNI_ABORT);
 	{{/bytes}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}
 }
-
+{{/notEmpty}}
 {{/methods}}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Manually wrapped
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Java_org_linphone_core_CallImpl_setNativeVideoWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCall *cptr = (LinphoneCall*)ptr;
+	jobject oldWindow = (jobject) linphone_call_get_native_video_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): setting to NULL");
+	linphone_call_set_native_video_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
+
+void Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCore *cptr = (LinphoneCore*)ptr;
+	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): setting to NULL");
+	linphone_core_set_native_preview_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
+
+void Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCore *cptr = (LinphoneCore*)ptr;
+	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): setting to NULL");
+	linphone_core_set_native_video_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
 
 #ifdef __cplusplus
 }

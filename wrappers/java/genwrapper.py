@@ -358,7 +358,11 @@ class JavaTranslator(object):
         return methodDict
 
     def translate_jni_method(self, className, _method, static=False):
-        methodDict = {}
+        jni_blacklist = ['linphone_call_set_native_video_window_id',\
+                        'linphone_core_set_native_preview_window_id',\
+                        'linphone_core_set_native_video_window_id']
+
+        methodDict = {'notEmpty': True}
         methodDict['classCName'] = 'Linphone' + className.to_camel_case()
         methodDict['className'] = className.to_camel_case()
         methodDict['classImplName'] = className.to_camel_case() + 'Impl'
@@ -378,6 +382,9 @@ class JavaTranslator(object):
         methodDict['isRealObjectArray'] = False
         methodDict['isStringObjectArray'] = False
         methodDict['c_type_return'] = self.translate_as_c_base_type(_method.returnType)
+        
+        if methodDict['c_name'] in jni_blacklist:
+            return {'notEmpty': False}
 
         if methodDict['hasListReturn']:
             if type(_method.returnType) is AbsApi.BaseType and _method.returnType.name == 'string_array':
