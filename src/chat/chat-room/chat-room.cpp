@@ -35,13 +35,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-int ChatRoomPrivate::createChatMessageFromDb (void *data, int argc, char **argv, char **colName) {
-	ChatRoomPrivate *d = reinterpret_cast<ChatRoomPrivate *>(data);
-	return d->createChatMessageFromDb(argc, argv, colName);
-}
-
-// -----------------------------------------------------------------------------
-
 void ChatRoomPrivate::addTransientEvent (const shared_ptr<EventLog> &log) {
 	auto iter = find(transientEvents.begin(), transientEvents.end(), log);
 	if (iter == transientEvents.end())
@@ -128,30 +121,6 @@ time_t ChatRoom::getLastUpdateTime () const {
 }
 
 // -----------------------------------------------------------------------------
-
-/**
- * DB layout:
- *
- * | 0  | storage_id
- * | 1  | localContact
- * | 2  | remoteContact
- * | 3  | direction flag (LinphoneChatMessageDir)
- * | 4  | message (text content of the message)
- * | 5  | time (unused now, used to be string-based timestamp, replaced by the utc timestamp)
- * | 6  | read flag (no longer used, replaced by the LinphoneChatMessageStateDisplayed state)
- * | 7  | status (LinphoneChatMessageState)
- * | 8  | external body url (deprecated file transfer system)
- * | 9  | utc timestamp
- * | 10 | app data text
- * | 11 | linphone content id (LinphoneContent describing a file transfer)
- * | 12 | message id (used for IMDN)
- * | 13 | content type (of the message field [must be text representable])
- * | 14 | secured flag
- */
-int ChatRoomPrivate::createChatMessageFromDb (int argc, char **argv, char **colName) {
-	// TODO: history.
-	return 0;
-}
 
 list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) const {
 	L_Q();

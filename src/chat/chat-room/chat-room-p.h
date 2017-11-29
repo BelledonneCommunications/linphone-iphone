@@ -36,8 +36,6 @@ class ChatRoomPrivate : public ObjectPrivate, public IsComposingListener {
 public:
 	ChatRoomPrivate () = default;
 
-	static int createChatMessageFromDb (void *data, int argc, char **argv, char **colName);
-
 	void addTransientEvent (const std::shared_ptr<EventLog> &log);
 	void removeTransientEvent (const std::shared_ptr<EventLog> &log);
 
@@ -49,7 +47,6 @@ public:
 
 	void sendIsComposingNotification ();
 
-	int createChatMessageFromDb (int argc, char **argv, char **colName);
 	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId) const;
 
 	virtual LinphoneReason messageReceived (SalOp *op, const SalMessage *msg);
