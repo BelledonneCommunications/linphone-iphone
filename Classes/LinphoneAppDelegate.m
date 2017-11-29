@@ -672,12 +672,14 @@ didInvalidatePushTokenForType:(NSString *)type {
   } else if ([response.actionIdentifier isEqual:@"Reply"]) {
     NSString *replyText =
         [(UNTextInputNotificationResponse *)response userText];
-    NSString *from = [response.notification.request.content.userInfo
-        objectForKey:@"from_addr"];
-    [LinphoneManager.instance send:replyText to:from];
+    NSString *chat_room_address = [response.notification.request.content.userInfo
+        objectForKey:@"chat_room_address"];
+	NSString *from_address = [response.notification.request.content.userInfo
+					objectForKey:@"from_addr"];
+	  [LinphoneManager.instance send:replyText to:[chat_room_address isEqualToString:@""] ? from_address : chat_room_address];
   } else if ([response.actionIdentifier isEqual:@"Seen"]) {
     NSString *from = [response.notification.request.content.userInfo
-        objectForKey:@"from_addr"];
+        objectForKey:@"chat_room_address"];
     LinphoneChatRoom *room =
         linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
     if (room) {
@@ -848,7 +850,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 				// use the standard handler
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
-				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
+				NSString *from = [notification.userInfo objectForKey:@"chat_room_address"];
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
 					if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
@@ -891,8 +893,9 @@ didInvalidatePushTokenForType:(NSString *)type {
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {
 		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
-		NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-		[LinphoneManager.instance send:replyText to:from];
+		NSString *chat_room_address = [notification.userInfo objectForKey:@"chat_room_address"];
+		NSString *from_address = [notification.userInfo objectForKey:@"from_addr"];
+		[LinphoneManager.instance send:replyText to:[chat_room_address isEqualToString:@""] ? from_address : chat_room_address];
 	}
 	completionHandler();
 }

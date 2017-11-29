@@ -136,7 +136,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		&& (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) != 0 || linphone_chat_room_get_nb_participants(_chatRoom) > 1))
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 	else {
-		const LinphoneAddress *addr = linphone_participant_get_address(linphone_chat_room_get_participants(_chatRoom)->data);
+		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
 		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
 	}
 
@@ -501,7 +503,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)sender {
-	[LinphoneManager.instance call:linphone_participant_get_address(linphone_chat_room_get_participants(_chatRoom)->data)];
+	bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+	LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+	const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
+	[LinphoneManager.instance call:addr];
 }
 
 - (IBAction)onListSwipe:(id)sender {

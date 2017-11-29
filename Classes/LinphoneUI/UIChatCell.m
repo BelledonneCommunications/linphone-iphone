@@ -69,13 +69,12 @@
 		_addressLabel.text = [NSString stringWithUTF8String:subject];
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	} else {
-		if (linphone_chat_room_get_participants(chatRoom) != NULL) {
-			LinphoneParticipant *participant = linphone_chat_room_get_participants(chatRoom)->data;
-			const LinphoneAddress *addr = linphone_participant_get_address(participant);
-			if (addr) {
-				[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-				[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
-			}
+		bctbx_list_t *participants = linphone_chat_room_get_participants(chatRoom);
+		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(chatRoom);
+		if (addr) {
+			[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+			[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 		} else {
 			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}

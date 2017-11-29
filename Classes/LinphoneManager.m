@@ -1169,9 +1169,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 					} else {
 						notif.alertBody = [NSString stringWithFormat:NSLocalizedString(@"IM_MSG", nil), from];
 					}
+					char *room_address = linphone_chat_room_get_conference_address(room) ? linphone_address_as_string_uri_only(linphone_chat_room_get_conference_address(room)) : NULL;
+					NSString *room_uri = room_address ? [NSString stringWithUTF8String:room_address] : @"";
 					notif.alertAction = NSLocalizedString(@"Show", nil);
 					notif.soundName = @"msg.caf";
-					notif.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"call-id" : callID };
+					notif.userInfo = @{@"from" : from, @"from_addr" : remote_uri, @"call-id" : callID, @"chat_room_address" : room_uri};
 					notif.accessibilityLabel = @"Message notif";
 					[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 				}
@@ -1210,9 +1212,11 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 				} else {
 					content.body = from;
 				}
+				char *room_address = linphone_chat_room_get_conference_address(room) ? linphone_address_as_string_uri_only(linphone_chat_room_get_conference_address(room)) : NULL;
+				NSString *room_uri = room_address ? [NSString stringWithUTF8String:room_address] : @"";
 				content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 				content.categoryIdentifier = @"msg_cat";
-				content.userInfo = @{ @"from" : from, @"from_addr" : remote_uri, @"CallId" : callID };
+				content.userInfo = @{@"from" : from, @"from_addr" : remote_uri, @"CallId" : callID, @"chat_room_address" : room_uri};
 				content.accessibilityLabel = @"Message notif";
 				UNNotificationRequest *req =
 					[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
