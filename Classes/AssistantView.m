@@ -449,12 +449,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 		BOOL show_logo = [LinphoneManager.instance lpConfigBoolForKey:@"show_assistant_logo_in_choice_view_preference"];
 		BOOL show_extern = ![LinphoneManager.instance lpConfigBoolForKey:@"hide_assistant_custom_account"];
 		BOOL show_new = ![LinphoneManager.instance lpConfigBoolForKey:@"hide_assistant_create_account"];
-
+		BOOL show_fetch_remote = ![LinphoneManager.instance lpConfigBoolForKey:@"show_remote_provisioning_in_assistant"];
+		
 		if (!placement_done) {
 			// visibility
 			_welcomeLogoImage.hidden = !show_logo;
 			_gotoLoginButton.hidden = !show_extern;
 			_gotoCreateAccountButton.hidden = !show_new;
+			_gotoRemoteProvisioningButton.hidden = !show_fetch_remote;
 
 			// placement
 			if (show_logo && show_new && !show_extern) {
