@@ -83,6 +83,7 @@ extern void libmsx264_init(MSFactory *factory);
 extern void libmsopenh264_init(MSFactory *factory);
 extern void libmssilk_init(MSFactory *factory);
 extern void libmswebrtc_init(MSFactory *factory);
+extern void libmscodec2_init(MSFactory *factory);
 
 #define FRONT_CAM_NAME                                                                                                 \
 	"AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
@@ -141,6 +142,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 												   {"mpeg4-generic", 48000, "aaceld_48k_preference"},
 												   {"opus", 48000, "opus_preference"},
 												   {"BV16", 8000, "bv16_preference"},
+												   {"CODEC2", 8000, "codec2_preference"},
 												   {NULL, 0, Nil}};
 
 + (NSString *)getPreferenceForCodec:(const char *)name withRate:(int)rate {
@@ -2112,6 +2114,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsx264_init(f);
 	libmsopenh264_init(f);
 	libmswebrtc_init(f);
+	libmscodec2_init(f);
+	
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 	[self migrationAllPost];
 

@@ -204,6 +204,16 @@
 		</dict>
 		<dict>
 			<key>Key</key>
+			<string>codec2_preference</string>
+			<key>Title</key>
+			<string>codec2</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Key</key>
 			<string>audio_advanced_group</string>
 			<key>Title</key>
 			<string>Advanced</string>
