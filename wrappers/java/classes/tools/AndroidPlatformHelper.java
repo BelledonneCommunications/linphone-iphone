@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 package org.linphone.core.tools;
 
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
 
 import android.net.wifi.WifiManager;
@@ -51,6 +52,8 @@ public class AndroidPlatformHelper {
 
 	public AndroidPlatformHelper(Object ctx_obj) {
 		mContext = (Context) ctx_obj;
+		MediastreamerAndroidContext.setContext(mContext);
+		
 		WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
 		mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
 		mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
