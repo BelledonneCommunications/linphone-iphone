@@ -664,8 +664,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 
   if ([response.actionIdentifier isEqual:@"Answer"]) {
     // use the standard handler
-    [PhoneMainView.instance
-        changeCurrentView:CallView.compositeViewDescription];
+    [PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
     linphone_call_accept(call);
   } else if ([response.actionIdentifier isEqual:@"Decline"]) {
     linphone_call_decline(call, LinphoneReasonDeclined);
@@ -676,14 +675,11 @@ didInvalidatePushTokenForType:(NSString *)type {
 					objectForKey:@"from_addr"];
 	  [LinphoneManager.instance send:replyText to:from_address];
   } else if ([response.actionIdentifier isEqual:@"Seen"]) {
-    NSString *from = [response.notification.request.content.userInfo
-        objectForKey:@"chat_room_address"];
-    LinphoneChatRoom *room =
-        linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
+    NSString *from = [response.notification.request.content.userInfo objectForKey:@"chat_room_address"];
+    LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
     if (room) {
       linphone_chat_room_mark_as_read(room);
-      TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-          getCachedController:NSStringFromClass(TabBarView.class)];
+      TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
       [tab update:YES];
       [PhoneMainView.instance updateApplicationBadgeNumber];
     }
