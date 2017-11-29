@@ -71,6 +71,9 @@ namespace Cpim {
 	bool Parser::coreHeaderIsValid<DateTimeHeader>(const std::string &headerValue) const;
 
 	template<>
+	bool Parser::coreHeaderIsValid<MessageIdHeader>(const std::string &headerValue) const;
+
+	template<>
 	bool Parser::coreHeaderIsValid<SubjectHeader>(const std::string &headerValue) const;
 
 	template<>
