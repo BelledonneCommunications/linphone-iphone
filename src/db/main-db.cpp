@@ -200,10 +200,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertChatRoom (
+	long long MainDbPrivate::insertBasicChatRoom (
 		long long peerSipAddressId,
 		long long localSipAddressId,
-		int capabilities,
 		const tm &creationTime
 	) {
 		L_Q();
@@ -214,6 +213,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		if (id >= 0)
 			return id;
 
+		static const int capabilities = static_cast<int>(ChatRoom::Capabilities::Basic);
 		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
 			", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 		*session << "INSERT INTO chat_room ("
@@ -1989,10 +1989,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					const long long &eventId = getLastInsertId();
 					const long long &localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
 					const long long &remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-					const long long &chatRoomId = d->insertChatRoom(
+					const long long &chatRoomId = d->insertBasicChatRoom(
 						remoteSipAddressId,
 						localSipAddressId,
-						static_cast<int>(ChatRoom::Capabilities::Basic),
 						creationTime
 					);
 					const int &isSecured = message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0);

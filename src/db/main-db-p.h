@@ -54,10 +54,9 @@ private:
 	void insertContent (long long messageEventId, const Content &content);
 	void updateContent (long long messageEventId, long long messageContentId, const Content &content);
 	long long insertContentType (const std::string &contentType);
-	long long insertChatRoom (
+	long long insertBasicChatRoom (
 		long long peerSipAddressId,
 		long long localSipAddressId,
-		int capabilities,
 		const tm &creationTime
 	);
 	long long insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
