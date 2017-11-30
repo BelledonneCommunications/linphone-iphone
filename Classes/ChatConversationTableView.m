@@ -216,7 +216,7 @@
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		[tableView beginUpdates];
 		LinphoneEventLog *event = bctbx_list_nth_data(eventList, (int)[indexPath row]);
-		//linphone_chat_room_delete_message(_chatRoom, chat);
+		linphone_event_log_delete_from_database(event);
 		eventList = bctbx_list_remove(eventList, event);
 
 		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
@@ -228,7 +228,7 @@
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 		LinphoneEventLog *event = bctbx_list_nth_data(eventList, (int)[indexPath row]);
-		//linphone_chat_room_delete_message(_chatRoom, chat);
+		linphone_event_log_delete_from_database(event);
 		eventList = bctbx_list_remove(eventList, event);
 	}];
 }
