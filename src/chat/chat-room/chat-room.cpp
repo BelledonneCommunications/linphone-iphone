@@ -380,7 +380,7 @@ shared_ptr<ChatMessage> ChatRoom::createMessage () {
 }
 
 void ChatRoom::deleteHistory () {
-	// TODO: history.
+	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
 }
 
 shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
