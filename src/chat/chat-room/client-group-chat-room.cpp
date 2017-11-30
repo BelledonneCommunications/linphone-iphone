@@ -104,7 +104,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const string &subject,
 	list<shared_ptr<Participant>> &&participants,
 	unsigned int lastNotifyId,
-	bool isReadOnly
+	bool hasBeenLeft
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(peerAddress, me->getAddress())),
 RemoteConference(core, me->getAddress(), nullptr) {
 	L_D();
@@ -115,7 +115,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 	dConference->subject = subject;
 	dConference->participants = move(participants);
 
-	d->state = isReadOnly ? ChatRoom::State::Terminated : ChatRoom::State::Created;
+	d->state = hasBeenLeft ? ChatRoom::State::Terminated : ChatRoom::State::Created;
 
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
@@ -131,7 +131,7 @@ ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () co
 	return static_cast<CapabilitiesMask>(Capabilities::Conference);
 }
 
-bool ClientGroupChatRoom::isReadOnly () const {
+bool ClientGroupChatRoom::hasBeenLeft () const {
 	return getState() != State::Created;
 }
 

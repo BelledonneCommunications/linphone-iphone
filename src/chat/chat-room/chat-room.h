@@ -57,7 +57,7 @@ public:
 	time_t getLastUpdateTime () const;
 
 	virtual CapabilitiesMask getCapabilities () const = 0;
-	virtual bool isReadOnly () const = 0;
+	virtual bool hasBeenLeft () const = 0;
 
 	std::shared_ptr<ChatMessage> getLastMessageInHistory () const;
 

@@ -40,7 +40,7 @@ public:
 	ServerGroupChatRoom (const std::shared_ptr<Core> &core, SalCallOp *op);
 
 	CapabilitiesMask getCapabilities () const override;
-	bool isReadOnly () const override;
+	bool hasBeenLeft () const override;
 
 	const IdentityAddress &getConferenceAddress () const override;
 

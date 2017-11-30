@@ -244,8 +244,8 @@ LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr) 
 	return (LinphoneChatRoomState)L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getState();
 }
 
-bool_t linphone_chat_room_is_read_only (const LinphoneChatRoom *cr) {
-	return (bool_t)L_GET_CPP_PTR_FROM_C_OBJECT(cr)->isReadOnly();
+bool_t linphone_chat_room_has_been_left (const LinphoneChatRoom *cr) {
+	return (bool_t)L_GET_CPP_PTR_FROM_C_OBJECT(cr)->hasBeenLeft();
 }
 
 void linphone_chat_room_add_participant (LinphoneChatRoom *cr, const LinphoneAddress *addr) {

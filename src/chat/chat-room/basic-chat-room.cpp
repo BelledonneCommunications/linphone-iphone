@@ -51,7 +51,7 @@ BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
 	return static_cast<CapabilitiesMask>(Capabilities::Basic);
 }
 
-bool BasicChatRoom::isReadOnly () const {
+bool BasicChatRoom::hasBeenLeft () const {
 	return false;
 }
 

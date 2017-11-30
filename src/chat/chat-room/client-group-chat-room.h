@@ -46,13 +46,13 @@ public:
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
 		unsigned int lastNotifyId,
-		bool isReadOnly
+		bool hasBeenLeft
 	);
 
 	std::shared_ptr<Core> getCore () const;
 
 	CapabilitiesMask getCapabilities () const override;
-	bool isReadOnly () const override;
+	bool hasBeenLeft () const override;
 
 	const IdentityAddress &getConferenceAddress () const override;
 

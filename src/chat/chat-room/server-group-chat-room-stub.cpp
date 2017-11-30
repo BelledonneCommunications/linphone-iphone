@@ -85,7 +85,7 @@ int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
-bool ServerGroupChatRoom::isReadOnly () const {
+bool ServerGroupChatRoom::hasBeenLeft () const {
 	return true;
 }
 

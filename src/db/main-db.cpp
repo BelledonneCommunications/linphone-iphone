@@ -247,7 +247,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
 		const int &capabilities = static_cast<int>(chatRoom->getCapabilities());
 		const string &subject = chatRoom->getSubject();
-		const int &flags = chatRoom->isReadOnly();
+		const int &flags = chatRoom->hasBeenLeft();
 		*session << "INSERT INTO chat_room ("
 			"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject, flags"
 			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject, :flags)",
