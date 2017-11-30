@@ -2060,12 +2060,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return false;
 	}
 
+	bool MainDb::updateEvent (const std::shared_ptr<EventLog> &) {
+		return false;
+	}
+
 	bool MainDb::deleteEvent (const shared_ptr<EventLog> &) {
 		return false;
 	}
 
 	int MainDb::getEventsCount (FilterMask) const {
 		return 0;
+	}
+
+	shared_ptr<EventLog> MainDb::getEventFromKey (const MainDbKey &) {
+		return nullptr;
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
@@ -2081,6 +2089,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	int MainDb::getUnreadChatMessagesCount (const ChatRoomId &) const {
 		return 0;
+	}
+
+	shared_ptr<ChatMessage> MainDb::getLastChatMessage (const ChatRoomId &) const {
+		return nullptr;
+	}
+
+	list<std::shared_ptr<ChatMessage>> MainDb::findChatMessages (const ChatRoomId &, const std::string &) const {
+		return list<shared_ptr<ChatMessage>>();
 	}
 
 	void MainDb::markChatMessagesAsRead (const ChatRoomId &) const {}
@@ -2101,7 +2117,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return list<shared_ptr<ChatRoom>>();
 	}
 
-	void MainDb::insertChatRoom (const ChatRoomId &, int, const string &) {}
+	void MainDb::insertChatRoom (const shared_ptr<ChatRoom> &) {}
 
 	void MainDb::deleteChatRoom (const ChatRoomId &) {}
 
