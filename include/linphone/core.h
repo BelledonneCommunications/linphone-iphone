@@ -4962,14 +4962,28 @@ LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneC
  * Find a chat room.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc the linphone core
- * @param peerAddr a linphone address.
- * @param localAddr a linphone address.
+ * @param peer_addr a linphone address.
+ * @param local_addr a linphone address.
  * @return #LinphoneChatRoom where messaging can take place.
 **/
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_find_chat_room (
 	const LinphoneCore *lc,
-	const LinphoneAddress *peerAddr,
-	const LinphoneAddress *localAddr
+	const LinphoneAddress *peer_addr,
+	const LinphoneAddress *local_addr
+);
+
+/**
+ * Find a one to one chat room.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
+ * @param lc the linphone core
+ * @param local_addr a linphone address.
+ * @param participant_addr a linphone address.
+ * @return #LinphoneChatRoom where messaging can take place.
+**/
+LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_find_one_to_one_chat_room (
+	const LinphoneCore *lc,
+	const LinphoneAddress *local_addr,
+	const LinphoneAddress *participant_addr
 );
 
 /**
