@@ -45,12 +45,14 @@ public:
 		std::shared_ptr<Participant> &me,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
-		unsigned int lastNotifyId
+		unsigned int lastNotifyId,
+		bool isReadOnly
 	);
 
 	std::shared_ptr<Core> getCore () const;
 
 	CapabilitiesMask getCapabilities () const override;
+	bool isReadOnly () const override;
 
 	const IdentityAddress &getConferenceAddress () const override;
 

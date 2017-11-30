@@ -247,11 +247,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
 		const int &capabilities = static_cast<int>(chatRoom->getCapabilities());
 		const string &subject = chatRoom->getSubject();
+		const int &flags = chatRoom->isReadOnly();
 		*session << "INSERT INTO chat_room ("
 			"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject"
-			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject)",
+			") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject, :flags)",
 			soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(creationTime),
-			soci::use(capabilities), soci::use(subject);
+			soci::use(capabilities), soci::use(subject), soci::use(flags);
 
 		id = q->getLastInsertId();
 
@@ -897,6 +898,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  subject VARCHAR(255),"
 
 			"  last_notify_id INT UNSIGNED,"
+
+			"  flags INT UNSIGNED DEFAULT 0,"
 
 			"  UNIQUE (peer_sip_address_id, local_sip_address_id),"
 
@@ -1718,7 +1721,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 // -----------------------------------------------------------------------------
 
 	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {
-		static const string query = "SELECT chat_room.id, peer_sip_address.value, local_sip_address.value, creation_time, last_update_time, capabilities, subject, last_notify_id"
+		static const string query = "SELECT chat_room.id, peer_sip_address.value, local_sip_address.value, "
+			"creation_time, last_update_time, capabilities, subject, last_notify_id, flags"
 			"  FROM chat_room, sip_address AS peer_sip_address, sip_address AS local_sip_address"
 			"  WHERE chat_room.peer_sip_address_id = peer_sip_address.id AND chat_room.local_sip_address_id = local_sip_address.id"
 			"  ORDER BY last_update_time DESC";
@@ -1797,7 +1801,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					me,
 					subject,
 					move(participants),
-					lastNotifyId
+					lastNotifyId,
+					!!row.get<int>(8, 0)
 				);
 			}
 

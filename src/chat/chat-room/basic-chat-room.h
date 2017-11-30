@@ -33,6 +33,7 @@ class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
 
 public:
 	CapabilitiesMask getCapabilities () const override;
+	bool isReadOnly () const override;
 
 	const IdentityAddress &getConferenceAddress () const override;
 

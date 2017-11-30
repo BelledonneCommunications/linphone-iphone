@@ -85,6 +85,10 @@ int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
+bool ServerGroupChatRoom::isReadOnly () const {
+	return true;
+}
+
 bool ServerGroupChatRoom::canHandleParticipants () const {
 	return false;
 }
