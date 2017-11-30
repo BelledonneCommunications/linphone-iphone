@@ -176,7 +176,7 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 /* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
 int linphone_run_stun_tests(LinphoneCore *lc, int audioPort, int videoPort, int textPort,
 	char *audioCandidateAddr, int *audioCandidatePort, char *videoCandidateAddr, int *videoCandidatePort, char *textCandidateAddr, int *textCandidatePort) {
-	LinphonePrivate::StunClient *client = new LinphonePrivate::StunClient(lc);
+	LinphonePrivate::StunClient *client = new LinphonePrivate::StunClient(lc->cppCore);
 	int ret = client->run(audioPort, videoPort, textPort);
 	strncpy(audioCandidateAddr, client->getAudioCandidate().address.c_str(), LINPHONE_IPADDR_SIZE);
 	*audioCandidatePort = client->getAudioCandidate().port;

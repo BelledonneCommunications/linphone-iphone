@@ -128,7 +128,7 @@ void PayloadTypeHandler::assignPayloadTypeNumbers (const bctbx_list_t *codecs) {
 		}
 
 		if (number == -1) {
-			int dynNumber = core->codecs_conf.dyn_pt;
+			int dynNumber = getCore()->getCCore()->codecs_conf.dyn_pt;
 			while (dynNumber < 127) {
 				if (isPayloadTypeNumberAvailable(codecs, dynNumber, nullptr)) {
 					payload_type_set_number(pt, dynNumber);
@@ -159,7 +159,7 @@ void PayloadTypeHandler::assignPayloadTypeNumbers (const bctbx_list_t *codecs) {
 
 bctbx_list_t *PayloadTypeHandler::createSpecialPayloadTypes (const bctbx_list_t *codecs) {
 	bctbx_list_t *result = createTelephoneEventPayloadTypes(codecs);
-	if (linphone_core_generic_comfort_noise_enabled(core)) {
+	if (linphone_core_generic_comfort_noise_enabled(getCore()->getCCore())) {
 		OrtpPayloadType *cn = payload_type_clone(&payload_type_cn);
 		payload_type_set_number(cn, 13);
 		result = bctbx_list_append(result, cn);
@@ -179,8 +179,8 @@ bctbx_list_t *PayloadTypeHandler::createTelephoneEventPayloadTypes (const bctbx_
 		// Let it choose the number dynamically as for normal codecs.
 		payload_type_set_number(tev, -1);
 		// But for first telephone-event, prefer the number that was configured in the core.
-		if (!result && isPayloadTypeNumberAvailable(codecs, core->codecs_conf.telephone_event_pt, nullptr))
-			payload_type_set_number(tev, core->codecs_conf.telephone_event_pt);
+		if (!result && isPayloadTypeNumberAvailable(codecs, getCore()->getCCore()->codecs_conf.telephone_event_pt, nullptr))
+			payload_type_set_number(tev, getCore()->getCCore()->codecs_conf.telephone_event_pt);
 		result = bctbx_list_append(result, tev);
 	}
 	return result;
@@ -189,8 +189,8 @@ bctbx_list_t *PayloadTypeHandler::createTelephoneEventPayloadTypes (const bctbx_
 bool PayloadTypeHandler::isPayloadTypeUsable (const OrtpPayloadType *pt) {
 	return isPayloadTypeUsableForBandwidth(
 		pt, getMinBandwidth(
-			linphone_core_get_download_bandwidth(core),
-			linphone_core_get_upload_bandwidth(core)
+			linphone_core_get_download_bandwidth(getCore()->getCCore()),
+			linphone_core_get_upload_bandwidth(getCore()->getCCore())
 		)
 	);
 }
@@ -276,13 +276,13 @@ bctbx_list_t *PayloadTypeHandler::makeCodecsList (SalStreamType type, int bandwi
 	switch (type) {
 		default:
 		case SalAudio:
-			allCodecs = core->codecs_conf.audio_codecs;
+			allCodecs = getCore()->getCCore()->codecs_conf.audio_codecs;
 			break;
 		case SalVideo:
-			allCodecs = core->codecs_conf.video_codecs;
+			allCodecs = getCore()->getCCore()->codecs_conf.video_codecs;
 			break;
 		case SalText:
-			allCodecs = core->codecs_conf.text_codecs;
+			allCodecs = getCore()->getCCore()->codecs_conf.text_codecs;
 			break;
 	}
 

@@ -37,8 +37,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class MediaSessionPrivate : public CallSessionPrivate {
 public:
-	MediaSessionPrivate (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
-	virtual ~MediaSessionPrivate ();
+	MediaSessionPrivate () = default;
 
 public:
 	static void stunAuthRequestedCb (void *userData, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
@@ -69,7 +68,9 @@ public:
 	MediaSessionParams *getCurrentParams () const { return static_cast<MediaSessionParams *>(currentParams); }
 	MediaSessionParams *getParams () const { return static_cast<MediaSessionParams *>(params); }
 	MediaSessionParams *getRemoteParams () const { return static_cast<MediaSessionParams *>(remoteParams); }
+	void setCurrentParams (MediaSessionParams *msp);
 	void setParams (MediaSessionParams *msp);
+	void setRemoteParams (MediaSessionParams *msp);
 
 	IceSession *getIceSession () const { return iceAgent->getIceSession(); }
 
@@ -99,6 +100,7 @@ private:
 
 	static float aggregateQualityRatings (float audioRating, float videoRating);
 
+	std::shared_ptr<Participant> getMe () const;
 	void setState (LinphoneCallState newState, const std::string &message) override;
 
 	void computeStreamsIndexes (const SalMediaDescription *md);
@@ -243,6 +245,8 @@ private:
 private:
 	static const std::string ecStateStore;
 	static const int ecStateMaxLen;
+
+	std::weak_ptr<Participant> me;
 
 	AudioStream *audioStream = nullptr;
 	OrtpEvQueue *audioStreamEvQueue = nullptr;

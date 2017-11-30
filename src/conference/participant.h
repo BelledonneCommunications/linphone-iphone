@@ -50,6 +50,8 @@ class Participant : public Object {
 	friend class ServerGroupChatRoomPrivate;
 
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(Participant);
+
 	explicit Participant (const IdentityAddress &address);
 	explicit Participant (IdentityAddress &&address);
 

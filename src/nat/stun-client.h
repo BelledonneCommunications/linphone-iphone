@@ -24,23 +24,25 @@
 
 #include <ortp/port.h>
 
+#include "core/core.h"
+#include "core/core-accessor.h"
+
 #include "linphone/utils/general.h"
 
 // =============================================================================
 
 L_DECL_C_STRUCT_PREFIX_LESS(SalMediaDescription);
-L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
-class StunClient {
+class StunClient : public CoreAccessor {
 	struct Candidate {
 		std::string address;
 		int port;
 	};
 
 public:
-	StunClient (LinphoneCore *core) : core(core) {}
+	StunClient (const std::shared_ptr<Core> &core) : CoreAccessor(core) {}
 
 	int run (int audioPort, int videoPort, int textPort);
 	void updateMediaDescription (SalMediaDescription *md) const;
@@ -62,7 +64,6 @@ public:
 	int sendStunRequest (ortp_socket_t sock, const struct sockaddr *server, socklen_t addrlen, int id, bool changeAddr);
 
 private:
-	LinphoneCore *core = nullptr;
 	Candidate audioCandidate;
 	Candidate videoCandidate;
 	Candidate textCandidate;

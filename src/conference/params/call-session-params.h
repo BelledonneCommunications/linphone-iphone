@@ -20,6 +20,8 @@
 #ifndef _CALL_SESSION_PARAMS_H_
 #define _CALL_SESSION_PARAMS_H_
 
+#include <memory>
+
 #include "object/clonable-object.h"
 
 #include "linphone/types.h"
@@ -31,6 +33,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionParamsPrivate;
+class Core;
 
 class CallSessionParams : public ClonableObject {
 	friend class CallSession;
@@ -44,7 +47,7 @@ public:
 
 	CallSessionParams &operator= (const CallSessionParams &src);
 
-	virtual void initDefault (LinphoneCore *core);
+	virtual void initDefault (const std::shared_ptr<Core> &core);
 
 	const std::string& getSessionName () const;
 	void setSessionName (const std::string &sessionName);

@@ -35,10 +35,11 @@ LINPHONE_BEGIN_NAMESPACE
 shared_ptr<CallSession> ParticipantPrivate::createSession (
 	const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener
 ) {
+	L_Q();
 	if (hasMedia && (!params || dynamic_cast<const MediaSessionParams *>(params))) {
-		session = make_shared<MediaSession>(conference, params, listener);
+		session = make_shared<MediaSession>(conference.getCore(), q->getSharedFromThis(), params, listener);
 	} else {
-		session = make_shared<CallSession>(conference, params, listener);
+		session = make_shared<CallSession>(conference.getCore(), params, listener);
 	}
 	return session;
 }

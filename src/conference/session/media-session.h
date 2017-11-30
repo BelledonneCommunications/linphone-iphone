@@ -28,8 +28,10 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CallPrivate;
+class Core;
 class IceAgent;
 class MediaSessionPrivate;
+class Participant;
 
 class LINPHONE_PUBLIC MediaSession : public CallSession {
 	friend class Call;
@@ -37,7 +39,8 @@ class LINPHONE_PUBLIC MediaSession : public CallSession {
 	friend class IceAgent;
 
 public:
-	MediaSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
+	MediaSession (const std::shared_ptr<Core> &core, std::shared_ptr<Participant> me, const CallSessionParams *params, CallSessionListener *listener);
+	virtual ~MediaSession ();
 
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);

@@ -22,6 +22,7 @@
 
 #include "media-session-params.h"
 
+#include "core/core.h"
 #include "logger/logger.h"
 
 #include "private.h"
@@ -223,27 +224,28 @@ MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &src
 
 // -----------------------------------------------------------------------------
 
-void MediaSessionParams::initDefault (LinphoneCore *core) {
+void MediaSessionParams::initDefault (const std::shared_ptr<Core> &core) {
 	L_D();
 	CallSessionParams::initDefault(core);
+	LinphoneCore *cCore = core->getCCore();
 	d->audioEnabled = true;
-	d->videoEnabled = linphone_core_video_enabled(core) && core->video_policy.automatically_initiate;
-	if (!linphone_core_video_enabled(core) && core->video_policy.automatically_initiate) {
+	d->videoEnabled = linphone_core_video_enabled(cCore) && cCore->video_policy.automatically_initiate;
+	if (!linphone_core_video_enabled(cCore) && cCore->video_policy.automatically_initiate) {
 		lError() << "LinphoneCore has video disabled for both capture and display, but video policy is to start the call with video. "
 			"This is a possible mis-use of the API. In this case, video is disabled in default LinphoneCallParams";
 	}
-	d->realtimeTextEnabled = !!linphone_core_realtime_text_enabled(core);
-	d->encryption = linphone_core_get_media_encryption(core);
-	d->avpfEnabled = (linphone_core_get_avpf_mode(core) == LinphoneAVPFEnabled);
-	d->_implicitRtcpFbEnabled = !!lp_config_get_int(linphone_core_get_config(core), "rtp", "rtcp_fb_implicit_rtcp_fb", true);
-	d->avpfRrInterval = static_cast<uint16_t>(linphone_core_get_avpf_rr_interval(core));
+	d->realtimeTextEnabled = !!linphone_core_realtime_text_enabled(cCore);
+	d->encryption = linphone_core_get_media_encryption(cCore);
+	d->avpfEnabled = (linphone_core_get_avpf_mode(cCore) == LinphoneAVPFEnabled);
+	d->_implicitRtcpFbEnabled = !!lp_config_get_int(linphone_core_get_config(cCore), "rtp", "rtcp_fb_implicit_rtcp_fb", true);
+	d->avpfRrInterval = static_cast<uint16_t>(linphone_core_get_avpf_rr_interval(cCore));
 	d->audioDirection = LinphoneMediaDirectionSendRecv;
 	d->videoDirection = LinphoneMediaDirectionSendRecv;
-	d->earlyMediaSendingEnabled = !!lp_config_get_int(linphone_core_get_config(core), "misc", "real_early_media", false);
-	d->audioMulticastEnabled = !!linphone_core_audio_multicast_enabled(core);
-	d->videoMulticastEnabled = !!linphone_core_video_multicast_enabled(core);
-	d->updateCallWhenIceCompleted = !!lp_config_get_int(linphone_core_get_config(core), "sip", "update_call_when_ice_completed", true);
-	d->mandatoryMediaEncryptionEnabled = !!linphone_core_is_media_encryption_mandatory(core);
+	d->earlyMediaSendingEnabled = !!lp_config_get_int(linphone_core_get_config(cCore), "misc", "real_early_media", false);
+	d->audioMulticastEnabled = !!linphone_core_audio_multicast_enabled(cCore);
+	d->videoMulticastEnabled = !!linphone_core_video_multicast_enabled(cCore);
+	d->updateCallWhenIceCompleted = !!lp_config_get_int(linphone_core_get_config(cCore), "sip", "update_call_when_ice_completed", true);
+	d->mandatoryMediaEncryptionEnabled = !!linphone_core_is_media_encryption_mandatory(cCore);
 }
 
 // -----------------------------------------------------------------------------

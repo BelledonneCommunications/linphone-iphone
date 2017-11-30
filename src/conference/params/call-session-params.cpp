@@ -86,7 +86,7 @@ CallSessionParams &CallSessionParams::operator= (const CallSessionParams &src) {
 
 // -----------------------------------------------------------------------------
 
-void CallSessionParams::initDefault (LinphoneCore *core) {
+void CallSessionParams::initDefault (const std::shared_ptr<Core> &core) {
 	L_D();
 	d->inConference = false;
 	d->privacy = LinphonePrivacyDefault;

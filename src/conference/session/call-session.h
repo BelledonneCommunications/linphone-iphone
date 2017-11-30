@@ -34,8 +34,9 @@ LINPHONE_BEGIN_NAMESPACE
 class CallPrivate;
 class CallSessionPrivate;
 class Content;
+class Core;
 
-class LINPHONE_PUBLIC CallSession : public Object {
+class LINPHONE_PUBLIC CallSession : public Object, public CoreAccessor {
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
@@ -46,7 +47,8 @@ class LINPHONE_PUBLIC CallSession : public Object {
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(CallSession);
 
-	CallSession (const Conference &conference, const CallSessionParams *params, CallSessionListener *listener);
+	CallSession (const std::shared_ptr<Core> &core, const CallSessionParams *params, CallSessionListener *listener);
+	virtual ~CallSession ();
 
 	LinphoneStatus accept (const CallSessionParams *csp = nullptr);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp);
@@ -80,7 +82,7 @@ public:
 	std::string getRemoteUserAgent () const;
 
 protected:
-	explicit CallSession (CallSessionPrivate &p);
+	explicit CallSession (CallSessionPrivate &p, const std::shared_ptr<Core> &core);
 
 private:
 	L_DECLARE_PRIVATE(CallSession);

@@ -30,13 +30,13 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 int StunClient::run (int audioPort, int videoPort, int textPort) {
-	if (linphone_core_ipv6_enabled(core)) {
+	if (linphone_core_ipv6_enabled(getCore()->getCCore())) {
 		lWarning() << "STUN support is not implemented for ipv6";
 		return -1;
 	}
-	if (!linphone_core_get_stun_server(core))
+	if (!linphone_core_get_stun_server(getCore()->getCCore()))
 		return -1;
-	const struct addrinfo *ai = linphone_core_get_stun_server_addrinfo(core);
+	const struct addrinfo *ai = linphone_core_get_stun_server_addrinfo(getCore()->getCCore());
 	if (!ai) {
 		lError() << "Could not obtain STUN server addrinfo";
 		return -1;
@@ -47,13 +47,13 @@ int StunClient::run (int audioPort, int videoPort, int textPort) {
 	if (sockAudio == -1)
 		return -1;
 	ortp_socket_t sockVideo = -1;
-	if (linphone_core_video_enabled(core)) {
+	if (linphone_core_video_enabled(getCore()->getCCore())) {
 		sockVideo = createStunSocket(videoPort);
 		if (sockVideo == -1)
 			return -1;
 	}
 	ortp_socket_t sockText = -1;
-	if (linphone_core_realtime_text_enabled(core)) {
+	if (linphone_core_realtime_text_enabled(getCore()->getCCore())) {
 		sockText = createStunSocket(textPort);
 		if (sockText == -1)
 			return -1;

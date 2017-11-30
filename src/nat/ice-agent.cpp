@@ -22,6 +22,7 @@
 #include "private.h"
 
 #include "conference/session/media-session-p.h"
+#include "core/core.h"
 #include "logger/logger.h"
 
 #include "ice-agent.h"
@@ -43,7 +44,7 @@ void IceAgent::checkSession (IceRole role, bool isReinvite) {
 	if (iceSession)
 		return;
 
-	LinphoneConfig *config = linphone_core_get_config(mediaSession.getPrivate()->getCore());
+	LinphoneConfig *config = linphone_core_get_config(mediaSession.getCore()->getCCore());
 	if (isReinvite && (lp_config_get_int(config, "net", "allow_late_ice", 0) == 0))
 		return;
 
@@ -128,7 +129,7 @@ bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer
 	bool hasVideo = false;
 	if (incomingOffer) {
 		remoteDesc = mediaSession.getPrivate()->getOp()->get_remote_media_description();
-		hasVideo = linphone_core_video_enabled(mediaSession.getPrivate()->getCore()) &&
+		hasVideo = linphone_core_video_enabled(mediaSession.getCore()->getCCore()) &&
 			linphone_core_media_description_contains_video_stream(remoteDesc);
 	} else
 		hasVideo = mediaSession.getMediaParams()->videoEnabled();
@@ -214,7 +215,7 @@ void IceAgent::updateFromRemoteMediaDescription (
 	if (!iceParamsFoundInRemoteMediaDescription(remoteDesc)) {
 		// Response from remote does not contain mandatory ICE attributes, delete the session.
 		deleteSession();
-		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
+		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getCore()->getCCore()));
 		return;
 	}
 
@@ -237,7 +238,7 @@ void IceAgent::updateFromRemoteMediaDescription (
 
 	if (ice_session_nb_check_lists(iceSession) == 0) {
 		deleteSession();
-		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getPrivate()->getCore()));
+		mediaSession.getPrivate()->enableSymmetricRtp(!!linphone_core_symmetric_rtp_enabled(mediaSession.getCore()->getCCore()));
 	}
 }
 
@@ -319,7 +320,7 @@ void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
 		if (!sal_stream_description_active(stream) || !cl)
 			continue;
 		if (ice_check_list_state(cl) == ICL_Completed) {
-			LinphoneConfig *config = linphone_core_get_config(mediaSession.getPrivate()->getCore());
+			LinphoneConfig *config = linphone_core_get_config(mediaSession.getCore()->getCCore());
 			// TODO: Remove `ice_uses_nortpproxy` option, let's say in December 2018.
 			bool useNoRtpProxy = !!lp_config_get_int(config, "sip", "ice_uses_nortpproxy", false);
 			if (useNoRtpProxy)
@@ -413,7 +414,7 @@ void IceAgent::addLocalIceCandidates (int family, const char *addr, IceCheckList
 		LinphoneCallStats *audioStats = mediaSession.getPrivate()->getStats(LinphoneStreamTypeAudio);
 		_linphone_call_stats_set_ice_state(audioStats, LinphoneIceStateInProgress);
 	}
-	LinphoneCore *core = mediaSession.getPrivate()->getCore();
+	LinphoneCore *core = mediaSession.getCore()->getCCore();
 	if (linphone_core_video_enabled(core) && videoCl && (ice_check_list_state(videoCl) != ICL_Completed) && !ice_check_list_candidates_gathered(videoCl)) {
 		int rtpPort = mediaSession.getPrivate()->getRtpPort(LinphoneStreamTypeVideo);
 		int rtcpPort = mediaSession.getPrivate()->getRtcpPort(LinphoneStreamTypeVideo);
@@ -583,7 +584,7 @@ int IceAgent::gatherIceCandidates () {
 			lWarning() << "Failed to resolve STUN server for ICE gathering, continuing without STUN";
 	} else
 		lWarning() << "ICE is used without STUN server";
-	LinphoneCore *core = mediaSession.getPrivate()->getCore();
+	LinphoneCore *core = mediaSession.getCore()->getCCore();
 	ice_session_enable_forced_relay(iceSession, core->forced_ice_relay);
 	ice_session_enable_short_turn_refresh(iceSession, core->short_turn_refresh);
 
@@ -649,6 +650,7 @@ const struct addrinfo *IceAgent::getIcePreferredStunServerAddrinfo (const struct
 		if (it->ai_family == AF_INET6) {
 			struct sockaddr_storage ss;
 			socklen_t sslen = sizeof(ss);
+			memset(&ss, 0, sizeof(ss));
 			bctbx_sockaddr_remove_nat64_mapping(it->ai_addr, (struct sockaddr *)&ss, &sslen);
 			if (ss.ss_family == AF_INET) break;
 		}

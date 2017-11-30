@@ -43,7 +43,7 @@ public:
 
 	MediaSessionParams &operator= (const MediaSessionParams &src);
 
-	void initDefault (LinphoneCore *core) override;
+	void initDefault (const std::shared_ptr<Core> &core) override;
 
 	bool audioEnabled () const;
 	bool audioMulticastEnabled () const;

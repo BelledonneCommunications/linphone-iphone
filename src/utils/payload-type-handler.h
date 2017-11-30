@@ -23,14 +23,14 @@
 #include "linphone/utils/general.h"
 
 #include "c-wrapper/internal/c-sal.h"
+#include "core/core.h"
+#include "core/core-accessor.h"
 
 #define PAYLOAD_TYPE_ENABLED PAYLOAD_TYPE_USER_FLAG_0
 #define PAYLOAD_TYPE_BITRATE_OVERRIDE PAYLOAD_TYPE_USER_FLAG_3
 #define PAYLOAD_TYPE_FROZEN_NUMBER PAYLOAD_TYPE_USER_FLAG_4
 
 // =============================================================================
-
-L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -40,9 +40,11 @@ struct VbrCodecBitrate {
 	int recommendedBitrate;
 };
 
-class PayloadTypeHandler {
+class Core;
+
+class PayloadTypeHandler : public CoreAccessor {
 public:
-	explicit PayloadTypeHandler (LinphoneCore *core) : core(core) {}
+	explicit PayloadTypeHandler (const std::shared_ptr<Core> &core) : CoreAccessor(core) {}
 
 	bctbx_list_t *makeCodecsList (SalStreamType type, int bandwidthLimit, int maxCodecs, const bctbx_list_t *previousList);
 
@@ -69,8 +71,6 @@ private:
 	static const int rtpHeaderSize;
 	static const int ipv4HeaderSize;
 	static const VbrCodecBitrate defaultVbrCodecBitrates[];
-
-	LinphoneCore *core = nullptr;
 };
 
 LINPHONE_END_NAMESPACE
