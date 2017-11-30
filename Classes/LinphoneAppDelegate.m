@@ -675,7 +675,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 					objectForKey:@"from_addr"];
 	  [LinphoneManager.instance send:replyText to:from_address];
   } else if ([response.actionIdentifier isEqual:@"Seen"]) {
-    NSString *from = [response.notification.request.content.userInfo objectForKey:@"chat_room_address"];
+    NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
     LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
     if (room) {
       linphone_chat_room_mark_as_read(room);
@@ -844,7 +844,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 				// use the standard handler
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
-				NSString *from = [notification.userInfo objectForKey:@"chat_room_address"];
+				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
 				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
 				if (room) {
 					if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)

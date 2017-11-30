@@ -35,6 +35,7 @@
 @property(weak, nonatomic) IBOutlet UIView *totalView;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 
+- (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;
 - (void)connectToFileDelegate:(FileTransferDelegate *)ftd;
 - (IBAction)onDownloadClick:(id)event;

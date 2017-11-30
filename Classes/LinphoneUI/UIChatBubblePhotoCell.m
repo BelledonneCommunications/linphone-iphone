@@ -51,6 +51,12 @@
 }
 
 #pragma mark -
+- (void)setEvent:(LinphoneEventLog *)event {
+	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
+		return;
+
+	[self setChatMessage:linphone_event_log_get_chat_message(event)];
+}
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;

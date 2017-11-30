@@ -173,7 +173,7 @@
 		if (cell == nil)
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
 
-		[cell setChatMessage:chat];
+		[cell setEvent:event];
 		if (chat)
 			[cell update];
 
