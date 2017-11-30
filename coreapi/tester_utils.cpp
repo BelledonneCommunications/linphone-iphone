@@ -56,17 +56,6 @@ bctbx_list_t **linphone_core_get_call_logs_attribute(LinphoneCore *lc) {
 	return &lc->call_logs;
 }
 
-LinphoneChatRoom * linphone_core_find_chat_room (const LinphoneCore *lc, const LinphoneAddress *peerAddr, const LinphoneAddress *localAddr) {
-	shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(ChatRoomId(
-		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(peerAddr)),
-		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(localAddr))
-	));
-
-	if (chatRoom)
-		return L_GET_C_BACK_PTR(chatRoom);
-	return nullptr;
-}
-
 void linphone_core_cbs_set_auth_info_requested(LinphoneCoreCbs *cbs, LinphoneCoreAuthInfoRequestedCb cb) {
 	cbs->vtable->auth_info_requested = cb;
 }

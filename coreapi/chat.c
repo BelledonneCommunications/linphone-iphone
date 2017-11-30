@@ -104,6 +104,17 @@ LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const c
 	return L_GET_C_BACK_PTR(lc->cppCore->getOrCreateBasicChatRoomFromUri(L_C_TO_STRING(to)));
 }
 
+LinphoneChatRoom *linphone_core_find_chat_room(
+	const LinphoneCore *lc,
+	const LinphoneAddress *peerAddr,
+	const LinphoneAddress *localAddr
+) {
+	return L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(LinphonePrivate::ChatRoomId(
+		LinphonePrivate::IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(peerAddr)),
+		LinphonePrivate::IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(localAddr))
+	)));
+}
+
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
 	const char *peerAddress;

@@ -52,8 +52,8 @@ bool AbstractDb::connect (Backend backend, const string &parameters) {
 
 	d->backend = backend;
 	d->dbSession = DbSessionProvider::getInstance()->getSession(
-			(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
-		);
+		(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
+	);
 
 	if (d->dbSession) {
 		try {

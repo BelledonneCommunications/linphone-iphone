@@ -3448,7 +3448,7 @@ LINPHONE_PUBLIC void linphone_core_set_preview_video_definition(LinphoneCore *lc
 
 /**
  * @biref Sets the video size for the captured (preview) video.
- * 
+ *
  * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
  * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
  * Using this feature increases the CPU consumption, since a rescaling will be done internally.
@@ -3501,7 +3501,7 @@ LINPHONE_PUBLIC LinphoneVideoDefinition * linphone_core_get_current_preview_vide
 
 /**
  * @brief Returns the effective video size for the captured video as provided by the camera.
- * 
+ *
  * When preview is disabled or not yet started, this function returns a zeroed video size.
  * @see #linphone_core_set_preview_video_size()
  * @ingroup media_parameters
@@ -4725,7 +4725,7 @@ LINPHONE_PUBLIC bool_t linphone_core_video_multicast_enabled(const LinphoneCore 
 
 /**
  * @brief Set the network simulator parameters.
- * 
+ *
  * Liblinphone has the capabability of simulating the effects of a network (latency, lost packets, jitter, max bandwidth).
  * Please refer to the oRTP documentation for the meaning of the parameters of the OrtpNetworkSimulatorParams structure.
  * This function has effect for future calls, but not for currently running calls, though this behavior may be changed in future versions.
@@ -4941,7 +4941,7 @@ LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneC
 LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject);
 
 /**
- * Get a chat room whose peer is the supplied address. If it does not exist yet, it will be created.
+ * Get a basic chat room whose peer is the supplied address. If it does not exist yet, it will be created.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc the linphone core
  * @param addr a linphone address.
@@ -4950,13 +4950,27 @@ LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(L
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room(LinphoneCore *lc, const LinphoneAddress *addr);
 
 /**
- * Get a chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
+ * Get a basic chat room for messaging from a sip uri like sip:joe@sip.linphone.org. If it does not exist yet, it will be created.
  * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
  * @param lc A #LinphoneCore object
  * @param to The destination address for messages.
  * @return #LinphoneChatRoom where messaging can take place.
 **/
 LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to);
+
+/**
+ * Find a chat room.
+ * No reference is transfered to the application. The LinphoneCore keeps a reference on the chat room.
+ * @param lc the linphone core
+ * @param peerAddr a linphone address.
+ * @param localAddr a linphone address.
+ * @return #LinphoneChatRoom where messaging can take place.
+**/
+LINPHONE_PUBLIC LinphoneChatRoom *linphone_core_find_chat_room (
+	const LinphoneCore *lc,
+	const LinphoneAddress *peerAddr,
+	const LinphoneAddress *localAddr
+);
 
 /**
  * Removes a chatroom including all message history from the LinphoneCore.
