@@ -845,11 +845,19 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(chatRoomId));
 		for (const auto &row : rows) {
-			shared_ptr<EventLog> eventLog = getEventFromCache(resolveId(row, 0));
+			long long eventId = resolveId(row, 0);
+			shared_ptr<EventLog> eventLog = getEventFromCache(eventId);
 			if (eventLog) {
 				const EventLogPrivate *dEventLog = eventLog->getPrivate();
 				L_ASSERT(dEventLog->dbKey.isValid());
 				dEventLog->dbKey = MainDbEventKey();
+			}
+			// TODO: Try to add a better code here...
+			shared_ptr<ChatMessage> chatMessage = getChatMessageFromCache(eventId);
+			if (chatMessage) {
+				const ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
+				L_ASSERT(dChatMessage->dbKey.isValid());
+				dChatMessage->dbKey = MainDbChatMessageKey();
 			}
 		}
 	}
