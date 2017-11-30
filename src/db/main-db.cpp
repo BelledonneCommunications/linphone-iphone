@@ -633,7 +633,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				soci::use(curChatRoomId);
 
 			if (eventLog->getType() == EventLog::Type::ConferenceTerminated)
-				*session << "UPDATE chat_room SET flags = 0 WHERE id = :chatRoomId", soci::use(curChatRoomId);
+				*session << "UPDATE chat_room SET flags = 1 WHERE id = :chatRoomId", soci::use(curChatRoomId);
 		}
 
 		if (chatRoomId)
