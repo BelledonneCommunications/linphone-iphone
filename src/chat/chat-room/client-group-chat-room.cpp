@@ -115,7 +115,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 	dConference->subject = subject;
 	dConference->participants = move(participants);
 
-	d->state = isReadOnly ? ChatRoom::State::Created : ChatRoom::State::Terminated;
+	d->state = isReadOnly ? ChatRoom::State::Terminated : ChatRoom::State::Created;
 
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
