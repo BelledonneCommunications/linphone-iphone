@@ -66,7 +66,6 @@ public:
 	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
 	std::shared_ptr<ChatMessage> createMessage ();
 	void deleteHistory ();
-	void deleteMessage (const std::shared_ptr<ChatMessage> &msg);
 	std::shared_ptr<ChatMessage> findMessage (const std::string &messageId);
 	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
 	std::list<std::shared_ptr<ChatMessage>> getHistory (int nbMessages);

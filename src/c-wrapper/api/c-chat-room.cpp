@@ -23,8 +23,9 @@
 #include "linphone/api/c-chat-room.h"
 #include "linphone/wrapper_utils.h"
 
-#include "c-wrapper/c-wrapper.h"
 #include "address/identity-address.h"
+#include "c-wrapper/c-wrapper.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
@@ -183,7 +184,11 @@ int linphone_chat_room_get_history_size (LinphoneChatRoom *cr) {
 }
 
 void linphone_chat_room_delete_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
+	shared_ptr<LinphonePrivate::EventLog> event = LinphonePrivate::MainDb::getEventFromKey(
+		L_GET_PRIVATE_FROM_C_OBJECT(msg)->dbKey
+	);
+	if (event)
+		LinphonePrivate::EventLog::deleteFromDatabase(event);
 }
 
 void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {

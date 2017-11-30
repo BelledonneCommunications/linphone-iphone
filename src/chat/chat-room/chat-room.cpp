@@ -383,10 +383,6 @@ void ChatRoom::deleteHistory () {
 	// TODO: history.
 }
 
-void ChatRoom::deleteMessage (const shared_ptr<ChatMessage> &msg) {
-	// TODO: history.
-}
-
 shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
 	L_D();
 	shared_ptr<ChatMessage> cm = nullptr;
