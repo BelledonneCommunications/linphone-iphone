@@ -1077,15 +1077,21 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	}
 #pragma deploymate pop
 	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
-	const LinphoneAddress *remoteAddress = linphone_chat_room_get_peer_address(room);
-	NSString *from = [FastAddressBook displayNameForAddress:remoteAddress];
+	const LinphoneAddress *peerAddress = linphone_chat_room_get_peer_address(room);
+	NSString *from = [FastAddressBook displayNameForAddress:peerAddress];
 
 	const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
 	NSString *fromMsg = [FastAddressBook displayNameForAddress:fromAddress];
 
-	char *c_address = linphone_address_as_string_uri_only(remoteAddress);
-	NSString *remote_uri = [NSString stringWithUTF8String:c_address];
-	ms_free(c_address);
+	char *peer_address = linphone_address_as_string_uri_only(peerAddress);
+	NSString *peer_uri = [NSString stringWithUTF8String:peer_address];
+	ms_free(peer_address);
+
+	const LinphoneAddress *localAddress = linphone_chat_room_get_local_address(room);
+	char *local_address = linphone_address_as_string_uri_only(localAddress);
+	NSString *local_uri = [NSString stringWithUTF8String:local_address];
+	ms_free(local_address);
+
 	int index = [(NSNumber *)[_pushDict objectForKey:callID] intValue] - 1;
 	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", callID, index);
 	[_pushDict setValue:[NSNumber numberWithInt:index] forKey:callID];
@@ -1174,7 +1180,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 					}
 					notif.alertAction = NSLocalizedString(@"Show", nil);
 					notif.soundName = @"msg.caf";
-					notif.userInfo = @{@"from" : from, @"from_addr" : remote_uri, @"call-id" : callID};
+					notif.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"call-id" : callID};
 					notif.accessibilityLabel = @"Message notif";
 					[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 				}
@@ -1220,7 +1226,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 				}
 				content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 				content.categoryIdentifier = @"msg_cat";
-				content.userInfo = @{@"from" : from, @"from_addr" : remote_uri, @"CallId" : callID};
+				content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID};
 				content.accessibilityLabel = @"Message notif";
 				UNNotificationRequest *req =
 					[UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
@@ -2538,22 +2544,17 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_call_accept_with_params(call, lcallParams);
 }
 
-- (void)send:(NSString *)replyText to:(NSString *)to {
-	LinphoneCore *lc = [LinphoneManager getLc];
-	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(lc, [to UTF8String]);
-	if (room) {
-		LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
-		linphone_chat_room_send_chat_message(room, msg);
+- (void)send:(NSString *)replyText toChatRoom:(LinphoneChatRoom *)room {
+	LinphoneChatMessage *msg = linphone_chat_room_create_message(room, replyText.UTF8String);
+	linphone_chat_room_send_chat_message(room, msg);
 
-		if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room)) {
-			[LinphoneManager.instance alertLIME:room];
-		}
-		linphone_chat_room_mark_as_read(room);
-		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-			getCachedController:NSStringFromClass(TabBarView.class)];
-		[tab update:YES];
-		[PhoneMainView.instance updateApplicationBadgeNumber];
-	}
+	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room))
+		[LinphoneManager.instance alertLIME:room];
+
+	linphone_chat_room_mark_as_read(room);
+	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
+	[tab update:YES];
+	[PhoneMainView.instance updateApplicationBadgeNumber];
 }
 
 - (void)call:(const LinphoneAddress *)iaddr {

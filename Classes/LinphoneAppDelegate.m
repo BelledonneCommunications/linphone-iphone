@@ -669,21 +669,31 @@ didInvalidatePushTokenForType:(NSString *)type {
   } else if ([response.actionIdentifier isEqual:@"Decline"]) {
     linphone_call_decline(call, LinphoneReasonDeclined);
   } else if ([response.actionIdentifier isEqual:@"Reply"]) {
-    NSString *replyText =
-        [(UNTextInputNotificationResponse *)response userText];
-	NSString *from_address = [response.notification.request.content.userInfo
-					objectForKey:@"from_addr"];
-	  [LinphoneManager.instance send:replyText to:from_address];
-  } else if ([response.actionIdentifier isEqual:@"Seen"]) {
-    NSString *from = [response.notification.request.content.userInfo objectForKey:@"from_addr"];
-    LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
-    if (room) {
-      linphone_chat_room_mark_as_read(room);
-      TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
-      [tab update:YES];
-      [PhoneMainView.instance updateApplicationBadgeNumber];
-    }
+	  NSString *replyText = [(UNTextInputNotificationResponse *)response userText];
+	  NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
+	  NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
+	  LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
+	  LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
+	  LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
+	  if(room)
+		  [LinphoneManager.instance send:replyText toChatRoom:room];
 
+	  linphone_address_unref(peer);
+	  linphone_address_unref(local);
+  } else if ([response.actionIdentifier isEqual:@"Seen"]) {
+	  NSString *peer_address = [response.notification.request.content.userInfo objectForKey:@"peer_addr"];
+	  NSString *local_address = [response.notification.request.content.userInfo objectForKey:@"local_addr"];
+	  LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
+	  LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
+	  LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
+	  if (room) {
+		  linphone_chat_room_mark_as_read(room);
+		  TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
+		  [tab update:YES];
+		  [PhoneMainView.instance updateApplicationBadgeNumber];
+	  }
+	  linphone_address_unref(peer);
+	  linphone_address_unref(local);
   } else if ([response.actionIdentifier isEqual:@"Cancel"]) {
     LOGI(@"User declined video proposal");
     if (call == linphone_core_get_current_call(LC)) {
@@ -844,16 +854,21 @@ didInvalidatePushTokenForType:(NSString *)type {
 				// use the standard handler
 				[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
 			} else if ([identifier isEqualToString:@"mark_read"]) {
-				NSString *from = [notification.userInfo objectForKey:@"from_addr"];
-				LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, [from UTF8String]);
+				NSString *peer_address = [notification.userInfo objectForKey:@"peer_addr"];
+				NSString *local_address = [notification.userInfo objectForKey:@"local_addr"];
+				LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
+				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
+				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 				if (room) {
 					if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 						linphone_chat_room_mark_as_read(room);
 					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-						getCachedController:NSStringFromClass(TabBarView.class)];
+													 getCachedController:NSStringFromClass(TabBarView.class)];
 					[tab update:YES];
 					[PhoneMainView.instance updateApplicationBadgeNumber];
 				}
+				linphone_address_unref(peer);
+				linphone_address_unref(local);
 			}
 		}
 	}
@@ -887,8 +902,16 @@ didInvalidatePushTokenForType:(NSString *)type {
 	} else if ([notification.category isEqualToString:@"incoming_msg"] &&
 			   [identifier isEqualToString:@"reply_inline"]) {
 		NSString *replyText = [responseInfo objectForKey:UIUserNotificationActionResponseTypedTextKey];
-		NSString *from_address = [notification.userInfo objectForKey:@"from_addr"];
-		[LinphoneManager.instance send:replyText to:from_address];
+		NSString *peer_address = [responseInfo objectForKey:@"peer_addr"];
+		NSString *local_address = [responseInfo objectForKey:@"local_addr"];
+		LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
+		LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
+		LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
+		if (room)
+			[LinphoneManager.instance send:replyText toChatRoom:room];
+
+		linphone_address_unref(peer);
+		linphone_address_unref(local);
 	}
 	completionHandler();
 }
