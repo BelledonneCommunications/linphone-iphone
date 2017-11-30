@@ -19,9 +19,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "call-p.h"
-#include "conference/local-conference.h"
-#include "conference/participant-p.h"
-#include "conference/remote-conference.h"
+#include "conference/session/call-session-p.h"
 #include "conference/session/media-session-p.h"
 #include "logger/logger.h"
 
@@ -30,31 +28,6 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-CallPrivate::CallPrivate (
-	LinphoneCall *call,
-	LinphoneCore *core,
-	LinphoneCallDir direction,
-	const Address &from,
-	const Address &to,
-	LinphoneProxyConfig *cfg,
-	SalOp *op,
-	const MediaSessionParams *msp
-) : lcall(call), core(core) {
-	nextVideoFrameDecoded._func = nullptr;
-	nextVideoFrameDecoded._user_data = nullptr;
-}
-
-CallPrivate::~CallPrivate () {
-	if (conference)
-		delete conference;
-}
-
-// -----------------------------------------------------------------------------
-
-shared_ptr<CallSession> CallPrivate::getActiveSession () const {
-	return conference->getActiveParticipant()->getPrivate()->getSession();
-}
 
 bool CallPrivate::getAudioMuted () const {
 	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getAudioMuted();
@@ -112,21 +85,24 @@ void CallPrivate::createPlayer () const {
 // -----------------------------------------------------------------------------
 
 void CallPrivate::onAckBeingSent (LinphoneHeaders *headers) {
-	if (lcall)
-		linphone_call_notify_ack_processing(lcall, headers, false);
+	L_Q();
+	linphone_call_notify_ack_processing(L_GET_C_BACK_PTR(q), headers, false);
 }
 
 void CallPrivate::onAckReceived (LinphoneHeaders *headers) {
-	if (lcall)
-		linphone_call_notify_ack_processing(lcall, headers, true);
+	L_Q();
+	linphone_call_notify_ack_processing(L_GET_C_BACK_PTR(q), headers, true);
 }
 
 void CallPrivate::onCallSetReleased () {
-	if (lcall)
-		linphone_call_unref(lcall);
+	L_Q();
+	linphone_call_unref(L_GET_C_BACK_PTR(q));
 }
 
 void CallPrivate::onCallSetTerminated () {
+	L_Q();
+	LinphoneCall *lcall = L_GET_C_BACK_PTR(q);
+	LinphoneCore *core = q->getCore()->getCCore();
 	if (lcall) {
 		if (lcall == core->current_call) {
 			lInfo() << "Resetting the current call";
@@ -150,12 +126,14 @@ void CallPrivate::onCallSetTerminated () {
 }
 
 void CallPrivate::onCallStateChanged (LinphoneCallState state, const string &message) {
-	if (lcall)
-		linphone_call_notify_state_changed(lcall, state, message.c_str());
+	L_Q();
+	linphone_call_notify_state_changed(L_GET_C_BACK_PTR(q), state, message.c_str());
 }
 
 void CallPrivate::onCheckForAcceptation () {
-	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(core));
+	L_Q();
+	LinphoneCall *lcall = L_GET_C_BACK_PTR(q);
+	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(q->getCore()->getCCore()));
 	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
 		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
 		if (call == lcall) continue;
@@ -176,78 +154,63 @@ void CallPrivate::onCheckForAcceptation () {
 }
 
 void CallPrivate::onIncomingCallStarted () {
-	if (lcall)
-		linphone_core_notify_incoming_call(core, lcall);
+	L_Q();
+	linphone_core_notify_incoming_call(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
 }
 
 void CallPrivate::onIncomingCallToBeAdded () {
-	if (lcall) /* The call is acceptable so we can now add it to our list */
-		linphone_core_add_call(core, lcall);
+	L_Q();
+	/* The call is acceptable so we can now add it to our list */
+	linphone_core_add_call(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
 }
 
 void CallPrivate::onInfoReceived (const LinphoneInfoMessage *im) {
-	if (lcall)
-		linphone_call_notify_info_message_received(lcall, im);
+	L_Q();
+	linphone_call_notify_info_message_received(L_GET_C_BACK_PTR(q), im);
 }
 
 void CallPrivate::onEncryptionChanged (bool activated, const string &authToken) {
-	if (lcall)
-		linphone_call_notify_encryption_changed(lcall, activated, authToken.empty() ? nullptr : authToken.c_str());
+	L_Q();
+	linphone_call_notify_encryption_changed(L_GET_C_BACK_PTR(q), activated, authToken.empty() ? nullptr : authToken.c_str());
 }
 
 void CallPrivate::onStatsUpdated (const LinphoneCallStats *stats) {
-	if (lcall)
-		linphone_call_notify_stats_updated(lcall, stats);
+	L_Q();
+	linphone_call_notify_stats_updated(L_GET_C_BACK_PTR(q), stats);
 }
 
 void CallPrivate::onResetCurrentCall () {
-	core->current_call = nullptr;
+	L_Q();
+	q->getCore()->getCCore()->current_call = nullptr;
 }
 
 void CallPrivate::onSetCurrentCall () {
-	if (lcall)
-		core->current_call = lcall;
+	L_Q();
+	q->getCore()->getCCore()->current_call = L_GET_C_BACK_PTR(q);
 }
 
 void CallPrivate::onFirstVideoFrameDecoded () {
-	if (lcall && nextVideoFrameDecoded._func) {
-		nextVideoFrameDecoded._func(lcall, nextVideoFrameDecoded._user_data);
+	L_Q();
+	if (nextVideoFrameDecoded._func) {
+		nextVideoFrameDecoded._func(L_GET_C_BACK_PTR(q), nextVideoFrameDecoded._user_data);
 		nextVideoFrameDecoded._func = nullptr;
 		nextVideoFrameDecoded._user_data = nullptr;
 	}
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded () {
-	#ifdef VIDEO_ENABLED
-		if (lcall && nextVideoFrameDecoded._func)
-			static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
-	#endif // ifdef VIDEO_ENABLED
+#ifdef VIDEO_ENABLED
+	if (nextVideoFrameDecoded._func)
+		static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
+#endif // ifdef VIDEO_ENABLED
 }
 
 // =============================================================================
 
-Call::Call (
-	LinphoneCall *call,
-	LinphoneCore *core,
-	LinphoneCallDir direction,
-	const Address &from,
-	const Address &to,
-	LinphoneProxyConfig *cfg,
-	SalCallOp *op,
-	const MediaSessionParams *msp
-) : Object(*new CallPrivate(call, core, direction, from, to, cfg, op, msp)) {
+Call::Call (CallPrivate &p, shared_ptr<Core> core) : Object(p), CoreAccessor(core) {
 	L_D();
-	const Address *myAddress = (direction == LinphoneCallIncoming) ? &to : &from;
-	string confType = lp_config_get_string(linphone_core_get_config(core), "misc", "conference_type", "local");
-	if (confType == "remote") {
-		d->conference = new RemoteConference(core->cppCore, *myAddress, d);
-	} else {
-		d->conference = new LocalConference(core->cppCore, *myAddress, d);
-	}
-	const Address *remoteAddress = (direction == LinphoneCallIncoming) ? &from : &to;
-	d->conference->addParticipant(*remoteAddress, msp, true);
-	shared_ptr<Participant> participant = d->conference->getParticipants().front();
-	participant->getPrivate()->getSession()->configure(direction, cfg, op, from, to);
+	d->nextVideoFrameDecoded._func = nullptr;
+	d->nextVideoFrameDecoded._user_data = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -396,11 +359,6 @@ bool Call::getAuthenticationTokenVerified () const {
 float Call::getAverageQuality () const {
 	L_D();
 	return static_cast<const MediaSession *>(d->getActiveSession().get())->getAverageQuality();
-}
-
-LinphoneCore *Call::getCore () const {
-	L_D();
-	return d->core;
 }
 
 const MediaSessionParams *Call::getCurrentParams () const {

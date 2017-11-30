@@ -31,6 +31,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/call-listener.h
 	call/call-p.h
 	call/call.h
+	call/local-conference-call-p.h
+	call/local-conference-call.h
+	call/remote-conference-call-p.h
+	call/remote-conference-call.h
 	chat/chat-message/chat-message-p.h
 	chat/chat-message/chat-message.h
 	chat/chat-room/basic-chat-room-p.h
@@ -160,6 +164,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-participant.cpp
 	c-wrapper/internal/c-sal.cpp
 	call/call.cpp
+	call/local-conference-call.cpp
+	call/remote-conference-call.cpp
 	chat/chat-message/chat-message.cpp
 	chat/chat-room/basic-chat-room.cpp
 	chat/chat-room/chat-room-id.cpp

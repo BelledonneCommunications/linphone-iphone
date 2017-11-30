@@ -32,21 +32,10 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallPrivate :
-	public ObjectPrivate,
-	CallListener {
+class CallPrivate :	public ObjectPrivate, public CallListener {
 public:
-	CallPrivate (
-		LinphoneCall *call,
-		LinphoneCore *core,
-		LinphoneCallDir direction,
-		const Address &from,
-		const Address &to,
-		LinphoneProxyConfig *cfg,
-		SalOp *op,
-		const MediaSessionParams *msp
-	);
-	virtual ~CallPrivate ();
+	CallPrivate () = default;
+	virtual ~CallPrivate () = default;
 
 	void initiateIncoming ();
 	bool initiateOutgoing ();
@@ -55,11 +44,8 @@ public:
 
 	int startInvite (const Address *destination);
 
-	std::shared_ptr<CallSession> getActiveSession () const;
+	virtual std::shared_ptr<CallSession> getActiveSession () const { return nullptr; }
 	bool getAudioMuted () const;
-	Conference *getConference () const {
-		return conference;
-	}
 
 	LinphoneProxyConfig *getDestProxy () const;
 	IceSession *getIceSession () const;
@@ -87,10 +73,6 @@ private:
 	void onFirstVideoFrameDecoded () override;
 	void onResetFirstVideoFrameDecoded () override;
 
-	LinphoneCall *lcall = nullptr;
-
-	LinphoneCore *core = nullptr;
-	Conference *conference = nullptr;
 	mutable LinphonePlayer *player = nullptr;
 
 	CallCallbackObj nextVideoFrameDecoded;

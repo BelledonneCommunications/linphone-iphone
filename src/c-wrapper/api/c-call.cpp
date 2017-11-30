@@ -25,7 +25,10 @@
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
 #include "call/call.h"
+#include "call/local-conference-call.h"
+#include "call/remote-conference-call.h"
 #include "conference/params/media-session-params-p.h"
+#include "core/core.h"
 
 // =============================================================================
 
@@ -574,7 +577,7 @@ void linphone_call_notify_ack_processing (LinphoneCall *call, LinphoneHeaders *m
 // =============================================================================
 
 LinphoneCore *linphone_call_get_core (const LinphoneCall *call) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getCore();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getCore()->getCCore();
 }
 
 LinphoneCallState linphone_call_get_state (const LinphoneCall *call) {
@@ -1140,26 +1143,44 @@ void linphone_call_set_user_data (LinphoneCall *call, void *ud) {
 // =============================================================================
 
 LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg) {
-	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallOutgoing,
-		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
-		cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params)));
-	call->currentParamsCache = linphone_call_params_new_for_wrapper();
-	call->paramsCache = linphone_call_params_new_for_wrapper();
-	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
-	call->remoteAddressCache = linphone_address_new(nullptr);
-	return call;
+	LinphoneCall *lcall = L_INIT(Call);
+	shared_ptr<LinphonePrivate::Call> call;
+	string confType = lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_type", "local");
+	if (confType == "remote") {
+		call = make_shared<LinphonePrivate::RemoteConferenceCall>(lc->cppCore, LinphoneCallOutgoing,
+			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
+			cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params));
+	} else {
+		call = make_shared<LinphonePrivate::LocalConferenceCall>(lc->cppCore, LinphoneCallOutgoing,
+			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
+			cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params));
+	}
+	L_SET_CPP_PTR_FROM_C_OBJECT(lcall, call);
+	lcall->currentParamsCache = linphone_call_params_new_for_wrapper();
+	lcall->paramsCache = linphone_call_params_new_for_wrapper();
+	lcall->remoteParamsCache = linphone_call_params_new_for_wrapper();
+	lcall->remoteAddressCache = linphone_address_new(nullptr);
+	return lcall;
 }
 
 LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op) {
-	LinphoneCall *call = L_INIT(Call);
-	L_SET_CPP_PTR_FROM_C_OBJECT(call, make_shared<LinphonePrivate::Call>(call, lc, LinphoneCallIncoming,
-		*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
-		nullptr, op, nullptr));
-	call->currentParamsCache = linphone_call_params_new_for_wrapper();
-	call->paramsCache = linphone_call_params_new_for_wrapper();
-	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
-	call->remoteAddressCache = linphone_address_new(nullptr);
-	L_GET_PRIVATE_FROM_C_OBJECT(call)->initiateIncoming();
-	return call;
+	LinphoneCall *lcall = L_INIT(Call);
+	shared_ptr<LinphonePrivate::Call> call;
+	string confType = lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_type", "local");
+	if (confType == "remote") {
+		call = make_shared<LinphonePrivate::RemoteConferenceCall>(lc->cppCore, LinphoneCallIncoming,
+			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
+			nullptr, op, nullptr);
+	} else {
+		call = make_shared<LinphonePrivate::LocalConferenceCall>(lc->cppCore, LinphoneCallIncoming,
+			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
+			nullptr, op, nullptr);
+	}
+	L_SET_CPP_PTR_FROM_C_OBJECT(lcall, call);
+	lcall->currentParamsCache = linphone_call_params_new_for_wrapper();
+	lcall->paramsCache = linphone_call_params_new_for_wrapper();
+	lcall->remoteParamsCache = linphone_call_params_new_for_wrapper();
+	lcall->remoteAddressCache = linphone_address_new(nullptr);
+	L_GET_PRIVATE_FROM_C_OBJECT(lcall)->initiateIncoming();
+	return lcall;
 }

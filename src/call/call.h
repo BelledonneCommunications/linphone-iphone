@@ -21,6 +21,7 @@
 #define _CALL_CALL_H_
 
 #include "conference/params/media-session-params.h"
+#include "core/core-accessor.h"
 #include "object/object.h"
 
 // =============================================================================
@@ -32,22 +33,11 @@ class CallPrivate;
 class CallSessionPrivate;
 class MediaSessionPrivate;
 
-class Call : public Object {
+class Call : public Object, public CoreAccessor {
 	friend class CallSessionPrivate;
 	friend class MediaSessionPrivate;
 
 public:
-	Call (
-		LinphoneCall *call,
-		LinphoneCore *core,
-		LinphoneCallDir direction,
-		const Address &from,
-		const Address &to,
-		LinphoneProxyConfig *cfg,
-		SalCallOp *op,
-		const MediaSessionParams *msp
-	);
-
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
@@ -78,7 +68,6 @@ public:
 	std::string getAuthenticationToken () const;
 	bool getAuthenticationTokenVerified () const;
 	float getAverageQuality () const;
-	LinphoneCore *getCore () const;
 	const MediaSessionParams *getCurrentParams () const;
 	float getCurrentQuality () const;
 	LinphoneCallDir getDirection () const;
@@ -112,6 +101,9 @@ public:
 	void setNativeVideoWindowId (void *id);
 	void setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_data);
 	void setSpeakerVolumeGain (float value);
+
+protected:
+	Call (CallPrivate &p, std::shared_ptr<Core> core);
 
 private:
 	L_DECLARE_PRIVATE(Call);
