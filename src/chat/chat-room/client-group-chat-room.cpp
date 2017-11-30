@@ -132,7 +132,7 @@ ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () co
 }
 
 bool ClientGroupChatRoom::isReadOnly () const {
-	return getState() == State::Created;
+	return getState() != State::Created;
 }
 
 bool ClientGroupChatRoom::canHandleParticipants () const {

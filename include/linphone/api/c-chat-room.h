@@ -274,6 +274,13 @@ LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const Li
 LINPHONE_PUBLIC LinphoneChatRoomState linphone_chat_room_get_state (const LinphoneChatRoom *cr);
 
 /**
+ * Return whether or not the chat room is read only.
+ * @param[in] cr LinphoneChatRoom object
+ * @return whether or not the chat room is read only
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_room_is_read_only (const LinphoneChatRoom *cr);
+
+/**
  * Add a participant to a chat room. This may fail if this type of chat room does not handle participants.
  * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
  * @param[in] cr A LinphoneChatRoom object
