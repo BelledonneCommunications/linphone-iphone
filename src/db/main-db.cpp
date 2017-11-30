@@ -897,7 +897,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			// Chatroom subject.
 			"  subject VARCHAR(255),"
 
-			"  last_notify_id INT UNSIGNED,"
+			"  last_notify_id INT UNSIGNED DEFAULT 0,"
 
 			"  flags INT UNSIGNED DEFAULT 0,"
 

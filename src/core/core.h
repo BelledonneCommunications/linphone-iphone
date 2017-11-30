@@ -70,6 +70,11 @@ public:
 	std::shared_ptr<ChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
 	std::list<std::shared_ptr<ChatRoom>> findChatRooms (const IdentityAddress &peerAddress) const;
 
+	std::shared_ptr<ChatRoom> findOneToOneChatRoom (
+		const IdentityAddress &localAddress,
+		const IdentityAddress &participantAddress
+	);
+
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject, const IdentityAddress &localAddress);
 

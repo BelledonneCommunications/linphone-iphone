@@ -23,6 +23,7 @@
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
+#include "conference/participant.h"
 #include "core-p.h"
 #include "logger/logger.h"
 
@@ -125,6 +126,22 @@ list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddre
 	);
 
 	return output;
+}
+
+shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
+	const IdentityAddress &localAddress,
+	const IdentityAddress &participantAddress
+) {
+	L_D();
+	for (const auto &chatRoom : d->chatRooms) {
+		if (
+			chatRoom->getNbParticipants() == 1 &&
+			chatRoom->getLocalAddress() == localAddress &&
+			participantAddress == chatRoom->getParticipants().front()->getAddress()
+		)
+			return chatRoom;
+	}
+	return nullptr;
 }
 
 shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
