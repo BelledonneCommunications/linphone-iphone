@@ -65,7 +65,7 @@ static bool isConferenceType (LinphoneEventLogType type) {
 		case LinphoneEventLogTypeConferenceCallStart:
 		case LinphoneEventLogTypeConferenceChatMessage:
 		case LinphoneEventLogTypeConferenceCreated:
-		case LinphoneEventLogTypeConferenceDestroyed:
+		case LinphoneEventLogTypeConferenceTerminated:
 		case LinphoneEventLogTypeConferenceParticipantAdded:
 		case LinphoneEventLogTypeConferenceParticipantDeviceAdded:
 		case LinphoneEventLogTypeConferenceParticipantDeviceRemoved:

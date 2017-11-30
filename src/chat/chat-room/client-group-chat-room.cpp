@@ -310,6 +310,11 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
+	getCore()->getPrivate()->mainDb->addEvent(make_shared<ConferenceEvent>(
+		EventLog::Type::ConferenceTerminated,
+		time(nullptr),
+		d->chatRoomId
+	));
 }
 
 void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {

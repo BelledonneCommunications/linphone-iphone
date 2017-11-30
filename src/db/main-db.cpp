@@ -351,7 +351,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				return nullptr;
 
 			case EventLog::Type::ConferenceCreated:
-			case EventLog::Type::ConferenceDestroyed:
+			case EventLog::Type::ConferenceTerminated:
 				eventLog = selectConferenceEvent(eventId, type, creationTime, chatRoomId);
 				break;
 
@@ -454,13 +454,15 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				chatRoom,
 				static_cast<ChatMessage::Direction>(direction)
 			));
-			chatMessage->getPrivate()->setState(static_cast<ChatMessage::State>(state), true);
 			chatMessage->setIsSecured(static_cast<bool>(isSecured));
 
-			chatMessage->getPrivate()->forceFromAddress(IdentityAddress(fromSipAddress));
-			chatMessage->getPrivate()->forceToAddress(IdentityAddress(toSipAddress));
+			ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
+			dChatMessage->setState(static_cast<ChatMessage::State>(state), true);
 
-			chatMessage->getPrivate()->setTime(Utils::getTmAsTimeT(messageTime));
+			dChatMessage->forceFromAddress(IdentityAddress(fromSipAddress));
+			dChatMessage->forceToAddress(IdentityAddress(toSipAddress));
+
+			dChatMessage->setTime(Utils::getTmAsTimeT(messageTime));
 		}
 
 		// 2 - Fetch contents.
@@ -629,6 +631,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			*session << "UPDATE chat_room SET last_update_time = :lastUpdateTime"
 				"  WHERE id = :chatRoomId", soci::use(lastUpdateTime),
 				soci::use(curChatRoomId);
+
+			if (eventLog->getType() == EventLog::Type::ConferenceTerminated)
+				*session << "UPDATE chat_room SET flags = 0 WHERE id = :chatRoomId", soci::use(curChatRoomId);
 		}
 
 		if (chatRoomId)
@@ -1160,7 +1165,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				return false;
 
 			case EventLog::Type::ConferenceCreated:
-			case EventLog::Type::ConferenceDestroyed:
+			case EventLog::Type::ConferenceTerminated:
 				storageId = d->insertConferenceEvent(eventLog);
 				break;
 
@@ -1232,7 +1237,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				break;
 
 			case EventLog::Type::ConferenceCreated:
-			case EventLog::Type::ConferenceDestroyed:
+			case EventLog::Type::ConferenceTerminated:
 			case EventLog::Type::ConferenceCallStart:
 			case EventLog::Type::ConferenceCallEnd:
 			case EventLog::Type::ConferenceParticipantAdded:

@@ -30,7 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 ConferenceEvent::ConferenceEvent (Type type, time_t creationTime, const ChatRoomId &chatRoomId) :
 	EventLog(*new ConferenceEventPrivate, type, creationTime) {
 	L_D();
-	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceDestroyed);
+	L_ASSERT(type == Type::ConferenceCreated || type == Type::ConferenceTerminated);
 	d->chatRoomId = chatRoomId;
 }
 
