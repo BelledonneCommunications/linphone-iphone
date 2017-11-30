@@ -21,12 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "private.h"
-#if !_WIN32
-#include "regex.h"
-#endif
 
-#include <bctoolbox/crypto.h>
-#include <bctoolbox/regex.h>
+#include "bctoolbox/crypto.h"
+#include "bctoolbox/regex.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorCbs);
 
