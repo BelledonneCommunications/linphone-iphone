@@ -21,11 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 
+
 #include "c-wrapper/c-wrapper.h"
 #include "dial-plan/dial-plan.h"
 
-#include <bctoolbox/crypto.h>
-#include <bctoolbox/regex.h>
+
+#include "bctoolbox/crypto.h"
+#include "bctoolbox/regex.h"
 
 // TODO: From coreapi. Remove me later.
 #include "private.h"
