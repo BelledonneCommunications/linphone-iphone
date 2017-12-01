@@ -761,25 +761,19 @@ void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *li
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address) {
+	LinphoneAddress *clean_addr = linphone_address_clone(address);
+	linphone_address_clean(clean_addr); // Remove any gruu param
+	return linphone_friend_list_find_friend_by_uri(list, linphone_address_as_string_uri_only(clean_addr));
+}
+
+LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
 	LinphoneFriend *result = NULL;
-	char *uri = linphone_address_as_string_uri_only(address);
 	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map_uri, uri);
 	if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map_uri))) {
 		bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
 		result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 	}
 	bctbx_iterator_cchar_delete(it);
-	ms_free(uri);
-	return result;
-}
-
-LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
-	LinphoneFriend *result = NULL;
-	LinphoneAddress *address = linphone_address_new(uri);
-	if(address) {
-		result = linphone_friend_list_find_friend_by_address(list, address);
-		linphone_address_unref(address);
-	}
 	return result;
 }
 
