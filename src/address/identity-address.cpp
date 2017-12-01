@@ -130,6 +130,12 @@ bool IdentityAddress::setGruu (const string &gruu) {
 	return true;
 }
 
+IdentityAddress IdentityAddress::getAddressWithoutGruu () const {
+	IdentityAddress address(*this);
+	address.setGruu("");
+	return address;
+}
+
 string IdentityAddress::asString () const {
 	Address tmpAddress(*this);
 	return tmpAddress.asStringUriOnly();

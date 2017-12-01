@@ -57,6 +57,8 @@ public:
 	const std::string &getGruu () const;
 	bool setGruu (const std::string &gruu);
 
+	IdentityAddress getAddressWithoutGruu () const;
+
 	virtual std::string asString () const;
 
 private:

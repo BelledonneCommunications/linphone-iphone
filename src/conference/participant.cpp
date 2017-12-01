@@ -88,12 +88,7 @@ void ParticipantPrivate::removeDevice (const IdentityAddress &gruu) {
 
 Participant::Participant (const IdentityAddress &address) : Object(*new ParticipantPrivate) {
 	L_D();
-	d->addr = address;
-}
-
-Participant::Participant (IdentityAddress &&address) : Object(*new ParticipantPrivate) {
-	L_D();
-	d->addr = address;
+	d->addr = address.getAddressWithoutGruu();
 }
 
 // -----------------------------------------------------------------------------

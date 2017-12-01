@@ -57,7 +57,6 @@ public:
 	L_OVERRIDE_SHARED_FROM_THIS(Participant);
 
 	explicit Participant (const IdentityAddress &address);
-	explicit Participant (IdentityAddress &&address);
 
 	const IdentityAddress &getAddress () const;
 	bool isAdmin () const;
