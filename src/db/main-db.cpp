@@ -1567,13 +1567,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		string query = "SELECT id, creation_time FROM event WHERE"
 			" id IN ("
-			"  SELECT conference_event.event_id FROM conference_event, conference_chat_message_event" +
+			"  SELECT conference_event.event_id FROM conference_event, conference_chat_message_event"
 			"  WHERE";
 		if (chatRoomId.isValid())
 			query += "  chat_room_id = :chatRoomId AND ";
-			"  conference_event.event_id = conference_chat_message_event.event_id"
+		query += "  conference_event.event_id = conference_chat_message_event.event_id"
 			"  AND direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
-			"  AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+			"  AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed)) +
 			")";
 
 		DurationLogger durationLogger(
