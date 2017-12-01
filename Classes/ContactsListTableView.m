@@ -157,7 +157,8 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				if ([ContactSelection getSipFilter] ||
 					[ContactSelection emailFilterEnabled]) {
 				  add = false;
-				}else if ([FastAddressBook contactHasValidSipDomain:contact]) {
+				}
+				if ([FastAddressBook contactHasValidSipDomain:contact]) {
 				  add = true;
 				}else if (contact.friend &&
 					linphone_presence_model_get_basic_status(
