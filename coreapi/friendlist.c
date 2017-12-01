@@ -762,8 +762,11 @@ void linphone_friend_list_synchronize_friends_from_server(LinphoneFriendList *li
 
 LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFriendList *list, const LinphoneAddress *address) {
 	LinphoneAddress *clean_addr = linphone_address_clone(address);
-	linphone_address_clean(clean_addr); // Remove any gruu param
-	return linphone_friend_list_find_friend_by_uri(list, linphone_address_as_string_uri_only(clean_addr));
+	LinphoneFriend *lf;
+	linphone_address_set_uri_param(clean_addr, "gr", NULL); // Remove any gruu param
+	lf = linphone_friend_list_find_friend_by_uri(list, linphone_address_as_string_uri_only(clean_addr));
+	linphone_address_unref(clean_addr);
+	return lf;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
