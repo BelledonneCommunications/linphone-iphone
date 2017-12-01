@@ -112,6 +112,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+	_room = NULL;
+}
+
 #pragma mark - next functions
 
 - (void)onCreate {
