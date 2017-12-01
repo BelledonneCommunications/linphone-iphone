@@ -443,15 +443,9 @@ void ChatRoom::markAsRead () {
 	if (getUnreadChatMessagesCount() == 0)
 		return;
 
-	shared_ptr<Core> core = getCore();
-	if (!core)
-		return;
-
-	CorePrivate *dCore = core->getPrivate();
+	CorePrivate *dCore = getCore()->getPrivate();
 	const string peerAddress = getPeerAddress().asString();
-	list<shared_ptr<ChatMessage>> chatMessages = dCore->mainDb->getUnreadChatMessages(d->chatRoomId);
-
-	for (auto &chatMessage : chatMessages)
+	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId))
 		chatMessage->sendDisplayNotification();
 
 	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);

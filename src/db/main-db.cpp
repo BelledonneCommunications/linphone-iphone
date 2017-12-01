@@ -1548,13 +1548,56 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	}
 
 	list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &chatRoomId) const {
+		L_D();
+
+		list<shared_ptr<ChatMessage>> chatMessages;
+
+		string query = "SELECT event_id, creation_time FROM conference_chat_message_event WHERE";
+		if (chatRoomId.isValid())
+			query += " event_id IN ("
+				"  SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
+				") AND";
+
+		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
+			+ " AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+
 		DurationLogger durationLogger(
 			"Get unread chat messages: (peer=" + chatRoomId.getPeerAddress().asString() +
 			", local=" + chatRoomId.getLocalAddress().asString() + ")."
 		);
 
-		// TODO.
-		return list<shared_ptr<ChatMessage>>();
+		L_BEGIN_LOG_EXCEPTION
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
+		long long dbChatRoomId;
+		if (chatRoomId.isValid())
+			dbChatRoomId = d->selectChatRoomId(chatRoomId);
+
+		soci::rowset<soci::row> rows = chatRoomId.isValid()
+			? (session->prepare << query, soci::use(dbChatRoomId))
+			: (session->prepare << query);
+
+		for (const auto &row : rows) {
+			long long eventId = d->resolveId(row, 0);
+			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
+
+			if (!event)
+				event = d->selectGenericConferenceEvent(
+					eventId,
+					EventLog::Type::ConferenceChatMessage,
+					Utils::getTmAsTimeT(row.get<tm>(1)),
+					chatRoomId
+				);
+
+			if (event)
+				chatMessages.push_back(static_pointer_cast<ConferenceChatMessageEvent>(event)->getChatMessage());
+		}
+
+		L_END_LOG_EXCEPTION
+
+		return chatMessages;
 	}
 
 	shared_ptr<ChatMessage> MainDb::getLastChatMessage (const ChatRoomId &chatRoomId) const {
