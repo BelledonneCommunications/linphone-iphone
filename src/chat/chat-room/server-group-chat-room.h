@@ -39,6 +39,15 @@ public:
 	// TODO: Make me private!
 	ServerGroupChatRoom (const std::shared_ptr<Core> &core, SalCallOp *op);
 
+	// TODO: Same idea.
+	ServerGroupChatRoom (
+		const std::shared_ptr<Core> &core,
+		const IdentityAddress &peerAddress,
+		const std::string &subject,
+		std::list<std::shared_ptr<Participant>> &&participants,
+		unsigned int lastNotifyId
+	);
+
 	CapabilitiesMask getCapabilities () const override;
 	bool hasBeenLeft () const override;
 

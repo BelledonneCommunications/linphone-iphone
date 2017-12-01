@@ -29,6 +29,7 @@
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/client-group-chat-room.h"
+#include "chat/chat-room/server-group-chat-room.h"
 #include "conference/participant-p.h"
 #include "content/content-type.h"
 #include "content/content.h"
@@ -1873,15 +1874,24 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					continue;
 				}
 
-				chatRoom = make_shared<ClientGroupChatRoom>(
-					core,
-					chatRoomId.getPeerAddress(),
-					me,
-					subject,
-					move(participants),
-					lastNotifyId,
-					!!row.get<int>(8, 0)
-				);
+				if (!linphone_core_conference_server_enabled(core->getCCore()))
+					chatRoom = make_shared<ClientGroupChatRoom>(
+						core,
+						chatRoomId.getPeerAddress(),
+						me,
+						subject,
+						move(participants),
+						lastNotifyId,
+						!!row.get<int>(8, 0)
+					);
+				else
+					chatRoom = make_shared<ServerGroupChatRoom>(
+						core,
+						chatRoomId.getPeerAddress(),
+						subject,
+						move(participants),
+						lastNotifyId
+					);
 			}
 
 			if (!chatRoom)

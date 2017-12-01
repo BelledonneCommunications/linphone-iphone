@@ -78,8 +78,17 @@ void ServerGroupChatRoomPrivate::onChatMessageReceived(const shared_ptr<ChatMess
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
-ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
-LocalConference(core, IdentityAddress(op->get_to()), nullptr) {}
+	ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
+	LocalConference(core, IdentityAddress(op->get_to()), nullptr) {}
+
+ServerGroupChatRoom::ServerGroupChatRoom (
+	const shared_ptr<Core> &core,
+	const IdentityAddress &peerAddress,
+	const string &subject,
+	list<shared_ptr<Participant>> &&participants,
+	unsigned int lastNotifyId
+) : ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(peerAddress, peerAddress)),
+	LocalConference(core, peerAddress, nullptr) {}
 
 int ServerGroupChatRoom::getCapabilities () const {
 	return 0;
