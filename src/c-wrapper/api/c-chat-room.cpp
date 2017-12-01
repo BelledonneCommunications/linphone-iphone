@@ -196,30 +196,24 @@ void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
 }
 
 bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int startm, int endm) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm));
+	list<shared_ptr<LinphonePrivate::ChatMessage>> chatMessages;
+	for (auto &event : L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm))
+		if (event->getType() == LinphonePrivate::EventLog::Type::ConferenceChatMessage)
+			chatMessages.push_back(static_pointer_cast<LinphonePrivate::ConferenceChatMessageEvent>(event)->getChatMessage());
+
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(chatMessages);
 }
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_message));
+	return linphone_chat_room_get_history_range(cr, 0, nb_message);
 }
 
 bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
-			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatRoomId(),
-			nb_events
-		)
-	);
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistory(nb_events));
 }
 
 bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(
-		L_GET_PRIVATE(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCore())->mainDb->getHistory(
-			L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatRoomId(),
-			begin,
-			end
-		)
-	);
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(begin, end));
 }
 
 LinphoneChatMessage *linphone_chat_room_get_last_message_in_history(LinphoneChatRoom *cr) {

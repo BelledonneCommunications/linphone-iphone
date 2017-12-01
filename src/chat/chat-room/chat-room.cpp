@@ -406,17 +406,16 @@ shared_ptr<ChatMessage> ChatRoom::findMessageWithDirection (const string &messag
 	return ret;
 }
 
-list<shared_ptr<ChatMessage> > ChatRoom::getHistory (int nbMessages) {
-	return getHistoryRange(0, nbMessages - 1);
+list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) {
+	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast);
+}
+
+list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) {
+	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end);
 }
 
 int ChatRoom::getHistorySize () {
 	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
-}
-
-list<shared_ptr<ChatMessage> > ChatRoom::getHistoryRange (int startm, int endm) {
-	// TODO: history.
-	return list<shared_ptr<ChatMessage>>();
 }
 
 shared_ptr<ChatMessage> ChatRoom::getLastMessageInHistory() const {
