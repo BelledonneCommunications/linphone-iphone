@@ -71,7 +71,10 @@
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {
-	[_contacts removeAllObjects];
+	if (_contacts)
+		[_contacts removeAllObjects];
+	else
+		_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 
 	[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
 		NSString *address = (NSString *)key;

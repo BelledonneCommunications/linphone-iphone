@@ -74,6 +74,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	_waitView.hidden = YES;
+
+	if (_create)
+		_room = NULL;
+
 	_nameLabel.text = _room && linphone_chat_room_get_subject(_room)
 		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 		: @"";
@@ -110,10 +114,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 
 	[_tableView reloadData];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-	_room = NULL;
 }
 
 #pragma mark - next functions
