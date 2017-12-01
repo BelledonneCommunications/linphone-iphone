@@ -1565,14 +1565,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return chatMessages;
 		}
 
-		string query = "SELECT event_id, creation_time FROM conference_chat_message_event WHERE";
+		string query = "SELECT id, creation_time FROM event WHERE"
+			" id IN ("
+			"  SELECT conference_event.event_id FROM conference_event, conference_chat_message_event" +
+			"  WHERE";
 		if (chatRoomId.isValid())
-			query += " event_id IN ("
-				"  SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
-				") AND";
-
-		query += " direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
-			+ " AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+			query += "  chat_room_id = :chatRoomId AND ";
+			"  conference_event.event_id = conference_chat_message_event.event_id"
+			"  AND direction = " + Utils::toString(static_cast<int>(ChatMessage::Direction::Incoming)) +
+			"  AND state <> " + Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
+			")";
 
 		DurationLogger durationLogger(
 			"Get unread chat messages: (peer=" + chatRoomId.getPeerAddress().asString() +
