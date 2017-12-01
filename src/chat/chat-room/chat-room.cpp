@@ -183,7 +183,6 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(salMsg->time);
-	msg->getPrivate()->setState(ChatMessage::State::Delivered);
 	msg->setImdnMessageId(op->get_call_id());
 
 	const SalCustomHeader *ch = op->get_recv_custom_header();

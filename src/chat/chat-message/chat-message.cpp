@@ -327,10 +327,11 @@ LinphoneReason ChatMessagePrivate::receive () {
 	shared_ptr<Core> core = q->getCore();
 	shared_ptr<ChatRoom> chatRoom = q->getChatRoom();
 
+	setState(ChatMessage::State::Delivered);
+
 	// ---------------------------------------
 	// Start of message modification
 	// ---------------------------------------
-
 
 	if ((currentRecvStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
 		lInfo() << "Cpim step already done, skipping";
