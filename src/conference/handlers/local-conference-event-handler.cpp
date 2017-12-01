@@ -346,12 +346,12 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 
 // =============================================================================
 
-LocalConferenceEventHandler::LocalConferenceEventHandler (LocalConference *localConference) :
+LocalConferenceEventHandler::LocalConferenceEventHandler (LocalConference *localConference, unsigned int notify) :
 	Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConference;
-	// TODO : init d->lastNotify = last notify
+	d->lastNotify = notify;
 }
 
 LocalConferenceEventHandler::~LocalConferenceEventHandler () {
@@ -427,6 +427,11 @@ void LocalConferenceEventHandler::notifyParticipantDeviceAdded (const Address &a
 void LocalConferenceEventHandler::notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
 	L_D();
 	d->notifyAll(d->createNotifyParticipantDeviceRemoved(addr, gruu));
+}
+
+void LocalConferenceEventHandler::setLastNotify (unsigned int lastNotify) {
+	L_D();
+	d->lastNotify = lastNotify;
 }
 
 LINPHONE_END_NAMESPACE

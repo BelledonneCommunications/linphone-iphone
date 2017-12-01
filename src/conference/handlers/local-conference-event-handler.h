@@ -35,7 +35,7 @@ class LocalConferenceEventHandlerPrivate;
 
 class LocalConferenceEventHandler : public Object {
 public:
-	LocalConferenceEventHandler (LocalConference *localConference);
+	LocalConferenceEventHandler (LocalConference *localConference, unsigned int notify = 0);
 	~LocalConferenceEventHandler ();
 
 	void subscribeReceived (LinphoneEvent *lev);
@@ -45,6 +45,8 @@ public:
 	void notifySubjectChanged ();
 	void notifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
 	void notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
+	
+	void setLastNotify (unsigned int lastNotify);
 
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);
