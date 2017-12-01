@@ -192,9 +192,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	_waitView.hidden = YES;
 	_editButton.hidden = ([ContactSelection getSelectionMode] != ContactSelectionModeEdit &&
 						  [ContactSelection getSelectionMode] != ContactSelectionModeNone);
 	[_tableController.tableView addObserver:self forKeyPath:@"contentSize" options:0 context:NULL];
+	_tableController.waitView = _waitView;
 	self.tmpContact = NULL;
 	
 	[[NSNotificationCenter defaultCenter] addObserver: self

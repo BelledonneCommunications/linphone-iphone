@@ -172,7 +172,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-	_waitView.hidden = YES;
 	[super viewWillAppear:animated];
 
 	// Set observers
@@ -823,7 +822,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 #pragma mark - Chat room Functions
 
-- (void)createChatRoomWithSubject:(const char *)subject andAddresses:(bctbx_list_t *)addresses {
+- (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
+	_waitView = waitView;
 	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT);
 	if (!room)
@@ -837,6 +837,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)goToChatRoom:(LinphoneChatRoom *)cr {
 	_waitView.hidden = YES;
+	_waitView = NULL;
 	ChatConversationView *view = VIEW(ChatConversationView);
 	view.chatRoom = cr;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];

@@ -153,6 +153,7 @@
 	UIContactDetailsCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIContactDetailsCell alloc] initWithIdentifier:kCellId];
+		cell.waitView = _waitView;
 		[cell.editTextfield setDelegate:self];
 	}
 

@@ -58,6 +58,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
+	_waitView.hidden = YES;
 	if(_tableController.contactsGroup.count == 0) {
 		if (!_isForEditing)
 			_nextButton.enabled = FALSE;
@@ -79,7 +80,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	NSString *addr = _tableController.contactsGroup[0];
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
 	bctbx_list_t *addresses = bctbx_list_new((void *)linphoneAddress);
-	[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT andAddresses:addresses];
+	[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:_waitView];
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 }
 

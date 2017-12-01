@@ -41,6 +41,7 @@
 @property(weak, nonatomic) IBOutlet UIScrollView *contentView;
 @property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
 @property BOOL isAdding;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onCancelClick:(id)event;

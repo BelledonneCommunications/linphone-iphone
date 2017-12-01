@@ -142,7 +142,7 @@
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, addr);
 	if (!room) {
 		bctbx_list_t *addresses = bctbx_list_new(addr);
-		[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT andAddresses:addresses];
+		[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:_waitView];
 		bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 		return;
 	}

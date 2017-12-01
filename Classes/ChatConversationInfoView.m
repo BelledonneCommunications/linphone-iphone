@@ -73,7 +73,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
+	_waitView.hidden = YES;
 	_nameLabel.text = _room && linphone_chat_room_get_subject(_room)
 		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 		: @"";
@@ -127,7 +127,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		addresses = bctbx_list_append(addresses, (void *)linphoneAddress);
 	}
-	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String andAddresses:addresses];
+	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String addresses:addresses andWaitView:_waitView];
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 }
 

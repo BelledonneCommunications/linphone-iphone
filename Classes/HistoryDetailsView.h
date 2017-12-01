@@ -38,6 +38,7 @@
 @property(weak, nonatomic) IBOutlet UIView *headerView;
 @property(strong, nonatomic) IBOutlet HistoryDetailsTableView *tableView;
 @property(weak, nonatomic) IBOutlet UILabel *emptyLabel;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onAddContactClick:(id)event;
