@@ -86,6 +86,7 @@
 @property(weak, readonly) UICompositeViewDescription *currentView;
 @property LinphoneChatRoom* currentRoom;
 @property(readonly, strong) MPVolumeView *volumeView;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 - (void)changeCurrentView:(UICompositeViewDescription *)view;
 - (UIViewController*)popCurrentView;
@@ -103,6 +104,9 @@
 - (BOOL)removeInhibitedEvent:(id)event;
 
 - (void)updateApplicationBadgeNumber;
+- (void)createChatRoomWithSubject:(const char *)subject andAddresses:(bctbx_list_t *)addresses;
 + (PhoneMainView*) instance;
 
 @end
+
+void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState);

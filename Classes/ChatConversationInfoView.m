@@ -74,7 +74,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
-	_waitView.hidden = YES;
 	_nameLabel.text = _room && linphone_chat_room_get_subject(_room)
 		? [NSString stringWithUTF8String:linphone_chat_room_get_subject(_room)]
 		: @"";
@@ -102,7 +101,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (_room) {
 		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
-		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
+		linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
 		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
 		linphone_chat_room_cbs_set_participant_added(cbs, chat_room_participant_added);
 		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
@@ -116,14 +115,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark - next functions
 
 - (void)onCreate {
-	_waitView.hidden = NO;
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, _nameLabel.text.UTF8String);
-	if(!room) {
-		return;
-	}
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
-	linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
-	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
 	bctbx_list_t *addresses = NULL;
 	for(NSString *addr in _contacts) {
 		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
@@ -136,7 +127,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		addresses = bctbx_list_append(addresses, (void *)linphoneAddress);
 	}
-	linphone_chat_room_add_participants(room, addresses);
+	[PhoneMainView.instance createChatRoomWithSubject:_nameLabel.text.UTF8String andAddresses:addresses];
 	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
 }
 
@@ -302,13 +293,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark - chat room callbacks
 
-- (void)goToChatRoom:(LinphoneChatRoom *)cr {
-	_waitView.hidden = YES;
-	ChatConversationView *view = VIEW(ChatConversationView);
-	view.chatRoom = cr;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
-}
-
 - (void)myAdminStatusChanged:(BOOL)admin {
 	NSString *message = admin
 		? NSLocalizedString(@"You are now an admin of the chat room", nil)
@@ -326,27 +310,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 														  handler:^(UIAlertAction * action) {}];
 	[alertView addAction:defaultAction];
 	[PhoneMainView.instance presentViewController:alertView animated:YES completion:nil];
-}
-
-void chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
-	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	switch (newState) {
-		case LinphoneChatRoomStateCreated:
-			LOGI(@"Chat room [%p] created on server.", cr);
-			[view goToChatRoom:cr];
-			break;
-		case LinphoneChatRoomStateCreationFailed:
-			view.waitView.hidden = YES;
-			[ChatConversationInfoView displayCreationError];
-			LOGE(@"Chat room [%p] could not be created on server.", cr);
-			break;
-		case LinphoneChatRoomStateTerminated:
-			LOGI(@"Chat room [%p] has been terminated.", cr);
-			[view goToChatRoom:cr];
-			break;
-		default:
-			break;
-	}
 }
 
 void chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {

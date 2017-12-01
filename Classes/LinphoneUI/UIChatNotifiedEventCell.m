@@ -90,6 +90,16 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
+		case LinphoneEventLogTypeConferenceTerminated: {
+			NSString *formatedString = [NSString stringWithFormat:@"Chat room has been left"];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
+		case LinphoneEventLogTypeConferenceCreated: {
+			NSString *formatedString = [NSString stringWithFormat:@"Chat room has been entered"];
+			eventString = NSLocalizedString(formatedString, nil);
+			break;
+		}
 		default:
 			return;
 	}

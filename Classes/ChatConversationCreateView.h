@@ -24,7 +24,6 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *allButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *linphoneButton;
 @property (weak, nonatomic) IBOutlet UIImageView *selectedButtonImage;
-@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 @property(nonatomic) Boolean isForEditing;
 

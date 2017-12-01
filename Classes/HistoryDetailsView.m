@@ -196,7 +196,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (addr == NULL)
 		return;
 	ChatConversationView *view = VIEW(ChatConversationView);
-	LinphoneChatRoom *room = linphone_core_get_chat_room(LC, addr);
+	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
+	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, addr);
+	if (!room) {
+		bctbx_list_t *addresses = bctbx_list_new((void*)addr);
+		[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT andAddresses:addresses];
+		bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+		return;
+	}
 	[view setChatRoom:room];
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }

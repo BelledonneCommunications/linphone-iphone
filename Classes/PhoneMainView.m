@@ -172,6 +172,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+	_waitView.hidden = YES;
 	[super viewWillAppear:animated];
 
 	// Set observers
@@ -818,6 +819,48 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)incomingCallDeclined:(LinphoneCall *)call {
 	linphone_call_terminate(call);
+}
+
+#pragma mark - Chat room Functions
+
+- (void)createChatRoomWithSubject:(const char *)subject andAddresses:(bctbx_list_t *)addresses {
+	_waitView.hidden = NO;
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT);
+	if (!room)
+		return;
+
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
+	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+	linphone_chat_room_add_participants(room, addresses);
+}
+
+- (void)goToChatRoom:(LinphoneChatRoom *)cr {
+	_waitView.hidden = YES;
+	ChatConversationView *view = VIEW(ChatConversationView);
+	view.chatRoom = cr;
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+}
+
+void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	PhoneMainView *view = (__bridge PhoneMainView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	switch (newState) {
+		case LinphoneChatRoomStateCreated:
+			LOGI(@"Chat room [%p] created on server.", cr);
+			[view goToChatRoom:cr];
+			break;
+		case LinphoneChatRoomStateCreationFailed:
+			view.waitView.hidden = YES;
+			[ChatConversationInfoView displayCreationError];
+			LOGE(@"Chat room [%p] could not be created on server.", cr);
+			break;
+		case LinphoneChatRoomStateTerminated:
+			LOGI(@"Chat room [%p] has been terminated.", cr);
+			[view goToChatRoom:cr];
+			break;
+		default:
+			break;
+	}
 }
 
 @end
