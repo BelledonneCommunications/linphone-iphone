@@ -192,7 +192,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onChatClick:(id)event {
-	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	const LinphoneAddress *addr = linphone_address_ref(linphone_call_log_get_remote_address(callLog));
 	if (addr == NULL)
 		return;
 	ChatConversationView *view = VIEW(ChatConversationView);
