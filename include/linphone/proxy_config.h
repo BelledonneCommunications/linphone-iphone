@@ -309,6 +309,11 @@ LINPHONE_PUBLIC void linphone_proxy_config_refresh_register(LinphoneProxyConfig 
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg);
 
+/**
+ * Return the contact address of the proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return a #LinphoneAddress correspong to the contact address of the proxy config.
+**/
 LINPHONE_PUBLIC const LinphoneAddress* linphone_proxy_config_get_contact(const LinphoneProxyConfig *cfg);
 
 /**
