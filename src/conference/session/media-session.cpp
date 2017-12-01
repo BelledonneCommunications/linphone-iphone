@@ -4826,6 +4826,14 @@ void MediaSession::setNativeVideoWindowId (void *id) {
 #endif
 }
 
+void MediaSession::setParams (const MediaSessionParams *msp) {
+	L_D();
+	if ((d->state == LinphoneCallOutgoingInit) || (d->state == LinphoneCallIncomingReceived))
+		d->setParams(msp ? new MediaSessionParams(*msp) : nullptr);
+	else
+		lError() << "MediaSession::setParams(): Invalid state %s", linphone_call_state_to_string(d->state);
+}
+
 void MediaSession::setSpeakerVolumeGain (float value) {
 	L_D();
 	if (d->audioStream)

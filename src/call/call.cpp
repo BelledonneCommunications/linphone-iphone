@@ -525,6 +525,11 @@ void Call::setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_d
 	d->onResetFirstVideoFrameDecoded();
 }
 
+void Call::setParams (const MediaSessionParams *msp) {
+	L_D();
+	static_cast<MediaSession *>(d->getActiveSession().get())->setParams(msp);
+}
+
 void Call::setSpeakerVolumeGain (float value) {
 	L_D();
 	static_cast<MediaSession *>(d->getActiveSession().get())->setSpeakerVolumeGain(value);

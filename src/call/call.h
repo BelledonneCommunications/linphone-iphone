@@ -100,6 +100,7 @@ public:
 	void setMicrophoneVolumeGain (float value);
 	void setNativeVideoWindowId (void *id);
 	void setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_data);
+	void setParams (const MediaSessionParams *msp);
 	void setSpeakerVolumeGain (float value);
 
 protected:

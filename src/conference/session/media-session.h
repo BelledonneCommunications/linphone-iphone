@@ -96,6 +96,7 @@ public:
 	void setAuthenticationTokenVerified (bool value);
 	void setMicrophoneVolumeGain (float value);
 	void setNativeVideoWindowId (void *id);
+	void setParams (const MediaSessionParams *msp);
 	void setSpeakerVolumeGain (float value);
 
 private:

@@ -1102,14 +1102,7 @@ const bctbx_list_t *linphone_call_get_callbacks_list(const LinphoneCall *call) {
 }
 
 void linphone_call_set_params (LinphoneCall *call, const LinphoneCallParams *params) {
-#if 0
-	if ( call->state == LinphoneCallOutgoingInit || call->state == LinphoneCallIncomingReceived){
-		_linphone_call_set_new_params(call, params);
-	}
-	else {
-		ms_error("linphone_call_set_params() invalid state %s to call this function", linphone_call_state_to_string(call->state));
-	}
-#endif
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->setParams(L_GET_CPP_PTR_FROM_C_OBJECT(params));
 }
 
 const LinphoneCallParams *linphone_call_get_params (LinphoneCall *call) {
