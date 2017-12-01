@@ -1260,9 +1260,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		tr.commit();
 
+		return true;
+
 		L_END_LOG_EXCEPTION
 
-		return true;
+		// Error.
+		return false;
 	}
 
 	bool MainDb::deleteEvent (const shared_ptr<EventLog> &eventLog) {
@@ -1298,6 +1301,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_END_LOG_EXCEPTION
 
+		// Error.
 		return false;
 	}
 
@@ -1394,12 +1398,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_D();
 
+		list<shared_ptr<EventLog>> events;
+
 		if (!isConnected()) {
 			lWarning() << "Unable to get conference notified events. Not connected.";
-			return list<shared_ptr<EventLog>>();
+			return events;
 		}
-
-		list<shared_ptr<EventLog>> events;
 
 		DurationLogger durationLogger(
 			"Get conference notified events of: (peer=" + chatRoomId.getPeerAddress().asString() +
@@ -1427,9 +1431,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			));
 		}
 
+		return events;
+
 		L_END_LOG_EXCEPTION
 
-		return events;
+		// Error.
+		return list<shared_ptr<EventLog>>();
 	}
 
 	int MainDb::getChatMessagesCount (const ChatRoomId &chatRoomId) const {
@@ -1552,6 +1559,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		list<shared_ptr<ChatMessage>> chatMessages;
 
+		if (!isConnected()) {
+			lWarning() << "Unable to get unread chat messages. Not connected.";
+			return chatMessages;
+		}
+
 		string query = "SELECT event_id, creation_time FROM conference_chat_message_event WHERE";
 		if (chatRoomId.isValid())
 			query += " event_id IN ("
@@ -1595,9 +1607,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				chatMessages.push_back(static_pointer_cast<ConferenceChatMessageEvent>(event)->getChatMessage());
 		}
 
+		return chatMessages;
+
 		L_END_LOG_EXCEPTION
 
-		return chatMessages;
+		// Error.
+		return list<shared_ptr<ChatMessage>>();
 	}
 
 	shared_ptr<ChatMessage> MainDb::getLastChatMessage (const ChatRoomId &chatRoomId) const {
@@ -1659,9 +1674,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				lWarning() << "Unable to fetch event: " << eventId;
 		}
 
+		return chatMessages;
+
 		L_END_LOG_EXCEPTION
 
-		return chatMessages;
+		// Error.
+		return list<shared_ptr<ChatMessage>>();
 	}
 
 	list<shared_ptr<EventLog>> MainDb::getHistory (const ChatRoomId &chatRoomId, int nLast, FilterMask mask) const {
@@ -1739,9 +1757,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				lWarning() << "Unable to fetch event: " << eventId;
 		}
 
+		return events;
+
 		L_END_LOG_EXCEPTION
 
-		return events;
+		// Error.
+		return list<shared_ptr<EventLog>>();
 	}
 
 	void MainDb::cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask) {
@@ -1785,13 +1806,14 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		L_D();
 
+		list<shared_ptr<ChatRoom>> chatRooms;
+
 		if (!isConnected()) {
 			lWarning() << "Unable to get chat rooms. Not connected.";
-			return list<shared_ptr<ChatRoom>>();
+			return chatRooms;
 		}
 
 		shared_ptr<Core> core = getCore();
-		list<shared_ptr<ChatRoom>> chatRooms;
 
 		DurationLogger durationLogger("Get chat rooms.");
 
@@ -1875,9 +1897,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			chatRooms.push_back(chatRoom);
 		}
 
+		return chatRooms;
+
 		L_END_LOG_EXCEPTION
 
-		return chatRooms;
+		// Error.
+		return list<shared_ptr<ChatRoom>>();
 	}
 
 	void MainDb::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
