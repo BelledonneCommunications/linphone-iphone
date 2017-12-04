@@ -131,7 +131,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
 		return q->getBackend() == AbstractDb::Sqlite3
 			? static_cast<long long>(row.get<int>(0))
-			: row.get<long long>(0);
+			: row.get<unsigned long long>(0);
 	}
 
 	long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
@@ -1870,7 +1870,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			tm lastUpdateTime = row.get<tm>(4);
 			int capabilities = row.get<int>(5);
 			string subject = row.get<string>(6);
-			unsigned int lastNotifyId = static_cast<unsigned int>(row.get<int>(7, 0));
+			unsigned int lastNotifyId = static_cast<unsigned int>(getBackend() == Backend::Mysql
+				? row.get<unsigned int>(7, 0)
+				: row.get<int>(7, 0)
+			);
 
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
 				chatRoom = core->getPrivate()->createBasicChatRoom(
@@ -1900,14 +1903,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						participants.push_back(participant);
 				}
 
-				if (!me) {
-					lError() << "Unable to find me in: (peer=" + chatRoomId.getPeerAddress().asString() +
-						", local=" + chatRoomId.getLocalAddress().asString() + ").";
-					continue;
-				}
-
 				if (!linphone_core_conference_server_enabled(core->getCCore())) {
 					bool hasBeenLeft = !!row.get<int>(8, 0);
+					if (!me) {
+						lError() << "Unable to find me in: (peer=" + chatRoomId.getPeerAddress().asString() +
+							", local=" + chatRoomId.getLocalAddress().asString() + ").";
+						continue;
+					}
 					chatRoom = make_shared<ClientGroupChatRoom>(
 						core,
 						chatRoomId.getPeerAddress(),
