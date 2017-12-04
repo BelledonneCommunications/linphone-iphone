@@ -110,13 +110,13 @@ static void call_received(SalCallOp *h) {
 		linphone_address_unref(fromAddr);
 		return;
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
-		linphone_address_unref(toAddr);
-		linphone_address_unref(fromAddr);
 		shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 			ChatRoomId(IdentityAddress(h->get_to()), IdentityAddress(h->get_to()))
 		);
 		if (chatRoom) {
 			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
+			linphone_address_unref(toAddr);
+			linphone_address_unref(fromAddr);
 			return;
 		}
 	} else {
