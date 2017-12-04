@@ -60,7 +60,7 @@ void CorePrivate::iterateCalls (time_t currentRealTime, bool oneSecondElapsed) c
 
 bool CorePrivate::canWeAddCall () const {
 	L_Q();
-	if (q->getCallsNb() < static_cast<unsigned int>(q->getCCore()->max_calls))
+	if (q->getCallCount() < static_cast<unsigned int>(q->getCCore()->max_calls))
 		return true;
 	lInfo() << "Maximum amount of simultaneous calls reached!";
 	return false;
@@ -137,7 +137,7 @@ const list<shared_ptr<Call>> &Core::getCalls () const {
 	return d->calls;
 }
 
-unsigned int Core::getCallsNb () const {
+unsigned int Core::getCallCount () const {
 	L_D();
 	return static_cast<unsigned int>(d->calls.size());
 }
