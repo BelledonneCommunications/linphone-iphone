@@ -434,12 +434,12 @@ void linphone_core_cbs_set_version_update_check_result_received(LinphoneCoreCbs 
 	cbs->vtable->version_update_check_result_received = cb;
 }
 
-LinphoneCoreCbsChatRoomInstantiatedCb linphone_core_cbs_get_chat_room_instantiated (LinphoneCoreCbs *cbs) {
-	return cbs->vtable->chat_room_instantiated;
+LinphoneCoreCbsChatRoomStateChangedCb linphone_core_cbs_get_chat_room_state_changed (LinphoneCoreCbs *cbs) {
+	return cbs->vtable->chat_room_state_changed;
 }
 
-void linphone_core_cbs_set_chat_room_instantiated (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomInstantiatedCb cb) {
-	cbs->vtable->chat_room_instantiated = cb;
+void linphone_core_cbs_set_chat_room_state_changed (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomStateChangedCb cb) {
+	cbs->vtable->chat_room_state_changed = cb;
 }
 
 void linphone_core_cbs_set_ec_calibration_result(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationResultCb cb) {

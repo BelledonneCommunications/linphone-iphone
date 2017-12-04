@@ -399,11 +399,11 @@ typedef LinphoneCoreCbsFriendListRemovedCb LinphoneCoreFriendListRemovedCb;
 typedef void (*LinphoneCoreCbsVersionUpdateCheckResultReceivedCb) (LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url);
 
 /**
- * Callback prototype telling that a LinphoneChatRoom object has been instantiated. This is useful to set the callbacks on the LinphoneChatRoom object.
+ * Callback prototype telling that a LinphoneChatRoom state has changed.
  * @param[in] lc LinphoneCore object
- * @param[in] cr The LinphoneChatRoom object that has been instantiated
+ * @param[in] cr The LinphoneChatRoom object for which the state has changed
  */
-typedef void (*LinphoneCoreCbsChatRoomInstantiatedCb) (LinphoneCore *lc, LinphoneChatRoom *cr);
+typedef void (*LinphoneCoreCbsChatRoomStateChangedCb) (LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatRoomState state);
 
 /**
  * @}

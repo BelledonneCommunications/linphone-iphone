@@ -288,8 +288,8 @@ void linphone_core_notify_version_update_check_result_received(LinphoneCore *lc,
 	cleanup_dead_vtable_refs(lc);
 }
 
-void linphone_core_notify_chat_room_instantiated (LinphoneCore *lc, LinphoneChatRoom *cr) {
-	NOTIFY_IF_EXIST(chat_room_instantiated, lc, cr);
+void linphone_core_notify_chat_room_state_changed (LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatRoomState state) {
+	NOTIFY_IF_EXIST(chat_room_state_changed, lc, cr, state);
 	cleanup_dead_vtable_refs(lc);
 }
 

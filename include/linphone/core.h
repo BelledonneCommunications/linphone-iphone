@@ -185,7 +185,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreFriendListRemovedCb friend_list_removed;
 	LinphoneCoreCbsCallCreatedCb call_created;
 	LinphoneCoreCbsVersionUpdateCheckResultReceivedCb version_update_check_result_received;
-	LinphoneCoreCbsChatRoomInstantiatedCb chat_room_instantiated;
+	LinphoneCoreCbsChatRoomStateChangedCb chat_room_state_changed;
 	LinphoneCoreCbsEcCalibrationResultCb ec_calibration_result;
 	LinphoneCoreCbsEcCalibrationAudioInitCb ec_calibration_audio_init;
 	LinphoneCoreCbsEcCalibrationAudioUninitCb ec_calibration_audio_uninit;
@@ -666,18 +666,18 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_version_update_check_result_received(
 LINPHONE_PUBLIC LinphoneCoreCbsVersionUpdateCheckResultReceivedCb linphone_core_cbs_get_version_update_check_result_received(LinphoneCoreCbs *cbs);
 
 /**
- * Get the chat room instantiated callback.
+ * Get the chat room state changed callback.
  * @param[in] cbs LinphoneCoreCbs object
  * @return The current callback
  */
-LINPHONE_PUBLIC LinphoneCoreCbsChatRoomInstantiatedCb linphone_core_cbs_get_chat_room_instantiated (LinphoneCoreCbs *cbs);
+LINPHONE_PUBLIC LinphoneCoreCbsChatRoomStateChangedCb linphone_core_cbs_get_chat_room_state_changed (LinphoneCoreCbs *cbs);
 
 /**
- * Set the chat room instantiated callback.
+ * Set the chat room state changed callback.
  * @param[in] cbs LinphoneCoreCbs object
  * @param[in] cb The callback to use
  */
-LINPHONE_PUBLIC void linphone_core_cbs_set_chat_room_instantiated (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomInstantiatedCb cb);
+LINPHONE_PUBLIC void linphone_core_cbs_set_chat_room_state_changed (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomStateChangedCb cb);
 
 /**
  * @brief Sets a callback to call each time the echo-canceler calibration is completed.
