@@ -2735,11 +2735,11 @@ static void apply_jitter_value(LinphoneCore *lc, int value, MSFormatType stype){
 			RtpSession *s=ms->sessions.rtp_session;
 			if (s){
 				if (value>0){
-					ms_message("Jitter buffer size set to [%i] ms on call [%p]",value,call);
+					ms_message("Jitter buffer size set to [%i] ms on call [%p]", value, call.get());
 					rtp_session_set_jitter_compensation(s,value);
 					rtp_session_enable_jitter_buffer(s,TRUE);
 				}else if (value==0){
-					ms_warning("Jitter buffer is disabled per application request on call [%p]",call);
+					ms_warning("Jitter buffer is disabled per application request on call [%p]", call.get());
 					rtp_session_enable_jitter_buffer(s,FALSE);
 				}
 			}

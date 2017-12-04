@@ -208,7 +208,7 @@ private:
 	MSAudioEndpoint *m_localEndpoint;
 	MSAudioEndpoint *m_recordEndpoint;
 	RtpProfile *m_localDummyProfile;
-	bool_t m_terminating;
+	//bool_t m_terminating;
 };
 
 class RemoteConference: public Conference {
@@ -373,8 +373,8 @@ LocalConference::LocalConference(LinphoneCore *core, LinphoneConference *conf, c
 	m_conf(NULL),
 	m_localEndpoint(NULL),
 	m_recordEndpoint(NULL),
-	m_localDummyProfile(NULL),
-	m_terminating(FALSE) {
+	m_localDummyProfile(NULL)/*,
+	m_terminating(FALSE)*/ {
 
 	MSAudioConferenceParams ms_conf_params;
 	ms_conf_params.samplerate = lp_config_get_int(m_core->config, "sound","conference_rate",16000);
