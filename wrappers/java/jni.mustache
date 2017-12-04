@@ -375,7 +375,7 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 
 	linphone_core_cbs_set_user_data(cbs, listener);
 	linphone_core_cbs_set_transfer_state_changed(cbs, linphone_core_on_transfer_state_changed);
-	linphone_core_cbs_set_chat_room_instantiated(cbs, linphone_core_on_chat_room_instantiated);
+	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_core_on_chat_room_state_changed);
 	linphone_core_cbs_set_friend_list_created(cbs, linphone_core_on_friend_list_created);
 	linphone_core_cbs_set_subscription_state_changed(cbs, linphone_core_on_subscription_state_changed);
 	linphone_core_cbs_set_call_log_updated(cbs, linphone_core_on_call_log_updated);
