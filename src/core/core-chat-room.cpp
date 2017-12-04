@@ -145,11 +145,10 @@ shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
 }
 
 shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
-	L_D();
 	return L_GET_CPP_PTR_FROM_C_OBJECT(
 		_linphone_client_group_chat_room_new(
-			d->cCore,
-			linphone_core_get_conference_factory_uri(d->cCore),
+			getCCore(),
+			linphone_core_get_conference_factory_uri(getCCore()),
 			L_STRING_TO_C(subject)
 		)
 	);
@@ -187,9 +186,7 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddress &peer
 }
 
 shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoomFromUri (const string &peerAddress, bool isRtt) {
-	L_D();
-
-	LinphoneAddress *address = linphone_core_interpret_url(d->cCore, L_STRING_TO_C(peerAddress));
+	LinphoneAddress *address = linphone_core_interpret_url(getCCore(), L_STRING_TO_C(peerAddress));
 	if (!address) {
 		lError() << "Cannot make a valid address with: `" << peerAddress << "`.";
 		return nullptr;

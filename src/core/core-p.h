@@ -48,7 +48,6 @@ public:
 	std::shared_ptr<ChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);
 
 	std::unique_ptr<MainDb> mainDb;
-	LinphoneCore *cCore = nullptr;
 
 private:
 	std::list<std::shared_ptr<Call>> calls;

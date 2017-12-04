@@ -163,13 +163,13 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		isComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
-		if (lp_config_get_int(cCore->config, "sip", "deliver_imdn", 0) != 1) {
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		imdnReceived(msg->getPrivate()->getText());
 		increaseMsgCount = FALSE;
-		if (lp_config_get_int(cCore->config, "sip", "deliver_imdn", 0) != 1) {
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	}
