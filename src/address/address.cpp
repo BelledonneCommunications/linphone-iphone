@@ -403,4 +403,14 @@ bool Address::setUriParams (const string &uriParams) {
 	return true;
 }
 
+bool Address::removeUriParam(const string &uriParamName) {
+	L_D();
+
+	if (!d->internalAddress)
+		return false;
+
+	sal_address_remove_uri_param(d->internalAddress, L_STRING_TO_C(uriParamName));
+	return true;
+}
+
 LINPHONE_END_NAMESPACE

@@ -255,6 +255,13 @@ LINPHONE_PUBLIC void linphone_address_set_uri_param (LinphoneAddress *address, c
 LINPHONE_PUBLIC void linphone_address_set_uri_params (LinphoneAddress *address, const char *params);
 
 /**
+ * Removes the value of a parameter of the URI of the address
+ * @param[in] address LinphoneAddress object
+ * @param[in] uri_param_name The name of the parameter
+ */
+LINPHONE_PUBLIC void linphone_address_remove_uri_param (LinphoneAddress *address, const char *uri_param_name);
+
+/**
  * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
  * @deprecated Use linphone_address_unref() instead
  * @donotwrap

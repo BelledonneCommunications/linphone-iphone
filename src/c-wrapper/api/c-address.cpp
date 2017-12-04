@@ -186,6 +186,10 @@ void linphone_address_set_uri_params (LinphoneAddress *address, const char *para
 	L_GET_CPP_PTR_FROM_C_OBJECT(address)->setUriParams(L_C_TO_STRING(params));
 }
 
+void linphone_address_remove_uri_param (LinphoneAddress *address, const char *uri_param_name) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(address)->removeUriParam(L_C_TO_STRING(uri_param_name));
+}
+
 void linphone_address_destroy (LinphoneAddress *address) {
 	belle_sip_object_unref(address);
 }
