@@ -1269,8 +1269,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return false;
 	}
 
-	bool MainDb::deleteEvent (const shared_ptr<EventLog> &eventLog) {
-		EventLogPrivate *dEventLog = eventLog->getPrivate();
+	bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
 		if (!dEventLog->dbKey.isValid()) {
 			lWarning() << "Unable to delete invalid event.";
 			return false;
@@ -1294,7 +1294,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		dEventLog->dbKey = MainDbEventKey();
 
 		if (eventLog->getType() == EventLog::Type::ConferenceChatMessage)
-			static_pointer_cast<ConferenceChatMessageEvent>(
+			static_pointer_cast<const ConferenceChatMessageEvent>(
 				eventLog
 			)->getChatMessage()->getPrivate()->dbKey = MainDbChatMessageKey();
 
@@ -2144,7 +2144,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return false;
 	}
 
-	bool MainDb::deleteEvent (const shared_ptr<EventLog> &) {
+	bool MainDb::deleteEvent (const shared_ptr<const EventLog> &) {
 		return false;
 	}
 

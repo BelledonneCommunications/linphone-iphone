@@ -44,7 +44,7 @@ time_t EventLog::getCreationTime () const {
 	return d->creationTime;
 }
 
-void EventLog::deleteFromDatabase (const shared_ptr<EventLog> &eventLog) {
+void EventLog::deleteFromDatabase (const shared_ptr<const EventLog> &eventLog) {
 	MainDb::deleteEvent(eventLog);
 }
 

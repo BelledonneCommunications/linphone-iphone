@@ -46,7 +46,7 @@ public:
 	Type getType () const;
 	time_t getCreationTime () const;
 
-	static void deleteFromDatabase (const std::shared_ptr<EventLog> &eventLog);
+	static void deleteFromDatabase (const std::shared_ptr<const EventLog> &eventLog);
 
 protected:
 	EventLog (EventLogPrivate &p, Type type, time_t creationTime);

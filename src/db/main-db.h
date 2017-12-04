@@ -59,7 +59,7 @@ public:
 
 	bool addEvent (const std::shared_ptr<EventLog> &eventLog);
 	bool updateEvent (const std::shared_ptr<EventLog> &eventLog);
-	static bool deleteEvent (const std::shared_ptr<EventLog> &eventLog);
+	static bool deleteEvent (const std::shared_ptr<const EventLog> &eventLog);
 	int getEventsCount (FilterMask mask = NoFilter) const;
 
 	static std::shared_ptr<EventLog> getEventFromKey (const MainDbKey &dbKey);
