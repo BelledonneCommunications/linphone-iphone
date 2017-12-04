@@ -18,7 +18,8 @@
  */
 
 #import <MobileCoreServices/UTCoreTypes.h>
-
+#import <AVFoundation/AVCaptureDevice.h>
+#import <AVFoundation/AVFoundation.h>
 #import "ImagePickerView.h"
 #import "PhoneMainView.h"
 
@@ -226,7 +227,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
 							block:^() {
-							  block(UIImagePickerControllerSourceTypeCamera);
+								if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] ==  AVAuthorizationStatusAuthorized ){
+									block(UIImagePickerControllerSourceTypeCamera);
+								}else{
+									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+								}
 							}];
 	}
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
