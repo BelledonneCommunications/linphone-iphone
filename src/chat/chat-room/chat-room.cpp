@@ -362,12 +362,12 @@ void ChatRoom::deleteHistory () {
 	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
 }
 
-int ChatRoom::getChatMessagesCount () {
-	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
+int ChatRoom::getChatMessageCount () {
+	return getCore()->getPrivate()->mainDb->getChatMessageCount(getChatRoomId());
 }
 
-int ChatRoom::getUnreadChatMessagesCount () {
-	return getCore()->getPrivate()->mainDb->getUnreadChatMessagesCount(getChatRoomId());
+int ChatRoom::getUnreadChatMessageCount () {
+	return getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
 }
 
 // -----------------------------------------------------------------------------
@@ -438,7 +438,7 @@ std::list<Address> ChatRoom::getComposingAddresses () const {
 void ChatRoom::markAsRead () {
 	L_D();
 
-	if (getUnreadChatMessagesCount() == 0)
+	if (getUnreadChatMessageCount() == 0)
 		return;
 
 	CorePrivate *dCore = getCore()->getPrivate();

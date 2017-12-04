@@ -176,11 +176,11 @@ void linphone_chat_room_mark_as_read (LinphoneChatRoom *cr) {
 }
 
 int linphone_chat_room_get_unread_messages_count (LinphoneChatRoom *cr) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getUnreadChatMessagesCount();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getUnreadChatMessageCount();
 }
 
 int linphone_chat_room_get_history_size (LinphoneChatRoom *cr) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatMessagesCount();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getChatMessageCount();
 }
 
 void linphone_chat_room_delete_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {

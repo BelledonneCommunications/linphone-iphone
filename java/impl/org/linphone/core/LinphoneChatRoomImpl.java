@@ -32,7 +32,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native Object[] getHistoryRange(long ptr, int begin, int end);
 	private native Object[] getHistory(long ptr, int limit);
 	private native void destroy(long ptr);
-	private native int getUnreadMessagesCount(long ptr);
+	private native int getUnreadMessageCount(long ptr);
 	private native int getHistorySize(long ptr);
 	private native void deleteHistory(long ptr);
 	private native void compose(long ptr);
@@ -101,9 +101,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 
-	public int getUnreadMessagesCount() {
+	public int getUnreadMessageCount() {
 		synchronized(getCore()){
-			return getUnreadMessagesCount(nativePtr);
+			return getUnreadMessageCount(nativePtr);
 		}
 	}
 

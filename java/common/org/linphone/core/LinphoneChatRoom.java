@@ -80,7 +80,7 @@ public interface LinphoneChatRoom {
 	 * Returns the amount of unread messages associated with the peer of this chatRoom.
 	 * @return the amount of unread messages
 	 */
-	int getUnreadMessagesCount();
+	int getUnreadMessageCount();
 
 	/**
 	 * Returns the amount of messages associated with the peer of this chatRoom.

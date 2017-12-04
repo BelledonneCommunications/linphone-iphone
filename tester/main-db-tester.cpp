@@ -73,19 +73,19 @@ static void open_database () {
 static void get_events_count () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(), 5175, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceCallFilter), 0, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceInfoFilter), 18, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::ConferenceChatMessageFilter), 5157, int, "%d");
-	BC_ASSERT_EQUAL(mainDb.getEventsCount(MainDb::NoFilter), 5175, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventCount(), 5175, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventCount(MainDb::ConferenceCallFilter), 0, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventCount(MainDb::ConferenceInfoFilter), 18, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventCount(MainDb::ConferenceChatMessageFilter), 5157, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getEventCount(MainDb::NoFilter), 5175, int, "%d");
 }
 
 static void get_messages_count () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
-	BC_ASSERT_EQUAL(mainDb.getChatMessagesCount(), 5157, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getChatMessageCount(), 5157, int, "%d");
 	BC_ASSERT_EQUAL(
-		mainDb.getChatMessagesCount(
+		mainDb.getChatMessageCount(
 			ChatRoomId(IdentityAddress("sip:test-3@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org"))
 		),
 		861, int, "%d"
@@ -95,9 +95,9 @@ static void get_messages_count () {
 static void get_unread_messages_count () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
-	BC_ASSERT_EQUAL(mainDb.getUnreadChatMessagesCount(), 2, int, "%d");
+	BC_ASSERT_EQUAL(mainDb.getUnreadChatMessageCount(), 2, int, "%d");
 	BC_ASSERT_EQUAL(
-		mainDb.getUnreadChatMessagesCount(
+		mainDb.getUnreadChatMessageCount(
 			ChatRoomId(IdentityAddress("sip:test-3@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org"))
 		),
 		0, int, "%d"

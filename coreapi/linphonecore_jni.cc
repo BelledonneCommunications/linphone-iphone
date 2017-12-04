@@ -4497,7 +4497,7 @@ extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getHistorySize		(JNI
 																				  ,jlong ptr) {
 	return (jint) linphone_chat_room_get_history_size((LinphoneChatRoom*)ptr);
 }
-extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getUnreadMessagesCount(JNIEnv*  env
+extern "C" jint Java_org_linphone_core_LinphoneChatRoomImpl_getUnreadMessageCount(JNIEnv*  env
 																				  ,jobject  thiz
 																				  ,jlong ptr) {
 	return (jint) linphone_chat_room_get_unread_messages_count((LinphoneChatRoom*)ptr);

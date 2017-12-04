@@ -60,7 +60,7 @@ public:
 	bool addEvent (const std::shared_ptr<EventLog> &eventLog);
 	bool updateEvent (const std::shared_ptr<EventLog> &eventLog);
 	static bool deleteEvent (const std::shared_ptr<const EventLog> &eventLog);
-	int getEventsCount (FilterMask mask = NoFilter) const;
+	int getEventCount (FilterMask mask = NoFilter) const;
 
 	static std::shared_ptr<EventLog> getEventFromKey (const MainDbKey &dbKey);
 
@@ -77,8 +77,8 @@ public:
 	// Conference chat message events.
 	// ---------------------------------------------------------------------------
 
-	int getChatMessagesCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	int getUnreadChatMessagesCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	int getChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 
