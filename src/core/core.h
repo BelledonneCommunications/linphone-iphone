@@ -49,6 +49,7 @@ class LINPHONE_PUBLIC Core : public Object {
 	friend class MainDb;
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
+	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
 
 public:
