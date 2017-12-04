@@ -469,7 +469,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// 2 - Fetch contents.
 		{
 			soci::session *session = dbSession.getBackendSession<soci::session>();
-			const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body FROM chat_message_content, content_type"
+			static const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body"
+				"  FROM chat_message_content, content_type"
 				"  WHERE event_id = :eventId AND content_type_id = content_type.id";
 			soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 			for (const auto &row : rows) {
@@ -1314,7 +1315,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return 0;
 		}
 
-		string query = "SELECT COUNT(*) FROM event" +
+		static string query = "SELECT COUNT(*) FROM event" +
 			buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter }, mask);
 		int count = 0;
 
@@ -1354,7 +1355,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return event;
 
 		// TODO: Improve. Deal with all events in the future.
-		static string query = "SELECT peer_sip_address.value, local_sip_address.value, type, event.creation_time"
+		static const string query = "SELECT peer_sip_address.value, local_sip_address.value, type, event.creation_time"
 			"  FROM event, conference_event, chat_room, sip_address AS peer_sip_address, sip_address as local_sip_address"
 			"  WHERE event.id = :eventId"
 			"  AND conference_event.event_id = event.id"
@@ -1639,8 +1640,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return chatMessages;
 		}
 
-		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
-		string query = "SELECT id, type, creation_time FROM event"
+		static const string query = "SELECT id, type, creation_time FROM event"
 			"  WHERE id IN ("
 			"    SELECT event_id FROM conference_event"
 			"    WHERE event_id IN (SELECT event_id FROM conference_chat_message_event WHERE imdn_message_id = :imdnMessageId)"
@@ -1657,6 +1657,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(imdnMessageId), soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
 			long long eventId = d->resolveId(row, 0);
@@ -1768,6 +1769,35 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return list<shared_ptr<EventLog>>();
 	}
 
+	int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const {
+		L_D();
+
+		if (!isConnected()) {
+			lWarning() << "Unable to get history size. Not connected.";
+			return 0;
+		}
+
+		int count = 0;
+
+		const string query = "SELECT COUNT(*) FROM event, conference_event"
+			"  WHERE chat_room_id = :chatRoomId"
+			"  AND event_id = event.id" +
+			buildSqlEventFilter({
+				ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+			}, mask, "AND");
+
+		L_BEGIN_LOG_EXCEPTION
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		*session << query, soci::into(count), soci::use(dbChatRoomId);
+
+		L_END_LOG_EXCEPTION
+
+		return count;
+	}
+
 	void MainDb::cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask) {
 		L_D();
 
@@ -1776,7 +1806,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return;
 		}
 
-		string query = "SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId" +
+		const string query = "SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId" +
 			buildSqlEventFilter({
 				ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
 			}, mask);
@@ -1852,7 +1882,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				list<shared_ptr<Participant>> participants;
 
 				const long long &dbChatRoomId = d->resolveId(row, 0);
-				string query = "SELECT sip_address.value, is_admin"
+				static const string query = "SELECT sip_address.value, is_admin"
 					"  FROM sip_address, chat_room, chat_room_participant"
 					"  WHERE chat_room.id = :chatRoomId"
 					"  AND sip_address.id = chat_room_participant.participant_sip_address_id"
@@ -2191,6 +2221,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 	list<shared_ptr<EventLog>> MainDb::getHistoryRange (const ChatRoomId &, int, int, FilterMask) const {
 		return list<shared_ptr<EventLog>>();
+	}
+
+	int getHistorySize (const ChatRoomId &, FilterMask) const {
+		return 0;
 	}
 
 	list<shared_ptr<ChatRoom>> MainDb::getChatRooms () const {

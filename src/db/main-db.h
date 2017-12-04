@@ -104,6 +104,9 @@ public:
 		int end,
 		FilterMask mask = NoFilter
 	) const;
+
+	int getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask = NoFilter) const;
+
 	void cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask = NoFilter);
 
 	// ---------------------------------------------------------------------------

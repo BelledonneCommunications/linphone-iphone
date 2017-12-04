@@ -203,6 +203,13 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_events (LinphoneCha
 LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr, int begin, int end);
 
 /**
+ * Gets the number of events in a chat room.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which size has to be computed
+ * @return the number of events.
+ */
+LINPHONE_PUBLIC int linphone_chat_room_get_history_events_size(LinphoneChatRoom *cr);
+
+/**
  * Gets the last chat message sent or received in this chat room
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which last message should be retrieved
  * @return the latest #LinphoneChatMessage

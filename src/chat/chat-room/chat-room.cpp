@@ -354,7 +354,7 @@ list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) {
 }
 
 int ChatRoom::getHistorySize () {
-	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
+	return getCore()->getPrivate()->mainDb->getHistorySize(getChatRoomId());
 }
 
 shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
@@ -363,6 +363,10 @@ shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
 
 void ChatRoom::deleteHistory () {
 	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
+}
+
+int ChatRoom::getChatMessagesCount () {
+	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
 }
 
 int ChatRoom::getUnreadChatMessagesCount () {

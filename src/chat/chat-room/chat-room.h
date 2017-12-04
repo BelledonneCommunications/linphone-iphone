@@ -68,6 +68,7 @@ public:
 
 	void deleteHistory ();
 
+	int getChatMessagesCount ();
 	int getUnreadChatMessagesCount ();
 
 	// TODO: Remove useless functions.
