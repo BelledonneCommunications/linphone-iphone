@@ -374,39 +374,10 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 	LinphoneCore *core = NULL;
 
 	linphone_core_cbs_set_user_data(cbs, listener);
-	linphone_core_cbs_set_transfer_state_changed(cbs, linphone_core_on_transfer_state_changed);
-	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_core_on_chat_room_state_changed);
-	linphone_core_cbs_set_friend_list_created(cbs, linphone_core_on_friend_list_created);
-	linphone_core_cbs_set_subscription_state_changed(cbs, linphone_core_on_subscription_state_changed);
-	linphone_core_cbs_set_call_log_updated(cbs, linphone_core_on_call_log_updated);
-	linphone_core_cbs_set_call_state_changed(cbs, linphone_core_on_call_state_changed);
-	linphone_core_cbs_set_authentication_requested(cbs, linphone_core_on_authentication_requested);
-	linphone_core_cbs_set_notify_presence_received_for_uri_or_tel(cbs, linphone_core_on_notify_presence_received_for_uri_or_tel);
-	linphone_core_cbs_set_buddy_info_updated(cbs, linphone_core_on_buddy_info_updated);
-	linphone_core_cbs_set_network_reachable(cbs, linphone_core_on_network_reachable);
-	linphone_core_cbs_set_notify_received(cbs, linphone_core_on_notify_received);
-	linphone_core_cbs_set_new_subscription_requested(cbs, linphone_core_on_new_subscription_requested);
-	linphone_core_cbs_set_registration_state_changed(cbs, linphone_core_on_registration_state_changed);
-	linphone_core_cbs_set_notify_presence_received(cbs, linphone_core_on_notify_presence_received);
-	linphone_core_cbs_set_ec_calibration_audio_init(cbs, linphone_core_on_ec_calibration_audio_init);
-	linphone_core_cbs_set_message_received(cbs, linphone_core_on_message_received);
-	linphone_core_cbs_set_ec_calibration_result(cbs, linphone_core_on_ec_calibration_result);
-	linphone_core_cbs_set_info_received(cbs, linphone_core_on_info_received);
-	linphone_core_cbs_set_call_stats_updated(cbs, linphone_core_on_call_stats_updated);
-	linphone_core_cbs_set_friend_list_removed(cbs, linphone_core_on_friend_list_removed);
-	linphone_core_cbs_set_refer_received(cbs, linphone_core_on_refer_received);
-	linphone_core_cbs_set_configuring_status(cbs, linphone_core_on_configuring_status);
-	linphone_core_cbs_set_call_created(cbs, linphone_core_on_call_created);
-	linphone_core_cbs_set_publish_state_changed(cbs, linphone_core_on_publish_state_changed);
-	linphone_core_cbs_set_call_encryption_changed(cbs, linphone_core_on_call_encryption_changed);
-	linphone_core_cbs_set_is_composing_received(cbs, linphone_core_on_is_composing_received);
-	linphone_core_cbs_set_message_received_unable_decrypt(cbs, linphone_core_on_message_received_unable_decrypt);
-	linphone_core_cbs_set_log_collection_upload_progress_indication(cbs, linphone_core_on_log_collection_upload_progress_indication);
-	linphone_core_cbs_set_version_update_check_result_received(cbs, linphone_core_on_version_update_check_result_received);
-	linphone_core_cbs_set_ec_calibration_audio_uninit(cbs, linphone_core_on_ec_calibration_audio_uninit);
-	linphone_core_cbs_set_global_state_changed(cbs, linphone_core_on_global_state_changed);
-	linphone_core_cbs_set_log_collection_upload_state_changed(cbs, linphone_core_on_log_collection_upload_state_changed);
-	linphone_core_cbs_set_dtmf_received(cbs, linphone_core_on_dtmf_received);
+
+	{{#coreListener}}
+	linphone_core_cbs_set_{{callback}}(cbs, {{callbackName}});
+	{{/coreListener}}
 
 	core = linphone_factory_create_core_2(linphone_factory_get(), cbs, config_path, factory_config_path, NULL, (void *)jcontext);
 

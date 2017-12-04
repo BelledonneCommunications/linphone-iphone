@@ -715,6 +715,7 @@ class Jni(object):
         self.methods = []
         self.jni_package = ''
         self.jni_path = ''
+        self.coreListener = []
         package_dirs = package.split('.')
         for directory in package_dirs:
             self.jni_package += directory + '_'
@@ -757,6 +758,9 @@ class Jni(object):
             }
             for callback in jniInterface.callbacks:
                 interface['callbacksList'].append(callback)
+                print obj['className']
+                if obj['className'] == 'Core':
+                    self.coreListener.append(callback)
             self.interfaces.append(interface)
 
     def add_callbacks(self, name, callbacks):
