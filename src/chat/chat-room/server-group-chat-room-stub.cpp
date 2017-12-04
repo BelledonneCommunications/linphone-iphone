@@ -122,7 +122,7 @@ shared_ptr<Participant> ServerGroupChatRoom::getMe () const {
 	return nullptr;
 }
 
-int ServerGroupChatRoom::getNbParticipants () const {
+int ServerGroupChatRoom::getParticipantCount () const {
 	return 0;
 }
 

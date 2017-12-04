@@ -83,7 +83,7 @@ shared_ptr<Participant> Conference::getMe () const {
 	return d->me;
 }
 
-int Conference::getNbParticipants () const {
+int Conference::getParticipantCount () const {
 	L_D();
 	return static_cast<int>(d->participants.size());
 }

@@ -287,7 +287,7 @@ LinphoneParticipant *linphone_chat_room_get_me (const LinphoneChatRoom *cr) {
 }
 
 int linphone_chat_room_get_nb_participants (const LinphoneChatRoom *cr) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getNbParticipants();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getParticipantCount();
 }
 
 bctbx_list_t *linphone_chat_room_get_participants (const LinphoneChatRoom *cr) {

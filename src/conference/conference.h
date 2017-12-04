@@ -54,7 +54,7 @@ public:
 	std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const override;
 	const IdentityAddress &getConferenceAddress () const override;
 	std::shared_ptr<Participant> getMe () const override;
-	int getNbParticipants () const override;
+	int getParticipantCount () const override;
 	const std::list<std::shared_ptr<Participant>> &getParticipants () const override;
 	const std::string &getSubject () const override;
 	void join () override;

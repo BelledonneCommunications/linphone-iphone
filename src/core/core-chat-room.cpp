@@ -135,7 +135,7 @@ shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
 	L_D();
 	for (const auto &chatRoom : d->chatRooms) {
 		if (
-			chatRoom->getNbParticipants() == 1 &&
+			chatRoom->getParticipantCount() == 1 &&
 			chatRoom->getLocalAddress() == localAddress &&
 			participantAddress == chatRoom->getParticipants().front()->getAddress()
 		)

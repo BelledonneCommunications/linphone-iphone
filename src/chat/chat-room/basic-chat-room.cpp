@@ -90,7 +90,7 @@ shared_ptr<Participant> BasicChatRoom::getMe () const {
 	return nullptr;
 }
 
-int BasicChatRoom::getNbParticipants () const {
+int BasicChatRoom::getParticipantCount () const {
 	return 1;
 }
 
