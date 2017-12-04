@@ -7,6 +7,9 @@
 -keep class {{package}}.{{classImplName}} {*;}
 {{/classes}}
 
+# Liblinphone tools
+-keep class org.linphone.core.tools.* {*;}
+
 # Mediastreamer classes
 -keep class org.linphone.mediastream.Factory {*;}
 -keep class org.linphone.mediastream.MediastreamerAndroidContext {*;}
