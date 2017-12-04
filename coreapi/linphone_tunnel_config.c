@@ -24,6 +24,9 @@
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 struct _LinphoneTunnelConfig {
 	belle_sip_object_t base;
 	char *host;

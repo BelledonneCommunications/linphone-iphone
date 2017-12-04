@@ -35,6 +35,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 typedef struct _CallLogStorageResult {
 	LinphoneCore *core;
 	bctbx_list_t *result;

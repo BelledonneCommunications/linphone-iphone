@@ -18,8 +18,11 @@
  */
 
 #include "c-wrapper/c-wrapper.h"
+#include "core/core.h"
 #include "conference/params/call-session-params-p.h"
 #include "conference/params/media-session-params-p.h"
+
+#include "linphone/call_params.h"
 
 // =============================================================================
 
@@ -502,7 +505,7 @@ LinphoneCallParams *linphone_call_params_new (LinphoneCore *core) {
 	LinphoneCallParams *params = _linphone_CallParams_init();
 	auto mediaSessionParams = new LinphonePrivate::MediaSessionParams();
 	L_SET_CPP_PTR_FROM_C_OBJECT(params, mediaSessionParams);
-	L_GET_CPP_PTR_FROM_C_OBJECT(params)->initDefault(core->cppCore);
+	L_GET_CPP_PTR_FROM_C_OBJECT(params)->initDefault(L_GET_CPP_PTR_FROM_C_OBJECT(core));
 	delete mediaSessionParams;
 	return params;
 }

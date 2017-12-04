@@ -54,22 +54,6 @@ using namespace LinphonePrivate;
 
 static void register_failure(SalOp *op);
 
-static bool_t already_a_call_with_remote_address(const LinphoneCore *lc, const LinphoneAddress *remote) {
-	bctbx_list_t *elem;
-	ms_message("Searching for already_a_call_with_remote_address.");
-
-	for(elem=lc->calls;elem!=NULL;elem=elem->next){
-		const LinphoneCall *call=(LinphoneCall*)elem->data;
-		const LinphoneAddress *cRemote=linphone_call_get_remote_address(call);
-		if (linphone_address_weak_equal(cRemote,remote)) {
-			ms_warning("already_a_call_with_remote_address found.");
-			return TRUE;
-		}
-	}
-	return FALSE;
-}
-
-
 static LinphoneCall * look_for_broken_call_to_replace(LinphonePrivate::SalOp *h, LinphoneCore *lc) {
 	const bctbx_list_t *calls = linphone_core_get_calls(lc);
 	const bctbx_list_t *it = calls;
@@ -128,7 +112,7 @@ static void call_received(SalCallOp *h) {
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
 		linphone_address_unref(toAddr);
 		linphone_address_unref(fromAddr);
-		shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
+		shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 			ChatRoomId(IdentityAddress(h->get_to()), IdentityAddress(h->get_to()))
 		);
 		if (chatRoom) {
@@ -169,7 +153,7 @@ static void call_received(SalCallOp *h) {
 		}
 	}
 
-	if (!linphone_core_can_we_add_call(lc)) { /* Busy */
+	if (!L_GET_PRIVATE_FROM_C_OBJECT(lc)->canWeAddCall()) { /* Busy */
 		h->decline(SalReasonBusy, nullptr);
 		LinphoneErrorInfo *ei = linphone_error_info_new();
 		linphone_error_info_set(ei, nullptr, LinphoneReasonBusy, 486, "Busy - too many calls", nullptr);
@@ -186,7 +170,7 @@ static void call_received(SalCallOp *h) {
 		fromAddressToSearchIfMe = linphone_address_new(pAssertedId);
 	else
 		ms_warning("Hidden from identity, don't know if it's me");
-	if (fromAddressToSearchIfMe && already_a_call_with_remote_address(lc, fromAddressToSearchIfMe)) {
+	if (fromAddressToSearchIfMe && L_GET_PRIVATE_FROM_C_OBJECT(lc)->isAlreadyInCallWithAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(fromAddressToSearchIfMe))) {
 		char *addr = linphone_address_as_string(fromAddr);
 		ms_warning("Receiving a call while one with same address [%s] is initiated, refusing this one with busy message", addr);
 		h->decline(SalReasonBusy, nullptr);
@@ -767,7 +751,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
-					shared_ptr<ChatRoom> chatRoom = lc->cppCore->findChatRoom(
+					shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 						ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
 					);
 					if (chatRoom) {
@@ -785,7 +769,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 				} else {
 					// The server asks a participant to leave a chat room
 					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
-						lc->cppCore->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to())))
+						L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to())))
 					);
 					if (cr) {
 						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->leave();
@@ -795,7 +779,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 				}
 			} else if (addr.hasParam("admin")) {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 					ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
 				));
 				if (cr) {
@@ -814,7 +798,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(lc->cppCore->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to()))));
+				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to()))));
 				if (!cr)
 					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
 				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();

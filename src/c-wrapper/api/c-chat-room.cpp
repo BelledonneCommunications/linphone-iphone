@@ -379,7 +379,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 	LinphonePrivate::IdentityAddress me(from);
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ClientGroupChatRoom>(
-		core->cppCore, L_C_TO_STRING(uri), me, L_C_TO_STRING(subject))
+		L_GET_CPP_PTR_FROM_C_OBJECT(core), L_C_TO_STRING(uri), me, L_C_TO_STRING(subject))
 	);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	return cr;
@@ -388,7 +388,7 @@ LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, cons
 LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, LinphonePrivate::SalCallOp *op) {
 	LinphoneChatRoom *cr = L_INIT(ChatRoom);
 	L_SET_CPP_PTR_FROM_C_OBJECT(cr, make_shared<LinphonePrivate::ServerGroupChatRoom>(
-		core->cppCore,
+		L_GET_CPP_PTR_FROM_C_OBJECT(core),
 		op
 	));
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);

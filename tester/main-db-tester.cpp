@@ -45,7 +45,7 @@ class MainDbProvider {
 public:
 	MainDbProvider () {
 		mCoreManager = linphone_core_manager_new("marie_rc");
-		mMainDb = new MainDb(mCoreManager->lc->cppCore->getSharedFromThis());
+		mMainDb = new MainDb(mCoreManager->lc->cppPtr->getSharedFromThis());
 		mMainDb->connect(MainDb::Sqlite3, getDatabasePath());
 	}
 

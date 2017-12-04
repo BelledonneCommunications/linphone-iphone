@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 static void linphone_content_set_sal_body_handler(LinphoneContent *content, SalBodyHandler *body_handler) {
 	if (content->body_handler != NULL) {
 		sal_body_handler_unref(content->body_handler);

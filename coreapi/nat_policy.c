@@ -21,6 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 static LinphoneNatPolicy * _linphone_nat_policy_new_with_ref(LinphoneCore *lc, const char *ref) {
 	LinphoneNatPolicy *policy = belle_sip_object_new(LinphoneNatPolicy);
 	policy->lc = lc;

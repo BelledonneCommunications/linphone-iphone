@@ -30,6 +30,19 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CorePrivate : public ObjectPrivate {
 public:
+	void init();
+	void uninit();
+
+	int addCall (const std::shared_ptr<Call> &call);
+	bool canWeAddCall () const;
+	bool hasCalls () const { return !calls.empty(); }
+	bool isAlreadyInCallWithAddress (const Address &addr) const;
+	void iterateCalls (time_t currentRealTime, bool oneSecondElapsed) const;
+	void notifySoundcardUsage (bool used);
+	int removeCall (const std::shared_ptr<Call> &call);
+	void setCurrentCall (const std::shared_ptr<Call> &call) { currentCall = call; }
+	void unsetVideoWindowId (bool preview, void *id);
+
 	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
 	std::shared_ptr<ChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);
@@ -38,6 +51,9 @@ public:
 	LinphoneCore *cCore = nullptr;
 
 private:
+	std::list<std::shared_ptr<Call>> calls;
+	std::shared_ptr<Call> currentCall;
+
 	std::list<std::shared_ptr<ChatRoom>> chatRooms;
 	std::unordered_map<ChatRoomId, std::shared_ptr<ChatRoom>> chatRoomsById;
 

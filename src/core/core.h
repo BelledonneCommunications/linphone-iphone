@@ -24,18 +24,23 @@
 
 #include "object/object.h"
 
+#include "linphone/types.h"
+
 // =============================================================================
 
 L_DECL_C_STRUCT(LinphoneCore);
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Address;
+class Call;
 class ChatRoom;
 class ChatRoomId;
 class CorePrivate;
 class IdentityAddress;
 
 class LINPHONE_PUBLIC Core : public Object {
+	friend class CallPrivate;
 	friend class ChatMessagePrivate;
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;
@@ -62,6 +67,19 @@ public:
 	LinphoneCore *getCCore () const;
 
 	// ---------------------------------------------------------------------------
+	// Call.
+	// ---------------------------------------------------------------------------
+
+	bool areSoundResourcesLocked () const;
+	std::shared_ptr<Call> getCallByRemoteAddress (const Address &addr) const;
+	const std::list<std::shared_ptr<Call>> &getCalls () const;
+	unsigned int getCallsNb () const;
+	std::shared_ptr<Call> getCurrentCall () const;
+	LinphoneStatus pauseAllCalls ();
+	void soundcardHintCheck ();
+	LinphoneStatus terminateAllCalls ();
+
+	// ---------------------------------------------------------------------------
 	// ChatRoom.
 	// ---------------------------------------------------------------------------
 
@@ -73,7 +91,7 @@ public:
 	std::shared_ptr<ChatRoom> findOneToOneChatRoom (
 		const IdentityAddress &localAddress,
 		const IdentityAddress &participantAddress
-	);
+	) const;
 
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
 	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject, const IdentityAddress &localAddress);

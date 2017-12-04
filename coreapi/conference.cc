@@ -36,6 +36,9 @@
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 using namespace std;
 
 namespace Linphone {
@@ -535,6 +538,7 @@ int LocalConference::remoteParticipantsCount() {
 
 int LocalConference::convertConferenceToCall(){
 	int err=0;
+#if 0
 	bctbx_list_t *calls=m_core->calls;
 
 	if (remoteParticipantsCount()!=1){
@@ -551,6 +555,7 @@ int LocalConference::convertConferenceToCall(){
 			break;
 		}
 	}
+#endif
 	return err;
 }
 
@@ -583,6 +588,7 @@ int LocalConference::removeParticipant(const LinphoneAddress *uri) {
 }
 
 int LocalConference::terminate() {
+#if 0
 	bctbx_list_t *calls=m_core->calls;
 	m_terminating =TRUE;
 
@@ -596,11 +602,12 @@ int LocalConference::terminate() {
 
 	Conference::terminate();
 	m_terminating = FALSE;
-
+#endif
 	return 0;
 }
 
 int LocalConference::enter() {
+#if 0
 	if (linphone_core_sound_resources_locked(m_core)) {
 		return -1;
 	}
@@ -608,6 +615,7 @@ int LocalConference::enter() {
 		_linphone_call_pause(m_core->current_call);
 	}
 	if (m_localParticipantStream==NULL) addLocalEndpoint();
+#endif
 	return 0;
 }
 

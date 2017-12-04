@@ -2541,7 +2541,7 @@ static void call_with_privacy(void) {
 
 		BC_ASSERT_EQUAL(linphone_call_params_get_privacy(linphone_call_get_current_params(c2)),LinphonePrivacyId, int, "%d");
 	}
-
+	liblinphone_tester_check_rtcp(pauline, marie);
 	end_call(pauline, marie);
 
 	/*test proxy config privacy*/

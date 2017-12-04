@@ -21,6 +21,7 @@
 #include "call-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/media-session-p.h"
+#include "core/core-p.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -101,28 +102,25 @@ void CallPrivate::onCallSetReleased () {
 
 void CallPrivate::onCallSetTerminated () {
 	L_Q();
-	LinphoneCall *lcall = L_GET_C_BACK_PTR(q);
 	LinphoneCore *core = q->getCore()->getCCore();
-	if (lcall) {
-		if (lcall == core->current_call) {
-			lInfo() << "Resetting the current call";
-			core->current_call = nullptr;
-		}
-		if (linphone_core_del_call(core, lcall) != 0)
-			lError() << "Could not remove the call from the list!!!";
-		#if 0
-			if (core->conf_ctx)
-				linphone_conference_on_call_terminating(core->conf_ctx, lcall);
-			if (lcall->ringing_beep) {
-				linphone_core_stop_dtmf(core);
-				lcall->ringing_beep = false;
-			}
-			if (lcall->chat_room)
-				linphone_chat_room_set_call(lcall->chat_room, nullptr);
-		#endif // if 0
-		if (!core->calls)
-			ms_bandwidth_controller_reset_state(core->bw_controller);
+	if (q->getSharedFromThis() == q->getCore()->getCurrentCall()) {
+		lInfo() << "Resetting the current call";
+		q->getCore()->getPrivate()->setCurrentCall(nullptr);
 	}
+	if (q->getCore()->getPrivate()->removeCall(q->getSharedFromThis()) != 0)
+		lError() << "Could not remove the call from the list!!!";
+#if 0
+	if (core->conf_ctx)
+		linphone_conference_on_call_terminating(core->conf_ctx, lcall);
+	if (lcall->ringing_beep) {
+		linphone_core_stop_dtmf(core);
+		lcall->ringing_beep = false;
+	}
+	if (lcall->chat_room)
+		linphone_chat_room_set_call(lcall->chat_room, nullptr);
+#endif // if 0
+	if (!q->getCore()->getPrivate()->hasCalls())
+		ms_bandwidth_controller_reset_state(core->bw_controller);
 }
 
 void CallPrivate::onCallStateChanged (LinphoneCallState state, const string &message) {
@@ -161,7 +159,7 @@ void CallPrivate::onIncomingCallStarted () {
 void CallPrivate::onIncomingCallToBeAdded () {
 	L_Q();
 	/* The call is acceptable so we can now add it to our list */
-	linphone_core_add_call(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
+	q->getCore()->getPrivate()->addCall(q->getSharedFromThis());
 }
 
 void CallPrivate::onInfoReceived (const LinphoneInfoMessage *im) {
@@ -181,12 +179,12 @@ void CallPrivate::onStatsUpdated (const LinphoneCallStats *stats) {
 
 void CallPrivate::onResetCurrentCall () {
 	L_Q();
-	q->getCore()->getCCore()->current_call = nullptr;
+	q->getCore()->getPrivate()->setCurrentCall(nullptr);
 }
 
 void CallPrivate::onSetCurrentCall () {
 	L_Q();
-	q->getCore()->getCCore()->current_call = L_GET_C_BACK_PTR(q);
+	q->getCore()->getPrivate()->setCurrentCall(q->getSharedFromThis());
 }
 
 void CallPrivate::onFirstVideoFrameDecoded () {

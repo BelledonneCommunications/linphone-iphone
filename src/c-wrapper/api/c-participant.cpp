@@ -19,6 +19,7 @@
 
 #include "linphone/api/c-participant.h"
 
+#include "address/address.h"
 #include "c-wrapper/c-wrapper.h"
 #include "conference/participant.h"
 

@@ -17,6 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "linphone/utils/utils.h"
+
+#include "address.h"
+#include "identity-address-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "identity-address-p.h"
 #include "logger/logger.h"

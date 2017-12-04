@@ -465,7 +465,7 @@ public:
 	string confSubject;
 };
 
-ConferenceEventTester::ConferenceEventTester (LinphoneCore *core, const Address &confAddr) : RemoteConference(core->cppCore, confAddr) {
+ConferenceEventTester::ConferenceEventTester (LinphoneCore *core, const Address &confAddr) : RemoteConference(core->cppPtr, confAddr) {
 	handler = new RemoteConferenceEventHandler(this);
 }
 
@@ -806,7 +806,7 @@ void send_first_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -851,7 +851,7 @@ void send_added_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -912,7 +912,7 @@ void send_removed_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -965,7 +965,7 @@ void send_admined_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -1017,7 +1017,7 @@ void send_unadmined_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -1070,7 +1070,7 @@ void send_subject_changed_notify () {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -1130,7 +1130,7 @@ void send_device_added_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);
@@ -1182,7 +1182,7 @@ void send_device_removed_notify() {
 	Address addr(identityStr);
 	bctbx_free(identityStr);
 	ConferenceEventTester tester(marie->lc, addr);
-	LocalConference localConf(pauline->lc->cppCore, addr);
+	LocalConference localConf(pauline->lc->cppPtr, addr);
 	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
 	char *bobAddrStr = linphone_address_as_string(cBobAddr);
 	Address bobAddr(bobAddrStr);

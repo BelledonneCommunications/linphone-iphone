@@ -38,6 +38,7 @@ list(APPEND LINPHONE_PRIVATE_HEADER_FILES
 	carddav.h
 	conference_private.h
 	contact_providers_priv.h
+	core_private.h
 	enum.h
 	lime.h
 	lpc2xml.h

@@ -28,6 +28,9 @@
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
 

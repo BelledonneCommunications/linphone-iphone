@@ -1140,11 +1140,11 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 	shared_ptr<LinphonePrivate::Call> call;
 	string confType = lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_type", "local");
 	if (confType == "remote") {
-		call = make_shared<LinphonePrivate::RemoteConferenceCall>(lc->cppCore, LinphoneCallOutgoing,
+		call = make_shared<LinphonePrivate::RemoteConferenceCall>(L_GET_CPP_PTR_FROM_C_OBJECT(lc), LinphoneCallOutgoing,
 			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 			cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params));
 	} else {
-		call = make_shared<LinphonePrivate::LocalConferenceCall>(lc->cppCore, LinphoneCallOutgoing,
+		call = make_shared<LinphonePrivate::LocalConferenceCall>(L_GET_CPP_PTR_FROM_C_OBJECT(lc), LinphoneCallOutgoing,
 			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 			cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params));
 	}
@@ -1161,11 +1161,11 @@ LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddres
 	shared_ptr<LinphonePrivate::Call> call;
 	string confType = lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_type", "local");
 	if (confType == "remote") {
-		call = make_shared<LinphonePrivate::RemoteConferenceCall>(lc->cppCore, LinphoneCallIncoming,
+		call = make_shared<LinphonePrivate::RemoteConferenceCall>(L_GET_CPP_PTR_FROM_C_OBJECT(lc), LinphoneCallIncoming,
 			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 			nullptr, op, nullptr);
 	} else {
-		call = make_shared<LinphonePrivate::LocalConferenceCall>(lc->cppCore, LinphoneCallIncoming,
+		call = make_shared<LinphonePrivate::LocalConferenceCall>(L_GET_CPP_PTR_FROM_C_OBJECT(lc), LinphoneCallIncoming,
 			*L_GET_CPP_PTR_FROM_C_OBJECT(from), *L_GET_CPP_PTR_FROM_C_OBJECT(to),
 			nullptr, op, nullptr);
 	}

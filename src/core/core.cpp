@@ -17,12 +17,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <mediastreamer2/mscommon.h>
+
+#include "call/call.h"
 #include "core-p.h"
 #include "logger/logger.h"
 #include "paths/paths.h"
 
 // TODO: Remove me later.
 #include "c-wrapper/c-wrapper.h"
+#include "private.h"
 
 #define LINPHONE_DB "linphone.db"
 
@@ -31,6 +35,40 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+void CorePrivate::init () {
+	L_Q();
+	mainDb.reset(new MainDb(q->getSharedFromThis()));
+
+	AbstractDb::Backend backend;
+	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(L_GET_C_BACK_PTR(q)), "storage", "uri", nullptr));
+	if (!uri.empty())
+		backend = strcmp(lp_config_get_string(linphone_core_get_config(L_GET_C_BACK_PTR(q)), "storage", "backend", nullptr), "mysql") == 0
+			? MainDb::Mysql
+			: MainDb::Sqlite3;
+	else {
+		backend = AbstractDb::Sqlite3;
+		uri = q->getDataPath() + LINPHONE_DB;
+	}
+
+	lInfo() << "Opening " LINPHONE_DB " at: " << uri;
+	if (!mainDb->connect(backend, uri))
+		lFatal() << "Unable to open linphone database.";
+
+	for (auto &chatRoom : mainDb->getChatRooms())
+		insertChatRoom(chatRoom);
+}
+
+void CorePrivate::uninit () {
+	L_Q();
+	while (!calls.empty()) {
+		calls.front()->terminate();
+		linphone_core_iterate(L_GET_C_BACK_PTR(q));
+		ms_usleep(10000);
+	}
+}
+
+// =============================================================================
 
 Core::Core () : Object(*new CorePrivate) {}
 
@@ -41,36 +79,12 @@ Core::~Core () {
 shared_ptr<Core> Core::create (LinphoneCore *cCore) {
 	// Do not use `make_shared` => Private constructor.
 	shared_ptr<Core> core = shared_ptr<Core>(new Core);
-
-	CorePrivate *const d = core->getPrivate();
-
-	d->cCore = cCore;
-	d->mainDb.reset(new MainDb(core->getSharedFromThis()));
-
-	AbstractDb::Backend backend;
-	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "uri", nullptr));
-	if (!uri.empty())
-		backend = strcmp(lp_config_get_string(linphone_core_get_config(d->cCore), "storage", "backend", nullptr), "mysql") == 0
-			? MainDb::Mysql
-			: MainDb::Sqlite3;
-	else {
-		backend = AbstractDb::Sqlite3;
-		uri = core->getDataPath() + LINPHONE_DB;
-	}
-
-	lInfo() << "Opening " LINPHONE_DB " at: " << uri;
-	if (!d->mainDb->connect(backend, uri))
-		lFatal() << "Unable to open linphone database.";
-
-	for (auto &chatRoom : d->mainDb->getChatRooms())
-		d->insertChatRoom(chatRoom);
-
+	L_SET_CPP_PTR_FROM_C_OBJECT(cCore, core);
 	return core;
 }
 
 LinphoneCore *Core::getCCore () const {
-	L_D();
-	return d->cCore;
+	return L_GET_C_BACK_PTR(this);
 }
 
 // -----------------------------------------------------------------------------
@@ -78,13 +92,11 @@ LinphoneCore *Core::getCCore () const {
 // -----------------------------------------------------------------------------
 
 string Core::getDataPath() const {
-	L_D();
-	return Paths::getPath(Paths::Data, static_cast<PlatformHelpers *>(d->cCore->platform_helper));
+	return Paths::getPath(Paths::Data, static_cast<PlatformHelpers *>(L_GET_C_BACK_PTR(this)->platform_helper));
 }
 
 string Core::getConfigPath() const {
-	L_D();
-	return Paths::getPath(Paths::Config, static_cast<PlatformHelpers *>(d->cCore->platform_helper));
+	return Paths::getPath(Paths::Config, static_cast<PlatformHelpers *>(L_GET_C_BACK_PTR(this)->platform_helper));
 }
 
 LINPHONE_END_NAMESPACE

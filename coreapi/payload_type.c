@@ -25,6 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "c-wrapper/c-wrapper.h"
 #include "utils/payload-type-handler.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 struct _LinphonePayloadType {
 	belle_sip_object_t base;
 	OrtpPayloadType *pt;

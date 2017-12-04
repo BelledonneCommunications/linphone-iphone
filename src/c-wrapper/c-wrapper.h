@@ -25,7 +25,7 @@
 #include "internal/c-tools.h"
 
 // TODO: From coreapi. Remove me later.
-#include "private.h"
+#include "private_functions.h"
 
 // =============================================================================
 // Declare exported C types.
@@ -36,12 +36,15 @@
 	F(Call, Call) \
 	F(ChatMessage, ChatMessage) \
 	F(ChatRoom, ChatRoom) \
+	F(Core, Core) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
 	F(MediaSessionParams, CallParams) \
 	F(Participant, Participant)
 
 #define L_REGISTER_SUBTYPES(F) \
+	F(Call, LocalConferenceCall) \
+	F(Call, RemoteConferenceCall) \
 	F(ChatRoom, BasicChatRoom) \
 	F(ChatRoom, ClientGroupChatRoom) \
 	F(ChatRoom, RealTimeTextChatRoom) \
@@ -78,7 +81,6 @@ BELLE_SIP_TYPE_ID(LinphoneConfig),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneContent),
-BELLE_SIP_TYPE_ID(LinphoneCore),
 BELLE_SIP_TYPE_ID(LinphoneCoreCbs),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneEvent),

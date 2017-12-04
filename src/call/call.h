@@ -35,9 +35,12 @@ class MediaSessionPrivate;
 
 class Call : public Object, public CoreAccessor {
 	friend class CallSessionPrivate;
+	friend class CorePrivate;
 	friend class MediaSessionPrivate;
 
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(Call);
+
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);

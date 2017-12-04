@@ -23,6 +23,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 using namespace LinphonePrivate;
 
 const char * linphone_subscription_dir_to_string(LinphoneSubscriptionDir dir){

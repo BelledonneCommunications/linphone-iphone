@@ -3210,7 +3210,7 @@ void MediaSessionPrivate::updateStreams (SalMediaDescription *newMd, LinphoneCal
 	if (getParams()->earlyMediaSendingEnabled() && (state == LinphoneCallOutgoingEarlyMedia))
 		prepareEarlyMediaForking();
 	startStreams(targetState);
-	if ((state == LinphoneCallPausing) && pausedByApp && (bctbx_list_size(q->getCore()->getCCore()->calls) == 1))
+	if ((state == LinphoneCallPausing) && pausedByApp && (q->getCore()->getCallsNb() == 1))
 		linphone_core_play_named_tone(q->getCore()->getCCore(), LinphoneToneCallOnHold);
 	updateFrozenPayloads(newMd);
 

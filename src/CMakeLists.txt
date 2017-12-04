@@ -159,6 +159,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-chat-message.cpp
 	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-chat-room.cpp
+	c-wrapper/api/c-core.cpp
 	c-wrapper/api/c-dial-plan.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
@@ -202,6 +203,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/file-content.cpp
 	content/file-transfer-content.cpp
 	core/core-accessor.cpp
+	core/core-call.cpp
 	core/core-chat-room.cpp
 	core/core.cpp
 	core/paths/paths.cpp

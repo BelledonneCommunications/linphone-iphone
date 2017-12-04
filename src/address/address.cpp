@@ -22,6 +22,7 @@
 #include "address-p.h"
 #include "address/identity-address.h"
 #include "c-wrapper/c-wrapper.h"
+#include "c-wrapper/internal/c-sal.h"
 #include "logger/logger.h"
 
 // =============================================================================

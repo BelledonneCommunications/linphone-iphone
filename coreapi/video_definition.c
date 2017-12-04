@@ -22,6 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 static void linphone_video_definition_destroy(LinphoneVideoDefinition *vdef) {
 	if (vdef->name) bctbx_free(vdef->name);
 }

@@ -42,6 +42,9 @@
 
 #include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
 using namespace std;
 
 using namespace LinphonePrivate;

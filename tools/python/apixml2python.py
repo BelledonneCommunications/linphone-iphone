@@ -52,7 +52,6 @@ blacklisted_functions = [
 	'linphone_config_load_dict_to_section',	# missing LinphoneDictionary
 	'linphone_config_section_to_dict',	# missing LinphoneDictionary
 	'linphone_core_add_listener',
-	'linphone_core_can_we_add_call',	# private function
 	'linphone_core_enable_log_collection',	# need to handle class properties
 	'linphone_core_enable_logs',	# unhandled argument type FILE
 	'linphone_core_enable_logs_with_cb',	# callback function in parameter

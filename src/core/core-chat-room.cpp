@@ -131,7 +131,7 @@ list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddre
 shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
 	const IdentityAddress &localAddress,
 	const IdentityAddress &participantAddress
-) {
+) const {
 	L_D();
 	for (const auto &chatRoom : d->chatRooms) {
 		if (
