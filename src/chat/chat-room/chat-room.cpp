@@ -92,37 +92,6 @@ shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Directi
 	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
 }
 
-// -----------------------------------------------------------------------------
-
-const ChatRoomId &ChatRoom::getChatRoomId () const {
-	L_D();
-	return d->chatRoomId;
-}
-
-const IdentityAddress &ChatRoom::getPeerAddress () const {
-	L_D();
-	return d->chatRoomId.getPeerAddress();
-}
-
-const IdentityAddress &ChatRoom::getLocalAddress () const {
-	L_D();
-	return d->chatRoomId.getLocalAddress();
-}
-
-// -----------------------------------------------------------------------------
-
-time_t ChatRoom::getCreationTime () const {
-	L_D();
-	return d->creationTime;
-}
-
-time_t ChatRoom::getLastUpdateTime () const {
-	L_D();
-	return d->lastUpdateTime;
-}
-
-// -----------------------------------------------------------------------------
-
 list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &messageId) const {
 	L_Q();
 	return q->getCore()->getPrivate()->mainDb->findChatMessages(q->getChatRoomId(), messageId);
@@ -167,8 +136,6 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	shared_ptr<ChatMessage> msg;
 
 	shared_ptr<Core> core = q->getCore();
-	if (!core)
-		return reason;
 	LinphoneCore *cCore = core->getCCore();
 
 	msg = createChatMessage(
@@ -349,6 +316,61 @@ ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const Chat
 
 // -----------------------------------------------------------------------------
 
+const ChatRoomId &ChatRoom::getChatRoomId () const {
+	L_D();
+	return d->chatRoomId;
+}
+
+const IdentityAddress &ChatRoom::getPeerAddress () const {
+	L_D();
+	return d->chatRoomId.getPeerAddress();
+}
+
+const IdentityAddress &ChatRoom::getLocalAddress () const {
+	L_D();
+	return d->chatRoomId.getLocalAddress();
+}
+
+// -----------------------------------------------------------------------------
+
+time_t ChatRoom::getCreationTime () const {
+	L_D();
+	return d->creationTime;
+}
+
+time_t ChatRoom::getLastUpdateTime () const {
+	L_D();
+	return d->lastUpdateTime;
+}
+
+// -----------------------------------------------------------------------------
+
+list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) {
+	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast);
+}
+
+list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) {
+	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end);
+}
+
+int ChatRoom::getHistorySize () {
+	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
+}
+
+shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
+	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
+}
+
+void ChatRoom::deleteHistory () {
+	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
+}
+
+int ChatRoom::getUnreadChatMessagesCount () {
+	return getCore()->getPrivate()->mainDb->getUnreadChatMessagesCount(getChatRoomId());
+}
+
+// -----------------------------------------------------------------------------
+
 void ChatRoom::compose () {
 	L_D();
 	if (!d->isComposing) {
@@ -379,10 +401,6 @@ shared_ptr<ChatMessage> ChatRoom::createMessage () {
 	return d->createChatMessage(ChatMessage::Direction::Outgoing);
 }
 
-void ChatRoom::deleteHistory () {
-	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
-}
-
 shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
 	L_D();
 	shared_ptr<ChatMessage> cm = nullptr;
@@ -404,26 +422,6 @@ shared_ptr<ChatMessage> ChatRoom::findMessageWithDirection (const string &messag
 		}
 	}
 	return ret;
-}
-
-list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) {
-	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast);
-}
-
-list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) {
-	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end);
-}
-
-int ChatRoom::getHistorySize () {
-	return getCore()->getPrivate()->mainDb->getChatMessagesCount(getChatRoomId());
-}
-
-shared_ptr<ChatMessage> ChatRoom::getLastMessageInHistory() const {
-	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
-}
-
-int ChatRoom::getUnreadChatMessagesCount () {
-	return getCore()->getPrivate()->mainDb->getUnreadChatMessagesCount(getChatRoomId());
 }
 
 bool ChatRoom::isRemoteComposing () const {

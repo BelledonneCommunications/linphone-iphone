@@ -101,7 +101,7 @@ public:
 	const std::string &getUriParamValue (const std::string &uriParamName) const;
 	bool setUriParam (const std::string &uriParamName, const std::string &uriParamValue = "");
 	bool setUriParams (const std::string &uriParams);
-	bool removeUriParam(const std::string &uriParamName);
+	bool removeUriParam (const std::string &uriParamName);
 
 private:
 	L_DECLARE_PRIVATE(Address);

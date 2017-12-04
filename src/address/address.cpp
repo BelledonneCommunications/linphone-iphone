@@ -20,9 +20,9 @@
 #include "linphone/utils/utils.h"
 
 #include "address-p.h"
+#include "address/identity-address.h"
 #include "c-wrapper/c-wrapper.h"
 #include "logger/logger.h"
-#include "address/identity-address.h"
 
 // =============================================================================
 
@@ -403,7 +403,7 @@ bool Address::setUriParams (const string &uriParams) {
 	return true;
 }
 
-bool Address::removeUriParam(const string &uriParamName) {
+bool Address::removeUriParam (const string &uriParamName) {
 	L_D();
 
 	if (!d->internalAddress)

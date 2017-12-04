@@ -64,17 +64,19 @@ public:
 	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end);
 	int getHistorySize ();
 
-	std::shared_ptr<ChatMessage> getLastMessageInHistory () const;
+	std::shared_ptr<ChatMessage> getLastChatMessageInHistory () const;
+
+	void deleteHistory ();
+
+	int getUnreadChatMessagesCount ();
 
 	// TODO: Remove useless functions.
 	void compose ();
 	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);
 	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
 	std::shared_ptr<ChatMessage> createMessage ();
-	void deleteHistory ();
 	std::shared_ptr<ChatMessage> findMessage (const std::string &messageId);
 	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
-	int getUnreadChatMessagesCount ();
 	bool isRemoteComposing () const;
 	std::list<Address> getComposingAddresses () const;
 

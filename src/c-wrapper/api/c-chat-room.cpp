@@ -217,7 +217,7 @@ bctbx_list_t *linphone_chat_room_get_history_range_events (LinphoneChatRoom *cr,
 }
 
 LinphoneChatMessage *linphone_chat_room_get_last_message_in_history(LinphoneChatRoom *cr) {
-	shared_ptr<LinphonePrivate::ChatMessage> cppPtr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getLastMessageInHistory();
+	shared_ptr<LinphonePrivate::ChatMessage> cppPtr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getLastChatMessageInHistory();
 	if (!cppPtr)
 		return nullptr;
 
