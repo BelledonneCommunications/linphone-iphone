@@ -21,7 +21,6 @@
 
 #include "linphone/utils/utils.h"
 
-#include "chat/chat-room/chat-room-id.h"
 #include "conference/local-conference.h"
 #include "conference/participant-p.h"
 #include "content/content-manager.h"
@@ -397,41 +396,95 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 		device->setConferenceSubscribeEvent(nullptr);
 }
 
-void LocalConferenceEventHandler::notifyParticipantAdded (const Address &addr) {
+shared_ptr<ConferenceParticipantEvent> LocalConferenceEventHandler::notifyParticipantAdded (const Address &addr) {
 	L_D();
 	shared_ptr<Participant> participant = d->conf->findParticipant(addr);
 	d->notifyAllExcept(d->createNotifyParticipantAdded(addr), participant);
+	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
+		EventLog::Type::ConferenceParticipantAdded,
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		addr
+	);
+	return event;
 }
 
-void LocalConferenceEventHandler::notifyParticipantRemoved (const Address &addr) {
+shared_ptr<ConferenceParticipantEvent> LocalConferenceEventHandler::notifyParticipantRemoved (const Address &addr) {
 	L_D();
 	shared_ptr<Participant> participant = d->conf->findParticipant(addr);
 	d->notifyAllExcept(d->createNotifyParticipantRemoved(addr), participant);
+	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
+		EventLog::Type::ConferenceParticipantRemoved,
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		addr
+	);
+	return event;
 }
 
-void LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr, bool isAdmin) {
+shared_ptr<ConferenceParticipantEvent> LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr, bool isAdmin) {
 	L_D();
 	d->notifyAll(d->createNotifyParticipantAdmined(addr, isAdmin));
+	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
+		isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		addr
+	);
+	return event;
 }
 
-void LocalConferenceEventHandler::notifySubjectChanged () {
+shared_ptr<ConferenceSubjectEvent> LocalConferenceEventHandler::notifySubjectChanged () {
 	L_D();
 	d->notifyAll(d->createNotifySubjectChanged());
+	shared_ptr<ConferenceSubjectEvent> event = make_shared<ConferenceSubjectEvent>(
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		d->conf->getSubject()
+	);
+	return event;
 }
 
-void LocalConferenceEventHandler::notifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
+shared_ptr<ConferenceParticipantDeviceEvent> LocalConferenceEventHandler::notifyParticipantDeviceAdded (const Address &addr, const Address &gruu) {
 	L_D();
 	d->notifyAll(d->createNotifyParticipantDeviceAdded(addr, gruu));
+	shared_ptr<ConferenceParticipantDeviceEvent> event = make_shared<ConferenceParticipantDeviceEvent>(
+		EventLog::Type::ConferenceParticipantDeviceAdded,
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		addr,
+		gruu
+	);
+	return event;
 }
 
-void LocalConferenceEventHandler::notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
+shared_ptr<ConferenceParticipantDeviceEvent> LocalConferenceEventHandler::notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu) {
 	L_D();
 	d->notifyAll(d->createNotifyParticipantDeviceRemoved(addr, gruu));
+	shared_ptr<ConferenceParticipantDeviceEvent> event = make_shared<ConferenceParticipantDeviceEvent>(
+		EventLog::Type::ConferenceParticipantDeviceRemoved,
+		time(nullptr),
+		d->chatRoomId,
+		d->lastNotify,
+		addr,
+		gruu
+	);
+	return event;
 }
 
 void LocalConferenceEventHandler::setLastNotify (unsigned int lastNotify) {
 	L_D();
 	d->lastNotify = lastNotify;
+}
+
+void LocalConferenceEventHandler::setChatRoomId (const ChatRoomId &chatRoomId) {
+	L_D();
+	d->chatRoomId = chatRoomId;
 }
 
 LINPHONE_END_NAMESPACE

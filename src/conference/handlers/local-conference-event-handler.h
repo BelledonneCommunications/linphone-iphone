@@ -20,6 +20,8 @@
 #ifndef _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 #define _LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
+#include <memory>
+
 #include "linphone/types.h"
 
 #include "address/address.h"
@@ -30,6 +32,10 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ChatRoomId;
+class ConferenceParticipantDeviceEvent;
+class ConferenceParticipantEvent;
+class ConferenceSubjectEvent;
 class LocalConference;
 class LocalConferenceEventHandlerPrivate;
 
@@ -39,14 +45,15 @@ public:
 	~LocalConferenceEventHandler ();
 
 	void subscribeReceived (LinphoneEvent *lev);
-	void notifyParticipantAdded (const Address &addr);
-	void notifyParticipantRemoved (const Address &addr);
-	void notifyParticipantSetAdmin (const Address &addr, bool isAdmin);
-	void notifySubjectChanged ();
-	void notifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
-	void notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
-	
+	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantAdded (const Address &addr);
+	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantRemoved (const Address &addr);
+	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantSetAdmin (const Address &addr, bool isAdmin);
+	std::shared_ptr<ConferenceSubjectEvent> notifySubjectChanged ();
+	std::shared_ptr<ConferenceParticipantDeviceEvent> notifyParticipantDeviceAdded (const Address &addr, const Address &gruu);
+	std::shared_ptr<ConferenceParticipantDeviceEvent> notifyParticipantDeviceRemoved (const Address &addr, const Address &gruu);
+
 	void setLastNotify (unsigned int lastNotify);
+	void setChatRoomId (const ChatRoomId &chatRoomId);
 
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);

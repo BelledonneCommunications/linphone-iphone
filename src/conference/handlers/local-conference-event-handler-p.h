@@ -22,6 +22,7 @@
 
 #include <string>
 
+#include "chat/chat-room/chat-room-id.h"
 #include "local-conference-event-handler.h"
 #include "object/object-p.h"
 #include "xml/conference-info.h"
@@ -48,6 +49,8 @@ public:
 	inline unsigned int getLastNotify () const { return lastNotify; };
 
 private:
+	ChatRoomId chatRoomId;
+
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 0;
 
