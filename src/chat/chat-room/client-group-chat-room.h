@@ -45,8 +45,7 @@ public:
 		std::shared_ptr<Participant> &me,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
-		unsigned int lastNotifyId,
-		bool hasBeenLeft
+		unsigned int lastNotifyId
 	);
 
 	std::shared_ptr<Core> getCore () const;

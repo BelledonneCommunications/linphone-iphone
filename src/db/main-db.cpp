@@ -1906,17 +1906,22 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					continue;
 				}
 
-				if (!linphone_core_conference_server_enabled(core->getCCore()))
+				if (!linphone_core_conference_server_enabled(core->getCCore())) {
+					bool hasBeenLeft = !!row.get<int>(8, 0);
 					chatRoom = make_shared<ClientGroupChatRoom>(
 						core,
 						chatRoomId.getPeerAddress(),
 						me,
 						subject,
 						move(participants),
-						lastNotifyId,
-						!!row.get<int>(8, 0)
+						lastNotifyId
 					);
-				else
+					chatRoom->getPrivate()->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+					chatRoom->getPrivate()->setState(hasBeenLeft
+						? ChatRoom::State::Terminated
+						: ChatRoom::State::Created
+					);
+				} else {
 					chatRoom = make_shared<ServerGroupChatRoom>(
 						core,
 						chatRoomId.getPeerAddress(),
@@ -1924,6 +1929,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 						move(participants),
 						lastNotifyId
 					);
+					chatRoom->getPrivate()->setState(LinphonePrivate::ChatRoom::State::Instantiated);
+					chatRoom->getPrivate()->setState(LinphonePrivate::ChatRoom::State::Created);
+				}
 			}
 
 			if (!chatRoom)

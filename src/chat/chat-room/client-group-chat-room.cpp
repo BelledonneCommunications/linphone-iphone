@@ -103,19 +103,15 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	shared_ptr<Participant> &me,
 	const string &subject,
 	list<shared_ptr<Participant>> &&participants,
-	unsigned int lastNotifyId,
-	bool hasBeenLeft
+	unsigned int lastNotifyId
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(peerAddress, me->getAddress())),
 RemoteConference(core, me->getAddress(), nullptr) {
-	L_D();
 	L_D_T(RemoteConference, dConference);
 
 	dConference->focus = make_shared<Participant>(peerAddress);
 	dConference->conferenceAddress = peerAddress;
 	dConference->subject = subject;
 	dConference->participants = move(participants);
-
-	d->state = hasBeenLeft ? ChatRoom::State::Terminated : ChatRoom::State::Created;
 
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
