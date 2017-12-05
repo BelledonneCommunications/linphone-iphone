@@ -1400,8 +1400,9 @@ static void linphone_iphone_call_encryption_changed(LinphoneCore *lc, LinphoneCa
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallEncryptionChanged object:self userInfo:dict];
 }
 
-void linphone_iphone_chatroom_instantiated(LinphoneCore *lc, LinphoneChatRoom *cr) {
-	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
+void linphone_iphone_chatroom_state_changed(LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatRoomState state) {
+	if (state == LinphoneChatRoomStateCreated)
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
 #pragma mark - Message composition start
@@ -1418,8 +1419,7 @@ void linphone_iphone_chatroom_instantiated(LinphoneCore *lc, LinphoneChatRoom *c
 
 		UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																style:UIAlertActionStyleDefault
-															  handler:^(UIAlertAction *action){
-															  }];
+															  handler:^(UIAlertAction *action){}];
 		[errView addAction:defaultAction];
 
 		UIAlertAction *callAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Call", nil)
@@ -1967,7 +1967,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_global_state_changed(cbs, linphone_iphone_global_state_changed);
 	linphone_core_cbs_set_notify_received(cbs, linphone_iphone_notify_received);
 	linphone_core_cbs_set_call_encryption_changed(cbs, linphone_iphone_call_encryption_changed);
-	linphone_core_cbs_set_chat_room_instantiated(cbs, linphone_iphone_chatroom_instantiated);
+	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
 	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
