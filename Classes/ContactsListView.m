@@ -219,8 +219,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onEditionChangeClick:(id)sender {
-	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =
-		self.tableController.isEditing;
+	allButton.hidden = linphoneButton.hidden = _selectedButtonImage.hidden = addButton.hidden =	self.tableController.isEditing;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {

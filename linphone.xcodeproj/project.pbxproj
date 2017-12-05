@@ -37,6 +37,7 @@
 		244523B01E8266CC0037A187 /* chat_error.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AD1E8266CC0037A187 /* chat_error.png */; };
 		244523B11E8266CC0037A187 /* chat_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AE1E8266CC0037A187 /* chat_read.png */; };
 		244523BE1E8D3A6C0037A187 /* chat_unsecure.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523BC1E8D3A6C0037A187 /* chat_unsecure.png */; };
+		249660951FD6A35F001D55AA /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 249660941FD6A359001D55AA /* Photos.framework */; };
 		24A3459E1D95797700881A5C /* UIShopTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 24A3459D1D95797700881A5C /* UIShopTableCell.xib */; };
 		24A345A61D95798A00881A5C /* UIShopTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 24A345A51D95798A00881A5C /* UIShopTableCell.m */; };
 		24E1C7C01F9A235600D3F981 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24E1C7B91F9A235500D3F981 /* Contacts.framework */; };
@@ -945,6 +946,7 @@
 		244523AD1E8266CC0037A187 /* chat_error.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_error.png; sourceTree = "<group>"; };
 		244523AE1E8266CC0037A187 /* chat_read.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_read.png; sourceTree = "<group>"; };
 		244523BC1E8D3A6C0037A187 /* chat_unsecure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chat_unsecure.png; sourceTree = "<group>"; };
+		249660941FD6A359001D55AA /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		24A3459D1D95797700881A5C /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
 		24A345A51D95798A00881A5C /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		24A345A71D95799900881A5C /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
@@ -1849,6 +1851,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				249660951FD6A35F001D55AA /* Photos.framework in Frameworks */,
 				24E1C7C01F9A235600D3F981 /* Contacts.framework in Frameworks */,
 				8C5BCED61EB3859300A9AAEF /* mediastreamer_voip.framework in Frameworks */,
 				8C2595DF1DEDCC8E007A6424 /* CallKit.framework in Frameworks */,
@@ -2210,6 +2213,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				249660941FD6A359001D55AA /* Photos.framework */,
 				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
 				8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */,
 				8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */,

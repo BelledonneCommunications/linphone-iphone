@@ -293,9 +293,6 @@
 	return ret;
 }
 
-- (BOOL)deleteContact:(Contact *)contact {
-  return [self deleteCNContact:contact.person];
-}
 
 - (CNContact *)getCNContactFromContact:(Contact *)acontact {
   NSArray *keysToFetch = @[
@@ -312,19 +309,46 @@
 }
 
 - (BOOL)deleteCNContact:(CNContact *)contact {
+		return TRUE;//[self deleteContact:] ;
+}
+
+- (BOOL)deleteContact:(Contact *)contact {
 	CNSaveRequest *saveRequest = [[CNSaveRequest alloc] init];
-	[saveRequest deleteContact:[contact mutableCopy]];
-	@try {
-		BOOL success = [store executeSaveRequest:saveRequest error:nil];
-		NSLog(@"Success %d", success);
-		if(success)
-			[self fetchContactsInBackGroundThread];
-	} @catch (NSException *exception) {
-		NSLog(@"description = %@", [exception description]);
-		return FALSE;
+	NSArray *keysToFetch = @[
+							 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+							 CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+							 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+							 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
+							 ];
+	CNMutableContact *mCNContact =
+	[[store unifiedContactWithIdentifier:contact.identifier
+							 keysToFetch:keysToFetch
+								   error:nil] mutableCopy];
+	if(mCNContact != nil){
+		[saveRequest deleteContact:mCNContact];
+		@try {
+			BOOL success = [store executeSaveRequest:saveRequest error:nil];
+			NSLog(@"Success %d", success);
+			[self removeFriend:contact ];
+			[LinphoneManager.instance setContactsUpdated:TRUE];
+			if([contact.sipAddresses count] > 0){
+				for (NSString *sip in contact.sipAddresses) {
+					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+				}
+			}
+			if([contact.phones count] > 0){
+				for (NSString *phone in contact.phones) {
+					[_addressBookMap removeObjectForKey:([FastAddressBook normalizeSipURI:phone] ?: phone)];
+				}
+			}
+		} @catch (NSException *exception) {
+			NSLog(@"description = %@", [exception description]);
+			return FALSE;
+		}
 	}
 	return TRUE;
 }
+
 
 - (BOOL)deleteAllContacts {
   NSArray *keys = @[ CNContactPhoneNumbersKey ];
@@ -410,6 +434,18 @@
 	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
+		linphone_friend_list_enable_subscriptions(lists->data, FALSE);
+		linphone_friend_list_enable_subscriptions(lists->data, enabled);
+		linphone_friend_list_update_subscriptions(lists->data);
+		lists = lists->next;
+	}
+}
+
+-(void)removeFriend:(Contact*) contact{
+	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
+	const MSList *lists = linphone_core_get_friends_lists(LC);
+	while (lists) {
+		linphone_friend_list_remove_friend(lists->data, contact.friend);
 		linphone_friend_list_enable_subscriptions(lists->data, FALSE);
 		linphone_friend_list_enable_subscriptions(lists->data, enabled);
 		linphone_friend_list_update_subscriptions(lists->data);
