@@ -129,7 +129,8 @@
 }
 
 - (void) fetchContactsInBackGroundThread{
-	
+	[_addressBookMap removeAllObjects];
+	_addressBookMap = [NSMutableDictionary dictionary];
 	CNEntityType entityType = CNEntityTypeContacts;
 	[store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
 		BOOL success = FALSE;
@@ -204,9 +205,7 @@
 					}else{
 						// Dosomte
 					}
-				
 				}
-					
 			}
 			if (normalizedPhone)
 				ms_free(normalizedPhone);
