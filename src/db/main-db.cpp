@@ -275,7 +275,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		// Do not add 'me' when creating a server-group-chat-room.
 		if (chatRoomId.getLocalAddress() != chatRoomId.getPeerAddress()) {
 			shared_ptr<Participant> me = chatRoom->getMe();
-			insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
+			long long meId = insertChatRoomParticipant(
+				id,
+				insertSipAddress(me->getAddress().asString()),
+				me->isAdmin()
+			);
+			for (const auto &device : me->getPrivate()->getDevices())
+				insertChatRoomParticipantDevice(meId, insertSipAddress(device->getAddress().asString()));
 		}
 
 		for (const auto &participant : chatRoom->getParticipants()) {
