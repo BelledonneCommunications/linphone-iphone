@@ -278,28 +278,58 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
 		}
 
-		for (const auto &participant : chatRoom->getParticipants())
-			insertChatRoomParticipant(id, insertSipAddress(participant->getAddress().asString()), participant->isAdmin());
+		for (const auto &participant : chatRoom->getParticipants()) {
+			long long participantId = insertChatRoomParticipant(
+				id,
+				insertSipAddress(participant->getAddress().asString()),
+				participant->isAdmin()
+			);
+			for (const auto &device : participant->getPrivate()->getDevices())
+				insertChatRoomParticipantDevice(participantId, insertSipAddress(device->getAddress().asString()));
+		}
 
 		return id;
 	}
 
-	void MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
-		// See: https://stackoverflow.com/a/15299655 (cast to reference)
+	long long MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
+		L_Q();
 
+		long long id = -1;
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		soci::statement statement = (
-			session->prepare << "UPDATE chat_room_participant SET is_admin = :isAdmin"
-				"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
-				soci::use(static_cast<const int &>(isAdmin)), soci::use(chatRoomId), soci::use(sipAddressId)
-		);
-		statement.execute(true);
-		if (statement.get_affected_rows() == 0) {
-			lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
-			*session << "INSERT INTO chat_room_participant (chat_room_id, participant_sip_address_id, is_admin)"
-				"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
-				soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<const int &>(isAdmin));
+		*session << "SELECT id from chat_room_participant"
+			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
+			soci::into(id), soci::use(chatRoomId), soci::use(sipAddressId);
+
+		if (id >= 0) {
+			// See: https://stackoverflow.com/a/15299655 (cast to reference)
+			*session << "UPDATE chat_room_participant SET is_admin = :isAdmin"
+				"  WHERE id = :id",
+				soci::use(static_cast<const int &>(isAdmin)), soci::use(id);
+			return id;
 		}
+
+		lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
+		*session << "INSERT INTO chat_room_participant (chat_room_id, participant_sip_address_id, is_admin)"
+			"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
+			soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<const int &>(isAdmin));
+
+		return q->getLastInsertId();
+	}
+
+	void MainDbPrivate::insertChatRoomParticipantDevice (long long participantId, long long sipAddressId) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		long long count;
+		*session << "SELECT COUNT(*) FROM chat_room_participant_device"
+			"  WHERE chat_room_participant_id = :participantId"
+			"  AND participant_device_sip_address_id = :sipAddressId",
+			soci::into(count), soci::use(participantId), soci::use(sipAddressId);
+		if (count)
+			return;
+
+		lInfo() << "Insert new chat room participant device in database: `" << sipAddressId << "`.";
+		*session << "INSERT INTO chat_room_participant_device (chat_room_participant_id, participant_device_sip_address_id)"
+			"  VALUES (:participantId, :sipAddressId)",
+			soci::use(participantId), soci::use(sipAddressId);
 	}
 
 	void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long sipAddressId, int state) {

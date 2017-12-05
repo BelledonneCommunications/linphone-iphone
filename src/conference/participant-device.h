@@ -55,6 +55,8 @@ private:
 	IdentityAddress mGruu;
 	std::shared_ptr<CallSession> mSession;
 	LinphoneEvent *mConferenceSubscribeEvent = nullptr;
+
+	L_DISABLE_COPY(ParticipantDevice);
 };
 
 LINPHONE_END_NAMESPACE
