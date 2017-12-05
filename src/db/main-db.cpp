@@ -272,8 +272,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		if (!chatRoom->canHandleParticipants())
 			return id;
 
-		shared_ptr<Participant> me = chatRoom->getMe();
-		insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
+		// Do not add 'me' when creating a server-group-chat-room.
+		if (chatRoomId.getLocalAddress() != chatRoomId.getPeerAddress()) {
+			shared_ptr<Participant> me = chatRoom->getMe();
+			insertChatRoomParticipant(id, insertSipAddress(me->getAddress().asString()), me->isAdmin());
+		}
+
 		for (const auto &participant : chatRoom->getParticipants())
 			insertChatRoomParticipant(id, insertSipAddress(participant->getAddress().asString()), participant->isAdmin());
 
