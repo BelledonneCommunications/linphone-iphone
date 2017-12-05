@@ -188,7 +188,7 @@ const string &ChatMessagePrivate::getAppdata () const {
 	for (const Content *c : contents) {
 		if (c->getContentType().isFile()) {
 			FileContent *fileContent = (FileContent *)c;
-			return fileContent->getAppData("app");
+			return fileContent->getAppData("legacy");
 		}
 	}
 	return Utils::getEmptyConstRefObject<string>();
@@ -198,7 +198,7 @@ void ChatMessagePrivate::setAppdata (const string &data) {
 	for (const Content *c : contents) {
 		if (c->getContentType().isFile()) {
 			FileContent *fileContent = (FileContent *)c;
-			fileContent->setAppData("app", data);
+			fileContent->setAppData("legacy", data);
 			break;
 		}
 	}
