@@ -569,6 +569,9 @@ void ChatMessagePrivate::send () {
 void ChatMessagePrivate::store() {
 	L_Q();
 
+	// TODO: store message in the future
+	if (linphone_core_conference_server_enabled(q->getCore()->getCCore())) return;
+
 	bool messageToBeStored = false;
 	for (Content *c : contents) {
 		ContentType contentType = c->getContentType();
