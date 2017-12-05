@@ -487,13 +487,13 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 			for (const auto &row : rows) {
 				ContentType contentType(row.get<string>(2));
+				const long long &contentId = resolveId(row, 0);
 				Content *content;
 
 				if (contentType == ContentType::FileTransfer)
 					content = new FileTransferContent();
 				else if (contentType.isFile()) {
-					const long long &contentId = resolveId(row, 0);
-
+					// 2.1 - Fetch contents' file informations.
 					string name;
 					int size;
 					string path;
@@ -510,6 +510,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					content = fileContent;
 				} else
 					content = new Content();
+
+				// 2.2 - Fetch contents' app data.
+				static const string content_app_data_query = "SELECT name, data FROM chat_message_content_app_data"
+					" WHERE chat_message_content_id = :messageContentId";
+				soci::rowset<soci::row> content_app_data_rows = (session->prepare << content_app_data_query, soci::use(contentId));
+				for (const auto &content_app_data_row : content_app_data_rows) {
+					string content_app_data_name(content_app_data_row.get<string>(0));
+					string content_app_data_value(content_app_data_row.get<string>(1));
+					content->setAppData(content_app_data_name, content_app_data_value);
+				}
 
 				content->setContentType(contentType);
 				content->setBody(row.get<string>(3));
