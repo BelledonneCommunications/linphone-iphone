@@ -186,17 +186,19 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 
 const string &ChatMessagePrivate::getAppdata () const {
 	for (const Content *c : contents) {
-		if (c->getContentType().isFile() || c->getContentType() == ContentType::FileTransfer) {
-			return c->getAppData("legacy");
+		if (c->getContentType().isFile()) {
+			FileContent *fileContent = (FileContent *)c;
+			return fileContent->getAppData("legacy");
 		}
 	}
 	return Utils::getEmptyConstRefObject<string>();
 }
 
 void ChatMessagePrivate::setAppdata (const string &data) {
-	for (Content *c : contents) {
-		if (c->getContentType().isFile() || c->getContentType() == ContentType::FileTransfer) {
-			c->setAppData("legacy", data);
+	for (const Content *c : contents) {
+		if (c->getContentType().isFile()) {
+			FileContent *fileContent = (FileContent *)c;
+			fileContent->setAppData("legacy", data);
 			break;
 		}
 	}
