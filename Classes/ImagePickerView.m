@@ -20,6 +20,7 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVCaptureDevice.h>
 #import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 #import "ImagePickerView.h"
 #import "PhoneMainView.h"
 
@@ -237,7 +238,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
 							block:^() {
-							  block(UIImagePickerControllerSourceTypePhotoLibrary);
+								if([PHPhotoLibrary authorizationStatus] ==  PHAuthorizationStatusAuthorized ){
+									 block(UIImagePickerControllerSourceTypePhotoLibrary);
+								}else{
+									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+								}
 							}];
 	}
 	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
