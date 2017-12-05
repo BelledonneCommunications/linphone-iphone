@@ -440,6 +440,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		if (!chatRoom)
 			return nullptr;
 
+		bool hasFileTransferContent = false;
+
 		// 1 - Fetch chat message.
 		shared_ptr<ChatMessage> chatMessage = getChatMessageFromCache(eventId);
 		if (chatMessage)
@@ -526,6 +528,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				content->setBody(row.get<string>(3));
 				chatMessage->addContent(*content);
 			}
+		}
+
+		// 3 - Load external body url from body into FileTransferContent if needed
+		if (hasFileTransferContent) {
+			ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
+			dChatMessage->loadFileTransferUrlFromBodyToContent();
 		}
 
 		cache(chatMessage, eventId);

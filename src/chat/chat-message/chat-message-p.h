@@ -86,6 +86,8 @@ public:
 	void removeSalCustomHeader(const std::string& name);
 	std::string getSalCustomHeaderValue(const std::string& name);
 
+	void loadFileTransferUrlFromBodyToContent();
+
 	// -----------------------------------------------------------------------------
 	// Deprecated methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------
