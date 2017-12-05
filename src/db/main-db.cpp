@@ -191,7 +191,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		*session << "DELETE FROM chat_message_content WHERE event_id=:eventId", soci::use(eventId);
-		
+
 		//TODO: remove file content if exists
 		//*session << "DELETE FROM chat_message_file_content WHERE chat_message_content_id=:messageContentId", soci::use(messageContentId);
 
@@ -1924,7 +1924,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					}
 					chatRoom = make_shared<ClientGroupChatRoom>(
 						core,
-						chatRoomId.getPeerAddress(),
+						chatRoomId,
 						me,
 						subject,
 						move(participants),
