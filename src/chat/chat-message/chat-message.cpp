@@ -538,13 +538,17 @@ void ChatMessagePrivate::send () {
 	} else
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsString().c_str());
 
-	for (Content *content : contents) {
-		// Restore FileContents and remove FileTransferContents
+	// Restore FileContents and remove FileTransferContents
+	list<Content*>::iterator i = contents.begin();
+	while (i != contents.end()) {
+		Content *content = *i;
 		if (content->getContentType() == ContentType::FileTransfer) {
 			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
-			q->removeContent(*content);
+			contents.erase(i++);
 			q->addContent(*fileTransferContent->getFileContent());
 			delete fileTransferContent;
+		} else {
+			++i;
 		}
 	}
 
