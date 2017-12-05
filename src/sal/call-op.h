@@ -30,6 +30,7 @@ public:
 	SalCallOp(Sal *sal): SalOp(sal) {}
 	~SalCallOp() override;
 
+	SalMediaDescription *get_local_media_description () const { return local_media; }
 	int set_local_media_description(SalMediaDescription *desc);
 	int set_local_body(const Content &body);
 	int set_local_body(const Content &&body);

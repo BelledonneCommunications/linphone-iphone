@@ -177,6 +177,12 @@ void IceAgent::prepareIceForStream (MediaStream *ms, bool createChecklist) {
 		media_stream_set_ice_check_list(ms, cl);
 }
 
+void IceAgent::resetSession (IceRole role) {
+	if (!iceSession)
+		return;
+	ice_session_reset(iceSession, role);
+}
+
 void IceAgent::restartSession (IceRole role) {
 	if (!iceSession)
 		return;

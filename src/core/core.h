@@ -41,6 +41,7 @@ class IdentityAddress;
 
 class LINPHONE_PUBLIC Core : public Object {
 	friend class CallPrivate;
+	friend class CallSession;
 	friend class ChatMessagePrivate;
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;

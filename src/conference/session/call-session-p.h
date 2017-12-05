@@ -29,7 +29,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallSessionPrivate : public ObjectPrivate {
+class CallSessionPrivate : public ObjectPrivate, public CoreListener {
 public:
 	CallSessionPrivate () = default;
 
@@ -43,16 +43,19 @@ public:
 	CallSessionParams *getCurrentParams () const { return currentParams; }
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
 	SalCallOp * getOp () const { return op; }
+	bool isBroken () const { return broken; }
 	void setParams (CallSessionParams *csp);
 
 	virtual void abort (const std::string &errorMsg);
 	virtual void accepted ();
 	void ackBeingSent (LinphoneHeaders *headers);
 	virtual void ackReceived (LinphoneHeaders *headers);
+	void cancelDone ();
 	virtual bool failure ();
 	void infoReceived (SalBodyHandler *bodyHandler);
 	void pingReply ();
 	virtual void remoteRinging ();
+	void replaceOp (SalCallOp *newOp);
 	virtual void terminated ();
 	void updated (bool isUpdate);
 	void updatedByRemote ();
@@ -77,12 +80,20 @@ protected:
 
 	void setContactOp ();
 
+	// CoreListener
+	void onNetworkReachable (bool reachable) override;
+	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) override;
+
 private:
 	void completeLog ();
 	void createOp ();
 	void createOpTo (const LinphoneAddress *to);
 
 	LinphoneAddress * getFixedContact () const;
+
+	virtual void reinviteToRecoverFromConnectionLoss ();
+	void repairByInviteWithReplaces ();
+	void repairIfBroken ();
 
 protected:
 	CallSessionListener *listener = nullptr;
@@ -107,9 +118,12 @@ protected:
 	bool pingReplied = false;
 	int pingTime = 0;
 
+	bool broken = false;
 	bool deferIncomingNotification = false;
 	bool deferUpdate = false;
+	bool needLocalIpRefresh = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
+	bool reinviteOnCancelResponseRequested = false;
 
 private:
 	L_DECLARE_PUBLIC(CallSession);

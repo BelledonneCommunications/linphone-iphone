@@ -539,6 +539,18 @@ int MediaSessionPrivate::getStreamIndex (MediaStream *ms) const {
 
 // -----------------------------------------------------------------------------
 
+void MediaSessionPrivate::onNetworkReachable (bool reachable) {
+	L_Q();
+	if (reachable) {
+		LinphoneConfig *config = linphone_core_get_config(q->getCore()->getCCore());
+		if (lp_config_get_int(config, "net", "recreate_sockets_when_network_is_up", 0))
+			refreshSockets();
+	}
+	CallSessionPrivate::onNetworkReachable(reachable);
+}
+
+// -----------------------------------------------------------------------------
+
 OrtpJitterBufferAlgorithm MediaSessionPrivate::jitterBufferNameToAlgo (const string &name) {
 	if (name == "basic") return OrtpJitterBufferBasic;
 	if (name == "rls") return OrtpJitterBufferRecursiveLeastSquare;
@@ -3693,9 +3705,7 @@ LinphoneStatus MediaSessionPrivate::pause () {
 		lError() << "No reason to pause this call, it is already paused or inactive";
 		return -1;
 	}
-#if 0
-	call->broken = FALSE;
-#endif
+	broken = false;
 	setState(LinphoneCallPausing, "Pausing call");
 	makeLocalMediaDescription();
 	op->set_local_media_description(localDesc);
@@ -3941,6 +3951,24 @@ LinphoneStatus MediaSessionPrivate::acceptUpdate (const CallSessionParams *csp, 
 		return 0; /* Deferred until completion of ICE gathering */
 	startAcceptUpdate(nextState, stateInfo);
 	return 0;
+}
+
+// -----------------------------------------------------------------------------
+
+void MediaSessionPrivate::refreshSockets () {
+	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
+		MSMediaStreamSessions *mss = &sessions[i];
+		if (mss->rtp_session)
+			rtp_session_refresh_sockets(mss->rtp_session);
+	}
+}
+
+void MediaSessionPrivate::reinviteToRecoverFromConnectionLoss () {
+	L_Q();
+	lInfo() << "MediaSession [" << q << "] is going to be updated (reINVITE) in order to recover from lost connectivity";
+	if (iceAgent->hasSession())
+		iceAgent->resetSession(IR_Controlling);
+	q->update(getParams());
 }
 
 // -----------------------------------------------------------------------------
@@ -4261,9 +4289,7 @@ LinphoneStatus MediaSession::resume () {
 		lInfo() << "Resuming MediaSession " << this;
 	}
 	d->automaticallyPaused = false;
-#if 0
-	call->broken = FALSE;
-#endif
+	d->broken = false;
 	/* Stop playing music immediately. If remote side is a conference it
 	 * prevents the participants to hear it while the 200OK comes back. */
 	if (d->audioStream)
@@ -4389,9 +4415,7 @@ LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string
 		lWarning() << "CallSession::update() is given the current params, this is probably not what you intend to do!";
 	d->iceAgent->checkSession(IR_Controlling, true);
 	if (msp) {
-#if 0
-		call->broken = FALSE;
-#endif
+		d->broken = false;
 		d->setState(nextState, "Updating call");
 		d->setParams(new MediaSessionParams(*msp));
 		if (d->iceAgent->prepare(d->localDesc, false)) {

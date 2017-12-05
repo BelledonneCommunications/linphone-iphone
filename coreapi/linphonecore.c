@@ -6140,20 +6140,7 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 	if (!lc->sip_network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
 		lc->sal->reset_transports();
-		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
-#if 0
-		bctbx_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
-#endif
 	}
-}
-
-void linphone_core_repair_calls(LinphoneCore *lc){
-#if 0
-	if (lc->calls && lp_config_get_int(lc->config, "sip", "repair_broken_calls", 1) && lc->media_network_reachable){
-		/*if we are registered and there were broken calls due to a past network disconnection, attempt to repair them*/
-		bctbx_list_for_each(lc->calls, (MSIterateFunc) linphone_call_repair_if_broken);
-	}
-#endif
 }
 
 static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reachable){
@@ -6161,18 +6148,7 @@ static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reacha
 	ms_message("Media network reachability state is now [%s]",is_media_reachable?"UP":"DOWN");
 	lc->media_network_reachable=is_media_reachable;
 
-	if (!lc->media_network_reachable){
-		/*mark all calls as broken, so that they can be either dropped immediately or restaured when network will be back*/
-#if 0
-		bctbx_list_for_each(lc->calls, (MSIterateFunc) linphone_call_set_broken);
-#endif
-	}else{
-		if (lp_config_get_int(lc->config, "net", "recreate_sockets_when_network_is_up", 0)){
-#if 0
-			bctbx_list_for_each(lc->calls, (MSIterateFunc)linphone_call_refresh_sockets);
-#endif
-		}
-		linphone_core_repair_calls(lc);
+	if (lc->media_network_reachable){
 		if (lc->bw_controller){
 			ms_bandwidth_controller_reset_state(lc->bw_controller);
 		}

@@ -1310,10 +1310,8 @@ void linphone_proxy_config_set_state(LinphoneProxyConfig *cfg, LinphoneRegistrat
 			cfg->state=state;
 		}
 
-		if (lc){
+		if (lc)
 			linphone_core_notify_registration_state_changed(lc,cfg,state,message);
-			linphone_core_repair_calls(lc);
-		}
 	} else {
 		/*state already reported*/
 	}

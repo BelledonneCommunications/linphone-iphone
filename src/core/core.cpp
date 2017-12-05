@@ -20,7 +20,8 @@
 #include <mediastreamer2/mscommon.h>
 
 #include "call/call.h"
-#include "core-p.h"
+#include "core/core-listener.h"
+#include "core/core-p.h"
 #include "logger/logger.h"
 #include "paths/paths.h"
 
@@ -59,6 +60,14 @@ void CorePrivate::init () {
 		insertChatRoom(chatRoom);
 }
 
+void CorePrivate::registerListener (CoreListener *listener) {
+	listeners.push_back(listener);
+}
+
+void CorePrivate::unregisterListener (CoreListener *listener) {
+	listeners.remove(listener);
+}
+
 void CorePrivate::uninit () {
 	L_Q();
 	while (!calls.empty()) {
@@ -66,6 +75,18 @@ void CorePrivate::uninit () {
 		linphone_core_iterate(L_GET_C_BACK_PTR(q));
 		ms_usleep(10000);
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+void CorePrivate::notifyNetworkReachable (bool reachable) {
+	for (const auto &listener : listeners)
+		listener->onNetworkReachable(reachable);
+}
+
+void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const string &message) {
+	for (const auto &listener : listeners)
+		listener->onRegistrationStateChanged(cfg, state, message);
 }
 
 // =============================================================================

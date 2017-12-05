@@ -18,6 +18,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "c-wrapper/c-wrapper.h"
+#include "core/core-p.h"
+
 #include "private.h"
 #include "linphone/wrapper_utils.h"
 
@@ -100,6 +103,7 @@ void linphone_core_notify_call_encryption_changed(LinphoneCore *lc, LinphoneCall
 }
 
 void linphone_core_notify_registration_state_changed(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const char *message){
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyRegistrationStateChanged(cfg, cstate, message);
 	NOTIFY_IF_EXIST(registration_state_changed, lc,cfg,cstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
@@ -239,6 +243,7 @@ void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguri
 }
 
 void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyNetworkReachable(!!reachable);
 	NOTIFY_IF_EXIST(network_reachable, lc,reachable);
 	cleanup_dead_vtable_refs(lc);
 }

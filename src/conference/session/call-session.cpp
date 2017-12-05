@@ -26,7 +26,7 @@
 #include "conference/params/call-session-params-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/call-session.h"
-#include "core/core.h"
+#include "core/core-p.h"
 
 #include "logger/logger.h"
 
@@ -241,6 +241,13 @@ void CallSessionPrivate::ackReceived (LinphoneHeaders *headers) {
 		listener->onAckReceived(q->getSharedFromThis(), headers);
 }
 
+void CallSessionPrivate::cancelDone () {
+	if (reinviteOnCancelResponseRequested) {
+		reinviteOnCancelResponseRequested = false;
+		reinviteToRecoverFromConnectionLoss();
+	}
+}
+
 bool CallSessionPrivate::failure () {
 	L_Q();
 	const SalErrorInfo *ei = op->get_error_info();
@@ -336,6 +343,47 @@ void CallSessionPrivate::remoteRinging () {
 #endif
 	lInfo() << "Remote ringing...";
 	setState(LinphoneCallOutgoingRinging, "Remote ringing");
+}
+
+void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
+	L_Q();
+	SalCallOp *oldOp = op;
+	LinphoneCallState oldState = state;
+	op = newOp;
+	op->set_user_pointer(q);
+	op->set_local_media_description(oldOp->get_local_media_description());
+	switch (state) {
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			op->notify_ringing((state == LinphoneCallIncomingEarlyMedia) ? true : false);
+			break;
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+			op->accept();
+			break;
+		default:
+			lWarning() << "CallSessionPrivate::replaceOp(): don't know what to do in state [" << linphone_call_state_to_string(state) << "]";
+			break;
+	}
+	switch (oldState) {
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			op->set_user_pointer(nullptr); // In order for the call session to not get terminated by terminating this op
+			// Do not terminate a forked INVITE
+			if (op->get_replaces())
+				oldOp->terminate();
+			else
+				oldOp->kill_dialog();
+			break;
+		case LinphoneCallConnected:
+		case LinphoneCallStreamsRunning:
+			oldOp->terminate();
+			oldOp->kill_dialog();
+			break;
+		default:
+			break;
+	}
+	oldOp->release();
 }
 
 void CallSessionPrivate::terminated () {
@@ -640,6 +688,45 @@ void CallSessionPrivate::setContactOp () {
 
 // -----------------------------------------------------------------------------
 
+void CallSessionPrivate::onNetworkReachable (bool reachable) {
+	if (reachable) {
+		repairIfBroken();
+	} else {
+		switch(state) {
+			// For all the early states, we prefer to drop the call
+			case LinphoneCallOutgoingInit:
+			case LinphoneCallOutgoingProgress:
+			case LinphoneCallOutgoingRinging:
+			case LinphoneCallOutgoingEarlyMedia:
+			case LinphoneCallIncomingReceived:
+			case LinphoneCallIncomingEarlyMedia:
+				// During the early states, the SAL layer reports the failure from the dialog or transaction layer,
+				// hence, there is nothing special to do
+			case LinphoneCallStreamsRunning:
+			case LinphoneCallUpdating:
+			case LinphoneCallPausing:
+			case LinphoneCallResuming:
+			case LinphoneCallPaused:
+			case LinphoneCallPausedByRemote:
+			case LinphoneCallUpdatedByRemote:
+				// During these states, the dialog is established. A failure of a transaction is not expected to close it.
+				// Instead we have to repair the dialog by sending a reINVITE
+				broken = true;
+				needLocalIpRefresh = true;
+				break;
+			default:
+				lError() << "CallSessionPrivate::onNetworkReachable(): unimplemented case";
+				break;
+		}
+	}
+}
+
+void CallSessionPrivate::onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) {
+	repairIfBroken();
+}
+
+// -----------------------------------------------------------------------------
+
 void CallSessionPrivate::completeLog () {
 	L_Q();
 	log->duration = computeDuration(); /* Store duration since connected */
@@ -699,11 +786,96 @@ LinphoneAddress * CallSessionPrivate::getFixedContact () const {
 	return result;
 }
 
+// -----------------------------------------------------------------------------
+
+void CallSessionPrivate::reinviteToRecoverFromConnectionLoss () {
+	L_Q();
+	lInfo() << "CallSession [" << q << "] is going to be updated (reINVITE) in order to recover from lost connectivity";
+	q->update(params);
+}
+
+void CallSessionPrivate::repairByInviteWithReplaces () {
+	L_Q();
+	const char *callId = op->get_call_id();
+	const char *fromTag = op->get_local_tag();
+	const char *toTag = op->get_remote_tag();
+	op->kill_dialog();
+	createOp();
+	op->set_replaces(callId, fromTag, toTag);
+	q->startInvite(nullptr);
+}
+
+void CallSessionPrivate::repairIfBroken () {
+	L_Q();
+	LinphoneCore *lc = q->getCore()->getCCore();
+	LinphoneConfig *config = linphone_core_get_config(lc);
+	if (!lp_config_get_int(config, "sip", "repair_broken_calls", 1) || !lc->media_network_reachable || !broken)
+		return;
+
+	// If we are registered and this session has been broken due to a past network disconnection,
+	// attempt to repair it
+
+	// Make sure that the proxy from which we received this call, or to which we routed this call is registered first
+	if (destProxy) {
+		// In all other cases, ie no proxy config, or a proxy config for which no registration was requested,
+		// we can start the call session repair immediately.
+		if (linphone_proxy_config_register_enabled(destProxy)
+			&& (linphone_proxy_config_get_state(destProxy) != LinphoneRegistrationOk))
+			return;
+	}
+
+	SalErrorInfo sei;
+	memset(&sei, 0, sizeof(sei));
+	switch (state) {
+		case LinphoneCallUpdating:
+		case LinphoneCallPausing:
+			if (op->dialog_request_pending()) {
+				// Need to cancel first re-INVITE as described in section 5.5 of RFC 6141
+				op->cancel_invite();
+				reinviteOnCancelResponseRequested = true;
+			}
+			break;
+		case LinphoneCallStreamsRunning:
+		case LinphoneCallPaused:
+		case LinphoneCallPausedByRemote:
+			if (!op->dialog_request_pending())
+				reinviteToRecoverFromConnectionLoss();
+			break;
+		case LinphoneCallUpdatedByRemote:
+			if (op->dialog_request_pending()) {
+				sal_error_info_set(&sei, SalReasonServiceUnavailable, "SIP", 0, nullptr, nullptr);
+				op->decline_with_error_info(&sei, nullptr);
+			}
+			reinviteToRecoverFromConnectionLoss();
+			break;
+		case LinphoneCallOutgoingInit:
+		case LinphoneCallOutgoingProgress:
+			op->cancel_invite();
+			reinviteOnCancelResponseRequested = true;
+			break;
+		case LinphoneCallOutgoingEarlyMedia:
+		case LinphoneCallOutgoingRinging:
+			repairByInviteWithReplaces();
+			break;
+		case LinphoneCallIncomingEarlyMedia:
+		case LinphoneCallIncomingReceived:
+			// Keep the call broken until a forked INVITE is received from the server
+			break;
+		default:
+			lWarning() << "CallSessionPrivate::repairIfBroken: don't know what to do in state ["
+				<< linphone_call_state_to_string(state);
+			broken = false;
+			break;
+	}
+	sal_error_info_reset(&sei);
+}
+
 // =============================================================================
 
 CallSession::CallSession (const shared_ptr<Core> &core, const CallSessionParams *params, CallSessionListener *listener)
 	: Object(*new CallSessionPrivate), CoreAccessor(core) {
 	L_D();
+	getCore()->getPrivate()->registerListener(d);
 	d->listener = listener;
 	if (params)
 		d->setParams(new CallSessionParams(*params));
@@ -713,11 +885,13 @@ CallSession::CallSession (const shared_ptr<Core> &core, const CallSessionParams 
 
 CallSession::CallSession (CallSessionPrivate &p, const shared_ptr<Core> &core) : Object(p), CoreAccessor(core) {
 	L_D();
+	getCore()->getPrivate()->registerListener(d);
 	d->init();
 }
 
 CallSession::~CallSession () {
 	L_D();
+	getCore()->getPrivate()->unregisterListener(d);
 	if (d->currentParams)
 		delete d->currentParams;
 	if (d->params)

@@ -54,9 +54,6 @@ void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
-void linphone_call_refresh_sockets(LinphoneCall *call);
-void linphone_call_replace_op(LinphoneCall *call, LinphonePrivate::SalOp *op);
-void linphone_call_reinvite_to_recover_from_connection_loss(LinphoneCall *call);
 
 LinphonePrivate::SalCallOp *linphone_call_get_op(const LinphoneCall *call);
 LinphoneProxyConfig * linphone_call_get_dest_proxy(const LinphoneCall *call);
@@ -335,9 +332,6 @@ LinphoneEcCalibratorStatus ec_calibrator_get_status(EcCalibrator *ecc);
 
 void ec_calibrator_destroy(EcCalibrator *ecc);
 
-void linphone_call_set_broken(LinphoneCall *call);
-void linphone_call_repair_if_broken(LinphoneCall *call);
-void linphone_core_repair_calls(LinphoneCore *lc);
 int linphone_core_preempt_sound_resources(LinphoneCore *lc);
 int _linphone_call_pause(LinphoneCall *call);
 

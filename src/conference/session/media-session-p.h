@@ -87,6 +87,9 @@ public:
 	SalCallOp * getOp () const { return op; }
 	void setAudioMuted (bool value) { audioMuted = value; }
 
+	// CoreListener
+	void onNetworkReachable (bool reachable) override;
+
 private:
 	static OrtpJitterBufferAlgorithm jitterBufferNameToAlgo (const std::string &name);
 
@@ -234,6 +237,9 @@ private:
 
 	void accept (const MediaSessionParams *params);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
+
+	void refreshSockets ();
+	void reinviteToRecoverFromConnectionLoss () override;
 
 	#ifdef VIDEO_ENABLED
 		void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);

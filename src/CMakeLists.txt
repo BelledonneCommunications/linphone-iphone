@@ -94,6 +94,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	content/file-content.h
 	content/file-transfer-content.h
 	core/core-accessor.h
+	core/core-listener.h
 	core/core-p.h
 	core/core.h
 	core/paths/paths.h

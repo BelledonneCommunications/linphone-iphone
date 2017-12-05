@@ -23,19 +23,28 @@
 #include "core.h"
 #include "db/main-db.h"
 #include "object/object-p.h"
+#include "sal/call-op.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CoreListener;
+
 class CorePrivate : public ObjectPrivate {
 public:
-	void init();
-	void uninit();
+	void init ();
+	void registerListener (CoreListener *listener);
+	void unregisterListener (CoreListener *listener);
+	void uninit ();
+
+	void notifyNetworkReachable (bool reachable);
+	void notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message);
 
 	int addCall (const std::shared_ptr<Call> &call);
 	bool canWeAddCall () const;
 	bool hasCalls () const { return !calls.empty(); }
+	bool inviteReplacesABrokenCall (SalCallOp *op);
 	bool isAlreadyInCallWithAddress (const Address &addr) const;
 	void iterateCalls (time_t currentRealTime, bool oneSecondElapsed) const;
 	void notifySoundcardUsage (bool used);
@@ -50,6 +59,8 @@ public:
 	std::unique_ptr<MainDb> mainDb;
 
 private:
+	std::list<CoreListener *> listeners;
+
 	std::list<std::shared_ptr<Call>> calls;
 	std::shared_ptr<Call> currentCall;
 

@@ -54,34 +54,11 @@ using namespace LinphonePrivate;
 
 static void register_failure(SalOp *op);
 
-static LinphoneCall * look_for_broken_call_to_replace(LinphonePrivate::SalOp *h, LinphoneCore *lc) {
-	const bctbx_list_t *calls = linphone_core_get_calls(lc);
-	const bctbx_list_t *it = calls;
-	while (it != NULL) {
-#if 0
-		LinphoneCall *replaced_call = NULL;
-		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(it);
-		SalOp *replaced_op = sal_call_get_replaces(h);
-		if (replaced_op) replaced_call = (LinphoneCall*)sal_op_get_user_pointer(replaced_op);
-		if ((call->broken && sal_call_compare_op(h, call->op))
-			|| ((replaced_call == call) && (strcmp(sal_op_get_from(h), sal_op_get_from(replaced_op)) == 0) && (strcmp(sal_op_get_to(h), sal_op_get_to(replaced_op)) == 0))) {
-			return call;
-		}
-#endif
-		it = bctbx_list_next(it);
-	}
-
-	return NULL;
-}
-
 static void call_received(SalCallOp *h) {
 	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(h->get_sal()->get_user_pointer());
-	LinphoneCall *replacedCall = look_for_broken_call_to_replace(h, lc);
-	if (replacedCall) {
-		linphone_call_replace_op(replacedCall, h);
+	if (L_GET_PRIVATE_FROM_C_OBJECT(lc)->inviteReplacesABrokenCall(h))
 		return;
-	}
 
 	LinphoneAddress *fromAddr = nullptr;
 	const char *pAssertedId = sal_custom_header_find(h->get_recv_custom_header(), "P-Asserted-Identity");
@@ -314,13 +291,12 @@ static void call_released(SalOp *op) {
 }
 
 static void call_cancel_done(SalOp *op) {
-#if 0
-	LinphoneCall *call = (LinphoneCall *)sal_op_get_user_pointer(op);
-	if (call->reinvite_on_cancel_response_requested == TRUE) {
-		call->reinvite_on_cancel_response_requested = FALSE;
-		linphone_call_reinvite_to_recover_from_connection_loss(call);
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	if (!session) {
+		ms_warning("Cancel done reported on already terminated CallSession");
+		return;
 	}
-#endif
+	L_GET_PRIVATE(session)->cancelDone();
 }
 
 static void auth_failure(SalOp *op, SalAuthInfo* info) {

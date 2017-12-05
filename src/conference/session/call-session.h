@@ -25,6 +25,7 @@
 #include "conference/conference.h"
 #include "conference/params/call-session-params.h"
 #include "conference/session/call-session-listener.h"
+#include "core/core-listener.h"
 #include "sal/call-op.h"
 
 // =============================================================================
@@ -41,6 +42,7 @@ class LINPHONE_PUBLIC CallSession : public Object, public CoreAccessor {
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
 	friend class Conference;
+	friend class CorePrivate;
 	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
 

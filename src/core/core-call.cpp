@@ -21,6 +21,7 @@
 
 #include "core-p.h"
 #include "call/call-p.h"
+#include "conference/session/call-session-p.h"
 #include "logger/logger.h"
 
 // TODO: Remove me later.
@@ -44,6 +45,35 @@ int CorePrivate::addCall (const shared_ptr<Call> &call) {
 	return 0;
 }
 
+bool CorePrivate::canWeAddCall () const {
+	L_Q();
+	if (q->getCallCount() < static_cast<unsigned int>(q->getCCore()->max_calls))
+		return true;
+	lInfo() << "Maximum amount of simultaneous calls reached!";
+	return false;
+}
+
+bool CorePrivate::inviteReplacesABrokenCall (SalCallOp *op) {
+	CallSession *replacedSession = nullptr;
+	SalCallOp *replacedOp = op->get_replaces();
+	if (replacedOp)
+		replacedSession = reinterpret_cast<CallSession *>(replacedOp->get_user_pointer());
+	for (const auto &call : calls) {
+		shared_ptr<CallSession> session = call->getPrivate()->getActiveSession();
+		if (session
+			&& ((session->getPrivate()->isBroken() && op->compare_op(session->getPrivate()->getOp()))
+				|| ((replacedSession == session.get())
+					&& (strcmp(op->get_from(), replacedOp->get_from()) == 0)
+					&& (strcmp(op->get_to(), replacedOp->get_to()) == 0)))
+			) {
+			session->getPrivate()->replaceOp(op);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CorePrivate::isAlreadyInCallWithAddress (const Address &addr) const {
 	for (const auto &call : calls) {
 		if (call->getRemoteAddress().weakEqual(addr))
@@ -56,14 +86,6 @@ void CorePrivate::iterateCalls (time_t currentRealTime, bool oneSecondElapsed) c
 	for (const auto &call : calls) {
 		call->getPrivate()->iterate(currentRealTime, oneSecondElapsed);
 	}
-}
-
-bool CorePrivate::canWeAddCall () const {
-	L_Q();
-	if (q->getCallCount() < static_cast<unsigned int>(q->getCCore()->max_calls))
-		return true;
-	lInfo() << "Maximum amount of simultaneous calls reached!";
-	return false;
 }
 
 void CorePrivate::notifySoundcardUsage (bool used) {
