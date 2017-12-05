@@ -912,7 +912,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"CREATE TABLE IF NOT EXISTS event ("
 			"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 			"  type TINYINT UNSIGNED NOT NULL,"
-			"  creation_time DATE NOT NULL"
+			"  creation_time TIMESTAMP NOT NULL"
 			") " + charset;
 
 		*session <<
@@ -925,10 +925,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  local_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
 			// Dialog creation time.
-			"  creation_time DATE NOT NULL,"
+			"  creation_time TIMESTAMP NOT NULL,"
 
 			// Last event time (call, message...).
-			"  last_update_time DATE NOT NULL,"
+			"  last_update_time TIMESTAMP NOT NULL,"
 
 			// ConferenceChatRoom, BasicChatRoom, RTT...
 			"  capabilities TINYINT UNSIGNED NOT NULL,"
@@ -1055,7 +1055,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  from_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 			"  to_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
 
-			"  time DATE,"
+			"  time TIMESTAMP,"
 
 			// See: https://tools.ietf.org/html/rfc5438#section-6.3
 			"  imdn_message_id VARCHAR(255) NOT NULL,"
