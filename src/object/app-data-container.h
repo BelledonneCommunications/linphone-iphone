@@ -41,7 +41,7 @@ public:
 
 	const std::unordered_map<std::string, std::string> &getAppDataMap () const;
 
-	std::string getAppData (const std::string &name) const;
+	const std::string &getAppData (const std::string &name) const;
 	void setAppData (const std::string &name, const std::string &appData);
 	void setAppData (const std::string &name, std::string &&appData);
 

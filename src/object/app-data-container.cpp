@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include "linphone/utils/utils.h"
 #include "app-data-container.h"
 
 // =============================================================================
@@ -62,10 +63,10 @@ const unordered_map<string, string> &AppDataContainer::getAppDataMap () const {
 	return *d->appData.get();
 }
 
-string AppDataContainer::getAppData (const string &name) const {
+const string &AppDataContainer::getAppData (const string &name) const {
 	L_D();
 	auto it = d->appData->find(name);
-	return it == d->appData->cend() ? string() : it->second;
+	return it == d->appData->cend() ? Utils::getEmptyConstRefObject<string>() : d->appData->at(name);
 }
 
 void AppDataContainer::setAppData (const string &name, const string &appData) {
