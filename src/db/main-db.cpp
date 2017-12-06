@@ -154,36 +154,24 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		const long long &contentTypeId = insertContentType(content.getContentType().asString());
 		const string &body = content.getBodyAsString();
 		*session << "INSERT INTO chat_message_content (event_id, content_type_id, body) VALUES"
-			"  (:eventId, :contentTypeId, :body)", soci::use(eventId), soci::use(contentTypeId),
+			" (:eventId, :contentTypeId, :body)", soci::use(eventId), soci::use(contentTypeId),
 			soci::use(body);
 
-		const long long &messageContentId = q->getLastInsertId();
+		const long long &chatMessageContentId = q->getLastInsertId();
 		if (content.getContentType().isFile()) {
 			const FileContent &fileContent = static_cast<const FileContent &>(content);
-			const string &fileName = fileContent.getFileName();
-			const size_t &fileSize = fileContent.getFileSize();
-			const string &filePath = fileContent.getFilePath();
+			const string &name = fileContent.getFileName();
+			const size_t &size = fileContent.getFileSize();
+			const string &path = fileContent.getFilePath();
 			*session << "INSERT INTO chat_message_file_content (chat_message_content_id, name, size, path) VALUES "
-				" (:contentId, :name, :size, :path)",
-				soci::use(messageContentId), soci::use(fileName), soci::use(fileSize), soci::use(filePath);
+				" (:chatMessageContentId, :name, :size, :path)",
+				soci::use(chatMessageContentId), soci::use(name), soci::use(size), soci::use(path);
 		}
 
 		for (const auto &appData : content.getAppDataMap())
 			*session << "INSERT INTO chat_message_content_app_data (chat_message_content_id, name, data) VALUES"
-				"  (:messageContentId, :name, :data)",
-				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
-	}
-
-	void MainDbPrivate::removeContentsForChatMessageEvent (long long eventId) {
-		soci::session *session = dbSession.getBackendSession<soci::session>();
-
-		*session << "DELETE FROM chat_message_content WHERE event_id=:eventId", soci::use(eventId);
-
-		//TODO: remove file content if exists
-		//*session << "DELETE FROM chat_message_file_content WHERE chat_message_content_id=:messageContentId", soci::use(messageContentId);
-
-		//TODO: remove contents' app_data
-		//*session << "DELETE FROM chat_message_content_app_data WHERE chat_message_content_id=:messageContentId", soci::use(messageContentId);
+				" (:chatMessageContentId, :name, :data)",
+				soci::use(chatMessageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
 	long long MainDbPrivate::insertContentType (const string &contentType) {
@@ -372,6 +360,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
 			soci::into(id), soci::use(chatRoomId), soci::use(sipAddressId);
 		return session->got_data() ? id : -1;
+	}
+
+	void MainDbPrivate::deleteContents (long long messageEventId) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM chat_message_content WHERE event_id = :messageEventId", soci::use(messageEventId);
 	}
 
 	void MainDbPrivate::deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId) {
@@ -777,7 +770,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(state), soci::use(eventId);
 
 		//TODO: improve
-		removeContentsForChatMessageEvent(eventId);
+		deleteContents(eventId);
 		for (const Content *content : chatMessage->getContents())
 			insertContent(eventId, *content);
 	}

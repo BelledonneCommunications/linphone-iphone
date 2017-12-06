@@ -52,7 +52,6 @@ private:
 
 	long long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long long messageEventId, const Content &content);
-	void removeContentsForChatMessageEvent (long long messageEventId);
 	long long insertContentType (const std::string &contentType);
 	long long insertBasicChatRoom (
 		long long peerSipAddressId,
@@ -69,6 +68,7 @@ private:
 	long long selectChatRoomId (const ChatRoomId &chatRoomId) const;
 	long long selectChatRoomParticipantId (long long chatRoomId, long long sipAddressId) const;
 
+	void deleteContents (long long messageEventId);
 	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);
 	void deleteChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
 
