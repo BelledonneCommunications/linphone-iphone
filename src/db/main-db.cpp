@@ -506,7 +506,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				static_cast<ChatMessage::Direction>(direction)
 			));
 			chatMessage->setIsSecured(static_cast<bool>(isSecured));
-
+			chatMessage->setImdnMessageId(imdnMessageId);
 			ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
 			dChatMessage->setState(static_cast<ChatMessage::State>(state), true);
 
