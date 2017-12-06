@@ -389,7 +389,7 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 		device->setConferenceSubscribeEvent(lev);
 		if (lastNotify == 0) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
-			d->notifyFullState(d->createNotifyFullState(), device);
+			d->notifyFullState(d->createNotifyFullState(static_cast<int>(d->lastNotify)), device);
 		} else if (lastNotify < d->lastNotify) {
 			lInfo() << "Sending all missed notify [" << lastNotify << "-" << d->lastNotify <<
 				"] for conference:" << d->conf->getConferenceAddress().asString() <<
