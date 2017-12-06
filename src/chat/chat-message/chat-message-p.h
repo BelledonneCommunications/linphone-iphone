@@ -65,6 +65,8 @@ public:
 
 	void setIsReadOnly(bool readOnly);
 
+	void setImdnMessageId (const std::string &imdnMessageId);
+
 	inline void forceFromAddress (const IdentityAddress &fromAddress) {
 		this->fromAddress = fromAddress;
 	}
@@ -127,7 +129,7 @@ public:
 private:
 	// TODO: Clean attributes.
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
-	std::string id;
+	std::string imdnId;
 	std::string rttMessage;
 	bool isSecured = false;
 	bool isReadOnly = false;

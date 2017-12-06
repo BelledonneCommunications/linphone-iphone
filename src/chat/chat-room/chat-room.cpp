@@ -147,7 +147,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(salMsg->time);
-	msg->setImdnMessageId(op->get_call_id());
+	msg->getPrivate()->setImdnMessageId(op->get_call_id());
 
 	const SalCustomHeader *ch = op->get_recv_custom_header();
 	if (ch)

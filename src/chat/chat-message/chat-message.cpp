@@ -320,7 +320,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 
 	Content *content = new Content();
 	content->setContentType("message/imdn+xml");
-	content->setBody(Imdn::createXml(id, time, imdnType, reason));
+	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(*content);
 
 	msg->getPrivate()->send();
@@ -416,7 +416,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 		setDirection(ChatMessage::Direction::Outgoing);
 
 	// Check if this is a duplicate message.
-	if (chatRoom && chatRoom->findMessageWithDirection(q->getImdnMessageId(), direction))
+	if (chatRoom && chatRoom->findMessageWithDirection(imdnId, direction))
 		return core->getCCore()->chat_deny_code;
 
 	if (errorCode > 0) {
@@ -558,8 +558,8 @@ void ChatMessagePrivate::send () {
 		}
 	}
 
-	if (q->getImdnMessageId().empty())
-		q->setImdnMessageId(op->get_call_id());   /* must be known at that time */
+	if (imdnId.empty())
+		setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
 	//store(); // Store will be done right below in the setState(InProgress)
 
@@ -692,12 +692,11 @@ ChatMessage::State ChatMessage::getState () const {
 
 const string &ChatMessage::getImdnMessageId () const {
 	L_D();
-	return d->id;
+	return d->imdnId;
 }
 
-void ChatMessage::setImdnMessageId (const string &id) {
-	L_D();
-	d->id = id;
+void ChatMessagePrivate::setImdnMessageId (const string &id) {
+	imdnId = id;
 }
 
 bool ChatMessage::isRead () const {

@@ -50,7 +50,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	Cpim::MessageIdHeader cpimMessageIdHeader;
 	cpimMessageIdHeader.setValue(token);
 	cpimMessage.addMessageHeader(cpimMessageIdHeader);
-	message->setImdnMessageId(token);
+	message->getPrivate()->setImdnMessageId(token);
 
 	const Content *content;
 	if (!message->getInternalContent().isEmpty()) {
@@ -134,7 +134,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 			else if (header->getName() == "To")
 				cpimToAddress = Address(header->getValue());
 			else if (header->getName() == "Message-ID")
-				message->setImdnMessageId(header->getValue());
+				message->getPrivate()->setImdnMessageId(header->getValue());
 		}
 	}
 

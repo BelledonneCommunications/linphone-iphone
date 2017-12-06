@@ -151,7 +151,7 @@ const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg)
 }
 
 void linphone_chat_message_set_message_id(LinphoneChatMessage *msg, char *id) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->setImdnMessageId(L_C_TO_STRING(id));
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setImdnMessageId(L_C_TO_STRING(id));
 }
 
 bool_t linphone_chat_message_is_read(LinphoneChatMessage *msg) {

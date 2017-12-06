@@ -64,7 +64,6 @@ public:
 	void updateState (State state);
 	void sendDeliveryNotification (LinphoneReason reason);
 	void sendDisplayNotification ();
-	void setImdnMessageId (const std::string &imdnMessageId);
 	void setIsSecured (bool isSecured);
 	// ----- TODO: Remove me.
 
