@@ -158,7 +158,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)changeView:(ContactsCategory)view {
 	CGRect frame = _selectedButtonImage.frame;
 	if (view == ContactsAll && !allButton.selected) {
-		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = allButton.frame.origin.x;
 		[ContactSelection setSipFilter:nil];
 		[ContactSelection enableEmailFilter:FALSE];
@@ -166,13 +165,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphoneButton.selected = FALSE;
 		[tableController loadData];
 	} else if (view == ContactsLinphone && !linphoneButton.selected) {
-		[LinphoneManager.instance setContactsUpdated:TRUE];
 		frame.origin.x = linphoneButton.frame.origin.x;
 		[ContactSelection setSipFilter:LinphoneManager.instance.contactFilter];
 		[ContactSelection enableEmailFilter:FALSE];
 		linphoneButton.selected = TRUE;
 		allButton.selected = FALSE;
 		[tableController loadData];
+		//REQUIRED TO RELOAD WITH FILTER
+		[LinphoneManager.instance setContactsUpdated:TRUE];
 	}
 	_selectedButtonImage.frame = frame;
 }
@@ -205,6 +205,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onDeleteClick:(id)sender {
 	NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete selected contacts?", nil)];
+	[LinphoneManager.instance setContactsUpdated:TRUE];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

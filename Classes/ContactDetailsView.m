@@ -473,6 +473,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditClick:(id)event {
 	if (_tableController.isEditing) {
+		[LinphoneManager.instance setContactsUpdated:TRUE];
 		if(![self hasDuplicateContactOf:_contact]){
 			[self setEditing:FALSE];
 			[self saveData];
