@@ -52,7 +52,6 @@ private:
 
 	long long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long long messageEventId, const Content &content);
-	void updateContent (long long messageEventId, long long messageContentId, const Content &content);
 	void removeContentsForChatMessageEvent (long long messageEventId);
 	long long insertContentType (const std::string &contentType);
 	long long insertBasicChatRoom (
@@ -68,8 +67,10 @@ private:
 	long long selectSipAddressId (const std::string &sipAddress) const;
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
 	long long selectChatRoomId (const ChatRoomId &chatRoomId) const;
+	long long selectChatRoomParticipantId (long long chatRoomId, long long sipAddressId) const;
 
 	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);
+	void deleteChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
 
 	// ---------------------------------------------------------------------------
 	// Events API.
@@ -130,7 +131,7 @@ private:
 	long long insertConferenceChatMessageEvent (const std::shared_ptr<EventLog> &eventLog);
 	void updateConferenceChatMessageEvent(const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceNotifiedEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
-	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog);
+	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
 

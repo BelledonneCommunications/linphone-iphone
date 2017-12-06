@@ -174,19 +174,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				soci::use(messageContentId), soci::use(appData.first), soci::use(appData.second);
 	}
 
-	void MainDbPrivate::updateContent (long long eventId, long long messageContentId, const Content &content) {
-		soci::session *session = dbSession.getBackendSession<soci::session>();
-
-		const long long &contentTypeId = insertContentType(content.getContentType().asString());
-		const string &body = content.getBodyAsString();
-		*session << "UPDATE chat_message_content SET content_type_id=:contentTypeId, body=:body WHERE event_id=:eventId",
-			soci::use(contentTypeId), soci::use(body), soci::use(eventId);
-
-		for (const auto &appData : content.getAppDataMap())
-			*session << "UPDATE chat_message_content_app_data SET name=:name, data=:data WHERE chat_message_content_id=:messageContentId",
-				soci::use(appData.first), soci::use(appData.second), soci::use(messageContentId);
-	}
-
 	void MainDbPrivate::removeContentsForChatMessageEvent (long long eventId) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
@@ -300,12 +287,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 	long long MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
 		L_Q();
 
-		long long id = -1;
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		*session << "SELECT id from chat_room_participant"
-			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
-			soci::into(id), soci::use(chatRoomId), soci::use(sipAddressId);
-
+		long long id = selectChatRoomParticipantId(chatRoomId, sipAddressId);
 		if (id >= 0) {
 			// See: https://stackoverflow.com/a/15299655 (cast to reference)
 			*session << "UPDATE chat_room_participant SET is_admin = :isAdmin"
@@ -382,11 +365,31 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return selectChatRoomId(peerSipAddressId, localSipAddressId);
 	}
 
+	long long MainDbPrivate::selectChatRoomParticipantId (long long chatRoomId, long long sipAddressId) const {
+		long long id;
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "SELECT id from chat_room_participant"
+			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
+			soci::into(id), soci::use(chatRoomId), soci::use(sipAddressId);
+		return session->got_data() ? id : -1;
+	}
+
 	void MainDbPrivate::deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "DELETE FROM chat_room_participant"
 			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :participantSipAddressId",
 			soci::use(chatRoomId), soci::use(participantSipAddressId);
+	}
+
+	void MainDbPrivate::deleteChatRoomParticipantDevice (
+		long long participantId,
+		long long participantDeviceSipAddressId
+	) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "DELETE FROM chat_room_participant_device"
+			"  WHERE chat_room_participant_id = :participantId"
+			"  AND participant_device_sip_address_id = :participantDeviceSipAddressId",
+			soci::use(participantId), soci::use(participantDeviceSipAddressId);
 	}
 
 // -----------------------------------------------------------------------------
@@ -799,9 +802,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return eventId;
 	}
 
-	long long MainDbPrivate::insertConferenceParticipantEvent (const shared_ptr<EventLog> &eventLog) {
-		long long chatRoomId;
-		const long long &eventId = insertConferenceNotifiedEvent(eventLog, &chatRoomId);
+	long long MainDbPrivate::insertConferenceParticipantEvent (
+		const shared_ptr<EventLog> &eventLog,
+		long long *chatRoomId
+	) {
+		long long curChatRoomId;
+		const long long &eventId = insertConferenceNotifiedEvent(eventLog, &curChatRoomId);
 		if (eventId < 0)
 			return -1;
 
@@ -821,32 +827,64 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			case EventLog::Type::ConferenceParticipantAdded:
 			case EventLog::Type::ConferenceParticipantSetAdmin:
 			case EventLog::Type::ConferenceParticipantUnsetAdmin:
-				insertChatRoomParticipant(chatRoomId, participantAddressId, isAdmin);
+				insertChatRoomParticipant(curChatRoomId, participantAddressId, isAdmin);
 				break;
 
 			case EventLog::Type::ConferenceParticipantRemoved:
-				deleteChatRoomParticipant(chatRoomId, participantAddressId);
+				deleteChatRoomParticipant(curChatRoomId, participantAddressId);
 				break;
 
 			default:
 				break;
 		}
 
+		if (chatRoomId)
+			*chatRoomId = curChatRoomId;
+
 		return eventId;
 	}
 
 	long long MainDbPrivate::insertConferenceParticipantDeviceEvent (const shared_ptr<EventLog> &eventLog) {
-		const long long &eventId = insertConferenceParticipantEvent(eventLog);
+		long long chatRoomId;
+		const long long &eventId = insertConferenceParticipantEvent(eventLog, &chatRoomId);
 		if (eventId < 0)
 			return -1;
 
+		shared_ptr<ConferenceParticipantDeviceEvent> participantDeviceEvent =
+			static_pointer_cast<ConferenceParticipantDeviceEvent>(eventLog);
+
+		const string participantAddress = participantDeviceEvent->getParticipantAddress().asString();
+		const long long &participantAddressId = selectSipAddressId(participantAddress);
+		if (participantAddressId < 0) {
+			lError() << "Unable to find sip address id of: `" << participantAddress << "`.";
+			return -1;
+		}
+		const long long &participantId = selectChatRoomParticipantId(chatRoomId, participantAddressId);
+		if (participantId < 0) {
+			lError() << "Unable to find valid participant id in database with chat room id = " << chatRoomId <<
+			" and participant address id = " << participantId;
+			return -1;
+		}
 		const long long &deviceAddressId = insertSipAddress(
-			static_pointer_cast<ConferenceParticipantDeviceEvent>(eventLog)->getDeviceAddress().asString()
+			participantDeviceEvent->getDeviceAddress().asString()
 		);
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_participant_device_event (event_id, device_sip_address_id)"
 			"  VALUES (:eventId, :deviceAddressId)", soci::use(eventId), soci::use(deviceAddressId);
+
+		switch (eventLog->getType()) {
+			case EventLog::Type::ConferenceParticipantDeviceAdded:
+				insertChatRoomParticipantDevice(participantId, deviceAddressId);
+				break;
+
+			case EventLog::Type::ConferenceParticipantDeviceRemoved:
+				deleteChatRoomParticipantDevice(participantId, deviceAddressId);
+				break;
+
+			default:
+				break;
+		}
 
 		return eventId;
 	}
