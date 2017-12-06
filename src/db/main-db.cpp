@@ -766,8 +766,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		const int &state = static_cast<int>(chatMessage->getState());
-		*session << "UPDATE conference_chat_message_event SET state = :state WHERE event_id = :eventId",
-			soci::use(state), soci::use(eventId);
+		const string &imdnMessageId = chatMessage->getImdnMessageId();
+		*session << "UPDATE conference_chat_message_event SET state = :state, imdn_message_id = :imdnMessageId WHERE event_id = :eventId",
+			soci::use(state), soci::use(imdnMessageId), soci::use(eventId);
 
 		//TODO: improve
 		deleteContents(eventId);
