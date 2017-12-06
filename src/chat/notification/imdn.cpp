@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 const string Imdn::imdnPrefix = "/imdn:imdn";
 
-string Imdn::createXml (string id, time_t time, Imdn::Type imdnType, LinphoneReason reason) {
+string Imdn::createXml (const string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason) {
 	xmlBufferPtr buf;
 	xmlTextWriterPtr writer;
 	int err;
