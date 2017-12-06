@@ -365,15 +365,20 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	char *addrStr = linphone_address_as_string(lAddr);
 	shared_ptr<Participant> participant = d->conf->findParticipant(Address(addrStr));
 	bctbx_free(addrStr);
-	if (!participant)
+	if (!participant) {
+		lError() << "received SUBSCRIBE corresponds to no participant of the conference; " << d->conf->getConferenceAddress().asString() << ", no NOTIFY sent.";
 		return;
+	}
 
 	const LinphoneAddress *lContactAddr = linphone_event_get_remote_contact(lev);
 	char *contactAddrStr = linphone_address_as_string(lContactAddr);
 	Address contactAddr(contactAddrStr);
 	bctbx_free(contactAddrStr);
-	if (contactAddr.getUriParamValue("gr").empty())
+	if (contactAddr.getUriParamValue("gr").empty()) {
+		lError() << "received SUBSCRIBE for conference: " << d->conf->getConferenceAddress().asString()
+			<< "has no GRUU in it's contact address:" << contactAddr.asString() << ", no NOTIFY sent.";
 		return;
+	}
 	IdentityAddress gruu(contactAddr);
 	shared_ptr<ParticipantDevice> device = participant->getPrivate()->addDevice(gruu);
 
