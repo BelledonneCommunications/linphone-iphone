@@ -59,14 +59,14 @@ private:
 		const tm &creationTime
 	);
 	long long insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
-	long long insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin);
-	void insertChatRoomParticipantDevice (long long participantId, long long sipAddressId);
+	long long insertChatRoomParticipant (long long chatRoomId, long long participantSipAddressId, bool isAdmin);
+	void insertChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
 	void insertChatMessageParticipant (long long messageEventId, long long sipAddressId, int state);
 
 	long long selectSipAddressId (const std::string &sipAddress) const;
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
 	long long selectChatRoomId (const ChatRoomId &chatRoomId) const;
-	long long selectChatRoomParticipantId (long long chatRoomId, long long sipAddressId) const;
+	long long selectChatRoomParticipantId (long long chatRoomId, long long participantSipAddressId) const;
 
 	void deleteContents (long long messageEventId);
 	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);

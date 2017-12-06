@@ -134,6 +134,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			: static_cast<long long>(row.get<unsigned long long>(0));
 	}
 
+// -----------------------------------------------------------------------------
+
 	long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 		L_Q();
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -224,7 +226,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
 		if (id >= 0) {
-			lWarning() << "Unable to insert chat room (it already exists): (peer=" << peerSipAddressId <<
+			lError() << "Unable to insert chat room (it already exists): (peer=" << peerSipAddressId <<
 				", local=" << localSipAddressId << ").";
 			return id;
 		}
@@ -243,7 +245,6 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			soci::use(capabilities), soci::use(subject), soci::use(flags);
 
 		id = q->getLastInsertId();
-
 		if (!chatRoom->canHandleParticipants())
 			return id;
 
@@ -272,56 +273,67 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return id;
 	}
 
-	long long MainDbPrivate::insertChatRoomParticipant (long long chatRoomId, long long sipAddressId, bool isAdmin) {
+	long long MainDbPrivate::insertChatRoomParticipant (
+		long long chatRoomId,
+		long long participantSipAddressId,
+		bool isAdmin
+	) {
 		L_Q();
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
-		long long id = selectChatRoomParticipantId(chatRoomId, sipAddressId);
+		long long id = selectChatRoomParticipantId(chatRoomId, participantSipAddressId);
 		if (id >= 0) {
 			// See: https://stackoverflow.com/a/15299655 (cast to reference)
-			*session << "UPDATE chat_room_participant SET is_admin = :isAdmin"
-				"  WHERE id = :id",
+			*session << "UPDATE chat_room_participant SET is_admin = :isAdmin WHERE id = :id",
 				soci::use(static_cast<const int &>(isAdmin)), soci::use(id);
 			return id;
 		}
 
-		lInfo() << "Insert new chat room participant in database: `" << sipAddressId << "` (isAdmin=" << isAdmin << ").";
+		lInfo() << "Insert new chat room participant in database: `" << participantSipAddressId <<
+			"` (isAdmin=" << isAdmin << ").";
 		*session << "INSERT INTO chat_room_participant (chat_room_id, participant_sip_address_id, is_admin)"
-			"  VALUES (:chatRoomId, :sipAddressId, :isAdmin)",
-			soci::use(chatRoomId), soci::use(sipAddressId), soci::use(static_cast<const int &>(isAdmin));
+			" VALUES (:chatRoomId, :participantSipAddressId, :isAdmin)",
+			soci::use(chatRoomId), soci::use(participantSipAddressId), soci::use(static_cast<const int &>(isAdmin));
 
 		return q->getLastInsertId();
 	}
 
-	void MainDbPrivate::insertChatRoomParticipantDevice (long long participantId, long long sipAddressId) {
+	void MainDbPrivate::insertChatRoomParticipantDevice (
+		long long participantId,
+		long long participantDeviceSipAddressId
+	) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		long long count;
 		*session << "SELECT COUNT(*) FROM chat_room_participant_device"
-			"  WHERE chat_room_participant_id = :participantId"
-			"  AND participant_device_sip_address_id = :sipAddressId",
-			soci::into(count), soci::use(participantId), soci::use(sipAddressId);
+			" WHERE chat_room_participant_id = :participantId"
+			" AND participant_device_sip_address_id = :participantDeviceSipAddressId",
+			soci::into(count), soci::use(participantId), soci::use(participantDeviceSipAddressId);
 		if (count)
 			return;
 
-		lInfo() << "Insert new chat room participant device in database: `" << sipAddressId << "`.";
+		lInfo() << "Insert new chat room participant device in database: `" << participantDeviceSipAddressId << "`.";
 		*session << "INSERT INTO chat_room_participant_device (chat_room_participant_id, participant_device_sip_address_id)"
-			"  VALUES (:participantId, :sipAddressId)",
-			soci::use(participantId), soci::use(sipAddressId);
+			" VALUES (:participantId, :participantDeviceSipAddressId)",
+			soci::use(participantId), soci::use(participantDeviceSipAddressId);
 	}
 
 	void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long sipAddressId, int state) {
+		// TODO: Deal with read messages.
+		// Remove if displayed? Think a good alorithm for mark as read.
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		soci::statement statement = (
 			session->prepare << "UPDATE chat_message_participant SET state = :state"
-				"  WHERE event_id = :eventId AND participant_sip_address_id = :sipAddressId",
+				" WHERE event_id = :eventId AND participant_sip_address_id = :sipAddressId",
 				soci::use(state), soci::use(eventId), soci::use(sipAddressId)
 		);
 		statement.execute(true);
 		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
 			*session << "INSERT INTO chat_message_participant (event_id, participant_sip_address_id, state)"
-				"  VALUES (:eventId, :sipAddressId, :state)",
+				" VALUES (:eventId, :sipAddressId, :state)",
 				soci::use(eventId), soci::use(sipAddressId), soci::use(state);
 	}
+
+// -----------------------------------------------------------------------------
 
 	long long MainDbPrivate::selectSipAddressId (const string &sipAddress) const {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
@@ -353,14 +365,16 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return selectChatRoomId(peerSipAddressId, localSipAddressId);
 	}
 
-	long long MainDbPrivate::selectChatRoomParticipantId (long long chatRoomId, long long sipAddressId) const {
+	long long MainDbPrivate::selectChatRoomParticipantId (long long chatRoomId, long long participantSipAddressId) const {
 		long long id;
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "SELECT id from chat_room_participant"
-			"  WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :sipAddressId",
-			soci::into(id), soci::use(chatRoomId), soci::use(sipAddressId);
+			" WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :participantSipAddressId",
+			soci::into(id), soci::use(chatRoomId), soci::use(participantSipAddressId);
 		return session->got_data() ? id : -1;
 	}
+
+// -----------------------------------------------------------------------------
 
 	void MainDbPrivate::deleteContents (long long messageEventId) {
 		soci::session *session = dbSession.getBackendSession<soci::session>();
