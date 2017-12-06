@@ -435,7 +435,7 @@ LINPHONE_PUBLIC void linphone_chat_message_set_appdata(LinphoneChatMessage* mess
  * Get text part of this message
  * @return text or NULL if no text.
  */
-LINPHONE_PUBLIC const char* linphone_chat_message_get_text(const LinphoneChatMessage* message);
+LINPHONE_PUBLIC const char* linphone_chat_message_get_text(LinphoneChatMessage* message);
 
 /**
  * Get the time the message was sent.

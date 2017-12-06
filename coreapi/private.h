@@ -245,6 +245,7 @@ struct _LinphoneChatMessage {
 	LinphoneErrorInfo *ei;
 	LinphoneChatMessageDir dir;
 	char* message;
+	char* locale_message;
 	void* message_state_changed_user_data;
 	void* message_userdata;
 	char* appdata;

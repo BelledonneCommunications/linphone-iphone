@@ -19,58 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "private.h"
 #include "linphone/core.h"
-
+#include "bctoolbox/charconv.h"
 
 #ifdef SQLITE_STORAGE_ENABLED
 
-
-#ifndef _WIN32
-#if !defined(__QNXNTO__) && !defined(__ANDROID__)
-#include <ctype.h>
-#include <langinfo.h>
-#include <locale.h>
-#include <iconv.h>
-#include <string.h>
-#endif
-#else
-#include <Windows.h>
-#endif
-
-#define MAX_PATH_SIZE 1024
-
 #include "sqlite3.h"
 #include <assert.h>
-
-
-static char *utf8_convert(const char *filename){
-	char db_file_utf8[MAX_PATH_SIZE] = "";
-#if defined(_WIN32)
-	wchar_t db_file_utf16[MAX_PATH_SIZE]={0};
-	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, filename, -1, db_file_utf16, MAX_PATH_SIZE);
-	WideCharToMultiByte(CP_UTF8, 0, db_file_utf16, -1, db_file_utf8, sizeof(db_file_utf8), NULL, NULL);
-#elif defined(__QNXNTO__) || defined(__ANDROID__)
-	strncpy(db_file_utf8, filename, MAX_PATH_SIZE - 1);
-#else
-	char db_file_locale[MAX_PATH_SIZE] = {'\0'};
-	char *inbuf=db_file_locale, *outbuf=db_file_utf8;
-	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
-	iconv_t cb;
-
-	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
-		strncpy(db_file_utf8, filename, MAX_PATH_SIZE - 1);
-	} else {
-		strncpy(db_file_locale, filename, MAX_PATH_SIZE-1);
-		cb = iconv_open("UTF-8", nl_langinfo(CODESET));
-		if (cb != (iconv_t)-1) {
-			int ret;
-			ret = iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-			if(ret == -1) db_file_utf8[0] = '\0';
-			iconv_close(cb);
-		}
-	}
-#endif
-	return ms_strdup(db_file_utf8);
-}
 
 
 int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
@@ -86,7 +40,7 @@ int _linphone_sqlite3_open(const char *db_file, sqlite3 **db) {
 
 	/*since we plug our vfs into sqlite, we convert to UTF-8.
 	 * On Windows, the filename has to be converted back to windows native charset.*/
-	char *utf8_filename = utf8_convert(db_file);
+	char *utf8_filename = bctbx_locale_to_utf8(db_file);
 	ret = sqlite3_open_v2(utf8_filename, db, flags, LINPHONE_SQLITE3_VFS);
 	ms_free(utf8_filename);
 

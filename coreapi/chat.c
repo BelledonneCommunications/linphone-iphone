@@ -28,6 +28,7 @@
 #include "belle-sip/belle-sip.h"
 #include "ortp/b64.h"
 #include "linphone/wrapper_utils.h"
+#include "bctoolbox/charconv.h"
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -370,6 +371,14 @@ static void store_or_update_chat_message(LinphoneChatMessage *msg) {
 	}
 }
 
+void _linphone_chat_message_convert_to_utf8(LinphoneChatMessage *msg) {
+	if (msg && msg->message) {
+		char* tmp = msg->message;
+		msg->message = bctbx_locale_to_utf8(tmp);
+		ms_free(tmp);
+	}
+}
+
 void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
 	int retval = -1;
 	LinphoneCore *lc = cr->lc;
@@ -406,6 +415,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		char *clear_text_content_type = NULL;
 
 		if (msg->message) {
+			_linphone_chat_message_convert_to_utf8(msg);
 			clear_text_message = ms_strdup(msg->message);
 		}
 		if (msg->content_type) {
@@ -952,6 +962,7 @@ LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, con
 	msg->callbacks = linphone_chat_message_cbs_new();
 	msg->chat_room = (LinphoneChatRoom *)cr;
 	msg->message = message ? ms_strdup(message) : NULL;
+	msg->locale_message = NULL;
 	msg->content_type = ms_strdup("text/plain");
 	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
 	msg->http_request = NULL;
@@ -1606,8 +1617,12 @@ LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessa
 	return msg->state;
 }
 
-const char *linphone_chat_message_get_text(const LinphoneChatMessage *msg) {
-	return msg->message;
+const char *linphone_chat_message_get_text(LinphoneChatMessage *msg) {
+	// Convert into system locale is message is in UTF8
+	if (msg->message && !msg->locale_message) {
+		msg->locale_message = bctbx_utf8_to_locale(msg->message);
+	}
+	return msg->locale_message;
 }
 
 int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
