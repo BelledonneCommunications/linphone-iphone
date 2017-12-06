@@ -783,12 +783,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		const int &state = static_cast<int>(chatMessage->getState());
 		const string &imdnMessageId = chatMessage->getImdnMessageId();
-		*session << "UPDATE conference_chat_message_event SET state = :state, imdn_message_id = :imdnMessageId WHERE event_id = :eventId",
+		*session << "UPDATE conference_chat_message_event SET state = :state, imdn_message_id = :imdnMessageId"
+			" WHERE event_id = :eventId",
 			soci::use(state), soci::use(imdnMessageId), soci::use(eventId);
 
-		//TODO: improve
 		deleteContents(eventId);
-		for (const Content *content : chatMessage->getContents())
+		for (const auto &content : chatMessage->getContents())
 			insertContent(eventId, *content);
 	}
 
@@ -802,7 +802,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_notified_event (event_id, notify_id)"
-			"  VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(lastNotifyId);
+			" VALUES (:eventId, :notifyId)", soci::use(eventId), soci::use(lastNotifyId);
 		*session << "UPDATE chat_room SET last_notify_id = :lastNotifyId WHERE id = :chatRoomId",
 			soci::use(lastNotifyId), soci::use(curChatRoomId);
 
@@ -881,7 +881,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_participant_device_event (event_id, device_sip_address_id)"
-			"  VALUES (:eventId, :deviceAddressId)", soci::use(eventId), soci::use(deviceAddressId);
+			" VALUES (:eventId, :deviceAddressId)", soci::use(eventId), soci::use(deviceAddressId);
 
 		switch (eventLog->getType()) {
 			case EventLog::Type::ConferenceParticipantDeviceAdded:
@@ -909,10 +909,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "INSERT INTO conference_subject_event (event_id, subject)"
-			"  VALUES (:eventId, :subject)", soci::use(eventId), soci::use(subject);
+			" VALUES (:eventId, :subject)", soci::use(eventId), soci::use(subject);
 
 		*session << "UPDATE chat_room SET subject = :subject"
-			"  WHERE id = :chatRoomId", soci::use(subject), soci::use(chatRoomId);
+			" WHERE id = :chatRoomId", soci::use(subject), soci::use(chatRoomId);
 
 		return eventId;
 	}
@@ -1433,7 +1433,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			return 0;
 		}
 
-		static string query = "SELECT COUNT(*) FROM event" +
+		string query = "SELECT COUNT(*) FROM event" +
 			buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter }, mask);
 		int count = 0;
 
