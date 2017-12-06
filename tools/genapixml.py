@@ -489,7 +489,14 @@ class Project:
 				elif spacePos != -1:
 					argType = argdef[0 : spacePos]
 					argName = argdef[spacePos + 1 :]
-				argslist.addArgument(CArgument(argType, argName, self.enums, self.__structs))
+				arg = CArgument(argType, argName, self.enums, self.__structs)
+				if arg.ctype == 'MSList' or arg.ctype == 'bctbx_list_t':
+					for argentry in node.findall("detaileddescription/para/parameterlist[@kind='param']/*"):
+						if argentry.find("parameternamelist[parametername='{0}']".format(argName)) is not None:
+							containedType = argentry.find("parameterdescription//bctbxlist")
+							arg.containedType = containedType.text if containedType is not None else None
+							break
+				argslist.addArgument(arg)
 			if len(argslist) > 0:
 				paramdescs = node.findall("detaileddescription/para/parameterlist[@kind='param']/parameteritem")
 				if paramdescs:
