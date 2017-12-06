@@ -192,10 +192,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 						[subAr insertObject:contact atIndex:idx];
 					}
 				}
-				//}
 			}
-			[super loadData];
-
 			// since we refresh the tableview, we must perform this on main
 			// thread
 			dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -209,6 +206,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 		[LinphoneManager.instance setLinphoneManagerAddressBookMap:addressBookMap];
 	}
+	[super loadData];
 	_ongoing = FALSE;
 }
 
@@ -406,23 +404,15 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 		UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
 		[cell setContact:NULL];
-                [[LinphoneManager.instance fastAddressBook]
-                    deleteContact:contact];
-                [tableView
-                    deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                          withRowAnimation:UITableViewRowAnimationFade];
-                [tableView endUpdates];
+		[[LinphoneManager.instance fastAddressBook] deleteContact:contact];
+		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+		[tableView endUpdates];
 
-                [NSNotificationCenter.defaultCenter
-                    addObserver:self
-                       selector:@selector(onAddressBookUpdate:)
+		[NSNotificationCenter.defaultCenter	addObserver:self selector:@selector(onAddressBookUpdate:)
                            name:kLinphoneAddressBookUpdate
                          object:nil];
-		dispatch_async(dispatch_get_main_queue(),
-					   ^{
-						   [self loadData];
-							});
-        }
+	   	[self loadData];
+	}
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
@@ -438,10 +428,9 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 	  }
 	  UIContactCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
 	  [cell setContact:NULL];
-          [[LinphoneManager.instance fastAddressBook] deleteContact:contact];
+	  [[LinphoneManager.instance fastAddressBook] deleteContact:contact];
 
-          [NSNotificationCenter.defaultCenter
-              addObserver:self
+	  [NSNotificationCenter.defaultCenter addObserver:self
                  selector:@selector(onAddressBookUpdate:)
                      name:kLinphoneAddressBookUpdate
                    object:nil];
