@@ -55,6 +55,7 @@
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
 		return;
 
+	super.event = event;
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
