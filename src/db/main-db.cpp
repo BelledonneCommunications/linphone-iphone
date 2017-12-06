@@ -483,8 +483,12 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		shared_ptr<Core> core = q->getCore();
 		shared_ptr<ChatRoom> chatRoom = core->findChatRoom(chatRoomId);
-		if (!chatRoom)
+		if (!chatRoom) {
+			lError() << "Unable to find chat room storage id of (peer=" +
+				chatRoomId.getPeerAddress().asString() +
+				", local=" + chatRoomId.getLocalAddress().asString() + "`).";
 			return nullptr;
+		}
 
 		bool hasFileTransferContent = false;
 
@@ -506,12 +510,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			soci::session *session = dbSession.getBackendSession<soci::session>();
 			*session << "SELECT from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured"
-				"  FROM event, conference_chat_message_event, sip_address AS from_sip_address,"
-				"  sip_address AS to_sip_address"
-				"  WHERE event_id = :eventId"
-				"  AND event_id = event.id"
-				"  AND from_sip_address_id = from_sip_address.id"
-				"  AND to_sip_address_id = to_sip_address.id", soci::into(fromSipAddress), soci::into(toSipAddress),
+				" FROM event, conference_chat_message_event, sip_address AS from_sip_address, sip_address AS to_sip_address"
+				" WHERE event_id = :eventId"
+				" AND event_id = event.id"
+				" AND from_sip_address_id = from_sip_address.id"
+				" AND to_sip_address_id = to_sip_address.id", soci::into(fromSipAddress), soci::into(toSipAddress),
 				soci::into(messageTime), soci::into(imdnMessageId), soci::into(state), soci::into(direction),
 				soci::into(isSecured), soci::use(eventId);
 
@@ -520,6 +523,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				static_cast<ChatMessage::Direction>(direction)
 			));
 			chatMessage->setIsSecured(static_cast<bool>(isSecured));
+
 			ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
 			dChatMessage->setState(static_cast<ChatMessage::State>(state), true);
 
@@ -534,8 +538,8 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		{
 			soci::session *session = dbSession.getBackendSession<soci::session>();
 			static const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body"
-				"  FROM chat_message_content, content_type"
-				"  WHERE event_id = :eventId AND content_type_id = content_type.id";
+				" FROM chat_message_content, content_type"
+				" WHERE event_id = :eventId AND content_type_id = content_type.id";
 			soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 			for (const auto &row : rows) {
 				ContentType contentType(row.get<string>(2));
@@ -553,7 +557,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					string path;
 
 					*session << "SELECT name, size, path FROM chat_message_file_content"
-						"  WHERE chat_message_content_id = :contentId",
+						" WHERE chat_message_content_id = :contentId",
 						soci::into(name), soci::into(size), soci::into(path), soci::use(contentId);
 
 					FileContent *fileContent = new FileContent();
@@ -567,7 +571,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 				// 2.2 - Fetch contents' app data.
 				static const string query = "SELECT name, data FROM chat_message_content_app_data"
-					"  WHERE chat_message_content_id = :contentId";
+					" WHERE chat_message_content_id = :contentId";
 				soci::rowset<soci::row> rows = (session->prepare << query, soci::use(contentId));
 				for (const auto &row : rows)
 					content->setAppData(row.get<string>(0), row.get<string>(1));
@@ -578,11 +582,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			}
 		}
 
-		// 3 - Load external body url from body into FileTransferContent if needed
-		if (hasFileTransferContent) {
-			ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
-			dChatMessage->loadFileTransferUrlFromBodyToContent();
-		}
+		// 3 - Load external body url from body into FileTransferContent if needed.
+		if (hasFileTransferContent)
+			chatMessage->getPrivate()->loadFileTransferUrlFromBodyToContent();
 
 		cache(chatMessage, eventId);
 
@@ -661,9 +663,9 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "SELECT notify_id, subject"
-			"  FROM conference_notified_event, conference_subject_event"
-			"  WHERE conference_subject_event.event_id = :eventId"
-			"    AND conference_notified_event.event_id = conference_subject_event.event_id",
+			" FROM conference_notified_event, conference_subject_event"
+			" WHERE conference_subject_event.event_id = :eventId"
+			" AND conference_notified_event.event_id = conference_subject_event.event_id",
 			soci::into(notifyId), soci::into(subject), soci::use(eventId);
 
 		return make_shared<ConferenceSubjectEvent>(
@@ -706,11 +708,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 			soci::session *session = dbSession.getBackendSession<soci::session>();
 			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
-				"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(curChatRoomId);
+				" VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(curChatRoomId);
 
 			const tm &lastUpdateTime = Utils::getTimeTAsTm(eventLog->getCreationTime());
 			*session << "UPDATE chat_room SET last_update_time = :lastUpdateTime"
-				"  WHERE id = :chatRoomId", soci::use(lastUpdateTime),
+				" WHERE id = :chatRoomId", soci::use(lastUpdateTime),
 				soci::use(curChatRoomId);
 
 			if (eventLog->getType() == EventLog::Type::ConferenceTerminated)

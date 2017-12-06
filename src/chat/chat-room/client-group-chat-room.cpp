@@ -321,7 +321,14 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Created);
-	getCore()->getPrivate()->insertChatRoomWithDb(getSharedFromThis());
+
+	CorePrivate *dCore = getCore()->getPrivate();
+	dCore->insertChatRoomWithDb(getSharedFromThis());
+	dCore->mainDb->addEvent(make_shared<ConferenceEvent>(
+		EventLog::Type::ConferenceCreated,
+		time(nullptr),
+		d->chatRoomId
+	));
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
