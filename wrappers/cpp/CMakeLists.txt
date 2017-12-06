@@ -21,6 +21,8 @@
 ############################################################################
 
 add_custom_command(OUTPUT include/linphone++/linphone.hh src/linphone++.cc
+	COMMAND ${CMAKE_COMMAND} -E remove_directory include
+	COMMAND ${CMAKE_COMMAND} -E remove_directory src
 	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml"
 	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py
 	${PROJECT_SOURCE_DIR}/tools/metadoc.py
