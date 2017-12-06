@@ -169,8 +169,14 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 void RemoteConferenceEventHandlerPrivate::subscribe () {
 	if (lev || !subscriptionWanted)
 		return; // Already subscribed or application did not request subscription
+
 	const string &peerAddress = chatRoomId.getPeerAddress().asString();
 	LinphoneAddress *lAddr = linphone_address_new(peerAddress.c_str());
+	LinphoneCore *lc = conf->getCore()->getCCore();
+	LinphoneProxyConfig *cfg = linphone_core_lookup_known_proxy(lc, lAddr);
+	if (!cfg || (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk))
+		return;
+
 	lev = linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600);
 	lev->op->set_from(chatRoomId.getLocalAddress().asString().c_str());
 	const string &lastNotifyStr = Utils::toString(lastNotify);
