@@ -68,7 +68,7 @@ void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify
 }
 
 void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &notify, const shared_ptr<ParticipantDevice> &device) {
-	if (device->isSubscribedToConferenceEventPackage()) {
+	if (device->isSubscribedToConferenceEventPackage() && !notify.empty()) {
 		LinphoneEvent *ev = device->getConferenceSubscribeEvent();
 		LinphoneContent *content = linphone_core_create_content(ev->lc);
 		linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
@@ -217,6 +217,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 		contents.push_back(content);
 	}
 
+	if (contents.empty())
+		return "";
 	return ContentManager::contentListToMultipart(contents).getBodyAsString();
 }
 
@@ -389,8 +391,9 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
 			d->notifyFullState(d->createNotifyFullState(), device);
 		} else if (lastNotify < d->lastNotify) {
-			lInfo() << "Sending all missed notify for conference:" << d->conf->getConferenceAddress().asString() <<
-				" from: " << lastNotify << " to: " << participant->getAddress().asString();
+			lInfo() << "Sending all missed notify [" << lastNotify << "-" << d->lastNotify <<
+				"] for conference:" << d->conf->getConferenceAddress().asString() <<
+				" to: " << participant->getAddress().asString();
 			d->notifyParticipantDevice(d->createNotifyMultipart(static_cast<int>(lastNotify)), device);
 		} else if (lastNotify > d->lastNotify) {
 			lError() << "last notify received by client: [" << lastNotify <<"] for conference:" <<
