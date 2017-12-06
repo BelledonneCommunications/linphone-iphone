@@ -46,6 +46,19 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 
 // -----------------------------------------------------------------------------
 
+shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const IdentityAddress &gruu) {
+	shared_ptr<ParticipantDevice> device = findDevice(gruu);
+	if (device)
+		return device;
+	device = make_shared<ParticipantDevice>(gruu);
+	devices.push_back(device);
+	return device;
+}
+
+void ParticipantPrivate::clearDevices () {
+	devices.clear();
+}
+
 shared_ptr<ParticipantDevice> ParticipantPrivate::findDevice (const IdentityAddress &gruu) const {
 	for (const auto &device : devices) {
 		if (device->getAddress() == gruu)
@@ -64,15 +77,6 @@ shared_ptr<ParticipantDevice> ParticipantPrivate::findDevice (const shared_ptr<c
 
 const list<shared_ptr<ParticipantDevice>> &ParticipantPrivate::getDevices () const {
 	return devices;
-}
-
-shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const IdentityAddress &gruu) {
-	shared_ptr<ParticipantDevice> device = findDevice(gruu);
-	if (device)
-		return device;
-	device = make_shared<ParticipantDevice>(gruu);
-	devices.push_back(device);
-	return device;
 }
 
 void ParticipantPrivate::removeDevice (const IdentityAddress &gruu) {

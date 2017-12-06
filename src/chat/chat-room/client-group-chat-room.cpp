@@ -66,7 +66,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	const Address &myAddress = q->getMe()->getAddress();
 	Address myCleanedAddress(myAddress);
 	myCleanedAddress.setUriParam("gr"); // Remove gr parameter for INVITE
-	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, focus->getAddress());
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, focus->getPrivate()->getDevices().front()->getAddress());
 	session->initiateOutgoing();
 	return session;
 }
@@ -87,13 +87,15 @@ void ClientGroupChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMes
 
 ClientGroupChatRoom::ClientGroupChatRoom (
 	const shared_ptr<Core> &core,
-	const string &factoryUri,
+	const string &uri,
 	const IdentityAddress &me,
 	const string &subject
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
 RemoteConference(core, me, nullptr) {
 	L_D_T(RemoteConference, dConference);
-	dConference->focus = make_shared<Participant>(Address(factoryUri));
+	IdentityAddress focusAddr(uri);
+	dConference->focus = make_shared<Participant>(focusAddr);
+	dConference->focus->getPrivate()->addDevice(focusAddr);
 	RemoteConference::setSubject(subject);
 }
 
@@ -298,6 +300,8 @@ void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->conferenceAddress = addr;
 	dConference->focus->getPrivate()->setAddress(addr);
+	dConference->focus->getPrivate()->clearDevices();
+	dConference->focus->getPrivate()->addDevice(addr);
 	d->chatRoomId = ChatRoomId(addr, d->chatRoomId.getLocalAddress());
 	getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
 }

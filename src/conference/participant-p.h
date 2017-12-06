@@ -40,10 +40,12 @@ public:
 	inline void removeSession () { session.reset(); }
 	inline void setAddress (const IdentityAddress &newAddr) { addr = newAddr; }
 	inline void setAdmin (bool isAdmin) { this->isAdmin = isAdmin; }
+
+	std::shared_ptr<ParticipantDevice> addDevice (const IdentityAddress &gruu);
+	void clearDevices ();
 	std::shared_ptr<ParticipantDevice> findDevice (const IdentityAddress &gruu) const;
 	std::shared_ptr<ParticipantDevice> findDevice (const std::shared_ptr<const CallSession> &session);
 	const std::list<std::shared_ptr<ParticipantDevice>> &getDevices () const;
-	std::shared_ptr<ParticipantDevice> addDevice (const IdentityAddress &gruu);
 	void removeDevice (const IdentityAddress &gruu);
 
 private:
