@@ -44,12 +44,15 @@ public:
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
+	void cancelDtmfs ();
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
 	void oglRender () const;
 	LinphoneStatus pause ();
 	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus resume ();
+	LinphoneStatus sendDtmf (char dtmf);
+	LinphoneStatus sendDtmfs (const std::string &dtmfs);
 	void sendVfuRequest ();
 	void startRecording ();
 	void stopRecording ();

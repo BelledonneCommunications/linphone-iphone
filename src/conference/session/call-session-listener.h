@@ -37,6 +37,7 @@ public:
 	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) = 0;
 	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) = 0;
 	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) = 0;
 	virtual void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) = 0;
 	virtual void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) = 0;
 

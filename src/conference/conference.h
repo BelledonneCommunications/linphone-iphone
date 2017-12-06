@@ -73,6 +73,7 @@ private:
 	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 	void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) override;
+	void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) override;
 	void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) override;
 	void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) override;
 	void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) override;

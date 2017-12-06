@@ -151,6 +151,11 @@ void CallPrivate::onCheckForAcceptation () {
 	bctbx_list_free(copy);
 }
 
+void CallPrivate::onDtmfReceived (char dtmf) {
+	L_Q();
+	linphone_call_notify_dtmf_received(L_GET_C_BACK_PTR(q), dtmf);
+}
+
 void CallPrivate::onIncomingCallStarted () {
 	L_Q();
 	linphone_core_notify_incoming_call(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
@@ -228,6 +233,11 @@ LinphoneStatus Call::acceptUpdate (const MediaSessionParams *msp) {
 	return static_cast<MediaSession *>(d->getActiveSession().get())->acceptUpdate(msp);
 }
 
+void Call::cancelDtmfs () {
+	L_D();
+	static_pointer_cast<MediaSession>(d->getActiveSession())->cancelDtmfs();
+}
+
 LinphoneStatus Call::decline (LinphoneReason reason) {
 	L_D();
 	return d->getActiveSession()->decline(reason);
@@ -256,6 +266,16 @@ LinphoneStatus Call::redirect (const std::string &redirectUri) {
 LinphoneStatus Call::resume () {
 	L_D();
 	return static_cast<MediaSession *>(d->getActiveSession().get())->resume();
+}
+
+LinphoneStatus Call::sendDtmf (char dtmf) {
+	L_D();
+	return static_pointer_cast<MediaSession>(d->getActiveSession())->sendDtmf(dtmf);
+}
+
+LinphoneStatus Call::sendDtmfs (const std::string &dtmfs) {
+	L_D();
+	return static_pointer_cast<MediaSession>(d->getActiveSession())->sendDtmfs(dtmfs);
 }
 
 void Call::sendVfuRequest () {

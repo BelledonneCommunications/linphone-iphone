@@ -164,6 +164,12 @@ void Conference::onCheckForAcceptation (const shared_ptr<const CallSession> &ses
 		d->callListener->onCheckForAcceptation();
 }
 
+void Conference::onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onDtmfReceived(dtmf);
+}
+
 void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSession> &session) {
 	L_D();
 	if (d->callListener)

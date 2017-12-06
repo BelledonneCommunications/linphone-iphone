@@ -45,12 +45,15 @@ public:
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
+	void cancelDtmfs ();
 	void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to) override;
 	void initiateIncoming () override;
 	bool initiateOutgoing () override;
 	void iterate (time_t currentRealTime, bool oneSecondElapsed) override;
 	LinphoneStatus pause ();
 	LinphoneStatus resume ();
+	LinphoneStatus sendDtmf (char dtmf);
+	LinphoneStatus sendDtmfs (const std::string &dtmfs);
 	void sendVfuRequest ();
 	void startIncomingNotification () override;
 	int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr) override;

@@ -132,14 +132,6 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				break;
 		}
 
-		if (newState != LinphoneCallStreamsRunning) {
-#if 0 // TODO
-			if (call->dtmfs_timer!=NULL){
-				/*cancelling DTMF sequence, if any*/
-				linphone_call_cancel_dtmfs(call);
-			}
-#endif
-		}
 		if (message.empty()) {
 			lError() << "You must fill a reason when changing call state (from " <<
 				linphone_call_state_to_string(prevState) << " to " << linphone_call_state_to_string(state) << ")";

@@ -28,6 +28,7 @@
 #include "conference/params/media-session-params-p.h"
 #include "conference/session/media-session.h"
 #include "core/core.h"
+#include "sal/sal.h"
 #include "utils/payload-type-handler.h"
 
 #include "logger/logger.h"
@@ -194,6 +195,12 @@ void MediaSessionPrivate::ackReceived (LinphoneHeaders *headers) {
 	}
 }
 
+void MediaSessionPrivate::dtmfReceived (char dtmf) {
+	L_Q();
+	if (listener)
+		listener->onDtmfReceived(q->getSharedFromThis(), dtmf);
+}
+
 bool MediaSessionPrivate::failure () {
 	L_Q();
 	const SalErrorInfo *ei = op->get_error_info();
@@ -321,6 +328,15 @@ void MediaSessionPrivate::remoteRinging () {
 
 void MediaSessionPrivate::resumed () {
 	acceptUpdate(nullptr, LinphoneCallStreamsRunning, "Connected (streams running)");
+}
+
+void MediaSessionPrivate::telephoneEventReceived (int event) {
+	static char dtmfTab[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#', 'A', 'B', 'C', 'D' };
+	if ((event < 0) || (event > 15)) {
+		lWarning() << "Bad dtmf value " << event;
+		return;
+	}
+	dtmfReceived(dtmfTab[event]);
 }
 
 void MediaSessionPrivate::terminated () {
@@ -577,6 +593,11 @@ void MediaSessionPrivate::realTimeTextCharacterReceived (void *userData, MSFilte
 	msp->realTimeTextCharacterReceived(f, id, arg);
 }
 
+int MediaSessionPrivate::sendDtmf (void *data, unsigned int revents) {
+	MediaSession *session = reinterpret_cast<MediaSession *>(data);
+	return session->getPrivate()->sendDtmf();
+}
+
 // -----------------------------------------------------------------------------
 
 float MediaSessionPrivate::aggregateQualityRatings (float audioRating, float videoRating) {
@@ -607,6 +628,8 @@ void MediaSessionPrivate::setState (LinphoneCallState newState, const string &me
 	L_Q();
 	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
 	shared_ptr<CallSession> sessionRef = q->getSharedFromThis();
+	if ((newState != state) && (newState != LinphoneCallStreamsRunning))
+		q->cancelDtmfs();
 	CallSessionPrivate::setState(newState, message);
 	updateReportingCallState();
 }
@@ -2194,9 +2217,7 @@ void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
 			if (ms)
 				handleIceEvents(ev);
 		} else if (evt == ORTP_EVENT_TELEPHONE_EVENT) {
-#if 0
-			linphone_core_dtmf_received(call, evd->info.telephone_event);
-#endif
+			telephoneEventReceived(evd->info.telephone_event);
 		} else if (evt == ORTP_EVENT_NEW_VIDEO_BANDWIDTH_ESTIMATION_AVAILABLE) {
 			lInfo() << "Video bandwidth estimation is " << (int)(evd->info.video_bandwidth_available / 1000.) << " kbit/s";
 			// TODO
@@ -4016,6 +4037,34 @@ void MediaSessionPrivate::realTimeTextCharacterReceived (MSFilter *f, unsigned i
 	}
 }
 
+int MediaSessionPrivate::sendDtmf () {
+	L_Q();
+	LinphoneCore *lc = q->getCore()->getCCore();
+	// By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO
+	if (linphone_core_get_use_rfc2833_for_dtmf(lc) || !linphone_core_get_use_info_for_dtmf(lc)) {
+		// In Band DTMF
+		if (audioStream)
+			audio_stream_send_dtmf(audioStream, dtmfSequence.front());
+		else {
+			lError() << "Cannot send RFC2833 DTMF when we are not in communication";
+			return FALSE;
+		}
+	}
+	if (linphone_core_get_use_info_for_dtmf(lc)) {
+		// Out of Band DTMF (use INFO method)
+		op->send_dtmf(dtmfSequence.front());
+	}
+
+	dtmfSequence.erase(0, 1);
+	// Continue only if the dtmf sequence is not empty
+	if (!dtmfSequence.empty())
+		return TRUE;
+	else {
+		q->cancelDtmfs();
+		return FALSE;
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 void MediaSessionPrivate::stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1) {
@@ -4094,6 +4143,7 @@ MediaSession::MediaSession (const shared_ptr<Core> &core, shared_ptr<Participant
 
 MediaSession::~MediaSession () {
 	L_D();
+	cancelDtmfs();
 	if (d->audioStats)
 		linphone_call_stats_unref(d->audioStats);
 	if (d->videoStats)
@@ -4176,7 +4226,16 @@ LinphoneStatus MediaSession::acceptUpdate (const MediaSessionParams *msp) {
 	return CallSession::acceptUpdate(msp);
 }
 
-// -----------------------------------------------------------------------------
+void MediaSession::cancelDtmfs () {
+	L_D();
+	if (!d->dtmfTimer)
+		return;
+
+	getCore()->getCCore()->sal->cancel_timer(d->dtmfTimer);
+	belle_sip_object_unref(d->dtmfTimer);
+	d->dtmfTimer = nullptr;
+	d->dtmfSequence.clear();
+}
 
 void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to) {
 	L_D();
@@ -4312,6 +4371,27 @@ LinphoneStatus MediaSession::resume () {
 		/* We are NOT offering, set local media description after sending the call so that we are ready to
 		 * process the remote offer when it will arrive. */
 		d->op->set_local_media_description(d->localDesc);
+	}
+	return 0;
+}
+
+LinphoneStatus MediaSession::sendDtmf (char dtmf) {
+	L_D();
+	d->dtmfSequence = dtmf;
+	d->sendDtmf();
+	return 0;
+}
+
+LinphoneStatus MediaSession::sendDtmfs (const std::string &dtmfs) {
+	L_D();
+	if (d->dtmfTimer) {
+		lWarning() << "MediaSession::sendDtmfs(): a DTMF sequence is already in place, canceling DTMF sequence";
+		return -2;
+	}
+	if (!dtmfs.empty()) {
+		int delayMs = lp_config_get_int(linphone_core_get_config(getCore()->getCCore()), "net", "dtmf_delay_ms", 200);
+		d->dtmfSequence = dtmfs;
+		d->dtmfTimer = getCore()->getCCore()->sal->create_timer(MediaSessionPrivate::sendDtmf, this, delayMs, "DTMF sequence timer");
 	}
 	return 0;
 }

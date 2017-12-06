@@ -51,37 +51,18 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	/* TODO: all the fields need to be removed */
 	struct _LinphoneCore *core;
 	LinphoneErrorInfo *ei;
-	SalMediaDescription *localdesc;
-	SalMediaDescription *resultdesc;
-	struct _LinphoneCallLog *log;
 	LinphonePrivate::SalOp *op;
-	LinphonePrivate::SalOp *ping_op;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	struct _AudioStream *audiostream;  /**/
-	struct _VideoStream *videostream;
-	struct _TextStream *textstream;
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
-	LinphoneCallParams *params;
-	LinphoneCallParams *current_params;
-	LinphoneCallParams *remote_params;
-	LinphoneCallStats *audio_stats;
-	LinphoneCallStats *video_stats;
-	LinphoneCallStats *text_stats;
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	LinphonePlayer *player;
-	char *dtmf_sequence; /*DTMF sequence needed to be sent using #dtmfs_timer*/
-	belle_sip_source_t *dtmfs_timer; /*DTMF timer needed to send a DTMF sequence*/
 	LinphoneChatRoom *chat_room;
 	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 	bool_t refer_pending;
 	bool_t defer_update;
-	bool_t was_automatically_paused;
-	bool_t paused_by_app;
-	bool_t broken; /*set to TRUE when the call is in broken state due to network disconnection or transport */
-	bool_t need_localip_refresh;
-	bool_t reinvite_on_cancel_response_requested;
 	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
 )
 
@@ -106,33 +87,9 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		call->remoteAddressCache = nullptr;
 	}
 	bctbx_list_free_with_data(call->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
-	if (call->audio_stats) {
-		linphone_call_stats_unref(call->audio_stats);
-		call->audio_stats = nullptr;
-	}
-	if (call->video_stats) {
-		linphone_call_stats_unref(call->video_stats);
-		call->video_stats = nullptr;
-	}
-	if (call->text_stats) {
-		linphone_call_stats_unref(call->text_stats);
-		call->text_stats = nullptr;
-	}
 	if (call->op) {
 		call->op->release();
 		call->op=nullptr;
-	}
-	if (call->resultdesc) {
-		sal_media_description_unref(call->resultdesc);
-		call->resultdesc=nullptr;
-	}
-	if (call->localdesc) {
-		sal_media_description_unref(call->localdesc);
-		call->localdesc=nullptr;
-	}
-	if (call->ping_op) {
-		call->ping_op->release();
-		call->ping_op=nullptr;
 	}
 	if (call->refer_to){
 		ms_free(call->refer_to);
@@ -145,25 +102,6 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 	if (call->transfer_target){
 		linphone_call_unref(call->transfer_target);
 		call->transfer_target=nullptr;
-	}
-	if (call->log) {
-		linphone_call_log_unref(call->log);
-		call->log=nullptr;
-	}
-	if (call->dtmfs_timer) {
-		linphone_call_cancel_dtmfs(call);
-	}
-	if (call->params){
-		linphone_call_params_unref(call->params);
-		call->params=nullptr;
-	}
-	if (call->current_params){
-		linphone_call_params_unref(call->current_params);
-		call->current_params=nullptr;
-	}
-	if (call->remote_params) {
-		linphone_call_params_unref(call->remote_params);
-		call->remote_params=nullptr;
 	}
 	if (call->ei) linphone_error_info_unref(call->ei);
 }
@@ -190,18 +128,6 @@ void linphone_call_create_op (LinphoneCall *call) {}
 void linphone_call_set_state (LinphoneCall *call, LinphoneCallState cstate, const char *message) {}
 
 void linphone_call_init_media_streams (LinphoneCall *call) {}
-
-#if 0
-static int dtmf_tab[16]={'0','1','2','3','4','5','6','7','8','9','*','#','A','B','C','D'};
-
-static void linphone_core_dtmf_received (LinphoneCall *call, int dtmf) {
-	if (dtmf<0 || dtmf>15){
-		ms_warning("Bad dtmf value %i",dtmf);
-		return;
-	}
-	linphone_call_notify_dtmf_received(call, dtmf_tab[dtmf]);
-}
-#endif
 
 /*This function is not static because used internally in linphone-daemon project*/
 void _post_configure_audio_stream (AudioStream *st, LinphoneCore *lc, bool_t muted) {}
@@ -258,41 +184,6 @@ void linphone_call_set_transfer_state (LinphoneCall *call, LinphoneCallState sta
 }
 
 void _linphone_call_set_new_params (LinphoneCall *call, const LinphoneCallParams *params) {}
-
-#if 0
-static int send_dtmf_handler (void *data, unsigned int revents) {
-	LinphoneCall *call = (LinphoneCall*)data;
-	/*By default we send DTMF RFC2833 if we do not have enabled SIP_INFO but we can also send RFC2833 and SIP_INFO*/
-	if (linphone_core_get_use_rfc2833_for_dtmf(call->core)!=0 || linphone_core_get_use_info_for_dtmf(call->core)==0)
-	{
-		/* In Band DTMF */
-		if (call->audiostream){
-			audio_stream_send_dtmf(call->audiostream,*call->dtmf_sequence);
-		}
-		else
-		{
-			ms_error("Cannot send RFC2833 DTMF when we are not in communication.");
-			return FALSE;
-		}
-	}
-	if (linphone_core_get_use_info_for_dtmf(call->core)!=0){
-		/* Out of Band DTMF (use INFO method) */
-		sal_call_send_dtmf(call->op,*call->dtmf_sequence);
-	}
-
-	/*this check is needed because linphone_call_send_dtmf does not set the timer since its a single character*/
-	if (call->dtmfs_timer) {
-		memmove(call->dtmf_sequence, call->dtmf_sequence+1, strlen(call->dtmf_sequence));
-	}
-	/* continue only if the dtmf sequence is not empty*/
-	if (call->dtmf_sequence && *call->dtmf_sequence!='\0') {
-		return TRUE;
-	} else {
-		linphone_call_cancel_dtmfs(call);
-		return FALSE;
-	}
-}
-#endif
 
 /* Internal version that does not play tone indication*/
 int _linphone_call_pause (LinphoneCall *call) {
@@ -607,54 +498,25 @@ void linphone_call_zoom (LinphoneCall *call, float zoom_factor, float cx, float 
 }
 
 LinphoneStatus linphone_call_send_dtmf (LinphoneCall *call, char dtmf) {
-#if 0
-	if (!call){
-		ms_warning("linphone_call_send_dtmf(): invalid call, canceling DTMF.");
+	if (!call) {
+		ms_warning("linphone_call_send_dtmf(): invalid call, canceling DTMF");
 		return -1;
 	}
-	call->dtmf_sequence = &dtmf;
-	send_dtmf_handler(call,0);
-	call->dtmf_sequence = nullptr;
-	return 0;
-#else
-	return 0;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->sendDtmf(dtmf);
 }
 
 LinphoneStatus linphone_call_send_dtmfs (LinphoneCall *call, const char *dtmfs) {
-#if 0
-	if (!call){
-		ms_warning("linphone_call_send_dtmfs(): invalid call, canceling DTMF sequence.");
+	if (!call) {
+		ms_warning("linphone_call_send_dtmfs(): invalid call, canceling DTMF sequence");
 		return -1;
 	}
-	if (call->dtmfs_timer){
-		ms_warning("linphone_call_send_dtmfs(): a DTMF sequence is already in place, canceling DTMF sequence.");
-		return -2;
-	}
-	if (dtmfs) {
-		int delay_ms = lp_config_get_int(call->core->config,"net","dtmf_delay_ms",200);
-		call->dtmf_sequence = ms_strdup(dtmfs);
-		call->dtmfs_timer = sal_create_timer(call->core->sal, send_dtmf_handler, call, delay_ms, "DTMF sequence timer");
-	}
-	return 0;
-#else
-	return 0;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->sendDtmfs(dtmfs);
 }
 
 void linphone_call_cancel_dtmfs (LinphoneCall *call) {
-#if 0
-	/*nothing to do*/
-	if (!call || !call->dtmfs_timer) return;
-
-	sal_cancel_timer(call->core->sal, call->dtmfs_timer);
-	belle_sip_object_unref(call->dtmfs_timer);
-	call->dtmfs_timer = nullptr;
-	if (call->dtmf_sequence) {
-		ms_free(call->dtmf_sequence);
-		call->dtmf_sequence = nullptr;
-	}
-#endif
+	if (!call)
+		return;
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->cancelDtmfs();
 }
 
 bool_t linphone_call_is_in_conference (const LinphoneCall *call) {

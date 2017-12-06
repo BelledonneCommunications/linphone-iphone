@@ -366,12 +366,16 @@ static void vfu_request(SalOp *op) {
 	L_GET_PRIVATE(mediaSession)->sendVfu();
 }
 
-static void dtmf_received(SalOp *op, char dtmf){
-#if 0
-	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (!call) return;
-	linphone_call_notify_dtmf_received(call, dtmf);
-#endif
+static void dtmf_received(SalOp *op, char dtmf) {
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	if (!session)
+		return;
+	LinphonePrivate::MediaSession *mediaSession = dynamic_cast<LinphonePrivate::MediaSession *>(session);
+	if (!mediaSession) {
+		ms_warning("DTMF received but no MediaSession!");
+		return;
+	}
+	L_GET_PRIVATE(mediaSession)->dtmfReceived(dtmf);
 }
 
 static void call_refer_received(SalOp *op, const SalAddress *referto){

@@ -44,10 +44,12 @@ public:
 
 	void accepted () override;
 	void ackReceived (LinphoneHeaders *headers) override;
+	void dtmfReceived (char dtmf);
 	bool failure () override;
 	void pausedByRemote ();
 	void remoteRinging () override;
 	void resumed ();
+	void telephoneEventReceived (int event);
 	void terminated () override;
 	void updated (bool isUpdate);
 	void updating (bool isUpdate) override;
@@ -93,14 +95,14 @@ public:
 private:
 	static OrtpJitterBufferAlgorithm jitterBufferNameToAlgo (const std::string &name);
 
-	#ifdef VIDEO_ENABLED
-		static void videoStreamEventCb (void *userData, const MSFilter *f, const unsigned int eventId, const void *args);
-	#endif // ifdef VIDEO_ENABLED
-	#ifdef TEST_EXT_RENDERER
-		static void extRendererCb (void *userData, const MSPicture *local, const MSPicture *remote);
-	#endif // ifdef TEST_EXT_RENDERER
+#ifdef VIDEO_ENABLED
+	static void videoStreamEventCb (void *userData, const MSFilter *f, const unsigned int eventId, const void *args);
+#endif // ifdef VIDEO_ENABLED
+#ifdef TEST_EXT_RENDERER
+	static void extRendererCb (void *userData, const MSPicture *local, const MSPicture *remote);
+#endif // ifdef TEST_EXT_RENDERER
 	static void realTimeTextCharacterReceived (void *userData, MSFilter *f, unsigned int id, void *arg);
-
+	static int sendDtmf (void *data, unsigned int revents);
 	static float aggregateQualityRatings (float audioRating, float videoRating);
 
 	std::shared_ptr<Participant> getMe () const;
@@ -241,10 +243,11 @@ private:
 	void refreshSockets ();
 	void reinviteToRecoverFromConnectionLoss () override;
 
-	#ifdef VIDEO_ENABLED
-		void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);
-	#endif // ifdef VIDEO_ENABLED
+#ifdef VIDEO_ENABLED
+	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);
+#endif // ifdef VIDEO_ENABLED
 	void realTimeTextCharacterReceived (MSFilter *f, unsigned int id, void *arg);
+	int sendDtmf ();
 
 	void stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
 
@@ -282,6 +285,9 @@ private:
 
 	// The address family to prefer for RTP path, guessed from signaling path.
 	int af;
+
+	std::string dtmfSequence;
+	belle_sip_source_t *dtmfTimer = nullptr;
 
 	std::string mediaLocalIp;
 	PortConfig mediaPorts[SAL_MEDIA_DESCRIPTION_MAX_STREAMS];

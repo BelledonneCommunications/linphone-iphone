@@ -63,6 +63,7 @@ private:
 	void onCallSetTerminated () override;
 	void onCallStateChanged (LinphoneCallState state, const std::string &message) override;
 	void onCheckForAcceptation () override;
+	void onDtmfReceived (char dtmf) override;
 	void onIncomingCallStarted () override;
 	void onIncomingCallToBeAdded () override;
 	void onInfoReceived (const LinphoneInfoMessage *im) override;
