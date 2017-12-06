@@ -23,6 +23,7 @@
 #include "linphone/types.h"
 
 #include "chat/chat-room/chat-room-id.h"
+#include "core/core-listener.h"
 #include "object/object-p.h"
 #include "remote-conference-event-handler.h"
 
@@ -30,9 +31,15 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class RemoteConferenceEventHandlerPrivate : public ObjectPrivate {
+class RemoteConferenceEventHandlerPrivate : public ObjectPrivate, public CoreListener {
 private:
 	void simpleNotifyReceived (const std::string &xmlBody);
+	void subscribe ();
+	void unsubscribe ();
+
+	// CoreListener
+	void onNetworkReachable (bool reachable) override;
+	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) override;
 
 	ChatRoomId chatRoomId;
 
@@ -40,6 +47,7 @@ private:
 	LinphoneEvent *lev = nullptr;
 
 	unsigned int lastNotify = 0;
+	bool subscriptionWanted = false;
 
 	L_DECLARE_PUBLIC(RemoteConferenceEventHandler);
 };

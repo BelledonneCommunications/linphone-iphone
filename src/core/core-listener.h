@@ -31,7 +31,7 @@ public:
 	virtual ~CoreListener () = default;
 
 	virtual void onNetworkReachable (bool reachable) {}
-	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) {}
+	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {}
 };
 
 LINPHONE_END_NAMESPACE

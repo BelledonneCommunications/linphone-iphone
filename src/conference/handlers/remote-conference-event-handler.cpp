@@ -166,6 +166,43 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 
 // -----------------------------------------------------------------------------
 
+void RemoteConferenceEventHandlerPrivate::subscribe () {
+	if (lev || !subscriptionWanted)
+		return; // Already subscribed or application did not request subscription
+	const string &peerAddress = chatRoomId.getPeerAddress().asString();
+	LinphoneAddress *lAddr = linphone_address_new(peerAddress.c_str());
+	lev = linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600);
+	lev->op->set_from(chatRoomId.getLocalAddress().asString().c_str());
+	const string &lastNotifyStr = Utils::toString(lastNotify);
+	linphone_event_add_custom_header(lev, "Last-Notify-Version", lastNotifyStr.c_str());
+	linphone_address_unref(lAddr);
+	linphone_event_set_internal(lev, TRUE);
+	linphone_event_set_user_data(lev, this);
+	lInfo() << "Subscribing to chat room: " << peerAddress << "with last notify: " << lastNotifyStr;
+	linphone_event_send_subscribe(lev, nullptr);
+}
+
+void RemoteConferenceEventHandlerPrivate::unsubscribe () {
+	if (lev) {
+		linphone_event_terminate(lev);
+		lev = nullptr;
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+void RemoteConferenceEventHandlerPrivate::onNetworkReachable (bool reachable) {
+	if (!reachable)
+		unsubscribe();
+}
+
+void RemoteConferenceEventHandlerPrivate::onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {
+	if (state == LinphoneRegistrationOk)
+		subscribe();
+}
+
+// -----------------------------------------------------------------------------
+
 RemoteConferenceEventHandler::RemoteConferenceEventHandler (RemoteConference *remoteConference) :
 Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
@@ -182,25 +219,14 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 void RemoteConferenceEventHandler::subscribe (const ChatRoomId &chatRoomId) {
 	L_D();
 	d->chatRoomId = chatRoomId;
-	const string &peerAddress = d->chatRoomId.getPeerAddress().asString();
-	LinphoneAddress *lAddr = linphone_address_new(peerAddress.c_str());
-	d->lev = linphone_core_create_subscribe(d->conf->getCore()->getCCore(), lAddr, "conference", 600);
-	d->lev->op->set_from(d->chatRoomId.getLocalAddress().asString().c_str());
-	const string &lastNotify = Utils::toString(d->lastNotify);
-	linphone_event_add_custom_header(d->lev, "Last-Notify-Version", lastNotify.c_str());
-	linphone_address_unref(lAddr);
-	linphone_event_set_internal(d->lev, TRUE);
-	linphone_event_set_user_data(d->lev, this);
-	lInfo() << "Subscribing to chat room: " << peerAddress << "with last notify: " << lastNotify;
-	linphone_event_send_subscribe(d->lev, nullptr);
+	d->subscriptionWanted = true;
+	d->subscribe();
 }
 
 void RemoteConferenceEventHandler::unsubscribe () {
 	L_D();
-	if (d->lev) {
-		linphone_event_terminate(d->lev);
-		d->lev = nullptr;
-	}
+	d->unsubscribe();
+	d->subscriptionWanted = false;
 }
 
 void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
@@ -245,6 +271,5 @@ void RemoteConferenceEventHandler::setLastNotify (unsigned int lastNotify) {
 void RemoteConferenceEventHandler::resetLastNotify () {
 	setLastNotify(0);
 }
-
 
 LINPHONE_END_NAMESPACE
