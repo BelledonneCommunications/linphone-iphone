@@ -22,7 +22,7 @@
 #include "conference/remote-conference.h"
 #include "content/content-manager.h"
 #include "content/content.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "logger/logger.h"
 #include "remote-conference-event-handler-p.h"
 #include "xml/conference-info.h"
@@ -214,9 +214,12 @@ Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
 	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = remoteConference;
+	d->conf->getCore()->getPrivate()->registerListener(d);
 }
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
+	L_D();
+	d->conf->getCore()->getPrivate()->unregisterListener(d);
 	xercesc::XMLPlatformUtils::Terminate();
 }
 
