@@ -190,7 +190,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertBasicChatRoom (
+	long long MainDbPrivate::insertOrUpdateBasicChatRoom (
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		const tm &creationTime
@@ -200,8 +200,11 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 
 		long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
-		if (id >= 0)
+		if (id >= 0) {
+			*session << "UPDATE chat_room SET last_update_time = :lastUpdateTime WHERE id = :id",
+				soci::use(creationTime), soci::use(id);
 			return id;
+		}
 
 		static const int capabilities = static_cast<int>(ChatRoom::Capabilities::Basic);
 		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
@@ -2244,7 +2247,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 					const long long &eventId = getLastInsertId();
 					const long long &localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
 					const long long &remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-					const long long &chatRoomId = d->insertBasicChatRoom(
+					const long long &chatRoomId = d->insertOrUpdateBasicChatRoom(
 						remoteSipAddressId,
 						localSipAddressId,
 						creationTime

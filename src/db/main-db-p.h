@@ -53,7 +53,7 @@ private:
 	long long insertSipAddress (const std::string &sipAddress);
 	void insertContent (long long messageEventId, const Content &content);
 	long long insertContentType (const std::string &contentType);
-	long long insertBasicChatRoom (
+	long long insertOrUpdateBasicChatRoom (
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		const tm &creationTime
