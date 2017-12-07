@@ -229,8 +229,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
 							block:^() {
 								if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] ==  AVAuthorizationStatusAuthorized ){
-									block(UIImagePickerControllerSourceTypeCamera);
-								}else{
+									if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
+										block(UIImagePickerControllerSourceTypeCamera);
+									}else{
+										[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+									}
+								}else {
 									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
 								}
 							}];
@@ -238,10 +242,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
 							block:^() {
-								if([PHPhotoLibrary authorizationStatus] ==  PHAuthorizationStatusAuthorized ){
+								if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
 									 block(UIImagePickerControllerSourceTypePhotoLibrary);
 								}else{
-									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
 								}
 							}];
 	}

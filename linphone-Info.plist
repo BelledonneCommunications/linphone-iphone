@@ -53,7 +53,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>9</string>
+	<string>10</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<true/>
 	<key>ITSEncryptionExportComplianceCode</key>
@@ -68,6 +68,8 @@
 	<string>Make calls with your friends</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Use microphone to make audio calls</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Add photo you shoot by yourself</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Share photos with your friends and customize avatars</string>
 	<key>NSVoIPUsageDescription</key>
