@@ -123,6 +123,20 @@ string AbstractDb::primaryKeyRefStr (const string &type) const {
 	return "";
 }
 
+string AbstractDb::timestampType () const {
+	L_D();
+
+	switch (d->backend) {
+		case Mysql:
+			return " TIMESTAMP";
+		case Sqlite3:
+			return " DATE";
+	}
+
+	L_ASSERT(false);
+	return "";
+}
+
 long long AbstractDb::getLastInsertId () const {
 	long long id = 0;
 

@@ -54,6 +54,8 @@ protected:
 	std::string primaryKeyStr (const std::string &type = "INT") const;
 	std::string primaryKeyRefStr (const std::string &type = "INT") const;
 
+	std::string timestampType () const;
+
 	long long getLastInsertId () const;
 
 	void enableForeignKeys (bool status);
