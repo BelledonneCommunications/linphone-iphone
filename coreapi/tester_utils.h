@@ -82,6 +82,7 @@ LINPHONE_PUBLIC LinphoneCallLog *linphone_call_get_log(const LinphoneCall *call)
 LINPHONE_PUBLIC MediaStream * linphone_call_get_stream(LinphoneCall *call, LinphoneStreamType type);
 LINPHONE_PUBLIC bool_t linphone_call_get_all_muted(const LinphoneCall *call);
 LINPHONE_PUBLIC LinphoneProxyConfig * linphone_call_get_dest_proxy(const LinphoneCall *call);
+LINPHONE_PUBLIC unsigned int _linphone_call_get_nb_media_starts (const LinphoneCall *call);
 
 LINPHONE_PUBLIC void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
 LINPHONE_PUBLIC bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);

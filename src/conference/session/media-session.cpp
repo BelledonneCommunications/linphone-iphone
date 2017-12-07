@@ -896,6 +896,10 @@ OrtpEvQueue * MediaSessionPrivate::getEventQueue (int streamIndex) const {
 	return nullptr;
 }
 
+unsigned int MediaSessionPrivate::getMediaStartCount () const {
+	return mediaStartCount;
+}
+
 MediaStream * MediaSessionPrivate::getMediaStream (int streamIndex) const {
 	if (streamIndex == mainAudioStreamIndex)
 		return &audioStream->ms;
@@ -2775,7 +2779,7 @@ void MediaSessionPrivate::startStreams (LinphoneCallState targetState) {
 		setSymmetricRtp(false);
 	}
 
-	nbMediaStarts++;
+	mediaStartCount++;
 	bool videoWillBeUsed = false;
 #if defined(VIDEO_ENABLED)
 	const SalStreamDescription *vstream = sal_media_description_find_best_stream(resultDesc, SalVideo);

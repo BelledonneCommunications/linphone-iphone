@@ -1530,16 +1530,14 @@ int check_nb_media_starts(LinphoneCoreManager *caller, LinphoneCoreManager *call
 	BC_ASSERT_PTR_NOT_NULL(c2);
 	if (!c1 || !c2) return FALSE;
 
-#if 0
 	if (c1) {
-		c1_ret = c1->nb_media_starts == caller_nb_media_starts;
-		BC_ASSERT_EQUAL(c1->nb_media_starts, caller_nb_media_starts, unsigned int, "%u");
+		c1_ret = (_linphone_call_get_nb_media_starts(c1) == caller_nb_media_starts) ? TRUE : FALSE;
+		BC_ASSERT_EQUAL(_linphone_call_get_nb_media_starts(c1), caller_nb_media_starts, unsigned int, "%u");
 	}
 	if (c2) {
-		c2_ret = c2->nb_media_starts == callee_nb_media_starts;
-		BC_ASSERT_EQUAL(c2->nb_media_starts, callee_nb_media_starts, unsigned int, "%u");
+		c2_ret = (_linphone_call_get_nb_media_starts(c2) == callee_nb_media_starts) ? TRUE : FALSE;
+		BC_ASSERT_EQUAL(_linphone_call_get_nb_media_starts(c2), callee_nb_media_starts, unsigned int, "%u");
 	}
-#endif
 	return c1_ret && c2_ret;
 }
 

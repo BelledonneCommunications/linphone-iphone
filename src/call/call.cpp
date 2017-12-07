@@ -42,6 +42,10 @@ IceSession *CallPrivate::getIceSession () const {
 	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getIceSession();
 }
 
+unsigned int CallPrivate::getMediaStartCount () const {
+	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getMediaStartCount();
+}
+
 MediaStream *CallPrivate::getMediaStream (LinphoneStreamType type) const {
 	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getMediaStream(type);
 }

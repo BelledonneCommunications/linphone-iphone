@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "tester_utils.h"
 #include "private.h"
 
+#include "call/call-p.h"
 #include "chat/chat-room/chat-room.h"
 #include "core/core.h"
 #include "c-wrapper/c-wrapper.h"
@@ -102,4 +103,8 @@ const bctbx_list_t *linphone_friend_list_get_dirty_friends_to_update(const Linph
 
 int linphone_friend_list_get_revision(const LinphoneFriendList *lfl) {
 	return lfl->revision;
+}
+
+unsigned int _linphone_call_get_nb_media_starts (const LinphoneCall *call) {
+	return L_GET_PRIVATE_FROM_C_OBJECT(call)->getMediaStartCount();
 }

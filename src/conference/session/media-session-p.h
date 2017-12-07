@@ -78,6 +78,7 @@ public:
 
 	SalMediaDescription *getLocalDesc () const { return localDesc; }
 
+	unsigned int getMediaStartCount () const;
 	MediaStream *getMediaStream (LinphoneStreamType type) const;
 	LinphoneNatPolicy *getNatPolicy () const { return natPolicy; }
 
@@ -308,7 +309,7 @@ private:
 	bool authTokenVerified = false;
 	std::string dtlsCertificateFingerprint;
 
-	unsigned int nbMediaStarts = 0;
+	unsigned int mediaStartCount = 0;
 
 	// Upload bandwidth setting at the time the call is started. Used to detect if it changes during a call.
 	int upBandwidth = 0;
