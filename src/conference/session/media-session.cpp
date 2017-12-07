@@ -4355,9 +4355,11 @@ LinphoneStatus MediaSession::sendDtmfs (const std::string &dtmfs) {
 		return -2;
 	}
 	if (!dtmfs.empty()) {
-		unsigned int delayMs = (unsigned int) lp_config_get_int(linphone_core_get_config(getCore()->getCCore()), "net", "dtmf_delay_ms", 200);
+		int delayMs = lp_config_get_int(linphone_core_get_config(getCore()->getCCore()), "net", "dtmf_delay_ms", 200);
+		if (delayMs < 0)
+			delayMs = 0;
 		d->dtmfSequence = dtmfs;
-		d->dtmfTimer = getCore()->getCCore()->sal->create_timer(MediaSessionPrivate::sendDtmf, this, delayMs, "DTMF sequence timer");
+		d->dtmfTimer = getCore()->getCCore()->sal->create_timer(MediaSessionPrivate::sendDtmf, this, static_cast<unsigned int>(delayMs), "DTMF sequence timer");
 	}
 	return 0;
 }
