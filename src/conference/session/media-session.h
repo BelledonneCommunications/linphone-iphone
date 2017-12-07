@@ -47,6 +47,7 @@ public:
 	LinphoneStatus acceptUpdate (const MediaSessionParams *msp);
 	void cancelDtmfs ();
 	void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to) override;
+	LinphoneStatus deferUpdate () override;
 	void initiateIncoming () override;
 	bool initiateOutgoing () override;
 	void iterate (time_t currentRealTime, bool oneSecondElapsed) override;
@@ -59,6 +60,7 @@ public:
 	int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr) override;
 	void startRecording ();
 	void stopRecording ();
+	void terminateBecauseOfLostMedia ();
 	LinphoneStatus update (const MediaSessionParams *msp, const std::string &subject = "");
 
 	void resetFirstVideoFrameDecoded ();
@@ -96,6 +98,7 @@ public:
 	LinphoneCallStats * getTextStats () const;
 	LinphoneCallStats * getVideoStats () const;
 	bool mediaInProgress () const;
+	void setAudioRoute (LinphoneAudioRoute route);
 	void setAuthenticationTokenVerified (bool value);
 	void setMicrophoneVolumeGain (float value);
 	void setNativeVideoWindowId (void *id);

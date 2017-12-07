@@ -32,14 +32,19 @@ public:
 
 	virtual void onAckBeingSent (LinphoneHeaders *headers) = 0;
 	virtual void onAckReceived (LinphoneHeaders *headers) = 0;
+	virtual void onBackgroundTaskToBeStarted () = 0;
+	virtual void onBackgroundTaskToBeStopped () = 0;
+	virtual bool onCallAccepted () = 0;
 	virtual void onCallSetReleased () = 0;
 	virtual void onCallSetTerminated () = 0;
 	virtual void onCallStateChanged (LinphoneCallState state, const std::string &message) = 0;
 	virtual void onCheckForAcceptation () = 0;
 	virtual void onDtmfReceived (char dtmf) = 0;
 	virtual void onIncomingCallStarted () = 0;
-	virtual void onIncomingCallToBeAdded () = 0;
+	virtual void onIncomingCallNotified () = 0;
+	virtual void onIncomingCallTimeoutCheck (int elapsed, bool oneSecondElapsed) = 0;
 	virtual void onInfoReceived (const LinphoneInfoMessage *im) = 0;
+	virtual void onNoMediaTimeoutCheck (bool oneSecondElapsed) = 0;
 
 	virtual void onEncryptionChanged (bool activated, const std::string &authToken) = 0;
 
@@ -50,6 +55,15 @@ public:
 
 	virtual void onFirstVideoFrameDecoded () = 0;
 	virtual void onResetFirstVideoFrameDecoded () = 0;
+
+	virtual void onPlayErrorTone (LinphoneReason reason) = 0;
+	virtual void onRingbackToneRequested (bool requested) = 0;
+	virtual void onStartRinging () = 0;
+	virtual void onStopRinging () = 0;
+	virtual void onStopRingingIfInCall () = 0;
+	virtual void onStopRingingIfNeeded () = 0;
+
+	virtual bool isPlayingRingbackTone () = 0;
 };
 
 LINPHONE_END_NAMESPACE

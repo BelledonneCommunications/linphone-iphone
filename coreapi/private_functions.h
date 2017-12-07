@@ -48,7 +48,6 @@ void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *ms
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
-void _linphone_call_set_new_params(LinphoneCall *call, const LinphoneCallParams *params);
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
@@ -227,7 +226,6 @@ void _linphone_call_stats_set_rtcp_download_bandwidth (LinphoneCallStats *stats,
 void _linphone_call_stats_set_rtcp_upload_bandwidth (LinphoneCallStats *stats, float bandwidth);
 void _linphone_call_stats_set_ip_family_of_remote (LinphoneCallStats *stats, LinphoneAddressFamily family);
 bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stats);
-void linphone_call_update_local_media_description_from_ice_or_upnp(LinphoneCall *call);
 void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer);
 void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md);
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
@@ -252,20 +250,12 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 void linphone_call_init_media_streams(LinphoneCall *call);
 void linphone_call_start_media_streams_for_ice_gathering(LinphoneCall *call);
 void linphone_call_stop_media_streams(LinphoneCall *call);
-void linphone_call_delete_upnp_session(LinphoneCall *call);
 int _linphone_core_apply_transports(LinphoneCore *lc);
 
 void linphone_core_start_waiting(LinphoneCore *lc, const char *purpose);
 void linphone_core_update_progress(LinphoneCore *lc, const char *purpose, float progresses);
 void linphone_core_stop_waiting(LinphoneCore *lc);
 
-int linphone_call_proceed_with_invite_if_ready(LinphoneCall *call, LinphoneProxyConfig *dest_proxy);
-int linphone_call_start_invite(LinphoneCall *call, const LinphoneAddress *destination/* = NULL if to be taken from the call log */);
-/*
- * param automatic_offering aims is to take into account previous answer for video in case of automatic re-invite.
- *  Purpose is to avoid to re-ask video previously declined */
-int linphone_call_start_update(LinphoneCall *call);
-int linphone_call_start_accept_update(LinphoneCall *call, LinphoneCallState next_state, const char *state_info);
 void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call);
 bool_t linphone_core_incompatible_security(LinphoneCore *lc, SalMediaDescription *md);
 extern LinphonePrivate::Sal::Callbacks linphone_sal_callbacks;
@@ -318,7 +308,6 @@ int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 void linphone_call_update_biggest_desc(LinphoneCall *call, SalMediaDescription *md);
-void linphone_call_make_local_media_description(LinphoneCall *call);
 void linphone_call_make_local_media_description_with_params(LinphoneCore *lc, LinphoneCall *call, LinphoneCallParams *params);
 
 bool_t linphone_core_is_payload_type_usable_for_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int bandwidth_limit);
@@ -401,7 +390,6 @@ bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc);
 const char *linphone_core_create_uuid(LinphoneCore *lc);
 void linphone_configure_op(LinphoneCore *lc, LinphonePrivate::SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact);
 void linphone_configure_op_with_proxy(LinphoneCore *lc, LinphonePrivate::SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy);
-void linphone_call_create_op(LinphoneCall *call);
 LinphoneContent * linphone_content_new(void);
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
 SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);

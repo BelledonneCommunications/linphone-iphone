@@ -57,27 +57,47 @@ public:
 	void createPlayer () const;
 
 private:
+	void startRemoteRing ();
+	void terminateBecauseOfLostMedia ();
+
 	/* CallListener */
 	void onAckBeingSent (LinphoneHeaders *headers) override;
 	void onAckReceived (LinphoneHeaders *headers) override;
+	void onBackgroundTaskToBeStarted () override;
+	void onBackgroundTaskToBeStopped () override;
+	bool onCallAccepted () override;
 	void onCallSetReleased () override;
 	void onCallSetTerminated () override;
 	void onCallStateChanged (LinphoneCallState state, const std::string &message) override;
 	void onCheckForAcceptation () override;
 	void onDtmfReceived (char dtmf) override;
+	void onIncomingCallNotified () override;
 	void onIncomingCallStarted () override;
-	void onIncomingCallToBeAdded () override;
+	void onIncomingCallTimeoutCheck (int elapsed, bool oneSecondElapsed) override;
 	void onInfoReceived (const LinphoneInfoMessage *im) override;
+	void onNoMediaTimeoutCheck (bool oneSecondElapsed) override;
 	void onEncryptionChanged (bool activated, const std::string &authToken) override;
 	void onStatsUpdated (const LinphoneCallStats *stats) override;
 	void onResetCurrentCall () override;
 	void onSetCurrentCall () override;
 	void onFirstVideoFrameDecoded () override;
 	void onResetFirstVideoFrameDecoded () override;
+	void onPlayErrorTone (LinphoneReason reason) override;
+	void onRingbackToneRequested (bool requested) override;
+	void onStartRinging () override;
+	void onStopRinging () override;
+	void onStopRingingIfInCall () override;
+	void onStopRingingIfNeeded () override;
+	bool isPlayingRingbackTone () override;
 
 	mutable LinphonePlayer *player = nullptr;
 
 	CallCallbackObj nextVideoFrameDecoded;
+
+	unsigned long backgroundTaskId = 0;
+
+	bool ringingBeep = false;
+	bool playingRingbackTone = false;
 
 	L_DECLARE_PUBLIC(Call);
 };

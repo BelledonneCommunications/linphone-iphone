@@ -134,10 +134,23 @@ void Conference::onAckReceived (const shared_ptr<const CallSession> &session, Li
 		d->callListener->onAckReceived(headers);
 }
 
-void Conference::onCallSessionAccepted (const shared_ptr<const CallSession> &session) {
+void Conference::onBackgroundTaskToBeStarted (const shared_ptr<const CallSession> &session) {
 	L_D();
 	if (d->callListener)
-		d->callListener->onIncomingCallToBeAdded();
+		d->callListener->onBackgroundTaskToBeStarted();
+}
+
+void Conference::onBackgroundTaskToBeStopped (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onBackgroundTaskToBeStopped();
+}
+
+bool Conference::onCallSessionAccepted (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		return d->callListener->onCallAccepted();
+	return false;
 }
 
 void Conference::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
@@ -164,10 +177,16 @@ void Conference::onCheckForAcceptation (const shared_ptr<const CallSession> &ses
 		d->callListener->onCheckForAcceptation();
 }
 
-void Conference::onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {
+void Conference::onDtmfReceived (const shared_ptr<const CallSession> &session, char dtmf) {
 	L_D();
 	if (d->callListener)
 		d->callListener->onDtmfReceived(dtmf);
+}
+
+void Conference::onIncomingCallSessionNotified (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onIncomingCallNotified();
 }
 
 void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSession> &session) {
@@ -176,10 +195,22 @@ void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSessio
 		d->callListener->onIncomingCallStarted();
 }
 
-void Conference::onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {
+void Conference::onIncomingCallSessionTimeoutCheck (const shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onIncomingCallTimeoutCheck(elapsed, oneSecondElapsed);
+}
+
+void Conference::onInfoReceived (const shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {
 	L_D();
 	if (d->callListener)
 		d->callListener->onInfoReceived(im);
+}
+
+void Conference::onNoMediaTimeoutCheck (const shared_ptr<const CallSession> &session, bool oneSecondElapsed) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onNoMediaTimeoutCheck(oneSecondElapsed);
 }
 
 void Conference::onEncryptionChanged (const shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
@@ -216,6 +247,49 @@ void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSessi
 	L_D();
 	if (d->callListener)
 		d->callListener->onResetFirstVideoFrameDecoded();
+}
+
+void Conference::onPlayErrorTone (const shared_ptr<const CallSession> &session, LinphoneReason reason) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onPlayErrorTone(reason);
+}
+
+void Conference::onRingbackToneRequested (const shared_ptr<const CallSession> &session, bool requested) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onRingbackToneRequested(requested);
+}
+
+void Conference::onStartRinging (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onStartRinging();
+}
+
+void Conference::onStopRinging (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onStopRinging();
+}
+
+void Conference::onStopRingingIfInCall (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onStopRingingIfInCall();
+}
+
+void Conference::onStopRingingIfNeeded (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		d->callListener->onStopRingingIfNeeded();
+}
+
+bool Conference::isPlayingRingbackTone (const shared_ptr<const CallSession> &session) {
+	L_D();
+	if (d->callListener)
+		return d->callListener->isPlayingRingbackTone();
+	return false;
 }
 
 // -----------------------------------------------------------------------------

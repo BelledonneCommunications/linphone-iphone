@@ -249,22 +249,8 @@ bool MediaSessionPrivate::failure () {
 	if (stop)
 		return true;
 
-#if 0
-	/* Stop ringing */
-	bool_t ring_during_early_media = linphone_core_get_ring_during_incoming_early_media(lc);
-	bool_t stop_ringing = TRUE;
-	bctbx_list_t *calls = lc->calls;
-	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (ring_during_early_media && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
-			stop_ringing = FALSE;
-			break;
-		}
-		calls = calls->next;
-	}
-	if(stop_ringing) {
-		linphone_core_stop_ringing(lc);
-	}
-#endif
+	if (listener)
+		listener->onStopRingingIfNeeded(q->getSharedFromThis());
 	stopStreams();
 	return false;
 }
@@ -301,16 +287,13 @@ void MediaSessionPrivate::remoteRinging () {
 		}
 
 		setState(LinphoneCallOutgoingEarlyMedia, "Early media");
-#if 0
-		linphone_core_stop_ringing(lc);
-#endif
+		if (listener)
+			listener->onStopRinging(q->getSharedFromThis());
 		lInfo() << "Doing early media...";
 		updateStreams(md, state);
 		if ((q->getCurrentParams()->getAudioDirection() == LinphoneMediaDirectionInactive) && audioStream) {
-#if 0
-			if (lc->ringstream != NULL) return; /* Already ringing! */
-			start_remote_ring(lc, call);
-#endif
+			if (listener)
+				listener->onStartRinging(q->getSharedFromThis());
 		}
 	} else {
 		linphone_core_stop_dtmf_stream(q->getCore()->getCCore());
@@ -318,9 +301,8 @@ void MediaSessionPrivate::remoteRinging () {
 			/* Already doing early media */
 			return;
 		}
-#if 0
-		if (lc->ringstream == NULL) start_remote_ring(lc, call);
-#endif
+		if (listener)
+			listener->onStartRinging(q->getSharedFromThis());
 		lInfo() << "Remote ringing...";
 		setState(LinphoneCallOutgoingRinging, "Remote ringing");
 	}
@@ -2580,6 +2562,13 @@ void MediaSessionPrivate::setSymmetricRtp (bool value) {
 	}
 }
 
+void MediaSessionPrivate::setupRingbackPlayer () {
+	L_Q();
+	int pauseTime = 3000;
+	audio_stream_play(audioStream, q->getCore()->getCCore()->sound_conf.ringback_tone);
+	ms_filter_call_method(audioStream->soundread, MS_FILE_PLAYER_LOOP, &pauseTime);
+}
+
 void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool videoWillBeUsed) {
 	L_Q();
 	const SalStreamDescription *stream = sal_media_description_find_best_stream(resultDesc, SalAudio);
@@ -2614,7 +2603,7 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				recfile = "";
 				/* And we will eventually play "playfile" if set by the user */
 			}
-			if (playingRingbackTone) {
+			if (listener && listener->isPlayingRingbackTone(q->getSharedFromThis())) {
 				captcard = nullptr;
 				playfile = ""; /* It is setup later */
 				if (lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sound", "send_ringback_without_playback", 0) == 1) {
@@ -2710,18 +2699,15 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 					(linphone_core_rtcp_enabled(q->getCore()->getCCore()) && !isMulticast) ? (stream->rtcp_port ? stream->rtcp_port : stream->rtp_port + 1) : 0,
 					usedPt, &io);
 				if (err == 0)
-					postConfigureAudioStreams((allMuted || audioMuted) && !playingRingbackTone);
+					postConfigureAudioStreams((allMuted || audioMuted) && (listener && !listener->isPlayingRingbackTone(q->getSharedFromThis())));
 			}
 			ms_media_stream_sessions_set_encryption_mandatory(&audioStream->ms.sessions, isEncryptionMandatory());
 			if ((targetState == LinphoneCallPaused) && !captcard && !playfile.empty()) {
 				int pauseTime = 500;
 				ms_filter_call_method(audioStream->soundread, MS_FILE_PLAYER_LOOP, &pauseTime);
 			}
-#if 0
-			if (playingRingbacktone) {
-				setup_ring_player(lc,call);
-			}
-#endif
+			if (listener && listener->isPlayingRingbackTone(q->getSharedFromThis()))
+				setupRingbackPlayer();
 			if (getParams()->getPrivate()->getInConference() && q->getCore()->getCCore()->conf_ctx) {
 				/* Transform the graph to connect it to the conference filter */
 #if 0
@@ -2751,16 +2737,16 @@ void MediaSessionPrivate::startStreams (LinphoneCallState targetState) {
 	L_Q();
 	switch (targetState) {
 		case LinphoneCallIncomingEarlyMedia:
-			if (linphone_core_get_remote_ringback_tone(q->getCore()->getCCore())) {
-				playingRingbackTone = true;
-			}
+			if (listener)
+				listener->onRingbackToneRequested(q->getSharedFromThis(), true);
 			BCTBX_NO_BREAK;
 		case LinphoneCallOutgoingEarlyMedia:
 			if (!getParams()->earlyMediaSendingEnabled())
 				allMuted = true;
 			break;
 		default:
-			playingRingbackTone = false;
+			if (listener)
+				listener->onRingbackToneRequested(q->getSharedFromThis(), false);
 			allMuted = false;
 			break;
 	}
@@ -3192,10 +3178,8 @@ void MediaSessionPrivate::updateStreams (SalMediaDescription *newMd, LinphoneCal
 				| SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED
 				| SAL_MEDIA_DESCRIPTION_FORCE_STREAM_RECONSTRUCTION))
 				lInfo() << "Media descriptions are different, need to restart the streams";
-#if 0
-			else if (call->playing_ringbacktone)
-				ms_message("Playing ringback tone, will restart the streams.");
-#endif
+			else if (listener && listener->isPlayingRingbackTone(q->getSharedFromThis()))
+				lInfo() << "Playing ringback tone, will restart the streams";
 			else {
 				if (allMuted && (targetState == LinphoneCallStreamsRunning)) {
 					lInfo() << "Early media finished, unmuting inputs...";
@@ -3595,6 +3579,7 @@ void MediaSessionPrivate::updateReportingMediaInfo (int statsType) {
 // -----------------------------------------------------------------------------
 
 void MediaSessionPrivate::executeBackgroundTasks (bool oneSecondElapsed) {
+	L_Q();
 	switch (state) {
 	case LinphoneCallStreamsRunning:
 	case LinphoneCallOutgoingEarlyMedia:
@@ -3624,16 +3609,8 @@ void MediaSessionPrivate::executeBackgroundTasks (bool oneSecondElapsed) {
 	handleStreamEvents(mainVideoStreamIndex);
 	handleStreamEvents(mainTextStreamIndex);
 
-#if 0
-	int disconnectTimeout = linphone_core_get_nortp_timeout(core);
-	bool disconnected = false;
-	if (((state == LinphoneCallStreamsRunning) || (state == LinphoneCallPausedByRemote)) && oneSecondElapsed && audioStream
-		&& (audioStream->ms.state == MSStreamStarted) && (disconnectTimeout > 0)) {
-		disconnected = !audio_stream_alive(audioStream, disconnectTimeout);
-	}
-	if (disconnected)
-		linphone_call_lost(call);
-#endif
+	if (listener)
+		listener->onNoMediaTimeoutCheck(q->getSharedFromThis(), oneSecondElapsed);
 }
 
 void MediaSessionPrivate::reportBandwidth () {
@@ -3684,9 +3661,9 @@ void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStr
 // -----------------------------------------------------------------------------
 
 void MediaSessionPrivate::abort (const string &errorMsg) {
-#if 0
-	linphone_core_stop_ringing(lc);
-#endif
+	L_Q();
+	if (listener)
+		listener->onStopRinging(q->getSharedFromThis());
 	stopStreams();
 	CallSessionPrivate::abort(errorMsg);
 }
@@ -3790,22 +3767,9 @@ LinphoneStatus MediaSessionPrivate::startUpdate (const string &subject) {
 }
 
 void MediaSessionPrivate::terminate () {
-#if 0 // TODO: handle in Call class
-	/* Stop ringing */
-	bool_t stop_ringing = TRUE;
-	bool_t ring_during_early_media = linphone_core_get_ring_during_incoming_early_media(lc);
-	const bctbx_list_t *calls = linphone_core_get_calls(lc);
-	while(calls) {
-		if (((LinphoneCall *)calls->data)->state == LinphoneCallIncomingReceived || (ring_during_early_media && ((LinphoneCall *)calls->data)->state == LinphoneCallIncomingEarlyMedia)) {
-			stop_ringing = FALSE;
-			break;
-		}
-		calls = calls->next;
-	}
-	if(stop_ringing) {
-		linphone_core_stop_ringing(lc);
-	}
-#endif
+	L_Q();
+	if (listener)
+		listener->onStopRingingIfNeeded(q->getSharedFromThis());
 
 	stopStreams();
 	CallSessionPrivate::terminate();
@@ -3903,7 +3867,7 @@ void MediaSessionPrivate::updateCurrentParams () const {
 
 // -----------------------------------------------------------------------------
 
-void MediaSessionPrivate::accept (const MediaSessionParams *msp) {
+void MediaSessionPrivate::accept (const MediaSessionParams *msp, bool wasRinging) {
 	L_Q();
 	if (msp) {
 		setParams(new MediaSessionParams(*msp));
@@ -3923,11 +3887,10 @@ void MediaSessionPrivate::accept (const MediaSessionParams *msp) {
 			ms_snd_card_set_preferred_sample_rate(q->getCore()->getCCore()->sound_conf.capt_sndcard, localDesc->streams[0].max_rate);
 	}
 
-#if 0
-	if (!was_ringing && (audioStream->ms.state == MSStreamInitialized) && !core->use_files) {
-		audio_stream_prepare_sound(audioStream, core->sound_conf.play_sndcard, core->sound_conf.capt_sndcard);
+	LinphoneCore *lc = q->getCore()->getCCore();
+	if (!wasRinging && (audioStream->ms.state == MSStreamInitialized) && !lc->use_files) {
+		audio_stream_prepare_sound(audioStream, lc->sound_conf.play_sndcard, lc->sound_conf.capt_sndcard);
 	}
-#endif
 
 	CallSessionPrivate::accept(nullptr);
 
@@ -4174,26 +4137,11 @@ LinphoneStatus MediaSession::accept (const MediaSessionParams *msp) {
 	LinphoneStatus result = d->checkForAcceptation();
 	if (result < 0) return result;
 
-#if 0
-	bool_t was_ringing = FALSE;
+	bool wasRinging = false;
+	if (d->listener)
+		wasRinging = d->listener->onCallSessionAccepted(getSharedFromThis());
 
-	if (lc->current_call != call) {
-		linphone_core_preempt_sound_resources(lc);
-	}
-
-	/* Stop ringing */
-	if (linphone_ringtoneplayer_is_started(lc->ringtoneplayer)) {
-		ms_message("Stop ringing");
-		linphone_core_stop_ringing(lc);
-		was_ringing = TRUE;
-	}
-	if (call->ringing_beep) {
-		linphone_core_stop_dtmf(lc);
-		call->ringing_beep = FALSE;
-	}
-#endif
-
-	d->accept(msp);
+	d->accept(msp, wasRinging);
 	lInfo() << "CallSession accepted";
 	return 0;
 }
@@ -4289,6 +4237,20 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 			d->runStunTestsIfNeeded();
 		d->discoverMtu(cleanedFrom);
 	}
+}
+
+LinphoneStatus MediaSession::deferUpdate () {
+	L_D();
+	if (d->state != LinphoneCallUpdatedByRemote) {
+		lError() << "MediaSession::deferUpdate() not done in state LinphoneCallUpdatedByRemote";
+		return -1;
+	}
+	if (d->expectMediaInAck) {
+		lError() << "MediaSession::deferUpdate() is not possible during a late offer incoming reINVITE (INVITE without SDP)";
+		return -1;
+	}
+	d->deferUpdate = true;
+	return 0;
 }
 
 void MediaSession::initiateIncoming () {
@@ -4486,6 +4448,13 @@ void MediaSession::stopRecording () {
 	if (d->audioStream && !d->getParams()->getPrivate()->getInConference())
 		audio_stream_mixed_record_stop(d->audioStream);
 	d->recordActive = false;
+}
+
+void MediaSession::terminateBecauseOfLostMedia () {
+	L_D();
+	d->nonOpError = true;
+	linphone_error_info_set(d->ei, nullptr, LinphoneReasonIOError, 503, "Media lost", nullptr);
+	terminate();
 }
 
 LinphoneStatus MediaSession::update (const MediaSessionParams *msp, const string &subject) {
@@ -4897,6 +4866,12 @@ bool MediaSession::mediaInProgress () const {
 		return true;
 	/* TODO: could check zrtp state */
 	return false;
+}
+
+void MediaSession::setAudioRoute (LinphoneAudioRoute route) {
+	L_D();
+	if (d->audioStream)
+		audio_stream_set_audio_route(d->audioStream, (MSAudioRoute)route);
 }
 
 void MediaSession::setAuthenticationTokenVerified (bool value) {

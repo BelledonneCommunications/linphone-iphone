@@ -150,14 +150,10 @@ void CallSessionPrivate::startIncomingNotification () {
 
 	setState(LinphoneCallIncomingReceived, "Incoming CallSession");
 
-	/* From now on, the application is aware of the call and supposed to take background task or already submitted notification to the user.
-	 * We can then drop our background task. */
-#if 0
-	if (call->bg_task_id!=0) {
-		sal_end_background_task(call->bg_task_id);
-		call->bg_task_id=0;
-	}
-#endif
+	// From now on, the application is aware of the call and supposed to take background task or already submitted
+	// notification to the user. We can then drop our background task.
+	if (listener)
+		listener->onBackgroundTaskToBeStopped(q->getSharedFromThis());
 
 	if (state == LinphoneCallIncomingReceived) {
 		handleIncomingReceivedStateInIncomingNotification();
@@ -287,10 +283,8 @@ bool CallSessionPrivate::failure () {
 			else
 				setState(LinphoneCallEnd, ei->full_string ? ei->full_string : "");
 		}
-#if 0 // TODO: handle in Call class
-		if (ei->reason != SalReasonNone)
-			linphone_core_play_call_error_tone(core, linphone_reason_from_sal(ei->reason));
-#endif
+		if ((ei->reason != SalReasonNone) && listener)
+			listener->onPlayErrorTone(q->getSharedFromThis(), linphone_reason_from_sal(ei->reason));
 	}
 #if 0
 	LinphoneCall *referer=call->referer;
@@ -328,11 +322,11 @@ void CallSessionPrivate::pingReply () {
 }
 
 void CallSessionPrivate::remoteRinging () {
+	L_Q();
 	/* Set privacy */
 	currentParams->setPrivacy((LinphonePrivacyMask)op->get_privacy());
-#if 0
-	if (lc->ringstream == NULL) start_remote_ring(lc, call);
-#endif
+	if (listener)
+		listener->onStartRinging(q->getSharedFromThis());
 	lInfo() << "Remote ringing...";
 	setState(LinphoneCallOutgoingRinging, "Remote ringing");
 }
@@ -379,6 +373,7 @@ void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
 }
 
 void CallSessionPrivate::terminated () {
+	L_Q();
 	switch (state) {
 		case LinphoneCallEnd:
 		case LinphoneCallError:
@@ -397,11 +392,9 @@ void CallSessionPrivate::terminated () {
 #if 0
 	if (call->refer_pending)
 		linphone_core_start_refered_call(lc,call,NULL);
-	//we stop the call only if we have this current call or if we are in call
-	if ((bctbx_list_size(lc->calls)  == 1) || linphone_core_in_call(lc)) {
-		linphone_core_stop_ringing(lc);
-	}
 #endif
+	if (listener)
+		listener->onStopRingingIfInCall(q->getSharedFromThis());
 	setState(LinphoneCallEnd, "Call ended");
 }
 
@@ -976,6 +969,24 @@ LinphoneStatus CallSession::decline (const LinphoneErrorInfo *ei) {
 	return 0;
 }
 
+LinphoneStatus CallSession::declineNotAnswered (LinphoneReason reason) {
+	L_D();
+	d->log->status = LinphoneCallMissed;
+	d->nonOpError = true;
+	linphone_error_info_set(d->ei, nullptr, reason, linphone_reason_to_error_code(reason), "Not answered", nullptr);
+	return decline(reason);
+}
+
+LinphoneStatus CallSession::deferUpdate () {
+	L_D();
+	if (d->state != LinphoneCallUpdatedByRemote) {
+		lError() << "CallSession::deferUpdate() not done in state LinphoneCallUpdatedByRemote";
+		return -1;
+	}
+	d->deferUpdate = true;
+	return 0;
+}
+
 void CallSession::initiateIncoming () {}
 
 bool CallSession::initiateOutgoing () {
@@ -999,20 +1010,8 @@ void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 		startInvite(nullptr, "");
 	}
 	if ((d->state == LinphoneCallIncomingReceived) || (d->state == LinphoneCallIncomingEarlyMedia)) {
-		if (oneSecondElapsed)
-			lInfo() << "Incoming call ringing for " << elapsed << " seconds";
-		if (elapsed > getCore()->getCCore()->sip_conf.inc_timeout) {
-			lInfo() << "Incoming call timeout (" << getCore()->getCCore()->sip_conf.inc_timeout << ")";
-#if 0
-			LinphoneReason declineReason = (core->current_call != call) ? LinphoneReasonBusy : LinphoneReasonDeclined;
-#endif
-			d->log->status = LinphoneCallMissed;
-#if 0
-			call->non_op_error = TRUE;
-			linphone_error_info_set(call->ei, NULL, decline_reason, linphone_reason_to_error_code(decline_reason), "Not answered", NULL);
-			linphone_call_decline(call, decline_reason);
-#endif
-		}
+		if (d->listener)
+			d->listener->onIncomingCallSessionTimeoutCheck(getSharedFromThis(), elapsed, oneSecondElapsed);
 	}
 	if ((getCore()->getCCore()->sip_conf.in_call_timeout > 0) && (d->log->connected_date_time != 0)
 		&& ((currentRealTime - d->log->connected_date_time) > getCore()->getCCore()->sip_conf.in_call_timeout)) {
@@ -1054,13 +1053,12 @@ LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
 
 void CallSession::startIncomingNotification () {
 	L_D();
-	if (d->listener)
-		d->listener->onCallSessionAccepted(getSharedFromThis());
+	if (d->listener) {
+		d->listener->onIncomingCallSessionNotified(getSharedFromThis());
+		d->listener->onBackgroundTaskToBeStarted(getSharedFromThis());
+	}
 	/* Prevent the CallSession from being destroyed while we are notifying, if the user declines within the state callback */
 	shared_ptr<CallSession> ref = getSharedFromThis();
-#if 0
-	call->bg_task_id=sal_begin_background_task("liblinphone call notification", NULL, NULL);
-#endif
 	if (d->deferIncomingNotification) {
 		lInfo() << "Defer incoming notification";
 		return;
@@ -1162,6 +1160,18 @@ LinphoneCallDir CallSession::getDirection () const {
 	return d->direction;
 }
 
+const Address& CallSession::getDiversionAddress () const {
+	L_D();
+	if (d->op) {
+		char *addrStr = sal_address_as_string(d->op->get_diversion_address());
+		d->diversionAddress = Address(addrStr);
+		bctbx_free(addrStr);
+	} else {
+		d->diversionAddress = Address();
+	}
+	return d->diversionAddress;
+}
+
 int CallSession::getDuration () const {
 	L_D();
 	switch (d->state) {
@@ -1238,6 +1248,17 @@ const CallSessionParams * CallSession::getRemoteParams () {
 LinphoneCallState CallSession::getState () const {
 	L_D();
 	return d->state;
+}
+
+const Address& CallSession::getToAddress () const {
+	L_D();
+	d->toAddress = Address(d->op->get_to());
+	return d->toAddress;
+}
+
+string CallSession::getToHeader (const string &name) const {
+	L_D();
+	return L_C_TO_STRING(sal_custom_header_find(d->op->get_recv_custom_header(), name.c_str()));
 }
 
 // -----------------------------------------------------------------------------

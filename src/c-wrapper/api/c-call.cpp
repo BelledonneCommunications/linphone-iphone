@@ -45,47 +45,53 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	LinphoneCallParams *currentParamsCache;
 	LinphoneCallParams *paramsCache;
 	LinphoneCallParams *remoteParamsCache;
+	LinphoneAddress *diversionAddressCache;
 	LinphoneAddress *remoteAddressCache;
+	LinphoneAddress *toAddressCache;
 	char *remoteContactCache;
 	char *remoteUserAgentCache;
+	mutable char *toHeaderCache;
 	/* TODO: all the fields need to be removed */
 	struct _LinphoneCore *core;
-	LinphoneErrorInfo *ei;
 	LinphonePrivate::SalOp *op;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
-	struct _AudioStream *audiostream;  /**/
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
 	char *refer_to;
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
-	LinphonePlayer *player;
 	LinphoneChatRoom *chat_room;
 	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 	bool_t refer_pending;
-	bool_t defer_update;
-	bool_t non_op_error; /*set when the LinphoneErrorInfo was set at higher level than sal*/
 )
 
 static void _linphone_call_constructor (LinphoneCall *call) {
+	call->currentParamsCache = linphone_call_params_new_for_wrapper();
+	call->paramsCache = linphone_call_params_new_for_wrapper();
+	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
+	call->diversionAddressCache = linphone_address_new(nullptr);
+	call->remoteAddressCache = linphone_address_new(nullptr);
+	call->toAddressCache = linphone_address_new(nullptr);
 }
 
 static void _linphone_call_destructor (LinphoneCall *call) {
-	if (call->currentParamsCache) {
+	if (call->currentParamsCache)
 		linphone_call_params_unref(call->currentParamsCache);
-		call->currentParamsCache = nullptr;
-	}
-	if (call->paramsCache) {
+	if (call->paramsCache)
 		linphone_call_params_unref(call->paramsCache);
-		call->paramsCache = nullptr;
-	}
-	if (call->remoteParamsCache) {
+	if (call->remoteParamsCache)
 		linphone_call_params_unref(call->remoteParamsCache);
-		call->remoteParamsCache = nullptr;
-	}
-	if (call->remoteAddressCache) {
+	if (call->diversionAddressCache)
+		linphone_address_unref(call->diversionAddressCache);
+	if (call->remoteAddressCache)
 		linphone_address_unref(call->remoteAddressCache);
-		call->remoteAddressCache = nullptr;
-	}
+	if (call->toAddressCache)
+		linphone_address_unref(call->toAddressCache);
+	if (call->remoteContactCache)
+		bctbx_free(call->remoteContactCache);
+	if (call->remoteUserAgentCache)
+		bctbx_free(call->remoteUserAgentCache);
+	if (call->toHeaderCache)
+		bctbx_free(call->toHeaderCache);
 	bctbx_list_free_with_data(call->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
 	if (call->op) {
 		call->op->release();
@@ -103,7 +109,6 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		linphone_call_unref(call->transfer_target);
 		call->transfer_target=nullptr;
 	}
-	if (call->ei) linphone_error_info_unref(call->ei);
 }
 
 
@@ -119,26 +124,12 @@ MSWebCam *get_nowebcam_device (MSFactory* f) {
 #endif
 }
 
-void linphone_call_update_local_media_description_from_ice_or_upnp (LinphoneCall *call) {}
-
-void linphone_call_make_local_media_description (LinphoneCall *call) {}
-
-void linphone_call_create_op (LinphoneCall *call) {}
-
 void linphone_call_set_state (LinphoneCall *call, LinphoneCallState cstate, const char *message) {}
 
 void linphone_call_init_media_streams (LinphoneCall *call) {}
 
 /*This function is not static because used internally in linphone-daemon project*/
 void _post_configure_audio_stream (AudioStream *st, LinphoneCore *lc, bool_t muted) {}
-
-#if 0
-static void setup_ring_player (LinphoneCore *lc, LinphoneCall *call) {
-	int pause_time=3000;
-	audio_stream_play(call->audiostream,lc->sound_conf.ringback_tone);
-	ms_filter_call_method(call->audiostream->soundread,MS_FILE_PLAYER_LOOP,&pause_time);
-}
-#endif
 
 #if 0
 static bool_t linphone_call_sound_resources_available (LinphoneCall *call) {
@@ -149,27 +140,7 @@ static bool_t linphone_call_sound_resources_available (LinphoneCall *call) {
 }
 #endif
 
-void linphone_call_delete_upnp_session (LinphoneCall *call) {}
-
 void linphone_call_stop_media_streams (LinphoneCall *call) {}
-
-#if 0
-static void linphone_call_lost (LinphoneCall *call) {
-	LinphoneCore *lc = call->core;
-	char *temp = nullptr;
-	char *from = nullptr;
-
-	from = linphone_call_get_remote_address_as_string(call);
-	temp = ms_strdup_printf("Media connectivity with %s is lost, call is going to be closed.", from ? from : "?");
-	if (from) ms_free(from);
-	ms_message("LinphoneCall [%p]: %s", call, temp);
-	call->non_op_error = TRUE;
-	linphone_error_info_set(call->ei,nullptr, LinphoneReasonIOError, 503, "Media lost", nullptr);
-	linphone_call_terminate(call);
-	linphone_core_play_named_tone(lc, LinphoneToneCallLost);
-	ms_free(temp);
-}
-#endif
 
 void linphone_call_set_transfer_state (LinphoneCall *call, LinphoneCallState state) {
 #if 0
@@ -183,30 +154,8 @@ void linphone_call_set_transfer_state (LinphoneCall *call, LinphoneCallState sta
 #endif
 }
 
-void _linphone_call_set_new_params (LinphoneCall *call, const LinphoneCallParams *params) {}
-
 /* Internal version that does not play tone indication*/
 int _linphone_call_pause (LinphoneCall *call) {
-	return 0;
-}
-
-#if 0
-static void terminate_call (LinphoneCall *call) {}
-#endif
-
-int linphone_call_start_update (LinphoneCall *call) {
-	return 0;
-}
-
-int linphone_call_start_accept_update (LinphoneCall *call, LinphoneCallState next_state, const char *state_info) {
-	return 0;
-}
-
-int linphone_call_proceed_with_invite_if_ready (LinphoneCall *call, LinphoneProxyConfig *dest_proxy) {
-	return 0;
-}
-
-int linphone_call_start_invite (LinphoneCall *call, const LinphoneAddress *destination /* = NULL if to be taken from the call log */) {
 	return 0;
 }
 
@@ -314,20 +263,19 @@ const LinphoneAddress *linphone_call_get_remote_address (const LinphoneCall *cal
 	return call->remoteAddressCache;
 }
 
-const LinphoneAddress *linphone_call_get_to_address (const LinphoneCall *call){
-#if 0
-  return (const LinphoneAddress *)sal_op_get_to_address(call->op);
-#else
-	return nullptr;
-#endif
+const LinphoneAddress *linphone_call_get_to_address (const LinphoneCall *call) {
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->toAddressCache, &L_GET_CPP_PTR_FROM_C_OBJECT(call)->getToAddress());
+	return call->toAddressCache;
 }
 
 const char *linphone_call_get_to_header (const LinphoneCall *call, const char *name) {
-#if 0
-	return sal_custom_header_find(sal_op_get_recv_custom_header(call->op),name);
-#else
-	return nullptr;
-#endif
+	string header = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getToHeader(name);
+	if (header.empty())
+		return nullptr;
+	if (call->toHeaderCache)
+		bctbx_free(call->toHeaderCache);
+	call->toHeaderCache = bctbx_strdup(header.c_str());
+	return call->toHeaderCache;
 }
 
 char *linphone_call_get_remote_address_as_string (const LinphoneCall *call) {
@@ -335,11 +283,11 @@ char *linphone_call_get_remote_address_as_string (const LinphoneCall *call) {
 }
 
 const LinphoneAddress *linphone_call_get_diversion_address (const LinphoneCall *call) {
-#if 0
-	return call->op?(const LinphoneAddress *)sal_op_get_diversion_address(call->op):nullptr;
-#else
-	return nullptr;
-#endif
+	LinphonePrivate::Address diversionAddress(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getDiversionAddress());
+	if (!diversionAddress.isValid())
+		return nullptr;
+	L_SET_CPP_PTR_FROM_C_OBJECT(call->diversionAddressCache, &diversionAddress);
+	return call->diversionAddressCache;
 }
 
 LinphoneCallDir linphone_call_get_dir (const LinphoneCall *call) {
@@ -536,11 +484,7 @@ LinphoneConference *linphone_call_get_conference (const LinphoneCall *call) {
 }
 
 void linphone_call_set_audio_route (LinphoneCall *call, LinphoneAudioRoute route) {
-#if 0
-	if (call && call->audiostream){
-		audio_stream_set_audio_route(call->audiostream, (MSAudioRoute) route);
-	}
-#endif
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->setAudioRoute(route);
 }
 
 int linphone_call_get_stream_count (const LinphoneCall *call) {
@@ -608,22 +552,7 @@ LinphoneStatus linphone_call_update (LinphoneCall *call, const LinphoneCallParam
 }
 
 LinphoneStatus linphone_call_defer_update (LinphoneCall *call) {
-#if 0
-	if (call->state != LinphoneCallUpdatedByRemote) {
-		ms_error("linphone_call_defer_update() not done in state LinphoneCallUpdatedByRemote");
-		return -1;
-	}
-
-	if (call->expect_media_in_ack) {
-		ms_error("linphone_call_defer_update() is not possible during a late offer incoming reINVITE (INVITE without SDP)");
-		return -1;
-	}
-
-	call->defer_update=TRUE;
-	return 0;
-#else
-	return 0;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->deferUpdate();
 }
 
 LinphoneStatus linphone_call_accept_update (LinphoneCall *call, const LinphoneCallParams *params) {
@@ -838,10 +767,6 @@ LinphoneCall *linphone_call_new_outgoing (LinphoneCore *lc, const LinphoneAddres
 			cfg, nullptr, L_GET_CPP_PTR_FROM_C_OBJECT(params));
 	}
 	L_SET_CPP_PTR_FROM_C_OBJECT(lcall, call);
-	lcall->currentParamsCache = linphone_call_params_new_for_wrapper();
-	lcall->paramsCache = linphone_call_params_new_for_wrapper();
-	lcall->remoteParamsCache = linphone_call_params_new_for_wrapper();
-	lcall->remoteAddressCache = linphone_address_new(nullptr);
 	return lcall;
 }
 
@@ -859,10 +784,6 @@ LinphoneCall *linphone_call_new_incoming (LinphoneCore *lc, const LinphoneAddres
 			nullptr, op, nullptr);
 	}
 	L_SET_CPP_PTR_FROM_C_OBJECT(lcall, call);
-	lcall->currentParamsCache = linphone_call_params_new_for_wrapper();
-	lcall->paramsCache = linphone_call_params_new_for_wrapper();
-	lcall->remoteParamsCache = linphone_call_params_new_for_wrapper();
-	lcall->remoteAddressCache = linphone_address_new(nullptr);
 	L_GET_PRIVATE_FROM_C_OBJECT(lcall)->initiateIncoming();
 	return lcall;
 }

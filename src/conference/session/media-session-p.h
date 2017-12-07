@@ -190,6 +190,7 @@ private:
 	void postConfigureAudioStreams (bool muted);
 	void setPlaybackGainDb (AudioStream *stream, float gain);
 	void setSymmetricRtp (bool value);
+	void setupRingbackPlayer ();
 	void startAudioStream (LinphoneCallState targetState, bool videoWillBeUsed);
 	void startStreams (LinphoneCallState targetState);
 	void startTextStream ();
@@ -238,7 +239,7 @@ private:
 	void terminate () override;
 	void updateCurrentParams () const override;
 
-	void accept (const MediaSessionParams *params);
+	void accept (const MediaSessionParams *params, bool wasRinging);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
 
 	void refreshSockets ();
@@ -321,7 +322,6 @@ private:
 	bool audioMuted = false;
 	bool automaticallyPaused = false;
 	bool pausedByApp = false;
-	bool playingRingbackTone = false;
 	bool recordActive = false;
 
 	std::string onHoldFile;

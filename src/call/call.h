@@ -47,6 +47,7 @@ public:
 	void cancelDtmfs ();
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
+	LinphoneStatus deferUpdate ();
 	void oglRender () const;
 	LinphoneStatus pause ();
 	LinphoneStatus redirect (const std::string &redirectUri);
@@ -77,6 +78,7 @@ public:
 	const MediaSessionParams *getCurrentParams () const;
 	float getCurrentQuality () const;
 	LinphoneCallDir getDirection () const;
+	const Address &getDiversionAddress () const;
 	int getDuration () const;
 	const LinphoneErrorInfo *getErrorInfo () const;
 	LinphoneCallLog *getLog () const;
@@ -100,8 +102,11 @@ public:
 	int getStreamCount () const;
 	MSFormatType getStreamType (int streamIndex) const;
 	LinphoneCallStats *getTextStats () const;
+	const Address &getToAddress () const;
+	std::string getToHeader (const std::string &name) const;
 	LinphoneCallStats *getVideoStats () const;
 	bool mediaInProgress () const;
+	void setAudioRoute (LinphoneAudioRoute route);
 	void setAuthenticationTokenVerified (bool value);
 	void setMicrophoneVolumeGain (float value);
 	void setNativeVideoWindowId (void *id);

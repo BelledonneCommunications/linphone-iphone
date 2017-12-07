@@ -57,6 +57,8 @@ public:
 	virtual void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to);
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
+	LinphoneStatus declineNotAnswered (LinphoneReason reason);
+	virtual LinphoneStatus deferUpdate ();
 	virtual void initiateIncoming ();
 	virtual bool initiateOutgoing ();
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
@@ -69,6 +71,7 @@ public:
 
 	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;
+	const Address& getDiversionAddress () const;
 	int getDuration () const;
 	const LinphoneErrorInfo * getErrorInfo () const;
 	LinphoneCallLog * getLog () const;
@@ -79,9 +82,10 @@ public:
 	std::string getRemoteContact () const;
 	const Address *getRemoteContactAddress () const;
 	const CallSessionParams *getRemoteParams ();
-	LinphoneCallState getState () const;
-
 	std::string getRemoteUserAgent () const;
+	LinphoneCallState getState () const;
+	const Address& getToAddress () const;
+	std::string getToHeader (const std::string &name) const;
 
 protected:
 	explicit CallSession (CallSessionPrivate &p, const std::shared_ptr<Core> &core);
