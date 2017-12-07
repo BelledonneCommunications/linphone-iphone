@@ -1990,7 +1990,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 			tm creationTime = row.get<tm>(3);
 			tm lastUpdateTime = row.get<tm>(4);
 			int capabilities = row.get<int>(5);
-			string subject = row.get<string>(6);
+			string subject = row.get<string>(6, "");
 			unsigned int lastNotifyId = (getBackend() == Backend::Mysql)
 				? row.get<unsigned int>(7, 0)
 				: static_cast<unsigned int>(row.get<int>(7, 0));
