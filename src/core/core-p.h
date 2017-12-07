@@ -54,7 +54,7 @@ public:
 
 	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<ChatRoom> &chatRoom);
-	std::shared_ptr<ChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);
+	std::shared_ptr<ChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt, bool notifyCreation = true);
 
 	std::unique_ptr<MainDb> mainDb;
 

@@ -61,7 +61,7 @@ static IdentityAddress getDefaultLocalAddress (const shared_ptr<Core> &core, con
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
+shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt, bool notifyCreation) {
 	L_Q();
 
 	shared_ptr<ChatRoom> chatRoom;
@@ -73,8 +73,11 @@ shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoo
 
 	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 
-	dChatRoom->setState(ChatRoom::State::Instantiated);
-	dChatRoom->setState(ChatRoom::State::Created);
+	if (notifyCreation) {
+		dChatRoom->setState(ChatRoom::State::Instantiated);
+		dChatRoom->setState(ChatRoom::State::Created);
+	} else
+		dChatRoom->state = ChatRoom::State::Created;
 
 	return chatRoom;
 }

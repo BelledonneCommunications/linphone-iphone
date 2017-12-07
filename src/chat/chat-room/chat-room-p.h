@@ -69,7 +69,6 @@ public:
 	std::shared_ptr<ChatMessage> createChatMessage (ChatMessage::Direction direction);
 
 	LinphoneCall *call = nullptr;
-	ChatRoom::State state = ChatRoom::State::None;
 	bool isComposing = false;
 	std::list<Address> remoteIsComposing;
 	std::list<std::shared_ptr<EventLog>> transientEvents;
@@ -81,6 +80,8 @@ public:
 	std::unique_ptr<IsComposing> isComposingHandler;
 
 	// TODO: Check all fields before this point.
+
+	ChatRoom::State state = ChatRoom::State::None;
 
 public:
 	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
