@@ -2019,7 +2019,8 @@ static inline string blobToString (soci::blob &in) {
 			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
 				chatRoom = core->getPrivate()->createBasicChatRoom(
 					chatRoomId,
-					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
+					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText),
+					false
 				);
 				chatRoom->setSubject(subject);
 			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
