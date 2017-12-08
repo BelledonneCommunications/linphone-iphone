@@ -501,7 +501,7 @@ void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {
 // ----------------------------------------------------------
 
 static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent *fileTransferContent) {
-	xmlChar *file_url = nullptr;
+	xmlChar *fileUrl = nullptr;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
 	/* parse the msg body to get all informations from it */
@@ -524,7 +524,7 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 							xmlFree(filename);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
-							file_url = xmlGetProp(cur, (const xmlChar *)"url");
+							fileUrl = xmlGetProp(cur, (const xmlChar *)"url");
 						}
 
 						cur = cur->next;
@@ -539,9 +539,9 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 	}
 	xmlFreeDoc(xmlMessageBody);
 
-	fileTransferContent->setFileUrl(file_url ? (const char *)file_url : "");
+	fileTransferContent->setFileUrl(fileUrl ? (const char *)fileUrl : "");
 
-	xmlFree(file_url);
+	xmlFree(fileUrl);
 }
 
 ChatMessageModifier::Result FileTransferChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
@@ -571,7 +571,7 @@ ChatMessageModifier::Result FileTransferChatMessageModifier::decode (const share
 // ----------------------------------------------------------
 
 static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferContent *fileTransferContent) {
-	xmlChar *file_url = nullptr;
+	xmlChar *fileUrl = nullptr;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
 	/* parse the msg body to get all informations from it */
@@ -618,7 +618,7 @@ static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferC
 							ms_free(content_type);
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
-							file_url = xmlGetProp(cur, (const xmlChar *)"url");
+							fileUrl = xmlGetProp(cur, (const xmlChar *)"url");
 						}
 
 						//TODO
@@ -652,7 +652,7 @@ static void createFileTransferInformationsFromVndGsmaRcsFtHttpXml (FileTransferC
 	// Link the FileContent to the FileTransferContent
 	fileTransferContent->setFileContent(fileContent);
 
-	xmlFree(file_url);
+	xmlFree(fileUrl);
 }
 
 static void _chat_message_on_recv_body (belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, void *data, size_t offset, uint8_t *buffer, size_t size) {
