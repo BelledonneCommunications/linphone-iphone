@@ -125,6 +125,22 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 
 // -----------------------------------------------------------------------------
 
+static inline vector<char> blobToVector (soci::blob &in) {
+	size_t len = in.get_len();
+	if (!len)
+		return vector<char>();
+	vector<char> out(len);
+	in.read(0, &out[0], len);
+	return out;
+}
+
+static inline string blobToString (soci::blob &in) {
+	vector<char> out = blobToVector(in);
+	return string(out.begin(), out.end());
+}
+
+// -----------------------------------------------------------------------------
+
 	long long MainDbPrivate::resolveId (const soci::row &row, int col) const {
 		L_Q();
 		// See: http://soci.sourceforge.net/doc/master/backends/
@@ -329,7 +345,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				" WHERE event_id = :eventId AND participant_sip_address_id = :sipAddressId",
 				soci::use(state), soci::use(eventId), soci::use(sipAddressId)
 		);
-		statement.execute(true);
+		statement.execute();
 		if (statement.get_affected_rows() == 0 && state != static_cast<int>(ChatMessage::State::Displayed))
 			*session << "INSERT INTO chat_message_participant (event_id, participant_sip_address_id, state)"
 				" VALUES (:eventId, :sipAddressId, :state)",
@@ -572,15 +588,20 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 				} else
 					content = new Content();
 
+				content->setContentType(contentType);
+				content->setBody(row.get<string>(3));
+
 				// 2.2 - Fetch contents' app data.
 				static const string query = "SELECT name, data FROM chat_message_content_app_data"
 					" WHERE chat_message_content_id = :contentId";
-				soci::rowset<soci::row> rows = (session->prepare << query, soci::use(contentId));
-				for (const auto &row : rows)
-					content->setAppData(row.get<string>(0), row.get<string>(1));
 
-				content->setContentType(contentType);
-				content->setBody(row.get<string>(3));
+				string name;
+				soci::blob data(*session);
+				soci::statement statement = (session->prepare << query, soci::use(contentId), soci::into(name), soci::into(data));
+				statement.execute();
+				while (statement.fetch())
+					content->setAppData(name, blobToString(data));
+
 				chatMessage->addContent(*content);
 			}
 		}
