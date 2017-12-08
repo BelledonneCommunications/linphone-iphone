@@ -839,6 +839,7 @@ void MediaSessionPrivate::initStats (LinphoneCallStats *stats, LinphoneStreamTyp
 }
 
 void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
+	L_Q();
 	LinphoneCallStats *stats = nullptr;
 	if (streamIndex == mainAudioStreamIndex)
 		stats = audioStats;
@@ -860,7 +861,7 @@ void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
 				break;
 		}
 		if (listener)
-			listener->onStatsUpdated(stats);
+			listener->onStatsUpdated(q->getSharedFromThis(), stats);
 		_linphone_call_stats_set_updated(stats, 0);
 	}
 }
@@ -3653,7 +3654,7 @@ void MediaSessionPrivate::reportBandwidthForStream (MediaStream *ms, LinphoneStr
 			linphone_call_stats_update(stats, ms);
 		_linphone_call_stats_set_updated(stats, _linphone_call_stats_get_updated(stats) | LINPHONE_CALL_STATS_PERIODICAL_UPDATE);
 		if (listener)
-			listener->onStatsUpdated(stats);
+			listener->onStatsUpdated(q->getSharedFromThis(), stats);
 		_linphone_call_stats_set_updated(stats, 0);
 	}
 }

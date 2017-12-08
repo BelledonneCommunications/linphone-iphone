@@ -22,12 +22,13 @@
 
 #include "chat/chat-room/chat-room-p.h"
 #include "client-group-chat-room.h"
+#include "conference/session/call-session-listener.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
+class ClientGroupChatRoomPrivate : public ChatRoomPrivate, public CallSessionListener {
 public:
 	ClientGroupChatRoomPrivate () = default;
 
@@ -37,6 +38,10 @@ public:
 	void multipartNotifyReceived (const std::string &body);
 
 private:
+	// CallSessionListener
+	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
+
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);

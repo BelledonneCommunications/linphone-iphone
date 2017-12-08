@@ -89,6 +89,13 @@ void CallPrivate::createPlayer () const {
 
 // -----------------------------------------------------------------------------
 
+void CallPrivate::resetFirstVideoFrameDecoded () {
+#ifdef VIDEO_ENABLED
+	if (nextVideoFrameDecoded._func)
+		static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
+#endif // ifdef VIDEO_ENABLED
+}
+
 void CallPrivate::startRemoteRing () {
 	L_Q();
 	LinphoneCore *lc = q->getCore()->getCCore();
@@ -118,28 +125,28 @@ void CallPrivate::terminateBecauseOfLostMedia () {
 
 // -----------------------------------------------------------------------------
 
-void CallPrivate::onAckBeingSent (LinphoneHeaders *headers) {
+void CallPrivate::onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
 	L_Q();
 	linphone_call_notify_ack_processing(L_GET_C_BACK_PTR(q), headers, false);
 }
 
-void CallPrivate::onAckReceived (LinphoneHeaders *headers) {
+void CallPrivate::onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
 	L_Q();
 	linphone_call_notify_ack_processing(L_GET_C_BACK_PTR(q), headers, true);
 }
 
-void CallPrivate::onBackgroundTaskToBeStarted () {
+void CallPrivate::onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) {
 	backgroundTaskId = sal_begin_background_task("liblinphone call notification", nullptr, nullptr);
 }
 
-void CallPrivate::onBackgroundTaskToBeStopped () {
+void CallPrivate::onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) {
 	if (backgroundTaskId != 0) {
 		sal_end_background_task(backgroundTaskId);
 		backgroundTaskId = 0;
 	}
 }
 
-bool CallPrivate::onCallAccepted () {
+bool CallPrivate::onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCore *lc = q->getCore()->getCCore();
 	bool wasRinging = false;
@@ -160,12 +167,12 @@ bool CallPrivate::onCallAccepted () {
 	return wasRinging;
 }
 
-void CallPrivate::onCallSetReleased () {
+void CallPrivate::onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	linphone_call_unref(L_GET_C_BACK_PTR(q));
 }
 
-void CallPrivate::onCallSetTerminated () {
+void CallPrivate::onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCore *core = q->getCore()->getCCore();
 	if (q->getSharedFromThis() == q->getCore()->getCurrentCall()) {
@@ -190,12 +197,12 @@ void CallPrivate::onCallSetTerminated () {
 		ms_bandwidth_controller_reset_state(core->bw_controller);
 }
 
-void CallPrivate::onCallStateChanged (LinphoneCallState state, const string &message) {
+void CallPrivate::onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
 	L_Q();
 	linphone_call_notify_state_changed(L_GET_C_BACK_PTR(q), state, message.c_str());
 }
 
-void CallPrivate::onCheckForAcceptation () {
+void CallPrivate::onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCall *lcall = L_GET_C_BACK_PTR(q);
 	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(q->getCore()->getCCore()));
@@ -218,23 +225,23 @@ void CallPrivate::onCheckForAcceptation () {
 	bctbx_list_free(copy);
 }
 
-void CallPrivate::onDtmfReceived (char dtmf) {
+void CallPrivate::onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {
 	L_Q();
 	linphone_call_notify_dtmf_received(L_GET_C_BACK_PTR(q), dtmf);
 }
 
-void CallPrivate::onIncomingCallNotified () {
+void CallPrivate::onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	/* The call is acceptable so we can now add it to our list */
 	q->getCore()->getPrivate()->addCall(q->getSharedFromThis());
 }
 
-void CallPrivate::onIncomingCallStarted () {
+void CallPrivate::onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	linphone_core_notify_incoming_call(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q));
 }
 
-void CallPrivate::onIncomingCallTimeoutCheck (int elapsed, bool oneSecondElapsed) {
+void CallPrivate::onIncomingCallSessionTimeoutCheck (const std::shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) {
 	L_Q();
 	if (oneSecondElapsed)
 		lInfo() << "Incoming call ringing for " << elapsed << " seconds";
@@ -246,12 +253,12 @@ void CallPrivate::onIncomingCallTimeoutCheck (int elapsed, bool oneSecondElapsed
 	}
 }
 
-void CallPrivate::onInfoReceived (const LinphoneInfoMessage *im) {
+void CallPrivate::onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {
 	L_Q();
 	linphone_call_notify_info_message_received(L_GET_C_BACK_PTR(q), im);
 }
 
-void CallPrivate::onNoMediaTimeoutCheck (bool oneSecondElapsed) {
+void CallPrivate::onNoMediaTimeoutCheck (const std::shared_ptr<const CallSession> &session, bool oneSecondElapsed) {
 	L_Q();
 	int disconnectTimeout = linphone_core_get_nortp_timeout(q->getCore()->getCCore());
 	bool disconnected = false;
@@ -263,27 +270,27 @@ void CallPrivate::onNoMediaTimeoutCheck (bool oneSecondElapsed) {
 		terminateBecauseOfLostMedia();
 }
 
-void CallPrivate::onEncryptionChanged (bool activated, const string &authToken) {
+void CallPrivate::onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
 	L_Q();
 	linphone_call_notify_encryption_changed(L_GET_C_BACK_PTR(q), activated, authToken.empty() ? nullptr : authToken.c_str());
 }
 
-void CallPrivate::onStatsUpdated (const LinphoneCallStats *stats) {
+void CallPrivate::onStatsUpdated (const std::shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) {
 	L_Q();
 	linphone_call_notify_stats_updated(L_GET_C_BACK_PTR(q), stats);
 }
 
-void CallPrivate::onResetCurrentCall () {
+void CallPrivate::onResetCurrentSession (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	q->getCore()->getPrivate()->setCurrentCall(nullptr);
 }
 
-void CallPrivate::onSetCurrentCall () {
+void CallPrivate::onSetCurrentSession (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	q->getCore()->getPrivate()->setCurrentCall(q->getSharedFromThis());
 }
 
-void CallPrivate::onFirstVideoFrameDecoded () {
+void CallPrivate::onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	if (nextVideoFrameDecoded._func) {
 		nextVideoFrameDecoded._func(L_GET_C_BACK_PTR(q), nextVideoFrameDecoded._user_data);
@@ -292,19 +299,16 @@ void CallPrivate::onFirstVideoFrameDecoded () {
 	}
 }
 
-void CallPrivate::onResetFirstVideoFrameDecoded () {
-#ifdef VIDEO_ENABLED
-	if (nextVideoFrameDecoded._func)
-		static_cast<MediaSession *>(getActiveSession().get())->resetFirstVideoFrameDecoded();
-#endif // ifdef VIDEO_ENABLED
+void CallPrivate::onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {
+	resetFirstVideoFrameDecoded();
 }
 
-void CallPrivate::onPlayErrorTone (LinphoneReason reason) {
+void CallPrivate::onPlayErrorTone (const std::shared_ptr<const CallSession> &session, LinphoneReason reason) {
 	L_Q();
 	linphone_core_play_call_error_tone(q->getCore()->getCCore(), reason);
 }
 
-void CallPrivate::onRingbackToneRequested (bool requested) {
+void CallPrivate::onRingbackToneRequested (const std::shared_ptr<const CallSession> &session, bool requested) {
 	L_Q();
 	if (requested && linphone_core_get_remote_ringback_tone(q->getCore()->getCCore()))
 		playingRingbackTone = true;
@@ -312,7 +316,7 @@ void CallPrivate::onRingbackToneRequested (bool requested) {
 		playingRingbackTone = false;
 }
 
-void CallPrivate::onStartRinging () {
+void CallPrivate::onStartRinging (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCore *lc = q->getCore()->getCCore();
 	if (lc->ringstream)
@@ -320,12 +324,12 @@ void CallPrivate::onStartRinging () {
 	startRemoteRing();
 }
 
-void CallPrivate::onStopRinging () {
+void CallPrivate::onStopRinging (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	linphone_core_stop_ringing(q->getCore()->getCCore());
 }
 
-void CallPrivate::onStopRingingIfInCall () {
+void CallPrivate::onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCore *lc = q->getCore()->getCCore();
 	// We stop the ring only if we have this current call or if we are in call
@@ -334,7 +338,7 @@ void CallPrivate::onStopRingingIfInCall () {
 	}
 }
 
-void CallPrivate::onStopRingingIfNeeded () {
+void CallPrivate::onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) {
 	L_Q();
 	LinphoneCore *lc = q->getCore()->getCCore();
 	bool stopRinging = true;
@@ -350,7 +354,7 @@ void CallPrivate::onStopRingingIfNeeded () {
 		linphone_core_stop_ringing(lc);
 }
 
-bool CallPrivate::isPlayingRingbackTone () {
+bool CallPrivate::isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) {
 	return playingRingbackTone;
 }
 
@@ -711,7 +715,7 @@ void Call::setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_d
 	L_D();
 	d->nextVideoFrameDecoded._func = cb;
 	d->nextVideoFrameDecoded._user_data = user_data;
-	d->onResetFirstVideoFrameDecoded();
+	d->resetFirstVideoFrameDecoded();
 }
 
 void Call::setParams (const MediaSessionParams *msp) {

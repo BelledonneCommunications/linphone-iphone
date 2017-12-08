@@ -28,7 +28,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	c-wrapper/c-wrapper.h
 	c-wrapper/internal/c-sal.h
 	c-wrapper/internal/c-tools.h
-	call/call-listener.h
 	call/call-p.h
 	call/call.h
 	call/local-conference-call-p.h

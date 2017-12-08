@@ -27,7 +27,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallListener;
+class CallSessionListener;
 class Participant;
 
 class ConferencePrivate {
@@ -40,11 +40,11 @@ protected:
 	std::shared_ptr<Participant> activeParticipant;
 	std::shared_ptr<Participant> me;
 
+	CallSessionListener *listener = nullptr;
+
 	Conference *mPublic = nullptr;
 
 private:
-	CallListener *callListener = nullptr;
-
 	L_DECLARE_PUBLIC(Conference);
 };
 

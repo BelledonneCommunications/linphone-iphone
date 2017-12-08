@@ -76,9 +76,6 @@ public:
 	void leave () override;
 
 private:
-	// TODO: Move me in ServerGroupChatRoomPrivate.
-	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
-
 	L_DECLARE_PRIVATE(ServerGroupChatRoom);
 	L_DISABLE_COPY(ServerGroupChatRoom);
 };

@@ -26,6 +26,7 @@
 #include "address/address.h"
 #include "chat-room-p.h"
 #include "server-group-chat-room.h"
+#include "conference/session/call-session-listener.h"
 
 // =============================================================================
 
@@ -33,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Participant;
 
-class ServerGroupChatRoomPrivate : public ChatRoomPrivate {
+class ServerGroupChatRoomPrivate : public ChatRoomPrivate, public CallSessionListener {
 public:
 	ServerGroupChatRoomPrivate () = default;
 
@@ -54,6 +55,9 @@ private:
 	void designateAdmin ();
 	void finalizeCreation ();
 	bool isAdminLeft () const;
+
+	// CallSessionListener
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &) override;
 

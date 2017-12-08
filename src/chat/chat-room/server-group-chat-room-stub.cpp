@@ -73,6 +73,16 @@ bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
 }
 
+// -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
+	const shared_ptr<const CallSession> &,
+	LinphoneCallState,
+	const string &
+) {}
+
+// -----------------------------------------------------------------------------
+
 void ServerGroupChatRoomPrivate::onChatMessageReceived(const shared_ptr<ChatMessage> &) {}
 
 // =============================================================================
@@ -141,13 +151,5 @@ void ServerGroupChatRoom::setSubject (const string &) {}
 void ServerGroupChatRoom::join () {}
 
 void ServerGroupChatRoom::leave () {}
-
-// -----------------------------------------------------------------------------
-
-void ServerGroupChatRoom::onCallSessionStateChanged (
-	const shared_ptr<const CallSession> &,
-	LinphoneCallState,
-	const string &
-) {}
 
 LINPHONE_END_NAMESPACE

@@ -31,7 +31,7 @@ LINPHONE_BEGIN_NAMESPACE
 RemoteConference::RemoteConference (
 	const shared_ptr<Core> &core,
 	const IdentityAddress &myAddress,
-	CallListener *listener
+	CallSessionListener *listener
 ) : Conference(*new RemoteConferencePrivate, core, myAddress, listener) {
 	L_D();
 	d->eventHandler.reset(new RemoteConferenceEventHandler(this));
@@ -50,7 +50,7 @@ void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSe
 	if (participant)
 		return;
 	participant = make_shared<Participant>(addr);
-	participant->getPrivate()->createSession(*this, params, hasMedia, this);
+	participant->getPrivate()->createSession(*this, params, hasMedia, d->listener);
 	d->participants.push_back(participant);
 	if (!d->activeParticipant)
 		d->activeParticipant = participant;

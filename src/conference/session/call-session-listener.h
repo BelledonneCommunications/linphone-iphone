@@ -30,40 +30,40 @@ class LINPHONE_PUBLIC CallSessionListener {
 public:
 	virtual ~CallSessionListener() = default;
 
-	virtual void onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) = 0;
-	virtual void onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) = 0;
-	virtual void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) = 0;
-	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) = 0;
-	virtual void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onIncomingCallSessionTimeoutCheck (const std::shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) = 0;
-	virtual void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) = 0;
-	virtual void onNoMediaTimeoutCheck (const std::shared_ptr<const CallSession> &session, bool oneSecondElapsed) = 0;
+	virtual void onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {}
+	virtual void onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {}
+	virtual void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) {}
+	virtual bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) { return false; }
+	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) {}
+	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {}
+	virtual void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onIncomingCallSessionTimeoutCheck (const std::shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) {}
+	virtual void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {}
+	virtual void onNoMediaTimeoutCheck (const std::shared_ptr<const CallSession> &session, bool oneSecondElapsed) {}
 
-	virtual void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) = 0;
+	virtual void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) {}
 
-	virtual void onStatsUpdated (const LinphoneCallStats *stats) = 0;
+	virtual void onStatsUpdated (const std::shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) {}
 
-	virtual void onResetCurrentSession (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onSetCurrentSession (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual void onResetCurrentSession (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onSetCurrentSession (const std::shared_ptr<const CallSession> &session) {}
 
-	virtual void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) {}
 
-	virtual void onPlayErrorTone (const std::shared_ptr<const CallSession> &session, LinphoneReason reason) = 0;
-	virtual void onRingbackToneRequested (const std::shared_ptr<const CallSession> &session, bool requested) = 0;
-	virtual void onStartRinging (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onStopRinging (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) = 0;
-	virtual void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual void onPlayErrorTone (const std::shared_ptr<const CallSession> &session, LinphoneReason reason) {}
+	virtual void onRingbackToneRequested (const std::shared_ptr<const CallSession> &session, bool requested) {}
+	virtual void onStartRinging (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onStopRinging (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) {}
 
-	virtual bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) = 0;
+	virtual bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) { return false; }
 };
 
 LINPHONE_END_NAMESPACE

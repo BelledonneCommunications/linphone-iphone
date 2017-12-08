@@ -91,9 +91,6 @@ private:
 	void onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
 	void onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) override;
 
-	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
-
 	L_DECLARE_PRIVATE(ClientGroupChatRoom);
 	L_DISABLE_COPY(ClientGroupChatRoom);
 };

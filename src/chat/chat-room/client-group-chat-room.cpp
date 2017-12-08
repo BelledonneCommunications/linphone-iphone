@@ -62,7 +62,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	csp.addCustomContactParameter("text");
 
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
-	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, q);
+	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, this);
 	const Address &myAddress = q->getMe()->getAddress();
 	Address myCleanedAddress(myAddress);
 	myCleanedAddress.setUriParam("gr"); // Remove gr parameter for INVITE
@@ -80,6 +80,41 @@ void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
 	L_Q_T(RemoteConference, qConference);
 	qConference->getPrivate()->eventHandler->multipartNotifyReceived(body);
 }
+
+// -----------------------------------------------------------------------------
+
+void ClientGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
+	L_Q_T(RemoteConference, qConference);
+
+	ParticipantPrivate *participantPrivate = qConference->getPrivate()->focus->getPrivate();
+	if (session == participantPrivate->getSession())
+		participantPrivate->removeSession();
+}
+
+void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
+	const shared_ptr<const CallSession> &session,
+	LinphoneCallState newState,
+	const string &message
+) {
+	L_Q();
+	L_Q_T(RemoteConference, qConference);
+
+	if (newState == LinphoneCallConnected) {
+		if (state == ChatRoom::State::CreationPending) {
+			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
+			q->onConferenceCreated(addr);
+			if (session->getRemoteContactAddress()->hasParam("isfocus"))
+				qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
+		} else if (state == ChatRoom::State::TerminationPending)
+			qConference->getPrivate()->focus->getPrivate()->getSession()->terminate();
+	} else if ((newState == LinphoneCallReleased) && (state == ChatRoom::State::TerminationPending)) {
+		q->onConferenceTerminated(q->getConferenceAddress());
+	} else if ((newState == LinphoneCallError) && (state == ChatRoom::State::CreationPending)) {
+		setState(ChatRoom::State::CreationFailed);
+	}
+}
+
+// -----------------------------------------------------------------------------
 
 void ClientGroupChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
 
@@ -473,39 +508,6 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 	LinphoneChatRoomCbsParticipantDeviceRemovedCb cb = linphone_chat_room_cbs_get_participant_device_removed(cbs);
 	if (cb)
 		cb(cr, L_GET_C_BACK_PTR(event));
-}
-
-// -----------------------------------------------------------------------------
-
-void ClientGroupChatRoom::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
-	L_D_T(RemoteConference, dConference);
-
-	ParticipantPrivate *participantPrivate = dConference->focus->getPrivate();
-	if (session == participantPrivate->getSession())
-		participantPrivate->removeSession();
-}
-
-void ClientGroupChatRoom::onCallSessionStateChanged (
-	const shared_ptr<const CallSession> &session,
-	LinphoneCallState state,
-	const string &message
-) {
-	L_D();
-	L_D_T(RemoteConference, dConference);
-
-	if (state == LinphoneCallConnected) {
-		if (d->state == ChatRoom::State::CreationPending) {
-			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
-			onConferenceCreated(addr);
-			if (session->getRemoteContactAddress()->hasParam("isfocus"))
-				dConference->eventHandler->subscribe(getChatRoomId());
-		} else if (d->state == ChatRoom::State::TerminationPending)
-			dConference->focus->getPrivate()->getSession()->terminate();
-	} else if ((state == LinphoneCallReleased) && (d->state == ChatRoom::State::TerminationPending)) {
-		onConferenceTerminated(getConferenceAddress());
-	} else if ((state == LinphoneCallError) && (d->state == ChatRoom::State::CreationPending)) {
-		d->setState(ChatRoom::State::CreationFailed);
-	}
 }
 
 LINPHONE_END_NAMESPACE

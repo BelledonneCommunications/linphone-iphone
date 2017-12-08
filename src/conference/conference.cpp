@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "call/call-listener.h"
 #include "conference-p.h"
 #include "conference/session/call-session-p.h"
 #include "logger/logger.h"
@@ -33,12 +32,12 @@ Conference::Conference (
 	ConferencePrivate &p,
 	const shared_ptr<Core> &core,
 	const IdentityAddress &myAddress,
-	CallListener *listener
+	CallSessionListener *listener
 ) : CoreAccessor(core), mPrivate(&p) {
 	L_D();
 	d->mPublic = this;
-	d->callListener = listener;
 	d->me = make_shared<Participant>(myAddress);
+	d->listener = listener;
 }
 
 Conference::~Conference () {
@@ -118,178 +117,6 @@ void Conference::setParticipantAdminStatus (shared_ptr<Participant> &participant
 void Conference::setSubject (const string &subject) {
 	L_D();
 	d->subject = subject;
-}
-
-// -----------------------------------------------------------------------------
-
-void Conference::onAckBeingSent (const shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onAckBeingSent(headers);
-}
-
-void Conference::onAckReceived (const shared_ptr<const CallSession> &session, LinphoneHeaders *headers) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onAckReceived(headers);
-}
-
-void Conference::onBackgroundTaskToBeStarted (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onBackgroundTaskToBeStarted();
-}
-
-void Conference::onBackgroundTaskToBeStopped (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onBackgroundTaskToBeStopped();
-}
-
-bool Conference::onCallSessionAccepted (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		return d->callListener->onCallAccepted();
-	return false;
-}
-
-void Conference::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onCallSetReleased();
-}
-
-void Conference::onCallSessionSetTerminated (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onCallSetTerminated();
-}
-
-void Conference::onCallSessionStateChanged (const shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onCallStateChanged(state, message);
-}
-
-void Conference::onCheckForAcceptation (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onCheckForAcceptation();
-}
-
-void Conference::onDtmfReceived (const shared_ptr<const CallSession> &session, char dtmf) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onDtmfReceived(dtmf);
-}
-
-void Conference::onIncomingCallSessionNotified (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onIncomingCallNotified();
-}
-
-void Conference::onIncomingCallSessionStarted (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onIncomingCallStarted();
-}
-
-void Conference::onIncomingCallSessionTimeoutCheck (const shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onIncomingCallTimeoutCheck(elapsed, oneSecondElapsed);
-}
-
-void Conference::onInfoReceived (const shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onInfoReceived(im);
-}
-
-void Conference::onNoMediaTimeoutCheck (const shared_ptr<const CallSession> &session, bool oneSecondElapsed) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onNoMediaTimeoutCheck(oneSecondElapsed);
-}
-
-void Conference::onEncryptionChanged (const shared_ptr<const CallSession> &session, bool activated, const string &authToken) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onEncryptionChanged(activated, authToken);
-}
-
-void Conference::onStatsUpdated (const LinphoneCallStats *stats) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onStatsUpdated(stats);
-}
-
-void Conference::onResetCurrentSession (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onResetCurrentCall();
-}
-
-void Conference::onSetCurrentSession (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onSetCurrentCall();
-}
-
-void Conference::onFirstVideoFrameDecoded (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onFirstVideoFrameDecoded();
-}
-
-void Conference::onResetFirstVideoFrameDecoded (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onResetFirstVideoFrameDecoded();
-}
-
-void Conference::onPlayErrorTone (const shared_ptr<const CallSession> &session, LinphoneReason reason) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onPlayErrorTone(reason);
-}
-
-void Conference::onRingbackToneRequested (const shared_ptr<const CallSession> &session, bool requested) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onRingbackToneRequested(requested);
-}
-
-void Conference::onStartRinging (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onStartRinging();
-}
-
-void Conference::onStopRinging (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onStopRinging();
-}
-
-void Conference::onStopRingingIfInCall (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onStopRingingIfInCall();
-}
-
-void Conference::onStopRingingIfNeeded (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		d->callListener->onStopRingingIfNeeded();
-}
-
-bool Conference::isPlayingRingbackTone (const shared_ptr<const CallSession> &session) {
-	L_D();
-	if (d->callListener)
-		return d->callListener->isPlayingRingbackTone();
-	return false;
 }
 
 // -----------------------------------------------------------------------------

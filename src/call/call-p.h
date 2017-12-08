@@ -20,9 +20,9 @@
 #ifndef _CALL_P_H_
 #define _CALL_P_H_
 
-#include "call-listener.h"
 #include "call.h"
 #include "conference/conference.h"
+#include "conference/session/call-session-listener.h"
 #include "object/object-p.h"
 
 // TODO: Remove me later.
@@ -32,7 +32,9 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class CallPrivate :	public ObjectPrivate, public CallListener {
+class CallSession;
+
+class CallPrivate :	public ObjectPrivate, public CallSessionListener {
 public:
 	CallPrivate () = default;
 	virtual ~CallPrivate () = default;
@@ -57,38 +59,39 @@ public:
 	void createPlayer () const;
 
 private:
+	void resetFirstVideoFrameDecoded ();
 	void startRemoteRing ();
 	void terminateBecauseOfLostMedia ();
 
-	/* CallListener */
-	void onAckBeingSent (LinphoneHeaders *headers) override;
-	void onAckReceived (LinphoneHeaders *headers) override;
-	void onBackgroundTaskToBeStarted () override;
-	void onBackgroundTaskToBeStopped () override;
-	bool onCallAccepted () override;
-	void onCallSetReleased () override;
-	void onCallSetTerminated () override;
-	void onCallStateChanged (LinphoneCallState state, const std::string &message) override;
-	void onCheckForAcceptation () override;
-	void onDtmfReceived (char dtmf) override;
-	void onIncomingCallNotified () override;
-	void onIncomingCallStarted () override;
-	void onIncomingCallTimeoutCheck (int elapsed, bool oneSecondElapsed) override;
-	void onInfoReceived (const LinphoneInfoMessage *im) override;
-	void onNoMediaTimeoutCheck (bool oneSecondElapsed) override;
-	void onEncryptionChanged (bool activated, const std::string &authToken) override;
-	void onStatsUpdated (const LinphoneCallStats *stats) override;
-	void onResetCurrentCall () override;
-	void onSetCurrentCall () override;
-	void onFirstVideoFrameDecoded () override;
-	void onResetFirstVideoFrameDecoded () override;
-	void onPlayErrorTone (LinphoneReason reason) override;
-	void onRingbackToneRequested (bool requested) override;
-	void onStartRinging () override;
-	void onStopRinging () override;
-	void onStopRingingIfInCall () override;
-	void onStopRingingIfNeeded () override;
-	bool isPlayingRingbackTone () override;
+	/* CallSessionListener */
+	void onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) override;
+	void onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) override;
+	void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) override;
+	void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) override;
+	bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
+	void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) override;
+	void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) override;
+	void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) override;
+	void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) override;
+	void onIncomingCallSessionTimeoutCheck (const std::shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) override;
+	void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) override;
+	void onNoMediaTimeoutCheck (const std::shared_ptr<const CallSession> &session, bool oneSecondElapsed) override;
+	void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) override;
+	void onStatsUpdated (const std::shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) override;
+	void onResetCurrentSession (const std::shared_ptr<const CallSession> &session) override;
+	void onSetCurrentSession (const std::shared_ptr<const CallSession> &session) override;
+	void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) override;
+	void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) override;
+	void onPlayErrorTone (const std::shared_ptr<const CallSession> &session, LinphoneReason reason) override;
+	void onRingbackToneRequested (const std::shared_ptr<const CallSession> &session, bool requested) override;
+	void onStartRinging (const std::shared_ptr<const CallSession> &session) override;
+	void onStopRinging (const std::shared_ptr<const CallSession> &session) override;
+	void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) override;
+	void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) override;
+	bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) override;
 
 	mutable LinphonePlayer *player = nullptr;
 

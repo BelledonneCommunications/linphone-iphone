@@ -28,7 +28,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-LocalConference::LocalConference (const shared_ptr<Core> &core, const IdentityAddress &myAddress, CallListener *listener)
+LocalConference::LocalConference (const shared_ptr<Core> &core, const IdentityAddress &myAddress, CallSessionListener *listener)
 	: Conference(*new LocalConferencePrivate, core, myAddress, listener) {
 	L_D();
 	d->eventHandler.reset(new LocalConferenceEventHandler(this));
@@ -42,7 +42,7 @@ void LocalConference::addParticipant (const IdentityAddress &addr, const CallSes
 	if (participant)
 		return;
 	participant = make_shared<Participant>(addr);
-	participant->getPrivate()->createSession(*this, params, hasMedia, this);
+	participant->getPrivate()->createSession(*this, params, hasMedia, d->listener);
 	d->participants.push_back(participant);
 	if (!d->activeParticipant)
 		d->activeParticipant = participant;
