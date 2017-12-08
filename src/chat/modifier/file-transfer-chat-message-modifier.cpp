@@ -539,7 +539,7 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 	}
 	xmlFreeDoc(xmlMessageBody);
 
-	fileTransferContent->setFileUrl((const char *)file_url); // Set file url in the file transfer content for the download
+	fileTransferContent->setFileUrl(file_url ? (const char *)file_url : "");
 
 	xmlFree(file_url);
 }
