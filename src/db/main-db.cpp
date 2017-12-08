@@ -1855,7 +1855,6 @@ static inline string blobToString (soci::blob &in) {
 			return events;
 		}
 
-		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		string query = "SELECT id, type, creation_time FROM event"
 			"  WHERE id IN ("
 			"    SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
@@ -1884,6 +1883,7 @@ static inline string blobToString (soci::blob &in) {
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
 			long long eventId = d->resolveId(row, 0);
