@@ -48,6 +48,7 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	LinphoneAddress *diversionAddressCache;
 	LinphoneAddress *remoteAddressCache;
 	LinphoneAddress *toAddressCache;
+	mutable char *referToCache;
 	char *remoteContactCache;
 	char *remoteUserAgentCache;
 	mutable char *toHeaderCache;
@@ -56,12 +57,10 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	LinphonePrivate::SalOp *op;
 	LinphoneCallState transfer_state; /*idle if no transfer*/
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
-	char *refer_to;
 	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
 	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	LinphoneChatRoom *chat_room;
 	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
-	bool_t refer_pending;
 )
 
 static void _linphone_call_constructor (LinphoneCall *call) {
@@ -86,6 +85,8 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		linphone_address_unref(call->remoteAddressCache);
 	if (call->toAddressCache)
 		linphone_address_unref(call->toAddressCache);
+	if (call->referToCache)
+		bctbx_free(call->referToCache);
 	if (call->remoteContactCache)
 		bctbx_free(call->remoteContactCache);
 	if (call->remoteUserAgentCache)
@@ -96,10 +97,6 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 	if (call->op) {
 		call->op->release();
 		call->op=nullptr;
-	}
-	if (call->refer_to){
-		ms_free(call->refer_to);
-		call->refer_to=nullptr;
 	}
 	if (call->referer){
 		linphone_call_unref(call->referer);
@@ -141,18 +138,6 @@ static bool_t linphone_call_sound_resources_available (LinphoneCall *call) {
 #endif
 
 void linphone_call_stop_media_streams (LinphoneCall *call) {}
-
-void linphone_call_set_transfer_state (LinphoneCall *call, LinphoneCallState state) {
-#if 0
-	if (state != call->transfer_state) {
-		ms_message("Transfer state for call [%p] changed  from [%s] to [%s]",call
-						,linphone_call_state_to_string(call->transfer_state)
-						,linphone_call_state_to_string(state));
-		call->transfer_state = state;
-		linphone_call_notify_transfer_state_changed(call, state);
-	}
-#endif
-}
 
 /* Internal version that does not play tone indication*/
 int _linphone_call_pause (LinphoneCall *call) {
@@ -299,35 +284,31 @@ LinphoneCallLog *linphone_call_get_call_log (const LinphoneCall *call) {
 }
 
 const char *linphone_call_get_refer_to (const LinphoneCall *call) {
-#if 0
-	return call->refer_to;
-#else
-	return nullptr;
-#endif
+	string referTo = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getReferTo();
+	if (referTo.empty())
+		return nullptr;
+	if (call->referToCache)
+		bctbx_free(call->referToCache);
+	call->referToCache = bctbx_strdup(referTo.c_str());
+	return call->referToCache;
 }
 
 bool_t linphone_call_has_transfer_pending (const LinphoneCall *call) {
-#if 0
-	return call->refer_pending;
-#else
-	return FALSE;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->hasTransferPending();
 }
 
 LinphoneCall *linphone_call_get_transferer_call (const LinphoneCall *call) {
-#if 0
-	return call->referer;
-#else
-	return nullptr;
-#endif
+	shared_ptr<LinphonePrivate::Call> referer = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getReferer();
+	if (!referer)
+		return nullptr;
+	return L_GET_C_BACK_PTR(referer);
 }
 
 LinphoneCall *linphone_call_get_transfer_target_call (const LinphoneCall *call) {
-#if 0
-	return call->transfer_target;
-#else
-	return nullptr;
-#endif
+	shared_ptr<LinphonePrivate::Call> transferTarget = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getTransferTarget();
+	if (!transferTarget)
+		return nullptr;
+	return L_GET_C_BACK_PTR(transferTarget);
 }
 
 LinphoneCall *linphone_call_get_replaced_call (LinphoneCall *call) {
@@ -430,11 +411,7 @@ void linphone_call_set_next_video_frame_decoded_callback (LinphoneCall *call, Li
 }
 
 LinphoneCallState linphone_call_get_transfer_state (LinphoneCall *call) {
-#if 0
-	return call->transfer_state;
-#else
-	return LinphoneCallIdle;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getTransferState();
 }
 
 void linphone_call_zoom_video (LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
@@ -559,36 +536,12 @@ LinphoneStatus linphone_call_accept_update (LinphoneCall *call, const LinphoneCa
 	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->acceptUpdate(params ? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
 }
 
-LinphoneStatus linphone_call_transfer (LinphoneCall *call, const char *refer_to) {
-#if 0
-	char *real_url = nullptr;
-	LinphoneCore *lc = linphone_call_get_core(call);
-	LinphoneAddress *real_parsed_url = linphone_core_interpret_url(lc, refer_to);
-
-	if (!real_parsed_url) {
-		/* bad url */
-		return -1;
-	}
-	//lc->call = nullptr; // Do not do that you will lose the call afterward...
-	real_url = linphone_address_as_string(real_parsed_url);
-	sal_call_refer(call->op, real_url);
-	ms_free(real_url);
-	linphone_address_unref(real_parsed_url);
-	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
-	return 0;
-#else
-	return 0;
-#endif
+LinphoneStatus linphone_call_transfer (LinphoneCall *call, const char *referTo) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->transfer(referTo);
 }
 
 LinphoneStatus linphone_call_transfer_to_another (LinphoneCall *call, LinphoneCall *dest) {
-#if 0
-	int result = sal_call_refer_with_replaces (call->op, dest->op);
-	linphone_call_set_transfer_state(call, LinphoneCallOutgoingInit);
-	return result;
-#else
-	return 0;
-#endif
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->transfer(L_GET_CPP_PTR_FROM_C_OBJECT(dest));
 }
 
 void *linphone_call_get_native_video_window_id (const LinphoneCall *call) {

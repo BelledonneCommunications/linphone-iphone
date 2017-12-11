@@ -59,6 +59,7 @@ public:
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
 	LinphoneStatus declineNotAnswered (LinphoneReason reason);
 	virtual LinphoneStatus deferUpdate ();
+	bool hasTransferPending ();
 	virtual void initiateIncoming ();
 	virtual bool initiateOutgoing ();
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
@@ -67,6 +68,8 @@ public:
 	virtual void startIncomingNotification ();
 	virtual int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
+	LinphoneStatus transfer (const std::shared_ptr<CallSession> &dest);
+	LinphoneStatus transfer (const std::string &dest);
 	LinphoneStatus update (const CallSessionParams *csp, const std::string &subject = "", const Content *content = nullptr);
 
 	CallSessionParams *getCurrentParams () const;
@@ -77,6 +80,8 @@ public:
 	LinphoneCallLog * getLog () const;
 	virtual const CallSessionParams *getParams () const;
 	LinphoneReason getReason () const;
+	std::shared_ptr<CallSession> getReferer () const;
+	std::string getReferTo () const;
 	const Address& getRemoteAddress () const;
 	std::string getRemoteAddressAsString () const;
 	std::string getRemoteContact () const;
@@ -85,6 +90,8 @@ public:
 	std::string getRemoteUserAgent () const;
 	LinphoneCallState getState () const;
 	const Address& getToAddress () const;
+	LinphoneCallState getTransferState () const;
+	std::shared_ptr<CallSession> getTransferTarget () const;
 	std::string getToHeader (const std::string &name) const;
 
 protected:

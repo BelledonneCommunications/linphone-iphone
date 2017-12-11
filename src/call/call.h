@@ -48,6 +48,7 @@ public:
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
 	LinphoneStatus deferUpdate ();
+	bool hasTransferPending () const;
 	void oglRender () const;
 	LinphoneStatus pause ();
 	LinphoneStatus redirect (const std::string &redirectUri);
@@ -60,6 +61,8 @@ public:
 	LinphoneStatus takePreviewSnapshot (const std::string &file);
 	LinphoneStatus takeVideoSnapshot (const std::string &file);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
+	LinphoneStatus transfer (const std::shared_ptr<Call> &dest);
+	LinphoneStatus transfer (const std::string &dest);
 	LinphoneStatus update (const MediaSessionParams *msp = nullptr);
 	void zoomVideo (float zoomFactor, float *cx, float *cy);
 	void zoomVideo (float zoomFactor, float cx, float cy);
@@ -91,6 +94,8 @@ public:
 	float getPlayVolume () const;
 	LinphoneReason getReason () const;
 	float getRecordVolume () const;
+	std::shared_ptr<Call> getReferer () const;
+	std::string getReferTo () const;
 	const Address &getRemoteAddress () const;
 	std::string getRemoteAddressAsString () const;
 	std::string getRemoteContact () const;
@@ -104,6 +109,8 @@ public:
 	LinphoneCallStats *getTextStats () const;
 	const Address &getToAddress () const;
 	std::string getToHeader (const std::string &name) const;
+	LinphoneCallState getTransferState () const;
+	std::shared_ptr<Call> getTransferTarget () const;
 	LinphoneCallStats *getVideoStats () const;
 	bool mediaInProgress () const;
 	void setAudioRoute (LinphoneAudioRoute route);

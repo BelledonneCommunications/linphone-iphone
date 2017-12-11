@@ -51,7 +51,6 @@ LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const Linpho
 void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
 /* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
-void linphone_call_set_transfer_state(LinphoneCall* call, LinphoneCallState state);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
 LinphonePrivate::SalCallOp *linphone_call_get_op(const LinphoneCall *call);
@@ -327,7 +326,6 @@ int _linphone_call_pause(LinphoneCall *call);
 /*conferencing subsystem*/
 void _post_configure_audio_stream(AudioStream *st, LinphoneCore *lc, bool_t muted);
 bool_t linphone_core_sound_resources_available(LinphoneCore *lc);
-void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall);
 LINPHONE_PUBLIC unsigned int linphone_core_get_audio_features(LinphoneCore *lc);
 
 void _linphone_core_codec_config_write(LinphoneCore *lc);

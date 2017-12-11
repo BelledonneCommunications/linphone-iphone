@@ -181,12 +181,6 @@ static void call_ringing(SalOp *h) {
 	L_GET_PRIVATE(session)->remoteRinging();
 }
 
-#if 0
-static void start_pending_refer(LinphoneCall *call){
-	linphone_core_start_refered_call(call->core, call,NULL);
-}
-#endif
-
 /*
  * could be reach :
  *  - when the call is accepted
@@ -363,30 +357,20 @@ static void dtmf_received(SalOp *op, char dtmf) {
 	L_GET_PRIVATE(mediaSession)->dtmfReceived(dtmf);
 }
 
-static void call_refer_received(SalOp *op, const SalAddress *referto){
-#if 0
-	LinphoneCore *lc=(LinphoneCore *)sal_get_user_pointer(sal);
-	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	LinphoneAddress *refer_to_addr = linphone_address_new(referto);
-	char method[20] = "";
-
-	if(refer_to_addr) {
-		const char *tmp = linphone_address_get_method_param(refer_to_addr);
-		if(tmp) strncpy(method, tmp, sizeof(method));
-		linphone_address_unref(refer_to_addr);
+static void call_refer_received(SalOp *op, const SalAddress *referTo) {
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	char *addrStr = sal_address_as_string_uri_only(referTo);
+	Address referToAddr(addrStr);
+	string method;
+	if (referToAddr.isValid())
+		method = referToAddr.getMethodParam();
+	if (session && (method.empty() || (method == "INVITE"))) {
+		L_GET_PRIVATE(session)->referred(referToAddr);
+	} else {
+		LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
+		linphone_core_notify_refer_received(lc, addrStr);
 	}
-	if (call && (strlen(method) == 0 || strcmp(method, "INVITE") == 0)) {
-		if (call->refer_to!=NULL){
-			ms_free(call->refer_to);
-		}
-		call->refer_to=ms_strdup(referto);
-		call->refer_pending=TRUE;
-		linphone_call_set_state(call,LinphoneCallRefered,"Refered");
-		if (call->refer_pending) linphone_core_start_refered_call(lc,call,NULL);
-	}else {
-		linphone_core_notify_refer_received(lc,referto);
-	}
-#endif
+	bctbx_free(addrStr);
 }
 
 static void message_received(SalOp *op, const SalMessage *msg){
@@ -534,31 +518,30 @@ static bool_t auth_requested(Sal* sal, SalAuthInfo* sai) {
 	}
 }
 
-static void notify_refer(SalOp *op, SalReferStatus status){
-	LinphoneCall *call=(LinphoneCall*) op->get_user_pointer();
+static void notify_refer(SalOp *op, SalReferStatus status) {
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	if (!session) {
+		ms_warning("Receiving notify_refer for unknown CallSession");
+		return;
+	}
 	LinphoneCallState cstate;
-	if (call==NULL) {
-		ms_warning("Receiving notify_refer for unknown call.");
-		return ;
-	}
-	switch(status){
+	switch (status) {
 		case SalReferTrying:
-			cstate=LinphoneCallOutgoingProgress;
-		break;
+			cstate = LinphoneCallOutgoingProgress;
+			break;
 		case SalReferSuccess:
-			cstate=LinphoneCallConnected;
-		break;
+			cstate = LinphoneCallConnected;
+			break;
 		case SalReferFailed:
-			cstate=LinphoneCallError;
-		break;
+			cstate = LinphoneCallError;
+			break;
 		default:
-			cstate=LinphoneCallError;
+			cstate = LinphoneCallError;
+			break;
 	}
-	linphone_call_set_transfer_state(call, cstate);
-	if (cstate==LinphoneCallConnected){
-		/*automatically terminate the call as the transfer is complete.*/
-		linphone_call_terminate(call);
-	}
+	L_GET_PRIVATE(session)->setTransferState(cstate);
+	if (cstate == LinphoneCallConnected)
+		session->terminate(); // Automatically terminate the call as the transfer is complete
 }
 
 static LinphoneChatMessageState chatStatusSal2Linphone(SalMessageDeliveryStatus status){

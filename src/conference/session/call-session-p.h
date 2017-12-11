@@ -35,7 +35,9 @@ public:
 
 	int computeDuration () const;
 	virtual void initializeParamsAccordingToIncomingCallParams ();
+	void notifyReferState ();
 	virtual void setState (LinphoneCallState newState, const std::string &message);
+	void setTransferState (LinphoneCallState newState);
 	void startIncomingNotification ();
 	bool startPing ();
 	void setPingTime (int value) { pingTime = value; }
@@ -45,6 +47,8 @@ public:
 	SalCallOp * getOp () const { return op; }
 	bool isBroken () const { return broken; }
 	void setParams (CallSessionParams *csp);
+	void setReferPending (bool value) { referPending = value; }
+	void setTransferTarget (std::shared_ptr<CallSession> session) { transferTarget = session; }
 
 	virtual void abort (const std::string &errorMsg);
 	virtual void accepted ();
@@ -54,6 +58,7 @@ public:
 	virtual bool failure ();
 	void infoReceived (SalBodyHandler *bodyHandler);
 	void pingReply ();
+	void referred (const Address &referToAddr);
 	virtual void remoteRinging ();
 	void replaceOp (SalCallOp *newOp);
 	virtual void terminated ();
@@ -109,10 +114,11 @@ protected:
 	LinphoneCallDir direction = LinphoneCallOutgoing;
 	LinphoneCallState state = LinphoneCallIdle;
 	LinphoneCallState prevState = LinphoneCallIdle;
-	//LinphoneCallState transferState = LinphoneCallIdle;
+	LinphoneCallState transferState = LinphoneCallIdle;
 	LinphoneProxyConfig *destProxy = nullptr;
 	LinphoneErrorInfo *ei = nullptr;
 	LinphoneCallLog *log = nullptr;
+	std::string referTo;
 
 	SalCallOp *op = nullptr;
 
@@ -120,11 +126,15 @@ protected:
 	bool pingReplied = false;
 	int pingTime = 0;
 
+	std::shared_ptr<CallSession> referer;
+	std::shared_ptr<CallSession> transferTarget;
+
 	bool broken = false;
 	bool deferIncomingNotification = false;
 	bool deferUpdate = false;
 	bool needLocalIpRefresh = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
+	bool referPending = false;
 	bool reinviteOnCancelResponseRequested = false;
 
 private:

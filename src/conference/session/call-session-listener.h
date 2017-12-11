@@ -37,7 +37,9 @@ public:
 	virtual bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) { return false; }
 	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) {}
+	virtual void onCallSessionTransferStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state) {}
 	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {}
 	virtual void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) {}

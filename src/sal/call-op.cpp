@@ -1415,7 +1415,7 @@ int SalCallOp::notify_refer_state(SalCallOp *newcall) {
 	if(belle_sip_dialog_get_state(this->dialog) == BELLE_SIP_DIALOG_TERMINATED){
 		return 0;
 	}
-	state = this->dialog?belle_sip_dialog_get_state(this->dialog):BELLE_SIP_DIALOG_NULL;
+	state = newcall->dialog?belle_sip_dialog_get_state(newcall->dialog):BELLE_SIP_DIALOG_NULL;
 	switch(state) {
 		case BELLE_SIP_DIALOG_EARLY:
 			send_notify_for_refer(100, "Trying");

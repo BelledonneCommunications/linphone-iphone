@@ -44,7 +44,9 @@ public:
 	void iterate (time_t currentRealTime, bool oneSecondElapsed);
 	void startIncomingNotification ();
 
+	void pauseForTransfer ();
 	int startInvite (const Address *destination);
+	std::shared_ptr<Call> startReferredCall (const MediaSessionParams *params);
 
 	virtual std::shared_ptr<CallSession> getActiveSession () const { return nullptr; }
 	bool getAudioMuted () const;
@@ -71,7 +73,9 @@ private:
 	bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
+	void onCallSessionTransferStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state) override;
 	void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) override;
 	void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) override;
 	void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) override;

@@ -18,9 +18,11 @@
  */
 
 #include "c-wrapper/c-wrapper.h"
+#include "call/call-p.h"
 #include "core/core.h"
 #include "conference/params/call-session-params-p.h"
 #include "conference/params/media-session-params-p.h"
+#include "conference/session/call-session.h"
 
 #include "linphone/call_params.h"
 
@@ -437,11 +439,18 @@ SalCustomSdpAttribute *linphone_call_params_get_custom_sdp_media_attributes (con
 }
 
 LinphoneCall *linphone_call_params_get_referer (const LinphoneCallParams *params) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(params)->getReferer();
+	shared_ptr<LinphonePrivate::CallSession> session = L_GET_PRIVATE_FROM_C_OBJECT(params)->getReferer();
+	if (!session)
+		return nullptr;
+	for (const auto &call : session->getCore()->getCalls()) {
+		if (L_GET_PRIVATE(call)->getActiveSession() == session)
+			return L_GET_C_BACK_PTR(call);
+	}
+	return nullptr;
 }
 
 void linphone_call_params_set_referer (LinphoneCallParams *params, LinphoneCall *referer) {
-	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReferer(referer);
+	L_GET_PRIVATE_FROM_C_OBJECT(params)->setReferer(L_GET_PRIVATE_FROM_C_OBJECT(referer)->getActiveSession());
 }
 
 bool_t linphone_call_params_get_update_call_when_ice_completed (const LinphoneCallParams *params) {

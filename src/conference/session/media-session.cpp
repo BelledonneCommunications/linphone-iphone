@@ -102,10 +102,8 @@ void MediaSessionPrivate::accepted () {
 		switch (state) {
 			case LinphoneCallResuming:
 			case LinphoneCallConnected:
-#if 0
-				if (call->referer)
-					linphone_core_notify_refer_state(lc,call->referer,call);
-#endif
+				if (referer)
+					notifyReferState();
 				BCTBX_NO_BREAK; /* Intentional no break */
 			case LinphoneCallUpdating:
 			case LinphoneCallUpdatedByRemote:
@@ -129,10 +127,8 @@ void MediaSessionPrivate::accepted () {
 				 * Our streams are all send-only (with music), soundcard and camera are never used. */
 				nextState = LinphoneCallPaused;
 				nextStateMsg = "Call paused";
-#if 0
-				if (call->refer_pending)
-					linphone_task_list_add(&tl, (LinphoneCoreIterateHook)start_pending_refer, call);
-#endif
+				if (referPending)
+					linphone_task_list_add(&tl, &MediaSessionPrivate::startPendingRefer, q);
 				break;
 			default:
 				lError() << "accepted(): don't know what to do in state [" << linphone_call_state_to_string(state) << "]";
@@ -249,10 +245,24 @@ bool MediaSessionPrivate::failure () {
 	if (stop)
 		return true;
 
+	if (referer) {
+		// Schedule automatic resume of the call. This must be done only after the notifications are completed due to dialog serialization of requests
+		linphone_core_queue_task(q->getCore()->getCCore(),
+			&MediaSessionPrivate::resumeAfterFailedTransfer, referer.get(),
+			"Automatic CallSession resuming after failed transfer");
+	}
+
 	if (listener)
 		listener->onStopRingingIfNeeded(q->getSharedFromThis());
 	stopStreams();
 	return false;
+}
+
+void MediaSessionPrivate::pauseForTransfer () {
+	L_Q();
+	lInfo() << "Automatically pausing current MediaSession to accept transfer";
+	q->pause();
+	automaticallyPaused = true;
 }
 
 void MediaSessionPrivate::pausedByRemote () {
@@ -308,8 +318,29 @@ void MediaSessionPrivate::remoteRinging () {
 	}
 }
 
+int MediaSessionPrivate::resumeAfterFailedTransfer () {
+	L_Q();
+	if (automaticallyPaused && (state == LinphoneCallPausing))
+		return BELLE_SIP_CONTINUE; // Was still in pausing state
+	if (automaticallyPaused && (state == LinphoneCallPaused)) {
+		if (op->is_idle())
+			q->resume();
+		else {
+			lInfo() << "MediaSessionPrivate::resumeAfterFailedTransfer(), op was busy";
+			return BELLE_SIP_CONTINUE;
+		}
+	}
+	return BELLE_SIP_STOP;
+}
+
 void MediaSessionPrivate::resumed () {
 	acceptUpdate(nullptr, LinphoneCallStreamsRunning, "Connected (streams running)");
+}
+
+void MediaSessionPrivate::startPendingRefer () {
+	L_Q();
+	if (listener)
+		listener->onCallSessionStartReferred(q->getSharedFromThis());
 }
 
 void MediaSessionPrivate::telephoneEventReceived (int event) {
@@ -4035,6 +4066,17 @@ int MediaSessionPrivate::sendDtmf () {
 
 // -----------------------------------------------------------------------------
 
+int MediaSessionPrivate::resumeAfterFailedTransfer (void *userData, unsigned int) {
+	MediaSession *session = reinterpret_cast<MediaSession *>(userData);
+	return session->getPrivate()->resumeAfterFailedTransfer();
+}
+
+bool_t MediaSessionPrivate::startPendingRefer (void *userData) {
+	MediaSession *session = reinterpret_cast<MediaSession *>(userData);
+	session->getPrivate()->startPendingRefer();
+	return TRUE;
+}
+
 void MediaSessionPrivate::stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1) {
 	L_Q();
 	/* Get the username from the nat policy or the proxy config */
@@ -4209,11 +4251,6 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 			d->iceAgent->checkSession(IR_Controlling, false);
 		d->runStunTestsIfNeeded();
 		d->discoverMtu(to);
-#if 0
-		if (linphone_call_params_get_referer(params)){
-			call->referer=linphone_call_ref(linphone_call_params_get_referer(params));
-		}
-#endif
 	} else if (direction == LinphoneCallIncoming) {
 		d->selectIncomingIpVersion();
 		/* Note that the choice of IP version for streams is later refined by setCompatibleIncomingCallParams() when examining the

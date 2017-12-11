@@ -40,15 +40,20 @@ public:
 	MediaSessionPrivate () = default;
 
 public:
+	static int resumeAfterFailedTransfer (void *userData, unsigned int);
+	static bool_t startPendingRefer (void *userData);
 	static void stunAuthRequestedCb (void *userData, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
 
 	void accepted () override;
 	void ackReceived (LinphoneHeaders *headers) override;
 	void dtmfReceived (char dtmf);
 	bool failure () override;
+	void pauseForTransfer ();
 	void pausedByRemote ();
 	void remoteRinging () override;
+	int resumeAfterFailedTransfer ();
 	void resumed ();
+	void startPendingRefer ();
 	void telephoneEventReceived (int event);
 	void terminated () override;
 	void updated (bool isUpdate);

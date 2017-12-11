@@ -54,6 +54,12 @@ void CallSessionPrivate::initializeParamsAccordingToIncomingCallParams () {
 	currentParams->setPrivacy((LinphonePrivacyMask)op->get_privacy());
 }
 
+void CallSessionPrivate::notifyReferState () {
+	SalCallOp *refererOp = referer->getPrivate()->getOp();
+	if (refererOp)
+		refererOp->notify_refer_state(op);
+}
+
 void CallSessionPrivate::setState(LinphoneCallState newState, const string &message) {
 	L_Q();
 	if (state != newState){
@@ -137,10 +143,21 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				linphone_call_state_to_string(prevState) << " to " << linphone_call_state_to_string(state) << ")";
 		}
 		if (listener)
-			listener->onCallSessionStateChanged(q->getSharedFromThis(), state, message);
+			listener->onCallSessionStateChanged(q->getSharedFromThis(), newState, message);
 		if (newState == LinphoneCallReleased)
 			setReleased(); /* Shall be performed after app notification */
 	}
+}
+
+void CallSessionPrivate::setTransferState (LinphoneCallState newState) {
+	L_Q();
+	if (newState == transferState)
+		return;
+	lInfo() << "Transfer state for CallSession [" << q << "] changed from ["
+		<< linphone_call_state_to_string(transferState) << "] to [" << linphone_call_state_to_string(newState) << "]";
+	transferState = newState;
+	if (listener)
+		listener->onCallSessionTransferStateChanged(q->getSharedFromThis(), newState);
 }
 
 void CallSessionPrivate::startIncomingNotification () {
@@ -286,15 +303,10 @@ bool CallSessionPrivate::failure () {
 		if ((ei->reason != SalReasonNone) && listener)
 			listener->onPlayErrorTone(q->getSharedFromThis(), linphone_reason_from_sal(ei->reason));
 	}
-#if 0
-	LinphoneCall *referer=call->referer;
-	if (referer){
-		/*notify referer of the failure*/
-		linphone_core_notify_refer_state(lc,referer,call);
-		/*schedule automatic resume of the call. This must be done only after the notifications are completed due to dialog serialization of requests.*/
-		linphone_core_queue_task(lc,(belle_sip_source_func_t)resume_call_after_failed_transfer,linphone_call_ref(referer),"Automatic call resuming after failed transfer");
+	if (referer) {
+		// Notify referer of the failure
+		notifyReferState();
 	}
-#endif
 	return false;
 }
 
@@ -319,6 +331,15 @@ void CallSessionPrivate::pingReply () {
 		if (isReadyForInvite())
 			q->startInvite(nullptr, "");
 	}
+}
+
+void CallSessionPrivate::referred (const Address &referToAddr) {
+	L_Q();
+	referTo = referToAddr.asString();
+	referPending = true;
+	setState(LinphoneCallRefered, "Referred");
+	if (referPending && listener)
+		listener->onCallSessionStartReferred(q->getSharedFromThis());
 }
 
 void CallSessionPrivate::remoteRinging () {
@@ -389,10 +410,8 @@ void CallSessionPrivate::terminated () {
 		default:
 			break;
 	}
-#if 0
-	if (call->refer_pending)
-		linphone_core_start_refered_call(lc,call,NULL);
-#endif
+	if (referPending && listener)
+		listener->onCallSessionStartReferred(q->getSharedFromThis());
 	if (listener)
 		listener->onStopRingingIfInCall(q->getSharedFromThis());
 	setState(LinphoneCallEnd, "Call ended");
@@ -587,16 +606,9 @@ void CallSessionPrivate::setReleased () {
 		op->release();
 		op = nullptr;
 	}
+	referer = nullptr;
+	transferTarget = nullptr;
 #if 0
-	/* It is necessary to reset pointers to other call to prevent circular references that would result in memory never freed */
-	if (call->referer){
-		linphone_call_unref(call->referer);
-		call->referer=NULL;
-	}
-	if (call->transfer_target){
-		linphone_call_unref(call->transfer_target);
-		call->transfer_target=NULL;
-	}
 	if (call->chat_room){
 		linphone_chat_room_unref(call->chat_room);
 		call->chat_room = NULL;
@@ -731,10 +743,8 @@ void CallSessionPrivate::createOpTo (const LinphoneAddress *to) {
 		op->release();
 	op = new SalCallOp(q->getCore()->getCCore()->sal);
 	op->set_user_pointer(q);
-#if 0
-	if (linphone_call_params_get_referer(call->params))
-		sal_call_set_referer(call->op,linphone_call_params_get_referer(call->params)->op);
-#endif
+	if (params->getPrivate()->getReferer())
+		op->set_referer(params->getPrivate()->getReferer()->getPrivate()->getOp());
 	linphone_configure_op(q->getCore()->getCCore(), op, to, q->getParams()->getPrivate()->getCustomHeaders(), false);
 	if (q->getParams()->getPrivacy() != LinphonePrivacyDefault)
 		op->set_privacy((SalPrivacyMask)q->getParams()->getPrivacy());
@@ -932,6 +942,8 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 	}
 
 	if (direction == LinphoneCallOutgoing) {
+		if (d->params->getPrivate()->getReferer())
+			d->referer = d->params->getPrivate()->getReferer();
 		d->startPing();
 	} else if (direction == LinphoneCallIncoming) {
 		d->setParams(new CallSessionParams());
@@ -985,6 +997,11 @@ LinphoneStatus CallSession::deferUpdate () {
 	}
 	d->deferUpdate = true;
 	return 0;
+}
+
+bool CallSession::hasTransferPending () {
+	L_D();
+	return d->referPending;
 }
 
 void CallSession::initiateIncoming () {}
@@ -1134,6 +1151,26 @@ LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 	return 0;
 }
 
+LinphoneStatus CallSession::transfer (const shared_ptr<CallSession> &dest) {
+	L_D();
+	int result = d->op->refer_with_replaces(dest->getPrivate()->op);
+	d->setTransferState(LinphoneCallOutgoingInit);
+	return result;
+}
+
+LinphoneStatus CallSession::transfer (const string &dest) {
+	L_D();
+	LinphoneAddress *destAddr = linphone_core_interpret_url(getCore()->getCCore(), dest.c_str());
+	if (!destAddr)
+		return -1;
+	char *addrStr = linphone_address_as_string(destAddr);
+	d->op->refer(addrStr);
+	bctbx_free(addrStr);
+	linphone_address_unref(destAddr);
+	d->setTransferState(LinphoneCallOutgoingInit);
+	return 0;
+}
+
 LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &subject, const Content *content) {
 	L_D();
 	LinphoneCallState nextState;
@@ -1200,6 +1237,16 @@ LinphoneReason CallSession::getReason () const {
 	return linphone_error_info_get_reason(getErrorInfo());
 }
 
+shared_ptr<CallSession> CallSession::getReferer () const {
+	L_D();
+	return d->referer;
+}
+
+string CallSession::getReferTo () const {
+	L_D();
+	return d->referTo;
+}
+
 const Address& CallSession::getRemoteAddress () const {
 	L_D();
 	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
@@ -1254,6 +1301,16 @@ const Address& CallSession::getToAddress () const {
 	L_D();
 	d->toAddress = Address(d->op->get_to());
 	return d->toAddress;
+}
+
+LinphoneCallState CallSession::getTransferState () const {
+	L_D();
+	return d->transferState;
+}
+
+shared_ptr<CallSession> CallSession::getTransferTarget () const {
+	L_D();
+	return d->transferTarget;
 }
 
 string CallSession::getToHeader (const string &name) const {

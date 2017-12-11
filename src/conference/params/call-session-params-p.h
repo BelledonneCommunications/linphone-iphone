@@ -30,6 +30,8 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class CallSession;
+
 class CallSessionParamsPrivate : public ClonableObjectPrivate {
 public:
 	CallSessionParamsPrivate () = default;
@@ -48,8 +50,8 @@ public:
 
 	const std::unordered_map<std::string, std::string> &getCustomContactParameters () const { return customContactParameters; }
 
-	LinphoneCall *getReferer () const { return referer; }
-	void setReferer (LinphoneCall *call) { referer = call; }
+	std::shared_ptr<CallSession> getReferer () const { return referer; }
+	void setReferer (std::shared_ptr<CallSession> session) { referer = session; }
 
 public:
 	std::string sessionName;
@@ -62,7 +64,7 @@ private:
 	bool noUserConsent = false; /* When set to true an UPDATE request will be used instead of reINVITE */
 	SalCustomHeader *customHeaders = nullptr;
 	std::unordered_map<std::string, std::string> customContactParameters;
-	LinphoneCall *referer = nullptr; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
+	std::shared_ptr<CallSession> referer; /* In case call creation is consecutive to an incoming transfer, this points to the original call */
 
 	L_DECLARE_PUBLIC(CallSessionParams);
 };

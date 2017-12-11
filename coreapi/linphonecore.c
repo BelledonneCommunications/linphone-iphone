@@ -3372,42 +3372,10 @@ const char * linphone_core_get_route(LinphoneCore *lc){
 	return route;
 }
 
-LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params){
-#if 0
-	LinphoneCallParams *cp=params ? linphone_call_params_copy(params) : linphone_core_create_call_params(lc, NULL);
-	LinphoneCall *newcall;
-
-	if (call->state!=LinphoneCallPaused){
-		ms_message("Automatically pausing current call to accept transfer.");
-		_linphone_call_pause(call);
-		call->was_automatically_paused=TRUE;
-	}
-
-	if (!params){
-		linphone_call_params_enable_audio(cp, linphone_call_params_audio_enabled(call->current_params));
-		linphone_call_params_enable_video(cp, linphone_call_params_video_enabled(call->current_params)); /*start the call to refer-target with video enabled if original call had video*/
-	}
-	linphone_call_params_set_referer(cp, call);
-	ms_message("Starting new call to refered address %s",call->refer_to);
-	call->refer_pending=FALSE;
-	newcall=linphone_core_invite_with_params(lc,call->refer_to,cp);
-	linphone_call_params_unref(cp);
-	if (newcall) {
-		call->transfer_target=linphone_call_ref(newcall);
-		linphone_core_notify_refer_state(lc,call,newcall);
-	}
-	return newcall;
-#else
-	return nullptr;
-#endif
-}
-
-void linphone_core_notify_refer_state(LinphoneCore *lc, LinphoneCall *referer, LinphoneCall *newcall){
-#if 0
-	if (referer->op!=NULL){
-		sal_call_notify_refer_state(referer->op,newcall ? newcall->op : NULL);
-	}
-#endif
+LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+	shared_ptr<LinphonePrivate::Call> referredCall = L_GET_PRIVATE_FROM_C_OBJECT(call)->startReferredCall(params
+		? L_GET_CPP_PTR_FROM_C_OBJECT(params) : nullptr);
+	return L_GET_C_BACK_PTR(referredCall);
 }
 
 /*
@@ -3786,7 +3754,7 @@ int linphone_core_preempt_sound_resources(LinphoneCore *lc){
 	current_call=linphone_core_get_current_call(lc);
 	if(current_call != NULL){
 		ms_message("Pausing automatically the current call.");
-		err = _linphone_call_pause(current_call);
+		err = L_GET_CPP_PTR_FROM_C_OBJECT(current_call)->pause();
 	}
 	if (lc->ringstream){
 		linphone_core_stop_ringing(lc);
