@@ -142,6 +142,13 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message2(Linpho
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_chat_message(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 
 /**
+ * Used to receive a chat message when using async mechanism with IM encryption engine
+ * @param[in] cr LinphoneChatRoom object
+ * @param[in] msg LinphoneChatMessage object
+ */
+LINPHONE_PUBLIC void linphone_chat_room_receive_chat_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+
+/**
  * Mark all messages of the conversation as read
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation.
  */

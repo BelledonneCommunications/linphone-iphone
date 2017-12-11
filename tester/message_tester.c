@@ -2238,6 +2238,16 @@ static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryption
 	return 500;
 }
 
+static bool_t im_encryption_engine_process_incoming_message_async_impl(LinphoneChatMessage** msg) {
+	if (*msg) {
+		im_encryption_engine_process_incoming_message_cb(NULL,NULL,*msg);
+		linphone_chat_room_receive_chat_message(linphone_chat_message_get_chat_room(*msg), *msg);
+		linphone_chat_message_unref(*msg);
+		*msg=NULL;
+	}
+	return TRUE;
+}
+
 static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	if (strcmp(linphone_chat_message_get_content_type(msg),"text/plain") == 0) {
 		size_t b64Size = 0;
@@ -2265,12 +2275,20 @@ static bool_t im_encryption_engine_process_outgoing_message_async_impl(LinphoneC
 }
 
 static LinphoneChatMessage* pending_message=NULL; /*limited to one message at a time */
+static LinphoneChatMessage* incoming_pending_message=NULL; /*limited to one message at a time */
 
 static int im_encryption_engine_process_outgoing_message_async(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	pending_message=msg;
 	linphone_chat_message_ref(pending_message);
 	linphone_core_add_iterate_hook(linphone_chat_room_get_core(room), (LinphoneCoreIterateHook)im_encryption_engine_process_outgoing_message_async_impl,&pending_message);
 	return 1;/*temporaly code to defer message sending*/
+}
+
+static int im_encryption_engine_process_incoming_message_async(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	incoming_pending_message=msg;
+	linphone_chat_message_ref(incoming_pending_message);
+	linphone_core_add_iterate_hook(linphone_chat_room_get_core(room), (LinphoneCoreIterateHook)im_encryption_engine_process_incoming_message_async_impl,&incoming_pending_message);
+	return 1;/*temporaly code to defer message receiving*/
 }
 
 void im_encryption_engine_b64_base(bool_t async) {
@@ -2283,13 +2301,14 @@ void im_encryption_engine_b64_base(bool_t async) {
 	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *pauline_cbs = linphone_im_encryption_engine_get_callbacks(pauline_imee);
 
-	linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);
 	linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, im_encryption_engine_process_outgoing_message_cb);
 	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, im_encryption_engine_process_incoming_message_cb);
 	if (async) {
 		linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_async);
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_async);
 	} else {
 		linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);
 	}
 
 	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);

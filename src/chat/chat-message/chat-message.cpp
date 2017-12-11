@@ -492,15 +492,18 @@ void ChatMessagePrivate::send () {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (applyModifiers && q->getChatRoom()->canHandleParticipants()) { // Do not multipart, encrypt or encapsulate with CPIM in an old ChatRoom to maintain backward compatibility
-		if ((currentSendStep &ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
-			lInfo() << "Multipart step already done, skipping";
-		} else {
-			if (contents.size() > 1) {
-				MultipartChatMessageModifier mcmm;
-				mcmm.encode(q->getSharedFromThis(), errorCode);
+	if (applyModifiers) { 
+		// Do not multipart or encapsulate with CPIM in an old ChatRoom to maintain backward compatibility
+		if (q->getChatRoom()->canHandleParticipants()) {
+			if ((currentSendStep &ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
+				lInfo() << "Multipart step already done, skipping";
+			} else {
+				if (contents.size() > 1) {
+					MultipartChatMessageModifier mcmm;
+					mcmm.encode(q->getSharedFromThis(), errorCode);
+				}
+				currentSendStep |= ChatMessagePrivate::Step::Multipart;
 			}
-			currentSendStep |= ChatMessagePrivate::Step::Multipart;
 		}
 
 		if ((currentSendStep &ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
@@ -519,15 +522,17 @@ void ChatMessagePrivate::send () {
 			currentSendStep |= ChatMessagePrivate::Step::Encryption;
 		}
 
-		if ((currentSendStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
-			lInfo() << "Cpim step already done, skipping";
-		} else {
-			int defaultValue = !!lp_config_get_string(core->getCCore()->config, "misc", "conference_factory_uri", nullptr);
-			if (lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", defaultValue) == 1) {
-				CpimChatMessageModifier ccmm;
-				ccmm.encode(q->getSharedFromThis(), errorCode);
+		if (q->getChatRoom()->canHandleParticipants()) {
+			if ((currentSendStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
+				lInfo() << "Cpim step already done, skipping";
+			} else {
+				int defaultValue = !!lp_config_get_string(core->getCCore()->config, "misc", "conference_factory_uri", nullptr);
+				if (lp_config_get_int(core->getCCore()->config, "sip", "use_cpim", defaultValue) == 1) {
+					CpimChatMessageModifier ccmm;
+					ccmm.encode(q->getSharedFromThis(), errorCode);
+				}
+				currentSendStep |= ChatMessagePrivate::Step::Cpim;
 			}
-			currentSendStep |= ChatMessagePrivate::Step::Cpim;
 		}
 	}
 

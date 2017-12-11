@@ -150,6 +150,10 @@ void linphone_chat_room_send_chat_message (LinphoneChatRoom *cr, LinphoneChatMes
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->sendMessage(L_GET_CPP_PTR_FROM_C_OBJECT(msg));
 }
 
+void linphone_chat_room_receive_chat_message (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->receive();
+}
+
 uint32_t linphone_chat_room_get_char (const LinphoneChatRoom *cr) {
 	if (linphone_core_realtime_text_enabled(linphone_chat_room_get_core(cr)))
 		return L_GET_CPP_PTR_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->getChar();

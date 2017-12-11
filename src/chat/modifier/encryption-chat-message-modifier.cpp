@@ -84,7 +84,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::decode (
 		return ChatMessageModifier::Result::Skipped;
 
 	int retval = cbProcessIncomingMessage(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(message));
-	if (retval != 0 && retval != -1) {
+	if (retval != 0 && retval != -1 && retval != 1) {
 		errorCode = retval;
 		return ChatMessageModifier::Result::Error;
 	}
