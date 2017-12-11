@@ -147,6 +147,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	const IdentityAddress &peerAddress = chatRoomId.getPeerAddress();
 	dConference->focus = make_shared<Participant>(peerAddress);
+	dConference->focus->getPrivate()->addDevice(peerAddress);
 	dConference->conferenceAddress = peerAddress;
 	dConference->subject = subject;
 	dConference->participants = move(participants);
