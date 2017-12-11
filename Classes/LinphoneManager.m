@@ -595,6 +595,8 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 									   reason:@"Linphone core not initialized yet"
 									 userInfo:nil]);
 	}
+	//Force keep alive to workaround push notif on chat message
+	linphone_core_enable_keep_alive(theLinphoneCore, true);
 	return theLinphoneCore;
 }
 
