@@ -784,6 +784,9 @@ belle_sip_header_contact_t *SalOp::create_contact() {
 			}
 		}
 	}
+	if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+org.linphone.specs")==0){
+		belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header),"+org.linphone.specs","groupchat");
+	}
 	return contact_header;
 }
 
