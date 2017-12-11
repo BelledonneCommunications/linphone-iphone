@@ -67,6 +67,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 													  _tableController.searchBar.frame.origin.y + _tableController.searchBar.frame.size.height,
 													  _tableController.tableView.frame.size.width,
 													  _tableController.tableView.frame.size.height + _collectionView.frame.size.height);
+	} else {
+		_tableController.tableView.frame = CGRectMake(_tableController.tableView.frame.origin.x,
+													  _collectionView.frame.origin.y + _collectionView.frame.size.height,
+													  _tableController.tableView.frame.size.width,
+													  _tableController.tableView.frame.size.height);
 	}
 	[_collectionView reloadData];
 	_tableController.isForEditing = _isForEditing;

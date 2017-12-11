@@ -129,7 +129,6 @@
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	cell.linphoneImage.hidden = !linphoneContact;
 	cell.addressLabel.text = key;
-
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
 
 	return cell;
