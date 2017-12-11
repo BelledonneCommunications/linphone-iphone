@@ -1133,7 +1133,7 @@ void assistant_is_account_activated(LinphoneAccountCreator *creator, LinphoneAcc
 				linphone_account_creator_recover_account(creator);
 			}
 		} else {
-			// TO DO : Re send email ?
+			// TODO : Re send email ?
 			[thiz showErrorPopup:"ERROR_ACCOUNT_ALREADY_IN_USE"];
 			[thiz findButton:ViewElement_NextButton].enabled = NO;
 		}
