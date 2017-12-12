@@ -110,7 +110,7 @@ void Conference::removeParticipants (const list<shared_ptr<Participant>> &partic
 		removeParticipant(p);
 }
 
-void Conference::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+void Conference::setParticipantAdminStatus (const shared_ptr<Participant> &participant, bool isAdmin) {
 	lError() << "Conference class does not handle setParticipantAdminStatus() generically";
 }
 

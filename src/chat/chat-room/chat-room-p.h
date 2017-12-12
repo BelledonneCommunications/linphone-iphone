@@ -47,7 +47,7 @@ public:
 	void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 	void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 
-	void notifyUndecryptableMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
+	void notifyUndecryptableChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;

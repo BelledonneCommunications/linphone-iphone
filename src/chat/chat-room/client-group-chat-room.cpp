@@ -247,7 +247,7 @@ const list<shared_ptr<Participant>> &ClientGroupChatRoom::getParticipants () con
 	return RemoteConference::getParticipants();
 }
 
-void ClientGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &participant, bool isAdmin) {
+void ClientGroupChatRoom::setParticipantAdminStatus (const shared_ptr<Participant> &participant, bool isAdmin) {
 	if (isAdmin == participant->isAdmin())
 		return;
 

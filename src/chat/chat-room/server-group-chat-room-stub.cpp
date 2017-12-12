@@ -18,7 +18,6 @@
  */
 
 #include "core/core.h"
-
 #include "server-group-chat-room-p.h"
 
 // =============================================================================
@@ -33,9 +32,7 @@ shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const Identi
 	return nullptr;
 }
 
-void ServerGroupChatRoomPrivate::confirmCreation () {}
-
-void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
+void ServerGroupChatRoomPrivate::removeParticipant (const shared_ptr<const Participant> &) {}
 
 shared_ptr<Participant> ServerGroupChatRoomPrivate::findRemovedParticipant (
 	const shared_ptr<const CallSession> &
@@ -43,11 +40,17 @@ shared_ptr<Participant> ServerGroupChatRoomPrivate::findRemovedParticipant (
 	return nullptr;
 }
 
+// -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::confirmCreation () {}
+
+void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
+
+// -----------------------------------------------------------------------------
+
 string ServerGroupChatRoomPrivate::generateConferenceId () const {
 	return "";
 }
-
-void ServerGroupChatRoomPrivate::removeParticipant (const shared_ptr<const Participant> &) {}
 
 void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *) {}
 
@@ -57,11 +60,13 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
 
+void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &) {}
+
+// -----------------------------------------------------------------------------
+
 LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
 	return LinphoneReasonNone;
 }
-
-void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &confAddr) {}
 
 // -----------------------------------------------------------------------------
 
@@ -104,6 +109,10 @@ bool ServerGroupChatRoom::hasBeenLeft () const {
 	return true;
 }
 
+const IdentityAddress &ServerGroupChatRoom::getConferenceAddress () const {
+	return LocalConference::getConferenceAddress();
+}
+
 bool ServerGroupChatRoom::canHandleParticipants () const {
 	return false;
 }
@@ -111,10 +120,6 @@ bool ServerGroupChatRoom::canHandleParticipants () const {
 void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSessionParams *, bool) {}
 
 void ServerGroupChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {}
-
-const IdentityAddress &ServerGroupChatRoom::getConferenceAddress () const {
-	return LocalConference::getConferenceAddress();
-}
 
 void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
 
@@ -136,7 +141,7 @@ const list<shared_ptr<Participant>> &ServerGroupChatRoom::getParticipants () con
 	return LocalConference::getParticipants();
 }
 
-void ServerGroupChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {}
+void ServerGroupChatRoom::setParticipantAdminStatus (const shared_ptr<Participant> &, bool) {}
 
 const string &ServerGroupChatRoom::getSubject () const {
 	return LocalConference::getSubject();

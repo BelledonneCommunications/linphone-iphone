@@ -43,7 +43,7 @@ public:
 	virtual void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 	virtual void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 
-	virtual void notifyUndecryptableMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
+	virtual void notifyUndecryptableChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
 
 	virtual void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
 	virtual LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) = 0;

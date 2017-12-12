@@ -60,7 +60,7 @@ public:
 	void leave () override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
-	void setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) override;
+	void setParticipantAdminStatus (const std::shared_ptr<Participant> &participant, bool isAdmin) override;
 	void setSubject (const std::string &subject) override;
 
 protected:

@@ -271,7 +271,7 @@ void ChatRoomPrivate::notifyStateChanged () {
 		cb(cr, (LinphoneChatRoomState)state);
 }
 
-void ChatRoomPrivate::notifyUndecryptableMessageReceived (const shared_ptr<ChatMessage> &msg) {
+void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);

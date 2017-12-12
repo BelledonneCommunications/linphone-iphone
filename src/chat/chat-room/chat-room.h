@@ -29,9 +29,6 @@ LINPHONE_BEGIN_NAMESPACE
 class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public AbstractChatRoom {
-	friend class Core;
-	friend class FileTransferChatMessageModifier;
-
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
 

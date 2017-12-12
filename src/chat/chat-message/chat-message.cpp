@@ -357,7 +357,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 		ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), errorCode);
 		if (result == ChatMessageModifier::Result::Error) {
 			/* Unable to decrypt message */
-			chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
+			chatRoom->getPrivate()->notifyUndecryptableChatMessageReceived(q->getSharedFromThis());
 			reason = linphone_error_code_to_reason(errorCode);
 			q->sendDeliveryNotification(reason);
 			return reason;

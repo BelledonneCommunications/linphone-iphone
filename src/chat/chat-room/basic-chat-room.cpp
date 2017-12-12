@@ -95,7 +95,7 @@ const list<shared_ptr<Participant>> &BasicChatRoom::getParticipants () const {
 	return d->participants;
 }
 
-void BasicChatRoom::setParticipantAdminStatus (shared_ptr<Participant> &, bool) {
+void BasicChatRoom::setParticipantAdminStatus (const shared_ptr<Participant> &, bool) {
 	lError() << "setParticipantAdminStatus() is not allowed on a BasicChatRoom";
 }
 

@@ -20,18 +20,14 @@
 #ifndef _SERVER_GROUP_CHAT_ROOM_H_
 #define _SERVER_GROUP_CHAT_ROOM_H_
 
-// From coreapi
-#include "private.h"
-
 #include "chat/chat-room/chat-room.h"
 #include "conference/local-conference.h"
-
-#include "linphone/types.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class SalCallOp;
 class ServerGroupChatRoomPrivate;
 
 class ServerGroupChatRoom : public ChatRoom, public LocalConference {
@@ -55,19 +51,23 @@ public:
 
 	bool canHandleParticipants () const override;
 
-	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
-	void addParticipants (const std::list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipant (const IdentityAddress &address, const CallSessionParams *params, bool hasMedia) override;
+	void addParticipants (
+		const std::list<IdentityAddress> &addresses,
+		const CallSessionParams *params,
+		bool hasMedia
+	) override;
 
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
-	std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const override;
+	std::shared_ptr<Participant> findParticipant (const IdentityAddress &participantAddress) const override;
 
 	std::shared_ptr<Participant> getMe () const override;
 	int getParticipantCount () const override;
 	const std::list<std::shared_ptr<Participant>> &getParticipants () const override;
 
-	void setParticipantAdminStatus (std::shared_ptr<Participant> &participant, bool isAdmin) override;
+	void setParticipantAdminStatus (const std::shared_ptr<Participant> &participant, bool isAdmin) override;
 
 	const std::string &getSubject () const override;
 	void setSubject (const std::string &subject) override;
