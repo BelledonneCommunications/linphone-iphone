@@ -57,7 +57,7 @@ private:
 	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
 	std::string createNotifySubjectChanged (const std::string &subject, int notifyId = -1);
 	void notifyParticipant (const std::string &notify, const std::shared_ptr<Participant> &participant);
-	void notifyParticipantDevice (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
+	void notifyParticipantDevice (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device, bool multipart = false);
 
 	L_DECLARE_PUBLIC(LocalConferenceEventHandler);
 };

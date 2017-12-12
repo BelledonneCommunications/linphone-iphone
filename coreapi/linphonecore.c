@@ -51,6 +51,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "chat/chat-room/client-group-chat-room-p.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/handlers/remote-conference-event-handler.h"
+#include "content/content-manager.h"
+#include "content/content-type.h"
 #include "core/core-p.h"
 
 // For migration purpose.
@@ -2138,11 +2140,17 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		));
 
 		if (chatRoom) {
-			if (linphone_content_is_multipart(body))
-				L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->multipartNotifyReceived(
-					linphone_content_get_string_buffer(body)
-				);
-			else
+			if (linphone_content_is_multipart(body)) {
+				// TODO : migrate to c++ 'Content'.
+				int i = 0;
+				LinphoneContent *part = NULL;
+				while ((part = linphone_content_get_part(body, i))) {
+					i++;
+					L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->notifyReceived(
+						linphone_content_get_string_buffer(part)
+					);
+				}
+			} else
 				L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->notifyReceived(
 					linphone_content_get_string_buffer(body)
 				);
