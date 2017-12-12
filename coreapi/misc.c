@@ -244,41 +244,6 @@ const char *linphone_ice_state_to_string(LinphoneIceState state){
 	return "invalid";
 }
 
-void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
-}
-
-#if 0
-static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port)
-{
-	if (componentID == 1) {
-		*addr = stream->rtp_addr;
-		*port = stream->rtp_port;
-	} else if (componentID == 2) {
-		*addr = stream->rtcp_addr;
-		*port = stream->rtcp_port;
-	} else return;
-	if ((*addr)[0] == '\0') *addr = md->addr;
-}
-#endif
-
-void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md){
-#if 0
-	int i;
-
-	if (!call->localdesc) return;
-	for (i = 0; i < md->nb_streams; i++) {
-		const SalStreamDescription *local_stream = &call->localdesc->streams[i];
-		const SalStreamDescription *stream = &md->streams[i];
-		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-		if (!cl || !local_stream) continue;
-
-		if (stream->rtcp_mux && local_stream->rtcp_mux){
-			ice_check_list_remove_rtcp_candidates(cl);
-		}
-	}
-#endif
-}
-
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
 	int i;
 
@@ -935,9 +900,6 @@ void linphone_task_list_run(LinphoneTaskList *t){
 
 void linphone_task_list_free(LinphoneTaskList *t){
 	t->hooks = bctbx_list_free_with_data(t->hooks, (void (*)(void*))ms_free);
-}
-
-void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer){
 }
 
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){

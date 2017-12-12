@@ -232,24 +232,6 @@ static void call_terminated(SalOp *op, const char *from) {
 	L_GET_PRIVATE(session)->terminated();
 }
 
-#if 0
-static int resume_call_after_failed_transfer(LinphoneCall *call){
-	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
-		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
-
-	if (call->was_automatically_paused && call->state==LinphoneCallPaused){
-		if (sal_op_is_idle(call->op)){
-			linphone_call_resume(call);
-		}else {
-			ms_message("resume_call_after_failed_transfer(), salop was busy");
-			return BELLE_SIP_CONTINUE;
-		}
-	}
-	linphone_call_unref(call);
-	return BELLE_SIP_STOP;
-}
-#endif
-
 static void call_failure(SalOp *op) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session) {
