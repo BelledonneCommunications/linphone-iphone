@@ -52,7 +52,7 @@ void CorePrivate::init () {
 		uri = q->getDataPath() + LINPHONE_DB;
 	}
 
-	lInfo() << "Opening " LINPHONE_DB " at: " << uri;
+	lInfo() << "Opening " LINPHONE_DB "...";
 	if (!mainDb->connect(backend, uri))
 		lFatal() << "Unable to open linphone database.";
 
