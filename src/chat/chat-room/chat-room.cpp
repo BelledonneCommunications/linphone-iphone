@@ -244,22 +244,22 @@ end:
 void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	L_Q();
 
-	if ((chatMessage->getPrivate()->getContentType() != ContentType::Imdn) && (chatMessage->getPrivate()->getContentType() != ContentType::ImIsComposing)) {
+	ContentType contentType = chatMessage->getPrivate()->getContentType();
+	if (contentType != ContentType::Imdn && contentType != ContentType::ImIsComposing) {
 		onChatMessageReceived(chatMessage);
 
-		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+		LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q);
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
 		LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
 		shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(time(nullptr), chatMessage);
-		if (cb) {
-			cb(cr, L_GET_C_BACK_PTR(event));
-		}
+		if (cb)
+			cb(chatRoom, L_GET_C_BACK_PTR(event));
 		// Legacy
 		notifyChatMessageReceived(chatMessage);
 
-		const string fromAddress = chatMessage->getFromAddress().asString();
-		isComposingHandler->stopRemoteRefreshTimer(fromAddress);
-		notifyIsComposingReceived(chatMessage->getFromAddress(), false);
+		const IdentityAddress &fromAddress = chatMessage->getFromAddress();
+		isComposingHandler->stopRemoteRefreshTimer(fromAddress.asString());
+		notifyIsComposingReceived(fromAddress, false);
 		chatMessage->sendDeliveryNotification(LinphoneReasonNone);
 	}
 }
@@ -410,25 +410,16 @@ shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneConte
 
 shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId) const {
 	L_D();
-	shared_ptr<ChatMessage> cm = nullptr;
-	list<shared_ptr<ChatMessage> > l = d->findChatMessages(messageId);
-	if (!l.empty()) {
-		cm = l.front();
-	}
-	return cm;
+	list<shared_ptr<ChatMessage>> chatMessages = d->findChatMessages(messageId);
+	return chatMessages.empty() ? nullptr : chatMessages.front();
 }
 
 shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId, ChatMessage::Direction direction) const {
 	L_D();
-	shared_ptr<ChatMessage> ret = nullptr;
-	list<shared_ptr<ChatMessage> > l = d->findChatMessages(messageId);
-	for (auto &message : l) {
-		if (message->getDirection() == direction) {
-			ret = message;
-			break;
-		}
-	}
-	return ret;
+	for (auto &chatMessage : d->findChatMessages(messageId))
+		if (chatMessage->getDirection() == direction)
+			return chatMessage;
+	return nullptr;
 }
 
 void ChatRoom::markAsRead () {
@@ -438,7 +429,6 @@ void ChatRoom::markAsRead () {
 		return;
 
 	CorePrivate *dCore = getCore()->getPrivate();
-	const string peerAddress = getPeerAddress().asString();
 	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId))
 		chatMessage->sendDisplayNotification();
 
