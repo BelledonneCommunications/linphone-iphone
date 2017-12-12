@@ -100,16 +100,16 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 	L_Q_T(RemoteConference, qConference);
 
 	if (newState == LinphoneCallConnected) {
-		if (state == ChatRoom::State::CreationPending) {
+		if (q->getState() == ChatRoom::State::CreationPending) {
 			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
 			q->onConferenceCreated(addr);
 			if (session->getRemoteContactAddress()->hasParam("isfocus"))
 				qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
-		} else if (state == ChatRoom::State::TerminationPending)
+		} else if (q->getState() == ChatRoom::State::TerminationPending)
 			qConference->getPrivate()->focus->getPrivate()->getSession()->terminate();
-	} else if ((newState == LinphoneCallReleased) && (state == ChatRoom::State::TerminationPending)) {
+	} else if ((newState == LinphoneCallReleased) && (q->getState() == ChatRoom::State::TerminationPending)) {
 		q->onConferenceTerminated(q->getConferenceAddress());
-	} else if ((newState == LinphoneCallError) && (state == ChatRoom::State::CreationPending)) {
+	} else if ((newState == LinphoneCallError) && (q->getState() == ChatRoom::State::CreationPending)) {
 		setState(ChatRoom::State::CreationFailed);
 	}
 }
@@ -192,7 +192,7 @@ void ClientGroupChatRoom::addParticipants (
 	if (addressesList.empty())
 		return;
 
-	if ((d->state != ChatRoom::State::Instantiated) && (d->state != ChatRoom::State::Created)) {
+	if ((getState() != ChatRoom::State::Instantiated) && (getState() != ChatRoom::State::Created)) {
 		lError() << "Cannot add participants to the ClientGroupChatRoom in a state other than Instantiated or Created";
 		return;
 	}
@@ -208,7 +208,7 @@ void ClientGroupChatRoom::addParticipants (
 	else {
 		session = d->createSession();
 		session->startInvite(nullptr, getSubject(), &content);
-		if (d->state == ChatRoom::State::Instantiated)
+		if (getState() == ChatRoom::State::Instantiated)
 			d->setState(ChatRoom::State::CreationPending);
 	}
 }
@@ -277,7 +277,7 @@ void ClientGroupChatRoom::setSubject (const string &subject) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	if (d->state != ChatRoom::State::Created) {
+	if (getState() != ChatRoom::State::Created) {
 		lError() << "Cannot change the ClientGroupChatRoom subject in a state other than Created";
 		return;
 	}
@@ -301,7 +301,7 @@ void ClientGroupChatRoom::join () {
 	L_D_T(RemoteConference, dConference);
 
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
-	if (!session && ((d->state == ChatRoom::State::Instantiated) || (d->state == ChatRoom::State::Terminated))) {
+	if (!session && ((getState() == ChatRoom::State::Instantiated) || (getState() == ChatRoom::State::Terminated))) {
 		session = d->createSession();
 		session->startInvite(nullptr, "", nullptr);
 		d->setState(ChatRoom::State::CreationPending);

@@ -20,11 +20,12 @@
 #ifndef _CHAT_ROOM_P_H_
 #define _CHAT_ROOM_P_H_
 
+#include <ctime>
+
 #include "abstract-chat-room-p.h"
 #include "chat-room-id.h"
 #include "chat-room.h"
 #include "chat/notification/is-composing.h"
-#include "event-log/event-log.h"
 
 // =============================================================================
 
@@ -32,67 +33,55 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public AbstractChatRoomPrivate, public IsComposingListener {
 public:
-	void setCreationTime (time_t creationTime) override {
+	inline void setCreationTime (time_t creationTime) override {
 		this->creationTime = creationTime;
 	}
 
-	void setLastUpdateTime (time_t lastUpdateTime) override {
+	inline void setLastUpdateTime (time_t lastUpdateTime) override {
 		this->lastUpdateTime = lastUpdateTime;
 	}
 
 	void setState (ChatRoom::State state) override;
 
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
+	void sendIsComposingNotification ();
 
 	void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 	void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 
+	std::shared_ptr<ChatMessage> createChatMessage (ChatMessage::Direction direction);
+	std::list<std::shared_ptr<ChatMessage>> findChatMessages (const std::string &messageId) const;
+
+	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage);
+	void notifyIsComposingReceived (const Address &remoteAddress, bool isComposing);
+	void notifyStateChanged ();
 	void notifyUndecryptableChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
-
-	// TODO: After this point clean and order methods (AND set members private if possible)!!!
-
-	void sendIsComposingNotification ();
-
-	std::list<std::shared_ptr<ChatMessage>> findMessages (const std::string &messageId) const;
-
-	void imdnReceived (const std::string &text);
-	void isComposingReceived (const Address &remoteAddr, const std::string &text);
-
-	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &msg);
-	void notifyIsComposingReceived (const Address &remoteAddr, bool isComposing);
-	void notifyStateChanged ();
-
-	/* IsComposingListener */
-	void onIsComposingStateChanged (bool isComposing) override;
-	void onIsRemoteComposingStateChanged (const Address &remoteAddr, bool isComposing) override;
+	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
+	void onImdnReceived (const std::string &text);
+	void onIsComposingReceived (const Address &remoteAddress, const std::string &text);
 	void onIsComposingRefreshNeeded () override;
+	void onIsComposingStateChanged (bool isComposing) override;
+	void onIsRemoteComposingStateChanged (const Address &remoteAddress, bool isComposing) override;
 
-	std::shared_ptr<ChatMessage> createChatMessage (ChatMessage::Direction direction);
-
-	LinphoneCall *call = nullptr;
-	bool isComposing = false;
 	std::list<IdentityAddress> remoteIsComposing;
-	std::list<std::shared_ptr<EventLog>> transientEvents;
-
-	// TODO: Remove me. Must be present only in rtt chat room.
-	std::shared_ptr<ChatMessage> pendingMessage;
-
-	// TODO: Use CoreAccessor on IsComposing. And avoid pointer if possible.
-	std::unique_ptr<IsComposing> isComposingHandler;
-
-	// TODO: Check all fields before this point.
-
-	ChatRoom::State state = ChatRoom::State::None;
 
 	ChatRoomId chatRoomId;
+
+private:
+	ChatRoom::State state = ChatRoom::State::None;
 
 	time_t creationTime = std::time(nullptr);
 	time_t lastUpdateTime = std::time(nullptr);
 
-private:
+	std::shared_ptr<ChatMessage> pendingMessage;
+	std::unique_ptr<IsComposing> isComposingHandler;
+
+	LinphoneCall *call = nullptr;
+	bool isComposing = false;
+	std::list<std::shared_ptr<EventLog>> transientEvents;
+
 	L_DECLARE_PUBLIC(ChatRoom);
 };
 

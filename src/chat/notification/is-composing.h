@@ -26,6 +26,7 @@
 
 #include "chat/notification/is-composing-listener.h"
 
+// TODO: Remove me later.
 #include "private.h"
 
 // =============================================================================
