@@ -78,7 +78,6 @@ private:
 	std::shared_ptr<ChatMessage> pendingMessage;
 	std::unique_ptr<IsComposing> isComposingHandler;
 
-	LinphoneCall *call = nullptr;
 	bool isComposing = false;
 	std::list<std::shared_ptr<EventLog>> transientEvents;
 
