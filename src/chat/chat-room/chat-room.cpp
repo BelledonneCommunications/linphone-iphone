@@ -350,7 +350,7 @@ void ChatRoom::deleteHistory () {
 	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
 }
 
-shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
+shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory () const {
 	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
 }
 
@@ -379,7 +379,7 @@ bool ChatRoom::isRemoteComposing () const {
 	return !d->remoteIsComposing.empty();
 }
 
-std::list<IdentityAddress> ChatRoom::getComposingAddresses () const {
+list<IdentityAddress> ChatRoom::getComposingAddresses () const {
 	L_D();
 	return d->remoteIsComposing;
 }

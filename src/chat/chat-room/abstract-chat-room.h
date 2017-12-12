@@ -33,6 +33,7 @@ class ChatRoomId;
 class EventLog;
 
 class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
+	friend class BasicToClientGroupChatRoomPrivate;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 	friend class CorePrivate;
