@@ -47,7 +47,6 @@ blacklisted_functions = [
 	'linphone_chat_message_start_file_download',	# callback function in parameter
 	'linphone_chat_message_state_to_string',	# There is no use to wrap this function
 	'linphone_chat_room_send_chat_message',	# Use linphone_chat_room_send_chat_message_2 instead
-	'linphone_chat_room_send_message2',	# callback function in parameter
 	'linphone_config_get_range',	# to be handwritten because of result via arguments
 	'linphone_config_load_dict_to_section',	# missing LinphoneDictionary
 	'linphone_config_section_to_dict',	# missing LinphoneDictionary

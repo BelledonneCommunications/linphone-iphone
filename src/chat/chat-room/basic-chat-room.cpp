@@ -31,10 +31,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-void BasicChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
-
-// -----------------------------------------------------------------------------
-
 BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
 	ChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
 

@@ -42,8 +42,6 @@ private:
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
 
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
-
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

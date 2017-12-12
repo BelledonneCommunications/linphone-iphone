@@ -1,5 +1,5 @@
 /*
- * real-time-text-chat-room-p.h
+ * abstract-chat-room.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,32 +17,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_
-#define _REAL_TIME_TEXT_CHAT_ROOM_P_H_
-
-#include "chat/chat-room/basic-chat-room-p.h"
-#include "chat/chat-room/real-time-text-chat-room.h"
+#include "abstract-chat-room-p.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class RealTimeTextChatRoomPrivate : public BasicChatRoomPrivate {
-public:
-	RealTimeTextChatRoomPrivate () = default;
-	~RealTimeTextChatRoomPrivate ();
+// -----------------------------------------------------------------------------
 
-	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
-	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
-
-	LinphoneCall *call = nullptr;
-	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
-	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
-
-private:
-	L_DECLARE_PUBLIC(RealTimeTextChatRoom);
-};
+AbstractChatRoom::AbstractChatRoom (
+	AbstractChatRoomPrivate &p,
+	const shared_ptr<Core> &core
+) : Object(p), CoreAccessor(core) {}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_

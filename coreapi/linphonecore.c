@@ -2134,7 +2134,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
 		const LinphoneAddress *from = linphone_event_get_from(lev);
 
-		shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
+		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
 		));
@@ -2164,7 +2164,7 @@ static void _linphone_core_conference_subscription_state_changed(LinphoneCore *l
 		state == LinphoneSubscriptionIncomingReceived
 	) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
+		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
 		));

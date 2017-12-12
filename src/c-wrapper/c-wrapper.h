@@ -35,7 +35,7 @@
 	F(Address, Address) \
 	F(Call, Call) \
 	F(ChatMessage, ChatMessage) \
-	F(ChatRoom, ChatRoom) \
+	F(AbstractChatRoom, ChatRoom) \
 	F(Core, Core) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
@@ -43,12 +43,14 @@
 	F(Participant, Participant)
 
 #define L_REGISTER_SUBTYPES(F) \
+	F(AbstractChatRoom, BasicChatRoom) \
+	F(AbstractChatRoom, BasicToClientGroupChatRoom) \
+	F(AbstractChatRoom, ChatRoom) \
+	F(AbstractChatRoom, ClientGroupChatRoom) \
+	F(AbstractChatRoom, RealTimeTextChatRoom) \
+	F(AbstractChatRoom, ServerGroupChatRoom) \
 	F(Call, LocalConferenceCall) \
 	F(Call, RemoteConferenceCall) \
-	F(ChatRoom, BasicChatRoom) \
-	F(ChatRoom, ClientGroupChatRoom) \
-	F(ChatRoom, RealTimeTextChatRoom) \
-	F(ChatRoom, ServerGroupChatRoom) \
 	F(EventLog, ConferenceCallEvent) \
 	F(EventLog, ConferenceChatMessageEvent) \
 	F(EventLog, ConferenceEvent) \

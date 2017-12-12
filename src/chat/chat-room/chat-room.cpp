@@ -50,12 +50,6 @@ void ChatRoomPrivate::removeTransientEvent (const shared_ptr<EventLog> &log) {
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::release () {
-	isComposingHandler->stopTimers();
-}
-
-// -----------------------------------------------------------------------------
-
 void ChatRoomPrivate::setState (ChatRoom::State newState) {
 	if (newState != state) {
 		state = newState;
@@ -93,7 +87,7 @@ list<shared_ptr<ChatMessage> > ChatRoomPrivate::findMessages (const string &mess
 	return q->getCore()->getPrivate()->mainDb->findChatMessages(q->getChatRoomId(), messageId);
 }
 
-void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
+void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 
 	// TODO: Check direction.
@@ -125,7 +119,7 @@ void ChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
 
 // -----------------------------------------------------------------------------
 
-LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *salMsg) {
+LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessage *message) {
 	L_Q();
 
 	bool increaseMsgCount = true;
@@ -142,11 +136,11 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 	);
 
 	Content content;
-	content.setContentType(salMsg->content_type);
-	content.setBody(salMsg->text ? salMsg->text : "");
+	content.setContentType(message->content_type);
+	content.setBody(message->text ? message->text : "");
 	msg->setInternalContent(content);
 
-	msg->getPrivate()->setTime(salMsg->time);
+	msg->getPrivate()->setTime(message->time);
 	msg->getPrivate()->setImdnMessageId(op->get_call_id());
 
 	const SalCustomHeader *ch = op->get_recv_custom_header();
@@ -182,7 +176,7 @@ LinphoneReason ChatRoomPrivate::messageReceived (SalOp *op, const SalMessage *sa
 		pendingMessage = msg;
 	}
 
-	chatMessageReceived(msg);
+	onChatMessageReceived(msg);
 
 	pendingMessage = nullptr;
 
@@ -192,7 +186,7 @@ end:
 
 // -----------------------------------------------------------------------------
 
-void ChatRoomPrivate::chatMessageReceived (const shared_ptr<ChatMessage> &msg) {
+void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &msg) {
 	L_Q();
 
 	if ((msg->getPrivate()->getContentType() != ContentType::Imdn) && (msg->getPrivate()->getContentType() != ContentType::ImIsComposing)) {
@@ -305,7 +299,7 @@ void ChatRoomPrivate::onIsComposingRefreshNeeded () {
 // =============================================================================
 
 ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
-	Object(p), CoreAccessor(core) {
+	AbstractChatRoom(p, core) {
 	L_D();
 
 	d->chatRoomId = chatRoomId;
@@ -343,31 +337,38 @@ time_t ChatRoom::getLastUpdateTime () const {
 
 // -----------------------------------------------------------------------------
 
-list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) {
+ChatRoom::State ChatRoom::getState () const {
+	L_D();
+	return d->state;
+}
+
+// -----------------------------------------------------------------------------
+
+list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) const {
 	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast);
 }
 
-list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) {
+list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) const {
 	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end);
 }
 
-int ChatRoom::getHistorySize () {
+int ChatRoom::getHistorySize () const {
 	return getCore()->getPrivate()->mainDb->getHistorySize(getChatRoomId());
-}
-
-shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
-	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
 }
 
 void ChatRoom::deleteHistory () {
 	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
 }
 
-int ChatRoom::getChatMessageCount () {
+shared_ptr<ChatMessage> ChatRoom::getLastChatMessageInHistory() const {
+	return getCore()->getPrivate()->mainDb->getLastChatMessage(getChatRoomId());
+}
+
+int ChatRoom::getChatMessageCount () const {
 	return getCore()->getPrivate()->mainDb->getChatMessageCount(getChatRoomId());
 }
 
-int ChatRoom::getUnreadChatMessageCount () {
+int ChatRoom::getUnreadChatMessageCount () const {
 	return getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
 }
 
@@ -383,27 +384,41 @@ void ChatRoom::compose () {
 	d->isComposingHandler->startIdleTimer();
 }
 
-shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
-	shared_ptr<ChatMessage> chatMessage = createMessage();
-	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
-	return chatMessage;
+bool ChatRoom::isRemoteComposing () const {
+	L_D();
+	return !d->remoteIsComposing.empty();
 }
 
-shared_ptr<ChatMessage> ChatRoom::createMessage (const string &message) {
-	shared_ptr<ChatMessage> chatMessage = createMessage();
-	Content *content = new Content();
-	content->setContentType(ContentType::PlainText);
-	content->setBody(message);
-	chatMessage->addContent(*content);
-	return chatMessage;
+std::list<IdentityAddress> ChatRoom::getComposingAddresses () const {
+	L_D();
+	return d->remoteIsComposing;
 }
 
-shared_ptr<ChatMessage> ChatRoom::createMessage () {
+// -----------------------------------------------------------------------------
+
+shared_ptr<ChatMessage> ChatRoom::createChatMessage () {
 	L_D();
 	return d->createChatMessage(ChatMessage::Direction::Outgoing);
 }
 
-shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
+shared_ptr<ChatMessage> ChatRoom::createChatMessage (const string &text) {
+	shared_ptr<ChatMessage> chatMessage = createChatMessage();
+	Content *content = new Content();
+	content->setContentType(ContentType::PlainText);
+	content->setBody(text);
+	chatMessage->addContent(*content);
+	return chatMessage;
+}
+
+shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
+	shared_ptr<ChatMessage> chatMessage = createChatMessage();
+	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
+	return chatMessage;
+}
+
+// -----------------------------------------------------------------------------
+
+shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId) const {
 	L_D();
 	shared_ptr<ChatMessage> cm = nullptr;
 	list<shared_ptr<ChatMessage> > l = d->findMessages(messageId);
@@ -413,7 +428,7 @@ shared_ptr<ChatMessage> ChatRoom::findMessage (const string &messageId) {
 	return cm;
 }
 
-shared_ptr<ChatMessage> ChatRoom::findMessageWithDirection (const string &messageId, ChatMessage::Direction direction) {
+shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId, ChatMessage::Direction direction) const {
 	L_D();
 	shared_ptr<ChatMessage> ret = nullptr;
 	list<shared_ptr<ChatMessage> > l = d->findMessages(messageId);
@@ -424,16 +439,6 @@ shared_ptr<ChatMessage> ChatRoom::findMessageWithDirection (const string &messag
 		}
 	}
 	return ret;
-}
-
-bool ChatRoom::isRemoteComposing () const {
-	L_D();
-	return d->remoteIsComposing.size() > 0;
-}
-
-std::list<Address> ChatRoom::getComposingAddresses () const {
-	L_D();
-	return d->remoteIsComposing;
 }
 
 void ChatRoom::markAsRead () {
@@ -453,13 +458,6 @@ void ChatRoom::markAsRead () {
 		d->pendingMessage->updateState(ChatMessage::State::Displayed);
 		d->pendingMessage->sendDisplayNotification();
 	}
-}
-
-// -----------------------------------------------------------------------------
-
-ChatRoom::State ChatRoom::getState () const {
-	L_D();
-	return d->state;
 }
 
 LINPHONE_END_NAMESPACE

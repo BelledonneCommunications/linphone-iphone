@@ -34,10 +34,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Address;
 class Call;
-class ChatRoom;
 class ChatRoomId;
 class CorePrivate;
 class IdentityAddress;
+class AbstractChatRoom;
 
 class LINPHONE_PUBLIC Core : public Object {
 	friend class CallPrivate;
@@ -86,25 +86,28 @@ public:
 	// ChatRoom.
 	// ---------------------------------------------------------------------------
 
-	const std::list<std::shared_ptr<ChatRoom>> &getChatRooms () const;
+	const std::list<std::shared_ptr<AbstractChatRoom>> &getChatRooms () const;
 
-	std::shared_ptr<ChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
-	std::list<std::shared_ptr<ChatRoom>> findChatRooms (const IdentityAddress &peerAddress) const;
+	std::shared_ptr<AbstractChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
+	std::list<std::shared_ptr<AbstractChatRoom>> findChatRooms (const IdentityAddress &peerAddress) const;
 
-	std::shared_ptr<ChatRoom> findOneToOneChatRoom (
+	std::shared_ptr<AbstractChatRoom> findOneToOneChatRoom (
 		const IdentityAddress &localAddress,
 		const IdentityAddress &participantAddress
 	) const;
 
-	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject);
-	std::shared_ptr<ChatRoom> createClientGroupChatRoom (const std::string &subject, const IdentityAddress &localAddress);
+	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject);
+	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (
+		const std::string &subject,
+		const IdentityAddress &localAddress
+	);
 
-	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt = false);
-	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt = false);
+	std::shared_ptr<AbstractChatRoom> getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt = false);
+	std::shared_ptr<AbstractChatRoom> getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt = false);
 
-	std::shared_ptr<ChatRoom> getOrCreateBasicChatRoomFromUri (const std::string &uri, bool isRtt = false);
+	std::shared_ptr<AbstractChatRoom> getOrCreateBasicChatRoomFromUri (const std::string &uri, bool isRtt = false);
 
-	static void deleteChatRoom (const std::shared_ptr<const ChatRoom> &chatRoom);
+	static void deleteChatRoom (const std::shared_ptr<const AbstractChatRoom> &chatRoom);
 
 	// ---------------------------------------------------------------------------
 	// Paths.

@@ -57,7 +57,7 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
 
-LinphoneReason ServerGroupChatRoomPrivate::messageReceived (SalOp *, const SalMessage *) {
+LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
 	return LinphoneReasonNone;
 }
 
@@ -80,10 +80,6 @@ void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
 	LinphoneCallState,
 	const string &
 ) {}
-
-// -----------------------------------------------------------------------------
-
-void ServerGroupChatRoomPrivate::onChatMessageReceived(const shared_ptr<ChatMessage> &) {}
 
 // =============================================================================
 

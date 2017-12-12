@@ -163,7 +163,7 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 	}
 
 	if (messageIdStr && datetimeStr) {
-		shared_ptr<ChatMessage> cm = cr.findMessageWithDirection(messageIdStr, ChatMessage::Direction::Outgoing);
+		shared_ptr<ChatMessage> cm = cr.findChatMessage(messageIdStr, ChatMessage::Direction::Outgoing);
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
 		} else {

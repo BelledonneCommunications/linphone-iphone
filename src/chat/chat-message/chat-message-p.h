@@ -156,7 +156,7 @@ public:
 	mutable MainDbChatMessageKey dbKey;
 
 private:
-	std::weak_ptr<ChatRoom> chatRoom;
+	std::weak_ptr<AbstractChatRoom> chatRoom;
 	ChatRoomId chatRoomId;
 	IdentityAddress fromAddress;
 	IdentityAddress toAddress;

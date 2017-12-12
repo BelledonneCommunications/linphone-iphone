@@ -114,10 +114,6 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 	}
 }
 
-// -----------------------------------------------------------------------------
-
-void ClientGroupChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &) {}
-
 // =============================================================================
 
 ClientGroupChatRoom::ClientGroupChatRoom (

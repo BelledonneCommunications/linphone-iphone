@@ -20,70 +20,59 @@
 #ifndef _CHAT_ROOM_H_
 #define _CHAT_ROOM_H_
 
-#include "chat/chat-message/chat-message.h"
-#include "chat/chat-room/chat-room-id.h"
-#include "conference/conference-interface.h"
+#include "abstract-chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate;
-class EventLog;
 
-class LINPHONE_PUBLIC ChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
-	friend class ChatMessage;
-	friend class ChatMessagePrivate;
+class LINPHONE_PUBLIC ChatRoom : public AbstractChatRoom {
 	friend class Core;
-	friend class CorePrivate;
 	friend class FileTransferChatMessageModifier;
-	friend class MainDb;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
 
-	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
-	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
+	const ChatRoomId &getChatRoomId () const override;
 
-	typedef int CapabilitiesMask;
+	const IdentityAddress &getPeerAddress () const override;
+	const IdentityAddress &getLocalAddress () const override;
 
-	virtual ~ChatRoom () = default;
+	time_t getCreationTime () const override;
+	time_t getLastUpdateTime () const override;
 
-	const ChatRoomId &getChatRoomId () const;
+	State getState () const override;
 
-	const IdentityAddress &getPeerAddress () const;
-	const IdentityAddress &getLocalAddress () const;
+	std::list<std::shared_ptr<EventLog>> getHistory (int nLast) const override;
+	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const override;
+	int getHistorySize () const override;
 
-	time_t getCreationTime () const;
-	time_t getLastUpdateTime () const;
+	void deleteHistory () override;
 
-	virtual CapabilitiesMask getCapabilities () const = 0;
-	virtual bool hasBeenLeft () const = 0;
+	std::shared_ptr<ChatMessage> getLastChatMessageInHistory () const override;
 
-	std::list<std::shared_ptr<EventLog>> getHistory (int nLast);
-	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end);
-	int getHistorySize ();
+	int getChatMessageCount () const override;
+	int getUnreadChatMessageCount () const override;
 
-	std::shared_ptr<ChatMessage> getLastChatMessageInHistory () const;
+	void compose () override;
+	bool isRemoteComposing () const override;
+	std::list<IdentityAddress> getComposingAddresses () const override;
 
-	void deleteHistory ();
+	std::shared_ptr<ChatMessage> createChatMessage () override;
+	std::shared_ptr<ChatMessage> createChatMessage (const std::string &text) override;
 
-	int getChatMessageCount ();
-	int getUnreadChatMessageCount ();
+	// TODO: Remove LinphoneContent by LinphonePrivate::Content.
+	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent) override;
 
-	// TODO: Remove useless functions.
-	void compose ();
-	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent);
-	std::shared_ptr<ChatMessage> createMessage (const std::string &msg);
-	std::shared_ptr<ChatMessage> createMessage ();
-	std::shared_ptr<ChatMessage> findMessage (const std::string &messageId);
-	std::shared_ptr<ChatMessage> findMessageWithDirection (const std::string &messageId, ChatMessage::Direction direction);
-	bool isRemoteComposing () const;
-	std::list<Address> getComposingAddresses () const;
+	std::shared_ptr<ChatMessage> findChatMessage (const std::string &messageId) const override;
+	std::shared_ptr<ChatMessage> findChatMessage (
+		const std::string &messageId,
+		ChatMessage::Direction direction
+	) const override;
 
-	virtual void markAsRead ();
-
-	State getState () const;
+	void markAsRead () override;
 
 protected:
 	explicit ChatRoom (ChatRoomPrivate &p, const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);

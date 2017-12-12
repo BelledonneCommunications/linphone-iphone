@@ -67,7 +67,7 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	if (force)
 		state = s;
 
-	if (s == state || !q->getChatRoom())
+	if (s == state)
 		return;
 
 	if (
@@ -316,7 +316,7 @@ void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	L_Q();
 
-	shared_ptr<ChatMessage> msg = q->getChatRoom()->createMessage();
+	shared_ptr<ChatMessage> msg = q->getChatRoom()->createChatMessage();
 
 	Content *content = new Content();
 	content->setContentType("message/imdn+xml");
@@ -332,7 +332,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 	LinphoneReason reason = LinphoneReasonNone;
 
 	shared_ptr<Core> core = q->getCore();
-	shared_ptr<ChatRoom> chatRoom = q->getChatRoom();
+	shared_ptr<AbstractChatRoom> chatRoom = q->getChatRoom();
 
 	setState(ChatMessage::State::Delivered);
 
@@ -357,8 +357,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 		ChatMessageModifier::Result result = ecmm.decode(q->getSharedFromThis(), errorCode);
 		if (result == ChatMessageModifier::Result::Error) {
 			/* Unable to decrypt message */
-			if (chatRoom)
-				chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
+			chatRoom->getPrivate()->notifyUndecryptableMessageReceived(q->getSharedFromThis());
 			reason = linphone_error_code_to_reason(errorCode);
 			q->sendDeliveryNotification(reason);
 			return reason;
@@ -416,7 +415,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 		setDirection(ChatMessage::Direction::Outgoing);
 
 	// Check if this is a duplicate message.
-	if (chatRoom && chatRoom->findMessageWithDirection(imdnId, direction))
+	if (chatRoom->findChatMessage(imdnId, direction))
 		return core->getCCore()->chat_deny_code;
 
 	if (errorCode > 0) {
@@ -632,9 +631,8 @@ void ChatMessagePrivate::store() {
 
 // -----------------------------------------------------------------------------
 
-ChatMessage::ChatMessage (const shared_ptr<ChatRoom> &chatRoom, ChatMessage::Direction direction) :
+ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
 	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
-	L_ASSERT(chatRoom);
 	L_D();
 
 	d->chatRoom = chatRoom;
@@ -658,12 +656,17 @@ ChatMessage::~ChatMessage () {
 		d->salOp->release();
 }
 
-shared_ptr<ChatRoom> ChatMessage::getChatRoom () const {
+shared_ptr<AbstractChatRoom> ChatMessage::getChatRoom () const {
 	L_D();
 
-	shared_ptr<ChatRoom> chatRoom = d->chatRoom.lock();
-	if (!chatRoom)
+	shared_ptr<AbstractChatRoom> chatRoom = d->chatRoom.lock();
+	if (!chatRoom) {
 		chatRoom = getCore()->getOrCreateBasicChatRoom(d->chatRoomId);
+		if (!chatRoom) {
+			lError() << "Unable to get valid chat room instance.";
+			throw logic_error("Unable to get chat room of chat message.");
+		}
+	}
 
 	return chatRoom;
 }
@@ -813,9 +816,7 @@ void ChatMessage::send () {
 		return;
 	}
 
-	shared_ptr<ChatRoom> chatRoom = getChatRoom();
-	if (chatRoom)
-		chatRoom->getPrivate()->sendMessage(getSharedFromThis());
+	getChatRoom()->getPrivate()->sendChatMessage(getSharedFromThis());
 }
 
 void ChatMessage::sendDeliveryNotification (LinphoneReason reason) {
@@ -860,9 +861,7 @@ int ChatMessage::putCharacter (uint32_t character) {
 		static const uint32_t crlf = 0x0D0A;
 		static const uint32_t lf = 0x0A;
 
-		shared_ptr<ChatRoom> chatRoom = getChatRoom();
-		if (!chatRoom)
-			return -1;
+		shared_ptr<AbstractChatRoom> chatRoom = getChatRoom();
 
 		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
 			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(chatRoom);

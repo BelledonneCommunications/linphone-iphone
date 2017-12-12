@@ -61,28 +61,27 @@ static IdentityAddress getDefaultLocalAddress (const shared_ptr<Core> &core, con
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<ChatRoom> CorePrivate::createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt, bool notifyCreation) {
+shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
+	const ChatRoomId &chatRoomId,
+	bool isRtt
+) {
 	L_Q();
 
-	shared_ptr<ChatRoom> chatRoom;
+	shared_ptr<AbstractChatRoom> chatRoom;
 
 	if (isRtt)
 		chatRoom.reset(new RealTimeTextChatRoom(q->getSharedFromThis(), chatRoomId));
 	else
 		chatRoom.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
 
-	ChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
-
-	if (notifyCreation) {
-		dChatRoom->setState(ChatRoom::State::Instantiated);
-		dChatRoom->setState(ChatRoom::State::Created);
-	} else
-		dChatRoom->state = ChatRoom::State::Created;
+	AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
+	dChatRoom->setState(ChatRoom::State::Instantiated);
+	dChatRoom->setState(ChatRoom::State::Created);
 
 	return chatRoom;
 }
 
-void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
+void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
 	L_Q();
 
@@ -91,19 +90,19 @@ void CorePrivate::insertChatRoom (const shared_ptr<ChatRoom> &chatRoom) {
 	chatRoomsById[chatRoom->getChatRoomId()] = chatRoom;
 }
 
-void CorePrivate::insertChatRoomWithDb (const shared_ptr<ChatRoom> &chatRoom) {
+void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 	mainDb->insertChatRoom(chatRoom);
 }
 
 // -----------------------------------------------------------------------------
 
-const list<shared_ptr<ChatRoom>> &Core::getChatRooms () const {
+const list<shared_ptr<AbstractChatRoom>> &Core::getChatRooms () const {
 	L_D();
 	return d->chatRooms;
 }
 
-shared_ptr<ChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
+shared_ptr<AbstractChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
 	L_D();
 
 	auto it = d->chatRoomsById.find(chatRoomId);
@@ -116,14 +115,13 @@ shared_ptr<ChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) const {
 	return shared_ptr<ChatRoom>();
 }
 
-list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {
+list<shared_ptr<AbstractChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {
 	L_D();
 
-	// TODO: Improve performance if necessary.
-	list<shared_ptr<ChatRoom>> output;
+	list<shared_ptr<AbstractChatRoom>> output;
 	copy_if(
 		d->chatRooms.begin(), d->chatRooms.end(),
-		back_inserter(output), [&peerAddress](const shared_ptr<ChatRoom> &chatRoom) {
+		back_inserter(output), [&peerAddress](const shared_ptr<AbstractChatRoom> &chatRoom) {
 			return chatRoom->getPeerAddress() == peerAddress;
 		}
 	);
@@ -131,7 +129,7 @@ list<shared_ptr<ChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddre
 	return output;
 }
 
-shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
+shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 	const IdentityAddress &localAddress,
 	const IdentityAddress &participantAddress
 ) const {
@@ -147,7 +145,7 @@ shared_ptr<ChatRoom> Core::findOneToOneChatRoom (
 	return nullptr;
 }
 
-shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
+shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(
 		_linphone_client_group_chat_room_new(
 			getCCore(),
@@ -157,10 +155,10 @@ shared_ptr<ChatRoom> Core::createClientGroupChatRoom (const string &subject) {
 	);
 }
 
-shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
+shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
 	L_D();
 
-	shared_ptr<ChatRoom> chatRoom = findChatRoom(chatRoomId);
+	shared_ptr<AbstractChatRoom> chatRoom = findChatRoom(chatRoomId);
 	if (chatRoom)
 		return chatRoom;
 
@@ -171,14 +169,14 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomI
 	return chatRoom;
 }
 
-shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt) {
+shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt) {
 	L_D();
 
-	list<shared_ptr<ChatRoom>> chatRooms = findChatRooms(peerAddress);
+	list<shared_ptr<AbstractChatRoom>> chatRooms = findChatRooms(peerAddress);
 	if (!chatRooms.empty())
 		return chatRooms.front();
 
-	shared_ptr<ChatRoom> chatRoom = d->createBasicChatRoom(
+	shared_ptr<AbstractChatRoom> chatRoom = d->createBasicChatRoom(
 		ChatRoomId(peerAddress, getDefaultLocalAddress(getSharedFromThis(), peerAddress)),
 		isRtt
 	);
@@ -188,19 +186,19 @@ shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddress &peer
 	return chatRoom;
 }
 
-shared_ptr<ChatRoom> Core::getOrCreateBasicChatRoomFromUri (const string &peerAddress, bool isRtt) {
+shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoomFromUri (const string &peerAddress, bool isRtt) {
 	LinphoneAddress *address = linphone_core_interpret_url(getCCore(), L_STRING_TO_C(peerAddress));
 	if (!address) {
 		lError() << "Cannot make a valid address with: `" << peerAddress << "`.";
 		return nullptr;
 	}
 
-	shared_ptr<ChatRoom> chatRoom = getOrCreateBasicChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(address), isRtt);
+	shared_ptr<AbstractChatRoom> chatRoom = getOrCreateBasicChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(address), isRtt);
 	linphone_address_unref(address);
 	return chatRoom;
 }
 
-void Core::deleteChatRoom (const shared_ptr<const ChatRoom> &chatRoom) {
+void Core::deleteChatRoom (const shared_ptr<const AbstractChatRoom> &chatRoom) {
 	CorePrivate *d = chatRoom->getCore()->getPrivate();
 
 	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();

@@ -52,7 +52,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 		LinphoneChatMessageCharacter *cmc = bctbx_new0(LinphoneChatMessageCharacter, 1);
 
 		if (!pendingMessage)
-			pendingMessage = q->createMessage("");
+			pendingMessage = q->createChatMessage("");
 
 		cmc->value = character;
 		cmc->has_been_read = FALSE;
@@ -79,7 +79,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			if (lp_config_get_int(linphone_core_get_config(cCore), "misc", "store_rtt_messages", 1) == 1)
 				 pendingMessage->getPrivate()->store();
 
-			chatMessageReceived(pendingMessage);
+			onChatMessageReceived(pendingMessage);
 			pendingMessage = nullptr;
 			for (auto &rttChars : receivedRttCharacters)
 				ms_free(rttChars);
@@ -94,10 +94,10 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 	}
 }
 
-void RealTimeTextChatRoomPrivate::sendMessage (const shared_ptr<ChatMessage> &msg) {
+void RealTimeTextChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) {
 	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
 		uint32_t new_line = 0x2028;
-		msg->putCharacter(new_line);
+		chatMessage->putCharacter(new_line);
 	}
 }
 

@@ -118,19 +118,6 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message(Linphon
 
 /**
  * Send a message to peer member of this chat room.
- * @param cr #LinphoneChatRoom object
- * @param msg #LinphoneChatMessage message to be sent
- * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when message is delivered or could not be delivered. May be NULL
- * @param ud user data for the status cb.
- * @deprecated Use linphone_chat_message_send() instead.
- * @note The LinphoneChatMessage must not be destroyed until the the callback is called.
- * The LinphoneChatMessage reference is transfered to the function and thus doesn't need to be unref'd by the application.
- * @donotwrap
- */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_send_message2(LinphoneChatRoom *cr, LinphoneChatMessage* msg,LinphoneChatMessageStateChangedCb status_cb,void* ud);
-
-/**
- * Send a message to peer member of this chat room.
  * @param[in] cr LinphoneChatRoom object
  * @param[in] msg LinphoneChatMessage object
  * The state of the message sending will be notified via the callbacks defined in the LinphoneChatMessageCbs object that can be obtained

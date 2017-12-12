@@ -137,18 +137,18 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 		localAddress = op->get_to();
 	}
 
-	shared_ptr<LinphonePrivate::ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 		LinphonePrivate::ChatRoomId(LinphonePrivate::IdentityAddress(peerAddress), LinphonePrivate::IdentityAddress(localAddress))
 	);
 
 	if (chatRoom)
-		reason = L_GET_PRIVATE(chatRoom)->messageReceived(op, sal_msg);
+		reason = L_GET_PRIVATE(chatRoom)->onSipMessageReceived(op, sal_msg);
 	else {
 		LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 		linphone_address_clean(addr);
 		LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
 		if (cr)
-			reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->messageReceived(op, sal_msg);
+			reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->onSipMessageReceived(op, sal_msg);
 		linphone_address_unref(addr);
 	}
 	return reason;

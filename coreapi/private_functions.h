@@ -274,7 +274,6 @@ void _linphone_proxy_config_release_ops(LinphoneProxyConfig *obj);
 /*chat*/
 LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject);
 LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, LinphonePrivate::SalCallOp *op);
-void linphone_chat_room_release(LinphoneChatRoom *cr);
 void linphone_chat_room_set_call(LinphoneChatRoom *cr, LinphoneCall *call);
 LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void);
 /**/

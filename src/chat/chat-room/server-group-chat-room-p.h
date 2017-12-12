@@ -48,7 +48,7 @@ public:
 	void update (SalCallOp *op);
 
 	void dispatchMessage (const IdentityAddress &fromAddr, const Content &content);
-	LinphoneReason messageReceived (SalOp *op, const SalMessage *msg) override;
+	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 	void setConferenceAddress (const IdentityAddress &confAddr);
 
 private:
@@ -58,8 +58,6 @@ private:
 
 	// CallSessionListener
 	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
-
-	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &) override;
 
 	std::list<std::shared_ptr<Participant>> removedParticipants;
 

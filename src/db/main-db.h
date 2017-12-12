@@ -30,8 +30,8 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class AbstractChatRoom;
 class ChatMessage;
-class ChatRoom;
 class Core;
 class EventLog;
 class MainDbKey;
@@ -113,8 +113,8 @@ public:
 	// Chat rooms.
 	// ---------------------------------------------------------------------------
 
-	std::list<std::shared_ptr<ChatRoom>> getChatRooms () const;
-	void insertChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
+	std::list<std::shared_ptr<AbstractChatRoom>> getChatRooms () const;
+	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	void deleteChatRoom (const ChatRoomId &chatRoomId);
 
 	// ---------------------------------------------------------------------------

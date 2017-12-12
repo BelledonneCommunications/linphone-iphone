@@ -37,7 +37,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::encode (
 	const shared_ptr<ChatMessage> &message,
 	int &errorCode
 ) {
-	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
+	shared_ptr<AbstractChatRoom> chatRoom = message->getChatRoom();
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(chatRoom->getCore()->getCCore());
 	if (!imee)
 		return ChatMessageModifier::Result::Skipped;
@@ -70,7 +70,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::decode (
 	const shared_ptr<ChatMessage> &message,
 	int &errorCode
 ) {
-	shared_ptr<ChatRoom> chatRoom = message->getChatRoom();
+	shared_ptr<AbstractChatRoom> chatRoom = message->getChatRoom();
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(chatRoom->getCore()->getCCore());
 	if (!imee)
 		return ChatMessageModifier::Result::Skipped;
@@ -95,7 +95,7 @@ ChatMessageModifier::Result EncryptionChatMessageModifier::decode (
 	message->setIsSecured(true);
 	if (retval == 1)
 		return ChatMessageModifier::Result::Suspended;
-		
+
 	return ChatMessageModifier::Result::Done;
 }
 

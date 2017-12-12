@@ -35,7 +35,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ChatRoom;
+class AbstractChatRoom;
 class Content;
 class FileTransferContent;
 class ChatMessagePrivate;
@@ -67,7 +67,7 @@ public:
 	void setIsSecured (bool isSecured);
 	// ----- TODO: Remove me.
 
-	std::shared_ptr<ChatRoom> getChatRoom () const;
+	std::shared_ptr<AbstractChatRoom> getChatRoom () const;
 
 	void send ();
 
@@ -102,7 +102,7 @@ public:
 	bool downloadFile (FileTransferContent &content);
 
 private:
-	ChatMessage (const std::shared_ptr<ChatRoom> &chatRoom, ChatMessage::Direction direction);
+	ChatMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);
 
 	L_DECLARE_PRIVATE(ChatMessage);
 	L_DISABLE_COPY(ChatMessage);

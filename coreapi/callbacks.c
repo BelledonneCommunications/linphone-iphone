@@ -87,7 +87,7 @@ static void call_received(SalCallOp *h) {
 		linphone_address_unref(fromAddr);
 		return;
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
-		shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 			ChatRoomId(IdentityAddress(h->get_to()), IdentityAddress(h->get_to()))
 		);
 		if (chatRoom) {
@@ -681,7 +681,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
-					shared_ptr<ChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
 						ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
 					);
 					if (chatRoom) {
