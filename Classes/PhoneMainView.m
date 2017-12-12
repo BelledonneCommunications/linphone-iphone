@@ -202,6 +202,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:UIDeviceBatteryLevelDidChangeNotification object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
 }
 
