@@ -1303,6 +1303,7 @@ static void sip_config_read(LinphoneCore *lc) {
 
 	lc->sal->use_no_initial_route(!!lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
 	lc->sal->use_rport(!!lp_config_get_int(lc->config,"sip","use_rport",1));
+	lc->sal->set_contact_linphone_specs(lp_config_get_string(lc->config, "sip", "linphone_specs", NULL));
 
 	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
 		lp_config_clean_entry(lc->config,"sip","use_ipv6");

@@ -170,6 +170,7 @@ public:
 
 	bctbx_list_t *get_pending_auths() const {return bctbx_list_copy(this->pending_auths);}
 
+	void set_contact_linphone_specs(const char *specs);
 
 	/**********************/
 	/* Network parameters */
@@ -305,6 +306,7 @@ private:
 	bool_t pending_trans_checking = TRUE; /*testing purpose*/
 	void *ssl_config = NULL;
 	bctbx_list_t *supported_content_types = NULL; /* list of char* */
+	char *linphone_specs = NULL;
 
 	friend class SalOp;
 	friend class SalCallOp;

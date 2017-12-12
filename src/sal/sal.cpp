@@ -395,6 +395,7 @@ Sal::~Sal() {
 	if (this->uuid) ms_free(this->uuid);
 	if (this->root_ca) ms_free(this->root_ca);
 	if (this->root_ca_data) ms_free(this->root_ca_data);
+	if (this->linphone_specs) ms_free(this->linphone_specs);
 }
 
 void Sal::set_callbacks(const Callbacks *cbs) {
@@ -670,6 +671,16 @@ void Sal::add_content_type_support(const char *content_type) {
 void Sal::use_rport(bool_t use_rports) {
 	belle_sip_provider_enable_rport(this->prov,use_rports);
 	ms_message("Sal use rport [%s]", use_rports ? "enabled" : "disabled");
+}
+
+void Sal::set_contact_linphone_specs(const char *specs) {
+	if (this->linphone_specs) {
+		ms_free(this->linphone_specs);
+		this->linphone_specs = NULL;
+	}
+	if (specs) {
+		this->linphone_specs = ms_strdup(specs);
+	}
 }
 
 void Sal::set_root_ca(const char* rootCa) {
