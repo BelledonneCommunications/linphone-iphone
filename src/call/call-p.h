@@ -56,7 +56,9 @@ public:
 	unsigned int getMediaStartCount () const;
 	MediaStream *getMediaStream (LinphoneStreamType type) const;
 	SalCallOp *getOp () const;
+	bool getRingingBeep () const { return ringingBeep; }
 	void setAudioMuted (bool value);
+	void setRingingBeep (bool value) { ringingBeep = value; }
 
 	void createPlayer () const;
 

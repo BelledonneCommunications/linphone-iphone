@@ -3644,9 +3644,7 @@ void linphone_core_notify_incoming_call(LinphoneCore *lc, LinphoneCall *call){
 		linphone_ringtoneplayer_start(lc->factory, lc->ringtoneplayer, ringcard, lc->sound_conf.local_ring, 2000);
 	}else{
 		/* else play a tone within the context of the current call */
-#if 0
-		call->ringing_beep=TRUE;
-#endif
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->setRingingBeep(true);
 		linphone_core_play_named_tone(lc,LinphoneToneCallWaiting);
 	}
 }
@@ -6309,7 +6307,7 @@ void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
 }
 
 void linphone_core_stop_ringing(LinphoneCore* lc) {
-	//LinphoneCall *call=linphone_core_get_current_call(lc);
+	LinphoneCall *call=linphone_core_get_current_call(lc);
 	if (linphone_ringtoneplayer_is_started(lc->ringtoneplayer)) {
 		linphone_ringtoneplayer_stop(lc->ringtoneplayer);
 	}
@@ -6319,12 +6317,10 @@ void linphone_core_stop_ringing(LinphoneCore* lc) {
 		lc->dmfs_playing_start_time=0;
 		lc->ringstream_autorelease=TRUE;
 	}
-#if 0
-	if (call && call->ringing_beep){
+	if (call && L_GET_PRIVATE_FROM_C_OBJECT(call)->getRingingBeep()) {
 		linphone_core_stop_dtmf(lc);
-		call->ringing_beep=FALSE;
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->setRingingBeep(false);
 	}
-#endif
 }
 
 void linphone_core_stop_dtmf_stream(LinphoneCore* lc) {
