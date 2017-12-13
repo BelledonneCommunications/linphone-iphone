@@ -1148,7 +1148,7 @@ test_t multi_call_tests[] = {
 	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing),
 	TEST_NO_TAG("Incoming call accepted when outgoing call in outgoing ringing early media", incoming_call_accepted_when_outgoing_call_in_outgoing_ringing_early_media),
 	TEST_NO_TAG("Simple conference", simple_conference),
-	TEST_NO_TAG("Simple conference established from scractch", simple_conference_from_scratch),
+	TEST_NO_TAG("Simple conference established from scratch", simple_conference_from_scratch),
 	TEST_ONE_TAG("Simple conference with ICE", simple_conference_with_ice, "ICE"),
 	TEST_ONE_TAG("Simple ZRTP conference with ICE", simple_zrtp_conference_with_ice, "ICE"),
 	TEST_NO_TAG("Eject from 3 participants conference", eject_from_3_participants_local_conference),

@@ -95,6 +95,9 @@ public:
 	SalCallOp * getOp () const { return op; }
 	void setAudioMuted (bool value) { audioMuted = value; }
 
+	void initializeStreams ();
+	void stopStreams ();
+
 	// CoreListener
 	void onNetworkReachable (bool reachable) override;
 
@@ -186,14 +189,10 @@ private:
 	void handleIceEvents (OrtpEvent *ev);
 	void handleStreamEvents (int streamIndex);
 	void initializeAudioStream ();
-	void initializeStreams ();
 	void initializeTextStream ();
 	void initializeVideoStream ();
-	void parameterizeEqualizer (AudioStream *stream);
 	void prepareEarlyMediaForking ();
-	void postConfigureAudioStream (AudioStream *stream, bool muted);
 	void postConfigureAudioStreams (bool muted);
-	void setPlaybackGainDb (AudioStream *stream, float gain);
 	void setSymmetricRtp (bool value);
 	void setupRingbackPlayer ();
 	void startAudioStream (LinphoneCallState targetState, bool videoWillBeUsed);
@@ -201,7 +200,6 @@ private:
 	void startTextStream ();
 	void startVideoStream (LinphoneCallState targetState);
 	void stopAudioStream ();
-	void stopStreams ();
 	void stopTextStream ();
 	void stopVideoStream ();
 	void tryEarlyMediaForking (SalMediaDescription *md);

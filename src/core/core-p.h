@@ -52,6 +52,10 @@ public:
 	void setCurrentCall (const std::shared_ptr<Call> &call) { currentCall = call; }
 	void unsetVideoWindowId (bool preview, void *id);
 
+	void parameterizeEqualizer (AudioStream *stream);
+	void postConfigureAudioStream (AudioStream *stream, bool muted);
+	void setPlaybackGainDb (AudioStream *stream, float gain);
+
 	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	std::shared_ptr<AbstractChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);

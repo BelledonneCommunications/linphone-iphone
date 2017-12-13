@@ -212,6 +212,10 @@ void CallSessionPrivate::setParams (CallSessionParams *csp) {
 	params = csp;
 }
 
+bool CallSessionPrivate::isInConference () const {
+	return params->getPrivate()->getInConference();
+}
+
 // -----------------------------------------------------------------------------
 
 void CallSessionPrivate::abort (const string &errorMsg) {
@@ -1325,6 +1329,14 @@ string CallSession::getRemoteUserAgent () const {
 	if (d->op && d->op->get_remote_ua())
 		return d->op->get_remote_ua();
 	return string();
+}
+
+shared_ptr<CallSession> CallSession::getReplacedCallSession () const {
+	L_D();
+	SalOp *replacedOp = d->op->get_replaces();
+	if (!replacedOp)
+		return nullptr;
+	return reinterpret_cast<CallSession *>(replacedOp->get_user_pointer())->getSharedFromThis();
 }
 
 CallSessionParams * CallSession::getCurrentParams () const {

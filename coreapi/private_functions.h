@@ -25,6 +25,8 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
+#include <mediastreamer2/msconference.h>
+
 #include "private_types.h"
 #include "tester_utils.h"
 #include "sal/op.h"
@@ -48,8 +50,6 @@ void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *ms
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
-void linphone_call_set_state(LinphoneCall *call, LinphoneCallState cstate, const char *message);
-/* private: */
 LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
@@ -61,6 +61,9 @@ IceSession * linphone_call_get_ice_session(const LinphoneCall *call);
 bool_t linphone_call_get_audio_muted(const LinphoneCall *call);
 void linphone_call_set_audio_muted(LinphoneCall *call, bool_t value);
 bool_t linphone_call_get_all_muted(const LinphoneCall *call);
+void _linphone_call_set_conf_ref (LinphoneCall *call, LinphoneConference *ref);
+MSAudioEndpoint *_linphone_call_get_endpoint (const LinphoneCall *call);
+void _linphone_call_set_endpoint (LinphoneCall *call, MSAudioEndpoint *endpoint);
 
 LinphoneCallParams * linphone_call_params_new(LinphoneCore *core);
 SalMediaProto get_proto_from_call_params(const LinphoneCallParams *params);

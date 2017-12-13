@@ -46,6 +46,7 @@ public:
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
 	SalCallOp * getOp () const { return op; }
 	bool isBroken () const { return broken; }
+	bool isInConference () const;
 	void setParams (CallSessionParams *csp);
 	void setReferPending (bool value) { referPending = value; }
 	void setTransferTarget (std::shared_ptr<CallSession> session) { transferTarget = session; }

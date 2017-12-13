@@ -27,7 +27,7 @@
 #include "conference/participant-p.h"
 #include "conference/params/media-session-params-p.h"
 #include "conference/session/media-session.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "sal/sal.h"
 #include "utils/payload-type-handler.h"
 
@@ -568,6 +568,53 @@ int MediaSessionPrivate::getStreamIndex (MediaStream *ms) const {
 
 // -----------------------------------------------------------------------------
 
+void MediaSessionPrivate::initializeStreams () {
+	initializeAudioStream();
+	initializeVideoStream();
+	initializeTextStream();
+}
+
+void MediaSessionPrivate::stopStreams () {
+	L_Q();
+	if (audioStream || videoStream || textStream) {
+		if (audioStream && videoStream)
+			audio_stream_unlink_video(audioStream, videoStream);
+		stopAudioStream();
+		stopVideoStream();
+		stopTextStream();
+		if (q->getCore()->getCCore()->msevq)
+			ms_event_queue_skip(q->getCore()->getCCore()->msevq);
+	}
+
+	if (audioProfile) {
+		rtp_profile_destroy(audioProfile);
+		audioProfile = nullptr;
+		unsetRtpProfile(mainAudioStreamIndex);
+	}
+	if (videoProfile) {
+		rtp_profile_destroy(videoProfile);
+		videoProfile = nullptr;
+		unsetRtpProfile(mainVideoStreamIndex);
+	}
+	if (textProfile) {
+		rtp_profile_destroy(textProfile);
+		textProfile = nullptr;
+		unsetRtpProfile(mainTextStreamIndex);
+	}
+	if (rtpIoAudioProfile) {
+		rtp_profile_destroy(rtpIoAudioProfile);
+		rtpIoAudioProfile = nullptr;
+	}
+	if (rtpIoVideoProfile) {
+		rtp_profile_destroy(rtpIoVideoProfile);
+		rtpIoVideoProfile = nullptr;
+	}
+
+	linphone_core_soundcard_hint_check(q->getCore()->getCCore());
+}
+
+// -----------------------------------------------------------------------------
+
 void MediaSessionPrivate::onNetworkReachable (bool reachable) {
 	L_Q();
 	if (reachable) {
@@ -929,7 +976,12 @@ MSWebCam * MediaSessionPrivate::getVideoDevice () const {
 	L_Q();
 	bool paused = (state == LinphoneCallPausing) || (state == LinphoneCallPaused);
 	if (paused || allMuted || !cameraEnabled)
-		return get_nowebcam_device(q->getCore()->getCCore()->factory);
+#ifdef VIDEO_ENABLED
+		return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(q->getCore()->getCCore()->factory),
+			"StaticImage: Static picture");
+#else
+		return nullptr;
+#endif
 	else
 		return q->getCore()->getCCore()->video_conf.device;
 }
@@ -2348,12 +2400,6 @@ void MediaSessionPrivate::initializeAudioStream () {
 	iceAgent->prepareIceForStream(&audioStream->ms, false);
 }
 
-void MediaSessionPrivate::initializeStreams () {
-	initializeAudioStream();
-	initializeVideoStream();
-	initializeTextStream();
-}
-
 void MediaSessionPrivate::initializeTextStream () {
 	L_Q();
 	if (textStream)
@@ -2470,49 +2516,6 @@ void MediaSessionPrivate::initializeVideoStream () {
 #endif
 }
 
-void MediaSessionPrivate::parameterizeEqualizer (AudioStream *stream) {
-	L_Q();
-	LinphoneConfig *config = linphone_core_get_config(q->getCore()->getCCore());
-	const char *eqActive = lp_config_get_string(config, "sound", "eq_active", nullptr);
-	if (eqActive)
-		lWarning() << "'eq_active' linphonerc parameter has no effect anymore. Please use 'mic_eq_active' or 'spk_eq_active' instead";
-	const char *eqGains = lp_config_get_string(config, "sound", "eq_gains", nullptr);
-	if(eqGains)
-		lWarning() << "'eq_gains' linphonerc parameter has no effect anymore. Please use 'mic_eq_gains' or 'spk_eq_gains' instead";
-	if (stream->mic_equalizer) {
-		MSFilter *f = stream->mic_equalizer;
-		bool enabled = !!lp_config_get_int(config, "sound", "mic_eq_active", 0);
-		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
-		const char *gains = lp_config_get_string(config, "sound", "mic_eq_gains", nullptr);
-		if (enabled && gains) {
-			bctbx_list_t *gainsList = ms_parse_equalizer_string(gains);
-			for (bctbx_list_t *it = gainsList; it; it = bctbx_list_next(it)) {
-				MSEqualizerGain *g = reinterpret_cast<MSEqualizerGain *>(bctbx_list_get_data(it));
-				lInfo() << "Read microphone equalizer gains: " << g->frequency << "(~" << g->width << ") --> " << g->gain;
-				ms_filter_call_method(f, MS_EQUALIZER_SET_GAIN, g);
-			}
-			if (gainsList)
-				bctbx_list_free_with_data(gainsList, ms_free);
-		}
-	}
-	if (stream->spk_equalizer) {
-		MSFilter *f = stream->spk_equalizer;
-		bool enabled = !!lp_config_get_int(config, "sound", "spk_eq_active", 0);
-		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
-		const char *gains = lp_config_get_string(config, "sound", "spk_eq_gains", nullptr);
-		if (enabled && gains) {
-			bctbx_list_t *gainsList = ms_parse_equalizer_string(gains);
-			for (bctbx_list_t *it = gainsList; it; it = bctbx_list_next(it)) {
-				MSEqualizerGain *g = reinterpret_cast<MSEqualizerGain *>(bctbx_list_get_data(it));
-				lInfo() << "Read speaker equalizer gains: " << g->frequency << "(~" << g->width << ") --> " << g->gain;
-				ms_filter_call_method(f, MS_EQUALIZER_SET_GAIN, g);
-			}
-			if (gainsList)
-				bctbx_list_free_with_data(gainsList, ms_free);
-		}
-	}
-}
-
 void MediaSessionPrivate::prepareEarlyMediaForking () {
 	/* We need to disable symmetric rtp otherwise our outgoing streams will be switching permanently between the multiple destinations */
 	if (audioStream)
@@ -2521,69 +2524,13 @@ void MediaSessionPrivate::prepareEarlyMediaForking () {
 		rtp_session_set_symmetric_rtp(videoStream->ms.sessions.rtp_session, false);
 }
 
-void MediaSessionPrivate::postConfigureAudioStream (AudioStream *stream, bool muted) {
-	L_Q();
-	float micGain = q->getCore()->getCCore()->sound_conf.soft_mic_lev;
-	if (muted)
-		audio_stream_set_mic_gain(stream, 0);
-	else
-		audio_stream_set_mic_gain_db(stream, micGain);
-	float recvGain = q->getCore()->getCCore()->sound_conf.soft_play_lev;
-	if (static_cast<int>(recvGain))
-		setPlaybackGainDb(stream, recvGain);
-	LinphoneConfig *config = linphone_core_get_config(q->getCore()->getCCore());
-	float ngThres = lp_config_get_float(config, "sound", "ng_thres", 0.05f);
-	float ngFloorGain = lp_config_get_float(config, "sound", "ng_floorgain", 0);
-	if (stream->volsend) {
-		int dcRemoval = lp_config_get_int(config, "sound", "dc_removal", 0);
-		ms_filter_call_method(stream->volsend, MS_VOLUME_REMOVE_DC, &dcRemoval);
-		float speed = lp_config_get_float(config, "sound", "el_speed", -1);
-		float thres = lp_config_get_float(config, "sound", "el_thres", -1);
-		float force = lp_config_get_float(config, "sound", "el_force", -1);
-		int sustain = lp_config_get_int(config, "sound", "el_sustain", -1);
-		float transmitThres = lp_config_get_float(config, "sound", "el_transmit_thres", -1);
-		if (static_cast<int>(speed) == -1)
-			speed = 0.03f;
-		if (static_cast<int>(force) == -1)
-			force = 25;
-		MSFilter *f = stream->volsend;
-		ms_filter_call_method(f, MS_VOLUME_SET_EA_SPEED, &speed);
-		ms_filter_call_method(f, MS_VOLUME_SET_EA_FORCE, &force);
-		if (static_cast<int>(thres) != -1)
-			ms_filter_call_method(f, MS_VOLUME_SET_EA_THRESHOLD, &thres);
-		if (static_cast<int>(sustain) != -1)
-			ms_filter_call_method(f, MS_VOLUME_SET_EA_SUSTAIN, &sustain);
-		if (static_cast<int>(transmitThres) != -1)
-			ms_filter_call_method(f, MS_VOLUME_SET_EA_TRANSMIT_THRESHOLD, &transmitThres);
-		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_THRESHOLD, &ngThres);
-		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_FLOORGAIN, &ngFloorGain);
-	}
-	if (stream->volrecv) {
-		/* Parameters for a limited noise-gate effect, using echo limiter threshold */
-		float floorGain = (float)(1 / pow(10, micGain / 10));
-		int spkAgc = lp_config_get_int(config, "sound", "speaker_agc_enabled", 0);
-		MSFilter *f = stream->volrecv;
-		ms_filter_call_method(f, MS_VOLUME_ENABLE_AGC, &spkAgc);
-		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_THRESHOLD, &ngThres);
-		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_FLOORGAIN, &floorGain);
-	}
-	parameterizeEqualizer(stream);
-}
-
 void MediaSessionPrivate::postConfigureAudioStreams (bool muted) {
 	L_Q();
-	postConfigureAudioStream(audioStream, muted);
+	q->getCore()->getPrivate()->postConfigureAudioStream(audioStream, muted);
 	if (linphone_core_dtmf_received_has_listener(q->getCore()->getCCore()))
 		audio_stream_play_received_dtmfs(audioStream, false);
 	if (recordActive)
 		q->startRecording();
-}
-
-void MediaSessionPrivate::setPlaybackGainDb (AudioStream *stream, float gain) {
-	if (stream->volrecv)
-		ms_filter_call_method(stream->volrecv, MS_VOLUME_SET_DB_GAIN, &gain);
-	else
-		lWarning() << "Could not apply playback gain: gain control wasn't activated";
 }
 
 void MediaSessionPrivate::setSymmetricRtp (bool value) {
@@ -2630,10 +2577,10 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				playfile = "";
 			}
 			if (targetState == LinphoneCallPaused) {
-				/* In paused state, we never use soundcard */
+				// In paused state, we never use soundcard
 				playcard = captcard = nullptr;
 				recfile = "";
-				/* And we will eventually play "playfile" if set by the user */
+				// And we will eventually play "playfile" if set by the user
 			}
 			if (listener && listener->isPlayingRingbackTone(q->getSharedFromThis())) {
 				captcard = nullptr;
@@ -2643,22 +2590,20 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 					recfile = "";
 				}
 			}
-			/* If playfile are supplied don't use soundcards */
+			// If playfile are supplied don't use soundcards
 			bool useRtpIo = !!lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sound", "rtp_io", false);
 			bool useRtpIoEnableLocalOutput = !!lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sound", "rtp_io_enable_local_output", false);
 			if (q->getCore()->getCCore()->use_files || (useRtpIo && !useRtpIoEnableLocalOutput)) {
 				captcard = playcard = nullptr;
 			}
 			if (getParams()->getPrivate()->getInConference()) {
-				/* First create the graph without soundcard resources */
+				// First create the graph without soundcard resources
 				captcard = playcard = nullptr;
 			}
-#if 0
-			if (!linphone_call_sound_resources_available(call)){
-				ms_message("Sound resources are used by another call, not using soundcard.");
+			if (listener && !listener->areSoundResourcesAvailable(q->getSharedFromThis())) {
+				lInfo() << "Sound resources are used by another CallSession, not using soundcard";
 				captcard = playcard = nullptr;
 			}
-#endif
 
 			if (playcard) {
 				ms_snd_card_set_stream_type(playcard, MS_SND_CARD_STREAM_VOICE);
@@ -2675,7 +2620,7 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 				audio_stream_mixed_record_open(audioStream, getParams()->getRecordFilePath().c_str());
 				getCurrentParams()->setRecordFilePath(getParams()->getRecordFilePath());
 			}
-			/* Valid local tags are > 0 */
+			// Valid local tags are > 0
 			if (sal_stream_description_has_srtp(stream)) {
 				const SalStreamDescription *localStreamDesc = sal_media_description_find_stream(localDesc, stream->proto, SalAudio);
 				int cryptoIdx = findCryptoIndexFromTag(localStreamDesc->crypto, static_cast<unsigned char>(stream->crypto_local_tag));
@@ -2740,16 +2685,14 @@ void MediaSessionPrivate::startAudioStream (LinphoneCallState targetState, bool 
 			}
 			if (listener && listener->isPlayingRingbackTone(q->getSharedFromThis()))
 				setupRingbackPlayer();
-			if (getParams()->getPrivate()->getInConference() && q->getCore()->getCCore()->conf_ctx) {
-				/* Transform the graph to connect it to the conference filter */
-#if 0
+			if (getParams()->getPrivate()->getInConference() && listener) {
+				// Transform the graph to connect it to the conference filter
 				bool mute = (stream->dir == SalStreamRecvOnly);
-				linphone_conference_on_call_stream_starting(q->getCore()->getCCore()->conf_ctx, call, mute);
-#endif
+				listener->onCallSessionConferenceStreamStarting(q->getSharedFromThis(), mute);
 			}
 			getCurrentParams()->getPrivate()->setInConference(getParams()->getPrivate()->getInConference());
 			getCurrentParams()->enableLowBandwidth(getParams()->lowBandwidthEnabled());
-			/* Start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
+			// Start ZRTP engine if needed : set here or remote have a zrtp-hash attribute
 			SalMediaDescription *remote = op->get_remote_media_description();
 			const SalStreamDescription *remoteStream = sal_media_description_find_best_stream(remote, SalAudio);
 			if (linphone_core_media_encryption_supported(q->getCore()->getCCore(), LinphoneMediaEncryptionZRTP)
@@ -3041,11 +2984,8 @@ void MediaSessionPrivate::stopAudioStream () {
 		}
 		audio_stream_get_local_rtp_stats(audioStream, &log->local_stats);
 		fillLogStats(&audioStream->ms);
-#if 0
-		if (call->endpoint) {
-			linphone_conference_on_call_stream_stopping(lc->conf_ctx, call);
-		}
-#endif
+		if (listener)
+			listener->onCallSessionConferenceStreamStopping(q->getSharedFromThis());
 		ms_bandwidth_controller_remove_stream(q->getCore()->getCCore()->bw_controller, &audioStream->ms);
 		audio_stream_stop(audioStream);
 		updateRtpStats(audioStats, mainAudioStreamIndex);
@@ -3058,45 +2998,6 @@ void MediaSessionPrivate::stopAudioStream () {
 
 		getCurrentParams()->getPrivate()->setUsedAudioCodec(nullptr);
 	}
-}
-
-void MediaSessionPrivate::stopStreams () {
-	L_Q();
-	if (audioStream || videoStream || textStream) {
-		if (audioStream && videoStream)
-			audio_stream_unlink_video(audioStream, videoStream);
-		stopAudioStream();
-		stopVideoStream();
-		stopTextStream();
-		if (q->getCore()->getCCore()->msevq)
-			ms_event_queue_skip(q->getCore()->getCCore()->msevq);
-	}
-
-	if (audioProfile) {
-		rtp_profile_destroy(audioProfile);
-		audioProfile = nullptr;
-		unsetRtpProfile(mainAudioStreamIndex);
-	}
-	if (videoProfile) {
-		rtp_profile_destroy(videoProfile);
-		videoProfile = nullptr;
-		unsetRtpProfile(mainVideoStreamIndex);
-	}
-	if (textProfile) {
-		rtp_profile_destroy(textProfile);
-		textProfile = nullptr;
-		unsetRtpProfile(mainTextStreamIndex);
-	}
-	if (rtpIoAudioProfile) {
-		rtp_profile_destroy(rtpIoAudioProfile);
-		rtpIoAudioProfile = nullptr;
-	}
-	if (rtpIoVideoProfile) {
-		rtp_profile_destroy(rtpIoVideoProfile);
-		rtpIoVideoProfile = nullptr;
-	}
-
-	linphone_core_soundcard_hint_check(q->getCore()->getCCore());
 }
 
 void MediaSessionPrivate::stopTextStream () {
@@ -4432,9 +4333,6 @@ void MediaSession::startIncomingNotification () {
 			linphone_core_report_early_failed_call(d->core, LinphoneCallIncoming, linphone_address_ref(from_addr), linphone_address_ref(to_addr), ei);
 #endif
 			d->op->decline(SalReasonNotAcceptable, nullptr);
-#if 0
-			linphone_call_unref(call);
-#endif
 			return;
 		}
 	}

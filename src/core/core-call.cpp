@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <math.h>
 
 #include "core-p.h"
 #include "call/call-p.h"
@@ -26,6 +27,8 @@
 
 // TODO: Remove me later.
 #include "c-wrapper/c-wrapper.h"
+
+#include <mediastreamer2/msvolume.h>
 
 // =============================================================================
 
@@ -118,6 +121,107 @@ void CorePrivate::unsetVideoWindowId (bool preview, void *id) {
 		}
 	}
 #endif
+}
+
+// -----------------------------------------------------------------------------
+
+void CorePrivate::parameterizeEqualizer (AudioStream *stream) {
+	L_Q();
+	LinphoneConfig *config = linphone_core_get_config(q->getCCore());
+	const char *eqActive = lp_config_get_string(config, "sound", "eq_active", nullptr);
+	if (eqActive)
+		lWarning() << "'eq_active' linphonerc parameter has no effect anymore. Please use 'mic_eq_active' or 'spk_eq_active' instead";
+	const char *eqGains = lp_config_get_string(config, "sound", "eq_gains", nullptr);
+	if(eqGains)
+		lWarning() << "'eq_gains' linphonerc parameter has no effect anymore. Please use 'mic_eq_gains' or 'spk_eq_gains' instead";
+	if (stream->mic_equalizer) {
+		MSFilter *f = stream->mic_equalizer;
+		bool enabled = !!lp_config_get_int(config, "sound", "mic_eq_active", 0);
+		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
+		const char *gains = lp_config_get_string(config, "sound", "mic_eq_gains", nullptr);
+		if (enabled && gains) {
+			bctbx_list_t *gainsList = ms_parse_equalizer_string(gains);
+			for (bctbx_list_t *it = gainsList; it; it = bctbx_list_next(it)) {
+				MSEqualizerGain *g = reinterpret_cast<MSEqualizerGain *>(bctbx_list_get_data(it));
+				lInfo() << "Read microphone equalizer gains: " << g->frequency << "(~" << g->width << ") --> " << g->gain;
+				ms_filter_call_method(f, MS_EQUALIZER_SET_GAIN, g);
+			}
+			if (gainsList)
+				bctbx_list_free_with_data(gainsList, ms_free);
+		}
+	}
+	if (stream->spk_equalizer) {
+		MSFilter *f = stream->spk_equalizer;
+		bool enabled = !!lp_config_get_int(config, "sound", "spk_eq_active", 0);
+		ms_filter_call_method(f, MS_EQUALIZER_SET_ACTIVE, &enabled);
+		const char *gains = lp_config_get_string(config, "sound", "spk_eq_gains", nullptr);
+		if (enabled && gains) {
+			bctbx_list_t *gainsList = ms_parse_equalizer_string(gains);
+			for (bctbx_list_t *it = gainsList; it; it = bctbx_list_next(it)) {
+				MSEqualizerGain *g = reinterpret_cast<MSEqualizerGain *>(bctbx_list_get_data(it));
+				lInfo() << "Read speaker equalizer gains: " << g->frequency << "(~" << g->width << ") --> " << g->gain;
+				ms_filter_call_method(f, MS_EQUALIZER_SET_GAIN, g);
+			}
+			if (gainsList)
+				bctbx_list_free_with_data(gainsList, ms_free);
+		}
+	}
+}
+
+void CorePrivate::postConfigureAudioStream (AudioStream *stream, bool muted) {
+	L_Q();
+	float micGain = q->getCCore()->sound_conf.soft_mic_lev;
+	if (muted)
+		audio_stream_set_mic_gain(stream, 0);
+	else
+		audio_stream_set_mic_gain_db(stream, micGain);
+	float recvGain = q->getCCore()->sound_conf.soft_play_lev;
+	if (static_cast<int>(recvGain))
+		setPlaybackGainDb(stream, recvGain);
+	LinphoneConfig *config = linphone_core_get_config(q->getCCore());
+	float ngThres = lp_config_get_float(config, "sound", "ng_thres", 0.05f);
+	float ngFloorGain = lp_config_get_float(config, "sound", "ng_floorgain", 0);
+	if (stream->volsend) {
+		int dcRemoval = lp_config_get_int(config, "sound", "dc_removal", 0);
+		ms_filter_call_method(stream->volsend, MS_VOLUME_REMOVE_DC, &dcRemoval);
+		float speed = lp_config_get_float(config, "sound", "el_speed", -1);
+		float thres = lp_config_get_float(config, "sound", "el_thres", -1);
+		float force = lp_config_get_float(config, "sound", "el_force", -1);
+		int sustain = lp_config_get_int(config, "sound", "el_sustain", -1);
+		float transmitThres = lp_config_get_float(config, "sound", "el_transmit_thres", -1);
+		if (static_cast<int>(speed) == -1)
+			speed = 0.03f;
+		if (static_cast<int>(force) == -1)
+			force = 25;
+		MSFilter *f = stream->volsend;
+		ms_filter_call_method(f, MS_VOLUME_SET_EA_SPEED, &speed);
+		ms_filter_call_method(f, MS_VOLUME_SET_EA_FORCE, &force);
+		if (static_cast<int>(thres) != -1)
+			ms_filter_call_method(f, MS_VOLUME_SET_EA_THRESHOLD, &thres);
+		if (static_cast<int>(sustain) != -1)
+			ms_filter_call_method(f, MS_VOLUME_SET_EA_SUSTAIN, &sustain);
+		if (static_cast<int>(transmitThres) != -1)
+			ms_filter_call_method(f, MS_VOLUME_SET_EA_TRANSMIT_THRESHOLD, &transmitThres);
+		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_THRESHOLD, &ngThres);
+		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_FLOORGAIN, &ngFloorGain);
+	}
+	if (stream->volrecv) {
+		/* Parameters for a limited noise-gate effect, using echo limiter threshold */
+		float floorGain = (float)(1 / pow(10, micGain / 10));
+		int spkAgc = lp_config_get_int(config, "sound", "speaker_agc_enabled", 0);
+		MSFilter *f = stream->volrecv;
+		ms_filter_call_method(f, MS_VOLUME_ENABLE_AGC, &spkAgc);
+		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_THRESHOLD, &ngThres);
+		ms_filter_call_method(f, MS_VOLUME_SET_NOISE_GATE_FLOORGAIN, &floorGain);
+	}
+	parameterizeEqualizer(stream);
+}
+
+void CorePrivate::setPlaybackGainDb (AudioStream *stream, float gain) {
+	if (stream->volrecv)
+		ms_filter_call_method(stream->volrecv, MS_VOLUME_SET_DB_GAIN, &gain);
+	else
+		lWarning() << "Could not apply playback gain: gain control wasn't activated";
 }
 
 // =============================================================================

@@ -28,7 +28,7 @@
 #include "call/local-conference-call.h"
 #include "call/remote-conference-call.h"
 #include "conference/params/media-session-params-p.h"
-#include "core/core.h"
+#include "core/core-p.h"
 
 // =============================================================================
 
@@ -53,14 +53,9 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	char *remoteUserAgentCache;
 	mutable char *toHeaderCache;
 	/* TODO: all the fields need to be removed */
-	struct _LinphoneCore *core;
-	LinphonePrivate::SalOp *op;
-	LinphoneCallState transfer_state; /*idle if no transfer*/
+	LinphoneConference *confRef; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 	MSAudioEndpoint *endpoint; /*used for conferencing*/
-	LinphoneCall *referer; /*when this call is the result of a transfer, referer is set to the original call that caused the transfer*/
-	LinphoneCall *transfer_target;/*if this call received a transfer request, then transfer_target points to the new call created to the refer target */
 	LinphoneChatRoom *chat_room;
-	LinphoneConference *conf_ref; /**> Point on the associated conference if this call is part of a conference. NULL instead. */
 )
 
 static void _linphone_call_constructor (LinphoneCall *call) {
@@ -94,18 +89,6 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 	if (call->toHeaderCache)
 		bctbx_free(call->toHeaderCache);
 	bctbx_list_free_with_data(call->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
-	if (call->op) {
-		call->op->release();
-		call->op=nullptr;
-	}
-	if (call->referer){
-		linphone_call_unref(call->referer);
-		call->referer=nullptr;
-	}
-	if (call->transfer_target){
-		linphone_call_unref(call->transfer_target);
-		call->transfer_target=nullptr;
-	}
 }
 
 
@@ -113,41 +96,40 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 // TODO: To remove!
 // =============================================================================
 
-MSWebCam *get_nowebcam_device (MSFactory* f) {
-#ifdef VIDEO_ENABLED
-	return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(f),"StaticImage: Static picture");
-#else
-	return nullptr;
-#endif
+void linphone_call_init_media_streams (LinphoneCall *call) {
+	L_GET_PRIVATE_FROM_C_OBJECT(call)->initializeMediaStreams();
 }
-
-void linphone_call_set_state (LinphoneCall *call, LinphoneCallState cstate, const char *message) {}
-
-void linphone_call_init_media_streams (LinphoneCall *call) {}
 
 /*This function is not static because used internally in linphone-daemon project*/
-void _post_configure_audio_stream (AudioStream *st, LinphoneCore *lc, bool_t muted) {}
-
-#if 0
-static bool_t linphone_call_sound_resources_available (LinphoneCall *call) {
-	LinphoneCore *lc=call->core;
-	LinphoneCall *current=linphone_core_get_current_call(lc);
-	return !linphone_core_is_in_conference(lc) &&
-		(current==nullptr || current==call);
+void _post_configure_audio_stream (AudioStream *st, LinphoneCore *lc, bool_t muted) {
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->postConfigureAudioStream(st, !!muted);
 }
-#endif
 
-void linphone_call_stop_media_streams (LinphoneCall *call) {}
+void linphone_call_stop_media_streams (LinphoneCall *call) {
+	L_GET_PRIVATE_FROM_C_OBJECT(call)->stopMediaStreams();
+}
 
 /* Internal version that does not play tone indication*/
 int _linphone_call_pause (LinphoneCall *call) {
-	return 0;
+	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->pause();
 }
 
 
 // =============================================================================
 // Private functions.
 // =============================================================================
+
+void _linphone_call_set_conf_ref (LinphoneCall *call, LinphoneConference *ref) {
+	call->confRef = ref;
+}
+
+MSAudioEndpoint *_linphone_call_get_endpoint (const LinphoneCall *call) {
+	return call->endpoint;
+}
+
+void _linphone_call_set_endpoint (LinphoneCall *call, MSAudioEndpoint *endpoint) {
+	call->endpoint = endpoint;
+}
 
 MediaStream *linphone_call_get_stream (LinphoneCall *call, LinphoneStreamType type) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(call)->getMediaStream(type);
@@ -312,15 +294,10 @@ LinphoneCall *linphone_call_get_transfer_target_call (const LinphoneCall *call) 
 }
 
 LinphoneCall *linphone_call_get_replaced_call (LinphoneCall *call) {
-#if 0
-	SalOp *op=sal_call_get_replaces(call->op);
-	if (op){
-		return (LinphoneCall*)sal_op_get_user_pointer(op);
-	}
-	return nullptr;
-#else
-	return nullptr;
-#endif
+	shared_ptr<LinphonePrivate::Call> replacedCall = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getReplacedCall();
+	if (!replacedCall)
+		return nullptr;
+	return L_GET_C_BACK_PTR(replacedCall);
 }
 
 int linphone_call_get_duration (const LinphoneCall *call) {
@@ -445,19 +422,11 @@ void linphone_call_cancel_dtmfs (LinphoneCall *call) {
 }
 
 bool_t linphone_call_is_in_conference (const LinphoneCall *call) {
-#if 0
-	return linphone_call_params_get_in_conference(call->params);
-#else
-	return FALSE;
-#endif
+	return !!L_GET_CPP_PTR_FROM_C_OBJECT(call)->isInConference();
 }
 
 LinphoneConference *linphone_call_get_conference (const LinphoneCall *call) {
-#if 0
-	return call->conf_ref;
-#else
-	return nullptr;
-#endif
+	return call->confRef;
 }
 
 void linphone_call_set_audio_route (LinphoneCall *call, LinphoneAudioRoute route) {

@@ -38,6 +38,7 @@ class Content;
 class Core;
 
 class LINPHONE_PUBLIC CallSession : public Object, public CoreAccessor {
+	friend class Call;
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
@@ -88,6 +89,7 @@ public:
 	const Address *getRemoteContactAddress () const;
 	const CallSessionParams *getRemoteParams ();
 	std::string getRemoteUserAgent () const;
+	std::shared_ptr<CallSession> getReplacedCallSession () const;
 	LinphoneCallState getState () const;
 	const Address& getToAddress () const;
 	LinphoneCallState getTransferState () const;

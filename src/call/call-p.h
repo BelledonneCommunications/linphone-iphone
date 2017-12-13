@@ -62,6 +62,9 @@ public:
 
 	void createPlayer () const;
 
+	void initializeMediaStreams ();
+	void stopMediaStreams ();
+
 private:
 	void resetFirstVideoFrameDecoded ();
 	void startRemoteRing ();
@@ -73,6 +76,8 @@ private:
 	void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) override;
 	void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) override;
 	bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionConferenceStreamStarting (const std::shared_ptr<const CallSession> &session, bool mute) override;
+	void onCallSessionConferenceStreamStopping (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) override;
@@ -97,6 +102,7 @@ private:
 	void onStopRinging (const std::shared_ptr<const CallSession> &session) override;
 	void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) override;
 	void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) override;
+	bool areSoundResourcesAvailable (const std::shared_ptr<const CallSession> &session) override;
 	bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) override;
 
 	mutable LinphonePlayer *player = nullptr;

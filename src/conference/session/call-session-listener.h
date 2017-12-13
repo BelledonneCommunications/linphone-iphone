@@ -35,6 +35,8 @@ public:
 	virtual void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) {}
 	virtual bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) { return false; }
+	virtual void onCallSessionConferenceStreamStarting (const std::shared_ptr<const CallSession> &session, bool mute) {}
+	virtual void onCallSessionConferenceStreamStopping (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) {}
@@ -65,6 +67,7 @@ public:
 	virtual void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) {}
 
+	virtual bool areSoundResourcesAvailable (const std::shared_ptr<const CallSession> &session) { return true; }
 	virtual bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) { return false; }
 };
 

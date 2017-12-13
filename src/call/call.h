@@ -101,6 +101,7 @@ public:
 	std::string getRemoteContact () const;
 	const MediaSessionParams *getRemoteParams () const;
 	std::string getRemoteUserAgent () const;
+	std::shared_ptr<Call> getReplacedCall () const;
 	float getSpeakerVolumeGain () const;
 	LinphoneCallState getState () const;
 	LinphoneCallStats *getStats (LinphoneStreamType type) const;
@@ -112,6 +113,7 @@ public:
 	LinphoneCallState getTransferState () const;
 	std::shared_ptr<Call> getTransferTarget () const;
 	LinphoneCallStats *getVideoStats () const;
+	bool isInConference () const;
 	bool mediaInProgress () const;
 	void setAudioRoute (LinphoneAudioRoute route);
 	void setAuthenticationTokenVerified (bool value);
