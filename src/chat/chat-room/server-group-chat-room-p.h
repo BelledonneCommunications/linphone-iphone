@@ -37,7 +37,7 @@ public:
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
 
-	std::string generateConferenceId () const;
+	IdentityAddress generateConferenceAddress (const std::shared_ptr<Participant> &me) const;
 
 	void subscribeReceived (LinphoneEvent *event);
 
@@ -46,6 +46,7 @@ public:
 	void dispatchMessage (const IdentityAddress &fromAddress, const Content &content);
 
 	void setConferenceAddress (const IdentityAddress &conferenceAddress);
+	void setParticipantDevices (const IdentityAddress &addr, const std::list<IdentityAddress> &devices);
 
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 

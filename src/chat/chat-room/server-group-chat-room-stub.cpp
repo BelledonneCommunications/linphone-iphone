@@ -48,8 +48,8 @@ void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
 
 // -----------------------------------------------------------------------------
 
-string ServerGroupChatRoomPrivate::generateConferenceId () const {
-	return "";
+IdentityAddress ServerGroupChatRoomPrivate::generateConferenceAddress (const shared_ptr<Participant> &me) const {
+	return IdentityAddress();
 }
 
 void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *) {}
@@ -61,6 +61,8 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
 
 void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &) {}
+
+void ServerGroupChatRoomPrivate::setParticipantDevices (const IdentityAddress &addr, const list<IdentityAddress> &devices) {}
 
 // -----------------------------------------------------------------------------
 
