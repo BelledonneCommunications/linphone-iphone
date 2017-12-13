@@ -481,7 +481,7 @@ void Java_org_linphone_core_CallImpl_setNativeVideoWindowId(JNIEnv *env, jobject
 
 void Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
 	LinphoneCore *cptr = (LinphoneCore*)ptr;
-	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id(cptr);
+	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id(cptr);
 	if (oldWindow == id) {
 		ms_warning("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): new id (%p) is the same as the current one, skipping...", id);
 		return;
@@ -499,7 +499,7 @@ void Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(JNIEnv *env, jobje
 
 void Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
 	LinphoneCore *cptr = (LinphoneCore*)ptr;
-	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id(cptr);
+	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id(cptr);
 	if (oldWindow == id) {
 		ms_warning("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): new id (%p) is the same as the current one, skipping...", id);
 		return;
