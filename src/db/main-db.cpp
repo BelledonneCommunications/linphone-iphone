@@ -1870,7 +1870,7 @@ static inline string blobToString (soci::blob &in) {
 		if (end > 0)
 			query += "  LIMIT " + Utils::toString(end - begin);
 		else
-			query += "  LIMIT -1";
+			query += "  LIMIT 9999999999999999999"; // For Mysql compatibility, do not set -1.
 
 		if (begin > 0)
 			query += "  OFFSET " + Utils::toString(begin);
