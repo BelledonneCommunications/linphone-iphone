@@ -51,6 +51,7 @@ extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
 extern test_suite_t main_db_test_suite;
 extern test_suite_t flexisip_test_suite;
+extern test_suite_t group_chat_test_suite;
 extern test_suite_t log_collection_test_suite;
 extern test_suite_t message_test_suite;
 extern test_suite_t multi_call_test_suite;
@@ -138,7 +139,6 @@ typedef struct _stats {
 	int number_of_LinphoneRegistrationFailed ;
 	int number_of_auth_info_requested ;
 
-
 	int number_of_LinphoneCallIncomingReceived;
 	int number_of_LinphoneCallOutgoingInit;
 	int number_of_LinphoneCallOutgoingProgress;
@@ -182,6 +182,13 @@ typedef struct _stats {
 	int number_of_LinphoneIsComposingActiveReceived;
 	int number_of_LinphoneIsComposingIdleReceived;
 	int progress_of_LinphoneFileTransfer;
+
+	int number_of_LinphoneChatRoomStateInstantiated;
+	int number_of_LinphoneChatRoomStateCreationPending;
+	int number_of_LinphoneChatRoomStateCreated;
+	int number_of_LinphoneChatRoomStateTerminationPending;
+	int number_of_LinphoneChatRoomStateTerminated;
+	int number_of_LinphoneChatRoomStateCreationFailed;
 
 	int number_of_IframeDecoded;
 
@@ -275,6 +282,11 @@ typedef struct _stats {
 	int number_of_rtcp_generic_nack;
 	int number_of_tmmbr_received;
 	int last_tmmbr_value_received;
+
+	int number_of_participants_added;
+	int number_of_participant_admin_statuses_changed;
+	int number_of_participants_removed;
+	int number_of_subject_changed;
 }stats;
 
 
@@ -377,6 +389,7 @@ void liblinphone_tester_clock_start(MSTimeSpec *start);
 bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
 void linphone_core_manager_check_accounts(LinphoneCoreManager *m);
 void account_manager_destroy(void);
+LinphoneAddress *account_manager_get_identity_with_modified_identity(const LinphoneAddress *modified_identity);
 LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
 
 void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data);
