@@ -1157,7 +1157,7 @@ static inline string blobToString (soci::blob &in) {
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS conference_subject_event ("
-			"  event_id" + primaryKeyStr("BIGINT") + ","
+			"  event_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
 
 			"  subject VARCHAR(255) NOT NULL,"
 
