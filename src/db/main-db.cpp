@@ -1267,6 +1267,8 @@ static inline string blobToString (soci::blob &in) {
 			") " + charset;
 
 		// Trigger to delete participant_message cache entries.
+		// TODO: Fix me in the future. (Problem on Mysql backend.)
+		#if 0
 		string displayedId = Utils::toString(static_cast<int>(ChatMessage::State::Displayed));
 		string participantMessageDeleter =
 			"CREATE TRIGGER IF NOT EXISTS chat_message_participant_deleter"
@@ -1286,6 +1288,7 @@ static inline string blobToString (soci::blob &in) {
 		participantMessageDeleter += displayedId;
 		participantMessageDeleter += " WHERE event_id = NEW.event_id;"
 			"  END";
+		#endif
 
 		*session << participantMessageDeleter;
 	}
