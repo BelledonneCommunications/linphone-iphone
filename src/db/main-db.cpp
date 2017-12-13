@@ -1288,9 +1288,9 @@ static inline string blobToString (soci::blob &in) {
 		participantMessageDeleter += displayedId;
 		participantMessageDeleter += " WHERE event_id = NEW.event_id;"
 			"  END";
-		#endif
 
 		*session << participantMessageDeleter;
+		#endif
 	}
 
 	bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
