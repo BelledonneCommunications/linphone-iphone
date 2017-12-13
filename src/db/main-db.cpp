@@ -139,6 +139,10 @@ static inline string blobToString (soci::blob &in) {
 	return string(out.begin(), out.end());
 }
 
+static constexpr string &blobToString (string &in) {
+	return in;
+}
+
 // -----------------------------------------------------------------------------
 
 	long long MainDbPrivate::resolveId (const soci::row &row, int col) const {
@@ -492,6 +496,18 @@ static inline string blobToString (soci::blob &in) {
 		return nullptr;
 	}
 
+	template<typename T>
+	static void fetchContentAppData (soci::session *session, Content &content, long long contentId, T &data) {
+		static const string query = "SELECT name, data FROM chat_message_content_app_data"
+			" WHERE chat_message_content_id = :contentId";
+
+		string name;
+		soci::statement statement = (session->prepare << query, soci::use(contentId), soci::into(name), soci::into(data));
+		statement.execute();
+		while (statement.fetch())
+			content.setAppData(name, blobToString(data));
+	}
+
 	shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		long long eventId,
 		EventLog::Type type,
@@ -592,16 +608,13 @@ static inline string blobToString (soci::blob &in) {
 				content->setBody(row.get<string>(3));
 
 				// 2.2 - Fetch contents' app data.
-				static const string query = "SELECT name, data FROM chat_message_content_app_data"
-					" WHERE chat_message_content_id = :contentId";
-
-				string name;
-				soci::blob data(*session);
-				soci::statement statement = (session->prepare << query, soci::use(contentId), soci::into(name), soci::into(data));
-				statement.execute();
-				while (statement.fetch())
-					content->setAppData(name, blobToString(data));
-
+				if (q->getBackend() == MainDb::Backend::Sqlite3) {
+					soci::blob data(*session);
+					fetchContentAppData(session, *content, contentId, data);
+				} else {
+					string data;
+					fetchContentAppData(session, *content, contentId, data);
+				}
 				chatMessage->addContent(*content);
 			}
 		}
@@ -2015,7 +2028,7 @@ static inline string blobToString (soci::blob &in) {
 			tm lastUpdateTime = row.get<tm>(4);
 			int capabilities = row.get<int>(5);
 			string subject = row.get<string>(6, "");
-			unsigned int lastNotifyId = (getBackend() == Backend::Mysql)
+			unsigned int lastNotifyId = getBackend() == Backend::Mysql
 				? row.get<unsigned int>(7, 0)
 				: static_cast<unsigned int>(row.get<int>(7, 0));
 
