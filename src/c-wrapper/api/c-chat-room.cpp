@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <algorithm>
+
 // TODO: Remove me later.
 #include "linphone/chat.h"
 
@@ -48,6 +50,7 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(
 	mutable LinphoneAddress *conferenceAddressCache;
 	mutable LinphoneAddress *peerAddressCache;
 	mutable LinphoneAddress *localAddressCache;
+	mutable bctbx_list_t *composingAddresses;
 )
 
 static void _linphone_chat_room_constructor (LinphoneChatRoom *cr) {
@@ -62,6 +65,8 @@ static void _linphone_chat_room_destructor (LinphoneChatRoom *cr) {
 		linphone_address_unref(cr->peerAddressCache);
 	if (cr->localAddressCache)
 		linphone_address_unref(cr->localAddressCache);
+	if (cr->composingAddresses)
+		bctbx_list_free_with_data(cr->composingAddresses, (bctbx_list_free_func)linphone_address_unref);
 }
 
 // =============================================================================
@@ -309,9 +314,20 @@ void linphone_chat_room_set_subject (LinphoneChatRoom *cr, const char *subject) 
 }
 
 const bctbx_list_t *linphone_chat_room_get_composing_addresses (LinphoneChatRoom *cr) {
-	// FIXME
-	// return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getComposingAddresses());
-	return nullptr;
+	bctbx_list_free_with_data(cr->composingAddresses, (bctbx_list_free_func)linphone_address_unref);
+	list<LinphonePrivate::Address> composingAddresses;
+	// TODO: Improve perf or algorithm?
+	{
+		list<LinphonePrivate::IdentityAddress> addresses = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getComposingAddresses();
+		transform(
+			addresses.cbegin(), addresses.cend(),
+			back_inserter(composingAddresses), [](const LinphonePrivate::Address &address) {
+				return LinphonePrivate::IdentityAddress(address);
+			}
+		);
+	}
+	cr->composingAddresses = L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(composingAddresses);
+	return cr->composingAddresses;
 }
 
 LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
