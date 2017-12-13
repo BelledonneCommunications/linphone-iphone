@@ -1017,7 +1017,7 @@ void linphone_core_reset_log_collection(void) {
 
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
-	ortp_set_log_file(file);
+	linphone_core_set_log_file(file);
 	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
