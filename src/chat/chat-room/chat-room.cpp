@@ -34,7 +34,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 void ChatRoomPrivate::setState (ChatRoom::State state) {
 	if (this->state != state) {
-		state = this->state;
+		this->state = state;
 		notifyStateChanged();
 	}
 }
