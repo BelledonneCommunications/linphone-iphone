@@ -1134,6 +1134,124 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 	//linphone_core_manager_destroy(laure2);
 }
 
+static void multiple_is_composing_notification(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
+	bctbx_list_t *coresManagerList = NULL;
+	bctbx_list_t *participantsAddresses = NULL;
+	const bctbx_list_t *composing_addresses = NULL;
+	coresManagerList = bctbx_list_append(coresManagerList, marie);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline);
+	coresManagerList = bctbx_list_append(coresManagerList, laure);
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
+	stats initialMarieStats = marie->stat;
+	stats initialPaulineStats = pauline->stat;
+	stats initialLaureStats = laure->stat;
+
+	// Marie creates a new group chat room
+	const char *initialSubject = "Colleagues";
+	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject);
+	participantsAddresses = NULL;
+	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
+
+	// Check that the chat room is correctly created on Pauline's side and that the participants are added
+	LinphoneChatRoom *paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, FALSE);
+
+	// Check that the chat room is correctly created on Laure's side and that the participants are added
+	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, FALSE);
+
+	// Only one is composing
+	linphone_chat_room_compose(paulineCr);
+
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingActiveReceived, 1, 1000));
+
+	// Laure side
+	composing_addresses = linphone_chat_room_get_composing_addresses(laureCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 1, int, "%i");
+	if (bctbx_list_size(composing_addresses) == 1) {
+		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_username(addr), linphone_address_get_username(pauline->identity));
+	}
+
+	// Marie side
+	composing_addresses = linphone_chat_room_get_composing_addresses(marieCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 1, int, "%i");
+	if (bctbx_list_size(composing_addresses) == 1) {
+		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_username(addr), linphone_address_get_username(pauline->identity));
+	}
+
+	// Pauline side
+	composing_addresses = linphone_chat_room_get_composing_addresses(paulineCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+
+	wait_for_list(coresList,0, 1, 1500);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingIdleReceived, 1, 1000));
+
+	composing_addresses = linphone_chat_room_get_composing_addresses(marieCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+	composing_addresses = linphone_chat_room_get_composing_addresses(laureCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+
+	// multiple is composing
+	linphone_chat_room_compose(paulineCr);
+	linphone_chat_room_compose(marieCr);
+
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 2, 1000)); // + 1
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingActiveReceived, 3, 1000)); // + 2
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, 1, 1000));
+
+	// Laure side
+	composing_addresses = linphone_chat_room_get_composing_addresses(laureCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 2, int, "%i");
+	if (bctbx_list_size(composing_addresses) == 2) {
+			while (composing_addresses) {
+				LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+				bool_t equal = strcmp(linphone_address_get_username(addr), linphone_address_get_username(pauline->identity)) == 0
+							|| strcmp(linphone_address_get_username(addr), linphone_address_get_username(marie->identity)) == 0;
+				BC_ASSERT_TRUE(equal);
+				composing_addresses = bctbx_list_next(composing_addresses);
+			}
+	}
+
+	// Marie side
+	composing_addresses = linphone_chat_room_get_composing_addresses(marieCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 1, int, "%i");
+	if (bctbx_list_size(composing_addresses) == 1) {
+		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_username(addr), linphone_address_get_username(pauline->identity));
+	}
+
+	// Pauline side
+	composing_addresses = linphone_chat_room_get_composing_addresses(paulineCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 1, int, "%i");
+	if (bctbx_list_size(composing_addresses) == 1) {
+		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
+		BC_ASSERT_STRING_EQUAL(linphone_address_get_username(addr), linphone_address_get_username(marie->identity));
+	}
+
+	wait_for_list(coresList,0, 1, 1500);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingIdleReceived, 3, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingIdleReceived, 1, 1000));
+
+	composing_addresses = linphone_chat_room_get_composing_addresses(marieCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+	composing_addresses = linphone_chat_room_get_composing_addresses(laureCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+	composing_addresses = linphone_chat_room_get_composing_addresses(paulineCr);
+	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(laure);
+}
+
 test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Group chat room creation server", group_chat_room_creation_server, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send message", group_chat_room_send_message, "Server", "LeaksMemory"),
@@ -1149,7 +1267,8 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Create chat room with disconnected friends", group_chat_room_create_room_with_disconnected_friends, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory")
+	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Send multiple is composing", multiple_is_composing_notification, "Server", "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {
