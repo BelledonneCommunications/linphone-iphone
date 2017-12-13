@@ -93,10 +93,20 @@ public:
 	int getStreamIndex (LinphoneStreamType type) const;
 	int getStreamIndex (MediaStream *ms) const;
 	SalCallOp * getOp () const { return op; }
+	MSWebCam *getVideoDevice () const;
 	void setAudioMuted (bool value) { audioMuted = value; }
 
 	void initializeStreams ();
 	void stopStreams ();
+
+	// Methods used by testers
+	void addLocalDescChangedFlag (int flag) { localDescChanged |= flag; }
+	belle_sip_source_t *getDtmfTimer () const { return dtmfTimer; }
+	const std::string &getDtmfSequence () const { return dtmfSequence; }
+	int getMainAudioStreamIndex () const { return mainAudioStreamIndex; }
+	int getMainTextStreamIndex () const { return mainTextStreamIndex; }
+	int getMainVideoStreamIndex () const { return mainVideoStreamIndex; }
+	SalMediaDescription *getResultDesc () const { return resultDesc; }
 
 	// CoreListener
 	void onNetworkReachable (bool reachable) override;
@@ -129,7 +139,6 @@ private:
 
 	OrtpEvQueue *getEventQueue (int streamIndex) const;
 	MediaStream *getMediaStream (int streamIndex) const;
-	MSWebCam *getVideoDevice () const;
 
 	void fillMulticastMediaAddresses ();
 	int selectFixedPort (int streamIndex, std::pair<int, int> portRange);

@@ -83,6 +83,15 @@ LINPHONE_PUBLIC MediaStream * linphone_call_get_stream(LinphoneCall *call, Linph
 LINPHONE_PUBLIC bool_t linphone_call_get_all_muted(const LinphoneCall *call);
 LINPHONE_PUBLIC LinphoneProxyConfig * linphone_call_get_dest_proxy(const LinphoneCall *call);
 LINPHONE_PUBLIC unsigned int _linphone_call_get_nb_media_starts (const LinphoneCall *call);
+LINPHONE_PUBLIC belle_sip_source_t *_linphone_call_get_dtmf_timer (const LinphoneCall *call);
+LINPHONE_PUBLIC bool_t _linphone_call_has_dtmf_sequence (const LinphoneCall *call);
+LINPHONE_PUBLIC SalMediaDescription *_linphone_call_get_local_desc (const LinphoneCall *call);
+LINPHONE_PUBLIC SalMediaDescription *_linphone_call_get_result_desc (const LinphoneCall *call);
+LINPHONE_PUBLIC MSWebCam *_linphone_call_get_video_device (const LinphoneCall *call);
+LINPHONE_PUBLIC void _linphone_call_add_local_desc_changed_flag (LinphoneCall *call, int flag);
+LINPHONE_PUBLIC int _linphone_call_get_main_audio_stream_index (const LinphoneCall *call);
+LINPHONE_PUBLIC int _linphone_call_get_main_text_stream_index (const LinphoneCall *call);
+LINPHONE_PUBLIC int _linphone_call_get_main_video_stream_index (const LinphoneCall *call);
 
 LINPHONE_PUBLIC void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
 LINPHONE_PUBLIC bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);

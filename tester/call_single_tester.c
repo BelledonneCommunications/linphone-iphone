@@ -2132,9 +2132,8 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline;
-#if 0
+	RtpSession *rtp_session;
 	const rtp_stats_t * stats;
-#endif
 	bool_t call_ok;
 
 	linphone_core_enable_audio_multicast(pauline->lc,multicast);
@@ -2173,12 +2172,11 @@ void call_paused_resumed_base(bool_t multicast, bool_t with_losses) {
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
 	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-#if 0
-	if (BC_ASSERT_PTR_NOT_NULL(call_pauline->sessions->rtp_session)) {
-		stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+	rtp_session = linphone_call_get_stream(call_pauline, LinphoneStreamTypeAudio)->sessions.rtp_session;
+	if (BC_ASSERT_PTR_NOT_NULL(rtp_session)) {
+		stats = rtp_session_get_stats(rtp_session);
 		BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
 	}
-#endif
 
 	if (with_losses) {
 		/* now we want to loose the ack*/
@@ -2213,9 +2211,7 @@ static void call_paused_by_both(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline, *call_marie;
-#if 0
 	const rtp_stats_t * stats;
-#endif
 	bctbx_list_t *lcs = NULL;
 	bool_t call_ok;
 
@@ -2266,10 +2262,8 @@ static void call_paused_by_both(void) {
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
 	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-#if 0
-	stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+	stats = rtp_session_get_stats(linphone_call_get_stream(call_pauline, LinphoneStreamTypeAudio)->sessions.rtp_session);
 	BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
-#endif
 
 	end_call(marie, pauline);
 
@@ -2395,9 +2389,7 @@ static void call_paused_resumed_from_callee(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_marie;
-#if 0
 	const rtp_stats_t * stats;
-#endif
 	bool_t call_ok;
 
 	BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
@@ -2419,10 +2411,8 @@ static void call_paused_resumed_from_callee(void) {
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
 	/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-#if 0
-	stats = rtp_session_get_stats(call_marie->sessions->rtp_session);
+	stats = rtp_session_get_stats(linphone_call_get_stream(call_marie, LinphoneStreamTypeAudio)->sessions.rtp_session);
 	BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
-#endif
 
 	end_call(pauline, marie);
 end:
@@ -3122,11 +3112,9 @@ static void early_media_call_with_ringing_base(bool_t network_change){
 
 		/* this is a hack to simulate an incoming OK with a different IP address
 		 * in the 'c' SDP field. */
-#if 0
 		if (network_change) {
-			marie_call->localdesc_changed |= SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED;
+			_linphone_call_add_local_desc_changed_flag(marie_call, SAL_MEDIA_DESCRIPTION_NETWORK_CHANGED);
 		}
-#endif
 
 		linphone_call_accept(linphone_core_get_current_call(pauline->lc));
 
@@ -4728,9 +4716,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall* call_pauline = NULL;
 	LinphoneCall* call_marie = NULL;
-#if 0
 	const rtp_stats_t * stats;
-#endif
 	bool_t call_ok;
 	LinphoneCoreVTable * v_table;
 	RtpTransportModifier *rtptm_marie = NULL;
@@ -4798,10 +4784,8 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 		wait_for_until(pauline->lc, marie->lc, NULL, 5, 5000);
 
 		/*since RTCP streams are reset when call is paused/resumed, there should be no loss at all*/
-#if 0
-		stats = rtp_session_get_stats(call_pauline->sessions->rtp_session);
+		stats = rtp_session_get_stats(linphone_call_get_stream(call_pauline, LinphoneStreamTypeAudio)->sessions.rtp_session);
 		BC_ASSERT_EQUAL((int)stats->cum_packet_loss, 0, int, "%d");
-#endif
 
 		end_call(pauline, marie);
 	} else if (recordTest) {
@@ -5843,12 +5827,10 @@ static void call_with_ice_with_default_candidate_not_stun(void){
 	call_ok = call(marie, pauline);
 	if (call_ok){
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
-#if 0
-		BC_ASSERT_STRING_EQUAL(marie->lc->current_call->localdesc->addr, localip);
-		BC_ASSERT_STRING_EQUAL(pauline->lc->current_call->resultdesc->addr, localip);
-		BC_ASSERT_STRING_EQUAL(marie->lc->current_call->localdesc->streams[0].rtp_addr, localip);
-		BC_ASSERT_STRING_EQUAL(pauline->lc->current_call->resultdesc->streams[0].rtp_addr, "");
-#endif
+		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->addr, localip);
+		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->addr, localip);
+		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip);
+		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->streams[0].rtp_addr, "");
 	}
 	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);

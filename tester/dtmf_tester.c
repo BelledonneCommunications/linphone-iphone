@@ -92,10 +92,8 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 void send_dtmf_cleanup(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
 	LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
 	if (marie_call) {
-#if 0
-		BC_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
-		BC_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
-#endif
+		BC_ASSERT_PTR_NULL(_linphone_call_get_dtmf_timer(marie_call));
+		BC_ASSERT_FALSE(_linphone_call_has_dtmf_sequence(marie_call));
 
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(pauline->lc);

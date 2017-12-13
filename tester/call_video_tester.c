@@ -92,10 +92,8 @@ static void call_paused_resumed_with_video_base(bool_t sdp_200_ack
 	wait_for_until(pauline->lc, marie->lc, NULL, 5, 2000);
 
 	/*check if video stream is still offered even if disabled*/
-#if 0
-	BC_ASSERT_EQUAL(call_pauline->localdesc->nb_streams, 2, int, "%i");
-	BC_ASSERT_EQUAL(call_marie->localdesc->nb_streams, 2, int, "%i");
-#endif
+	BC_ASSERT_EQUAL(_linphone_call_get_local_desc(call_pauline)->nb_streams, 2, int, "%i");
+	BC_ASSERT_EQUAL(_linphone_call_get_local_desc(call_marie)->nb_streams, 2, int, "%i");
 
 	linphone_core_enable_sdp_200_ack(pauline->lc,sdp_200_ack);
 
@@ -616,6 +614,8 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 	LinphoneCall* callee_call;
 	LinphoneCall* caller_call;
+	VideoStream *callee_vstream;
+	VideoStream *caller_vstream;
 
 	callee_call=linphone_core_get_current_call(callee->lc);
 	caller_call=linphone_core_get_current_call(caller->lc);
@@ -630,31 +630,26 @@ static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 
 	linphone_call_send_vfu_request(callee_call);
 
-#if 0
-	if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
-		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
-	}else{
-		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&caller_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
-	}
-	ms_message ("check_fir : [%p] received  %d FIR  ",&caller_call ,caller_call->videostream->ms_video_stat.counter_rcvd_fir);
-	ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&callee_call, callee->stat.number_of_IframeDecoded);
-#endif
+	callee_vstream = (VideoStream *)linphone_call_get_stream(callee_call, LinphoneStreamTypeVideo);
+	caller_vstream = (VideoStream *)linphone_call_get_stream(caller_call, LinphoneStreamTypeVideo);
+	if (media_stream_avpf_enabled(&callee_vstream->ms))
+		BC_ASSERT_TRUE(wait_for(callee->lc, caller->lc, &caller_vstream->ms_video_stat.counter_rcvd_fir, 1));
+	else
+		BC_ASSERT_TRUE(wait_for(callee->lc, caller->lc, &caller_vstream->ms_video_stat.counter_rcvd_fir, 0));
+	ms_message("check_fir: [%p] received  %d FIR  ",&caller_call ,caller_vstream->ms_video_stat.counter_rcvd_fir);
+	ms_message("check_fir: [%p] stat number of iframe decoded  %d ",&callee_call, callee->stat.number_of_IframeDecoded);
 
 	linphone_call_set_next_video_frame_decoded_callback(caller_call,linphone_call_iframe_decoded_cb,caller->lc);
 	linphone_call_send_vfu_request(caller_call);
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
 
-#if 0
-	if (rtp_session_avpf_enabled(caller_call->sessions->rtp_session)) {
-		if (rtp_session_avpf_enabled(callee_call->sessions->rtp_session)){
-			BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 1));
-		}
-	}else{
-		BC_ASSERT_TRUE(wait_for(callee->lc,caller->lc,&callee_call->videostream->ms_video_stat.counter_rcvd_fir, 0));
-	}
-	ms_message ("check_fir : [%p] received  %d FIR  ",&callee_call ,callee_call->videostream->ms_video_stat.counter_rcvd_fir);
-	ms_message ("check_fir : [%p] stat number of iframe decoded  %d ",&caller_call, caller->stat.number_of_IframeDecoded);
-#endif
+	if (media_stream_avpf_enabled(&caller_vstream->ms)) {
+		if (media_stream_avpf_enabled(&callee_vstream->ms))
+			BC_ASSERT_TRUE(wait_for(callee->lc, caller->lc, &callee_vstream->ms_video_stat.counter_rcvd_fir, 1));
+	} else
+		BC_ASSERT_TRUE(wait_for(callee->lc, caller->lc, &callee_vstream->ms_video_stat.counter_rcvd_fir, 0));
+	ms_message("check_fir: [%p] received  %d FIR  ", &callee_call, callee_vstream->ms_video_stat.counter_rcvd_fir);
+	ms_message("check_fir: [%p] stat number of iframe decoded  %d ", &caller_call, caller->stat.number_of_IframeDecoded);
 }
 
 void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {

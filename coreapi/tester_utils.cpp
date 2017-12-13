@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "chat/chat-room/chat-room.h"
 #include "core/core.h"
 #include "c-wrapper/c-wrapper.h"
+#include "conference/session/media-session-p.h"
 
 using namespace std;
 
@@ -107,4 +108,49 @@ int linphone_friend_list_get_revision(const LinphoneFriendList *lfl) {
 
 unsigned int _linphone_call_get_nb_media_starts (const LinphoneCall *call) {
 	return L_GET_PRIVATE_FROM_C_OBJECT(call)->getMediaStartCount();
+}
+
+belle_sip_source_t *_linphone_call_get_dtmf_timer (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getDtmfTimer();
+}
+
+bool_t _linphone_call_has_dtmf_sequence (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getDtmfSequence().empty() ? FALSE : TRUE;
+}
+
+SalMediaDescription *_linphone_call_get_local_desc (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getLocalDesc();
+}
+
+SalMediaDescription *_linphone_call_get_result_desc (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getResultDesc();
+}
+
+MSWebCam *_linphone_call_get_video_device (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getVideoDevice();
+}
+
+void _linphone_call_add_local_desc_changed_flag (LinphoneCall *call, int flag) {
+	L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->addLocalDescChangedFlag(flag);
+}
+
+int _linphone_call_get_main_audio_stream_index (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getMainAudioStreamIndex();
+}
+
+int _linphone_call_get_main_text_stream_index (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getMainTextStreamIndex();
+}
+
+int _linphone_call_get_main_video_stream_index (const LinphoneCall *call) {
+	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
+		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getMainVideoStreamIndex();
 }

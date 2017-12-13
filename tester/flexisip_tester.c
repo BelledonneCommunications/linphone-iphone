@@ -691,13 +691,12 @@ static void call_with_sips_not_achievable(void){
 }
 
 
-#if 0
 static bool_t is_sending_ipv6(RtpSession *session, bool_t rtcp){
 	const struct sockaddr *dest = rtcp ? (struct sockaddr*)&session->rtcp.gs.rem_addr : (struct sockaddr*)&session->rtp.gs.rem_addr;
 	struct sockaddr_in6 *in6=(struct sockaddr_in6*)dest;
 	return dest->sa_family == AF_INET6 && !IN6_IS_ADDR_V4MAPPED(&in6->sin6_addr);
 }
-#endif
+
 static bool_t is_remote_contact_ipv6(LinphoneCall *call){
 	const char *contact=linphone_call_get_remote_contact(call);
 	LinphoneAddress *ct_addr;
@@ -749,12 +748,10 @@ static void _call_with_ipv6(bool_t caller_with_ipv6, bool_t callee_with_ipv6) {
 		BC_ASSERT_EQUAL(is_remote_contact_ipv6(marie_call), callee_with_ipv6, int, "%i");
 
 		/*check that the RTP destinations are IPv6 (flexisip should propose an IPv6 relay for parties with IPv6)*/
-#if 0
-		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, FALSE), caller_with_ipv6, int, "%i");
-		BC_ASSERT_EQUAL(is_sending_ipv6(marie_call->sessions[0].rtp_session, TRUE), caller_with_ipv6, int, "%i");
-		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, FALSE), callee_with_ipv6, int, "%i");
-		BC_ASSERT_EQUAL(is_sending_ipv6(pauline_call->sessions[0].rtp_session, TRUE), callee_with_ipv6, int, "%i");
-#endif
+		BC_ASSERT_EQUAL(is_sending_ipv6(linphone_call_get_stream(marie_call, LinphoneStreamTypeAudio)->sessions.rtp_session, FALSE), caller_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(linphone_call_get_stream(marie_call, LinphoneStreamTypeAudio)->sessions.rtp_session, TRUE), caller_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(linphone_call_get_stream(pauline_call, LinphoneStreamTypeAudio)->sessions.rtp_session, FALSE), callee_with_ipv6, int, "%i");
+		BC_ASSERT_EQUAL(is_sending_ipv6(linphone_call_get_stream(pauline_call, LinphoneStreamTypeAudio)->sessions.rtp_session, TRUE), callee_with_ipv6, int, "%i");
 	}
 
 	liblinphone_tester_check_rtcp(marie,pauline);

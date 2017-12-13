@@ -566,6 +566,20 @@ int MediaSessionPrivate::getStreamIndex (MediaStream *ms) const {
 	return -1;
 }
 
+MSWebCam * MediaSessionPrivate::getVideoDevice () const {
+	L_Q();
+	bool paused = (state == LinphoneCallPausing) || (state == LinphoneCallPaused);
+	if (paused || allMuted || !cameraEnabled)
+#ifdef VIDEO_ENABLED
+		return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(q->getCore()->getCCore()->factory),
+			"StaticImage: Static picture");
+#else
+		return nullptr;
+#endif
+	else
+		return q->getCore()->getCCore()->video_conf.device;
+}
+
 // -----------------------------------------------------------------------------
 
 void MediaSessionPrivate::initializeStreams () {
@@ -970,20 +984,6 @@ MediaStream * MediaSessionPrivate::getMediaStream (int streamIndex) const {
 		return &textStream->ms;
 	lError() << "getMediaStream(): no stream index " << streamIndex;
 	return nullptr;
-}
-
-MSWebCam * MediaSessionPrivate::getVideoDevice () const {
-	L_Q();
-	bool paused = (state == LinphoneCallPausing) || (state == LinphoneCallPaused);
-	if (paused || allMuted || !cameraEnabled)
-#ifdef VIDEO_ENABLED
-		return ms_web_cam_manager_get_cam(ms_factory_get_web_cam_manager(q->getCore()->getCCore()->factory),
-			"StaticImage: Static picture");
-#else
-		return nullptr;
-#endif
-	else
-		return q->getCore()->getCCore()->video_conf.device;
 }
 
 // -----------------------------------------------------------------------------
