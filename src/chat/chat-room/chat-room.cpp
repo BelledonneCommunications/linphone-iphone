@@ -246,8 +246,6 @@ void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &chat
 
 	ContentType contentType = chatMessage->getPrivate()->getContentType();
 	if (contentType != ContentType::Imdn && contentType != ContentType::ImIsComposing) {
-		onChatMessageReceived(chatMessage);
-
 		LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q);
 		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
 		LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
