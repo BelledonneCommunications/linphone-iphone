@@ -549,9 +549,6 @@ static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status){
 	if (linphone_chat_message_get_chat_room(chat_msg) != NULL) {
 		linphone_chat_message_update_state(chat_msg, chatStatusSal2Linphone(status));
 	}
-	if (status != SalMessageDeliveryInProgress) { /*only release op if not in progress*/
-		linphone_chat_message_unref(chat_msg);
-	}
 }
 
 static void info_received(SalOp *op, SalBodyHandler *body_handler) {

@@ -535,9 +535,8 @@ public:
 	>
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<std::shared_ptr<CppType>> &cppList) {
 		bctbx_list_t *result = nullptr;
-		for (const auto &value : cppList) {
+		for (const auto &value : cppList)
 			result = bctbx_list_append(result, belle_sip_object_ref(getCBackPtr(value)));
-		}
 		return result;
 	}
 

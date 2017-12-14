@@ -491,7 +491,7 @@ void ChatMessagePrivate::send () {
 	// Start of message modification
 	// ---------------------------------------
 
-	if (applyModifiers) { 
+	if (applyModifiers) {
 		// Do not multipart or encapsulate with CPIM in an old ChatRoom to maintain backward compatibility
 		if (q->getChatRoom()->canHandleParticipants()) {
 			if ((currentSendStep &ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
