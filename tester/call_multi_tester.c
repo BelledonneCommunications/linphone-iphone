@@ -32,13 +32,22 @@
 
 
 static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneCoreManager* laure = linphone_core_manager_new( "laure_rc_udp");
 	bctbx_list_t *iterator;
 	bctbx_list_t* lcs;
 	LinphoneCall* pauline_called_by_marie;
 	LinphoneCall* pauline_called_by_laure=NULL;
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_remove_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie, TRUE);
+	LinphoneCoreManager *pauline = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(pauline, "pauline_tcp_rc", NULL);
+	linphone_core_remove_supported_tag(pauline->lc,"gruu");
+	linphone_core_manager_start(pauline,TRUE);
+	LinphoneCoreManager *laure = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(laure, "laure_rc_udp", NULL);
+	linphone_core_remove_supported_tag(laure->lc,"gruu");
+	linphone_core_manager_start(laure, TRUE);
 	LinphoneCallParams *laure_params=linphone_core_create_call_params(laure->lc, NULL);
 	LinphoneCallParams *marie_params=linphone_core_create_call_params(marie->lc, NULL);
 

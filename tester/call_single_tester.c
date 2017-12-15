@@ -2504,11 +2504,20 @@ static void call_with_media_relay_random_ports(void) {
 }
 
 static void call_with_privacy(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	LinphoneProxyConfig* pauline_proxy;
+
+	/* pub-gruu and privacy do not work well together. */
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_remove_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie, TRUE);
+	LinphoneCoreManager *pauline = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(pauline, transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", NULL);
+	linphone_core_remove_supported_tag(pauline->lc,"gruu");
+	linphone_core_manager_start(pauline,TRUE);
+
 	params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
@@ -2559,11 +2568,18 @@ static void call_with_privacy(void) {
 
 /*this ones makes call with privacy without previous registration*/
 static void call_with_privacy2(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new2(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
 	LinphoneCall *c1,*c2;
 	LinphoneCallParams *params;
 	LinphoneProxyConfig* pauline_proxy;
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_remove_supported_tag(marie->lc,"gruu");
+	linphone_core_manager_start(marie, TRUE);
+	LinphoneCoreManager *pauline = ms_new0(LinphoneCoreManager, 1);
+	linphone_core_manager_init(pauline, transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", NULL);
+	linphone_core_remove_supported_tag(pauline->lc,"gruu");
+	linphone_core_manager_start(pauline,TRUE);
+
 	params=linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_set_privacy(params,LinphonePrivacyId);
 
