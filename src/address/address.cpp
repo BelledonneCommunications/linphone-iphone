@@ -33,6 +33,12 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+void AddressPrivate::setInternalAddress (const SalAddress *addr) {
+	internalAddress = sal_address_clone(addr);
+}
+
+// -----------------------------------------------------------------------------
+
 Address::Address (const string &address) : ClonableObject(*new AddressPrivate) {
 	L_D();
 	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(address)))) {

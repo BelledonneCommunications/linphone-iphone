@@ -1430,21 +1430,19 @@ uint8_t linphone_proxy_config_get_avpf_rr_interval(const LinphoneProxyConfig *cf
 }
 
 const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyConfig *cfg) {
-	// Workaround for wrapping.
-	if (cfg->contact_address) {
-		linphone_address_unref(cfg->contact_address);
-		const_cast<LinphoneProxyConfig *>(cfg)->contact_address = NULL;
-	}
-
 	// Warning : Do not remove, the op can change its contact_address
 	if (!cfg->op)
 		return NULL;
 	const SalAddress *salAddr = cfg->op->get_contact_address();
 	if (!salAddr)
 		return NULL;
-	char *buf = sal_address_as_string(salAddr);
-	const_cast<LinphoneProxyConfig *>(cfg)->contact_address = linphone_address_new(buf);
-	ms_free(buf);
+	if (cfg->contact_address)
+		L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->setInternalAddress(const_cast<SalAddress *>(salAddr));
+	else {
+		char *buf = sal_address_as_string(salAddr);
+		const_cast<LinphoneProxyConfig *>(cfg)->contact_address = linphone_address_new(buf);
+		ms_free(buf);
+	}
 
 	return cfg->contact_address;
 }

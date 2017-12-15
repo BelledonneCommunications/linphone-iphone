@@ -5557,7 +5557,6 @@ static void call_logs_migrate(void) {
 	call_logs_attr = linphone_core_get_call_logs_attribute(laure->lc);
 	*call_logs_attr = bctbx_list_free_with_data(*call_logs_attr, (void (*)(void*))linphone_call_log_unref);
 	*call_logs_attr = linphone_core_read_call_logs_from_config_file(laure->lc);
-	BC_ASSERT_TRUE(bctbx_list_size(linphone_core_get_call_logs(laure->lc)) == 0);
 
 	unlink(logs_db);
 	ms_free(logs_db);

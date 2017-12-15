@@ -78,6 +78,7 @@ private:
 	bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionConferenceStreamStarting (const std::shared_ptr<const CallSession> &session, bool mute) override;
 	void onCallSessionConferenceStreamStopping (const std::shared_ptr<const CallSession> &session) override;
+	void onCallSessionEarlyFailed (const std::shared_ptr<const CallSession> &session, LinphoneErrorInfo *ei) override;
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
 	void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) override;

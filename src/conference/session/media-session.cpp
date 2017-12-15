@@ -4329,9 +4329,8 @@ void MediaSession::startIncomingNotification () {
 		if (sal_media_description_empty(md) || linphone_core_incompatible_security(getCore()->getCCore(), md)) {
 			LinphoneErrorInfo *ei = linphone_error_info_new();
 			linphone_error_info_set(ei, nullptr, LinphoneReasonNotAcceptable, 488, "Not acceptable here", nullptr);
-#if 0
-			linphone_core_report_early_failed_call(d->core, LinphoneCallIncoming, linphone_address_ref(from_addr), linphone_address_ref(to_addr), ei);
-#endif
+			if (d->listener)
+				d->listener->onCallSessionEarlyFailed(getSharedFromThis(), ei);
 			d->op->decline(SalReasonNotAcceptable, nullptr);
 			return;
 		}

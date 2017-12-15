@@ -36,6 +36,7 @@ public:
 	inline const SalAddress *getInternalAddress () const {
 		return internalAddress;
 	}
+	void setInternalAddress (const SalAddress *value);
 
 private:
 	struct AddressCache {

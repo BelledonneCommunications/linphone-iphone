@@ -223,6 +223,17 @@ void CallPrivate::onCallSessionConferenceStreamStopping (const shared_ptr<const 
 		linphone_conference_on_call_stream_stopping(lc->conf_ctx, L_GET_C_BACK_PTR(q));
 }
 
+void CallPrivate::onCallSessionEarlyFailed (const shared_ptr<const CallSession> &session, LinphoneErrorInfo *ei) {
+	L_Q();
+	LinphoneCallLog *log = session->getLog();
+	linphone_core_report_early_failed_call(q->getCore()->getCCore(),
+		linphone_call_log_get_dir(log),
+		linphone_address_clone(linphone_call_log_get_from(log)),
+		linphone_address_clone(linphone_call_log_get_to(log)),
+		ei);
+	linphone_call_unref(L_GET_C_BACK_PTR(q));
+}
+
 void CallPrivate::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
 	L_Q();
 	linphone_call_unref(L_GET_C_BACK_PTR(q));

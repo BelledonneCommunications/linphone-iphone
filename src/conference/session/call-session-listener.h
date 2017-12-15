@@ -37,6 +37,7 @@ public:
 	virtual bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) { return false; }
 	virtual void onCallSessionConferenceStreamStarting (const std::shared_ptr<const CallSession> &session, bool mute) {}
 	virtual void onCallSessionConferenceStreamStopping (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onCallSessionEarlyFailed (const std::shared_ptr<const CallSession> &session, LinphoneErrorInfo *ei) {}
 	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) {}
