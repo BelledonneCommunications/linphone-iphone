@@ -187,19 +187,26 @@ long Utils::getTmAsTimeT (const tm &time) {
 
 // -----------------------------------------------------------------------------
 
+// TODO: Improve perf!!! Avoid c <--> cpp string conversions.
 string Utils::localeToUtf8 (const string &str) {
-	char *ret = bctbx_locale_to_utf8(str.c_str());
-	return string(ret != NULL ? ret : "");
+	char *cStr = bctbx_locale_to_utf8(str.c_str());
+	string utf8Str = cStringToCppString(cStr);
+	bctbx_free(cStr);
+	return utf8Str;
 }
 
 string Utils::utf8ToLocale (const string &str) {
-	char *ret = bctbx_utf8_to_locale(str.c_str());
-	return string(ret != NULL ? ret : "");
+	char *cStr = bctbx_utf8_to_locale(str.c_str());
+	string localeStr = cStringToCppString(cStr);
+	bctbx_free(cStr);
+	return localeStr;
 }
 
 string Utils::convertString (const string &str, const string &from, const string &to) {
-	char *ret = bctbx_convert_from_to(str.c_str(), from.c_str(), to.c_str());
-	return string(ret != NULL ? ret : "");
+	char *cStr = bctbx_convert_from_to(str.c_str(), from.c_str(), to.c_str());
+	string convertedStr = cStringToCppString(cStr);
+	bctbx_free(cStr);
+	return convertedStr;
 }
 
 LINPHONE_END_NAMESPACE

@@ -99,6 +99,10 @@ namespace Utils {
 	// Return a buffer allocated with new.
 	LINPHONE_PUBLIC char *utf8ToChar (uint32_t ic);
 
+	LINPHONE_PUBLIC inline std::string cStringToCppString (const char *str) {
+		return str ? str : "";
+	}
+
 	template<typename T>
 	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {
 		static const T object;
