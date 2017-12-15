@@ -636,7 +636,7 @@
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
-	[[LinphoneManager.instance fastAddressBook] reload];
+        [[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {
@@ -722,34 +722,27 @@
 
 			NSString *videoPreset = [self stringForKey:@"video_preset_preference"];
 			linphone_core_set_video_preset(LC, [videoPreset UTF8String]);
-			int bw;
 			MSVideoSize vsize;
 			switch ([self integerForKey:@"video_preferred_size_preference"]) {
 				case 0:
 					MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
-					// 128 = margin for audio, the BW includes both video and audio
-					bw = 1024 + 128;
 					break;
 				case 1:
 					MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
-					// no margin for VGA or QVGA, because video encoders can encode the
-					// target resulution in less than the asked bandwidth
-					bw = 660;
 					break;
 				case 2:
 				default:
 					MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
-					bw = 380;
 					break;
 			}
 			linphone_core_set_preferred_video_size(LC, vsize);
 			if (![videoPreset isEqualToString:@"custom"]) {
 				[self setInteger:0 forKey:@"video_preferred_fps_preference"];
-				[self setInteger:bw forKey:@"download_bandwidth_preference"];
+				[self setInteger:0 forKey:@"download_bandwidth_preference"];
 			}
 			linphone_core_set_preferred_framerate(LC, [self integerForKey:@"video_preferred_fps_preference"]);
-			linphone_core_set_download_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
-			linphone_core_set_upload_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
+            linphone_core_set_download_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
+            linphone_core_set_upload_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
 		}
 
 		// call section

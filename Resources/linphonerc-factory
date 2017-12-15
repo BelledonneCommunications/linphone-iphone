@@ -21,6 +21,10 @@ publish_presence=0
 password_length=-1
 username_length=-1
 
+[net]
+download_bw=0
+upload_bw=0
+
 [sip]
 sip_random_port=0
 #whether SIP passwords must be encrypted in configuration storage file

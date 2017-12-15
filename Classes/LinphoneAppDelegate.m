@@ -91,47 +91,56 @@
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
 			[PhoneMainView.instance changeCurrentView:DialerView.compositeViewDescription];
 		}
-		[instance.fastAddressBook reload];
-		instance.fastAddressBook.needToUpdate = FALSE;
-		const MSList *lists = linphone_core_get_friends_lists(LC);
-		while (lists) {
-			linphone_friend_list_update_subscriptions(lists->data);
-			lists = lists->next;
-		}
-	}
+                [instance.fastAddressBook fetchContactsInBackGroundThread];
+                instance.fastAddressBook.needToUpdate = FALSE;
+                const MSList *lists = linphone_core_get_friends_lists(LC);
+                while (lists) {
+                  linphone_friend_list_update_subscriptions(lists->data);
+                  lists = lists->next;
+                }
+        }
 
-	LinphoneCall *call = linphone_core_get_current_call(LC);
+        LinphoneCall *call = linphone_core_get_current_call(LC);
 
-	if (call) {
-		if (call == instance->currentCallContextBeforeGoingBackground.call) {
-			const LinphoneCallParams *params = linphone_call_get_current_params(call);
-			if (linphone_call_params_video_enabled(params)) {
-				linphone_call_enable_camera(call, instance->currentCallContextBeforeGoingBackground.cameraIsEnabled);
-			}
-			instance->currentCallContextBeforeGoingBackground.call = 0;
-		} else if (linphone_call_get_state(call) == LinphoneCallIncomingReceived) {
-			LinphoneCallAppData *data = (__bridge LinphoneCallAppData *)linphone_call_get_user_data(call);
-			if (data && data->timer) {
-				[data->timer invalidate];
-				data->timer = nil;
-			}
-			if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
-				if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
-					linphone_call_accept(call);
-					[PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
-				} else {
-					[PhoneMainView.instance displayIncomingCall:call];
-				}
-			} else if (linphone_core_get_calls_nb(LC) > 1) {
-				[PhoneMainView.instance displayIncomingCall:call];
-			}
+        if (call) {
+          if (call == instance->currentCallContextBeforeGoingBackground.call) {
+            const LinphoneCallParams *params =
+                linphone_call_get_current_params(call);
+            if (linphone_call_params_video_enabled(params)) {
+              linphone_call_enable_camera(
+                  call, instance->currentCallContextBeforeGoingBackground
+                            .cameraIsEnabled);
+            }
+            instance->currentCallContextBeforeGoingBackground.call = 0;
+          } else if (linphone_call_get_state(call) ==
+                     LinphoneCallIncomingReceived) {
+            LinphoneCallAppData *data =
+                (__bridge LinphoneCallAppData *)linphone_call_get_user_data(
+                    call);
+            if (data && data->timer) {
+              [data->timer invalidate];
+              data->timer = nil;
+            }
+            if ((floor(NSFoundationVersionNumber) <=
+                 NSFoundationVersionNumber_iOS_9_x_Max)) {
+              if ([LinphoneManager.instance
+                      lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
+                linphone_call_accept(call);
+                [PhoneMainView.instance
+                    changeCurrentView:CallView.compositeViewDescription];
+              } else {
+                [PhoneMainView.instance displayIncomingCall:call];
+              }
+            } else if (linphone_core_get_calls_nb(LC) > 1) {
+              [PhoneMainView.instance displayIncomingCall:call];
+            }
 
-			// in this case, the ringing sound comes from the notification.
-			// To stop it we have to do the iOS7 ring fix...
-			[self fixRing];
-		}
-	}
-	[LinphoneManager.instance.iapManager check];
+            // in this case, the ringing sound comes from the notification.
+            // To stop it we have to do the iOS7 ring fix...
+            [self fixRing];
+          }
+        }
+        [LinphoneManager.instance.iapManager check];
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -978,7 +987,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 	linphone_core_set_provisioning_uri(LC, [configURL UTF8String]);
 	[LinphoneManager.instance destroyLinphoneCore];
 	[LinphoneManager.instance startLinphoneCore];
-	[LinphoneManager.instance.fastAddressBook reload];
+        [LinphoneManager.instance.fastAddressBook fetchContactsInBackGroundThread];
 }
 
 #pragma mark - Prevent ImagePickerView from rotating

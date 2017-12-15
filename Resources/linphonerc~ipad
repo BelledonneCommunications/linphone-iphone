@@ -22,13 +22,11 @@ file_transfer_server_url=https://www.linphone.org:444/lft.php
 max_calls=3
 
 [net]
-download_bw=512
 edge_bw=10
 edge_ping_time=10
 firewall_policy=ice
 mtu=1300
 stun_server=stun.linphone.org
-upload_bw=512
 
 [rtp]
 audio_jitt_comp=60

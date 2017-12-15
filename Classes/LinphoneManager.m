@@ -83,6 +83,7 @@ extern void libmsx264_init(MSFactory *factory);
 extern void libmsopenh264_init(MSFactory *factory);
 extern void libmssilk_init(MSFactory *factory);
 extern void libmswebrtc_init(MSFactory *factory);
+extern void libmscodec2_init(MSFactory *factory);
 
 #define FRONT_CAM_NAME                                                                                                 \
 	"AV Capture: com.apple.avfoundation.avcapturedevice.built-in_video:1" /*"AV Capture: Front Camera"*/
@@ -141,6 +142,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 												   {"mpeg4-generic", 48000, "aaceld_48k_preference"},
 												   {"opus", 48000, "opus_preference"},
 												   {"BV16", 8000, "bv16_preference"},
+												   {"CODEC2", 8000, "codec2_preference"},
 												   {NULL, 0, Nil}};
 
 + (NSString *)getPreferenceForCodec:(const char *)name withRate:(int)rate {
@@ -257,7 +259,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		_bluetoothEnabled = FALSE;
 		_conf = FALSE;
 		_fileTransferDelegates = [[NSMutableArray alloc] init];
-
+		_linphoneManagerAddressBookMap = [[OrderedDictionary alloc] init];
 		pushCallIDs = [[NSMutableArray alloc] init];
 		_photoLibrary = [[ALAssetsLibrary alloc] init];
 		_isTesting = [LinphoneManager isRunningTests];
@@ -290,6 +292,23 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 
 - (void)dealloc {
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+#pragma mark - AddressBookMap
+
+- (void) setLinphoneManagerAddressBookMap:(OrderedDictionary*) addressBook{
+	_linphoneManagerAddressBookMap = addressBook;
+}
+
+- (OrderedDictionary*) getLinphoneManagerAddressBookMap{
+	return _linphoneManagerAddressBookMap;
+}
+
+- (void) setContactsUpdated:(BOOL) updated{
+	_contactsUpdated = updated;
+}
+- (BOOL) getContactsUpdated{
+	return _contactsUpdated;
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -580,7 +599,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 				video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
 						 linphone_core_get_video_policy(LC)->automatically_accept &&
 						 linphone_call_params_video_enabled(linphone_call_get_remote_params(call)));
-				[LinphoneManager.instance.providerDelegate reportIncomingCallwithUUID:uuid handle:address video:video];
+				[LinphoneManager.instance.providerDelegate reportIncomingCall:call withUUID:uuid handle:address video:video];
 #else
 				[PhoneMainView.instance displayIncomingCall:call];
 #endif
@@ -697,8 +716,6 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 			// furthermore it introduces a bug when calling multiple times since route may not be
 			// reconfigured between cause leading to bluetooth being disabled while it should not
 			_bluetoothEnabled = FALSE;
-			/*IOS specific*/
-			linphone_core_start_dtmf_stream(theLinphoneCore);
 		}
 
 		if (incallBgTask) {
@@ -1983,6 +2000,8 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsx264_init(f);
 	libmsopenh264_init(f);
 	libmswebrtc_init(f);
+	libmscodec2_init(f);
+	
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 	[self migrationAllPost];
 
@@ -2052,10 +2071,10 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	[self destroyLinphoneCore];
 	[self createLinphoneCore];
 	// reload friends
-	[self.fastAddressBook reload];
+        [self.fastAddressBook fetchContactsInBackGroundThread];
 
-	// reset network state to trigger a new network connectivity assessment
-	linphone_core_set_network_reachable(theLinphoneCore, FALSE);
+        // reset network state to trigger a new network connectivity assessment
+        linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 }
 
 static int comp_call_id(const LinphoneCall *call, const char *callid) {

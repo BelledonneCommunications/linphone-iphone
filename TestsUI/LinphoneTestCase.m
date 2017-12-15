@@ -127,8 +127,7 @@
 		linphone_address_set_header(testAddr, "X-Create-Account", "yes");
 		linphone_address_set_transport(testAddr, LinphoneTransportTcp);
 		linphone_address_set_port(testAddr, 0);
-
-		LinphoneProxyConfig *testProxy = linphone_core_create_proxy_config(LC);
+		LinphoneProxyConfig *testProxy = linphone_core_create_proxy_config(lc);
 		linphone_proxy_config_set_identity_address(testProxy, testAddr);
 		linphone_proxy_config_set_server_addr(testProxy, [self accountProxyRoute].UTF8String);
 		linphone_proxy_config_set_route(testProxy, [self accountProxyRoute].UTF8String);
@@ -151,7 +150,7 @@
 		linphone_core_set_file_transfer_server(lc, "https://www.linphone.org:444/lft.php");
 
 		// reload address book to prepend proxy config domain to contacts' phone number
-		[[[LinphoneManager instance] fastAddressBook] reload];
+		[[[LinphoneManager instance] fastAddressBook] fetchContactsInBackGroundThread];
 
 		[self waitForRegistration];
 		[[LinphoneManager instance] lpConfigSetInt:NO forKey:@"animations_preference"];

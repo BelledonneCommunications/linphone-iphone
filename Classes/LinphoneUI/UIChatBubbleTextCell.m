@@ -40,6 +40,23 @@
 			[self addSubview:sub];
 		}
 	}
+
+	UITapGestureRecognizer *limeRecognizer =
+	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onLime)];
+	limeRecognizer.numberOfTapsRequired = 1;
+	[_LIMEKO addGestureRecognizer:limeRecognizer];
+	_LIMEKO.userInteractionEnabled = YES;
+	UITapGestureRecognizer *resendRecognizer =
+	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
+	resendRecognizer.numberOfTapsRequired = 1;
+	[_imdmIcon addGestureRecognizer:resendRecognizer];
+	_imdmIcon.userInteractionEnabled = YES;
+	UITapGestureRecognizer *resendRecognizer2 =
+	[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onResend)];
+	resendRecognizer2.numberOfTapsRequired = 1;
+	[_imdmLabel addGestureRecognizer:resendRecognizer2];
+	_imdmLabel.userInteractionEnabled = YES;
+
 	return self;
 }
 
@@ -150,13 +167,10 @@
 	_contactDateLabel.textColor = [UIColor colorWithPatternImage:_backgroundColorImage.image];
 
 	if (outgoing && state == LinphoneChatMessageStateInProgress) {
-		_statusErrorImage.hidden = YES;
 		[_statusInProgressSpinner startAnimating];
 	} else if (!outgoing && state == LinphoneChatMessageStateFileTransferError) {
-		_statusErrorImage.hidden = NO;
 		[_statusInProgressSpinner stopAnimating];
 	} else {
-		_statusErrorImage.hidden = YES;
 		[_statusInProgressSpinner stopAnimating];
 	}
 
@@ -210,7 +224,7 @@
 
 #pragma mark - Action Functions
 
-- (IBAction)onDeleteClick:(id)event {
+- (void)onDelete {
 	if (_message != NULL) {
 		UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
 		NSIndexPath *indexPath = [tableView indexPathForCell:self];
@@ -220,45 +234,42 @@
 	}
 }
 
-- (IBAction)onResendClick:(id)event {
-	if (!_LIMEKO.hidden) {
+- (void)onLime {
+	if (!_LIMEKO.hidden)
 		[self displayLIMEWarning];
-		return;
-	}
+}
 
+- (void)onResend {
 	if (_message == nil || !linphone_chat_message_is_outgoing(_message))
 		return;
 
 	LinphoneChatMessageState state = linphone_chat_message_get_state(_message);
-	if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
-		if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
-			NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
-			NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
-			
-			NSURL *imageUrl = [NSURL URLWithString:localImage];
+	if (state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateFileTransferError)
+		return;
 
-			[self onDeleteClick:nil];
-
-			[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-				resultBlock:^(ALAsset *asset) {
-				  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-								 ^(void) {
-									UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-									[_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
-								 });
-				}
-				failureBlock:^(NSError *error) {
-				  LOGE(@"Can't read image");
-				}];
-		} else {
-			[self onDeleteClick:nil];
-
-			double delayInSeconds = 0.4;
-			dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-			dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
-			  [_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
-			});
-		}
+	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
+		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
+		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
+		NSURL *imageUrl = [NSURL URLWithString:localImage];
+		[self onDelete];
+		[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
+			resultBlock:^(ALAsset *asset) {
+			  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+							 ^(void) {
+								UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+								[_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
+							 });
+			}
+			failureBlock:^(NSError *error) {
+			  LOGE(@"Can't read image");
+			}];
+	} else {
+		[self onDelete];
+		double delayInSeconds = 0.4;
+		dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+		dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+		  [_chatRoomDelegate resendChat:self.textMessage withExternalUrl:nil];
+		});
 	}
 }
 #pragma mark - State changed handling

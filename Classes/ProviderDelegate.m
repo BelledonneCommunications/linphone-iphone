@@ -71,7 +71,7 @@
 	}
 }
 
-- (void)reportIncomingCallwithUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video {
+- (void)reportIncomingCall:(LinphoneCall *) call withUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video; {
 	// Create update to describe the incoming call and caller
 	CXCallUpdate *update = [[CXCallUpdate alloc] init];
 	update.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:handle];
@@ -80,13 +80,24 @@
 	update.supportsGrouping = TRUE;
 	update.supportsUngrouping = TRUE;
 	update.hasVideo = video;
-
+	linphone_call_ref(call);
 	// Report incoming call to system
 	LOGD(@"CallKit: report new incoming call");
+	
 	[self.provider reportNewIncomingCallWithUUID:uuid
 										  update:update
 									  completion:^(NSError *error) {
-									  }];
+										  if (error) {
+											  LOGE(@"CallKit: cannot complete incoming call from [%@] caused by [%@]",handle,[error localizedDescription]);
+											  if (   [error code] == CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb
+												  || [error code] == CXErrorCodeIncomingCallErrorFilteredByBlockList) {
+												  linphone_call_decline(call,LinphoneReasonBusy); /*to give a chance for other devices to answer*/
+											  } else {
+												  linphone_call_decline(call,LinphoneReasonUnknown);
+											  }
+										  }
+										  linphone_call_unref(call);
+										  }];
 }
 
 - (void)setPendingCall:(LinphoneCall *)pendingCall {
@@ -198,11 +209,12 @@
 			LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
 			linphone_call_pause((LinphoneCall *)call);
 		} else {
-			[self configAudioSession:[AVAudioSession sharedInstance]];
+			
 			if (linphone_core_get_conference(LC)) {
 				linphone_core_enter_conference(LC);
 				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 			} else {
+				[self configAudioSession:[AVAudioSession sharedInstance]]; 
 				self.pendingCall = call;
 			}
 		}
