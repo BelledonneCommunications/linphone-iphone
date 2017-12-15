@@ -20,23 +20,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef SQLITE_STORAGE_ENABLED
 #include "private.h"
 
+#include "bctoolbox/charconv.h"
 #include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
 
 #ifndef _WIN32_WCE
 #include <errno.h>
 #endif /*_WIN32_WCE*/
-
-
-#ifndef _WIN32
-#if !defined(__QNXNTO__) && !defined(__ANDROID__)
-#	include <langinfo.h>
-#	include <locale.h>
-#	include <iconv.h>
-#	include <string.h>
-#endif
-
-#endif
 
 
 /**
@@ -252,60 +242,6 @@ static int sqlite3bctbx_Sync(sqlite3_file *p, int flags){
 
 /************************ END OF PLACE HOLDER FUNCTIONS ***********************/
 
-
-
-static char* ConvertFromUtf8Filename(const char* fName){
-#if _WIN32
-	char* convertedFilename;
-	int nChar, nb_byte;
-	LPWSTR wideFilename;
-
-	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, NULL, 0);
-	if (nChar == 0) return NULL;
-	wideFilename = reinterpret_cast<LPWSTR>(bctbx_malloc(nChar*sizeof(wideFilename[0])));
-	if (wideFilename == NULL) return NULL;
-	nChar = MultiByteToWideChar(CP_UTF8, 0, fName, -1, wideFilename, nChar);
-	if (nChar == 0) {
-		bctbx_free(wideFilename);
-		wideFilename = 0;
-	}
-
-	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, 0, 0, 0, 0);
-	if (nb_byte == 0) return NULL;
-	convertedFilename = reinterpret_cast<char *>(bctbx_malloc(nb_byte));
-	if (convertedFilename == NULL) return NULL;
-	nb_byte = WideCharToMultiByte(CP_ACP, 0, wideFilename, -1, convertedFilename, nb_byte, 0, 0);
-	if (nb_byte == 0) {
-		bctbx_free(convertedFilename);
-		convertedFilename = 0;
-	}
-	bctbx_free(wideFilename);
-	return convertedFilename;
-#elif defined(__QNXNTO__) || defined(__ANDROID__)
-	return bctbx_strdup(fName);
-#else
-	#define MAX_PATH_SIZE 1024
-	char db_file_utf8[MAX_PATH_SIZE] = {'\0'};
-	char db_file_locale[MAX_PATH_SIZE] = "";
-	char *outbuf=db_file_locale, *inbuf=db_file_utf8;
-	size_t inbyteleft = MAX_PATH_SIZE, outbyteleft = MAX_PATH_SIZE;
-	iconv_t cb;
-
-	if (strcasecmp("UTF-8", nl_langinfo(CODESET)) == 0) {
-		strncpy(db_file_locale, fName, MAX_PATH_SIZE - 1);
-	} else {
-		strncpy(db_file_utf8, fName, MAX_PATH_SIZE-1);
-		cb = iconv_open(nl_langinfo(CODESET), "UTF-8");
-		if (cb != (iconv_t)-1) {
-			int ret = (int)iconv(cb, &inbuf, &inbyteleft, &outbuf, &outbyteleft);
-			if(ret == -1) db_file_locale[0] = '\0';
-			iconv_close(cb);
-		}
-	}
-	return bctbx_strdup(db_file_locale);
-#endif
-}
-
 /**
  * Opens the file fName and populates the structure pointed by p
  * with the necessary io_methods
@@ -355,7 +291,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 #if defined(_WIN32)
 	openFlags |= O_BINARY;
 #endif
-	wFname = ConvertFromUtf8Filename(fName);
+	wFname = bctbx_utf8_to_locale(fName);
 	if (wFname != NULL) {
 		pFile->pbctbx_file = bctbx_file_open2(bctbx_vfs_get_default(), wFname, openFlags);
 		bctbx_free(wFname);
