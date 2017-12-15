@@ -595,8 +595,6 @@ static void migrateWizardToAssistant(const char *entry, void *user_data) {
 									   reason:@"Linphone core not initialized yet"
 									 userInfo:nil]);
 	}
-	//Force keep alive to workaround push notif on chat message
-	linphone_core_enable_keep_alive(theLinphoneCore, true);
 	return theLinphoneCore;
 }
 
@@ -1874,6 +1872,9 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 /** Should be called once per linphone_core_new() */
 - (void)finishCoreConfiguration {
+	
+	//Force keep alive to workaround push notif on chat message
+	linphone_core_enable_keep_alive(theLinphoneCore, true);
 
 	// get default config from bundle
 	NSString *zrtpSecretsFileName = [LinphoneManager documentFile:@"zrtp_secrets"];

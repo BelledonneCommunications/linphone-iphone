@@ -35,6 +35,8 @@ sip_random_port=0
 #whether SIP passwords must be encrypted in configuration storage file
 store_ha1_passwd=0
 deliver_imdn=1
+#to avoid app to not detect broken sockets when in long running task.
+tcp_tls_keepalive=30000
 
 [misc]
 #by default it is set to 30 by liblinphone
