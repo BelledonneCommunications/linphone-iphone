@@ -19,7 +19,6 @@
 
 #import <UIKit/UIKit.h>
 #import <PushKit/PushKit.h>
-#import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 #import "LinphoneCoreSettingsStore.h"
 #import "ProviderDelegate.h"
