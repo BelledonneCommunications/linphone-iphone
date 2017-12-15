@@ -19,6 +19,8 @@
 
 #include <algorithm>
 
+#include "linphone/utils/utils.h"
+
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
@@ -194,7 +196,7 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 
 	Content content;
 	content.setContentType(message->content_type);
-	content.setBody(message->text ? message->text : "");
+	content.setBodyFromUtf8(message->text ? message->text : "");
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(message->time);

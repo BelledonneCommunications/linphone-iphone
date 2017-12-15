@@ -21,6 +21,7 @@
 
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
+#include "linphone/utils/utils.h"
 #include "c-wrapper/c-wrapper.h"
 #include "address/address.h"
 
@@ -387,6 +388,32 @@ LinphoneReason ChatMessagePrivate::receive () {
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
 		contents.push_back(&internalContent);
+	}
+
+	// Convert PlainText contents if they have a charset different than UTF-8
+	for (Content *c : contents) {
+		if (c->getContentType() == ContentType::PlainText && !c->getContentType().getParameter().empty()) {
+			L_BEGIN_LOG_EXCEPTION
+				ContentType ct = c->getContentType();
+				string charset = string(ct.getParameter());
+				size_t n = charset.find("charset=");
+				if (n != string::npos) {
+					size_t begin = n + sizeof("charset");
+					size_t end = charset.find(";", begin);
+					charset = charset.substr(begin, end - begin);
+
+					if (Utils::stringToLower(charset) != "utf-8") {
+						string converted = Utils::convertString(c->getBodyAsUtf8String(), charset, "UTF-8");
+						if (!converted.empty()) {
+							c->setBodyFromUtf8(converted);
+							string params = ct.getParameter();
+							ct.setParameter(params.replace(begin, end - begin, "UTF-8"));
+							c->setContentType(ct);
+						}
+					}
+				}
+			L_END_LOG_EXCEPTION
+		}
 	}
 
 	// ---------------------------------------
