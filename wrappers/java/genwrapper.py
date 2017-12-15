@@ -758,7 +758,7 @@ class Jni(object):
             }
             for callback in jniInterface.callbacks:
                 interface['callbacksList'].append(callback)
-                print obj['className']
+                print(obj['className'])
                 if obj['className'] == 'Core':
                     self.coreListener.append(callback)
             self.interfaces.append(interface)
