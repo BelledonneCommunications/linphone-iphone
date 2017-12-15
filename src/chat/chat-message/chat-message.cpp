@@ -327,6 +327,39 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	msg->getPrivate()->send();
 }
 
+static void forceUtf8Content (Content &content) {
+	// TODO: Deal with other content type in the future.
+	ContentType contentType = content.getContentType();
+	if (contentType != ContentType::PlainText)
+		return;
+
+	string charset = contentType.getParameter();
+	if (charset.empty())
+		return;
+
+	size_t n = charset.find("charset=");
+	if (n == string::npos)
+		return;
+
+	L_BEGIN_LOG_EXCEPTION
+
+	size_t begin = n + sizeof("charset");
+	size_t end = charset.find(";", begin);
+	charset = charset.substr(begin, end - begin);
+
+	if (Utils::stringToLower(charset) != "utf-8") {
+		string utf8Body = Utils::convertString(content.getBodyAsUtf8String(), charset, "UTF-8");
+		if (!utf8Body.empty()) {
+			// TODO: use move operator if possible in the future!
+			content.setBodyFromUtf8(utf8Body);
+			contentType.setParameter(string(contentType.getParameter()).replace(begin, end - begin, "UTF-8"));
+			content.setContentType(contentType);
+		}
+	}
+
+	L_END_LOG_EXCEPTION
+}
+
 LinphoneReason ChatMessagePrivate::receive () {
 	L_Q();
 	int errorCode = 0;
@@ -390,31 +423,8 @@ LinphoneReason ChatMessagePrivate::receive () {
 		contents.push_back(&internalContent);
 	}
 
-	// Convert PlainText contents if they have a charset different than UTF-8
-	for (Content *c : contents) {
-		if (c->getContentType() == ContentType::PlainText && !c->getContentType().getParameter().empty()) {
-			L_BEGIN_LOG_EXCEPTION
-				ContentType ct = c->getContentType();
-				string charset = string(ct.getParameter());
-				size_t n = charset.find("charset=");
-				if (n != string::npos) {
-					size_t begin = n + sizeof("charset");
-					size_t end = charset.find(";", begin);
-					charset = charset.substr(begin, end - begin);
-
-					if (Utils::stringToLower(charset) != "utf-8") {
-						string converted = Utils::convertString(c->getBodyAsUtf8String(), charset, "UTF-8");
-						if (!converted.empty()) {
-							c->setBodyFromUtf8(converted);
-							string params = ct.getParameter();
-							ct.setParameter(params.replace(begin, end - begin, "UTF-8"));
-							c->setContentType(ct);
-						}
-					}
-				}
-			L_END_LOG_EXCEPTION
-		}
-	}
+	for (auto &content : contents)
+		forceUtf8Content(*content);
 
 	// ---------------------------------------
 	// End of message modification
