@@ -280,11 +280,9 @@ public:
 		typename = typename std::enable_if<std::is_base_of<BaseObject, CppType>::value, CppType>::type
 	>
 	static void signalCppPtrDestruction (CppType *cppObject) {
-		// TODO: Remove commented section in the future.
-		// Repair message storage first.
-		// void *value = cppObject->getCBackPtr();
-		// if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
-		//  belle_sip_object_unref(value);
+		void *value = cppObject->getCBackPtr();
+		if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
+			belle_sip_object_unref(value);
 	}
 
 	// ---------------------------------------------------------------------------
