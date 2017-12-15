@@ -19,6 +19,7 @@
 
 // TODO: Remove me later.
 #include "linphone/core.h"
+#include "linphone/utils/utils.h"
 
 #include "content-p.h"
 #include "content-type.h"
@@ -118,6 +119,11 @@ const vector<char> &Content::getBody () const {
 
 string Content::getBodyAsString () const {
 	L_D();
+	return Utils::utf8ToLocale(string(d->body.begin(), d->body.end()));
+}
+
+string Content::getBodyAsUtf8String () const {
+	L_D();
 	return string(d->body.begin(), d->body.end());
 }
 
@@ -133,13 +139,19 @@ void Content::setBody (vector<char> &&body) {
 
 void Content::setBody (const string &body) {
 	L_D();
-	d->body = vector<char>(body.cbegin(), body.cend());
+	string toUtf8 = Utils::localeToUtf8(body);
+	d->body = vector<char>(toUtf8.cbegin(), toUtf8.cend());
 }
 
 void Content::setBody (const void *buffer, size_t size) {
 	L_D();
 	const char *start = static_cast<const char *>(buffer);
 	d->body = vector<char>(start, start + size);
+}
+
+void Content::setBodyFromUtf8 (const string &body) {
+	L_D();
+	d->body = vector<char>(body.cbegin(), body.cend());
 }
 
 size_t Content::getSize () const {

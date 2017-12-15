@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include <bctoolbox/port.h>
+#include <bctoolbox/charconv.h>
 
 #include "linphone/utils/utils.h"
 
@@ -182,6 +183,23 @@ tm Utils::getTimeTAsTm (time_t time) {
 
 long Utils::getTmAsTimeT (const tm &time) {
 	return timegm(&const_cast<tm &>(time));
+}
+
+// -----------------------------------------------------------------------------
+
+string Utils::localeToUtf8 (const string &str) {
+	char *ret = bctbx_locale_to_utf8(str.c_str());
+	return string(ret != NULL ? ret : "");
+}
+
+string Utils::utf8ToLocale (const string &str) {
+	char *ret = bctbx_utf8_to_locale(str.c_str());
+	return string(ret != NULL ? ret : "");
+}
+
+string Utils::convertString (const string &str, const string &from, const string &to) {
+	char *ret = bctbx_convert_from_to(str.c_str(), from.c_str(), to.c_str());
+	return string(ret != NULL ? ret : "");
 }
 
 LINPHONE_END_NAMESPACE
