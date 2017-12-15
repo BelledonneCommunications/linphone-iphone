@@ -33,11 +33,11 @@ class ChatRoomId;
 class EventLog;
 
 class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
-	friend class BasicToClientGroupChatRoomPrivate;
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 	friend class CorePrivate;
 	friend class MainDb;
+	friend class ProxyChatRoomPrivate;
 
 public:
 	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);

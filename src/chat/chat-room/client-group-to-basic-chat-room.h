@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
-#define _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
+#ifndef _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_
+#define _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_
 
 #include "proxy-chat-room.h"
 
@@ -26,17 +26,17 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class BasicToClientGroupChatRoomPrivate;
+class ClientGroupToBasicChatRoomPrivate;
 
-class LINPHONE_PUBLIC BasicToClientGroupChatRoom : public ProxyChatRoom {
+class LINPHONE_PUBLIC ClientGroupToBasicChatRoom : public ProxyChatRoom {
 public:
-	BasicToClientGroupChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
+	ClientGroupToBasicChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 
 private:
-	L_DECLARE_PRIVATE(BasicToClientGroupChatRoom);
-	L_DISABLE_COPY(BasicToClientGroupChatRoom);
+	L_DECLARE_PRIVATE(ClientGroupToBasicChatRoom);
+	L_DISABLE_COPY(ClientGroupToBasicChatRoom);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
+#endif // ifndef _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_

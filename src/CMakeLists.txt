@@ -46,6 +46,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/chat-room/chat-room.h
 	chat/chat-room/client-group-chat-room-p.h
 	chat/chat-room/client-group-chat-room.h
+	chat/chat-room/client-group-to-basic-chat-room.h
+	chat/chat-room/proxy-chat-room-p.h
+	chat/chat-room/proxy-chat-room.h
 	chat/chat-room/real-time-text-chat-room-p.h
 	chat/chat-room/real-time-text-chat-room.h
 	chat/chat-room/server-group-chat-room-p.h
@@ -177,6 +180,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/chat-room/chat-room-id.cpp
 	chat/chat-room/chat-room.cpp
 	chat/chat-room/client-group-chat-room.cpp
+	chat/chat-room/client-group-to-basic-chat-room.cpp
+	chat/chat-room/proxy-chat-room.cpp
 	chat/chat-room/real-time-text-chat-room.cpp
 	chat/chat-room/server-group-chat-room-stub.cpp
 	chat/cpim/header/cpim-core-headers.cpp

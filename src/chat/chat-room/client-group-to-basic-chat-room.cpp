@@ -1,5 +1,5 @@
 /*
- * basic-to-client-group-chat-room.cpp
+ * client-group-to-basic-chat-room.cpp
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "basic-to-client-group-chat-room.h"
+#include "client-group-to-basic-chat-room.h"
 #include "proxy-chat-room-p.h"
 
 // =============================================================================
@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-class BasicToClientGroupChatRoomPrivate : public ProxyChatRoomPrivate {
+class ClientGroupToBasicChatRoomPrivate : public ProxyChatRoomPrivate {
 public:
 	inline void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
 		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
@@ -43,7 +43,7 @@ public:
 
 // =============================================================================
 
-BasicToClientGroupChatRoom::BasicToClientGroupChatRoom (const shared_ptr<ChatRoom> &chatRoom) :
-	ProxyChatRoom(*new BasicToClientGroupChatRoomPrivate, chatRoom) {}
+ClientGroupToBasicChatRoom::ClientGroupToBasicChatRoom (const shared_ptr<ChatRoom> &chatRoom) :
+	ProxyChatRoom(*new ClientGroupToBasicChatRoomPrivate, chatRoom) {}
 
 LINPHONE_END_NAMESPACE
