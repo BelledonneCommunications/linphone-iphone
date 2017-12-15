@@ -18,7 +18,6 @@
  */
 
 #import "PhoneMainView.h"
-#import <AddressBook/ABPerson.h>
 
 @implementation ContactSelection
 

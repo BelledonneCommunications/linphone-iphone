@@ -18,7 +18,6 @@
  */
 
 #import <UIKit/UIKit.h>
-#import <AddressBookUI/ABPeoplePickerNavigationController.h>
 
 #import "UICompositeView.h"
 #import "ContactsListTableView.h"
