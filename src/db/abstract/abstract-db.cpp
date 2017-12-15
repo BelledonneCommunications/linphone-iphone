@@ -137,6 +137,20 @@ string AbstractDb::timestampType () const {
 	return "";
 }
 
+string AbstractDb::noLimitValue () const {
+	L_D();
+
+	switch (d->backend) {
+		case Mysql:
+			return "9999999999999999999";
+		case Sqlite3:
+			return "-1";
+	}
+
+	L_ASSERT(false);
+	return "";
+}
+
 long long AbstractDb::getLastInsertId () const {
 	long long id = 0;
 

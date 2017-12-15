@@ -1883,7 +1883,7 @@ static constexpr string &blobToString (string &in) {
 		if (end > 0)
 			query += "  LIMIT " + Utils::toString(end - begin);
 		else
-			query += "  LIMIT 9999999999999999999"; // For Mysql compatibility, do not set -1.
+			query += "  LIMIT " + noLimitValue();
 
 		if (begin > 0)
 			query += "  OFFSET " + Utils::toString(begin);

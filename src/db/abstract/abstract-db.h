@@ -56,6 +56,8 @@ protected:
 
 	std::string timestampType () const;
 
+	std::string noLimitValue () const;
+
 	long long getLastInsertId () const;
 
 	void enableForeignKeys (bool status);
