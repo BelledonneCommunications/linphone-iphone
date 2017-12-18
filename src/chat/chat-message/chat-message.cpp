@@ -203,6 +203,7 @@ void ChatMessagePrivate::setAppdata (const string &data) {
 			break;
 		}
 	}
+	store();
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
