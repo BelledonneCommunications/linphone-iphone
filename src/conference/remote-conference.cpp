@@ -83,43 +83,25 @@ string RemoteConference::getResourceLists (const list<IdentityAddress> &addresse
 
 // -----------------------------------------------------------------------------
 
-void RemoteConference::onConferenceCreated (const IdentityAddress &addr) {}
+void RemoteConference::onConferenceCreated (const IdentityAddress &) {}
 
-void RemoteConference::onConferenceTerminated (const IdentityAddress &addr) {
+void RemoteConference::onConferenceTerminated (const IdentityAddress &) {
 	L_D();
 	d->eventHandler->unsubscribe();
 }
 
-void RemoteConference::onFirstNotifyReceived (const IdentityAddress &addr) {}
+void RemoteConference::onFirstNotifyReceived (const IdentityAddress &) {}
 
-void RemoteConference::onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &, bool) {}
 
-void RemoteConference::onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &, bool) {}
 
-void RemoteConference::onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &, bool) {}
 
-void RemoteConference::onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &, bool) {}
 
-void RemoteConference::onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &, bool) {}
 
-void RemoteConference::onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
-	(void)event;
-	(void)isFullState;
-}
+void RemoteConference::onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &, bool) {}
 
 LINPHONE_END_NAMESPACE
