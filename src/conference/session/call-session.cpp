@@ -612,12 +612,7 @@ void CallSessionPrivate::setReleased () {
 	}
 	referer = nullptr;
 	transferTarget = nullptr;
-#if 0
-	if (call->chat_room){
-		linphone_chat_room_unref(call->chat_room);
-		call->chat_room = NULL;
-	}
-#endif
+
 	if (listener)
 		listener->onCallSessionSetReleased(q->getSharedFromThis());
 }

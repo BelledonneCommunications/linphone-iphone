@@ -53,6 +53,7 @@ protected:
 
 	std::string primaryKeyStr (const std::string &type = "INT") const;
 	std::string primaryKeyRefStr (const std::string &type = "INT") const;
+	std::string varcharPrimaryKeyStr (int length) const;
 
 	std::string timestampType () const;
 

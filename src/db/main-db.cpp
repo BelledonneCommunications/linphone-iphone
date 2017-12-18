@@ -1304,6 +1304,12 @@ static constexpr string &blobToString (string &in) {
 
 		*session << participantMessageDeleter;
 		#endif
+
+		*session <<
+			"CREATE TABLE IF NOT EXISTS db_module_version ("
+			"  name" + varcharPrimaryKeyStr(16) + ","
+			"  version INT UNSIGNED NOT NULL"
+			") " + charset;
 	}
 
 	bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
