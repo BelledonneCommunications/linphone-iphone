@@ -35,7 +35,6 @@ class LINPHONE_PUBLIC RemoteConference : public Conference, public ConferenceLis
 
 public:
 	RemoteConference (const std::shared_ptr<Core> &core, const IdentityAddress &myAddress, CallSessionListener *listener);
-	virtual ~RemoteConference();
 
 	/* ConferenceInterface */
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;

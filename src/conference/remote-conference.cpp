@@ -37,11 +37,6 @@ RemoteConference::RemoteConference (
 	d->eventHandler.reset(new RemoteConferenceEventHandler(this));
 }
 
-RemoteConference::~RemoteConference () {
-	L_D();
-	d->eventHandler->unsubscribe();
-}
-
 // -----------------------------------------------------------------------------
 
 void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
