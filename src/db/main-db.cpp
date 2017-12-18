@@ -41,6 +41,8 @@
 #include "main-db-key-p.h"
 #include "main-db-p.h"
 
+#define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 0)
+
 // =============================================================================
 
 // See: http://soci.sourceforge.net/doc/3.2/exchange.html
@@ -1021,6 +1023,22 @@ static constexpr string &blobToString (string &in) {
 
 // -----------------------------------------------------------------------------
 
+	unsigned int MainDbPrivate::getModuleVersion (const string &name) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+
+		unsigned int version;
+		*session << "SELECT version FROM db_module_version WHERE name = :name", soci::into(version), soci::use(name);
+		return session->got_data() ? version : 0;
+	}
+
+	void MainDbPrivate::updateModuleVersion (const string &name, unsigned int version) {
+		soci::session *session = dbSession.getBackendSession<soci::session>();
+		*session << "REPLACE INTO db_module_version (name, version) VALUES (:name, :version)",
+			soci::use(name), soci::use(version);
+	}
+
+// -----------------------------------------------------------------------------
+
 	void MainDb::init () {
 		L_D();
 
@@ -1310,6 +1328,8 @@ static constexpr string &blobToString (string &in) {
 			"  name" + varcharPrimaryKeyStr(16) + ","
 			"  version INT UNSIGNED NOT NULL"
 			") " + charset;
+
+		d->updateModuleVersion("events", DB_MODULE_VERSION_EVENTS);
 	}
 
 	bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {

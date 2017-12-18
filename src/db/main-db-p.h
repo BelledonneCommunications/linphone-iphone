@@ -147,6 +147,13 @@ private:
 
 	void invalidConferenceEventsFromQuery (const std::string &query, long long chatRoomId);
 
+	// ---------------------------------------------------------------------------
+	// Versions.
+	// ---------------------------------------------------------------------------
+
+	unsigned int getModuleVersion (const std::string &name);
+	void updateModuleVersion (const std::string &name, unsigned int version);
+
 	L_DECLARE_PUBLIC(MainDb);
 };
 

@@ -82,6 +82,9 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_UNLIKELY(EXPRESSION) EXPRESSION
 #endif
 
+// Define an integer version like: 0xXXYYZZ, XX=MAJOR, YY=MINOR, and ZZ=PATCH.
+#define L_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
+
 class BaseObject;
 class BaseObjectPrivate;
 class ClonableObject;
