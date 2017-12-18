@@ -52,6 +52,9 @@ public:
 	void setFileContent (FileContent *content);
 	FileContent *getFileContent () const;
 
+	void setFileSize (size_t size);
+	size_t getFileSize () const;
+
 	// TODO: Remove me later.
 	LinphoneContent *toLinphoneContent () const override;
 

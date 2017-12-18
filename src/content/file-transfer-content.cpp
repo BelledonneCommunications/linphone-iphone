@@ -37,6 +37,7 @@ public:
 	string fileUrl;
 	string filePath;
 	FileContent *fileContent = nullptr;
+	size_t fileSize = 0;
 };
 
 // -----------------------------------------------------------------------------
@@ -49,6 +50,7 @@ FileTransferContent::FileTransferContent (const FileTransferContent &src) : Cont
 	d->fileUrl = src.getFileUrl();
 	d->filePath = src.getFilePath();
 	d->fileContent = src.getFileContent();
+	d->fileSize = src.getFileSize();
 }
 
 FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*new FileTransferContentPrivate) {
@@ -57,6 +59,7 @@ FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*
 	d->fileUrl = move(src.getPrivate()->fileUrl);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
+	d->fileSize = move(src.getPrivate()->fileSize);
 }
 
 FileTransferContent &FileTransferContent::operator= (const FileTransferContent &src) {
@@ -67,6 +70,7 @@ FileTransferContent &FileTransferContent::operator= (const FileTransferContent &
 		d->fileUrl = src.getFileUrl();
 		d->filePath = src.getFilePath();
 		d->fileContent = src.getFileContent();
+		d->fileSize = src.getFileSize();
 	}
 
 	return *this;
@@ -79,6 +83,7 @@ FileTransferContent &FileTransferContent::operator= (FileTransferContent &&src) 
 	d->fileUrl = move(src.getPrivate()->fileUrl);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
+	d->fileSize = move(src.getPrivate()->fileSize);
 	return *this;
 }
 
@@ -87,7 +92,8 @@ bool FileTransferContent::operator== (const FileTransferContent &content) const 
 	return Content::operator==(content) &&
 		d->fileName == content.getFileName() &&
 		d->fileUrl == content.getFileUrl() &&
-		d->filePath == content.getFilePath();
+		d->filePath == content.getFilePath() &&
+		d->fileSize == content.getFileSize();
 }
 
 void FileTransferContent::setFileName (const string &name) {
@@ -130,11 +136,22 @@ FileContent *FileTransferContent::getFileContent () const {
 	return d->fileContent;
 }
 
+void FileTransferContent::setFileSize (size_t size) {
+	L_D();
+	d->fileSize = size;
+}
+
+size_t FileTransferContent::getFileSize () const {
+	L_D();
+	return d->fileSize;
+}
+
 LinphoneContent *FileTransferContent::toLinphoneContent () const {
 	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
 	linphone_content_set_name(content, getFileName().c_str());
+	linphone_content_set_size(content, getFileSize());
 	return content;
 }
 
