@@ -42,6 +42,7 @@
 #include "main-db-p.h"
 
 #define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 0)
+#define DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT L_VERSION(1, 0, 0)
 
 // =============================================================================
 
@@ -2242,10 +2243,15 @@ static constexpr string &blobToString (string &in) {
 
 		// Import messages.
 		try {
+			soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
+
+			unsigned int version = d->getModuleVersion("legacy-history-import");
+			if (version >= L_VERSION(1, 0, 0))
+				return false;
+			d->updateModuleVersion("legacy-history-import", DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT);
+
 			soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
 			try {
-				soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
-
 				for (const auto &message : messages) {
 					const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
 					if (direction != 0 && direction != 1) {
