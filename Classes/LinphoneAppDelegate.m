@@ -620,9 +620,8 @@ didInvalidatePushTokenForType:(NSString *)type {
 		[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 	}
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
-	dispatch_async(dispatch_get_main_queue(), ^{
-	  [self processRemoteNotification:payload.dictionaryPayload];
-	});
+	//to avoid IOS to suspend the app before being able to launch long running task
+	[self processRemoteNotification:payload.dictionaryPayload];
 }
 
 - (void)pushRegistry:(PKPushRegistry *)registry
