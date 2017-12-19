@@ -46,6 +46,7 @@ public:
 	const std::string &getCountry () const;
 	const std::string &getIsoCountryCode () const;
 	const std::string &getCountryCallingCode () const;
+	void setCountryCallingCode(const std::string &ccc);
 	int getNationalNumberLength () const;
 	const std::string &getInternationalCallPrefix () const;
 	bool isGeneric () const;

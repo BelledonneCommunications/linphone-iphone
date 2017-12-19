@@ -321,6 +321,11 @@ const string &DialPlan::getCountryCallingCode () const {
 	return d->countryCallingCode;
 }
 
+void DialPlan::setCountryCallingCode(const std::string &ccc) {
+	L_D();
+	d->countryCallingCode = ccc;
+}
+
 int DialPlan::getNationalNumberLength () const {
 	L_D();
 	return d->nationalNumberLength;

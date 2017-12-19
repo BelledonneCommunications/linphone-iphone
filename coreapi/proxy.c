@@ -34,6 +34,9 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "c-wrapper/c-wrapper.h"
 #include "linphone/api/c-dial-plan.h"
 
+#include "dial-plan/dial-plan.h"
+#include "dial-plan/dial-plan-p.h"
+
 using namespace LinphonePrivate;
 
 /*store current config related to server location*/
@@ -647,7 +650,7 @@ bool_t linphone_proxy_config_normalize_number(LinphoneProxyConfig *proxy, const 
 char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, const char *username) {
 	LinphoneProxyConfig *tmpproxy = proxy ? proxy : linphone_proxy_config_new();
 	char* result = NULL;
-	const LinphoneDialPlan *dialplan;
+	DialPlan dialplan;
 	char * nationnal_significant_number = NULL;
 	int ccc = -1;
 
@@ -655,51 +658,50 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 		char * flatten=flatten_number(username);
 		ms_debug("Flattened number is '%s' for '%s'",flatten, username);
 
-		ccc = linphone_dial_plan_lookup_ccc_from_e164(flatten);
+		ccc = DialPlan::lookupCccFromE164(flatten);
 		if (ccc>-1) { /*e164 like phone number*/
-			dialplan = linphone_dial_plan_by_ccc_as_int(ccc);
-			nationnal_significant_number = strstr(flatten, linphone_dial_plan_get_country_calling_code(dialplan));
+			dialplan = DialPlan::findByCccAsInt(ccc);
+			nationnal_significant_number = strstr(flatten, dialplan.getCountryCallingCode().c_str());
 			if (nationnal_significant_number) {
-				nationnal_significant_number +=strlen(linphone_dial_plan_get_country_calling_code(dialplan));
+				nationnal_significant_number +=strlen(dialplan.getCountryCallingCode().c_str());
 			}
 		} else if (flatten[0] =='+') {
 			ms_message ("Unknown ccc for e164 like number [%s]", flatten);
 			goto end;
 		} else {
-			dialplan = linphone_dial_plan_by_ccc(tmpproxy->dial_prefix); //copy dial plan;
+			dialplan = DialPlan::findByCcc(tmpproxy->dial_prefix); //copy dial plan;
 			if (tmpproxy->dial_prefix){
-				/*if (strcmp(tmpproxy->dial_prefix,linphone_dial_plan_get_country_calling_code(dialplan)) != 0){
+				if (strcmp(tmpproxy->dial_prefix,dialplan.getCountryCallingCode().c_str()) != 0){
 					//probably generic dialplan, preserving proxy dial prefix
-					strncpy(linphone_dial_plan_get_country_calling_code(dialplan),tmpproxy->dial_prefix,sizeof(linphone_dial_plan_get_country_calling_code(dialplan)));
-				}*/
+					dialplan.setCountryCallingCode(tmpproxy->dial_prefix);
+				}
 				/*it does not make sens to try replace icp with + if we are not sure from the country we are (I.E tmpproxy->dial_prefix==NULL)*/
-				if (strstr(flatten,linphone_dial_plan_get_international_call_prefix(dialplan))==flatten) {
-					char *e164 = replace_icp_with_plus(flatten,linphone_dial_plan_get_iso_country_code(dialplan));
+				if (strstr(flatten,dialplan.getInternationalCallPrefix().c_str())==flatten) {
+					char *e164 = replace_icp_with_plus(flatten,dialplan.getIsoCountryCode().c_str());
 					result = linphone_proxy_config_normalize_phone_number(tmpproxy,e164);
 					ms_free(e164);
 					goto end;
 				}
-
 			}
 			nationnal_significant_number=flatten;
 		}
-		ms_debug("Using dial plan '%s'",linphone_dial_plan_get_country(dialplan));
+		ms_debug("Using dial plan '%s'",dialplan.getCountry().c_str());
 
 		/*if proxy has a dial prefix, modify phonenumber accordingly*/
-		if (linphone_dial_plan_get_country_calling_code(dialplan) != NULL && linphone_dial_plan_get_country_calling_code(dialplan)[0]!='\0') {
+		if (dialplan.getCountryCallingCode().c_str()[0]!='\0') {
 			/* the number already starts with + or international prefix*/
 			/*0. keep at most national number significant digits */
 			char* nationnal_significant_number_start = nationnal_significant_number
 														+ MAX(0, (int)strlen(nationnal_significant_number)
-														- (int)linphone_dial_plan_get_national_number_length(dialplan));
-			ms_debug("Prefix not present. Keeping at most %d digits: %s", linphone_dial_plan_get_national_number_length(dialplan), nationnal_significant_number_start);
+														- (int)dialplan.getNationalNumberLength());
+			ms_debug("Prefix not present. Keeping at most %d digits: %s", dialplan.getNationalNumberLength(), nationnal_significant_number_start);
 
 			/*1. First prepend international calling prefix or +*/
 			/*2. Second add prefix*/
 			/*3. Finally add user digits */
 			result = ms_strdup_printf("%s%s%s"
-										, tmpproxy->dial_escape_plus ? linphone_dial_plan_get_international_call_prefix(dialplan) : "+"
-										, linphone_dial_plan_get_country_calling_code(dialplan)
+										, tmpproxy->dial_escape_plus ? dialplan.getInternationalCallPrefix().c_str() : "+"
+										, dialplan.getCountryCallingCode().c_str()
 										, nationnal_significant_number_start);
 			ms_debug("Prepended prefix resulted in %s", result);
 		}
