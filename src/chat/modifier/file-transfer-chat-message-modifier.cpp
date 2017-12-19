@@ -416,7 +416,7 @@ void FileTransferChatMessageModifier::processAuthRequestedUpload (const belle_si
 
 int FileTransferChatMessageModifier::uploadFile () {
 	if (httpRequest) {
-		lError() << "linphone_chat_room_upload_file(): there is already an upload in progress.";
+		lError() << "Unable to upload file: there is already an upload in progress.";
 		return -1;
 	}
 

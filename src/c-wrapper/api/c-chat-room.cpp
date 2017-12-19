@@ -132,10 +132,13 @@ LinphoneChatMessage *linphone_chat_room_create_message_2 (
 	bool_t is_incoming
 ) {
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(cr, message);
+
 	linphone_chat_message_set_external_body_url(msg, external_body_url ? ms_strdup(external_body_url) : NULL);
-	linphone_chat_message_set_time(msg, time);
-	linphone_chat_message_set_is_secured(msg, FALSE);
-	linphone_chat_message_set_state(msg, state);
+
+	LinphonePrivate::ChatMessagePrivate *dMsg = L_GET_PRIVATE_FROM_C_OBJECT(msg);
+	dMsg->setTime(time);
+	dMsg->setState(static_cast<LinphonePrivate::ChatMessage::State>(state));
+
 	return msg;
 }
 
