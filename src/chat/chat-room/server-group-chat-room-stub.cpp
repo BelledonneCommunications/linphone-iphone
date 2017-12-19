@@ -100,9 +100,12 @@ void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
 
 // =============================================================================
 
-ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op) :
-	ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
-	LocalConference(core, IdentityAddress(op->get_to()), nullptr) {}
+ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op)
+: ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
+LocalConference(core, IdentityAddress(op->get_to()), nullptr) {
+	L_D();
+	d->chatRoomListener = d;
+}
 
 ServerGroupChatRoom::ServerGroupChatRoom (
 	const shared_ptr<Core> &core,
