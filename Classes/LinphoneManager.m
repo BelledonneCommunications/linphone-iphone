@@ -1093,7 +1093,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		_silentPushCompletion = nil;
 	}
 #pragma deploymate pop
-	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
+	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_message_id(msg)];
 	const LinphoneAddress *peerAddress = linphone_chat_room_get_peer_address(room);
 	NSString *from = [FastAddressBook displayNameForAddress:peerAddress];
 
