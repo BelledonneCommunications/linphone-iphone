@@ -559,6 +559,12 @@ class JavaTranslator(object):
                 methodDict['jparams'] += 'L' + self.jni_path + self.translate_java_jni_enum_name(arg.type.desc) + ';'
                 methodDict['params_impl'] += 'j_' + argname
                 methodDict['jenums'].append({'enumName': argname, 'cEnumPrefix': 'linphone_' + arg.type.desc.name.to_snake_case()})
+            elif type(arg.type) is AbsApi.ListType:
+                #TODO #FIXME handle bctbx_list_t as callback param
+                methodDict['params'] += 'const bctbx_list_t *' + argname
+                methodDict['jparams'] += '[L' + self.jni_path + arg.type.containedTypeDesc.name + ';'
+                methodDict['params_impl'] += 'NULL'
+                #methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.containedTypeDesc.name, })
 
         methodDict['jparams'] += ')'
         if (methodDict['return'] == 'void'):
