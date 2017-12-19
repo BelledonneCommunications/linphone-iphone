@@ -159,7 +159,7 @@ shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 }
 
 ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () const {
-	return static_cast<CapabilitiesMask>(Capabilities::Conference);
+	return Capabilities::Conference;
 }
 
 bool ClientGroupChatRoom::hasBeenLeft () const {

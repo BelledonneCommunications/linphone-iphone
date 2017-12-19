@@ -40,8 +40,6 @@ public:
 		std::is_signed<typename std::underlying_type<T>::type>::value, int, unsigned int
 	>::type StorageType;
 
-	typedef std::integral_constant<int, 0> Zero;
-
 	// Zero initializer: Take 0 value or no value.
 	constexpr EnumMask (int *zero = 0) : mMask(0) {}
 

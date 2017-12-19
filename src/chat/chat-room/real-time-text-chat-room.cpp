@@ -107,7 +107,7 @@ RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const 
 	BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
 
 RealTimeTextChatRoom::CapabilitiesMask RealTimeTextChatRoom::getCapabilities () const {
-	return BasicChatRoom::getCapabilities() | static_cast<CapabilitiesMask>(Capabilities::RealTimeText);
+	return BasicChatRoom::getCapabilities() | Capabilities::RealTimeText;
 }
 
 uint32_t RealTimeTextChatRoom::getChar () const {

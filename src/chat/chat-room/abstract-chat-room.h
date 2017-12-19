@@ -20,6 +20,8 @@
 #ifndef _ABSTRACT_CHAT_ROOM_H_
 #define _ABSTRACT_CHAT_ROOM_H_
 
+#include "linphone/utils/enum-mask.h"
+
 #include "chat/chat-message/chat-message.h"
 #include "conference/conference-interface.h"
 #include "core/core-accessor.h"
@@ -43,7 +45,7 @@ public:
 	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 
-	typedef int CapabilitiesMask;
+	typedef EnumMask<Capabilities> CapabilitiesMask;
 
 	virtual const ChatRoomId &getChatRoomId () const = 0;
 

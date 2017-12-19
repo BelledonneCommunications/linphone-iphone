@@ -103,7 +103,7 @@ ServerGroupChatRoom::ServerGroupChatRoom (
 ) : ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(peerAddress, peerAddress)),
 	LocalConference(core, peerAddress, nullptr) {}
 
-int ServerGroupChatRoom::getCapabilities () const {
+ServerGroupChatRoom::CapabilitiesMask ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
