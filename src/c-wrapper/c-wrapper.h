@@ -47,6 +47,7 @@
 	F(AbstractChatRoom, BasicToClientGroupChatRoom) \
 	F(AbstractChatRoom, ChatRoom) \
 	F(AbstractChatRoom, ClientGroupChatRoom) \
+	F(AbstractChatRoom, ClientGroupToBasicChatRoom) \
 	F(AbstractChatRoom, RealTimeTextChatRoom) \
 	F(AbstractChatRoom, ServerGroupChatRoom) \
 	F(Call, LocalConferenceCall) \

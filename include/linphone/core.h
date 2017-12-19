@@ -4910,6 +4910,21 @@ LINPHONE_PUBLIC bool_t linphone_core_is_content_type_supported(const LinphoneCor
  */
 LINPHONE_PUBLIC void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type);
 
+/**
+ * Get the linphone specs value telling what functionalities the linphone client supports.
+ * @param[in] core LinphoneCore object
+ * @return The linphone specs telling what functionalities the linphone client supports
+ * @ingroup initializing
+ */
+const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
+
+/**
+ * Set the linphone specs value telling what functionalities the linphone client supports.
+ * @param[in] core LinphoneCore object
+ * @param[in] specs The linphone specs to set
+ * @ingroup initializing
+ */
+void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
 
 /**
  * @addtogroup chatroom

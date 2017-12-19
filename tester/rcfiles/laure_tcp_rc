@@ -5,7 +5,6 @@ sip_tls_port=5093
 default_proxy=0
 ping_with_options=0
 
-
 [auth_info_0]
 username=laure
 userid=laure

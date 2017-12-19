@@ -21,6 +21,8 @@
 #define _ABSTRACT_CHAT_ROOM_P_H_
 
 #include "abstract-chat-room.h"
+#include "chat/chat-room/chat-room-listener.h"
+#include "conference/session/call-session-listener.h"
 #include "object/object-p.h"
 
 // =============================================================================
@@ -31,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class SalOp;
 
-class AbstractChatRoomPrivate : public ObjectPrivate {
+class AbstractChatRoomPrivate : public ObjectPrivate, public ChatRoomListener, public CallSessionListener {
 public:
 	virtual void setCreationTime (time_t creationTime) = 0;
 	virtual void setLastUpdateTime (time_t lastUpdateTime) = 0;

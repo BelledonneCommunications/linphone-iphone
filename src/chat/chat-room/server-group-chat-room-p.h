@@ -21,14 +21,13 @@
 #define _SERVER_GROUP_CHAT_ROOM_P_H_
 
 #include "chat-room-p.h"
-#include "conference/session/call-session-listener.h"
 #include "server-group-chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ServerGroupChatRoomPrivate : public ChatRoomPrivate, public CallSessionListener {
+class ServerGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
 	std::shared_ptr<Participant> addParticipant (const IdentityAddress &participantAddress);
 	void removeParticipant (const std::shared_ptr<const Participant> &participant);
@@ -55,6 +54,11 @@ private:
 	void finalizeCreation ();
 	bool isAdminLeft () const;
 
+	// ChatRoomListener
+	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
+	void onChatRoomInsertInDatabaseRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
+	void onChatRoomDeleteRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
+
 	// CallSessionListener
 	void onCallSessionStateChanged (
 		const std::shared_ptr<const CallSession> &session,
@@ -63,6 +67,7 @@ private:
 	) override;
 
 	std::list<std::shared_ptr<Participant>> removedParticipants;
+	ChatRoomListener *chatRoomListener = this;
 
 	L_DECLARE_PUBLIC(ServerGroupChatRoom);
 };

@@ -39,7 +39,9 @@ public:
 	time_t getCreationTime () const override;
 	time_t getLastUpdateTime () const override;
 
+	CapabilitiesMask getCapabilities () const override;
 	State getState () const override;
+	bool hasBeenLeft () const override;
 
 	std::list<std::shared_ptr<EventLog>> getHistory (int nLast) const override;
 	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const override;
@@ -101,6 +103,8 @@ public:
 
 	void join () override;
 	void leave () override;
+
+	const std::shared_ptr<AbstractChatRoom> &getProxiedChatRoom () const;
 
 protected:
 	ProxyChatRoom (ProxyChatRoomPrivate &p, const std::shared_ptr<ChatRoom> &chatRoom);

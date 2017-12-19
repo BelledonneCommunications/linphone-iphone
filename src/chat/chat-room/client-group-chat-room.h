@@ -30,6 +30,8 @@ LINPHONE_BEGIN_NAMESPACE
 class ClientGroupChatRoomPrivate;
 
 class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
+	friend class ClientGroupToBasicChatRoomPrivate;
+
 public:
 	// TODO: Make me private.
 	ClientGroupChatRoom (

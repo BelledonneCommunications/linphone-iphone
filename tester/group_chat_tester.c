@@ -121,6 +121,7 @@ static void configure_core_for_conference (LinphoneCore *core, const char* usern
 	linphone_core_set_conference_factory_uri(core, factoryUri);
 	bctbx_free(factoryUri);
 	linphone_config_set_int(linphone_core_get_config(core), "sip", "use_cpim", 1);
+	linphone_core_set_linphone_specs(core, "groupchat");
 }
 
 static void _configure_core_for_conference (LinphoneCoreManager *lcm, LinphoneAddress *factoryAddr) {
@@ -1339,6 +1340,46 @@ static void multiple_is_composing_notification(void) {
 	linphone_core_manager_destroy(laure);
 }
 
+static void group_chat_room_fallback_to_basic_chat_room (void) {
+	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
+	bctbx_list_t *coresManagerList = NULL;
+	bctbx_list_t *participantsAddresses = NULL;
+	int dummy = 0;
+	coresManagerList = bctbx_list_append(coresManagerList, marie);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline);
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	linphone_core_set_linphone_specs(pauline->lc, NULL);
+	start_core_for_conference(coresManagerList);
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
+	stats initialMarieStats = marie->stat;
+
+	// Marie creates a new group chat room
+	LinphoneChatRoom *chatRoom = linphone_core_create_client_group_chat_room(marie->lc, "Fallback");
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateInstantiated, initialMarieStats.number_of_LinphoneChatRoomStateInstantiated + 1, 100));
+
+	// Add participants
+	linphone_chat_room_add_participants(chatRoom, participantsAddresses);
+
+	// Check that the group chat room creation fails and that a fallback to a basic chat room is done
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationFailed, initialMarieStats.number_of_LinphoneChatRoomStateCreationFailed + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(chatRoom), 1, int, "%d");
+	BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesBasic);
+	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
+	participantsAddresses = NULL;
+
+	// Clean db from chat room
+	linphone_core_delete_chat_room(marie->lc, chatRoom);
+
+	wait_for_list(coresList, &dummy, 1, 1000);
+	bctbx_list_free(coresList);
+	bctbx_list_free(coresManagerList);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Group chat room creation server", group_chat_room_creation_server, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send message", group_chat_room_send_message, "Server", "LeaksMemory"),
@@ -1355,7 +1396,9 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Send multiple is composing", multiple_is_composing_notification, "Server", "LeaksMemory")
+	TEST_TWO_TAGS("Send multiple is composing", multiple_is_composing_notification, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Create chat room with incompatible friend", group_chat_room_create_room_with_incompatible_friend, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Fallback to basic chat room", group_chat_room_fallback_to_basic_chat_room, "Server", "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {

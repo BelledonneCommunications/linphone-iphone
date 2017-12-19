@@ -65,9 +65,20 @@ time_t ProxyChatRoom::getLastUpdateTime () const {
 }
 
 // -----------------------------------------------------------------------------
- ProxyChatRoom::State ProxyChatRoom::getState () const {
+
+ProxyChatRoom::CapabilitiesMask ProxyChatRoom::getCapabilities () const {
+	L_D();
+	return d->chatRoom->getCapabilities() | static_cast<int>(ProxyChatRoom::Capabilities::Proxy);
+}
+
+ProxyChatRoom::State ProxyChatRoom::getState () const {
 	L_D();
 	return d->chatRoom->getState();
+}
+
+bool ProxyChatRoom::hasBeenLeft () const {
+	L_D();
+	return d->chatRoom->hasBeenLeft();
 }
 
 // -----------------------------------------------------------------------------
@@ -250,6 +261,13 @@ void ProxyChatRoom::join () {
 void ProxyChatRoom::leave () {
 	L_D();
 	d->chatRoom->leave();
+}
+
+// -----------------------------------------------------------------------------
+
+const shared_ptr<AbstractChatRoom> &ProxyChatRoom::getProxiedChatRoom () const {
+	L_D();
+	return d->chatRoom;
 }
 
 LINPHONE_END_NAMESPACE

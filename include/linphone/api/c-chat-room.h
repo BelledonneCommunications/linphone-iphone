@@ -313,6 +313,13 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_can_handle_participants (const Linphon
 LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_find_participant (const LinphoneChatRoom *cr, const LinphoneAddress *addr);
 
 /**
+ * Get the capabilities of a chat room.
+ * @param[in] cr A LinphoneChatRoom object
+ * @return The capabilities of the chat room
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCapabilities linphone_chat_room_get_capabilities (const LinphoneChatRoom *cr);
+
+/**
  * Get the conference address of the chat room.
  * @param[in] cr A LinphoneChatRoom object
  * @return The conference address of the chat room or NULL if this type of chat room is not conference based

@@ -170,6 +170,12 @@ L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 
 /**
+ * LinphoneChatRoomCapabilities is used to indicated the capabilities of a chat room.
+ * @ingroup chatroom
+ */
+L_DECLARE_C_ENUM_FIXED_VALUES(ChatRoomCapabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
+
+/**
  * LinphoneChatRoomState is used to indicate the current state of a chat room.
  * @ingroup chatroom
  */

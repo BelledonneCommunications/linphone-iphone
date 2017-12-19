@@ -42,6 +42,8 @@ class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, pub
 	friend class ProxyChatRoomPrivate;
 
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(AbstractChatRoom);
+
 	L_DECLARE_ENUM(Capabilities, L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES);
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_ROOM_STATE);
 

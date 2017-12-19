@@ -62,7 +62,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	csp.addCustomContactParameter("text");
 
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
-	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, this);
+	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, callSessionListener);
 	const Address &myAddress = q->getMe()->getAddress();
 	Address myCleanedAddress(myAddress);
 	myCleanedAddress.setUriParam("gr"); // Remove gr parameter for INVITE
@@ -79,6 +79,18 @@ void ClientGroupChatRoomPrivate::notifyReceived (const string &body) {
 void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
 	L_Q_T(RemoteConference, qConference);
 	qConference->getPrivate()->eventHandler->multipartNotifyReceived(body);
+}
+
+// -----------------------------------------------------------------------------
+
+void ClientGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
+	L_Q();
+	q->getCore()->getPrivate()->insertChatRoom(chatRoom);
+}
+
+void ClientGroupChatRoomPrivate::onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
+	L_Q();
+	q->getCore()->getPrivate()->insertChatRoomWithDb(chatRoom);
 }
 
 // -----------------------------------------------------------------------------
@@ -335,7 +347,7 @@ void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	dConference->focus->getPrivate()->clearDevices();
 	dConference->focus->getPrivate()->addDevice(addr);
 	d->chatRoomId = ChatRoomId(addr, d->chatRoomId.getLocalAddress());
-	getCore()->getPrivate()->insertChatRoom(getSharedFromThis());
+	d->chatRoomListener->onChatRoomInsertRequested(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
@@ -354,9 +366,8 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Created);
 
-	CorePrivate *dCore = getCore()->getPrivate();
-	dCore->insertChatRoomWithDb(getSharedFromThis());
-	dCore->mainDb->addEvent(make_shared<ConferenceEvent>(
+	d->chatRoomListener->onChatRoomInsertInDatabaseRequested(getSharedFromThis());
+	getCore()->getPrivate()->mainDb->addEvent(make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceCreated,
 		time(nullptr),
 		d->chatRoomId

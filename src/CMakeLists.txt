@@ -42,6 +42,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/chat-room/basic-chat-room.h
 	chat/chat-room/basic-to-client-group-chat-room.h
 	chat/chat-room/chat-room-id.h
+	chat/chat-room/chat-room-listener.h
 	chat/chat-room/chat-room-p.h
 	chat/chat-room/chat-room.h
 	chat/chat-room/client-group-chat-room-p.h

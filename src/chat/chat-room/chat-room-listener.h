@@ -1,5 +1,5 @@
 /*
- * basic-to-client-group-chat-room.h
+ * chat-room-listener.h
  * Copyright (C) 2010-2017 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,37 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_
-#define _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_
+#ifndef _CHAT_ROOM_LISTENER_H_
+#define _CHAT_ROOM_LISTENER_H_
 
-#include "proxy-chat-room.h"
+#include <memory>
+
+#include "chat/chat-room/abstract-chat-room.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ClientGroupToBasicChatRoomPrivate;
-
-class LINPHONE_PUBLIC ClientGroupToBasicChatRoom : public ProxyChatRoom {
+class ChatRoomListener {
 public:
-	ClientGroupToBasicChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
+	virtual ~ChatRoomListener () = default;
 
-	void addParticipant (
-		const IdentityAddress &participantAddress,
-		const CallSessionParams *params,
-		bool hasMedia
-	) override;
-	void addParticipants (
-		const std::list<IdentityAddress> &addresses,
-		const CallSessionParams *params,
-		bool hasMedia
-	) override;
-
-private:
-	L_DECLARE_PRIVATE(ClientGroupToBasicChatRoom);
-	L_DISABLE_COPY(ClientGroupToBasicChatRoom);
+	virtual void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) {}
+	virtual void onChatRoomInsertInDatabaseRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) {}
+	virtual void onChatRoomDeleteRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) {}
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CLIENT_GROUP_TO_BASIC_CHAT_ROOM_H_
+#endif // ifndef _CHAT_ROOM_LISTENER_H_

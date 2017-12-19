@@ -34,6 +34,7 @@
 #define L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES(F) \
 	F(Basic, 1 << 0) \
 	F(RealTimeText, 1 << 1) \
-	F(Conference, 1 << 2)
+	F(Conference, 1 << 2) \
+	F(Proxy, 1 << 3)
 
 #endif // ifndef _CHAT_ROOM_ENUMS_H_
