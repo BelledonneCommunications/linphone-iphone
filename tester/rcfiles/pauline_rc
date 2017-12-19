@@ -12,7 +12,6 @@ userid=pauline
 passwd=secret
 realm=sip.example.org
 
-
 [proxy_0]
 realm=sip.example.org
 reg_proxy=sip2.linphone.org;transport=tls

@@ -1020,4 +1020,45 @@ belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port
 	return sal->resolve_a(name, port, family, cb, data);
 }
 
+Sal *sal_op_get_sal(SalOp *op) {
+	return op->get_sal();
+}
+
+SalOp *sal_create_refer_op(Sal *sal) {
+	return new SalReferOp(sal);
+}
+
+void sal_release_op(SalOp *op) {
+	op->release();
+}
+
+void sal_op_set_from(SalOp *sal_refer_op, const char* from) {
+	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
+	referOp->set_from(from);
+}
+
+void sal_op_set_to(SalOp *sal_refer_op, const char* to) {
+	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
+	referOp->set_to(to);
+}
+
+void sal_op_send_refer(SalOp *sal_refer_op, SalAddress* refer_to) {
+	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
+	referOp->send_refer(refer_to);
+}
+
+void sal_set_user_pointer(Sal *sal, void *user_pointer) {
+	sal->set_user_pointer(user_pointer);
+}
+
+void *sal_get_user_pointer(Sal *sal) {
+	return sal->get_user_pointer();
+}
+
+void sal_set_call_refer_callback(Sal *sal, void (*OnReferCb)(SalOp *op, const SalAddress *referto)) {
+	struct Sal::Callbacks cbs = {NULL};
+	cbs.refer_received = OnReferCb;
+	sal->set_callbacks(&cbs);
+}
+
 }

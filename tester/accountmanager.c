@@ -97,6 +97,20 @@ Account *account_manager_get_account(AccountManager *m, const LinphoneAddress *i
 	return NULL;
 }
 
+LinphoneAddress *account_manager_get_identity_with_modified_identity(const LinphoneAddress *modified_identity){
+	AccountManager *m = account_manager_get();
+	bctbx_list_t *it;
+
+	for(it=m->accounts;it!=NULL;it=it->next){
+		Account *a=(Account*)it->data;
+		if (linphone_address_weak_equal(a->modified_identity,modified_identity)){
+			return a->identity;
+		}
+	}
+	return NULL;
+}
+
+
 static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const char *info){
 	Account *account=(Account*)linphone_core_get_user_data(lc);
 	switch(state){

@@ -14,7 +14,6 @@ userid=marie
 passwd=secret
 realm=sip.example.org
 
-
 [proxy_0]
 reg_proxy=sip.example.org;transport=tcp
 reg_route=sip.example.org;transport=tcp;lr
@@ -29,6 +28,8 @@ url="Paupoche" <sip:pauline@sip.example.org>
 pol=accept
 subscribe=0
 
+[misc]
+conference-factory-uri=sip:conference-factory@conf.example.org
 
 [rtp]
 audio_rtp_port=18070-28000

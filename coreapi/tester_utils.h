@@ -152,6 +152,16 @@ LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handli
 LINPHONE_PUBLIC SalMediaDescription * sal_call_get_final_media_description(SalOp *h);
 
 LINPHONE_PUBLIC belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data);
+
+LINPHONE_PUBLIC Sal *sal_op_get_sal(SalOp *op);
+LINPHONE_PUBLIC SalOp *sal_create_refer_op(Sal *sal);
+LINPHONE_PUBLIC void sal_release_op(SalOp *op);
+LINPHONE_PUBLIC void sal_op_set_from(SalOp *sal_refer_op, const char* from);
+LINPHONE_PUBLIC void sal_op_set_to(SalOp *sal_refer_op, const char* to);
+LINPHONE_PUBLIC void sal_op_send_refer(SalOp *sal_refer_op, SalAddress* refer_to);
+LINPHONE_PUBLIC void sal_set_user_pointer(Sal *sal, void *user_pointer);
+LINPHONE_PUBLIC void *sal_get_user_pointer(Sal *sal);
+LINPHONE_PUBLIC void sal_set_call_refer_callback(Sal *sal, void (*OnReferCb)(SalOp *op, const SalAddress *referto));
 #endif
 
 #ifdef __cplusplus

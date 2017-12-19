@@ -7041,10 +7041,6 @@ void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
 	lp_config_set_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", enable);
 }
 
-bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc) {
-	return lp_config_get_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", FALSE) ? TRUE : FALSE;
-}
-
 bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const LinphoneAddress *addr) {
 	const char *uri = linphone_core_get_conference_factory_uri(lc);
 	if (!uri)
@@ -7061,6 +7057,10 @@ bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const Linp
 	linphone_address_unref(factoryAddr);
 	linphone_address_unref(testedAddr);
 	return result;
+}
+
+bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc) {
+	return lp_config_get_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", FALSE) ? TRUE : FALSE;
 }
 
 void linphone_core_set_tls_cert(LinphoneCore *lc, const char *tls_cert) {

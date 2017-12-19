@@ -85,6 +85,7 @@ set(RC_FILES
 	rcfiles/account_creator_rc
 	rcfiles/assistant_create.rc
 	rcfiles/carddav_rc
+	rcfiles/chloe_rc
 	rcfiles/conference_focus_rc
 	rcfiles/empty_rc
 	rcfiles/friends_rc
