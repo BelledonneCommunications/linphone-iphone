@@ -989,9 +989,9 @@ static void group_chat_room_come_back_after_disconnection (void) {
 }
 
 static void group_chat_room_create_room_with_disconnected_friends (void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
-	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
+	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
 	int dummy = 0;
@@ -1002,13 +1002,16 @@ static void group_chat_room_create_room_with_disconnected_friends (void) {
 	stats initialPaulineStats = pauline->stat;
 	stats initialLaureStats = laure->stat;
 
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	start_core_for_conference(coresManagerList);
+
+	wait_for_list(coresList, &dummy, 1, 2000);
+
 	// Disconnect pauline and laure
 	linphone_core_set_network_reachable(pauline->lc, FALSE);
 	linphone_core_set_network_reachable(laure->lc, FALSE);
 
-	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
-
-	wait_for_list(coresList, &dummy, 1, 3000);
+	wait_for_list(coresList, &dummy, 1, 2000);
 
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
@@ -1298,9 +1301,9 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 }
 
 static void multiple_is_composing_notification(void) {
-	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
-	LinphoneCoreManager *laure = linphone_core_manager_new("laure_tcp_rc");
+	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
 	const bctbx_list_t *composing_addresses = NULL;
@@ -1308,6 +1311,7 @@ static void multiple_is_composing_notification(void) {
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	start_core_for_conference(coresManagerList);
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
 	stats initialMarieStats = marie->stat;
@@ -1434,6 +1438,8 @@ static void group_chat_room_create_room_with_incompatible_friend (void) {
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	// Removing Pauline groupchat capability
+	linphone_core_set_linphone_specs(pauline->lc, "");
 	start_core_for_conference(coresManagerList);
 
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
