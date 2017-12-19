@@ -65,7 +65,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, callSessionListener);
 	const Address &myAddress = q->getMe()->getAddress();
 	Address myCleanedAddress(myAddress);
-	myCleanedAddress.setUriParam("gr"); // Remove gr parameter for INVITE
+	myCleanedAddress.removeUriParam("gr"); // Remove gr parameter for INVITE
 	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, focus->getPrivate()->getDevices().front()->getAddress());
 	session->initiateOutgoing();
 	return session;
