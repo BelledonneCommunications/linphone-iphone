@@ -229,7 +229,7 @@ static constexpr string &blobToString (string &in) {
 			return id;
 		}
 
-		static const int capabilities = static_cast<int>(ChatRoom::Capabilities::Basic);
+		static const int capabilities = ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Basic);
 		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
 			", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 		*session << "INSERT INTO chat_room ("
@@ -261,7 +261,7 @@ static constexpr string &blobToString (string &in) {
 			", local=" << localSipAddressId << ").";
 
 		const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
-		const int &capabilities = static_cast<int>(chatRoom->getCapabilities());
+		const int &capabilities = chatRoom->getCapabilities();
 		const string &subject = chatRoom->getSubject();
 		const int &flags = chatRoom->hasBeenLeft();
 		*session << "INSERT INTO chat_room ("
@@ -2059,13 +2059,13 @@ static constexpr string &blobToString (string &in) {
 				? row.get<unsigned int>(7, 0)
 				: static_cast<unsigned int>(row.get<int>(7, 0));
 
-			if (capabilities & static_cast<int>(ChatRoom::Capabilities::Basic)) {
+			if (capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Basic)) {
 				chatRoom = core->getPrivate()->createBasicChatRoom(
 					chatRoomId,
-					capabilities & static_cast<int>(ChatRoom::Capabilities::RealTimeText)
+					capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::RealTimeText)
 				);
 				chatRoom->setSubject(subject);
-			} else if (capabilities & static_cast<int>(ChatRoom::Capabilities::Conference)) {
+			} else if (capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)) {
 				list<shared_ptr<Participant>> participants;
 
 				const long long &dbChatRoomId = d->resolveId(row, 0);
