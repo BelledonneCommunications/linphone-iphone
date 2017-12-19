@@ -109,7 +109,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 		bool isStart = true;
 		string sql;
 		for (const auto &filter : filters) {
-			if (!(mask & filter))
+			if (!mask.isSet(filter))
 				continue;
 
 			if (isStart) {
@@ -1505,7 +1505,7 @@ static constexpr string &blobToString (string &in) {
 		int count = 0;
 
 		DurationLogger durationLogger(
-			"Get events count with mask=" + Utils::toString(static_cast<int>(mask)) + "."
+			"Get events count with mask=" + Utils::toString(mask) + "."
 		);
 
 		L_BEGIN_LOG_EXCEPTION
@@ -1999,7 +1999,7 @@ static constexpr string &blobToString (string &in) {
 		DurationLogger durationLogger(
 			"Clean history of: (peer=" + chatRoomId.getPeerAddress().asString() +
 			", local=" + chatRoomId.getLocalAddress().asString() +
-			", mask=" + Utils::toString(static_cast<int>(mask)) + ")."
+			", mask=" + Utils::toString(mask) + ")."
 		);
 
 		L_BEGIN_LOG_EXCEPTION
@@ -2422,7 +2422,7 @@ static constexpr string &blobToString (string &in) {
 		return list<shared_ptr<EventLog>>();
 	}
 
-	int getHistorySize (const ChatRoomId &, FilterMask) const {
+	int MainDb::getHistorySize (const ChatRoomId &, FilterMask) const {
 		return 0;
 	}
 

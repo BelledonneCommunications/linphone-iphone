@@ -22,6 +22,8 @@
 
 #include <list>
 
+#include "linphone/utils/enum-mask.h"
+
 #include "abstract/abstract-db.h"
 #include "chat/chat-room/chat-room-id.h"
 #include "core/core-accessor.h"
@@ -49,7 +51,7 @@ public:
 		ConferenceInfoFilter = 0x4
 	};
 
-	typedef int FilterMask;
+	typedef EnumMask<Filter> FilterMask;
 
 	MainDb (const std::shared_ptr<Core> &core);
 
