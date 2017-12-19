@@ -1033,6 +1033,10 @@ static constexpr string &blobToString (string &in) {
 	}
 
 	void MainDbPrivate::updateModuleVersion (const string &name, unsigned int version) {
+		unsigned int oldVersion = getModuleVersion(name);
+		if (oldVersion == version)
+			return;
+
 		soci::session *session = dbSession.getBackendSession<soci::session>();
 		*session << "REPLACE INTO db_module_version (name, version) VALUES (:name, :version)",
 			soci::use(name), soci::use(version);
