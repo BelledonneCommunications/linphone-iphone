@@ -478,22 +478,23 @@ static void call_forking_with_push_notification_multiple(void){
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,5000));
 
 	/*marie2 accepts the call*/
-	linphone_call_accept(linphone_core_get_current_call(marie2->lc));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallConnected,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-
-	/*call to marie should be cancelled*/
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
-
-	liblinphone_tester_check_rtcp(pauline,marie2);
-
-	linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
-
-	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
-
+	if (BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie2->lc))) {
+		linphone_call_accept(linphone_core_get_current_call(marie2->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallConnected,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		
+		/*call to marie should be cancelled*/
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+		
+		liblinphone_tester_check_rtcp(pauline,marie2);
+		
+		linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+		
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+	}
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
