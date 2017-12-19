@@ -669,16 +669,21 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 			ms_message ("Unknown ccc for e164 like number [%s]", flatten);
 			goto end;
 		} else {
-			dialplan = DialPlan::findByCcc(tmpproxy->dial_prefix); //copy dial plan;
+			if (tmpproxy->dial_prefix) {
+				dialplan = DialPlan::findByCcc(tmpproxy->dial_prefix); //copy dial plan;
+			} else {
+				dialplan = DialPlan::MostCommon;
+			}
 			if (tmpproxy->dial_prefix){
 				if (strcmp(tmpproxy->dial_prefix,dialplan.getCountryCallingCode().c_str()) != 0){
 					//probably generic dialplan, preserving proxy dial prefix
 					dialplan.setCountryCallingCode(tmpproxy->dial_prefix);
 				}
+				
 				/*it does not make sens to try replace icp with + if we are not sure from the country we are (I.E tmpproxy->dial_prefix==NULL)*/
-				if (strstr(flatten,dialplan.getInternationalCallPrefix().c_str())==flatten) {
-					char *e164 = replace_icp_with_plus(flatten,dialplan.getIsoCountryCode().c_str());
-					result = linphone_proxy_config_normalize_phone_number(tmpproxy,e164);
+				if (strstr(flatten, dialplan.getInternationalCallPrefix().c_str()) == flatten) {
+					char *e164 = replace_icp_with_plus(flatten, dialplan.getInternationalCallPrefix().c_str());
+					result = linphone_proxy_config_normalize_phone_number(tmpproxy, e164);
 					ms_free(e164);
 					goto end;
 				}
