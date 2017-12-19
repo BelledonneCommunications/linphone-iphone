@@ -130,7 +130,7 @@ string AbstractDb::varcharPrimaryKeyStr (int length) const {
 
 	switch (d->backend) {
 		case Mysql:
-			return " VARCHAR(" + Utils::toString(length) + ") AUTO_INCREMENT PRIMARY KEY";
+			return " VARCHAR(" + Utils::toString(length) + ") PRIMARY KEY";
 		case Sqlite3:
 			return " VARCHAR(" + Utils::toString(length) + ") PRIMARY KEY";
 	}
