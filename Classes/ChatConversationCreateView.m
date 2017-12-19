@@ -92,7 +92,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onBackClick:(id)sender {
 	[_tableController.contactsGroup removeAllObjects];
-	if (_tableController.notFirstTime)
+	if (_tableController.isForEditing)
 		[PhoneMainView.instance popToView:ChatConversationInfoView.compositeViewDescription];
 	else
 		[PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
