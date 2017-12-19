@@ -83,6 +83,22 @@ void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
 
 // -----------------------------------------------------------------------------
 
+void ClientGroupChatRoomPrivate::setCallSessionListener (CallSessionListener *listener) {
+	L_Q();
+	L_Q_T(RemoteConference, qConference);
+	callSessionListener = listener;
+	shared_ptr<CallSession> session = qConference->getPrivate()->focus->getPrivate()->getSession();
+	if (session)
+		session->getPrivate()->setCallSessionListener(listener);
+	for (const auto &participant : q->getParticipants()) {
+		session = participant->getPrivate()->getSession();
+		if (session)
+			session->getPrivate()->setCallSessionListener(listener);
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 void ClientGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_Q();
 	q->getCore()->getPrivate()->insertChatRoom(chatRoom);

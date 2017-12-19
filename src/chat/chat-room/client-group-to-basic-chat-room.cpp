@@ -62,9 +62,9 @@ public:
 			return;
 		if ((newState == LinphoneCallError) && (cgcr->getState() == ChatRoom::State::CreationPending)
 			&& (invitedAddresses.size() == 1)) {
-			cgcr->getPrivate()->setCallSessionListener(cgcr->getPrivate());
-			cgcr->getPrivate()->setChatRoomListener(cgcr->getPrivate());
-			cgcr->getPrivate()->setState(ChatRoom::State::CreationFailed);
+			cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);
+			cgcr->getPrivate()->setCallSessionListener(nullptr);
+			cgcr->getPrivate()->setChatRoomListener(nullptr);
 			Core::deleteChatRoom(q->getSharedFromThis());
 			LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(q);
 			L_SET_CPP_PTR_FROM_C_OBJECT(lcr, cgcr->getCore()->getOrCreateBasicChatRoom(invitedAddresses.front()));

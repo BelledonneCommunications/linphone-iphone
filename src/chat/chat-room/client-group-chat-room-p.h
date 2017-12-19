@@ -36,7 +36,7 @@ public:
 	void notifyReceived (const std::string &body);
 	void multipartNotifyReceived (const std::string &body);
 
-	void setCallSessionListener (CallSessionListener *listener) { callSessionListener = listener; }
+	void setCallSessionListener (CallSessionListener *listener);
 	void setChatRoomListener (ChatRoomListener *listener) { chatRoomListener = listener; }
 
 	// ChatRoomListener

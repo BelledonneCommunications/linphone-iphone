@@ -67,6 +67,8 @@ public:
 	void updatedByRemote ();
 	virtual void updating (bool isUpdate);
 
+	void setCallSessionListener (CallSessionListener *listener) { this->listener = listener; }
+
 protected:
 	void init ();
 
