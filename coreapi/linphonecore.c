@@ -2143,7 +2143,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 
 		if (chatRoom) {
 			shared_ptr<ClientGroupChatRoom> cgcr;
-			if (chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Proxy))
+			if (chatRoom->getCapabilities() & ChatRoom::Capabilities::Proxy)
 				cgcr = static_pointer_cast<ClientGroupChatRoom>(
 					static_pointer_cast<ClientGroupToBasicChatRoom>(chatRoom)->getProxiedChatRoom());
 			else

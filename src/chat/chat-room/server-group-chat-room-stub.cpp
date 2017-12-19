@@ -64,6 +64,8 @@ void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &) 
 
 void ServerGroupChatRoomPrivate::setParticipantDevices (const IdentityAddress &addr, const list<IdentityAddress> &devices) {}
 
+void ServerGroupChatRoomPrivate::addCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &participantCompatible) {}
+
 // -----------------------------------------------------------------------------
 
 LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
@@ -79,6 +81,14 @@ void ServerGroupChatRoomPrivate::finalizeCreation () {}
 bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
 }
+
+// -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {}
+
+void ServerGroupChatRoomPrivate::onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {}
+
+void ServerGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {}
 
 // -----------------------------------------------------------------------------
 

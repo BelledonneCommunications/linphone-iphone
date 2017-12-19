@@ -244,6 +244,34 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsConferenceAddressGenerationCb linphone_chat_r
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_conference_address_generation (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceAddressGenerationCb cb);
 
 /**
+ * Get the participant device getting callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The participant device getting callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceFetchedCb linphone_chat_room_cbs_get_participant_device_fetched (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant device getting callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The participant device getting callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_fetched (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceFetchedCb cb);
+
+/**
+ * Get the participants capabilities callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The participants capabilities getting callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_chat_room_cbs_get_participants_capabilities_checked (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participants capabilities callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The participants capabilities callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participants_capabilities_checked (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb cb);
+
+/**
  * @}
  */
 

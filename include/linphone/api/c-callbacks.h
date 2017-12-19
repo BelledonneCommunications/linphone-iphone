@@ -235,6 +235,21 @@ typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom 
 typedef void (*LinphoneChatRoomCbsConferenceAddressGenerationCb) (LinphoneChatRoom *cr);
 
 /**
+ * Callback used when a group chat room server is adding participant to fetch all device information from participant.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] participantAddr #LinphoneAddress object
+ */
+typedef void (*LinphoneChatRoomCbsParticipantDeviceFetchedCb) (LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
+
+/**
+ * Callback used when a group chat room server is checking participants capabilities.
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] deviceAddr #LinphoneAddress object
+ * @param[in] participantsAddr \bctbx_list{LinphoneAddress}
+ */
+typedef void (*LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb) (LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsAddr);
+
+/**
  * @}
 **/
 

@@ -319,6 +319,8 @@ void liblinphone_tester_add_suites(void);
 
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias);
 void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies);
+LinphoneCoreManager* linphone_core_manager_create2(const char* rc_file, const char* phone_alias);
+LinphoneCoreManager* linphone_core_manager_create(const char* rc_file);
 LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias);
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);

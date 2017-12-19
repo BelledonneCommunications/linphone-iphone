@@ -317,7 +317,7 @@ LINPHONE_PUBLIC LinphoneParticipant *linphone_chat_room_find_participant (const 
  * @param[in] cr A LinphoneChatRoom object
  * @return The capabilities of the chat room
  */
-LINPHONE_PUBLIC LinphoneChatRoomCapabilities linphone_chat_room_get_capabilities (const LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneChatRoomCapabilitiesMask linphone_chat_room_get_capabilities (const LinphoneChatRoom *cr);
 
 /**
  * Get the conference address of the chat room.
@@ -403,6 +403,24 @@ LINPHONE_PUBLIC const bctbx_list_t * linphone_chat_room_get_composing_addresses(
  * @param[in] confAddr The conference address to be used by the group chat room
  */
 LINPHONE_PUBLIC void linphone_chat_room_set_conference_address (LinphoneChatRoom *cr, const LinphoneAddress *confAddr);
+
+/**
+ * Set the participant device. This function needs to be called from the
+ * LinphoneChatRoomCbsParticipantDeviceFetchedCb callback and only there.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] partAddr The participant address
+ * @param[in] partDevices \bctbx_list{LinphoneAddress} list of the participant devices to be used by the group chat room
+ */
+LINPHONE_PUBLIC void linphone_chat_room_set_participant_devices (LinphoneChatRoom *cr, const LinphoneAddress *partAddr, const bctbx_list_t *partDevices);
+
+/**
+ * Set the participant device. This function needs to be called from the
+ * LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb callback and only there.
+ * @param[in] cr A LinphoneChatRoom object
+ * @param[in] deviceAddr The device address
+ * @param[in] participantsCompatible \bctbx_list{LinphoneAddress}
+ */
+LINPHONE_PUBLIC void linphone_chat_room_add_compatible_participants (LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsCompatible);
 
 /**
  * Returns back pointer to #LinphoneCore object.

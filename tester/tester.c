@@ -426,10 +426,18 @@ void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies
 
 }
 
-LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
+LinphoneCoreManager* linphone_core_manager_create2(const char* rc_file, const char* phone_alias) {
 	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
-
 	linphone_core_manager_init(manager, rc_file, phone_alias);
+	return manager;
+}
+
+LinphoneCoreManager* linphone_core_manager_create(const char* rc_file) {
+	return linphone_core_manager_create2(rc_file, NULL);
+}
+
+LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
+	LinphoneCoreManager *manager = linphone_core_manager_create2(rc_file, phone_alias);
 	linphone_core_manager_start(manager, check_for_proxies);
 	return manager;
 }

@@ -46,6 +46,7 @@ public:
 
 	void setConferenceAddress (const IdentityAddress &conferenceAddress);
 	void setParticipantDevices (const IdentityAddress &addr, const std::list<IdentityAddress> &devices);
+	void addCompatibleParticipants (const IdentityAddress &deviceAddr, const std::list<IdentityAddress> &participantCompatible);
 
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 

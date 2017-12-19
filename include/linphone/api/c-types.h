@@ -118,6 +118,12 @@ typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
 typedef struct _LinphoneChatRoom LinphoneChatRoom;
 
 /**
+ * A mask of LinphoneChatRoomCapabilities
+ * @ingroup chatroom
+ */
+typedef int LinphoneChatRoomCapabilitiesMask;
+
+/**
  * An object to handle the callbacks for the handling a LinphoneChatRoom objects.
  * @ingroup chatroom
  */

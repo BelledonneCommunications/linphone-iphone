@@ -68,7 +68,7 @@ time_t ProxyChatRoom::getLastUpdateTime () const {
 
 ProxyChatRoom::CapabilitiesMask ProxyChatRoom::getCapabilities () const {
 	L_D();
-	return d->chatRoom->getCapabilities() | static_cast<int>(ProxyChatRoom::Capabilities::Proxy);
+	return d->chatRoom->getCapabilities() | ProxyChatRoom::Capabilities::Proxy;
 }
 
 ProxyChatRoom::State ProxyChatRoom::getState () const {

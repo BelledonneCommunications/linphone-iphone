@@ -46,7 +46,7 @@ public:
 	}
 
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override {
-		if (!(chatRoom->getCapabilities() & static_cast<int>(ChatRoom::Capabilities::Conference)))
+		if (!(chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference))
 			return;
 		static_pointer_cast<ClientGroupChatRoom>(chatRoom)->getPrivate()->onCallSessionSetReleased(session);
 	}
