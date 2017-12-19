@@ -1330,7 +1330,7 @@ static constexpr string &blobToString (string &in) {
 
 		*session <<
 			"CREATE TABLE IF NOT EXISTS db_module_version ("
-			"  name" + varcharPrimaryKeyStr(16) + ","
+			"  name" + varcharPrimaryKeyStr(255) + ","
 			"  version INT UNSIGNED NOT NULL"
 			") " + charset;
 
