@@ -58,7 +58,7 @@ INIT_WITH_COMMON_CF {
 
 	if (!linphone_core_video_display_enabled(LC))
 		return;
-
+	[LinphoneManager.instance setSpeakerEnabled:FALSE];
 	[self setEnabled:FALSE];
 	[waitView startAnimating];
 
