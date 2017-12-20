@@ -387,7 +387,9 @@
 	return UIInterfaceOrientationPortrait;
 }
 
-#define IPHONE_STATUSBAR_HEIGHT 20
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0)
+#define IPHONE_STATUSBAR_HEIGHT (IS_IPHONE_X ? 35 : 20)
 
 - (void)update:(UICompositeViewDescription *)description
 		tabBar:(NSNumber *)tabBar
@@ -571,6 +573,7 @@
 	// Compute frame for each elements
 	CGRect viewFrame = self.view.frame;
 	int origin = currentViewDescription.fullscreen ? 0 : IPHONE_STATUSBAR_HEIGHT;
+	
 
 	// 1. status bar - fixed size on top
 	CGRect statusBarFrame = self.statusBarView.frame;
