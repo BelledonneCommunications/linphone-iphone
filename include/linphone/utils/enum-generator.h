@@ -42,14 +42,51 @@ LINPHONE_BEGIN_NAMESPACE
 // Enum value declaration.
 #define L_DECLARE_ENUM_VALUE(...) L_DECLARE_ENUM_MACRO_CHOOSER(__VA_ARGS__)(__VA_ARGS__)
 
+#ifdef __cplusplus
+
+// `getEnumValue` helper.
+#define L_DECLARE_ENUM_VALUE_STR_CASE(ENUM_NAME, VALUE_NAME, ...) \
+	case ENUM_NAME::VALUE_NAME: return #ENUM_NAME "::" #VALUE_NAME;
+
+// Helper to get enum name.
+#define L_DECLARE_ENUM_NAME(NAME, ...) NAME,
+
+// Get names as string from enum values.
+#define L_GET_ENUM_VALUE_NAMES(VALUES) L_GET_HEAP(VALUES(L_DECLARE_ENUM_NAME))
+
+#endif
+
 // -----------------------------------------------------------------------------
 // Public API.
 // -----------------------------------------------------------------------------
 
+#ifdef __cplusplus
+
 #define L_DECLARE_ENUM(NAME, VALUES) \
 	enum class NAME { \
 		VALUES(L_DECLARE_ENUM_VALUE) \
-	};
+	}; \
+	friend constexpr const char *getResolvedEnumNameAsString (NAME) { \
+		return #NAME; \
+	} \
+	friend const char *getResolvedEnumValueAsString (NAME value) { \
+		switch (value) { \
+			L_APPLY_WITHOUT_COMMA(L_DECLARE_ENUM_VALUE_STR_CASE, NAME, L_GET_ENUM_VALUE_NAMES(VALUES)) \
+		} \
+		return ""; \
+	}
+
+template<typename T>
+inline const char *getEnumNameAsString () {
+	return getResolvedEnumNameAsString(T());
+}
+
+template<typename T>
+inline const char *getEnumValueAsString (T value) {
+	return getResolvedEnumValueAsString(value);
+}
+
+#endif
 
 #define L_C_ENUM_PREFIX Linphone
 
