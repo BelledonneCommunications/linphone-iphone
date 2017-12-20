@@ -206,8 +206,25 @@ static RootViewManager *rootViewManagerInstance = nil;
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
 }
 
+/* IPHONE X specific : hide the HomeIndcator when not used */
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0)
+#define IPHONE_STATUSBAR_HEIGHT (IS_IPHONE_X ? 35 : 20)
+
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	if(IS_IPHONE_X){
+		if(@available(iOS 11.0, *)) {
+			[self childViewControllerForHomeIndicatorAutoHidden];
+			[self prefersHomeIndicatorAutoHidden];
+			[self setNeedsUpdateOfHomeIndicatorAutoHidden];
+		}
+	}
+
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden{
+	return YES;
 }
 
 - (void)setVolumeHidden:(BOOL)hidden {
