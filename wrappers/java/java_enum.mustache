@@ -39,7 +39,7 @@ public enum {{className}} {
         {{/lines}}
       */
     {{/doc}}
-    {{name}}({{value}}){{commarorsemicolon}}
+    {{name}}({{{value}}}){{commarorsemicolon}}
 
 {{/values}}
     protected final int mValue;
@@ -51,7 +51,7 @@ public enum {{className}} {
     static public {{className}} fromInt(int value) throws RuntimeException {
         switch(value) {
         {{#values}}
-        case {{value}}: return {{name}};
+        case {{{value}}}: return {{name}};
         {{/values}}
         default:
             throw new RuntimeException("Unhandled enum value " + value + " for {{className}}");
