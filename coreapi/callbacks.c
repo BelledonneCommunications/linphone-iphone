@@ -727,7 +727,7 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 			} else {
 				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to()))));
 				if (!cr)
-					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr);
+					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr, FALSE);
 				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
 				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 				return;

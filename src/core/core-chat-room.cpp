@@ -150,7 +150,8 @@ shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subj
 		_linphone_client_group_chat_room_new(
 			getCCore(),
 			linphone_core_get_conference_factory_uri(getCCore()),
-			L_STRING_TO_C(subject)
+			L_STRING_TO_C(subject),
+			TRUE
 		)
 	);
 }
