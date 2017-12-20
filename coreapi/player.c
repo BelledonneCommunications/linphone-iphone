@@ -129,9 +129,13 @@ static bool_t call_player_check_state(LinphonePlayer *player, bool_t check_playe
 
 static void on_eof(void *user_data, MSFilter *f, unsigned int event_id, void *arg){
 	LinphonePlayer *player=(LinphonePlayer *)user_data;
-	LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
-	LinphonePlayerCbsEofReachedCb cb = linphone_player_cbs_get_eof_reached(cbs);
-	if (cb) cb(player);
+	switch (event_id){
+		case MS_PLAYER_EOF:
+			LinphonePlayerCbs *cbs = linphone_player_get_callbacks(player);
+			LinphonePlayerCbsEofReachedCb cb = linphone_player_cbs_get_eof_reached(cbs);
+			if (cb) cb(player);
+		break;
+	}
 }
 
 static int call_player_open(LinphonePlayer* player, const char *filename){
