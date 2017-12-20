@@ -21,6 +21,7 @@
 #include "client-group-to-basic-chat-room.h"
 #include "proxy-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
+#include "conference/session/call-session.h"
 #include "core/core-p.h"
 
 // =============================================================================
@@ -61,7 +62,7 @@ public:
 		if (!cgcr)
 			return;
 		if ((newState == LinphoneCallError) && (cgcr->getState() == ChatRoom::State::CreationPending)
-			&& (invitedAddresses.size() == 1)) {
+			&& (session->getReason() == LinphoneReasonNotAcceptable) && (invitedAddresses.size() == 1)) {
 			cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);
 			cgcr->getPrivate()->setCallSessionListener(nullptr);
 			cgcr->getPrivate()->setChatRoomListener(nullptr);
