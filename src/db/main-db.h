@@ -119,6 +119,11 @@ public:
 	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	void deleteChatRoom (const ChatRoomId &chatRoomId);
 
+	void migrateBasicToClientGroupChatRoom (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const ChatRoomId &newChatRoomId
+	);
+
 	// ---------------------------------------------------------------------------
 	// Other.
 	// ---------------------------------------------------------------------------

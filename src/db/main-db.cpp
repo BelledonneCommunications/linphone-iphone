@@ -2214,6 +2214,47 @@ static constexpr string &blobToString (string &in) {
 		L_END_LOG_EXCEPTION
 	}
 
+	void MainDb::migrateBasicToClientGroupChatRoom (
+		const shared_ptr<AbstractChatRoom> &chatRoom,
+		const ChatRoomId &newChatRoomId
+	) {
+		L_D();
+
+		if (!isConnected()) {
+			lWarning() << "Unable to migrate chat room. Not connected.";
+			return;
+		}
+
+		L_ASSERT(
+			chatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Proxy) &&
+			chatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Basic)
+		);
+
+		L_BEGIN_LOG_EXCEPTION
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
+
+		// TODO: Update events and chat messages. (Or wait signals.)
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
+		const long long &peerSipAddressId = d->insertSipAddress(newChatRoomId.getPeerAddress().asString());
+		const long long &localSipAddressId = d->insertSipAddress(newChatRoomId.getLocalAddress().asString());
+		const int &capabilities = ChatRoom::CapabilitiesMask({ ChatRoom::Capabilities::Conference });
+
+		*session << "UPDATE chat_room"
+			"  SET capabilities = :capabilities,"
+			"      peer_sip_address_id = :peerSipAddressId,"
+			"      local_sip_address_id = :localSipAddressId"
+			"  WHERE id = :chatRoomId", soci::use(capabilities), soci::use(peerSipAddressId),
+			soci::use(localSipAddressId), soci::use(dbChatRoomId);
+
+		// TODO: Participants.
+
+		L_END_LOG_EXCEPTION
+	}
+
 // -----------------------------------------------------------------------------
 
 	#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1
@@ -2389,7 +2430,7 @@ static constexpr string &blobToString (string &in) {
 		return false;
 	}
 
-	bool MainDb::updateEvent (const std::shared_ptr<EventLog> &) {
+	bool MainDb::updateEvent (const shared_ptr<EventLog> &) {
 		return false;
 	}
 
@@ -2424,7 +2465,7 @@ static constexpr string &blobToString (string &in) {
 		return nullptr;
 	}
 
-	list<std::shared_ptr<ChatMessage>> MainDb::findChatMessages (const ChatRoomId &, const std::string &) const {
+	list<shared_ptr<ChatMessage>> MainDb::findChatMessages (const ChatRoomId &, const string &) const {
 		return list<shared_ptr<ChatMessage>>();
 	}
 
@@ -2453,6 +2494,11 @@ static constexpr string &blobToString (string &in) {
 	void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &) {}
 
 	void MainDb::deleteChatRoom (const ChatRoomId &) {}
+
+	void MainDb::migrateBasicToClientGroupChatRoom (
+		const shared_ptr<AbstractChatRoom> &,
+		const ChatRoomId &newChatRoomId
+	) {}
 
 	void MainDb::cleanHistory (const ChatRoomId &, FilterMask) {}
 
