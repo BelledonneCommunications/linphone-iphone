@@ -383,11 +383,16 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	d->setState(ChatRoom::State::Created);
 
 	d->chatRoomListener->onChatRoomInsertInDatabaseRequested(getSharedFromThis());
+
+	// TODO: Bug. Event is inserted many times.
+	// Avoid this in the future. Deal with signals/slots system.
+	#if 0
 	getCore()->getPrivate()->mainDb->addEvent(make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceCreated,
 		time(nullptr),
 		d->chatRoomId
 	));
+	#endif
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
