@@ -1612,6 +1612,89 @@ static void group_chat_room_creation_successful_if_at_least_one_invited_particip
 	linphone_core_manager_destroy(laure);
 }
 
+static void group_chat_room_migrate_from_basic_chat_room (void) {
+	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
+	bctbx_list_t *coresManagerList = NULL;
+	int dummy = 0;
+	coresManagerList = bctbx_list_append(coresManagerList, marie);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline);
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	start_core_for_conference(coresManagerList);
+	stats initialMarieStats = marie->stat;
+	stats initialPaulineStats = pauline->stat;
+
+	// Create a basic chat room
+	LinphoneAddress *paulineAddr = linphone_address_new(linphone_core_get_identity(pauline->lc));
+	LinphoneChatRoom *marieCr = linphone_core_get_chat_room(marie->lc, paulineAddr);
+
+	// Send a message and check that a basic chat room is create on Pauline's side
+	LinphoneChatMessage *msg = linphone_chat_room_create_message(marieCr, "Hey Pauline!");
+	linphone_chat_message_send(msg);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 1000));
+	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
+	if (pauline->stat.last_received_chat_message)
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), "text/plain");
+	LinphoneChatRoom *paulineCr = linphone_core_get_chat_room(pauline->lc, linphone_chat_room_get_local_address(marieCr));
+	BC_ASSERT_PTR_NOT_NULL(paulineCr);
+	if (paulineCr)
+		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(paulineCr) & LinphoneChatRoomCapabilitiesBasic);
+
+	// Enable chat room migration and restart core for Marie
+	_linphone_chat_room_enable_migration(marieCr, TRUE);
+	coresList = bctbx_list_remove(coresList, marie->lc);
+	linphone_core_manager_restart(marie, TRUE);
+	bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, marie);
+	init_core_for_conference(tmpCoresManagerList);
+	bctbx_list_free(tmpCoresManagerList);
+	coresList = bctbx_list_append(coresList, marie->lc);
+
+	// Send a new message to initiate chat room migration
+	marieCr = linphone_core_get_chat_room(marie->lc, paulineAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieCr);
+	if (marieCr) {
+		initialMarieStats = marie->stat;
+		initialPaulineStats = pauline->stat;
+		BC_ASSERT_EQUAL(linphone_chat_room_get_capabilities(marieCr), LinphoneChatRoomCapabilitiesBasic | LinphoneChatRoomCapabilitiesProxy, int, "%d");
+		msg = linphone_chat_room_create_message(marieCr, "Did you migrate?");
+		linphone_chat_message_send(msg);
+		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marieCr) & LinphoneChatRoomCapabilitiesConference);
+		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 2, int, "%d");
+
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreationPending, initialPaulineStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreated, initialPaulineStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(paulineCr) & LinphoneChatRoomCapabilitiesConference);
+		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 1, int, "%d");
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 1000));
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 2, int, "%d");
+
+		msg = linphone_chat_room_create_message(marieCr, "Let's go drink a beer");
+		linphone_chat_message_send(msg);
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 2, 1000));
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 3, int, "%d");
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 3, int, "%d");
+
+		msg = linphone_chat_room_create_message(paulineCr, "Let's go drink mineral water instead");
+		linphone_chat_message_send(msg);
+		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, initialMarieStats.number_of_LinphoneMessageReceived + 1, 1000));
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 4, int, "%d");
+		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 4, int, "%d");
+	}
+
+	// Clean db from chat room
+	linphone_core_delete_chat_room(marie->lc, marieCr);
+	linphone_core_delete_chat_room(marie->lc, paulineCr);
+
+	wait_for_list(coresList, &dummy, 1, 1000);
+	bctbx_list_free(coresList);
+	bctbx_list_free(coresManagerList);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Group chat room creation server", group_chat_room_creation_server, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send message", group_chat_room_send_message, "Server", "LeaksMemory"),
@@ -1633,7 +1716,8 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Create chat room with incompatible friend", group_chat_room_create_room_with_incompatible_friend, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Fallback to basic chat room", group_chat_room_fallback_to_basic_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Group chat room creation fails if invited participants don't support it", group_chat_room_creation_fails_if_invited_participants_dont_support_it, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Group chat room creation succesful if at least one invited participant supports it", group_chat_room_creation_successful_if_at_least_one_invited_participant_supports_it, "Server", "LeaksMemory")
+	TEST_TWO_TAGS("Group chat room creation succesful if at least one invited participant supports it", group_chat_room_creation_successful_if_at_least_one_invited_participant_supports_it, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Migrate basic chat room to client group chat room", group_chat_room_migrate_from_basic_chat_room, "Server", "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {

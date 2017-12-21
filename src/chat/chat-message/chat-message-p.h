@@ -90,6 +90,8 @@ public:
 
 	void loadFileTransferUrlFromBodyToContent();
 
+	void setChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+
 	// -----------------------------------------------------------------------------
 	// Deprecated methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------

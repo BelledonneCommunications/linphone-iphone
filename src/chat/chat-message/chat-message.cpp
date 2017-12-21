@@ -312,6 +312,18 @@ void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
 	fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
 }
 
+void ChatMessagePrivate::setChatRoom (const shared_ptr<AbstractChatRoom> &cr) {
+	chatRoom = cr;
+	chatRoomId = cr->getChatRoomId();
+	if (direction == ChatMessage::Direction::Outgoing) {
+		fromAddress = chatRoomId.getLocalAddress();
+		toAddress = chatRoomId.getPeerAddress();
+	} else {
+		fromAddress = chatRoomId.getPeerAddress();
+		toAddress = chatRoomId.getLocalAddress();
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
@@ -672,16 +684,8 @@ ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMess
 	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
 	L_D();
 
-	d->chatRoom = chatRoom;
-	d->chatRoomId = chatRoom->getChatRoomId();
-	if (direction == Direction::Outgoing) {
-		d->fromAddress = d->chatRoomId.getLocalAddress();
-		d->toAddress = d->chatRoomId.getPeerAddress();
-	} else {
-		d->fromAddress = d->chatRoomId.getPeerAddress();
-		d->toAddress = d->chatRoomId.getLocalAddress();
-	}
 	d->direction = direction;
+	d->setChatRoom(chatRoom);
 }
 
 ChatMessage::~ChatMessage () {

@@ -21,6 +21,7 @@
 
 #include "address/identity-address.h"
 #include "chat/chat-room/basic-chat-room.h"
+#include "chat/chat-room/basic-to-client-group-chat-room.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
 #include "conference/participant.h"
@@ -63,22 +64,42 @@ static IdentityAddress getDefaultLocalAddress (const shared_ptr<Core> &core, con
 
 shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 	const ChatRoomId &chatRoomId,
-	bool isRtt
+	ChatRoom::CapabilitiesMask capabilities
 ) {
 	L_Q();
 
 	shared_ptr<AbstractChatRoom> chatRoom;
 
-	if (isRtt)
+	if (capabilities & ChatRoom::Capabilities::RealTimeText)
 		chatRoom.reset(new RealTimeTextChatRoom(q->getSharedFromThis(), chatRoomId));
-	else
-		chatRoom.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
+	else {
+		bool isToMigrate = (capabilities & ChatRoom::Capabilities::Migratable);
+		if (isToMigrate) {
+			shared_ptr<BasicChatRoom> bcr;
+			bcr.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
+			chatRoom.reset(new BasicToClientGroupChatRoom(bcr));
+		} else {
+			chatRoom.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
+		}
+	}
 
 	AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 	dChatRoom->setState(ChatRoom::State::Instantiated);
 	dChatRoom->setState(ChatRoom::State::Created);
 
 	return chatRoom;
+}
+
+shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const string &subject, bool fallback) {
+	L_Q();
+	return L_GET_CPP_PTR_FROM_C_OBJECT(
+		_linphone_client_group_chat_room_new(
+			q->getCCore(),
+			linphone_core_get_conference_factory_uri(q->getCCore()),
+			L_STRING_TO_C(subject),
+			fallback ? TRUE : FALSE
+		)
+	);
 }
 
 void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
@@ -93,6 +114,20 @@ void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) 
 void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
 	mainDb->insertChatRoom(chatRoom);
+}
+
+void CorePrivate::replaceChatRoom (const shared_ptr<AbstractChatRoom> &replacedChatRoom, const shared_ptr<AbstractChatRoom> &newChatRoom) {
+	const ChatRoomId &replacedChatRoomId = replacedChatRoom->getChatRoomId();
+	const ChatRoomId &newChatRoomId = newChatRoom->getChatRoomId();
+	if (replacedChatRoom->getCapabilities() & ChatRoom::Capabilities::Proxy) {
+		chatRooms.remove(newChatRoom);
+		chatRoomsById.erase(newChatRoomId);
+		chatRoomsById[newChatRoomId] = replacedChatRoom;
+	} else {
+		chatRooms.remove(replacedChatRoom);
+		chatRoomsById.erase(replacedChatRoomId);
+		chatRoomsById[newChatRoomId] = newChatRoom;
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -146,14 +181,8 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 }
 
 shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(
-		_linphone_client_group_chat_room_new(
-			getCCore(),
-			linphone_core_get_conference_factory_uri(getCCore()),
-			L_STRING_TO_C(subject),
-			TRUE
-		)
-	);
+	L_D();
+	return d->createClientGroupChatRoom(subject, true);
 }
 
 shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
@@ -163,7 +192,9 @@ shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &c
 	if (chatRoom)
 		return chatRoom;
 
-	chatRoom = d->createBasicChatRoom(chatRoomId, isRtt);
+	chatRoom = d->createBasicChatRoom(chatRoomId,
+		isRtt ? ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::RealTimeText) : ChatRoom::CapabilitiesMask()
+	);
 	d->insertChatRoom(chatRoom);
 	d->insertChatRoomWithDb(chatRoom);
 
@@ -179,7 +210,7 @@ shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const IdentityAddre
 
 	shared_ptr<AbstractChatRoom> chatRoom = d->createBasicChatRoom(
 		ChatRoomId(peerAddress, getDefaultLocalAddress(getSharedFromThis(), peerAddress)),
-		isRtt
+		isRtt ? ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::RealTimeText) : ChatRoom::CapabilitiesMask()
 	);
 	d->insertChatRoom(chatRoom);
 	d->insertChatRoomWithDb(chatRoom);

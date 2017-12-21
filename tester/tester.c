@@ -290,45 +290,11 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	}
 }
 
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#else
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias) {
+void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
 	LinphoneImNotifPolicy *im_notif_policy;
-	char *rc_path = NULL;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 
-	mgr->number_of_bcunit_error_at_creation =  bc_get_number_of_failures();
-	mgr->v_table.registration_state_changed=registration_state_changed;
-	mgr->v_table.auth_info_requested=auth_info_requested;
-	mgr->v_table.call_state_changed=call_state_changed;
-	mgr->v_table.text_received=text_message_received;
-	mgr->v_table.message_received=message_received;
-	mgr->v_table.is_composing_received=is_composing_received;
-	mgr->v_table.new_subscription_requested=new_subscription_requested;
-	mgr->v_table.notify_presence_received=notify_presence_received;
-	mgr->v_table.notify_presence_received_for_uri_or_tel=notify_presence_received_for_uri_or_tel;
-	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
-	mgr->v_table.info_received=info_message_received;
-	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
-	mgr->v_table.notify_received=linphone_notify_received;
-	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
-	mgr->v_table.configuring_status=linphone_configuration_status;
-	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
-	mgr->v_table.network_reachable=network_reachable;
-	mgr->v_table.dtmf_received=dtmf_received;
-	mgr->v_table.call_stats_updated=call_stats_updated;
-
-	mgr->phone_alias = phone_alias ? ms_strdup(phone_alias) : NULL;
-
-	reset_counters(&mgr->stat);
-	if (rc_file) rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
-	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_get_resource_dir_prefix(), rc_path, mgr);
+	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_get_resource_dir_prefix(), mgr->rc_path, mgr);
 	linphone_core_manager_check_accounts(mgr);
 	im_notif_policy = linphone_core_get_im_notif_policy(mgr->lc);
 	if (im_notif_policy != NULL) {
@@ -337,8 +303,6 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 		linphone_im_notif_policy_set_send_is_composing(im_notif_policy, TRUE);
 		linphone_im_notif_policy_set_recv_is_composing(im_notif_policy, TRUE);
 	}
-
-	manager_count++;
 
 #if TARGET_OS_IPHONE
 	linphone_core_set_ringer_device( mgr->lc, "AQ: Audio Queue Device");
@@ -369,7 +333,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 
 	if( manager_count >= 2){
 		char *recordpath = ms_strdup_printf("%s/record_for_lc_%p.wav",bc_tester_get_writable_dir_prefix(),mgr->lc);
-		ms_message("Manager for '%s' using files", rc_file ? rc_file : "--");
+		ms_message("Manager for '%s' using files", mgr->rc_path ? mgr->rc_path : "--");
 		linphone_core_set_use_files(mgr->lc, TRUE);
 		linphone_core_set_record_file(mgr->lc,recordpath);
 		ms_free(recordpath);
@@ -378,14 +342,52 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 	/*for now, we need the periodical updates facility to compute bandwidth measurements correctly during tests*/
 	linphone_core_enable_send_call_stats_periodical_updates(mgr->lc, TRUE);
+}
 
-	if (rc_path) ms_free(rc_path);
+#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
+#pragma GCC diagnostic push
+#endif
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias) {
+	mgr->number_of_bcunit_error_at_creation =  bc_get_number_of_failures();
+	mgr->v_table.registration_state_changed=registration_state_changed;
+	mgr->v_table.auth_info_requested=auth_info_requested;
+	mgr->v_table.call_state_changed=call_state_changed;
+	mgr->v_table.text_received=text_message_received;
+	mgr->v_table.message_received=message_received;
+	mgr->v_table.is_composing_received=is_composing_received;
+	mgr->v_table.new_subscription_requested=new_subscription_requested;
+	mgr->v_table.notify_presence_received=notify_presence_received;
+	mgr->v_table.notify_presence_received_for_uri_or_tel=notify_presence_received_for_uri_or_tel;
+	mgr->v_table.transfer_state_changed=linphone_transfer_state_changed;
+	mgr->v_table.info_received=info_message_received;
+	mgr->v_table.subscription_state_changed=linphone_subscription_state_change;
+	mgr->v_table.notify_received=linphone_notify_received;
+	mgr->v_table.publish_state_changed=linphone_publish_state_changed;
+	mgr->v_table.configuring_status=linphone_configuration_status;
+	mgr->v_table.call_encryption_changed=linphone_call_encryption_changed;
+	mgr->v_table.network_reachable=network_reachable;
+	mgr->v_table.dtmf_received=dtmf_received;
+	mgr->v_table.call_stats_updated=call_stats_updated;
+
+	mgr->phone_alias = phone_alias ? ms_strdup(phone_alias) : NULL;
+
+	reset_counters(&mgr->stat);
+	if (rc_file) mgr->rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
+
+	manager_count++;
+
+	linphone_core_manager_configure(mgr);
 }
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic pop
 #endif
 
-void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies) {
+void linphone_core_manager_start(LinphoneCoreManager *mgr, bool_t check_for_proxies) {
 	LinphoneProxyConfig* proxy;
 	int proxy_count;
 
@@ -436,13 +438,13 @@ LinphoneCoreManager* linphone_core_manager_create(const char* rc_file) {
 	return linphone_core_manager_create2(rc_file, NULL);
 }
 
-LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias) {
+LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, bool_t check_for_proxies, const char* phone_alias) {
 	LinphoneCoreManager *manager = linphone_core_manager_create2(rc_file, phone_alias);
 	linphone_core_manager_start(manager, check_for_proxies);
 	return manager;
 }
 
-LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies) {
+LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, bool_t check_for_proxies) {
 	return linphone_core_manager_new3(rc_file, check_for_proxies, NULL);
 }
 
@@ -454,7 +456,6 @@ LinphoneCoreManager* linphone_core_manager_new( const char* rc_file) {
 void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 	if (mgr->lc) {
 		const char *record_file = linphone_core_get_record_file(mgr->lc);
-		char *chatdb = ms_strdup(linphone_core_get_chat_database_path(mgr->lc));
 		if (!liblinphone_tester_keep_record_files && record_file && ortp_file_exist(record_file)==0) {
 			if ((bc_get_number_of_failures() - mgr->number_of_bcunit_error_at_creation)>0) {
 				ms_error("Test has failed, keeping recorded file [%s]", record_file);
@@ -464,16 +465,15 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 			}
 		}
 		linphone_core_unref(mgr->lc);
-		if (chatdb) {
-			if (ortp_file_exist(chatdb)==0) {
-				if (unlink(chatdb) != 0){
-					ms_error("Could not delete %s: %s", chatdb, strerror(errno));
-				}
-			}
-			ms_free(chatdb);
-		}
 		mgr->lc = NULL;
 	}
+}
+
+void linphone_core_manager_restart(LinphoneCoreManager *mgr, bool_t check_for_proxies) {
+	linphone_core_unref(mgr->lc);
+	linphone_core_manager_configure(mgr);
+	reset_counters(&mgr->stat);
+	linphone_core_manager_start(mgr, check_for_proxies);
 }
 
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {

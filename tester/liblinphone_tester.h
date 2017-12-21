@@ -299,6 +299,7 @@ typedef struct _LinphoneCoreManager {
 	bool_t decline_subscribe;
 	int number_of_bcunit_error_at_creation;
 	char* phone_alias;
+	char *rc_path;
 } LinphoneCoreManager;
 
 typedef struct _LinphoneConferenceServer {
@@ -318,13 +319,14 @@ typedef struct _LinphoneCallTestParams {
 void liblinphone_tester_add_suites(void);
 
 void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, const char* phone_alias);
-void linphone_core_manager_start(LinphoneCoreManager *mgr, int check_for_proxies);
+void linphone_core_manager_start(LinphoneCoreManager *mgr, bool_t check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_create2(const char* rc_file, const char* phone_alias);
 LinphoneCoreManager* linphone_core_manager_create(const char* rc_file);
-LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, int check_for_proxies, const char* phone_alias);
-LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, int check_for_proxies);
+LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, bool_t check_for_proxies, const char* phone_alias);
+LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, bool_t check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);
+void linphone_core_manager_restart(LinphoneCoreManager *mgr, bool_t check_for_proxies);
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr);
 void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);

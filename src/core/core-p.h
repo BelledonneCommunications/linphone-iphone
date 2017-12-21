@@ -20,6 +20,7 @@
 #ifndef _CORE_P_H_
 #define _CORE_P_H_
 
+#include "chat/chat-room/abstract-chat-room.h"
 #include "core.h"
 #include "db/main-db.h"
 #include "object/object-p.h"
@@ -58,7 +59,9 @@ public:
 
 	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<AbstractChatRoom> &chatRoom);
-	std::shared_ptr<AbstractChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt);
+	std::shared_ptr<AbstractChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, AbstractChatRoom::CapabilitiesMask capabilities);
+	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject, bool fallback = true);
+	void replaceChatRoom (const std::shared_ptr<AbstractChatRoom> &replacedChatRoom, const std::shared_ptr<AbstractChatRoom> &newChatRoom);
 
 	std::unique_ptr<MainDb> mainDb;
 

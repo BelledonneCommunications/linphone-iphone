@@ -19,6 +19,12 @@
 
 #include "basic-to-client-group-chat-room.h"
 #include "proxy-chat-room-p.h"
+#include "client-group-chat-room-p.h"
+#include "chat/chat-message/chat-message-p.h"
+#include "conference/participant.h"
+#include "conference/session/call-session.h"
+#include "core/core-p.h"
+#include "c-wrapper/c-wrapper.h"
 
 // =============================================================================
 
@@ -30,20 +36,84 @@ LINPHONE_BEGIN_NAMESPACE
 
 class BasicToClientGroupChatRoomPrivate : public ProxyChatRoomPrivate {
 public:
-	inline void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
-		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
-		// TODO: Try migration.
+	void onChatRoomInsertRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
+		L_Q();
+		// Insert the client group chat room temporarily
+		q->getCore()->getPrivate()->insertChatRoom(chatRoom);
 	}
 
-	inline void onChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) override {
-		ProxyChatRoomPrivate::onChatMessageReceived(chatMessage);
-		// TODO: Try migration.
+	void onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
+		// Do not insert the client group chat room in database, the migration will do it
 	}
+
+	void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
+		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
+		if (!linphone_core_get_conference_factory_uri(chatMessage->getCore()->getCCore())
+			|| (chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference)
+			|| clientGroupChatRoom
+		) {
+			return;
+		}
+		clientGroupChatRoom = static_pointer_cast<ClientGroupChatRoom>(
+			chatRoom->getCore()->getPrivate()->createClientGroupChatRoom(chatRoom->getSubject(), false)
+		);
+		clientGroupChatRoom->getPrivate()->setCallSessionListener(this);
+		clientGroupChatRoom->getPrivate()->setChatRoomListener(this);
+		clientGroupChatRoom->addParticipant(chatRoom->getPeerAddress(), nullptr, false);
+	}
+
+	void onCallSessionStateChanged (
+		const shared_ptr<const CallSession> &session,
+		LinphoneCallState newState,
+		const string &message
+	) override {
+		if (!clientGroupChatRoom)
+			return;
+		if ((newState == LinphoneCallError) && (clientGroupChatRoom->getState() == ChatRoom::State::CreationPending)) {
+			Core::deleteChatRoom(clientGroupChatRoom);
+			if (session->getReason() == LinphoneReasonNotAcceptable) {
+				clientGroupChatRoom = nullptr;
+				return;
+			}
+		}
+		clientGroupChatRoom->getPrivate()->onCallSessionStateChanged(session, newState, message);
+	}
+
+private:
+	shared_ptr<ClientGroupChatRoom> clientGroupChatRoom;
+
+	L_DECLARE_PUBLIC(BasicToClientGroupChatRoom);
 };
 
 // =============================================================================
 
 BasicToClientGroupChatRoom::BasicToClientGroupChatRoom (const shared_ptr<ChatRoom> &chatRoom) :
 	ProxyChatRoom(*new BasicToClientGroupChatRoomPrivate, chatRoom) {}
+
+shared_ptr<ChatMessage> BasicToClientGroupChatRoom::createChatMessage () {
+	shared_ptr<ChatMessage> msg = ProxyChatRoom::createChatMessage();
+	msg->getPrivate()->setChatRoom(getSharedFromThis());
+	return msg;
+}
+
+shared_ptr<ChatMessage> BasicToClientGroupChatRoom::createChatMessage (const string &text) {
+	shared_ptr<ChatMessage> msg = ProxyChatRoom::createChatMessage(text);
+	msg->getPrivate()->setChatRoom(getSharedFromThis());
+	return msg;
+}
+
+void BasicToClientGroupChatRoom::migrate(const std::shared_ptr<ClientGroupChatRoom> &clientGroupChatRoom, const std::shared_ptr<AbstractChatRoom> &chatRoom) {
+	clientGroupChatRoom->getCore()->getPrivate()->mainDb->migrateBasicToClientGroupChatRoom(chatRoom, clientGroupChatRoom);
+
+	if (chatRoom->getCapabilities() & ChatRoom::Capabilities::Proxy) {
+		shared_ptr<BasicToClientGroupChatRoom> btcgcr = static_pointer_cast<BasicToClientGroupChatRoom>(chatRoom);
+		btcgcr->getCore()->getPrivate()->replaceChatRoom(chatRoom, clientGroupChatRoom);
+		btcgcr->getPrivate()->chatRoom = clientGroupChatRoom;
+	} else {
+		LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
+		L_SET_CPP_PTR_FROM_C_OBJECT(lcr, clientGroupChatRoom);
+		clientGroupChatRoom->getCore()->getPrivate()->replaceChatRoom(chatRoom, clientGroupChatRoom);
+	}
+}
 
 LINPHONE_END_NAMESPACE

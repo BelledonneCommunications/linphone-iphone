@@ -30,9 +30,12 @@ LINPHONE_BEGIN_NAMESPACE
 class ClientGroupChatRoomPrivate;
 
 class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConference {
+	friend class BasicToClientGroupChatRoomPrivate;
 	friend class ClientGroupToBasicChatRoomPrivate;
 
 public:
+	L_OVERRIDE_SHARED_FROM_THIS(ClientGroupChatRoom);
+
 	// TODO: Make me private.
 	ClientGroupChatRoom (
 		const std::shared_ptr<Core> &core,

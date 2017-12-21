@@ -229,7 +229,9 @@ static constexpr string &blobToString (string &in) {
 			return id;
 		}
 
-		static const int capabilities = ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Basic);
+		static const int capabilities = ChatRoom::CapabilitiesMask(
+			{ ChatRoom::Capabilities::Basic, ChatRoom::Capabilities::Migratable }
+		);
 		lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
 			", local=" << localSipAddressId << ", capabilities=" << capabilities << ").";
 		*session << "INSERT INTO chat_room ("
@@ -2064,10 +2066,7 @@ static constexpr string &blobToString (string &in) {
 				: static_cast<unsigned int>(row.get<int>(7, 0));
 
 			if (capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Basic)) {
-				chatRoom = core->getPrivate()->createBasicChatRoom(
-					chatRoomId,
-					capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::RealTimeText)
-				);
+				chatRoom = core->getPrivate()->createBasicChatRoom(chatRoomId, capabilities);
 				chatRoom->setSubject(subject);
 			} else if (capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)) {
 				list<shared_ptr<Participant>> participants;
@@ -2269,6 +2268,32 @@ static constexpr string &blobToString (string &in) {
 		}
 
 		tr.commit();
+
+		L_END_LOG_EXCEPTION
+	}
+
+	void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable) {
+		L_D();
+
+		if (!isConnected()) {
+			lWarning() << "Unable to enable chat room migration. Not connected.";
+			return;
+		}
+
+		L_BEGIN_LOG_EXCEPTION
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		int capabilities = 0;
+		*session << "SELECT capabilities FROM chat_room WHERE id = :chatRoomId",
+			soci::use(dbChatRoomId), soci::into(capabilities);
+		if (enable)
+			capabilities |= static_cast<int>(ChatRoom::Capabilities::Migratable);
+		else
+			capabilities &= ~static_cast<int>(ChatRoom::Capabilities::Migratable);
+		*session << "UPDATE chat_room SET capabilities = :capabilities WHERE id = :chatRoomId",
+			soci::use(capabilities), soci::use(dbChatRoomId);
 
 		L_END_LOG_EXCEPTION
 	}

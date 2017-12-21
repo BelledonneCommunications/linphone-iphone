@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "call/call-p.h"
 #include "chat/chat-room/chat-room.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "conference/session/media-session-p.h"
 
@@ -153,4 +153,9 @@ int _linphone_call_get_main_text_stream_index (const LinphoneCall *call) {
 int _linphone_call_get_main_video_stream_index (const LinphoneCall *call) {
 	return L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::MediaSession>(
 		L_GET_PRIVATE_FROM_C_OBJECT(call)->getActiveSession()))->getMainVideoStreamIndex();
+}
+
+void _linphone_chat_room_enable_migration(LinphoneChatRoom *cr, bool_t enable) {
+	shared_ptr<AbstractChatRoom> acr = L_GET_CPP_PTR_FROM_C_OBJECT(cr);
+	L_GET_PRIVATE(acr->getCore())->mainDb->enableChatRoomMigration(acr->getChatRoomId(), !!enable);
 }

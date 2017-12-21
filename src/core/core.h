@@ -40,6 +40,8 @@ class IdentityAddress;
 class AbstractChatRoom;
 
 class LINPHONE_PUBLIC Core : public Object {
+	friend class BasicToClientGroupChatRoom;
+	friend class BasicToClientGroupChatRoomPrivate;
 	friend class CallPrivate;
 	friend class CallSession;
 	friend class ChatMessagePrivate;

@@ -35,6 +35,7 @@
 	F(Basic, 1 << 0) \
 	F(RealTimeText, 1 << 1) \
 	F(Conference, 1 << 2) \
-	F(Proxy, 1 << 3)
+	F(Proxy, 1 << 3) \
+	F(Migratable, 1 << 4)
 
 #endif // ifndef _CHAT_ROOM_ENUMS_H_
