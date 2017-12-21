@@ -179,7 +179,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidAppear:animated];
 
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-	//UIDevice.currentDevice.proximityMonitoringEnabled = !_speakerButton.enabled;
 	[[UIDevice currentDevice] setProximityMonitoringEnabled:TRUE];
 	
 	[PhoneMainView.instance setVolumeHidden:TRUE];
@@ -220,7 +219,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidDisappear:animated];
 
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
-	UIDevice.currentDevice.proximityMonitoringEnabled = NO;
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 
 	[PhoneMainView.instance fullScreen:false];
 	// Disable tap
