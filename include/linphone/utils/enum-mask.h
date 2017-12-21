@@ -40,9 +40,7 @@ public:
 		std::is_signed<typename std::underlying_type<T>::type>::value, int, unsigned int
 	>::type StorageType;
 
-	// Zero initializer: Take 0 value or no value.
-	constexpr EnumMask (int *zero = 0) : mMask(0) {}
-
+	constexpr EnumMask (int mask = 0) : mMask(mask) {}
 	constexpr EnumMask (T value) : mMask(StorageType(value)) {}
 	constexpr EnumMask (std::initializer_list<T> mask) : mMask(init(mask.begin(), mask.end())) {}
 
@@ -104,56 +102,38 @@ public:
 	}
 
 	constexpr EnumMask operator& (int mask) const {
-		return MaskBuilder(mMask & mask);
+		return mMask & mask;
 	}
 
 	constexpr EnumMask operator& (unsigned int mask) const {
-		return MaskBuilder(mMask & mask);
+		return mMask & mask;
 	}
 
 	constexpr EnumMask operator& (T mask) const {
-		return MaskBuilder(mMask & StorageType(mask));
+		return mMask & StorageType(mask);
 	}
 
 	constexpr EnumMask operator| (EnumMask mask) const {
-		return MaskBuilder(mMask | mask.mMask);
+		return mMask | mask.mMask;
 	}
 
 	constexpr EnumMask operator| (T mask) const {
-		return MaskBuilder(mMask | StorageType(mask));
+		return mMask | StorageType(mask);
 	}
 
 	constexpr EnumMask operator^ (EnumMask mask) const {
-		return MaskBuilder(mMask ^ mask.mMask);
+		return mMask ^ mask.mMask;
 	}
 
 	constexpr EnumMask operator^ (T mask) const {
-		return MaskBuilder(mMask ^ StorageType(mask));
+		return mMask ^ StorageType(mask);
 	}
 
 	constexpr EnumMask operator~ () const {
-		return MaskBuilder(~mMask);
+		return ~mMask;
 	}
 
 private:
-	class MaskBuilder {
-	public:
-		constexpr MaskBuilder (int mask) : mMask(mask) {}
-
-		constexpr operator int () const {
-			return mMask;
-		}
-
-		constexpr operator unsigned int () const {
-			return static_cast<unsigned int>(mMask);
-		}
-
-	private:
-		int mMask;
-	};
-
-	constexpr EnumMask (MaskBuilder builder) : mMask(builder) {}
-
 	constexpr bool isSet (StorageType value) const {
 		return (mMask & value) == value && (value || mMask == 0);
 	}
