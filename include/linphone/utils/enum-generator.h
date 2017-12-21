@@ -66,10 +66,10 @@ LINPHONE_BEGIN_NAMESPACE
 	enum class NAME { \
 		VALUES(L_DECLARE_ENUM_VALUE) \
 	}; \
-	friend constexpr const char *getResolvedEnumNameAsString (NAME) { \
+	friend constexpr const char *getEnumNameAsString (NAME) { \
 		return #NAME; \
 	} \
-	friend const char *getResolvedEnumValueAsString (NAME value) { \
+	friend const char *getEnumValueAsString (const NAME &value) { \
 		switch (value) { \
 			L_APPLY_WITHOUT_COMMA(L_DECLARE_ENUM_VALUE_STR_CASE, NAME, L_GET_ENUM_VALUE_NAMES(VALUES)) \
 		} \
@@ -77,14 +77,12 @@ LINPHONE_BEGIN_NAMESPACE
 	}
 
 template<typename T>
-inline const char *getEnumNameAsString () {
-	return getResolvedEnumNameAsString(T());
-}
+inline char getEnumValueAsString (const T &) { return 0; }
 
 template<typename T>
-inline const char *getEnumValueAsString (T value) {
-	return getResolvedEnumValueAsString(value);
-}
+struct IsDefinedEnum {
+	enum { value = sizeof(getEnumValueAsString(std::declval<T>())) == sizeof(const char *) };
+};
 
 #endif
 

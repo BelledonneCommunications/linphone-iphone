@@ -81,8 +81,8 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	)
 		return;
 
-	lInfo() << "Chat message " << this << ": moving from " << getEnumValueAsString(state) <<
-		" to " << getEnumValueAsString(s);
+	lInfo() << "Chat message " << this << ": moving from " << Utils::toString(state) <<
+		" to " << Utils::toString(s);
 	state = s;
 
 	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
