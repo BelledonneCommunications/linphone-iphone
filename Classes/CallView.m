@@ -179,8 +179,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidAppear:animated];
 
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-	UIDevice.currentDevice.proximityMonitoringEnabled = !_speakerButton.enabled;
-
+	//UIDevice.currentDevice.proximityMonitoringEnabled = !_speakerButton.enabled;
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:TRUE];
+	
 	[PhoneMainView.instance setVolumeHidden:TRUE];
 	hiddenVolume = TRUE;
 
@@ -192,7 +193,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
+[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 	[self disableVideoDisplay:TRUE animated:NO];
 
 	if (hideControlsTimer != nil) {
