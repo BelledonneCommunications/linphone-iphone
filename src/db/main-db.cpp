@@ -2215,8 +2215,8 @@ static constexpr string &blobToString (string &in) {
 	}
 
 	void MainDb::migrateBasicToClientGroupChatRoom (
-		const shared_ptr<AbstractChatRoom> &chatRoom,
-		const ChatRoomId &newChatRoomId
+		const shared_ptr<AbstractChatRoom> &basicChatRoom,
+		const shared_ptr<AbstractChatRoom> &clientGroupChatRoom
 	) {
 		L_D();
 
@@ -2225,32 +2225,50 @@ static constexpr string &blobToString (string &in) {
 			return;
 		}
 
-		L_ASSERT(
-			chatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Proxy) &&
-			chatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Basic)
-		);
+		L_ASSERT(basicChatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Basic));
+		L_ASSERT(clientGroupChatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Conference));
 
 		L_BEGIN_LOG_EXCEPTION
 
-		const long long &dbChatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
+		const long long &dbChatRoomId = d->selectChatRoomId(basicChatRoom->getChatRoomId());
 
 		// TODO: Update events and chat messages. (Or wait signals.)
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
 
+		const ChatRoomId &newChatRoomId = clientGroupChatRoom->getChatRoomId();
 		const long long &peerSipAddressId = d->insertSipAddress(newChatRoomId.getPeerAddress().asString());
 		const long long &localSipAddressId = d->insertSipAddress(newChatRoomId.getLocalAddress().asString());
-		const int &capabilities = ChatRoom::CapabilitiesMask({ ChatRoom::Capabilities::Conference });
+		const int &capabilities = clientGroupChatRoom->getCapabilities();
 
 		*session << "UPDATE chat_room"
 			"  SET capabilities = :capabilities,"
-			"      peer_sip_address_id = :peerSipAddressId,"
-			"      local_sip_address_id = :localSipAddressId"
+			"    peer_sip_address_id = :peerSipAddressId,"
+			"    local_sip_address_id = :localSipAddressId"
 			"  WHERE id = :chatRoomId", soci::use(capabilities), soci::use(peerSipAddressId),
 			soci::use(localSipAddressId), soci::use(dbChatRoomId);
 
-		// TODO: Participants.
+		shared_ptr<Participant> me = clientGroupChatRoom->getMe();
+		long long meId = d->insertChatRoomParticipant(
+			dbChatRoomId,
+			d->insertSipAddress(me->getAddress().asString()),
+			true
+		);
+		for (const auto &device : me->getPrivate()->getDevices())
+			d->insertChatRoomParticipantDevice(meId, d->insertSipAddress(device->getAddress().asString()));
+
+		for (const auto &participant : clientGroupChatRoom->getParticipants()) {
+			long long participantId = d->insertChatRoomParticipant(
+				dbChatRoomId,
+				d->insertSipAddress(participant->getAddress().asString()),
+				true
+			);
+			for (const auto &device : participant->getPrivate()->getDevices())
+				d->insertChatRoomParticipantDevice(participantId, d->insertSipAddress(device->getAddress().asString()));
+		}
+
+		tr.commit();
 
 		L_END_LOG_EXCEPTION
 	}
@@ -2497,7 +2515,7 @@ static constexpr string &blobToString (string &in) {
 
 	void MainDb::migrateBasicToClientGroupChatRoom (
 		const shared_ptr<AbstractChatRoom> &,
-		const ChatRoomId &newChatRoomId
+		const shared_ptr<AbstractChatRoom> &
 	) {}
 
 	void MainDb::cleanHistory (const ChatRoomId &, FilterMask) {}
