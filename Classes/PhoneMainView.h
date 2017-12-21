@@ -106,4 +106,6 @@
 - (void)updateApplicationBadgeNumber;
 + (PhoneMainView*) instance;
 
+- (BOOL)isIphoneXDevice;
+
 @end

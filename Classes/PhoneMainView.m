@@ -211,9 +211,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 #define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0)
 #define IPHONE_STATUSBAR_HEIGHT (IS_IPHONE_X ? 35 : 20)
 
+- (BOOL)isIphoneXDevice{
+	return IS_IPHONE_X;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
-	if(IS_IPHONE_X){
+	if([self isIphoneXDevice]){
 		if(@available(iOS 11.0, *)) {
 			[self childViewControllerForHomeIndicatorAutoHidden];
 			[self prefersHomeIndicatorAutoHidden];

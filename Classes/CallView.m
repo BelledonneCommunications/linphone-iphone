@@ -358,7 +358,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		hideControlsTimer = nil;
 	}
 
-	[PhoneMainView.instance fullScreen:!disabled];
+	if(![PhoneMainView.instance isIphoneXDevice]){
+		[PhoneMainView.instance fullScreen:!disabled];
+	}
 	[PhoneMainView.instance hideTabBar:!disabled];
 
 	if (!disabled) {
