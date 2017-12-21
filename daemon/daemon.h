@@ -160,6 +160,11 @@ public:
 		const LinphoneCallStats *stats, bool event);
 };
 
+class CallPlayingStatsResponse: public Response {
+public:
+	CallPlayingStatsResponse(Daemon *daemon, int id);
+}; 
+
 class DtmfResponse: public Response {
 public:
 	DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf);
@@ -230,7 +235,7 @@ public:
 	void dumpCommandsHelpHtml();
 	void enableStatsEvents(bool enabled);
 	void enableLSD(bool enabled);
-
+	void callPlayingComplete(int id);
 	void setAutoVideo( bool enabled ){ mAutoVideo = enabled; }
 	inline bool autoVideo(){ return mAutoVideo; }
 

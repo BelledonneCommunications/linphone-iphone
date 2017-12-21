@@ -79,6 +79,8 @@ set(DAEMON_SOURCE_FILES
 	commands/msfilter-add-fmtp.h
 	commands/netsim.cc
 	commands/netsim.h
+	commands/play.cc
+	commands/play.h
 	commands/play-wav.cc
 	commands/play-wav.h
 	commands/pop-event.cc

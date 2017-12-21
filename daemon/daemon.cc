@@ -79,6 +79,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "commands/netsim.h"
 #include "commands/cn.h"
 #include "commands/version.h"
+#include "commands/play.h"
 
 #include "private.h"
 using namespace std;
@@ -210,6 +211,15 @@ AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* 
 	}
 
 	printCallStatsHelper(ostr, stats, prefix);
+
+	setBody(ostr.str().c_str());
+}
+
+CallPlayingStatsResponse::CallPlayingStatsResponse(Daemon* daemon, int id) {
+	ostringstream ostr;
+ 
+	ostr << "Event-type: call-playing-complete\n";
+	ostr << "Id: " << id << "\n";
 
 	setBody(ostr.str().c_str());
 }
@@ -486,6 +496,10 @@ void Daemon::initCommands() {
 	mCommands.push_back(new ConfigSetCommand());
 	mCommands.push_back(new NetsimCommand());
 	mCommands.push_back(new CNCommand());
+	mCommands.push_back(new IncallPlayerStartCommand());
+	mCommands.push_back(new IncallPlayerStopCommand());
+	mCommands.push_back(new IncallPlayerPauseCommand());
+	mCommands.push_back(new IncallPlayerResumeCommand());
 	mCommands.sort(compareCommands);
 }
 
@@ -522,6 +536,10 @@ void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats
 			mEventQueue.push(new CallStatsResponse(this, call, stats, true));
 		}
 	}
+}
+
+void Daemon::callPlayingComplete(int id) {
+	mEventQueue.push(new CallPlayingStatsResponse(this, id));
 }
 
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {
