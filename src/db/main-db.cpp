@@ -2010,11 +2010,15 @@ static constexpr string &blobToString (string &in) {
 
 		L_BEGIN_LOG_EXCEPTION
 
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
 		d->invalidConferenceEventsFromQuery(query, dbChatRoomId);
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		*session << "DELETE FROM event WHERE id IN (" + query + ")", soci::use(dbChatRoomId);
+
+		tr.commit();
 
 		L_END_LOG_EXCEPTION
 	}
@@ -2044,6 +2048,7 @@ static constexpr string &blobToString (string &in) {
 		L_BEGIN_LOG_EXCEPTION
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
 
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
@@ -2152,6 +2157,8 @@ static constexpr string &blobToString (string &in) {
 			chatRooms.push_back(chatRoom);
 		}
 
+		tr.commit();
+
 		return chatRooms;
 
 		L_END_LOG_EXCEPTION
@@ -2200,6 +2207,9 @@ static constexpr string &blobToString (string &in) {
 
 		L_BEGIN_LOG_EXCEPTION
 
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
 		d->invalidConferenceEventsFromQuery(
@@ -2207,8 +2217,9 @@ static constexpr string &blobToString (string &in) {
 			dbChatRoomId
 		);
 
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		*session << "DELETE FROM chat_room WHERE id = :chatRoomId", soci::use(dbChatRoomId);
+
+		tr.commit();
 
 		L_END_LOG_EXCEPTION
 	}
@@ -2229,12 +2240,12 @@ static constexpr string &blobToString (string &in) {
 
 		L_BEGIN_LOG_EXCEPTION
 
-		const long long &dbChatRoomId = d->selectChatRoomId(basicChatRoom->getChatRoomId());
-
 		// TODO: Update events and chat messages. (Or wait signals.)
 
 		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		soci::transaction tr(*session);
+
+		const long long &dbChatRoomId = d->selectChatRoomId(basicChatRoom->getChatRoomId());
 
 		const ChatRoomId &newChatRoomId = clientGroupChatRoom->getChatRoomId();
 		const long long &peerSipAddressId = d->insertSipAddress(newChatRoomId.getPeerAddress().asString());
@@ -2282,9 +2293,11 @@ static constexpr string &blobToString (string &in) {
 
 		L_BEGIN_LOG_EXCEPTION
 
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		soci::transaction tr(*session);
+
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
 		int capabilities = 0;
 		*session << "SELECT capabilities FROM chat_room WHERE id = :chatRoomId",
 			soci::use(dbChatRoomId), soci::into(capabilities);
@@ -2294,6 +2307,8 @@ static constexpr string &blobToString (string &in) {
 			capabilities &= ~static_cast<int>(ChatRoom::Capabilities::Migratable);
 		*session << "UPDATE chat_room SET capabilities = :capabilities WHERE id = :chatRoomId",
 			soci::use(capabilities), soci::use(dbChatRoomId);
+
+		tr.commit();
 
 		L_END_LOG_EXCEPTION
 	}
