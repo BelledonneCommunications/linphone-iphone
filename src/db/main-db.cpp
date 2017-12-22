@@ -213,7 +213,7 @@ static constexpr string &blobToString (string &in) {
 		return q->getLastInsertId();
 	}
 
-	long long MainDbPrivate::insertOrUpdateBasicChatRoom (
+	long long MainDbPrivate::insertOrUpdateImportedBasicChatRoom (
 		long long peerSipAddressId,
 		long long localSipAddressId,
 		const tm &creationTime
@@ -2435,7 +2435,7 @@ static constexpr string &blobToString (string &in) {
 					const long long &eventId = getLastInsertId();
 					const long long &localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
 					const long long &remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-					const long long &chatRoomId = d->insertOrUpdateBasicChatRoom(
+					const long long &chatRoomId = d->insertOrUpdateImportedBasicChatRoom(
 						remoteSipAddressId,
 						localSipAddressId,
 						creationTime
