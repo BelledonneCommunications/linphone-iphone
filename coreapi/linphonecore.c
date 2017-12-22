@@ -2136,10 +2136,14 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
 		const LinphoneAddress *from = linphone_event_get_from(lev);
 
-		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
-			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
-			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
-		));
+		// TODO: remove when using signals
+		LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
+			L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
+				IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
+				IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
+			))
+		);
+		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(cr);
 
 		if (chatRoom) {
 			shared_ptr<ClientGroupChatRoom> cgcr;
@@ -2148,6 +2152,8 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 					static_pointer_cast<ClientGroupToBasicChatRoom>(chatRoom)->getProxiedChatRoom());
 			else
 				cgcr = static_pointer_cast<ClientGroupChatRoom>(chatRoom);
+
+			L_SET_CPP_PTR_FROM_C_OBJECT(cr, cgcr);
 			if (linphone_content_is_multipart(body)) {
 				// TODO : migrate to c++ 'Content'.
 				int i = 0;
@@ -2158,6 +2164,8 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 				}
 			} else
 				L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(body));
+
+			L_SET_CPP_PTR_FROM_C_OBJECT(cr, chatRoom);
 		}
 	}
 }

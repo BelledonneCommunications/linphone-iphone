@@ -52,7 +52,7 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_sent(cbs);
+	LinphoneChatRoomCbsChatMessageSentCb cb = linphone_chat_room_cbs_get_chat_message_sent(cbs);
 
 	// TODO: server currently don't stock message, remove condition in the future.
 	if (cb && !linphone_core_conference_server_enabled(q->getCore()->getCCore())) {

@@ -38,6 +38,7 @@
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
+#include "chat/chat-room/client-group-to-basic-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
 #include "content/content-type.h"
@@ -131,10 +132,24 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 		localAddress = op->get_to();
 	}
 
-	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-		LinphonePrivate::ChatRoomId(LinphonePrivate::IdentityAddress(peerAddress), LinphonePrivate::IdentityAddress(localAddress))
+	// TODO: remove when using signals
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(
+		L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+			LinphonePrivate::ChatRoomId(LinphonePrivate::IdentityAddress(peerAddress),
+			LinphonePrivate::IdentityAddress(localAddress)
+		))
 	);
+	if (!cr)
+		return LinphoneReasonNone;
+	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(cr);
 
+	shared_ptr<LinphonePrivate::AbstractChatRoom> acr;
+	if (chatRoom->getCapabilities() & LinphonePrivate::ChatRoom::Capabilities::Proxy)
+		acr = static_pointer_cast<LinphonePrivate::ClientGroupToBasicChatRoom>(chatRoom)->getProxiedChatRoom();
+	else
+		acr = chatRoom;
+
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, acr);
 	if (chatRoom)
 		reason = L_GET_PRIVATE(chatRoom)->onSipMessageReceived(op, sal_msg);
 	else {
@@ -145,6 +160,7 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 			reason = L_GET_PRIVATE_FROM_C_OBJECT(cr)->onSipMessageReceived(op, sal_msg);
 		linphone_address_unref(addr);
 	}
+	L_SET_CPP_PTR_FROM_C_OBJECT(cr, chatRoom);
 	return reason;
 }
 
