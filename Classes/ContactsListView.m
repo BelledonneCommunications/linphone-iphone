@@ -227,6 +227,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	searchBar.text = @"";
 	[self searchBar:searchBar textDidChange:@""];
+	[LinphoneManager.instance setContactsUpdated:TRUE];
 	[tableController loadData];
 	[searchBar resignFirstResponder];
 }
