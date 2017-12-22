@@ -245,6 +245,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// searchBar.text = [searchText uppercaseString];
 	[ContactSelection setNameOrEmailFilter:searchText];
 	if (searchText.length == 0) {
+		[LinphoneManager.instance setContactsUpdated:TRUE];
 		[tableController loadData];
 	} else {
 		[tableController loadSearchedData];
