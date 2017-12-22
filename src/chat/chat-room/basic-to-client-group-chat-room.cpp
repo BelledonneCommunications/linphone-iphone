@@ -92,7 +92,10 @@ BasicToClientGroupChatRoom::BasicToClientGroupChatRoom (const shared_ptr<ChatRoo
 
 BasicToClientGroupChatRoom::CapabilitiesMask BasicToClientGroupChatRoom::getCapabilities () const {
 	L_D();
-	return d->chatRoom->getCapabilities() | BasicToClientGroupChatRoom::Capabilities::Migratable;
+	CapabilitiesMask capabilities = d->chatRoom->getCapabilities();
+	if (capabilities.isSet(Capabilities::Basic))
+		capabilities.set(Capabilities::Migratable);
+	return capabilities;
 }
 
 shared_ptr<ChatMessage> BasicToClientGroupChatRoom::createChatMessage () {
