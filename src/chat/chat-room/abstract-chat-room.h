@@ -37,6 +37,7 @@ class EventLog;
 class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, public ConferenceInterface {
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
+	friend class ClientGroupToBasicChatRoomPrivate;
 	friend class CorePrivate;
 	friend class MainDb;
 	friend class ProxyChatRoomPrivate;

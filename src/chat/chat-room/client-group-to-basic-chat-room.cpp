@@ -68,7 +68,12 @@ public:
 			cgcr->getPrivate()->setChatRoomListener(nullptr);
 			Core::deleteChatRoom(q->getSharedFromThis());
 			LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(q);
-			L_SET_CPP_PTR_FROM_C_OBJECT(lcr, cgcr->getCore()->getOrCreateBasicChatRoom(invitedAddresses.front()));
+			shared_ptr<AbstractChatRoom> bcr = cgcr->getCore()->onlyGetOrCreateBasicChatRoom(invitedAddresses.front());
+			L_SET_CPP_PTR_FROM_C_OBJECT(lcr, bcr);
+			bcr->getPrivate()->setState(ChatRoom::State::Instantiated);
+			bcr->getPrivate()->setState(ChatRoom::State::Created);
+			cgcr->getCore()->getPrivate()->insertChatRoom(bcr);
+			cgcr->getCore()->getPrivate()->insertChatRoomWithDb(bcr);
 			return;
 		}
 		cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);

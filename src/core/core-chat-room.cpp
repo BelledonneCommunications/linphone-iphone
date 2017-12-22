@@ -185,6 +185,20 @@ shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subj
 	return d->createClientGroupChatRoom(subject, true);
 }
 
+shared_ptr<AbstractChatRoom> Core::onlyGetOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt) {
+	list<shared_ptr<AbstractChatRoom>> chatRooms = findChatRooms(peerAddress);
+	if (!chatRooms.empty())
+		return chatRooms.front();
+
+	const ChatRoomId &chatRoomId = ChatRoomId(peerAddress, getDefaultLocalAddress(getSharedFromThis(), peerAddress));
+	shared_ptr<AbstractChatRoom> chatRoom;
+
+	BasicChatRoom *basicChatRoom = new BasicChatRoom(getSharedFromThis(), chatRoomId);
+	chatRoom.reset(basicChatRoom);
+
+	return chatRoom;
+}
+
 shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
 	L_D();
 

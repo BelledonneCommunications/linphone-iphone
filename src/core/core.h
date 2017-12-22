@@ -107,6 +107,7 @@ public:
 		const IdentityAddress &localAddress
 	);
 
+	std::shared_ptr<AbstractChatRoom> onlyGetOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt = false);
 	std::shared_ptr<AbstractChatRoom> getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt = false);
 	std::shared_ptr<AbstractChatRoom> getOrCreateBasicChatRoom (const IdentityAddress &peerAddress, bool isRtt = false);
 

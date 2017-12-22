@@ -29,6 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 class BasicChatRoomPrivate;
 
 class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
+	friend class Core;
 	friend class CorePrivate;
 
 public:
