@@ -90,6 +90,11 @@ private:
 BasicToClientGroupChatRoom::BasicToClientGroupChatRoom (const shared_ptr<ChatRoom> &chatRoom) :
 	ProxyChatRoom(*new BasicToClientGroupChatRoomPrivate, chatRoom) {}
 
+BasicToClientGroupChatRoom::CapabilitiesMask BasicToClientGroupChatRoom::getCapabilities () const {
+	L_D();
+	return d->chatRoom->getCapabilities() | BasicToClientGroupChatRoom::Capabilities::Migratable;
+}
+
 shared_ptr<ChatMessage> BasicToClientGroupChatRoom::createChatMessage () {
 	shared_ptr<ChatMessage> msg = ProxyChatRoom::createChatMessage();
 	msg->getPrivate()->setChatRoom(getSharedFromThis());

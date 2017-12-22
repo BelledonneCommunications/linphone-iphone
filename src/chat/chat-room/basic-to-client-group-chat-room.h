@@ -33,10 +33,15 @@ class LINPHONE_PUBLIC BasicToClientGroupChatRoom : public ProxyChatRoom {
 public:
 	BasicToClientGroupChatRoom (const std::shared_ptr<ChatRoom> &chatRoom);
 
+	CapabilitiesMask getCapabilities () const override;
+
 	std::shared_ptr<ChatMessage> createChatMessage () override;
 	std::shared_ptr<ChatMessage> createChatMessage (const std::string &text) override;
 
-	static void migrate(const std::shared_ptr<ClientGroupChatRoom> &clientGroupChatRoom, const std::shared_ptr<AbstractChatRoom> &chatRoom);
+	static void migrate (
+		const std::shared_ptr<ClientGroupChatRoom> &clientGroupChatRoom,
+		const std::shared_ptr<AbstractChatRoom> &chatRoom
+	);
 
 private:
 	L_DECLARE_PRIVATE(BasicToClientGroupChatRoom);

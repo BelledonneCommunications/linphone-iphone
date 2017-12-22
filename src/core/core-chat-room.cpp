@@ -73,14 +73,11 @@ shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 	if (capabilities & ChatRoom::Capabilities::RealTimeText)
 		chatRoom.reset(new RealTimeTextChatRoom(q->getSharedFromThis(), chatRoomId));
 	else {
-		bool isToMigrate = (capabilities & ChatRoom::Capabilities::Migratable);
-		if (isToMigrate) {
-			shared_ptr<BasicChatRoom> bcr;
-			bcr.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
-			chatRoom.reset(new BasicToClientGroupChatRoom(bcr));
-		} else {
-			chatRoom.reset(new BasicChatRoom(q->getSharedFromThis(), chatRoomId));
-		}
+		BasicChatRoom *basicChatRoom = new BasicChatRoom(q->getSharedFromThis(), chatRoomId);
+		if (capabilities & ChatRoom::Capabilities::Migratable)
+			chatRoom.reset(new BasicToClientGroupChatRoom(shared_ptr<BasicChatRoom>(basicChatRoom)));
+		else
+			chatRoom.reset(basicChatRoom);
 	}
 
 	AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();

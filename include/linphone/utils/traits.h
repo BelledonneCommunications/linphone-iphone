@@ -20,7 +20,7 @@
 #ifndef _TRAITS_H_
 #define _TRAITS_H_
 
-#include "general.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
