@@ -2698,7 +2698,6 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 	char* cname;
 
 	if (call->audiostream != NULL) return;
-	ms_snd_card_set_stream_type(lc->sound_conf.play_sndcard, MS_SND_CARD_STREAM_VOICE);
 	
 	if (call->sessions[call->main_audio_stream_index].rtp_session==NULL){
 		SalMulticastRole multicast_role = linphone_call_get_multicast_role(call,SalAudio);
@@ -3563,6 +3562,9 @@ static void linphone_call_start_audio_stream(LinphoneCall *call, LinphoneCallSta
 					io.input.file = NULL; /*we prefer to use the remote_play api, that allows to play multimedia files */
 				}
 
+			}
+			if (playcard){
+				ms_snd_card_set_stream_type(playcard, MS_SND_CARD_STREAM_VOICE);
 			}
 			if (ok == TRUE) {
 				int err = audio_stream_start_from_io(call->audiostream,
