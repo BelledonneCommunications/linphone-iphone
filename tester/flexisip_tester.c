@@ -208,7 +208,7 @@ static void text_message_expires(void) {
 
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	/* Wait for 5 seconds for surely cut marie of network */
-	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 5000);
 
 	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc,marie->identity), "hello");
 	linphone_core_set_network_reachable(marie->lc, TRUE);
@@ -227,7 +227,7 @@ static void text_call_expires(void) {
 	
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	/* Wait for 5 seconds for surely cut marie of network */
-	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 5000);
 	
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_core_set_network_reachable(marie->lc, TRUE);
