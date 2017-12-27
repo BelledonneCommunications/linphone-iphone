@@ -64,7 +64,11 @@ public:
 		chatRoom->getPrivate()->onChatMessageReceived(chatMessage);
 	}
 
+	void setupCallbacks ();
+
 	std::shared_ptr<AbstractChatRoom> chatRoom;
+
+	L_DECLARE_PUBLIC(ProxyChatRoom);
 };
 
 LINPHONE_END_NAMESPACE

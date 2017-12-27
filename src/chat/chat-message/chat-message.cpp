@@ -858,20 +858,7 @@ void ChatMessage::send () {
 		return;
 	}
 
-	// TODO: remove when using signals
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(getCore()->findChatRoom(getChatRoom()->getChatRoomId()));
-
-	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(cr);
-
-	shared_ptr<LinphonePrivate::AbstractChatRoom> acr;
-	if (chatRoom->getCapabilities() & LinphonePrivate::ChatRoom::Capabilities::Proxy)
-		acr = static_pointer_cast<LinphonePrivate::ClientGroupToBasicChatRoom>(chatRoom)->getProxiedChatRoom();
-	else
-		acr = chatRoom;
-
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, acr);
-	acr->getPrivate()->sendChatMessage(getSharedFromThis());
-	L_SET_CPP_PTR_FROM_C_OBJECT(cr, chatRoom);
+	getChatRoom()->getPrivate()->sendChatMessage(getSharedFromThis());
 }
 
 void ChatMessage::sendDeliveryNotification (LinphoneReason reason) {

@@ -93,6 +93,7 @@ BasicToClientGroupChatRoom::BasicToClientGroupChatRoom (const shared_ptr<ChatRoo
 BasicToClientGroupChatRoom::CapabilitiesMask BasicToClientGroupChatRoom::getCapabilities () const {
 	L_D();
 	CapabilitiesMask capabilities = d->chatRoom->getCapabilities();
+	capabilities.set(Capabilities::Proxy);
 	if (capabilities.isSet(Capabilities::Basic))
 		capabilities.set(Capabilities::Migratable);
 	return capabilities;

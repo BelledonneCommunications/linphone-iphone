@@ -4,7 +4,6 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-
 composing_idle_timeout=1
 store_ha1_passwd=0 #used for sipp
 
@@ -29,7 +28,7 @@ pol=accept
 subscribe=0
 
 [misc]
-conference-factory-uri=sip:conference-factory@conf.example.org
+conference_factory_uri=sip:conference-factory@conf.example.org
 
 [rtp]
 audio_rtp_port=18070-28000
