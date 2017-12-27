@@ -76,7 +76,9 @@ shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 		BasicChatRoom *basicChatRoom = new BasicChatRoom(q->getSharedFromThis(), chatRoomId);
 		if (
 			capabilities & ChatRoom::Capabilities::Migratable &&
-			linphone_core_get_conference_factory_uri(q->getCCore())
+			linphone_core_get_conference_factory_uri(q->getCCore()) &&
+			linphone_config_get_bool(linphone_core_get_config(q->getCCore()),
+				"misc", "enable_basic_to_client_group_chat_room_migration", FALSE)
 		)
 			chatRoom.reset(new BasicToClientGroupChatRoom(shared_ptr<BasicChatRoom>(basicChatRoom)));
 		else
