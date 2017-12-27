@@ -91,10 +91,17 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms){
 
 
 LinphoneAddress * create_linphone_address(const char * domain) {
+	return create_linphone_address_with_username(domain,NULL);
+}
+
+LinphoneAddress * create_linphone_address_with_username(const char * domain, const char* username) {
 	LinphoneAddress *addr = linphone_address_new(NULL);
 	if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
-	linphone_address_set_username(addr,test_username);
-	BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
+	/* For test purpose, we might use different username */
+	if(username) linphone_address_set_username(addr,username);
+	else linphone_address_set_username(addr,test_username);
+	if(username) BC_ASSERT_STRING_EQUAL(username,linphone_address_get_username(addr));
+	else BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
 	if (!domain) domain= test_route;
 	linphone_address_set_domain(addr,domain);
 	BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
