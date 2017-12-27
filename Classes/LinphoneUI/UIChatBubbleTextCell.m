@@ -84,16 +84,8 @@
 		return;
 	}
 
-	if (_message) {
-		CFBridgingRelease(linphone_chat_message_get_user_data(_message));
-		linphone_chat_message_set_user_data(_message, NULL);
-		linphone_chat_message_cbs_set_msg_state_changed(linphone_chat_message_get_callbacks(_message), NULL);
-		linphone_chat_message_unref(_message);
-	}
-
 	_message = amessage;
 	if (amessage) {
-		linphone_chat_message_ref(_message);
 		linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);

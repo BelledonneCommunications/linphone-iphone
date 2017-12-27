@@ -1277,7 +1277,7 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
 															LinphoneChatMessage *message) {
 
-	NSString *msgId = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(message, "Call-ID")];
+	NSString *msgId = [NSString stringWithUTF8String:linphone_chat_message_get_message_id(message)];
 
 	int index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:msgId] intValue] - 1;
 	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", msgId, index);

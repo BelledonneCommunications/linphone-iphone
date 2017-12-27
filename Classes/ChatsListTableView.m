@@ -40,12 +40,6 @@
 	return self;
 }
 
-- (void)dealloc {
-	if (data != nil) {
-		bctbx_list_free_with_data(data, chatTable_free_chatrooms);
-	}
-}
-
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -98,26 +92,13 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		LinphoneChatRoom *chat_room = iter->data;
 		LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chat_room);
 		linphone_chat_room_set_user_data(chat_room, last_msg);
-		sorted = bctbx_list_insert_sorted(sorted, linphone_chat_room_ref(chat_room),
-										  (bctbx_compare_func)sorted_history_comparison);
+		sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
 		iter = iter->next;
 	}
 	return sorted;
 }
 
-static void chatTable_free_chatrooms(void *data) {
-	LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(data);
-	if (last_msg) {
-		linphone_chat_message_unref(last_msg);
-		linphone_chat_room_set_user_data(data, NULL);
-	}
-	linphone_chat_room_unref(data);
-}
-
 - (void)loadData {
-	if (data != NULL) {
-		bctbx_list_free_with_data(data, chatTable_free_chatrooms);
-	}
 	data = [self sortChatRooms];
 	[super loadData];
 
@@ -190,12 +171,6 @@ static void chatTable_free_chatrooms(void *data) {
 		[tableView beginUpdates];
 
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
-		LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
-		if (last_msg) {
-			linphone_chat_message_unref(last_msg);
-			linphone_chat_room_set_user_data(chatRoom, NULL);
-		}
-
 		FileTransferDelegate *ftdToDelete = nil;
 		for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 			if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
@@ -220,12 +195,6 @@ static void chatTable_free_chatrooms(void *data) {
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
 	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
 	  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
-	  LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
-	  if (last_msg) {
-		  linphone_chat_message_unref(last_msg);
-		  linphone_chat_room_set_user_data(chatRoom, NULL);
-	  }
-
 	  FileTransferDelegate *ftdToDelete = nil;
 	  for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		  if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
