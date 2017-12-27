@@ -4,7 +4,7 @@ password_max_length=12
 password_min_length=3
 username_max_length=14
 username_min_length=3
-username_regex=^[A-Za-z0-9_.\-]*$
+username_regex=^[A-Za-z0-9_.\-\ ]*$
 xmlrpc_url=https://sip2.linphone.org:446/wizard.php
 
 [proxy_default_values]
