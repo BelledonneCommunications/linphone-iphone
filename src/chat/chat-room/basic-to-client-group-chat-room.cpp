@@ -48,12 +48,20 @@ public:
 
 	void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
 		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
+		const char *specs = linphone_core_get_linphone_specs(chatMessage->getCore()->getCCore());
+		time_t currentRealTime = ms_time(nullptr);
 		if (!linphone_core_get_conference_factory_uri(chatMessage->getCore()->getCCore())
 			|| (chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference)
 			|| clientGroupChatRoom
+			|| !specs || !strstr(specs, "groupchat")
+			|| ((currentRealTime - migrationRealTime) <
+				linphone_config_get_int(linphone_core_get_config(chatMessage->getCore()->getCCore()),
+					"misc", "basic_to_client_group_chat_room_migration_timer", 86400) // Try migration every 24 hours
+				)
 		) {
 			return;
 		}
+		migrationRealTime = currentRealTime;
 		clientGroupChatRoom = static_pointer_cast<ClientGroupChatRoom>(
 			chatRoom->getCore()->getPrivate()->createClientGroupChatRoom(chatRoom->getSubject(), false)
 		);
@@ -81,6 +89,7 @@ public:
 
 private:
 	shared_ptr<ClientGroupChatRoom> clientGroupChatRoom;
+	time_t migrationRealTime = 0;
 
 	L_DECLARE_PUBLIC(BasicToClientGroupChatRoom);
 };
