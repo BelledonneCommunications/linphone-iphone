@@ -137,6 +137,37 @@ extern "C" void Java_org_linphone_core_FactoryImpl_setDebugMode(JNIEnv* env, job
 	}
 }
 
+static jstring get_jstring_from_char(JNIEnv *env, const char* cString) {
+    int len;
+    jmethodID constructorString;
+    jbyteArray bytesArray = NULL;
+    jstring javaString = NULL;
+    jclass classString = env->FindClass("java/lang/String");
+    if (classString == 0) {
+        ms_error("Cannot find java.lang.String class.\n");
+        return NULL;
+    }
+
+    constructorString = env->GetMethodID(classString, "<init>", "([BLjava/lang/String;)V");
+    if (constructorString == 0) {
+        ms_error("Cannot find String <init> method.\n");
+        return NULL;
+    }
+
+    len = (int)strlen(cString);
+    bytesArray = env->NewByteArray(len);
+
+    if (bytesArray) {
+        env->SetByteArrayRegion(bytesArray, 0, len, (jbyte *)cString);
+        jstring UTF8 = env->NewStringUTF("UTF8");
+        javaString = (jstring)env->NewObject(classString, constructorString, bytesArray, UTF8);
+        env->DeleteLocalRef(bytesArray);
+        env->DeleteLocalRef(UTF8);
+    }
+
+    return javaString;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class LinphoneJavaBindings {
@@ -280,9 +311,9 @@ static {{return}} {{callbackName}}({{params}}) {
 	jobject j_{{enumName}} = env->CallStaticObjectMethod(ljb->{{cEnumPrefix}}_class, ljb->{{cEnumPrefix}}_class_constructor_from_int, (jint){{enumName}});
 	{{/jenums}}
 	{{#jstrings}}
-	jstring j_{{stringName}} = {{stringName}} ? env->NewStringUTF({{stringName}}) : NULL;
+	jstring j_{{stringName}} = {{stringName}} ? get_jstring_from_char(env, {{stringName}}) : NULL;
 	{{/jstrings}}
-	
+
 	{{#hasReturn}}{{jniUpcallType}} jni_upcall_result = {{/hasReturn}}env->{{jniUpcallMethod}}(jlistener, jcallback, {{params_impl}});
 	{{#hasReturn}}
 	{{#isJniUpcallObject}}
@@ -349,7 +380,7 @@ void Java_{{jniPackage}}{{className}}Impl_removeListener(JNIEnv* env, jobject th
 			{{cPrefix}}_remove_callbacks(cptr, cbs);
 			break;
 		}
-	}	
+	}
 }
 {{/isMultiListener}}
 
@@ -429,7 +460,7 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 		jobject object = get{{objectClassName}}(env, c_object);
 		{{/isRealObjectArray}}
 		{{#isStringObjectArray}}const char *cstring = (const char *)list->data;
-		jstring object = cstring ? env->NewStringUTF(cstring) : 0;{{/isStringObjectArray}}
+		jstring object = cstring ? get_jstring_from_char(env, cstring) : 0;{{/isStringObjectArray}}
 		if (object != 0) {
 			env->SetObjectArrayElement(jni_list_result, (int)i, object);
 			{{#isRealObjectArray}}env->DeleteLocalRef(object);{{/isRealObjectArray}}
@@ -445,7 +476,7 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 	return array;
 	{{/hasByteArrayReturn}}{{#hasStringReturn}}
 	const char *c_string = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
-	jstring jni_result = (c_string != NULL) ? env->NewStringUTF(c_string) : NULL;
+	jstring jni_result = (c_string != NULL) ? get_jstring_from_char(env, c_string) : NULL;
 	{{/hasStringReturn}}{{#hasNormalReturn}}
 	{{#hasReturn}}{{return}} jni_result = ({{return}}){{#returnObject}}get{{returnClassName}}(env, (Linphone{{returnClassName}} *){{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
 	{{/hasNormalReturn}}{{#strings}}
