@@ -24,7 +24,6 @@
 #include "address/address.h"
 #include "conference/conference.h"
 #include "conference/params/call-session-params.h"
-#include "conference/session/call-session-listener.h"
 #include "core/core-listener.h"
 #include "sal/call-op.h"
 
@@ -49,6 +48,8 @@ class LINPHONE_PUBLIC CallSession : public Object, public CoreAccessor {
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(CallSession);
+
+	L_DECLARE_ENUM(State, L_ENUM_VALUES_CALL_SESSION_STATE);
 
 	CallSession (const std::shared_ptr<Core> &core, const CallSessionParams *params, CallSessionListener *listener);
 	virtual ~CallSession ();
@@ -90,11 +91,13 @@ public:
 	const CallSessionParams *getRemoteParams ();
 	std::string getRemoteUserAgent () const;
 	std::shared_ptr<CallSession> getReplacedCallSession () const;
-	LinphoneCallState getState () const;
+	CallSession::State getState () const;
 	const Address& getToAddress () const;
-	LinphoneCallState getTransferState () const;
+	CallSession::State getTransferState () const;
 	std::shared_ptr<CallSession> getTransferTarget () const;
 	std::string getToHeader (const std::string &name) const;
+
+	static bool isEarlyState (CallSession::State state);
 
 protected:
 	explicit CallSession (CallSessionPrivate &p, const std::shared_ptr<Core> &core);

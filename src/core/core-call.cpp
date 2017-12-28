@@ -232,14 +232,14 @@ bool Core::areSoundResourcesLocked () const {
 		if (call->mediaInProgress())
 			return true;
 		switch (call->getState()) {
-			case LinphoneCallOutgoingInit:
-			case LinphoneCallOutgoingProgress:
-			case LinphoneCallOutgoingRinging:
-			case LinphoneCallOutgoingEarlyMedia:
-			case LinphoneCallConnected:
-			case LinphoneCallRefered:
-			case LinphoneCallIncomingEarlyMedia:
-			case LinphoneCallUpdating:
+			case CallSession::State::OutgoingInit:
+			case CallSession::State::OutgoingProgress:
+			case CallSession::State::OutgoingRinging:
+			case CallSession::State::OutgoingEarlyMedia:
+			case CallSession::State::Connected:
+			case CallSession::State::Referred:
+			case CallSession::State::IncomingEarlyMedia:
+			case CallSession::State::Updating:
 				lInfo() << "Call " << call << " is locking sound resources";
 				return true;
 			default:
@@ -276,7 +276,7 @@ shared_ptr<Call> Core::getCurrentCall () const {
 LinphoneStatus Core::pauseAllCalls () {
 	L_D();
 	for (const auto &call : d->calls) {
-		if ((call->getState() == LinphoneCallStreamsRunning) || (call->getState() == LinphoneCallPausedByRemote))
+		if ((call->getState() == CallSession::State::StreamsRunning) || (call->getState() == CallSession::State::PausedByRemote))
 			call->pause();
 	}
 	return 0;
@@ -287,10 +287,10 @@ void Core::soundcardHintCheck () {
 	bool noNeedForSound = true;
 	// Check if the remaining calls are paused
 	for (const auto &call : d->calls) {
-		if ((call->getState() != LinphoneCallPausing)
-			&& (call->getState() != LinphoneCallPaused)
-			&& (call->getState() != LinphoneCallEnd)
-			&& (call->getState() != LinphoneCallError)) {
+		if ((call->getState() != CallSession::State::Pausing)
+			&& (call->getState() != CallSession::State::Paused)
+			&& (call->getState() != CallSession::State::End)
+			&& (call->getState() != CallSession::State::Error)) {
 			noNeedForSound = false;
 			break;
 		}

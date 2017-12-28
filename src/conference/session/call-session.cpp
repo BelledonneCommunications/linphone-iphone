@@ -60,40 +60,40 @@ void CallSessionPrivate::notifyReferState () {
 		refererOp->notify_refer_state(op);
 }
 
-void CallSessionPrivate::setState(LinphoneCallState newState, const string &message) {
+void CallSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
 	if (state != newState){
 		prevState = state;
 
 		/* Make sanity checks with call state changes. Any bad transition can result in unpredictable results
 		   or irrecoverable errors in the application. */
-		if ((state == LinphoneCallEnd) || (state == LinphoneCallError)) {
-			if (newState != LinphoneCallReleased) {
-				lFatal() << "Abnormal call resurection from " << linphone_call_state_to_string(state) <<
-					" to " << linphone_call_state_to_string(newState) << " , aborting";
+		if ((state == CallSession::State::End) || (state == CallSession::State::Error)) {
+			if (newState != CallSession::State::Released) {
+				lFatal() << "Abnormal call resurection from " << Utils::toString(state) <<
+					" to " << Utils::toString(newState) << " , aborting";
 				return;
 			}
-		} else if ((newState == LinphoneCallReleased) && (prevState != LinphoneCallError) && (prevState != LinphoneCallEnd)) {
+		} else if ((newState == CallSession::State::Released) && (prevState != CallSession::State::Error) && (prevState != CallSession::State::End)) {
 			lFatal() << "Attempt to move CallSession [" << q << "] to Released state while it was not previously in Error or End state, aborting";
 			return;
 		}
-		lInfo() << "CallSession [" << q << "] moving from state " << linphone_call_state_to_string(state) << " to " << linphone_call_state_to_string(newState);
+		lInfo() << "CallSession [" << q << "] moving from state " << Utils::toString(state) << " to " << Utils::toString(newState);
 
-		if (newState != LinphoneCallRefered) {
-			/* LinphoneCallRefered is rather an event, not a state.
+		if (newState != CallSession::State::Referred) {
+			/* CallSession::State::Referred is rather an event, not a state.
 			   Indeed it does not change the state of the call (still paused or running). */
 			state = newState;
 		}
 
 		switch (newState) {
-			case LinphoneCallOutgoingInit:
-			case LinphoneCallIncomingReceived:
+			case CallSession::State::OutgoingInit:
+			case CallSession::State::IncomingReceived:
 				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
 				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
 				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
 				break;
-			case LinphoneCallEnd:
-			case LinphoneCallError:
+			case CallSession::State::End:
+			case CallSession::State::Error:
 				switch (linphone_error_info_get_reason(q->getErrorInfo())) {
 					case LinphoneReasonDeclined:
 						log->status = LinphoneCallDeclined;
@@ -125,11 +125,11 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 				}
 				setTerminated();
 				break;
-			case LinphoneCallConnected:
+			case CallSession::State::Connected:
 				log->status = LinphoneCallSuccess;
 				log->connected_date_time = ms_time(nullptr);
 				break;
-			case LinphoneCallReleased:
+			case CallSession::State::Released:
 				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
 				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
 				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
@@ -140,21 +140,21 @@ void CallSessionPrivate::setState(LinphoneCallState newState, const string &mess
 
 		if (message.empty()) {
 			lError() << "You must fill a reason when changing call state (from " <<
-				linphone_call_state_to_string(prevState) << " to " << linphone_call_state_to_string(state) << ")";
+				Utils::toString(prevState) << " to " << Utils::toString(state) << ")";
 		}
 		if (listener)
 			listener->onCallSessionStateChanged(q->getSharedFromThis(), newState, message);
-		if (newState == LinphoneCallReleased)
+		if (newState == CallSession::State::Released)
 			setReleased(); /* Shall be performed after app notification */
 	}
 }
 
-void CallSessionPrivate::setTransferState (LinphoneCallState newState) {
+void CallSessionPrivate::setTransferState (CallSession::State newState) {
 	L_Q();
 	if (newState == transferState)
 		return;
 	lInfo() << "Transfer state for CallSession [" << q << "] changed from ["
-		<< linphone_call_state_to_string(transferState) << "] to [" << linphone_call_state_to_string(newState) << "]";
+		<< Utils::toString(transferState) << "] to [" << Utils::toString(newState) << "]";
 	transferState = newState;
 	if (listener)
 		listener->onCallSessionTransferStateChanged(q->getSharedFromThis(), newState);
@@ -165,14 +165,14 @@ void CallSessionPrivate::startIncomingNotification () {
 	if (listener)
 		listener->onIncomingCallSessionStarted(q->getSharedFromThis());
 
-	setState(LinphoneCallIncomingReceived, "Incoming CallSession");
+	setState(CallSession::State::IncomingReceived, "Incoming CallSession");
 
 	// From now on, the application is aware of the call and supposed to take background task or already submitted
 	// notification to the user. We can then drop our background task.
 	if (listener)
 		listener->onBackgroundTaskToBeStopped(q->getSharedFromThis());
 
-	if (state == LinphoneCallIncomingReceived) {
+	if (state == CallSession::State::IncomingReceived) {
 		handleIncomingReceivedStateInIncomingNotification();
 	}
 }
@@ -220,17 +220,17 @@ bool CallSessionPrivate::isInConference () const {
 
 void CallSessionPrivate::abort (const string &errorMsg) {
 	op->terminate();
-	setState(LinphoneCallError, errorMsg);
+	setState(CallSession::State::Error, errorMsg);
 }
 
 void CallSessionPrivate::accepted () {
 	/* Immediately notify the connected state, even if errors occur after */
 	switch (state) {
-		case LinphoneCallOutgoingProgress:
-		case LinphoneCallOutgoingRinging:
-		case LinphoneCallOutgoingEarlyMedia:
+		case CallSession::State::OutgoingProgress:
+		case CallSession::State::OutgoingRinging:
+		case CallSession::State::OutgoingEarlyMedia:
 			/* Immediately notify the connected state */
-			setState(LinphoneCallConnected, "Connected");
+			setState(CallSession::State::Connected, "Connected");
 			break;
 		default:
 			break;
@@ -262,8 +262,8 @@ bool CallSessionPrivate::failure () {
 	const SalErrorInfo *ei = op->get_error_info();
 	switch (ei->reason) {
 		case SalReasonRedirect:
-			if ((state == LinphoneCallOutgoingInit) || (state == LinphoneCallOutgoingProgress)
-				|| (state == LinphoneCallOutgoingRinging) /* Push notification case */ || (state == LinphoneCallOutgoingEarlyMedia)) {
+			if ((state == CallSession::State::OutgoingInit) || (state == CallSession::State::OutgoingProgress)
+				|| (state == CallSession::State::OutgoingRinging) /* Push notification case */ || (state == CallSession::State::OutgoingEarlyMedia)) {
 				const SalAddress *redirectionTo = op->get_remote_contact_address();
 				if (redirectionTo) {
 					char *url = sal_address_as_string(redirectionTo);
@@ -283,11 +283,11 @@ bool CallSessionPrivate::failure () {
 
 	/* Some call errors are not fatal */
 	switch (state) {
-		case LinphoneCallUpdating:
-		case LinphoneCallPausing:
-		case LinphoneCallResuming:
+		case CallSession::State::Updating:
+		case CallSession::State::Pausing:
+		case CallSession::State::Resuming:
 			if (ei->reason != SalReasonNoMatch) {
-				lInfo() << "Call error on state [" << linphone_call_state_to_string(state) << "], restoring previous state [" << linphone_call_state_to_string(prevState) << "]";
+				lInfo() << "Call error on state [" << Utils::toString(state) << "], restoring previous state [" << Utils::toString(prevState) << "]";
 				setState(prevState, ei->full_string);
 				return true;
 			}
@@ -295,14 +295,14 @@ bool CallSessionPrivate::failure () {
 			break;
 	}
 
-	if ((state != LinphoneCallEnd) && (state != LinphoneCallError)) {
+	if ((state != CallSession::State::End) && (state != CallSession::State::Error)) {
 		if (ei->reason == SalReasonDeclined)
-			setState(LinphoneCallEnd, "Call declined");
+			setState(CallSession::State::End, "Call declined");
 		else {
-			if (linphone_call_state_is_early(state))
-				setState(LinphoneCallError, ei->full_string ? ei->full_string : "");
+			if (CallSession::isEarlyState(state))
+				setState(CallSession::State::Error, ei->full_string ? ei->full_string : "");
 			else
-				setState(LinphoneCallEnd, ei->full_string ? ei->full_string : "");
+				setState(CallSession::State::End, ei->full_string ? ei->full_string : "");
 		}
 		if ((ei->reason != SalReasonNone) && listener)
 			listener->onPlayErrorTone(q->getSharedFromThis(), linphone_reason_from_sal(ei->reason));
@@ -330,7 +330,7 @@ void CallSessionPrivate::infoReceived (SalBodyHandler *bodyHandler) {
 
 void CallSessionPrivate::pingReply () {
 	L_Q();
-	if (state == LinphoneCallOutgoingInit) {
+	if (state == CallSession::State::OutgoingInit) {
 		pingReplied = true;
 		if (isReadyForInvite())
 			q->startInvite(nullptr, "");
@@ -341,7 +341,7 @@ void CallSessionPrivate::referred (const Address &referToAddr) {
 	L_Q();
 	referTo = referToAddr.asString();
 	referPending = true;
-	setState(LinphoneCallRefered, "Referred");
+	setState(CallSession::State::Referred, "Referred");
 	if (referPending && listener)
 		listener->onCallSessionStartReferred(q->getSharedFromThis());
 }
@@ -353,32 +353,32 @@ void CallSessionPrivate::remoteRinging () {
 	if (listener)
 		listener->onStartRinging(q->getSharedFromThis());
 	lInfo() << "Remote ringing...";
-	setState(LinphoneCallOutgoingRinging, "Remote ringing");
+	setState(CallSession::State::OutgoingRinging, "Remote ringing");
 }
 
 void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
 	L_Q();
 	SalCallOp *oldOp = op;
-	LinphoneCallState oldState = state;
+	CallSession::State oldState = state;
 	op = newOp;
 	op->set_user_pointer(q);
 	op->set_local_media_description(oldOp->get_local_media_description());
 	switch (state) {
-		case LinphoneCallIncomingEarlyMedia:
-		case LinphoneCallIncomingReceived:
-			op->notify_ringing((state == LinphoneCallIncomingEarlyMedia) ? true : false);
+		case CallSession::State::IncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
+			op->notify_ringing((state == CallSession::State::IncomingEarlyMedia) ? true : false);
 			break;
-		case LinphoneCallConnected:
-		case LinphoneCallStreamsRunning:
+		case CallSession::State::Connected:
+		case CallSession::State::StreamsRunning:
 			op->accept();
 			break;
 		default:
-			lWarning() << "CallSessionPrivate::replaceOp(): don't know what to do in state [" << linphone_call_state_to_string(state) << "]";
+			lWarning() << "CallSessionPrivate::replaceOp(): don't know what to do in state [" << Utils::toString(state) << "]";
 			break;
 	}
 	switch (oldState) {
-		case LinphoneCallIncomingEarlyMedia:
-		case LinphoneCallIncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
 			op->set_user_pointer(nullptr); // In order for the call session to not get terminated by terminating this op
 			// Do not terminate a forked INVITE
 			if (op->get_replaces())
@@ -386,8 +386,8 @@ void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
 			else
 				oldOp->kill_dialog();
 			break;
-		case LinphoneCallConnected:
-		case LinphoneCallStreamsRunning:
+		case CallSession::State::Connected:
+		case CallSession::State::StreamsRunning:
 			oldOp->terminate();
 			oldOp->kill_dialog();
 			break;
@@ -400,12 +400,12 @@ void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
 void CallSessionPrivate::terminated () {
 	L_Q();
 	switch (state) {
-		case LinphoneCallEnd:
-		case LinphoneCallError:
+		case CallSession::State::End:
+		case CallSession::State::Error:
 			lWarning() << "terminated: already terminated, ignoring";
 			return;
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
 			if (!op->get_reason_error_info()->protocol || strcmp(op->get_reason_error_info()->protocol, "") == 0) {
 				linphone_error_info_set(ei, nullptr, LinphoneReasonNotAnswered, 0, "Incoming call cancelled", nullptr);
 				nonOpError = true;
@@ -418,7 +418,7 @@ void CallSessionPrivate::terminated () {
 		listener->onCallSessionStartReferred(q->getSharedFromThis());
 	if (listener)
 		listener->onStopRingingIfInCall(q->getSharedFromThis());
-	setState(LinphoneCallEnd, "Call ended");
+	setState(CallSession::State::End, "Call ended");
 }
 
 void CallSessionPrivate::updated (bool isUpdate) {
@@ -427,56 +427,56 @@ void CallSessionPrivate::updated (bool isUpdate) {
 	SalErrorInfo sei;
 	memset(&sei, 0, sizeof(sei));
 	switch (state) {
-		case LinphoneCallPausedByRemote:
+		case CallSession::State::PausedByRemote:
 			updatedByRemote();
 			break;
 		/* SIP UPDATE CASE */
-		case LinphoneCallOutgoingRinging:
-		case LinphoneCallOutgoingEarlyMedia:
-		case LinphoneCallIncomingEarlyMedia:
+		case CallSession::State::OutgoingRinging:
+		case CallSession::State::OutgoingEarlyMedia:
+		case CallSession::State::IncomingEarlyMedia:
 			if (isUpdate) {
-				setState(LinphoneCallEarlyUpdatedByRemote, "EarlyUpdatedByRemote");
-				acceptUpdate(nullptr, prevState, linphone_call_state_to_string(prevState));
+				setState(CallSession::State::EarlyUpdatedByRemote, "EarlyUpdatedByRemote");
+				acceptUpdate(nullptr, prevState, Utils::toString(prevState));
 			}
 			break;
-		case LinphoneCallStreamsRunning:
-		case LinphoneCallConnected:
-		case LinphoneCallUpdatedByRemote: /* Can happen on UAC connectivity loss */
+		case CallSession::State::StreamsRunning:
+		case CallSession::State::Connected:
+		case CallSession::State::UpdatedByRemote: /* Can happen on UAC connectivity loss */
 			updatedByRemote();
 			break;
-		case LinphoneCallPaused:
+		case CallSession::State::Paused:
 			/* We'll remain in pause state but accept the offer anyway according to default parameters */
-			acceptUpdate(nullptr, state, linphone_call_state_to_string(state));
+			acceptUpdate(nullptr, state, Utils::toString(state));
 			break;
-		case LinphoneCallUpdating:
-		case LinphoneCallPausing:
-		case LinphoneCallResuming:
+		case CallSession::State::Updating:
+		case CallSession::State::Pausing:
+		case CallSession::State::Resuming:
 			sal_error_info_set(&sei, SalReasonInternalError, "SIP", 0, nullptr, nullptr);
 			op->decline_with_error_info(&sei, nullptr);
 			BCTBX_NO_BREAK; /* no break */
-		case LinphoneCallIdle:
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallEnd:
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallOutgoingProgress:
-		case LinphoneCallRefered:
-		case LinphoneCallError:
-		case LinphoneCallReleased:
-		case LinphoneCallEarlyUpdatedByRemote:
-		case LinphoneCallEarlyUpdating:
-			lWarning() << "Receiving reINVITE or UPDATE while in state [" << linphone_call_state_to_string(state) << "], should not happen";
+		case CallSession::State::Idle:
+		case CallSession::State::OutgoingInit:
+		case CallSession::State::End:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::OutgoingProgress:
+		case CallSession::State::Referred:
+		case CallSession::State::Error:
+		case CallSession::State::Released:
+		case CallSession::State::EarlyUpdatedByRemote:
+		case CallSession::State::EarlyUpdating:
+			lWarning() << "Receiving reINVITE or UPDATE while in state [" << Utils::toString(state) << "], should not happen";
 		break;
 	}
 }
 
 void CallSessionPrivate::updatedByRemote () {
 	L_Q();
-	setState(LinphoneCallUpdatedByRemote,"Call updated by remote");
+	setState(CallSession::State::UpdatedByRemote,"Call updated by remote");
 	if (deferUpdate) {
-		if (state == LinphoneCallUpdatedByRemote)
+		if (state == CallSession::State::UpdatedByRemote)
 			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_core_accept_call_update() later.";
 	} else {
-		if (state == LinphoneCallUpdatedByRemote)
+		if (state == CallSession::State::UpdatedByRemote)
 			q->acceptUpdate(nullptr);
 		else {
 			/* Otherwise it means that the app responded by linphone_core_accept_call_update
@@ -510,21 +510,21 @@ void CallSessionPrivate::accept (const CallSessionParams *csp) {
 	op->accept();
 	if (listener)
 		listener->onSetCurrentSession(q->getSharedFromThis());
-	setState(LinphoneCallConnected, "Connected");
+	setState(CallSession::State::Connected, "Connected");
 }
 
-LinphoneStatus CallSessionPrivate::acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const string &stateInfo) {
+LinphoneStatus CallSessionPrivate::acceptUpdate (const CallSessionParams *csp, CallSession::State nextState, const string &stateInfo) {
 	return startAcceptUpdate(nextState, stateInfo);
 }
 
 LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
 	L_Q();
 	switch (state) {
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
 			break;
 		default:
-			lError() << "checkForAcceptation() CallSession [" << q << "] is in state [" << linphone_call_state_to_string(state) << "], operation not permitted";
+			lError() << "checkForAcceptation() CallSession [" << q << "] is in state [" << Utils::toString(state) << "], operation not permitted";
 			return -1;
 	}
 	if (listener)
@@ -561,31 +561,31 @@ bool CallSessionPrivate::isReadyForInvite () const {
 	return pingReady;
 }
 
-bool CallSessionPrivate::isUpdateAllowed (LinphoneCallState &nextState) const {
+bool CallSessionPrivate::isUpdateAllowed (CallSession::State &nextState) const {
 	switch (state) {
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
-		case LinphoneCallOutgoingRinging:
-		case LinphoneCallOutgoingEarlyMedia:
-			nextState = LinphoneCallEarlyUpdating;
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
+		case CallSession::State::OutgoingRinging:
+		case CallSession::State::OutgoingEarlyMedia:
+			nextState = CallSession::State::EarlyUpdating;
 			break;
-		case LinphoneCallConnected:
-		case LinphoneCallStreamsRunning:
-		case LinphoneCallPausedByRemote:
-		case LinphoneCallUpdatedByRemote:
-			nextState = LinphoneCallUpdating;
+		case CallSession::State::Connected:
+		case CallSession::State::StreamsRunning:
+		case CallSession::State::PausedByRemote:
+		case CallSession::State::UpdatedByRemote:
+			nextState = CallSession::State::Updating;
 			break;
-		case LinphoneCallPaused:
-			nextState = LinphoneCallPausing;
+		case CallSession::State::Paused:
+			nextState = CallSession::State::Pausing;
 			break;
-		case LinphoneCallOutgoingProgress:
-		case LinphoneCallPausing:
-		case LinphoneCallResuming:
-		case LinphoneCallUpdating:
+		case CallSession::State::OutgoingProgress:
+		case CallSession::State::Pausing:
+		case CallSession::State::Resuming:
+		case CallSession::State::Updating:
 			nextState = state;
 			break;
 		default:
-			lError() << "Update is not allowed in [" << linphone_call_state_to_string(state) << "] state";
+			lError() << "Update is not allowed in [" << Utils::toString(state) << "] state";
 			return false;
 	}
 	return true;
@@ -629,7 +629,7 @@ void CallSessionPrivate::setTerminated() {
 		listener->onCallSessionSetTerminated(q->getSharedFromThis());
 }
 
-LinphoneStatus CallSessionPrivate::startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) {
+LinphoneStatus CallSessionPrivate::startAcceptUpdate (CallSession::State nextState, const std::string &stateInfo) {
 	op->accept();
 	setState(nextState, stateInfo);
 	return 0;
@@ -657,11 +657,11 @@ LinphoneStatus CallSessionPrivate::startUpdate (const string &subject) {
 }
 
 void CallSessionPrivate::terminate () {
-	if ((state == LinphoneCallIncomingReceived) && (linphone_error_info_get_reason(ei) != LinphoneReasonNotAnswered)) {
+	if ((state == CallSession::State::IncomingReceived) && (linphone_error_info_get_reason(ei) != LinphoneReasonNotAnswered)) {
 		linphone_error_info_set_reason(ei, LinphoneReasonDeclined);
 		nonOpError = true;
 	}
-	setState(LinphoneCallEnd, "Call terminated");
+	setState(CallSession::State::End, "Call terminated");
 }
 
 void CallSessionPrivate::updateCurrentParams () const {}
@@ -690,21 +690,21 @@ void CallSessionPrivate::onNetworkReachable (bool reachable) {
 	} else {
 		switch(state) {
 			// For all the early states, we prefer to drop the call
-			case LinphoneCallOutgoingInit:
-			case LinphoneCallOutgoingProgress:
-			case LinphoneCallOutgoingRinging:
-			case LinphoneCallOutgoingEarlyMedia:
-			case LinphoneCallIncomingReceived:
-			case LinphoneCallIncomingEarlyMedia:
+			case CallSession::State::OutgoingInit:
+			case CallSession::State::OutgoingProgress:
+			case CallSession::State::OutgoingRinging:
+			case CallSession::State::OutgoingEarlyMedia:
+			case CallSession::State::IncomingReceived:
+			case CallSession::State::IncomingEarlyMedia:
 				// During the early states, the SAL layer reports the failure from the dialog or transaction layer,
 				// hence, there is nothing special to do
-			case LinphoneCallStreamsRunning:
-			case LinphoneCallUpdating:
-			case LinphoneCallPausing:
-			case LinphoneCallResuming:
-			case LinphoneCallPaused:
-			case LinphoneCallPausedByRemote:
-			case LinphoneCallUpdatedByRemote:
+			case CallSession::State::StreamsRunning:
+			case CallSession::State::Updating:
+			case CallSession::State::Pausing:
+			case CallSession::State::Resuming:
+			case CallSession::State::Paused:
+			case CallSession::State::PausedByRemote:
+			case CallSession::State::UpdatedByRemote:
 				// During these states, the dialog is established. A failure of a transaction is not expected to close it.
 				// Instead we have to repair the dialog by sending a reINVITE
 				broken = true;
@@ -821,43 +821,42 @@ void CallSessionPrivate::repairIfBroken () {
 	SalErrorInfo sei;
 	memset(&sei, 0, sizeof(sei));
 	switch (state) {
-		case LinphoneCallUpdating:
-		case LinphoneCallPausing:
+		case CallSession::State::Updating:
+		case CallSession::State::Pausing:
 			if (op->dialog_request_pending()) {
 				// Need to cancel first re-INVITE as described in section 5.5 of RFC 6141
 				op->cancel_invite();
 				reinviteOnCancelResponseRequested = true;
 			}
 			break;
-		case LinphoneCallStreamsRunning:
-		case LinphoneCallPaused:
-		case LinphoneCallPausedByRemote:
+		case CallSession::State::StreamsRunning:
+		case CallSession::State::Paused:
+		case CallSession::State::PausedByRemote:
 			if (!op->dialog_request_pending())
 				reinviteToRecoverFromConnectionLoss();
 			break;
-		case LinphoneCallUpdatedByRemote:
+		case CallSession::State::UpdatedByRemote:
 			if (op->dialog_request_pending()) {
 				sal_error_info_set(&sei, SalReasonServiceUnavailable, "SIP", 0, nullptr, nullptr);
 				op->decline_with_error_info(&sei, nullptr);
 			}
 			reinviteToRecoverFromConnectionLoss();
 			break;
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallOutgoingProgress:
+		case CallSession::State::OutgoingInit:
+		case CallSession::State::OutgoingProgress:
 			op->cancel_invite();
 			reinviteOnCancelResponseRequested = true;
 			break;
-		case LinphoneCallOutgoingEarlyMedia:
-		case LinphoneCallOutgoingRinging:
+		case CallSession::State::OutgoingEarlyMedia:
+		case CallSession::State::OutgoingRinging:
 			repairByInviteWithReplaces();
 			break;
-		case LinphoneCallIncomingEarlyMedia:
-		case LinphoneCallIncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
 			// Keep the call broken until a forked INVITE is received from the server
 			break;
 		default:
-			lWarning() << "CallSessionPrivate::repairIfBroken: don't know what to do in state ["
-				<< linphone_call_state_to_string(state);
+			lWarning() << "CallSessionPrivate::repairIfBroken: don't know what to do in state [" << Utils::toString(state);
 			broken = false;
 			break;
 	}
@@ -912,11 +911,11 @@ LinphoneStatus CallSession::accept (const CallSessionParams *csp) {
 
 LinphoneStatus CallSession::acceptUpdate (const CallSessionParams *csp) {
 	L_D();
-	if (d->state != LinphoneCallUpdatedByRemote) {
-		lError() << "CallSession::acceptUpdate(): invalid state " << linphone_call_state_to_string(d->state) << " to call this method";
+	if (d->state != CallSession::State::UpdatedByRemote) {
+		lError() << "CallSession::acceptUpdate(): invalid state " << Utils::toString(d->state) << " to call this method";
 		return -1;
 	}
-	return d->acceptUpdate(csp, d->prevState, linphone_call_state_to_string(d->prevState));
+	return d->acceptUpdate(csp, d->prevState, Utils::toString(d->prevState));
 }
 
 void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to) {
@@ -965,8 +964,8 @@ LinphoneStatus CallSession::decline (const LinphoneErrorInfo *ei) {
 	memset(&sei, 0, sizeof(sei));
 	memset(&sub_sei, 0, sizeof(sub_sei));
 	sei.sub_sei = &sub_sei;
-	if ((d->state != LinphoneCallIncomingReceived) && (d->state != LinphoneCallIncomingEarlyMedia)) {
-		lError() << "Cannot decline a CallSession that is in state " << linphone_call_state_to_string(d->state);
+	if ((d->state != CallSession::State::IncomingReceived) && (d->state != CallSession::State::IncomingEarlyMedia)) {
+		lError() << "Cannot decline a CallSession that is in state " << Utils::toString(d->state);
 		return -1;
 	}
 	if (ei) {
@@ -990,8 +989,8 @@ LinphoneStatus CallSession::declineNotAnswered (LinphoneReason reason) {
 
 LinphoneStatus CallSession::deferUpdate () {
 	L_D();
-	if (d->state != LinphoneCallUpdatedByRemote) {
-		lError() << "CallSession::deferUpdate() not done in state LinphoneCallUpdatedByRemote";
+	if (d->state != CallSession::State::UpdatedByRemote) {
+		lError() << "CallSession::deferUpdate() not done in state CallSession::State::UpdatedByRemote";
 		return -1;
 	}
 	d->deferUpdate = true;
@@ -1008,7 +1007,7 @@ void CallSession::initiateIncoming () {}
 bool CallSession::initiateOutgoing () {
 	L_D();
 	bool defer = false;
-	d->setState(LinphoneCallOutgoingInit, "Starting outgoing call");
+	d->setState(CallSession::State::OutgoingInit, "Starting outgoing call");
 	d->log->start_date_time = ms_time(nullptr);
 	if (!d->destProxy)
 		defer = d->startPing();
@@ -1021,11 +1020,11 @@ bool CallSession::initiateOutgoing () {
 void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 	L_D();
 	int elapsed = (int)(currentRealTime - d->log->start_date_time);
-	if ((d->state == LinphoneCallOutgoingInit) && (elapsed >= getCore()->getCCore()->sip_conf.delayed_timeout)) {
+	if ((d->state == CallSession::State::OutgoingInit) && (elapsed >= getCore()->getCCore()->sip_conf.delayed_timeout)) {
 		/* Start the call even if the OPTIONS reply did not arrive */
 		startInvite(nullptr, "");
 	}
-	if ((d->state == LinphoneCallIncomingReceived) || (d->state == LinphoneCallIncomingEarlyMedia)) {
+	if ((d->state == CallSession::State::IncomingReceived) || (d->state == CallSession::State::IncomingEarlyMedia)) {
 		if (d->listener)
 			d->listener->onIncomingCallSessionTimeoutCheck(getSharedFromThis(), elapsed, oneSecondElapsed);
 	}
@@ -1052,7 +1051,7 @@ LinphoneStatus CallSession::redirect (const string &redirectUri) {
 
 LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
 	L_D();
-	if (d->state != LinphoneCallIncomingReceived) {
+	if (d->state != CallSession::State::IncomingReceived) {
 		lError() << "Bad state for CallSession redirection";
 		return -1;
 	}
@@ -1105,33 +1104,33 @@ int CallSession::startInvite (const Address *destination, const string &subject,
 	int result = d->op->call(from, destinationStr.c_str(), subject.empty() ? nullptr : subject.c_str());
 	ms_free(from);
 	if (result < 0) {
-		if ((d->state != LinphoneCallError) && (d->state != LinphoneCallReleased)) {
+		if ((d->state != CallSession::State::Error) && (d->state != CallSession::State::Released)) {
 			/* sal_call() may invoke call_failure() and call_released() SAL callbacks synchronously,
 			   in which case there is no need to perform a state change here. */
-			d->setState(LinphoneCallError, "Call failed");
+			d->setState(CallSession::State::Error, "Call failed");
 		}
 	} else {
 		d->log->call_id = ms_strdup(d->op->get_call_id()); /* Must be known at that time */
-		d->setState(LinphoneCallOutgoingProgress, "Outgoing call in progress");
+		d->setState(CallSession::State::OutgoingProgress, "Outgoing call in progress");
 	}
 	return result;
 }
 
 LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 	L_D();
-	lInfo() << "Terminate CallSession [" << this << "] which is currently in state [" << linphone_call_state_to_string(d->state) << "]";
+	lInfo() << "Terminate CallSession [" << this << "] which is currently in state [" << Utils::toString(d->state) << "]";
 	SalErrorInfo sei;
 	memset(&sei, 0, sizeof(sei));
 	switch (d->state) {
-		case LinphoneCallReleased:
-		case LinphoneCallEnd:
-		case LinphoneCallError:
-			lWarning() << "No need to terminate CallSession [" << this << "] in state [" << linphone_call_state_to_string(d->state) << "]";
+		case CallSession::State::Released:
+		case CallSession::State::End:
+		case CallSession::State::Error:
+			lWarning() << "No need to terminate CallSession [" << this << "] in state [" << Utils::toString(d->state) << "]";
 			return -1;
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
 			return decline(ei);
-		case LinphoneCallOutgoingInit:
+		case CallSession::State::OutgoingInit:
 			/* In state OutgoingInit, op has to be destroyed */
 			d->op->release();
 			d->op = nullptr;
@@ -1153,7 +1152,7 @@ LinphoneStatus CallSession::terminate (const LinphoneErrorInfo *ei) {
 LinphoneStatus CallSession::transfer (const shared_ptr<CallSession> &dest) {
 	L_D();
 	int result = d->op->refer_with_replaces(dest->getPrivate()->op);
-	d->setTransferState(LinphoneCallOutgoingInit);
+	d->setTransferState(CallSession::State::OutgoingInit);
 	return result;
 }
 
@@ -1166,14 +1165,14 @@ LinphoneStatus CallSession::transfer (const string &dest) {
 	d->op->refer(addrStr);
 	bctbx_free(addrStr);
 	linphone_address_unref(destAddr);
-	d->setTransferState(LinphoneCallOutgoingInit);
+	d->setTransferState(CallSession::State::OutgoingInit);
 	return 0;
 }
 
 LinphoneStatus CallSession::update (const CallSessionParams *csp, const string &subject, const Content *content) {
 	L_D();
-	LinphoneCallState nextState;
-	LinphoneCallState initialState = d->state;
+	CallSession::State nextState;
+	CallSession::State initialState = d->state;
 	if (!d->isUpdateAllowed(nextState))
 		return -1;
 	if (d->currentParams == csp)
@@ -1211,9 +1210,9 @@ const Address& CallSession::getDiversionAddress () const {
 int CallSession::getDuration () const {
 	L_D();
 	switch (d->state) {
-		case LinphoneCallEnd:
-		case LinphoneCallError:
-		case LinphoneCallReleased:
+		case CallSession::State::End:
+		case CallSession::State::Error:
+		case CallSession::State::Released:
 			return d->log->duration;
 		default:
 			return d->computeDuration();
@@ -1291,7 +1290,7 @@ const CallSessionParams * CallSession::getRemoteParams () {
 	return nullptr;
 }
 
-LinphoneCallState CallSession::getState () const {
+CallSession::State CallSession::getState () const {
 	L_D();
 	return d->state;
 }
@@ -1302,7 +1301,7 @@ const Address& CallSession::getToAddress () const {
 	return d->toAddress;
 }
 
-LinphoneCallState CallSession::getTransferState () const {
+CallSession::State CallSession::getTransferState () const {
 	L_D();
 	return d->transferState;
 }
@@ -1345,6 +1344,25 @@ CallSessionParams * CallSession::getCurrentParams () const {
 const CallSessionParams * CallSession::getParams () const {
 	L_D();
 	return d->params;
+}
+
+// -----------------------------------------------------------------------------
+
+bool CallSession::isEarlyState (CallSession::State state) {
+	switch (state) {
+		case CallSession::State::Idle:
+		case CallSession::State::OutgoingInit:
+		case CallSession::State::OutgoingEarlyMedia:
+		case CallSession::State::OutgoingRinging:
+		case CallSession::State::OutgoingProgress:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
+		case CallSession::State::EarlyUpdatedByRemote:
+		case CallSession::State::EarlyUpdating:
+			return true;
+		default:
+			return false;
+	}
 }
 
 LINPHONE_END_NAMESPACE

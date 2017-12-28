@@ -20,6 +20,8 @@
 #ifndef _CALL_SESSION_LISTENER_H_
 #define _CALL_SESSION_LISTENER_H_
 
+#include "conference/session/call-session.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
@@ -41,8 +43,8 @@ public:
 	virtual void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) {}
-	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) {}
-	virtual void onCallSessionTransferStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state) {}
+	virtual void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state, const std::string &message) {}
+	virtual void onCallSessionTransferStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state) {}
 	virtual void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) {}
 	virtual void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) {}

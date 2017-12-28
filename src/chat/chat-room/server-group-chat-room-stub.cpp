@@ -94,7 +94,7 @@ void ServerGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<Abs
 
 void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
 	const shared_ptr<const CallSession> &,
-	LinphoneCallState,
+	CallSession::State,
 	const string &
 ) {}
 

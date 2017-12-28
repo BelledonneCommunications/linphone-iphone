@@ -89,7 +89,7 @@ int CallPrivate::startInvite (const Address *destination) {
 
 shared_ptr<Call> CallPrivate::startReferredCall (const MediaSessionParams *params) {
 	L_Q();
-	if (q->getState() != LinphoneCallPaused) {
+	if (q->getState() != CallSession::State::Paused) {
 		pauseForTransfer();
 	}
 	MediaSessionParams msp;
@@ -266,14 +266,14 @@ void CallPrivate::onCallSessionStartReferred (const shared_ptr<const CallSession
 	startReferredCall(nullptr);
 }
 
-void CallPrivate::onCallSessionStateChanged (const shared_ptr<const CallSession> &session, LinphoneCallState state, const string &message) {
+void CallPrivate::onCallSessionStateChanged (const shared_ptr<const CallSession> &session, CallSession::State state, const string &message) {
 	L_Q();
-	linphone_call_notify_state_changed(L_GET_C_BACK_PTR(q), state, message.c_str());
+	linphone_call_notify_state_changed(L_GET_C_BACK_PTR(q), static_cast<LinphoneCallState>(state), message.c_str());
 }
 
-void CallPrivate::onCallSessionTransferStateChanged (const shared_ptr<const CallSession> &session, LinphoneCallState state) {
+void CallPrivate::onCallSessionTransferStateChanged (const shared_ptr<const CallSession> &session, CallSession::State state) {
 	L_Q();
-	linphone_call_notify_transfer_state_changed(L_GET_C_BACK_PTR(q), state);
+	linphone_call_notify_transfer_state_changed(L_GET_C_BACK_PTR(q), static_cast<LinphoneCallState>(state));
 }
 
 void CallPrivate::onCheckForAcceptation (const shared_ptr<const CallSession> &session) {
@@ -283,11 +283,11 @@ void CallPrivate::onCheckForAcceptation (const shared_ptr<const CallSession> &se
 	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
 		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
 		if (call == lcall) continue;
-		switch (linphone_call_get_state(call)) {
-			case LinphoneCallOutgoingInit:
-			case LinphoneCallOutgoingProgress:
-			case LinphoneCallOutgoingRinging:
-			case LinphoneCallOutgoingEarlyMedia:
+		switch (L_GET_CPP_PTR_FROM_C_OBJECT(call)->getState()) {
+			case CallSession::State::OutgoingInit:
+			case CallSession::State::OutgoingProgress:
+			case CallSession::State::OutgoingRinging:
+			case CallSession::State::OutgoingEarlyMedia:
 				lInfo() << "Already existing call [" << call << "] in state [" << linphone_call_state_to_string(linphone_call_get_state(call)) <<
 					"], canceling it before accepting new call [" << lcall << "]";
 				linphone_call_terminate(call);
@@ -337,7 +337,7 @@ void CallPrivate::onNoMediaTimeoutCheck (const shared_ptr<const CallSession> &se
 	int disconnectTimeout = linphone_core_get_nortp_timeout(q->getCore()->getCCore());
 	bool disconnected = false;
 	AudioStream *as = reinterpret_cast<AudioStream *>(getMediaStream(LinphoneStreamTypeAudio));
-	if (((q->getState() == LinphoneCallStreamsRunning) || (q->getState() == LinphoneCallPausedByRemote))
+	if (((q->getState() == CallSession::State::StreamsRunning) || (q->getState() == CallSession::State::PausedByRemote))
 		&& oneSecondElapsed && as && (as->ms.state == MSStreamStarted) && (disconnectTimeout > 0))
 		disconnected = !audio_stream_alive(as, disconnectTimeout);
 	if (disconnected)
@@ -418,8 +418,8 @@ void CallPrivate::onStopRingingIfNeeded (const shared_ptr<const CallSession> &se
 	bool stopRinging = true;
 	bool ringDuringEarlyMedia = linphone_core_get_ring_during_incoming_early_media(lc);
 	for (const auto &call : q->getCore()->getCalls()) {
-		if ((call->getState() == LinphoneCallIncomingReceived)
-			|| (ringDuringEarlyMedia && call->getState() == LinphoneCallIncomingEarlyMedia)) {
+		if ((call->getState() == CallSession::State::IncomingReceived)
+			|| (ringDuringEarlyMedia && call->getState() == CallSession::State::IncomingEarlyMedia)) {
 			stopRinging = false;
 			break;
 		}
@@ -771,7 +771,7 @@ float Call::getSpeakerVolumeGain () const {
 	return static_pointer_cast<const MediaSession>(d->getActiveSession())->getSpeakerVolumeGain();
 }
 
-LinphoneCallState Call::getState () const {
+CallSession::State Call::getState () const {
 	L_D();
 	return d->getActiveSession()->getState();
 }
@@ -806,7 +806,7 @@ string Call::getToHeader (const std::string &name) const {
 	return d->getActiveSession()->getToHeader(name);
 }
 
-LinphoneCallState Call::getTransferState () const {
+CallSession::State Call::getTransferState () const {
 	L_D();
 	return d->getActiveSession()->getTransferState();
 }

@@ -45,7 +45,7 @@ public:
 
 	// CallSessionListener
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, LinphoneCallState state, const std::string &message) override;
+	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state, const std::string &message) override;
 
 private:
 	CallSessionListener *callSessionListener = this;

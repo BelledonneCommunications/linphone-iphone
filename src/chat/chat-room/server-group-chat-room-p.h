@@ -63,7 +63,7 @@ private:
 	// CallSessionListener
 	void onCallSessionStateChanged (
 		const std::shared_ptr<const CallSession> &session,
-		LinphoneCallState state,
+		CallSession::State state,
 		const std::string &message
 	) override;
 

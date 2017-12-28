@@ -125,7 +125,7 @@ private:
 	static float aggregateQualityRatings (float audioRating, float videoRating);
 
 	std::shared_ptr<Participant> getMe () const;
-	void setState (LinphoneCallState newState, const std::string &message) override;
+	void setState (CallSession::State newState, const std::string &message) override;
 
 	void computeStreamsIndexes (const SalMediaDescription *md);
 	void fixCallParams (SalMediaDescription *rmd);
@@ -204,16 +204,16 @@ private:
 	void postConfigureAudioStreams (bool muted);
 	void setSymmetricRtp (bool value);
 	void setupRingbackPlayer ();
-	void startAudioStream (LinphoneCallState targetState, bool videoWillBeUsed);
-	void startStreams (LinphoneCallState targetState);
+	void startAudioStream (CallSession::State targetState, bool videoWillBeUsed);
+	void startStreams (CallSession::State targetState);
 	void startTextStream ();
-	void startVideoStream (LinphoneCallState targetState);
+	void startVideoStream (CallSession::State targetState);
 	void stopAudioStream ();
 	void stopTextStream ();
 	void stopVideoStream ();
 	void tryEarlyMediaForking (SalMediaDescription *md);
 	void updateFrozenPayloads (SalMediaDescription *result);
-	void updateStreams (SalMediaDescription *newMd, LinphoneCallState targetState);
+	void updateStreams (SalMediaDescription *newMd, CallSession::State targetState);
 	void updateStreamsDestinations (SalMediaDescription *oldMd, SalMediaDescription *newMd);
 
 	bool allStreamsAvpfEnabled () const;
@@ -246,13 +246,13 @@ private:
 	LinphoneStatus pause ();
 	int restartInvite () override;
 	void setTerminated () override;
-	LinphoneStatus startAcceptUpdate (LinphoneCallState nextState, const std::string &stateInfo) override;
+	LinphoneStatus startAcceptUpdate (CallSession::State nextState, const std::string &stateInfo) override;
 	LinphoneStatus startUpdate (const std::string &subject = "") override;
 	void terminate () override;
 	void updateCurrentParams () const override;
 
 	void accept (const MediaSessionParams *params, bool wasRinging);
-	LinphoneStatus acceptUpdate (const CallSessionParams *csp, LinphoneCallState nextState, const std::string &stateInfo) override;
+	LinphoneStatus acceptUpdate (const CallSessionParams *csp, CallSession::State nextState, const std::string &stateInfo) override;
 
 	void refreshSockets ();
 	void reinviteToRecoverFromConnectionLoss () override;

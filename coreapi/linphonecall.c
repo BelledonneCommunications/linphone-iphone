@@ -27,35 +27,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 
 
-bool_t linphone_call_state_is_early(LinphoneCallState state){
-	switch (state){
-		case LinphoneCallIdle:
-		case LinphoneCallOutgoingInit:
-		case LinphoneCallOutgoingEarlyMedia:
-		case LinphoneCallOutgoingRinging:
-		case LinphoneCallOutgoingProgress:
-		case LinphoneCallIncomingReceived:
-		case LinphoneCallIncomingEarlyMedia:
-		case LinphoneCallEarlyUpdatedByRemote:
-		case LinphoneCallEarlyUpdating:
-			return TRUE;
-		case LinphoneCallResuming:
-		case LinphoneCallEnd:
-		case LinphoneCallUpdating:
-		case LinphoneCallRefered:
-		case LinphoneCallPausing:
-		case LinphoneCallPausedByRemote:
-		case LinphoneCallPaused:
-		case LinphoneCallConnected:
-		case LinphoneCallError:
-		case LinphoneCallUpdatedByRemote:
-		case LinphoneCallReleased:
-		case LinphoneCallStreamsRunning:
-		break;
-	}
-	return FALSE;
-}
-
 const char *linphone_call_state_to_string(LinphoneCallState cs){
 	switch (cs){
 		case LinphoneCallIdle:

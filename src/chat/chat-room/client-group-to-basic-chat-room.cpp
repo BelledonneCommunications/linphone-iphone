@@ -54,14 +54,14 @@ public:
 
 	void onCallSessionStateChanged (
 		const shared_ptr<const CallSession> &session,
-		LinphoneCallState newState,
+		CallSession::State newState,
 		const string &message
 	) override {
 		L_Q();
 		shared_ptr<ClientGroupChatRoom> cgcr = dynamic_pointer_cast<ClientGroupChatRoom>(chatRoom);
 		if (!cgcr)
 			return;
-		if ((newState == LinphoneCallError) && (cgcr->getState() == ChatRoom::State::CreationPending)
+		if ((newState == CallSession::State::Error) && (cgcr->getState() == ChatRoom::State::CreationPending)
 			&& (session->getReason() == LinphoneReasonNotAcceptable) && (invitedAddresses.size() == 1)) {
 			cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);
 			cgcr->getPrivate()->setCallSessionListener(nullptr);

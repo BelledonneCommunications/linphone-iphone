@@ -23,6 +23,7 @@
 // TODO: Remove me in the future.
 #include "linphone/types.h"
 
+#include "linphone/enums/call-enums.h"
 #include "linphone/enums/chat-message-enums.h"
 #include "linphone/enums/chat-room-enums.h"
 #include "linphone/enums/event-log-enums.h"
@@ -158,6 +159,17 @@ typedef struct _LinphoneParticipant LinphoneParticipant;
 // =============================================================================
 // C Enums.
 // =============================================================================
+
+// -----------------------------------------------------------------------------
+// Call.
+// -----------------------------------------------------------------------------
+
+/**
+ * LinphoneCallState enum represents the different state a call can reach into.
+ * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
+ * @ingroup call_control
+**/
+L_DECLARE_C_ENUM(CallState, L_ENUM_VALUES_CALL_SESSION_STATE);
 
 // -----------------------------------------------------------------------------
 // ChatRoom.

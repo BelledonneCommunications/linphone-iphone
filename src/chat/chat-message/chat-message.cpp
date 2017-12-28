@@ -22,11 +22,11 @@
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "linphone/utils/utils.h"
-#include "c-wrapper/c-wrapper.h"
+
 #include "address/address.h"
-
+#include "c-wrapper/c-wrapper.h"
+#include "call/call.h"
 #include "chat/chat-message/chat-message-p.h"
-
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/client-group-to-basic-chat-room.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
@@ -482,7 +482,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 void ChatMessagePrivate::send () {
 	L_Q();
 	SalOp *op = salOp;
-	LinphoneCall *call = nullptr;
+	LinphoneCall *lcall = nullptr;
 	int errorCode = 0;
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
@@ -501,14 +501,18 @@ void ChatMessagePrivate::send () {
 
 	shared_ptr<Core> core = q->getCore();
 	if (lp_config_get_int(core->getCCore()->config, "sip", "chat_use_call_dialogs", 0) != 0) {
-		call = linphone_core_get_call_by_remote_address(core->getCCore(), q->getToAddress().asString().c_str());
-		if (call) {
-			if (linphone_call_get_state(call) == LinphoneCallConnected || linphone_call_get_state(call) == LinphoneCallStreamsRunning ||
-					linphone_call_get_state(call) == LinphoneCallPaused || linphone_call_get_state(call) == LinphoneCallPausing ||
-					linphone_call_get_state(call) == LinphoneCallPausedByRemote) {
+		lcall = linphone_core_get_call_by_remote_address(core->getCCore(), q->getToAddress().asString().c_str());
+		if (lcall) {
+			shared_ptr<Call> call = L_GET_CPP_PTR_FROM_C_OBJECT(lcall);
+			if ((call->getState() == CallSession::State::Connected)
+				|| (call->getState() == CallSession::State::StreamsRunning)
+				|| (call->getState() == CallSession::State::Paused)
+				|| (call->getState() == CallSession::State::Pausing)
+				|| (call->getState() == CallSession::State::PausedByRemote)
+			) {
 				lInfo() << "send SIP msg through the existing call.";
-				op = linphone_call_get_op(call);
-				string identity = linphone_core_find_best_identity(core->getCCore(), linphone_call_get_remote_address(call));
+				op = linphone_call_get_op(lcall);
+				string identity = linphone_core_find_best_identity(core->getCCore(), linphone_call_get_remote_address(lcall));
 				if (identity.empty()) {
 					LinphoneAddress *addr = linphone_address_new(q->getToAddress().asString().c_str());
 					LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core->getCCore(), addr);
@@ -617,7 +621,7 @@ void ChatMessagePrivate::send () {
 
 	//store(); // Store will be done right below in the setState(InProgress)
 
-	if (call && linphone_call_get_op(call) == op) {
+	if (lcall && linphone_call_get_op(lcall) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
 		/* Might be better fixed by delivering status, but too costly for now */
 		return;

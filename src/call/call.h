@@ -21,6 +21,7 @@
 #define _CALL_CALL_H_
 
 #include "conference/params/media-session-params.h"
+#include "conference/session/call-session.h"
 #include "core/core-accessor.h"
 #include "object/object.h"
 
@@ -103,14 +104,14 @@ public:
 	std::string getRemoteUserAgent () const;
 	std::shared_ptr<Call> getReplacedCall () const;
 	float getSpeakerVolumeGain () const;
-	LinphoneCallState getState () const;
+	CallSession::State getState () const;
 	LinphoneCallStats *getStats (LinphoneStreamType type) const;
 	int getStreamCount () const;
 	MSFormatType getStreamType (int streamIndex) const;
 	LinphoneCallStats *getTextStats () const;
 	const Address &getToAddress () const;
 	std::string getToHeader (const std::string &name) const;
-	LinphoneCallState getTransferState () const;
+	CallSession::State getTransferState () const;
 	std::shared_ptr<Call> getTransferTarget () const;
 	LinphoneCallStats *getVideoStats () const;
 	bool isInConference () const;

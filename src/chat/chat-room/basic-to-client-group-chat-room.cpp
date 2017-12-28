@@ -72,12 +72,12 @@ public:
 
 	void onCallSessionStateChanged (
 		const shared_ptr<const CallSession> &session,
-		LinphoneCallState newState,
+		CallSession::State newState,
 		const string &message
 	) override {
 		if (!clientGroupChatRoom)
 			return;
-		if ((newState == LinphoneCallError) && (clientGroupChatRoom->getState() == ChatRoom::State::CreationPending)) {
+		if ((newState == CallSession::State::Error) && (clientGroupChatRoom->getState() == ChatRoom::State::CreationPending)) {
 			Core::deleteChatRoom(clientGroupChatRoom);
 			if (session->getReason() == LinphoneReasonNotAcceptable) {
 				clientGroupChatRoom = nullptr;

@@ -123,13 +123,13 @@ void ClientGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<cons
 
 void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 	const shared_ptr<const CallSession> &session,
-	LinphoneCallState newState,
+	CallSession::State newState,
 	const string &message
 ) {
 	L_Q();
 	L_Q_T(RemoteConference, qConference);
 
-	if (newState == LinphoneCallConnected) {
+	if (newState == CallSession::State::Connected) {
 		if (q->getState() == ChatRoom::State::CreationPending) {
 			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
 			q->onConferenceCreated(addr);
@@ -137,9 +137,9 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 				qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
 		} else if (q->getState() == ChatRoom::State::TerminationPending)
 			qConference->getPrivate()->focus->getPrivate()->getSession()->terminate();
-	} else if ((newState == LinphoneCallReleased) && (q->getState() == ChatRoom::State::TerminationPending)) {
+	} else if ((newState == CallSession::State::Released) && (q->getState() == ChatRoom::State::TerminationPending)) {
 		q->onConferenceTerminated(q->getConferenceAddress());
-	} else if ((newState == LinphoneCallError) && (q->getState() == ChatRoom::State::CreationPending)) {
+	} else if ((newState == CallSession::State::Error) && (q->getState() == ChatRoom::State::CreationPending)) {
 		setState(ChatRoom::State::CreationFailed);
 	}
 }

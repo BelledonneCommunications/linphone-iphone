@@ -215,7 +215,7 @@ LinphoneCore *linphone_call_get_core (const LinphoneCall *call) {
 }
 
 LinphoneCallState linphone_call_get_state (const LinphoneCall *call) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getState();
+	return static_cast<LinphoneCallState>(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getState());
 }
 
 bool_t linphone_call_asked_to_autoanswer (LinphoneCall *call) {
@@ -388,7 +388,7 @@ void linphone_call_set_next_video_frame_decoded_callback (LinphoneCall *call, Li
 }
 
 LinphoneCallState linphone_call_get_transfer_state (LinphoneCall *call) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getTransferState();
+	return static_cast<LinphoneCallState>(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getTransferState());
 }
 
 void linphone_call_zoom_video (LinphoneCall* call, float zoom_factor, float* cx, float* cy) {
