@@ -808,14 +808,14 @@
 
 				if ([turn_username length] > 0) {
 					const LinphoneAuthInfo *turnAuthInfo = nil;
-					if ([turn_password length] > 0)
+					if ([turn_password length] > 0){
 						turnAuthInfo = linphone_auth_info_new([turn_username UTF8String], NULL,
 															  [turn_password UTF8String], NULL, NULL, NULL);
-					else
-						turnAuthInfo = linphone_core_find_auth_info(LC, NULL, [turn_username UTF8String], NULL);
-					if (turnAuthInfo != NULL)
 						linphone_core_add_auth_info(LC, turnAuthInfo);
-					linphone_nat_policy_set_stun_server_username(LNP, linphone_auth_info_get_username(turnAuthInfo));
+					}else{
+						turnAuthInfo = linphone_core_find_auth_info(LC, NULL, [turn_username UTF8String], NULL);
+					}
+					linphone_nat_policy_set_stun_server_username(LNP, [turn_username UTF8String]);
 				}
 			} else {
 				linphone_nat_policy_enable_stun(LNP, FALSE);
