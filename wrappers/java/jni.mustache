@@ -167,7 +167,6 @@ static jstring get_jstring_from_char(JNIEnv *env, const char* cString) {
 
     error:
     if (classString) env->DeleteLocalRef(classString);
-    if (constructorString) env->DeleteLocalRef(constructorString);
 
     return javaString;
 }
