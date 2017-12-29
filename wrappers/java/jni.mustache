@@ -145,13 +145,13 @@ static jstring get_jstring_from_char(JNIEnv *env, const char* cString) {
     jclass classString = env->FindClass("java/lang/String");
     if (classString == 0) {
         ms_error("Cannot find java.lang.String class.\n");
-        return NULL;
+        goto error;
     }
 
     constructorString = env->GetMethodID(classString, "<init>", "([BLjava/lang/String;)V");
     if (constructorString == 0) {
         ms_error("Cannot find String <init> method.\n");
-        return NULL;
+        goto error;
     }
 
     len = (int)strlen(cString);
@@ -164,6 +164,10 @@ static jstring get_jstring_from_char(JNIEnv *env, const char* cString) {
         env->DeleteLocalRef(bytesArray);
         env->DeleteLocalRef(UTF8);
     }
+
+    error:
+    if (classString) env->DeleteLocalRef(classString);
+    if (constructorString) env->DeleteLocalRef(constructorString);
 
     return javaString;
 }
