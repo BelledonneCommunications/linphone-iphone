@@ -115,6 +115,10 @@ void _linphone_call_stats_set_received_rtcp (LinphoneCallStats *stats, mblk_t *m
 	stats->received_rtcp = m;
 }
 
+mblk_t *_linphone_call_stats_get_sent_rtcp (const LinphoneCallStats *stats) {
+	return stats->sent_rtcp;
+}
+
 void _linphone_call_stats_set_sent_rtcp (LinphoneCallStats *stats, mblk_t *m) {
 	stats->sent_rtcp = m;
 }

@@ -231,11 +231,6 @@ private:
 	void updateLocalStats (LinphoneCallStats *stats, MediaStream *stream) const;
 	void updateRtpStats (LinphoneCallStats *stats, int streamIndex);
 
-	bool mediaReportEnabled (int statsType);
-	bool qualityReportingEnabled () const;
-	void updateReportingCallState ();
-	void updateReportingMediaInfo (int statsType);
-
 	void executeBackgroundTasks (bool oneSecondElapsed);
 	void reportBandwidth ();
 	void reportBandwidthForStream (MediaStream *ms, LinphoneStreamType type);

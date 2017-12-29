@@ -705,7 +705,8 @@ void MediaSessionPrivate::setState (CallSession::State newState, const string &m
 	if ((newState != state) && (newState != CallSession::State::StreamsRunning))
 		q->cancelDtmfs();
 	CallSessionPrivate::setState(newState, message);
-	updateReportingCallState();
+	if (listener)
+		listener->onCallSessionStateChangedForReporting(q->getSharedFromThis());
 }
 
 // -----------------------------------------------------------------------------
@@ -945,9 +946,13 @@ void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
 		switch (_linphone_call_stats_get_updated(stats)) {
 			case LINPHONE_CALL_STATS_RECEIVED_RTCP_UPDATE:
 			case LINPHONE_CALL_STATS_SENT_RTCP_UPDATE:
-#if 0
-				linphone_reporting_on_rtcp_update(call, stream_index == call->main_audio_stream_index ? SalAudio : stream_index == call->main_video_stream_index ? SalVideo : SalText);
-#endif
+				if (listener) {
+					listener->onRtcpUpdateForReporting(q->getSharedFromThis(),
+						(streamIndex == mainAudioStreamIndex)
+							? SalAudio
+							: (streamIndex == mainVideoStreamIndex) ? SalVideo : SalText
+					);
+				}
 				break;
 			default:
 				break;
@@ -2972,7 +2977,8 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 void MediaSessionPrivate::stopAudioStream () {
 	L_Q();
 	if (audioStream) {
-		updateReportingMediaInfo(LINPHONE_CALL_STATS_AUDIO);
+		if (listener)
+			listener->onUpdateMediaInfoForReporting(q->getSharedFromThis(), LINPHONE_CALL_STATS_AUDIO);
 		media_stream_reclaim_sessions(&audioStream->ms, &sessions[mainAudioStreamIndex]);
 		if (audioStream->ec) {
 			char *stateStr = nullptr;
@@ -3001,8 +3007,10 @@ void MediaSessionPrivate::stopAudioStream () {
 }
 
 void MediaSessionPrivate::stopTextStream () {
+	L_Q();
 	if (textStream) {
-		updateReportingMediaInfo(LINPHONE_CALL_STATS_TEXT);
+		if (listener)
+			listener->onUpdateMediaInfoForReporting(q->getSharedFromThis(), LINPHONE_CALL_STATS_TEXT);
 		media_stream_reclaim_sessions(&textStream->ms, &sessions[mainTextStreamIndex]);
 		fillLogStats(&textStream->ms);
 		text_stream_stop(textStream);
@@ -3021,7 +3029,8 @@ void MediaSessionPrivate::stopVideoStream () {
 #ifdef VIDEO_ENABLED
 	L_Q();
 	if (videoStream) {
-		updateReportingMediaInfo(LINPHONE_CALL_STATS_VIDEO);
+		if (listener)
+			listener->onUpdateMediaInfoForReporting(q->getSharedFromThis(), LINPHONE_CALL_STATS_VIDEO);
 		media_stream_reclaim_sessions(&videoStream->ms, &sessions[mainVideoStreamIndex]);
 		fillLogStats(&videoStream->ms);
 		ms_bandwidth_controller_remove_stream(q->getCore()->getCCore()->bw_controller, &videoStream->ms);
@@ -3367,145 +3376,6 @@ void MediaSessionPrivate::updateRtpStats (LinphoneCallStats *stats, int streamIn
 		const rtp_stats_t *rtpStats = rtp_session_get_stats(sessions[streamIndex].rtp_session);
 		if (rtpStats)
 			_linphone_call_stats_set_rtp_stats(stats, rtpStats);
-	}
-}
-
-// -----------------------------------------------------------------------------
-
-bool MediaSessionPrivate::mediaReportEnabled (int statsType) {
-	L_Q();
-	if (!qualityReportingEnabled())
-		return false;
-	if ((statsType == LINPHONE_CALL_STATS_VIDEO) && !q->getCurrentParams()->videoEnabled())
-		return false;
-	if ((statsType == LINPHONE_CALL_STATS_TEXT) && !q->getCurrentParams()->realtimeTextEnabled())
-		return false;
-	return (log->reporting.reports[statsType] != nullptr);
-}
-
-bool MediaSessionPrivate::qualityReportingEnabled () const {
-	return (destProxy && linphone_proxy_config_quality_reporting_enabled(destProxy));
-}
-
-void MediaSessionPrivate::updateReportingCallState () {
-	if ((state == CallSession::State::Released) || !qualityReportingEnabled())
-		return;
-	switch (state) {
-		case CallSession::State::StreamsRunning:
-#if 0
-			for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
-				int streamIndex = (i == mainAudioStreamIndex) ? LINPHONE_CALL_STATS_AUDIO : mainVideoStreamIndex ? LINPHONE_CALL_STATS_VIDEO : LINPHONE_CALL_STATS_TEXT;
-				bool enabled = mediaReportEnabled(streamIndex);
-				MediaStream *ms = getMediaStream(i);
-				if (enabled && set_on_action_suggested_cb(ms, qos_analyzer_on_action_suggested, log->reporting.reports[streamIndex])) {
-					log->reporting.reports[streamIndex]->call = call;
-					STR_REASSIGN(log->reporting.reports[streamIndex]->qos_analyzer.name, ms_strdup(ms_qos_analyzer_get_name(ms_bitrate_controller_get_qos_analyzer(ms->rc))));
-				}
-			}
-			linphone_reporting_update_ip(call);
-			if (!mediaReportEnabled(LINPHONE_CALL_STATS_VIDEO) && log->reporting.was_video_running)
-				send_report(log->reporting.reports[LINPHONE_CALL_STATS_VIDEO], "VQSessionReport");
-#endif
-			log->reporting.was_video_running = mediaReportEnabled(LINPHONE_CALL_STATS_VIDEO);
-			break;
-		case CallSession::State::End:
-#if 0
-			set_on_action_suggested_cb(&audioStream->ms, nullptr, nullptr);
-			set_on_action_suggested_cb(&videoStream->ms, nullptr, nullptr);
-			if ((log->status == LinphoneCallSuccess) || (log->status == LinphoneCallAborted))
-				linphone_reporting_publish_session_report(call, true);
-#endif
-			break;
-		default:
-			break;
-	}
-}
-
-void MediaSessionPrivate::updateReportingMediaInfo (int statsType) {
-	L_Q();
-	/* op might be already released if hanging up in state CallSession::State::OutgoingInit */
-	if (!op || !mediaReportEnabled(statsType))
-		return;
-
-	char *dialogId = op->get_dialog_id();
-	reporting_session_report_t * report = log->reporting.reports[statsType];
-	STR_REASSIGN(report->info.call_id, ms_strdup(log->call_id));
-
-	STR_REASSIGN(report->local_metrics.user_agent, ms_strdup(linphone_core_get_user_agent(q->getCore()->getCCore())));
-	STR_REASSIGN(report->remote_metrics.user_agent, ms_strdup(q->getRemoteUserAgent().c_str()));
-
-	/* RFC states: "LocalGroupID provides the identification for the purposes of aggregation for the local endpoint" */
-	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s",
-		dialogId ? dialogId : "", "local",
-		report->local_metrics.user_agent ? report->local_metrics.user_agent : ""));
-	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s",
-		dialogId ? dialogId : "", "remote",
-		report->remote_metrics.user_agent ? report->remote_metrics.user_agent : ""));
-
-	if (direction == LinphoneCallIncoming) {
-		STR_REASSIGN(report->info.remote_addr.id, linphone_address_as_string(log->from));
-		STR_REASSIGN(report->info.local_addr.id, linphone_address_as_string(log->to));
-		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.remote_addr.id));
-	} else {
-		STR_REASSIGN(report->info.remote_addr.id, linphone_address_as_string(log->to));
-		STR_REASSIGN(report->info.local_addr.id, linphone_address_as_string(log->from));
-		STR_REASSIGN(report->info.orig_id, ms_strdup(report->info.local_addr.id));
-	}
-
-	report->local_metrics.timestamps.start = log->start_date_time;
-	report->local_metrics.timestamps.stop = log->start_date_time + q->getDuration();
-
-	/* We use same timestamps for remote too */
-	report->remote_metrics.timestamps.start = log->start_date_time;
-	report->remote_metrics.timestamps.stop = log->start_date_time + q->getDuration();
-
-	/* Yet we use the same payload config for local and remote, since this is the largest use case */
-	MediaStream *stream = nullptr;
-	const OrtpPayloadType *localPayload = nullptr;
-	const OrtpPayloadType *remotePayload = nullptr;
-	if (audioStream && (statsType == LINPHONE_CALL_STATS_AUDIO)) {
-		stream = &audioStream->ms;
-		localPayload = q->getCurrentParams()->getUsedAudioCodec();
-		remotePayload = localPayload;
-	} else if (videoStream && (statsType == LINPHONE_CALL_STATS_VIDEO)) {
-		stream = &videoStream->ms;
-		localPayload = q->getCurrentParams()->getUsedVideoCodec();
-		remotePayload = localPayload;
-	} else if (textStream && (statsType == LINPHONE_CALL_STATS_TEXT)) {
-		stream = &textStream->ms;
-		localPayload = q->getCurrentParams()->getUsedRealtimeTextCodec();
-		remotePayload = localPayload;
-	}
-
-	if (stream) {
-		RtpSession * session = stream->sessions.rtp_session;
-		report->info.local_addr.ssrc = rtp_session_get_send_ssrc(session);
-		report->info.remote_addr.ssrc = rtp_session_get_recv_ssrc(session);
-		if (stream->qi){
-			report->local_metrics.quality_estimates.moslq = ms_quality_indicator_get_average_lq_rating(stream->qi) >= 0 ?
-				MAX(1, ms_quality_indicator_get_average_lq_rating(stream->qi)) : -1;
-			report->local_metrics.quality_estimates.moscq = ms_quality_indicator_get_average_rating(stream->qi) >= 0 ?
-				MAX(1, ms_quality_indicator_get_average_rating(stream->qi)) : -1;
-		}
-	}
-
-	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialogId ? dialogId : "", report->info.local_addr.ssrc));
-	ms_free(dialogId);
-
-	if (localPayload) {
-		report->local_metrics.session_description.payload_type = localPayload->type;
-		if (localPayload->mime_type)
-			STR_REASSIGN(report->local_metrics.session_description.payload_desc, ms_strdup(localPayload->mime_type));
-		report->local_metrics.session_description.sample_rate = localPayload->clock_rate;
-		if (localPayload->recv_fmtp)
-			STR_REASSIGN(report->local_metrics.session_description.fmtp, ms_strdup(localPayload->recv_fmtp));
-	}
-
-	if (remotePayload) {
-		report->remote_metrics.session_description.payload_type = remotePayload->type;
-		STR_REASSIGN(report->remote_metrics.session_description.payload_desc, ms_strdup(remotePayload->mime_type));
-		report->remote_metrics.session_description.sample_rate = remotePayload->clock_rate;
-		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remotePayload->recv_fmtp));
 	}
 }
 

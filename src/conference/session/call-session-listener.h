@@ -55,7 +55,10 @@ public:
 
 	virtual void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) {}
 
+	virtual void onCallSessionStateChangedForReporting (const std::shared_ptr<const CallSession> &session) {}
+	virtual void onRtcpUpdateForReporting (const std::shared_ptr<const CallSession> &session, SalStreamType type) {}
 	virtual void onStatsUpdated (const std::shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) {}
+	virtual void onUpdateMediaInfoForReporting (const std::shared_ptr<const CallSession> &session, int statsType) {}
 
 	virtual void onResetCurrentSession (const std::shared_ptr<const CallSession> &session) {}
 	virtual void onSetCurrentSession (const std::shared_ptr<const CallSession> &session) {}

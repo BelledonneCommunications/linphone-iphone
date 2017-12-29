@@ -3602,10 +3602,8 @@ LinphoneCall * linphone_core_invite_address_with_params(LinphoneCore *lc, const 
 		return NULL;
 	}
 
-#if 0
 	/* Unless this call is for a conference, it becomes now the current one*/
 	if (linphone_call_params_get_local_conference_mode(params) ==  FALSE)
-#endif
 		L_GET_PRIVATE_FROM_C_OBJECT(lc)->setCurrentCall(L_GET_CPP_PTR_FROM_C_OBJECT(call));
 	bool defer = L_GET_PRIVATE_FROM_C_OBJECT(call)->initiateOutgoing();
 	if (!defer) {
@@ -6960,19 +6958,13 @@ LinphoneStatus linphone_core_add_to_conference(LinphoneCore *lc, LinphoneCall *c
 }
 
 LinphoneStatus linphone_core_add_all_to_conference(LinphoneCore *lc) {
-#if 0
-	bctbx_list_t *calls=lc->calls;
-	while (calls) {
-		LinphoneCall *call=(LinphoneCall*)calls->data;
-		calls=calls->next;
-		if(linphone_call_get_conference(call) == NULL) { // Prevent the call to the conference server from being added to the conference
-			linphone_core_add_to_conference(lc, call);
-		}
+	for (const auto &call : L_GET_CPP_PTR_FROM_C_OBJECT(lc)->getCalls()) {
+		if (!linphone_call_get_conference(L_GET_C_BACK_PTR(call))) // Prevent the call to the conference server from being added to the conference
+			linphone_core_add_to_conference(lc, L_GET_C_BACK_PTR(call));
 	}
 	if(lc->conf_ctx && linphone_conference_check_class(lc->conf_ctx, LinphoneConferenceClassLocal)) {
 		linphone_core_enter_conference(lc);
 	}
-#endif
 	return 0;
 }
 

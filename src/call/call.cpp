@@ -349,9 +349,24 @@ void CallPrivate::onEncryptionChanged (const shared_ptr<const CallSession> &sess
 	linphone_call_notify_encryption_changed(L_GET_C_BACK_PTR(q), activated, authToken.empty() ? nullptr : authToken.c_str());
 }
 
+void CallPrivate::onCallSessionStateChangedForReporting (const shared_ptr<const CallSession> &session) {
+	L_Q();
+	linphone_reporting_call_state_updated(L_GET_C_BACK_PTR(q));
+}
+
+void CallPrivate::onRtcpUpdateForReporting (const shared_ptr<const CallSession> &session, SalStreamType type) {
+	L_Q();
+	linphone_reporting_on_rtcp_update(L_GET_C_BACK_PTR(q), type);
+}
+
 void CallPrivate::onStatsUpdated (const shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) {
 	L_Q();
 	linphone_call_notify_stats_updated(L_GET_C_BACK_PTR(q), stats);
+}
+
+void CallPrivate::onUpdateMediaInfoForReporting (const std::shared_ptr<const CallSession> &session, int statsType) {
+	L_Q();
+	linphone_reporting_update_media_info(L_GET_C_BACK_PTR(q), statsType);
 }
 
 void CallPrivate::onResetCurrentSession (const shared_ptr<const CallSession> &session) {
