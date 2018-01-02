@@ -1327,32 +1327,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 					[[UIApplication sharedApplication] presentLocalNotificationNow:notif];
 				}
 			} else {
-				// Msg category
-				UNTextInputNotificationAction *act_reply =
-					[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
-																  title:NSLocalizedString(@"Reply", nil)
-																options:UNNotificationActionOptionNone];
-				UNNotificationAction *act_seen =
-					[UNNotificationAction actionWithIdentifier:@"Seen"
-														 title:NSLocalizedString(@"Mark as seen", nil)
-													   options:UNNotificationActionOptionNone];
-				UNNotificationCategory *cat_msg =
-					[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
-														   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
-												 intentIdentifiers:[[NSMutableArray alloc] init]
-														   options:UNNotificationCategoryOptionCustomDismissAction];
-
-				[[UNUserNotificationCenter currentNotificationCenter]
-					requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
-													 UNAuthorizationOptionBadge)
-								  completionHandler:^(BOOL granted, NSError *_Nullable error) {
-									// Enable or disable features based on authorization.
-									if (error) {
-										LOGD(error.description);
-									}
-								  }];
-				NSSet *categories = [NSSet setWithObjects:cat_msg, nil];
-				[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 				UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
 				content.title = NSLocalizedString(@"Message received", nil);
 				if ([LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif" withDefault:YES]) {
