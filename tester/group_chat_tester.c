@@ -20,6 +20,7 @@
 
 #include "linphone/core.h"
 #include "tester_utils.h"
+#include "linphone/wrapper_utils.h"
 #include "liblinphone_tester.h"
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
@@ -31,6 +32,61 @@
 
 static const char sFactoryUri[] = "sip:conference-factory@conf.example.org";
 
+/*
+ * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
+ * */
+LinphoneBuffer * tester_file_transfer_send_cr(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t size){
+	LinphoneBuffer *lb;
+	size_t file_size;
+	size_t size_to_send;
+	uint8_t *buf;
+	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
+
+	// If a file path is set, we should NOT call the on_send callback !
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_file_transfer_filepath(msg));
+
+	BC_ASSERT_PTR_NOT_NULL(file_to_send);
+	if (file_to_send == NULL){
+		return NULL;
+	}
+	fseek(file_to_send, 0, SEEK_END);
+	file_size = ftell(file_to_send);
+	fseek(file_to_send, (long)offset, SEEK_SET);
+	size_to_send = MIN(size, file_size - offset);
+	buf = ms_malloc(size_to_send);
+	if (fread(buf, sizeof(uint8_t), size_to_send, file_to_send) != size_to_send){
+		// reaching end of file, close it
+		fclose(file_to_send);
+		linphone_chat_message_set_user_data(msg, NULL);
+	}
+	lb = linphone_buffer_new_from_data(buf, size_to_send);
+	ms_free(buf);
+	return lb;
+}
+
+/**
+ * function invoked to report file transfer progress.
+ * */
+void file_transfer_progress_indication_cr(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
+	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
+	LinphoneCore *lc = linphone_chat_room_get_core(cr);
+	const LinphoneAddress* from_address = linphone_chat_message_get_from_address(msg);
+	const LinphoneAddress* to_address = linphone_chat_message_get_to_address(msg);
+	char *address = linphone_chat_message_is_outgoing(msg)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
+	stats* counters = get_stats(lc);
+	int progress = (int)((offset * 100)/total);
+	ms_message(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", progress
+	,(linphone_chat_message_is_outgoing(msg)?"sent":"received")
+	, linphone_content_get_type(content)
+	, linphone_content_get_subtype(content)
+	,(linphone_chat_message_is_outgoing(msg)?"to":"from")
+	, address);
+	counters->progress_of_LinphoneFileTransfer = progress;
+	if (progress == 100) {
+		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
+	}
+	free(address);
+}
 
 static void chat_room_is_composing_received (LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
@@ -57,6 +113,16 @@ static void chat_room_participant_removed (LinphoneChatRoom *cr, const LinphoneE
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
 	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
 	manager->stat.number_of_participants_removed++;
+}
+
+static void chat_room_message_received (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
+	LinphoneCore *core = linphone_chat_room_get_core(cr);
+	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
+	if (linphone_chat_message_get_file_transfer_information(msg) || linphone_chat_message_get_external_body_url(msg)) {
+		manager->stat.number_of_LinphoneMessageReceivedWithFile++;
+	} else {
+		manager->stat.number_of_LinphoneMessageReceived++;
+	}
 }
 
 static void chat_room_state_changed (LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
@@ -101,6 +167,7 @@ static void core_chat_room_state_changed (LinphoneCore *core, LinphoneChatRoom *
 		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
 		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
+		linphone_chat_room_cbs_set_message_received(cbs, chat_room_message_received);
 	}
 }
 
@@ -142,6 +209,29 @@ static void _send_message(LinphoneChatRoom *chatRoom, const char *message) {
 	LinphoneChatMessageCbs *msgCbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(msgCbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_message_send(msg);
+}
+
+static void _send_file(LinphoneChatRoom* cr, char *sendFilepath) {
+	LinphoneChatMessage *msg;
+	LinphoneChatMessageCbs *cbs;
+	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(cr));
+	belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
+	linphone_content_set_type(content,"video");
+	linphone_content_set_subtype(content,"mkv");
+	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
+
+	msg = linphone_chat_room_create_file_transfer_message(cr, content);
+	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
+	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send_cr);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication_cr);
+	linphone_chat_room_send_chat_message_2(cr, msg);
+	linphone_content_unref(content);
+}
+
+static void _receive_file(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats) {
+	BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneMessageReceivedWithFile, receiverStats->number_of_LinphoneMessageReceivedWithFile+1, 10000));
 }
 
 // Configure list of core manager for conference and add the listener
@@ -1427,51 +1517,6 @@ static void multiple_is_composing_notification(void) {
 	linphone_core_manager_destroy(laure);
 }
 
-static void group_chat_room_create_room_with_incompatible_friend (void) {
-	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
-	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_tcp_rc");
-	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
-	bctbx_list_t *coresManagerList = NULL;
-	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
-	coresManagerList = bctbx_list_append(coresManagerList, marie);
-	coresManagerList = bctbx_list_append(coresManagerList, pauline);
-	coresManagerList = bctbx_list_append(coresManagerList, laure);
-	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
-	// Removing Pauline groupchat capability
-	linphone_core_set_linphone_specs(pauline->lc, "");
-	start_core_for_conference(coresManagerList);
-
-	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
-	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
-	stats initialMarieStats = marie->stat;
-	stats initialLaureStats = laure->stat;
-
-	// Marie creates a new group chat room
-	const char *initialSubject = "Colleagues";
-	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject, 1);
-	participantsAddresses = NULL;
-	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
-
-	//TODO check pauline side
-
-	// Check that the chat room is correctly created on Laure's side and that the participants are added
-	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 1, 0);
-
-	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(laureCr), 1, int, "%d");
-	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
-
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-
-	wait_for_list(coresList, &dummy, 1, 1000);
-	bctbx_list_free(coresList);
-	bctbx_list_free(coresManagerList);
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-	linphone_core_manager_destroy(laure);
-}
-
 static void group_chat_room_fallback_to_basic_chat_room (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
@@ -1517,7 +1562,7 @@ static void group_chat_room_fallback_to_basic_chat_room (void) {
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(marie->lc, paulineCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
@@ -1602,7 +1647,7 @@ static void group_chat_room_creation_successful_if_at_least_one_invited_particip
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(marie->lc, paulineCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
@@ -1686,7 +1731,7 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(marie->lc, paulineCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
@@ -1806,7 +1851,7 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(marie->lc, paulineCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
@@ -1888,13 +1933,76 @@ static void group_chat_donot_room_migrate_from_basic_chat_room (void) {
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(marie->lc, paulineCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void group_chat_room_send_file (void) {
+	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
+	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
+	bctbx_list_t *coresManagerList = NULL;
+	bctbx_list_t *participantsAddresses = NULL;
+	int dummy = 0;
+	char *sendFilepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
+	char *receivePaulineFilepath = bc_tester_file("receive_file_pauline.dump");
+	char *receiveChloeFilepath = bc_tester_file("receive_file_chloe.dump");
+
+	/* Globally configure an http file transfer server. */
+	linphone_core_set_file_transfer_server(marie->lc, "https://www.linphone.org:444/lft.php");
+	coresManagerList = bctbx_list_append(coresManagerList, marie);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline);
+	coresManagerList = bctbx_list_append(coresManagerList, chloe);
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	start_core_for_conference(coresManagerList);
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(chloe->lc)));
+	stats initialMarieStats = marie->stat;
+	stats initialPaulineStats = pauline->stat;
+	stats initialChloeStats = chloe->stat;
+
+	/* Remove any previously downloaded file */
+	remove(receivePaulineFilepath);
+	remove(receiveChloeFilepath);
+
+	// Marie creates a new group chat room
+	const char *initialSubject = "Colleagues";
+	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject, -1);
+	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
+
+	// Check that the chat room is correctly created on Pauline's side and that the participants are added
+	LinphoneChatRoom *paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, 0);
+
+	// Check that the chat room is correctly created on Chloe's side and that the participants are added
+	LinphoneChatRoom *chloeCr = check_creation_chat_room_client_side(coresList, chloe, &initialChloeStats, confAddr, initialSubject, 2, 0);
+
+	// Sending file
+	_send_file(marieCr, sendFilepath);
+
+	wait_for_list(coresList, &dummy, 1, 10000);
+
+	// Check that chat rooms have received the file
+	// TODO check file after downloading file
+	_receive_file(coresList, pauline, &initialPaulineStats);
+	_receive_file(coresList, chloe, &initialChloeStats);
+
+	// Clean db from chat room
+	linphone_core_delete_chat_room(marie->lc, marieCr);
+	linphone_core_delete_chat_room(chloe->lc, chloeCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	bc_free(sendFilepath);
+
+	wait_for_list(coresList, &dummy, 1, 1000);
+	bctbx_list_free(coresList);
+	bctbx_list_free(coresManagerList);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(chloe);
 }
 
 test_t group_chat_tests[] = {
@@ -1915,13 +2023,13 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send multiple is composing", multiple_is_composing_notification, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Create chat room with incompatible friend", group_chat_room_create_room_with_incompatible_friend, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Fallback to basic chat room", group_chat_room_fallback_to_basic_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Group chat room creation fails if invited participants don't support it", group_chat_room_creation_fails_if_invited_participants_dont_support_it, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Group chat room creation succesful if at least one invited participant supports it", group_chat_room_creation_successful_if_at_least_one_invited_participant_supports_it, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Migrate basic chat room to client group chat room", group_chat_room_migrate_from_basic_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Migrate basic chat room to client group chat room failure", group_chat_room_migrate_from_basic_to_client_fail, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Migrate basic chat room to client group chat room not needed", group_chat_donot_room_migrate_from_basic_chat_room, "Server", "LeaksMemory")
+	TEST_TWO_TAGS("Migrate basic chat room to client group chat room not needed", group_chat_donot_room_migrate_from_basic_chat_room, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Send file", group_chat_room_send_file, "Server", "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {
