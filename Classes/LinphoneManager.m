@@ -989,7 +989,8 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	if (state == LinphoneCallConnected && !mCallCenter) {
 		/*only register CT call center CB for connected call*/
 		[self setupGSMInteraction];
-		[self setSpeakerEnabled:FALSE];
+		if (!_bluetoothEnabled)
+			[self setSpeakerEnabled:FALSE];
 	}
 
 	// Post event
