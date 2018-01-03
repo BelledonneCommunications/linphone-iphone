@@ -32,62 +32,6 @@
 
 static const char sFactoryUri[] = "sip:conference-factory@conf.example.org";
 
-/*
- * function called when the file transfer is initiated. file content should be feed into object LinphoneContent
- * */
-LinphoneBuffer * tester_file_transfer_send_cr(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t size){
-	LinphoneBuffer *lb;
-	size_t file_size;
-	size_t size_to_send;
-	uint8_t *buf;
-	FILE *file_to_send = linphone_chat_message_get_user_data(msg);
-
-	// If a file path is set, we should NOT call the on_send callback !
-	BC_ASSERT_PTR_NULL(linphone_chat_message_get_file_transfer_filepath(msg));
-
-	BC_ASSERT_PTR_NOT_NULL(file_to_send);
-	if (file_to_send == NULL){
-		return NULL;
-	}
-	fseek(file_to_send, 0, SEEK_END);
-	file_size = ftell(file_to_send);
-	fseek(file_to_send, (long)offset, SEEK_SET);
-	size_to_send = MIN(size, file_size - offset);
-	buf = ms_malloc(size_to_send);
-	if (fread(buf, sizeof(uint8_t), size_to_send, file_to_send) != size_to_send){
-		// reaching end of file, close it
-		fclose(file_to_send);
-		linphone_chat_message_set_user_data(msg, NULL);
-	}
-	lb = linphone_buffer_new_from_data(buf, size_to_send);
-	ms_free(buf);
-	return lb;
-}
-
-/**
- * function invoked to report file transfer progress.
- * */
-void file_transfer_progress_indication_cr(LinphoneChatMessage *msg, const LinphoneContent* content, size_t offset, size_t total) {
-	LinphoneChatRoom *cr = linphone_chat_message_get_chat_room(msg);
-	LinphoneCore *lc = linphone_chat_room_get_core(cr);
-	const LinphoneAddress* from_address = linphone_chat_message_get_from_address(msg);
-	const LinphoneAddress* to_address = linphone_chat_message_get_to_address(msg);
-	char *address = linphone_chat_message_is_outgoing(msg)?linphone_address_as_string(to_address):linphone_address_as_string(from_address);
-	stats* counters = get_stats(lc);
-	int progress = (int)((offset * 100)/total);
-	ms_message(" File transfer  [%d%%] %s of type [%s/%s] %s [%s] \n", progress
-	,(linphone_chat_message_is_outgoing(msg)?"sent":"received")
-	, linphone_content_get_type(content)
-	, linphone_content_get_subtype(content)
-	,(linphone_chat_message_is_outgoing(msg)?"to":"from")
-	, address);
-	counters->progress_of_LinphoneFileTransfer = progress;
-	if (progress == 100) {
-		counters->number_of_LinphoneFileTransferDownloadSuccessful++;
-	}
-	free(address);
-}
-
 static void chat_room_is_composing_received (LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
 	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
@@ -211,7 +155,7 @@ static void _send_message(LinphoneChatRoom *chatRoom, const char *message) {
 	linphone_chat_message_send(msg);
 }
 
-static void _send_file(LinphoneChatRoom* cr, char *sendFilepath) {
+static void _send_file(LinphoneChatRoom* cr, const char *sendFilepath) {
 	LinphoneChatMessage *msg;
 	LinphoneChatMessageCbs *cbs;
 	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(cr));
@@ -223,15 +167,29 @@ static void _send_file(LinphoneChatRoom* cr, char *sendFilepath) {
 	msg = linphone_chat_room_create_file_transfer_message(cr, content);
 	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
 	cbs = linphone_chat_message_get_callbacks(msg);
-	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send_cr);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication_cr);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_room_send_chat_message_2(cr, msg);
 	linphone_content_unref(content);
 }
 
-static void _receive_file(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats) {
-	BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneMessageReceivedWithFile, receiverStats->number_of_LinphoneMessageReceivedWithFile+1, 10000));
+static void _receive_file(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats, const char *receive_filepath, const char *sendFilepath) {
+	if (BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneMessageReceivedWithFile, receiverStats->number_of_LinphoneMessageReceivedWithFile+1, 10000))) {
+		LinphoneChatMessageCbs *cbs;
+		LinphoneChatMessage *msg = lcm->stat.last_received_chat_message;
+
+		cbs = linphone_chat_message_get_callbacks(msg);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+		linphone_chat_message_set_file_transfer_filepath(msg, receive_filepath);
+		linphone_chat_message_download_file(msg);
+
+		if (BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneFileTransferDownloadSuccessful,receiverStats->number_of_LinphoneFileTransferDownloadSuccessful + 1, 20000))) {
+			compare_files(sendFilepath, receive_filepath);
+		}
+	}
 }
 
 // Configure list of core manager for conference and add the listener
@@ -1987,15 +1945,16 @@ static void group_chat_room_send_file (void) {
 	wait_for_list(coresList, &dummy, 1, 10000);
 
 	// Check that chat rooms have received the file
-	// TODO check file after downloading file
-	_receive_file(coresList, pauline, &initialPaulineStats);
-	_receive_file(coresList, chloe, &initialChloeStats);
+	_receive_file(coresList, pauline, &initialPaulineStats, receivePaulineFilepath, sendFilepath);
+	_receive_file(coresList, chloe, &initialChloeStats, receiveChloeFilepath, sendFilepath);
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
 	linphone_core_delete_chat_room(chloe->lc, chloeCr);
 	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 	bc_free(sendFilepath);
+	bc_free(receivePaulineFilepath);
+	bc_free(receiveChloeFilepath);
 
 	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
