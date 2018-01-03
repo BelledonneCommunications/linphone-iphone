@@ -612,11 +612,11 @@ void linphone_reporting_on_rtcp_update(LinphoneCall *call, SalStreamType stats_t
 	int report_interval;
 
 	if (stats_type == 0) {
-		stats = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeAudio);
+		stats = L_GET_PRIVATE_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeAudio);
 	} else if (stats_type == 1) {
-		stats = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeVideo);
+		stats = L_GET_PRIVATE_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeVideo);
 	} else {
-		stats = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeText);
+		stats = L_GET_PRIVATE_FROM_C_OBJECT(call)->getStats(LinphoneStreamTypeText);
 	}
 
 	if (! media_report_enabled(call,stats_type))

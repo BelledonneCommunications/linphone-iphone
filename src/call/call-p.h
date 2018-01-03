@@ -59,6 +59,7 @@ public:
 	bool getRingingBeep () const { return ringingBeep; }
 	void setAudioMuted (bool value);
 	void setRingingBeep (bool value) { ringingBeep = value; }
+	LinphoneCallStats *getStats (LinphoneStreamType type) const;
 
 	void createPlayer () const;
 

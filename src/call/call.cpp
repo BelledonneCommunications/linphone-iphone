@@ -61,6 +61,10 @@ void CallPrivate::setAudioMuted (bool value) {
 	static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->setAudioMuted(value);
 }
 
+LinphoneCallStats *CallPrivate::getStats (LinphoneStreamType type) const {
+	return static_pointer_cast<const MediaSession>(getActiveSession())->getPrivate()->getStats(type);
+}
+
 // -----------------------------------------------------------------------------
 
 void CallPrivate::initiateIncoming () {
