@@ -172,11 +172,11 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 ) const {
 	L_D();
 	for (const auto &chatRoom : d->chatRooms) {
+		const IdentityAddress &curLocalAddress = chatRoom->getLocalAddress();
 		if (
-			chatRoom->getParticipantCount() == 1 &&
-			(
-			 (chatRoom->getLocalAddress() == localAddress && participantAddress == chatRoom->getParticipants().front()->getAddress()) ||
-			 (chatRoom->getLocalAddress() == localAddress.getAddressWithoutGruu() && chatRoom->getPeerAddress() == participantAddress)
+			chatRoom->getParticipantCount() == 1 && (
+				(curLocalAddress == localAddress && participantAddress == chatRoom->getParticipants().front()->getAddress()) ||
+				(curLocalAddress == localAddress.getAddressWithoutGruu() && chatRoom->getPeerAddress() == participantAddress)
 			)
 		)
 			return chatRoom;
