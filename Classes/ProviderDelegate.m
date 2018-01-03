@@ -89,12 +89,11 @@
 									  completion:^(NSError *error) {
 										  if (error) {
 											  LOGE(@"CallKit: cannot complete incoming call from [%@] caused by [%@]",handle,[error localizedDescription]);
-											  if (   [error code] == CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb
-												  || [error code] == CXErrorCodeIncomingCallErrorFilteredByBlockList) {
+											  if ([error code] == CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb ||
+												  [error code] == CXErrorCodeIncomingCallErrorFilteredByBlockList)
 												  linphone_call_decline(call,LinphoneReasonBusy); /*to give a chance for other devices to answer*/
-											  } else {
+											  else
 												  linphone_call_decline(call,LinphoneReasonUnknown);
-											  }
 										  }
 										  linphone_call_unref(call);
 										  }];
