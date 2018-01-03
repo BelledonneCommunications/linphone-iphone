@@ -1628,6 +1628,10 @@ const char *linphone_chat_message_get_text(LinphoneChatMessage *msg) {
 int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 	if (msg->message)
 		ms_free(msg->message);
+	if (msg->locale_message) {
+		ms_free(msg->locale_message);
+		msg->locale_message = NULL;
+	}
 	if (text)
 		msg->message = ms_strdup(text);
 	else
