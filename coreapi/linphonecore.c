@@ -6692,11 +6692,8 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc){
 }
 
 void linphone_core_set_chat_database_path (LinphoneCore *lc, const char *path) {
-	if (
-		linphone_core_conference_server_enabled(lc) ||
-		!L_GET_PRIVATE(lc->cppPtr)->mainDb->import(LinphonePrivate::MainDb::Sqlite3, path)
-	)
-		lError() << "Do not use `linphone_core_set_chat_database_path`. Not necessary.";
+	if (!linphone_core_conference_server_enabled(lc))
+		L_GET_PRIVATE(lc->cppPtr)->mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
 }
 
 const char *linphone_core_get_chat_database_path (const LinphoneCore *) {

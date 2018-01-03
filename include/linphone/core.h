@@ -5288,13 +5288,6 @@ LINPHONE_PUBLIC void linphone_core_set_friends_database_path(LinphoneCore *lc, c
 LINPHONE_PUBLIC const char* linphone_core_get_friends_database_path(LinphoneCore *lc);
 
 /**
- * Migrates the friends from the linphonerc to the database if not done yet
- * @ingroup initializing
- * @param lc the linphone core
-**/
-LINPHONE_PUBLIC void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc);
-
-/**
  * Create a new empty LinphoneFriendList object.
  * @param[in] lc LinphoneCore object.
  * @return A new LinphoneFriendList object.

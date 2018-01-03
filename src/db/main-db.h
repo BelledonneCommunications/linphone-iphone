@@ -129,7 +129,7 @@ public:
 	// Other.
 	// ---------------------------------------------------------------------------
 
-	// Import legacy messages from old db.
+	// Import legacy calls/messages from old db.
 	bool import (Backend backend, const std::string &parameters) override;
 
 protected:

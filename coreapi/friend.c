@@ -41,6 +41,8 @@
 #endif
 
 #include "c-wrapper/c-wrapper.h"
+#include "core/core-p.h"
+#include "db/main-db.h"
 
 // TODO: From coreapi. Remove me later.
 #include "private.h"
@@ -529,11 +531,11 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 }
 
 static void close_presence_notification(SalPresenceOp *op) {
-    op->notify_presence_close();
+	op->notify_presence_close();
 }
 
 static void release_sal_op(SalOp *op) {
-    op->release();
+	op->release();
 }
 
 static void linphone_friend_close_incoming_subscriptions(LinphoneFriend *lf) {
@@ -1722,6 +1724,10 @@ bctbx_list_t* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc) {
 #endif
 
 void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path) {
+	if (!linphone_core_conference_server_enabled(lc))
+		L_GET_PRIVATE(lc->cppPtr)->mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
+
+	// TODO: Remove me later.
 	if (lc->friends_db_file){
 		ms_free(lc->friends_db_file);
 		lc->friends_db_file = NULL;
@@ -1729,76 +1735,11 @@ void linphone_core_set_friends_database_path(LinphoneCore *lc, const char *path)
 	if (path) {
 		lc->friends_db_file = ms_strdup(path);
 		linphone_core_friends_storage_init(lc);
-
-		linphone_core_migrate_friends_from_rc_to_db(lc);
 	}
 }
 
 const char* linphone_core_get_friends_database_path(LinphoneCore *lc) {
 	return lc->friends_db_file;
-}
-
-void linphone_core_migrate_friends_from_rc_to_db(LinphoneCore *lc) {
-	LpConfig *lpc = NULL;
-	LinphoneFriend *lf = NULL;
-	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(lc);
-	int i;
-#ifndef SQLITE_STORAGE_ENABLED
-	ms_warning("linphone has been compiled without sqlite, can't migrate friends");
-	return;
-#endif
-	if (!lc) {
-		return;
-	}
-
-	lpc = linphone_core_get_config(lc);
-	if (!lpc) {
-		ms_warning("this core has been started without a rc file, nothing to migrate");
-		return;
-	}
-	if (lp_config_get_int(lpc, "misc", "friends_migration_done", 0) == 1) {
-		ms_warning("the friends migration has already been done, skipping...");
-		return;
-	}
-
-	if (bctbx_list_size(linphone_friend_list_get_friends(lfl)) > 0 && lfl->storage_id == 0) {
-		linphone_core_remove_friend_list(lc, lfl);
-		lfl = linphone_core_create_friend_list(lc);
-		linphone_core_add_friend_list(lc, lfl);
-		linphone_friend_list_unref(lfl);
-	}
-
-	for (i = 0; (lf = linphone_friend_new_from_config_file(lc, i)) != NULL; i++) {
-		char friend_section[32];
-
-		const LinphoneAddress *addr = linphone_friend_get_address(lf);
-		if (addr) {
-			char *address = NULL;
-			const char *displayName = linphone_address_get_display_name(addr);
-			if (!displayName) displayName = linphone_address_get_username(addr);
-
-			address = linphone_address_as_string(addr);
-			if (linphone_core_vcard_supported()) {
-				if (!linphone_friend_create_vcard(lf, displayName)) {
-					ms_warning("Couldn't create vCard for friend %s", address);
-				} else {
-					linphone_vcard_add_sip_address(linphone_friend_get_vcard(lf), address);
-					linphone_address_unref(lf->uri);
-					lf->uri = NULL;
-				}
-			}
-			ms_free(address);
-
-			linphone_friend_list_add_friend(lfl, lf);
-			linphone_friend_unref(lf);
-
-			snprintf(friend_section, sizeof(friend_section), "friend_%i", i);
-			lp_config_clean_section(lpc, friend_section);
-		}
-	}
-
-	ms_debug("friends migration successful: %i friends migrated", i);
-	lp_config_set_int(lpc, "misc", "friends_migration_done", 1);
 }
 
 LinphoneSubscriptionState linphone_friend_get_subscription_state(const LinphoneFriend *lf) {

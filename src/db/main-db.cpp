@@ -42,6 +42,8 @@
 #include "main-db-p.h"
 
 #define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 0)
+#define DB_MODULE_VERSION_FRIENDS L_VERSION(1, 0, 0)
+#define DB_MODULE_VERSION_LEGACY_FRIENDS_IMPORT L_VERSION(1, 0, 0)
 #define DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT L_VERSION(1, 0, 0)
 
 // =============================================================================
@@ -1051,6 +1053,265 @@ void MainDbPrivate::updateModuleVersion (const string &name, unsigned int versio
 
 // -----------------------------------------------------------------------------
 
+#define CHECK_LEGACY_TABLE_EXISTS(SESSION, NAME) \
+	do { \
+		SESSION << "SELECT name FROM sqlite_master WHERE type='table' AND name='" NAME "'"; \
+		return SESSION.got_data() > 0; \
+	} while (false);
+
+static inline bool checkLegacyFriendsTableExists (soci::session &session) {
+	CHECK_LEGACY_TABLE_EXISTS(session, "friends");
+}
+
+static inline bool checkLegacyHistoryTableExists (soci::session &session) {
+	CHECK_LEGACY_TABLE_EXISTS(session, "history");
+}
+
+template<typename T>
+static T getValueFromRow (const soci::row &row, int index, bool &isNull) {
+	isNull = false;
+
+	try {
+		return row.get<T>(static_cast<size_t>(index));
+	} catch (const exception &) {
+		isNull = true;
+	}
+
+	return T();
+}
+
+// -----------------------------------------------------------------------------
+
+#define LEGACY_FRIEND_LIST_COL_ID 0
+#define LEGACY_FRIEND_LIST_COL_NAME 1
+#define LEGACY_FRIEND_LIST_COL_RLS_URI 2
+#define LEGACY_FRIEND_LIST_COL_SYNC_URI 3
+#define LEGACY_FRIEND_LIST_COL_REVISION 4
+
+#define LEGACY_FRIEND_COL_FRIEND_LIST_ID 1
+#define LEGACY_FRIEND_COL_SIP_ADDRESS 2
+#define LEGACY_FRIEND_COL_SUBSCRIBE_POLICY 3
+#define LEGACY_FRIEND_COL_SEND_SUBSCRIBE 4
+#define LEGACY_FRIEND_COL_REF_KEY 5
+#define LEGACY_FRIEND_COL_V_CARD 6
+#define LEGACY_FRIEND_COL_V_CARD_ETAG 7
+#define LEGACY_FRIEND_COL_V_CARD_SYNC_URI 8
+#define LEGACY_FRIEND_COL_PRESENCE_RECEIVED 9
+
+void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
+	L_Q();
+
+	soci::session *inSession = inDbSession.getBackendSession<soci::session>();
+	soci::transaction tr(*dbSession.getBackendSession<soci::session>());
+
+	if (getModuleVersion("legacy-friends-import") >= L_VERSION(1, 0, 0))
+		return;
+	updateModuleVersion("legacy-friends-import", DB_MODULE_VERSION_LEGACY_FRIENDS_IMPORT);
+
+	if (!checkLegacyFriendsTableExists(*inSession))
+		return;
+
+	unordered_map<int, long long> resolvedListsIds;
+	soci::session *session = dbSession.getBackendSession<soci::session>();
+
+	soci::rowset<soci::row> friendsLists = (inSession->prepare << "SELECT * FROM friends_lists");
+	try {
+		set<string> names;
+		for (const auto &friendList : friendsLists) {
+			const string &name = friendList.get<string>(LEGACY_FRIEND_LIST_COL_NAME, "");
+			const string &rlsUri = friendList.get<string>(LEGACY_FRIEND_LIST_COL_RLS_URI, "");
+			const string &syncUri = friendList.get<string>(LEGACY_FRIEND_LIST_COL_SYNC_URI, "");
+			const int &revision = friendList.get<int>(LEGACY_FRIEND_LIST_COL_REVISION, 0);
+
+			string uniqueName = name;
+			for (int id = 0; names.find(uniqueName) != names.end(); uniqueName = name + "-" + Utils::toString(id++));
+			names.insert(uniqueName);
+
+			*session << "INSERT INTO friends_list (name, rls_uri, sync_uri, revision) VALUES ("
+				"  :name, :rlsUri, :syncUri, :revision"
+				")", soci::use(uniqueName), soci::use(rlsUri), soci::use(syncUri), soci::use(revision);
+			resolvedListsIds[friendList.get<int>(LEGACY_FRIEND_LIST_COL_ID)] = q->getLastInsertId();
+		}
+	} catch (const exception &e) {
+		lWarning() << "Failed to import legacy friends list: " << e.what() << ".";
+		return;
+	}
+
+	soci::rowset<soci::row> friends = (inSession->prepare << "SELECT * FROM friends");
+	try {
+		for (const auto &friendInfo : friends) {
+			long long friendsListId;
+			{
+				auto it = resolvedListsIds.find(friendInfo.get<int>(LEGACY_FRIEND_COL_FRIEND_LIST_ID, -1));
+				if (it == resolvedListsIds.end())
+					continue;
+				friendsListId = it->second;
+			}
+
+			const long long &sipAddressId = insertSipAddress(friendInfo.get<string>(LEGACY_FRIEND_COL_SIP_ADDRESS, ""));
+			const int &subscribePolicy = friendInfo.get<int>(LEGACY_FRIEND_COL_SUBSCRIBE_POLICY, LinphoneSPAccept);
+			const int &sendSubscribe = friendInfo.get<int>(LEGACY_FRIEND_COL_SEND_SUBSCRIBE, 1);
+			const string &vCard = friendInfo.get<string>(LEGACY_FRIEND_COL_V_CARD, "");
+			const string &vCardEtag = friendInfo.get<string>(LEGACY_FRIEND_COL_V_CARD_ETAG, "");
+			const string &vCardSyncUri = friendInfo.get<string>(LEGACY_FRIEND_COL_V_CARD_SYNC_URI, "");
+			const int &presenceReveived = friendInfo.get<int>(LEGACY_FRIEND_COL_PRESENCE_RECEIVED, 0);
+
+			*session << "INSERT INTO friend ("
+				"  sip_address_id, friends_list_id, subscribe_policy, send_subscribe,"
+				"  presence_received, v_card, v_card_etag, v_card_sync_uri"
+				") VALUES ("
+				"  :sipAddressId, :friendsListId, :subscribePolicy, :sendSubscribe,"
+				"  :presenceReceived, :vCard, :vCardEtag, :vCardSyncUri"
+				")", soci::use(sipAddressId), soci::use(friendsListId), soci::use(subscribePolicy), soci::use(sendSubscribe),
+				soci::use(presenceReveived), soci::use(vCard), soci::use(vCardEtag), soci::use(vCardSyncUri);
+
+			bool isNull;
+			const string &data = getValueFromRow<string>(friendInfo, LEGACY_FRIEND_COL_REF_KEY, isNull);
+			if (!isNull)
+				*session << "INSERT INTO friend_app_data (friend_id, name, data) VALUES"
+					" (:friendId, 'legacy', :data)",
+					soci::use(q->getLastInsertId()), soci::use(data);
+		}
+		tr.commit();
+	} catch (const exception &e) {
+		lWarning() << "Failed to import legacy friends: " << e.what() << ".";
+		return;
+	}
+
+	lInfo() << "Successful import of legacy friends.";
+}
+
+#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1
+#define LEGACY_MESSAGE_COL_REMOTE_ADDRESS 2
+#define LEGACY_MESSAGE_COL_DIRECTION 3
+#define LEGACY_MESSAGE_COL_TEXT 4
+#define LEGACY_MESSAGE_COL_STATE 7
+#define LEGACY_MESSAGE_COL_URL 8
+#define LEGACY_MESSAGE_COL_DATE 9
+#define LEGACY_MESSAGE_COL_APP_DATA 10
+#define LEGACY_MESSAGE_COL_CONTENT_ID 11
+#define LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID 12
+#define LEGACY_MESSAGE_COL_CONTENT_TYPE 13
+#define LEGACY_MESSAGE_COL_IS_SECURED 14
+
+void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
+	L_Q();
+
+	soci::session *inSession = inDbSession.getBackendSession<soci::session>();
+	soci::transaction tr(*dbSession.getBackendSession<soci::session>());
+
+	unsigned int version = getModuleVersion("legacy-history-import");
+	if (version >= L_VERSION(1, 0, 0))
+		return;
+	updateModuleVersion("legacy-history-import", DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT);
+
+	if (!checkLegacyHistoryTableExists(*inSession))
+		return;
+
+	soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
+	try {
+		for (const auto &message : messages) {
+			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
+			if (direction != 0 && direction != 1) {
+				lWarning() << "Unable to import legacy message with invalid direction.";
+				continue;
+			}
+
+			const int &state = message.get<int>(
+				LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
+			);
+			if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
+				lWarning() << "Unable to import legacy message with invalid state.";
+				continue;
+			}
+
+			const tm &creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
+
+			bool isNull;
+			getValueFromRow<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
+
+			const int &contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
+			ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
+			if (!contentType.isValid())
+				contentType = contentId != -1
+					? ContentType::FileTransfer
+					: (isNull ? ContentType::PlainText : ContentType::ExternalBody);
+			if (contentType == ContentType::ExternalBody) {
+				lInfo() << "Import of external body content is skipped.";
+				continue;
+			}
+
+			const string &text = getValueFromRow<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
+
+			Content content;
+			content.setContentType(contentType);
+			if (contentType == ContentType::PlainText) {
+				if (isNull) {
+					lWarning() << "Unable to import legacy message with no text.";
+					continue;
+				}
+				content.setBody(text);
+			} else {
+				if (contentType != ContentType::FileTransfer) {
+					lWarning() << "Unable to import unsupported legacy content.";
+					continue;
+				}
+
+				const string appData = getValueFromRow<string>(message, LEGACY_MESSAGE_COL_APP_DATA, isNull);
+				if (isNull) {
+					lWarning() << "Unable to import legacy file message without app data.";
+					continue;
+				}
+
+				content.setAppData("legacy", appData);
+			}
+
+			soci::session *session = dbSession.getBackendSession<soci::session>();
+			const int &eventType = static_cast<int>(EventLog::Type::ConferenceChatMessage);
+			*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
+				soci::use(eventType), soci::use(creationTime);
+
+			const long long &eventId = q->getLastInsertId();
+			const long long &localSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
+			const long long &remoteSipAddressId = insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
+			const long long &chatRoomId = insertOrUpdateImportedBasicChatRoom(
+				remoteSipAddressId,
+				localSipAddressId,
+				creationTime
+			);
+			const int &isSecured = message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0);
+
+			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
+				"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
+
+			*session << "INSERT INTO conference_chat_message_event ("
+				"  event_id, from_sip_address_id, to_sip_address_id,"
+				"  time, state, direction, imdn_message_id, is_secured"
+				") VALUES ("
+				"  :eventId, :localSipAddressId, :remoteSipAddressId,"
+				"  :creationTime, :state, :direction, '', :isSecured"
+				")", soci::use(eventId), soci::use(localSipAddressId), soci::use(remoteSipAddressId),
+				soci::use(creationTime), soci::use(state), soci::use(direction),
+				soci::use(isSecured);
+
+			insertContent(eventId, content);
+			insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
+
+			if (state != static_cast<int>(ChatMessage::State::Displayed))
+				insertChatMessageParticipant(eventId, remoteSipAddressId, state);
+		}
+
+		tr.commit();
+	} catch (const exception &e) {
+		lInfo() << "Failed to import legacy messages: " << e.what() << ".";
+		return;
+	}
+
+	lInfo() << "Successful import of legacy messages.";
+}
+
+// -----------------------------------------------------------------------------
+
 void MainDb::init () {
 	L_D();
 
@@ -1336,12 +1597,59 @@ void MainDb::init () {
 	#endif
 
 	*session <<
+		"CREATE TABLE IF NOT EXISTS friends_list ("
+		"  id" + primaryKeyStr("INT UNSIGNED") + ","
+
+		"  name VARCHAR(255) UNIQUE,"
+		"  rls_uri VARCHAR(2047),"
+		"  sync_uri VARCHAR(2047),"
+		"  revision INT UNSIGNED NOT NULL"
+		") " + charset;
+
+	*session <<
+		"CREATE TABLE IF NOT EXISTS friend ("
+		"  id" + primaryKeyStr("INT UNSIGNED") + ","
+
+		"  sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+		"  friends_list_id" + primaryKeyRefStr("INT UNSIGNED") + " NOT NULL,"
+
+		"  subscribe_policy TINYINT UNSIGNED NOT NULL,"
+		"  send_subscribe BOOLEAN NOT NULL,"
+		"  presence_received BOOLEAN NOT NULL,"
+
+		"  v_card MEDIUMTEXT,"
+		"  v_card_etag VARCHAR(255),"
+		"  v_card_sync_uri VARCHAR(2047),"
+
+		"  FOREIGN KEY (sip_address_id)"
+		"    REFERENCES sip_address(id)"
+		"    ON DELETE CASCADE,"
+		"  FOREIGN KEY (friends_list_id)"
+		"    REFERENCES friends_list(id)"
+		"    ON DELETE CASCADE"
+		") " + charset;
+
+	*session <<
+		"CREATE TABLE IF NOT EXISTS friend_app_data ("
+		"  friend_id" + primaryKeyRefStr("INT UNSIGNED") + ","
+
+		"  name VARCHAR(255),"
+		"  data BLOB NOT NULL,"
+
+		"  PRIMARY KEY (friend_id, name),"
+		"  FOREIGN KEY (friend_id)"
+		"    REFERENCES friend(id)"
+		"    ON DELETE CASCADE"
+		") " + charset;
+
+	*session <<
 		"CREATE TABLE IF NOT EXISTS db_module_version ("
 		"  name" + varcharPrimaryKeyStr(255) + ","
 		"  version INT UNSIGNED NOT NULL"
 		") " + charset;
 
 	d->updateModuleVersion("events", DB_MODULE_VERSION_EVENTS);
+	d->updateModuleVersion("friends", DB_MODULE_VERSION_FRIENDS);
 }
 
 bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
@@ -2320,37 +2628,6 @@ void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable)
 
 // -----------------------------------------------------------------------------
 
-#define LEGACY_MESSAGE_COL_LOCAL_ADDRESS 1
-#define LEGACY_MESSAGE_COL_REMOTE_ADDRESS 2
-#define LEGACY_MESSAGE_COL_DIRECTION 3
-#define LEGACY_MESSAGE_COL_TEXT 4
-#define LEGACY_MESSAGE_COL_STATE 7
-#define LEGACY_MESSAGE_COL_URL 8
-#define LEGACY_MESSAGE_COL_DATE 9
-#define LEGACY_MESSAGE_COL_APP_DATA 10
-#define LEGACY_MESSAGE_COL_CONTENT_ID 11
-#define LEGACY_MESSAGE_COL_IMDN_MESSAGE_ID 12
-#define LEGACY_MESSAGE_COL_CONTENT_TYPE 13
-#define LEGACY_MESSAGE_COL_IS_SECURED 14
-
-template<typename T>
-static T getValueFromLegacyMessage (const soci::row &message, int index, bool &isNull) {
-	isNull = false;
-
-	try {
-		return message.get<T>(static_cast<size_t>(index));
-	} catch (const exception &) {
-		isNull = true;
-	}
-
-	return T();
-}
-
-static bool checkLegacyHistoryTableExists (soci::session &session) {
-	session << "SELECT name FROM sqlite_master WHERE type='table' AND name='history'";
-	return session.got_data() > 0;
-}
-
 bool MainDb::import (Backend, const string &parameters) {
 	L_D();
 
@@ -2368,118 +2645,13 @@ bool MainDb::import (Backend, const string &parameters) {
 		return false;
 	}
 
-	soci::session *inSession = inDbSession.getBackendSession<soci::session>();
+	L_BEGIN_LOG_EXCEPTION
+	d->importLegacyFriends(inDbSession);
+	L_END_LOG_EXCEPTION
 
-	// Import messages.
-	try {
-		soci::transaction tr(*d->dbSession.getBackendSession<soci::session>());
-
-		if (!checkLegacyHistoryTableExists(*inSession))
-			return false;
-
-		unsigned int version = d->getModuleVersion("legacy-history-import");
-		if (version >= L_VERSION(1, 0, 0))
-			return false;
-		d->updateModuleVersion("legacy-history-import", DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT);
-
-		soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
-		for (const auto &message : messages) {
-			const int direction = message.get<int>(LEGACY_MESSAGE_COL_DIRECTION);
-			if (direction != 0 && direction != 1) {
-				lWarning() << "Unable to import legacy message with invalid direction.";
-				continue;
-			}
-
-			const int &state = message.get<int>(
-				LEGACY_MESSAGE_COL_STATE, static_cast<int>(ChatMessage::State::Displayed)
-			);
-			if (state < 0 || state > static_cast<int>(ChatMessage::State::Displayed)) {
-				lWarning() << "Unable to import legacy message with invalid state.";
-				continue;
-			}
-
-			const tm &creationTime = Utils::getTimeTAsTm(message.get<int>(LEGACY_MESSAGE_COL_DATE, 0));
-
-			bool isNull;
-			getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_URL, isNull);
-
-			const int &contentId = message.get<int>(LEGACY_MESSAGE_COL_CONTENT_ID, -1);
-			ContentType contentType(message.get<string>(LEGACY_MESSAGE_COL_CONTENT_TYPE, ""));
-			if (!contentType.isValid())
-				contentType = contentId != -1
-					? ContentType::FileTransfer
-					: (isNull ? ContentType::PlainText : ContentType::ExternalBody);
-			if (contentType == ContentType::ExternalBody) {
-				lInfo() << "Import of external body content is skipped.";
-				continue;
-			}
-
-			const string &text = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_TEXT, isNull);
-
-			Content content;
-			content.setContentType(contentType);
-			if (contentType == ContentType::PlainText) {
-				if (isNull) {
-					lWarning() << "Unable to import legacy message with no text.";
-					continue;
-				}
-				content.setBody(text);
-			} else {
-				if (contentType != ContentType::FileTransfer) {
-					lWarning() << "Unable to import unsupported legacy content.";
-					continue;
-				}
-
-				const string appData = getValueFromLegacyMessage<string>(message, LEGACY_MESSAGE_COL_APP_DATA, isNull);
-				if (isNull) {
-					lWarning() << "Unable to import legacy file message without app data.";
-					continue;
-				}
-
-				content.setAppData("legacy", appData);
-			}
-
-			soci::session *session = d->dbSession.getBackendSession<soci::session>();
-			const int &eventType = static_cast<int>(EventLog::Type::ConferenceChatMessage);
-			*session << "INSERT INTO event (type, creation_time) VALUES (:type, :creationTime)",
-				soci::use(eventType), soci::use(creationTime);
-
-			const long long &eventId = getLastInsertId();
-			const long long &localSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_LOCAL_ADDRESS));
-			const long long &remoteSipAddressId = d->insertSipAddress(message.get<string>(LEGACY_MESSAGE_COL_REMOTE_ADDRESS));
-			const long long &chatRoomId = d->insertOrUpdateImportedBasicChatRoom(
-				remoteSipAddressId,
-				localSipAddressId,
-				creationTime
-			);
-			const int &isSecured = message.get<int>(LEGACY_MESSAGE_COL_IS_SECURED, 0);
-
-			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
-				"  VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
-
-			*session << "INSERT INTO conference_chat_message_event ("
-				"  event_id, from_sip_address_id, to_sip_address_id,"
-				"  time, state, direction, imdn_message_id, is_secured"
-				") VALUES ("
-				"  :eventId, :localSipAddressId, :remoteSipAddressId,"
-				"  :creationTime, :state, :direction, '', :isSecured"
-				")", soci::use(eventId), soci::use(localSipAddressId), soci::use(remoteSipAddressId),
-				soci::use(creationTime), soci::use(state), soci::use(direction),
-				soci::use(isSecured);
-
-			d->insertContent(eventId, content);
-			d->insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
-
-			if (state != static_cast<int>(ChatMessage::State::Displayed))
-				d->insertChatMessageParticipant(eventId, remoteSipAddressId, state);
-		}
-
-		tr.commit();
-	} catch (const exception &e) {
-		lInfo() << "Failed to import legacy messages from: `" << uri << "`. (" << e.what() << ")";
-		return false;
-	}
-	lInfo() << "Successful import of legacy messages from: `" << uri << "`.";
+	L_BEGIN_LOG_EXCEPTION
+	d->importLegacyHistory(inDbSession);
+	L_END_LOG_EXCEPTION
 
 	return true;
 }
