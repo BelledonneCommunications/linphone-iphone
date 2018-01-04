@@ -536,30 +536,32 @@
 
 #pragma mark - PushKit Functions
 
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
+	LOGI(@"PushKit credentials updated");
+	LOGI(@"voip token: %@", (credentials.token));
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[LinphoneManager.instance setPushNotificationToken:credentials.token];
+	});
+}
+
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry
-	didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
-							  forType:(NSString *)type {
-
+#ifdef __IPHONE_11_0
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
+#else
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+#endif
 	LOGI(@"PushKit : incoming voip notfication: %@", payload.dictionaryPayload);
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:payload.dictionaryPayload];
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-	didUpdatePushCredentials:(PKPushCredentials *)credentials
-					 forType:(PKPushType)type {
-	LOGI(@"PushKit credentials updated");
-	LOGI(@"voip token: %@", (credentials.token));
-	dispatch_async(dispatch_get_main_queue(), ^{
-	  [LinphoneManager.instance setPushNotificationToken:credentials.token];
-	});
+#ifdef __IPHONE_11_0
+	dispatch_async(dispatch_get_main_queue(), ^{completion();});
+#endif
 }
 
 #pragma mark - UNUserNotifications Framework
