@@ -2385,28 +2385,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}
 
 		if ([LinphoneManager.instance lpConfigBoolForKey:@"backgroundmode_preference"]) {
-			// register keepalive
-			if ([[UIApplication sharedApplication]
-					setKeepAliveTimeout:600 /*(NSTimeInterval)linphone_proxy_config_get_expires(proxyCfg)*/
-								handler:^{
-								  LOGW(@"keepalive handler");
-								  mLastKeepAliveDate = [NSDate date];
-								  if (theLinphoneCore == nil) {
-									  LOGW(@"It seems that Linphone BG mode was deactivated, just skipping");
-									  return;
-								  }
-								  [_iapManager check];
-								  if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-									  // For registration register
-									  [self refreshRegisters];
-								  }
-								  linphone_core_iterate(theLinphoneCore);
-								}]) {
-
-				LOGI(@"keepalive handler succesfully registered");
-			} else {
-				LOGI(@"keepalive handler cannot be registered");
-			}
 			shouldEnterBgMode = TRUE;
 		}
 	}

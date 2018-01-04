@@ -509,7 +509,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)startUp {
 	@try {
 		LinphoneManager *lm = LinphoneManager.instance;
-                LOGE(@"%s", linphone_global_state_to_string(
+                LOGI(@"%s", linphone_global_state_to_string(
                                 linphone_core_get_global_state(LC)));
                 if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
                   [self changeCurrentView:DialerView.compositeViewDescription];

@@ -430,23 +430,22 @@
 		return;
 
 	NSString *loc_key = [aps objectForKey:@"loc-key"];
-	NSString *callId = [aps objectForKey:@"call-id"];
-	if (!loc_key || !callId)
+	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
+	if (!loc_key)
 		return;
+
+	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+		if ([loc_key isEqualToString:@"IC_MSG"])
+			[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
+		else if ([loc_key isEqualToString:@"IM_MSG"])
+			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
+	}
 
 	// if we receive a remote notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 	if (!linphone_core_is_network_reachable(LC)) {
 		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
 		[LinphoneManager.instance setupNetworkReachabilityCallback];
-	}
-
-	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-		if ([loc_key isEqualToString:@"IC_MSG"]) {
-			[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
-			[self fixRing];
-		} else if ([loc_key isEqualToString:@"IM_MSG"])
-			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
 	}
 
 	if ([callId isEqualToString:@""]) {
