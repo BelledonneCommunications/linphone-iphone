@@ -540,7 +540,6 @@ didInvalidatePushTokenForType:(NSString *)type {
 #else
 - (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
 #endif
-	LOGI(@"PushKit : incoming voip notfication: %@", payload.dictionaryPayload);
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:payload.dictionaryPayload];
