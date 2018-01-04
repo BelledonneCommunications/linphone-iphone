@@ -422,79 +422,65 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary *)userInfo {
+	if (linphone_core_get_calls(LC)) // if there are calls, obviously our TCP socket shall be working
+		return;
 
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	if (!aps)
+		return;
 
-	if (aps != nil) {
-		NSDictionary *alert = [aps objectForKey:@"alert"];
-		NSString *loc_key = [aps objectForKey:@"loc-key"];
-		NSString *callId = [aps objectForKey:@"call-id"];
-		if (alert != nil) {
-			loc_key = [alert objectForKey:@"loc-key"];
-			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
-			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
-				//linphone_core_set_network_reachable(LC, FALSE);
-                if (!linphone_core_is_network_reachable(LC)) {
-                    LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
-                    [LinphoneManager.instance setupNetworkReachabilityCallback];
-                }
-				if (loc_key != nil) {
+	NSString *loc_key = [aps objectForKey:@"loc-key"];
+	NSString *callId = [aps objectForKey:@"call-id"];
+	if (!loc_key || !callId)
+		return;
 
-					callId = [userInfo objectForKey:@"call-id"];
-					if (callId != nil) {
-						if ([callId isEqualToString:@""]){
-							//Present apn pusher notifications for info
-							if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-								UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-								content.title = @"APN Pusher";
-								content.body = @"Push notification received !";
-							
-								UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-								[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-									// Enable or disable features based on authorization.
-									if (error) {
-										LOGD(@"Error while adding notification request :");
-										LOGD(error.description);
-									}
-								}];
-							} else {
-								UILocalNotification *notification = [[UILocalNotification alloc] init];
-								notification.repeatInterval = 0;
-								notification.alertBody = @"Push notification received !";
-								notification.alertTitle = @"APN Pusher";
-								[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-							}
-						} else {
-							[LinphoneManager.instance addPushCallId:callId];
-						}
-					} else  if ([callId  isEqual: @""]) {
-						LOGE(@"PushNotification: does not have call-id yet, fix it !");
-					}
-				}
-			}
-		}
-
-		if (callId && [self addLongTaskIDforCallID:callId]) {
-			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && loc_key &&
-				index > 0) {
-				if ([loc_key isEqualToString:@"IC_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
-					[self fixRing];
-				} else if ([loc_key isEqualToString:@"IM_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
-				}
-			}
-		}
+	// if we receive a remote notification, it is probably because our TCP background socket was no more working.
+	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
+	if (!linphone_core_is_network_reachable(LC)) {
+		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
+		[LinphoneManager.instance setupNetworkReachabilityCallback];
 	}
+
+	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+		if ([loc_key isEqualToString:@"IC_MSG"]) {
+			[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
+			[self fixRing];
+		} else if ([loc_key isEqualToString:@"IM_MSG"])
+			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
+	}
+
+	if ([callId isEqualToString:@""]) {
+		//Present apn pusher notifications for info
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+			content.title = @"APN Pusher";
+			content.body = @"Push notification received !";
+							
+			UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+			[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+				// Enable or disable features based on authorization.
+				if (error) {
+					LOGD(@"Error while adding notification request :");
+					LOGD(error.description);
+				}
+			}];
+		} else {
+			UILocalNotification *notification = [[UILocalNotification alloc] init];
+			notification.repeatInterval = 0;
+			notification.alertBody = @"Push notification received !";
+			notification.alertTitle = @"APN Pusher";
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+		}
+	} else
+		[LinphoneManager.instance addPushCallId:callId];
+
     LOGI(@"Notification %@ processed", userInfo.description);
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
 	NSDictionary *dict = LinphoneManager.instance.pushDict;
-	if ([[dict allKeys] indexOfObject:callId] != NSNotFound) {
+	if ([[dict allKeys] indexOfObject:callId] != NSNotFound)
 		return FALSE;
-	}
 
 	LOGI(@"Adding long running task for call id : %@ with index : 1", callId);
 	[dict setValue:[NSNumber numberWithInt:1] forKey:callId];
@@ -503,7 +489,6 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-
 	[self processRemoteNotification:userInfo];
 }
 
@@ -513,9 +498,9 @@
 	while (rooms) {
 		const LinphoneAddress *room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom *)rooms->data);
 		char *room_from = linphone_address_as_string_uri_only(room_from_address);
-		if (room_from && strcmp(from, room_from) == 0) {
+		if (room_from && strcmp(from, room_from) == 0)
 			return rooms->data;
-		}
+
 		rooms = rooms->next;
 	}
 	return NULL;
