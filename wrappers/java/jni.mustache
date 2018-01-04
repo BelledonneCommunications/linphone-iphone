@@ -426,7 +426,9 @@ jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jo
 {{#methods}}
 {{#notEmpty}}
 {{return}} {{name}}({{params}}) {
-	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;{{/notStatic}}{{#strings}}
+	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;
+	{{#isLinphoneFactory}}cptr = linphone_factory_get();{{/isLinphoneFactory}}
+	{{/notStatic}}{{#strings}}
 	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
 	{{/strings}}{{#bytes}}
 	{{bytesargtype}} c_{{bytesargname}} = ({{bytesargtype}})env->GetByteArrayElements({{bytesargname}}, NULL);

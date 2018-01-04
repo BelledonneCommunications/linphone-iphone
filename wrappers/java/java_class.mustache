@@ -85,7 +85,7 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
     public static final synchronized Factory instance() {
 		try {
 			if (_Factory == null) {
-				_Factory = new FactoryImpl(0);
+				_Factory = new FactoryImpl(0); // This value is not relevant, correct factory pointer will be used in JNI layer
 			}
 		} catch (Exception e) {
 			System.err.println("Cannot instanciate factory");

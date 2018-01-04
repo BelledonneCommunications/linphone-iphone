@@ -366,6 +366,7 @@ class JavaTranslator(object):
         methodDict['classCName'] = 'Linphone' + className.to_camel_case()
         methodDict['className'] = className.to_camel_case()
         methodDict['classImplName'] = className.to_camel_case() + 'Impl'
+        methodDict['isLinphoneFactory'] = className.to_camel_case() == 'Factory'
         methodDict['jniPath'] = self.jni_path
 
         methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
