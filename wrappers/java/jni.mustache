@@ -333,6 +333,11 @@ static {{return}} {{callbackName}}({{params}}) {
 		env->DeleteLocalRef(j_{{objectName}});
 	}
 	{{/jobjects}}
+	{{#jenums}}
+	if (j_{{enumName}}) {
+		env->DeleteLocalRef(j_{{enumName}});
+	}
+	{{/jenums}}
 	{{#jstrings}}
 	if (j_{{stringName}}) {
 		env->DeleteLocalRef(j_{{stringName}});
