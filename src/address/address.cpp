@@ -34,6 +34,8 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 void AddressPrivate::setInternalAddress (const SalAddress *addr) {
+	if (internalAddress)
+		sal_address_unref(internalAddress);
 	internalAddress = sal_address_clone(addr);
 }
 

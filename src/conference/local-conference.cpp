@@ -34,6 +34,11 @@ LocalConference::LocalConference (const shared_ptr<Core> &core, const IdentityAd
 	d->eventHandler.reset(new LocalConferenceEventHandler(this));
 }
 
+LocalConference::~LocalConference () {
+	L_D();
+	d->eventHandler.reset();
+}
+
 // -----------------------------------------------------------------------------
 
 void LocalConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {

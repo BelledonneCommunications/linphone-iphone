@@ -489,6 +489,8 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->identity) {
 		linphone_address_unref(mgr->identity);
 	}
+	if (mgr->rc_path)
+		bctbx_free(mgr->rc_path);
 
 	manager_count--;
 	linphone_core_set_log_level(old_log_level);

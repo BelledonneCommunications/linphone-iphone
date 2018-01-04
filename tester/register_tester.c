@@ -1252,7 +1252,9 @@ static void register_get_gruu(void) {
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
 		BC_ASSERT_PTR_NOT_NULL(addr);
-		BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(addr), "gr"));
+		char *addrStr = linphone_address_as_string_uri_only(addr);
+		BC_ASSERT_PTR_NOT_NULL(strstr(addrStr, "gr"));
+		bctbx_free(addrStr);
 	}
 	linphone_core_manager_destroy(marie);
 }

@@ -37,6 +37,11 @@ RemoteConference::RemoteConference (
 	d->eventHandler.reset(new RemoteConferenceEventHandler(this));
 }
 
+RemoteConference::~RemoteConference () {
+	L_D();
+	d->eventHandler.reset();
+}
+
 // -----------------------------------------------------------------------------
 
 void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
