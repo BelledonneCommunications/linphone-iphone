@@ -177,6 +177,12 @@ LINPHONE_PUBLIC void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *
 LINPHONE_PUBLIC const struct addrinfo * linphone_nat_policy_get_stun_server_addrinfo(LinphoneNatPolicy *policy);
 
 /**
+ * Returns the LinphoneCore object managing this nat policy, if any.
+ * @param[in] fr LinphoneNatPolicy object
+ */
+LINPHONE_PUBLIC LinphoneCore *linphone_nat_policy_get_core(const LinphoneNatPolicy *policy);
+
+/**
  * @}
  */
 

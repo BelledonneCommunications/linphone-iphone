@@ -204,6 +204,9 @@ LinphonePlayer *linphone_call_build_player(LinphoneCall *call){
 	return obj;
 }
 
+LinphoneCore *linphone_player_get_core(const LinphonePlayer *player){
+	return linphone_call_get_core((LinphoneCall *)player->impl);
+}
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphonePlayerCbs);
 

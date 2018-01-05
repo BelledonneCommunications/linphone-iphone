@@ -316,3 +316,7 @@ LinphoneNatPolicy * linphone_core_create_nat_policy_from_config(LinphoneCore *lc
 	}
 return policy;
 }
+
+LinphoneCore *linphone_nat_policy_get_core(const LinphoneNatPolicy *policy) {
+	return policy->lc;
+}
