@@ -1744,7 +1744,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 					linphone_proxy_config_expires(proxy, 0);
 				}
 				linphone_core_set_network_reachable(theLinphoneCore, true);
-				linphone_core_iterate(theLinphoneCore);
+				[LinphoneManager.instance iterate];
 				LOGI(@"Network connectivity changed to type [%s]", (newConnectivity == wifi ? "wifi" : "wwan"));
 				lm.connectivity = newConnectivity;
 			}
@@ -1834,7 +1834,14 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 // scheduling loop
 - (void)iterate {
+	UIBackgroundTaskIdentifier coreIterateTaskId = 0;
+	coreIterateTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+		LOGW(@"Background task for core iteration launching expired.");
+		[[UIApplication sharedApplication] endBackgroundTask:coreIterateTaskId];
+	}];
 	linphone_core_iterate(theLinphoneCore);
+	if (coreIterateTaskId != UIBackgroundTaskInvalid)
+		[[UIApplication sharedApplication] endBackgroundTask:coreIterateTaskId];
 }
 
 - (void)audioSessionInterrupted:(NSNotification *)notification {
@@ -2122,7 +2129,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 
 	/*call iterate once immediately in order to initiate background connections with sip server or remote provisioning
 	 * grab, if any */
-	linphone_core_iterate(theLinphoneCore);
+	[self iterate];
 	// start scheduler
 	mIterateTimer =
 		[NSTimer scheduledTimerWithTimeInterval:0.02 target:self selector:@selector(iterate) userInfo:nil repeats:YES];
@@ -2355,7 +2362,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			proxies = proxies->next;
 		}
 		// force registration update first, then update friend list subscription
-		linphone_core_iterate(theLinphoneCore);
+		[self iterate];
 	}
 
 	const MSList *lists = linphone_core_get_friends_lists(LC);
@@ -2403,7 +2410,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	/*stop the video preview*/
 	if (theLinphoneCore) {
 		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
-		linphone_core_iterate(theLinphoneCore);
+		[self iterate];
 	}
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 
