@@ -406,11 +406,12 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	LinphoneAddress *contact_addr=NULL;
-	if (	cfg->op
+	if (cfg->op
 			&& cfg->state == LinphoneRegistrationOk
 			&& (contact_addr = (LinphoneAddress*)sal_op_get_contact_address(cfg->op))
-			&& linphone_address_get_transport(contact_addr) != LinphoneTransportUdp /*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/) {
-		/*need to save current contact in order to reset is later*/
+			&& linphone_address_get_transport(contact_addr) != LinphoneTransportUdp /*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/
+			&& lp_config_get_int(cfg->lc->config, "sip", "unregister_previous_contact", 0)) {
+		/*need to save current contact in order to reset it later*/
 		linphone_address_ref(contact_addr);
 		if (cfg->pending_contact)
 			linphone_address_unref(cfg->pending_contact);
