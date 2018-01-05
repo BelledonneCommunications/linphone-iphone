@@ -220,6 +220,7 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -298,7 +299,7 @@ static {{return}} {{callbackName}}({{params}}) {
 	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
 
 	if (jlistener == NULL) {
-		ms_warning("{{name}}() notification without listener");
+		ms_warning("{{callbackName}}() notification without listener");
 		return{{returnIfFail}};
 	}
 
@@ -403,8 +404,6 @@ jobject Java_{{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobjec
 
 jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jobject jfactory, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path, jobject jcontext) {
 	LinphoneFactory *cptr = linphone_factory_get();
-	SetObjectNativePtr(env, jfactory, (jlong)cptr); // Set the C factory ptr as Factory.nativePtr for next factory calls
-
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(cptr);
 	jobject listener = env->NewGlobalRef(jlistener);
 

@@ -78,6 +78,17 @@ ENUMS_LIST = {
     'XmlRpcRequestStatus': 'XmlRpcRequest',
 }
 
+CORE_ACCESSOR_LIST = [
+    'Call',
+    'ChatRoom',
+    'Event',
+    'Friend',
+    'FriendList',
+    'NatPolicy',
+    'Player',
+    'ProxyConfig'
+]
+
 ##########################################################################
 
 class JavaTranslator(object):
@@ -271,12 +282,12 @@ class JavaTranslator(object):
     def translate_argument(self, _arg, native=False, jni=False):
         return '{0} {1}'.format(self.translate_type(_arg.type, native, jni), self.translate_argument_name(_arg.name))
 
-    def translate_property(self, _property):
+    def translate_property(self, _property, _hasCoreAccessor):
         properties = []
         if _property.getter is not None:
-            properties.append(self.translate_method(_property.getter))
+            properties.append(self.translate_method(_property.getter, _hasCoreAccessor))
         if _property.setter is not None:
-            properties.append(self.translate_method(_property.setter))
+            properties.append(self.translate_method(_property.setter, _hasCoreAccessor))
         return properties
 
     def translate_jni_property(self, className, _property):
@@ -317,7 +328,7 @@ class JavaTranslator(object):
     def generate_set_listener(self, _class):
         return self.generate_listener('setListener', _class)
 
-    def translate_method(self, _method):
+    def translate_method(self, _method, _hasCoreAccessor=False):
         methodDict = {}
 
         methodDict['return'] = self.translate_type(_method.returnType, isReturn=True)
@@ -328,6 +339,8 @@ class JavaTranslator(object):
         methodDict['convertInputClassArrayToLongArray'] = False
 
         methodDict['name'] = _method.name.to_camel_case(lower=True)
+        methodDict['isNotGetCore'] = not methodDict['name'] == 'getCore'
+        methodDict['hasCoreAccessor'] = _hasCoreAccessor
         methodDict['exception'] = self.throws_exception(_method.returnType)
 
         methodDict['enumCast'] = type(_method.returnType) is AbsApi.EnumType
@@ -459,16 +472,17 @@ class JavaTranslator(object):
         classDict['isLinphoneCore'] = _class.name.to_camel_case() == "Core"
         classDict['doc'] = _class.briefDescription.translate(self.docTranslator) if _class.briefDescription is not None else None
 
+        hasCoreAccessor = _class.name.to_camel_case() in CORE_ACCESSOR_LIST
         for _property in _class.properties:
             try:
-                classDict['methods'] += self.translate_property(_property)
+                classDict['methods'] += self.translate_property(_property, hasCoreAccessor)
                 classDict['jniMethods'] += self.translate_jni_property(_class.name, _property)
             except AbsApi.Error as e:
                 logging.error('error while translating {0} property: {1}'.format(_property.name.to_snake_case(), e.args[0]))
 
         for method in _class.instanceMethods:
             try:
-                methodDict = self.translate_method(method)
+                methodDict = self.translate_method(method, hasCoreAccessor)
                 jniMethodDict = self.translate_jni_method(_class.name, method)
                 classDict['methods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
@@ -477,7 +491,7 @@ class JavaTranslator(object):
 
         for method in _class.classMethods:
             try:
-                methodDict = self.translate_method(method)
+                methodDict = self.translate_method(method, hasCoreAccessor)
                 jniMethodDict = self.translate_jni_method(_class.name, method, True)
                 classDict['methods'].append(methodDict)
                 classDict['jniMethods'].append(jniMethodDict)
