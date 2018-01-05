@@ -46,4 +46,9 @@ shared_ptr<const Object> Object::getSharedFromThis () const {
 	return nullptr;
 }
 
+inline const Object::Lock &Object::getLock () const {
+	L_D();
+	return d->getLock();
+}
+
 LINPHONE_END_NAMESPACE

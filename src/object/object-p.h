@@ -30,8 +30,13 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ObjectPrivate : public BaseObjectPrivate {
+protected:
+	constexpr const Object::Lock &getLock () const {
+		return lock;
+	}
+
 private:
-	std::unordered_map<std::string, Variant> properties;
+	Object::Lock lock;
 
 	L_DECLARE_PUBLIC(Object);
 };
