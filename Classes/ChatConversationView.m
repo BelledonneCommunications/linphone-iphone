@@ -334,6 +334,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
+	Boolean shouldAnimate = composingVisible == visible;
 	CGRect keyboardFrame = [_messageView frame];
 	CGRect newComposingFrame = [_composeIndicatorView frame];
 	CGRect newTableFrame = [_tableController.tableView frame];
@@ -364,8 +365,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	composingVisible = visible;
 	[UIView animateWithDuration:delay
 		animations:^{
-		  _tableController.tableView.frame = newTableFrame;
-		  _composeIndicatorView.frame = newComposingFrame;
+			if (shouldAnimate)
+				return;
+			_tableController.tableView.frame = newTableFrame;
+			_composeIndicatorView.frame = newComposingFrame;
 		}
 		completion:^(BOOL finished) {
 		  [_tableController scrollToBottom:TRUE];
