@@ -115,6 +115,8 @@ set(RC_FILES
 	rcfiles/marie_zrtp_aes256_rc
 	rcfiles/marie_zrtp_b256_rc
 	rcfiles/marie_zrtp_srtpsuite_aes256_rc
+	rcfiles/marie_zrtp_ecdh255_rc
+	rcfiles/marie_zrtp_ecdh448_rc
 	rcfiles/michelle_rc_udp
 	rcfiles/multi_account_rc
 	rcfiles/pauline_alt_rc
