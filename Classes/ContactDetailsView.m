@@ -154,7 +154,6 @@
 - (void)newContact:(NSString *)address {
   CNContact *contact = [[CNContact alloc] init];
   Contact *mContact = [[Contact alloc] initWithCNContact:contact];
-  [mContact setSipAddress:address atIndex:0];
   [self selectContact:mContact andReload:NO];
   [self addCurrentContactContactField:address];
   // force to restart server subscription to add new contact into the list

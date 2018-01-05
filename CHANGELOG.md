@@ -14,6 +14,7 @@ Group changes to describe their impact on the project, as follows:
 
 ### Added
 - Support of IOS 11
+- new algorithm to adapt audio and video codec bitrates to the available bandwidth (https://wiki.linphone.org/xwiki/wiki/public/view/FAQ/How%20does%20adaptive%20bitrate%20algorithm%20work%20%3F/)
 
 ### Changed
 - Contact, CNContact implmentation.
