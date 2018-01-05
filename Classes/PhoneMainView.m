@@ -859,7 +859,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
-	PhoneMainView *view = (__bridge PhoneMainView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	PhoneMainView *view = PhoneMainView.instance;
 	switch (newState) {
 		case LinphoneChatRoomStateCreated:
 			LOGI(@"Chat room [%p] created on server.", cr);
