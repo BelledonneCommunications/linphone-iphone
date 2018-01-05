@@ -174,10 +174,12 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 	LinphoneAddress *lAddr = linphone_address_new(peerAddress.c_str());
 	LinphoneCore *lc = conf->getCore()->getCCore();
 	LinphoneProxyConfig *cfg = linphone_core_lookup_known_proxy(lc, lAddr);
-	if (!cfg || (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk))
+	if (!cfg || (linphone_proxy_config_get_state(cfg) != LinphoneRegistrationOk)) {
+		linphone_address_unref(lAddr);
 		return;
+	}
 
-	lev = linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600);
+	lev = linphone_event_ref(linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600));
 	lev->op->set_from(chatRoomId.getLocalAddress().asString().c_str());
 	const string &lastNotifyStr = Utils::toString(lastNotify);
 	linphone_event_add_custom_header(lev, "Last-Notify-Version", lastNotifyStr.c_str());
@@ -191,6 +193,7 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 void RemoteConferenceEventHandlerPrivate::unsubscribe () {
 	if (lev) {
 		linphone_event_terminate(lev);
+		linphone_event_unref(lev);
 		lev = nullptr;
 	}
 }
