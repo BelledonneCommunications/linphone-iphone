@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <unordered_map>
+
 #include <belr/abnf.h>
 #include <belr/grammarbuilder.h>
 
