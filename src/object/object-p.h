@@ -20,8 +20,6 @@
 #ifndef _L_OBJECT_P_H_
 #define _L_OBJECT_P_H_
 
-#include <unordered_map>
-
 #include "base-object-p.h"
 #include "object.h"
 

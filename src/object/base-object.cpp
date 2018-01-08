@@ -18,11 +18,10 @@
  */
 
 #include "base-object-p.h"
+#include "base-object.h"
 
 // Necessary for: L_SIGNAL_CPP_PTR_DESTRUCTION.
 #include "c-wrapper/internal/c-tools.h"
-
-#include "base-object.h"
 
 // =============================================================================
 
