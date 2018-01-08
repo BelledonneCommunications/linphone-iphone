@@ -4038,6 +4038,7 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 				/* Create the ice session now if ICE is required */
 				d->iceAgent->checkSession(IR_Controlled, false);
 			} else {
+				linphone_nat_policy_unref(d->natPolicy);
 				d->natPolicy = nullptr;
 				lWarning() << "ICE not supported for incoming INVITE without SDP";
 			}

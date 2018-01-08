@@ -804,10 +804,12 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 
 	if (video_enabled){
 		liblinphone_tester_clock_start(&ts);
-		do{
+		LinphoneCallStats *stats1 = NULL;
+		LinphoneCallStats *stats2 = NULL;
+		do {
 			if ((c1 != NULL) && (c2 != NULL)) {
-				LinphoneCallStats *stats1 = linphone_call_get_video_stats(c1);
-				LinphoneCallStats *stats2 = linphone_call_get_video_stats(c2);
+				stats1 = linphone_call_get_video_stats(c1);
+				stats2 = linphone_call_get_video_stats(c2);
 				if (linphone_call_stats_get_ice_state(stats1)==state &&
 					linphone_call_stats_get_ice_state(stats2)==state){
 					video_success=TRUE;
@@ -815,21 +817,27 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeVideo);
 					break;
 				}
-				linphone_call_stats_unref(stats1);
-				linphone_call_stats_unref(stats2);
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
+				linphone_call_stats_unref(stats1);
+				linphone_call_stats_unref(stats2);
 			}
 			ms_usleep(20000);
-		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
+		} while (!liblinphone_tester_clock_elapsed(&ts,10000));
+		if (stats1)
+			linphone_call_stats_unref(stats1);
+		if (stats2)
+			linphone_call_stats_unref(stats2);
 	}
 
 	if (realtime_text_enabled){
 		liblinphone_tester_clock_start(&ts);
-		do{
+		LinphoneCallStats *stats1 = NULL;
+		LinphoneCallStats *stats2 = NULL;
+		do {
 			if ((c1 != NULL) && (c2 != NULL)) {
-				LinphoneCallStats *stats1 = linphone_call_get_text_stats(c1);
-				LinphoneCallStats *stats2 = linphone_call_get_text_stats(c2);
+				stats1 = linphone_call_get_text_stats(c1);
+				stats2 = linphone_call_get_text_stats(c2);
 				if (linphone_call_stats_get_ice_state(stats1)==state &&
 					linphone_call_stats_get_ice_state(stats2)==state){
 					text_success=TRUE;
@@ -837,13 +845,17 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 					check_ice_from_rtp(c2,c1,LinphoneStreamTypeText);
 					break;
 				}
-				linphone_call_stats_unref(stats1);
-				linphone_call_stats_unref(stats2);
 				linphone_core_iterate(caller->lc);
 				linphone_core_iterate(callee->lc);
+				linphone_call_stats_unref(stats1);
+				linphone_call_stats_unref(stats2);
 			}
 			ms_usleep(20000);
-		}while(!liblinphone_tester_clock_elapsed(&ts,10000));
+		} while (!liblinphone_tester_clock_elapsed(&ts,10000));
+		if (stats1)
+			linphone_call_stats_unref(stats1);
+		if (stats2)
+			linphone_call_stats_unref(stats2);
 	}
 
 	/*make sure encryption mode are preserved*/
