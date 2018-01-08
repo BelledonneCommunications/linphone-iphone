@@ -470,9 +470,10 @@ class JavaTranslator(object):
 
         classDict['isLinphoneFactory'] = _class.name.to_camel_case() == "Factory"
         classDict['isLinphoneCore'] = _class.name.to_camel_case() == "Core"
+        hasCoreAccessor = _class.name.to_camel_case() in CORE_ACCESSOR_LIST
+        classDict['hasCoreAccessor'] = hasCoreAccessor
         classDict['doc'] = _class.briefDescription.translate(self.docTranslator) if _class.briefDescription is not None else None
 
-        hasCoreAccessor = _class.name.to_camel_case() in CORE_ACCESSOR_LIST
         for _property in _class.properties:
             try:
                 classDict['methods'] += self.translate_property(_property, hasCoreAccessor)
@@ -706,6 +707,7 @@ class JavaClass(object):
         self.isLinphoneFactory = self._class['isLinphoneFactory']
         self.isLinphoneCore = self._class['isLinphoneCore']
         self.isNotLinphoneFactory = not self.isLinphoneFactory
+        self.hasCoreAccessor = self._class['hasCoreAccessor']
         self.cName = 'Linphone' + _class.name.to_camel_case()
         self.cPrefix = 'linphone_' + _class.name.to_snake_case()
         self.packageName = package
