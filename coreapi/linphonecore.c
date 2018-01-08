@@ -3728,7 +3728,7 @@ LinphoneStatus linphone_core_decline_call(LinphoneCore *lc, LinphoneCall *call, 
 
 const bctbx_list_t *linphone_core_get_calls(LinphoneCore *lc) {
 	if (lc->callsCache) {
-		bctbx_list_free(lc->callsCache);
+		bctbx_list_free_with_data(lc->callsCache, (bctbx_list_free_func)linphone_call_unref);
 		lc->callsCache = NULL;
 	}
 	lc->callsCache = L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->getCalls());
