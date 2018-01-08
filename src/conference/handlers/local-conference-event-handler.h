@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _LOCAL_CONFERENCE_EVENT_HANDLER_H_
-#define _LOCAL_CONFERENCE_EVENT_HANDLER_H_
+#ifndef _L_LOCAL_CONFERENCE_EVENT_HANDLER_H_
+#define _L_LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
 #include <memory>
 
@@ -62,4 +62,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _LOCAL_CONFERENCE_EVENT_HANDLER_H_
+#endif // ifndef _L_LOCAL_CONFERENCE_EVENT_HANDLER_H_

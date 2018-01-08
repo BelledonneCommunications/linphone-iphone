@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _PARTICIPANT_H_
-#define _PARTICIPANT_H_
+#ifndef _L_PARTICIPANT_H_
+#define _L_PARTICIPANT_H_
 
 #include <list>
 
@@ -71,4 +71,4 @@ std::ostream & operator<< (std::ostream &strm, const std::shared_ptr<Participant
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _PARTICIPANT_H_
+#endif // ifndef _L_PARTICIPANT_H_

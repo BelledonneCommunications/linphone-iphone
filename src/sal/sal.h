@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _SAL_H_
-#define _SAL_H_
+#ifndef _L_SAL_H_
+#define _L_SAL_H_
 
 #include "c-wrapper/internal/c-sal.h"
 #include "linphone/utils/general.h"
@@ -322,4 +322,4 @@ int to_sip_code(SalReason r);
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _SAL_H_
+#endif // ifndef _L_SAL_H_

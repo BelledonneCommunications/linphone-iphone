@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _STUN_CLIENT_H_
-#define _STUN_CLIENT_H_
+#ifndef _L_STUN_CLIENT_H_
+#define _L_STUN_CLIENT_H_
 
 #include <string>
 
@@ -71,4 +71,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _STUN_CLIENT_H_
+#endif // ifndef _L_STUN_CLIENT_H_

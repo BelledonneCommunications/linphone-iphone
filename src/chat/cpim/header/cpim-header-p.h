@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CPIM_HEADER_P_H_
-#define _CPIM_HEADER_P_H_
+#ifndef _L_CPIM_HEADER_P_H_
+#define _L_CPIM_HEADER_P_H_
 
 #include "cpim-header.h"
 #include "object/object-p.h"
@@ -41,4 +41,4 @@ namespace Cpim {
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CPIM_HEADER_P_H_
+#endif // ifndef _L_CPIM_HEADER_P_H_

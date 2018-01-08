@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _VARIANT_H_
-#define _VARIANT_H_
+#ifndef _L_VARIANT_H_
+#define _L_VARIANT_H_
 
 #include <string>
 
@@ -145,4 +145,4 @@ L_DECLARE_VARIANT_TYPES(L_DECLARE_VARIANT_TRAIT_TYPE);
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _VARIANT_H_
+#endif // ifndef _L_VARIANT_H_

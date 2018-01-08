@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _SAL_OP_H_
-#define _SAL_OP_H_
+#ifndef _L_SAL_OP_H_
+#define _L_SAL_OP_H_
 
 #include <bctoolbox/list.h>
 #include <bctoolbox/port.h>
@@ -259,4 +259,4 @@ protected:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _SAL_OP_H_
+#endif // ifndef _L_SAL_OP_H_

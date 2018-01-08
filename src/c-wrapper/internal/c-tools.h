@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_TOOLS_H_
-#define _C_TOOLS_H_
+#ifndef _L_C_TOOLS_H_
+#define _L_C_TOOLS_H_
 
 #include <list>
 
@@ -812,4 +812,4 @@ LINPHONE_END_NAMESPACE
 #define L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(C_LIST, C_TYPE) \
 	LinphonePrivate::Wrapper::getResolvedCppListFromCList<Linphone ## C_TYPE>(C_LIST)
 
-#endif // ifndef _C_TOOLS_H_
+#endif // ifndef _L_C_TOOLS_H_

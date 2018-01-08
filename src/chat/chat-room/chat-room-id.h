@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CHAT_ROOM_ID_H_
-#define _CHAT_ROOM_ID_H_
+#ifndef _L_CHAT_ROOM_ID_H_
+#define _L_CHAT_ROOM_ID_H_
 
 #include "address/identity-address.h"
 
@@ -63,4 +63,4 @@ namespace std {
 	};
 }
 
-#endif // ifndef _CHAT_ROOM_ID_H_
+#endif // ifndef _L_CHAT_ROOM_ID_H_

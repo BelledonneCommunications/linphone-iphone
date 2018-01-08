@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _ICE_AGENT_H_
-#define _ICE_AGENT_H_
+#ifndef _L_ICE_AGENT_H_
+#define _L_ICE_AGENT_H_
 
 #include <mediastreamer2/ice.h>
 #include <ortp/event.h>
@@ -85,4 +85,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _ICE_AGENT_H_
+#endif // ifndef _L_ICE_AGENT_H_

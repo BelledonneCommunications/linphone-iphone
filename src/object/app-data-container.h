@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _APP_DATA_CONTAINER_H_
-#define _APP_DATA_CONTAINER_H_
+#ifndef _L_APP_DATA_CONTAINER_H_
+#define _L_APP_DATA_CONTAINER_H_
 
 #include <string>
 #include <unordered_map>
@@ -53,4 +53,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _APP_DATA_CONTAINER_H_
+#endif // ifndef _L_APP_DATA_CONTAINER_H_

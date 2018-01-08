@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _BASE_OBJECT_P_H_
-#define _BASE_OBJECT_P_H_
+#ifndef _L_BASE_OBJECT_P_H_
+#define _L_BASE_OBJECT_P_H_
 
 #include "linphone/utils/general.h"
 
@@ -44,4 +44,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _BASE_OBJECT_P_H_
+#endif // ifndef _L_BASE_OBJECT_P_H_

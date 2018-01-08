@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_P_H_
-#define _EVENT_LOG_P_H_
+#ifndef _L_EVENT_LOG_P_H_
+#define _L_EVENT_LOG_P_H_
 
 #include "db/main-db-event-key.h"
 #include "object/base-object-p.h"
@@ -42,4 +42,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _EVENT_LOG_P_H_
+#endif // ifndef _L_EVENT_LOG_P_H_

@@ -23,8 +23,8 @@
  protocols and implementations under linphone, for example SIP, JINGLE...
 **/
 
-#ifndef _C_SAL_H_
-#define _C_SAL_H_
+#ifndef _L_C_SAL_H_
+#define _L_C_SAL_H_
 
 #ifdef HAVE_CONFIG_H
 	#include "config.h"

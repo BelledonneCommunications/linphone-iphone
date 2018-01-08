@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENTS_H_
-#define _EVENTS_H_
+#ifndef _L_EVENTS_H_
+#define _L_EVENTS_H_
 
 #include "conference/conference-call-event.h"
 #include "conference/conference-chat-message-event.h"
 #include "conference/conference-participant-device-event.h"
 #include "conference/conference-subject-event.h"
 
-#endif // ifndef _EVENTS_H_
+#endif // ifndef _L_EVENTS_H_

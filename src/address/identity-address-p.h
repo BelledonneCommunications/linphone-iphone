@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _IDENTITY_ADDRESS_P_H_
-#define _IDENTITY_ADDRESS_P_H_
+#ifndef _L_IDENTITY_ADDRESS_P_H_
+#define _L_IDENTITY_ADDRESS_P_H_
 
 #include "identity-address.h"
 #include "object/clonable-object-p.h"
@@ -39,4 +39,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _IDENTITY_ADDRESS_P_H_
+#endif // ifndef _L_IDENTITY_ADDRESS_P_H_

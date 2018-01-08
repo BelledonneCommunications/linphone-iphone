@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
-#define _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
+#ifndef _L_BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
+#define _L_BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
 
 #include "proxy-chat-room.h"
 
@@ -50,4 +50,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_
+#endif // ifndef _L_BASIC_TO_CLIENT_GROUP_CHAT_ROOM_H_

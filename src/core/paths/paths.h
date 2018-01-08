@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _PATHS_H_
-#define _PATHS_H_
+#ifndef _L_PATHS_H_
+#define _L_PATHS_H_
 
 #include <string>
 
@@ -40,4 +40,4 @@ namespace Paths {
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _PATHS_H_
+#endif // ifndef _L_PATHS_H_

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CONFERENCE_LISTENER_H_
-#define _CONFERENCE_LISTENER_H_
+#ifndef _L_CONFERENCE_LISTENER_H_
+#define _L_CONFERENCE_LISTENER_H_
 
 #include <ctime>
 #include <string>
@@ -48,4 +48,4 @@ public:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CONFERENCE_LISTENER_H_
+#endif // ifndef _L_CONFERENCE_LISTENER_H_

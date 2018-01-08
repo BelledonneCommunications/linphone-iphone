@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_
-#define _REAL_TIME_TEXT_CHAT_ROOM_P_H_
+#ifndef _L_REAL_TIME_TEXT_CHAT_ROOM_P_H_
+#define _L_REAL_TIME_TEXT_CHAT_ROOM_P_H_
 
 #include "chat/chat-room/basic-chat-room-p.h"
 #include "chat/chat-room/real-time-text-chat-room.h"
@@ -45,4 +45,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _REAL_TIME_TEXT_CHAT_ROOM_P_H_
+#endif // ifndef _L_REAL_TIME_TEXT_CHAT_ROOM_P_H_

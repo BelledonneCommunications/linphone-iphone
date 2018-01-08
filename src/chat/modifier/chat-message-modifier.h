@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CHAT_MESSAGE_MODIFIER_H_
-#define _CHAT_MESSAGE_MODIFIER_H_
+#ifndef _L_CHAT_MESSAGE_MODIFIER_H_
+#define _L_CHAT_MESSAGE_MODIFIER_H_
 
 #include "object/object.h"
 
@@ -55,4 +55,4 @@ public:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CPIM_CHAT_MESSAGE_MODIFIER_H_
+#endif // ifndef _L_CPIM_CHAT_MESSAGE_MODIFIER_H_

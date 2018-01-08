@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _SAL_MESSAGE_OP_H_
-#define _SAL_MESSAGE_OP_H_
+#ifndef _L_SAL_MESSAGE_OP_H_
+#define _L_SAL_MESSAGE_OP_H_
 
 #include "sal/op.h"
 #include "sal/message-op-interface.h"
@@ -44,4 +44,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _SAL_MESSAGE_OP_H_
+#endif // ifndef _L_SAL_MESSAGE_OP_H_

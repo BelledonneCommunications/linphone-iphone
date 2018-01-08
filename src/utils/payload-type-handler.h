@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _PAYLOAD_TYPE_HANDLER_H_
-#define _PAYLOAD_TYPE_HANDLER_H_
+#ifndef _L_PAYLOAD_TYPE_HANDLER_H_
+#define _L_PAYLOAD_TYPE_HANDLER_H_
 
 #include "linphone/utils/general.h"
 
@@ -75,4 +75,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _PAYLOAD_TYPE_HANDLER_H_
+#endif // ifndef _L_PAYLOAD_TYPE_HANDLER_H_

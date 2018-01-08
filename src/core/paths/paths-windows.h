@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _PATHS_WINDOWS_H_
-#define _PATHS_WINDOWS_H_
+#ifndef _L_PATHS_WINDOWS_H_
+#define _L_PATHS_WINDOWS_H_
 
 #include <string>
 
@@ -37,4 +37,4 @@ namespace SysPaths {
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _PATHS_WINDOWS_H_
+#endif // ifndef _L_PATHS_WINDOWS_H_

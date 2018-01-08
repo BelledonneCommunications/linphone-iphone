@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _ABSTRACT_DB_H_
-#define _ABSTRACT_DB_H_
+#ifndef _L_ABSTRACT_DB_H_
+#define _L_ABSTRACT_DB_H_
 
 #include "object/object.h"
 
@@ -72,4 +72,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _ABSTRACT_DB_H_
+#endif // ifndef _L_ABSTRACT_DB_H_

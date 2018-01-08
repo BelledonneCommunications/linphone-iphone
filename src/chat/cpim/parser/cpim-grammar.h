@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CPIM_GRAMMAR_H_
-#define _CPIM_GRAMMAR_H_
+#ifndef _L_CPIM_GRAMMAR_H_
+#define _L_CPIM_GRAMMAR_H_
 
 #include "linphone/utils/general.h"
 
@@ -32,4 +32,4 @@ namespace Cpim {
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CPIM_GRAMMAR_H_
+#endif // ifndef _L_CPIM_GRAMMAR_H_

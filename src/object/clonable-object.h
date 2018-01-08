@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CLONABLE_OBJECT_H_
-#define _CLONABLE_OBJECT_H_
+#ifndef _L_CLONABLE_OBJECT_H_
+#define _L_CLONABLE_OBJECT_H_
 
 #include "object-head.h"
 #include "property-container.h"
@@ -65,4 +65,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _CLONABLE_OBJECT_H_
+#endif // ifndef _L_CLONABLE_OBJECT_H_

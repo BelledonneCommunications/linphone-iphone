@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
-#define _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
+#ifndef _L_REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
+#define _L_REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
 
 #include "linphone/types.h"
 
@@ -54,4 +54,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _REMOTE_CONFERENCE_EVENT_HANDLER_P_H_
+#endif // ifndef _L_REMOTE_CONFERENCE_EVENT_HANDLER_P_H_

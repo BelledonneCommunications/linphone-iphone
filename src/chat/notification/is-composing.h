@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _IS_COMPOSING_H_
-#define _IS_COMPOSING_H_
+#ifndef _L_IS_COMPOSING_H_
+#define _L_IS_COMPOSING_H_
 
 #include <unordered_map>
 
@@ -78,4 +78,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _IS_COMPOSING_H_
+#endif // ifndef _L_IS_COMPOSING_H_

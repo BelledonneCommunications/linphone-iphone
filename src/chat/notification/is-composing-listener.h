@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _IS_COMPOSING_LISTENER_H_
-#define _IS_COMPOSING_LISTENER_H_
+#ifndef _L_IS_COMPOSING_LISTENER_H_
+#define _L_IS_COMPOSING_LISTENER_H_
 
 #include "linphone/utils/general.h"
 
@@ -39,4 +39,4 @@ public:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _IS_COMPOSING_LISTENER_H_
+#endif // ifndef _L_IS_COMPOSING_LISTENER_H_
