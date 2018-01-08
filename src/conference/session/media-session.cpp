@@ -2187,9 +2187,9 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 		if (iceAgent->hasCompletedCheckList()) {
 			/* At least one ICE session has succeeded, so perform a call update */
 			if (iceAgent->isControlling() && q->getCurrentParams()->getPrivate()->getUpdateCallWhenIceCompleted()) {
-				MediaSessionParams *newParams = new MediaSessionParams(*getParams());
-				newParams->getPrivate()->setInternalCallUpdate(true);
-				q->update(newParams);
+				MediaSessionParams newParams(*getParams());
+				newParams.getPrivate()->setInternalCallUpdate(true);
+				q->update(&newParams);
 			}
 			startDtlsOnAllStreams();
 		}
