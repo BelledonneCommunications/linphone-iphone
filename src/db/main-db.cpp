@@ -2646,7 +2646,9 @@ bool MainDb::import (Backend, const string &parameters) {
 	}
 
 	L_BEGIN_LOG_EXCEPTION
-	d->importLegacyFriends(inDbSession);
+	// TODO: Remove condition after cpp migration in friends/friends list.
+	if (false)
+		d->importLegacyFriends(inDbSession);
 	L_END_LOG_EXCEPTION
 
 	L_BEGIN_LOG_EXCEPTION
