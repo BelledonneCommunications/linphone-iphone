@@ -63,6 +63,8 @@ protected:
 
 	void enableForeignKeys (bool status);
 
+	bool checkTableExists (const std::string &table) const;
+
 private:
 	L_DECLARE_PRIVATE(AbstractDb);
 	L_DISABLE_COPY(AbstractDb);

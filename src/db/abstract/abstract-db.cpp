@@ -205,4 +205,22 @@ void AbstractDb::enableForeignKeys (bool status) {
 	#endif // ifdef SOCI_ENABLED
 }
 
+bool AbstractDb::checkTableExists (const string &table) const {
+	#ifdef SOCI_ENABLED
+		L_D();
+		soci::session *session = d->dbSession.getBackendSession<soci::session>();
+		switch (d->backend) {
+			case Mysql:
+				*session << "SHOW TABLES LIKE :table", soci::use(table);
+				return session->got_data() > 0;
+			case Sqlite3:
+				*session << "SELECT name FROM sqlite_master WHERE type='table' AND name=:table", soci::use(table);
+				return session->got_data() > 0;
+		}
+	#endif // ifdef SOCI_ENABLED
+
+	L_ASSERT(false);
+	return false;
+}
+
 LINPHONE_END_NAMESPACE
