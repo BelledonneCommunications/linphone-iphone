@@ -47,6 +47,7 @@ public:
 		SalCallOp *op,
 		const MediaSessionParams *msp
 	);
+	virtual ~LocalConferenceCall ();
 
 	std::shared_ptr<Core> getCore () const;
 

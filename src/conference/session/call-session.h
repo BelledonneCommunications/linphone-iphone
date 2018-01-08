@@ -43,6 +43,8 @@ class LINPHONE_PUBLIC CallSession : public Object, public CoreAccessor {
 	friend class ClientGroupChatRoomPrivate;
 	friend class Conference;
 	friend class CorePrivate;
+	friend class LocalConferenceCall;
+	friend class RemoteConferenceCall;
 	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
 
