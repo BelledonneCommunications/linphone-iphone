@@ -60,7 +60,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/cpim/header/cpim-header-p.h
 	chat/cpim/header/cpim-header.h
 	chat/cpim/message/cpim-message.h
-	chat/cpim/parser/cpim-grammar.h
 	chat/cpim/parser/cpim-parser.h
 	chat/modifier/chat-message-modifier.h
 	chat/modifier/cpim-chat-message-modifier.h
@@ -189,7 +188,6 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/cpim/header/cpim-generic-header.cpp
 	chat/cpim/header/cpim-header.cpp
 	chat/cpim/message/cpim-message.cpp
-	chat/cpim/parser/cpim-grammar.cpp
 	chat/cpim/parser/cpim-parser.cpp
 	chat/modifier/cpim-chat-message-modifier.cpp
 	chat/modifier/encryption-chat-message-modifier.cpp

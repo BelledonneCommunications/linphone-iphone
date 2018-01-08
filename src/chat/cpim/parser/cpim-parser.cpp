@@ -24,7 +24,6 @@
 
 #include "linphone/utils/utils.h"
 
-#include "cpim-grammar.h"
 #include "content/content-type.h"
 #include "logger/logger.h"
 #include "object/object-p.h"
@@ -36,6 +35,8 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+#define CPIM_GRAMMAR "cpim_grammar"
 
 namespace Cpim {
 	class Node {
@@ -223,11 +224,9 @@ public:
 Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 	L_D();
 
-	belr::ABNFGrammarBuilder builder;
-
-	d->grammar = builder.createFromAbnf(getGrammar(), make_shared<belr::CoreRules>());
+	d->grammar = belr::GrammarLoader::get().load(CPIM_GRAMMAR);
 	if (!d->grammar)
-		lFatal() << "Unable to build CPIM grammar.";
+		lFatal() << "Unable to load CPIM grammar.";
 }
 
 // -----------------------------------------------------------------------------
