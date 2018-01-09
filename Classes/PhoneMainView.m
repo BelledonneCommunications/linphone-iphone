@@ -202,11 +202,33 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
 	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:UIDeviceBatteryLevelDidChangeNotification object:nil];
 	[[UIDevice currentDevice] setBatteryMonitoringEnabled:NO];
+}
+
+/* IPHONE X specific : hide the HomeIndcator when not used */
+#define IS_IPHONE (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+#define IS_IPHONE_X (IS_IPHONE && [[UIScreen mainScreen] bounds].size.height == 812.0)
+#define IPHONE_STATUSBAR_HEIGHT (IS_IPHONE_X ? 35 : 20)
+
+- (BOOL)isIphoneXDevice{
+	return IS_IPHONE_X;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
+	if([self isIphoneXDevice]){
+		if(@available(iOS 11.0, *)) {
+			[self childViewControllerForHomeIndicatorAutoHidden];
+			[self prefersHomeIndicatorAutoHidden];
+			[self setNeedsUpdateOfHomeIndicatorAutoHidden];
+		}
+	}
+
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden{
+	return YES;
 }
 
 - (void)setVolumeHidden:(BOOL)hidden {
@@ -486,7 +508,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 - (void)startUp {
 	@try {
 		LinphoneManager *lm = LinphoneManager.instance;
-                LOGE(@"%s", linphone_global_state_to_string(
+                LOGI(@"%s", linphone_global_state_to_string(
                                 linphone_core_get_global_state(LC)));
                 if (linphone_core_get_global_state(LC) != LinphoneGlobalOn) {
                   [self changeCurrentView:DialerView.compositeViewDescription];

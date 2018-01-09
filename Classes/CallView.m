@@ -179,8 +179,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidAppear:animated];
 
 	[[UIApplication sharedApplication] setIdleTimerDisabled:YES];
-	UIDevice.currentDevice.proximityMonitoringEnabled = !_speakerButton.enabled;
-
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:TRUE];
+	
 	[PhoneMainView.instance setVolumeHidden:TRUE];
 	hiddenVolume = TRUE;
 
@@ -192,7 +192,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
+[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 	[self disableVideoDisplay:TRUE animated:NO];
 
 	if (hideControlsTimer != nil) {
@@ -219,7 +219,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super viewDidDisappear:animated];
 
 	[[UIApplication sharedApplication] setIdleTimerDisabled:false];
-	UIDevice.currentDevice.proximityMonitoringEnabled = NO;
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 
 	[PhoneMainView.instance fullScreen:false];
 	// Disable tap
@@ -357,7 +357,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 		hideControlsTimer = nil;
 	}
 
-	[PhoneMainView.instance fullScreen:!disabled];
+	if(![PhoneMainView.instance isIphoneXDevice]){
+		[PhoneMainView.instance fullScreen:!disabled];
+	}
 	[PhoneMainView.instance hideTabBar:!disabled];
 
 	if (!disabled) {

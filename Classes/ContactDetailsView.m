@@ -154,7 +154,6 @@
 - (void)newContact:(NSString *)address {
   CNContact *contact = [[CNContact alloc] init];
   Contact *mContact = [[Contact alloc] initWithCNContact:contact];
-  [mContact setSipAddress:address atIndex:0];
   [self selectContact:mContact andReload:NO];
   [self addCurrentContactContactField:address];
   // force to restart server subscription to add new contact into the list
@@ -475,13 +474,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onEditClick:(id)event {
 	if (_tableController.isEditing) {
-		[self setEditing:FALSE];
-		[self saveData];
-		_isAdding = FALSE;
-		self.tmpContact = NULL;
-		_avatarImage.hidden = FALSE;
-		_deleteButton.hidden = FALSE;
-		_editButton.hidden = FALSE;
+		[LinphoneManager.instance setContactsUpdated:TRUE];
+		if(![self hasDuplicateContactOf:_contact]){
+			[self setEditing:FALSE];
+			[self saveData];
+			_isAdding = FALSE;
+			self.tmpContact = NULL;
+			_avatarImage.hidden = FALSE;
+			_deleteButton.hidden = FALSE;
+			_editButton.hidden = FALSE;
+		}else{
+			LOGE(@"====>>>> Duplicated Contacts detected !!!");
+			[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Contact error", nil) message:NSLocalizedString(@"Contact duplicate", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+		}
 	} else {
 		[self modifyTmpContact:_contact];
 		[self setEditing:TRUE];
@@ -518,6 +523,30 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 }
+
+- (BOOL) hasDuplicateContactOf:(Contact*) contactToCheck{
+	CNContactStore *store = [[CNContactStore alloc] init];
+	NSArray *keysToFetch = @[
+							 CNContactEmailAddressesKey, CNContactPhoneNumbersKey,
+							 CNContactInstantMessageAddressesKey, CNInstantMessageAddressUsernameKey,
+							 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactPostalAddressesKey,
+							 CNContactIdentifierKey, CNContactImageDataKey, CNContactNicknameKey
+							 ];
+	CNMutableContact *mCNContact =
+	[[store unifiedContactWithIdentifier:contactToCheck.identifier keysToFetch:keysToFetch error:nil] mutableCopy];
+	if(mCNContact == NULL){
+		for(NSString *address in contactToCheck.sipAddresses){
+			NSString *name = [FastAddressBook normalizeSipURI:address];
+			if([LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:name]){
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}else{
+		return FALSE;
+	}
+}
+
 
 #pragma mark - Image picker delegate
 

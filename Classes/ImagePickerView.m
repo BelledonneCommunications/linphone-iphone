@@ -18,7 +18,9 @@
  */
 
 #import <MobileCoreServices/UTCoreTypes.h>
-
+#import <AVFoundation/AVCaptureDevice.h>
+#import <AVFoundation/AVFoundation.h>
+#import <Photos/Photos.h>
 #import "ImagePickerView.h"
 #import "PhoneMainView.h"
 
@@ -226,13 +228,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
 							block:^() {
-							  block(UIImagePickerControllerSourceTypeCamera);
+								if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] ==  AVAuthorizationStatusAuthorized ){
+									if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
+										block(UIImagePickerControllerSourceTypeCamera);
+									}else{
+										[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+									}
+								}else {
+									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+								}
 							}];
 	}
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
 							block:^() {
-							  block(UIImagePickerControllerSourceTypePhotoLibrary);
+								if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
+									 block(UIImagePickerControllerSourceTypePhotoLibrary);
+								}else{
+									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+								}
 							}];
 	}
 	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];

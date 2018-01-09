@@ -111,6 +111,8 @@
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView;
 + (PhoneMainView*) instance;
 
+- (BOOL)isIphoneXDevice;
+
 @end
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState);

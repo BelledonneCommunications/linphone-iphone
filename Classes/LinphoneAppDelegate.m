@@ -84,7 +84,7 @@
 	}
 	LinphoneManager *instance = LinphoneManager.instance;
 	[instance becomeActive];
-	
+
 	if (instance.fastAddressBook.needToUpdate) {
 		//Update address book for external changes
 		if (PhoneMainView.instance.currentView == ContactsListView.compositeViewDescription || PhoneMainView.instance.currentView == ContactDetailsView.compositeViewDescription) {
@@ -193,7 +193,7 @@
 	answer.activationMode = UIUserNotificationActivationModeForeground;
 	answer.destructive = NO;
 	answer.authenticationRequired = YES;
-    
+
 	UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
 	decline.identifier = @"decline";
 	decline.title = NSLocalizedString(@"Decline", nil);
@@ -212,7 +212,7 @@
 }
 
 - (UIUserNotificationCategory *)getAccountExpiryNotificationCategory {
-	
+
 	UIMutableUserNotificationCategory *expiryNotification = [[UIMutableUserNotificationCategory alloc] init];
 	expiryNotification.identifier = @"expiry_notification";
 	return expiryNotification;
@@ -333,20 +333,20 @@
 	[RootViewManager setupWithPortrait:(PhoneMainView *)self.window.rootViewController];
 	[PhoneMainView.instance startUp];
 	[PhoneMainView.instance updateStatusBar:nil];
-    
+
 	if (bgStartId != UIBackgroundTaskInvalid)
 		[[UIApplication sharedApplication] endBackgroundTask:bgStartId];
-    
+
     //Enable all notification type. VoIP Notifications don't present a UI but we will use this to show local nofications later
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert| UIUserNotificationTypeBadge | UIUserNotificationTypeSound categories:nil];
-    
+
     //register the notification settings
     [application registerUserNotificationSettings:notificationSettings];
-    
+
     //output what state the app is in. This will be used to see when the app is started in the background
     LOGI(@"app launched with state : %li", (long)application.applicationState);
     LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
-    
+
 	return YES;
 }
 
@@ -384,18 +384,18 @@
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Remote configuration", nil)
 																		 message:NSLocalizedString(@"This operation will load a remote configuration. Continue ?", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-		
+
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"No", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-		
+
 		UIAlertAction* yesAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Yes", nil)
 																style:UIAlertActionStyleDefault
 														  handler:^(UIAlertAction * action) {
 															  [self showWaitingIndicator];
 															  [self attemptRemoteConfiguration];
 														  }];
-		
+
 		[errView addAction:defaultAction];
 		[errView addAction:yesAction];
 
@@ -422,79 +422,64 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary *)userInfo {
+	if (linphone_core_get_calls(LC)) // if there are calls, obviously our TCP socket shall be working
+		return;
 
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
+	if (!aps)
+		return;
 
-	if (aps != nil) {
-		NSDictionary *alert = [aps objectForKey:@"alert"];
-		NSString *loc_key = [aps objectForKey:@"loc-key"];
-		NSString *callId = [aps objectForKey:@"call-id"];
-		if (alert != nil) {
-			loc_key = [alert objectForKey:@"loc-key"];
-			/*if we receive a remote notification, it is probably because our TCP background socket was no more working.
-			 As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE*/
-			if (linphone_core_get_calls(LC) == NULL) { // if there are calls, obviously our TCP socket shall be working
-				//linphone_core_set_network_reachable(LC, FALSE);
-                if (!linphone_core_is_network_reachable(LC)) {
-                    LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
-                    [LinphoneManager.instance setupNetworkReachabilityCallback];
-                }
-				if (loc_key != nil) {
+	NSString *loc_key = [aps objectForKey:@"loc-key"];
+	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
+	if (!loc_key)
+		return;
 
-					callId = [userInfo objectForKey:@"call-id"];
-					if (callId != nil) {
-						if ([callId isEqualToString:@""]){
-							//Present apn pusher notifications for info
-							if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-								UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-								content.title = @"APN Pusher";
-								content.body = @"Push notification received !";
-							
-								UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
-								[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
-									// Enable or disable features based on authorization.
-									if (error) {
-										LOGD(@"Error while adding notification request :");
-										LOGD(error.description);
-									}
-								}];
-							} else {
-								UILocalNotification *notification = [[UILocalNotification alloc] init];
-								notification.repeatInterval = 0;
-								notification.alertBody = @"Push notification received !";
-								notification.alertTitle = @"APN Pusher";
-								[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
-							}
-						} else {
-							[LinphoneManager.instance addPushCallId:callId];
-						}
-					} else  if ([callId  isEqual: @""]) {
-						LOGE(@"PushNotification: does not have call-id yet, fix it !");
-					}
-				}
-			}
-		}
-
-		if (callId && [self addLongTaskIDforCallID:callId]) {
-			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive && loc_key &&
-				index > 0) {
-				if ([loc_key isEqualToString:@"IC_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
-					[self fixRing];
-				} else if ([loc_key isEqualToString:@"IM_MSG"]) {
-					[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
-				}
-			}
-		}
+	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+		if ([loc_key isEqualToString:@"IC_MSG"])
+			[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
+		else if ([loc_key isEqualToString:@"IM_MSG"])
+			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
 	}
+
+	// if we receive a remote notification, it is probably because our TCP background socket was no more working.
+	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
+	if (!linphone_core_is_network_reachable(LC)) {
+		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
+		[LinphoneManager.instance setupNetworkReachabilityCallback];
+	}
+
+	if ([callId isEqualToString:@""]) {
+		//Present apn pusher notifications for info
+		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+			UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+			content.title = @"APN Pusher";
+			content.body = @"Push notification received !";
+
+			UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
+			[[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+				// Enable or disable features based on authorization.
+				if (error) {
+					LOGD(@"Error while adding notification request :");
+					LOGD(error.description);
+				}
+			}];
+		} else {
+			UILocalNotification *notification = [[UILocalNotification alloc] init];
+			notification.repeatInterval = 0;
+			notification.alertBody = @"Push notification received !";
+			notification.alertTitle = @"APN Pusher";
+			[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+		}
+	} else
+		[LinphoneManager.instance addPushCallId:callId];
+
     LOGI(@"Notification %@ processed", userInfo.description);
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
 	NSDictionary *dict = LinphoneManager.instance.pushDict;
-	if ([[dict allKeys] indexOfObject:callId] != NSNotFound) {
+	if ([[dict allKeys] indexOfObject:callId] != NSNotFound)
 		return FALSE;
-	}
 
 	LOGI(@"Adding long running task for call id : %@ with index : 1", callId);
 	[dict setValue:[NSNumber numberWithInt:1] forKey:callId];
@@ -503,7 +488,6 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
 	LOGI(@"%@ : %@", NSStringFromSelector(_cmd), userInfo);
-
 	[self processRemoteNotification:userInfo];
 }
 
@@ -513,9 +497,9 @@
 	while (rooms) {
 		const LinphoneAddress *room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom *)rooms->data);
 		char *room_from = linphone_address_as_string_uri_only(room_from_address);
-		if (room_from && strcmp(from, room_from) == 0) {
+		if (room_from && strcmp(from, room_from) == 0)
 			return rooms->data;
-		}
+
 		rooms = rooms->next;
 	}
 	return NULL;
@@ -536,31 +520,31 @@
 
 #pragma mark - PushKit Functions
 
+- (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
+	LOGI(@"PushKit credentials updated");
+	LOGI(@"voip token: %@", (credentials.token));
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[LinphoneManager.instance setPushNotificationToken:credentials.token];
+	});
+}
+
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"PushKit Token invalidated");
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry
-	didReceiveIncomingPushWithPayload:(PKPushPayload *)payload
-							  forType:(NSString *)type {
-
-	LOGI(@"PushKit : incoming voip notfication: %@", payload.dictionaryPayload);
+#ifdef __IPHONE_11_0
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
+#else
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+#endif
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
-	dispatch_async(dispatch_get_main_queue(), ^{
-	  [self processRemoteNotification:payload.dictionaryPayload];
-	});
-}
-
-- (void)pushRegistry:(PKPushRegistry *)registry
-	didUpdatePushCredentials:(PKPushCredentials *)credentials
-					 forType:(PKPushType)type {
-	LOGI(@"PushKit credentials updated");
-	LOGI(@"voip token: %@", (credentials.token));
-	dispatch_async(dispatch_get_main_queue(), ^{
-	  [LinphoneManager.instance setPushNotificationToken:credentials.token];
-	});
+	//to avoid IOS to suspend the app before being able to launch long running task
+	[self processRemoteNotification:payload.dictionaryPayload];
+#ifdef __IPHONE_11_0
+	dispatch_async(dispatch_get_main_queue(), ^{completion();});
+#endif
 }
 
 #pragma mark - UNUserNotifications Framework
@@ -864,11 +848,11 @@ didInvalidatePushTokenForType:(NSString *)type {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Success", nil)
 																		 message:NSLocalizedString(@"Remote configuration successfully fetched and applied.", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-		
+
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-		
+
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 
@@ -880,11 +864,11 @@ didInvalidatePushTokenForType:(NSString *)type {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Failure", nil)
 																		 message:NSLocalizedString(@"Failed configuring from the specified URL.", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-		
+
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-		
+
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
@@ -894,13 +878,13 @@ didInvalidatePushTokenForType:(NSString *)type {
 	_waitingIndicator = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Fetching remote configuration...", nil)
 															message:@""
 													 preferredStyle:UIAlertControllerStyleAlert];
-	
+
 	UIActivityIndicatorView *progress = [[UIActivityIndicatorView alloc] initWithFrame:CGRectMake(125, 60, 30, 30)];
 	progress.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
-	
+
 	[_waitingIndicator setValue:progress forKey:@"accessoryView"];
 	[progress setColor:[UIColor blackColor]];
-	
+
 	[progress startAnimating];
 	[PhoneMainView.instance presentViewController:_waitingIndicator animated:YES completion:nil];
 }

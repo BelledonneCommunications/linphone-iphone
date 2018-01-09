@@ -234,6 +234,7 @@ CGRect IASKCGRectSwap(CGRect rect);
 
 - (void)viewDidDisappear:(BOOL)animated {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillTerminateNotification object:[UIApplication sharedApplication]];
 
     // hide the keyboard
     [self.currentFirstResponder resignFirstResponder];
