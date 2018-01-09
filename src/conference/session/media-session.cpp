@@ -2298,8 +2298,8 @@ void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
 		} else if (evt == ORTP_EVENT_NEW_VIDEO_BANDWIDTH_ESTIMATION_AVAILABLE) {
 			lInfo() << "Video bandwidth estimation is " << (int)(evd->info.video_bandwidth_available / 1000.) << " kbit/s";
 			/* If this event happens then it should be a video stream */
-			if (stream_index == call->main_video_stream_index)
-				stats->estimated_download_bandwidth = (float)(evd->info.video_bandwidth_available)*1e-3;
+			if (streamIndex == mainVideoStreamIndex)
+				linphone_call_stats_set_estimated_download_bandwidth(stats, (float)(evd->info.video_bandwidth_available*1e-3));
 		}
 		ortp_event_destroy(ev);
 	}

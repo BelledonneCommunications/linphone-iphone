@@ -198,6 +198,8 @@ LINPHONE_PUBLIC float linphone_call_stats_get_round_trip_delay (const LinphoneCa
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_estimated_download_bandwidth(const LinphoneCallStats *stats);
 
+void linphone_call_stats_set_estimated_download_bandwidth(LinphoneCallStats *stats, float estimated_value);
+
 /**
  * @}
  */
