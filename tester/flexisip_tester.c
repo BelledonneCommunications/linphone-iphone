@@ -1409,6 +1409,18 @@ end:
 	ms_free(hellopath);
 }
 
+static void register_without_regid(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new2("marie_rc", FALSE);
+	linphone_core_manager_start(marie,TRUE);
+	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
+	if(cfg) {
+		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
+		BC_ASSERT_PTR_NOT_NULL(addr);
+		BC_ASSERT_PTR_NULL(strstr(linphone_address_as_string_uri_only(addr), "regid"));
+	}
+	linphone_core_manager_destroy(marie);
+}
+
 void test_removing_old_tport(void) {
 	bctbx_list_t* lcs;
 	LinphoneCoreManager* marie2;
@@ -1472,7 +1484,8 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("TLS authentication - client rejected due to CN mismatch", tls_client_auth_bad_certificate_cn),
 	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
 	TEST_NO_TAG("Transcoder", transcoder_tester),
-	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport)
+	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport),
+	TEST_NO_TAG("Registered contact does not have regid param", register_without_regid)
 };
 
 
