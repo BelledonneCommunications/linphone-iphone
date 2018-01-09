@@ -1336,7 +1336,7 @@ static void register_without_regid(void) {
 	if(cfg) {
 		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
 		BC_ASSERT_PTR_NOT_NULL(addr);
-		BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(addr), "regid"));
+		BC_ASSERT_PTR_NULL(strstr(linphone_address_as_string_uri_only(addr), "regid"));
 	}
 	linphone_core_manager_destroy(marie);
 }
