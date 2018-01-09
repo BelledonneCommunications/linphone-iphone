@@ -156,3 +156,8 @@ void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *c
 		//L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr)))->realtimeTextReceived(character, call);
 	}
 }
+
+unsigned int linphone_chat_message_store(LinphoneChatMessage *msg) {
+	// DO nothing, just for old JNI compat...
+	return 1;
+}

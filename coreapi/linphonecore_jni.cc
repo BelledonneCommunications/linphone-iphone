@@ -222,7 +222,6 @@ extern "C" jlong Java_org_linphone_core_LinphoneCoreFactoryImpl_createErrorInfoN
 }
 
 extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreFactoryImpl_getAllDialPlanNative(JNIEnv *env, jobject thiz) {
-	LinphoneDialPlan *countries;
 	jclass addr_class = env->FindClass("org/linphone/core/DialPlanImpl");
 	jmethodID addr_constructor = env->GetMethodID(addr_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)V");
 	jobjectArray jaddr_array;
@@ -2445,13 +2444,13 @@ extern "C" jobjectArray Java_org_linphone_core_LinphoneCoreImpl_findContactsByCh
 	const bctbx_list_t* contacts = linphone_core_find_contacts_by_char((LinphoneCore*)lc, filter, jsiponly);
 	size_t contactsSize = bctbx_list_size(contacts);
 	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_core_get_user_data((LinphoneCore *)lc);
-	jobjectArray jContacts = env->NewObjectArray(contactsSize, ljb->addressClass, NULL);
+	jobjectArray jContacts = env->NewObjectArray((int)contactsSize, ljb->addressClass, NULL);
 
 	for (size_t i = 0; i < contactsSize; i++) {
 		LinphoneAddress *addr = (LinphoneAddress*)contacts->data;
 		jobject jcontact = env->NewObject(ljb->addressClass, ljb->addressCtrId, (jlong)addr);
 		if(jcontact != NULL){
-			env->SetObjectArrayElement(jContacts, i, jcontact);
+			env->SetObjectArrayElement(jContacts, (int)i, jcontact);
 		}
 		contacts = contacts->next;
 	}
@@ -4700,7 +4699,7 @@ extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isOutgoing(JN
 extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_getStorageId(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
-	return (jint) linphone_chat_message_get_storage_id((LinphoneChatMessage*)ptr);
+	return 0;
 }
 
 extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setFileTransferFilepath(JNIEnv*  env
@@ -4943,10 +4942,20 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendMessage2(JNIEnv*
 																		,jlong messagePtr
 																		,jobject jlistener) {
 	jobject listener = env->NewGlobalRef(jlistener);
+	LinphoneChatMessage *msg = (LinphoneChatMessage *)messagePtr;
 	message = env->NewGlobalRef(message);
-	linphone_chat_message_ref((LinphoneChatMessage*)messagePtr);
-	linphone_chat_message_set_user_data((LinphoneChatMessage*)messagePtr, message);
-	linphone_chat_room_send_message2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr, chat_room_impl_callback, (void*)listener);
+	linphone_chat_message_ref(msg);
+	linphone_chat_message_set_user_data(msg, message);
+
+	LinphoneChatMessageCbs *cbs;
+	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_user_data(cbs, (void *)listener);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+	linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_recv);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, file_transfer_send);
+	
+	linphone_chat_room_send_chat_message_2((LinphoneChatRoom*)chatroom_ptr, msg);
 }
 
 extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIEnv*  env
@@ -6046,7 +6055,7 @@ static LinphoneContent *create_content_from_java_args(JNIEnv *env, LinphoneCore 
 			ReleaseStringUTFChars(env, jencoding, tmp);
 		}
 
-		linphone_content_set_buffer(content, data, (size_t)env->GetArrayLength(jdata));
+		linphone_content_set_buffer(content, (const uint8_t *)data, (size_t)env->GetArrayLength(jdata));
 		env->ReleaseByteArrayElements(jdata,(jbyte*)data,JNI_ABORT);
 	}
 	return content;
