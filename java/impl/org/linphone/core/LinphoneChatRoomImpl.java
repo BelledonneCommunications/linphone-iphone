@@ -101,9 +101,9 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 
-	public int getUnreadMessageCount() {
+	public int getUnreadMessagesCount() {
 		synchronized(getCore()){
-			return getUnreadMessageCount(nativePtr);
+			return getUnreadMessagesCount(nativePtr);
 		}
 	}
 
