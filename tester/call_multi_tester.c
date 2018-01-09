@@ -533,6 +533,7 @@ static void simple_call_transfer(void) {
 
 
 	linphone_call_transfer(pauline_called_by_marie,laure_identity);
+	bctbx_free(laure_identity);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallRefered,1,2000));
 	/*marie pausing pauline*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallPausing,1,2000));

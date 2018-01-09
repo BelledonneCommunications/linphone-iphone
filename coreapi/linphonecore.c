@@ -3550,6 +3550,8 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		if (contact)
 			salAddress = sal_address_clone(const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress()));
 		op->set_contact_address(salAddress);
+		if (salAddress)
+			sal_address_unref(salAddress);
 	}
 	op->enable_cnx_ip_to_0000_if_sendonly(!!lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }

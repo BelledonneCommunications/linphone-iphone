@@ -267,10 +267,10 @@ void MediaSessionPrivate::pauseForTransfer () {
 
 void MediaSessionPrivate::pausedByRemote () {
 	L_Q();
-	MediaSessionParams *newParams = new MediaSessionParams(*getParams());
+	MediaSessionParams newParams(*getParams());
 	if (lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sip", "inactive_video_on_pause", 0))
-		newParams->setVideoDirection(LinphoneMediaDirectionInactive);
-	acceptUpdate(newParams, CallSession::State::PausedByRemote, "Call paused by remote");
+		newParams.setVideoDirection(LinphoneMediaDirectionInactive);
+	acceptUpdate(&newParams, CallSession::State::PausedByRemote, "Call paused by remote");
 }
 
 void MediaSessionPrivate::remoteRinging () {

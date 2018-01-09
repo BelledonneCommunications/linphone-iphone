@@ -647,7 +647,7 @@ test_t presence_tests[] = {
 	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/
 	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
 	TEST_NO_TAG("Presence information", presence_information),
-	TEST_ONE_TAG("App managed presence failure", subscribe_failure_handle_by_app, "LeaksMemory"),
+	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
 	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
 	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
 };
