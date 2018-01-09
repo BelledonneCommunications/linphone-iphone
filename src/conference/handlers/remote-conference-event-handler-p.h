@@ -38,7 +38,7 @@ private:
 	void unsubscribe ();
 
 	// CoreListener
-	void onNetworkReachable (bool reachable) override;
+	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) override;
 
 	ChatRoomId chatRoomId;

@@ -79,9 +79,9 @@ void CorePrivate::uninit () {
 
 // -----------------------------------------------------------------------------
 
-void CorePrivate::notifyNetworkReachable (bool reachable) {
+void CorePrivate::notifyNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
 	for (const auto &listener : listeners)
-		listener->onNetworkReachable(reachable);
+		listener->onNetworkReachable(sipNetworkReachable, mediaNetworkReachable);
 }
 
 void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const string &message) {

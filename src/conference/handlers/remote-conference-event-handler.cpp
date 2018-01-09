@@ -200,8 +200,8 @@ void RemoteConferenceEventHandlerPrivate::unsubscribe () {
 
 // -----------------------------------------------------------------------------
 
-void RemoteConferenceEventHandlerPrivate::onNetworkReachable (bool reachable) {
-	if (!reachable)
+void RemoteConferenceEventHandlerPrivate::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
+	if (!sipNetworkReachable)
 		unsubscribe();
 }
 

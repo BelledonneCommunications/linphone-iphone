@@ -6125,6 +6125,8 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 static void set_media_network_reachable(LinphoneCore* lc, bool_t is_media_reachable){
 	if (lc->media_network_reachable==is_media_reachable) return; // no change, ignore.
+	lc->network_reachable_to_be_notified=TRUE;
+
 	ms_message("Media network reachability state is now [%s]",is_media_reachable?"UP":"DOWN");
 	lc->media_network_reachable=is_media_reachable;
 

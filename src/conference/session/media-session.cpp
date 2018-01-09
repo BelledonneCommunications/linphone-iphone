@@ -629,14 +629,16 @@ void MediaSessionPrivate::stopStreams () {
 
 // -----------------------------------------------------------------------------
 
-void MediaSessionPrivate::onNetworkReachable (bool reachable) {
+void MediaSessionPrivate::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
 	L_Q();
-	if (reachable) {
+	if (mediaNetworkReachable) {
 		LinphoneConfig *config = linphone_core_get_config(q->getCore()->getCCore());
 		if (lp_config_get_int(config, "net", "recreate_sockets_when_network_is_up", 0))
 			refreshSockets();
+	} else {
+		setBroken();
 	}
-	CallSessionPrivate::onNetworkReachable(reachable);
+	CallSessionPrivate::onNetworkReachable(sipNetworkReachable, mediaNetworkReachable);
 }
 
 // -----------------------------------------------------------------------------

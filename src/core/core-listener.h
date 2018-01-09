@@ -30,7 +30,7 @@ class CoreListener {
 public:
 	virtual ~CoreListener () = default;
 
-	virtual void onNetworkReachable (bool reachable) {}
+	virtual void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {}
 	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {}
 };
 

@@ -379,7 +379,7 @@ void CallSessionPrivate::replaceOp (SalCallOp *newOp) {
 	switch (oldState) {
 		case CallSession::State::IncomingEarlyMedia:
 		case CallSession::State::IncomingReceived:
-			op->set_user_pointer(nullptr); // In order for the call session to not get terminated by terminating this op
+			oldOp->set_user_pointer(nullptr); // In order for the call session to not get terminated by terminating this op
 			// Do not terminate a forked INVITE
 			if (op->get_replaces())
 				oldOp->terminate();
@@ -668,6 +668,35 @@ void CallSessionPrivate::updateCurrentParams () const {}
 
 // -----------------------------------------------------------------------------
 
+void CallSessionPrivate::setBroken () {
+	switch (state) {
+		// For all the early states, we prefer to drop the call
+		case CallSession::State::OutgoingInit:
+		case CallSession::State::OutgoingProgress:
+		case CallSession::State::OutgoingRinging:
+		case CallSession::State::OutgoingEarlyMedia:
+		case CallSession::State::IncomingReceived:
+		case CallSession::State::IncomingEarlyMedia:
+			// During the early states, the SAL layer reports the failure from the dialog or transaction layer,
+			// hence, there is nothing special to do
+		case CallSession::State::StreamsRunning:
+		case CallSession::State::Updating:
+		case CallSession::State::Pausing:
+		case CallSession::State::Resuming:
+		case CallSession::State::Paused:
+		case CallSession::State::PausedByRemote:
+		case CallSession::State::UpdatedByRemote:
+			// During these states, the dialog is established. A failure of a transaction is not expected to close it.
+			// Instead we have to repair the dialog by sending a reINVITE
+			broken = true;
+			needLocalIpRefresh = true;
+			break;
+		default:
+			lError() << "CallSessionPrivate::setBroken(): unimplemented case";
+			break;
+	}
+}
+
 void CallSessionPrivate::setContactOp () {
 	L_Q();
 	SalAddress *salAddress = nullptr;
@@ -684,37 +713,11 @@ void CallSessionPrivate::setContactOp () {
 
 // -----------------------------------------------------------------------------
 
-void CallSessionPrivate::onNetworkReachable (bool reachable) {
-	if (reachable) {
+void CallSessionPrivate::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
+	if (sipNetworkReachable)
 		repairIfBroken();
-	} else {
-		switch(state) {
-			// For all the early states, we prefer to drop the call
-			case CallSession::State::OutgoingInit:
-			case CallSession::State::OutgoingProgress:
-			case CallSession::State::OutgoingRinging:
-			case CallSession::State::OutgoingEarlyMedia:
-			case CallSession::State::IncomingReceived:
-			case CallSession::State::IncomingEarlyMedia:
-				// During the early states, the SAL layer reports the failure from the dialog or transaction layer,
-				// hence, there is nothing special to do
-			case CallSession::State::StreamsRunning:
-			case CallSession::State::Updating:
-			case CallSession::State::Pausing:
-			case CallSession::State::Resuming:
-			case CallSession::State::Paused:
-			case CallSession::State::PausedByRemote:
-			case CallSession::State::UpdatedByRemote:
-				// During these states, the dialog is established. A failure of a transaction is not expected to close it.
-				// Instead we have to repair the dialog by sending a reINVITE
-				broken = true;
-				needLocalIpRefresh = true;
-				break;
-			default:
-				lError() << "CallSessionPrivate::onNetworkReachable(): unimplemented case";
-				break;
-		}
-	}
+	else
+		setBroken();
 }
 
 void CallSessionPrivate::onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) {

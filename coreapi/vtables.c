@@ -243,7 +243,7 @@ void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguri
 }
 
 void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
-	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyNetworkReachable(!!reachable);
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyNetworkReachable(!!lc->sip_network_reachable, lc->media_network_reachable);
 	NOTIFY_IF_EXIST(network_reachable, lc,reachable);
 	cleanup_dead_vtable_refs(lc);
 }

@@ -86,10 +86,11 @@ protected:
 	virtual void terminate ();
 	virtual void updateCurrentParams () const;
 
+	void setBroken ();
 	void setContactOp ();
 
 	// CoreListener
-	void onNetworkReachable (bool reachable) override;
+	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) override;
 
 private:

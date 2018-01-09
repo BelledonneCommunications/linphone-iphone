@@ -109,7 +109,7 @@ public:
 	SalMediaDescription *getResultDesc () const { return resultDesc; }
 
 	// CoreListener
-	void onNetworkReachable (bool reachable) override;
+	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 
 private:
 	static OrtpJitterBufferAlgorithm jitterBufferNameToAlgo (const std::string &name);
