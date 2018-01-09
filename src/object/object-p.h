@@ -29,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ObjectPrivate : public BaseObjectPrivate {
 protected:
-	constexpr const Object::Lock &getLock () const {
+	inline const Object::Lock &getLock () const {
 		return lock;
 	}
 
