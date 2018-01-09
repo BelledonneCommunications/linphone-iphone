@@ -100,6 +100,7 @@ set(ENUMS_HEADER_FILES
 set(UTILS_HEADER_FILES
 	enum-generator.h
 	enum-mask.h
+	fs.h
 	general.h
 	magic-macros.h
 	traits.h
