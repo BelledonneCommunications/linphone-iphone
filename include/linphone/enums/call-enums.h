@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CALL_ENUMS_H_
-#define _CALL_ENUMS_H_
+#ifndef _L_CALL_ENUMS_H_
+#define _L_CALL_ENUMS_H_
 
 // =============================================================================
 
@@ -71,4 +71,4 @@
 #define LinphoneCallEarlyUpdatedByRemote LinphoneCallStateEarlyUpdatedByRemote
 #define LinphoneCallEarlyUpdating LinphoneCallStateEarlyUpdating
 
-#endif // ifndef _CALL_ENUMS_H_
+#endif // ifndef _L_CALL_ENUMS_H_

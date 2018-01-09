@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CHAT_ROOM_CBS_H_
-#define _C_CHAT_ROOM_CBS_H_
+#ifndef _L_C_CHAT_ROOM_CBS_H_
+#define _L_C_CHAT_ROOM_CBS_H_
 
 #include "linphone/api/c-callbacks.h"
 #include "linphone/api/c-types.h"
@@ -279,4 +279,4 @@ LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participants_capabilities_checke
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CHAT_ROOM_H_
+#endif // ifndef _L_C_CHAT_ROOM_CBS_H_

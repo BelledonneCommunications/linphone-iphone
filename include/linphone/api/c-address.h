@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_ADDRESS_H_
-#define _C_ADDRESS_H_
+#ifndef _L_C_ADDRESS_H_
+#define _L_C_ADDRESS_H_
 
 #include "linphone/api/c-types.h"
 
@@ -283,4 +283,4 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC bool_t linphone_address_is_secure (const Lin
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_ADDRESS_H_
+#endif // ifndef _L_C_ADDRESS_H_

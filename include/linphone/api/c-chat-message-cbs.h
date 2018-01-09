@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CHAT_MESSAGE_CBS_H_
-#define _C_CHAT_MESSAGE_CBS_H_
+#ifndef _L_C_CHAT_MESSAGE_CBS_H_
+#define _L_C_CHAT_MESSAGE_CBS_H_
 
 #include "linphone/api/c-callbacks.h"
 #include "linphone/api/c-types.h"
@@ -33,7 +33,7 @@
  * @addtogroup chatroom
  * @{
  */
- 
+
 LinphoneChatMessageCbs *linphone_chat_message_cbs_new(void);
 
 /**
@@ -69,55 +69,55 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_user_data (LinphoneChatMessag
  * @return The current message state changed callback.
  */
  LINPHONE_PUBLIC LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs);
- 
+
  /**
   * Set the message state changed callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @param[in] cb The message state changed callback to be used.
   */
  LINPHONE_PUBLIC void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsMsgStateChangedCb cb);
- 
+
  /**
   * Get the file transfer receive callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @return The current file transfer receive callback.
   */
  LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs);
- 
+
  /**
   * Set the file transfer receive callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @param[in] cb The file transfer receive callback to be used.
   */
  LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferRecvCb cb);
- 
+
  /**
   * Get the file transfer send callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @return The current file transfer send callback.
   */
  LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs);
- 
+
  /**
   * Set the file transfer send callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @param[in] cb The file transfer send callback to be used.
   */
  LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferSendCb cb);
- 
+
  /**
   * Get the file transfer progress indication callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @return The current file transfer progress indication callback.
   */
  LINPHONE_PUBLIC LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs);
- 
+
  /**
   * Set the file transfer progress indication callback.
   * @param[in] cbs LinphoneChatMessageCbs object.
   * @param[in] cb The file transfer progress indication callback to be used.
   */
- LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb); 
+ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_file_transfer_progress_indication(LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb);
 
 /**
  * @}
@@ -127,4 +127,4 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_user_data (LinphoneChatMessag
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CHAT_MESSAGE_H_
+#endif // ifndef _L_C_CHAT_MESSAGE_CBS_H_

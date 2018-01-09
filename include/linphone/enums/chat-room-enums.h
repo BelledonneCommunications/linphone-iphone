@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _CHAT_ROOM_ENUMS_H_
-#define _CHAT_ROOM_ENUMS_H_
+#ifndef _L_CHAT_ROOM_ENUMS_H_
+#define _L_CHAT_ROOM_ENUMS_H_
 
 // =============================================================================
 
@@ -38,4 +38,4 @@
 	F(Proxy, 1 << 3) \
 	F(Migratable, 1 << 4)
 
-#endif // ifndef _CHAT_ROOM_ENUMS_H_
+#endif // ifndef _L_CHAT_ROOM_ENUMS_H_

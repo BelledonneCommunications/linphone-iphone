@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _EVENT_LOG_ENUMS_H_
-#define _EVENT_LOG_ENUMS_H_
+#ifndef _L_EVENT_LOG_ENUMS_H_
+#define _L_EVENT_LOG_ENUMS_H_
 
 // =============================================================================
 
@@ -37,4 +37,4 @@
 	F(ConferenceParticipantDeviceRemoved) \
 	F(ConferenceSubjectChanged)
 
-#endif // ifndef _EVENT_LOG_ENUMS_H_
+#endif // ifndef _L_EVENT_LOG_ENUMS_H_

@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CHAT_MESSAGE_H_
-#define _C_CHAT_MESSAGE_H_
+#ifndef _L_C_CHAT_MESSAGE_H_
+#define _L_C_CHAT_MESSAGE_H_
 
 #include "linphone/api/c-types.h"
 #include "linphone/api/c-chat-message-cbs.h"
@@ -355,4 +355,4 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const Linphon
 }
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CHAT_MESSAGE_H_
+#endif // ifndef _L_C_CHAT_MESSAGE_H_

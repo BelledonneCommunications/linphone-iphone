@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CALL_H_
-#define _C_CALL_H_
+#ifndef _L_C_CALL_H_
+#define _L_C_CALL_H_
 
 #include <ortp/rtpsession.h>
 
@@ -773,7 +773,7 @@ LINPHONE_PUBLIC LinphoneCallCbs *linphone_call_get_current_callbacks(const Linph
 
 /**
  * Set call parameters - advanced and not recommended feature - use with caution.
- * Local call parameters applicable to an outgoing or incoming shall usually be passed to linphone_core_invite_address_with_params() or 
+ * Local call parameters applicable to an outgoing or incoming shall usually be passed to linphone_core_invite_address_with_params() or
  * linphone_call_accept_with_params().
  * However, in some cases it might be desirable from a software design standpoint to modify local parameters outside of the application layer, typically
  * in the purpose of implementing a custom logic including special headers in INVITE or 200Ok requests, driven by a call_state_changed listener method.
@@ -799,4 +799,4 @@ LINPHONE_PUBLIC const LinphoneCallParams * linphone_call_get_params(LinphoneCall
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CALL_H_
+#endif // ifndef _L_C_CALL_H_

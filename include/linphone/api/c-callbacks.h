@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CALLBACKS_H_
-#define _C_CALLBACKS_H_
+#ifndef _L_C_CALLBACKS_H_
+#define _L_C_CALLBACKS_H_
 
 // TODO: Remove me in the future.
 #include "linphone/callbacks.h"
@@ -257,4 +257,4 @@ typedef void (*LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb) (LinphoneCh
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CALLBACKS_H_
+#endif // ifndef _L_C_CALLBACKS_H_

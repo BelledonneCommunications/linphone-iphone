@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _ENUM_MASK_H_
-#define _ENUM_MASK_H_
+#ifndef _L_ENUM_MASK_H_
+#define _L_ENUM_MASK_H_
 
 #include <initializer_list>
 
@@ -150,4 +150,4 @@ private:
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _ENUM_MASK_H_
+#endif // ifndef _L_ENUM_MASK_H_

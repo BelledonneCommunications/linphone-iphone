@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _C_CALL_STATS_H_
-#define _C_CALL_STATS_H_
+#ifndef _L_C_CALL_STATS_H_
+#define _L_C_CALL_STATS_H_
 
 #include <ortp/rtp.h>
 
@@ -199,4 +199,4 @@ LINPHONE_PUBLIC float linphone_call_stats_get_round_trip_delay (const LinphoneCa
 	}
 #endif // ifdef __cplusplus
 
-#endif // ifndef _C_CALL_STATS_H_
+#endif // ifndef _L_C_CALL_STATS_H_
