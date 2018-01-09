@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 
-package org.linphone.core.util;
+package org.linphone.core.tools;
 
 import org.linphone.mediastream.Log;
+import org.linphone.mediastream.MediastreamerAndroidContext;
+import org.linphone.mediastream.Version;
 
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
@@ -40,19 +42,22 @@ import android.os.Build;
  * This class is instanciated directly by the linphone library in order to access specific features only accessible in java.
 **/
 
-public class AndroidPlatformHelper{
+public class AndroidPlatformHelper {
+	private Context mContext;
 	private WifiManager.WifiLock mWifiLock;
 	private WifiManager.MulticastLock mMcastLock;
 	private ConnectivityManager mConnectivityManager;
 	private PowerManager mPowerManager;
 	private WakeLock mWakeLock;
 
-	public AndroidPlatformHelper(Object ctx_obj){
-		Context ctx = (Context) ctx_obj;
-		WifiManager wifiMgr = ctx.getSystemService(WifiManager.class);
-		mPowerManager = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
-		mConnectivityManager = (ConnectivityManager) ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-
+	public AndroidPlatformHelper(Object ctx_obj) {
+		mContext = (Context) ctx_obj;
+		MediastreamerAndroidContext.setContext(mContext);
+		
+		WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+		mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+		mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		
 		mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,	"AndroidPlatformHelper");
 		mWakeLock.setReferenceCounted(true);
 		mMcastLock = wifiMgr.createMulticastLock("AndroidPlatformHelper");
@@ -60,13 +65,13 @@ public class AndroidPlatformHelper{
 		mWifiLock = wifiMgr.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AndroidPlatformHelper");
 		mWifiLock.setReferenceCounted(true);
 	}
-
-	public Object getPowerManager(){
+	
+	public Object getPowerManager() {
 		return mPowerManager;
 	}
-
+	
 	public String[] getDnsServers() {
-		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
+		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Version.API23_MARSHMALLOW_60)
 			return null;
 
 		if (mConnectivityManager.getActiveNetwork() == null
@@ -85,26 +90,44 @@ public class AndroidPlatformHelper{
 		Log.i("getDnsServers() returning");
 		return servers;
 	}
-	public void acquireWifiLock(){
+
+	public String getDataPath() {
+		return mContext.getFilesDir().getAbsolutePath();
+	}
+
+	public String getConfigPath() {
+		return mContext.getFilesDir().getAbsolutePath();
+	}
+
+	public String getCachePath() {
+		return mContext.getCacheDir().getAbsolutePath();
+	}
+
+	public void acquireWifiLock() {
 		Log.i("acquireWifiLock()");
 		mWifiLock.acquire();
 	}
-	public void releaseWifiLock(){
+
+	public void releaseWifiLock() {
 		Log.i("releaseWifiLock()");
 		mWifiLock.release();
 	}
-	public void acquireMcastLock(){
+
+	public void acquireMcastLock() {
 		Log.i("acquireMcastLock()");
 		mMcastLock.acquire();
 	}
-	public void releaseMcastLock(){
+
+	public void releaseMcastLock() {
 		Log.i("releaseMcastLock()");
 		mMcastLock.release();
 	}
-	public void acquireCpuLock(){
+
+	public void acquireCpuLock() {
 		Log.i("acquireCpuLock()");
 		mWakeLock.acquire();
 	}
+
 	public void releaseCpuLock(){
 		Log.i("releaseCpuLock()");
 		mWakeLock.release();
