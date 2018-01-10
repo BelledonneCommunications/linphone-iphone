@@ -58,7 +58,7 @@ int linphone_dial_plan_lookup_ccc_from_iso (const char *iso) {
 }
 
 const LinphoneDialPlan *linphone_dial_plan_by_ccc_as_int (int ccc) {
-	const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCccAsInt(ccc);
+	const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCcc(ccc);
 	return L_GET_C_BACK_PTR(&dp);
 }
 
