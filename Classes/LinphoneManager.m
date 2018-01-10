@@ -1684,7 +1684,7 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 		return;
 
 	
-	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0){
+	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0) {
 		if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
 			LOGI(@"Wifi SSID changed, resesting transports.");
 			mgr.connectivity=none; //this will trigger a connectivity change in networkReachabilityCallback.
@@ -1692,8 +1692,6 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 		}
 	}
 	mgr.SSID = newSSID;
-
-	
 }
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *nilCtx) {
