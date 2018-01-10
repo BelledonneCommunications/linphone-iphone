@@ -38,6 +38,10 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+// -----------------------------------------------------------------------------
+// Export.
+// -----------------------------------------------------------------------------
+
 #ifndef LINPHONE_PUBLIC
 	#if defined(_MSC_VER)
 		#ifdef LINPHONE_STATIC
@@ -66,6 +70,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 #ifdef __cplusplus
 
+// -----------------------------------------------------------------------------
+// Debug.
+// -----------------------------------------------------------------------------
+
 void l_assert (const char *condition, const char *file, int line);
 
 #ifdef DEBUG
@@ -73,6 +81,10 @@ void l_assert (const char *condition, const char *file, int line);
 #else
 	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #endif
+
+// -----------------------------------------------------------------------------
+// Optimization.
+// -----------------------------------------------------------------------------
 
 #ifndef _MSC_VER
 	#define L_LIKELY(EXPRESSION) __builtin_expect(static_cast<bool>(EXPRESSION), true)
@@ -82,8 +94,16 @@ void l_assert (const char *condition, const char *file, int line);
 	#define L_UNLIKELY(EXPRESSION) EXPRESSION
 #endif
 
+// -----------------------------------------------------------------------------
+// Misc.
+// -----------------------------------------------------------------------------
+
 // Define an integer version like: 0xXXYYZZ, XX=MAJOR, YY=MINOR, and ZZ=PATCH.
 #define L_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
+
+// -----------------------------------------------------------------------------
+// Data access.
+// -----------------------------------------------------------------------------
 
 class BaseObject;
 class BaseObjectPrivate;
@@ -211,6 +231,42 @@ struct AddConstMirror<const T, U> {
 	inline std::shared_ptr<const CLASS> getSharedFromThis () const { \
 		return std::static_pointer_cast<const CLASS>(Object::getSharedFromThis()); \
 	}
+
+// -----------------------------------------------------------------------------
+// Overload.
+// -----------------------------------------------------------------------------
+
+namespace Private {
+	template<typename... Args>
+	struct ResolveMemberFunctionOverload {
+		template<typename Ret, typename Obj>
+		constexpr auto operator() (Ret (Obj::*func)(Args...)) const -> decltype(func) {
+			return func;
+		}
+	};
+
+	template<typename... Args>
+	struct ResolveConstMemberFunctionOverload {
+		template<typename Ret, typename Obj>
+		constexpr auto operator() (Ret (Obj::*func)(Args...) const) const -> decltype(func) {
+			return func;
+		}
+	};
+
+	template<typename... Args>
+	struct ResolveOverload : ResolveMemberFunctionOverload<Args...>, ResolveConstMemberFunctionOverload<Args...> {
+		using ResolveMemberFunctionOverload<Args...>::operator();
+		using ResolveConstMemberFunctionOverload<Args...>::operator();
+
+		template<typename Ret>
+		constexpr auto operator() (Ret (*func)(Args...)) const -> decltype(func) {
+			return func;
+		}
+	};
+}
+
+// Useful to select a specific overloaded function. (Avoid usage of static_cast.)
+#define L_RESOLVE_OVERLOAD(ARGS) LinphonePrivate::Private::ResolveOverload<ARGS>
 
 // -----------------------------------------------------------------------------
 // Wrapper public.
