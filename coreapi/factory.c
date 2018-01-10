@@ -151,26 +151,75 @@ void linphone_factory_clean(void){
 	}
 }
 
-LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
-		const char *config_path, const char *factory_config_path, void *user_data, void *system_context) {
+static LinphoneCore *_linphone_factory_create_core (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path,
+	void *user_data,
+	void *system_context,
+	bool_t automatically_start
+) {
 	bctbx_init_logger(FALSE);
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context);
+	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context, automatically_start);
 	lp_config_unref(config);
 	return lc;
 }
 
-LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
-		const char *config_path, const char *factory_config_path){
-	return linphone_factory_create_core_2(factory, cbs, config_path, factory_config_path, NULL, NULL);
+LinphoneCore *linphone_factory_create_core (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path
+) {
+	return _linphone_factory_create_core(factory, cbs, config_path, factory_config_path, NULL, NULL, TRUE);
 }
 
-LinphoneCore *linphone_factory_create_core_with_config(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config) {
-	return _linphone_core_new_with_config(cbs, config, NULL, NULL);
+LinphoneCore *linphone_factory_create_core_2 (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path,
+	void *user_data,
+	void *system_context
+) {
+	return _linphone_factory_create_core(factory, cbs, config_path, factory_config_path, user_data, system_context, TRUE);
 }
 
-LinphoneCore *linphone_factory_create_core_with_config_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config, void *user_data, void *system_context) {
-	return _linphone_core_new_with_config(cbs, config, user_data, system_context);
+LinphoneCore *linphone_factory_create_core_3 (
+	const LinphoneFactory *factory,
+	const char *config_path,
+	const char *factory_config_path,
+	void *system_context
+) {
+	return _linphone_factory_create_core(factory, NULL, config_path, factory_config_path, NULL, system_context, FALSE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	LinphoneConfig *config
+) {
+	return _linphone_core_new_with_config(cbs, config, NULL, NULL, TRUE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config_2 (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	LinphoneConfig *config,
+	void *user_data,
+	void *system_context
+) {
+	return _linphone_core_new_with_config(cbs, config, user_data, system_context, TRUE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config_3 (
+	const LinphoneFactory *factory,
+	LinphoneConfig *config,
+	void *system_context
+) {
+	return _linphone_core_new_with_config(NULL, config, NULL, system_context, FALSE);
 }
 
 LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory) {

@@ -1990,7 +1990,7 @@ void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
 	codecs_config_read(lc);
 }
 
-static void linphone_core_start(LinphoneCore * lc) {
+static void _linphone_core_start(LinphoneCore * lc) {
 	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
 	linphone_friend_list_set_display_name(list, "_default");
 	linphone_core_add_friend_list(lc, list);
@@ -2032,7 +2032,7 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 		belle_sip_object_unref(lc->provisioning_http_listener);
 		lc->provisioning_http_listener = NULL;
 	}
-	linphone_core_start(lc);
+	_linphone_core_start(lc);
 }
 
 
@@ -2220,8 +2220,7 @@ static void _linphone_core_init_account_creator_service(LinphoneCore *lc) {
 	linphone_core_set_account_creator_service(lc, service);
 }
 
-static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata, void *system_context){
-	const char *remote_provisioning_uri = NULL;
+static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig *config, void * userdata, void *system_context, bool_t automatically_start) {
 	LinphoneFactory *lfactory = linphone_factory_get();
 	LinphoneCoreCbs *internal_cbs = _linphone_core_cbs_new();
 	const char *msplugins_dir;
@@ -2256,14 +2255,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	if (cbs != NULL) {
 		_linphone_core_add_callbacks(lc, cbs, FALSE);
-	} else {
-		LinphoneCoreCbs *fallback_cbs = linphone_factory_create_core_cbs(linphone_factory_get());
-		_linphone_core_add_callbacks(lc, fallback_cbs, FALSE);
-		belle_sip_object_unref(fallback_cbs);
 	}
 
-
-	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 	ortp_set_log_handler(NULL); /*remove ortp default log handler*/
 	ortp_init();
 
@@ -2309,12 +2302,30 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
-
-	remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
-	if (remote_provisioning_uri == NULL) {
-		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
-	} // else linphone_core_start will be called after the remote provisioning (see linphone_core_iterate)
 	lc->bw_controller = ms_bandwidth_controller_new();
+
+	if (automatically_start) {
+		linphone_core_start(lc);
+	}
+}
+
+void linphone_core_start (LinphoneCore *lc) {
+	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
+
+	if (lc->sal->get_root_ca()) {
+		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->get_root_ca());
+		belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);
+	}
+
+	linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
+
+	const char *remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
+	if (remote_provisioning_uri) {
+		if (linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri) == -1)
+			linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "Bad URI");
+	} else {
+		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
+	}
 }
 
 #ifdef __ANDROID__
@@ -2328,10 +2339,10 @@ static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_con
 }
 #endif
 
-LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context) {
+LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context, bool_t automatically_start) {
 	LinphoneCore *core = L_INIT(Core);
 	Core::create(core);
-	linphone_core_init(core, cbs, config, userdata, system_context);
+	linphone_core_init(core, cbs, config, userdata, system_context, automatically_start);
 	return core;
 }
 
@@ -2341,7 +2352,7 @@ LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, st
 	LinphoneCore *core = NULL;
 	if (vtable != NULL) *local_vtable = *vtable;
 	_linphone_core_cbs_set_v_table(cbs, local_vtable, TRUE);
-	core = _linphone_core_new_with_config(cbs, config, userdata, NULL);
+	core = _linphone_core_new_with_config(cbs, config, userdata, NULL, TRUE);
 	linphone_core_cbs_unref(cbs);
 	return core;
 }
@@ -3216,7 +3227,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 	time_t current_real_time = ms_time(NULL);
 	int64_t diff_time;
 	bool_t one_second_elapsed=FALSE;
-	const char *remote_provisioning_uri = NULL;
 
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
@@ -3224,22 +3234,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 		if (lc->sip_network_reachable) {
 			linphone_core_resolve_stun_server(lc);
 		}
-	}
-	if (linphone_core_get_global_state(lc) == LinphoneGlobalStartup) {
-		if (lc->sal->get_root_ca()) {
-			belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->get_root_ca());
-			belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);
-		}
-
-		linphone_core_set_state(lc, LinphoneGlobalConfiguring, "Configuring");
-
-		remote_provisioning_uri = linphone_core_get_provisioning_uri(lc);
-		if (remote_provisioning_uri) {
-			int err = linphone_remote_provisioning_download_and_apply(lc, remote_provisioning_uri);
-			if (err == -1) {
-				linphone_configuring_terminated(lc, LinphoneConfiguringFailed, "Bad URI");
-			}
-		} // else linphone_configuring_terminated has already been called in linphone_core_init
 	}
 	if (lc->prevtime_ms == 0){
 		lc->prevtime_ms = curtime_ms;

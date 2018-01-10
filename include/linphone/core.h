@@ -871,13 +871,13 @@ LINPHONE_PUBLIC const char *linphone_core_get_version(void);
 LINPHONE_PUBLIC const char *linphone_core_get_user_agent(LinphoneCore *lc);
 
 /**
- * @deprecated Use #linphone_core_get_user_agent instead.
+ * @deprecated 2016-12-20: Use #linphone_core_get_user_agent instead.
  * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_user_agent_name(void);
 
 /**
- * @deprecated Use #linphone_core_get_user_agent instead.
+ * @deprecated 2016-12-20: Use #linphone_core_get_user_agent instead.
  * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_user_agent_version(void);
@@ -904,7 +904,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_core_get_user_agent_ver
  * @param userdata an opaque user pointer that can be retrieved at any time (for example in
  *        callbacks) using linphone_core_get_user_data().
  * @see linphone_core_new_with_config
- * @deprecated Use linphone_factory_create_core() instead.
+ * @deprecated 2017-01-12: Use linphone_factory_create_core() instead.
  * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
@@ -921,10 +921,17 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneCore *linphone_core_new(const Linpho
  * @param userdata an opaque user pointer that can be retrieved at any time (for example in
  *        callbacks) using linphone_core_get_user_data().
  * @see linphone_core_new
- * @deprecated Use linphone_factory_create_core_with_config() instead.
+ * @deprecated 2017-01-12: Use linphone_factory_create_core_with_config() instead.
  * @donotwrap
 **/
 LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, LpConfig *config, void *userdata);
+
+/**
+ * Start a LinphoneCore object after it has been instantiated.
+ * @ingroup initializing
+ * @param[in] core The #LinphoneCore object to be started
+ */
+LINPHONE_PUBLIC void linphone_core_start (LinphoneCore *core);
 
 /**
  * Increment the reference counter of a #LinphoneCore object.
