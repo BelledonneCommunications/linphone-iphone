@@ -651,11 +651,10 @@
 }
 
 - (BOOL)synchronize {
-	//@try {
+	@try {
+		LinphoneManager *lm = LinphoneManager.instance;
 
-	LinphoneManager *lm = LinphoneManager.instance;
-	// root section
-	{
+		// root section
 		BOOL account_changed = NO;
 		for (NSString *key in self->changedDict) {
 			if ([key hasPrefix:@"account_"] && [self valueChangedForKey:key]) {
@@ -676,10 +675,8 @@
 
 		bool enableAutoAnswer = [self boolForKey:@"enable_auto_answer_preference"];
 		[LinphoneManager.instance lpConfigSetBool:enableAutoAnswer forKey:@"auto_answer"];
-	}
 
-	// audio section
-	{
+		// audio section
 		[self synchronizeCodecs:linphone_core_get_audio_codecs(LC)];
 
 		float playback_gain = [self floatForKey:@"playback_gain_preference"];
@@ -701,255 +698,221 @@
 		[LinphoneManager.instance configureVbrCodecs];
 
 		NSString *au_device = @"AU: Audio Unit Receiver";
-		if (!voice_processing) {
+		if (!voice_processing)
 			au_device = @"AU: Audio Unit NoVoiceProc";
-		}
+
 		linphone_core_set_capture_device(LC, [au_device UTF8String]);
 		linphone_core_set_playback_device(LC, [au_device UTF8String]);
-		}
 
 		// video section
-		{
-			[self synchronizeCodecs:linphone_core_get_video_codecs(LC)];
+		[self synchronizeCodecs:linphone_core_get_video_codecs(LC)];
 
-			LinphoneVideoPolicy policy;
-			policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
-			policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
-			linphone_core_set_video_policy(LC, &policy);
-			linphone_core_enable_self_view(LC, [self boolForKey:@"self_video_preference"]);
-			BOOL preview_preference = IPAD && [self boolForKey:@"preview_preference"];
-			[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];
+		LinphoneVideoPolicy policy;
+		policy.automatically_initiate = [self boolForKey:@"start_video_preference"];
+		policy.automatically_accept = [self boolForKey:@"accept_video_preference"];
+		linphone_core_set_video_policy(LC, &policy);
+		linphone_core_enable_self_view(LC, [self boolForKey:@"self_video_preference"]);
+		BOOL preview_preference = IPAD && [self boolForKey:@"preview_preference"];
+		[lm lpConfigSetInt:preview_preference forKey:@"preview_preference"];
 
-			NSString *videoPreset = [self stringForKey:@"video_preset_preference"];
-			linphone_core_set_video_preset(LC, [videoPreset UTF8String]);
-			MSVideoSize vsize;
-			switch ([self integerForKey:@"video_preferred_size_preference"]) {
-				case 0:
-					MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
-					break;
-				case 1:
-					MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
-					break;
-				case 2:
-				default:
-					MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
-					break;
-			}
-			linphone_core_set_preferred_video_size(LC, vsize);
-			if (![videoPreset isEqualToString:@"custom"]) {
-				[self setInteger:0 forKey:@"video_preferred_fps_preference"];
-				[self setInteger:0 forKey:@"download_bandwidth_preference"];
-			}
-			linphone_core_set_preferred_framerate(LC, [self integerForKey:@"video_preferred_fps_preference"]);
-            linphone_core_set_download_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
-            linphone_core_set_upload_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
+		NSString *videoPreset = [self stringForKey:@"video_preset_preference"];
+		linphone_core_set_video_preset(LC, [videoPreset UTF8String]);
+		MSVideoSize vsize;
+		switch ([self integerForKey:@"video_preferred_size_preference"]) {
+			case 0:
+				MS_VIDEO_SIZE_ASSIGN(vsize, 720P);
+				break;
+			case 1:
+				MS_VIDEO_SIZE_ASSIGN(vsize, VGA);
+				break;
+			case 2:
+			default:
+				MS_VIDEO_SIZE_ASSIGN(vsize, QVGA);
+				break;
 		}
+		linphone_core_set_preferred_video_size(LC, vsize);
+		if (![videoPreset isEqualToString:@"custom"]) {
+			[self setInteger:0 forKey:@"video_preferred_fps_preference"];
+			[self setInteger:0 forKey:@"download_bandwidth_preference"];
+		}
+		linphone_core_set_preferred_framerate(LC, [self integerForKey:@"video_preferred_fps_preference"]);
+		linphone_core_set_download_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
+		linphone_core_set_upload_bandwidth(LC, [self integerForKey:@"download_bandwidth_preference"]);
 
 		// call section
-		{
-			linphone_core_set_use_rfc2833_for_dtmf(LC, [self boolForKey:@"rfc_dtmf_preference"]);
-			linphone_core_set_use_info_for_dtmf(LC, [self boolForKey:@"sipinfo_dtmf_preference"]);
-			linphone_core_set_inc_timeout(LC, [self integerForKey:@"incoming_call_timeout_preference"]);
-			linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);
-			[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
-			[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"]
-						 forKey:@"repeat_call_notification"];
-		}
+		linphone_core_set_use_rfc2833_for_dtmf(LC, [self boolForKey:@"rfc_dtmf_preference"]);
+		linphone_core_set_use_info_for_dtmf(LC, [self boolForKey:@"sipinfo_dtmf_preference"]);
+		linphone_core_set_inc_timeout(LC, [self integerForKey:@"incoming_call_timeout_preference"]);
+		linphone_core_set_in_call_timeout(LC, [self integerForKey:@"in_call_timeout_preference"]);
+		[lm lpConfigSetString:[self stringForKey:@"voice_mail_uri_preference"] forKey:@"voice_mail_uri"];
+		[lm lpConfigSetBool:[self boolForKey:@"repeat_call_notification_preference"] forKey:@"repeat_call_notification"];
 
 		// chat section
-		{
-			int val = [self integerForKey:@"use_lime_preference"];
-			linphone_core_enable_lime(LC, val);
-			if (val == LinphoneLimeMandatory &&
-				(linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
-				[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
-				UIAlertController *errView = [UIAlertController
-					alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
-									 message:
-										 NSLocalizedString(
-											 @"LIME requires ZRTP encryption.\n"
-											 @"By activating LIME you automatically activate ZRTP media encryption.",
-											 nil)
-							  preferredStyle:UIAlertControllerStyleAlert];
+		int val = [self integerForKey:@"use_lime_preference"];
+		linphone_core_enable_lime(LC, val);
+		if (val == LinphoneLimeMandatory && (linphone_core_get_media_encryption(LC) != LinphoneMediaEncryptionZRTP)) {
+			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
+			[self setCString:"ZRTP" forKey:@"media_encryption_preference"];
+			UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"ZRTP activation", nil)
+																			 message:NSLocalizedString(@"LIME requires ZRTP encryption.\n"
+																									   @"By activating LIME you automatically activate ZRTP media encryption.",
+																									   nil)
+																	  preferredStyle:UIAlertControllerStyleAlert];
 
-				UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																		style:UIAlertActionStyleDefault
-																	  handler:^(UIAlertAction *action){
-																	  }];
-				[errView addAction:defaultAction];
-				[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-			}
-			linphone_core_set_file_transfer_server(
-				LC, [[self stringForKey:@"file_transfer_server_url_preference"] UTF8String]);
+			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction *action){}];
+			[errView addAction:defaultAction];
+			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		}
+		linphone_core_set_file_transfer_server(LC, [self stringForKey:@"file_transfer_server_url_preference"].UTF8String);
 
 		// network section
-		{
-			BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
-			[lm lpConfigSetInt:edgeOpt forKey:@"edge_opt_preference"];
+		BOOL edgeOpt = [self boolForKey:@"edge_opt_preference"];
+		[lm lpConfigSetInt:edgeOpt forKey:@"edge_opt_preference"];
 
-			BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
-			[lm lpConfigSetInt:wifiOnly forKey:@"wifi_only_preference"];
-			if ([self valueChangedForKey:@"wifi_only_preference"]) {
-				[LinphoneManager.instance setupNetworkReachabilityCallback];
+		BOOL wifiOnly = [self boolForKey:@"wifi_only_preference"];
+		[lm lpConfigSetInt:wifiOnly forKey:@"wifi_only_preference"];
+		if ([self valueChangedForKey:@"wifi_only_preference"])
+			[LinphoneManager.instance setupNetworkReachabilityCallback];
+
+		LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
+		NSString *stun_server = [self stringForKey:@"stun_preference"];
+		if ([stun_server length] > 0) {
+			linphone_core_set_stun_server(LC, [stun_server UTF8String]);
+			linphone_nat_policy_set_stun_server(LNP, [stun_server UTF8String]);
+			BOOL ice_preference = [self boolForKey:@"ice_preference"];
+			linphone_nat_policy_enable_ice(LNP, ice_preference);
+			linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
+			NSString *turn_username = [self stringForKey:@"turn_username"];
+			NSString *turn_password = [self stringForKey:@"turn_password"];
+
+			if ([turn_username length] > 0) {
+				const LinphoneAuthInfo *turnAuthInfo = nil;
+				if ([turn_password length] > 0){
+					turnAuthInfo = linphone_auth_info_new([turn_username UTF8String], NULL, [turn_password UTF8String], NULL, NULL, NULL);
+					linphone_core_add_auth_info(LC, turnAuthInfo);
+				} else
+					turnAuthInfo = linphone_core_find_auth_info(LC, NULL, [turn_username UTF8String], NULL);
+
+				linphone_nat_policy_set_stun_server_username(LNP, [turn_username UTF8String]);
 			}
-
-			LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
-			NSString *stun_server = [self stringForKey:@"stun_preference"];
-			if ([stun_server length] > 0) {
-				linphone_core_set_stun_server(LC, [stun_server UTF8String]);
-				linphone_nat_policy_set_stun_server(LNP, [stun_server UTF8String]);
-				BOOL ice_preference = [self boolForKey:@"ice_preference"];
-				linphone_nat_policy_enable_ice(LNP, ice_preference);
-				linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
-				NSString *turn_username = [self stringForKey:@"turn_username"];
-				NSString *turn_password = [self stringForKey:@"turn_password"];
-
-				if ([turn_username length] > 0) {
-					const LinphoneAuthInfo *turnAuthInfo = nil;
-					if ([turn_password length] > 0){
-						turnAuthInfo = linphone_auth_info_new([turn_username UTF8String], NULL,
-															  [turn_password UTF8String], NULL, NULL, NULL);
-						linphone_core_add_auth_info(LC, turnAuthInfo);
-					}else{
-						turnAuthInfo = linphone_core_find_auth_info(LC, NULL, [turn_username UTF8String], NULL);
-					}
-					linphone_nat_policy_set_stun_server_username(LNP, [turn_username UTF8String]);
-				}
-			} else {
-				linphone_nat_policy_enable_stun(LNP, FALSE);
-				linphone_nat_policy_set_stun_server(LNP, NULL);
-				linphone_core_set_stun_server(LC, NULL);
-			}
-			linphone_core_set_nat_policy(LC, LNP);
-			{
-				NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
-				int minPort, maxPort;
-				[LinphoneCoreSettingsStore parsePortRange:audio_port_preference minPort:&minPort maxPort:&maxPort];
-				linphone_core_set_audio_port_range(LC, minPort, maxPort);
-			}
-			{
-				NSString *video_port_preference = [self stringForKey:@"video_port_preference"];
-				int minPort, maxPort;
-				[LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&minPort maxPort:&maxPort];
-
-				linphone_core_set_video_port_range(LC, minPort, maxPort);
-			}
-
-			NSString *menc = [self stringForKey:@"media_encryption_preference"];
-			if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
-			else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
-			else if (menc && [menc compare:@"DTLS"] == NSOrderedSame)
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionDTLS);
-			else
-				linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionNone);
-
-			linphone_core_enable_adaptive_rate_control(LC, [self boolForKey:@"adaptive_rate_control_preference"]);
+		} else {
+			linphone_nat_policy_enable_stun(LNP, FALSE);
+			linphone_nat_policy_set_stun_server(LNP, NULL);
+			linphone_core_set_stun_server(LC, NULL);
 		}
+		linphone_core_set_nat_policy(LC, LNP);
+
+		NSString *audio_port_preference = [self stringForKey:@"audio_port_preference"];
+		int audioMinPort, audioMaxPort;
+		[LinphoneCoreSettingsStore parsePortRange:audio_port_preference minPort:&audioMinPort maxPort:&audioMaxPort];
+		linphone_core_set_audio_port_range(LC, audioMinPort, audioMaxPort);
+
+		NSString *video_port_preference = [self stringForKey:@"video_port_preference"];
+		int videoMinPort, videoMaxPort;
+		[LinphoneCoreSettingsStore parsePortRange:video_port_preference minPort:&videoMinPort maxPort:&videoMaxPort];
+		linphone_core_set_video_port_range(LC, videoMinPort, videoMaxPort);
+
+		NSString *menc = [self stringForKey:@"media_encryption_preference"];
+		if (menc && [menc compare:@"SRTP"] == NSOrderedSame)
+			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionSRTP);
+		else if (menc && [menc compare:@"ZRTP"] == NSOrderedSame)
+			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionZRTP);
+		else if (menc && [menc compare:@"DTLS"] == NSOrderedSame)
+			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionDTLS);
+		else
+			linphone_core_set_media_encryption(LC, LinphoneMediaEncryptionNone);
+
+		linphone_core_enable_adaptive_rate_control(LC, [self boolForKey:@"adaptive_rate_control_preference"]);
 
 		// tunnel section
-		{
-			if (linphone_core_tunnel_available()) {
-				NSString *lTunnelPrefMode = [self stringForKey:@"tunnel_mode_preference"];
-				NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
-				int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
-				LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
-				LinphoneTunnelMode mode = LinphoneTunnelModeDisable;
-				int lTunnelPort = 443;
-				if (lTunnelPrefPort) {
-					lTunnelPort = lTunnelPrefPort;
-				}
+		if (linphone_core_tunnel_available()) {
+			NSString *lTunnelPrefMode = [self stringForKey:@"tunnel_mode_preference"];
+			NSString *lTunnelPrefAddress = [self stringForKey:@"tunnel_address_preference"];
+			int lTunnelPrefPort = [self integerForKey:@"tunnel_port_preference"];
+			LinphoneTunnel *tunnel = linphone_core_get_tunnel(LC);
+			LinphoneTunnelMode mode = LinphoneTunnelModeDisable;
+			int lTunnelPort = 443;
+			if (lTunnelPrefPort)
+				lTunnelPort = lTunnelPrefPort;
 
-				linphone_tunnel_clean_servers(tunnel);
-				if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
-					LinphoneTunnelConfig *ltc = linphone_tunnel_config_new();
-					linphone_tunnel_config_set_host(ltc, [lTunnelPrefAddress UTF8String]);
-					linphone_tunnel_config_set_port(ltc, lTunnelPort);
-					linphone_tunnel_add_server(tunnel, ltc);
+			linphone_tunnel_clean_servers(tunnel);
+			if (lTunnelPrefAddress && [lTunnelPrefAddress length]) {
+				LinphoneTunnelConfig *ltc = linphone_tunnel_config_new();
+				linphone_tunnel_config_set_host(ltc, [lTunnelPrefAddress UTF8String]);
+				linphone_tunnel_config_set_port(ltc, lTunnelPort);
+				linphone_tunnel_add_server(tunnel, ltc);
 
-					if ([lTunnelPrefMode isEqualToString:@"off"]) {
-						mode = LinphoneTunnelModeDisable;
-					} else if ([lTunnelPrefMode isEqualToString:@"on"]) {
-						mode = LinphoneTunnelModeEnable;
-					} else if ([lTunnelPrefMode isEqualToString:@"auto"]) {
-						mode = LinphoneTunnelModeAuto;
-					} else {
-						LOGE(@"Unexpected tunnel mode [%s]", [lTunnelPrefMode UTF8String]);
-					}
-				}
-
-				[lm lpConfigSetString:lTunnelPrefMode forKey:@"tunnel_mode_preference"];
-				linphone_tunnel_set_mode(tunnel, mode);
+				if ([lTunnelPrefMode isEqualToString:@"off"])
+					mode = LinphoneTunnelModeDisable;
+				else if ([lTunnelPrefMode isEqualToString:@"on"])
+					mode = LinphoneTunnelModeEnable;
+				else if ([lTunnelPrefMode isEqualToString:@"auto"])
+					mode = LinphoneTunnelModeAuto;
+				else
+					LOGE(@"Unexpected tunnel mode [%s]", [lTunnelPrefMode UTF8String]);
 			}
+
+			[lm lpConfigSetString:lTunnelPrefMode forKey:@"tunnel_mode_preference"];
+			linphone_tunnel_set_mode(tunnel, mode);
 		}
 
 		// advanced section
-		{
-			BOOL animations = [self boolForKey:@"animations_preference"];
-			[lm lpConfigSetInt:animations forKey:@"animations_preference"];
+		BOOL animations = [self boolForKey:@"animations_preference"];
+		[lm lpConfigSetInt:animations forKey:@"animations_preference"];
 
-			UIDevice *device = [UIDevice currentDevice];
-			bool backgroundSupported =
-				[device respondsToSelector:@selector(isMultitaskingSupported)] && [device isMultitaskingSupported];
-			BOOL isbackgroundModeEnabled = backgroundSupported && [self boolForKey:@"backgroundmode_preference"];
-			[lm lpConfigSetInt:isbackgroundModeEnabled forKey:@"backgroundmode_preference"];
+		UIDevice *device = [UIDevice currentDevice];
+		BOOL backgroundSupported = [device respondsToSelector:@selector(isMultitaskingSupported)] && [device isMultitaskingSupported];
+		BOOL isbackgroundModeEnabled = backgroundSupported && [self boolForKey:@"backgroundmode_preference"];
+		[lm lpConfigSetInt:isbackgroundModeEnabled forKey:@"backgroundmode_preference"];
+		[lm lpConfigSetInt:[self integerForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
+		[lm lpConfigSetInt:[self integerForKey:@"autoanswer_notif_preference"] forKey:@"autoanswer_notif_preference"];
+		[lm lpConfigSetInt:[self integerForKey:@"show_msg_in_notif"] forKey:@"show_msg_in_notif"];
 
-			[lm lpConfigSetInt:[self integerForKey:@"start_at_boot_preference"] forKey:@"start_at_boot_preference"];
-			[lm lpConfigSetInt:[self integerForKey:@"autoanswer_notif_preference"]
-						forKey:@"autoanswer_notif_preference"];
-			[lm lpConfigSetInt:[self integerForKey:@"show_msg_in_notif"] forKey:@"show_msg_in_notif"];
-
-			if ([self integerForKey:@"use_rls_presence"]) {
-				[self setInteger:0 forKey:@"use_rls_presence"];
-				NSString *rls_uri =
-					[lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
-				LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
-				const char *rls_domain = linphone_address_get_domain(rls_addr);
-				const MSList *proxies = linphone_core_get_proxy_config_list(LC);
-				if (!proxies) {
-					// Enable it if no proxy config for first launch of app
-					[self setInteger:1 forKey:@"use_rls_presence"];
-				} else {
-					while (proxies) {
-						const char *proxy_domain = linphone_proxy_config_get_domain(proxies->data);
-						if (strcmp(rls_domain, proxy_domain) == 0) {
-							[self setInteger:1 forKey:@"use_rls_presence"];
-							break;
-						}
-						proxies = proxies->next;
+		if ([self integerForKey:@"use_rls_presence"]) {
+			[self setInteger:0 forKey:@"use_rls_presence"];
+			NSString *rls_uri = [lm lpConfigStringForKey:@"rls_uri" inSection:@"sip" withDefault:@"sips:rls@sip.linphone.org"];
+			LinphoneAddress *rls_addr = linphone_address_new(rls_uri.UTF8String);
+			const char *rls_domain = linphone_address_get_domain(rls_addr);
+			const MSList *proxies = linphone_core_get_proxy_config_list(LC);
+			if (!proxies) // Enable it if no proxy config for first launch of app
+				[self setInteger:1 forKey:@"use_rls_presence"];
+			else {
+				while (proxies) {
+					const char *proxy_domain = linphone_proxy_config_get_domain(proxies->data);
+					if (strcmp(rls_domain, proxy_domain) == 0) {
+						[self setInteger:1 forKey:@"use_rls_presence"];
+						break;
 					}
+					proxies = proxies->next;
 				}
-				linphone_address_unref(rls_addr);
 			}
-			[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
-
-			const MSList *lists = linphone_core_get_friends_lists(LC);
-			while (lists) {
-				linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
-				lists = lists->next;
-			}
-
-			BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
-			[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
-
-			NSString *displayname = [self stringForKey:@"primary_displayname_preference"];
-			NSString *username = [self stringForKey:@"primary_username_preference"];
-			LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
-			if (parsed != NULL) {
-				linphone_address_set_display_name(parsed, [displayname UTF8String]);
-				linphone_address_set_username(parsed, [username UTF8String]);
-				char *contact = linphone_address_as_string(parsed);
-				linphone_core_set_primary_contact(LC, contact);
-				ms_free(contact);
-				linphone_address_destroy(parsed);
-			}
-
-			[lm lpConfigSetInt:[self integerForKey:@"account_mandatory_advanced_preference"]
-						forKey:@"account_mandatory_advanced_preference"];
+			linphone_address_unref(rls_addr);
 		}
+
+		[lm lpConfigSetInt:[self integerForKey:@"use_rls_presence"] forKey:@"use_rls_presence"];
+		const MSList *lists = linphone_core_get_friends_lists(LC);
+		while (lists) {
+			linphone_friend_list_enable_subscriptions(lists->data, [self integerForKey:@"use_rls_presence"]);
+			lists = lists->next;
+		}
+
+		BOOL firstloginview = [self boolForKey:@"enable_first_login_view_preference"];
+		[lm lpConfigSetInt:firstloginview forKey:@"enable_first_login_view_preference"];
+
+		NSString *displayname = [self stringForKey:@"primary_displayname_preference"];
+		NSString *username = [self stringForKey:@"primary_username_preference"];
+		LinphoneAddress *parsed = linphone_core_get_primary_contact_parsed(LC);
+		if (parsed != NULL) {
+			linphone_address_set_display_name(parsed, [displayname UTF8String]);
+			linphone_address_set_username(parsed, [username UTF8String]);
+			char *contact = linphone_address_as_string(parsed);
+			linphone_core_set_primary_contact(LC, contact);
+			ms_free(contact);
+			linphone_address_destroy(parsed);
+		}
+		[lm lpConfigSetInt:[self integerForKey:@"account_mandatory_advanced_preference"] forKey:@"account_mandatory_advanced_preference"];
 
 		changedDict = [[NSMutableDictionary alloc] init];
 
@@ -958,11 +921,16 @@
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneSettingsUpdate object:self userInfo:eventDic];
 
 		return YES;
-		//} @catch (NSException *e) {
-		//	// may happen when application is terminated, since we are destroying the core
-		//	LOGI(@"Core probably already destroyed, cannot synchronize settings. Skipping. %@", [e callStackSymbols]);
-		//}
-		// return NO;
+	} @catch (NSException *exception) {
+		// may happen when application is terminated, since we are destroying the core
+		if ([exception.name isEqualToString:@"LinphoneCoreException"]) {
+			LOGE(@"Core already destroyed, settings not synchronized");
+			return NO;
+		}
+		LOGE(@"Uncaught exception : %@", exception.description);
+		abort();
+	}
+	return NO;
 }
 
 - (void)removeAccount {
