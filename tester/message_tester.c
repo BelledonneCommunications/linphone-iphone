@@ -297,6 +297,7 @@ void text_message_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline)
 	}
 
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
+	linphone_chat_message_unref(msg);
 }
 
 /****************************** Tests starting below ******************************/
@@ -305,8 +306,7 @@ static void text_message(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
-	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc,marie->identity), "hello");
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedLegacy,1));
+	text_message_base(marie, pauline);
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

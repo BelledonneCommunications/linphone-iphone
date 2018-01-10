@@ -700,6 +700,8 @@ ChatMessage::~ChatMessage () {
 
 	if (d->salOp)
 		d->salOp->release();
+	if (d->salCustomHeaders)
+		sal_custom_header_unref(d->salCustomHeaders);
 }
 
 shared_ptr<AbstractChatRoom> ChatMessage::getChatRoom () const {
