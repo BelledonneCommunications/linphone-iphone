@@ -422,17 +422,24 @@
 }
 
 - (void)processRemoteNotification:(NSDictionary *)userInfo {
-	if (linphone_core_get_calls(LC)) // if there are calls, obviously our TCP socket shall be working
+	if (linphone_core_get_calls(LC)) {
+		// if there are calls, obviously our TCP socket shall be working
+		LOGD(@"Notification [%p] has np need to be processed because there already is an active call.", userInfo);
 		return;
+	}
 
 	NSDictionary *aps = [userInfo objectForKey:@"aps"];
-	if (!aps)
+	if (!aps) {
+		LOGE(@"Notification [%p] was empy, it's impossible to process it.", userInfo);
 		return;
+	}
 
 	NSString *loc_key = [aps objectForKey:@"loc-key"];
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
-	if (!loc_key)
+	if (!loc_key) {
+		LOGE(@"Notification [%p] has no loc_key, it's impossible to process it.", userInfo);
 		return;
+	}
 
 	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
 		if ([loc_key isEqualToString:@"IC_MSG"])
@@ -450,6 +457,7 @@
 
 	if ([callId isEqualToString:@""]) {
 		//Present apn pusher notifications for info
+		LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
 			content.title = @"APN Pusher";
@@ -473,7 +481,7 @@
 	} else
 		[LinphoneManager.instance addPushCallId:callId];
 
-    LOGI(@"Notification %@ processed", userInfo.description);
+    LOGI(@"Notification [%p] processed", userInfo);
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
@@ -534,17 +542,20 @@ didInvalidatePushTokenForType:(NSString *)type {
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
-#ifdef __IPHONE_11_0
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
-#else
-- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
-#endif
+- (void)processPush:(NSDictionary *)userInfo {
+	LOGI(@"Notification [%p] received with pay load : %@", userInfo, userInfo.description);
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
-	[self processRemoteNotification:payload.dictionaryPayload];
-#ifdef __IPHONE_11_0
+	[self processRemoteNotification:userInfo];
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(PKPushType)type withCompletionHandler:(void (^)(void))completion {
+	[self processPush:payload.dictionaryPayload];
 	dispatch_async(dispatch_get_main_queue(), ^{completion();});
-#endif
+}
+
+- (void)pushRegistry:(PKPushRegistry *)registry didReceiveIncomingPushWithPayload:(PKPushPayload *)payload forType:(NSString *)type {
+	[self processPush:payload.dictionaryPayload];
 }
 
 #pragma mark - UNUserNotifications Framework
@@ -553,25 +564,17 @@ didInvalidatePushTokenForType:(NSString *)type {
 	completionHandler(UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionAlert);
 }
 
-#ifdef __IPHONE_11_0
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
-
-#else
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    didReceiveNotificationResponse:(UNNotificationResponse *)response
-             withCompletionHandler:(void (^)())completionHandler {
-#endif
-
   LOGD(@"UN : response received");
   LOGD(response.description);
 
   NSString *callId = (NSString *)[response.notification.request.content.userInfo
       objectForKey:@"CallId"];
-  if (!callId) {
+  if (!callId)
     return;
-  }
+
   LinphoneCall *call = [LinphoneManager.instance callByCallId:callId];
   if (call) {
     LinphoneCallAppData *data =
