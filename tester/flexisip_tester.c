@@ -544,6 +544,64 @@ static void call_forking_with_push_notification_single(void){
 	bctbx_list_free(lcs);
 }
 
+/*
+ * This test is a variant of push notification (single) where the client do send ambigous REGISTER with two contacts,
+ * one of them being the previous contact address with "expires=0" to tell the server to remove it.
+**/
+static void call_forking_with_push_notification_double_contact(void){
+	bctbx_list_t* lcs;
+	LinphoneCoreManager* marie = linphone_core_manager_new2( "marie_rc", FALSE);
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc",FALSE);
+	int dummy=0;
+
+	
+	lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "unregister_previous_contact", 1);
+	lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "unregister_previous_contact", 1);
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	linphone_proxy_config_set_contact_uri_parameters(
+		linphone_core_get_default_proxy_config(marie->lc),
+		"app-id=org.linphonetester;pn-tok=aaabbb;pn-type=apple;pn-msg-str=33;pn-call-str=34;");
+
+	lcs=bctbx_list_append(NULL,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneRegistrationOk,1,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneRegistrationOk,1,5000));
+
+	/*unfortunately marie gets unreachable due to crappy 3G operator or iOS bug...*/
+	linphone_core_set_network_reachable(marie->lc,FALSE);
+
+	linphone_core_invite_address(pauline->lc,marie->identity);
+
+	/*After 5 seconds the server is expected to send a push notification to marie, this will wake up linphone, that will reconnect:*/
+	wait_for_list(lcs,&dummy,1,6000);
+	linphone_core_set_network_reachable(marie->lc,TRUE);
+
+	/*Marie shall receive the call immediately*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,5000));
+	/*pauline should hear ringback as well*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,1000));
+
+	/*marie accepts the call*/
+	if (BC_ASSERT_PTR_NOT_NULL(linphone_core_get_current_call(marie->lc))) {
+		linphone_call_accept(linphone_core_get_current_call(marie->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,5000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+		
+		liblinphone_tester_check_rtcp(pauline,marie);
+		
+		linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
+		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
+	}
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	bctbx_list_free(lcs);
+}
+
 static void call_forking_with_push_notification_multiple(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1834,6 +1892,7 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Call forking declined localy", call_forking_declined_localy),
 	TEST_NO_TAG("Call forking with urgent reply", call_forking_with_urgent_reply),
 	TEST_NO_TAG("Call forking with push notification (single)", call_forking_with_push_notification_single),
+	TEST_NO_TAG("Call forking with push notification with double contact", call_forking_with_push_notification_double_contact),
 	TEST_NO_TAG("Call forking with push notification (multiple)", call_forking_with_push_notification_multiple),
 	TEST_NO_TAG("Call forking not responded", call_forking_not_responded),
 	TEST_NO_TAG("Early-media call forking", early_media_call_forking),
