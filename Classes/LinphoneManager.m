@@ -895,30 +895,23 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 								: @"";
             NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids objectForKey:callId2];
             if (uuid) {
-				if (linphone_core_get_calls_nb(LC) > 0 && !_conf) {
+				LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)->data;
+				const char *callKit_callId = callKit_call
+					? linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))
+					: NULL;
+				if (callKit_callId && !_conf) {
 					// Create a CallKit call because there's not !
-                    _conf = FALSE;
-                    LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)->data;
-                    NSString *callKit_callId = [NSString stringWithUTF8String:
-						linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))];
+                    NSString *callKit_callIdNS = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))];
                     NSUUID *callKit_uuid = [NSUUID UUID];
-                    [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid
-																		forKey:callKit_callId];
-					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callId
-																		forKey:callKit_uuid];
-                    NSString *address = [FastAddressBook displayNameForAddress:
-						linphone_call_get_remote_address(callKit_call)];
-					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric
-																 value:address];
-					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid
-																				  handle:handle];
+                    [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid forKey:callKit_callIdNS];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callIdNS forKey:callKit_uuid];
+                    NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(callKit_call)];
+					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid handle:handle];
                     CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){}];
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
-																		   startedConnectingAtDate:nil];
-                    [LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
-																				   connectedAtDate:nil];
+                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr completion:^(NSError *err){}];
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid startedConnectingAtDate:nil];
+                    [LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid connectedAtDate:nil];
 				}
 
 				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
