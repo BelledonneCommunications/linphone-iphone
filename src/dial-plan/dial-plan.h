@@ -55,7 +55,7 @@ public:
 
 	static int lookupCccFromE164 (const std::string &e164);
 	static int lookupCccFromIso (const std::string &iso);
-	static const DialPlan &findByCccAsInt (int ccc);
+	static const DialPlan &findByCcc (int ccc);
 	static const DialPlan &findByCcc (const std::string &ccc);
 	static const std::list<DialPlan> &getAllDialPlans ();
 

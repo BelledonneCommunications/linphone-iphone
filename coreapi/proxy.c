@@ -660,7 +660,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 
 		ccc = DialPlan::lookupCccFromE164(flatten);
 		if (ccc>-1) { /*e164 like phone number*/
-			dialplan = DialPlan::findByCccAsInt(ccc);
+			dialplan = DialPlan::findByCcc(ccc);
 			nationnal_significant_number = strstr(flatten, dialplan.getCountryCallingCode().c_str());
 			if (nationnal_significant_number) {
 				nationnal_significant_number +=strlen(dialplan.getCountryCallingCode().c_str());
@@ -679,7 +679,7 @@ char* linphone_proxy_config_normalize_phone_number(LinphoneProxyConfig *proxy, c
 					//probably generic dialplan, preserving proxy dial prefix
 					dialplan.setCountryCallingCode(tmpproxy->dial_prefix);
 				}
-				
+
 				/*it does not make sens to try replace icp with + if we are not sure from the country we are (I.E tmpproxy->dial_prefix==NULL)*/
 				if (strstr(flatten, dialplan.getInternationalCallPrefix().c_str()) == flatten) {
 					char *e164 = replace_icp_with_plus(flatten, dialplan.getInternationalCallPrefix().c_str());

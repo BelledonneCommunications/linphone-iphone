@@ -29,14 +29,6 @@ using namespace std;
 
 L_DECLARE_C_CLONABLE_OBJECT_IMPL(DialPlan);
 
-LinphoneDialPlan *linphone_dial_plan_ref (LinphoneDialPlan *dp) {
-	return reinterpret_cast<LinphoneDialPlan *>(belle_sip_object_ref(dp));
-}
-
-void linphone_dial_plan_unref (LinphoneDialPlan *dp) {
-	belle_sip_object_unref(dp);
-}
-
 const char *linphone_dial_plan_get_country (const LinphoneDialPlan *dp) {
 	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getCountry());
 }
@@ -66,21 +58,17 @@ int linphone_dial_plan_lookup_ccc_from_iso (const char *iso) {
 }
 
 const LinphoneDialPlan *linphone_dial_plan_by_ccc_as_int (int ccc) {
-	const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCccAsInt(ccc);
+	static const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCcc(ccc);
 	return L_GET_C_BACK_PTR(&dp);
 }
 
 const LinphoneDialPlan *linphone_dial_plan_by_ccc (const char *ccc) {
-	const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCcc(L_C_TO_STRING(ccc));
+	static const LinphonePrivate::DialPlan &dp = LinphonePrivate::DialPlan::findByCcc(L_C_TO_STRING(ccc));
 	return L_GET_C_BACK_PTR(&dp);
 }
 
-const LinphoneDialPlan *linphone_dial_plan_get_all () {
-	return nullptr;
-}
-
 const bctbx_list_t *linphone_dial_plan_get_all_list () {
-	const list<LinphonePrivate::DialPlan> &dps = LinphonePrivate::DialPlan::getAllDialPlans();
+	static const list<LinphonePrivate::DialPlan> &dps = LinphonePrivate::DialPlan::getAllDialPlans();
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(dps);
 }
 
