@@ -901,7 +901,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 					: NULL;
 				if (callKit_callId && !_conf) {
 					// Create a CallKit call because there's not !
-                    NSString *callKit_callIdNS = [NSString stringWithUTF8String:linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))];
+                    NSString *callKit_callIdNS = [NSString stringWithUTF8String:callKit_callId];
                     NSUUID *callKit_uuid = [NSUUID UUID];
                     [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid forKey:callKit_callIdNS];
 					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callIdNS forKey:callKit_uuid];
