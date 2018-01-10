@@ -534,11 +534,16 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 					compare_files(send_filepath, receive_filepath);
 				}
 			}
+
+			if (!download_from_history) {
+				linphone_chat_message_unref(recv_msg);
+			}
 		}
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	}
 end:
+	linphone_chat_message_unref(msg);
 	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
 	remove(receive_filepath);
 	bc_free(send_filepath);
