@@ -94,25 +94,27 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 }
 
 LinphoneAddress * create_linphone_address_for_algo(const char * domain, const char* username) {
-	LinphoneAddress *addr = linphone_address_new(NULL);
-	if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
-	/* For clients who support different algorithms, their usernames must be differnet for having diffrent forms of password */
-	if(username) linphone_address_set_username(addr,username);
-	else linphone_address_set_username(addr,test_username);
-	if(username) BC_ASSERT_STRING_EQUAL(username,linphone_address_get_username(addr));
-	else BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
-	if (!domain) domain= test_route;
-	linphone_address_set_domain(addr,domain);
-	BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
-	linphone_address_set_display_name(addr, NULL);
-	linphone_address_set_display_name(addr, "Mr Tester");
-	BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
-	return addr;
+    LinphoneAddress *addr = linphone_address_new(NULL);
+    if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
+    /* For clients who support different algorithms, their usernames must be differnet for having diffrent forms of password */
+    if(username) linphone_address_set_username(addr,username);
+    else linphone_address_set_username(addr,test_username);
+    if(username) BC_ASSERT_STRING_EQUAL(username,linphone_address_get_username(addr));
+    else BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
+    if (!domain) domain= test_route;
+    linphone_address_set_domain(addr,domain);
+    BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
+    linphone_address_set_display_name(addr, NULL);
+    linphone_address_set_display_name(addr, "Mr Tester");
+    BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
+    return addr;
 }
 
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
-	ms_message("Auth info requested  for user id [%s] at realm [%s]\n", username, realm);
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
+			   ,username
+			   ,realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
@@ -288,11 +290,11 @@ bool_t transport_supported(LinphoneTransportType transport) {
 	}
 }
 
-static void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
+void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
 	LinphoneImNotifPolicy *im_notif_policy;
 	char *hellopath = bc_tester_res("sounds/hello8000.wav");
 
-	mgr->lc=configure_lc_from(&mgr->v_table, NULL, mgr->rc_path, mgr);
+	mgr->lc=configure_lc_from(&mgr->v_table, bc_tester_get_resource_dir_prefix(), mgr->rc_path, mgr);
 	linphone_core_manager_check_accounts(mgr);
 	im_notif_policy = linphone_core_get_im_notif_policy(mgr->lc);
 	if (im_notif_policy != NULL) {
@@ -342,57 +344,6 @@ static void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
 	linphone_core_enable_send_call_stats_periodical_updates(mgr->lc, TRUE);
 }
 
-// TODO: Remove me later. When C++ will be available in this (bullshit) file... :'(
-static int copy_file (const char *from, const char *to) {
-	FILE *in, *out;
-	char buf[255];
-	size_t n;
-
-	in = fopen(from, "rb");
-	if (!in) {
-		bctbx_error("Can't open %s for reading: %s\n", from, strerror(errno));
-		return 1;
-	}
-
-	out = fopen(to, "wb");
-	if (!out) {
-		bctbx_error("Can't open %s for writing: %s\n", to, strerror(errno));
-		fclose(in);
-		return 1;
-	}
-
-	while ((n = fread(buf, sizeof buf[0], sizeof buf, in)) > 0)
-		if (!fwrite(buf, 1, n, out)) {
-			bctbx_error("Could not write in %s: %s\n", to, strerror(errno));
-			fclose(in);
-			fclose(out);
-			return 1;
-		}
-
-	fclose(in);
-	fclose(out);
-
-	return 0;
-}
-
-static void configure_random_database_path (LinphoneCoreManager *mgr) {
-	LinphoneConfig *config = linphone_config_new(mgr->rc_path);
-	if (!config)
-		bctbx_fatal("Unable to open linphone config from: %s", mgr->rc_path);
-
-	char random_id[32];
-	belle_sip_random_token(random_id, sizeof random_id);
-	char *database_path_format = bctbx_strdup_printf("linphone_%s.db", random_id);
-	mgr->database_path = bc_tester_file(database_path_format);
-
-	linphone_config_set_string(config, "storage", "backend", "sqlite3");
-	linphone_config_set_string(config, "storage", "uri", mgr->database_path);
-	linphone_config_sync(config);
-	linphone_config_unref(config);
-
-	bctbx_free(database_path_format);
-}
-
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
@@ -426,13 +377,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	mgr->phone_alias = phone_alias ? ms_strdup(phone_alias) : NULL;
 
 	reset_counters(&mgr->stat);
-	if (rc_file) {
-		char *src = bctbx_strdup_printf("%s/rcfiles/%s", bc_tester_get_resource_dir_prefix(), rc_file);
-		mgr->rc_path = bc_tester_file("rc_file");
-		copy_file(src, mgr->rc_path);
-		bctbx_free(src);
-		configure_random_database_path(mgr);
-	}
+	if (rc_file) mgr->rc_path = ms_strdup_printf("rcfiles/%s", rc_file);
 
 	manager_count++;
 
@@ -544,14 +489,8 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->identity) {
 		linphone_address_unref(mgr->identity);
 	}
-	if (mgr->rc_path) {
-		unlink(mgr->rc_path);
+	if (mgr->rc_path)
 		bctbx_free(mgr->rc_path);
-	}
-	if (mgr->database_path) {
-		unlink(mgr->database_path);
-		bctbx_free(mgr->database_path);
-	}
 
 	manager_count--;
 	linphone_core_set_log_level(old_log_level);
