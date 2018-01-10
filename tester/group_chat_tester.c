@@ -174,10 +174,50 @@ static void _send_file(LinphoneChatRoom* cr, const char *sendFilepath) {
 	linphone_content_unref(content);
 }
 
+static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath, const char *text) {
+	LinphoneChatMessage *msg;
+	LinphoneChatMessageCbs *cbs;
+	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(cr));
+	belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
+	linphone_content_set_type(content,"video");
+	linphone_content_set_subtype(content,"mkv");
+	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
+
+	msg = linphone_chat_room_create_file_transfer_message(cr, content);
+	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
+	cbs = linphone_chat_message_get_callbacks(msg);
+	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+	linphone_chat_room_send_chat_message_2(cr, msg);
+	linphone_content_unref(content);
+}
+
 static void _receive_file(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats, const char *receive_filepath, const char *sendFilepath) {
 	if (BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneMessageReceivedWithFile, receiverStats->number_of_LinphoneMessageReceivedWithFile+1, 10000))) {
 		LinphoneChatMessageCbs *cbs;
 		LinphoneChatMessage *msg = lcm->stat.last_received_chat_message;
+
+		cbs = linphone_chat_message_get_callbacks(msg);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+		linphone_chat_message_set_file_transfer_filepath(msg, receive_filepath);
+		linphone_chat_message_download_file(msg);
+
+		if (BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneFileTransferDownloadSuccessful,receiverStats->number_of_LinphoneFileTransferDownloadSuccessful + 1, 20000))) {
+			compare_files(sendFilepath, receive_filepath);
+		}
+	}
+}
+
+static void _receive_file_plus_text(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats, const char *receive_filepath, const char *sendFilepath, const char *text) {
+	if (BC_ASSERT_TRUE(wait_for_list(coresList, &lcm->stat.number_of_LinphoneMessageReceivedWithFile, receiverStats->number_of_LinphoneMessageReceivedWithFile+1, 10000))) {
+		LinphoneChatMessageCbs *cbs;
+		LinphoneChatMessage *msg = lcm->stat.last_received_chat_message;
+
+		BC_ASSERT_TRUE(linphone_chat_message_has_text_content(msg));
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text_content(msg), text);
 
 		cbs = linphone_chat_message_get_callbacks(msg);
 		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
@@ -1900,7 +1940,7 @@ static void group_chat_donot_room_migrate_from_basic_chat_room (void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void group_chat_room_send_file (void) {
+static void group_chat_room_send_file_with_or_without_text (bool_t with_text) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
@@ -1910,6 +1950,7 @@ static void group_chat_room_send_file (void) {
 	char *sendFilepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 	char *receivePaulineFilepath = bc_tester_file("receive_file_pauline.dump");
 	char *receiveChloeFilepath = bc_tester_file("receive_file_chloe.dump");
+	const char *text = "Hello Group !";
 
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(marie->lc, "https://www.linphone.org:444/lft.php");
@@ -1940,13 +1981,22 @@ static void group_chat_room_send_file (void) {
 	LinphoneChatRoom *chloeCr = check_creation_chat_room_client_side(coresList, chloe, &initialChloeStats, confAddr, initialSubject, 2, 0);
 
 	// Sending file
-	_send_file(marieCr, sendFilepath);
+	if (with_text) {
+		_send_file_plus_text(marieCr, sendFilepath, text);
+	} else {
+		_send_file(marieCr, sendFilepath);
+	}
 
 	wait_for_list(coresList, &dummy, 1, 10000);
 
 	// Check that chat rooms have received the file
-	_receive_file(coresList, pauline, &initialPaulineStats, receivePaulineFilepath, sendFilepath);
-	_receive_file(coresList, chloe, &initialChloeStats, receiveChloeFilepath, sendFilepath);
+	if (with_text) {
+		_receive_file_plus_text(coresList, pauline, &initialPaulineStats, receivePaulineFilepath, sendFilepath, text);
+		_receive_file_plus_text(coresList, chloe, &initialChloeStats, receiveChloeFilepath, sendFilepath, text);
+	} else {
+		_receive_file(coresList, pauline, &initialPaulineStats, receivePaulineFilepath, sendFilepath);
+		_receive_file(coresList, chloe, &initialChloeStats, receiveChloeFilepath, sendFilepath);
+	}
 
 	// Clean db from chat room
 	linphone_core_delete_chat_room(marie->lc, marieCr);
@@ -1962,6 +2012,14 @@ static void group_chat_room_send_file (void) {
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(chloe);
+}
+
+static void group_chat_room_send_file (void) {
+	group_chat_room_send_file_with_or_without_text(FALSE);
+}
+
+static void group_chat_room_send_file_plus_text(void) {
+	group_chat_room_send_file_with_or_without_text(TRUE);
 }
 
 test_t group_chat_tests[] = {
@@ -1988,7 +2046,8 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Migrate basic chat room to client group chat room", group_chat_room_migrate_from_basic_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Migrate basic chat room to client group chat room failure", group_chat_room_migrate_from_basic_to_client_fail, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Migrate basic chat room to client group chat room not needed", group_chat_donot_room_migrate_from_basic_chat_room, "Server", "LeaksMemory"),
-	TEST_TWO_TAGS("Send file", group_chat_room_send_file, "Server", "LeaksMemory")
+	TEST_TWO_TAGS("Send file", group_chat_room_send_file, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Send file + text", group_chat_room_send_file_plus_text, "Server", "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {
