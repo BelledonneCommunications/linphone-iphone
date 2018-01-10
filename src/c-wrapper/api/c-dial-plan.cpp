@@ -69,7 +69,8 @@ const LinphoneDialPlan *linphone_dial_plan_by_ccc (const char *ccc) {
 
 const bctbx_list_t *linphone_dial_plan_get_all_list () {
 	static const list<LinphonePrivate::DialPlan> &dps = LinphonePrivate::DialPlan::getAllDialPlans();
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(dps);
+	static const bctbx_list_t *list = L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(dps);
+	return list;
 }
 
 bool_t linphone_dial_plan_is_generic (const LinphoneDialPlan *ccc) {

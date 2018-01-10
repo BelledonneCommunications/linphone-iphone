@@ -1129,9 +1129,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_password_linphone(L
 		return LinphoneAccountCreatorStatusMissingArguments;
 	}
 
-	const char * username = creator->username ? creator->username : creator->phone_number;
-	const char * ha1 = ms_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) );
-	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), new_pwd));
+	const char *username = creator->username ? creator->username : creator->phone_number;
+	char *ha1 = bctbx_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) );
+	char *new_ha1 = bctbx_strdup(ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), new_pwd));
 
 	ms_debug("Account creator: update_password (username=%s, domain=%s)",
 		creator->username,
@@ -1146,6 +1146,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_password_linphone(L
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _password_updated_cb_custom);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
+
+	bctbx_free(ha1);
+	bctbx_free(new_ha1);
 
 	return LinphoneAccountCreatorStatusRequestOk;
 }
