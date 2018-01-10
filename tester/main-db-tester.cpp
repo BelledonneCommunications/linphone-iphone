@@ -17,14 +17,16 @@
  */
 
 #include "address/address.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "db/main-db.h"
 #include "event-log/events.h"
 
+// TODO: Remove me later.
 #include "private.h"
 
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
+#include "tools/tester.h"
 
 // =============================================================================
 
@@ -34,33 +36,23 @@ using namespace LinphonePrivate;
 
 // -----------------------------------------------------------------------------
 
-static const string getDatabasePath () {
-	static const string path = string(bc_tester_get_resource_dir_prefix()) + "db/linphone.db";
-	return path;
-}
-
-// -----------------------------------------------------------------------------
-
 class MainDbProvider {
 public:
 	MainDbProvider () {
-		mCoreManager = linphone_core_manager_new("marie_rc");
-		mMainDb = new MainDb(mCoreManager->lc->cppPtr->getSharedFromThis());
-		mMainDb->connect(MainDb::Sqlite3, getDatabasePath());
+		mCoreManager = linphone_core_manager_create("marie_rc");
+		linphone_core_manager_start(mCoreManager, false);
 	}
 
 	~MainDbProvider () {
-		delete mMainDb;
 		linphone_core_manager_destroy(mCoreManager);
 	}
 
 	const MainDb &getMainDb () {
-		return *mMainDb;
+		return *L_GET_PRIVATE(mCoreManager->lc->cppPtr)->mainDb;
 	}
 
 private:
 	LinphoneCoreManager *mCoreManager;
-	MainDb *mMainDb;
 };
 
 // -----------------------------------------------------------------------------
@@ -130,7 +122,7 @@ static void get_history () {
 			ChatRoomId(IdentityAddress("sip:test-1@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org")),
 			0, -1, MainDb::Filter::ConferenceChatMessageFilter
 		).size(),
-		862,
+		804,
 		int,
 		"%d"
 	);
@@ -149,11 +141,11 @@ static void get_conference_notified_events () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
 	list<shared_ptr<EventLog>> events = mainDb.getConferenceNotifiedEvents(
-		ChatRoomId(IdentityAddress("sip:fake-group-2@sip.linphone.org"), IdentityAddress("sip:fake-group-2@sip.linphone.org")),
-		1
+		ChatRoomId(IdentityAddress("sip:test-44@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org")),
+		-1
 	);
-	BC_ASSERT_EQUAL(events.size(), 3, int, "%d");
-	if (events.size() != 3)
+	BC_ASSERT_EQUAL(events.size(), 5, int, "%d");
+	if (events.size() != 5)
 		return;
 
 	shared_ptr<EventLog> event;
@@ -199,7 +191,7 @@ test_t main_db_tests[] = {
 	TEST_NO_TAG("Get messages count", get_messages_count),
 	TEST_NO_TAG("Get unread messages count", get_unread_messages_count),
 	TEST_NO_TAG("Get history", get_history),
-	TEST_NO_TAG("Get conference events", get_conference_notified_events)
+	TEST_NO_TAG("Get conference notified events", get_conference_notified_events)
 };
 
 test_suite_t main_db_test_suite = {

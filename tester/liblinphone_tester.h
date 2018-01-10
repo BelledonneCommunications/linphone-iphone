@@ -300,6 +300,7 @@ typedef struct _LinphoneCoreManager {
 	int number_of_bcunit_error_at_creation;
 	char* phone_alias;
 	char *rc_path;
+	char *database_path;
 } LinphoneCoreManager;
 
 typedef struct _LinphoneConferenceServer {
