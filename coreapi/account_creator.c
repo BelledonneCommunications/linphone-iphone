@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/lpconfig.h"
 
 #include "c-wrapper/c-wrapper.h"
-#include "linphone/api/c-dial-plan.h"
+#include "dial-plan/dial-plan.h"
 
 #if !_WIN32
 	#include "regex.h"
@@ -32,6 +32,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // TODO: From coreapi. Remove me later.
 #include "private.h"
+
+// =============================================================================
+
+using namespace LinphonePrivate;
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorCbs);
 
@@ -130,7 +134,7 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 	if (creator->phone_country_code) {
 		linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
 	} else if (creator->phone_number) {
-		int dial_prefix_number = linphone_dial_plan_lookup_ccc_from_e164(creator->phone_number);
+		int dial_prefix_number = DialPlan::lookupCccFromE164(creator->phone_number);
 		char buff[4];
 		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
 		linphone_proxy_config_set_dial_prefix(cfg, buff);
@@ -401,15 +405,15 @@ LinphoneAccountCreatorPhoneNumberStatusMask linphone_account_creator_set_phone_n
 
 		// if phone is valid, we lastly want to check that length is OK
 		{
-			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(creator->phone_country_code);
+			const DialPlan &plan = DialPlan::findByCcc(creator->phone_country_code);
 			int size = (int)strlen(phone_number);
-			if (linphone_dial_plan_is_generic(plan)) {
+			if (plan.isGeneric()) {
 				return_status = LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode;
 			}
-			if (size < linphone_dial_plan_get_national_number_length(plan) - 1) {
+			if (size < plan.getNationalNumberLength() - 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooShort;
 				goto end;
-			} else if (size > linphone_dial_plan_get_national_number_length(plan) + 1) {
+			} else if (size > plan.getNationalNumberLength() + 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooLong;
 				goto end;
 			} else if (return_status & LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode) {
