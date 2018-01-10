@@ -436,34 +436,6 @@ static void text_message_with_send_error(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void text_message_with_external_body(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-	LinphoneChatMessage* msg = linphone_chat_room_create_message(chat_room,"Bli bli bli \n blu");
-	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-
-	message_external_body_url="http://www.linphone.org";
-	linphone_chat_message_set_external_body_url(msg,message_external_body_url);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(chat_room,msg);
-
-	/* check transient msg list: the msg should be in it, and should be the only one */
-	/*BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 1, unsigned int, "%u");
-	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(linphone_chat_room_get_transient_messages(chat_room),0), msg);*/
-
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
-
-	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
-	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
-
-	//BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 0, unsigned int, "%u");
-
-	linphone_core_manager_destroy(marie);
-	linphone_core_manager_destroy(pauline);
-}
-
 void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pauline, bool_t upload_error, bool_t download_error,
 							bool_t use_file_body_handler_in_upload, bool_t use_file_body_handler_in_download, bool_t download_from_history) {
 	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
@@ -2345,7 +2317,6 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Text message compatibility mode", text_message_compatibility_mode),
 	TEST_NO_TAG("Text message with ack", text_message_with_ack),
 	TEST_NO_TAG("Text message with send error", text_message_with_send_error),
-	TEST_NO_TAG("Text message with external body", text_message_with_external_body),
 	TEST_NO_TAG("Transfer message", transfer_message),
 	TEST_NO_TAG("Transfer message 2", transfer_message_2),
 	TEST_NO_TAG("Transfer message 3", transfer_message_3),
