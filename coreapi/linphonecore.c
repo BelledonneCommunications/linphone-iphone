@@ -2346,29 +2346,42 @@ LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpCon
 	return core;
 }
 
-LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata) {
+static LinphoneCore *_linphone_core_new_with_config_and_start (
+	const LinphoneCoreVTable *vtable,
+	LinphoneConfig *config,
+	void *userdata,
+	bool_t automatically_start
+) {
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	LinphoneCoreVTable *local_vtable = linphone_core_v_table_new();
 	LinphoneCore *core = NULL;
 	if (vtable != NULL) *local_vtable = *vtable;
 	_linphone_core_cbs_set_v_table(cbs, local_vtable, TRUE);
-	core = _linphone_core_new_with_config(cbs, config, userdata, NULL, TRUE);
+	core = _linphone_core_new_with_config(cbs, config, userdata, NULL, automatically_start);
 	linphone_core_cbs_unref(cbs);
 	return core;
 }
 
-static LinphoneCore *_linphone_core_new(const LinphoneCoreVTable *vtable,
-						const char *config_path, const char *factory_config_path, void * userdata) {
-	LinphoneCore *lc;
-	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	lc=linphone_core_new_with_config(vtable, config, userdata);
-	lp_config_unref(config);
+LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, struct _LpConfig *config, void *userdata) {
+	return _linphone_core_new_with_config_and_start(vtable, config, userdata, TRUE);
+}
+
+LinphoneCore *_linphone_core_new (
+	const LinphoneCoreVTable *vtable,
+	const char *config_path,
+	const char *factory_config_path,
+	void * userdata,
+	bool_t automatically_start
+) {
+	LinphoneConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
+	LinphoneCore *lc = _linphone_core_new_with_config_and_start(vtable, config, userdata, automatically_start);
+	linphone_config_unref(config);
 	return lc;
 }
 
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config_path, void * userdata) {
-	return _linphone_core_new(vtable, config_path, factory_config_path, userdata);
+	return _linphone_core_new(vtable, config_path, factory_config_path, userdata, TRUE);
 }
 
 LinphoneCore *linphone_core_ref(LinphoneCore *lc) {

@@ -155,13 +155,13 @@ LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, c
 	dnsuserhostspath = userhostsfile[0]=='/' ? ms_strdup(userhostsfile) : ms_strdup_printf("%s/%s", path, userhostsfile);
 
 
-	if( config != NULL ) {
+	if (config) {
 		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
 		lp_config_set_string(config, "sound", "local_ring" , ringpath);
 		lp_config_set_string(config, "sip",   "root_ca"    , rootcapath);
-		lc = linphone_core_new_with_config(v_table, config, user_data);
+		lc = linphone_factory_create_core_with_config_3(linphone_factory_get(), config, NULL);
 	} else {
-		lc = linphone_core_new(v_table,NULL,(filepath!=NULL&&filepath[0]!='\0') ? filepath : NULL, user_data);
+		lc = _linphone_core_new(v_table,NULL,(filepath!=NULL&&filepath[0]!='\0') ? filepath : NULL, user_data, FALSE);
 
 		linphone_core_set_ring(lc, ringpath);
 		linphone_core_set_ringback(lc, ringbackpath);
@@ -390,6 +390,8 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 void linphone_core_manager_start(LinphoneCoreManager *mgr, bool_t check_for_proxies) {
 	LinphoneProxyConfig* proxy;
 	int proxy_count;
+
+	linphone_core_start(mgr->lc);
 
 	/*BC_ASSERT_EQUAL(bctbx_list_size(linphone_core_get_proxy_config_list(lc)),proxy_count, int, "%d");*/
 	if (check_for_proxies){ /**/
