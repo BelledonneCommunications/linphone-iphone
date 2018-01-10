@@ -2366,22 +2366,12 @@ LinphoneCore *linphone_core_new_with_config(const LinphoneCoreVTable *vtable, st
 	return _linphone_core_new_with_config_and_start(vtable, config, userdata, TRUE);
 }
 
-LinphoneCore *_linphone_core_new (
-	const LinphoneCoreVTable *vtable,
-	const char *config_path,
-	const char *factory_config_path,
-	void * userdata,
-	bool_t automatically_start
-) {
-	LinphoneConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	LinphoneCore *lc = _linphone_core_new_with_config_and_start(vtable, config, userdata, automatically_start);
-	linphone_config_unref(config);
-	return lc;
-}
-
 LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 						const char *config_path, const char *factory_config_path, void * userdata) {
-	return _linphone_core_new(vtable, config_path, factory_config_path, userdata, TRUE);
+	LinphoneConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
+	LinphoneCore *lc = _linphone_core_new_with_config_and_start(vtable, config, userdata, TRUE);
+	linphone_config_unref(config);
+	return lc;
 }
 
 LinphoneCore *linphone_core_ref(LinphoneCore *lc) {
@@ -6703,8 +6693,13 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc){
 }
 
 void linphone_core_set_chat_database_path (LinphoneCore *lc, const char *path) {
-	if (!linphone_core_conference_server_enabled(lc))
-		L_GET_PRIVATE(lc->cppPtr)->mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
+	if (!linphone_core_conference_server_enabled(lc)) {
+		auto &mainDb = L_GET_PRIVATE(lc->cppPtr)->mainDb;
+		if (mainDb)
+			mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
+		else
+			ms_warning("linphone_core_set_chat_database_path() needs to be called once linphone_core_start() has been called");
+	}
 }
 
 const char *linphone_core_get_chat_database_path (const LinphoneCore *) {

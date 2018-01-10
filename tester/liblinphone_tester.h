@@ -291,14 +291,14 @@ typedef struct _stats {
 
 
 typedef struct _LinphoneCoreManager {
-	LinphoneCoreVTable v_table;
-	LinphoneCore* lc;
+	LinphoneCoreCbs *cbs;
+	LinphoneCore *lc;
 	stats stat;
-	LinphoneAddress* identity;
+	LinphoneAddress *identity;
 	LinphoneEvent *lev;
 	bool_t decline_subscribe;
 	int number_of_bcunit_error_at_creation;
-	char* phone_alias;
+	char *phone_alias;
 	char *rc_path;
 } LinphoneCoreManager;
 
@@ -394,7 +394,7 @@ bool_t liblinphone_tester_clock_elapsed(const MSTimeSpec *start, int value_ms);
 void linphone_core_manager_check_accounts(LinphoneCoreManager *m);
 void account_manager_destroy(void);
 LinphoneAddress *account_manager_get_identity_with_modified_identity(const LinphoneAddress *modified_identity);
-LinphoneCore* configure_lc_from(LinphoneCoreVTable* v_table, const char* path, const char* file, void* user_data);
+LinphoneCore *configure_lc_from(LinphoneCoreCbs *cbs, const char *path, const char *file, void *user_data);
 
 void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data);
 void call_paused_resumed_base(bool_t multicast,bool_t with_losses);

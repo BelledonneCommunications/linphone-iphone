@@ -45,7 +45,6 @@ typedef enum _LinphoneProxyConfigAddressComparisonResult{
 extern "C" {
 #endif
 
-LINPHONE_PUBLIC LinphoneCore *_linphone_core_new (const LinphoneCoreVTable *vtable, const char *config_path, const char *factory_config_path, void * userdata, bool_t automatically_start);
 LINPHONE_PUBLIC LinphoneVcardContext *linphone_core_get_vcard_context(const LinphoneCore *lc);
 LINPHONE_PUBLIC bool_t linphone_core_rtcp_enabled(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char *result);

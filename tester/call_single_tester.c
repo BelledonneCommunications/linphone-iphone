@@ -1826,7 +1826,7 @@ static void call_with_custom_sdp_attributes(void) {
 	const LinphoneCallParams *marie_remote_params;
 	const LinphoneCallParams *pauline_remote_params;
 	const char *value;
-	LinphoneCoreVTable *vtable;
+	LinphoneCoreCbs *cbs;
 
 	pauline_params = linphone_core_create_call_params(pauline->lc, NULL);
 	linphone_call_params_add_custom_sdp_attribute(pauline_params, "weather", "bad");
@@ -1849,9 +1849,9 @@ static void call_with_custom_sdp_attributes(void) {
 	BC_ASSERT_PTR_NOT_NULL(value);
 	if (value) BC_ASSERT_STRING_EQUAL(value, "almost");
 
-	vtable = linphone_core_v_table_new();
-	vtable->call_state_changed = call_with_custom_sdp_attributes_cb;
-	linphone_core_add_listener(marie->lc, vtable);
+	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_with_custom_sdp_attributes_cb);
+	linphone_core_add_callbacks(marie->lc, cbs);
 	pauline_params = linphone_core_create_call_params(pauline->lc, call_pauline);
 	linphone_call_params_clear_custom_sdp_attributes(pauline_params);
 	linphone_call_params_clear_custom_sdp_media_attributes(pauline_params, LinphoneStreamTypeAudio);
@@ -1868,6 +1868,7 @@ static void call_with_custom_sdp_attributes(void) {
 
 	end_call(pauline, marie);
 
+	linphone_core_cbs_unref(cbs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1915,9 +1916,7 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *call_caller = NULL, *call_callee = NULL;
 	LinphoneCallParams  *caller_params; //	*callee_params ;
-
-	LinphoneCoreVTable *vtable;
-
+	LinphoneCoreCbs *cbs;
 	LinphoneCallTestParams caller_test_params = {0};
 	LinphoneCallTestParams callee_test_params =  {0};
 
@@ -1941,11 +1940,11 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	setup_sdp_handling(&caller_test_params, caller_mgr);
 	setup_sdp_handling(&callee_test_params, callee_mgr);
 
-	// Assign dedicated callback to vtable for caller and callee
-	vtable = linphone_core_v_table_new();
-	vtable->call_state_changed = call_with_custom_header_or_sdp_cb;
-	linphone_core_add_listener(callee_mgr->lc, vtable);
-	linphone_core_add_listener(caller_mgr->lc, vtable);
+	// Assign dedicated callback for caller and callee
+	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_with_custom_header_or_sdp_cb);
+	linphone_core_add_callbacks(callee_mgr->lc, cbs);
+	linphone_core_add_callbacks(caller_mgr->lc, cbs);
 
 	//Caller initates the call with INVITE
 	// caller params not null
@@ -1969,8 +1968,6 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 	if (linphone_core_get_calls_nb(callee_mgr->lc)<=1)
 		BC_ASSERT_TRUE(linphone_core_inc_invite_pending(callee_mgr->lc));
 	BC_ASSERT_EQUAL(caller_mgr->stat.number_of_LinphoneCallOutgoingProgress,initial_caller.number_of_LinphoneCallOutgoingProgress+1, int, "%d");
-
-
 
 
 	LinphoneCallParams *default_params=linphone_core_create_call_params(callee_mgr->lc,call_callee);
@@ -1998,6 +1995,7 @@ static void call_caller_with_custom_header_or_sdp_attributes(void) {
 
 	end_call(caller_mgr, callee_mgr);
 
+	linphone_core_cbs_unref(cbs);
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
 }
@@ -2037,20 +2035,16 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	LinphoneCoreManager *caller_mgr = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCall *call_caller = NULL, *call_callee = NULL;
 	LinphoneCallParams *callee_params, *caller_params ;
-
-	LinphoneCoreVTable *vtable;
+	LinphoneCoreCbs *cbs;
 	const char *value;
 	LinphoneCallTestParams caller_test_params = {0};
 	LinphoneCallTestParams callee_test_params =  {0};
-
 	stats initial_caller=caller_mgr->stat;
 	stats initial_callee=callee_mgr->stat;
 	bool_t did_receive_call;
 	const LinphoneCallParams *caller_remote_params;
 
 	caller_params = linphone_core_create_call_params(caller_mgr->lc, NULL);
-
-
 	callee_test_params.base = NULL;
 	caller_test_params.base = NULL;
 
@@ -2061,11 +2055,11 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	setup_sdp_handling(&caller_test_params, caller_mgr);
 	setup_sdp_handling(&callee_test_params, callee_mgr);
 
-	// Assign dedicated callback to vtable for caller and callee
-	vtable = linphone_core_v_table_new();
-	vtable->call_state_changed = call_callee_with_custom_header_or_sdp_cb;
-	linphone_core_add_listener(callee_mgr->lc, vtable);
-	linphone_core_add_listener(caller_mgr->lc, vtable);
+	// Assign dedicated callback for caller and callee
+	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_callee_with_custom_header_or_sdp_cb);
+	linphone_core_add_callbacks(callee_mgr->lc, cbs);
+	linphone_core_add_callbacks(caller_mgr->lc, cbs);
 
 	//Caller initates the call with INVITE
 	// caller params not null
@@ -2124,6 +2118,7 @@ static void call_callee_with_custom_header_or_sdp_attributes(void) {
 	linphone_call_params_unref(caller_params);
 	end_call(caller_mgr, callee_mgr);
 
+	linphone_core_cbs_unref(cbs);
 	linphone_core_manager_destroy(callee_mgr);
 	linphone_core_manager_destroy(caller_mgr);
 }
@@ -3575,7 +3570,6 @@ static void call_rejected_because_wrong_credentials_with_params(const char* user
 		linphone_core_set_user_agent(marie->lc,user_agent,NULL);
 	}
 	if (!enable_auth_req_cb) {
-		// ((VTableReference*)(marie->lc->vtable_refs->data))->cbs->vtable->auth_info_requested=NULL;
 		LinphoneCoreCbs *cbs = linphone_core_get_first_callbacks(marie->lc);
 		linphone_core_cbs_set_auth_info_requested(cbs, NULL);
 		linphone_core_add_auth_info(marie->lc,wrong_auth_info);
@@ -4204,15 +4198,16 @@ static void call_with_transport_change_base(bool_t succesfull_call) {
 	LinphoneSipTransports sip_tr;
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
-	LinphoneCoreVTable * v_table;
-	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed=call_state_changed_2;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_state_changed_2);
 	marie = linphone_core_manager_new("marie_rc");
 	pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	linphone_core_add_listener(marie->lc,v_table);
-	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed=call_state_changed_3;
-	linphone_core_add_listener(marie->lc,v_table);
+	linphone_core_add_callbacks(marie->lc, cbs);
+	linphone_core_cbs_unref(cbs);
+	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_state_changed_3);
+	linphone_core_add_callbacks(marie->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 
 	sip_tr.udp_port = 0;
 	sip_tr.tcp_port = 45875;
@@ -4734,7 +4729,7 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	LinphoneCall* call_marie = NULL;
 	const rtp_stats_t * stats;
 	bool_t call_ok;
-	LinphoneCoreVTable * v_table;
+	LinphoneCoreCbs *cbs;
 	RtpTransportModifier *rtptm_marie = NULL;
 	RtpTransportModifier *rtptm_pauline = NULL;
 	RtpTransportModifierData *data_marie = NULL;
@@ -4746,14 +4741,12 @@ static void custom_rtp_modifier(bool_t pauseResumeTest, bool_t recordTest) {
 	double similar = 1; // The factor of similarity between the played file and the one recorded
 	const double threshold = 0.85; // Minimum similarity value to consider the record file equal to the one sent
 
-	// We create a new vtable to listen only to the call state changes, in order to plug our RTP Transport Modifier when the call will be established
-	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed = call_state_changed_4;
-	linphone_core_add_listener(pauline->lc,v_table);
-	v_table = linphone_core_v_table_new();
-	v_table->call_state_changed = call_state_changed_4;
-	linphone_core_add_listener(marie->lc,v_table);
-
+	// We create a new LinphoneCoreCbs to listen only to the call state changes, in order to plug our RTP Transport Modifier when the call will be established
+	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_call_state_changed(cbs, call_state_changed_4);
+	linphone_core_add_callbacks(pauline->lc, cbs);
+	linphone_core_add_callbacks(marie->lc, cbs);
+	linphone_core_cbs_unref(cbs);
 
 	if (recordTest) { // When we do the record test, we need a file player to play the content of a sound file
 		/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/

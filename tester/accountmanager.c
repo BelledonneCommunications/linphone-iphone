@@ -131,17 +131,7 @@ static void account_created_on_server_cb(LinphoneCore *lc, LinphoneProxyConfig *
 	}
 }
 
-// TEMPORARY CODE: remove function below when flexisip is updated, this is not needed anymore!
-// The new flexisip now answer "200 Test account created" when creating a test account, and do not
-// challenge authentication anymore! so this code is not used for newer version
-static void account_created_auth_requested_cb(LinphoneCore *lc, const char *username, const char *realm, const char *domain){
-	Account *account=(Account*)linphone_core_get_user_data(lc);
-	account->created=1;
-}
-// TEMPORARY CODE: remove line above when flexisip is updated, this is not needed anymore!
-
 void account_create_on_server(Account *account, const LinphoneProxyConfig *refcfg, const char* phone_alias){
-	LinphoneCoreVTable vtable={0};
 	LinphoneCore *lc;
 	LinphoneAddress *tmp_identity=linphone_address_clone(account->modified_identity);
 	LinphoneProxyConfig *cfg;
@@ -149,13 +139,11 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 	char *tmp;
 	LinphoneAddress *server_addr;
 	LinphoneSipTransports tr;
-	char *chatdb;
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 
-	vtable.registration_state_changed=account_created_on_server_cb;
-	// TEMPORARY CODE: remove line below when flexisip is updated, this is not needed anymore!
-	vtable.auth_info_requested=account_created_auth_requested_cb;
-	lc=configure_lc_from(&vtable,bc_tester_get_resource_dir_prefix(),NULL,account);
-	chatdb = ms_strdup(linphone_core_get_chat_database_path(lc));
+	linphone_core_cbs_set_registration_state_changed(cbs, account_created_on_server_cb);
+	lc = configure_lc_from(cbs, bc_tester_get_resource_dir_prefix(), NULL, account);
+	linphone_core_cbs_unref(cbs);
 	tr.udp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tcp_port=LC_SIP_TRANSPORT_RANDOM;
 	tr.tls_port=LC_SIP_TRANSPORT_RANDOM;
@@ -211,8 +199,6 @@ void account_create_on_server(Account *account, const LinphoneProxyConfig *refcf
 		ms_error("Account creation could not clean the registration context.");
 	}
 	linphone_core_unref(lc);
-	unlink(chatdb);
-	ms_free(chatdb);
 }
 
 static LinphoneAddress *account_manager_check_account(AccountManager *m, LinphoneProxyConfig *cfg, LinphoneCoreManager *cm){

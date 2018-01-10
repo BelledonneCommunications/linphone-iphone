@@ -4942,15 +4942,17 @@ void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
  * Set the chat database path.
  * @param lc the linphone core
  * @param path the database path
+ * @deprecated 2018-01-10: Use only for migration purposes
  */
-LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC void linphone_core_set_chat_database_path(LinphoneCore *lc, const char *path);
 
 /**
  * Get path to the database file used for storing chat messages.
  * @param lc the linphone core
  * @return file path or NULL if not exist
+ * @deprecated 2018-01-10
  **/
-LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
+LINPHONE_DEPRECATED LINPHONE_PUBLIC const char *linphone_core_get_chat_database_path(const LinphoneCore *lc);
 
 /**
  * Create a client-side group chat room. When calling this function the chat room is only created
