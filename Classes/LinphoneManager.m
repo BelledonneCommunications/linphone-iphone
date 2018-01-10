@@ -865,25 +865,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallMissed
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallAborted
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallEarlyAborted)) {
-					UNMutableNotificationContent *missed_content =
-						[[UNMutableNotificationContent alloc] init];
+					UNMutableNotificationContent *missed_content = [[UNMutableNotificationContent alloc] init];
                     missed_content.title = NSLocalizedString(@"Missed call", nil);
                     missed_content.body = address;
                     UNNotificationRequest *missed_req = [UNNotificationRequest requestWithIdentifier:@"call_request"
 																							 content:missed_content
 																							 trigger:NULL];
-                    [[UNUserNotificationCenter currentNotificationCenter]
-                                      addNotificationRequest:missed_req
-                                       withCompletionHandler:^(
-                                           NSError *_Nullable error) {
-                                         // Enable or disable features based on
-                                         // authorization.
-                                         if (error) {
-                                           LOGD(@"Error while adding "
-                                                @"notification request :");
-                                           LOGD(error.description);
-                                         }
-                                       }];
+                    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:missed_req
+																		   withCompletionHandler:^(NSError *_Nullable error)
+					 															{if (error) LOGD(@"Error while adding notification request : %@", error.description);}];
 				}
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
