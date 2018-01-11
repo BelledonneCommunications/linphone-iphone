@@ -402,29 +402,6 @@ jobject Java_{{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobjec
 	return env->NewObject(ljb->ms_factory_class, ljb->ms_factory_class_constructor, (jlong)factory);
 }
 
-jobject Java_{{jni_package}}FactoryImpl_createCore(JNIEnv *env, jobject thiz, jobject jfactory, jobject jlistener, jstring jconfig_path, jstring jfactory_config_path, jobject jcontext) {
-	LinphoneFactory *cptr = linphone_factory_get();
-	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(cptr);
-	jobject listener = env->NewGlobalRef(jlistener);
-
-	const char *config_path = GetStringUTFChars(env, jconfig_path);
-	const char *factory_config_path = GetStringUTFChars(env, jfactory_config_path);
-	LinphoneCore *core = NULL;
-
-	linphone_core_cbs_set_user_data(cbs, listener);
-
-	{{#coreListener}}
-	linphone_core_cbs_set_{{callback}}(cbs, {{callbackName}});
-	{{/coreListener}}
-
-	core = linphone_factory_create_core_2(linphone_factory_get(), cbs, config_path, factory_config_path, NULL, (void *)jcontext);
-
-	ReleaseStringUTFChars(env, jconfig_path, config_path);
-	ReleaseStringUTFChars(env, jfactory_config_path, factory_config_path);
-
-	return getCore(env, core);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 {{#methods}}
