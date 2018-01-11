@@ -615,7 +615,7 @@ int IceAgent::gatherIceCandidates () {
 		lInfo() << "ICE: gathering candidates from [" << server << "] using " << (linphone_nat_policy_turn_enabled(natPolicy) ? "TURN" : "STUN");
 		// Gather local srflx candidates.
 		ice_session_enable_turn(iceSession, linphone_nat_policy_turn_enabled(natPolicy));
-		ice_session_set_stun_auth_requested_cb(iceSession, MediaSessionPrivate::stunAuthRequestedCb, &mediaSession);
+		ice_session_set_stun_auth_requested_cb(iceSession, MediaSessionPrivate::stunAuthRequestedCb, mediaSession.getPrivate());
 		return ice_session_gather_candidates(iceSession, ai->ai_addr, (socklen_t)ai->ai_addrlen) ? 1 : 0;
 	} else {
 		lInfo() << "ICE: bypass candidates gathering";
