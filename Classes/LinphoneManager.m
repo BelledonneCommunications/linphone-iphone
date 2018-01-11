@@ -885,7 +885,9 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 								: @"";
             NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids objectForKey:callId2];
             if (uuid) {
-				LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)->data;
+				LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)
+					? linphone_core_get_calls(LC)->data
+					: NULL;
 				const char *callKit_callId = callKit_call
 					? linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))
 					: NULL;
