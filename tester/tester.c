@@ -341,6 +341,20 @@ void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
 	linphone_core_enable_send_call_stats_periodical_updates(mgr->lc, TRUE);
 }
 
+static void configure_random_database_path (LinphoneCoreManager *mgr) {
+	LinphoneConfig *config = linphone_core_get_config(mgr->lc);
+
+	char random_id[32];
+	belle_sip_random_token(random_id, sizeof random_id);
+	char *database_path_format = bctbx_strdup_printf("linphone_%s.db", random_id);
+	mgr->database_path = bc_tester_file(database_path_format);
+
+	linphone_config_set_string(config, "storage", "backend", "sqlite3");
+	linphone_config_set_string(config, "storage", "uri", mgr->database_path);
+
+	bctbx_free(database_path_format);
+}
+
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
 #endif
@@ -380,6 +394,7 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	manager_count++;
 
 	linphone_core_manager_configure(mgr);
+	configure_random_database_path(mgr);
 }
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic pop
@@ -491,6 +506,11 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	}
 	if (mgr->rc_path)
 		bctbx_free(mgr->rc_path);
+	if (mgr->database_path) {
+		unlink(mgr->database_path);
+		bctbx_free(mgr->database_path);
+	}
+
 	if (mgr->cbs)
 		linphone_core_cbs_unref(mgr->cbs);
 
