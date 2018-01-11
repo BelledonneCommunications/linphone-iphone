@@ -64,7 +64,9 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	ms_free(from);
 	counters = get_stats(lc);
 	counters->number_of_LinphoneMessageReceived++;
-	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
+	if (counters->last_received_chat_message) {
+		linphone_chat_message_unref(counters->last_received_chat_message);
+	}
 	counters->last_received_chat_message=linphone_chat_message_ref(msg);
 	if (linphone_chat_message_get_file_transfer_information(msg)) {
 		counters->number_of_LinphoneMessageReceivedWithFile++;
@@ -284,10 +286,11 @@ LinphoneChatMessage* create_file_transfer_message_from_sintel_trailer(LinphoneCh
 }
 
 void text_message_base(LinphoneCoreManager* marie, LinphoneCoreManager* pauline) {
-	LinphoneChatMessage* msg = linphone_chat_room_create_message(linphone_core_get_chat_room(pauline->lc,marie->identity),"Bli bli bli \n blu");
+	LinphoneChatRoom *room = linphone_core_get_chat_room(pauline->lc,marie->identity);
+	LinphoneChatMessage* msg = linphone_chat_room_create_message(room,"Bli bli bli \n blu");
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(linphone_chat_message_get_chat_room(msg), msg);
+	linphone_chat_room_send_chat_message(room, msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDelivered,1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
