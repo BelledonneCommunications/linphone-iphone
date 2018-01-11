@@ -391,6 +391,10 @@ class JavaTranslator(object):
         methodDict['name'] = 'Java_' + self.jni_package + className.to_camel_case() + 'Impl_' + _method.name.to_camel_case(lower=True)
         methodDict['notStatic'] = not static
         methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + _method.name.to_snake_case()
+        if _method.name.to_snake_case() == 'create_core':
+            methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + 'create_core_3'
+        elif _method.name.to_snake_case() == 'create_core_with_config':
+            methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + 'create_core_with_config_3'
         methodDict['returnObject'] = methodDict['hasReturn'] and type(_method.returnType) is AbsApi.ClassType
         methodDict['returnClassName'] = self.translate_type(_method.returnType)
         methodDict['isRealObjectArray'] = False
@@ -435,7 +439,7 @@ class JavaTranslator(object):
                 classCName = 'Linphone' + arg.type.desc.name.to_camel_case()
                 if classCName[-8:] == 'Listener':
                    classCName = 'Linphone' + arg.type.desc.name.to_camel_case()[:-8] + 'Cbs'
-                methodDict['objects'].append({'object': argname, 'objectClassCName': classCName})
+                methodDict['objects'].append({'object': argname, 'objectClassCName': classCName, 'refCountable': arg.type.desc.refcountable})
                 methodDict['params_impl'] += 'c_' + argname
                 
             elif type(arg.type) is AbsApi.ListType:

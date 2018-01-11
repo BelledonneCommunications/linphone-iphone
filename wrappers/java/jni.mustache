@@ -243,7 +243,7 @@ jobject get{{className}}(JNIEnv *env, {{classCName}} *cptr) {
 		if (up == NULL) {
 			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
 			belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
-			{{cPrefix}}_ref(cptr);
+			{{#refCountable}}{{cPrefix}}_ref(cptr);{{/refCountable}}
 		} else {
 			jobj = env->NewLocalRef((jobject)up);
 			if (jobj == NULL) {
@@ -252,7 +252,7 @@ jobject get{{className}}(JNIEnv *env, {{classCName}} *cptr) {
 				// takes implicit local ref
 				jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
 				belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
-				{{cPrefix}}_ref(cptr);
+				{{#refCountable}}{{cPrefix}}_ref(cptr);{{/refCountable}}
 			}
 		}
 	}
@@ -266,7 +266,7 @@ void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong 
 	if (wref) {
 		env->DeleteWeakGlobalRef(wref);
 	}
-	{{cPrefix}}_unref(cptr);
+	{{#refCountable}}{{cPrefix}}_unref(cptr);{{/refCountable}}
 }
 
 {{/objects}}
