@@ -30,13 +30,13 @@
 
 #include "cpim-parser.h"
 
+#define CPIM_GRAMMAR "cpim_grammar"
+
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-#define CPIM_GRAMMAR "cpim_grammar"
 
 namespace Cpim {
 	class Node {
