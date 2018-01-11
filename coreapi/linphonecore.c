@@ -524,10 +524,11 @@ void linphone_core_set_log_level(OrtpLogLevel loglevel) {
 }
 
 void linphone_core_set_log_level_mask(unsigned int loglevel) {
-	//we only have 2 domain for now ortp and belle-sip
-	bctbx_set_log_level_mask(ORTP_LOG_DOMAIN, (int)loglevel);
+	bctbx_set_log_level_mask("bctbx", (int)loglevel);
+	bctbx_set_log_level_mask("ortp", (int)loglevel);
 	bctbx_set_log_level_mask("mediastreamer", (int)loglevel);
-	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log lvel for all domains*/
+	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log level for all domains*/
+	bctbx_set_log_level_mask("linphone", (int)loglevel);
 	sal_set_log_level((OrtpLogLevel)loglevel);
 }
 unsigned int linphone_core_get_log_level_mask(void) {
