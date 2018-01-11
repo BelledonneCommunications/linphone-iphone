@@ -96,9 +96,7 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
     abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
 
     abstract public void setDebugMode(boolean enable, String tag);
-
-    abstract public Core createCore(CoreListener listener, String configPath, String factoryConfigPath, Context context);
-
+    
 {{/isLinphoneFactory}}
 {{#isLinphoneCore}}
     /**
@@ -172,12 +170,6 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 
     @Override
     public native void setDebugMode(boolean enable, String tag);
-
-    private native Core createCore(Factory factory, CoreListener listener, String configPath, String factoryConfigPath, Context context);
-    @Override
-    public Core createCore(CoreListener listener, String configPath, String factoryConfigPath, Context context) {
-        return createCore(this, listener, configPath, factoryConfigPath, context);
-    }
 {{/isLinphoneFactory}}
 
 {{#methods}}
