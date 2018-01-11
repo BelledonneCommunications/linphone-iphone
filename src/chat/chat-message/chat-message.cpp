@@ -547,7 +547,7 @@ void ChatMessagePrivate::send () {
 
 	if (applyModifiers) {
 		// Do not multipart or encapsulate with CPIM in an old ChatRoom to maintain backward compatibility
-		if (q->getChatRoom()->canHandleParticipants()) {
+		if (q->getChatRoom()->canHandleCpim()) {
 			if ((currentSendStep &ChatMessagePrivate::Step::Multipart) == ChatMessagePrivate::Step::Multipart) {
 				lInfo() << "Multipart step already done, skipping";
 			} else {
@@ -575,7 +575,7 @@ void ChatMessagePrivate::send () {
 			currentSendStep |= ChatMessagePrivate::Step::Encryption;
 		}
 
-		if (q->getChatRoom()->canHandleParticipants()) {
+		if (q->getChatRoom()->canHandleCpim()) {
 			if ((currentSendStep &ChatMessagePrivate::Step::Cpim) == ChatMessagePrivate::Step::Cpim) {
 				lInfo() << "Cpim step already done, skipping";
 			} else {

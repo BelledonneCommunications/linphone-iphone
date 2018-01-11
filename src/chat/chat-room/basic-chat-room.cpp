@@ -55,6 +55,16 @@ bool BasicChatRoom::canHandleParticipants () const {
 	return false;
 }
 
+bool BasicChatRoom::canHandleCpim () const {
+	L_D();
+	return d->allowCpim; 
+}
+
+void BasicChatRoom::allowCpim (bool isCpimAllowed) {
+	L_D();
+	d->allowCpim = isCpimAllowed;
+}
+
 const IdentityAddress &BasicChatRoom::getConferenceAddress () const {
 	lError() << "a BasicChatRoom does not have a conference address";
 	return Utils::getEmptyConstRefObject<IdentityAddress>();

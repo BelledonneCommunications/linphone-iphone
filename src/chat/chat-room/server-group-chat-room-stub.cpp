@@ -132,6 +132,10 @@ bool ServerGroupChatRoom::canHandleParticipants () const {
 	return false;
 }
 
+bool ServerGroupChatRoom::canHandleCpim () const {
+	return true;
+}
+
 void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSessionParams *, bool) {}
 
 void ServerGroupChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {}

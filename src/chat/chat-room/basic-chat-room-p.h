@@ -34,6 +34,7 @@ public:
 private:
 	std::string subject;
 	std::list<std::shared_ptr<Participant>> participants;
+	bool allowCpim = false;
 
 	L_DECLARE_PUBLIC(BasicChatRoom);
 };

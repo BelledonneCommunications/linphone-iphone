@@ -278,6 +278,10 @@ bool ProxyChatRoom::canHandleParticipants () const {
 	return d->chatRoom->canHandleParticipants();
 }
 
+bool ProxyChatRoom::canHandleCpim () const {
+	return true;
+}
+
 void ProxyChatRoom::addParticipant (
 	const IdentityAddress &participantAddress,
 	const CallSessionParams *params,

@@ -75,6 +75,7 @@ public:
 	const IdentityAddress &getConferenceAddress () const override;
 
 	bool canHandleParticipants () const override;
+	bool canHandleCpim () const override;
 
 	void addParticipant (
 		const IdentityAddress &participantAddress,

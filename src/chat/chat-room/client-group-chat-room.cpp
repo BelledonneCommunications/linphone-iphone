@@ -200,6 +200,10 @@ bool ClientGroupChatRoom::canHandleParticipants () const {
 	return RemoteConference::canHandleParticipants();
 }
 
+bool ClientGroupChatRoom::canHandleCpim () const {
+	return true; 
+}
+
 const IdentityAddress &ClientGroupChatRoom::getConferenceAddress () const {
 	return RemoteConference::getConferenceAddress();
 }
