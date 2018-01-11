@@ -772,7 +772,7 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 				FileTransferContent *fileTransferContent = (FileTransferContent*)content;
 				if (fileTransferContent->getFileContent() == fileContent) {
 					chatMessage->removeContent(*content);
-					free(fileTransferContent);
+					delete fileTransferContent;
 					break;
 				}
 			}
