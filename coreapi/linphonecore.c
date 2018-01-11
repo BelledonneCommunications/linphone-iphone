@@ -2232,6 +2232,9 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->ringstream_autorelease=TRUE;
 
 	// We need the Sal on the Android platform helper init
+	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
+	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
+	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
 	lc->sal=new Sal(lc->factory);
 	lc->sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
 	lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
@@ -2265,9 +2268,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	linphone_core_activate_log_serialization_if_needed();
 
-	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
-	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
-	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
 	linphone_core_register_default_codecs(lc);
 	linphone_core_register_offer_answer_providers(lc);
 	/* Get the mediastreamer2 event queue */
