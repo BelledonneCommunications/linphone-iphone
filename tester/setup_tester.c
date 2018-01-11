@@ -404,7 +404,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("LPConfig from buffer", linphone_lpconfig_from_buffer),
 	TEST_NO_TAG("LPConfig zero_len value from buffer", linphone_lpconfig_from_buffer_zerolen_value),
 	TEST_NO_TAG("LPConfig zero_len value from file", linphone_lpconfig_from_file_zerolen_value),
-	TEST_ONE_TAG("LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value, "LeaksMemory"),
+	TEST_NO_TAG("LPConfig zero_len value from XML", linphone_lpconfig_from_xml_zerolen_value),
 	TEST_NO_TAG("Chat room", chat_room_test),
 	TEST_NO_TAG("Devices reload", devices_reload_test),
 	TEST_NO_TAG("Codec usability", codec_usability_test),

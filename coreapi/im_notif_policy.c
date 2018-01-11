@@ -205,6 +205,8 @@ LinphoneImNotifPolicy * linphone_core_get_im_notif_policy(const LinphoneCore *lc
 }
 
 void linphone_core_create_im_notif_policy(LinphoneCore *lc) {
+	if (lc->im_notif_policy)
+		linphone_im_notif_policy_unref(lc->im_notif_policy);
 	lc->im_notif_policy = belle_sip_object_new(LinphoneImNotifPolicy);
 	lc->im_notif_policy->lc = lc;
 	load_im_notif_policy_from_config(lc->im_notif_policy);

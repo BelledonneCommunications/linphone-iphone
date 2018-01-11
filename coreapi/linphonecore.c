@@ -1084,7 +1084,9 @@ static void net_config_read(LinphoneCore *lc) {
 
 	nat_policy_ref = lp_config_get_string(lc->config, "net", "nat_policy_ref", NULL);
 	if (nat_policy_ref != NULL) {
-		lc->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
+		LinphoneNatPolicy *nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
+		linphone_core_set_nat_policy(lc, nat_policy);
+		linphone_nat_policy_unref(nat_policy);
 	}
 	if (lc->nat_policy == NULL){
 		/*this will create a default nat policy according to deprecated config keys, or an empty nat policy otherwise*/
@@ -1991,12 +1993,7 @@ void linphone_core_reload_ms_plugins(LinphoneCore *lc, const char *path){
 	codecs_config_read(lc);
 }
 
-static void _linphone_core_start(LinphoneCore * lc) {
-	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
-	linphone_friend_list_set_display_name(list, "_default");
-	linphone_core_add_friend_list(lc, list);
-	linphone_friend_list_unref(list);
-
+static void _linphone_core_read_config(LinphoneCore * lc) {
 	sip_setup_register_all(lc->factory);
 	sound_config_read(lc);
 	net_config_read(lc);
@@ -2005,8 +2002,6 @@ static void _linphone_core_start(LinphoneCore * lc) {
 	sip_config_read(lc);
 	video_config_read(lc);
 	//autoreplier_config_init(&lc->autoreplier_conf);
-	lc->presence_model=linphone_presence_model_new();
-	linphone_presence_model_set_basic_status(lc->presence_model, LinphonePresenceBasicStatusOpen);
 	misc_config_read(lc);
 	ui_config_read(lc);
 #ifdef TUNNEL_ENABLED
@@ -2016,10 +2011,6 @@ static void _linphone_core_start(LinphoneCore * lc) {
 #endif
 
 	lc->auto_net_state_mon=lc->sip_conf.auto_net_state_mon;
-
-	L_GET_PRIVATE_FROM_C_OBJECT(lc)->init();
-
-	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
 void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState state, const char *message) {
@@ -2028,12 +2019,15 @@ void linphone_configuring_terminated(LinphoneCore *lc, LinphoneConfiguringState 
 	if (state == LinphoneConfiguringSuccessful) {
 		if (linphone_core_is_provisioning_transient(lc) == TRUE)
 			linphone_core_set_provisioning_uri(lc, NULL);
+		_linphone_core_read_config(lc);
 	}
 	if (lc->provisioning_http_listener){
 		belle_sip_object_unref(lc->provisioning_http_listener);
 		lc->provisioning_http_listener = NULL;
 	}
-	_linphone_core_start(lc);
+
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->init();
+	linphone_core_set_state(lc,LinphoneGlobalOn,"Ready");
 }
 
 
@@ -2306,6 +2300,14 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
 
+	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
+	linphone_friend_list_set_display_name(list, "_default");
+	linphone_core_add_friend_list(lc, list);
+	linphone_friend_list_unref(list);
+	lc->presence_model = linphone_presence_model_new();
+	linphone_presence_model_set_basic_status(lc->presence_model, LinphonePresenceBasicStatusOpen);
+
+	_linphone_core_read_config(lc);
 	if (automatically_start) {
 		linphone_core_start(lc);
 	}
