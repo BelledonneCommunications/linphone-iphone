@@ -575,13 +575,15 @@
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		[ContactDisplay setDisplayNameLabel:label forContact:contact];
+		addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+		addressLabel.hidden = FALSE;
 	} else {
 		label.text = [FastAddressBook displayNameForAddress:addr];
+		if([LinphoneManager.instance lpConfigBoolForKey:@"display_phone_only" inSection:@"app"])
+			addressLabel.hidden = TRUE;
+		else
+			addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
 	}
-	if([LinphoneManager.instance lpConfigStringForKey:@"display_phone_only" inSection:@"app"])
-		addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
-	else
-		addressLabel.hidden = TRUE;
 }
 
 
