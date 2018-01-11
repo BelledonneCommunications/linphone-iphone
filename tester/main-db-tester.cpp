@@ -17,14 +17,15 @@
  */
 
 #include "address/address.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "db/main-db.h"
 #include "event-log/events.h"
 
+// TODO: Remove me. <3
 #include "private.h"
 
 #include "liblinphone_tester.h"
-#include "tester_utils.h"
+#include "tools/tester.h"
 
 // =============================================================================
 
@@ -44,23 +45,21 @@ static const string getDatabasePath () {
 class MainDbProvider {
 public:
 	MainDbProvider () {
-		mCoreManager = linphone_core_manager_new("marie_rc");
-		mMainDb = new MainDb(mCoreManager->lc->cppPtr->getSharedFromThis());
-		mMainDb->connect(MainDb::Sqlite3, getDatabasePath());
+		mCoreManager = linphone_core_manager_create("marie_rc");
+		linphone_config_set_string(linphone_core_get_config(mCoreManager->lc), "storage", "uri", getDatabasePath().c_str());
+		linphone_core_manager_start(mCoreManager, false);
 	}
 
 	~MainDbProvider () {
-		delete mMainDb;
 		linphone_core_manager_destroy(mCoreManager);
 	}
 
 	const MainDb &getMainDb () {
-		return *mMainDb;
+		return *L_GET_PRIVATE(mCoreManager->lc->cppPtr)->mainDb;
 	}
 
 private:
 	LinphoneCoreManager *mCoreManager;
-	MainDb *mMainDb;
 };
 
 // -----------------------------------------------------------------------------
