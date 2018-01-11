@@ -338,25 +338,25 @@ static bool coreHeaderIsValid (
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::FromHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::FromHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "From", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::ToHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::ToHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "To", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::CcHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::CcHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "cc", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader> (const string &headerValue) const {
 	static const int daysInMonth[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 	L_D();
@@ -397,25 +397,25 @@ bool Cpim::Parser::coreHeaderIsValid<Cpim::DateTimeHeader>(const string &headerV
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::MessageIdHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::MessageIdHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Message-ID", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::SubjectHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::SubjectHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Subject", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::NsHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::NsHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "NS", headerValue);
 }
 
 template<>
-bool Cpim::Parser::coreHeaderIsValid<Cpim::RequireHeader>(const string &headerValue) const {
+bool Cpim::Parser::coreHeaderIsValid<Cpim::RequireHeader> (const string &headerValue) const {
 	L_D();
 	return LinphonePrivate::coreHeaderIsValid(d->grammar, "Require", headerValue);
 }
