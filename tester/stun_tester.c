@@ -131,9 +131,9 @@ static void ice_turn_call_base(bool_t video_enabled, bool_t forced_relay, bool_t
 	LinphoneMediaDirection expected_video_dir = LinphoneMediaDirectionInactive;
 	bctbx_list_t *lcs = NULL;
 
-	marie = linphone_core_manager_new2("marie_rc", FALSE);
+	marie = linphone_core_manager_create("marie_rc");
 	lcs = bctbx_list_append(lcs, marie->lc);
-	pauline = linphone_core_manager_new2(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
+	pauline = linphone_core_manager_create(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	lcs = bctbx_list_append(lcs, pauline->lc);
 
 	if (ipv6) {
