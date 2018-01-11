@@ -2237,6 +2237,14 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->data=userdata;
 	lc->ringstream_autorelease=TRUE;
 
+	// We need the Sal on the Android platform helper init
+	lc->sal=new Sal(lc->factory);
+	lc->sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
+	lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
+
+	lc->sal->set_user_pointer(lc);
+	lc->sal->set_callbacks(&linphone_sal_callbacks);
+
 #ifdef __ANDROID__
 	if (system_context)
 		lc->platform_helper = LinphonePrivate::createAndroidPlatformHelpers(lc, system_context);
@@ -2271,13 +2279,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	/* Get the mediastreamer2 event queue */
 	/* This allows to run event's callback in linphone_core_iterate() */
 	lc->msevq=ms_factory_create_event_queue(lc->factory);
-
-	lc->sal=new Sal(lc->factory);
-	lc->sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
-	lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
-
-	lc->sal->set_user_pointer(lc);
-	lc->sal->set_callbacks(&linphone_sal_callbacks);
 
 #ifdef TUNNEL_ENABLED
 	lc->tunnel=linphone_core_tunnel_new(lc);
