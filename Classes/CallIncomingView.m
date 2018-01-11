@@ -95,9 +95,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)update {
 	const LinphoneAddress *addr = linphone_call_get_remote_address(_call);
-	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr];
+	[ContactDisplay setDisplayNameLabel:_nameLabel forAddress:addr withAddressLabel:_addressLabel];
 	char *uri = linphone_address_as_string_uri_only(addr);
-	_addressLabel.text = [NSString stringWithUTF8String:uri];
 	ms_free(uri);
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:YES withRoundedRadius:YES];
 

@@ -571,6 +571,20 @@
 	}
 }
 
++ (void)setDisplayNameLabel:(UILabel *)label forAddress:(const LinphoneAddress *)addr withAddressLabel:(UILabel*)addressLabel{
+	Contact *contact = [FastAddressBook getContactWithAddress:addr];
+	if (contact) {
+		[ContactDisplay setDisplayNameLabel:label forContact:contact];
+	} else {
+		label.text = [FastAddressBook displayNameForAddress:addr];
+	}
+	if([LinphoneManager.instance lpConfigStringForKey:@"display_phone_only" inSection:@"app"])
+		addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string_uri_only(addr)];
+	else
+		addressLabel.hidden = TRUE;
+}
+
+
 @end
 
 @implementation UIImage (squareCrop)

@@ -144,10 +144,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	_addContactButton.hidden = ([FastAddressBook getContactWithAddress:addr] != nil);
-	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr];
+	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr withAddressLabel:_addressLabel];
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
 	char *addrURI = linphone_address_as_string_uri_only(addr);
-	_addressLabel.text = [NSString stringWithUTF8String:addrURI];
 	ms_free(addrURI);
 
 	[_tableView loadDataForAddress:(callLog ? linphone_call_log_get_remote_address(callLog) : NULL)];
