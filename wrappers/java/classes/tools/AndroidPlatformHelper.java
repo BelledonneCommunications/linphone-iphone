@@ -183,7 +183,7 @@ public class AndroidPlatformHelper {
 		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/incoming_chat", null, null), mErrorToneFile);
 		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/cpim_grammar", null, null), mGrammarCpimFile);
 		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/vcard_grammar", null, null), mGrammarVcardFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/rootca", null, null), new File(mLinphoneRootCaFile).getName());
+		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/rootca", null, null), mLinphoneRootCaFile);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
