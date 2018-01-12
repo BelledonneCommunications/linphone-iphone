@@ -44,7 +44,6 @@ endif()
 
 set(GRAMMAR_FILES
 	cpim_grammar
-	vcard_grammar
 )
 
 install(FILES ${GRAMMAR_FILES}
