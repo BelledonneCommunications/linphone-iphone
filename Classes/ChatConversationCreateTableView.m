@@ -93,8 +93,8 @@
 
 	for (NSString* key in _sortedAddresses){
 		NSString *address = (NSString *)key;
-		NSString *name = [FastAddressBook displayNameForContact:value];
 		Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
+		NSString *name = [FastAddressBook displayNameForContact:contact];
 		Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 			|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 		BOOL add = _allFilter || linphoneContact;
