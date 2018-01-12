@@ -39,7 +39,9 @@
 	  if ([_person respondsToSelector:NSSelectorFromString( CNInstantMessageAddressUsernameKey)] || [_person respondsToSelector:NSSelectorFromString(CNContactInstantMessageAddressesKey)]) {
 		  if (_person.instantMessageAddresses != NULL) {
 			  for (CNLabeledValue<CNInstantMessageAddress *> *sipAddr in _person.instantMessageAddresses) {
-				  [_sipAddresses addObject:sipAddr.value.username];
+				  NSString *username =  sipAddr.value.username;
+				  if (username)
+					  [_sipAddresses addObject:username];
 			  }
 		  }
 	  }

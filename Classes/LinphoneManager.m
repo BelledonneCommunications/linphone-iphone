@@ -734,25 +734,15 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallMissed
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallAborted
 						|| linphone_call_log_get_status(UNlog) == LinphoneCallEarlyAborted)) {
-					UNMutableNotificationContent *missed_content =
-						[[UNMutableNotificationContent alloc] init];
+					UNMutableNotificationContent *missed_content = [[UNMutableNotificationContent alloc] init];
                     missed_content.title = NSLocalizedString(@"Missed call", nil);
                     missed_content.body = address;
                     UNNotificationRequest *missed_req = [UNNotificationRequest requestWithIdentifier:@"call_request"
 																							 content:missed_content
 																							 trigger:NULL];
-                    [[UNUserNotificationCenter currentNotificationCenter]
-                                      addNotificationRequest:missed_req
-                                       withCompletionHandler:^(
-                                           NSError *_Nullable error) {
-                                         // Enable or disable features based on
-                                         // authorization.
-                                         if (error) {
-                                           LOGD(@"Error while adding "
-                                                @"notification request :");
-                                           LOGD(error.description);
-                                         }
-                                       }];
+                    [UNUserNotificationCenter.currentNotificationCenter addNotificationRequest:missed_req
+																		   withCompletionHandler:^(NSError *_Nullable error)
+					 															{if (error) LOGD(@"Error while adding notification request : %@", error.description);}];
 				}
                 linphone_core_set_network_reachable(LC, FALSE);
                 LinphoneManager.instance.connectivity = none;
@@ -764,30 +754,25 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 								: @"";
             NSUUID *uuid = (NSUUID *)[self.providerDelegate.uuids objectForKey:callId2];
             if (uuid) {
-				if (linphone_core_get_calls_nb(LC) > 0 && !_conf) {
+				LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)
+					? linphone_core_get_calls(LC)->data
+					: NULL;
+				const char *callKit_callId = callKit_call
+					? linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))
+					: NULL;
+				if (callKit_callId && !_conf) {
 					// Create a CallKit call because there's not !
-                    _conf = FALSE;
-                    LinphoneCall *callKit_call = (LinphoneCall *)linphone_core_get_calls(LC)->data;
-                    NSString *callKit_callId = [NSString stringWithUTF8String:
-						linphone_call_log_get_call_id(linphone_call_get_call_log(callKit_call))];
+                    NSString *callKit_callIdNS = [NSString stringWithUTF8String:callKit_callId];
                     NSUUID *callKit_uuid = [NSUUID UUID];
-                    [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid
-																		forKey:callKit_callId];
-					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callId
-																		forKey:callKit_uuid];
-                    NSString *address = [FastAddressBook displayNameForAddress:
-						linphone_call_get_remote_address(callKit_call)];
-					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric
-																 value:address];
-					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid
-																				  handle:handle];
+                    [LinphoneManager.instance.providerDelegate.uuids setObject:callKit_uuid forKey:callKit_callIdNS];
+					[LinphoneManager.instance.providerDelegate.calls setObject:callKit_callIdNS forKey:callKit_uuid];
+                    NSString *address = [FastAddressBook displayNameForAddress:linphone_call_get_remote_address(callKit_call)];
+					CXHandle *handle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:address];
+					CXStartCallAction *act = [[CXStartCallAction alloc] initWithCallUUID:callKit_uuid handle:handle];
                     CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
-                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr
-																				  completion:^(NSError *err){}];
-					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
-																		   startedConnectingAtDate:nil];
-                    [LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid
-																				   connectedAtDate:nil];
+                    [LinphoneManager.instance.providerDelegate.controller requestTransaction:tr completion:^(NSError *err){}];
+					[LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid startedConnectingAtDate:nil];
+                    [LinphoneManager.instance.providerDelegate.provider reportOutgoingCallWithUUID:callKit_uuid connectedAtDate:nil];
 				}
 
 				CXEndCallAction *act = [[CXEndCallAction alloc] initWithCallUUID:uuid];
@@ -858,8 +843,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 	if (state == LinphoneCallConnected && !mCallCenter) {
 		/*only register CT call center CB for connected call*/
 		[self setupGSMInteraction];
-		if (!_bluetoothEnabled)
-			[self setSpeakerEnabled:FALSE];
+		[[UIDevice currentDevice] setProximityMonitoringEnabled:!(_speakerEnabled || _bluetoothEnabled)];
 	}
 
 	// Post event
@@ -1577,7 +1561,7 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 		return;
 
 	
-	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0){
+	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0) {
 		if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
 			LOGI(@"Wifi SSID changed, resesting transports.");
 			mgr.connectivity=none; //this will trigger a connectivity change in networkReachabilityCallback.
@@ -1585,8 +1569,6 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 		}
 	}
 	mgr.SSID = newSSID;
-
-	
 }
 
 void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *nilCtx) {

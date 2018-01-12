@@ -16,14 +16,27 @@
 
 @property(nonatomic, strong) NSMutableDictionary *contacts;
 @property(nonatomic, strong) NSDictionary *allContacts;
+@property(nonatomic, strong) NSArray *sortedKeys;
+@property(nonatomic, strong) NSArray *sortedAddresses;
 @end
 
 @implementation ChatConversationCreateTableView
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	_allContacts =
-		[[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+
+	self.allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+	self.sortedKeys = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingSelector: @selector(compare:)];
+	self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+		Contact* first =  [_allContacts objectForKey:a];
+		Contact* second =  [_allContacts objectForKey:b];
+
+		if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
+			return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
+		else
+			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
+	}];
+
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
@@ -33,6 +46,7 @@
 	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_allFilter = TRUE;
+
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
@@ -77,7 +91,7 @@
 	else
 		_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 
-	[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+	for (NSString* key in _sortedAddresses){
 		NSString *address = (NSString *)key;
 		NSString *name = [FastAddressBook displayNameForContact:value];
 		Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
@@ -90,7 +104,8 @@
 				 || ([address.lowercaseString containsSubstring:filter.lowercaseString]))
 			&& add)
 			[_contacts setObject:name forKey:address];
-	}];
+	}
+
 	// also add current entry, if not listed
 	NSString *nsuri = filter.lowercaseString;
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:nsuri];
@@ -122,15 +137,21 @@
 	if (cell == nil) {
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
+
 	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
 	NSString *key = [_contacts.allKeys objectAtIndex:indexPath.row];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	cell.linphoneImage.hidden = !linphoneContact;
-	cell.addressLabel.text = key;
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_sortedAddresses objectAtIndex:indexPath.row]];
+	cell.displayNameLabel.text =  [_contacts objectForKey:[_sortedAddresses objectAtIndex:indexPath.row]];
+	if (addr) {
+		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
+	} else {
+		cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
+	}
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
-
 	return cell;
 }
 

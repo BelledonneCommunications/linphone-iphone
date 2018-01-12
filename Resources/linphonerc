@@ -13,6 +13,7 @@ start_at_boot_preference=1
 stun_preference=stun.linphone.org
 voiceproc_preference=1
 repeat_call_notification=1
+display_phone_only=0
 
 [in_app_purchase]
 #set to 1 if in-app purchases are to be shown in the application

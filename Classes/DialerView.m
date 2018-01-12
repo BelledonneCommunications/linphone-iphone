@@ -204,8 +204,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				[_videoCameraSwitch setHidden:TRUE];
 			}
 		}
-	}
-	@catch (NSException *exception) {
+	} @catch (NSException *exception) {
 		if ([exception.name isEqualToString:@"LinphoneCoreException"]) {
 			LOGE(@"Core already destroyed");
 			return;
