@@ -439,7 +439,7 @@ class JavaTranslator(object):
                 classCName = 'Linphone' + arg.type.desc.name.to_camel_case()
                 if classCName[-8:] == 'Listener':
                    classCName = 'Linphone' + arg.type.desc.name.to_camel_case()[:-8] + 'Cbs'
-                methodDict['objects'].append({'object': argname, 'objectClassCName': classCName, 'refCountable': arg.type.desc.refcountable})
+                methodDict['objects'].append({'object': argname, 'objectClassCName': classCName})
                 methodDict['params_impl'] += 'c_' + argname
                 
             elif type(arg.type) is AbsApi.ListType:
@@ -477,6 +477,7 @@ class JavaTranslator(object):
         hasCoreAccessor = _class.name.to_camel_case() in CORE_ACCESSOR_LIST
         classDict['hasCoreAccessor'] = hasCoreAccessor
         classDict['doc'] = _class.briefDescription.translate(self.docTranslator) if _class.briefDescription is not None else None
+        classDict['refCountable'] = _class.refcountable
 
         for _property in _class.properties:
             try:
@@ -717,6 +718,7 @@ class JavaClass(object):
         self.packageName = package
         self.className = _class.name.to_camel_case()
         self.classImplName = self.className + "Impl"
+        self.refCountable = self._class['refCountable']
         self.factoryName = _class.name.to_snake_case()
         self.filename = self.className + ".java"
         self.imports = []
@@ -768,6 +770,7 @@ class Jni(object):
             'className': javaClass.className,
             'classCName': javaClass.cName,
             'classImplName': javaClass.classImplName,
+            'refCountable': javaClass.refCountable
         }
         self.objects.append(obj)
 
@@ -785,7 +788,6 @@ class Jni(object):
             }
             for callback in jniInterface.callbacks:
                 interface['callbacksList'].append(callback)
-                print(obj['className'])
                 if obj['className'] == 'Core':
                     self.coreListener.append(callback)
             self.interfaces.append(interface)

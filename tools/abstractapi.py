@@ -357,7 +357,7 @@ class Class(DocumentableObject):
 		self.classMethods = []
 		self._listenerInterface = None
 		self.multilistener = False
-		self.refcountable = True
+		self.refcountable = False
 	
 	def add_property(self, property):
 		self.properties.append(property)
@@ -644,6 +644,7 @@ class CParser(object):
 		_class = Class(name)
 		_class.briefDescription = cclass.briefDoc
 		_class.detailedDescription = cclass.detailedDoc
+		_class.refcountable = self._class_is_refcountable(cclass)
 		
 		for cproperty in cclass.properties.values():
 			try:
