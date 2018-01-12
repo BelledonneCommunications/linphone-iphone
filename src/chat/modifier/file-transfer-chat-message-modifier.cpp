@@ -383,6 +383,11 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
+		} else if (code == 400) {
+			lWarning() << "Received HTTP code response " << code << " for file transfer, probably meaning file is too large";
+			chatMessage->updateState(ChatMessage::State::FileTransferError);
+			releaseHttpRequest();
+			fileUploadEndBackgroundTask();
 		} else {
 			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
 			chatMessage->updateState(ChatMessage::State::NotDelivered);
