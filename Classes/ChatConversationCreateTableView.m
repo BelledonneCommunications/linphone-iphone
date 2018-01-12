@@ -86,14 +86,48 @@
 
 - (void)reloadDataWithFilter:(NSString *)filter {
 	_allContacts = [[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+
+	if (_allFilter) {
+		self.sortedKeys = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingSelector: @selector(compare:)];
+		self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+			Contact* first =  [_allContacts objectForKey:a];
+			Contact* second =  [_allContacts objectForKey:b];
+
+			if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
+				return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
+			else
+				return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
+		}];
+	} else {
+		NSMutableArray *keys = [[NSMutableArray alloc] init];
+		[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+			NSString *address = (NSString *)key;
+			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
+			Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
+				|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+
+			if (linphoneContact)
+				[keys addObject:key];
+		}];
+		self.sortedKeys = [keys sortedArrayUsingSelector: @selector(compare:)];
+		self.sortedAddresses = [keys sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+			Contact* first =  [_allContacts objectForKey:a];
+			Contact* second =  [_allContacts objectForKey:b];
+
+			if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
+				return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
+			else
+				return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
+		}];
+	}
+
 	if (_contacts)
 		[_contacts removeAllObjects];
 	else
 		_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 
 	for (NSString* key in _sortedAddresses){
-		NSString *address = (NSString *)key;
-		Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
+		Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
 		NSString *name = [FastAddressBook displayNameForContact:contact];
 		Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 			|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
@@ -101,9 +135,9 @@
 
 		if (((filter.length == 0)
 				 || ([name.lowercaseString containsSubstring:filter.lowercaseString])
-				 || ([address.lowercaseString containsSubstring:filter.lowercaseString]))
+				 || ([key.lowercaseString containsSubstring:filter.lowercaseString]))
 			&& add)
-			[_contacts setObject:name forKey:address];
+			[_contacts setObject:name forKey:key];
 	}
 
 	// also add current entry, if not listed
@@ -137,13 +171,13 @@
 	if (cell == nil)
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 
-	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
 	NSString *key = [_contacts.allKeys objectAtIndex:indexPath.row];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	cell.linphoneImage.hidden = !linphoneContact;
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_sortedAddresses objectAtIndex:indexPath.row]];
+	cell.displayNameLabel.text =  [_contacts objectForKey:[_sortedAddresses objectAtIndex:indexPath.row]];
 	cell.addressLabel.text = addr
 		? [NSString stringWithUTF8String:linphone_address_as_string(addr)]
 		: key;
