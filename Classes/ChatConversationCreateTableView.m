@@ -134,9 +134,8 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIChatCreateCell.class);
 	UIChatCreateCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-	if (cell == nil) {
+	if (cell == nil)
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
-	}
 
 	cell.displayNameLabel.text = [_contacts.allValues objectAtIndex:indexPath.row];
 	NSString *key = [_contacts.allKeys objectAtIndex:indexPath.row];
@@ -144,13 +143,11 @@
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	cell.linphoneImage.hidden = !linphoneContact;
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_sortedAddresses objectAtIndex:indexPath.row]];
-	cell.displayNameLabel.text =  [_contacts objectForKey:[_sortedAddresses objectAtIndex:indexPath.row]];
-	if (addr) {
-		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
-	} else {
-		cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
-	}
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
+	cell.addressLabel.text = addr
+		? [NSString stringWithUTF8String:linphone_address_as_string(addr)]
+		: key;
+
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
 	return cell;
 }
