@@ -535,6 +535,10 @@ void Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(JNIEnv *env, jobject
 	}
 }
 
+jobject Java_org_linphone_core_FactoryImpl_getCore(JNIEnv *env, jobject thiz, jlong ptr, jlong lcPtr) {
+	return getCore(env, (LinphoneCore*)lcPtr);
+}
+
 #ifdef __cplusplus
 }
 #endif

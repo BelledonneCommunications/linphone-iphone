@@ -38,6 +38,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
 #include <bctoolbox/defs.h>
+#include <belr/grammarbuilder.h>
 
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
@@ -2248,6 +2249,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 #endif
 	if (lc->platform_helper == NULL)
 		lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
+
+	belr::GrammarLoader::get().addPath(getPlatformHelpers(lc)->getDataPath());
 
 	linphone_task_list_init(&lc->hooks);
 

@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.linphone.core.tools;
 
+import org.linphone.core.Core;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
@@ -33,10 +34,14 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.Build;
 
 import java.net.InetAddress;
 import java.util.List;
-import android.os.Build;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class is instanciated directly by the linphone library in order to access specific features only accessible in java.
@@ -49,27 +54,56 @@ public class AndroidPlatformHelper {
 	private ConnectivityManager mConnectivityManager;
 	private PowerManager mPowerManager;
 	private WakeLock mWakeLock;
+	private String mLinphoneRootCaFile;
+	private String mRingSoundFile;
+	private String mRingbackSoundFile;
+	private String mPauseSoundFile;
+	private String mErrorToneFile;
+	private String mGrammarCpimFile;
+	private String mGrammarVcardFile ;
+	private String mUserCertificatePath;
 
 	public AndroidPlatformHelper(Object ctx_obj) {
 		mContext = (Context) ctx_obj;
 		MediastreamerAndroidContext.setContext(mContext);
-		
+
 		WifiManager wifiMgr = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
 		mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
 		mConnectivityManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-		
+
 		mWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,	"AndroidPlatformHelper");
 		mWakeLock.setReferenceCounted(true);
 		mMcastLock = wifiMgr.createMulticastLock("AndroidPlatformHelper");
 		mMcastLock.setReferenceCounted(true);
 		mWifiLock = wifiMgr.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AndroidPlatformHelper");
 		mWifiLock.setReferenceCounted(true);
+
+		String basePath = mContext.getFilesDir().getAbsolutePath();
+		mLinphoneRootCaFile = basePath + "/rootca.pem";
+		mRingSoundFile = basePath + "/ringtone.mkv";
+		mRingbackSoundFile = basePath + "/ringback.wav";
+		mPauseSoundFile = basePath + "/hold.mkv";
+		mErrorToneFile = basePath + "/error.wav";
+		mGrammarCpimFile = basePath + "/cpim_grammar";
+		mGrammarVcardFile = basePath + "/vcard_gramamr";
+		mUserCertificatePath = basePath;
+
+		copyAssetsFromPackage();
 	}
-	
+
+	public void initCore(long ptrLc) {
+		Core lc = Factory.instance().getCore(ptrLc);
+		if (lc == null) return;
+		lc.setRingback(mRingbackSoundFile);
+		lc.setRootCa(mLinphoneRootCaFile);
+		lc.setPlayFile(mPauseSoundFile);
+		lc.setUserCertificatesPath(mUserCertificatePath);
+	}
+
 	public Object getPowerManager() {
 		return mPowerManager;
 	}
-	
+
 	public String[] getDnsServers() {
 		if (mConnectivityManager == null || Build.VERSION.SDK_INT < Version.API23_MARSHMALLOW_60)
 			return null;
@@ -131,6 +165,36 @@ public class AndroidPlatformHelper {
 	public void releaseCpuLock(){
 		Log.i("releaseCpuLock()");
 		mWakeLock.release();
+	}
+
+	private void copyAssetsFromPackage() throws IOException {
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/notes_of_the_optimistic", null, null), mRingSoundFile);
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/ringback", null, null), mRingbackSoundFile);
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/hold", null, null), mPauseSoundFile);
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/incoming_chat", null, null), mErrorToneFile);
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/cpim_grammar", null, null), mGrammarCpimFile);
+		copyIfNotExist(mContext.getResources().getIdentifier("org.linphone:raw/vcard_grammar", null, null), mGrammarVcardFile);
+		copyFromPackage(R.raw.rootca, new File(mLinphoneRootCaFile).getName());
+	}
+
+	public void copyIfNotExist(int ressourceId, String target) throws IOException {
+		File lFileToCopy = new File(target);
+		if (!lFileToCopy.exists()) {
+			copyFromPackage(ressourceId,lFileToCopy.getName());
+		}
+	}
+
+	public void copyFromPackage(int ressourceId, String target) throws IOException{
+		FileOutputStream lOutputStream = mServiceContext.openFileOutput (target, 0);
+		InputStream lInputStream = mR.openRawResource(ressourceId);
+		int readByte;
+		byte[] buff = new byte[8048];
+		while (( readByte = lInputStream.read(buff)) != -1) {
+			lOutputStream.write(buff,0, readByte);
+		}
+		lOutputStream.flush();
+		lOutputStream.close();
+		lInputStream.close();
 	}
 };
 
