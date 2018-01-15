@@ -29,6 +29,13 @@ using namespace std;
 
 L_DECLARE_C_CLONABLE_OBJECT_IMPL(DialPlan);
 
+// TODO: Remove me later. Ugly workaround for C++ wrapper.
+LinphoneDialPlan *linphone_dial_plan_ref (LinphoneDialPlan *dp) {
+	return dp;
+}
+
+void linphone_dial_plan_unref (LinphoneDialPlan *) {}
+
 const char *linphone_dial_plan_get_country (const LinphoneDialPlan *dp) {
 	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(dp)->getCountry());
 }
@@ -75,14 +82,4 @@ const bctbx_list_t *linphone_dial_plan_get_all_list () {
 
 bool_t linphone_dial_plan_is_generic (const LinphoneDialPlan *ccc) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(ccc)->isGeneric();
-}
-
-/* Ugly workaround for C++ wrapper */
-
-LinphoneDialPlan *linphone_dial_plan_ref(LinphoneDialPlan *dp) {
-	return dp;
-}
-
-void linphone_dial_plan_unref(LinphoneDialPlan *dp) {
-
 }
