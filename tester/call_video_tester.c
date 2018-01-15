@@ -1713,16 +1713,18 @@ static void video_call_snapshot(void) {
 
 	BC_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
 	BC_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
-	if((call_succeeded == TRUE) && (callInst != NULL)) {
-		LinphoneCall *pauline_call = linphone_core_get_current_call(pauline->lc);
-		BC_ASSERT_PTR_NOT_NULL(pauline_call);
-		LinphoneCallCbs *pauline_call_cbs = linphone_call_get_current_callbacks(pauline_call);
-		linphone_call_cbs_set_snapshot_taken(pauline_call_cbs, snapshot_taken);
+	if (call_succeeded == TRUE && callInst != NULL) {
+		LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
+		LinphoneCallCbs *marie_call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+		BC_ASSERT_PTR_NOT_NULL(marie_call);
+		linphone_call_cbs_set_snapshot_taken(marie_call_cbs, snapshot_taken);
+		linphone_call_add_callbacks(marie_call, marie_call_cbs);
+		linphone_call_cbs_unref(marie_call_cbs);
 		int jpeg_support = linphone_call_take_video_snapshot(callInst, filename);
 		if (jpeg_support < 0) {
 			ms_warning("No jpegwriter support!");
 		} else {
-			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_snapshot_taken,1));
+			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_snapshot_taken,1));
 			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
 			remove(filename);
 		}
