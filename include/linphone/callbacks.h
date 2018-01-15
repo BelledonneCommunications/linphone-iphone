@@ -143,6 +143,13 @@ typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeade
 typedef void (*LinphoneCallCbsTmmbrReceivedCb)(LinphoneCall *call, int stream_index, int tmmbr);
 
 /**
+ * Callback for notifying a snapshot taken.
+ * @param call LinphoneCall for which the snapshot was taken
+ * @param filepath the name of the saved file
+ */
+typedef void (*LinphoneCallCbsSnapshotTakenCb)(LinphoneCall *call, const char *filepath);
+
+/**
  * @}
 **/
 

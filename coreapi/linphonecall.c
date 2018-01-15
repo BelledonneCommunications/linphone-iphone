@@ -152,6 +152,14 @@ void linphone_call_cbs_set_tmmbr_received(LinphoneCallCbs *cbs, LinphoneCallCbsT
 	cbs->tmmbr_received_cb = cb;
 }
 
+LinphoneCallCbsSnapshotTakenCb linphone_call_cbs_get_snapshot_taken(LinphoneCallCbs *cbs) {
+	return cbs->snapshot_taken_cb;
+}
+
+void linphone_call_cbs_set_snapshot_taken(LinphoneCallCbs *cbs, LinphoneCallCbsSnapshotTakenCb cb) {
+	cbs->snapshot_taken_cb = cb;
+}
+
 
 bool_t linphone_call_state_is_early(LinphoneCallState state){
 	switch (state){
@@ -2360,9 +2368,23 @@ void linphone_call_send_vfu_request(LinphoneCall *call) {
 #endif
 }
 
+#ifdef VIDEO_ENABLED
+static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
+		LinphoneCall *call = (LinphoneCall *)userdata;
+		if (call) {
+			const char *filepath = (const char *) arg;
+			linphone_call_notify_snapshot_taken(call, filepath);
+		}
+		linphone_call_unref(call);
+	}
+}
+#endif
+
 LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
+		ms_filter_add_notify_callback(call->videostream->jpegwriter, snapshot_taken, linphone_call_ref(call), TRUE);
 		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
 	ms_warning("Cannot take snapshot: no currently running video stream on this call.");
@@ -2373,6 +2395,7 @@ LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char 
 LinphoneStatus linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->local_jpegwriter!=NULL){
+		ms_filter_add_notify_callback(call->videostream->local_jpegwriter, snapshot_taken, linphone_call_ref(call), TRUE);
 		return ms_filter_call_method(call->videostream->local_jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
 	ms_warning("Cannot take local snapshot: no currently running video stream on this call.");
@@ -6274,4 +6297,8 @@ void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *ms
 
 void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr) {
 	NOTIFY_IF_EXIST(tmmbr_received_cb, call, stream_index, tmmbr)
+}
+
+void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_path) {
+	NOTIFY_IF_EXIST(snapshot_taken_cb, call, file_path)
 }

@@ -268,6 +268,8 @@ typedef struct _stats {
 	int number_of_tmmbr_received;
 	int last_tmmbr_value_received;
 	int tmmbr_received_from_cb;
+
+	int number_of_snapshot_taken;
 }stats;
 
 

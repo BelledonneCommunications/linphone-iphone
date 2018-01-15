@@ -718,8 +718,6 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 	}
 }
 
-
-
 static void video_call_base(LinphoneCoreManager* pauline,LinphoneCoreManager* marie, bool_t using_policy,LinphoneMediaEncryption mode, bool_t callee_video_enabled, bool_t caller_video_enabled) {
 	video_call_base_2(pauline,marie,using_policy,mode,callee_video_enabled,caller_video_enabled);
 	end_call(pauline, marie);
@@ -1688,6 +1686,15 @@ static void video_call_recording_vp8_test(void) {
 	record_call("recording", TRUE, "VP8");
 }
 
+static void snapshot_taken(LinphoneCall *call, const char *filepath) {
+	char *filename = bc_tester_file("snapshot.jpeg");
+	LinphoneCore *lc = linphone_call_get_core(call);
+	stats *callstats = get_stats(lc);
+	BC_ASSERT_STRING_EQUAL(filepath, filename);
+	callstats->number_of_snapshot_taken++;
+	ms_free(filename);
+}
+
 static void video_call_snapshot(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1695,7 +1702,6 @@ static void video_call_snapshot(void) {
 	LinphoneCallParams *paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
 	LinphoneCall *callInst = NULL;
 	char *filename = bc_tester_file("snapshot.jpeg");
-	int dummy = 0;
 	bool_t call_succeeded = FALSE;
 
 	linphone_core_enable_video_capture(marie->lc, TRUE);
@@ -1708,11 +1714,15 @@ static void video_call_snapshot(void) {
 	BC_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
 	BC_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
 	if((call_succeeded == TRUE) && (callInst != NULL)) {
+		LinphoneCall *pauline_call = linphone_core_get_current_call(pauline->lc);
+		BC_ASSERT_PTR_NOT_NULL(pauline_call);
+		LinphoneCallCbs *pauline_call_cbs = linphone_call_get_current_callbacks(pauline_call);
+		linphone_call_cbs_set_snapshot_taken(pauline_call_cbs, snapshot_taken);
 		int jpeg_support = linphone_call_take_video_snapshot(callInst, filename);
 		if (jpeg_support < 0) {
 			ms_warning("No jpegwriter support!");
 		} else {
-			wait_for_until(marie->lc, pauline->lc, &dummy, 1, 5000);
+			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_snapshot_taken,1));
 			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
 			remove(filename);
 		}
@@ -2173,6 +2183,7 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Simple video call implicit AVPF to AVPF", video_call_implicit_AVPF_to_AVPF),
 	TEST_NO_TAG("Video added by reINVITE, with implicit AVPF", video_call_established_by_reinvite_with_implicit_avpf),
 	TEST_NO_TAG("Simple video call", video_call),
+	TEST_NO_TAG("Simple video call with snapshot", video_call_snapshot),
 	TEST_NO_TAG("Simple video call without rtcp",video_call_without_rtcp),
 	TEST_NO_TAG("Simple ZRTP video call", video_call_zrtp),
 	TEST_NO_TAG("Simple DTLS video call", video_call_dtls),
