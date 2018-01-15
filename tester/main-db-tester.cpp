@@ -129,7 +129,7 @@ static void get_history () {
 			ChatRoomId(IdentityAddress("sip:test-1@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org")),
 			0, -1, MainDb::Filter::ConferenceChatMessageFilter
 		).size(),
-		862,
+		804,
 		int,
 		"%d"
 	);
