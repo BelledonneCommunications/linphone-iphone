@@ -116,7 +116,9 @@ const string &Address::getScheme () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.scheme = L_C_TO_STRING(sal_address_get_scheme(d->internalAddress));
+	string scheme(L_C_TO_STRING(sal_address_get_scheme(d->internalAddress)));
+	if (scheme != d->cache.scheme)
+		d->cache.scheme = scheme;
 	return d->cache.scheme;
 }
 
@@ -126,7 +128,9 @@ const string &Address::getDisplayName () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.displayName = L_C_TO_STRING(sal_address_get_display_name(d->internalAddress));
+	string displayName(L_C_TO_STRING(sal_address_get_display_name(d->internalAddress)));
+	if (displayName != d->cache.displayName)
+		d->cache.displayName = displayName;
 	return d->cache.displayName;
 }
 
@@ -146,7 +150,9 @@ const string &Address::getUsername () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.username = L_C_TO_STRING(sal_address_get_username(d->internalAddress));
+	string username(L_C_TO_STRING(sal_address_get_username(d->internalAddress)));
+	if (username != d->cache.username)
+		d->cache.username = username;
 	return d->cache.username;
 }
 
@@ -166,7 +172,9 @@ const string &Address::getDomain () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.domain = L_C_TO_STRING(sal_address_get_domain(d->internalAddress));
+	string domain(L_C_TO_STRING(sal_address_get_domain(d->internalAddress)));
+	if (domain != d->cache.domain)
+		d->cache.domain = domain;
 	return d->cache.domain;
 }
 
@@ -236,7 +244,9 @@ const string &Address::getMethodParam () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.methodParam = L_C_TO_STRING(sal_address_get_method_param(d->internalAddress));
+	string methodParam(L_C_TO_STRING(sal_address_get_method_param(d->internalAddress)));
+	if (methodParam != d->cache.methodParam)
+		d->cache.methodParam = methodParam;
 	return d->cache.methodParam;
 }
 
@@ -256,7 +266,9 @@ const string &Address::getPassword () const {
 	if (!d->internalAddress)
 		return Utils::getEmptyConstRefObject<string>();
 
-	d->cache.password = L_C_TO_STRING(sal_address_get_password(d->internalAddress));
+	string password(L_C_TO_STRING(sal_address_get_password(d->internalAddress)));
+	if (password != d->cache.password)
+		d->cache.password = password;
 	return d->cache.password;
 }
 
