@@ -2272,7 +2272,7 @@ end:
 	rtcp_count_current = pauline->stat.number_of_rtcp_sent; \
 	/*wait for an RTCP packet to have an accurate cumulative lost value*/ \
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_rtcp_sent, rtcp_count_current+1, 10000)); \
-	stats = rtp_session_get_stats(astream->ms.sessions.rtp_session); \
+	stats = rtp_session_get_stats(rtp_session); \
 	loss_percentage = stats->cum_packet_loss * 100.f / (stats->packet_recv + stats->cum_packet_loss); \
 	BC_ASSERT_GREATER(loss_percentage, .75f * params.loss_rate, float, "%f"); \
 	BC_ASSERT_LOWER(loss_percentage , 1.25f * params.loss_rate, float, "%f")
@@ -2292,8 +2292,8 @@ static void call_paused_resumed_with_loss(void) {
 	BC_ASSERT_TRUE(call(pauline,marie));
 	call_pauline = linphone_core_get_current_call(pauline->lc);
 	if (call_pauline){
-		AudioStream *astream = (AudioStream *)linphone_call_get_stream(call_pauline, LinphoneStreamTypeAudio);
-		rtp_session_enable_network_simulation(astream->ms.sessions.rtp_session,&params);
+		RtpSession *rtp_session = linphone_call_get_stream(call_pauline, LinphoneStreamTypeAudio)->sessions.rtp_session;
+		rtp_session_enable_network_simulation(rtp_session, &params);
 
 		/*generate some traffic*/
 		wait_for_until(pauline->lc, marie->lc, NULL, 5, 10000);
