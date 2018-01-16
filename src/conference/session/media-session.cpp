@@ -3929,6 +3929,8 @@ MediaSession::MediaSession (const shared_ptr<Core> &core, shared_ptr<Participant
 MediaSession::~MediaSession () {
 	L_D();
 	cancelDtmfs();
+	if (d->audioStream || d->videoStream)
+		d->freeResources();
 	if (d->audioStats)
 		linphone_call_stats_unref(d->audioStats);
 	if (d->videoStats)
@@ -4218,7 +4220,7 @@ int MediaSession::startInvite (const Address *destination, const string &subject
 	L_D();
 	linphone_core_stop_dtmf_stream(getCore()->getCCore());
 	d->makeLocalMediaDescription();
-	if (getCore()->getCCore()->ringstream && getCore()->getCCore()->sound_conf.play_sndcard && getCore()->getCCore()->sound_conf.capt_sndcard) {
+	if (!getCore()->getCCore()->ringstream && getCore()->getCCore()->sound_conf.play_sndcard && getCore()->getCCore()->sound_conf.capt_sndcard) {
 		/* Give a chance to set card prefered sampling frequency */
 		if (d->localDesc->streams[0].max_rate > 0)
 			ms_snd_card_set_preferred_sample_rate(getCore()->getCCore()->sound_conf.play_sndcard, d->localDesc->streams[0].max_rate);
