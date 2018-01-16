@@ -99,7 +99,7 @@ int IceAgent::getNbLosingPairs () const {
 
 bool IceAgent::hasCompleted () const {
 	if (!iceSession)
-		return false;
+		return true;
 	return ice_session_state(iceSession) == IS_Completed;
 }
 
