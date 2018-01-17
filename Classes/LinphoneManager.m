@@ -1855,7 +1855,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	device = [device stringByReplacingOccurrencesOfString:@" " withString:@"."];
 	linphone_core_set_user_agent(theLinphoneCore, device.UTF8String, LINPHONE_IOS_VERSION);
 
-	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" withDefault:@"SIP"];
+	_contactSipField = [self lpConfigStringForKey:@"contact_im_type_value" inSection:@"sip" withDefault:@"SIP"];
 
 	if (_fastAddressBook == nil) {
 		_fastAddressBook = [[FastAddressBook alloc] init];
