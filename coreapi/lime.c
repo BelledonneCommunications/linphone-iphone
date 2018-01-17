@@ -485,6 +485,9 @@ int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t 
 	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
 		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
 	}
+	if (message == NULL || contentType == NULL) {
+		return LIME_UNABLE_TO_ENCRYPT_MESSAGE;
+	}
 
 	/* encrypted message length is plaintext + 16 for tag */
 	encryptedMessageLength = (uint32_t)strlen((char *)message) + 16;
