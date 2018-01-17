@@ -29,6 +29,10 @@
 #include "object/object-p.h"
 
 #include "cpim-parser.h"
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif
 
 #define CPIM_GRAMMAR "cpim_grammar"
 
@@ -223,8 +227,18 @@ public:
 
 Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 	L_D();
-
-	d->grammar = belr::GrammarLoader::get().load(CPIM_GRAMMAR);
+#if TARGET_OS_IPHONE	
+	CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("org.linphone.linphone") );
+	CFURLRef grammar_url = CFBundleCopyResourceURL(bundle, CFSTR(CPIM_GRAMMAR), NULL, NULL);
+	CFStringRef grammar_path = CFURLCopyFileSystemPath(grammar_url, kCFURLPOSIXPathStyle);
+	CFStringEncoding encoding_method = CFStringGetSystemEncoding();
+	const char *path = CFStringGetCStringPtr(grammar_path, encoding_method);
+	CFRelease(grammar_url);
+	CFRelease(grammar_path);
+#else
+	const char *path = CPIM_GRAMMAR;
+#endif
+	d->grammar = belr::GrammarLoader::get().load(path);
 	if (!d->grammar)
 		lFatal() << "Unable to load CPIM grammar.";
 }
