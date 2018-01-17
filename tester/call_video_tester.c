@@ -1737,6 +1737,61 @@ static void video_call_snapshot(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
+static void video_call_snapshots(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCallParams *marieParams = linphone_core_create_call_params(marie->lc, NULL);
+	LinphoneCallParams *paulineParams = linphone_core_create_call_params(pauline->lc, NULL);
+	LinphoneCall *callInst = NULL;
+	char *filename = bc_tester_file("snapshot.jpeg");
+	bool_t call_succeeded = FALSE;
+	int dummy = 0;
+
+	linphone_core_enable_video_capture(marie->lc, TRUE);
+	linphone_core_enable_video_display(marie->lc, TRUE);
+	linphone_core_enable_video_capture(pauline->lc, TRUE);
+	linphone_core_enable_video_display(pauline->lc, FALSE);
+	linphone_call_params_enable_video(marieParams, TRUE);
+	linphone_call_params_enable_video(paulineParams, TRUE);
+
+	BC_ASSERT_TRUE(call_succeeded = call_with_params(marie, pauline, marieParams, paulineParams));
+	BC_ASSERT_PTR_NOT_NULL(callInst = linphone_core_get_current_call(marie->lc));
+	if (call_succeeded == TRUE && callInst != NULL) {
+		LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
+		LinphoneCallCbs *marie_call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+		BC_ASSERT_PTR_NOT_NULL(marie_call);
+		linphone_call_cbs_set_snapshot_taken(marie_call_cbs, snapshot_taken);
+		linphone_call_add_callbacks(marie_call, marie_call_cbs);
+		linphone_call_cbs_unref(marie_call_cbs);
+		int jpeg_support = linphone_call_take_video_snapshot(callInst, filename);
+		if (jpeg_support < 0) {
+			ms_warning("No jpegwriter support!");
+		} else {
+			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_snapshot_taken,1));
+			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
+			remove(filename);
+
+			wait_for_until(marie->lc, pauline->lc, &dummy, 1, 1000);
+			linphone_call_take_video_snapshot(callInst, filename);
+			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_snapshot_taken,2));
+			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
+			remove(filename);
+
+			wait_for_until(marie->lc, pauline->lc, &dummy, 1, 1000);
+			linphone_call_take_video_snapshot(callInst, filename);
+			BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_snapshot_taken,3));
+			BC_ASSERT_EQUAL(ortp_file_exist(filename), 0, int, "%d");
+			remove(filename);
+		}
+		end_call(marie, pauline);
+	}
+	ms_free(filename);
+	linphone_call_params_unref(marieParams);
+	linphone_call_params_unref(paulineParams);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 static void video_call_with_re_invite_inactive_followed_by_re_invite_base(LinphoneMediaEncryption mode, bool_t no_sdp) {
 	LinphoneCoreManager* marie;
 	LinphoneCoreManager* pauline;
@@ -2220,6 +2275,7 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Video call recording (H264)", video_call_recording_h264_test),
 	TEST_NO_TAG("Video call recording (VP8)", video_call_recording_vp8_test),
 	TEST_NO_TAG("Snapshot", video_call_snapshot),
+	TEST_NO_TAG("Snapshots", video_call_snapshots),
 	TEST_NO_TAG("Video call with early media and no matching audio codecs", video_call_with_early_media_no_matching_audio_codecs),
 	TEST_NO_TAG("DTLS SRTP video call", dtls_srtp_video_call),
 	TEST_ONE_TAG("DTLS SRTP ice video call", dtls_srtp_ice_video_call, "ICE"),

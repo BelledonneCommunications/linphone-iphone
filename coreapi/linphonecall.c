@@ -2384,6 +2384,7 @@ static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id,
 LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->jpegwriter!=NULL){
+		ms_filter_clear_notify_callback(call->videostream->jpegwriter);
 		ms_filter_add_notify_callback(call->videostream->jpegwriter, snapshot_taken, linphone_call_ref(call), TRUE);
 		return ms_filter_call_method(call->videostream->jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
@@ -2395,6 +2396,7 @@ LinphoneStatus linphone_call_take_video_snapshot(LinphoneCall *call, const char 
 LinphoneStatus linphone_call_take_preview_snapshot(LinphoneCall *call, const char *file) {
 #ifdef VIDEO_ENABLED
 	if (call->videostream!=NULL && call->videostream->local_jpegwriter!=NULL){
+		ms_filter_clear_notify_callback(call->videostream->local_jpegwriter);
 		ms_filter_add_notify_callback(call->videostream->local_jpegwriter, snapshot_taken, linphone_call_ref(call), TRUE);
 		return ms_filter_call_method(call->videostream->local_jpegwriter,MS_JPEG_WRITER_TAKE_SNAPSHOT,(void*)file);
 	}
