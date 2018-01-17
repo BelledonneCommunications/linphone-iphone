@@ -852,20 +852,6 @@
 			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
 			remoteInfo = KIFFrameworkConsumerTests;
 		};
-		8C7898421F58439900E8A740 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D4C1EF5105800ACA260;
-			remoteInfo = LinphoneManager;
-		};
-		8C7898441F58439900E8A740 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8CD87D541EF5105900ACA260;
-			remoteInfo = LinphoneManagerTests;
-		};
 		F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -1725,8 +1711,8 @@
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
 		8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_core.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_core.a"; sourceTree = "<group>"; };
 		8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite3.a; path = "liblinphone-sdk/apple-darwin/lib/libsqlite3.a"; sourceTree = "<group>"; };
-		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = check_selected.png; path = "../../../ressources 27.07.17/check_selected.png"; sourceTree = "<group>"; };
-		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "check_selected@2x.png"; path = "../../../ressources 27.07.17/check_selected@2x.png"; sourceTree = "<group>"; };
+		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = check_selected.png; sourceTree = "<group>"; };
+		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check_selected@2x.png"; sourceTree = "<group>"; };
 		8CE24F491F8234A20077AC0A /* next_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_default.png; sourceTree = "<group>"; };
 		8CE24F4A1F8234A30077AC0A /* next_default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_default@2x.png"; sourceTree = "<group>"; };
 		8CE24F551F8268840077AC0A /* conference_delete.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = conference_delete.png; sourceTree = "<group>"; };
@@ -2394,8 +2380,6 @@
 				63058A071B4E816A00EFAE36 /* KIF.framework */,
 				633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */,
 				633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */,
-				8C7898431F58439900E8A740 /* LinphoneManager.framework */,
-				8C7898451F58439900E8A740 /* LinphoneManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3334,20 +3318,6 @@
 			fileType = wrapper.cfbundle;
 			path = KIFFrameworkConsumerTests.xctest;
 			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C7898431F58439900E8A740 /* LinphoneManager.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = LinphoneManager.framework;
-			remoteRef = 8C7898421F58439900E8A740 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		8C7898451F58439900E8A740 /* LinphoneManagerTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = LinphoneManagerTests.xctest;
-			remoteRef = 8C7898441F58439900E8A740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
