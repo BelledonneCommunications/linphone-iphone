@@ -114,6 +114,10 @@ public:
 	Sal(MSFactory *factory);
 	~Sal();
 
+	void set_factory(MSFactory *factory) {
+		this->factory = factory;
+	}
+
 	void set_user_pointer(void *user_data) {this->up=user_data;}
 	void *get_user_pointer() const {return this->up;}
 
