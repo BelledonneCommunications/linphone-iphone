@@ -2596,6 +2596,48 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 	L_END_LOG_EXCEPTION
 }
 
+IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
+	const IdentityAddress &participantA,
+	const IdentityAddress &participantB
+) const {
+	static const string query = "SELECT sip_address.value"
+		"  FROM chat_room, sip_address"
+		"  WHERE capabilities = " + Utils::toString(static_cast<int>(ChatRoom::Capabilities::Conference)) +
+		"  AND (SELECT COUNT(*) FROM chat_room_participant WHERE chat_room_id = chat_room.id) = 2"
+		"  AND (SELECT COUNT(*) FROM chat_room_participant WHERE chat_room_id = chat_room.id AND participant_sip_address_id IN ("
+		"    (SELECT id FROM sip_address WHERE value = :participantSipAddressA),"
+		"    (SELECT id FROM sip_address WHERE value = :participantSipAddressB)"
+		"  )) = 2"
+		"  AND sip_address.id = peer_sip_address_id"
+		"  LIMIT 1";
+
+	L_D();
+
+	if (!isConnected()) {
+		lWarning() << "Unable to find one to one conference chat room. Not connected.";
+		return IdentityAddress();
+	}
+
+	L_BEGIN_LOG_EXCEPTION
+
+	soci::session *session = d->dbSession.getBackendSession<soci::session>();
+	soci::transaction tr(*session);
+
+	const string &participantSipAddressA = participantA.asString();
+	const string &participantSipAddressB = participantB.asString();
+
+	string chatRoomAddress;
+
+	*session << query, soci::use(participantSipAddressA), soci::use(participantSipAddressB), soci::into(chatRoomAddress);
+
+	return IdentityAddress(chatRoomAddress);
+
+	L_END_LOG_EXCEPTION
+
+	// Soci error.
+	return IdentityAddress();
+}
+
 void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable) {
 	L_D();
 
@@ -2739,6 +2781,13 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 	const shared_ptr<AbstractChatRoom> &,
 	const shared_ptr<AbstractChatRoom> &
 ) {}
+
+IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
+	const IdentityAddress &,
+	const IdentityAddress &
+) const {
+	return IdentityAddress();
+}
 
 void MainDb::cleanHistory (const ChatRoomId &, FilterMask) {}
 

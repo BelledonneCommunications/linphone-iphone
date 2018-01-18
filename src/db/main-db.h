@@ -125,6 +125,11 @@ public:
 		const std::shared_ptr<AbstractChatRoom> &clientGroupChatRoom
 	);
 
+	IdentityAddress findOneToOneConferenceChatRoomAddress (
+		const IdentityAddress &participantA,
+		const IdentityAddress &participantB
+	) const;
+
 	// ---------------------------------------------------------------------------
 	// Other.
 	// ---------------------------------------------------------------------------
