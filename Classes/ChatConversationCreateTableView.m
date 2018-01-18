@@ -15,7 +15,7 @@
 
 @property(nonatomic, strong) NSMutableDictionary *contacts;
 @property(nonatomic, strong) NSDictionary *allContacts;
-@property(nonatomic, strong) NSArray *sortedKeys;
+@property(nonatomic, strong) NSMutableArray *contactsAddresses;
 @property(nonatomic, strong) NSArray *sortedAddresses;
 @end
 
@@ -23,20 +23,17 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	self.allContacts =
-	[[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
-	self.sortedKeys = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingSelector: @selector(compare:)];
-	
+	self.allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
 	self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
 		Contact* first =  [_allContacts objectForKey:a];
 		Contact* second =  [_allContacts objectForKey:b];
-		
 		if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
 			return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
 		else
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 	self.contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
+	self.contactsAddresses = [NSMutableArray array];
 	[_searchBar becomeFirstResponder];
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
@@ -45,13 +42,14 @@
 
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_contacts removeAllObjects];
-
+	[_contactsAddresses removeAllObjects];
 	for (NSString* key in _sortedAddresses){
 		NSString *address = (NSString *)key;
 		NSString *name = [FastAddressBook displayNameForContact:[_allContacts objectForKey:key]];
 		if ((filter.length == 0) || ([name.lowercaseString containsSubstring:filter.lowercaseString]) ||
 			([address.lowercaseString containsSubstring:filter.lowercaseString])) {
 			[_contacts setObject:name forKey:address] ;
+			[_contactsAddresses insertObject:address atIndex:[_contactsAddresses count]];
 		}
 	}
 	// also add current entry, if not listed
@@ -64,9 +62,9 @@
 		linphone_address_destroy(addr);
 	}
 	if (nsuri.length > 0 && [_contacts valueForKey:nsuri] == nil) {
-		_contacts[nsuri] = filter;
+		[_contacts setObject:filter forKey:nsuri] ;
+		[_contactsAddresses insertObject:nsuri atIndex:[_contactsAddresses count]];
 	}
-
 	[self.tableView reloadData];
 }
 
@@ -84,8 +82,8 @@
 	if (cell == nil) {
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 	}
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_sortedAddresses objectAtIndex:indexPath.row]];
-	cell.displayNameLabel.text =  [_contacts objectForKey:[_sortedAddresses objectAtIndex:indexPath.row]];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contactsAddresses objectAtIndex:indexPath.row]];
+	cell.displayNameLabel.text =  [_contacts objectForKey:[_contactsAddresses objectAtIndex:indexPath.row]];
 	if (addr) {
 		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
 	} else {
