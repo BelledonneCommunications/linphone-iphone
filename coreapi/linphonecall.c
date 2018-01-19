@@ -160,6 +160,13 @@ void linphone_call_cbs_set_snapshot_taken(LinphoneCallCbs *cbs, LinphoneCallCbsS
 	cbs->snapshot_taken_cb = cb;
 }
 
+LinphoneCallCbsNextVideoFrameDecodedCb linphone_call_cbs_get_next_video_frame_decoded(LinphoneCallCbs *cbs) {
+	return cbs->next_video_frame_decoded_cb;
+}
+
+void linphone_call_cbs_set_next_video_frame_decoded(LinphoneCallCbs *cbs, LinphoneCallCbsNextVideoFrameDecodedCb cb) {
+	cbs->next_video_frame_decoded_cb = cb;
+}
 
 bool_t linphone_call_state_is_early(LinphoneCallState state){
 	switch (state){
@@ -2459,6 +2466,7 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 				call->nextVideoFrameDecoded._func = NULL;
 				call->nextVideoFrameDecoded._user_data = NULL;
 			}
+			linphone_call_notify_next_video_frame_decoded(call);
 			break;
 		case MS_VIDEO_DECODER_SEND_PLI:
 		case MS_VIDEO_DECODER_SEND_SLI:
@@ -6303,4 +6311,8 @@ void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, i
 
 void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_path) {
 	NOTIFY_IF_EXIST(snapshot_taken_cb, call, file_path)
+}
+
+void linphone_call_notify_next_video_frame_decoded(LinphoneCall *call) {
+	NOTIFY_IF_EXIST(next_video_frame_decoded_cb, call)
 }
