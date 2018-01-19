@@ -81,14 +81,16 @@ static void call_waiting_indication_with_param(bool_t enable_caller_privacy) {
 							,&laure->stat.number_of_LinphoneCallOutgoingRinging
 							,1));
 
-	for (iterator=(bctbx_list_t *)linphone_core_get_calls(pauline->lc);iterator!=NULL;iterator=iterator->next) {
-		LinphoneCall *call=(LinphoneCall *)iterator->data;
+	bctbx_list_t *calls = bctbx_list_copy(linphone_core_get_calls(pauline->lc));
+	for (iterator = calls; iterator; iterator = bctbx_list_next(iterator)) {
+		LinphoneCall *call = (LinphoneCall *)bctbx_list_get_data(iterator);
 		if (call != pauline_called_by_marie) {
 			/*fine, this is the call waiting*/
 			pauline_called_by_laure=call;
 			linphone_call_accept(pauline_called_by_laure);
 		}
 	}
+	bctbx_list_free(calls);
 
 	BC_ASSERT_TRUE(wait_for(laure->lc
 							,pauline->lc
