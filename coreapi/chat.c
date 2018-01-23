@@ -137,7 +137,7 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 	);
 	if (chatRoom)
 		reason = L_GET_PRIVATE(chatRoom)->onSipMessageReceived(op, sal_msg);
-	else {
+	else if (!linphone_core_conference_server_enabled(lc)) {
 		LinphoneAddress *addr = linphone_address_new(sal_msg->from);
 		linphone_address_clean(addr);
 		LinphoneChatRoom *cr = linphone_core_get_chat_room(lc, addr);
