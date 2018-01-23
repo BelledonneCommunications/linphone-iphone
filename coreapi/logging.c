@@ -132,6 +132,12 @@ static LinphoneLoggingService *_linphone_logging_service_new(void) {
 	service->log_handler = bctbx_create_log_handler(_log_handler_on_message_written_cb, _log_handler_destroy_cb, service);
 	service->cbs = _linphone_logging_service_cbs_new();
 	bctbx_add_log_handler(service->log_handler);
+
+	/* We need to set the legacy log handler to NULL here
+	   because LinphoneCore have a default log handler that dump
+	   all messages into the standard output. */
+	_linphone_core_set_log_handler(NULL);
+
 	return service;
 }
 

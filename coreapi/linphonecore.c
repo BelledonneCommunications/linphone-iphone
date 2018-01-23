@@ -462,13 +462,17 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 
 static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
-void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
+void _linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	liblinphone_user_log_func = logfunc;
 	if (liblinphone_current_log_func == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
 	} else {
 		bctbx_set_log_handler(liblinphone_current_log_func=liblinphone_user_log_func);
 	}
+}
+
+void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
+	_linphone_core_set_log_handler(logfunc);
 }
 
 void linphone_core_set_log_file(FILE *file) {

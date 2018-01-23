@@ -797,7 +797,7 @@ LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
  * Define a log handler.
  *
  * @param logfunc The function pointer of the log handler.
- * @deprecated Use #linphone_log_service_set_log_handler() instead. Deprecated since 2017-10-10.
+ * @deprecated Use #linphone_logging_service_cbs_set_log_message_written() instead. Deprecated since 2017-10-10.
  */
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_log_handler(OrtpLogFunc logfunc);
 

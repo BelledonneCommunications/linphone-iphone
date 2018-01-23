@@ -2036,6 +2036,8 @@ LinphoneVideoDefinition * linphone_factory_find_supported_video_definition_by_na
 const char* _linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
 LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const LinphoneConfig *config, const char* section);
 
+void _linphone_core_set_log_handler(OrtpLogFunc logfunc);
+
 
 #ifdef __cplusplus
 }
