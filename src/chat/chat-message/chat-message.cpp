@@ -593,8 +593,14 @@ void ChatMessagePrivate::send () {
 	// End of message modification
 	// ---------------------------------------
 
-	if (internalContent.isEmpty())
-		internalContent = *(contents.front());
+	if (internalContent.isEmpty()) {
+		if (contents.size() > 0) {
+			internalContent = *(contents.front());
+		} else {
+			lError() << "Trying to send a message without any content !";
+			return;
+		}
+	}
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (internalContent.getContentType().isValid()) {
