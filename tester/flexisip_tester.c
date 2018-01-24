@@ -202,6 +202,59 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	bctbx_list_free(lcs);
 }
 
+static void message_forking_with_unreachable_recipients_with_gruu(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
+	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
+
+	LinphoneProxyConfig *marie_proxy_config = linphone_core_get_default_proxy_config(marie->lc);
+	LinphoneProxyConfig *marie2_proxy_config = linphone_core_get_default_proxy_config(marie2->lc);
+	const LinphoneAddress *marie_address = linphone_proxy_config_get_contact(marie_proxy_config);
+	const LinphoneAddress *marie2_address = linphone_proxy_config_get_contact(marie2_proxy_config);
+	LinphoneChatRoom* chat_room_1 = linphone_core_get_chat_room(pauline->lc, marie_address);
+	LinphoneChatMessage* message_1 = linphone_chat_room_create_message(chat_room_1,"Bli bli bli \n blu");
+	LinphoneChatRoom* chat_room_2 = linphone_core_get_chat_room(pauline->lc, marie2_address);
+	LinphoneChatMessage* message_2 = linphone_chat_room_create_message(chat_room_2,"Bla bla bla \n bli");
+
+	lcs=bctbx_list_append(lcs,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+
+	/*the following lines are to workaround a problem with messages sent by a previous test (Message forking) that arrive together with REGISTER responses,
+	 * because the ForkMessageContext is not terminated at flexisip side if Message forking test is passing fast*/
+	wait_for_list(lcs,NULL,0,1000);
+	marie->stat.number_of_LinphoneMessageReceived = 0;
+	marie2->stat.number_of_LinphoneMessageReceived = 0;
+
+	/*marie and marie2 go offline*/
+	linphone_core_set_network_reachable(marie->lc,FALSE);
+	linphone_core_set_network_reachable(marie2->lc,FALSE);
+
+	linphone_chat_room_send_chat_message(chat_room_1, message_1);
+	linphone_chat_room_send_chat_message(chat_room_2, message_2);
+
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	
+	/*marie 2 goes online */
+	linphone_core_set_network_reachable(marie2->lc,TRUE);
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
+
+	/*wait a long time so that all transactions are expired*/
+	wait_for_list(lcs,NULL,0,32000);
+
+	/*marie goes online now*/
+	linphone_core_set_network_reachable(marie->lc,TRUE);
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
+
+	linphone_chat_message_unref(message_1);
+	linphone_chat_message_unref(message_2);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(pauline);
+	bctbx_list_free(lcs);
+}
+
 static void call_forking(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1465,6 +1518,7 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Message forking", message_forking),
 	TEST_NO_TAG("Message forking with unreachable recipients", message_forking_with_unreachable_recipients),
 	TEST_NO_TAG("Message forking with all recipients unreachable", message_forking_with_all_recipients_unreachable),
+	TEST_NO_TAG("Message forking with unreachable recipients with gruu", message_forking_with_unreachable_recipients_with_gruu),
 	TEST_NO_TAG("Call forking", call_forking),
 	TEST_NO_TAG("Call forking cancelled", call_forking_cancelled),
 	TEST_NO_TAG("Call forking declined globaly", call_forking_declined_globaly),
