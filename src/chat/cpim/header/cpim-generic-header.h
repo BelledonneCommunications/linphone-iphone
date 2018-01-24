@@ -21,7 +21,6 @@
 #define _L_CPIM_GENERIC_HEADER_H_
 
 #include <list>
-#include <memory>
 
 #include "cpim-header.h"
 

@@ -64,11 +64,6 @@ private:
 
 // -----------------------------------------------------------------------------
 
-static void open_database () {
-	MainDbProvider provider;
-	BC_ASSERT_TRUE(provider.getMainDb().isConnected());
-}
-
 static void get_events_count () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
@@ -193,7 +188,6 @@ static void get_conference_notified_events () {
 }
 
 test_t main_db_tests[] = {
-	TEST_NO_TAG("Open database", open_database),
 	TEST_NO_TAG("Get events count", get_events_count),
 	TEST_NO_TAG("Get messages count", get_messages_count),
 	TEST_NO_TAG("Get unread messages count", get_unread_messages_count),

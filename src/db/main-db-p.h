@@ -20,6 +20,8 @@
 #ifndef _L_MAIN_DB_P_H_
 #define _L_MAIN_DB_P_H_
 
+#include <unordered_map>
+
 #include "abstract/abstract-db-p.h"
 #include "event-log/event-log.h"
 #include "main-db.h"

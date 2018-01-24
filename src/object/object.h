@@ -20,7 +20,6 @@
 #ifndef _L_OBJECT_H_
 #define _L_OBJECT_H_
 
-#include <memory>
 #include <mutex>
 
 #include "base-object.h"

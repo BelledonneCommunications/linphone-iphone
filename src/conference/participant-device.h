@@ -20,7 +20,6 @@
 #ifndef _L_PARTICIPANT_DEVICE_H_
 #define _L_PARTICIPANT_DEVICE_H_
 
-#include <memory>
 #include <string>
 
 #include "address/identity-address.h"

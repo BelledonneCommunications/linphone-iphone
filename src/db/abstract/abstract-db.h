@@ -38,9 +38,9 @@ public:
 	virtual ~AbstractDb () = default;
 
 	bool connect (Backend backend, const std::string &parameters);
-	bool disconnect ();
+	void disconnect ();
 
-	bool isConnected () const;
+	bool forceReconnect ();
 
 	Backend getBackend () const;
 
@@ -50,20 +50,6 @@ protected:
 	explicit AbstractDb (AbstractDbPrivate &p);
 
 	virtual void init ();
-
-	std::string primaryKeyStr (const std::string &type = "INT") const;
-	std::string primaryKeyRefStr (const std::string &type = "INT") const;
-	std::string varcharPrimaryKeyStr (int length) const;
-
-	std::string timestampType () const;
-
-	std::string noLimitValue () const;
-
-	long long getLastInsertId () const;
-
-	void enableForeignKeys (bool status);
-
-	bool checkTableExists (const std::string &table) const;
 
 private:
 	L_DECLARE_PRIVATE(AbstractDb);

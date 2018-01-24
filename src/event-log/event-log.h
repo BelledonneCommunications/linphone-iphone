@@ -21,7 +21,6 @@
 #define _L_EVENT_LOG_H_
 
 #include <ctime>
-#include <memory>
 
 #include "linphone/enums/event-log-enums.h"
 #include "linphone/utils/enum-generator.h"

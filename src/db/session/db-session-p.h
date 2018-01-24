@@ -20,8 +20,6 @@
 #ifndef _L_DB_SESSION_P_H_
 #define _L_DB_SESSION_P_H_
 
-#include <memory>
-
 #include "db-session.h"
 #include "object/clonable-object-p.h"
 
@@ -33,10 +31,15 @@ class DbSessionPrivate : public ClonableObjectPrivate {
 	friend class DbSessionProvider;
 
 private:
-	bool isValid = false;
+	enum class Backend {
+		None,
+		Mysql,
+		Sqlite3
+	} backend;
 
-	DbSession::Type type = DbSession::None;
-	std::shared_ptr<void> backendSession;
+	#ifdef SOCI_ENABLED
+		std::unique_ptr<soci::session> backendSession;
+	#endif // ifdef SOCI_ENABLED
 
 	L_DECLARE_PUBLIC(DbSession);
 };

@@ -21,6 +21,7 @@
 #define _L_GENERAL_H_
 
 #ifdef __cplusplus
+	#include <memory>
 	#include <type_traits>
 #endif
 
@@ -100,6 +101,12 @@ void l_assert (const char *condition, const char *file, int line);
 
 // Define an integer version like: 0xXXYYZZ, XX=MAJOR, YY=MINOR, and ZZ=PATCH.
 #define L_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
+
+// Not available in C++11...
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args && ...args) {
+	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 // -----------------------------------------------------------------------------
 // Data access.

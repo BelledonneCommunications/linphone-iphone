@@ -20,8 +20,6 @@
 #ifndef _L_CHAT_MESSAGE_EVENT_H_
 #define _L_CHAT_MESSAGE_EVENT_H_
 
-#include <memory>
-
 #include "conference-event.h"
 
 // =============================================================================

@@ -21,7 +21,6 @@
 #define _L_CONFERENCE_INTERFACE_H_
 
 #include <list>
-#include <memory>
 
 #include "linphone/utils/general.h"
 

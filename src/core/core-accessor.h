@@ -20,8 +20,6 @@
 #ifndef _L_CORE_ACCESSOR_H_
 #define _L_CORE_ACCESSOR_H_
 
-#include <memory>
-
 #include "linphone/utils/general.h"
 
 // =============================================================================

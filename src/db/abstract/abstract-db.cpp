@@ -17,18 +17,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifdef SOCI_ENABLED
-	#include <soci/soci.h>
-#endif // ifdef SOCI_ENABLED
-
 #ifdef __APPLE__
 	#include <TargetConditionals.h>
 #endif // ifdef __APPLE__
 
-#include "linphone/utils/utils.h"
-
 #include "abstract-db-p.h"
-#include "db/session/db-session-provider.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -40,28 +33,30 @@ LINPHONE_BEGIN_NAMESPACE
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
 // Force static sqlite3 linking for IOS and Android.
-#if TARGET_OS_IPHONE || defined(__ANDROID__)
+#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 	extern "C" void register_factory_sqlite3();
-#endif // TARGET_OS_IPHONE || defined(__ANDROID__)
+#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
 
-	#if TARGET_OS_IPHONE || defined(__ANDROID__)
+	#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 		if (backend == Sqlite3)
 			register_factory_sqlite3();
-	#endif // defined(TARGET_OS_IPHONE) || defined(__ANDROID__)
+	#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 	d->backend = backend;
-	d->dbSession = DbSessionProvider::getInstance()->getSession(
+	d->dbSession = DbSession(
 		(backend == Mysql ? "mysql://" : "sqlite3://") + parameters
 	);
 
 	if (d->dbSession) {
 		try {
-			enableForeignKeys(false);
-			init();
-			enableForeignKeys(true);
+			#ifdef SOCI_ENABLED
+				d->dbSession.enableForeignKeys(false);
+				init();
+				d->dbSession.enableForeignKeys(true);
+			#endif // ifdef SOCI_ENABLED
 		} catch (const exception &e) {
 			lWarning() << "Unable to init database: " << e.what();
 
@@ -73,9 +68,46 @@ bool AbstractDb::connect (Backend backend, const string &parameters) {
 	return d->dbSession;
 }
 
-bool AbstractDb::isConnected () const {
+void AbstractDb::disconnect () {
 	L_D();
-	return d->dbSession;
+	d->dbSession = DbSession();
+}
+
+bool AbstractDb::forceReconnect () {
+	L_D();
+	if (!d->dbSession) {
+		lWarning() << "Unable to reconnect. Not a valid database session.";
+		return false;
+	}
+
+	#ifdef SOCI_ENABLED
+		constexpr int retryCount = 2;
+		lInfo() << "Trying sql backend reconnect...";
+
+		try {
+			soci::session *session = d->dbSession.getBackendSession();
+			session->close();
+
+			for (int i = 0; i < retryCount; ++i) {
+				try {
+					lInfo() << "Reconnect... Try: " << i;
+					session->reconnect();
+					lInfo() << "Database reconnection successful!";
+					return true;
+				} catch (const soci::soci_error &e) {
+					if (e.get_error_category() != soci::soci_error::connection_error)
+						throw e;
+				}
+			}
+		} catch (const exception &e) {
+			lError() << "Unable to reconnect: `" << e.what() << "`.";
+			return false;
+		}
+
+		lError() << "Database reconnection failed!";
+	#endif // ifdef SOCI_ENABLED
+
+	return false;
 }
 
 AbstractDb::Backend AbstractDb::getBackend () const {
@@ -91,136 +123,6 @@ bool AbstractDb::import (Backend, const string &) {
 
 void AbstractDb::init () {
 	// Nothing.
-}
-
-// -----------------------------------------------------------------------------
-
-string AbstractDb::primaryKeyStr (const string &type) const {
-	L_D();
-
-	switch (d->backend) {
-		case Mysql:
-			return " " + type + " AUTO_INCREMENT PRIMARY KEY";
-		case Sqlite3:
-			// See: ROWIDs and the INTEGER PRIMARY KEY
-			// https://www.sqlite.org/lang_createtable.html
-			return " INTEGER PRIMARY KEY ASC";
-	}
-
-	L_ASSERT(false);
-	return "";
-}
-
-string AbstractDb::primaryKeyRefStr (const string &type) const {
-	L_D();
-
-	switch (d->backend) {
-		case Mysql:
-			return " " + type;
-		case Sqlite3:
-			return " INTEGER";
-	}
-
-	L_ASSERT(false);
-	return "";
-}
-
-string AbstractDb::varcharPrimaryKeyStr (int length) const {
-	L_D();
-
-	switch (d->backend) {
-		case Mysql:
-			return " VARCHAR(" + Utils::toString(length) + ") PRIMARY KEY";
-		case Sqlite3:
-			return " VARCHAR(" + Utils::toString(length) + ") PRIMARY KEY";
-	}
-
-	L_ASSERT(false);
-	return "";
-}
-
-string AbstractDb::timestampType () const {
-	L_D();
-
-	switch (d->backend) {
-		case Mysql:
-			return " TIMESTAMP";
-		case Sqlite3:
-			return " DATE";
-	}
-
-	L_ASSERT(false);
-	return "";
-}
-
-string AbstractDb::noLimitValue () const {
-	L_D();
-
-	switch (d->backend) {
-		case Mysql:
-			return "9999999999999999999";
-		case Sqlite3:
-			return "-1";
-	}
-
-	L_ASSERT(false);
-	return "";
-}
-
-long long AbstractDb::getLastInsertId () const {
-	long long id = 0;
-
-	#ifdef SOCI_ENABLED
-		L_D();
-
-		string sql;
-		switch (d->backend) {
-			case Mysql:
-				sql = "SELECT LAST_INSERT_ID()";
-				break;
-			case Sqlite3:
-				sql = "SELECT last_insert_rowid()";
-				break;
-		}
-
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		*session << sql, soci::into(id);
-	#endif // ifdef SOCI_ENABLED
-
-	return id;
-}
-
-void AbstractDb::enableForeignKeys (bool status) {
-	#ifdef SOCI_ENABLED
-		L_D();
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		switch (d->backend) {
-			case Mysql:
-				*session << string("SET FOREIGN_KEY_CHECKS = ") + (status ? "1" : "0");
-				break;
-			case Sqlite3:
-				*session << string("PRAGMA foreign_keys = ") + (status ? "ON" : "OFF");
-				break;
-		}
-	#endif // ifdef SOCI_ENABLED
-}
-
-bool AbstractDb::checkTableExists (const string &table) const {
-	#ifdef SOCI_ENABLED
-		L_D();
-		soci::session *session = d->dbSession.getBackendSession<soci::session>();
-		switch (d->backend) {
-			case Mysql:
-				*session << "SHOW TABLES LIKE :table", soci::use(table);
-				return session->got_data() > 0;
-			case Sqlite3:
-				*session << "SELECT name FROM sqlite_master WHERE type='table' AND name=:table", soci::use(table);
-				return session->got_data() > 0;
-		}
-	#endif // ifdef SOCI_ENABLED
-
-	L_ASSERT(false);
-	return false;
 }
 
 LINPHONE_END_NAMESPACE

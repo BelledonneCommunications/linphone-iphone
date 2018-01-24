@@ -20,8 +20,6 @@
 #ifndef _L_LOCAL_CONFERENCE_EVENT_HANDLER_H_
 #define _L_LOCAL_CONFERENCE_EVENT_HANDLER_H_
 
-#include <memory>
-
 #include "linphone/types.h"
 
 #include "address/address.h"

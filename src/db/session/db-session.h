@@ -20,15 +20,13 @@
 #ifndef _L_DB_SESSION_H_
 #define _L_DB_SESSION_H_
 
+#ifdef SOCI_ENABLED
+	#include <soci/soci.h>
+#endif // ifdef SOCI_ENABLED
+
 #include "object/clonable-object.h"
 
 // =============================================================================
-
-#ifdef SOCI_ENABLED
-	namespace soci {
-		class session;
-	}
-#endif // ifdef SOCI_ENABLED
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -38,53 +36,35 @@ class DbSession : public ClonableObject {
 	friend class DbSessionProvider;
 
 public:
-	enum Type {
-		None,
-		Soci
-	};
-
-	explicit DbSession (Type type = None);
+	DbSession ();
+	explicit DbSession (const std::string &uri);
 	DbSession (const DbSession &src);
 
 	DbSession &operator= (const DbSession &src);
 
 	operator bool () const;
 
-	Type getBackendType () const;
+	#ifdef SOCI_ENABLED
+		soci::session *getBackendSession () const;
+	#endif // ifdef SOCI_ENABLED
 
-	template<typename T>
-	T *getBackendSession () const;
+	std::string primaryKeyStr (const std::string &type = "INT") const;
+	std::string primaryKeyRefStr (const std::string &type = "INT") const;
+	std::string varcharPrimaryKeyStr (int length) const;
+
+	std::string timestampType () const;
+
+	std::string noLimitValue () const;
+
+	long long getLastInsertId () const;
+
+	void enableForeignKeys (bool status);
+
+	bool checkTableExists (const std::string &table) const;
 
 private:
-	void *getBackendSession () const;
-
 	L_DECLARE_PRIVATE(DbSession);
 };
-
-// -----------------------------------------------------------------------------
-
-template<typename T>
-struct TypeOfDbSession {
-	static const DbSession::Type type = DbSession::None;
-};
-
-#ifdef SOCI_ENABLED
-
-	template<>
-	struct TypeOfDbSession<::soci::session> {
-		static const DbSession::Type type = DbSession::Soci;
-	};
-
-#endif // ifdef SOCI_ENABLED
-
-template<typename T>
-T *DbSession::getBackendSession () const {
-	typedef TypeOfDbSession<T> Type;
-	static_assert(Type::type != DbSession::None, "Unable to get backend session, invalid type.");
-	if (getBackendType() != Type::type)
-		return nullptr;
-	return static_cast<T *>(getBackendSession());
-}
 
 LINPHONE_END_NAMESPACE
 

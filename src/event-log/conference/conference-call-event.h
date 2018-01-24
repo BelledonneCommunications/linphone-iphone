@@ -20,8 +20,6 @@
 #ifndef _L_CONFERENCE_CALL_EVENT_H_
 #define _L_CONFERENCE_CALL_EVENT_H_
 
-#include <memory>
-
 #include "event-log/event-log.h"
 
 // =============================================================================

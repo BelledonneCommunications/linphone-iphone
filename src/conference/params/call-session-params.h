@@ -20,8 +20,6 @@
 #ifndef _L_CALL_SESSION_PARAMS_H_
 #define _L_CALL_SESSION_PARAMS_H_
 
-#include <memory>
-
 #include "object/clonable-object.h"
 
 #include "linphone/types.h"

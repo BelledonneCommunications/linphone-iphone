@@ -20,8 +20,6 @@
 #ifndef _L_CHAT_ROOM_LISTENER_H_
 #define _L_CHAT_ROOM_LISTENER_H_
 
-#include <memory>
-
 #include "chat/chat-room/abstract-chat-room.h"
 
 // =============================================================================

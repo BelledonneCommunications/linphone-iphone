@@ -20,8 +20,6 @@
 #ifndef _L_MEDIA_SESSION_PARAMS_P_H_
 #define _L_MEDIA_SESSION_PARAMS_P_H_
 
-#include <memory>
-
 #include "call-session-params-p.h"
 
 #include "media-session-params.h"

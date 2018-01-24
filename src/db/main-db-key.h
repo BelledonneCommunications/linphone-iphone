@@ -20,8 +20,6 @@
 #ifndef _L_MAIN_DB_KEY_H_
 #define _L_MAIN_DB_KEY_H_
 
-#include <memory>
-
 #include "object/clonable-object.h"
 
 // =============================================================================

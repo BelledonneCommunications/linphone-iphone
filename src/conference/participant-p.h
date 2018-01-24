@@ -20,8 +20,6 @@
 #ifndef _L_PARTICIPANT_P_H_
 #define _L_PARTICIPANT_P_H_
 
-#include <memory>
-
 #include "object/object-p.h"
 
 #include "conference/participant.h"
