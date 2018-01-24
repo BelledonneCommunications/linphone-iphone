@@ -2362,6 +2362,11 @@ void linphone_call_enable_camera (LinphoneCall *call, bool_t enable){
 void linphone_call_send_vfu_request(LinphoneCall *call) {
 #ifdef VIDEO_ENABLED
 	const LinphoneCallParams *current_params = linphone_call_get_current_params(call);
+	
+	if (call->videostream && call->videostream->ms.decoder) {
+		ms_filter_call_method_noarg(call->videostream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
+	}
+
 	if ((current_params->avpf_enabled || current_params->implicit_rtcp_fb  )&& call->videostream && media_stream_get_state((const MediaStream *)call->videostream) == MSStreamStarted) { // || sal_media_description_has_implicit_avpf((const SalMediaDescription *)call->resultdesc)
 		ms_message("Request Full Intra Request on call [%p]", call);
 		video_stream_send_fir(call->videostream);
@@ -2482,7 +2487,7 @@ static void video_stream_event_cb(void *user_pointer, const MSFilter *f, const u
 
 static void _linphone_call_set_next_video_frame_decoded_trigger(LinphoneCall *call){
 #ifdef VIDEO_ENABLED
-	if (call->nextVideoFrameDecoded._func && call->videostream && call->videostream->ms.decoder)
+	if (call->videostream && call->videostream->ms.decoder)
 		ms_filter_call_method_noarg(call->videostream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
 #endif
 }
@@ -3805,7 +3810,7 @@ static void linphone_call_start_video_stream(LinphoneCall *call, LinphoneCallSta
 					}
 				}
 				ms_media_stream_sessions_set_encryption_mandatory(&call->videostream->ms.sessions,
-					linphone_call_encryption_mandatory(call));
+				linphone_call_encryption_mandatory(call));
 				_linphone_call_set_next_video_frame_decoded_trigger(call);
 
 				/* start ZRTP engine if needed : set here or remote have a zrtp-hash attribute */
