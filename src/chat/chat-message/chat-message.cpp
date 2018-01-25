@@ -604,9 +604,9 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (internalContent.getContentType().isValid()) {
-		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsString().c_str());
+		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	} else
-		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsString().c_str());
+		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 
 	// Restore FileContents and remove FileTransferContents
 	list<Content*>::iterator i = contents.begin();
