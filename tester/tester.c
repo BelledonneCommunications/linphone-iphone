@@ -339,19 +339,17 @@ void linphone_core_manager_configure (LinphoneCoreManager *mgr) {
 	linphone_core_set_user_certificates_path(mgr->lc,bc_tester_get_writable_dir_prefix());
 	/*for now, we need the periodical updates facility to compute bandwidth measurements correctly during tests*/
 	linphone_core_enable_send_call_stats_periodical_updates(mgr->lc, TRUE);
+
+	LinphoneConfig *config = linphone_core_get_config(mgr->lc);
+	linphone_config_set_string(config, "storage", "backend", "sqlite3");
+	linphone_config_set_string(config, "storage", "uri", mgr->database_path);
 }
 
-static void configure_random_database_path (LinphoneCoreManager *mgr) {
-	LinphoneConfig *config = linphone_core_get_config(mgr->lc);
-
+static void generate_random_database_path (LinphoneCoreManager *mgr) {
 	char random_id[32];
 	belle_sip_random_token(random_id, sizeof random_id);
 	char *database_path_format = bctbx_strdup_printf("linphone_%s.db", random_id);
 	mgr->database_path = bc_tester_file(database_path_format);
-
-	linphone_config_set_string(config, "storage", "backend", "sqlite3");
-	linphone_config_set_string(config, "storage", "uri", mgr->database_path);
-
 	bctbx_free(database_path_format);
 }
 
@@ -393,8 +391,8 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 
 	manager_count++;
 
+	generate_random_database_path(mgr);
 	linphone_core_manager_configure(mgr);
-	configure_random_database_path(mgr);
 }
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic pop

@@ -59,16 +59,6 @@ static void chat_room_participant_removed (LinphoneChatRoom *cr, const LinphoneE
 	manager->stat.number_of_participants_removed++;
 }
 
-static void chat_room_message_received (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	LinphoneCore *core = linphone_chat_room_get_core(cr);
-	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
-	if (linphone_chat_message_get_file_transfer_information(msg) || linphone_chat_message_get_external_body_url(msg)) {
-		manager->stat.number_of_LinphoneMessageReceivedWithFile++;
-	} else {
-		manager->stat.number_of_LinphoneMessageReceived++;
-	}
-}
-
 static void chat_room_state_changed (LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
 	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
@@ -114,7 +104,6 @@ static void core_chat_room_state_changed (LinphoneCore *core, LinphoneChatRoom *
 		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
 		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
-		linphone_chat_room_cbs_set_message_received(cbs, chat_room_message_received);
 	}
 }
 
@@ -1743,8 +1732,8 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 
 	// Check that the group chat room creation fails and that a fallback to a basic chat room is done
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
-	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationFailed, initialMarieStats.number_of_LinphoneChatRoomStateCreationFailed + 1, 10000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneChatRoomStateCreationFailed, initialMarieStats.number_of_LinphoneChatRoomStateCreationFailed, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
 	BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marieCr) & LinphoneChatRoomCapabilitiesBasic);
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
@@ -1909,8 +1898,8 @@ static void group_chat_donot_room_migrate_from_basic_chat_room (void) {
 	}
 
 	// Clean db from chat room
-	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
-	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	linphone_core_delete_chat_room(marie->lc, marieCr);
+	linphone_core_delete_chat_room(pauline->lc, paulineCr);
 
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);

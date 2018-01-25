@@ -46,6 +46,12 @@ public:
 		// Do not insert the client group chat room in database, the migration will do it
 	}
 
+	void onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
+		L_Q();
+		q->getCore()->deleteChatRoom(q->getSharedFromThis());
+		setState(AbstractChatRoom::State::Deleted);
+	}
+
 	void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
 		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
 		const char *specs = linphone_core_get_linphone_specs(chatMessage->getCore()->getCCore());
