@@ -55,6 +55,9 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 
 	IdentityAddress entityAddress(confInfo->getEntity().c_str());
 	if (entityAddress == chatRoomId.getPeerAddress()) {
+		if (confInfo->getVersion().present())
+			lastNotify = confInfo->getVersion().get();
+		
 		if (confInfo->getConferenceDescription().present()) {
 			if (confInfo->getConferenceDescription().get().getSubject().present() &&
 				!confInfo->getConferenceDescription().get().getSubject().get().empty()
@@ -79,8 +82,6 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 				confListener->onConferenceKeywordsChanged(keywords);
 			}
 		}
-		if (confInfo->getVersion().present())
-			lastNotify = confInfo->getVersion().get();
 
 		if (!confInfo->getUsers().present())
 			return;
