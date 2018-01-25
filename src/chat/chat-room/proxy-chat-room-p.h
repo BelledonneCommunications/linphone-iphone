@@ -65,6 +65,7 @@ public:
 	}
 
 	void setupCallbacks ();
+	void teardownCallbacks ();
 
 	std::shared_ptr<AbstractChatRoom> chatRoom;
 
