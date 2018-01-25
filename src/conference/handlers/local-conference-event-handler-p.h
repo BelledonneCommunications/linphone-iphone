@@ -37,7 +37,7 @@ public:
 	void notifyFullState (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
 	void notifyAllExcept (const std::string &notify, const std::shared_ptr<Participant> &exceptParticipant);
 	void notifyAll (const std::string &notify);
-	std::string createNotifyFullState (int notifyId = -1);
+	std::string createNotifyFullState (int notifyId = -1, bool oneToOne = false);
 	std::string createNotifyMultipart (int notifyId);
 	std::string createNotifyParticipantAdded (const Address &addr, int notifyId = -1);
 	std::string createNotifyParticipantRemoved (const Address &addr, int notifyId = -1);

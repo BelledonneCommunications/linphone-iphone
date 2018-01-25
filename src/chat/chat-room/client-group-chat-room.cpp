@@ -62,6 +62,8 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	CallSessionParams csp;
 	csp.addCustomHeader("Require", "recipient-list-invite");
 	csp.addCustomContactParameter("text");
+	if (capabilities & ClientGroupChatRoom::Capabilities::OneToOne)
+		csp.addCustomHeader("One-To-One-Chat-Room", "true");
 
 	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
 	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, callSessionListener);
@@ -109,6 +111,12 @@ void ClientGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<Abs
 void ClientGroupChatRoomPrivate::onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_Q();
 	q->getCore()->getPrivate()->insertChatRoomWithDb(chatRoom);
+}
+
+void ClientGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
+	L_Q();
+	q->getCore()->deleteChatRoom(q->getSharedFromThis());
+	setState(ClientGroupChatRoom::State::Deleted);
 }
 
 // -----------------------------------------------------------------------------
@@ -164,6 +172,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const shared_ptr<Core> &core,
 	const ChatRoomId &chatRoomId,
 	shared_ptr<Participant> &me,
+	AbstractChatRoom::CapabilitiesMask capabilities,
 	const string &subject,
 	list<shared_ptr<Participant>> &&participants,
 	unsigned int lastNotifyId
@@ -189,7 +198,8 @@ shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 }
 
 ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () const {
-	return Capabilities::Conference;
+	L_D();
+	return d->capabilities;
 }
 
 bool ClientGroupChatRoom::hasBeenLeft () const {
@@ -206,6 +216,16 @@ bool ClientGroupChatRoom::canHandleCpim () const {
 
 const IdentityAddress &ClientGroupChatRoom::getConferenceAddress () const {
 	return RemoteConference::getConferenceAddress();
+}
+
+void ClientGroupChatRoom::deleteFromDb () {
+	L_D();
+	if (!hasBeenLeft()) {
+		d->deletionOnTerminationEnabled = true;
+		leave();
+		return;
+	}
+	d->chatRoomListener->onChatRoomDeleteRequested(getSharedFromThis());
 }
 
 void ClientGroupChatRoom::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
@@ -229,6 +249,19 @@ void ClientGroupChatRoom::addParticipants (
 	if ((getState() != ChatRoom::State::Instantiated) && (getState() != ChatRoom::State::Created)) {
 		lError() << "Cannot add participants to the ClientGroupChatRoom in a state other than Instantiated or Created";
 		return;
+	}
+
+	if ((getState() == ChatRoom::State::Created) && (d->capabilities & ClientGroupChatRoom::Capabilities::OneToOne)) {
+		lError() << "Cannot add more participants to a OneToOne ClientGroupChatRoom";
+		return;
+	}
+
+	if ((getState() == ChatRoom::State::Instantiated)
+		&& (addressesList.size() == 1)
+		&& (linphone_config_get_bool(linphone_core_get_config(L_GET_C_BACK_PTR(getCore())),
+			"misc", "one_to_one_chat_room_enabled", TRUE))
+	) {
+		d->capabilities |= ClientGroupChatRoom::Capabilities::OneToOne;
 	}
 
 	Content content;
@@ -372,6 +405,11 @@ void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 	d->chatRoomListener->onChatRoomInsertRequested(getSharedFromThis());
 }
 
+void ClientGroupChatRoom::onConferenceKeywordsChanged (const vector<string> &keywords) {
+	L_D();
+	d->capabilities |= ClientGroupChatRoom::Capabilities::OneToOne;
+}
+
 void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
@@ -382,6 +420,10 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 		time(nullptr),
 		d->chatRoomId
 	));
+	if (d->deletionOnTerminationEnabled) {
+		d->deletionOnTerminationEnabled = false;
+		d->chatRoomListener->onChatRoomDeleteRequested(getSharedFromThis());
+	}
 }
 
 void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {

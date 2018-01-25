@@ -38,6 +38,7 @@ class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, pub
 	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 	friend class ClientGroupToBasicChatRoomPrivate;
+	friend class Core;
 	friend class CorePrivate;
 	friend class MainDb;
 	friend class ProxyChatRoomPrivate;
@@ -66,6 +67,7 @@ public:
 	virtual std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const = 0;
 	virtual int getHistorySize () const = 0;
 
+	virtual void deleteFromDb () = 0;
 	virtual void deleteHistory () = 0;
 
 	virtual std::shared_ptr<ChatMessage> getLastChatMessageInHistory () const = 0;

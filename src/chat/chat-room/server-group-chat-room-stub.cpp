@@ -46,6 +46,8 @@ void ServerGroupChatRoomPrivate::confirmCreation () {}
 
 void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
 
+void ServerGroupChatRoomPrivate::confirmRecreation (SalCallOp *) {}
+
 // -----------------------------------------------------------------------------
 
 IdentityAddress ServerGroupChatRoomPrivate::generateConferenceAddress (const shared_ptr<Participant> &me) const {
@@ -110,6 +112,7 @@ LocalConference(core, IdentityAddress(op->get_to()), nullptr) {
 ServerGroupChatRoom::ServerGroupChatRoom (
 	const shared_ptr<Core> &core,
 	const IdentityAddress &peerAddress,
+	AbstractChatRoom::CapabilitiesMask capabilities,
 	const string &subject,
 	list<shared_ptr<Participant>> &&participants,
 	unsigned int lastNotifyId

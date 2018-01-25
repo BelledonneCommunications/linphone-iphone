@@ -346,6 +346,12 @@ int ChatRoom::getHistorySize () const {
 	return getCore()->getPrivate()->mainDb->getHistorySize(getChatRoomId());
 }
 
+void ChatRoom::deleteFromDb () {
+	L_D();
+	Core::deleteChatRoom(this->getSharedFromThis());
+	d->setState(ChatRoom::State::Deleted);
+}
+
 void ChatRoom::deleteHistory () {
 	getCore()->getPrivate()->mainDb->cleanHistory(getChatRoomId());
 }

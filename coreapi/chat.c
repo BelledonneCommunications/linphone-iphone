@@ -92,7 +92,7 @@ LinphoneChatRoom *_linphone_core_create_server_group_chat_room (LinphoneCore *lc
 }
 
 void linphone_core_delete_chat_room (LinphoneCore *, LinphoneChatRoom *cr) {
-	LinphonePrivate::Core::deleteChatRoom(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+	L_GET_CPP_PTR_FROM_C_OBJECT(cr)->deleteFromDb();
 }
 
 LinphoneChatRoom *linphone_core_get_chat_room_from_uri(LinphoneCore *lc, const char *to) {

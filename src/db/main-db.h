@@ -130,6 +130,8 @@ public:
 		const IdentityAddress &participantB
 	) const;
 
+	void insertOneToOneConferenceChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+
 	// ---------------------------------------------------------------------------
 	// Other.
 	// ---------------------------------------------------------------------------

@@ -107,13 +107,17 @@ string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo
 	return notify.str();
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId) {
+string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId, bool oneToOne) {
 	string entity = conf->getConferenceAddress().asString();
 	string subject = conf->getSubject();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
 	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
 	confDescr.setSubject(subject);
+	if (oneToOne) {
+		KeywordsType keywords(sizeof(char), "one-to-one");
+		confDescr.setKeywords(keywords);
+	}
 	confInfo.setUsers(users);
 	confInfo.setConferenceDescription((const ConferenceDescriptionType) confDescr);
 
@@ -357,18 +361,13 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 LocalConferenceEventHandler::LocalConferenceEventHandler (LocalConference *localConference, unsigned int notify) :
 	Object(*new LocalConferenceEventHandlerPrivate) {
 	L_D();
-	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = localConference;
 	d->lastNotify = notify;
 }
 
-LocalConferenceEventHandler::~LocalConferenceEventHandler () {
-	xercesc::XMLPlatformUtils::Terminate();
-}
-
 // -----------------------------------------------------------------------------
 
-void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
+void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool oneToOne) {
 	L_D();
 	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
 	char *addrStr = linphone_address_as_string(lAddr);
@@ -396,7 +395,7 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev) {
 		device->setConferenceSubscribeEvent(lev);
 		if (lastNotify == 0) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
-			d->notifyFullState(d->createNotifyFullState(static_cast<int>(d->lastNotify)), device);
+			d->notifyFullState(d->createNotifyFullState(static_cast<int>(d->lastNotify), oneToOne), device);
 		} else if (lastNotify < d->lastNotify) {
 			lInfo() << "Sending all missed notify [" << lastNotify << "-" << d->lastNotify <<
 				"] for conference:" << d->conf->getConferenceAddress().asString() <<

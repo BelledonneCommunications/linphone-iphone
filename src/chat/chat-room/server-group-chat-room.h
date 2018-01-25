@@ -39,10 +39,15 @@ public:
 	ServerGroupChatRoom (
 		const std::shared_ptr<Core> &core,
 		const IdentityAddress &peerAddress,
+		AbstractChatRoom::CapabilitiesMask capabilities,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
 		unsigned int lastNotifyId
 	);
+
+	std::shared_ptr<Core> getCore () const;
+
+	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
 
 	CapabilitiesMask getCapabilities () const override;
 	bool hasBeenLeft () const override;

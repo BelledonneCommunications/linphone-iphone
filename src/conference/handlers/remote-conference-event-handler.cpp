@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <sstream>
+
 #include "linphone/utils/utils.h"
 
 #include "conference/remote-conference.h"
@@ -53,20 +55,30 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 
 	IdentityAddress entityAddress(confInfo->getEntity().c_str());
 	if (entityAddress == chatRoomId.getPeerAddress()) {
-		if (
-			confInfo->getConferenceDescription().present() &&
-			confInfo->getConferenceDescription().get().getSubject().present() &&
-			!confInfo->getConferenceDescription().get().getSubject().get().empty()
-		)
-			confListener->onSubjectChanged(
-				make_shared<ConferenceSubjectEvent>(
-					tm,
-					chatRoomId,
-					lastNotify,
-					confInfo->getConferenceDescription().get().getSubject().get()
-				),
-				isFullState
-			);
+		if (confInfo->getConferenceDescription().present()) {
+			if (confInfo->getConferenceDescription().get().getSubject().present() &&
+				!confInfo->getConferenceDescription().get().getSubject().get().empty()
+			) {
+				confListener->onSubjectChanged(
+					make_shared<ConferenceSubjectEvent>(
+						tm,
+						chatRoomId,
+						lastNotify,
+						confInfo->getConferenceDescription().get().getSubject().get()
+					),
+					isFullState
+				);
+			}
+			if (confInfo->getConferenceDescription().get().getKeywords().present()
+				&& !confInfo->getConferenceDescription().get().getKeywords().get().empty()
+			) {
+				KeywordsType xmlKeywords = confInfo->getConferenceDescription().get().getKeywords().get();
+				vector<string> keywords;
+				for (const auto &k : xmlKeywords)
+					keywords.push_back(k);
+				confListener->onConferenceKeywordsChanged(keywords);
+			}
+		}
 		if (confInfo->getVersion().present())
 			lastNotify = confInfo->getVersion().get();
 
@@ -215,7 +227,6 @@ void RemoteConferenceEventHandlerPrivate::onRegistrationStateChanged (LinphonePr
 RemoteConferenceEventHandler::RemoteConferenceEventHandler (RemoteConference *remoteConference) :
 Object(*new RemoteConferenceEventHandlerPrivate) {
 	L_D();
-	xercesc::XMLPlatformUtils::Initialize();
 	d->conf = remoteConference;
 	d->conf->getCore()->getPrivate()->registerListener(d);
 }
@@ -223,7 +234,6 @@ Object(*new RemoteConferenceEventHandlerPrivate) {
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 	L_D();
 	d->conf->getCore()->getPrivate()->unregisterListener(d);
-	xercesc::XMLPlatformUtils::Terminate();
 }
 
 // -----------------------------------------------------------------------------

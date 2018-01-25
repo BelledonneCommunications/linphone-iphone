@@ -18,6 +18,7 @@
  */
 
 #include <mediastreamer2/mscommon.h>
+#include <xercesc/util/PlatformUtils.hpp>
 
 #include "call/call.h"
 #include "core/core-listener.h"
@@ -52,7 +53,7 @@ void CorePrivate::init () {
 		uri = q->getDataPath() + LINPHONE_DB;
 	}
 
-	lInfo() << "Opening " LINPHONE_DB "...";
+	lInfo() << "Opening linphone database: " << uri;
 	if (!mainDb->connect(backend, uri))
 		lFatal() << "Unable to open linphone database.";
 
@@ -91,10 +92,13 @@ void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, Linp
 
 // =============================================================================
 
-Core::Core () : Object(*new CorePrivate) {}
+Core::Core () : Object(*new CorePrivate) {
+	xercesc::XMLPlatformUtils::Initialize();
+}
 
 Core::~Core () {
 	lInfo() << "Destroying core: " << this;
+	xercesc::XMLPlatformUtils::Terminate();
 }
 
 shared_ptr<Core> Core::create (LinphoneCore *cCore) {

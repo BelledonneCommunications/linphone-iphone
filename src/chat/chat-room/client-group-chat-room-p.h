@@ -42,6 +42,7 @@ public:
 	// ChatRoomListener
 	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
 	void onChatRoomInsertInDatabaseRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
+	void onChatRoomDeleteRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
 
 	// CallSessionListener
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
@@ -50,6 +51,8 @@ public:
 private:
 	CallSessionListener *callSessionListener = this;
 	ChatRoomListener *chatRoomListener = this;
+	ClientGroupChatRoom::CapabilitiesMask capabilities = ClientGroupChatRoom::Capabilities::Conference;
+	bool deletionOnTerminationEnabled = false;
 
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };

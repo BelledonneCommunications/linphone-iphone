@@ -266,10 +266,7 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 
 	const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
 	// Remove capabilities like `Proxy`.
-	const int &capabilities = chatRoom->getCapabilities() & ChatRoom::CapabilitiesMask({
-		ChatRoom::Capabilities::Basic, ChatRoom::Capabilities::RealTimeText,
-		ChatRoom::Capabilities::Conference, ChatRoom::Capabilities::Migratable
-	});
+	const int &capabilities = chatRoom->getCapabilities() & ~ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Proxy);
 
 	const string &subject = chatRoom->getSubject();
 	const int &flags = chatRoom->hasBeenLeft();
@@ -406,6 +403,18 @@ long long MainDbPrivate::selectChatRoomParticipantId (long long chatRoomId, long
 	*session << "SELECT id from chat_room_participant"
 		" WHERE chat_room_id = :chatRoomId AND participant_sip_address_id = :participantSipAddressId",
 		soci::into(id), soci::use(chatRoomId), soci::use(participantSipAddressId);
+	return session->got_data() ? id : -1;
+}
+
+long long MainDbPrivate::selectOneToOneChatRoomId (long long sipAddressIdA, long long sipAddressIdB) const {
+	long long id;
+	soci::session *session = dbSession.getBackendSession<soci::session>();
+	*session << "SELECT chat_room_id"
+		"  FROM one_to_one_chat_room"
+		"  WHERE participant_a_sip_address_id IN (:sipAddressIdA, :sipAddressIdB)"
+		"  AND participant_b_sip_address_id IN (:sipAddressIdABis, :sipAddressIdBBis)",
+		soci::into(id),
+		soci::use(sipAddressIdA), soci::use(sipAddressIdB), soci::use(sipAddressIdA), soci::use(sipAddressIdB);
 	return session->got_data() ? id : -1;
 }
 
@@ -1371,6 +1380,26 @@ void MainDb::init () {
 		"    REFERENCES sip_address(id)"
 		"    ON DELETE CASCADE"
 		") " + charset;
+
+	if (linphone_core_conference_server_enabled(getCore()->getCCore())) {
+		*session <<
+			"CREATE TABLE IF NOT EXISTS one_to_one_chat_room ("
+			"  chat_room_id" + primaryKeyStr("BIGINT UNSIGNED") + ","
+
+			"  participant_a_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+			"  participant_b_sip_address_id" + primaryKeyRefStr("BIGINT UNSIGNED") + " NOT NULL,"
+
+			"  FOREIGN KEY (chat_room_id)"
+			"    REFERENCES chat_room(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (participant_a_sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE,"
+			"  FOREIGN KEY (participant_b_sip_address_id)"
+			"    REFERENCES sip_address(id)"
+			"    ON DELETE CASCADE"
+			") " + charset;
+	}
 
 	*session <<
 		"CREATE TABLE IF NOT EXISTS chat_room_participant ("
@@ -2433,6 +2462,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 					core,
 					chatRoomId,
 					me,
+					capabilities,
 					subject,
 					move(participants),
 					lastNotifyId
@@ -2447,6 +2477,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 				chatRoom = make_shared<ServerGroupChatRoom>(
 					core,
 					chatRoomId.getPeerAddress(),
+					capabilities,
 					subject,
 					move(participants),
 					lastNotifyId
@@ -2600,17 +2631,6 @@ IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
 	const IdentityAddress &participantA,
 	const IdentityAddress &participantB
 ) const {
-	static const string query = "SELECT sip_address.value"
-		"  FROM chat_room, sip_address"
-		"  WHERE capabilities = " + Utils::toString(static_cast<int>(ChatRoom::Capabilities::Conference)) +
-		"  AND (SELECT COUNT(*) FROM chat_room_participant WHERE chat_room_id = chat_room.id) = 2"
-		"  AND (SELECT COUNT(*) FROM chat_room_participant WHERE chat_room_id = chat_room.id AND participant_sip_address_id IN ("
-		"    (SELECT id FROM sip_address WHERE value = :participantSipAddressA),"
-		"    (SELECT id FROM sip_address WHERE value = :participantSipAddressB)"
-		"  )) = 2"
-		"  AND sip_address.id = peer_sip_address_id"
-		"  LIMIT 1";
-
 	L_D();
 
 	if (!isConnected()) {
@@ -2618,24 +2638,63 @@ IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
 		return IdentityAddress();
 	}
 
+	string chatRoomAddress;
+
 	L_BEGIN_LOG_EXCEPTION
 
 	soci::session *session = d->dbSession.getBackendSession<soci::session>();
 	soci::transaction tr(*session);
 
-	const string &participantSipAddressA = participantA.asString();
-	const string &participantSipAddressB = participantB.asString();
+	const long long &participantASipAddressId = d->selectSipAddressId(participantA.asString());
+	const long long &participantBSipAddressId = d->selectSipAddressId(participantB.asString());
+	if ((participantASipAddressId == -1) || (participantBSipAddressId == -1))
+		return IdentityAddress();
 
-	string chatRoomAddress;
+	const long long &chatRoomId = d->selectOneToOneChatRoomId(participantASipAddressId, participantBSipAddressId);
 
-	*session << query, soci::use(participantSipAddressA), soci::use(participantSipAddressB), soci::into(chatRoomAddress);
-
-	return IdentityAddress(chatRoomAddress);
+	*session << "SELECT sip_address.value"
+		" FROM chat_room, sip_address"
+		" WHERE chat_room.id = :chatRoomId AND peer_sip_address_id = sip_address.id",
+		soci::use(chatRoomId), soci::into(chatRoomAddress);
 
 	L_END_LOG_EXCEPTION
 
-	// Soci error.
-	return IdentityAddress();
+	return IdentityAddress(chatRoomAddress);
+}
+
+void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
+	L_D();
+	L_ASSERT(linphone_core_conference_server_enabled(chatRoom->getCore()->getCCore()));
+	L_ASSERT(chatRoom->getCapabilities() & ChatRoom::Capabilities::OneToOne);
+
+	if (!isConnected()) {
+		lWarning() << "Unable to insert one to one conference chat room. Not connected.";
+		return;
+	}
+
+	L_BEGIN_LOG_EXCEPTION
+
+	soci::session *session = d->dbSession.getBackendSession<soci::session>();
+	soci::transaction tr(*session);
+
+	const list<shared_ptr<Participant>> &participants = chatRoom->getParticipants();
+	const long long &participantASipAddressId = d->selectSipAddressId(participants.front()->getAddress().asString());
+	const long long &participantBSipAddressId = d->selectSipAddressId(participants.back()->getAddress().asString());
+	L_ASSERT(participantASipAddressId != -1);
+	L_ASSERT(participantBSipAddressId != -1);
+
+	long long chatRoomId = d->selectOneToOneChatRoomId(participantASipAddressId, participantBSipAddressId);
+	if (chatRoomId == -1) {
+		chatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
+		*session << "INSERT INTO one_to_one_chat_room ("
+		"  chat_room_id, participant_a_sip_address_id, participant_b_sip_address_id"
+		") VALUES (:chatRoomId, :participantASipAddressId, :participantBSipAddressId)",
+		soci::use(chatRoomId), soci::use(participantASipAddressId), soci::use(participantBSipAddressId);
+	}
+
+	tr.commit();
+
+	L_END_LOG_EXCEPTION
 }
 
 void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable) {

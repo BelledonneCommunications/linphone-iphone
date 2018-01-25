@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "content/content.h"
+#include "content/content-type.h"
 #include "handlers/local-conference-event-handler.h"
 #include "local-conference-p.h"
 #include "participant-p.h"
@@ -63,20 +65,25 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 	}
 }
 
-list<IdentityAddress> LocalConference::parseResourceLists (const string &xmlBody) {
-	istringstream data(xmlBody);
-	unique_ptr<Xsd::ResourceLists::ResourceLists> rl = LinphonePrivate::Xsd::ResourceLists::parseResourceLists(
-		data,
-		Xsd::XmlSchema::Flags::dont_validate
-	);
-	list<IdentityAddress> addresses = list<IdentityAddress>();
-	for (const auto &l : rl->getList()) {
-		for (const auto &entry : l.getEntry()) {
-			IdentityAddress addr(entry.getUri());
-			addresses.push_back(addr);
+list<IdentityAddress> LocalConference::parseResourceLists (const Content &content) {
+	if ((content.getContentType() == ContentType::ResourceLists)
+		&& (content.getContentDisposition() == "recipient-list")
+	) {
+		istringstream data(content.getBodyAsString());
+		unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(
+			data,
+			Xsd::XmlSchema::Flags::dont_validate
+		));
+		list<IdentityAddress> addresses;
+		for (const auto &l : rl->getList()) {
+			for (const auto &entry : l.getEntry()) {
+				IdentityAddress addr(entry.getUri());
+				addresses.push_back(move(addr));
+			}
 		}
+		return addresses;
 	}
-	return addresses;
+	return list<IdentityAddress>();
 }
 
 LINPHONE_END_NAMESPACE

@@ -26,6 +26,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Content;
 class LocalConferencePrivate;
 
 class LocalConference : public Conference {
@@ -39,7 +40,7 @@ public:
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
 	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
 
-	std::list<IdentityAddress> parseResourceLists (const std::string &xmlBody);
+	static std::list<IdentityAddress> parseResourceLists (const Content &content);
 
 private:
 	L_DECLARE_PRIVATE(LocalConference);

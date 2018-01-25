@@ -190,6 +190,11 @@ int ProxyChatRoom::getHistorySize () const {
 	return d->chatRoom->getHistorySize();
 }
 
+void ProxyChatRoom::deleteFromDb () {
+	L_D();
+	d->chatRoom->deleteFromDb();
+}
+
 void ProxyChatRoom::deleteHistory () {
 	L_D();
 	d->chatRoom->deleteHistory();

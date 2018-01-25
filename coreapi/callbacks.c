@@ -80,11 +80,30 @@ static void call_received(SalCallOp *h) {
 	LinphoneAddress *toAddr = linphone_address_new(h->get_to());
 
 	if (_linphone_core_is_conference_creation(lc, toAddr)) {
-		if (sal_address_has_param(h->get_remote_contact_address(), "text"))
-			_linphone_core_create_server_group_chat_room(lc, h);
-		// TODO: handle media conference creation if the "text" feature tag is not present
 		linphone_address_unref(toAddr);
 		linphone_address_unref(fromAddr);
+		if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
+			bool oneToOneChatRoom = false;
+			const char *oneToOneChatRoomStr = sal_custom_header_find(h->get_recv_custom_header(), "One-To-One-Chat-Room");
+			if (oneToOneChatRoomStr && (strcmp(oneToOneChatRoomStr, "true") == 0))
+				oneToOneChatRoom = true;
+			if (oneToOneChatRoom) {
+				IdentityAddress from(h->get_from());
+				list<IdentityAddress> identAddresses = ServerGroupChatRoom::parseResourceLists(h->get_remote_body());
+				if (identAddresses.size() != 1) {
+					h->decline(SalReasonNotAcceptable, nullptr);
+					return;
+				}
+				IdentityAddress confAddr = L_GET_PRIVATE_FROM_C_OBJECT(lc)->mainDb->findOneToOneConferenceChatRoomAddress(from, identAddresses.front());
+				if (confAddr.isValid()) {
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(confAddr, confAddr));
+					L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmRecreation(h);
+					return;
+				}
+			}
+			_linphone_core_create_server_group_chat_room(lc, h);
+		}
+		// TODO: handle media conference creation if the "text" feature tag is not present
 		return;
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
 		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(

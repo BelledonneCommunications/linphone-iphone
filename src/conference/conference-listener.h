@@ -22,6 +22,7 @@
 
 #include <ctime>
 #include <string>
+#include <vector>
 
 #include "linphone/utils/general.h"
 
@@ -36,6 +37,7 @@ class IdentityAddress;
 class ConferenceListener {
 public:
 	virtual void onConferenceCreated (const IdentityAddress &addr) = 0;
+	virtual void onConferenceKeywordsChanged (const std::vector<std::string> &keywords) {}
 	virtual void onConferenceTerminated (const IdentityAddress &addr) = 0;
 	virtual void onFirstNotifyReceived (const IdentityAddress &addr) = 0;
 	virtual void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;

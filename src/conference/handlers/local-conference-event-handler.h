@@ -42,9 +42,8 @@ class LocalConferenceEventHandlerPrivate;
 class LocalConferenceEventHandler : public Object {
 public:
 	LocalConferenceEventHandler (LocalConference *localConference, unsigned int notify = 0);
-	~LocalConferenceEventHandler ();
 
-	void subscribeReceived (LinphoneEvent *lev);
+	void subscribeReceived (LinphoneEvent *lev, bool oneToOne = false);
 	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantAdded (const Address &addr);
 	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantRemoved (const Address &addr);
 	std::shared_ptr<ConferenceParticipantEvent> notifyParticipantSetAdmin (const Address &addr, bool isAdmin);

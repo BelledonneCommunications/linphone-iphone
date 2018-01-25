@@ -449,6 +449,7 @@ public:
 
 private:
 	void onConferenceCreated (const IdentityAddress &addr) override;
+	void onConferenceKeywordsChanged (const vector<string> &keywords) override;
 	void onConferenceTerminated (const IdentityAddress &addr) override;
 	void onFirstNotifyReceived (const IdentityAddress &addr) override;
 	void onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) override;
@@ -463,6 +464,7 @@ public:
 	map<string, bool> participants;
 	map<string, int> participantDevices;
 	string confSubject;
+	bool oneToOne = false;
 };
 
 ConferenceEventTester::ConferenceEventTester (const shared_ptr<Core> &core, const Address &confAddr)
@@ -475,6 +477,13 @@ ConferenceEventTester::~ConferenceEventTester () {
 }
 
 void ConferenceEventTester::onConferenceCreated (const IdentityAddress &addr) {}
+
+void ConferenceEventTester::onConferenceKeywordsChanged (const vector<string> &keywords) {
+	for (const auto &k : keywords) {
+		if (k == "one-to-one")
+			oneToOne = true;
+	}
+}
 
 void ConferenceEventTester::onConferenceTerminated (const IdentityAddress &addr) {}
 
@@ -1277,6 +1286,42 @@ void send_device_removed_notify() {
 	linphone_core_manager_destroy(pauline);
 }
 
+void one_to_one_keyword () {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	char *identityStr = linphone_address_as_string(pauline->identity);
+	Address addr(identityStr);
+	bctbx_free(identityStr);
+	shared_ptr<ConferenceEventTester> tester = make_shared<ConferenceEventTester>(marie->lc->cppPtr, addr);
+	shared_ptr<LocalConference> localConf = make_shared<LocalConference>(pauline->lc->cppPtr, addr, nullptr);
+	LinphoneAddress *cBobAddr = linphone_core_interpret_url(marie->lc, bobUri);
+	char *bobAddrStr = linphone_address_as_string(cBobAddr);
+	Address bobAddr(bobAddrStr);
+	bctbx_free(bobAddrStr);
+	linphone_address_unref(cBobAddr);
+
+	CallSessionParams params;
+	localConf->addParticipant(bobAddr, &params, false);
+	LocalConferenceEventHandlerPrivate *localHandlerPrivate = L_GET_PRIVATE(
+		L_ATTR_GET(L_GET_PRIVATE(localConf), eventHandler)
+	);
+	const_cast<IdentityAddress &>(localConf->getConferenceAddress()) = addr;
+	string notify = localHandlerPrivate->createNotifyFullState(-1, true);
+
+	const_cast<IdentityAddress &>(tester->handler->getChatRoomId().getPeerAddress()) = addr;
+	tester->handler->notifyReceived(notify);
+
+	BC_ASSERT_EQUAL(tester->participantDevices.size(), 1, int, "%d");
+	BC_ASSERT_TRUE(tester->participantDevices.find(bobAddr.asString()) != tester->participantDevices.end());
+	BC_ASSERT_EQUAL(tester->participantDevices.find(bobAddr.asString())->second, 0, int, "%d");
+	BC_ASSERT_TRUE(tester->oneToOne);
+
+	tester = nullptr;
+	localConf = nullptr;
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t conference_event_tests[] = {
 	TEST_NO_TAG("First notify parsing", first_notify_parsing),
 	TEST_NO_TAG("First notify parsing wrong conf", first_notify_parsing_wrong_conf),
@@ -1292,7 +1337,8 @@ test_t conference_event_tests[] = {
 	TEST_NO_TAG("Send participant unadmined notify", send_unadmined_notify),
 	TEST_NO_TAG("Send subject changed notify", send_subject_changed_notify),
 	TEST_NO_TAG("Send device added notify", send_device_added_notify),
-	TEST_NO_TAG("Send device removed notify", send_device_removed_notify)
+	TEST_NO_TAG("Send device removed notify", send_device_removed_notify),
+	TEST_NO_TAG("one-to-one keyword", one_to_one_keyword)
 };
 
 test_suite_t conference_event_test_suite = {

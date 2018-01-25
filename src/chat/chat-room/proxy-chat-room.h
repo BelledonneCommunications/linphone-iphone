@@ -47,6 +47,7 @@ public:
 	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const override;
 	int getHistorySize () const override;
 
+	void deleteFromDb () override;
 	void deleteHistory () override;
 
 	std::shared_ptr<ChatMessage> getLastChatMessageInHistory () const override;

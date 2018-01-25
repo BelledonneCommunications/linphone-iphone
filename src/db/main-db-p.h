@@ -67,6 +67,7 @@ private:
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
 	long long selectChatRoomId (const ChatRoomId &chatRoomId) const;
 	long long selectChatRoomParticipantId (long long chatRoomId, long long participantSipAddressId) const;
+	long long selectOneToOneChatRoomId (long long sipAddressIdA, long long sipAddressIdB) const;
 
 	void deleteContents (long long messageEventId);
 	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);

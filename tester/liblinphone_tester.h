@@ -189,6 +189,7 @@ typedef struct _stats {
 	int number_of_LinphoneChatRoomStateTerminationPending;
 	int number_of_LinphoneChatRoomStateTerminated;
 	int number_of_LinphoneChatRoomStateCreationFailed;
+	int number_of_LinphoneChatRoomStateDeleted;
 
 	int number_of_IframeDecoded;
 
@@ -331,6 +332,7 @@ void linphone_core_manager_restart(LinphoneCoreManager *mgr, bool_t check_for_pr
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr);
 void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr);
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr);
+void linphone_core_manager_delete_chat_room (LinphoneCoreManager *mgr, LinphoneChatRoom *cr, bctbx_list_t *coresList);
 
 void reset_counters( stats* counters);
 

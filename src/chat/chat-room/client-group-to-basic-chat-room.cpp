@@ -46,6 +46,12 @@ public:
 		q->getCore()->getPrivate()->insertChatRoomWithDb(q->getSharedFromThis());
 	}
 
+	void onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
+		L_Q();
+		q->getCore()->deleteChatRoom(q->getSharedFromThis());
+		setState(AbstractChatRoom::State::Deleted);
+	}
+
 	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override {
 		if (!(chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference))
 			return;
