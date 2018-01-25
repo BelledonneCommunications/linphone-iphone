@@ -80,7 +80,7 @@
 		}
 	}
 
-	LinphoneChatMessage *last_msg = linphone_chat_room_get_user_data(chatRoom);
+	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
 		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_msg];
 		// shorten long messages
