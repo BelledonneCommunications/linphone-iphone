@@ -455,12 +455,11 @@ static void group_chat_room_creation_server (void) {
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateTerminated, initialPaulineStats.number_of_LinphoneChatRoomStateTerminated + 1, 10000));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
-	linphone_core_delete_chat_room(chloe->lc, chloeCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -475,7 +474,6 @@ static void group_chat_room_send_message (void) {
 	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, chloe);
@@ -529,11 +527,10 @@ static void group_chat_room_send_message (void) {
 	linphone_address_unref(paulineAddr);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(chloe->lc, chloeCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -548,7 +545,6 @@ static void group_chat_room_invite_multi_register_account (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline1);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline2);
@@ -578,12 +574,11 @@ static void group_chat_room_invite_multi_register_account (void) {
 	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline1->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline1, paulineCr, coresList);
 	linphone_core_delete_chat_room(pauline2->lc, paulineCr2);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -598,7 +593,6 @@ static void group_chat_room_add_admin (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -634,11 +628,10 @@ static void group_chat_room_add_admin (void) {
 	BC_ASSERT_TRUE(linphone_participant_is_admin(paulineParticipant));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -652,7 +645,6 @@ static void group_chat_room_add_admin_non_admin (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -685,11 +677,10 @@ static void group_chat_room_add_admin_non_admin (void) {
 	BC_ASSERT_FALSE(linphone_participant_is_admin(laureParticipant));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -703,7 +694,6 @@ static void group_chat_room_remove_admin (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -750,11 +740,10 @@ static void group_chat_room_remove_admin (void) {
 	BC_ASSERT_FALSE(linphone_participant_is_admin(marieParticipant));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -769,7 +758,6 @@ static void group_chat_room_change_subject (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -804,11 +792,10 @@ static void group_chat_room_change_subject (void) {
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(laureCr), newSubject);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -822,7 +809,6 @@ static void group_chat_room_change_subject_non_admin (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -857,11 +843,10 @@ static void group_chat_room_change_subject_non_admin (void) {
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(laureCr), initialSubject);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -875,7 +860,6 @@ static void group_chat_room_remove_participant (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -910,11 +894,10 @@ static void group_chat_room_remove_participant (void) {
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_participants_removed, initialPaulineStats.number_of_participants_removed + 1, 1000));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -928,7 +911,6 @@ static void group_chat_room_send_message_with_participant_removed (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -973,11 +955,10 @@ static void group_chat_room_send_message_with_participant_removed (void) {
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingIdleReceived, initialPaulineStats.number_of_LinphoneIsComposingIdleReceived, 10000));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -991,7 +972,6 @@ static void group_chat_room_leave (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -1021,11 +1001,10 @@ static void group_chat_room_leave (void) {
 	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_participants_removed, initialLaureStats.number_of_participants_removed + 1, 1000));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1082,11 +1061,10 @@ static void group_chat_room_come_back_after_disconnection (void) {
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(laureCr), newSubject);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1141,11 +1119,10 @@ static void group_chat_room_create_room_with_disconnected_friends (void) {
 	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1159,7 +1136,6 @@ static void group_chat_room_reinvited_after_removed (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -1212,11 +1188,10 @@ static void group_chat_room_reinvited_after_removed (void) {
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(newLaureCr), initialSubject);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1321,11 +1296,10 @@ static void group_chat_room_notify_after_disconnection (void) {
 	BC_ASSERT_TRUE(linphone_participant_is_admin(laureParticipantFromPauline));
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1341,7 +1315,6 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie1);
 	coresManagerList = bctbx_list_append(coresManagerList, marie2);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline1);
@@ -1390,13 +1363,12 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr2), 1, int, "%d");
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie1->lc, marieCr);
+	linphone_core_manager_delete_chat_room(marie1, marieCr, coresList);
 	linphone_core_delete_chat_room(marie2->lc, marieCr2);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline1->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline1, paulineCr, coresList);
 	linphone_core_delete_chat_room(pauline2->lc, paulineCr2);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie1);
@@ -1521,11 +1493,10 @@ static void multiple_is_composing_notification(void) {
 	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(laure->lc, laureCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList,0, 1, 1500);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1538,7 +1509,6 @@ static void group_chat_room_fallback_to_basic_chat_room (void) {
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
@@ -1577,10 +1547,9 @@ static void group_chat_room_fallback_to_basic_chat_room (void) {
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(paulineCr) & LinphoneChatRoomCapabilitiesBasic);
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1593,7 +1562,6 @@ static void group_chat_room_creation_fails_if_invited_participants_dont_support_
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -1620,9 +1588,8 @@ static void group_chat_room_creation_fails_if_invited_participants_dont_support_
 	BC_ASSERT_EQUAL(linphone_chat_room_get_state(marieCr), LinphoneChatRoomStateCreationFailed, int, "%d");
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1636,7 +1603,6 @@ static void group_chat_room_creation_successful_if_at_least_one_invited_particip
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -1662,10 +1628,9 @@ static void group_chat_room_creation_successful_if_at_least_one_invited_particip
 	BC_ASSERT_EQUAL(initialLaureStats.number_of_LinphoneChatRoomStateCreated, laure->stat.number_of_LinphoneChatRoomStateCreated, int, "%d");
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1677,7 +1642,6 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	bctbx_list_t *coresManagerList = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
@@ -1746,10 +1710,9 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 	}
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1866,10 +1829,9 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 	}
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1880,7 +1842,6 @@ static void group_chat_donot_room_migrate_from_basic_chat_room (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	bctbx_list_t *coresManagerList = NULL;
-	int dummy = 0;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
@@ -1948,10 +1909,9 @@ static void group_chat_donot_room_migrate_from_basic_chat_room (void) {
 	}
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -2017,14 +1977,13 @@ static void group_chat_room_send_file_with_or_without_text (bool_t with_text) {
 	}
 
 	// Clean db from chat room
-	linphone_core_delete_chat_room(marie->lc, marieCr);
-	linphone_core_delete_chat_room(chloe->lc, chloeCr);
-	linphone_core_delete_chat_room(pauline->lc, paulineCr);
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 	bc_free(sendFilepath);
 	bc_free(receivePaulineFilepath);
 	bc_free(receiveChloeFilepath);
 
-	wait_for_list(coresList, &dummy, 1, 1000);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
