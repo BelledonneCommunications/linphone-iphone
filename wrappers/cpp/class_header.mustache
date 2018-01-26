@@ -71,7 +71,7 @@ namespace linphone {
 		{{#friendClasses}}
 		friend class {{name}};
 		{{/friendClasses}}
-	
+
 		public:
 			{{#isNotListener}}
 			{{#isrefcountable}}
@@ -86,7 +86,7 @@ namespace linphone {
 			{{/isnotrefcountable}}
 			LINPHONECXX_PUBLIC {{{privCClassName}}} *cPtr() {return ({{{privCClassName}}} *)mPrivPtr;}
 			{{/isNotListener}}
-			
+
 			{{#ismonolistenable}}
 			LINPHONECXX_PUBLIC void setListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismonolistenable}}
@@ -96,7 +96,11 @@ namespace linphone {
 			LINPHONECXX_PUBLIC void addListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			LINPHONECXX_PUBLIC void removeListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismultilistenable}}
-	
+
+			{{#isListener}}
+			LINPHONECXX_PUBLIC virtual ~{{{className}}}() = default;
+			{{/isListener}}
+
 		public:
 			{{#isfactory}}
 			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> &listener, const std::string & configPath, const std::string & factoryConfigPath) const;
@@ -105,8 +109,8 @@ namespace linphone {
 			{{#isVcard}}
 			LINPHONECXX_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
 			{{/isVcard}}
-			
-		
+
+
 			{{#methods}}
 			/**
 			{{#briefDoc}}
@@ -122,7 +126,7 @@ namespace linphone {
 			{{/detailedDoc}}
 			 */
 			LINPHONECXX_PUBLIC {{#deprecated}}LINPHONECXX_DEPRECATED {{/deprecated}}{{#isListener}}virtual {{/isListener}}{{{declPrototype}}}{{{suffix}}};
-			
+
 			{{/methods}}
 			{{#staticMethods}};
 			/**
@@ -139,20 +143,20 @@ namespace linphone {
 			{{/detailedDoc}}
 			 */
 			LINPHONECXX_PUBLIC {{#deprecated}}LINPHONECXX_DEPRECATED {{/deprecated}}static {{{declPrototype}}};
-			
+
 			{{/staticMethods}}
 
 		{{#ismultilistenable}}
 		private:
 			static void *createCallbacks(void *userData);
 		{{/ismultilistenable}}
-		
-		
+
+
 		{{#ismultilistenable}}
 		private:
 			void *mCallbacks;
 		{{/ismultilistenable}}
-		
+
 		{{#isnotrefcountable}}
 		private:
 			void *mPrivPtr;
