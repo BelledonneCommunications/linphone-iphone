@@ -43,15 +43,28 @@ public:
 
 	void update (SalCallOp *op);
 
-	void dispatchMessage (const IdentityAddress &fromAddress, const Content &content);
 	void setConferenceAddress (const IdentityAddress &conferenceAddress);
 	void setParticipantDevices (const IdentityAddress &addr, const std::list<IdentityAddress> &devices);
 	void addCompatibleParticipants (const IdentityAddress &deviceAddr, const std::list<IdentityAddress> &compatibleParticipants);
+	void checkCompatibleParticipants (const IdentityAddress &deviceAddr, const std::list<IdentityAddress> &addressesToCheck);
 
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 
 private:
+	struct Message {
+		Message (const std::string &from, const std::string &contentType, const std::string &text) : fromAddr(from) {
+			content.setContentType(contentType);
+			if (!text.empty())
+				content.setBodyFromUtf8(text);
+		}
+
+		IdentityAddress fromAddr;
+		Content content;
+	};
+
 	void designateAdmin ();
+	void dispatchMessage (const Message &message);
+	void dispatchQueuedMessages ();
 	void finalizeCreation ();
 	bool isAdminLeft () const;
 
@@ -71,6 +84,7 @@ private:
 	ChatRoomListener *chatRoomListener = this;
 	ServerGroupChatRoom::CapabilitiesMask capabilities = ServerGroupChatRoom::Capabilities::Conference;
 	bool joiningPendingAfterCreation = false;
+	std::list<Message> queuedMessages;
 
 	L_DECLARE_PUBLIC(ServerGroupChatRoom);
 };

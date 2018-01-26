@@ -60,8 +60,6 @@ void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::dispatchMessage (const IdentityAddress &, const Content &) {}
-
 void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &) {}
 
 void ServerGroupChatRoomPrivate::setParticipantDevices (const IdentityAddress &addr, const list<IdentityAddress> &devices) {}
@@ -77,6 +75,10 @@ LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const 
 // -----------------------------------------------------------------------------
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
+
+void ServerGroupChatRoomPrivate::dispatchMessage (const Message &message) {}
+
+void ServerGroupChatRoomPrivate::dispatchQueuedMessages () {}
 
 void ServerGroupChatRoomPrivate::finalizeCreation () {}
 

@@ -2554,6 +2554,44 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 	};
 }
 
+IdentityAddress MainDb::findMissingOneToOneConferenceChatRoomParticipantAddress (
+	const shared_ptr<AbstractChatRoom> &chatRoom,
+	const IdentityAddress &presentParticipantAddr
+) {
+	L_ASSERT(linphone_core_conference_server_enabled(chatRoom->getCore()->getCCore()));
+	L_ASSERT(chatRoom->getCapabilities() & ChatRoom::Capabilities::OneToOne);
+	L_ASSERT(chatRoom->getParticipantCount() == 1);
+
+	return L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+		soci::transaction tr(*session);
+
+		string missingParticipantAddress;
+		string participantASipAddress;
+		string participantBSipAddress;
+
+		const long long &chatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
+		L_ASSERT(chatRoomId != -1);
+
+		*session << "SELECT participant_a_sip_address.value, participant_b_sip_address.value"
+			" FROM one_to_one_chat_room, sip_address AS participant_a_sip_address, sip_address AS participant_b_sip_address"
+			" WHERE chat_room_id = :chatRoomId"
+			" AND participant_a_sip_address_id = participant_a_sip_address.id"
+			" AND participant_b_sip_address_id = participant_b_sip_address.id",
+			soci::into(participantASipAddress), soci::into(participantBSipAddress), soci::use(chatRoomId);
+
+		string presentParticipantAddress(presentParticipantAddr.asString());
+		if (presentParticipantAddress == participantASipAddress)
+			missingParticipantAddress = participantBSipAddress;
+		else if (presentParticipantAddress == participantBSipAddress)
+			missingParticipantAddress = participantASipAddress;
+
+		return IdentityAddress(missingParticipantAddress);
+	};
+}
+
 IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
 	const IdentityAddress &participantA,
 	const IdentityAddress &participantB
