@@ -394,7 +394,6 @@ def main():
     if preparator.check_environment() != 0:
         preparator.show_environment_errors()
         return 1
-    preparator.install_git_hook()
     return preparator.run()
 
 if __name__ == "__main__":
