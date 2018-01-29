@@ -42,12 +42,6 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
-RemoteConferenceEventHandlerPrivate::~RemoteConferenceEventHandlerPrivate(){
-	if (lev){
-		unsubscribe();
-	}
-}
-
 void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
@@ -63,7 +57,7 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 	if (entityAddress == chatRoomId.getPeerAddress()) {
 		if (confInfo->getVersion().present())
 			lastNotify = confInfo->getVersion().get();
-		
+
 		if (confInfo->getConferenceDescription().present()) {
 			if (confInfo->getConferenceDescription().get().getSubject().present() &&
 				!confInfo->getConferenceDescription().get().getSubject().get().empty()
@@ -241,6 +235,9 @@ Object(*new RemoteConferenceEventHandlerPrivate) {
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 	L_D();
 	d->conf->getCore()->getPrivate()->unregisterListener(d);
+
+	if (d->lev)
+		unsubscribe();
 }
 
 // -----------------------------------------------------------------------------

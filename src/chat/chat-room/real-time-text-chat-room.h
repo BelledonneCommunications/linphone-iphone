@@ -32,6 +32,8 @@ class LINPHONE_PUBLIC RealTimeTextChatRoom : public BasicChatRoom {
 	friend class CorePrivate;
 
 public:
+	~RealTimeTextChatRoom ();
+
 	CapabilitiesMask getCapabilities () const override;
 
 	uint32_t getChar () const;

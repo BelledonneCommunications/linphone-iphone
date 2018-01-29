@@ -29,9 +29,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 namespace Cpim {
 	class HeaderPrivate : public ObjectPrivate {
-	public:
-		virtual ~HeaderPrivate () = default;
-
 	private:
 		std::string value;
 

@@ -33,7 +33,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceEventHandlerPrivate : public ObjectPrivate, public CoreListener {
 private:
-	~RemoteConferenceEventHandlerPrivate();
 	void simpleNotifyReceived (const std::string &xmlBody);
 	void subscribe ();
 	void unsubscribe ();

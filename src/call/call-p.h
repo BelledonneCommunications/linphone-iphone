@@ -37,7 +37,6 @@ class CallSession;
 class CallPrivate :	public ObjectPrivate, public CallSessionListener {
 public:
 	CallPrivate () = default;
-	virtual ~CallPrivate () = default;
 
 	void initiateIncoming ();
 	bool initiateOutgoing ();

@@ -30,7 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 class RealTimeTextChatRoomPrivate : public BasicChatRoomPrivate {
 public:
 	RealTimeTextChatRoomPrivate () = default;
-	~RealTimeTextChatRoomPrivate ();
 
 	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;

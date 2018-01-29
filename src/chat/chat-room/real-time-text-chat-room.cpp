@@ -30,13 +30,6 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-RealTimeTextChatRoomPrivate::~RealTimeTextChatRoomPrivate () {
-	if (!receivedRttCharacters.empty()) {
-		for (auto &rttChars : receivedRttCharacters)
-			bctbx_free(rttChars);
-	}
-}
-
 // -----------------------------------------------------------------------------
 
 void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, LinphoneCall *call) {
@@ -105,6 +98,14 @@ void RealTimeTextChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage>
 
 RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
 	BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
+
+RealTimeTextChatRoom::~RealTimeTextChatRoom () {
+	L_D();
+
+	if (!d->receivedRttCharacters.empty())
+		for (auto &rttChars : d->receivedRttCharacters)
+			bctbx_free(rttChars);
+}
 
 RealTimeTextChatRoom::CapabilitiesMask RealTimeTextChatRoom::getCapabilities () const {
 	return BasicChatRoom::getCapabilities() | Capabilities::RealTimeText;
