@@ -39,6 +39,9 @@ LINPHONE_BEGIN_NAMESPACE
 
 #define L_EXPAND(X) X
 
+// Useful in depth context.
+#define L_STRINGIFY(X) #X
+
 #define L_GET_N_ARGS(...) L_EXPAND(L_ARG_N( \
 	__VA_ARGS__, \
 	21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, \

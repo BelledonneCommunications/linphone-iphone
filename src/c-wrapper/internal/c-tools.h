@@ -143,6 +143,15 @@ private:
 	};
 
 	// ---------------------------------------------------------------------------
+	// Debug tools.
+	// ---------------------------------------------------------------------------
+
+	#ifdef DEBUG
+		static void setName (belle_sip_object_t *cObject, const BaseObject *cppObject);
+		static void setName (belle_sip_object_t *cObject, const ClonableObject *cppObject);
+	#endif
+
+	// ---------------------------------------------------------------------------
 	// Runtime checker.
 	// ---------------------------------------------------------------------------
 
@@ -393,6 +402,10 @@ public:
 		if (oldCppObject)
 			oldCppObject->setCBackPtr(nullptr);
 		cppObject->setCBackPtr(cObject);
+
+		#ifdef DEBUG
+			setName(reinterpret_cast<belle_sip_object_t *>(cObject), cppObject.get());
+		#endif
 	}
 
 	template<
@@ -408,6 +421,10 @@ public:
 
 		*cppObjectAddr = cppObject;
 		(*cppObjectAddr)->setCBackPtr(cObject);
+
+		#ifdef DEBUG
+			setName(reinterpret_cast<belle_sip_object_t *>(cObject), cppObject);
+		#endif
 	}
 
 	template<

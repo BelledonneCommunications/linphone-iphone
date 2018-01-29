@@ -168,6 +168,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-participant.cpp
 	c-wrapper/internal/c-sal.cpp
+	c-wrapper/internal/c-tools.cpp
 	call/call.cpp
 	call/local-conference-call.cpp
 	call/remote-conference-call.cpp
