@@ -64,7 +64,7 @@ public:
 
 private:
 	std::shared_ptr<ChatRoom> chatRoom;
-	std::shared_ptr<ChatMessage> chatMessage;
+	std::weak_ptr<ChatMessage> chatMessage;
 	FileContent* currentFileContentToTransfer;
 	unsigned long backgroundTaskId = 0;
 	belle_http_request_t *httpRequest = nullptr;

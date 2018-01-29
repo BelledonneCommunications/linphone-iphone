@@ -433,7 +433,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (contents.size() == 0) {
 		// All previous modifiers only altered the internal content, let's fill the content list
-		contents.push_back(&internalContent);
+		contents.push_back(new Content(internalContent));
 	}
 
 	for (auto &content : contents)
