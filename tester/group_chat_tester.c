@@ -74,14 +74,17 @@ static void chat_room_state_changed (LinphoneChatRoom *cr, LinphoneChatRoomState
 		case LinphoneChatRoomStateCreated:
 			manager->stat.number_of_LinphoneChatRoomStateCreated++;
 			break;
+		case LinphoneChatRoomStateCreationFailed:
+			manager->stat.number_of_LinphoneChatRoomStateCreationFailed++;
+			break;
 		case LinphoneChatRoomStateTerminationPending:
 			manager->stat.number_of_LinphoneChatRoomStateTerminationPending++;
 			break;
 		case LinphoneChatRoomStateTerminated:
 			manager->stat.number_of_LinphoneChatRoomStateTerminated++;
 			break;
-		case LinphoneChatRoomStateCreationFailed:
-			manager->stat.number_of_LinphoneChatRoomStateCreationFailed++;
+		case LinphoneChatRoomStateTerminationFailed:
+			manager->stat.number_of_LinphoneChatRoomStateTerminationFailed++;
 			break;
 		case LinphoneChatRoomStateDeleted:
 			manager->stat.number_of_LinphoneChatRoomStateDeleted++;
@@ -2084,6 +2087,8 @@ static void group_chat_room_unique_one_to_one_chat_room (void) {
 
 	// Marie deletes the chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	wait_for_list(coresList, 0, 1, 2000);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_participants_removed, initialPaulineStats.number_of_participants_removed, int, "%d");
 
 	// Marie creates the chat room again
 	initialMarieStats = marie->stat;
@@ -2146,6 +2151,8 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message (
 
 	// Marie deletes the chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	wait_for_list(coresList, 0, 1, 2000);
+	BC_ASSERT_EQUAL(pauline->stat.number_of_participants_removed, initialPaulineStats.number_of_participants_removed, int, "%d");
 
 	// Pauline sends a new message
 	initialMarieStats = marie->stat;

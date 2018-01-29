@@ -27,9 +27,10 @@
 	F(Instantiated) \
 	F(CreationPending) \
 	F(Created) \
+	F(CreationFailed) \
 	F(TerminationPending) \
 	F(Terminated) \
-	F(CreationFailed) \
+	F(TerminationFailed) \
 	F(Deleted)
 
 #define L_ENUM_VALUES_CHAT_ROOM_CAPABILITIES(F) \

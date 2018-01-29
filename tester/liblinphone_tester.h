@@ -186,9 +186,10 @@ typedef struct _stats {
 	int number_of_LinphoneChatRoomStateInstantiated;
 	int number_of_LinphoneChatRoomStateCreationPending;
 	int number_of_LinphoneChatRoomStateCreated;
+	int number_of_LinphoneChatRoomStateCreationFailed;
 	int number_of_LinphoneChatRoomStateTerminationPending;
 	int number_of_LinphoneChatRoomStateTerminated;
-	int number_of_LinphoneChatRoomStateCreationFailed;
+	int number_of_LinphoneChatRoomStateTerminationFailed;
 	int number_of_LinphoneChatRoomStateDeleted;
 
 	int number_of_IframeDecoded;
