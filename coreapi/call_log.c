@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#ifndef __APPLE__ /*XOPEN_SOURCE icompilation issue  with xcode9 https://github.com/eclipse/omr/pull/1721*/
 #define _XOPEN_SOURCE 700 /*required for strptime of GNU libc*/
+#endif
 
 #include <time.h>
 
