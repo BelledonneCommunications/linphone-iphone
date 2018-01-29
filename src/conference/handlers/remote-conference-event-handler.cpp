@@ -42,6 +42,12 @@ using namespace Xsd::ConferenceInfo;
 
 // -----------------------------------------------------------------------------
 
+RemoteConferenceEventHandlerPrivate::~RemoteConferenceEventHandlerPrivate(){
+	if (lev){
+		unsubscribe();
+	}
+}
+
 void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);

@@ -6064,6 +6064,12 @@ void _linphone_core_uninit(LinphoneCore *lc)
 	if (lc->friends_db_file) {
 		ms_free(lc->friends_db_file);
 	}
+	if (lc->tls_key){
+		ms_free(lc->tls_key);
+	}
+	if (lc->tls_cert){
+		ms_free(lc->tls_cert);
+	}
 	if (lc->ringtoneplayer) {
 		linphone_ringtoneplayer_destroy(lc->ringtoneplayer);
 	}
