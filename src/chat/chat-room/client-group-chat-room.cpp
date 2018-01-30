@@ -184,8 +184,10 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	unsigned int lastNotifyId
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, chatRoomId),
 RemoteConference(core, me->getAddress(), nullptr) {
+	L_D();
 	L_D_T(RemoteConference, dConference);
 
+	d->capabilities |= capabilities & ClientGroupChatRoom::Capabilities::OneToOne;
 	const IdentityAddress &peerAddress = chatRoomId.getPeerAddress();
 	dConference->focus = make_shared<Participant>(peerAddress);
 	dConference->focus->getPrivate()->addDevice(peerAddress);
