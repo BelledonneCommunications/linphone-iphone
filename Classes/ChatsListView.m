@@ -36,6 +36,7 @@
 											   name:kLinphoneCallUpdate
 											 object:nil];
 	[_backToCallButton update];
+	self.tableController.waitView = _waitView;
 	[self setEditing:NO];
 }
 
@@ -102,7 +103,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 		onConfirmationClick:^() {
 		  [_tableController removeSelectionUsing:nil];
-		  [_tableController loadData];
 		  [self onEditionChangeClick:nil];
 		}];
 }

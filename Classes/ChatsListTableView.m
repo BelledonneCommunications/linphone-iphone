@@ -36,6 +36,8 @@
 	self = super.init;
 	if (self) {
 		data = nil;
+		_nbOfChatRoomToDelete = 0;
+		_waitView.hidden = TRUE;
 	}
 	return self;
 }
@@ -46,6 +48,7 @@
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"Chat list";
 	[self loadData];
+	_chatRooms = NULL;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -54,6 +57,19 @@
 	// was not finished, leading to "[CALayer retain]: message sent to deallocated instance" error msg
 	if (IPAD && [self totalNumberOfItems] > 0) {
 		[PhoneMainView.instance changeCurrentView:ChatConversationView.compositeViewDescription];
+	}
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+	while (_chatRooms) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)_chatRooms->data;
+		if (!chatRoom)
+			continue;
+
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
+		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
+		linphone_chat_room_cbs_set_user_data(cbs, NULL);
+		_chatRooms = _chatRooms->next;
 	}
 }
 
@@ -162,13 +178,35 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	}
 }
 
-- (void)tableView:(UITableView *)tableView
-	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
-	 forRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		[tableView beginUpdates];
+void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
+	ChatsListTableView *view = (__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) ?: NULL;
+	if (newState == LinphoneChatRoomStateDeleted || newState == LinphoneChatRoomStateTerminationFailed) {
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
+		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
+		linphone_chat_room_cbs_set_user_data(cbs, NULL);
+		view.nbOfChatRoomToDelete--;
+	}
 
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+	if (view.nbOfChatRoomToDelete == 0) {
+		// will force a call to [self loadData]
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
+		view.waitView.hidden = TRUE;
+	}
+}
+
+- (void) deleteChatRooms {
+	_waitView.hidden = FALSE;
+	bctbx_list_t *chatRooms = bctbx_list_copy(_chatRooms);
+	while (chatRooms) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)chatRooms->data;
+		if (!chatRoom)
+			continue;
+
+		_nbOfChatRoomToDelete++;
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
+		linphone_chat_room_cbs_set_state_changed(cbs, deletion_chat_room_state_changed);
+		linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+
 		FileTransferDelegate *ftdToDelete = nil;
 		for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 			if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
@@ -178,36 +216,35 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		}
 		[ftdToDelete cancel];
 
-		linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
-		data = bctbx_list_remove(data, chatRoom);
+		linphone_core_delete_chat_room(LC, chatRoom);
+		chatRooms = chatRooms->next;
+	}
+}
 
-		// will force a call to [self loadData]
-		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
-
-		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-						 withRowAnimation:UITableViewRowAnimationFade];
-		[tableView endUpdates];
+- (void)tableView:(UITableView *)tableView
+	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
+	 forRowAtIndexPath:(NSIndexPath *)indexPath {
+	if (editingStyle == UITableViewCellEditingStyleDelete) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+		_chatRooms = bctbx_list_new((void *)chatRoom);
+		[self deleteChatRooms];
 	}
 }
 
 - (void)removeSelectionUsing:(void (^)(NSIndexPath *))remover {
-	[super removeSelectionUsing:^(NSIndexPath *indexPath) {
-	  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
-	  FileTransferDelegate *ftdToDelete = nil;
-	  for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
-		  if (linphone_chat_message_get_chat_room(ftd.message) == chatRoom) {
-			  ftdToDelete = ftd;
-			  break;
-		  }
-	  }
-	  [ftdToDelete cancel];
-
-	  linphone_core_delete_chat_room(linphone_chat_room_get_core(chatRoom), chatRoom);
-	  data = bctbx_list_remove(data, chatRoom);
-
-	  // will force a call to [self loadData]
-	  [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self];
+	_chatRooms = NULL;
+	// we must iterate through selected items in reverse order
+	[self.selectedItems sortUsingComparator:^(NSIndexPath *obj1, NSIndexPath *obj2) {
+		return [obj2 compare:obj1];
 	}];
+	NSArray *copy = [[NSArray alloc] initWithArray:self.selectedItems];
+	for (NSIndexPath *indexPath in copy) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+		_chatRooms = _chatRooms ? bctbx_list_append(_chatRooms, chatRoom) : bctbx_list_new(chatRoom);
+	}
+	[self deleteChatRooms];
+	[self.selectedItems removeAllObjects];
+	[self setEditing:NO animated:YES];
 }
 
 @end

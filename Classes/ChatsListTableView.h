@@ -23,6 +23,10 @@
 
 @interface ChatsListTableView : UICheckBoxTableView
 
+@property (nonatomic) NSInteger nbOfChatRoomToDelete;
+@property (nonatomic) bctbx_list_t *chatRooms;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
+
 - (void)loadData;
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;
 @end

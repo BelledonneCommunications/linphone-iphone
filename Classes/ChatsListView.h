@@ -31,6 +31,7 @@
 @property(nonatomic, strong) IBOutlet ChatsListTableView *tableController;
 @property(weak, nonatomic) IBOutlet UIButton *addButton;
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 - (IBAction)onAddClick:(id)event;
 - (IBAction)onEditionChangeClick:(id)sender;
