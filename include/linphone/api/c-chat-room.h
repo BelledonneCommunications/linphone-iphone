@@ -325,7 +325,7 @@ LINPHONE_PUBLIC LinphoneChatRoomCapabilitiesMask linphone_chat_room_get_capabili
  * @param[in] mask A Capabilities mask
  * @return True if the mask matches, false otherwise
  */
-LINPHONE_PUBLIC bool_t linphone_chat_room_has_capability(const LinphoneChatRoom *cr, LinphoneChatRoomCapabilitiesMask mask);
+LINPHONE_PUBLIC bool_t linphone_chat_room_has_capability(const LinphoneChatRoom *cr, int mask);
 
 /**
  * Get the conference address of the chat room.
