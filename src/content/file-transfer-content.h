@@ -55,6 +55,8 @@ public:
 	void setFileSize (size_t size);
 	size_t getFileSize () const;
 
+	bool isFile () const override;
+
 	// TODO: Remove me later.
 	LinphoneContent *toLinphoneContent () const override;
 

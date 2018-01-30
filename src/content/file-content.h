@@ -48,6 +48,8 @@ public:
 	void setFilePath (const std::string &path);
 	const std::string &getFilePath () const;
 
+	bool isFile () const override;
+
 	// TODO: Remove me later.
 	LinphoneContent *toLinphoneContent () const override;
 

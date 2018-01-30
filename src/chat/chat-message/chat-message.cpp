@@ -187,7 +187,7 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 
 const string &ChatMessagePrivate::getAppdata () const {
 	for (const Content *c : contents) {
-		if (c->getContentType().isFile()) {
+		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			return fileContent->getAppData("legacy");
 		}
@@ -197,7 +197,7 @@ const string &ChatMessagePrivate::getAppdata () const {
 
 void ChatMessagePrivate::setAppdata (const string &data) {
 	for (const Content *c : contents) {
-		if (c->getContentType().isFile()) {
+		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			fileContent->setAppData("legacy", data);
 			break;
@@ -281,7 +281,7 @@ LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
 		return getFileTransferContent()->toLinphoneContent();
 	}
 	for (const Content *c : contents) {
-		if (c->getContentType().isFile()) {
+		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			return fileContent->toLinphoneContent();
 		}
@@ -657,7 +657,7 @@ void ChatMessagePrivate::store() {
 	bool messageToBeStored = false;
 	for (Content *c : contents) {
 		ContentType contentType = c->getContentType();
-		if (contentType == ContentType::FileTransfer || contentType == ContentType::PlainText || contentType.isFile()) {
+		if (contentType == ContentType::FileTransfer || contentType == ContentType::PlainText || c->isFile()) {
 			messageToBeStored = true;
 		}
 	}

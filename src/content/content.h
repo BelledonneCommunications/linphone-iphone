@@ -69,6 +69,8 @@ public:
 
 	bool isEmpty () const;
 
+	virtual bool isFile () const;
+
 	// TODO: Remove me later.
 	virtual LinphoneContent *toLinphoneContent () const;
 

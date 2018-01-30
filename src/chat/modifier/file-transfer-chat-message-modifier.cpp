@@ -48,9 +48,8 @@ ChatMessageModifier::Result FileTransferChatMessageModifier::encode (const share
 	currentFileContentToTransfer = nullptr;
 	// For each FileContent, upload it and create a FileTransferContent
 	for (Content *content : message->getContents()) {
-		ContentType contentType = content->getContentType();
-		if (contentType.isFile()) {
-				lInfo() << "Found content with type " << contentType.asString() << ", set it for file upload";
+		if (content->isFile()) {
+				lInfo() << "Found file content, set it for file upload";
 				FileContent *fileContent = (FileContent *)content;
 				currentFileContentToTransfer = fileContent;
 				break;

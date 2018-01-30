@@ -161,10 +161,6 @@ bool ContentType::isValid () const {
 	return !d->type.empty() && !d->subType.empty();
 }
 
-bool ContentType::isFile () const {
-	return isFile(*this);
-}
-
 string ContentType::asString () const {
 	L_D();
 	if (isValid()) {
@@ -176,8 +172,14 @@ string ContentType::asString () const {
 	return "";
 }
 
+
+bool ContentType::isFile () const {
+	// TODO Remove when not needed anymore in step 2.1 of maindb
+	return isFile(*this);
+}
+
 bool ContentType::isFile (const ContentType &contentType) {
-	// TODO Improve.
+	// TODO Remove when not needed anymore in step 2.1 of maindb
 	return contentType != FileTransfer &&
 		contentType != PlainText &&
 		contentType != ExternalBody &&

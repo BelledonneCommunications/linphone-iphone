@@ -168,6 +168,10 @@ bool Content::isValid () const {
 	return d->contentType.isValid() || (d->contentType.isEmpty() && d->body.empty());
 }
 
+bool Content::isFile () const {
+	return false;
+}
+
 LinphoneContent *Content::toLinphoneContent () const {
 	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());

@@ -263,7 +263,7 @@ void MainDbPrivate::insertContent (long long eventId, const Content &content) {
 		soci::use(body);
 
 	const long long &chatMessageContentId = dbSession.getLastInsertId();
-	if (content.getContentType().isFile()) {
+	if (content.isFile()) {
 		const FileContent &fileContent = static_cast<const FileContent &>(content);
 		const string &name = fileContent.getFileName();
 		const size_t &size = fileContent.getFileSize();

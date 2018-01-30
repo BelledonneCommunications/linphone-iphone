@@ -155,4 +155,8 @@ LinphoneContent *FileTransferContent::toLinphoneContent () const {
 	return content;
 }
 
+bool FileTransferContent::isFile () const {
+	return false;
+}
+
 LINPHONE_END_NAMESPACE

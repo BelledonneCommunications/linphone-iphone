@@ -115,6 +115,10 @@ const string &FileContent::getFilePath () const {
 	return d->filePath;
 }
 
+bool FileContent::isFile () const {
+	return true;
+}
+
 LinphoneContent *FileContent::toLinphoneContent () const {
 	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
