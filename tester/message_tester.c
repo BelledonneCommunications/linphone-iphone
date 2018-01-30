@@ -68,8 +68,10 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 		linphone_chat_message_unref(counters->last_received_chat_message);
 	}
 	counters->last_received_chat_message=linphone_chat_message_ref(msg);
-	if (linphone_chat_message_get_file_transfer_information(msg)) {
+	LinphoneContent * content = linphone_chat_message_get_file_transfer_information(msg);
+	if (content) {
 		counters->number_of_LinphoneMessageReceivedWithFile++;
+		linphone_content_unref(content);
 	} else if (linphone_chat_message_get_external_body_url(msg)) {
 		counters->number_of_LinphoneMessageExtBodyReceived++;
 		if (message_external_body_url) {
@@ -537,10 +539,6 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 				if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1,55000))) {
 					compare_files(send_filepath, receive_filepath);
 				}
-			}
-
-			if (!download_from_history) {
-				linphone_chat_message_unref(recv_msg);
 			}
 		}
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
@@ -1371,7 +1369,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000));
 	if (marie->stat.last_received_chat_message ) {
 		LinphoneChatMessage *recv_msg;
-		const LinphoneContent* content;
+		LinphoneContent* content;
 		if (download_file_from_stored_msg) {
 			LinphoneChatRoom *marie_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 			msg_list = linphone_chat_room_get_history(marie_room,1);
@@ -1391,6 +1389,7 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_key(content));
 		else
 			BC_ASSERT_PTR_NULL(linphone_content_get_key(content));
+		linphone_content_unref(content);
 
 		if (use_file_body_handler_in_download) {
 			linphone_chat_message_set_file_transfer_filepath(recv_msg, receive_filepath);

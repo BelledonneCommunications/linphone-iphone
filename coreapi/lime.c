@@ -886,34 +886,52 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 }
 
 int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t size, uint8_t *decrypted_buffer) {
-	if (linphone_content_get_key(linphone_chat_message_get_file_transfer_information(msg)) == NULL) return -1;
-
-	if (buffer == NULL || size == 0) {
-		return lime_decryptFile(linphone_content_get_cryptoContext_address(linphone_chat_message_get_file_transfer_information(msg)), NULL, 0, NULL, NULL);
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+	if (!content)
+		return -1;
+	if (!linphone_content_get_key(content)) {
+		linphone_content_unref(content);
+		return -1;
 	}
 
-	return lime_decryptFile(linphone_content_get_cryptoContext_address(linphone_chat_message_get_file_transfer_information(msg)),
-						 (unsigned char *)linphone_content_get_key(linphone_chat_message_get_file_transfer_information(msg)), size, (char *)decrypted_buffer,
-						 (char *)buffer);
+	if (!buffer || (size == 0)) {
+		int result = lime_decryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
+		linphone_content_unref(content);
+		return result;
+	}
+
+	int result = lime_decryptFile(linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content), size, (char *)decrypted_buffer, (char *)buffer);
+	linphone_content_unref(content);
+	return result;
 }
 
 int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer) {
-	size_t file_size = linphone_content_get_size(linphone_chat_message_get_file_transfer_information(msg));
-	if (linphone_content_get_key(linphone_chat_message_get_file_transfer_information(msg)) == NULL) return -1;
-
-	if (buffer == NULL || *size == 0) {
-		return lime_encryptFile(linphone_content_get_cryptoContext_address(linphone_chat_message_get_file_transfer_information(msg)), NULL, 0, NULL, NULL);
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+	if (!content)
+		return -1;
+	if (!linphone_content_get_key(content)) {
+		linphone_content_unref(content);
+		return -1;
 	}
 
+	if (!buffer || (*size == 0)) {
+		int result = lime_encryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
+		linphone_content_unref(content);
+		return result;
+	}
+
+	size_t file_size = linphone_content_get_size(content);
 	if (file_size == 0) {
 		ms_warning("File size has not been set, encryption will fail if not done in one step (if file is larger than 16K)");
 	} else if (offset + *size < file_size) {
 		*size -= (*size % 16);
 	}
 
-	return lime_encryptFile(linphone_content_get_cryptoContext_address(linphone_chat_message_get_file_transfer_information(msg)),
-					(unsigned char *)linphone_content_get_key(linphone_chat_message_get_file_transfer_information(msg)), *size,
-					(char *)buffer, (char *)encrypted_buffer);
+	int result = lime_encryptFile(linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content), *size, (char *)buffer, (char *)encrypted_buffer);
+	linphone_content_unref(content);
+	return result;
 }
 
 bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room) {
@@ -926,7 +944,11 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 	/* generate a random 192 bits key + 64 bits of initial vector and store it into the
 		* file_transfer_information->key field of the msg */
 	sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
-	linphone_content_set_key(linphone_chat_message_get_file_transfer_information(msg), keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+	if (!content)
+		return;
+	linphone_content_set_key(content, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
+	linphone_content_unref(content);
 }
 
 #else /* HAVE_LIME */

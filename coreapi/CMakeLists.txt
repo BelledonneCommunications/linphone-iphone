@@ -63,7 +63,6 @@ set(LINPHONE_SOURCE_FILES_C
 	call_log.c
 	carddav.c
 	chat.c
-	chat_file_transfer.c
 	contactprovider.c
 	content.c
 	dial_plan.c
