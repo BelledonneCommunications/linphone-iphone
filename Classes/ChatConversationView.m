@@ -132,15 +132,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = _chatRoom;
-	if (linphone_chat_room_can_handle_participants(_chatRoom)
-		&& (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) != 0 || linphone_chat_room_get_nb_participants(_chatRoom) > 1))
-		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
-	else {
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
 		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	}
+	} else
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
 
 	[self updateParticipantLabel];
 
@@ -378,16 +377,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
-	_infoButton.hidden = (!linphone_chat_room_can_handle_participants(_chatRoom)
-						|| (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) == 0 && linphone_chat_room_get_nb_participants(_chatRoom) == 1)
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	_infoButton.hidden = ((capabilities & LinphoneChatRoomCapabilitiesBasic)
+						|| (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
 						|| !_backToCallButton.hidden
 						|| _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
 }
 
 - (void)updateParticipantLabel {
-	if (!linphone_chat_room_can_handle_participants(_chatRoom)
-		|| (strcmp(linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT, LINPHONE_DUMMY_SUBJECT) == 0 && linphone_chat_room_get_nb_participants(_chatRoom) == 1)) {
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
 		_particpantsLabel.hidden = TRUE;
 	} else {
 		_particpantsLabel.hidden = FALSE;

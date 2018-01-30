@@ -64,11 +64,8 @@
 		return;
 	}
 
-	const char *subject = linphone_chat_room_get_subject(chatRoom) ?: LINPHONE_DUMMY_SUBJECT;
-	if (linphone_chat_room_can_handle_participants(chatRoom) && (strcmp(subject, LINPHONE_DUMMY_SUBJECT) != 0 || linphone_chat_room_get_nb_participants(chatRoom) > 1)) {
-		_addressLabel.text = [NSString stringWithUTF8String:subject];
-		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
-	} else {
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chatRoom);
+	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(chatRoom);
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(chatRoom);
@@ -78,6 +75,10 @@
 		} else {
 			_addressLabel.text = [NSString stringWithUTF8String:LINPHONE_DUMMY_SUBJECT];
 		}
+	} else {
+		const char *subject = linphone_chat_room_get_subject(chatRoom);
+		_addressLabel.text = [NSString stringWithUTF8String:subject];
+		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	}
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
