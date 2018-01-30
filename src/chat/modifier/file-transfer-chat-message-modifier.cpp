@@ -85,8 +85,6 @@ void FileTransferChatMessageModifier::fileTransferOnProgress (
 	size_t total
 ) {
 	if (!isFileTransferInProgressAndValid()) {
-		/*lWarning() << "Cancelled request for " << (chatRoom->lock() ? "" : "ORPHAN") << " msg [" << this <<
-			"], ignoring " << __FUNCTION__;*/
 		releaseHttpRequest();
 		return;
 	}
@@ -102,15 +100,7 @@ void FileTransferChatMessageModifier::fileTransferOnProgress (
 		linphone_chat_message_cbs_get_file_transfer_progress_indication(cbs)(msg, content, offset, total);
 	} else {
 		// Legacy: call back given by application level.
-		shared_ptr<Core> core = message->getCore();
-		if (core)
-			linphone_core_notify_file_transfer_progress_indication(
-				core->getCCore(),
-				msg,
-				content,
-				offset,
-				total
-			);
+		linphone_core_notify_file_transfer_progress_indication(message->getCore()->getCCore(), msg, content, offset, total);
 	}
 	linphone_content_unref(content);
 }
@@ -143,8 +133,6 @@ int FileTransferChatMessageModifier::onSendBody (
 
 	if (!isFileTransferInProgressAndValid()) {
 		if (httpRequest) {
-			/*lWarning() << "Cancelled request for " << (chatRoom->lock() ? "" : "ORPHAN") <<
-				" msg [" << this << "], ignoring " << __FUNCTION__;*/
 			releaseHttpRequest();
 		}
 		return BELLE_SIP_STOP;
@@ -169,18 +157,12 @@ int FileTransferChatMessageModifier::onSendBody (
 			}
 		} else {
 			// Legacy
-			shared_ptr<Core> core = message->getCore();
-			if (core)
-				linphone_core_notify_file_transfer_send(core->getCCore(), msg, content, (char *)buffer, size);
+			linphone_core_notify_file_transfer_send(message->getCore()->getCCore(), msg, content, (char *)buffer, size);
 		}
 		linphone_content_unref(content);
 	}
 
-	LinphoneImEncryptionEngine *imee = nullptr;
-	shared_ptr<Core> core = message->getCore();
-	if (core)
-		imee = linphone_core_get_im_encryption_engine(core->getCCore());
-
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file =
@@ -209,12 +191,11 @@ static void _chat_message_on_send_end (belle_sip_user_body_handler_t *bh, void *
 }
 
 void FileTransferChatMessageModifier::onSendEnd (belle_sip_user_body_handler_t *bh) {
-	LinphoneImEncryptionEngine *imee = nullptr;
 	shared_ptr<ChatMessage> message = chatMessage.lock();
-	shared_ptr<Core> core = message->getCore();
-	if (core)
-		imee = linphone_core_get_im_encryption_engine(core->getCCore());
+	if (!message)
+		return;
 
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsUploadingFileCb cb_process_uploading_file = linphone_im_encryption_engine_cbs_get_process_uploading_file(imee_cbs);
@@ -231,13 +212,13 @@ static void _chat_message_process_response_from_post_file (void *data, const bel
 
 void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_http_response_event_t *event) {
 	if (httpRequest && !isFileTransferInProgressAndValid()) {
-		/*lWarning() << "Cancelled request for " << (chatRoom->lock() ? "" : "ORPHAN") <<
-			" msg [" << this << "], ignoring " << __FUNCTION__;*/
 		releaseHttpRequest();
 		return;
 	}
 
 	shared_ptr<ChatMessage> message = chatMessage.lock();
+	if (!message)
+		return;
 
 	// check the answer code
 	if (event->response) {
@@ -249,27 +230,22 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			belle_sip_body_handler_t *first_part_bh;
 
 			bool_t is_file_encryption_enabled = FALSE;
-			LinphoneImEncryptionEngine *imee = nullptr;
-
-			shared_ptr<Core> core = message->getCore();
-
-			imee = linphone_core_get_im_encryption_engine(core->getCCore());
-
-			if (imee && chatRoom) {
+			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
+			if (imee && message->getChatRoom()) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 				LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer_cb =
 					linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(imee_cbs);
 				if (is_encryption_enabled_for_file_transfer_cb) {
-					is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(imee, L_GET_C_BACK_PTR(chatRoom));
+					is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()));
 				}
 			}
 			// shall we encrypt the file
-			if (is_file_encryption_enabled && chatRoom) {
+			if (is_file_encryption_enabled && message->getChatRoom()) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 				LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key_cb =
 					linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(imee_cbs);
 				if (generate_file_transfer_key_cb) {
-					generate_file_transfer_key_cb(imee, L_GET_C_BACK_PTR(chatRoom), L_GET_C_BACK_PTR(message));
+					generate_file_transfer_key_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()), L_GET_C_BACK_PTR(message));
 				}
 				// temporary storage for the Content-disposition header value : use a generic filename to not leak it
 				// Actual filename stored in msg->file_transfer_information->name will be set in encrypted msg
@@ -466,8 +442,7 @@ int FileTransferChatMessageModifier::startHttpTransfer (const string &url, const
 	if (!message)
 		return -1;
 
-	shared_ptr<Core> core = message->getCore();
-	const char *ua = linphone_core_get_user_agent(core->getCCore());
+	const char *ua = linphone_core_get_user_agent(message->getCore()->getCCore());
 
 	if (url.empty()) {
 		lWarning() << "Cannot process file transfer msg [" << this << "]: no file remote URI configured.";
@@ -491,7 +466,7 @@ int FileTransferChatMessageModifier::startHttpTransfer (const string &url, const
 
 	// give msg to listener to be able to start the actual file upload when server answer a 204 No content
 	httpListener = belle_http_request_listener_create_from_callbacks(cbs, this);
-	belle_http_provider_send_request(core->getCCore()->http_provider, httpRequest, httpListener);
+	belle_http_provider_send_request(message->getCore()->getCCore()->http_provider, httpRequest, httpListener);
 	return 0;
 
 error:
@@ -694,12 +669,6 @@ static void _chat_message_on_recv_body (belle_sip_user_body_handler_t *bh, belle
 
 void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t *bh, belle_sip_message_t *m, size_t offset, uint8_t *buffer, size_t size) {
 	int retval = -1;
-	uint8_t *decrypted_buffer = nullptr;
-
-	/*if (!chatRoom.lock()) {
-		q->cancelFileTransfer();
-		return;
-	}*/
 
 	if (!httpRequest || belle_http_request_is_cancelled(httpRequest)) {
 		lWarning() << "Cancelled request for msg [" << this << "], ignoring " << __FUNCTION__;
@@ -712,14 +681,12 @@ void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t 
 	}
 
 	shared_ptr<ChatMessage> message = chatMessage.lock();
+	if (!message)
+		return;
 
-	decrypted_buffer = (uint8_t *)ms_malloc0(size);
+	uint8_t *decrypted_buffer = (uint8_t *)ms_malloc0(size);
 
-	LinphoneImEncryptionEngine *imee = nullptr;
-	shared_ptr<Core> core = message->getCore();
-	if (core)
-		imee = linphone_core_get_im_encryption_engine(core->getCCore());
-
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 	if (imee) {
 		LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 		LinphoneImEncryptionEngineCbsDownloadingFileCb cb_process_downloading_file = linphone_im_encryption_engine_cbs_get_process_downloading_file(imee_cbs);
@@ -743,7 +710,7 @@ void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t 
 				linphone_buffer_unref(lb);
 			} else {
 				// Legacy: call back given by application level
-				linphone_core_notify_file_transfer_recv(core->getCCore(), msg, content, (const char *)buffer, size);
+				linphone_core_notify_file_transfer_recv(message->getCore()->getCCore(), msg, content, (const char *)buffer, size);
 			}
 			linphone_content_unref(content);
 		}
@@ -762,11 +729,8 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	shared_ptr<Core> core = message->getCore();
-	if (!core)
-		return;
 
-	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(core->getCCore());
+	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 	int retval = -1;
 
 	if (imee) {
@@ -788,7 +752,7 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 				linphone_buffer_unref(lb);
 			} else {
 				// Legacy: call back given by application level
-				linphone_core_notify_file_transfer_recv(core->getCCore(), msg, content, nullptr, 0);
+				linphone_core_notify_file_transfer_recv(message->getCore()->getCCore(), msg, content, nullptr, 0);
 			}
 			linphone_content_unref(content);
 		}
@@ -978,13 +942,12 @@ void FileTransferChatMessageModifier::cancelFileTransfer () {
 		if (!belle_http_request_is_cancelled(httpRequest)) {
 			shared_ptr<ChatMessage> message = chatMessage.lock();
 			if (message) {
-				shared_ptr<Core> core = message->getCore();
 				lInfo() << "Canceling file transfer " << (
 					currentFileContentToTransfer->getFilePath().empty()
-						? linphone_core_get_file_transfer_server(core->getCCore())
+						? linphone_core_get_file_transfer_server(message->getCore()->getCCore())
 						: currentFileContentToTransfer->getFilePath().c_str()
 					);
-				belle_http_provider_cancel_request(core->getCCore()->http_provider, httpRequest);
+				belle_http_provider_cancel_request(message->getCore()->getCCore()->http_provider, httpRequest);
 			} else {
 				lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";
 			}

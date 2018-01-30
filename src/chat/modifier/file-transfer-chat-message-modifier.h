@@ -63,7 +63,6 @@ public:
 	bool isFileTransferInProgressAndValid();
 
 private:
-	std::shared_ptr<ChatRoom> chatRoom;
 	std::weak_ptr<ChatMessage> chatMessage;
 	FileContent* currentFileContentToTransfer;
 	unsigned long backgroundTaskId = 0;
