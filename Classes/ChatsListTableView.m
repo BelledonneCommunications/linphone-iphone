@@ -68,8 +68,8 @@
 #pragma mark -
 
 static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem) {
-	LinphoneChatMessage *last_new_message = linphone_chat_room_get_user_data(to_insert);
-	LinphoneChatMessage *last_elem_message = linphone_chat_room_get_user_data(elem);
+	LinphoneChatMessage *last_new_message = linphone_chat_room_get_last_message_in_history(to_insert);
+	LinphoneChatMessage *last_elem_message = linphone_chat_room_get_last_message_in_history(elem);
 
 	if (last_new_message && last_elem_message) {
 		time_t new = linphone_chat_message_get_time(last_new_message);
@@ -90,8 +90,6 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	while (iter) {
 		// store last message in user data
 		LinphoneChatRoom *chat_room = iter->data;
-		LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chat_room);
-		linphone_chat_room_set_user_data(chat_room, last_msg);
 		sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
 		iter = iter->next;
 	}

@@ -116,6 +116,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableView reloadData];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+	if (_room) {
+		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
+		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
+		linphone_chat_room_cbs_set_subject_changed(cbs, NULL);
+		linphone_chat_room_cbs_set_participant_added(cbs, NULL);
+		linphone_chat_room_cbs_set_participant_removed(cbs, NULL);
+		linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, NULL);
+		linphone_chat_room_cbs_set_user_data(cbs, NULL);
+	}
+}
+
 #pragma mark - next functions
 
 - (void)onCreate {

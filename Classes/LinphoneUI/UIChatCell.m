@@ -92,7 +92,6 @@
 		_chatLatestTimeLabel.text =
 			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_msg) withFormat:LinphoneDateChatList];
 		_chatLatestTimeLabel.hidden = NO;
-		linphone_chat_room_set_user_data(chatRoom, NULL);
 	} else {
 		_chatContentLabel.text = nil;
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);

@@ -868,7 +868,6 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
 	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
-	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
 	linphone_chat_room_add_participants(room, addresses);
 }
 
