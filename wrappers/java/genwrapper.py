@@ -627,15 +627,15 @@ class JavaTranslator(object):
 
         enumDict['jniPath'] = self.jni_path
 
-        for enumValue in enum.enumerators:
+        for enumerator in enum.enumerators:
             enumValDict = {}
-            enumValDict['name'] = enumValue.name.to_camel_case()
-            enumValDict['doc'] = enumValue.briefDescription.translate(self.docTranslator)
-            if type(enumValue.value) is int:
-                lastValue = enumValue.value
-                enumValDict['value'] = str(enumValue.value)
-            elif type(enumValue.value) is AbsApi.Flag:
-                enumValDict['value'] = '1<<' + str(enumValue.value.position)
+            enumValDict['name'] = enumerator.name.to_camel_case()
+            enumValDict['doc'] = enumerator.briefDescription.translate(self.docTranslator)
+            if isinstance(enumerator.value, int):
+                lastValue = enumerator.value
+                enumValDict['value'] = str(enumerator.value)
+            elif isinstance(enumerator.value, AbsApi.Flag):
+                enumValDict['value'] = '1<<' + str(enumerator.value.position)
             else:
                 if lastValue is not None:
                     enumValDict['value'] = lastValue + 1
