@@ -44,7 +44,7 @@ BasicChatRoom::BasicChatRoom (
 }
 
 BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
-	return Capabilities::Basic;
+	return { Capabilities::Basic, Capabilities::OneToOne };
 }
 
 bool BasicChatRoom::hasBeenLeft () const {
