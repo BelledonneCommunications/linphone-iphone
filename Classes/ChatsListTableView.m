@@ -180,6 +180,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	ChatsListTableView *view = (__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) ?: NULL;
+	if (!view)
+		return;
+	
 	if (newState == LinphoneChatRoomStateDeleted || newState == LinphoneChatRoomStateTerminationFailed) {
 		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
 		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
