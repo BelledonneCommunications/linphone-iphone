@@ -653,6 +653,7 @@ static void transfer_message_download_cancelled(void) {
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageNotDelivered,1, int, "%d");
 
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -724,9 +725,9 @@ static void file_transfer_2_messages_simultaneously(void) {
 			linphone_chat_room_send_chat_message(pauline_room,msg);
 			linphone_chat_room_send_chat_message(pauline_room,msg2);
 			if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000))) {
-				msg = linphone_chat_message_ref(marie->stat.last_received_chat_message);
+				LinphoneChatMessage *recvMsg = linphone_chat_message_ref(marie->stat.last_received_chat_message);
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,2, 60000));
-				msg2 = marie->stat.last_received_chat_message;
+				LinphoneChatMessage *recvMsg2 = marie->stat.last_received_chat_message;
 				BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, unsigned int, "%u");
 				if (bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)) != 1) {
 					char * buf = ms_strdup_printf("Found %d rooms instead of 1: ", bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)));
@@ -739,17 +740,17 @@ static void file_transfer_2_messages_simultaneously(void) {
 					ms_error("%s", buf);
 				}
 
-				cbs = linphone_chat_message_get_callbacks(msg);
+				cbs = linphone_chat_message_get_callbacks(recvMsg);
 				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-				linphone_chat_message_download_file(msg);
+				linphone_chat_message_download_file(recvMsg);
 
-				cbs = linphone_chat_message_get_callbacks(msg2);
+				cbs = linphone_chat_message_get_callbacks(recvMsg2);
 				linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 				linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
 				linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-				linphone_chat_message_download_file(msg2);
+				linphone_chat_message_download_file(recvMsg2);
 
 				BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,2,50000));
 
@@ -757,9 +758,11 @@ static void file_transfer_2_messages_simultaneously(void) {
 				BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,2, int, "%d");
 				compare_files(send_filepath, receive_filepath);
 
-				linphone_chat_message_unref(msg);
+				linphone_chat_message_unref(recvMsg);
 			}
 		}
+		linphone_chat_message_unref(msg);
+		linphone_chat_message_unref(msg2);
 		linphone_core_manager_destroy(pauline);
 		remove(receive_filepath);
 		bc_free(send_filepath);
@@ -782,6 +785,7 @@ static void text_message_denied(void) {
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0, int, "%d");
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
