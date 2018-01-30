@@ -104,6 +104,8 @@ LINPHONE_PUBLIC LinphoneQualityReporting *linphone_call_log_get_quality_reportin
 LINPHONE_PUBLIC reporting_session_report_t **linphone_quality_reporting_get_reports(LinphoneQualityReporting *qreporting);
 
 LINPHONE_PUBLIC void _linphone_chat_room_enable_migration(LinphoneChatRoom *cr, bool_t enable);
+LINPHONE_PUBLIC int _linphone_chat_room_get_transient_message_count (const LinphoneChatRoom *cr);
+LINPHONE_PUBLIC LinphoneChatMessage * _linphone_chat_room_get_first_transient_message (const LinphoneChatRoom *cr);
 
 LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_from_db(LinphoneCore *lc, LinphoneFriendList *list);
 LINPHONE_PUBLIC MSList* linphone_core_fetch_friends_lists_from_db(LinphoneCore *lc);

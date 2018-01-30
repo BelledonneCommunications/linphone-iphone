@@ -365,7 +365,6 @@ static void text_message_with_privacy(void) {
 	linphone_proxy_config_set_privacy(linphone_core_get_default_proxy_config(pauline->lc),LinphonePrivacyId);
 
 	text_message_base(marie, pauline);
-	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedLegacy,1, int, "%d");
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
@@ -420,15 +419,15 @@ static void text_message_with_send_error(void) {
 	linphone_chat_room_send_chat_message(chat_room,msg);
 
 	/* check transient msg list: the msg should be in it, and should be the only one */
-	/*BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 1, unsigned int, "%u");
-	BC_ASSERT_PTR_EQUAL(bctbx_list_nth_data(linphone_chat_room_get_transient_messages(chat_room),0), msg);*/
+	BC_ASSERT_EQUAL(_linphone_chat_room_get_transient_message_count(chat_room), 1, int, "%d");
+	BC_ASSERT_PTR_EQUAL(_linphone_chat_room_get_first_transient_message(chat_room), msg);
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageNotDelivered,1));
 	/*BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageInProgress,1, int, "%d");*/
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageReceived,0, int, "%d");
 
 	/* the msg should have been discarded from transient list after an error */
-	//BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_chat_room_get_transient_messages(chat_room)), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL(_linphone_chat_room_get_transient_message_count(chat_room), 0, int, "%d");
 
 	sal_set_send_error(linphone_core_get_sal(marie->lc), 0);
 
@@ -436,6 +435,7 @@ static void text_message_with_send_error(void) {
 	linphone_core_refresh_registers(marie->lc);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneRegistrationOk,marie->stat.number_of_LinphoneRegistrationOk + 1));
 
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }

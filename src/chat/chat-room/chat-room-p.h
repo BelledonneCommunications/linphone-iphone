@@ -66,6 +66,7 @@ public:
 	void onIsRemoteComposingStateChanged (const Address &remoteAddress, bool isComposing) override;
 
 	std::list<IdentityAddress> remoteIsComposing;
+	std::list<std::shared_ptr<EventLog>> transientEvents;
 
 	ChatRoomId chatRoomId;
 
@@ -79,7 +80,6 @@ private:
 	std::unique_ptr<IsComposing> isComposingHandler;
 
 	bool isComposing = false;
-	std::list<std::shared_ptr<EventLog>> transientEvents;
 
 	L_DECLARE_PUBLIC(ChatRoom);
 };

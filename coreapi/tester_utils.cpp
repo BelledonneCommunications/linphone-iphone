@@ -21,10 +21,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "private.h"
 
 #include "call/call-p.h"
-#include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "c-wrapper/c-wrapper.h"
 #include "conference/session/media-session-p.h"
+#include "event-log/conference/conference-chat-message-event.h"
 
 using namespace std;
 
@@ -158,4 +159,19 @@ int _linphone_call_get_main_video_stream_index (const LinphoneCall *call) {
 void _linphone_chat_room_enable_migration(LinphoneChatRoom *cr, bool_t enable) {
 	shared_ptr<AbstractChatRoom> acr = L_GET_CPP_PTR_FROM_C_OBJECT(cr);
 	L_GET_PRIVATE(acr->getCore())->mainDb->enableChatRoomMigration(acr->getChatRoomId(), !!enable);
+}
+
+int _linphone_chat_room_get_transient_message_count (const LinphoneChatRoom *cr) {
+	shared_ptr<const ChatRoom> chatRoom = static_pointer_cast<const ChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+	return (int)L_GET_PRIVATE(chatRoom)->transientEvents.size();
+}
+
+LinphoneChatMessage * _linphone_chat_room_get_first_transient_message (const LinphoneChatRoom *cr) {
+	shared_ptr<const ChatRoom> chatRoom = static_pointer_cast<const ChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
+	if (L_GET_PRIVATE(chatRoom)->transientEvents.empty())
+		return nullptr;
+	shared_ptr<ConferenceChatMessageEvent> event = static_pointer_cast<ConferenceChatMessageEvent>(
+		L_GET_PRIVATE(chatRoom)->transientEvents.front()
+	);
+	return L_GET_C_BACK_PTR(event->getChatMessage());
 }
