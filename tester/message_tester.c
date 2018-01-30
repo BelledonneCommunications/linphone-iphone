@@ -615,6 +615,7 @@ static void transfer_message_upload_cancelled(void) {
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageNotDelivered,1, int, "%d");
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,0, int, "%d");
 
+		linphone_chat_message_unref(msg);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
@@ -2149,6 +2150,9 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 	size_t file_size;
 	char *buf;
 
+	linphone_core_add_content_type_support(marie->lc, "image/svg+xml");
+	linphone_core_add_content_type_support(pauline->lc, "image/svg+xml");
+
 	if (with_lime) {
 		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
 	}
@@ -2164,8 +2168,6 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 	msg = linphone_chat_room_create_message(chat_room, buf);
 	linphone_chat_message_set_content_type(msg, "image/svg+xml");
 
-	linphone_core_add_content_type_support(marie->lc, "image/svg+xml");
-	linphone_core_add_content_type_support(pauline->lc, "image/svg+xml");
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, msg);

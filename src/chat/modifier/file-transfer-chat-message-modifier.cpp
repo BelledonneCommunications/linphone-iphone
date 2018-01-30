@@ -976,8 +976,9 @@ int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> 
 void FileTransferChatMessageModifier::cancelFileTransfer () {
 	if (httpRequest) {
 		if (!belle_http_request_is_cancelled(httpRequest)) {
-			if (chatRoom) {
-				shared_ptr<Core> core = chatRoom->getCore();
+			shared_ptr<ChatMessage> message = chatMessage.lock();
+			if (message) {
+				shared_ptr<Core> core = message->getCore();
 				lInfo() << "Canceling file transfer " << (
 					currentFileContentToTransfer->getFilePath().empty()
 						? linphone_core_get_file_transfer_server(core->getCCore())
