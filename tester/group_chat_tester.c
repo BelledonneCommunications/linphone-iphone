@@ -22,6 +22,7 @@
 #include "tester_utils.h"
 #include "linphone/wrapper_utils.h"
 #include "liblinphone_tester.h"
+#include "bctoolbox/crypto.h"
 
 #if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
 #pragma GCC diagnostic push
@@ -469,7 +470,45 @@ static void group_chat_room_creation_server (void) {
 	linphone_core_manager_destroy(chloe);
 }
 
-static void group_chat_room_send_message (void) {
+static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	if (linphone_chat_message_get_content_type(msg)) {
+		if (strcmp(linphone_chat_message_get_content_type(msg), "cipher/b64") == 0) {
+			size_t b64Size = 0;
+			unsigned char *output;
+			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+			output = (unsigned char *)ms_malloc(b64Size+1),
+			bctbx_base64_decode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+			output[b64Size] = '\0';
+			linphone_chat_message_set_text(msg, (char *)output);
+			ms_free(output);
+			linphone_chat_message_set_content_type(msg, "message/cpim");
+			return 0;
+		} else if (strcmp(linphone_chat_message_get_content_type(msg), "message/cpim") == 0) {
+			return -1; // Not encrypted, nothing to do
+		} else {
+			return 488; // Not acceptable
+		}
+	}
+	return 500;
+}
+
+static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
+	if (strcmp(linphone_chat_message_get_content_type(msg),"message/cpim") == 0) {
+		size_t b64Size = 0;
+		unsigned char *output;
+		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+		output = (unsigned char *)ms_malloc0(b64Size+1),
+		bctbx_base64_encode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+		output[b64Size] = '\0';
+		linphone_chat_message_set_text(msg,(const char*)output);
+		ms_free(output);
+		linphone_chat_message_set_content_type(msg, "cipher/b64");
+		return 0;
+	}
+	return -1;
+}
+
+static void group_chat_room_message (bool_t encrypt) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
@@ -485,6 +524,26 @@ static void group_chat_room_send_message (void) {
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
 	stats initialChloeStats = chloe->stat;
+	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new();
+	LinphoneImEncryptionEngineCbs *marie_cbs = linphone_im_encryption_engine_get_callbacks(marie_imee);
+	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new();
+	LinphoneImEncryptionEngineCbs *pauline_cbs = linphone_im_encryption_engine_get_callbacks(pauline_imee);
+	LinphoneImEncryptionEngine *chloe_imee = linphone_im_encryption_engine_new();
+	LinphoneImEncryptionEngineCbs *chloe_cbs = linphone_im_encryption_engine_get_callbacks(chloe_imee);
+
+	if (encrypt) {
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(marie_cbs, im_encryption_engine_process_outgoing_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(pauline_cbs, im_encryption_engine_process_outgoing_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_outgoing_message(chloe_cbs, im_encryption_engine_process_outgoing_message_cb);
+
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(marie_cbs, im_encryption_engine_process_incoming_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, im_encryption_engine_process_incoming_message_cb);
+		linphone_im_encryption_engine_cbs_set_process_incoming_message(chloe_cbs, im_encryption_engine_process_incoming_message_cb);
+		
+		linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
+		linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
+		linphone_core_set_im_encryption_engine(chloe->lc, chloe_imee);
+	}
 
 	// Marie creates a new group chat room
 	const char *initialSubject = "Colleagues";
@@ -532,11 +591,22 @@ static void group_chat_room_send_message (void) {
 	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
+	linphone_im_encryption_engine_unref(marie_imee);
+	linphone_im_encryption_engine_unref(pauline_imee);
+	linphone_im_encryption_engine_unref(chloe_imee);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(chloe);
+}
+
+static void group_chat_room_send_message(void) {
+	group_chat_room_message(FALSE);
+}
+
+static void group_chat_room_send_message_encrypted(void) {
+	group_chat_room_message(TRUE);
 }
 
 static void group_chat_room_invite_multi_register_account (void) {
@@ -2371,6 +2441,7 @@ static void group_chat_room_new_unique_one_to_one_chat_room_after_both_participa
 test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Group chat room creation server", group_chat_room_creation_server, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send message", group_chat_room_send_message, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Send encrypted message", group_chat_room_send_message_encrypted, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send invite on a multi register account", group_chat_room_invite_multi_register_account, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Add admin", group_chat_room_add_admin, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Add admin lately notified", group_chat_room_add_admin_lately_notified, "Server", "LeaksMemory"),
