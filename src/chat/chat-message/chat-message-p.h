@@ -50,7 +50,8 @@ public:
 		FileUpload = 1 << 1,
 		Multipart = 1 << 2,
 		Encryption = 1 << 3,
-		Cpim = 1 << 4
+		Cpim = 1 << 4,
+		Started = 1 << 5,
 	};
 
 	ChatMessagePrivate () = default;

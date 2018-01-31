@@ -240,6 +240,12 @@ void ChatMessagePrivate::setContentType (const ContentType &contentType) {
 		internalContent.setBody(contents.front()->getBody());
 	}
 	internalContent.setContentType(contentType);
+
+	if ((currentSendStep &ChatMessagePrivate::Step::Started) != ChatMessagePrivate::Step::Started) {
+		// if not started yet the sending also alter the first content
+		if (contents.size() > 0)
+			contents.front()->setContentType(contentType);
+	}
 }
 
 const string &ChatMessagePrivate::getText () {
@@ -272,6 +278,12 @@ void ChatMessagePrivate::setText (const string &text) {
 		internalContent.setContentType(contents.front()->getContentType());
 	}
 	internalContent.setBody(text);
+
+	if ((currentSendStep &ChatMessagePrivate::Step::Started) != ChatMessagePrivate::Step::Started) {
+		// if not started yet the sending also alter the first content
+		if (contents.size() > 0)
+			contents.front()->setBody(text);
+	}
 }
 
 LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
@@ -515,6 +527,8 @@ void ChatMessagePrivate::send () {
 	LinphoneCall *lcall = nullptr;
 	int errorCode = 0;
 
+	currentSendStep |= ChatMessagePrivate::Step::Started;
+
 	storeInDb();
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
@@ -658,6 +672,8 @@ void ChatMessagePrivate::send () {
 	// Remove internal content as it is not needed anymore and will confuse some old methods like getContentType()
 	internalContent.setBody("");
 	internalContent.setContentType(ContentType(""));
+	// Also remove current step so we go through all modifiers if message is re-sent
+	currentSendStep = ChatMessagePrivate::Step::None;
 
 	if (imdnId.empty())
 		setImdnMessageId(op->get_call_id());   /* must be known at that time */
