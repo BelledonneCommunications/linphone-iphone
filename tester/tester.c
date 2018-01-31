@@ -367,7 +367,6 @@ void linphone_core_manager_init(LinphoneCoreManager *mgr, const char* rc_file, c
 	linphone_core_cbs_set_registration_state_changed(mgr->cbs, registration_state_changed);
 	linphone_core_cbs_set_auth_info_requested(mgr->cbs, auth_info_requested);
 	linphone_core_cbs_set_call_state_changed(mgr->cbs, call_state_changed);
-	//mgr->v_table.text_received=text_message_received;
 	linphone_core_cbs_set_message_received(mgr->cbs, message_received);
 	linphone_core_cbs_set_is_composing_received(mgr->cbs, is_composing_received);
 	linphone_core_cbs_set_new_subscription_requested(mgr->cbs, new_subscription_requested);
