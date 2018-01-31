@@ -244,24 +244,10 @@ end:
 }
 
 void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
-	L_Q();
-
-	ContentType contentType = chatMessage->getPrivate()->getContentType();
-	if (contentType != ContentType::Imdn && contentType != ContentType::ImIsComposing) {
-		LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q);
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
-		LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
-		shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(time(nullptr), chatMessage);
-		if (cb)
-			cb(chatRoom, L_GET_C_BACK_PTR(event));
-		// Legacy
-		notifyChatMessageReceived(chatMessage);
-
-		const IdentityAddress &fromAddress = chatMessage->getFromAddress();
-		isComposingHandler->stopRemoteRefreshTimer(fromAddress.asString());
-		notifyIsComposingReceived(fromAddress, false);
-		chatMessage->sendDeliveryNotification(LinphoneReasonNone);
-	}
+	const IdentityAddress &fromAddress = chatMessage->getFromAddress();
+	isComposingHandler->stopRemoteRefreshTimer(fromAddress.asString());
+	notifyIsComposingReceived(fromAddress, false);
+	chatMessage->getPrivate()->notifyReceiving();
 }
 
 void ChatRoomPrivate::onImdnReceived (const string &text) {

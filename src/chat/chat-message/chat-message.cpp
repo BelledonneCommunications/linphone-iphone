@@ -63,7 +63,7 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setState (ChatMessage::State s, bool force, bool storeInDb) {
+void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	L_Q();
 
 	if (force)
@@ -98,9 +98,7 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force, bool storeI
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
 		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
 
-	if (storeInDb) {
-		store();
-	}
+	updateInDb();
 }
 
 belle_http_request_t *ChatMessagePrivate::getHttpRequest () const {
@@ -205,7 +203,7 @@ void ChatMessagePrivate::setAppdata (const string &data) {
 			break;
 		}
 	}
-	store();
+	updateInDb();
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
@@ -381,6 +379,29 @@ static void forceUtf8Content (Content &content) {
 	L_END_LOG_EXCEPTION
 }
 
+void ChatMessagePrivate::notifyReceiving () {
+	L_Q();
+
+	if ((getContentType() == ContentType::Imdn) || (getContentType() == ContentType::ImIsComposing))
+		return;
+
+	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
+	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
+	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
+		::time(nullptr), q->getSharedFromThis()
+	);
+	if (cb)
+		cb(chatRoom, L_GET_C_BACK_PTR(event));
+	// Legacy
+	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
+
+	if (toBeStored)
+		storeInDb();
+
+	q->sendDeliveryNotification(LinphoneReasonNone);
+}
+
 LinphoneReason ChatMessagePrivate::receive () {
 	L_Q();
 	int errorCode = 0;
@@ -388,8 +409,6 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	shared_ptr<Core> core = q->getCore();
 	shared_ptr<AbstractChatRoom> chatRoom = q->getChatRoom();
-
-	setState(ChatMessage::State::Delivered, false, false); // Wait for decryption and CPIM to reveal the real message to know if it must be stored or not
 
 	// ---------------------------------------
 	// Start of message modification
@@ -451,6 +470,8 @@ LinphoneReason ChatMessagePrivate::receive () {
 	// End of message modification
 	// ---------------------------------------
 
+	setState(ChatMessage::State::Delivered, false);
+
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
 		for (Content *c : contents) {
@@ -482,7 +503,8 @@ LinphoneReason ChatMessagePrivate::receive () {
 		return reason;
 	}
 
-	store();
+	if ((getContentType() == ContentType::ImIsComposing) || (getContentType() == ContentType::Imdn))
+		toBeStored = false;
 
 	return reason;
 }
@@ -492,6 +514,8 @@ void ChatMessagePrivate::send () {
 	SalOp *op = salOp;
 	LinphoneCall *lcall = nullptr;
 	int errorCode = 0;
+
+	storeInDb();
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
@@ -634,8 +658,6 @@ void ChatMessagePrivate::send () {
 	if (imdnId.empty())
 		setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
-	//store(); // Store will be done right below in the setState(InProgress)
-
 	if (lcall && linphone_call_get_op(lcall) == op) {
 		/* In this case, chat delivery status is not notified, so unrefing chat message right now */
 		/* Might be better fixed by delivering status, but too costly for now */
@@ -649,43 +671,17 @@ void ChatMessagePrivate::send () {
 	}
 }
 
-void ChatMessagePrivate::store() {
+void ChatMessagePrivate::storeInDb () {
 	L_Q();
 
 	// TODO: store message in the future
 	if (linphone_core_conference_server_enabled(q->getCore()->getCCore())) return;
 
-	bool messageToBeStored = true;
-	for (Content *c : contents) {
-		ContentType contentType = c->getContentType();
-		if (contentType == ContentType::Imdn || contentType == ContentType::ImIsComposing) {
-			messageToBeStored = false;
-			break;
-		}
-	}
-	if (!messageToBeStored) {
-		return;
-	}
-
-	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
 	if (dbKey.isValid()) {
-		shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
-		mainDb->updateEvent(eventLog);
-
-		if (direction == ChatMessage::Direction::Incoming) {
-			if (!hasFileTransferContent()) {
-				// Incoming message doesn't have any download waiting anymore, we can remove it's event from the transients
-				q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
-			}
-		} else {
-			if (state == ChatMessage::State::Delivered || state == ChatMessage::State::NotDelivered) {
-				// Once message has reached this state it won't change anymore so we can remove the event from the transients
-				q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
-			}
-		}
+		updateInDb();
 	} else {
 		shared_ptr<EventLog> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
-		mainDb->addEvent(eventLog);
+		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
 			if (hasFileTransferContent()) {
@@ -695,6 +691,29 @@ void ChatMessagePrivate::store() {
 		} else {
 			// Keep event in transient to be able to store in database state changes
 			q->getChatRoom()->getPrivate()->addTransientEvent(eventLog);
+		}
+	}
+}
+
+void ChatMessagePrivate::updateInDb () {
+	L_Q();
+
+	if (!dbKey.isValid())
+		return;
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	mainDb->updateEvent(eventLog);
+
+	if (direction == ChatMessage::Direction::Incoming) {
+		if (!hasFileTransferContent()) {
+			// Incoming message doesn't have any download waiting anymore, we can remove it's event from the transients
+			q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
+		}
+	} else {
+		if (state == ChatMessage::State::Delivered || state == ChatMessage::State::NotDelivered) {
+			// Once message has reached this state it won't change anymore so we can remove the event from the transients
+			q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
 		}
 	}
 }
@@ -797,6 +816,16 @@ const IdentityAddress &ChatMessage::getFromAddress () const {
 const IdentityAddress &ChatMessage::getToAddress () const {
 	L_D();
 	return d->toAddress;
+}
+
+bool ChatMessage::getToBeStored () const {
+	L_D();
+	return d->toBeStored;
+}
+
+void ChatMessage::setToBeStored (bool value) {
+	L_D();
+	d->toBeStored = value;
 }
 
 // -----------------------------------------------------------------------------

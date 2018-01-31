@@ -59,11 +59,11 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setState(ChatMessage::State state, bool force = false, bool storeInDb = true);
+	void setState (ChatMessage::State state, bool force = false);
 
-	void setTime(time_t time);
+	void setTime (time_t time);
 
-	void setIsReadOnly(bool readOnly);
+	void setIsReadOnly (bool readOnly);
 
 	void setImdnMessageId (const std::string &imdnMessageId);
 
@@ -75,20 +75,20 @@ public:
 		this->toAddress = toAddress;
 	}
 
-	belle_http_request_t *getHttpRequest() const;
-	void setHttpRequest(belle_http_request_t *request);
+	belle_http_request_t *getHttpRequest () const;
+	void setHttpRequest (belle_http_request_t *request);
 
-	SalOp *getSalOp() const;
-	void setSalOp(SalOp *op);
+	SalOp *getSalOp () const;
+	void setSalOp (SalOp *op);
 
-	SalCustomHeader *getSalCustomHeaders() const;
-	void setSalCustomHeaders(SalCustomHeader *headers);
+	SalCustomHeader *getSalCustomHeaders () const;
+	void setSalCustomHeaders (SalCustomHeader *headers);
 
-	void addSalCustomHeader(const std::string& name, const std::string& value);
-	void removeSalCustomHeader(const std::string& name);
-	std::string getSalCustomHeaderValue(const std::string& name);
+	void addSalCustomHeader (const std::string& name, const std::string& value);
+	void removeSalCustomHeader (const std::string& name);
+	std::string getSalCustomHeaderValue (const std::string& name);
 
-	void loadFileTransferUrlFromBodyToContent();
+	void loadFileTransferUrlFromBodyToContent ();
 
 	void setChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 
@@ -96,11 +96,11 @@ public:
 	// Deprecated methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------
 
-	const ContentType &getContentType();
-	void setContentType(const ContentType &contentType);
+	const ContentType &getContentType ();
+	void setContentType (const ContentType &contentType);
 
-	const std::string &getText();
-	void setText(const std::string &text);
+	const std::string &getText ();
+	void setText (const std::string &text);
 
 	const std::string &getFileTransferFilepath () const;
 	void setFileTransferFilepath (const std::string &path);
@@ -110,23 +110,25 @@ public:
 
 	const std::string &getExternalBodyUrl () const;
 
-	bool hasTextContent() const;
-	const Content* getTextContent() const;
+	bool hasTextContent () const;
+	const Content* getTextContent () const;
 
-	bool hasFileTransferContent() const;
-	const Content* getFileTransferContent() const;
+	bool hasFileTransferContent () const;
+	const Content* getFileTransferContent () const;
 
-	LinphoneContent *getFileTransferInformation() const;
-	void setFileTransferInformation(const LinphoneContent *content);
+	LinphoneContent *getFileTransferInformation () const;
+	void setFileTransferInformation (const LinphoneContent *content);
 
 	bool downloadFile ();
 
-	void sendImdn(Imdn::Type imdnType, LinphoneReason reason);
+	void sendImdn (Imdn::Type imdnType, LinphoneReason reason);
 
-	LinphoneReason receive();
-	void send();
+	void notifyReceiving ();
+	LinphoneReason receive ();
+	void send ();
 
-	void store();
+	void storeInDb ();
+	void updateInDb ();
 
 private:
 	// TODO: Clean attributes.
@@ -165,6 +167,8 @@ private:
 
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
+
+	bool toBeStored = true;
 
 	L_DECLARE_PUBLIC(ChatMessage);
 };

@@ -70,7 +70,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
 
 			if (lp_config_get_int(linphone_core_get_config(cCore), "misc", "store_rtt_messages", 1) == 1)
-				 pendingMessage->getPrivate()->store();
+				 pendingMessage->getPrivate()->storeInDb();
 
 			onChatMessageReceived(pendingMessage);
 			pendingMessage = nullptr;

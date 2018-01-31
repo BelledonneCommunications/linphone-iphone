@@ -177,6 +177,14 @@ const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChat
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getErrorInfo();
 }
 
+bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *message) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(message)->getToBeStored();
+}
+
+void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *message, bool_t to_be_stored) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(message)->setToBeStored(!!to_be_stored);
+}
+
 // =============================================================================
 // Methods
 // =============================================================================

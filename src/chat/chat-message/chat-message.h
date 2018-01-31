@@ -90,6 +90,9 @@ public:
 	bool isRead () const;
 	bool isReadOnly () const;
 
+	bool getToBeStored () const;
+	void setToBeStored (bool value);
+
 	const std::list<Content *> &getContents () const;
 	void addContent (Content &content);
 	void removeContent (const Content &content);

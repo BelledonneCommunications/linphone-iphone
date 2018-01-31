@@ -167,6 +167,21 @@ LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(Li
 
 // =============================================================================
 
+/**
+ * Get if a chat message is to be stored.
+ * @param[in] message LinphoneChatMessage object
+ * @return Whether or not the message is to be stored
+ */
+LINPHONE_PUBLIC bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *message);
+
+/**
+ * Set if a chat message is to be stored.
+ * This content type must match a content that is text representable, such as text/plain, text/html or image/svg+xml.
+ * @param[in] message LinphoneChatMessage object
+ * @param[in] to_be_stored Whether or not the chat message is to be stored
+ */
+LINPHONE_PUBLIC void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *message, bool_t to_be_stored);
+
 LINPHONE_PUBLIC unsigned int linphone_chat_message_store(LinphoneChatMessage *msg);
 
 /**
