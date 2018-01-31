@@ -98,6 +98,7 @@ set(ENUMS_HEADER_FILES
 )
 
 set(UTILS_HEADER_FILES
+	algorithm.h
 	enum-generator.h
 	enum-mask.h
 	fs.h
