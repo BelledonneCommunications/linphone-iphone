@@ -239,10 +239,9 @@ const ContentType &ChatMessagePrivate::getContentType () {
 
 void ChatMessagePrivate::setContentType (const ContentType &contentType) {
 	if (contents.size() > 0 && internalContent.getContentType().isEmpty() && internalContent.isEmpty()) {
-		contents.front()->setContentType(contentType);
-	} else {
-		internalContent.setContentType(contentType);
+		internalContent.setBody(contents.front()->getBody());
 	}
+	internalContent.setContentType(contentType);
 }
 
 const string &ChatMessagePrivate::getText () {
@@ -272,10 +271,9 @@ const string &ChatMessagePrivate::getText () {
 
 void ChatMessagePrivate::setText (const string &text) {
 	if (contents.size() > 0 && internalContent.getContentType().isEmpty() && internalContent.isEmpty()) {
-		contents.front()->setBody(text);
-	} else {
-		internalContent.setBody(text);
+		internalContent.setContentType(contents.front()->getContentType());
 	}
+	internalContent.setBody(text);
 }
 
 LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
