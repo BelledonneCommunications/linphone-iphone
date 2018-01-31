@@ -658,43 +658,6 @@ static void transfer_message_download_cancelled(void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void file_transfer_using_external_body_url(void) {
-	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
-		LinphoneChatRoom *chat_room;
-		LinphoneChatMessage *msg;
-		LinphoneChatMessageCbs *cbs;
-		LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
-
-		/* make sure lime is disabled */
-		linphone_core_enable_lime(marie->lc, LinphoneLimeDisabled);
-		linphone_core_enable_lime(pauline->lc, LinphoneLimeDisabled);
-
-		/* create a chatroom on pauline's side */
-		chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-
-		msg = linphone_chat_room_create_message(chat_room, NULL);
-
-		cbs = linphone_chat_message_get_callbacks(msg);
-		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-
-		linphone_chat_message_set_external_body_url(msg, "https://www.linphone.org:444//tmp/54ec58280ace9_c30709218df8eaba61d1.jpg");
-		linphone_chat_room_send_chat_message(chat_room, msg);
-
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-		if (marie->stat.last_received_chat_message) {
-			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
-			linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-			linphone_chat_message_download_file(marie->stat.last_received_chat_message);
-		}
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageFileTransferError, 1));
-		linphone_core_manager_destroy(pauline);
-		linphone_core_manager_destroy(marie);
-	}
-}
-
 static void file_transfer_2_messages_simultaneously(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -2342,7 +2305,6 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message with download io error", transfer_message_with_download_io_error),
 	TEST_NO_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled),
 	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
-	TEST_NO_TAG("Transfer message using external body url", file_transfer_using_external_body_url),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
 	TEST_NO_TAG("Text message denied", text_message_denied),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
