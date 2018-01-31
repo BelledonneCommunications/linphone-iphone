@@ -78,7 +78,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	}
 
 	Content newContent;
-	newContent.setContentType(ContentType("Message/CPIM"));
+	newContent.setContentType(ContentType::Cpim);
 	newContent.setBody(cpimMessage.asString());
 	message->setInternalContent(newContent);
 
