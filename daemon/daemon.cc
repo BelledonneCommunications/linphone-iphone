@@ -122,13 +122,18 @@ void *Daemon::iterateThread(void *arg) {
 }
 
 EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state) {
+	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
+	LinphoneAddress *fromAddr = linphone_call_log_get_from_address(callLog);
+	char *fromStr = linphone_address_as_string(fromAddr);
+
 	ostringstream ostr;
-	char *remote = linphone_call_get_remote_address_as_string(call);
-	ostr << "Event-type: call-state-changed\nEvent: " << linphone_call_state_to_string(state) << "\n";
-	ostr << "From: " << remote << "\n";
+	ostr << "Event-type: call-state-changed" << "\n";
+	ostr << "Event: " << linphone_call_state_to_string(state) << "\n";
+	ostr << "From: " << fromStr << "\n";
 	ostr << "Id: " << daemon->updateCallId(call) << "\n";
 	setBody(ostr.str().c_str());
-	ms_free(remote);
+
+	bctbx_free(fromStr);
 }
 
 DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
