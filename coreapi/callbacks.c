@@ -113,8 +113,11 @@ static void call_received(SalCallOp *h) {
 			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
 			linphone_address_unref(toAddr);
 			linphone_address_unref(fromAddr);
-			return;
+		} else {
+			//invite is for an unknown chatroom
+			h->decline(SalReasonNotFound, nullptr);
 		}
+		return;
 	} else {
 		// TODO: handle media conference joining if the "text" feature tag is not present
 	}
