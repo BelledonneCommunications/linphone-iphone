@@ -89,7 +89,8 @@ public:
 		} catch (const soci::soci_error &e) {
 			lWarning() << "Catched exception in MainDb::" << info.name << ".";
 			soci::soci_error::error_category category = e.get_error_category();
-			if (category == soci::soci_error::connection_error && info.mainDb->forceReconnect()) {
+			if ((category == soci::soci_error::connection_error
+				|| category == soci::soci_error::unknown) && info.mainDb->forceReconnect()) {
 				mResult = mFunction();
 				return;
 			}
