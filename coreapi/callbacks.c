@@ -555,17 +555,14 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalMessageDeliveryStatus 
 	return LinphoneChatMessageStateIdle;
 }
 
-static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status){
-	LinphoneChatMessage *chat_msg=(LinphoneChatMessage* )op->get_user_pointer();
+static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status) {
+	LinphonePrivate::ChatMessage *msg = reinterpret_cast<LinphonePrivate::ChatMessage *>(op->get_user_pointer());
+	if (!msg)
+		return; // Do not handle delivery status for isComposing messages.
 
-	if (chat_msg == NULL) {
-		// Do not handle delivery status for isComposing messages.
-		return;
-	}
-	// check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
-	if (linphone_chat_message_get_chat_room(chat_msg) != NULL) {
-		linphone_chat_message_update_state(chat_msg, chatStatusSal2Linphone(status));
-	}
+	// Check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
+	if (msg->getChatRoom())
+		msg->updateState((LinphonePrivate::ChatMessage::State)chatStatusSal2Linphone(status));
 }
 
 static void info_received(SalOp *op, SalBodyHandler *body_handler) {

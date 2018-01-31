@@ -543,7 +543,7 @@ void ChatMessagePrivate::send () {
 			core->getCCore(), op, peer, getSalCustomHeaders(),
 			!!lp_config_get_int(core->getCCore()->config, "sip", "chat_msg_with_contact", 0)
 		);
-		op->set_user_pointer(L_GET_C_BACK_PTR(q));     /* If out of call, directly store msg */
+		op->set_user_pointer(q);     /* If out of call, directly store msg */
 		linphone_address_unref(peer);
 	}
 	op->set_from(q->getFromAddress().asString().c_str());
@@ -712,8 +712,10 @@ ChatMessage::~ChatMessage () {
 	for (Content *content : d->contents)
 		delete content;
 
-	if (d->salOp)
-		d->salOp->release();
+	if (d->salOp) {
+		d->salOp->set_user_pointer(nullptr);
+		d->salOp->unref();
+	}
 	if (d->salCustomHeaders)
 		sal_custom_header_unref(d->salCustomHeaders);
 }
