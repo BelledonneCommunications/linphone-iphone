@@ -133,11 +133,6 @@ static LinphoneLoggingService *_linphone_logging_service_new(void) {
 	service->cbs = _linphone_logging_service_cbs_new();
 	bctbx_add_log_handler(service->log_handler);
 
-	/* We need to set the legacy log handler to NULL here
-	   because LinphoneCore have a default log handler that dump
-	   all messages into the standard output. */
-	_linphone_core_set_log_handler(NULL);
-
 	return service;
 }
 
@@ -241,6 +236,12 @@ void linphone_logging_service_cbs_unref(LinphoneLoggingServiceCbs *cbs) {
 }
 
 void linphone_logging_service_cbs_set_log_message_written(LinphoneLoggingServiceCbs *cbs, LinphoneLoggingServiceCbsLogMessageWrittenCb cb) {
+	
+	/* We need to set the legacy log handler to NULL here
+	 because LinphoneCore have a default log handler that dump
+	 all messages into the standard output. */
+	/*this function is moved here to make sure default log handler is only removed when user defined logging cbs is set*/
+	_linphone_core_set_log_handler(NULL);
 	cbs->message_event_cb = cb;
 }
 
