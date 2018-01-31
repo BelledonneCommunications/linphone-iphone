@@ -59,6 +59,12 @@ static void chat_room_participant_removed (LinphoneChatRoom *cr, const LinphoneE
 	manager->stat.number_of_participants_removed++;
 }
 
+static void chat_room_participant_device_added (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	LinphoneCore *core = linphone_chat_room_get_core(cr);
+	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
+	manager->stat.number_of_participant_devices_added++;
+}
+
 static void chat_room_state_changed (LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
 	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
@@ -107,6 +113,7 @@ static void core_chat_room_state_changed (LinphoneCore *core, LinphoneChatRoom *
 		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
 		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
+		linphone_chat_room_cbs_set_participant_device_added(cbs, chat_room_participant_device_added);
 	}
 }
 
@@ -649,22 +656,22 @@ static void group_chat_room_add_admin_lately_notified (void) {
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
 	stats initialLaureStats = laure->stat;
-	
+
 	// Marie creates a new group chat room
 	const char *initialSubject = "Colleagues";
 	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject, -1);
-	
+
 	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
-	
+
 	// Check that the chat room is correctly created on Pauline's side and that the participants are added
 	LinphoneChatRoom *paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, 0);
-	
+
 	// Check that the chat room is correctly created on Laure's side and that the participants are added
 	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
-	
+
 	//simulate pauline has disapeared
 	linphone_core_set_network_reachable(pauline->lc, FALSE);
-	
+
 	// Marie designates Pauline as admin
 	LinphoneAddress *paulineAddr = linphone_address_new(linphone_core_get_identity(pauline->lc));
 	LinphoneParticipant *paulineParticipant = linphone_chat_room_find_participant(marieCr, paulineAddr);
@@ -679,12 +686,12 @@ static void group_chat_room_add_admin_lately_notified (void) {
 	linphone_core_set_network_reachable(pauline->lc, TRUE);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_participant_admin_statuses_changed, initialPaulineStats.number_of_participant_admin_statuses_changed + 1, 3000));
 	BC_ASSERT_TRUE(linphone_participant_is_admin(paulineParticipant));
-	
+
 	// Clean db from chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
-	
+
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -1400,6 +1407,129 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 
 	// Check that the chat room is correctly created on Laure's side and that the participants are added
 	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
+
+	// Check that added Marie's device didn't change her admin status
+	LinphoneAddress *marieAddr = linphone_address_new(linphone_core_get_identity(marie1->lc));
+	LinphoneParticipant *marieParticipant = linphone_chat_room_get_me(marieCr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_get_me(marieCr2);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_find_participant(paulineCr, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_find_participant(paulineCr2, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_find_participant(laureCr, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	linphone_address_unref(marieAddr);
+
+	// Marie removes Laure from the chat room
+	LinphoneAddress *laureAddr = linphone_address_new(linphone_core_get_identity(laure->lc));
+	LinphoneParticipant *laureParticipant = linphone_chat_room_find_participant(marieCr, laureAddr);
+	linphone_address_unref(laureAddr);
+	BC_ASSERT_PTR_NOT_NULL(laureParticipant);
+	linphone_chat_room_remove_participant(marieCr, laureParticipant);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateTerminated, initialLaureStats.number_of_LinphoneChatRoomStateTerminated + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie1->stat.number_of_participants_removed, initialMarie1Stats.number_of_participants_removed + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie2->stat.number_of_participants_removed, initialMarie2Stats.number_of_participants_removed + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline1->stat.number_of_participants_removed, initialPauline1Stats.number_of_participants_removed + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline2->stat.number_of_participants_removed, initialPauline2Stats.number_of_participants_removed + 1, 1000));
+
+	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
+	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 1, int, "%d");
+	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr2), 1, int, "%d");
+
+	// Clean db from chat room
+	linphone_core_manager_delete_chat_room(marie1, marieCr, coresList);
+	linphone_core_delete_chat_room(marie2->lc, marieCr2);
+	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline1, paulineCr, coresList);
+	linphone_core_delete_chat_room(pauline2->lc, paulineCr2);
+
+	bctbx_list_free(coresList);
+	bctbx_list_free(coresManagerList);
+	linphone_core_manager_destroy(marie1);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(pauline1);
+	linphone_core_manager_destroy(pauline2);
+	linphone_core_manager_destroy(laure);
+}
+
+static void group_chat_room_add_device (void) {
+	LinphoneCoreManager *marie1 = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager *pauline1 = linphone_core_manager_create("pauline_rc");
+	LinphoneCoreManager *pauline2 = linphone_core_manager_create("pauline_rc");
+	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
+	bctbx_list_t *coresManagerList = NULL;
+	bctbx_list_t *participantsAddresses = NULL;
+	coresManagerList = bctbx_list_append(coresManagerList, marie1);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline1);
+	coresManagerList = bctbx_list_append(coresManagerList, pauline2);
+	coresManagerList = bctbx_list_append(coresManagerList, laure);
+	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
+	start_core_for_conference(coresManagerList);
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline1->lc)));
+	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
+	stats initialMarie1Stats = marie1->stat;
+	stats initialPauline1Stats = pauline1->stat;
+	stats initialPauline2Stats = pauline2->stat;
+	stats initialLaureStats = laure->stat;
+
+	// Marie creates a new group chat room
+	const char *initialSubject = "Colleagues";
+	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie1, &initialMarie1Stats, participantsAddresses, initialSubject, -1);
+	participantsAddresses = NULL;
+	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
+
+	// Check that the chat room is correctly created on Pauline's side and that the participants are added
+	LinphoneChatRoom *paulineCr = check_creation_chat_room_client_side(coresList, pauline1, &initialPauline1Stats, confAddr, initialSubject, 2, 0);
+	LinphoneChatRoom *paulineCr2 = check_creation_chat_room_client_side(coresList, pauline2, &initialPauline2Stats, confAddr, initialSubject, 2, 0);
+
+	// Check that the chat room is correctly created on Laure's side and that the participants are added
+	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
+
+	// Marie adds a new device
+	LinphoneCoreManager *marie2 = linphone_core_manager_create("marie_rc");
+	coresManagerList = bctbx_list_append(coresManagerList, marie2);
+	LinphoneAddress *factoryAddr = linphone_address_new(sFactoryUri);
+	_configure_core_for_conference(marie2, factoryAddr);
+	linphone_address_unref(factoryAddr);
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_chat_room_state_changed(cbs, core_chat_room_state_changed);
+	_configure_core_for_callbacks(marie2, cbs);
+	linphone_core_cbs_unref(cbs);
+	coresList = bctbx_list_append(coresList, marie2->lc);
+	_start_core(marie2);
+	stats initialMarie2Stats = marie2->stat;
+	// Check that the chat room is correctly created on second Marie's device
+	LinphoneChatRoom *marieCr2 = check_creation_chat_room_client_side(coresList, marie2, &initialMarie2Stats, confAddr, initialSubject, 2, 1);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie1->stat.number_of_participant_devices_added, initialMarie1Stats.number_of_participant_devices_added + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline1->stat.number_of_participant_devices_added, initialMarie1Stats.number_of_participant_devices_added + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline2->stat.number_of_participant_devices_added, initialMarie1Stats.number_of_participant_devices_added + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_participant_devices_added, initialMarie1Stats.number_of_participant_devices_added + 1, 1000));
+
+	// Check that adding Marie's device didn't change her admin status
+	LinphoneParticipant *marieParticipant = linphone_chat_room_get_me(marieCr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_get_me(marieCr2);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	LinphoneAddress *marieAddr = linphone_address_new(linphone_core_get_identity(marie1->lc));
+	marieParticipant = linphone_chat_room_find_participant(paulineCr, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_find_participant(paulineCr2, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	marieParticipant = linphone_chat_room_find_participant(laureCr, marieAddr);
+	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
+	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	linphone_address_unref(marieAddr);
 
 	// Marie removes Laure from the chat room
 	LinphoneAddress *laureAddr = linphone_address_new(linphone_core_get_identity(laure->lc));
@@ -2254,6 +2384,8 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
+	// TODO: Use when we support adding a new device in created conf
+	//TEST_TWO_TAGS("Admin add device and doesn't lose admin status", group_chat_room_add_device, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send multiple is composing", multiple_is_composing_notification, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Fallback to basic chat room", group_chat_room_fallback_to_basic_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Group chat room creation fails if invited participants don't support it", group_chat_room_creation_fails_if_invited_participants_dont_support_it, "Server", "LeaksMemory"),

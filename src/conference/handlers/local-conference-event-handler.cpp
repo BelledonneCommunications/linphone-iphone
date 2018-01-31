@@ -315,11 +315,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceAdded (c
 	confInfo.setUsers(users);
 
 	UserType user = UserType();
-	UserRolesType roles;
 	UserType::EndpointSequence endpoints;
-	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
-	user.getRoles()->getEntry().push_back("participant");
 	user.setState(StateType::partial);
 
 	EndpointType endpoint = EndpointType();
@@ -339,11 +336,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 	confInfo.setUsers(users);
 
 	UserType user = UserType();
-	UserRolesType roles;
 	UserType::EndpointSequence endpoints;
-	user.setRoles(roles);
 	user.setEntity(addr.asStringUriOnly());
-	user.getRoles()->getEntry().push_back("participant");
 	user.setState(StateType::partial);
 
 	EndpointType endpoint = EndpointType();

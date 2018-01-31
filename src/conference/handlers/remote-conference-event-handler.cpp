@@ -103,16 +103,6 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 					isFullState
 				);
 			} else {
-				bool isAdmin = false;
-				if (user.getRoles()) {
-					for (const auto &entry : user.getRoles()->getEntry()) {
-						if (entry == "admin") {
-							isAdmin = true;
-							break;
-						}
-					}
-				}
-
 				if (user.getState() == StateType::full) {
 					confListener->onParticipantAdded(
 						make_shared<ConferenceParticipantEvent>(
@@ -126,16 +116,25 @@ void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xm
 					);
 				}
 
-				confListener->onParticipantSetAdmin(
-					make_shared<ConferenceParticipantEvent>(
-						isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
-						tm,
-						chatRoomId,
-						lastNotify,
-						addr
-					),
-					isFullState
-				);
+				if (user.getRoles()) {
+					bool isAdmin = false;
+					for (const auto &entry : user.getRoles()->getEntry()) {
+						if (entry == "admin") {
+							isAdmin = true;
+							break;
+						}
+					}
+					confListener->onParticipantSetAdmin(
+						make_shared<ConferenceParticipantEvent>(
+							isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
+							tm,
+							chatRoomId,
+							lastNotify,
+							addr
+						),
+						isFullState
+					);
+				}
 
 				for (const auto &endpoint : user.getEndpoint()) {
 					if (!endpoint.getEntity().present())
