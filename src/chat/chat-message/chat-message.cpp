@@ -655,6 +655,10 @@ void ChatMessagePrivate::send () {
 		}
 	}
 
+	// Remove internal content as it is not needed anymore and will confuse some old methods like getContentType()
+	internalContent.setBody("");
+	internalContent.setContentType(ContentType(""));
+
 	if (imdnId.empty())
 		setImdnMessageId(op->get_call_id());   /* must be known at that time */
 
