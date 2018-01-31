@@ -1358,6 +1358,8 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); // file transfer
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1, int, "%d");
+	linphone_chat_message_unref(msg);
+
 end:
 	remove("tmpZIDCacheMarie.sqlite");
 	remove("tmpZIDCachePauline.sqlite");
