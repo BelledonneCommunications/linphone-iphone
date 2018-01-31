@@ -2174,6 +2174,9 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
 
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(msg), "image/svg+xml");
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), buf);
+
 	if (marie->stat.last_received_chat_message) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(marie->stat.last_received_chat_message), "image/svg+xml");
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), buf);
@@ -2182,6 +2185,7 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 	bctbx_free(buf);
 
 end:
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	remove("tmpZIDCacheMarie.sqlite");
@@ -2299,12 +2303,14 @@ void im_encryption_engine_b64_base(bool_t async) {
 	chat_msg = linphone_chat_room_create_message(chat_room, "Bla bla bla bla");
 	linphone_chat_room_send_chat_message(chat_room, chat_msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(chat_msg), "Bla bla bla bla");
 	BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
 	if (marie->stat.last_received_chat_message) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "Bla bla bla bla");
 	}
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room(marie->lc,pauline->identity));
 
+	linphone_chat_message_unref(chat_msg);
 	linphone_im_encryption_engine_unref(marie_imee);
 	linphone_im_encryption_engine_unref(pauline_imee);
 	linphone_core_manager_destroy(marie);
