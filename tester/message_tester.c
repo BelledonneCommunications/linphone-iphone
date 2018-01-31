@@ -989,7 +989,6 @@ static void _imdn_notifications(bool_t with_lime) {
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 	sent_cm = linphone_chat_room_create_message(pauline_chat_room, "Tell me if you get my message");
-	linphone_chat_message_ref(sent_cm);
 	cbs = linphone_chat_message_get_callbacks(sent_cm);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(pauline_chat_room, sent_cm);
@@ -1056,7 +1055,6 @@ static void _im_notification_policy(bool_t with_lime) {
 
 	/* Test imdn delivered */
 	msg1 = linphone_chat_room_create_message(pauline_chat_room, "Happy new year!");
-	linphone_chat_message_ref(msg1);
 	cbs = linphone_chat_message_get_callbacks(msg1);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(pauline_chat_room, msg1);
@@ -1065,14 +1063,12 @@ static void _im_notification_policy(bool_t with_lime) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDeliveredToUser, 0, int, "%d");
 	linphone_im_notif_policy_set_recv_imdn_delivered(pauline_policy, TRUE);
 	msg2 = linphone_chat_room_create_message(pauline_chat_room, "I said: Happy new year!");
-	linphone_chat_message_ref(msg2);
 	cbs = linphone_chat_message_get_callbacks(msg2);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(pauline_chat_room, msg2);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 2));
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
 	msg3 = linphone_chat_room_create_message(marie_chat_room, "Thank you! Happy easter to you!");
-	linphone_chat_message_ref(msg3);
 	cbs = linphone_chat_message_get_callbacks(msg3);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(marie_chat_room, msg3);
@@ -1081,7 +1077,6 @@ static void _im_notification_policy(bool_t with_lime) {
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageDeliveredToUser, 0, int, "%d");
 	linphone_im_notif_policy_set_send_imdn_delivered(pauline_policy, TRUE);
 	msg4 = linphone_chat_room_create_message(marie_chat_room, "Yeah, yeah, I heard that...");
-	linphone_chat_message_ref(msg4);
 	cbs = linphone_chat_message_get_callbacks(msg4);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(marie_chat_room, msg4);
