@@ -59,7 +59,7 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setState(ChatMessage::State state, bool force = false);
+	void setState(ChatMessage::State state, bool force = false, bool storeInDb = true);
 
 	void setTime(time_t time);
 

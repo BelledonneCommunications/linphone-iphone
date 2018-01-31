@@ -63,7 +63,7 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
+void ChatMessagePrivate::setState (ChatMessage::State s, bool force, bool storeInDb) {
 	L_Q();
 
 	if (force)
@@ -98,7 +98,9 @@ void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
 		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
 
-	store();
+	if (storeInDb) {
+		store();
+	}
 }
 
 belle_http_request_t *ChatMessagePrivate::getHttpRequest () const {
@@ -389,7 +391,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 	shared_ptr<Core> core = q->getCore();
 	shared_ptr<AbstractChatRoom> chatRoom = q->getChatRoom();
 
-	setState(ChatMessage::State::Delivered);
+	setState(ChatMessage::State::Delivered, false, false); // Wait for decryption and CPIM to reveal the real message to know if it must be stored or not
 
 	// ---------------------------------------
 	// Start of message modification
