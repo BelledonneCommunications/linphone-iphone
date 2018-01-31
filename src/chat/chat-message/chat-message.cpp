@@ -613,9 +613,10 @@ void ChatMessagePrivate::send () {
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (internalContent.getContentType().isValid()) {
 		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
-	} else
+	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
-
+	}
+	
 	// Restore FileContents and remove FileTransferContents
 	list<Content*>::iterator i = contents.begin();
 	while (i != contents.end()) {
@@ -654,11 +655,12 @@ void ChatMessagePrivate::store() {
 	// TODO: store message in the future
 	if (linphone_core_conference_server_enabled(q->getCore()->getCCore())) return;
 
-	bool messageToBeStored = false;
+	bool messageToBeStored = true;
 	for (Content *c : contents) {
 		ContentType contentType = c->getContentType();
-		if (contentType == ContentType::FileTransfer || contentType == ContentType::PlainText || c->isFile()) {
-			messageToBeStored = true;
+		if (contentType == ContentType::Imdn || contentType == ContentType::ImIsComposing) {
+			messageToBeStored = false;
+			break;
 		}
 	}
 	if (!messageToBeStored) {
