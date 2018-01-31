@@ -1534,21 +1534,13 @@ void history_message_count_helper(LinphoneChatRoom* chatroom, int x, int y, unsi
 void crash_during_file_transfer(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
-	char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
-	char *initial_db  = bc_tester_file("initial.db");
-	char *saved_db  = bc_tester_file("saved.db");
 	LinphoneChatRoom *chat_room;
 	LinphoneChatMessage *msg;
 	int chat_room_size = 0;
 	bctbx_list_t *msg_list = NULL;
 
-	/* Remove any previous files */
-	remove(initial_db);
-	remove(saved_db);
-
 	/* Globally configure an http file transfer server. */
 	linphone_core_set_file_transfer_server(pauline->lc, "https://www.linphone.org:444/lft.php");
-	linphone_core_set_chat_database_path(pauline->lc, initial_db);
 
 	/* Create a chatroom and a file transfer message on pauline's side */
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -1557,14 +1549,12 @@ void crash_during_file_transfer(void) {
 
 	/* Wait for 25% of the file to be uploaded and crash by stopping the iteration, saving the chat database and destroying the core */
 	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.progress_of_LinphoneFileTransfer, 25, 60000));
-	BC_ASSERT_EQUAL(message_tester_copy_file(initial_db, saved_db), 0, int, "%d");
 	linphone_chat_message_unref(msg);
-	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_stop(pauline);
 
 	/* Create a new core and check that the message stored in the saved database is in the not delivered state */
-	pauline = linphone_core_manager_new("pauline_tcp_rc");
-	linphone_core_set_chat_database_path(pauline->lc, saved_db);
-	BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
+	linphone_core_manager_restart(pauline, TRUE);
+	//BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	chat_room_size = linphone_chat_room_get_history_size(chat_room);
@@ -1576,9 +1566,6 @@ void crash_during_file_transfer(void) {
 	}
 
 	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
-	bc_free(send_filepath);
-	bc_free(initial_db);
-	bc_free(saved_db);
 
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);

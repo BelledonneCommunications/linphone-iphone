@@ -36,6 +36,7 @@ class FileTransferContent;
 class FileTransferChatMessageModifier : public ChatMessageModifier {
 public:
 	FileTransferChatMessageModifier () = default;
+	~FileTransferChatMessageModifier ();
 
 	Result encode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
 	Result decode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;

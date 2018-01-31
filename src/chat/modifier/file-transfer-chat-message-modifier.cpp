@@ -42,6 +42,10 @@ void FileTransferChatMessageModifier::setHttpRequest (belle_http_request_t *requ
 	httpRequest = request;
 }
 
+FileTransferChatMessageModifier::~FileTransferChatMessageModifier () {
+	releaseHttpRequest();
+}
+
 ChatMessageModifier::Result FileTransferChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	chatMessage = message;
 
