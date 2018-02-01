@@ -418,9 +418,6 @@ shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId, Chat
 void ChatRoom::markAsRead () {
 	L_D();
 
-	if (getUnreadChatMessageCount() == 0)
-		return;
-
 	CorePrivate *dCore = getCore()->getPrivate();
 	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId))
 		chatMessage->sendDisplayNotification();
