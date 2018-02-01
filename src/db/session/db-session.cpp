@@ -194,9 +194,10 @@ bool DbSession::checkTableExists (const string &table) const {
 			case DbSessionPrivate::Backend::None:
 				return false;
 		}
+		L_ASSERT(false);
 	#endif // ifdef SOCI_ENABLED
 
-	L_ASSERT(false);
+	(void)table;
 	return false;
 }
 
