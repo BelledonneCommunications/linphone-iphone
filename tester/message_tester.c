@@ -2127,9 +2127,9 @@ void _text_message_with_custom_content_type(bool_t with_lime) {
 	}
 
 	bctbx_free(buf);
+	linphone_chat_message_unref(msg);
 
 end:
-	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	remove("tmpZIDCacheMarie.sqlite");
