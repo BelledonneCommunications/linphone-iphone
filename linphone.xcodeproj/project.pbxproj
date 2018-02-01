@@ -664,6 +664,8 @@
 		8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
 		8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C56289E20236AA7007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
+		8C56289F20236C25007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
 		8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C5BCED21EB3859200A9AAEF /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
@@ -851,6 +853,20 @@
 			proxyType = 2;
 			remoteGlobalIDString = FAB8A0141CAC546A00C6DFC1;
 			remoteInfo = KIFFrameworkConsumerTests;
+		};
+		8C56289A20236AA7007A8ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8CD87D4C1EF5105800ACA260;
+			remoteInfo = LinphoneManager;
+		};
+		8C56289C20236AA7007A8ECC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8CD87D541EF5105900ACA260;
+			remoteInfo = LinphoneManagerTests;
 		};
 		F08F119119C09C6B007D70C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1677,6 +1693,7 @@
 		8C3EA9E21EB892D600B732B6 /* msopenh264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msopenh264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msopenh264.framework"; sourceTree = "<group>"; };
 		8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msx264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msx264.framework"; sourceTree = "<group>"; };
 		8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphonetester.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphonetester.framework"; sourceTree = "<group>"; };
+		8C56289120236AA6007A8ECC /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = submodules/linphone/tester/db; sourceTree = SOURCE_ROOT; };
 		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
 		8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = bctoolbox.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox.framework"; sourceTree = "<group>"; };
 		8C5BCEC81EB3859200A9AAEF /* linphone.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphone.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphone.framework"; sourceTree = "<group>"; };
@@ -2380,6 +2397,8 @@
 				63058A071B4E816A00EFAE36 /* KIF.framework */,
 				633FC7C81CD7466400774B8B /* KIFFrameworkConsumer.app */,
 				633FC7CA1CD7466400774B8B /* KIFFrameworkConsumerTests.xctest */,
+				8C56289B20236AA7007A8ECC /* LinphoneManager.framework */,
+				8C56289D20236AA7007A8ECC /* LinphoneManagerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2387,6 +2406,7 @@
 		63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */ = {
 			isa = PBXGroup;
 			children = (
+				8C56289120236AA6007A8ECC /* db */,
 				635598811C96AFFA006ED99A /* vcards */,
 				63058AE41B4E952E00EFAE36 /* share */,
 				63058AE11B4E93A100EFAE36 /* tester_hosts */,
@@ -3320,6 +3340,20 @@
 			remoteRef = 633FC7C91CD7466400774B8B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		8C56289B20236AA7007A8ECC /* LinphoneManager.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = LinphoneManager.framework;
+			remoteRef = 8C56289A20236AA7007A8ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8C56289D20236AA7007A8ECC /* LinphoneManagerTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = LinphoneManagerTests.xctest;
+			remoteRef = 8C56289C20236AA7007A8ECC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -3434,6 +3468,7 @@
 				633FEDB61D3CD5590014B822 /* call_alt_start_default.png in Resources */,
 				6352A5761BE0D4B800594C1C /* CallSideMenuView.xib in Resources */,
 				633FEF0D1D3CD55A0014B822 /* options_transfer_call_disabled@2x.png in Resources */,
+				8C56289E20236AA7007A8ECC /* db in Resources */,
 				633FEDEF1D3CD5590014B822 /* call_transfer_default@2x.png in Resources */,
 				633FEF391D3CD55A0014B822 /* routes_selected@2x.png in Resources */,
 				633FEE491D3CD5590014B822 /* delete_default@2x.png in Resources */,
@@ -3881,6 +3916,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C56289F20236C25007A8ECC /* db in Resources */,
 				635598821C96AFFA006ED99A /* vcards in Resources */,
 				63058ADA1B4E937300EFAE36 /* certificates in Resources */,
 				63B21A7D1C623DA80074DFF8 /* test_inprogress.png in Resources */,

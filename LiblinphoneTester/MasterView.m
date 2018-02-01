@@ -63,7 +63,7 @@ void tester_logs_handler(int level, const char *fmt, va_list args) {
 	LOGI(@"Bundle path: %@", bundlePath);
 	LOGI(@"Writable path: %@", writablePath);
 
-#if (TARGET_OS_SIMULATOR)
+#if 0//(TARGET_OS_SIMULATOR)
 	char *xmlFile = bc_tester_file("LibLinphoneIOS.xml");
 	char *args[] = {"--xml-file", xmlFile};
 	bc_tester_parse_args(2, args, 0);
