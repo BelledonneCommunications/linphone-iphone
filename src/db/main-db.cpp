@@ -2084,6 +2084,7 @@ void MainDb::markChatMessagesAsRead (const ChatRoomId &chatRoomId) const {
 			soci::transaction tr(*session);
 			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 			*session << query, soci::use(dbChatRoomId);
+			tr.commit();
 		}
 
 		return true;
