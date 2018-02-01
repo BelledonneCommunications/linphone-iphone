@@ -93,6 +93,8 @@ public:
 
 	void setChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 
+	void setEncryptionPrevented (bool value) { encryptionPrevented = value; }
+
 	// -----------------------------------------------------------------------------
 	// Deprecated methods only used for C wrapper, to be removed some day...
 	// -----------------------------------------------------------------------------
@@ -169,6 +171,7 @@ private:
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
 
+	bool encryptionPrevented = false;
 	bool toBeStored = true;
 
 	L_DECLARE_PUBLIC(ChatMessage);

@@ -353,6 +353,8 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(*content);
 
+	if (reason != LinphoneReasonNone)
+		msg->getPrivate()->setEncryptionPrevented(true);
 	msg->setToBeStored(false);
 
 	msg->getPrivate()->send();
@@ -628,15 +630,17 @@ void ChatMessagePrivate::send () {
 		if ((currentSendStep &ChatMessagePrivate::Step::Encryption) == ChatMessagePrivate::Step::Encryption) {
 			lInfo() << "Encryption step already done, skipping";
 		} else {
-			EncryptionChatMessageModifier ecmm;
-			ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
-			if (result == ChatMessageModifier::Result::Error) {
-				sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
-				setState(ChatMessage::State::NotDelivered);
-				return;
-			} else if (result == ChatMessageModifier::Result::Suspended) {
-				currentSendStep |= ChatMessagePrivate::Step::Encryption;
-				return;
+			if (!encryptionPrevented) {
+				EncryptionChatMessageModifier ecmm;
+				ChatMessageModifier::Result result = ecmm.encode(q->getSharedFromThis(), errorCode);
+				if (result == ChatMessageModifier::Result::Error) {
+					sal_error_info_set((SalErrorInfo *)op->get_error_info(), SalReasonNotAcceptable, "SIP", errorCode, "Unable to encrypt IM", nullptr);
+					setState(ChatMessage::State::NotDelivered);
+					return;
+				} else if (result == ChatMessageModifier::Result::Suspended) {
+					currentSendStep |= ChatMessagePrivate::Step::Encryption;
+					return;
+				}
 			}
 			currentSendStep |= ChatMessagePrivate::Step::Encryption;
 		}
