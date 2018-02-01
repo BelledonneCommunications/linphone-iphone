@@ -21,25 +21,6 @@
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
 
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#else
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#endif
-
-#ifdef HAVE_GTK
-#include <gtk/gtk.h>
-#endif
-
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
-
-
 static FILE * log_file = NULL;
 
 #ifdef __ANDROID__
@@ -219,14 +200,6 @@ int main (int argc, char *argv[])
 {
 	int i;
 	int ret;
-
-#ifdef HAVE_GTK
-	gtk_init(&argc, &argv);
-#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
-	g_thread_init(NULL);
-#endif
-	gdk_threads_init();
-#endif
 
 	liblinphone_tester_init(NULL);
 	linphone_core_set_log_level(ORTP_ERROR);

@@ -23,21 +23,6 @@
 #include <bctoolbox/tester.h>
 #include "tester_utils.h"
 
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#ifndef _MSC_VER
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#endif
-
-#ifdef HAVE_GTK
-#include <gtk/gtk.h>
-#endif
-
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
-
 #if _WIN32
 #define unlink _unlink
 #endif
@@ -94,27 +79,25 @@ LinphoneAddress * create_linphone_address(const char * domain) {
 }
 
 LinphoneAddress * create_linphone_address_for_algo(const char * domain, const char* username) {
-    LinphoneAddress *addr = linphone_address_new(NULL);
-    if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
-    /* For clients who support different algorithms, their usernames must be differnet for having diffrent forms of password */
-    if(username) linphone_address_set_username(addr,username);
-    else linphone_address_set_username(addr,test_username);
-    if(username) BC_ASSERT_STRING_EQUAL(username,linphone_address_get_username(addr));
-    else BC_ASSERT_STRING_EQUAL(test_username,linphone_address_get_username(addr));
-    if (!domain) domain= test_route;
-    linphone_address_set_domain(addr,domain);
-    BC_ASSERT_STRING_EQUAL(domain,linphone_address_get_domain(addr));
-    linphone_address_set_display_name(addr, NULL);
-    linphone_address_set_display_name(addr, "Mr Tester");
-    BC_ASSERT_STRING_EQUAL("Mr Tester",linphone_address_get_display_name(addr));
-    return addr;
+	LinphoneAddress *addr = linphone_address_new(NULL);
+	if (!BC_ASSERT_PTR_NOT_NULL(addr)) return NULL;
+	/* For clients who support different algorithms, their usernames must be differnet for having diffrent forms of password */
+	if (username) linphone_address_set_username(addr,username);
+	else linphone_address_set_username(addr,test_username);
+	if (username) BC_ASSERT_STRING_EQUAL(username, linphone_address_get_username(addr));
+	else BC_ASSERT_STRING_EQUAL(test_username, linphone_address_get_username(addr));
+	if (!domain) domain = test_route;
+	linphone_address_set_domain(addr,domain);
+	BC_ASSERT_STRING_EQUAL(domain, linphone_address_get_domain(addr));
+	linphone_address_set_display_name(addr, NULL);
+	linphone_address_set_display_name(addr, "Mr Tester");
+	BC_ASSERT_STRING_EQUAL("Mr Tester", linphone_address_get_display_name(addr));
+	return addr;
 }
 
 static void auth_info_requested(LinphoneCore *lc, const char *realm, const char *username, const char *domain) {
 	stats* counters;
-	ms_message("Auth info requested  for user id [%s] at realm [%s]\n"
-			   ,username
-			   ,realm);
+	ms_message("Auth info requested  for user id [%s] at realm [%s]\n", username, realm);
 	counters = get_stats(lc);
 	counters->number_of_auth_info_requested++;
 }
@@ -216,11 +199,6 @@ bool_t wait_for_list(bctbx_list_t* lcs,int* counter,int value,int timeout_ms) {
 	liblinphone_tester_clock_start(&start);
 	while ((counter==NULL || *counter<value) && !liblinphone_tester_clock_elapsed(&start,timeout_ms)) {
 		for (iterator=lcs;iterator!=NULL;iterator=iterator->next) {
-#ifdef HAVE_GTK
-			gdk_threads_enter();
-			gtk_main_iteration_do(FALSE);
-			gdk_threads_leave();
-#endif
 			linphone_core_iterate((LinphoneCore*)(iterator->data));
 		}
 #ifdef LINPHONE_WINDOWS_DESKTOP
@@ -621,9 +599,9 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&clonable_object_test_suite);
 	bc_tester_add_suite(&main_db_test_suite);
 	bc_tester_add_suite(&property_container_test_suite);
-#if defined(VIDEO_ENABLED) && defined(HAVE_GTK)
-	bc_tester_add_suite(&video_test_suite);
-#endif
+	#ifdef VIDEO_ENABLED
+		bc_tester_add_suite(&video_test_suite);
+	#endif // ifdef VIDEO_ENABLED
 	bc_tester_add_suite(&multicast_call_test_suite);
 	bc_tester_add_suite(&proxy_config_test_suite);
 #if HAVE_SIPP
@@ -949,10 +927,12 @@ static void linphone_conference_server_refer_received(LinphoneCore *core, const 
 	linphone_address_unref(refer_to_addr);
 }
 
-static void linphone_conference_server_registration_state_changed(LinphoneCore *core,
-																  LinphoneProxyConfig *cfg,
-																  LinphoneRegistrationState cstate,
-																  const char *message) {
+static void linphone_conference_server_registration_state_changed(
+	LinphoneCore *core,
+	LinphoneProxyConfig *cfg,
+	LinphoneRegistrationState cstate,
+	const char *message
+) {
 	LinphoneCoreCbs *cbs = linphone_core_get_current_callbacks(core);
 	LinphoneConferenceServer *m = (LinphoneConferenceServer *)linphone_core_cbs_get_user_data(cbs);
 	if(cfg == linphone_core_get_default_proxy_config(core)) {
