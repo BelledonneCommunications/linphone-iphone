@@ -51,6 +51,9 @@ public:
 
 	typedef EnumMask<Capabilities> CapabilitiesMask;
 
+	virtual bool canHandleCpim () const = 0;
+	virtual bool canHandleMultipart () const = 0;
+
 	virtual const ChatRoomId &getChatRoomId () const = 0;
 
 	virtual const IdentityAddress &getPeerAddress () const = 0;

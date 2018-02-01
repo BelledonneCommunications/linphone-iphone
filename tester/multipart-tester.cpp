@@ -42,6 +42,7 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 
 	IdentityAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
 	shared_ptr<AbstractChatRoom> marieRoom = pauline->lc->cppPtr->getOrCreateBasicChatRoom(paulineAddress);
+	static_pointer_cast<BasicChatRoom>(marieRoom)->allowMultipart(true);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createChatMessage();
 	if (first_file_transfer) {

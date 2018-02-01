@@ -57,13 +57,15 @@ public:
 
 	std::shared_ptr<Core> getCore () const;
 
+	bool canHandleCpim () const override;
+	bool canHandleMultipart () const override;
+
 	CapabilitiesMask getCapabilities () const override;
 	bool hasBeenLeft () const override;
 
 	const IdentityAddress &getConferenceAddress () const override;
 
 	bool canHandleParticipants () const override;
-	bool canHandleCpim () const override;
 
 	void deleteFromDb () override;
 

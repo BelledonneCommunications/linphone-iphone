@@ -43,6 +43,26 @@ BasicChatRoom::BasicChatRoom (
 	d->participants.push_back(make_shared<Participant>(getPeerAddress()));
 }
 
+void BasicChatRoom::allowCpim (bool value) {
+	L_D();
+	d->cpimAllowed = value;
+}
+
+void BasicChatRoom::allowMultipart (bool value) {
+	L_D();
+	d->multipartAllowed = value;
+}
+
+bool BasicChatRoom::canHandleCpim () const {
+	L_D();
+	return d->cpimAllowed;
+}
+
+bool BasicChatRoom::canHandleMultipart () const {
+	L_D();
+	return d->multipartAllowed;
+}
+
 BasicChatRoom::CapabilitiesMask BasicChatRoom::getCapabilities () const {
 	return { Capabilities::Basic, Capabilities::OneToOne };
 }
@@ -53,16 +73,6 @@ bool BasicChatRoom::hasBeenLeft () const {
 
 bool BasicChatRoom::canHandleParticipants () const {
 	return false;
-}
-
-bool BasicChatRoom::canHandleCpim () const {
-	L_D();
-	return d->allowCpim; 
-}
-
-void BasicChatRoom::allowCpim (bool isCpimAllowed) {
-	L_D();
-	d->allowCpim = isCpimAllowed;
 }
 
 const IdentityAddress &BasicChatRoom::getConferenceAddress () const {

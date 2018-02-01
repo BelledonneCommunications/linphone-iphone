@@ -72,10 +72,6 @@ bool Conference::canHandleParticipants () const {
 	return true;
 }
 
-bool Conference::canHandleCpim () const {
-	return true;
-}
-
 const IdentityAddress &Conference::getConferenceAddress () const {
 	L_D();
 	return d->conferenceAddress;

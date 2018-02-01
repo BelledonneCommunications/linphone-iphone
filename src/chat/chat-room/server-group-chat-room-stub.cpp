@@ -125,6 +125,14 @@ ServerGroupChatRoom::CapabilitiesMask ServerGroupChatRoom::getCapabilities () co
 	return 0;
 }
 
+bool ServerGroupChatRoom::canHandleCpim () const {
+	return true;
+}
+
+bool ServerGroupChatRoom::canHandleMultipart () const {
+	return true;
+}
+
 bool ServerGroupChatRoom::hasBeenLeft () const {
 	return true;
 }
@@ -135,10 +143,6 @@ const IdentityAddress &ServerGroupChatRoom::getConferenceAddress () const {
 
 bool ServerGroupChatRoom::canHandleParticipants () const {
 	return false;
-}
-
-bool ServerGroupChatRoom::canHandleCpim () const {
-	return true;
 }
 
 void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSessionParams *, bool) {}

@@ -205,6 +205,14 @@ shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 	return ChatRoom::getCore();
 }
 
+bool ClientGroupChatRoom::canHandleCpim () const {
+	return true;
+}
+
+bool ClientGroupChatRoom::canHandleMultipart () const {
+	return true;
+}
+
 ClientGroupChatRoom::CapabilitiesMask ClientGroupChatRoom::getCapabilities () const {
 	L_D();
 	return d->capabilities;
@@ -216,10 +224,6 @@ bool ClientGroupChatRoom::hasBeenLeft () const {
 
 bool ClientGroupChatRoom::canHandleParticipants () const {
 	return RemoteConference::canHandleParticipants();
-}
-
-bool ClientGroupChatRoom::canHandleCpim () const {
-	return true; 
 }
 
 const IdentityAddress &ClientGroupChatRoom::getConferenceAddress () const {

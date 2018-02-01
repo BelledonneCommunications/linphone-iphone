@@ -47,7 +47,6 @@ public:
 		bool hasMedia
 	) = 0;
 	virtual bool canHandleParticipants () const = 0;
-	virtual bool canHandleCpim () const = 0;
 	virtual std::shared_ptr<Participant> findParticipant (const IdentityAddress &participantAddress) const = 0;
 	virtual const IdentityAddress &getConferenceAddress () const = 0;
 	virtual std::shared_ptr<Participant> getMe () const = 0;
