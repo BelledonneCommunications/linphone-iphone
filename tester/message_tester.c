@@ -1114,7 +1114,6 @@ static void _im_error_delivery_notification(bool_t online) {
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 
 	msg = linphone_chat_room_create_message(chat_room, "Happy new year!");
-	linphone_chat_message_ref(msg);
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_room_send_chat_message(chat_room, msg);
@@ -1131,7 +1130,6 @@ static void _im_error_delivery_notification(bool_t online) {
 
 	/* Restore the ZID cache of the receiver and resend the chat message */
 	linphone_core_set_zrtp_cache_db(marie->lc, zrtp_cache_db_holder);
-	linphone_chat_message_ref(msg);
 	linphone_chat_message_resend(msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 2)); /* Check the new message is now received */
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));

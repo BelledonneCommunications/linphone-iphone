@@ -816,6 +816,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 		} else {
 			/* swap encrypted message with plain text message */
 			linphone_chat_message_set_text(msg, (char *)decrypted_body);
+			ms_free(decrypted_body);
 			if (decrypted_content_type != NULL) {
 				linphone_chat_message_set_content_type(msg, decrypted_content_type);
 				ms_free(decrypted_content_type);
@@ -870,6 +871,7 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 					errcode = 488;
 				} else { /* encryption ok, swap plain text message body by encrypted one */
 					linphone_chat_message_set_text(msg, (char *)crypted_body);
+					ms_free(crypted_body);
 					linphone_chat_message_set_content_type(msg, new_content_type);
 				}
 				ms_free(peerUri);
