@@ -1573,6 +1573,7 @@ static void text_status_after_destroying_chat_room(void) {
 	linphone_core_delete_chat_room(marie->lc, chatroom);
 	//since message is orphan, we do not expect to be notified of state change
 	BC_ASSERT_FALSE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneMessageNotDelivered, 1, 1000));
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 }
 
@@ -2077,6 +2078,7 @@ void chat_message_custom_headers(void) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "Lorem Ipsum");
 	}
 
+	linphone_chat_message_unref(msg);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
