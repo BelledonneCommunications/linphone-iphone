@@ -35,7 +35,7 @@ private:
 		None,
 		Mysql,
 		Sqlite3
-	} backend;
+	} backend = Backend::None;
 
 	#ifdef SOCI_ENABLED
 		std::unique_ptr<soci::session> backendSession;
