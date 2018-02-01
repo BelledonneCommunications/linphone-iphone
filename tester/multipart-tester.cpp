@@ -40,9 +40,11 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new("pauline_tcp_rc");
 
-	IdentityAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
-	shared_ptr<AbstractChatRoom> marieRoom = pauline->lc->cppPtr->getOrCreateBasicChatRoom(paulineAddress);
-	static_pointer_cast<BasicChatRoom>(marieRoom)->allowMultipart(true);
+	char *paulineUriStr = linphone_address_as_string_uri_only(pauline->identity);
+	IdentityAddress paulineAddress(paulineUriStr);
+	bctbx_free(paulineUriStr);
+	shared_ptr<AbstractChatRoom> marieRoom = marie->lc->cppPtr->getOrCreateBasicChatRoom(paulineAddress);
+	marieRoom->allowMultipart(true);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createChatMessage();
 	if (first_file_transfer) {
