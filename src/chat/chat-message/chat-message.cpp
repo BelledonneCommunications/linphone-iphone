@@ -663,16 +663,16 @@ void ChatMessagePrivate::send () {
 	}
 	
 	// Restore FileContents and remove FileTransferContents
-	list<Content*>::iterator i = contents.begin();
-	while (i != contents.end()) {
-		Content *content = *i;
+	list<Content*>::iterator it = contents.begin();
+	while (it != contents.end()) {
+		Content *content = *it;
 		if (content->getContentType() == ContentType::FileTransfer) {
 			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
-			contents.erase(i++);
+			it = contents.erase(it);
 			q->addContent(*fileTransferContent->getFileContent());
 			delete fileTransferContent;
 		} else {
-			++i;
+			it++;
 		}
 	}
 
