@@ -948,7 +948,7 @@ void FileTransferChatMessageModifier::cancelFileTransfer () {
 			if (message) {
 				lInfo() << "Canceling file transfer " << (
 					currentFileContentToTransfer->getFilePath().empty()
-						? linphone_core_get_file_transfer_server(message->getCore()->getCCore())
+						? L_C_TO_STRING(linphone_core_get_file_transfer_server(message->getCore()->getCCore()))
 						: currentFileContentToTransfer->getFilePath().c_str()
 					);
 				belle_http_provider_cancel_request(message->getCore()->getCCore()->http_provider, httpRequest);
