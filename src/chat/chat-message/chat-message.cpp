@@ -488,7 +488,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 	// Also remove current step so we go through all modifiers if message is re-sent
 	currentRecvStep = ChatMessagePrivate::Step::None;
 
-	setState(ChatMessage::State::Delivered, false);
+	setState(ChatMessage::State::Delivered);
 
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
