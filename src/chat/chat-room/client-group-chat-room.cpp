@@ -205,6 +205,14 @@ shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 	return ChatRoom::getCore();
 }
 
+void ClientGroupChatRoom::allowCpim (bool value) {
+	
+}
+
+void ClientGroupChatRoom::allowMultipart (bool value) {
+	
+}
+
 bool ClientGroupChatRoom::canHandleCpim () const {
 	return true;
 }

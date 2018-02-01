@@ -56,7 +56,9 @@ public:
 	);
 
 	std::shared_ptr<Core> getCore () const;
-
+	
+	void allowCpim (bool value) override;
+	void allowMultipart (bool value) override;
 	bool canHandleCpim () const override;
 	bool canHandleMultipart () const override;
 

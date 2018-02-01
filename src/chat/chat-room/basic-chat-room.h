@@ -33,8 +33,8 @@ class LINPHONE_PUBLIC BasicChatRoom : public ChatRoom {
 	friend class CorePrivate;
 
 public:
-	void allowCpim (bool value);
-	void allowMultipart (bool value);
+	void allowCpim (bool value) override;
+	void allowMultipart (bool value) override;
 	bool canHandleCpim () const override;
 	bool canHandleMultipart () const override;
 

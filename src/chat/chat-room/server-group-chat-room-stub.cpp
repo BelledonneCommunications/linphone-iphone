@@ -125,6 +125,14 @@ ServerGroupChatRoom::CapabilitiesMask ServerGroupChatRoom::getCapabilities () co
 	return 0;
 }
 
+void ServerGroupChatRoom::allowCpim (bool value) {
+	
+}
+
+void ServerGroupChatRoom::allowMultipart (bool value) {
+	
+}
+
 bool ServerGroupChatRoom::canHandleCpim () const {
 	return true;
 }

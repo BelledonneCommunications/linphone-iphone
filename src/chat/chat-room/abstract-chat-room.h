@@ -51,6 +51,8 @@ public:
 
 	typedef EnumMask<Capabilities> CapabilitiesMask;
 
+	virtual void allowCpim (bool value) = 0;
+	virtual void allowMultipart (bool value) = 0;
 	virtual bool canHandleCpim () const = 0;
 	virtual bool canHandleMultipart () const = 0;
 
