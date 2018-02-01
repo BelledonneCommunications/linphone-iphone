@@ -1079,7 +1079,9 @@ static void group_chat_room_send_message_with_participant_removed (void) {
 	LinphoneAddress *laureAddr = linphone_address_new(linphone_core_get_identity(laure->lc));
 	LinphoneParticipant *laureParticipant = linphone_chat_room_find_participant(marieCr, laureAddr);
 	linphone_address_unref(laureAddr);
-	BC_ASSERT_PTR_NOT_NULL(laureParticipant);
+	if(!BC_ASSERT_PTR_NOT_NULL(laureParticipant))
+		goto end;
+
 	linphone_chat_room_remove_participant(marieCr, laureParticipant);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateTerminated, initialLaureStats.number_of_LinphoneChatRoomStateTerminated + 1, 1000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_participants_removed, initialMarieStats.number_of_participants_removed + 1, 1000));
@@ -1095,6 +1097,7 @@ static void group_chat_room_send_message_with_participant_removed (void) {
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingIdleReceived, initialMarieStats.number_of_LinphoneIsComposingIdleReceived, 10000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingIdleReceived, initialPaulineStats.number_of_LinphoneIsComposingIdleReceived, 10000));
 
+end:
 	// Clean db from chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
@@ -1490,20 +1493,25 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 	// Check that added Marie's device didn't change her admin status
 	LinphoneAddress *marieAddr = linphone_address_new(linphone_core_get_identity(marie1->lc));
 	LinphoneParticipant *marieParticipant = linphone_chat_room_get_me(marieCr);
-	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
-	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	if(BC_ASSERT_PTR_NOT_NULL(marieParticipant))
+		BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+
 	marieParticipant = linphone_chat_room_get_me(marieCr2);
-	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
-	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	if(BC_ASSERT_PTR_NOT_NULL(marieParticipant))
+		BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+
 	marieParticipant = linphone_chat_room_find_participant(paulineCr, marieAddr);
-	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
-	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	if(BC_ASSERT_PTR_NOT_NULL(marieParticipant))
+		BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+
 	marieParticipant = linphone_chat_room_find_participant(paulineCr2, marieAddr);
-	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
-	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	if(BC_ASSERT_PTR_NOT_NULL(marieParticipant))
+		BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+
 	marieParticipant = linphone_chat_room_find_participant(laureCr, marieAddr);
-	BC_ASSERT_PTR_NOT_NULL(marieParticipant);
-	BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	if(BC_ASSERT_PTR_NOT_NULL(marieParticipant))
+		BC_ASSERT_TRUE(linphone_participant_is_admin(marieParticipant));
+	
 	linphone_address_unref(marieAddr);
 
 	// Marie removes Laure from the chat room
