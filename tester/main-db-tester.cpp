@@ -35,18 +35,13 @@ using namespace LinphonePrivate;
 
 // -----------------------------------------------------------------------------
 
-static const string getDatabasePath () {
-	static const string path = string(bc_tester_get_resource_dir_prefix()) + "db/linphone.db";
-	return path;
-}
-
-// -----------------------------------------------------------------------------
-
 class MainDbProvider {
 public:
 	MainDbProvider () {
 		mCoreManager = linphone_core_manager_create("marie_rc");
-		linphone_config_set_string(linphone_core_get_config(mCoreManager->lc), "storage", "uri", getDatabasePath().c_str());
+		char *dbPath = bc_tester_res("db/linphone.db");
+		linphone_config_set_string(linphone_core_get_config(mCoreManager->lc), "storage", "uri", dbPath);
+		bctbx_free(dbPath);
 		linphone_core_manager_start(mCoreManager, false);
 	}
 
