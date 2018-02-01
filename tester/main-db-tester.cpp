@@ -143,7 +143,7 @@ static void get_conference_notified_events () {
 	MainDbProvider provider;
 	const MainDb &mainDb = provider.getMainDb();
 	list<shared_ptr<EventLog>> events = mainDb.getConferenceNotifiedEvents(
-		ChatRoomId(IdentityAddress("sip:fake-group-2@sip.linphone.org"), IdentityAddress("sip:fake-group-2@sip.linphone.org")),
+		ChatRoomId(IdentityAddress("sip:test-44@sip.linphone.org"), IdentityAddress("sip:test-1@sip.linphone.org")),
 		1
 	);
 	BC_ASSERT_EQUAL(events.size(), 3, int, "%d");
@@ -157,7 +157,7 @@ static void get_conference_notified_events () {
 	if (!BC_ASSERT_TRUE(event->getType() == EventLog::Type::ConferenceParticipantRemoved)) return;
 	{
 		shared_ptr<ConferenceParticipantEvent> participantEvent = static_pointer_cast<ConferenceParticipantEvent>(event);
-		BC_ASSERT_TRUE(participantEvent->getChatRoomId().getPeerAddress().asString() == "sip:fake-group-2@sip.linphone.org");
+		BC_ASSERT_TRUE(participantEvent->getChatRoomId().getPeerAddress().asString() == "sip:test-44@sip.linphone.org");
 		BC_ASSERT_TRUE(participantEvent->getParticipantAddress().asString() == "sip:test-11@sip.linphone.org");
 		BC_ASSERT_TRUE(participantEvent->getNotifyId() == 2);
 	}
@@ -168,10 +168,10 @@ static void get_conference_notified_events () {
 		shared_ptr<ConferenceParticipantDeviceEvent> deviceEvent = static_pointer_cast<
 			ConferenceParticipantDeviceEvent
 		>(event);
-		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:fake-group-2@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:test-44@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getParticipantAddress().asString() == "sip:test-11@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getNotifyId() == 3);
-		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:device-address-1@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:test-47@sip.linphone.org");
 	}
 
 	event = *++it;
@@ -180,10 +180,10 @@ static void get_conference_notified_events () {
 		shared_ptr<ConferenceParticipantDeviceEvent> deviceEvent = static_pointer_cast<
 			ConferenceParticipantDeviceEvent
 		>(event);
-		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:fake-group-2@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getChatRoomId().getPeerAddress().asString() == "sip:test-44@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getParticipantAddress().asString() == "sip:test-11@sip.linphone.org");
 		BC_ASSERT_TRUE(deviceEvent->getNotifyId() == 4);
-		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:device-address-1@sip.linphone.org");
+		BC_ASSERT_TRUE(deviceEvent->getDeviceAddress().asString() == "sip:test-47@sip.linphone.org");
 	}
 }
 
