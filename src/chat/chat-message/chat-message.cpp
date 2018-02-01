@@ -259,9 +259,7 @@ const string &ChatMessagePrivate::getText () {
 			cText = internalContent.getBodyAsString();
 		}
 	} else {
-		if (hasTextContent()) {
-			cText = getTextContent()->getBodyAsString();
-		} else if (!internalContent.isEmpty()) {
+		if (!internalContent.isEmpty()) {
 			cText = internalContent.getBodyAsString();
 		} else {
 			if (contents.size() > 0) {
@@ -481,6 +479,12 @@ LinphoneReason ChatMessagePrivate::receive () {
 	// ---------------------------------------
 	// End of message modification
 	// ---------------------------------------
+
+	// Remove internal content as it is not needed anymore and will confuse some old methods like getText()
+	internalContent.setBody("");
+	internalContent.setContentType(ContentType(""));
+	// Also remove current step so we go through all modifiers if message is re-sent
+	currentRecvStep = ChatMessagePrivate::Step::None;
 
 	setState(ChatMessage::State::Delivered, false);
 
