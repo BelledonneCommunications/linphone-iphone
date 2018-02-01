@@ -78,6 +78,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 		string payload = isComposingHandler->marshal(isComposing);
 		if (!payload.empty()) {
 			shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
+			chatMessage->setToBeStored(false);
 			Content *content = new Content();
 			content->setContentType(ContentType::ImIsComposing);
 			content->setBody(payload);

@@ -353,6 +353,8 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(*content);
 
+	msg->setToBeStored(false);
+
 	msg->getPrivate()->send();
 }
 
@@ -533,7 +535,8 @@ void ChatMessagePrivate::send () {
 
 	currentSendStep |= ChatMessagePrivate::Step::Started;
 
-	storeInDb();
+	if (toBeStored)
+		storeInDb();
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
 		lInfo() << "File upload step already done, skipping";
