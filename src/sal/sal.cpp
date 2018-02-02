@@ -58,37 +58,37 @@ void Sal::process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *
 	}
 }
 
-void Sal::process_request_event_cb(void *ud, const belle_sip_request_event_t *event) {
-	Sal *sal=(Sal*)ud;
-	SalOp* op=NULL;
-	belle_sip_request_t* req = belle_sip_request_event_get_request(event);
-	belle_sip_dialog_t* dialog=belle_sip_request_event_get_dialog(event);
-	belle_sip_header_address_t* origin_address;
-	belle_sip_header_address_t* address=NULL;
-	belle_sip_header_from_t* from_header;
-	belle_sip_header_to_t* to;
-	belle_sip_header_diversion_t* diversion;
-	belle_sip_response_t* resp;
+void Sal::process_request_event_cb (void *ud, const belle_sip_request_event_t *event) {
+	Sal *sal = (Sal *)ud;
+	SalOp *op = NULL;
+	belle_sip_request_t *req = belle_sip_request_event_get_request(event);
+	belle_sip_dialog_t *dialog = belle_sip_request_event_get_dialog(event);
+	belle_sip_header_address_t *origin_address;
+	belle_sip_header_address_t *address=NULL;
+	belle_sip_header_from_t *from_header;
+	belle_sip_header_to_t *to;
+	belle_sip_header_diversion_t *diversion;
+	belle_sip_response_t *resp;
 	belle_sip_header_t *evh;
-	const char *method=belle_sip_request_get_method(req);
-	belle_sip_header_contact_t* remote_contact = belle_sip_message_get_header_by_type(req, belle_sip_header_contact_t);
+	const char *method = belle_sip_request_get_method(req);
+	belle_sip_header_contact_t *remote_contact = belle_sip_message_get_header_by_type(req, belle_sip_header_contact_t);
 	belle_sip_header_t *subjectHeader = belle_sip_message_get_header(BELLE_SIP_MESSAGE(req), "Subject");
 
-	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
+	from_header = belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 
 	if (dialog) {
-		op=(SalOp*)belle_sip_dialog_get_application_data(dialog);
+		op = (SalOp *)belle_sip_dialog_get_application_data(dialog);
 
 		if (op == NULL  && strcmp("NOTIFY",method) == 0) {
 			/*special case for Dialog created by notify mathing subscribe*/
 			belle_sip_transaction_t * sub_trans = belle_sip_dialog_get_last_transaction(dialog);
 			op = (SalOp*)belle_sip_transaction_get_application_data(sub_trans);
 		}
-		if (op==NULL || op->state==SalOp::State::Terminated){
+		if (op == NULL || op->state == SalOp::State::Terminated){
 			ms_warning("Receiving request for null or terminated op [%p], ignored",op);
 			return;
 		}
-	}else{
+	} else {
 		/*handle the case where we are receiving a request with to tag but it is not belonging to any dialog*/
 		belle_sip_header_to_t *to = belle_sip_message_get_header_by_type(req, belle_sip_header_to_t);
 		if ((strcmp("INVITE",method)==0 || strcmp("NOTIFY",method)==0) && (belle_sip_header_to_get_tag(to) != NULL)) {
