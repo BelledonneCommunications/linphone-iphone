@@ -31,33 +31,38 @@
 LINPHONE_BEGIN_NAMESPACE
 
 template<typename T, typename Value>
-inline typename T::const_iterator find (const T &container, const Value &value) {
+typename T::const_iterator find (const T &container, const Value &value) {
 	return std::find(container.cbegin(), container.cend(), value);
 }
 
 template<typename T, typename Value>
-inline typename T::iterator find (T &container, const Value &value) {
+typename T::iterator find (T &container, const Value &value) {
 	return std::find(container.begin(), container.end(), value);
 }
 
 template<typename T, typename Predicate>
-inline typename T::const_iterator findIf (const T &container, Predicate predicate) {
+typename T::const_iterator findIf (const T &container, Predicate predicate) {
 	return std::find_if(container.cbegin(), container.cend(), predicate);
 }
 
 template<typename T, typename Predicate>
-inline typename T::iterator findIf (T &container, Predicate predicate) {
+typename T::iterator findIf (T &container, Predicate predicate) {
 	return std::find_if(container.begin(), container.end(), predicate);
 }
 
 template<typename T, typename Value>
-inline bool removeFirst (T &container, const Value &value) {
+bool removeFirst (T &container, const Value &value) {
 	auto it = find(container, value);
 	if (it != container.end()) {
 		container.erase(it);
 		return true;
 	}
 	return false;
+}
+
+template<typename T, typename Predicate>
+void removeIf (T &container, Predicate predicate) {
+	std::remove_if(container.begin(), container.end(), predicate);
 }
 
 LINPHONE_END_NAMESPACE
