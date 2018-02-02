@@ -207,19 +207,28 @@ static void message_forking_with_all_recipients_unreachable(void) {
 }
 
 static void message_forking_with_unreachable_recipients_with_gruu(void) {
-	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	LinphoneCoreManager* marie2 = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
+	LinphoneCoreManager *pauline = ms_new0(LinphoneCoreManager, 1);
+	LinphoneCoreManager *marie2 = ms_new0(LinphoneCoreManager, 1);
+	
+	linphone_core_manager_init(marie, "marie_rc", NULL);
+	linphone_core_manager_init(pauline, transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", NULL);
+	linphone_core_manager_init(marie2, "marie_rc", NULL);
+	
+	linphone_core_add_supported_tag(marie->lc,"gruu");
+	linphone_core_add_supported_tag(pauline->lc,"gruu");
+	linphone_core_add_supported_tag(marie2->lc,"gruu");
+	
+	linphone_core_manager_start(marie,TRUE);
+	linphone_core_manager_start(pauline,TRUE);
+	linphone_core_manager_start(marie2,TRUE);
+	
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 
 	LinphoneProxyConfig *marie_proxy_config = linphone_core_get_default_proxy_config(marie->lc);
-	LinphoneProxyConfig *marie2_proxy_config = linphone_core_get_default_proxy_config(marie2->lc);
 	const LinphoneAddress *marie_address = linphone_proxy_config_get_contact(marie_proxy_config);
-	const LinphoneAddress *marie2_address = linphone_proxy_config_get_contact(marie2_proxy_config);
 	LinphoneChatRoom* chat_room_1 = linphone_core_get_chat_room(pauline->lc, marie_address);
 	LinphoneChatMessage* message_1 = linphone_chat_room_create_message(chat_room_1,"Bli bli bli \n blu");
-	LinphoneChatRoom* chat_room_2 = linphone_core_get_chat_room(pauline->lc, marie2_address);
-	LinphoneChatMessage* message_2 = linphone_chat_room_create_message(chat_room_2,"Bla bla bla \n bli");
 
 	lcs=bctbx_list_append(lcs,pauline->lc);
 	lcs=bctbx_list_append(lcs,marie2->lc);
@@ -234,25 +243,24 @@ static void message_forking_with_unreachable_recipients_with_gruu(void) {
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 
-	linphone_chat_message_send(message_1);
-	linphone_chat_message_send(message_2);
+	linphone_chat_room_send_chat_message(chat_room_1, message_1);
 
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
 
 	/*wait a long time so that all transactions are expired*/
 	wait_for_list(lcs,NULL,0,32000);
 
 	/*marie goes online now*/
 	linphone_core_set_network_reachable(marie->lc,TRUE);
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
-
+	if (BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000))) {
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(marie->stat.last_received_chat_message), linphone_chat_message_get_text(message_1));
+	}
 	linphone_chat_message_unref(message_1);
-	linphone_chat_message_unref(message_2);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
 	linphone_core_manager_destroy(pauline);
