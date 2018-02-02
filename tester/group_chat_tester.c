@@ -475,15 +475,16 @@ static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryption
 		if (strcmp(linphone_chat_message_get_content_type(msg), "cipher/b64") == 0) {
 			size_t b64Size = 0;
 			unsigned char *output;
-			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+			const char * msg_str = linphone_chat_message_get_text(msg);
+			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)msg_str, strlen(msg_str));
 			output = (unsigned char *)ms_malloc(b64Size+1),
-			bctbx_base64_decode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+			bctbx_base64_decode(output, &b64Size, (unsigned char *)msg_str, strlen(msg_str));
 			output[b64Size] = '\0';
 			linphone_chat_message_set_text(msg, (char *)output);
 			ms_free(output);
 			linphone_chat_message_set_content_type(msg, "message/cpim");
 			return 0;
-		} else if (strcmp(linphone_chat_message_get_content_type(msg), "message/cpim") == 0) {
+		} else if (strcmp(linphone_chat_message_get_content_type(msg), "application/im-iscomposing+xml") == 0) {
 			return -1; // Not encrypted, nothing to do
 		} else {
 			return 488; // Not acceptable
@@ -496,9 +497,10 @@ static int im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryption
 	if (strcmp(linphone_chat_message_get_content_type(msg),"message/cpim") == 0) {
 		size_t b64Size = 0;
 		unsigned char *output;
-		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
-		output = (unsigned char *)ms_malloc0(b64Size+1),
-		bctbx_base64_encode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
+		const char * msg_str = linphone_chat_message_get_text(msg);
+		bctbx_base64_encode(NULL, &b64Size, (unsigned char *)msg_str, strlen(msg_str));
+		output = (unsigned char *)ms_malloc0(b64Size+1);
+		bctbx_base64_encode(output, &b64Size, (unsigned char *)msg_str, strlen(msg_str));
 		output[b64Size] = '\0';
 		linphone_chat_message_set_text(msg,(const char*)output);
 		ms_free(output);
