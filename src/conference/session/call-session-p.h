@@ -42,6 +42,7 @@ public:
 	bool startPing ();
 	void setPingTime (int value) { pingTime = value; }
 
+	void createOp ();
 	CallSessionParams *getCurrentParams () const { return currentParams; }
 	LinphoneProxyConfig * getDestProxy () const { return destProxy; }
 	SalCallOp * getOp () const { return op; }
@@ -95,7 +96,6 @@ protected:
 
 private:
 	void completeLog ();
-	void createOp ();
 	void createOpTo (const LinphoneAddress *to);
 
 	LinphoneAddress * getFixedContact () const;

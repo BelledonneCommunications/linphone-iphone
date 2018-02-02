@@ -72,7 +72,10 @@ void CallPrivate::initiateIncoming () {
 }
 
 bool CallPrivate::initiateOutgoing () {
-	return getActiveSession()->initiateOutgoing();
+	shared_ptr<CallSession> session = getActiveSession();
+	bool defer = session->initiateOutgoing();
+	session->getPrivate()->createOp();
+	return defer;
 }
 
 void CallPrivate::iterate (time_t currentRealTime, bool oneSecondElapsed) {

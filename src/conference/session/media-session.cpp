@@ -999,8 +999,12 @@ void MediaSessionPrivate::fillMulticastMediaAddresses () {
 	L_Q();
 	if (getParams()->audioMulticastEnabled())
 		mediaPorts[mainAudioStreamIndex].multicastIp = linphone_core_get_audio_multicast_addr(q->getCore()->getCCore());
+	else
+		mediaPorts[mainAudioStreamIndex].multicastIp.clear();
 	if (getParams()->videoMulticastEnabled())
 		mediaPorts[mainVideoStreamIndex].multicastIp = linphone_core_get_video_multicast_addr(q->getCore()->getCCore());
+	else
+		mediaPorts[mainVideoStreamIndex].multicastIp.clear();
 }
 
 int MediaSessionPrivate::selectFixedPort (int streamIndex, pair<int, int> portRange) {
@@ -4022,6 +4026,7 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 	if (direction == LinphoneCallOutgoing) {
 		d->selectOutgoingIpVersion();
 		d->getLocalIp(to);
+		d->initializeStreams(); // Reserve the sockets immediately
 		d->getCurrentParams()->getPrivate()->setUpdateCallWhenIceCompleted(d->getParams()->getPrivate()->getUpdateCallWhenIceCompleted());
 		d->fillMulticastMediaAddresses();
 		if (d->natPolicy && linphone_nat_policy_ice_enabled(d->natPolicy))
@@ -4049,6 +4054,7 @@ void MediaSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cf
 				lWarning() << "ICE not supported for incoming INVITE without SDP";
 			}
 		}
+		d->initializeStreams(); // Reserve the sockets immediately
 		if (d->natPolicy)
 			d->runStunTestsIfNeeded();
 		d->discoverMtu(cleanedFrom);

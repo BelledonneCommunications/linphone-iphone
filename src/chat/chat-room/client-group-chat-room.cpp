@@ -72,6 +72,7 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	myCleanedAddress.removeUriParam("gr"); // Remove gr parameter for INVITE
 	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, focus->getPrivate()->getDevices().front()->getAddress());
 	session->initiateOutgoing();
+	session->getPrivate()->createOp();
 	return session;
 }
 

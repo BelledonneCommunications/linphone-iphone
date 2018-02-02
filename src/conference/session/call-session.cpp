@@ -212,6 +212,10 @@ void CallSessionPrivate::setParams (CallSessionParams *csp) {
 	params = csp;
 }
 
+void CallSessionPrivate::createOp () {
+	createOpTo(log->to);
+}
+
 bool CallSessionPrivate::isInConference () const {
 	return params->getPrivate()->getInConference();
 }
@@ -735,10 +739,6 @@ void CallSessionPrivate::completeLog () {
 	linphone_core_report_call_log(q->getCore()->getCCore(), log);
 }
 
-void CallSessionPrivate::createOp () {
-	createOpTo(log->to);
-}
-
 void CallSessionPrivate::createOpTo (const LinphoneAddress *to) {
 	L_Q();
 	if (op)
@@ -1014,10 +1014,7 @@ bool CallSession::initiateOutgoing () {
 	d->log->start_date_time = ms_time(nullptr);
 	if (!d->destProxy)
 		defer = d->startPing();
- 	if (d->direction == LinphoneCallOutgoing) {
-		d->createOpTo(d->log->to);
-	}
-	return defer;
+ 	return defer;
 }
 
 void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
