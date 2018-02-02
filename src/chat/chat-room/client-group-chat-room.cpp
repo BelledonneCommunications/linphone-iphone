@@ -530,7 +530,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 	else
 		participant = findParticipant(addr);
 	if (!participant) {
-		lWarning() << "Participant " << participant << " admin status has been changed but is not in the list of participants!";
+		lWarning() << "Participant " << addr.asString() << " admin status has been changed but is not in the list of participants!";
 		return;
 	}
 
@@ -576,7 +576,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 	else
 		participant = findParticipant(addr);
 	if (!participant) {
-		lWarning() << "Participant " << participant << " added a device but is not in the list of participants!";
+		lWarning() << "Participant " << addr.asString() << " added a device but is not in the list of participants!";
 		return;
 	}
 	participant->getPrivate()->addDevice(event->getDeviceAddress());
@@ -603,7 +603,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 	else
 		participant = findParticipant(addr);
 	if (!participant) {
-		lWarning() << "Participant " << participant << " removed a device but is not in the list of participants!";
+		lWarning() << "Participant " << addr.asString() << " removed a device but is not in the list of participants!";
 		return;
 	}
 	participant->getPrivate()->removeDevice(event->getDeviceAddress());
