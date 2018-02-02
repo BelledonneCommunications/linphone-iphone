@@ -233,7 +233,12 @@ Object(*new RemoteConferenceEventHandlerPrivate) {
 
 RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 	L_D();
-	d->conf->getCore()->getPrivate()->unregisterListener(d);
+
+	try {
+		d->conf->getCore()->getPrivate()->unregisterListener(d);
+	} catch (const bad_weak_ptr &) {
+		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
+	}
 
 	if (d->lev)
 		unsubscribe();

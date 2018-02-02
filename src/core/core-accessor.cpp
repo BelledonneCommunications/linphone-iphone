@@ -56,7 +56,7 @@ shared_ptr<Core> CoreAccessor::getCore () const {
 	shared_ptr<Core> core = d->core.lock();
 	if (!core) {
 		lWarning() << "Unable to get valid core instance.";
-		throw std::bad_weak_ptr();
+		throw bad_weak_ptr();
 	}
 
 	return core;
