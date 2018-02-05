@@ -63,7 +63,7 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 // -----------------------------------------------------------------------------
 
 #define L_SAFE_TRANSACTION_C(CONTEXT) \
-	LinphonePrivate::SafeTransactionInfo().set(__func__, CONTEXT) + [&]()
+	LinphonePrivate::SafeTransactionInfo().set(__func__, CONTEXT) * [&]()
 
 #define L_SAFE_TRANSACTION L_SAFE_TRANSACTION_C(this)
 
@@ -140,7 +140,7 @@ private:
 };
 
 template<typename Function>
-typename SafeTransaction<Function>::ReturnType operator+ (SafeTransactionInfo &info, Function &&function) {
+typename SafeTransaction<Function>::ReturnType operator* (SafeTransactionInfo &info, Function &&function) {
 	return SafeTransaction<Function>(info, forward<Function>(function));
 }
 
