@@ -41,7 +41,7 @@ public:
 
 	void subscribeReceived (LinphoneEvent *event);
 
-	void update (SalCallOp *op);
+	bool update (SalCallOp *op);
 
 	void setConferenceAddress (const IdentityAddress &conferenceAddress);
 	void setParticipantDevices (const IdentityAddress &addr, const std::list<IdentityAddress> &devices);

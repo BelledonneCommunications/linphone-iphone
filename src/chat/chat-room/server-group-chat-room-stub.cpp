@@ -56,7 +56,7 @@ IdentityAddress ServerGroupChatRoomPrivate::generateConferenceAddress (const sha
 
 void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *) {}
 
-void ServerGroupChatRoomPrivate::update (SalCallOp *) {}
+bool ServerGroupChatRoomPrivate::update (SalCallOp *) { return true; }
 
 // -----------------------------------------------------------------------------
 
