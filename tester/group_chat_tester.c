@@ -158,25 +158,6 @@ static void _send_message(LinphoneChatRoom *chatRoom, const char *message) {
 	linphone_chat_message_send(msg);
 }
 
-static void _send_file(LinphoneChatRoom* cr, const char *sendFilepath) {
-	LinphoneChatMessage *msg;
-	LinphoneChatMessageCbs *cbs;
-	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(cr));
-	belle_sip_object_set_name(BELLE_SIP_OBJECT(content), "sintel trailer content");
-	linphone_content_set_type(content,"video");
-	linphone_content_set_subtype(content,"mkv");
-	linphone_content_set_name(content,"sintel_trailer_opus_h264.mkv");
-
-	msg = linphone_chat_room_create_file_transfer_message(cr, content);
-	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
-	cbs = linphone_chat_message_get_callbacks(msg);
-	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-	linphone_chat_room_send_chat_message_2(cr, msg);
-	linphone_content_unref(content);
-}
-
 static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath, const char *text) {
 	LinphoneChatMessage *msg;
 	LinphoneChatMessageCbs *cbs;
@@ -189,7 +170,8 @@ static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath,
 	msg = linphone_chat_room_create_file_transfer_message(cr, content);
 	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
 
-	linphone_chat_message_add_text_content(msg, text);
+	if (text)
+		linphone_chat_message_add_text_content(msg, text);
 
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
@@ -197,6 +179,10 @@ static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath,
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
 	linphone_chat_room_send_chat_message_2(cr, msg);
 	linphone_content_unref(content);
+}
+
+static void _send_file(LinphoneChatRoom* cr, const char *sendFilepath) {
+	_send_file_plus_text(cr, sendFilepath, NULL);
 }
 
 static void _receive_file(bctbx_list_t *coresList, LinphoneCoreManager *lcm, stats *receiverStats, const char *receive_filepath, const char *sendFilepath) {
