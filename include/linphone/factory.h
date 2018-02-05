@@ -118,7 +118,6 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneCore *linphone_factory_create_core_2
  * @param[in] system_context A pointer to a system object required by the core to operate. Currently it is required to
  * pass an android Context on android, pass NULL on other platforms.
  * @see linphone_core_new_with_config_3
- * @deprecated 2018-01-10: Use linphone_factory_create_core_3() instead
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_factory_create_core_3 (
 	const LinphoneFactory *factory,
@@ -180,7 +179,6 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC LinphoneCore *linphone_factory_create_core_w
  * @param[in] system_context A pointer to a system object required by the core to operate. Currently it is required to
  * pass an android Context on android, pass NULL on other platforms.
  * @see linphone_factory_create_core_3
- * @deprecated 2018-01-10: Use linphone_factory_create_core_with_config_3() instead
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_factory_create_core_with_config_3 (
 	const LinphoneFactory *factory,

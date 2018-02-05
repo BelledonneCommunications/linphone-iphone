@@ -82,7 +82,6 @@ class CppTranslator(object):
 			'isnotrefcountable'   : not _class.refcountable,
 			'isNotListener'       : True,
 			'isListener'          : False,
-			'isfactory'           : (_class.name.to_c() == 'LinphoneFactory'),
 			'isVcard'             : (_class.name.to_c() == 'LinphoneVcard'),
 			'className'           : _class.name.translate(self.nameTranslator),
 			'cClassName'          : '::' + _class.name.to_c(),

@@ -117,50 +117,6 @@ void *{{{className}}}::createCallbacks(void *userData) {
 }
 {{/ismultilistenable}}
 
-{{#isfactory}}
-std::shared_ptr<Core> Factory::createCore(const std::shared_ptr<CoreListener> & listener, const std::string & configPath, const std::string & factoryConfigPath) const {
-	::LinphoneCoreCbs *cbs = NULL;
-	std::list<std::shared_ptr<Listener> > listeners;
-	if (listener != nullptr) {
-		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
-		cbs = (::LinphoneCoreCbs *)Core::createCallbacks(&listeners);
-	}
-	
-	::LinphoneFactory *factory = linphone_factory_get();
-	::LinphoneCore *core_ptr = linphone_factory_create_core(factory, cbs, StringUtilities::cppStringToC(configPath), StringUtilities::cppStringToC(factoryConfigPath));
-	
-	if (cbs != NULL) {
-		linphone_core_remove_callbacks(core_ptr, cbs);
-		linphone_core_cbs_unref(cbs);
-	}
-	
-	std::shared_ptr<Core> cppCore = cPtrToSharedPtr<Core>((::belle_sip_object_t *)core_ptr, false);
-	if (listener != nullptr) cppCore->addListener(listener);
-	return cppCore;
-}
-
-std::shared_ptr<Core> Factory::createCoreWithConfig(const std::shared_ptr<CoreListener> & listener, const std::shared_ptr<Config> & config) const {
-	::LinphoneCoreCbs *cbs = NULL;
-	std::list<std::shared_ptr<Listener> > listeners;
-	if (listener != nullptr) {
-		listeners.push_back(std::static_pointer_cast<Listener,CoreListener>(listener));
-		cbs = (::LinphoneCoreCbs *)Core::createCallbacks(&listeners);
-	}
-	
-	::LinphoneFactory *factory = linphone_factory_get();
-	::LinphoneCore *core_ptr = linphone_factory_create_core_with_config(factory, cbs, (::LinphoneConfig *)sharedPtrToCPtr(config));
-	
-	if (cbs != NULL) {
-		linphone_core_remove_callbacks(core_ptr, cbs);
-		linphone_core_cbs_unref(cbs);
-	}
-	
-	std::shared_ptr<Core> cppCore = cPtrToSharedPtr<Core>((::belle_sip_object_t *)core_ptr, false);
-	if (listener != nullptr) cppCore->addListener(listener);
-	return cppCore;
-}
-{{/isfactory}}
-
 {{#isVcard}}
 std::shared_ptr<belcard::BelCard> &Vcard::getVcard() {
 	return *(shared_ptr<belcard::BelCard> *)linphone_vcard_get_belcard((LinphoneVcard *)mPrivPtr);

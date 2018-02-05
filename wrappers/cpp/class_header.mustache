@@ -29,10 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 {{/includes}}
 #include "object.hh"
 
-{{#_class}}{{#isfactory}}
-#include "config.hh"
-{{/isfactory}}{{/_class}}
-
 {{#_class}}{{#isVcard}}
 namespace belcard {
 class BelCard;
@@ -98,10 +94,6 @@ namespace linphone {
 			{{/ismultilistenable}}
 	
 		public:
-			{{#isfactory}}
-			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> &listener, const std::string & configPath, const std::string & factoryConfigPath) const;
-			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> &listener, const std::shared_ptr<Config> & config) const;
-			{{/isfactory}}
 			{{#isVcard}}
 			LINPHONECXX_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
 			{{/isVcard}}
