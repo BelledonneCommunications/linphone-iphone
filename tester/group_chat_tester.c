@@ -188,6 +188,9 @@ static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath,
 
 	msg = linphone_chat_room_create_file_transfer_message(cr, content);
 	linphone_chat_message_set_file_transfer_filepath(msg, sendFilepath);
+
+	linphone_chat_message_add_text_content(msg, text);
+
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
@@ -265,7 +268,7 @@ static void start_core_for_conference(bctbx_list_t *coreManagerList) {
 
 static LinphoneChatRoom * check_creation_chat_room_client_side(bctbx_list_t *lcs, LinphoneCoreManager *lcm, stats *initialStats, const LinphoneAddress *confAddr, const char* subject, int participantNumber, bool_t isAdmin) {
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreationPending, initialStats->number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
-	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreated, initialStats->number_of_LinphoneChatRoomStateCreated + 1, 5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreated, initialStats->number_of_LinphoneChatRoomStateCreated + 1, 10000));
 	char *deviceIdentity = linphone_core_get_device_identity(lcm->lc);
 	LinphoneAddress *localAddr = linphone_address_new(deviceIdentity);
 	bctbx_free(deviceIdentity);
