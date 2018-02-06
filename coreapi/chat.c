@@ -710,7 +710,8 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		LinphoneImEncryptionEngineCbsIncomingMessageCb cb_process_incoming_message = linphone_im_encryption_engine_cbs_get_process_incoming_message(imee_cbs);
 		if (cb_process_incoming_message) {
 			retval = cb_process_incoming_message(imee, cr, msg);
-			if(retval == 0) {
+			ms_debug("Decryption done, result is %i", retval);
+			if (retval == 0) {
 				msg->is_secured = TRUE;
 			} else if(retval > 0) {
 				// Unable to decrypt message
@@ -721,7 +722,11 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 				reason = LinphoneReasonNone;
 				goto end;
 			}
+		} else {
+			ms_warning("IM Encryption Engine found but there is no process incoming messsage callback set...");
 		}
+	} else {
+		ms_debug("No IM Encryption Engine found");
 	}
 
 	if ((retval <= 0) && (linphone_core_is_content_type_supported(lc, msg->content_type) == FALSE)) {

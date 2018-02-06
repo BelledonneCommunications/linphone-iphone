@@ -793,6 +793,8 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 		char *peerUri = NULL;
 		char *selfUri = NULL;
 
+		ms_debug("Content type is known (%s), try to decrypt it", msg->content_type);
+
 		zrtp_cache_db = linphone_core_get_zrtp_cache_db(lc);
 		if (zrtp_cache_db == NULL) {
 			ms_warning("Unable to load content of ZRTP ZID cache to decrypt message");
@@ -817,9 +819,11 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			}
 			msg->message = (char *)decrypted_body;
 			if (decrypted_content_type != NULL) {
+				ms_debug("Decrypted content type is ", decrypted_content_type);
 				linphone_chat_message_set_content_type(msg, decrypted_content_type);
 				ms_free(decrypted_content_type);
 			} else {
+				ms_debug("Decrypted content type is unknown, use plain/text or application/vnd.gsma.rcs-ft-http+xml");
 				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
 					linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
 				} else {
@@ -827,6 +831,8 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 				}
 			}
 		}
+	} else {
+		ms_message("Content type is unknown (%s), don't try to decrypt it", msg->content_type);
 	}
 	return errcode;
 }
