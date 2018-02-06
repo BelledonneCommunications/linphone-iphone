@@ -1207,13 +1207,16 @@ static void group_chat_room_come_back_after_disconnection (void) {
 	linphone_core_manager_destroy(laure);
 }
 
-static void group_chat_room_create_room_with_disconnected_friends (void) {
+static void group_chat_room_create_room_with_disconnected_friends_base (bool_t initial_message) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
 	int dummy = 0;
+	LinphoneChatRoom *paulineCr = NULL;
+	LinphoneChatRoom *laureCr = NULL;
+	
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
 	coresManagerList = bctbx_list_append(coresManagerList, pauline);
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
@@ -1241,6 +1244,12 @@ static void group_chat_room_create_room_with_disconnected_friends (void) {
 
 	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
 
+	if (initial_message) {
+		LinphoneChatMessage* msg = linphone_chat_room_create_message(marieCr, "Salut");
+		linphone_chat_message_send(msg);
+		linphone_chat_message_unref(msg);
+	}
+	
 	wait_for_list(coresList, &dummy, 1, 4000);
 
 	// Reconnect pauline and laure
@@ -1248,21 +1257,46 @@ static void group_chat_room_create_room_with_disconnected_friends (void) {
 	linphone_core_set_network_reachable(laure->lc, TRUE);
 
 	// Check that the chat room is correctly created on Pauline's side and that the participants are added
-	LinphoneChatRoom *paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, 0);
-
+	paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, 0);
+	if (!BC_ASSERT_PTR_NOT_NULL(paulineCr))
+			goto end;
 	// Check that the chat room is correctly created on Laure's side and that the participants are added
-	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
+	laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, 0);
+	if (!BC_ASSERT_PTR_NOT_NULL(laureCr))
+		goto end;
 
+	if (initial_message) {
+		if (BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, 1, 10000))) {
+			if (BC_ASSERT_PTR_NOT_NULL(linphone_chat_room_get_history(paulineCr, 0))) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage*)(linphone_chat_room_get_history(paulineCr, 0)->data)),"Salut)");
+			}
+		}
+		if (BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, 1, 10000))) {
+			if (BC_ASSERT_PTR_NOT_NULL(linphone_chat_room_get_history(laureCr, 0))) {
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage*)(linphone_chat_room_get_history(laureCr, 0)->data)),"Salut)");
+			}
+		}
+	}
+
+end:
 	// Clean db from chat room
-	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
-	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
-	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	if (marieCr) linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	if (laureCr) linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
+	if (paulineCr) linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(laure);
+}
+
+static void group_chat_room_create_room_with_disconnected_friends (void) {
+	group_chat_room_create_room_with_disconnected_friends_base(FALSE);
+}
+
+static void group_chat_room_create_room_with_disconnected_friends_and_initial_message (void) {
+	group_chat_room_create_room_with_disconnected_friends_base(TRUE);
 }
 
 static void group_chat_room_reinvited_after_removed (void) {
@@ -2462,6 +2496,7 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Leave group chat room", group_chat_room_leave, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Come back on a group chat room after a disconnection", group_chat_room_come_back_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Create chat room with disconnected friends", group_chat_room_create_room_with_disconnected_friends, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Create chat room with disconnected friends and initial message", group_chat_room_create_room_with_disconnected_friends_and_initial_message, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
