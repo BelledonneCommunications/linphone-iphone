@@ -1497,3 +1497,11 @@ void sal_add_content_type_support(Sal *sal, const char *content_type) {
 		sal->supported_content_types = bctbx_list_append(sal->supported_content_types, ms_strdup(content_type));
 	}
 }
+
+void sal_remove_content_type_support(Sal *sal, const char *content_type) {
+	if (content_type != NULL) {
+		if (bctbx_list_find(sal->supported_content_types, content_type)) {
+			sal->supported_content_types = bctbx_list_remove(sal->supported_content_types, (char *)content_type);
+		}
+	}
+}

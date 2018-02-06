@@ -4875,6 +4875,14 @@ LINPHONE_PUBLIC bool_t linphone_core_is_content_type_supported(const LinphoneCor
  */
 LINPHONE_PUBLIC void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type);
 
+/**
+ * Remove support for the specified content type.
+ * It is the application responsibility to handle it correctly afterwards.
+ * @param[in] lc LinphoneCore object
+ * @param[in] content_type The content type to remove support for
+ */
+LINPHONE_PUBLIC void linphone_core_remove_content_type_support(LinphoneCore *lc, const char *content_type);
+
 
 /**
  * @addtogroup chatroom

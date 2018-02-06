@@ -643,6 +643,7 @@ int sal_set_tunnel(Sal *ctx, void *tunnelclient);
 void sal_enable_sip_update_method(Sal *ctx,bool_t value);
 bool_t sal_is_content_type_supported(const Sal *sal, const char *content_type);
 void sal_add_content_type_support(Sal *sal, const char *content_type);
+void sal_remove_content_type_support(Sal *sal, const char *content_type);
 
 /**
  * returns keepalive period in ms

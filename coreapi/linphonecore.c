@@ -2431,8 +2431,8 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
 
-	if(lime_is_available()){
-		if (linphone_core_ready(lc)){
+	if (lime_is_available()) {
+		if (linphone_core_ready(lc)) {
 			lp_config_set_int(lc->config,"sip","lime",val);
 		}
 
@@ -2444,11 +2444,15 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 			linphone_im_encryption_engine_cbs_set_process_uploading_file(cbs, lime_im_encryption_engine_process_uploading_file_cb);
 			linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(cbs, lime_im_encryption_engine_is_file_encryption_enabled_cb);
 			linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(cbs, lime_im_encryption_engine_generate_file_transfer_key_cb);
+
+			linphone_core_add_content_type_support(lc, "xml/cipher");
 		} else {
 			linphone_im_encryption_engine_cbs_set_process_outgoing_message(cbs, NULL);
 			linphone_im_encryption_engine_cbs_set_process_uploading_file(cbs, NULL);
 			linphone_im_encryption_engine_cbs_set_is_encryption_enabled_for_file_transfer(cbs, NULL);
 			linphone_im_encryption_engine_cbs_set_generate_file_transfer_key(cbs, NULL);
+
+			linphone_core_remove_content_type_support(lc, "xml/cipher");
 		}
 
 		linphone_core_set_im_encryption_engine(lc, imee);
@@ -7316,6 +7320,10 @@ bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const cha
 
 void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type) {
 	sal_add_content_type_support(lc->sal, content_type);
+}
+
+void linphone_core_remove_content_type_support(LinphoneCore *lc, const char *content_type) {
+	sal_remove_content_type_support(lc->sal, content_type);
 }
 
 #ifdef ENABLE_UPDATE_CHECK
