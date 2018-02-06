@@ -225,7 +225,7 @@ void SalSubscribeOp::fill_cbs() {
 	}
 	this->callbacks=&op_subscribe_callbacks;
 	this->type=Type::Subscribe;
-	this->release_cb=release_cb;
+	this->release_cb=_release_cb;
 }
 
 void SalSubscribeOp::subscribe_refresher_listener_cb (belle_sip_refresher_t* refresher,void* user_pointer,unsigned int status_code,const char* reason_phrase, int will_retry) {
