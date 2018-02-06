@@ -136,8 +136,8 @@ class CppTranslator(object):
 		return classDict
 	
 	def _generate_wrapper_callback(self, listenedClass, method):
-		namespace = method.find_first_ancestor_by_type(AbsApi.Namespace)
-		listenedClass = method.find_first_ancestor_by_type(AbsApi.Interface).listenedClass
+		namespace = method.find_first_ancestor_by_type((AbsApi.Namespace,))
+		listenedClass = method.find_first_ancestor_by_type((AbsApi.Interface,)).listenedClass
 		
 		params = {}
 		params['name'] = method.name.to_snake_case(fullName=True) + '_cb'
@@ -188,7 +188,7 @@ class CppTranslator(object):
 		return res
 	
 	def translate_method(self, method, genImpl=True):
-		namespace = method.find_first_ancestor_by_type(AbsApi.Class, AbsApi.Interface)
+		namespace = method.find_first_ancestor_by_type((AbsApi.Class, AbsApi.Interface))
 		
 		methodDict = {
 			'declPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
@@ -235,7 +235,7 @@ class CppTranslator(object):
 	def _generate_wrapped_arguments(self, method, usedNamespace=None):
 		args = []
 		if method.type == AbsApi.Method.Type.Instance:
-			_class = method.find_first_ancestor_by_type(AbsApi.Class)
+			_class = method.find_first_ancestor_by_type((AbsApi.Class,))
 			argStr = '(::{0} *)mPrivPtr'.format(_class.name.to_camel_case(fullName=True))
 			args.append(argStr)
 		
@@ -414,14 +414,14 @@ class ClassHeader(object):
 				decl = 'class ' + class_.name.translate(translator)
 				self._add_prior_declaration(decl)
 			else:
-				rootClass = class_.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				rootClass = class_.find_first_ancestor_by_type((AbsApi.Namespace,), priorAncestor=True)
 				self._add_include(includes, 'internal', rootClass.name.to_snake_case())
 		elif isinstance(type_, AbsApi.EnumType):
 			enum = type_.desc
 			if enum.parent == self.rootNs:
 				headerFile = 'enums'
 			else:
-				rootClass = enum.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				rootClass = enum.find_first_ancestor_by_type((AbsApi.Namespace, ), priorAncestor=True)
 				headerFile = rootClass.name.to_snake_case()
 			self._add_include(includes, 'internal', headerFile)
 		elif isinstance(type_, AbsApi.BaseType):
