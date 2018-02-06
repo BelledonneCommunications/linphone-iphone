@@ -448,9 +448,10 @@
 			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
 	}
 
-	// if we receive a remote notification, it is probably because our TCP background socket was no more working.
+	// if we receive a push notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 	if (!linphone_core_is_network_reachable(LC)) {
+		LOGI(@"Notification [%p] : network is down, restarting it.", userInfo);
 		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
 		[LinphoneManager.instance setupNetworkReachabilityCallback];
 	}
