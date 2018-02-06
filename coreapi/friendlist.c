@@ -769,18 +769,22 @@ LinphoneFriend * linphone_friend_list_find_friend_by_address(const LinphoneFrien
 	if (linphone_address_has_param(clean_addr, "gr")) {
 		linphone_address_remove_uri_param(clean_addr, "gr");
 	}
-	lf = linphone_friend_list_find_friend_by_uri(list, linphone_address_as_string_uri_only(clean_addr));
+	char *uri = linphone_address_as_string_uri_only(clean_addr);
+	lf = linphone_friend_list_find_friend_by_uri(list, uri);
+	bctbx_free(uri);
 	linphone_address_unref(clean_addr);
 	return lf;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendList *list, const char *uri) {
 	LinphoneFriend *result = NULL;
-	bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map_uri, uri);
-	if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map_uri))) {
+	bctbx_iterator_t *it = bctbx_map_cchar_find_key(list->friends_map_uri, uri);
+	bctbx_iterator_t *end = bctbx_map_cchar_end(list->friends_map_uri);
+	if (!bctbx_iterator_cchar_equals(it, end)) {
 		bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
 		result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 	}
+	bctbx_iterator_cchar_delete(end);
 	bctbx_iterator_cchar_delete(it);
 	return result;
 }
