@@ -227,31 +227,6 @@ static void friends_if_no_db_set(void) {
 	linphone_core_manager_destroy(manager);
 }
 
-static void friends_migration(void) {
-	LinphoneCoreManager* manager = linphone_core_manager_new2("friends_rc", FALSE);
-	LpConfig *lpc = linphone_core_get_config(manager->lc);
-	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
-	const bctbx_list_t *friends = linphone_friend_list_get_friends(lfl);
-	bctbx_list_t *friends_from_db = NULL;
-	char *friends_db = bc_tester_file("friends.db");
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 3, unsigned int, "%u");
-	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 0, int, "%i");
-
-	unlink(friends_db);
-	linphone_core_set_friends_database_path(manager->lc, friends_db);
-	lfl = linphone_core_get_default_friend_list(manager->lc);
-	friends = linphone_friend_list_get_friends(lfl);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 3, unsigned int, "%u");
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends_from_db), 3, unsigned int, "%u");
-	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 1, int, "%i");
-
-	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
-	linphone_core_manager_destroy(manager);
-	unlink(friends_db);
-	bc_free(friends_db);
-}
-
 typedef struct _LinphoneFriendListStats {
 	int new_list_count;
 	int removed_list_count;
@@ -1039,7 +1014,6 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses),
 #ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Friends working if no db set", friends_if_no_db_set),
-	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 	TEST_NO_TAG("20000 Friends storage in sqlite database", friends_sqlite_store_lot_of_friends),
 	TEST_NO_TAG("Find friend in database of 20000 objects", friends_sqlite_find_friend_in_lot_of_friends),
