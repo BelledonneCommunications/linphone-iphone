@@ -21,6 +21,7 @@
 ############################################################################
 
 add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/src/linphone_jni.cc"
+	COMMAND ${CMAKE_COMMAND} -E remove -f java/org/linphone/core/* src/*
 	COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_SOURCE_DIR}/genwrapper.py" "${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml" "-o" "${CMAKE_CURRENT_BINARY_DIR}"
 	DEPENDS ${PROJECT_SOURCE_DIR}/tools/genapixml.py ${LINPHONE_HEADER_FILES}
 	${PROJECT_SOURCE_DIR}/tools/metadoc.py

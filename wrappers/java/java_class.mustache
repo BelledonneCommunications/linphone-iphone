@@ -45,7 +45,7 @@ import org.linphone.core.tools.OpenH264DownloadHelper;
 {{/doc}}
 public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}interface{{/isNotLinphoneFactory}} {{className}} {
 {{#enums}}
-    enum {{className}} {
+    enum {{{className}}} {
     {{#values}}
         {{#doc}}
         /**
@@ -59,17 +59,17 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
     {{/values}}
         protected final int mValue;
 
-        private {{className}} (int value) {
+        private {{{className}}} (int value) {
             mValue = value;
         }
 
-        static public {{className}} fromInt(int value) throws RuntimeException {
+        static public {{{className}}} fromInt(int value) throws RuntimeException {
             switch(value) {
             {{#values}}
             case {{value}}: return {{name}};
             {{/values}}
             default:
-                throw new RuntimeException("Unhandled enum value " + value + " for {{className}}");
+                throw new RuntimeException("Unhandled enum value " + value + " for {{{className}}}");
             }
         }
 

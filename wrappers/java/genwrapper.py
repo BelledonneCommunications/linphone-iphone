@@ -28,55 +28,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 import genapixml as CApi
 import abstractapi as AbsApi
 import metadoc
+import metaname
 
-##########################################################################
-
-ENUMS_LIST = {
-    'AccountCreatorActivationCodeStatus': 'AccountCreator',
-    'AccountCreatorDomainStatus': 'AccountCreator',
-    'AccountCreatorEmailStatus': 'AccountCreator',
-    'AccountCreatorLanguageStatus': 'AccountCreator',
-    'AccountCreatorPasswordStatus': 'AccountCreator',
-    'AccountCreatorPhoneNumberStatus': 'AccountCreator',
-    'AccountCreatorStatus': 'AccountCreator',
-    'AccountCreatorTransportStatus': 'AccountCreator',
-    'AccountCreatorUsernameStatus': 'AccountCreator',
-    'AddressFamily': 'CallStats',
-    'AudioRoute': 'Call',
-    'AuthMethod': 'Core',
-    'CallDir': 'Call',
-    'CallState': 'Call',
-    'CallStatus': 'CallLog',
-    'ChatRoomState': 'ChatRoom',
-    'ChatMessageDirection': 'ChatMessage',
-    'ChatMessageState': 'ChatMessage',
-    'ConfiguringState': 'Core',
-    'ConsolidatedPresence': 'PresenceModel',
-    'CoreLogCollectionUploadState': 'Core',
-    'EcCalibratorStatus': 'Core',
-    'EventLogType': 'EventLog',
-    'GlobalState': 'Core',
-    'FriendListStatus': 'FriendList',
-    'FriendListSyncStatus': 'FriendList',
-    'IceState': 'CallStats',
-    'LimeState': 'Core',
-    'LogCollectionState': 'Core',
-    'MediaDirection': 'Core',
-    'MediaEncryption': 'Core',
-    'PlayerState': 'Player',
-    'PresenceActivityType': 'PresenceActivity',
-    'PublishState': 'Event',
-    'RegistrationState': 'Core',
-    'StreamType': 'CallStats',
-    'SubscriptionDir': 'Event',
-    'SubscribePolicy': 'Friend',
-    'TransportType': 'Address',
-    'TunnelMode': 'Tunnel',
-    'UpnpState': 'Core',
-    'VersionUpdateCheckResult': 'Core',
-    'XmlRpcRequestArgType': 'XmlRpcRequest',
-    'XmlRpcRequestStatus': 'XmlRpcRequest',
-}
 
 CORE_ACCESSOR_LIST = [
     'Call',
@@ -89,7 +42,89 @@ CORE_ACCESSOR_LIST = [
     'ProxyConfig'
 ]
 
-##########################################################################
+
+class JNINameTranslator(metaname.Translator):
+    _instance = None
+
+    @staticmethod
+    def get():
+        if JNINameTranslator._instance is None:
+            JNINameTranslator._instance = JNINameTranslator()
+        return JNINameTranslator._instance
+
+    def translate_class_name(self, name, **params):
+        translated_name = name.to_camel_case()
+        if name.prev is not None:
+            return name.prev.translate(self) + self._getseparator(name.prev) + translated_name
+        else:
+            return translated_name
+
+    def translate_interface_name(self, name, **params):
+        return self.translate_class_name(name, **params)
+
+    def translate_enum_name(self, name, **params):
+        return self.translate_class_name(name, **params)
+
+    def translate_enumerator_name(self, name, **params):
+        raise NotImplemented()
+
+    def translate_method_name(self, name, **params):
+        raise NotImplemented()
+
+    def translate_namespace_name(self, name, **params):
+        translated_name = name.to_snake_case()
+        if name.prev is not None:
+            return name.prev.translate(self) + self._getseparator(name.prev) + translated_name
+        else:
+            return translated_name
+
+    def translate_argument_name(self, name, **params):
+        raise NotImplemented()
+
+    def translate_property_name(self, name, **params):
+        raise NotImplemented()
+
+    def _getseparator(self, previous_name):
+        if isinstance(previous_name, metaname.NamespaceName):
+            return '/'
+        elif isinstance(previous_name, metaname.ClassName):
+            return '$'
+        else:
+            raise TypeError("no separator for '{0}' type".format(type(previous_name)))
+
+
+class JNILangTranslator(AbsApi.Translator):
+    _instance = None
+
+    @staticmethod
+    def get():
+        if JNILangTranslator._instance is None:
+            JNILangTranslator._instance = JNILangTranslator()
+        return JNILangTranslator._instance
+
+    def translate_base_type(self, type_):
+        if type_.name == 'string':
+            return 'Ljava/lang/String;'
+        elif type_.name == 'integer':
+            return 'I'
+        elif type_.name == 'boolean':
+            return 'Z'
+        elif type_.name == 'floatant':
+            return 'F'
+        elif type_.name == 'size':
+            return 'I'
+        elif type_.name == 'time':
+            return 'I'
+        elif type_.name == 'status':
+            return 'I'
+        elif type_.name == 'string_array':
+            return '[Ljava/lang/String;'
+        elif type_.name == 'character':
+            return 'C'
+        elif type_.name == 'void':
+            return 'V'
+        return type_.name
+
 
 class JavaTranslator(object):
     def __init__(self, packageName, exceptions):
@@ -101,7 +136,14 @@ class JavaTranslator(object):
             self.jni_package += directory + '_'
             self.jni_path += directory + '/'
 
+        self.nameTranslator = metaname.Translator.get('Java')
+        self.langTranslator = AbsApi.Translator.get('Java')
         self.docTranslator = metadoc.JavaDocTranslator()
+
+        self.jninameTranslator = JNINameTranslator.get()
+        self.jnilangTranslator = JNILangTranslator.get()
+
+        self.clangTranslator = AbsApi.Translator.get('C')
 
     def throws_exception(self, _type):
         if not self.exceptions:
@@ -110,177 +152,6 @@ class JavaTranslator(object):
             if _type.name == 'status':
                 return True
         return False
-
-    def translate_argument_name(self, _argName):
-        return _argName.to_snake_case()
-
-    def translate_java_jni_enum_name(self, _enum):
-        name = _enum.name.to_camel_case()
-        if name in ENUMS_LIST:
-            className = ENUMS_LIST[name]
-            if name.startswith(className):
-                name = name[len(className):]
-            name = className + '$' + name
-        return name
-
-    def translate_java_jni_base_type_name(self, _type):
-        if _type == 'string':
-            return 'Ljava/lang/String;'
-        elif _type == 'integer':
-            return 'I'
-        elif _type == 'boolean':
-            return 'Z'
-        elif _type == 'floatant':
-            return 'F'
-        elif _type == 'size':
-            return 'I'
-        elif _type == 'time':
-            return 'I'
-        elif _type == 'status':
-            return 'I'
-        elif _type == 'string_array':
-            return '[Ljava/lang/String;'
-        elif _type == 'character':
-            return 'C'
-        elif _type == 'void':
-            return 'V'
-        return _type
-
-    def translate_as_c_base_type(self, t):
-        _type = t.name
-        if _type == 'string':
-            return 'char *'
-        elif _type == 'integer':
-            if t.size is None:
-                if t.isUnsigned:
-                    return 'unsigned int'
-                return 'int'
-            inttype = 'int{0}_t'.format(t.size)
-            if t.isUnsigned:
-                inttype = 'u' + inttype
-            if t.isref:
-                inttype = inttype + ' *'
-            if t.isconst:
-                inttype = 'const ' + inttype
-            return inttype
-        elif _type == 'boolean':
-            return 'bool_t'
-        elif _type == 'floatant':
-            return 'float'
-        elif _type == 'size':
-            return 'size_t'
-        elif _type == 'time':
-            return 'time_t'
-        elif _type == 'status':
-            return 'int'
-        elif _type == 'string_array':
-            return 'char **'
-        elif _type == 'character':
-            return 'char'
-        elif _type == 'void':
-            if t.isref:
-                return 'void *'
-            return 'void'
-        return _type
-
-    def translate_type(self, _type, native=False, jni=False, isReturn=False):
-        if type(_type) is AbsApi.ListType:
-            if jni:
-                if type(_type.containedTypeDesc) is AbsApi.ClassType:
-                    return 'jobjectArray'
-                elif type(_type.containedTypeDesc) is AbsApi.BaseType:
-                    if _type.containedTypeDesc.name == 'string':
-                        return 'jobjectArray'
-                    return self.translate_type(_type.containedTypeDesc, jni=True) + 'Array'
-                elif type(_type.containedTypeDesc) is AbsApi.EnumType:
-                    ptrtype = self.translate_type(_type.containedTypeDesc, native)
-            ptrtype = ''
-            if type(_type.containedTypeDesc) is AbsApi.ClassType:
-                ptrtype = self.translate_type(_type.containedTypeDesc, native)
-            elif type(_type.containedTypeDesc) is AbsApi.BaseType:
-                ptrtype = self.translate_type(_type.containedTypeDesc, native)
-            elif type(_type.containedTypeDesc) is AbsApi.EnumType:
-                ptrtype = self.translate_type(_type.containedTypeDesc, native)
-            else:
-                if _type.containedTypeDesc:
-                    raise AbsApi.Error('translation of bctbx_list_t of ' + _type.containedTypeDesc.name)
-                else:
-                    raise AbsApi.Error('translation of bctbx_list_t of unknow type !')
-            return ptrtype + '[]'
-                
-        elif type(_type) is AbsApi.ClassType:
-            if jni:
-                return 'jobject'
-            return _type.desc.name.to_camel_case()
-        elif type(_type) is AbsApi.EnumType:
-            if native:
-                return 'int'
-            elif jni:
-                return 'jint'
-            if _type.desc.name.to_camel_case() == "XmlRpcStatus":
-                return "XmlRpcRequest.Status"
-            elif _type.desc.name.to_camel_case() == "XmlRpcArgType":
-                return "XmlRpcRequest.ArgType"
-            name = _type.desc.name.to_camel_case()
-            if name in ENUMS_LIST:
-                className = ENUMS_LIST[name]
-                if name.startswith(className):
-                    name = name[len(className):]
-                name = className + '.' + name
-            return name
-        elif type(_type) is AbsApi.BaseType:
-            if _type.name == 'string':
-                if jni:
-                    return 'jstring'
-                return 'String'
-            elif _type.name == 'integer':
-                if _type.size is not None and _type.isref:
-                    if jni:
-                        return 'jbyteArray'
-                    return 'byte[]'
-                if jni:
-                    return 'jint'
-                return 'int'
-            elif _type.name == 'boolean':
-                if jni:
-                    return 'jboolean'
-                return 'boolean'
-            elif _type.name == 'floatant':
-                if jni:
-                    return 'jfloat'
-                return 'float'
-            elif _type.name == 'size':
-                if jni:
-                    return 'jint'
-                return 'int'
-            elif _type.name == 'time':
-                if jni:
-                    return 'jlong'
-                return 'long'
-            elif _type.name == 'status':
-                if jni:
-                    return 'jint'
-                if native:
-                    return 'int'
-                return 'void'
-            elif _type.name == 'string_array':
-                if jni:
-                    return 'jobjectArray'
-                return 'String[]'
-            elif _type.name == 'character':
-                if jni:
-                    return 'jchar'
-                return 'char'
-            elif _type.name == 'void':
-                if isReturn:
-                    return 'void'
-                if jni:
-                    return 'jobject'
-                return 'Object'
-            return _type.name
-
-    def translate_argument(self, _arg, native=False, jni=False):
-        return '{0} {1}'.format(self.translate_type(_arg.type, native, jni), self.translate_argument_name(_arg.name))
 
     def translate_property(self, _property, _hasCoreAccessor):
         properties = []
@@ -331,8 +202,8 @@ class JavaTranslator(object):
     def translate_method(self, _method, _hasCoreAccessor=False):
         methodDict = {}
 
-        methodDict['return'] = self.translate_type(_method.returnType, isReturn=True)
-        methodDict['return_native'] = self.translate_type(_method.returnType, native=True, isReturn=True)
+        methodDict['return'] = _method.returnType.translate(self.langTranslator, isReturn=True)
+        methodDict['return_native'] = _method.returnType.translate(self.langTranslator, native=True, isReturn=True)
         methodDict['return_keyword'] = '' if methodDict['return'] == 'void' else 'return '
         methodDict['hasReturn'] = not methodDict['return'] == 'void'
 
@@ -357,13 +228,13 @@ class JavaTranslator(object):
             methodDict['native_params'] += ', '
             methodDict['native_params_impl'] += ', '
 
-            methodDict['params'] += self.translate_argument(arg)
-            methodDict['native_params'] += self.translate_argument(arg, True)
-            methodDict['static_native_params'] += self.translate_argument(arg, True)
+            methodDict['params'] += arg.translate(self.langTranslator)
+            methodDict['native_params'] += arg.translate(self.langTranslator, native=True)
+            methodDict['static_native_params'] += arg.translate(self.langTranslator, native=True)
             if type(arg.type) is AbsApi.EnumType:
-                methodDict['native_params_impl'] += self.translate_argument_name(arg.name) + '.toInt()'
+                methodDict['native_params_impl'] += arg.name.translate(self.nameTranslator) + '.toInt()'
             else:
-                methodDict['native_params_impl'] += self.translate_argument_name(arg.name)
+                methodDict['native_params_impl'] += arg.name.translate(self.nameTranslator)
 
         methodDict['deprecated'] = _method.deprecated
         methodDict['doc'] = _method.briefDescription.translate(self.docTranslator) if _method.briefDescription is not None else None
@@ -371,8 +242,8 @@ class JavaTranslator(object):
         return methodDict
 
     def translate_jni_method(self, className, _method, static=False):
-        jni_blacklist = ['linphone_call_set_native_video_window_id',\
-                        'linphone_core_set_native_preview_window_id',\
+        jni_blacklist = ['linphone_call_set_native_video_window_id',
+                        'linphone_core_set_native_preview_window_id',
                         'linphone_core_set_native_video_window_id']
 
         methodDict = {'notEmpty': True}
@@ -382,7 +253,7 @@ class JavaTranslator(object):
         methodDict['isLinphoneFactory'] = className.to_camel_case() == 'Factory'
         methodDict['jniPath'] = self.jni_path
 
-        methodDict['return'] = self.translate_type(_method.returnType, jni=True, isReturn=True)
+        methodDict['return'] = _method.returnType.translate(self.langTranslator, jni=True, isReturn=True)
         methodDict['hasListReturn'] = methodDict['return'] == 'jobjectArray'
         methodDict['hasByteArrayReturn'] = methodDict['return'] == 'jbyteArray'
         methodDict['hasReturn'] = not methodDict['return'] == 'void' and not methodDict['hasListReturn'] and not methodDict['hasByteArrayReturn']
@@ -396,11 +267,11 @@ class JavaTranslator(object):
         elif _method.name.to_snake_case() == 'create_core_with_config':
             methodDict['c_name'] = 'linphone_' + className.to_snake_case() + "_" + 'create_core_with_config_3'
         methodDict['returnObject'] = methodDict['hasReturn'] and type(_method.returnType) is AbsApi.ClassType
-        methodDict['returnClassName'] = self.translate_type(_method.returnType)
+        methodDict['returnClassName'] = _method.returnType.translate(self.langTranslator)
         methodDict['isRealObjectArray'] = False
         methodDict['isStringObjectArray'] = False
-        methodDict['c_type_return'] = self.translate_as_c_base_type(_method.returnType)
-        
+        methodDict['c_type_return'] = _method.returnType.translate(self.clangTranslator)
+
         if methodDict['c_name'] in jni_blacklist:
             return {'notEmpty': False}
 
@@ -432,8 +303,8 @@ class JavaTranslator(object):
             else:
                 methodDict['params_impl'] += ', '
 
-            methodDict['params'] += self.translate_argument(arg, jni=True)
-            argname = self.translate_argument_name(arg.name)
+            methodDict['params'] += arg.translate(self.langTranslator, jni=True)
+            argname = arg.name.translate(self.nameTranslator)
 
             if type(arg.type) is AbsApi.ClassType:
                 classCName = 'Linphone' + arg.type.desc.name.to_camel_case()
@@ -441,7 +312,7 @@ class JavaTranslator(object):
                    classCName = 'Linphone' + arg.type.desc.name.to_camel_case()[:-8] + 'Cbs'
                 methodDict['objects'].append({'object': argname, 'objectClassCName': classCName})
                 methodDict['params_impl'] += 'c_' + argname
-                
+
             elif type(arg.type) is AbsApi.ListType:
                 isStringList = type(arg.type.containedTypeDesc) is AbsApi.BaseType and arg.type.containedTypeDesc.name == 'string'
                 isObjList = type(arg.type.containedTypeDesc) is AbsApi.ClassType
@@ -451,16 +322,16 @@ class JavaTranslator(object):
             elif type(arg.type) is AbsApi.EnumType:
                 argCType = arg.type.name
                 methodDict['params_impl'] += '(' + argCType + ') ' + argname
-                
+
             elif type(arg.type) is AbsApi.BaseType:
                 if arg.type.name == 'integer' and arg.type.size is not None and arg.type.isref:
-                    methodDict['bytes'].append({'bytesargname': argname, 'bytesargtype' : self.translate_as_c_base_type(arg.type)})
+                    methodDict['bytes'].append({'bytesargname': argname, 'bytesargtype' : arg.type.translate(self.clangTranslator)})
                     methodDict['params_impl'] += 'c_' + argname
                 elif arg.type.name == 'string':
                     methodDict['strings'].append({'string': argname})
                     methodDict['params_impl'] += 'c_' + argname
                 else:
-                    methodDict['params_impl'] += '(' + self.translate_as_c_base_type(arg.type) + ')' + argname                        
+                    methodDict['params_impl'] += '(' + arg.type.translate(self.clangTranslator) + ')' + argname
             else:
                 methodDict['params_impl'] += argname
 
@@ -517,27 +388,25 @@ class JavaTranslator(object):
 
     def translate_jni_interface(self, _class, className, _method):
         methodDict = {}
-        listenerName = 'Linphone' + className.to_camel_case()
-        methodDict['classCName'] = listenerName[:-8] #Remove Listener at the end
-        methodDict['className'] = className.to_camel_case()
-        methodDict['classImplName'] = className.to_camel_case() + 'Impl'
+        methodDict['classCName'] = className.to_c()
+        methodDict['className'] = className.translate(self.nameTranslator)
+        methodDict['classImplName'] = methodDict['className'] + 'Impl'
         methodDict['jniPath'] = self.jni_path
-        methodDict['cPrefix'] = 'linphone_' + className.to_snake_case()[:-9] # Remove _listener at the end
-        methodDict['callbackName'] = methodDict['cPrefix'] + '_' + _method.name.to_snake_case()
-        methodDict['jname'] = _method.name.to_camel_case(lower=True)
-        methodDict['return'] = self.translate_as_c_base_type(_method.returnType)
+        methodDict['cPrefix'] = _class.name.to_snake_case(fullName=True)
+        methodDict['callbackName'] = '_{0}_cb'.format(_method.name.to_snake_case(fullName=True))
+        methodDict['jname'] = _method.name.translate(self.nameTranslator)
+        methodDict['return'] = _method.returnType.translate(self.clangTranslator)
         methodDict['jniUpcallMethod'] = 'CallVoidMethod'
         methodDict['isJniUpcallBasicType'] = False
         methodDict['isJniUpcallObject'] = False
         if type(_method.returnType) is AbsApi.ClassType:
-            methodDict['return'] += '*'
             methodDict['jniUpcallMethod'] = 'CallObjectMethod'
             methodDict['isJniUpcallObject'] = True
             methodDict['jniUpcallType'] = 'jobject'
         elif type(_method.returnType) is AbsApi.BaseType:
             if not _method.returnType.name == 'void':
                 methodDict['jniUpcallMethod'] = 'CallIntMethod'
-                methodDict['jniUpcallType'] = self.translate_type(_method.returnType, jni=True)
+                methodDict['jniUpcallType'] = _method.returnType.translate(self.langTranslator, jni=True)
                 methodDict['isJniUpcallBasicType'] = True
         methodDict['returnIfFail'] = '' if  methodDict['return'] == 'void' else ' NULL'
         methodDict['hasReturn'] = not methodDict['return'] == 'void'
@@ -552,40 +421,33 @@ class JavaTranslator(object):
         methodDict['jparams'] = '('
         methodDict['params_impl'] = ''
         for arg in _method.args:
-            argname = self.translate_argument_name(arg.name)
+            argname = arg.name.translate(self.nameTranslator)
             if arg is not _method.args[0]:
                 methodDict['params'] += ', '
                 methodDict['params_impl'] += ', '
             else:
-                 methodDict['firstParam'] = argname
+                methodDict['firstParam'] = argname
 
-            if (arg.type.isconst):
-                methodDict['params'] += 'const '
+            methodDict['params'] += '{0} {1}'.format(arg.type.translate(self.clangTranslator), argname)
 
             if type(arg.type) is AbsApi.ClassType:
-                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' *' + argname
                 methodDict['jparams'] += 'L' + self.jni_path + arg.type.desc.name.to_camel_case() + ';'
                 methodDict['params_impl'] += 'j_' + argname
                 methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.desc.name.to_camel_case(), })
             elif type(arg.type) is AbsApi.BaseType:
-                methodDict['params'] += self.translate_as_c_base_type(arg.type) + ' ' + argname
-                methodDict['jparams'] += self.translate_java_jni_base_type_name(arg.type.name)
+                methodDict['jparams'] += arg.type.translate(self.jnilangTranslator)
                 if arg.type.name == 'string':
                     methodDict['params_impl'] += 'j_' + argname
                     methodDict['jstrings'].append({'stringName': argname,})
                 else:
                     methodDict['params_impl'] += argname
             elif type(arg.type) is AbsApi.EnumType:
-                methodDict['params'] += 'Linphone' + arg.type.desc.name.to_camel_case() + ' ' + argname
-                methodDict['jparams'] += 'L' + self.jni_path + self.translate_java_jni_enum_name(arg.type.desc) + ';'
+                methodDict['jparams'] += 'L' + self.jni_path + arg.type.desc.name.translate(self.jninameTranslator) + ';'
                 methodDict['params_impl'] += 'j_' + argname
-                methodDict['jenums'].append({'enumName': argname, 'cEnumPrefix': 'linphone_' + arg.type.desc.name.to_snake_case()})
+                methodDict['jenums'].append({'enumName': argname, 'cEnumPrefix': arg.type.desc.name.to_snake_case(fullName=True)})
             elif type(arg.type) is AbsApi.ListType:
-                #TODO #FIXME handle bctbx_list_t as callback param
-                methodDict['params'] += 'const bctbx_list_t *' + argname
                 methodDict['jparams'] += '[L' + self.jni_path + arg.type.containedTypeDesc.name + ';'
                 methodDict['params_impl'] += 'NULL'
-                #methodDict['jobjects'].append({'objectName': argname, 'className': arg.type.containedTypeDesc.name, })
 
         methodDict['jparams'] += ')'
         if (methodDict['return'] == 'void'):
@@ -652,22 +514,15 @@ class JavaTranslator(object):
 
 class JavaEnum(object):
     def __init__(self, package, _enum, translator):
+        javaNameTranslator = metaname.Translator.get('Java')
         self._class = translator.translate_enum(_enum)
         self.packageName = package
-        self.className = _enum.name.to_camel_case()
-        if self.className == 'XmlRpcArgType':
-            self.className = 'XmlRpcRequestArgType'
-        elif self.className == 'XmlRpcStatus':
-            self.className = 'XmlRpcRequestStatus'
-        self.cPrefix = 'linphone_' + _enum.name.to_snake_case()
+        self.className = _enum.name.translate(javaNameTranslator)
+        self.cPrefix = _enum.name.to_snake_case(fullName=True)
         self.filename = self.className + ".java"
         self.values = self._class['values']
         self.doc = self._class['doc']
-        self.jniName = translator.translate_java_jni_enum_name(_enum)
-        if self.className == 'XmlRpcRequestArgType':
-            self.jniName = 'XmlRpcRequest$ArgType'
-        elif self.className == 'XmlRpcRequestStatus':
-            self.jniName = 'XmlRpcRequest$Status'
+        self.jniName = _enum.name.translate(JNINameTranslator.get())
 
 class JniInterface(object):
     def __init__(self, javaClass, apiClass):
@@ -679,10 +534,8 @@ class JniInterface(object):
         self.callbacks = []
         listener = apiClass.listenerInterface
         for method in listener.methods:
-            cb = 'linphone_' + listener.name.to_snake_case()[:-9] # Remove _listener at the end
-            cbName = cb + '_' + method.name.to_snake_case()
             self.callbacks.append({
-                'callbackName': cbName,
+                'callbackName': '_{0}_cb'.format(method.name.to_snake_case(fullName=True)),
                 'callback': method.name.to_snake_case()[3:], # Remove the on_
             })
 
@@ -712,9 +565,9 @@ class JavaClass(object):
         self.isLinphoneFactory = self._class['isLinphoneFactory']
         self.isLinphoneCore = self._class['isLinphoneCore']
         self.isNotLinphoneFactory = not self.isLinphoneFactory
+        self.cName = _class.name.to_c()
         self.hasCoreAccessor = self._class['hasCoreAccessor']
-        self.cName = 'Linphone' + _class.name.to_camel_case()
-        self.cPrefix = 'linphone_' + _class.name.to_snake_case()
+        self.cPrefix = _class.name.to_snake_case(fullName=True)
         self.packageName = package
         self.className = _class.name.to_camel_case()
         self.classImplName = self.className + "Impl"
@@ -726,6 +579,8 @@ class JavaClass(object):
         self.jniMethods = self._class['jniMethods']
         self.doc = self._class['doc']
         self.enums = []
+        for enum in _class.enums:
+            self.enums.append(JavaEnum(package, enum, translator))
         self.jniInterface = None
         if _class.listenerInterface is not None:
             self.jniInterface = JniInterface(self, _class)
@@ -827,18 +682,19 @@ class GenWrapper(object):
         project.check()
 
         self.parser = AbsApi.CParser(project)
-        self.parser.functionBl = \
-            ['linphone_factory_create_core_with_config',\
-            'linphone_factory_create_core',\
-            'linphone_factory_create_core_2',\
-            'linphone_factory_create_core_with_config_2',\
-            'linphone_vcard_get_belcard',\
-            'linphone_core_get_current_vtable',\
-            'linphone_factory_get',\
-            'linphone_factory_clean',\
-            'linphone_call_zoom_video',\
-            'linphone_core_get_zrtp_cache_db',\
-            'linphone_config_get_range']
+        self.parser.functionBl = [
+            'linphone_factory_create_core_with_config',
+            'linphone_factory_create_core',
+            'linphone_factory_create_core_2',
+            'linphone_factory_create_core_with_config_2',
+            'linphone_vcard_get_belcard',
+            'linphone_core_get_current_vtable',
+            'linphone_factory_get',
+            'linphone_factory_clean',
+            'linphone_call_zoom_video',
+            'linphone_core_get_zrtp_cache_db',
+            'linphone_config_get_range'
+        ]
         self.parser.parse_all()
         self.translator = JavaTranslator(package, exceptions)
         self.renderer = pystache.Renderer()
@@ -848,27 +704,14 @@ class GenWrapper(object):
         self.enums = {}
         self.interfaces = {}
         self.classes = {}
-        self.enums_to_remove = []
 
     def render_all(self):
-        for _interface in self.parser.interfacesIndex.values():
+        for _interface in self.parser.namespace.interfaces:
             self.render_java_interface(_interface)
-        for _class in self.parser.classesIndex.values():
+        for _class in self.parser.namespace.classes:
             self.render_java_class(_class)
-        for _enum in self.parser.enumsIndex.items():
-            if _enum[1] is not None:
-                self.render_java_enum(_enum[1])
-
-        for name, value in self.enums.items():
-            self.jni.add_enum(value)
-            if name in ENUMS_LIST:
-                className = ENUMS_LIST[name]
-                logging.info('Enum ' + name + ' belongs to class ' + className)
-                self.classes[className].add_enum(value)
-                self.enums_to_remove.append(name)
-
-        for enum in self.enums_to_remove:
-            self.enums.pop(enum, None)
+        for enum in self.parser.namespace.enums:
+            self.render_java_enum(enum)
 
         for name, value in self.enums.items():
             self.render(value, self.javadir + '/' + value.filename)
@@ -898,6 +741,7 @@ class GenWrapper(object):
             try:
                 javaenum = JavaEnum(self.package, _class, self.translator)
                 self.enums[javaenum.className] = javaenum
+                self.jni.add_enum(javaenum)
             except AbsApi.Error as e:
                 logging.error('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
 
@@ -917,6 +761,8 @@ class GenWrapper(object):
             try:
                 javaclass = JavaClass(self.package, _class, self.translator)
                 self.classes[javaclass.className] = javaclass
+                for enum in javaclass.enums:
+                    self.jni.add_enum(enum)
             except AbsApi.Error as e:
                 logging.error('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
             self.jni.add_methods(javaclass.className, javaclass.jniMethods)

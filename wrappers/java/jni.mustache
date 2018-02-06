@@ -291,10 +291,10 @@ static {{return}} {{callbackName}}({{params}}) {
 	}
 
 	{{#isSingleListener}}
-	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks({{firstParam}});
+	{{classCName}} *cbs = {{cPrefix}}_get_callbacks({{firstParam}});
 	{{/isSingleListener}}
 	{{#isMultiListener}}
-	{{classCName}}Cbs *cbs = {{cPrefix}}_get_current_callbacks({{firstParam}});
+	{{classCName}} *cbs = {{cPrefix}}_get_current_callbacks({{firstParam}});
 	{{/isMultiListener}}
 	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
 

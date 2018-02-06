@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# 1st pass
 find ./src/android/org/linphone/ -type f -exec sed -i -e "s/import org.linphone.tools/import org.linphone.core.tools/g; \
 s/import org.linphone.core.OpenH264DownloadHelperListener/import org.linphone.core.tools.OpenH264DownloadHelperListener/g; \
 s/import org.linphone.core.LinphoneCore.Transports/import org.linphone.core.Transports/g; \
@@ -270,7 +271,26 @@ s/linkPhoneNumberWithAccount()/linkAccount()/g; \
 s/zoomVideo(/zoom(/g; \
 s/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g; \
 s/new XmlRpcRequestImpl(/xmlRpcSession.createRequest(/g; \
-s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g" {} \;
+s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g;" {} \;
+
+# 2nd pass
+find ./src/android/org/linphone/ -type f -exec sed -i -e "s/Address\.TransportType/TransportType/g; \
+s/\(CallLog\.\)\?CallStatus\([^[:alnum:]_]\)/Call.Status\2/g; \
+s/CallStats\.AddressFamily/AddressFamily/g; \
+s/CallStats\.StreamType/StreamType/g; \
+s/Core\.AuthMethod/AuthMethod/g; \
+s/Core\.ConfiguringState/ConfiguringState/g; \
+s/Core\.EcCalibratorStatus/EcCalibratorStatus/g; \
+s/Core\.GlobalState/GlobalState/g; \
+s/Core\.LimeState/LimeState/g; \
+s/Core\.LogCollectionState/LogCollectionState/g; \
+s/Core\.MediaEncryption/MediaEncryption/g; \
+s/Core\.RegistrationState/RegistrationState/g; \
+s/Core\.VersionUpdateCheckResult/VersionUpdateCheckResult/g; \
+s/Event\.PublishState/PublishState/g; \
+s/Friend\.SubscribePolicy/SubscribePolicy/g; \
+s/XmlRpcRequest\.ArgType/XmlRpcArgType/g; \
+s/XmlRpcRequest\.Status/XmlRpcStatus/g;" {} \;
 
 # TODO
 #Tunnel, TunnelConfig

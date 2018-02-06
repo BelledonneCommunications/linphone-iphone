@@ -36,19 +36,16 @@ import metaname
 class CppTranslator(object):
 	sharedPtrTypeExtractor = re.compile('^(const )?std::shared_ptr<(.+)>( &)?$')
 	
-	def __init__(self):
-		self.ambigousTypes = ['LinphonePayloadType']
+	def __init__(self, rootNs=None):
 		self.nameTranslator = metaname.Translator.get('Cpp')
 		self.langTranslator = AbsApi.Translator.get('Cpp')
 		self.langTranslator.ambigousTypes.append('LinphonePayloadType')
 		self.docTranslator = metadoc.DoxygenTranslator('Cpp')
-	
-	def is_ambigous_type(self, _type):
-		return _type.name in self.ambigousTypes or (_type.name == 'list' and self.is_ambigous_type(_type.containedTypeDesc))
+		self.rootNs = rootNs
 	
 	def translate_enum(self, enum):
 		enumDict = {}
-		enumDict['name'] = enum.name.to_camel_case()
+		enumDict['name'] = enum.name.translate(self.nameTranslator)
 		enumDict['doc'] = enum.briefDescription.translate(self.docTranslator)
 		enumDict['enumerators'] = []
 		for enumerator in enum.enumerators:
@@ -87,6 +84,7 @@ class CppTranslator(object):
 			'cClassName'          : '::' + _class.name.to_c(),
 			'privCClassName'      : '_' + _class.name.to_c(),
 			'parentClassName'     : 'Object' if _class.refcountable else None,
+			'enums'               : [],
 			'methods'             : [],
 			'staticMethods'       : [],
 			'wrapperCbs'          : [],
@@ -120,6 +118,9 @@ class CppTranslator(object):
 			classDict['userDataSetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_set_user_data'
 			classDict['userDataGetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_get_user_data'
 			classDict['currentCallbacksGetter'] = _class.name.to_snake_case(fullName=True) + '_get_current_callbacks'
+
+		for enum in _class.enums:
+			classDict['enums'].append(self.translate_enum(enum))
 		
 		for _property in _class.properties:
 			classDict['methods'] += self.translate_property(_property)
@@ -187,11 +188,11 @@ class CppTranslator(object):
 		return res
 	
 	def translate_method(self, method, genImpl=True):
-		namespace = method.find_first_ancestor_by_type(AbsApi.Namespace)
+		namespace = method.find_first_ancestor_by_type(AbsApi.Class, AbsApi.Interface)
 		
 		methodDict = {
-			'declPrototype': method.translate_as_prototype(self.langTranslator),
-			'implPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
+			'declPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
+			'implPrototype': method.translate_as_prototype(self.langTranslator, namespace=AbsApi.GlobalNs),
 			'deprecated': method.deprecated,
 			'suffix': '',
 		}
@@ -355,6 +356,7 @@ class ClassHeader(object):
 		else:
 			self._class = translator.translate_interface(_class)
 		
+		self.rootNs = translator.rootNs
 		self.define = '_{0}_HH'.format(_class.name.to_snake_case(upper=True, fullName=True))
 		self.filename = '{0}.hh'.format(_class.name.to_snake_case())
 		self.priorDeclarations = []
@@ -362,16 +364,12 @@ class ClassHeader(object):
 		
 		self.includes = {'internal': [], 'external': []}
 		includes = self.needed_includes(_class)
-		for include in includes['internal']:
-			if include == 'enums':
-				self.includes['internal'].append({'name': include})
-			else:
-				className = metaname.ClassName()
-				className.from_snake_case(include)
-				self.priorDeclarations.append({'name': className.to_camel_case()})
 		
 		for include in includes['external']:
 			self.includes['external'].append({'name': include})
+
+		for include in includes['internal']:
+			self.includes['internal'].append({'name': include})
 	
 	def needed_includes(self, _class):
 		includes = {'internal': [], 'external': []}
@@ -394,7 +392,8 @@ class ClassHeader(object):
 				self._needed_includes_from_type(arg.type, includes)
 		
 		if isinstance(_class, AbsApi.Class) and _class.listenerInterface is not None:
-			self._add_include(includes, 'internal', _class.listenerInterface.name.to_snake_case())
+			decl = 'class ' + _class.listenerInterface.name.translate(metaname.Translator.get('Cpp'))
+			self._add_prior_declaration(decl)
 		
 		currentClassInclude = _class.name.to_snake_case()
 		if currentClassInclude in includes['internal']:
@@ -407,25 +406,40 @@ class ClassHeader(object):
 		for arg in method.args:
 			self._needed_includes_from_type(arg.type, includes)
 	
-	def _needed_includes_from_type(self, _type, includes):
-		if isinstance(_type, AbsApi.ClassType):
-			self._add_include(includes, 'external', 'memory')
-			if _type.desc is not None:
-				self._add_include(includes, 'internal', _type.desc.name.to_snake_case())
-		elif isinstance(_type, AbsApi.EnumType):
-			self._add_include(includes, 'internal', 'enums')
-		elif isinstance(_type, AbsApi.BaseType):
-			if _type.name == 'integer' and isinstance(_type.size, int):
+	def _needed_includes_from_type(self, type_, includes):
+		translator = metaname.Translator.get('Cpp')
+		if isinstance(type_, AbsApi.ClassType):
+			class_ = type_.desc
+			if class_.parent == self.rootNs:
+				decl = 'class ' + class_.name.translate(translator)
+				self._add_prior_declaration(decl)
+			else:
+				rootClass = class_.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				self._add_include(includes, 'internal', rootClass.name.to_snake_case())
+		elif isinstance(type_, AbsApi.EnumType):
+			enum = type_.desc
+			if enum.parent == self.rootNs:
+				headerFile = 'enums'
+			else:
+				rootClass = enum.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				headerFile = rootClass.name.to_snake_case()
+			self._add_include(includes, 'internal', headerFile)
+		elif isinstance(type_, AbsApi.BaseType):
+			if type_.name == 'integer' and isinstance(type_.size, int):
 				self._add_include(includes, 'external', 'cstdint')
-			elif _type.name == 'string':
+			elif type_.name == 'string':
 				self._add_include(includes, 'external', 'string')
-		elif isinstance(_type, AbsApi.ListType):
+		elif isinstance(type_, AbsApi.ListType):
 			self._add_include(includes, 'external', 'list')
-			self._needed_includes_from_type(_type.containedTypeDesc, includes)
+			self._needed_includes_from_type(type_.containedTypeDesc, includes)
 	
 	def _add_include(self, includes, location, name):
 		if not name in includes[location]:
 			includes[location].append(name)
+
+	def _add_prior_declaration(self, decl):
+		if next((x for x in self.priorDeclarations if x['declaration']==decl), None) is None:
+			self.priorDeclarations.append({'declaration': decl})
 
 
 class MainHeader(object):
@@ -453,18 +467,16 @@ class GenWrapper(object):
 		
 		self.parser = AbsApi.CParser(project)
 		self.parser.parse_all()
-		self.translator = CppTranslator()
+		self.translator = CppTranslator(self.parser.namespace)
 		self.renderer = pystache.Renderer()
 		self.mainHeader = MainHeader()
 		self.impl = ClassImpl()
 
 	def render_all(self):
 		header = EnumsHeader(self.translator)
-		for item in self.parser.enumsIndex.items():
-			if item[1] is not None:
-				header.add_enum(item[1])
-			else:
-				logging.info('{0} enum won\'t be translated because of parsing errors'.format(item[0]))
+
+		for enum in self.parser.namespace.enums:
+			header.add_enum(enum)
 		
 		self.render(header, self.includedir + '/enums.hh')
 		self.mainHeader.add_include('enums.hh')

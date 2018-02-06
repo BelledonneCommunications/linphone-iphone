@@ -46,7 +46,7 @@ struct {{{privCClassName}}};
 namespace linphone {
 
 	{{#priorDeclarations}}
-	class {{{name}}};
+	{{{declaration}}};
 	{{/priorDeclarations}}
 
 	{{#_class}}
@@ -69,6 +69,30 @@ namespace linphone {
 		{{/friendClasses}}
 	
 		public:
+			{{#enums}}
+			{{#doc}}
+			/**
+			{{#lines}}
+			* {{{line}}}
+			{{/lines}}
+			*
+			*/
+			{{/doc}}
+			enum class {{name}} {
+				{{#enumerators}}
+				{{#doc}}
+				/**
+				{{#lines}}
+				* {{{line}}}
+				{{/lines}}
+				*/
+				{{/doc}}
+				{{name}}{{#value}} = {{{value}}}{{/value}}{{#notLast}},{{/notLast}}
+				{{/enumerators}}
+			};
+
+			{{/enums}}
+
 			{{#isNotListener}}
 			{{#isrefcountable}}
 			{{{className}}}(void *ptr, bool takeRef=true);
