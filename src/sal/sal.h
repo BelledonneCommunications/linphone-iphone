@@ -146,6 +146,7 @@ public:
 	bool_t content_encoding_available(const char *content_encoding) {return (bool_t)belle_sip_stack_content_encoding_available(this->stack, content_encoding);}
 	bool_t is_content_type_supported(const char *content_type) const;
 	void add_content_type_support(const char *content_type);
+	void remove_content_type_support(const char *content_type);
 
 	void set_default_sdp_handling(SalOpSDPHandling sdp_handling_method);
 

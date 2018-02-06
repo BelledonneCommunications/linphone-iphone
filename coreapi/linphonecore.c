@@ -2527,8 +2527,8 @@ void linphone_core_enable_lime(LinphoneCore *lc, LinphoneLimeState val){
 	LinphoneImEncryptionEngine *imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *cbs = linphone_im_encryption_engine_get_callbacks(imee);
 
-	if(lime_is_available()){
-		if (linphone_core_ready(lc)){
+	if (lime_is_available()) {
+		if (linphone_core_ready(lc)) {
 			lp_config_set_int(lc->config,"sip","lime",val);
 		}
 
@@ -7172,6 +7172,10 @@ bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const cha
 
 void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type) {
 	lc->sal->add_content_type_support(content_type);
+}
+
+void linphone_core_remove_content_type_support(LinphoneCore *lc, const char *content_type) {
+	lc->sal->remove_content_type_support(content_type);
 }
 
 #ifdef ENABLE_UPDATE_CHECK

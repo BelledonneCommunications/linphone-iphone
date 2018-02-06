@@ -670,6 +670,14 @@ void Sal::add_content_type_support(const char *content_type) {
 	}
 }
 
+void Sal::remove_content_type_support(const char *content_type) {
+	if (content_type != NULL) {
+		if (bctbx_list_find(this->supported_content_types, content_type)) {
+			this->supported_content_types = bctbx_list_remove(this->supported_content_types, (char *)content_type);
+		}
+	}
+}
+
 void Sal::use_rport(bool_t use_rports) {
 	belle_sip_provider_enable_rport(this->prov,use_rports);
 	ms_message("Sal use rport [%s]", use_rports ? "enabled" : "disabled");
