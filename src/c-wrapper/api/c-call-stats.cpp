@@ -165,7 +165,8 @@ bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stat
 // =============================================================================
 
 LinphoneCallStats *linphone_call_stats_ref (LinphoneCallStats* stats) {
-	return reinterpret_cast<LinphoneCallStats *>(belle_sip_object_ref(stats));
+	belle_sip_object_ref(stats);
+	return stats;
 }
 
 void linphone_call_stats_unref (LinphoneCallStats* stats) {
