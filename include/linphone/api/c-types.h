@@ -156,6 +156,12 @@ typedef struct _LinphoneDialPlan LinphoneDialPlan;
 **/
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
+/**
+ * The LinphoneContent object holds data that can be embedded in a signaling message.
+ * @ingroup misc
+**/
+typedef struct _LinphoneContent LinphoneContent;
+
 // =============================================================================
 // C Enums.
 // =============================================================================
