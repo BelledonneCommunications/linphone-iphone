@@ -1267,14 +1267,14 @@ static void group_chat_room_create_room_with_disconnected_friends_base (bool_t i
 
 	if (initial_message) {
 		if (BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, 1, 10000))) {
-			if (BC_ASSERT_PTR_NOT_NULL(linphone_chat_room_get_history(paulineCr, 0))) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage*)(linphone_chat_room_get_history(paulineCr, 0)->data)),"Salut)");
-			}
+			LinphoneChatMessage *msg = linphone_chat_room_get_last_message_in_history(paulineCr);
+			if (BC_ASSERT_PTR_NOT_NULL(msg))
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), "Salut");
 		}
-		if (BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, 1, 10000))) {
-			if (BC_ASSERT_PTR_NOT_NULL(linphone_chat_room_get_history(laureCr, 0))) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text((LinphoneChatMessage*)(linphone_chat_room_get_history(laureCr, 0)->data)),"Salut)");
-			}
+		if (BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneMessageReceived, 1, 10000))) {
+			LinphoneChatMessage *msg = linphone_chat_room_get_last_message_in_history(laureCr);
+			if (BC_ASSERT_PTR_NOT_NULL(msg))
+				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), "Salut");
 		}
 	}
 
