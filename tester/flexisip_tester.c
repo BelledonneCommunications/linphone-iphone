@@ -81,6 +81,7 @@ static void message_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
+	linphone_chat_message_unref(message);
 
 	/*wait a bit that 200Ok for MESSAGE are sent to server before shuting down the cores, because otherwise Flexisip will consider the messages
 	 * as not delivered and will expedite them in the next test, after receiving the REGISTER from marie's instances*/
@@ -125,6 +126,8 @@ static void message_forking_with_unreachable_recipients(void) {
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL(marie3->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	linphone_chat_message_unref(message);
+
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
@@ -179,6 +182,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	BC_ASSERT_EQUAL( marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL( marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL( marie3->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
+	linphone_chat_message_unref(message);
 
 	/*marie 1 goes online */
 	linphone_core_set_network_reachable(marie->lc,TRUE);
@@ -235,7 +239,7 @@ static void message_forking_with_unreachable_recipients_with_gruu(void) {
 
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
-	
+
 	/*marie 2 goes online */
 	linphone_core_set_network_reachable(marie2->lc,TRUE);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,3000));
@@ -1473,37 +1477,37 @@ void resend_refer_other_devices(void) {
 	Sal *pauline_sal = linphone_core_get_sal(pauline->lc);
 	sal_set_user_pointer(pauline_sal, (void*)pauline);
 	sal_set_call_refer_callback(pauline_sal, on_refer_received);
-	
-	
+
+
 	char *marie_address = linphone_address_as_string(marie->identity);
 	char *pauline_address = linphone_address_as_string(pauline->identity);
 	char *laure_address = linphone_address_as_string(laure->identity);
-	
+
 	/* Then we create a refer from marie to pauline that refers to laure */
 	SalOp *op = sal_create_refer_op(linphone_core_get_sal(marie->lc));
 	sal_op_set_from(op, marie_address);
 	sal_op_set_to(op, pauline_address);
-	
+
 	SalAddress *address = sal_address_new(laure_address);
 	sal_address_set_param(address, "text", NULL);
 	sal_op_send_refer(op, address);
-	
+
 	ms_free(marie_address);
 	ms_free(pauline_address);
 	ms_free(laure_address);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallRefered,1,5000));
-	
+
 	/* We create another pauline and check if it has received a refer */
 	pauline2 = linphone_core_manager_new( "pauline_rc");
 	lcs=bctbx_list_append(lcs,pauline2->lc);
-	
+
 	Sal *pauline2_sal = linphone_core_get_sal(pauline2->lc);
 	sal_set_user_pointer(pauline2_sal, (void*)pauline2);
 	sal_set_call_refer_callback(pauline2_sal, on_refer_received);
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline2->stat.number_of_LinphoneCallRefered,1,5000));
-	
+
 	sal_address_unref(address);
 	sal_release_op(op);
 	linphone_core_manager_destroy(marie);
