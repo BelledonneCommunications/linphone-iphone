@@ -785,10 +785,12 @@ static void _call_with_ipv6(bool_t caller_with_ipv6, bool_t callee_with_ipv6) {
 	}
 
 	marie = linphone_core_manager_new2( "marie_rc", FALSE);
+	linphone_core_remove_supported_tag(marie->lc,"gruu"); // With gruu, we have no access to the "public IP from contact
 	linphone_core_enable_ipv6(marie->lc, caller_with_ipv6);
 	linphone_core_manager_start(marie, TRUE);
 
 	pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", FALSE);
+	linphone_core_remove_supported_tag(pauline->lc,"gruu"); // With gruu, we have no access to the "public IP from contact
 	linphone_core_enable_ipv6(pauline->lc, callee_with_ipv6);
 	linphone_core_manager_start(pauline, TRUE);
 
