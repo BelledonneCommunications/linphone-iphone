@@ -48,6 +48,9 @@ public:
 	void setFilePath (const std::string &path);
 	const std::string &getFilePath () const;
 
+	void setFileKey (const std::string &key);
+	const std::string &getFileKey () const;
+
 	bool isFile () const override;
 
 	// TODO: Remove me later.

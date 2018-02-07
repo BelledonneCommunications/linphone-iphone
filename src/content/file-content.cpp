@@ -36,6 +36,7 @@ public:
 	string fileName;
 	string filePath;
 	size_t fileSize = 0;
+	string fileKey;
 };
 
 // -----------------------------------------------------------------------------
@@ -47,6 +48,7 @@ FileContent::FileContent (const FileContent &src) : Content(*new FileContentPriv
 	d->fileName = src.getFileName();
 	d->filePath = src.getFilePath();
 	d->fileSize = src.getFileSize();
+	d->fileKey = src.getFileKey();
 }
 
 FileContent::FileContent (FileContent &&src) : Content(*new FileContentPrivate) {
@@ -54,6 +56,7 @@ FileContent::FileContent (FileContent &&src) : Content(*new FileContentPrivate) 
 	d->fileName = move(src.getPrivate()->fileName);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileKey = move(src.getPrivate()->fileKey);
 }
 
 FileContent &FileContent::operator= (const FileContent &src) {
@@ -63,6 +66,7 @@ FileContent &FileContent::operator= (const FileContent &src) {
 		d->fileName = src.getFileName();
 		d->filePath = src.getFilePath();
 		d->fileSize = src.getFileSize();
+		d->fileKey = src.getFileKey();
 	}
 
 	return *this;
@@ -74,6 +78,7 @@ FileContent &FileContent::operator= (FileContent &&src) {
 	d->fileName = move(src.getPrivate()->fileName);
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileKey = move(src.getPrivate()->fileKey);
 	return *this;
 }
 
@@ -82,7 +87,8 @@ bool FileContent::operator== (const FileContent &content) const {
 	return Content::operator==(content) &&
 		d->fileName == content.getFileName() &&
 		d->filePath == content.getFilePath() &&
-		d->fileSize == content.getFileSize();
+		d->fileSize == content.getFileSize() &&
+		d->fileKey == content.getFileKey();
 }
 
 void FileContent::setFileSize (size_t size) {
@@ -115,6 +121,16 @@ const string &FileContent::getFilePath () const {
 	return d->filePath;
 }
 
+void FileContent::setFileKey (const string &key) {
+	L_D();
+	d->fileKey = key;
+}
+
+const string &FileContent::getFileKey () const {
+	L_D();
+	return d->fileKey;
+}
+
 bool FileContent::isFile () const {
 	return true;
 }
@@ -125,6 +141,7 @@ LinphoneContent *FileContent::toLinphoneContent () const {
 	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
 	linphone_content_set_name(content, getFileName().c_str());
 	linphone_content_set_size(content, getFileSize());
+	linphone_content_set_key(content, getFileKey().c_str(), getFileKey().size());
 	return content;
 }
 

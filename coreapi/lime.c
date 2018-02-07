@@ -396,6 +396,8 @@ int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t me
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
 	bctbx_aes_gcm_context_t *gcmContext;
 
+	if (key == NULL) return -1;
+
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
 		gcmContext = bctbx_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTBX_GCM_ENCRYPT);
