@@ -890,7 +890,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
 		linphone_chat_room_send_chat_message(chat_room,message);
-		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageExtBodyReceived,1));
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 
 		if (marie->stat.last_received_chat_message ) {
 			cbs = linphone_chat_message_get_callbacks(marie->stat.last_received_chat_message);
@@ -902,88 +902,15 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d");
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,1, int, "%d");
-		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived,1, int, "%d");
+		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceivedWithFile,1, int, "%d");
 		compare_files(send_filepath, receive_filepath);
 
+		linphone_chat_message_unref(message);
 		linphone_content_unref(content);
 		linphone_core_manager_destroy(marie);
 		linphone_core_manager_destroy(pauline);
 		ms_free(send_filepath);
 		bc_free(receive_filepath);
-	}
-}
-
-void send_file_transfer_message_using_external_body_url(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
-	LinphoneChatMessageCbs *cbs;
-	LinphoneChatRoom *chat_room;
-	LinphoneChatMessage *message;
-
-	/* create a chatroom on pauline's side */
-	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
-
-	message = linphone_chat_room_create_message(chat_room, NULL);
-
-	cbs = linphone_chat_message_get_callbacks(message);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-
-	linphone_chat_message_set_external_body_url(message, "https://www.linphone.org:444//tmp/54ec58280ace9_c30709218df8eaba61d1.jpg");
-	linphone_chat_room_send_chat_message(chat_room, message);
-
-	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-	if (marie->stat.last_received_chat_message) {
-		linphone_chat_message_download_file(marie->stat.last_received_chat_message);
-	}
-	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageExtBodyReceived, 1));
-
-	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress, 1, int, "%d");
-	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageExtBodyReceived, 1, int, "%d");
-
-	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDelivered, 1));
-
-}
-
-static void file_transfer_message_external_body_to_external_body_client(void) {
-	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-
-		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(marie->lc), "Accept", "application/sdp");
-		linphone_core_manager_start(marie, TRUE);
-
-		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(pauline->lc), "Accept", "application/sdp");
-		linphone_core_manager_start(pauline, TRUE);
-
-		reset_counters(&marie->stat);
-		reset_counters(&pauline->stat);
-
-		linphone_core_refresh_registers(marie->lc);
-		linphone_core_refresh_registers(pauline->lc);
-
-		send_file_transfer_message_using_external_body_url(marie, pauline);
-
-		linphone_core_manager_destroy(pauline);
-		linphone_core_manager_destroy(marie);
-	}
-}
-
-static void file_transfer_message_external_body_to_rcs_client(void) {
-	if (transport_supported(LinphoneTransportTls)) {
-		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
-		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_rc");
-
-		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(marie->lc), "Accept", "application/sdp");
-		linphone_core_manager_start(marie, TRUE);
-
-		linphone_proxy_config_set_custom_header(linphone_core_get_default_proxy_config(pauline->lc), "Accept", "application/sdp, text/plain, application/vnd.gsma.rcs-ft-http+xml");
-		linphone_core_manager_start(pauline, TRUE);
-
-		reset_counters(&marie->stat);
-		reset_counters(&pauline->stat);
-
-		send_file_transfer_message_using_external_body_url(marie, pauline);
-
-		linphone_core_manager_destroy(pauline);
-		linphone_core_manager_destroy(marie);
 	}
 }
 
@@ -1547,8 +1474,6 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("List subscribe", test_list_subscribe),
 	TEST_NO_TAG("List subscribe without body", test_list_subscribe_wrong_body),
 	TEST_NO_TAG("File transfer message rcs to external body client", file_transfer_message_rcs_to_external_body_client),
-	TEST_ONE_TAG("File transfer message external body to rcs client", file_transfer_message_external_body_to_rcs_client, "LeaksMemory"),
-	TEST_ONE_TAG("File transfer message external body to external body client", file_transfer_message_external_body_to_external_body_client, "LeaksMemory"),
 	TEST_NO_TAG("DoS module trigger by sending a lot of chat messages", dos_module_trigger),
 #if HAVE_SIPP
 	TEST_NO_TAG("Subscribe on wrong dialog", test_subscribe_on_wrong_dialog),
