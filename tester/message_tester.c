@@ -2342,7 +2342,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Info message with body", info_message_with_body),
 	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer),
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
-	TEST_ONE_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
+	TEST_NO_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
 };
 
 static int message_tester_before_suite(void) {
