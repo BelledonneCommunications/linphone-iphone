@@ -1971,19 +1971,9 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 
 static void misc_config_read(LinphoneCore *lc) {
 	LpConfig *config=lc->config;
-	const char *uuid;
 
 	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",LINPHONE_MAX_CALL_HISTORY_SIZE);
 	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
-
-	uuid=lp_config_get_string(config,"misc","uuid",NULL);
-	if (!uuid){
-		char tmp[64];
-		lc->sal->create_uuid(tmp,sizeof(tmp));
-		lp_config_set_string(config,"misc","uuid",tmp);
-	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
-		lc->sal->set_uuid(uuid);
-
 	lc->user_certificates_path=ms_strdup(lp_config_get_string(config,"misc","user_certificates_path","."));
 	lc->send_call_stats_periodical_updates = !!lp_config_get_int(config, "misc", "send_call_stats_periodical_updates", 0);
 }
@@ -2322,6 +2312,15 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 void linphone_core_start (LinphoneCore *lc) {
 	linphone_core_set_state(lc,LinphoneGlobalStartup,"Starting up");
 
+	//to give a chance to change uuid before starting
+	const char* uuid=lp_config_get_string(lc->config,"misc","uuid",NULL);
+	if (!uuid){
+		char tmp[64];
+		lc->sal->create_uuid(tmp,sizeof(tmp));
+		lp_config_set_string(lc->config,"misc","uuid",tmp);
+	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
+		lc->sal->set_uuid(uuid);
+	
 	if (lc->sal->get_root_ca()) {
 		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->get_root_ca());
 		belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);

@@ -2362,7 +2362,7 @@ static void group_chat_room_unique_one_to_one_chat_room (void) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message (void) {
+static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_base (bool_t with_app_restart) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	bctbx_list_t *coresManagerList = NULL;
@@ -2393,6 +2393,23 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message (
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 10000));
 	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), message);
 
+	if (with_app_restart) {
+		//to simulate dialog removal
+		linphone_core_set_network_reachable(marie->lc, FALSE);
+		//linphone_core_set_network_reachable(marie->lc, TRUE);
+		coresList=bctbx_list_remove(coresList, marie->lc);
+		linphone_core_manager_reinit(marie,TRUE);
+		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, marie);
+		init_core_for_conference(tmpCoresManagerList);
+		bctbx_list_free(tmpCoresManagerList);
+		coresList = bctbx_list_append(coresList, marie->lc);
+		linphone_core_manager_start(marie,TRUE);
+		wait_for_list(coresList, 0, 1, 2000);
+		LinphoneChatRoom *oldMarieCr = marieCr;
+		marieCr = linphone_core_get_chat_room(marie->lc, linphone_chat_room_get_peer_address(oldMarieCr));
+	}
+	
+
 	// Marie deletes the chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	wait_for_list(coresList, 0, 1, 2000);
@@ -2422,6 +2439,14 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message (
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message(void) {
+	group_chat_room_unique_one_to_one_chat_room_recreated_from_message_base(FALSE);
+}
+
+static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_with_app_restart(void) {
+	group_chat_room_unique_one_to_one_chat_room_recreated_from_message_base(TRUE);
 }
 
 static void group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left (void) {
@@ -2513,6 +2538,7 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Send file + text", group_chat_room_send_file_plus_text, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Unique one-to-one chatroom", group_chat_room_unique_one_to_one_chat_room, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Unique one-to-one chatroom recreated from message", group_chat_room_unique_one_to_one_chat_room_recreated_from_message, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Unique one-to-one chatroom recreated from message with app restart",group_chat_room_unique_one_to_one_chat_room_recreated_from_message_with_app_restart, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("New unique one-to-one chatroom after both participants left", group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left, "Server", "LeaksMemory")
 };
 

@@ -329,6 +329,7 @@ LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, bool_t chec
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, bool_t check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
 void linphone_core_manager_stop(LinphoneCoreManager *mgr);
+void linphone_core_manager_reinit(LinphoneCoreManager *mgr, bool_t check_for_proxies);
 void linphone_core_manager_restart(LinphoneCoreManager *mgr, bool_t check_for_proxies);
 void linphone_core_manager_uninit(LinphoneCoreManager *mgr);
 void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr);
