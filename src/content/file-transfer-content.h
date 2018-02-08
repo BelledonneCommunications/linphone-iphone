@@ -60,6 +60,7 @@ public:
 	void setFileKey (const char *key, size_t size);
 	const std::vector<char> &getFileKey () const;
 	const char *getFileKeyAsString () const;
+	size_t getFileKeySize() const;
 
 	bool isFile () const override;
 	bool isFileTransfer () const override;

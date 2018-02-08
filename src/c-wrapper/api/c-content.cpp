@@ -122,7 +122,7 @@ const char * linphone_content_get_name(const LinphoneContent *content) {
         const LinphonePrivate::FileContent *fc = static_cast<const LinphonePrivate::FileContent *>(c);
         if (content->name) ms_free(content->name);
         content->name = ms_strdup(L_STRING_TO_C(fc->getFileName()));
-    } else if (c->getContentType() == LinphonePrivate::ContentType::FileTransfer) {
+    } else if (c->isFileTransfer()) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
         if (content->name) ms_free(content->name);
         content->name = ms_strdup(L_STRING_TO_C(ftc->getFileName()));
@@ -135,7 +135,7 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
     if (c->isFile()) {
         LinphonePrivate::FileContent *fc = static_cast<LinphonePrivate::FileContent *>(c);
         fc->setFileName(L_C_TO_STRING(name));
-    } else if (c->getContentType() == LinphonePrivate::ContentType::FileTransfer) {
+    } else if (c->isFileTransfer()) {
         LinphonePrivate::FileTransferContent *ftc = static_cast<LinphonePrivate::FileTransferContent *>(c);
         ftc->setFileName(L_C_TO_STRING(name));
     }
@@ -166,7 +166,7 @@ const char * linphone_content_get_custom_header(const LinphoneContent *content, 
 
 const char *linphone_content_get_key(const LinphoneContent *content) {
     const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-    if (c->getContentType() == LinphonePrivate::ContentType::FileTransfer) {
+    if (c->isFileTransfer()) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
         return ftc->getFileKeyAsString();
     }
@@ -175,16 +175,16 @@ const char *linphone_content_get_key(const LinphoneContent *content) {
 
 size_t linphone_content_get_key_size(const LinphoneContent *content) {
     const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-    if (c->getContentType() == LinphonePrivate::ContentType::FileTransfer) {
+    if (c->isFileTransfer()) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-        return ftc->getFileKey().size();
+        return ftc->getFileKeySize();
     }
     return 0;
 }
 
 void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength) {
     LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-    if (c->getContentType() == LinphonePrivate::ContentType::FileTransfer) {
+    if (c->isFileTransfer()) {
         LinphonePrivate::FileTransferContent *ftc = static_cast<LinphonePrivate::FileTransferContent *>(c);
         ftc->setFileKey(key, keyLength);
     }

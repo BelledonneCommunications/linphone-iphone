@@ -166,6 +166,11 @@ const char *FileTransferContent::getFileKeyAsString() const {
 	return d->fileKey.data();
 }
 
+size_t FileTransferContent::getFileKeySize() const {
+	L_D();
+	return d->fileKey.size();
+}
+
 bool FileTransferContent::isFile () const {
 	return false;
 }
