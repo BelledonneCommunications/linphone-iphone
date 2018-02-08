@@ -20,6 +20,8 @@
 #ifndef _L_FILE_TRANSFER_CONTENT_H_
 #define _L_FILE_TRANSFER_CONTENT_H_
 
+#include <vector>
+
 #include "content.h"
 
 // =============================================================================
@@ -54,6 +56,10 @@ public:
 
 	void setFileSize (size_t size);
 	size_t getFileSize () const;
+
+	void setFileKey (const char *key, size_t size);
+	const std::vector<char> &getFileKey () const;
+	const char *getFileKeyAsString () const;
 
 	bool isFile () const override;
 

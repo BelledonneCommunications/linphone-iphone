@@ -82,7 +82,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 			Content *content = new Content();
 			content->setContentType(ContentType::ImIsComposing);
 			content->setBody(payload);
-			chatMessage->addContent(*content);
+			chatMessage->addContent(content);
 			chatMessage->getPrivate()->send();
 		}
 	}
@@ -389,7 +389,7 @@ shared_ptr<ChatMessage> ChatRoom::createChatMessage (const string &text) {
 	Content *content = new Content();
 	content->setContentType(ContentType::PlainText);
 	content->setBody(text);
-	chatMessage->addContent(*content);
+	chatMessage->addContent(content);
 	return chatMessage;
 }
 

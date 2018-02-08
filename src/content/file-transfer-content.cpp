@@ -38,6 +38,7 @@ public:
 	string filePath;
 	FileContent *fileContent = nullptr;
 	size_t fileSize = 0;
+	std::vector<char> fileKey;
 };
 
 // -----------------------------------------------------------------------------
@@ -51,6 +52,7 @@ FileTransferContent::FileTransferContent (const FileTransferContent &src) : Cont
 	d->filePath = src.getFilePath();
 	d->fileContent = src.getFileContent();
 	d->fileSize = src.getFileSize();
+	d->fileKey = src.getFileKey();
 }
 
 FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*new FileTransferContentPrivate) {
@@ -60,6 +62,7 @@ FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
 	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileKey = move(src.getPrivate()->fileKey);
 }
 
 FileTransferContent &FileTransferContent::operator= (const FileTransferContent &src) {
@@ -71,6 +74,7 @@ FileTransferContent &FileTransferContent::operator= (const FileTransferContent &
 		d->filePath = src.getFilePath();
 		d->fileContent = src.getFileContent();
 		d->fileSize = src.getFileSize();
+		d->fileKey = src.getFileKey();
 	}
 
 	return *this;
@@ -84,6 +88,7 @@ FileTransferContent &FileTransferContent::operator= (FileTransferContent &&src) 
 	d->filePath = move(src.getPrivate()->filePath);
 	d->fileContent = move(src.getPrivate()->fileContent);
 	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileKey = move(src.getPrivate()->fileKey);
 	return *this;
 }
 
@@ -144,6 +149,21 @@ void FileTransferContent::setFileSize (size_t size) {
 size_t FileTransferContent::getFileSize () const {
 	L_D();
 	return d->fileSize;
+}
+
+void FileTransferContent::setFileKey (const char *key, size_t size) {
+	L_D();
+	d->fileKey = vector<char>(key, key + size);
+}
+
+const vector<char> &FileTransferContent::getFileKey () const {
+	L_D();
+	return d->fileKey;
+}
+
+const char *FileTransferContent::getFileKeyAsString() const {
+	L_D();
+	return d->fileKey.data();
 }
 
 bool FileTransferContent::isFile () const {

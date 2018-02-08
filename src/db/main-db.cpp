@@ -708,7 +708,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 				string data;
 				fetchContentAppData(session, *content, contentId, data);
 			}
-			chatMessage->addContent(*content);
+			chatMessage->addContent(content);
 		}
 	}
 

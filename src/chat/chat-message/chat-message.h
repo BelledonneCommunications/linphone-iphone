@@ -94,8 +94,8 @@ public:
 	void setToBeStored (bool value);
 
 	const std::list<Content *> &getContents () const;
-	void addContent (Content &content);
-	void removeContent (const Content &content);
+	void addContent (Content *content);
+	void removeContent (const Content *content);
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);

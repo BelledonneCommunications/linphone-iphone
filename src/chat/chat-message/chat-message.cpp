@@ -301,7 +301,7 @@ void ChatMessagePrivate::setFileTransferInformation (Content *content) {
 	L_Q();
 
 	if (content->isFile()) {
-		q->addContent(*content);
+		q->addContent(content);
 	} else {
 		// This scenario is more likely to happen because the caller is using the C API
 		LinphoneContent *c_content = L_GET_C_BACK_PTR(content);
@@ -312,7 +312,7 @@ void ChatMessagePrivate::setFileTransferInformation (Content *content) {
 		if (!content->isEmpty()) {
 			fileContent->setBody(content->getBody());
 		}
-		q->addContent(*fileContent);
+		q->addContent(fileContent);
 	}
 }
 
@@ -354,7 +354,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	Content *content = new Content();
 	content->setContentType("message/imdn+xml");
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
-	msg->addContent(*content);
+	msg->addContent(content);
 
 	if (reason != LinphoneReasonNone)
 		msg->getPrivate()->setEncryptionPrevented(true);
@@ -676,7 +676,7 @@ void ChatMessagePrivate::send () {
 		if (content->getContentType() == ContentType::FileTransfer) {
 			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
 			it = contents.erase(it);
-			q->addContent(*fileTransferContent->getFileContent());
+			q->addContent(fileTransferContent->getFileContent());
 			delete fileTransferContent;
 		} else {
 			it++;
@@ -881,18 +881,18 @@ const list<Content *> &ChatMessage::getContents () const {
 	return d->contents;
 }
 
-void ChatMessage::addContent (Content &content) {
+void ChatMessage::addContent (Content *content) {
 	L_D();
 	if (d->isReadOnly) return;
 
-	d->contents.push_back(&content);
+	d->contents.push_back(content);
 }
 
-void ChatMessage::removeContent (const Content &content) {
+void ChatMessage::removeContent (const Content *content) {
 	L_D();
 	if (d->isReadOnly) return;
 
-	d->contents.remove(&const_cast<Content &>(content));
+	d->contents.remove(const_cast<Content *>(content));
 }
 
 const Content &ChatMessage::getInternalContent () const {
