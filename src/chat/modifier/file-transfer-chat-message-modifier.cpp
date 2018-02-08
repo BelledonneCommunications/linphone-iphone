@@ -587,8 +587,8 @@ ChatMessageModifier::Result FileTransferChatMessageModifier::decode (const share
 	}
 
 	for (Content *content : message->getContents()) {
-		if (content->getContentType() == ContentType::FileTransfer) {
-			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
+		if (content->isFileTransfer()) {
+			FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
 			fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
 		}
 	}
@@ -779,8 +779,8 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 		FileContent *fileContent = currentFileContentToTransfer;
 		message->addContent(fileContent);
 		for (Content *content : message->getContents()) {
-			if (content->getContentType() == ContentType::FileTransfer) {
-				FileTransferContent *fileTransferContent = (FileTransferContent*)content;
+			if (content->isFileTransfer()) {
+				FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
 				if (fileTransferContent->getFileContent() == fileContent) {
 					message->removeContent(content);
 					delete fileTransferContent;

@@ -70,6 +70,7 @@ public:
 	bool isEmpty () const;
 
 	virtual bool isFile () const;
+	virtual bool isFileTransfer () const;
 
 protected:
 	explicit Content (ContentPrivate &p);

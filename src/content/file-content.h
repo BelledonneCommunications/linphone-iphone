@@ -49,6 +49,7 @@ public:
 	const std::string &getFilePath () const;
 
 	bool isFile () const override;
+	bool isFileTransfer () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileContent);

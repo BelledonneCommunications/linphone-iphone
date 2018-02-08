@@ -162,7 +162,7 @@ const Content* ChatMessagePrivate::getTextContent() const {
 
 bool ChatMessagePrivate::hasFileTransferContent() const {
 	for (const Content *c : contents) {
-		if (c->getContentType() == ContentType::FileTransfer) {
+		if (c->isFileTransfer()) {
 			return true;
 		}
 	}
@@ -171,7 +171,7 @@ bool ChatMessagePrivate::hasFileTransferContent() const {
 
 const Content* ChatMessagePrivate::getFileTransferContent() const {
 	for (const Content *c : contents) {
-		if (c->getContentType() == ContentType::FileTransfer) {
+		if (c->isFileTransfer()) {
 			return c;
 		}
 	}
@@ -321,8 +321,8 @@ bool ChatMessagePrivate::downloadFile () {
 	L_Q();
 
 	for (auto &content : contents)
-		if (content->getContentType() == ContentType::FileTransfer)
-			return q->downloadFile(*static_cast<FileTransferContent *>(content));
+		if (content->isFileTransfer())
+			return q->downloadFile(static_cast<FileTransferContent *>(content));
 
 	return false;
 }
@@ -674,8 +674,8 @@ void ChatMessagePrivate::send () {
 	list<Content*>::iterator it = contents.begin();
 	while (it != contents.end()) {
 		Content *content = *it;
-		if (content->getContentType() == ContentType::FileTransfer) {
-			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
+		if (content->isFileTransfer()) {
+			FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
 			it = contents.erase(it);
 			q->addContent(fileTransferContent->getFileContent());
 			delete fileTransferContent;
@@ -965,9 +965,9 @@ void ChatMessage::sendDisplayNotification () {
 		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
-bool ChatMessage::downloadFile(FileTransferContent &fileTransferContent) {
+bool ChatMessage::downloadFile(FileTransferContent *fileTransferContent) {
 	L_D();
-	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), &fileTransferContent);
+	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), fileTransferContent);
 }
 
 void ChatMessage::cancelFileTransfer () {

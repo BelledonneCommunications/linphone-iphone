@@ -62,6 +62,7 @@ public:
 	const char *getFileKeyAsString () const;
 
 	bool isFile () const override;
+	bool isFileTransfer () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileTransferContent);

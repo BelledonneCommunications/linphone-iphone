@@ -170,4 +170,8 @@ bool FileTransferContent::isFile () const {
 	return false;
 }
 
+bool FileTransferContent::isFileTransfer () const {
+	return true;
+}
+
 LINPHONE_END_NAMESPACE
