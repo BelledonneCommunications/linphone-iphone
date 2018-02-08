@@ -110,7 +110,12 @@ class Object(object):
 	def __lt__(self, other):
 		return self.name < other.name
 	
-	def find_first_ancestor_by_type(self, types, priorAncestor=False):
+	def find_first_ancestor_by_type(self, *types, **kargs):
+		try:
+			priorAncestor = kargs['priorAncestor']
+		except KeyError:
+			priorAncestor = False
+
 		current = self
 		ancestor = self.parent
 		while ancestor is not None and type(ancestor) not in types:
@@ -951,7 +956,7 @@ class Translator:
 		if namespace is not None:
 			return namespace.name if namespace is not GlobalNs else None
 		else:
-			namespace = obj.find_first_ancestor_by_type((Enum, Class, Namespace, Interface))
+			namespace = obj.find_first_ancestor_by_type(Enum, Class, Namespace, Interface)
 			return metaname.Name.find_common_parent(self._get_object_name(obj), namespace.name)
 
 
@@ -1000,7 +1005,7 @@ class CLangTranslator(CLikeLangTranslator):
 			raise TypeError('invalid enumerator value type: {0}'.format(value))
 	
 	def translate_method_as_prototype(self, method, **params):
-		_class = method.find_first_ancestor_by_type((Class,))
+		_class = method.find_first_ancestor_by_type(Class)
 		params = '{const}{className} *obj'.format(
 			className=_class.name.to_c(),
 			const='const ' if method.isconst else ''
