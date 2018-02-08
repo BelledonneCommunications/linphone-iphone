@@ -451,6 +451,11 @@ static void group_chat_room_creation_server (void) {
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
 
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(marie->lc), 0, int,"%i");
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(laure->lc), 0, int,"%i");
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(pauline->lc), 0, int,"%i");
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(chloe->lc), 0, int,"%i");
+	
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -2434,6 +2439,12 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_b
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
+	wait_for_list(coresList, 0, 1, 2000);
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(marie->lc), 0, int,"%i");
+	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(pauline->lc), 0, int,"%i");
+	BC_ASSERT_PTR_NULL(linphone_core_get_call_logs(marie->lc));
+	BC_ASSERT_PTR_NULL(linphone_core_get_call_logs(pauline->lc));
+	
 	linphone_address_unref(confAddr);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
