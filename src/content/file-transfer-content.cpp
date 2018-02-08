@@ -146,15 +146,6 @@ size_t FileTransferContent::getFileSize () const {
 	return d->fileSize;
 }
 
-LinphoneContent *FileTransferContent::toLinphoneContent () const {
-	LinphoneContent *content = linphone_core_create_content(nullptr);
-	linphone_content_set_type(content, getContentType().getType().c_str());
-	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
-	linphone_content_set_name(content, getFileName().c_str());
-	linphone_content_set_size(content, getFileSize());
-	return content;
-}
-
 bool FileTransferContent::isFile () const {
 	return false;
 }

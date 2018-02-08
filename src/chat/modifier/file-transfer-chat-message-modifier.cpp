@@ -100,7 +100,7 @@ void FileTransferChatMessageModifier::fileTransferOnProgress (
 
 	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(message);
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-	LinphoneContent *content = currentFileContentToTransfer->toLinphoneContent();
+	LinphoneContent *content = L_GET_C_BACK_PTR((Content *)currentFileContentToTransfer);
 	if (linphone_chat_message_cbs_get_file_transfer_progress_indication(cbs)) {
 		linphone_chat_message_cbs_get_file_transfer_progress_indication(cbs)(msg, content, offset, total);
 	} else {
@@ -150,7 +150,7 @@ int FileTransferChatMessageModifier::onSendBody (
 		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 		LinphoneChatMessageCbsFileTransferSendCb file_transfer_send_cb =
 			linphone_chat_message_cbs_get_file_transfer_send(cbs);
-		LinphoneContent *content = currentFileContentToTransfer->toLinphoneContent();
+		LinphoneContent *content = L_GET_C_BACK_PTR((Content *)currentFileContentToTransfer);
 		if (file_transfer_send_cb) {
 			LinphoneBuffer *lb = file_transfer_send_cb(msg, content, offset, *size);
 			if (lb) {
@@ -706,7 +706,7 @@ void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t 
 		if (currentFileContentToTransfer->getFilePath().empty()) {
 			LinphoneChatMessage *msg = L_GET_C_BACK_PTR(message);
 			LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-			LinphoneContent *content = currentFileContentToTransfer->toLinphoneContent();
+			LinphoneContent *content = L_GET_C_BACK_PTR((Content *)currentFileContentToTransfer);
 			if (linphone_chat_message_cbs_get_file_transfer_recv(cbs)) {
 				LinphoneBuffer *lb = linphone_buffer_new_from_data(buffer, size);
 				linphone_chat_message_cbs_get_file_transfer_recv(cbs)(msg, content, lb);
@@ -747,7 +747,7 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 		if (currentFileContentToTransfer->getFilePath().empty()) {
 			LinphoneChatMessage *msg = L_GET_C_BACK_PTR(message);
 			LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
-			LinphoneContent *content = currentFileContentToTransfer->toLinphoneContent();
+			LinphoneContent *content = L_GET_C_BACK_PTR((Content *)currentFileContentToTransfer);
 			if (linphone_chat_message_cbs_get_file_transfer_recv(cbs)) {
 				LinphoneBuffer *lb = linphone_buffer_new();
 				linphone_chat_message_cbs_get_file_transfer_recv(cbs)(msg, content, lb);

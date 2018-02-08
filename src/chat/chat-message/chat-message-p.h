@@ -119,8 +119,8 @@ public:
 	bool hasFileTransferContent () const;
 	const Content* getFileTransferContent () const;
 
-	LinphoneContent *getFileTransferInformation () const;
-	void setFileTransferInformation (const LinphoneContent *content);
+	const Content* getFileTransferInformation () const;
+	void setFileTransferInformation (Content *content);
 
 	bool downloadFile ();
 

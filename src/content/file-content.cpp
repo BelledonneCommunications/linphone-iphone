@@ -135,14 +135,4 @@ bool FileContent::isFile () const {
 	return true;
 }
 
-LinphoneContent *FileContent::toLinphoneContent () const {
-	LinphoneContent *content = linphone_core_create_content(nullptr);
-	linphone_content_set_type(content, getContentType().getType().c_str());
-	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
-	linphone_content_set_name(content, getFileName().c_str());
-	linphone_content_set_size(content, getFileSize());
-	linphone_content_set_key(content, getFileKey().c_str(), getFileKey().size());
-	return content;
-}
-
 LINPHONE_END_NAMESPACE

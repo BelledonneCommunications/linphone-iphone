@@ -393,7 +393,7 @@ shared_ptr<ChatMessage> ChatRoom::createChatMessage (const string &text) {
 	return chatMessage;
 }
 
-shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
+shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (Content *initialContent) {
 	shared_ptr<ChatMessage> chatMessage = createChatMessage();
 	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
 	return chatMessage;

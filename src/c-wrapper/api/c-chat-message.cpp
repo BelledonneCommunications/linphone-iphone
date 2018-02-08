@@ -283,7 +283,9 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 }
 
 LinphoneContent *linphone_chat_message_get_file_transfer_information(LinphoneChatMessage *msg) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getFileTransferInformation();
+	const LinphonePrivate::Content *content = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getFileTransferInformation();
+	if (content) return L_GET_C_BACK_PTR(content);
+	return NULL;
 }
 
 // =============================================================================

@@ -71,9 +71,6 @@ public:
 
 	virtual bool isFile () const;
 
-	// TODO: Remove me later.
-	virtual LinphoneContent *toLinphoneContent () const;
-
 protected:
 	explicit Content (ContentPrivate &p);
 

@@ -53,9 +53,6 @@ public:
 
 	bool isFile () const override;
 
-	// TODO: Remove me later.
-	LinphoneContent *toLinphoneContent () const override;
-
 private:
 	L_DECLARE_PRIVATE(FileContent);
 };

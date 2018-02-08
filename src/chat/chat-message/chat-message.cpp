@@ -284,33 +284,36 @@ void ChatMessagePrivate::setText (const string &text) {
 	}
 }
 
-LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
+const Content *ChatMessagePrivate::getFileTransferInformation () const {
 	if (hasFileTransferContent()) {
-		return getFileTransferContent()->toLinphoneContent();
+		return getFileTransferContent();
 	}
 	for (const Content *c : contents) {
 		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
-			return fileContent->toLinphoneContent();
+			return fileContent;
 		}
 	}
 	return NULL;
 }
 
-void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_content) {
+void ChatMessagePrivate::setFileTransferInformation (Content *content) {
 	L_Q();
 
-	// Create a FileContent, it will create the FileTransferContent at upload time
-	FileContent *fileContent = new FileContent();
-	ContentType contentType(linphone_content_get_type(c_content), linphone_content_get_subtype(c_content));
-	fileContent->setContentType(contentType);
-	fileContent->setFileSize(linphone_content_get_size(c_content));
-	fileContent->setFileName(linphone_content_get_name(c_content));
-	if (linphone_content_get_string_buffer(c_content) != NULL) {
-		fileContent->setBody(linphone_content_get_string_buffer(c_content));
+	if (content->isFile()) {
+		q->addContent(*content);
+	} else {
+		// This scenario is more likely to happen because the caller is using the C API
+		LinphoneContent *c_content = L_GET_C_BACK_PTR(content);
+		FileContent *fileContent = new FileContent();
+		fileContent->setContentType(content->getContentType());
+		fileContent->setFileSize(linphone_content_get_size(c_content)); // This information is only available from C Content if it was created from C API
+		fileContent->setFileName(linphone_content_get_name(c_content)); // This information is only available from C Content if it was created from C API
+		if (!content->isEmpty()) {
+			fileContent->setBody(content->getBody());
+		}
+		q->addContent(*fileContent);
 	}
-
-	q->addContent(*fileContent);
 }
 
 bool ChatMessagePrivate::downloadFile () {
