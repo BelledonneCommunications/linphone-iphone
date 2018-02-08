@@ -186,14 +186,11 @@ void CallPrivate::onAckReceived (const shared_ptr<const CallSession> &session, L
 }
 
 void CallPrivate::onBackgroundTaskToBeStarted (const shared_ptr<const CallSession> &session) {
-	backgroundTaskId = sal_begin_background_task("liblinphone call notification", nullptr, nullptr);
+	bgTask.start();
 }
 
 void CallPrivate::onBackgroundTaskToBeStopped (const shared_ptr<const CallSession> &session) {
-	if (backgroundTaskId != 0) {
-		sal_end_background_task(backgroundTaskId);
-		backgroundTaskId = 0;
-	}
+	bgTask.stop();
 }
 
 bool CallPrivate::onCallSessionAccepted (const shared_ptr<const CallSession> &session) {
@@ -468,6 +465,8 @@ Call::Call (CallPrivate &p, shared_ptr<Core> core) : Object(p), CoreAccessor(cor
 	L_D();
 	d->nextVideoFrameDecoded._func = nullptr;
 	d->nextVideoFrameDecoded._user_data = nullptr;
+
+	d->bgTask.setName("Liblinphone call notification");
 }
 
 // -----------------------------------------------------------------------------

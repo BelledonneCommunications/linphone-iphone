@@ -24,6 +24,7 @@
 #include "conference/conference.h"
 #include "conference/session/call-session-listener.h"
 #include "object/object-p.h"
+#include "utils/background-task.h"
 
 // TODO: Remove me later.
 #include "private.h"
@@ -113,10 +114,10 @@ private:
 
 	CallCallbackObj nextVideoFrameDecoded;
 
-	unsigned long backgroundTaskId = 0;
-
 	bool ringingBeep = false;
 	bool playingRingbackTone = false;
+
+	BackgroundTask bgTask;
 
 	L_DECLARE_PUBLIC(Call);
 };

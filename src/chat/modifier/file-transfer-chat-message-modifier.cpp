@@ -35,6 +35,10 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+FileTransferChatMessageModifier::FileTransferChatMessageModifier () {
+	bgTask.setName("File transfer upload");
+}
+
 belle_http_request_t *FileTransferChatMessageModifier::getHttpRequest () const {
 	return httpRequest;
 }
@@ -480,29 +484,12 @@ error:
 	return -1;
 }
 
-static void _chat_message_file_upload_background_task_ended (void *data) {
-	FileTransferChatMessageModifier *d = (FileTransferChatMessageModifier *)data;
-	d->fileUploadBackgroundTaskEnded();
-}
-
-void FileTransferChatMessageModifier::fileUploadBackgroundTaskEnded () {
-	lWarning() << "channel [" << this << "]: file upload background task has to be ended now, but work isn't finished.";
-	fileUploadEndBackgroundTask();
-}
-
 void FileTransferChatMessageModifier::fileUploadBeginBackgroundTask () {
-	if (backgroundTaskId == 0) {
-		backgroundTaskId = sal_begin_background_task("file transfer upload", _chat_message_file_upload_background_task_ended, this);
-		if (backgroundTaskId) lInfo() << "channel [" << this << "]: starting file upload background task with id=[" << backgroundTaskId << "].";
-	}
+	bgTask.start();
 }
 
 void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {
-	if (backgroundTaskId) {
-		lInfo() << "channel [" << this << "]: ending file upload background task with id=[" << backgroundTaskId << "].";
-		sal_end_background_task(backgroundTaskId);
-		backgroundTaskId = 0;
-	}
+	bgTask.stop();
 }
 
 // ----------------------------------------------------------
