@@ -51,7 +51,7 @@ public:
 
 private:
 	std::string mName;
-	unsigned long mId;
+	unsigned long mId = 0;
 };
 
 LINPHONE_END_NAMESPACE
