@@ -79,8 +79,8 @@ public:
 			shared_ptr<AbstractChatRoom> bcr = cgcr->getCore()->onlyGetOrCreateBasicChatRoom(invitedAddresses.front());
 			L_SET_CPP_PTR_FROM_C_OBJECT(lcr, bcr);
 			bcr->getPrivate()->setState(ChatRoom::State::Instantiated);
-			bcr->getPrivate()->setState(ChatRoom::State::Created);
 			cgcr->getCore()->getPrivate()->insertChatRoom(bcr);
+			bcr->getPrivate()->setState(ChatRoom::State::Created);
 			cgcr->getCore()->getPrivate()->insertChatRoomWithDb(bcr);
 			return;
 		}
