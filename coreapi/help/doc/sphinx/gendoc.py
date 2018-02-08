@@ -348,11 +348,11 @@ class DocGenerator:
 			if not os.path.exists(directory):
 				os.mkdir(directory)
 			
-			enumsPage = EnumsPage(lang, self.languages, absApiParser.enums)
+			enumsPage = EnumsPage(lang, self.languages, self.api.namespace.enums)
 			enumsPage.write(directory)
 			
 			indexPage = IndexPage(lang, self.languages)
-			for _class in absApiParser.classes:
+			for _class in self.api.namespace.classes:
 				page = ClassPage(_class, lang, self.languages)
 				page.write(directory)
 				indexPage.add_class_entry(_class)
