@@ -22,6 +22,7 @@
 
 #include "chat/chat-room/chat-room-p.h"
 #include "client-group-chat-room.h"
+#include "utils/background-task.h"
 
 // =============================================================================
 
@@ -53,6 +54,7 @@ private:
 	ChatRoomListener *chatRoomListener = this;
 	ClientGroupChatRoom::CapabilitiesMask capabilities = ClientGroupChatRoom::Capabilities::Conference;
 	bool deletionOnTerminationEnabled = false;
+	BackgroundTask bgTask;
 
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };

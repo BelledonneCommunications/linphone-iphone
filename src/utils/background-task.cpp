@@ -30,6 +30,11 @@ static void notifier (void *context) {
 }
 
 void BackgroundTask::start () {
+	if (mName.empty()) {
+		lError() << "No name was set on background task.";
+		return;
+	}
+
 	unsigned long newId = sal_begin_background_task(mName.c_str(), notifier, this);
 	lInfo() << "Starting background task [" << newId << "] with name : [" << mName << "].";
 	stop();
@@ -43,6 +48,11 @@ void BackgroundTask::stop () {
 	lInfo() << "Ending background task [" << mId << "] with name : [" << mName << "].";
 	sal_end_background_task(mId);
 	mId = 0;
+}
+
+void BackgroundTask::handleTimeout () {
+	lWarning() << "Background task [" << mId << "] with name : [" << mName << "] has expired before completion...";
+	stop();
 }
 
 LINPHONE_END_NAMESPACE

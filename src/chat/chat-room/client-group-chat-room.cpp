@@ -168,7 +168,11 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	const string &subject
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(), me)),
 RemoteConference(core, me, nullptr) {
+	L_D();
 	L_D_T(RemoteConference, dConference);
+
+	d->bgTask.setName("Client group chat room refer received");
+
 	IdentityAddress focusAddr(uri);
 	dConference->focus = make_shared<Participant>(focusAddr);
 	dConference->focus->getPrivate()->addDevice(focusAddr);
@@ -207,11 +211,11 @@ shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 }
 
 void ClientGroupChatRoom::allowCpim (bool value) {
-	
+
 }
 
 void ClientGroupChatRoom::allowMultipart (bool value) {
-	
+
 }
 
 bool ClientGroupChatRoom::canHandleCpim () const {
@@ -390,6 +394,7 @@ void ClientGroupChatRoom::join () {
 
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
 	if (!session && ((getState() == ChatRoom::State::Instantiated) || (getState() == ChatRoom::State::Terminated))) {
+		d->bgTask.start();
 		session = d->createSession();
 		session->startInvite(nullptr, "", nullptr);
 		d->setState(ChatRoom::State::CreationPending);
@@ -400,6 +405,7 @@ void ClientGroupChatRoom::leave () {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
+	d->bgTask.start();
 	dConference->eventHandler->unsubscribe();
 
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
@@ -471,6 +477,7 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 		d->chatRoomId
 	));
 	#endif
+	d->bgTask.stop();
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {

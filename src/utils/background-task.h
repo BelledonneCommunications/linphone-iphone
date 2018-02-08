@@ -30,9 +30,14 @@ LINPHONE_BEGIN_NAMESPACE
 
 class BackgroundTask {
 public:
+	BackgroundTask () = default;
 	BackgroundTask (const std::string &name) : mName(name) {}
 	virtual ~BackgroundTask () {
 		stop();
+	}
+
+	void setName (const std::string &name) {
+		mName = name;
 	}
 
 	void start ();
@@ -42,7 +47,7 @@ public:
 		return mName;
 	}
 
-	virtual void handleTimeout () {}
+	virtual void handleTimeout ();
 
 private:
 	std::string mName;
