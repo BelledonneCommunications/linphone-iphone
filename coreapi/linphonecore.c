@@ -18,9 +18,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
-#include "linphone/sipsetup.h"
 #include "linphone/lpconfig.h"
+#include "linphone/sipsetup.h"
+
 #include "private.h"
 #include "quality_reporting.h"
 #include "lime.h"
@@ -2320,7 +2322,7 @@ void linphone_core_start (LinphoneCore *lc) {
 		lp_config_set_string(lc->config,"misc","uuid",tmp);
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
 		lc->sal->set_uuid(uuid);
-	
+
 	if (lc->sal->get_root_ca()) {
 		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->get_root_ca());
 		belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);

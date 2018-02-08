@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/api/c-content.h"
+
 #include "lime.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -787,8 +789,8 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
-	if (linphone_chat_message_get_content_type(msg) && 
-		(strcmp("xml/cipher", linphone_chat_message_get_content_type(msg)) == 0 || 
+	if (linphone_chat_message_get_content_type(msg) &&
+		(strcmp("xml/cipher", linphone_chat_message_get_content_type(msg)) == 0 ||
 		strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", linphone_chat_message_get_content_type(msg)) == 0)) {
 		errcode = 0;
 		int retval;

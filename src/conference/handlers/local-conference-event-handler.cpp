@@ -19,6 +19,7 @@
 
 #include <ctime>
 
+#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 
 #include "conference/local-conference.h"

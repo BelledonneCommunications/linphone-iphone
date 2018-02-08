@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "config.h"
 #endif
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
+
 #include "private.h"
 #include "c-wrapper/internal/c-sal.h"
 #include "sal/sal.h"

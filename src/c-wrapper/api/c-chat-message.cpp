@@ -18,6 +18,7 @@
  */
 
 #include "linphone/api/c-chat-message.h"
+#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 #include "linphone/wrapper_utils.h"
 

@@ -19,6 +19,7 @@
 
 #include "object/object-p.h"
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "linphone/utils/utils.h"
@@ -668,7 +669,7 @@ void ChatMessagePrivate::send () {
 	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	}
-	
+
 	// Restore FileContents and remove FileTransferContents
 	list<Content*>::iterator it = contents.begin();
 	while (it != contents.end()) {

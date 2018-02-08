@@ -17,15 +17,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "c-wrapper/c-wrapper.h"
+#include "linphone/api/c-content.h"
+
 #include "address/address.h"
+#include "bctoolbox/crypto.h"
+#include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "content/content-type.h"
 #include "content/content.h"
-#include "chat/chat-room/chat-room-p.h"
 #include "core/core.h"
 #include "logger/logger.h"
-#include "bctoolbox/crypto.h"
 
 #include "file-transfer-chat-message-modifier.h"
 
