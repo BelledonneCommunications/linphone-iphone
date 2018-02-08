@@ -144,6 +144,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/property-container.h
 	object/singleton.h
 	sal/sal.h
+	utils/background-task.h
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
@@ -248,6 +249,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/refer-op.cpp
 	sal/register-op.cpp
 	sal/sal.cpp
+	utils/background-task.cpp
 	utils/fs.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
