@@ -95,7 +95,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	NSString *uri;
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_sortedAddresses objectAtIndex:indexPath.row]];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contactsAddresses objectAtIndex:indexPath.row]];
 	if (addr) {
 		uri = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
 	} else {
