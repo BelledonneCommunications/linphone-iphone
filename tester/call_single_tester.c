@@ -1450,18 +1450,21 @@ static void call_declined_with_error(void) {
 	linphone_core_manager_destroy(caller_mgr);
 }
 
-static void call_declined(void) {
+static void call_declined_base(bool_t use_timeout) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	LinphoneCall* in_call;
 	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	if (use_timeout)
+		linphone_core_set_inc_timeout(marie->lc, 1);
 	linphone_call_ref(out_call);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(marie->lc));
 	if (in_call) {
 		linphone_call_ref(in_call);
-		linphone_call_terminate(in_call);
+		if (!use_timeout)
+			linphone_call_terminate(in_call);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1, int, "%d");
@@ -1475,6 +1478,14 @@ static void call_declined(void) {
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_declined(void) {
+	call_declined_base(FALSE);
+}
+
+static void call_declined_on_timeout(void) {
+	call_declined_base(TRUE);
 }
 
 static void call_terminated_by_caller(void) {
@@ -6339,6 +6350,7 @@ end:
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
+	TEST_NO_TAG("Call declined on timeout",call_declined_on_timeout),
 	TEST_NO_TAG("Call declined with error", call_declined_with_error),
 	TEST_NO_TAG("Cancelled call", cancelled_call),
 	TEST_NO_TAG("Early cancelled call", early_cancelled_call),
