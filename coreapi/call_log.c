@@ -610,7 +610,10 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	sqlite3_stmt *selectStatement;
 	int returnValue;
 
-	if (!lc || lc->logs_db == NULL) return 0;
+	if (!lc)
+		return 0;
+	if (!lc->logs_db)
+		return (int)bctbx_list_size(lc->call_logs);
 
 	buf = sqlite3_mprintf("SELECT count(*) FROM call_history");
 	returnValue = sqlite3_prepare_v2(lc->logs_db, buf, -1, &selectStatement, NULL);
