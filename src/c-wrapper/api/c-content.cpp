@@ -24,6 +24,7 @@
 
 #include "content/content.h"
 #include "content/content-type.h"
+#include "content/content-manager.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
 
@@ -158,10 +159,7 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
 }
 
 bool_t linphone_content_is_multipart(const LinphoneContent *content) {
-    SalBodyHandler *body_handler = sal_body_handler_from_content(content);
-    bool_t multipart = sal_body_handler_is_multipart(body_handler);
-    sal_body_handler_unref(body_handler);
-    return multipart;
+    return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType() == LinphonePrivate::ContentType::Multipart;
 }
 
 LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx) {
@@ -241,13 +239,15 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
         if (!sal_body_handler_is_multipart(body_handler)) {
             linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
         } else {
-            string body;
             belle_sip_multipart_body_handler_t *mpbh = BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler);
+            list<LinphonePrivate::Content> contents;
             for (const belle_sip_list_t *parts = belle_sip_multipart_body_handler_get_parts(mpbh); parts; parts = parts->next) {
                 belle_sip_body_handler_t *part = BELLE_SIP_BODY_HANDLER(parts->data);
-                body += (const char *)belle_sip_memory_body_handler_get_buffer(BELLE_SIP_MEMORY_BODY_HANDLER(part));
+                LinphoneContent *part_content = linphone_content_new_with_body_handler((SalBodyHandler *)part);
+                contents.push_back(*L_GET_CPP_PTR_FROM_C_OBJECT(part_content));
             }
-            linphone_content_set_string_buffer(content, body.c_str());
+            LinphonePrivate::Content multipartContent = LinphonePrivate::ContentManager::contentListToMultipart(contents);
+            linphone_content_set_string_buffer(content, multipartContent.getBodyAsUtf8String().c_str());
         }
         if (sal_body_handler_get_encoding(body_handler)) linphone_content_set_encoding(content, sal_body_handler_get_encoding(body_handler));
 	}
