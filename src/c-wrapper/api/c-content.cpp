@@ -90,7 +90,7 @@ void linphone_content_set_subtype(LinphoneContent *content, const char *subtype)
 }
 
 uint8_t * linphone_content_get_buffer(const LinphoneContent *content) {
-    return (uint8_t *)L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsString());
+    return (uint8_t *)L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBody().data();
 }
 
 void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer, size_t size) {
@@ -99,12 +99,12 @@ void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer
 
 const char * linphone_content_get_string_buffer(const LinphoneContent *content) {
     if (content->body) ms_free(content->body);
-    content->body = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsString()));
+    content->body = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
     return content->body;
 }
 
 void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer) {
-    L_GET_CPP_PTR_FROM_C_OBJECT(content)->setBody(L_C_TO_STRING(buffer));
+    L_GET_CPP_PTR_FROM_C_OBJECT(content)->setBodyFromUtf8(L_C_TO_STRING(buffer));
 }
 
 size_t linphone_content_get_size(const LinphoneContent *content) {
@@ -269,10 +269,10 @@ LinphoneContent * linphone_content_from_sal_body_handler(SalBodyHandler *body_ha
 SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
 	if (content == NULL) return NULL;
     SalBodyHandler *body_handler = sal_body_handler_new();
-    sal_body_handler_set_type(body_handler, belle_sip_strdup(linphone_content_get_type(content)));
-    sal_body_handler_set_subtype(body_handler, belle_sip_strdup(linphone_content_get_subtype(content)));
+    sal_body_handler_set_type(body_handler, linphone_content_get_type(content));
+    sal_body_handler_set_subtype(body_handler, linphone_content_get_subtype(content));
     sal_body_handler_set_size(body_handler, linphone_content_get_size(content));
 	sal_body_handler_set_data(body_handler, belle_sip_strdup(linphone_content_get_string_buffer(content)));
-    sal_body_handler_set_encoding(body_handler, belle_sip_strdup(linphone_content_get_encoding(content)));
+    if (content->encoding) sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
 	return body_handler;
 }
