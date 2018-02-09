@@ -24,11 +24,13 @@
 #import "Utils.h"
 
 @implementation ContactsListTableView
+NSArray *sortedAddresses;
 
 #pragma mark - Lifecycle Functions
 
 - (void)initContactsTableViewController {
 	addressBookMap = [[OrderedDictionary alloc] init];
+	sortedAddresses = [[NSArray alloc] init];
         [NSNotificationCenter.defaultCenter
             addObserver:self
                selector:@selector(onAddressBookUpdate:)
@@ -129,16 +131,27 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 
 - (void)loadData {
 	_ongoing = TRUE;
-	LOGI(@"Load contact list");
+	LOGI(@"====>>>> Load contact list - Start");
 	NSString* previous = [PhoneMainView.instance  getPreviousViewName];
 	addressBookMap = [LinphoneManager.instance getLinphoneManagerAddressBookMap];
 	BOOL updated = [LinphoneManager.instance getContactsUpdated];
 	if(([previous isEqualToString:@"ContactsDetailsView"] && updated) || updated || [addressBookMap count] == 0){
 		[LinphoneManager.instance setContactsUpdated:FALSE];
 		@synchronized(addressBookMap) {
+			NSDictionary *allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+			sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+				Contact* first =  [allContacts objectForKey:a];
+				Contact* second =  [allContacts objectForKey:b];
+				if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
+					return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
+				else
+					return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
+			}];
+			
+			
+			LOGI(@"====>>>> Load contact list - Start 2 !!");
 			//Set all contacts from ContactCell to nil
-			for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j)
-			{
+			for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j){
 				for (NSInteger i = 0; i < [self.tableView numberOfRowsInSection:j]; ++i)
 				{
 					[[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setContact:nil];
@@ -147,7 +160,7 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 			
 			// Reset Address book
 			[addressBookMap removeAllObjects];
-			for (NSString *addr in LinphoneManager.instance.fastAddressBook.addressBookMap) {
+			for (NSString *addr in sortedAddresses) {
 				Contact *contact = nil;
 				@synchronized(LinphoneManager.instance.fastAddressBook.addressBookMap) {
 					contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:addr];
@@ -206,12 +219,13 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 		}
 		[LinphoneManager.instance setLinphoneManagerAddressBookMap:addressBookMap];
 	}
+	LOGI(@"====>>>> Load contact list - End");
 	[super loadData];
 	_ongoing = FALSE;
 }
 
 - (void)loadSearchedData {
-	LOGI(@"Load contact list");
+	LOGI(@"Load search contact list");
 	@synchronized(addressBookMap) {
 		//Set all contacts from ContactCell to nil
 		for (NSInteger j = 0; j < [self.tableView numberOfSections]; ++j)
@@ -221,14 +235,13 @@ static int ms_strcmpfuz(const char *fuzzy_word, const char *sentence) {
 				[[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:j]] setContact:nil];
 			}
 		}
-		
 		// Reset Address book
 		[addressBookMap removeAllObjects];
 		NSMutableArray *subAr = [NSMutableArray new];
 		NSMutableArray *subArBegin = [NSMutableArray new];
 		NSMutableArray *subArContain = [NSMutableArray new];
 		[addressBookMap insertObject:subAr forKey:@"" selector:@selector(caseInsensitiveCompare:)];
-		for (NSString *addr in LinphoneManager.instance.fastAddressBook.addressBookMap) {
+		for (NSString *addr in sortedAddresses) {
                   @synchronized(
                       LinphoneManager.instance.fastAddressBook.addressBookMap) {
                     Contact *contact =

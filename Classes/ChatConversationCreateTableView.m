@@ -16,7 +16,7 @@
 
 @property(nonatomic, strong) NSMutableDictionary *contacts;
 @property(nonatomic, strong) NSDictionary *allContacts;
-@property(nonatomic, strong) NSArray *sortedKeys;
+@property(nonatomic, strong) NSMutableArray *contactsAddresses;
 @property(nonatomic, strong) NSArray *sortedAddresses;
 @end
 
@@ -24,13 +24,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
 	self.allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
-	self.sortedKeys = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
 		Contact* first =  [_allContacts objectForKey:a];
 		Contact* second =  [_allContacts objectForKey:b];
-
 		if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
 			return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
 		else
@@ -43,7 +40,8 @@
 		}
 		return;
 	}
-	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
+	self.contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
+	self.contactsAddresses = [NSMutableArray array];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_allFilter = TRUE;
 
@@ -88,16 +86,16 @@
 	_allContacts = [[NSDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
 
 	if (_allFilter) {
-		self.sortedKeys = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingSelector: @selector(compare:)];
-		self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-			Contact* first =  [_allContacts objectForKey:a];
-			Contact* second =  [_allContacts objectForKey:b];
-
-			if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
-				return [[first.lastName lowercaseString] compare:[second.lastName lowercaseString]];
-			else
-				return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
-		}];
+		[_contacts removeAllObjects];
+		[_contactsAddresses removeAllObjects];
+		for (NSString* key in _sortedAddresses){
+		NSString *address = (NSString *)key;
+		NSString *name = [FastAddressBook displayNameForContact:[_allContacts objectForKey:key]];
+		if ((filter.length == 0) || ([name.lowercaseString containsSubstring:filter.lowercaseString]) ||
+			([address.lowercaseString containsSubstring:filter.lowercaseString])) {
+			[_contacts setObject:name forKey:address] ;
+			[_contactsAddresses insertObject:address atIndex:[_contactsAddresses count]];
+		}
 	} else {
 		NSMutableArray *keys = [[NSMutableArray alloc] init];
 		[_allContacts enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
@@ -109,7 +107,6 @@
 			if (linphoneContact)
 				[keys addObject:key];
 		}];
-		self.sortedKeys = [keys sortedArrayUsingSelector: @selector(compare:)];
 		self.sortedAddresses = [keys sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
 			Contact* first =  [_allContacts objectForKey:a];
 			Contact* second =  [_allContacts objectForKey:b];
@@ -149,8 +146,11 @@
 		ms_free(uri);
 		linphone_address_destroy(addr);
 	}
-	if (nsuri.length > 0 && [_contacts valueForKey:nsuri] == nil)
-		[_contacts setObject:filter forKey:nsuri];
+
+	if (nsuri.length > 0 && [_contacts valueForKey:nsuri] == nil) {
+		[_contacts setObject:filter forKey:nsuri] ;
+		[_contactsAddresses insertObject:nsuri atIndex:[_contactsAddresses count]];
+	}
 
 	[self.tableView reloadData];
 }
@@ -162,7 +162,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self.contacts count];
+	return [self.contactsAddresses count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

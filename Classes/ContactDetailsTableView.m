@@ -75,12 +75,10 @@
 - (void)addEntry:(UITableView *)tableview section:(NSInteger)section animated:(BOOL)animated value:(NSString *)value {
 	bool added = FALSE;
 	if (section == ContactSections_Number) {
-		if ([_contact.phones count] ==
-			[_contact.person.phoneNumbers count])
+		if ([_contact.phones count] == [_contact.person.phoneNumbers count])
 		added = [_contact addPhoneNumber:value];
 	} else if (section == ContactSections_Sip) {
-          if ([_contact.sipAddresses count] ==
-              [_contact.person.instantMessageAddresses count])
+          if ([_contact.sipAddresses count] == [self countSipAddressFromCNContact:_contact.person]) //[_contact.person.instantMessageAddresses count])
             added = [_contact addSipAddress:value];
         } else if (section == ContactSections_Email) {
 			if ([_contact.emails count] ==
@@ -99,6 +97,21 @@
                section);
         }
 }
+
+-(NSInteger)countSipAddressFromCNContact:(CNContact*) mCNContact{
+	NSInteger count = 0;
+	if (mCNContact.instantMessageAddresses != NULL) {
+		for (CNLabeledValue<CNInstantMessageAddress *> *sipAddr in mCNContact.instantMessageAddresses) {
+			NSString *username =  sipAddr.value.username;
+			NSString *service =  sipAddr.value.service;
+			if (username && ([service isEqualToString:LinphoneManager.instance.contactSipField] || ([service isEqualToString:@"INSTANT_MESSAGING_NAME"] && [FastAddressBook isSipURI:username]))){
+				count ++;
+			}
+		}
+	}
+	return count;
+}
+
 
 - (void)setContact:(Contact *)acontact {
   // if (acontact == _contact)

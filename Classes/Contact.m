@@ -40,11 +40,14 @@
 		  if (_person.instantMessageAddresses != NULL) {
 			  for (CNLabeledValue<CNInstantMessageAddress *> *sipAddr in _person.instantMessageAddresses) {
 				  NSString *username =  sipAddr.value.username;
-				  if (username)
-					  [_sipAddresses addObject:username];
+				  NSString *service =  sipAddr.value.service;
+				  if (username && ([service isEqualToString:LinphoneManager.instance.contactSipField] || ([service isEqualToString:@"INSTANT_MESSAGING_NAME"] && [FastAddressBook isSipURI:username]))){
+				 	  [_sipAddresses addObject:username];
+				  }
 			  }
 		  }
 	  }
+	  
 	  for (CNLabeledValue<NSString *> *email in _person.emailAddresses) {
 		  [_emails addObject:email.value];
 	  }
@@ -225,11 +228,11 @@
             CNInstantMessageAddress *cNSipMsgAddr;
             if ([normSip containsString:@"@"])
        		cNSipMsgAddr = [[CNInstantMessageAddress alloc]
-								initWithUsername:normSip service:[normSip componentsSeparatedByString:@"@"][1]];
+							initWithUsername:normSip service:@"SIP"];//service:[normSip componentsSeparatedByString:@"@"][1]];
             else
               cNSipMsgAddr =
                   [[CNInstantMessageAddress alloc] initWithUsername:normSip
-                                                            service:normSip];
+                                                            service:@"SIP"];
             CNLabeledValue *sipAddress =
                 [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
             NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>
@@ -244,13 +247,13 @@
             CNInstantMessageAddress *cNSipMsgAddr;
             if ([[FastAddressBook normalizeSipURI:normSip] containsString:@"@"])
     			cNSipMsgAddr = [[CNInstantMessageAddress alloc]
-							  initWithUsername:sip
-							  service:[[FastAddressBook normalizeSipURI:normSip]
-									   componentsSeparatedByString:@"@"][1]];
+								initWithUsername:sip service:@"SIP"];
+							  //service:[[FastAddressBook normalizeSipURI:normSip]
+							//		   componentsSeparatedByString:@"@"][1]];
             else
               cNSipMsgAddr =
-                  [[CNInstantMessageAddress alloc] initWithUsername:normSip
-                                                            service:normSip];
+				[[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"];
+                                                            //service:normSip];
             CNLabeledValue *sipAddress =
                 [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
             NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *>
@@ -351,12 +354,12 @@
                 cNSipMsgAddr = [[CNInstantMessageAddress alloc]
                     initWithUsername:[normSip
                                          componentsSeparatedByString:@"@"][0]
-                             service:[normSip
-                                         componentsSeparatedByString:@"@"][1]];
+								service:@"SIP"];
+								//service:[normSip componentsSeparatedByString:@"@"][1]];
               else
                 cNSipMsgAddr =
                     [[CNInstantMessageAddress alloc] initWithUsername:normSip
-                                                              service:normSip];
+                                                              service:@"SIP"];
               CNLabeledValue *sipAddress =
                   [CNLabeledValue labeledValueWithLabel:NULL
                                                   value:cNSipMsgAddr];

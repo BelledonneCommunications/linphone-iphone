@@ -49,7 +49,11 @@ class IOSTarget(prepare.Target):
         self.config_file = 'configs/config-ios-' + arch + '.cmake'
         self.toolchain_file = 'toolchains/toolchain-ios-' + arch + '.cmake'
         self.output = 'liblinphone-sdk/' + arch + '-apple-darwin.ios'
-	self.external_source_path = os.path.join(current_path, 'submodules')
+        self.external_source_path = os.path.join(current_path, 'submodules')
+        external_builders_path = os.path.join(current_path, 'cmake_builder')
+        self.additional_args = [
+            "-DLINPHONE_BUILDER_EXTERNAL_BUILDERS_PATH=" + external_builders_path
+        ]
 
 
 class IOSi386Target(IOSTarget):

@@ -145,7 +145,7 @@
 									 CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
 									 CNContactPostalAddressesKey, CNContactIdentifierKey,
 									 CNInstantMessageAddressUsernameKey, CNContactInstantMessageAddressesKey,
-									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey
+									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
 									 ];
 			CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
 			

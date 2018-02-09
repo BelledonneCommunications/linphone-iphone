@@ -20,20 +20,20 @@ Interested in helping translate Linphone? Contribute [on Transifex](https://www.
 ## Report bugs and submit patchs
 
 If you want to dig through Linphone code or report a bug, please read `CONTRIBUTING.md` first. You should also read this `README` entirely ;-).
- 
+
 ## How to be a beta tester ?
- 
+
 Enter the Beta :
  - Download TestFlight from the App Store and log in it with your apple-id
- - Send an email to linphone-iphone@belledonne-communications.com, with object : [Beta test - Request], where you precise your apple-id you logged in TestFlight with	
+ - Send an email to linphone-iphone@belledonne-communications.com, with object : [Beta test - Request], where you precise your apple-id you logged in TestFlight with
  - You will receive an invitation code to the beta in the following days via your email associated to your apple-id
  - Enter the invitation code received into TestFlight
  - Download Linphone from TestFlight
  - And voilà ! TestFlight will send you a notification every time a new beta test is available.
- 
+
 Send a crash report :
  - It is done automatically by TestFlight
- 
+
 Report a bug :
  - Open Linphone
  - Go to Settings —> Advanced —> Send logs
@@ -68,7 +68,10 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 ## Incorporating our SDK in your project
 
-After the SDK has been built, add all the `.framework` files located in `liblinphone-sdk/apple-darwin/Frameworks` to your XCode project Embedded Frameworks.
+After the SDK has been built, add all the `.framework` files located in `liblinphone-sdk/apple-darwin/Frameworks` to your XCode project Embedded Frameworks and linked binaries.
+Make sure that your project FRAMEWORK_SEARCH_PATHS contains "$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks"
+Make sure that your project HEADER_SEARCH_PATHS contains "$(SRCROOT)/liblinphone-sdk/apple-darwin/include"
+Make sure that your project LD_RUNPATH_SEARCH_PATHS contains "$(inherited) @executable_path/Frameworks";
 Add a Run Script step to your build steps, put it after your step to embed frameworks, set it to use our `deploy.sh` script located in `liblinphone-sdk/apple-darwin/Tools`.
 
 ## Licensing: GPL third parties versus non GPL third parties
