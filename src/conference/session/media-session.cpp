@@ -624,7 +624,7 @@ void MediaSessionPrivate::stopStreams () {
 		rtpIoVideoProfile = nullptr;
 	}
 
-	linphone_core_soundcard_hint_check(q->getCore()->getCCore());
+	q->getCore()->soundcardHintCheck();
 }
 
 // -----------------------------------------------------------------------------
