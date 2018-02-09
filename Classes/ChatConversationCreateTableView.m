@@ -33,13 +33,13 @@
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 
-	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
 		}
 		return;
 	}
+	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_allFilter = TRUE;
 
@@ -56,17 +56,6 @@
 															self.tableView.frame.size.width,
 															self.tableView.frame.size.height - _collectionView.frame.size.height)];
 
-						 }
-						 completion:nil];
-	} else {
-		[UIView animateWithDuration:0
-							  delay:0
-							options:UIViewAnimationOptionCurveEaseOut
-						 animations:^{
-							 [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x,
-															_searchBar.frame.origin.y + _searchBar.frame.size.height,
-															self.tableView.frame.size.width,
-															self.tableView.frame.size.height + _collectionView.frame.size.height)];
 						 }
 						 completion:nil];
 	}
