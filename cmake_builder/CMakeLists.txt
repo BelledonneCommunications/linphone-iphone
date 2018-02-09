@@ -20,5 +20,3 @@
 #
 ############################################################################
 
-lcb_blacklist_dependencies("libxsd" "soci") # linphone do not need them for the moment
-
