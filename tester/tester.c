@@ -459,24 +459,23 @@ void linphone_core_manager_stop(LinphoneCoreManager *mgr){
 	}
 }
 
-void linphone_core_manager_reinit(LinphoneCoreManager *mgr, bool_t check_for_proxies) {
-	char* uuid = NULL;
+void linphone_core_manager_reinit(LinphoneCoreManager *mgr) {
+	char *uuid = NULL;
 	if (mgr->lc) {
-		if (lp_config_get_string(linphone_core_get_config(mgr->lc),"misc","uuid",NULL)) {
-			uuid = bctbx_strdup(lp_config_get_string(linphone_core_get_config(mgr->lc),"misc","uuid",NULL));
-		}
+		if (lp_config_get_string(linphone_core_get_config(mgr->lc), "misc", "uuid", NULL))
+			uuid = bctbx_strdup(lp_config_get_string(linphone_core_get_config(mgr->lc), "misc", "uuid", NULL));
 		linphone_core_unref(mgr->lc);
 	}
 	linphone_core_manager_configure(mgr);
 	reset_counters(&mgr->stat);
-	//to make sure gruu is preserved
-	lp_config_set_string(linphone_core_get_config(mgr->lc),"misc","uuid",uuid);
+	// Make sure gruu is preserved
+	lp_config_set_string(linphone_core_get_config(mgr->lc), "misc", "uuid", uuid);
 	if (uuid)
-		bctbx_free(uuid);	
+		bctbx_free(uuid);
 }
 
 void linphone_core_manager_restart(LinphoneCoreManager *mgr, bool_t check_for_proxies) {
-	linphone_core_manager_reinit(mgr, check_for_proxies);
+	linphone_core_manager_reinit(mgr);
 	linphone_core_manager_start(mgr, check_for_proxies);
 }
 
