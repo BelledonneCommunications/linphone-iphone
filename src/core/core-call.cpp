@@ -86,7 +86,9 @@ bool CorePrivate::isAlreadyInCallWithAddress (const Address &addr) const {
 }
 
 void CorePrivate::iterateCalls (time_t currentRealTime, bool oneSecondElapsed) const {
-	for (const auto &call : calls) {
+	// Make a copy of the list af calls because it may be altered during calls to the Call::iterate method
+	list<shared_ptr<Call>> savedCalls(calls);
+	for (const auto &call : savedCalls) {
 		call->getPrivate()->iterate(currentRealTime, oneSecondElapsed);
 	}
 }
