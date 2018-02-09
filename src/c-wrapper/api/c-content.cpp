@@ -32,9 +32,14 @@
 using namespace std;
 
 L_DECLARE_C_CLONABLE_OBJECT_IMPL(Content,
-    SalBodyHandler *body_handler;
 	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
 	mutable char *name;
+    mutable char *type;
+    mutable char *subtype;
+    mutable char *body;
+    mutable size_t size;
+    mutable char *encoding;
+    mutable char *key;
 )
 
 // =============================================================================
@@ -61,7 +66,9 @@ void linphone_content_set_user_data(LinphoneContent *content, void *ud) {
 // =============================================================================
 
 const char * linphone_content_get_type(const LinphoneContent *content) {
-    return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType());
+    if (content->type) ms_free(content->type);
+    content->type = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType()));
+    return content->type;
 }
 
 void linphone_content_set_type(LinphoneContent *content, const char *type) {
@@ -71,7 +78,9 @@ void linphone_content_set_type(LinphoneContent *content, const char *type) {
 }
 
 const char * linphone_content_get_subtype(const LinphoneContent *content) {
-    return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType());
+    if (content->subtype) ms_free(content->subtype);
+    content->subtype = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType()));
+    return content->subtype;
 }
 
 void linphone_content_set_subtype(LinphoneContent *content, const char *subtype) {
@@ -89,7 +98,9 @@ void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer
 }
 
 const char * linphone_content_get_string_buffer(const LinphoneContent *content) {
-    return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsString());
+    if (content->body) ms_free(content->body);
+    content->body = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsString()));
+    return content->body;
 }
 
 void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer) {
@@ -99,21 +110,22 @@ void linphone_content_set_string_buffer(LinphoneContent *content, const char *bu
 size_t linphone_content_get_size(const LinphoneContent *content) {
     size_t size = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getSize();
     if (size == 0) {
-        size = sal_body_handler_get_size(content->body_handler);
+        size = content->size;
     }
     return size;
 }
 
 void linphone_content_set_size(LinphoneContent *content, size_t size) {
-    sal_body_handler_set_size(content->body_handler, size);
+    content->size = size;
 }
 
 const char * linphone_content_get_encoding(const LinphoneContent *content) {
-	return sal_body_handler_get_encoding(content->body_handler);
+	return content->encoding;
 }
 
 void linphone_content_set_encoding(LinphoneContent *content, const char *encoding) {
-	sal_body_handler_set_encoding(content->body_handler, encoding);
+    if (content->encoding) ms_free(content->encoding);
+	content->encoding = ms_strdup(encoding);
 }
 
 const char * linphone_content_get_name(const LinphoneContent *content) {
@@ -131,6 +143,8 @@ const char * linphone_content_get_name(const LinphoneContent *content) {
 }
 
 void linphone_content_set_name(LinphoneContent *content, const char *name) {
+    if (content->name) ms_free(content->name);
+
     LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
     if (c->isFile()) {
         LinphonePrivate::FileContent *fc = static_cast<LinphonePrivate::FileContent *>(c);
@@ -139,38 +153,58 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
         LinphonePrivate::FileTransferContent *ftc = static_cast<LinphonePrivate::FileTransferContent *>(c);
         ftc->setFileName(L_C_TO_STRING(name));
     }
+
     content->name = ms_strdup(name);
 }
 
 bool_t linphone_content_is_multipart(const LinphoneContent *content) {
-    return sal_body_handler_is_multipart(content->body_handler);
+    SalBodyHandler *body_handler = sal_body_handler_from_content(content);
+    bool_t multipart = sal_body_handler_is_multipart(body_handler);
+    sal_body_handler_unref(body_handler);
+    return multipart;
 }
 
 LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx) {
 	SalBodyHandler *part_body_handler;
-	if (!linphone_content_is_multipart(content)) return NULL;
-	part_body_handler = sal_body_handler_get_part(content->body_handler, idx);
+	SalBodyHandler *body_handler = sal_body_handler_from_content(content);
+    if (!sal_body_handler_is_multipart(body_handler)) {
+        sal_body_handler_unref(body_handler);
+        return NULL;
+    }
+	part_body_handler = sal_body_handler_get_part(body_handler, idx);
+    sal_body_handler_unref(body_handler);
 	return linphone_content_from_sal_body_handler(part_body_handler);
 }
 
 LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *content, const char *header_name, const char *header_value) {
 	SalBodyHandler *part_body_handler;
-	if (!linphone_content_is_multipart(content)) return NULL;
-	part_body_handler = sal_body_handler_find_part_by_header(content->body_handler, header_name, header_value);
+	SalBodyHandler *body_handler = sal_body_handler_from_content(content);
+    if (!sal_body_handler_is_multipart(body_handler)) {
+        sal_body_handler_unref(body_handler);
+        return NULL;
+    }
+	part_body_handler = sal_body_handler_find_part_by_header(body_handler, header_name, header_value);
+    sal_body_handler_unref(body_handler);
 	return linphone_content_from_sal_body_handler(part_body_handler);
 }
 
 const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name) {
-    return sal_body_handler_get_header(content->body_handler, header_name);
+    SalBodyHandler *body_handler = sal_body_handler_from_content(content);
+    const char *header = sal_body_handler_get_header(body_handler, header_name);
+    sal_body_handler_unref(body_handler);
+    return header;
 }
 
 const char *linphone_content_get_key(const LinphoneContent *content) {
+    if (content->key) ms_free(content->key);
+
     const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
     if (c->isFileTransfer()) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-        return ftc->getFileKeyAsString();
+        content->key = ms_strdup(ftc->getFileKeyAsString());
     }
-    return NULL;
+    
+    return content->key;
 }
 
 size_t linphone_content_get_key_size(const LinphoneContent *content) {
@@ -194,24 +228,17 @@ void linphone_content_set_key(LinphoneContent *content, const char *key, const s
 // Private functions.
 // =============================================================================
 
-static void linphone_content_set_sal_body_handler(LinphoneContent *content, SalBodyHandler *body_handler) {
-	if (content->body_handler != NULL) {
-		sal_body_handler_unref(content->body_handler);
-		content->body_handler = NULL;
-	}
-	content->body_handler = sal_body_handler_ref(body_handler);
-}
-
 static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *body_handler) {
 	LinphoneContent *content = L_INIT(Content);
     content->cryptoContext = NULL;
-    if (body_handler == NULL) {
-		linphone_content_set_sal_body_handler(content, sal_body_handler_new());
-	} else {
-		linphone_content_set_sal_body_handler(content, body_handler);
-	}
     LinphonePrivate::Content *c = new LinphonePrivate::Content();
     L_SET_CPP_PTR_FROM_C_OBJECT(content, c);
+    if (body_handler != NULL) {
+        linphone_content_set_type(content, sal_body_handler_get_type(body_handler));
+        linphone_content_set_subtype(content, sal_body_handler_get_subtype(body_handler));
+        linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
+        linphone_content_set_encoding(content, sal_body_handler_get_encoding(body_handler));
+	}
     return content;
 }
 
@@ -220,7 +247,6 @@ LinphoneContent * linphone_content_new(void) {
 }
 
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref) {
-    //TODO
 	return (LinphoneContent *)belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
 }
 
@@ -242,5 +268,11 @@ LinphoneContent * linphone_content_from_sal_body_handler(SalBodyHandler *body_ha
 
 SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
 	if (content == NULL) return NULL;
-	return content->body_handler;
+    SalBodyHandler *body_handler = sal_body_handler_new();
+    sal_body_handler_set_type(body_handler, belle_sip_strdup(linphone_content_get_type(content)));
+    sal_body_handler_set_subtype(body_handler, belle_sip_strdup(linphone_content_get_subtype(content)));
+    sal_body_handler_set_size(body_handler, linphone_content_get_size(content));
+	sal_body_handler_set_data(body_handler, belle_sip_strdup(linphone_content_get_string_buffer(content)));
+    sal_body_handler_set_encoding(body_handler, belle_sip_strdup(linphone_content_get_encoding(content)));
+	return body_handler;
 }
