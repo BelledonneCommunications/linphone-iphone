@@ -89,8 +89,10 @@ public:
 		} catch (const soci::soci_error &e) {
 			lWarning() << "Catched exception in MainDb::" << info.name << ".";
 			soci::soci_error::error_category category = e.get_error_category();
-			if ((category == soci::soci_error::connection_error
-				|| category == soci::soci_error::unknown) && info.mainDb->forceReconnect()) {
+			if (
+				(category == soci::soci_error::connection_error || category == soci::soci_error::unknown) &&
+				info.mainDb->forceReconnect()
+			) {
 				mResult = mFunction();
 				return;
 			}
@@ -2527,6 +2529,19 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 		const long long &peerSipAddressId = d->insertSipAddress(newChatRoomId.getPeerAddress().asString());
 		const long long &localSipAddressId = d->insertSipAddress(newChatRoomId.getLocalAddress().asString());
 		const int &capabilities = clientGroupChatRoom->getCapabilities();
+
+		{
+			shared_ptr<AbstractChatRoom> buggyChatRoom = getCore()->findChatRoom(newChatRoomId);
+			if (buggyChatRoom) {
+				lError() << "Chat room was found with the same chat room id of a new migrated ClientGroupChatRoom!!!";
+				AbstractChatRoom::CapabilitiesMask capabilities = buggyChatRoom->getCapabilities();
+				if (capabilities & AbstractChatRoom::Capabilities::Basic) {
+					lError() << "Delete invalid basic chat room...";
+					Core::deleteChatRoom(buggyChatRoom);
+				} else
+					lError() << "Unable to delete invalid chat room with capabilities: " << capabilities << ".";
+			}
+		}
 
 		*session << "UPDATE chat_room"
 			"  SET capabilities = :capabilities,"
