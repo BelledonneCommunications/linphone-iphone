@@ -668,20 +668,25 @@ static void on_expire(SalOp *op){
 
 static void on_notify_response(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)op->get_user_pointer();
+	if (!lev)
+		return;
 
-	if (lev==NULL) return;
-	/*this is actually handling out of dialogs notify - for the moment*/
-	if (!lev->is_out_of_dialog_op) return;
-	switch (linphone_event_get_subscription_state(lev)){
-		case LinphoneSubscriptionIncomingReceived:
-			if (op->get_error_info()->reason == SalReasonNone){
-				linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
-			}else{
-				linphone_event_set_state(lev, LinphoneSubscriptionError);
-			}
-		break;
-		default:
-			ms_warning("Unhandled on_notify_response() case %s", linphone_subscription_state_to_string(linphone_event_get_subscription_state(lev)));
+	if (lev->is_out_of_dialog_op) {
+		switch (linphone_event_get_subscription_state(lev)) {
+			case LinphoneSubscriptionIncomingReceived:
+				if (op->get_error_info()->reason == SalReasonNone)
+					linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
+				else
+					linphone_event_set_state(lev, LinphoneSubscriptionError);
+				break;
+			default:
+				ms_warning("Unhandled on_notify_response() case %s",
+					linphone_subscription_state_to_string(linphone_event_get_subscription_state(lev)));
+				break;
+		}
+	} else {
+		ms_warning("on_notify_response in dialog");
+		_linphone_event_notify_notify_response(lev);
 	}
 }
 

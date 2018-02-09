@@ -421,6 +421,12 @@ typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
 typedef struct _LinphoneEvent LinphoneEvent;
 
 /**
+ * An object to handle the callbacks for handling the LinphoneEvent operations.
+ * @ingroup event_api
+**/
+typedef struct _LinphoneEventCbs LinphoneEventCbs;
+
+/**
  * #LinphoneFactory is a singleton object devoted to the creation of all the object
  * of Liblinphone that cannot created by #LinphoneCore or #LinphoneCore itself.
  * @ingroup initializing

@@ -378,6 +378,14 @@ struct _LCCallbackObj {
 	void *_user_data;
 };
 
+struct _LinphoneEventCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneEventCbsNotifyResponseCb notify_response_cb;
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEventCbs);
+
 struct _LinphoneEvent{
 	belle_sip_object_t base;
 	LinphoneErrorInfo *ei;
@@ -389,6 +397,7 @@ struct _LinphoneEvent{
 	LinphonePublishState publish_state;
 	void *userdata;
 	char *name;
+	LinphoneEventCbs *callbacks;
 	int expires;
 	bool_t terminating;
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/
