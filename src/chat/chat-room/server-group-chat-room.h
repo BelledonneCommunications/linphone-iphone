@@ -85,6 +85,9 @@ public:
 	void join () override;
 	void leave () override;
 
+	/* ConferenceListener */
+	void onFirstNotifyReceived (const IdentityAddress &addr) override;
+
 private:
 	L_DECLARE_PRIVATE(ServerGroupChatRoom);
 	L_DISABLE_COPY(ServerGroupChatRoom);

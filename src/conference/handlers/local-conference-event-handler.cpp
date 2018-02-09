@@ -62,51 +62,6 @@ void LocalConferenceEventHandlerPrivate::notifyAll (const string &notify) {
 		notifyParticipant(notify, participant);
 }
 
-void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const shared_ptr<Participant> &participant) {
-	for (const auto &device : participant->getPrivate()->getDevices())
-		notifyParticipantDevice(notify, device);
-}
-
-void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &notify, const shared_ptr<ParticipantDevice> &device, bool multipart) {
-	if (device->isSubscribedToConferenceEventPackage() && !notify.empty()) {
-		LinphoneEvent *ev = device->getConferenceSubscribeEvent();
-		LinphoneContent *content = linphone_core_create_content(ev->lc);
-		linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
-		if (multipart) {
-			linphone_content_set_type(content, "multipart");
-			linphone_content_set_subtype(content, "mixed;boundary=---------------------------14737809831466499882746641449");
-		} else {
-			linphone_content_set_type(content, "application");
-			linphone_content_set_subtype(content, "conference-info");
-		}
-		linphone_event_notify(ev, content);
-		linphone_content_unref(content);
-	}
-}
-
-string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
-	if (notifyId == -1) {
-		lastNotify = lastNotify + 1;
-		confInfo.setVersion(lastNotify);
-	} else {
-		confInfo.setVersion(static_cast<unsigned int>(notifyId));
-	}
-	confInfo.setState(isFullState ? StateType::full : StateType::partial);
-	if (!confInfo.getConferenceDescription()) {
-		ConferenceDescriptionType description = ConferenceDescriptionType();
-		confInfo.setConferenceDescription(description);
-	}
-
-	time_t result = time(nullptr);
-	confInfo.getConferenceDescription()->setFreeText(Utils::toString(static_cast<long>(result)));
-
-	stringstream notify;
-	Xsd::XmlSchema::NamespaceInfomap map;
-	map[""].name = "urn:ietf:params:xml:ns:conference-info";
-	serializeConferenceInfo(notify, confInfo, map);
-	return notify.str();
-}
-
 string LocalConferenceEventHandlerPrivate::createNotifyFullState (int notifyId, bool oneToOne) {
 	string entity = conf->getConferenceAddress().asString();
 	string subject = conf->getSubject();
@@ -177,7 +132,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 
 			case EventLog::Type::ConferenceParticipantSetAdmin: {
 				shared_ptr<ConferenceParticipantEvent> setAdminEvent = static_pointer_cast<ConferenceParticipantEvent>(eventLog);
-				body = createNotifyParticipantAdmined(
+				body = createNotifyParticipantAdminStatusChanged(
 					setAdminEvent->getParticipantAddress(),
 					true,
 					eventNotifyId
@@ -186,7 +141,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 
 			case EventLog::Type::ConferenceParticipantUnsetAdmin: {
 				shared_ptr<ConferenceParticipantEvent> unsetAdminEvent = static_pointer_cast<ConferenceParticipantEvent>(eventLog);
-				body = createNotifyParticipantAdmined(
+				body = createNotifyParticipantAdminStatusChanged(
 					unsetAdminEvent->getParticipantAddress(),
 					false,
 					eventNotifyId
@@ -263,21 +218,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const A
 	return createNotify(confInfo, notifyId);
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr, int notifyId) {
-	string entity = conf->getConferenceAddress().asString();
-	ConferenceType confInfo = ConferenceType(entity);
-	UsersType users;
-	confInfo.setUsers(users);
-
-	UserType user = UserType();
-	user.setEntity(addr.asStringUriOnly());
-	user.setState(StateType::deleted);
-	confInfo.getUsers()->getUser().push_back(user);
-
-	return createNotify(confInfo, notifyId);
-}
-
-string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const Address &addr, bool isAdmin, int notifyId) {
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdminStatusChanged (const Address &addr, bool isAdmin, int notifyId) {
 	string entity = conf->getConferenceAddress().asString();
 	ConferenceType confInfo = ConferenceType(entity);
 	UsersType users;
@@ -294,16 +235,16 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdmined (const
 	return createNotify(confInfo, notifyId);
 }
 
-string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged (int notifyId) {
-	return createNotifySubjectChanged(conf->getSubject(), notifyId);
-}
-
-string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged (const string &subject, int notifyId) {
+string LocalConferenceEventHandlerPrivate::createNotifyParticipantRemoved (const Address &addr, int notifyId) {
 	string entity = conf->getConferenceAddress().asString();
 	ConferenceType confInfo = ConferenceType(entity);
-	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
-	confDescr.setSubject(subject);
-	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
+	UsersType users;
+	confInfo.setUsers(users);
+
+	UserType user = UserType();
+	user.setEntity(addr.asStringUriOnly());
+	user.setState(StateType::deleted);
+	confInfo.getUsers()->getUser().push_back(user);
 
 	return createNotify(confInfo, notifyId);
 }
@@ -348,6 +289,93 @@ string LocalConferenceEventHandlerPrivate::createNotifyParticipantDeviceRemoved 
 	confInfo.getUsers()->getUser().push_back(user);
 
 	return createNotify(confInfo, notifyId);
+}
+
+string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged (int notifyId) {
+	return createNotifySubjectChanged(conf->getSubject(), notifyId);
+}
+
+// -----------------------------------------------------------------------------
+
+void LocalConferenceEventHandlerPrivate::notifyResponseCb (const LinphoneEvent *ev) {
+	LinphoneEventCbs *cbs = linphone_event_get_callbacks(ev);
+	LocalConferenceEventHandlerPrivate *handler = reinterpret_cast<LocalConferenceEventHandlerPrivate *>(
+		linphone_event_cbs_get_user_data(cbs)
+	);
+	linphone_event_cbs_set_user_data(cbs, nullptr);
+	linphone_event_cbs_set_notify_response(cbs, nullptr);
+
+	if (linphone_event_get_reason(ev) != LinphoneReasonNone)
+		return;
+
+	for (const auto &p : handler->conf->getParticipants()) {
+		for (const auto &d : p->getPrivate()->getDevices()) {
+			if ((d->getConferenceSubscribeEvent() == ev) && (d->getState() == ParticipantDevice::State::Joining)) {
+				handler->conf->onFirstNotifyReceived(d->getAddress());
+				return;
+			}
+		}
+	}
+}
+
+// -----------------------------------------------------------------------------
+
+string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
+	if (notifyId == -1) {
+		lastNotify = lastNotify + 1;
+		confInfo.setVersion(lastNotify);
+	} else {
+		confInfo.setVersion(static_cast<unsigned int>(notifyId));
+	}
+	confInfo.setState(isFullState ? StateType::full : StateType::partial);
+	if (!confInfo.getConferenceDescription()) {
+		ConferenceDescriptionType description = ConferenceDescriptionType();
+		confInfo.setConferenceDescription(description);
+	}
+
+	time_t result = time(nullptr);
+	confInfo.getConferenceDescription()->setFreeText(Utils::toString(static_cast<long>(result)));
+
+	stringstream notify;
+	Xsd::XmlSchema::NamespaceInfomap map;
+	map[""].name = "urn:ietf:params:xml:ns:conference-info";
+	serializeConferenceInfo(notify, confInfo, map);
+	return notify.str();
+}
+
+string LocalConferenceEventHandlerPrivate::createNotifySubjectChanged (const string &subject, int notifyId) {
+	string entity = conf->getConferenceAddress().asString();
+	ConferenceType confInfo = ConferenceType(entity);
+	ConferenceDescriptionType confDescr = ConferenceDescriptionType();
+	confDescr.setSubject(subject);
+	confInfo.setConferenceDescription((const ConferenceDescriptionType)confDescr);
+
+	return createNotify(confInfo, notifyId);
+}
+
+void LocalConferenceEventHandlerPrivate::notifyParticipant (const string &notify, const shared_ptr<Participant> &participant) {
+	for (const auto &device : participant->getPrivate()->getDevices())
+		notifyParticipantDevice(notify, device);
+}
+
+void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &notify, const shared_ptr<ParticipantDevice> &device, bool multipart) {
+	if (device->isSubscribedToConferenceEventPackage() && !notify.empty()) {
+		LinphoneEvent *ev = device->getConferenceSubscribeEvent();
+		LinphoneEventCbs *cbs = linphone_event_get_callbacks(ev);
+		linphone_event_cbs_set_user_data(cbs, this);
+		linphone_event_cbs_set_notify_response(cbs, notifyResponseCb);
+		LinphoneContent *content = linphone_core_create_content(ev->lc);
+		linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
+		if (multipart) {
+			linphone_content_set_type(content, "multipart");
+			linphone_content_set_subtype(content, "mixed;boundary=---------------------------14737809831466499882746641449");
+		} else {
+			linphone_content_set_type(content, "application");
+			linphone_content_set_subtype(content, "conference-info");
+		}
+		linphone_event_notify(ev, content);
+		linphone_content_unref(content);
+	}
 }
 
 // =============================================================================
@@ -434,7 +462,7 @@ shared_ptr<ConferenceParticipantEvent> LocalConferenceEventHandler::notifyPartic
 
 shared_ptr<ConferenceParticipantEvent> LocalConferenceEventHandler::notifyParticipantSetAdmin (const Address &addr, bool isAdmin) {
 	L_D();
-	d->notifyAll(d->createNotifyParticipantAdmined(addr, isAdmin));
+	d->notifyAll(d->createNotifyParticipantAdminStatusChanged(addr, isAdmin));
 	shared_ptr<ConferenceParticipantEvent> event = make_shared<ConferenceParticipantEvent>(
 		isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
 		time(nullptr),

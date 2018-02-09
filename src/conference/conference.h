@@ -23,6 +23,7 @@
 #include "linphone/types.h"
 
 #include "conference/conference-interface.h"
+#include "conference/conference-listener.h"
 #include "core/core-accessor.h"
 
 // =============================================================================
@@ -36,6 +37,7 @@ class ConferencePrivate;
 
 class LINPHONE_PUBLIC Conference :
 	public ConferenceInterface,
+	public ConferenceListener,
 	public CoreAccessor {
 	friend class CallSessionPrivate;
 

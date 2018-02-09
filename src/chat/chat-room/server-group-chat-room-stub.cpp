@@ -34,9 +34,11 @@ shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const Identi
 
 void ServerGroupChatRoomPrivate::removeParticipant (const shared_ptr<const Participant> &) {}
 
-shared_ptr<Participant> ServerGroupChatRoomPrivate::findRemovedParticipant (
-	const shared_ptr<const CallSession> &
-) const {
+shared_ptr<Participant> ServerGroupChatRoomPrivate::findFilteredParticipant (const shared_ptr<const CallSession> &session) const {
+	return nullptr;
+}
+
+shared_ptr<Participant> ServerGroupChatRoomPrivate::findFilteredParticipant (const IdentityAddress &participantAddress) const {
 	return nullptr;
 }
 
@@ -47,6 +49,8 @@ void ServerGroupChatRoomPrivate::confirmCreation () {}
 void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
 
 void ServerGroupChatRoomPrivate::confirmRecreation (SalCallOp *) {}
+
+void ServerGroupChatRoomPrivate::dispatchQueuedMessages () {}
 
 // -----------------------------------------------------------------------------
 
@@ -76,15 +80,23 @@ LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const 
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
 
-void ServerGroupChatRoomPrivate::dispatchMessage (const Message &message) {}
-
-void ServerGroupChatRoomPrivate::dispatchQueuedMessages () {}
+void ServerGroupChatRoomPrivate::dispatchMessage (const std::shared_ptr<Message> &message, const std::string &uri) {}
 
 void ServerGroupChatRoomPrivate::finalizeCreation () {}
+
+void ServerGroupChatRoomPrivate::inviteDevice (const std::shared_ptr<ParticipantDevice> &device) {}
 
 bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
 }
+
+void ServerGroupChatRoomPrivate::queueMessage (const std::shared_ptr<Message> &message) {}
+
+void ServerGroupChatRoomPrivate::queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress) {}
+
+// -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session) {}
 
 // -----------------------------------------------------------------------------
 
@@ -188,5 +200,7 @@ void ServerGroupChatRoom::setSubject (const string &) {}
 void ServerGroupChatRoom::join () {}
 
 void ServerGroupChatRoom::leave () {}
+
+void ServerGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {}
 
 LINPHONE_END_NAMESPACE

@@ -34,6 +34,13 @@ class CallSession;
 
 class ParticipantDevice {
 public:
+	enum class State {
+		Joining,
+		Present,
+		Leaving,
+		Left
+	};
+
 	ParticipantDevice ();
 	explicit ParticipantDevice (const IdentityAddress &gruu);
 	virtual ~ParticipantDevice ();
@@ -43,6 +50,8 @@ public:
 	inline const IdentityAddress &getAddress () const { return mGruu; }
 	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
 	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
+	inline State getState () const { return mState; }
+	inline void setState (State newState) { mState = newState; }
 
 	inline bool isSubscribedToConferenceEventPackage () const { return mConferenceSubscribeEvent != nullptr; }
 	LinphoneEvent *getConferenceSubscribeEvent () const { return mConferenceSubscribeEvent; }
@@ -54,6 +63,7 @@ private:
 	IdentityAddress mGruu;
 	std::shared_ptr<CallSession> mSession;
 	LinphoneEvent *mConferenceSubscribeEvent = nullptr;
+	State mState = State::Joining;
 
 	L_DISABLE_COPY(ParticipantDevice);
 };

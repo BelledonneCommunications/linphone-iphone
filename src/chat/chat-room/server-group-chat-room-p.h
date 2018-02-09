@@ -20,6 +20,10 @@
 #ifndef _L_SERVER_GROUP_CHAT_ROOM_P_H_
 #define _L_SERVER_GROUP_CHAT_ROOM_P_H_
 
+#include <chrono>
+#include <queue>
+#include <unordered_map>
+
 #include "chat-room-p.h"
 #include "server-group-chat-room.h"
 
@@ -27,15 +31,20 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ParticipantDevice;
+
 class ServerGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
 	std::shared_ptr<Participant> addParticipant (const IdentityAddress &participantAddress);
 	void removeParticipant (const std::shared_ptr<const Participant> &participant);
-	std::shared_ptr<Participant> findRemovedParticipant (const std::shared_ptr<const CallSession> &session) const;
+
+	std::shared_ptr<Participant> findFilteredParticipant (const std::shared_ptr<const CallSession> &session) const;
+	std::shared_ptr<Participant> findFilteredParticipant (const IdentityAddress &participantAddress) const;
 
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
 	void confirmRecreation (SalCallOp *op);
+	void dispatchQueuedMessages ();
 
 	IdentityAddress generateConferenceAddress (const std::shared_ptr<Participant> &me) const;
 
@@ -60,13 +69,18 @@ private:
 
 		IdentityAddress fromAddr;
 		Content content;
+		std::chrono::system_clock::time_point timestamp = std::chrono::system_clock::now();
 	};
 
 	void designateAdmin ();
-	void dispatchMessage (const Message &message);
-	void dispatchQueuedMessages ();
+	void dispatchMessage (const std::shared_ptr<Message> &message, const std::string &uri);
 	void finalizeCreation ();
+	void inviteDevice (const std::shared_ptr<ParticipantDevice> &device);
 	bool isAdminLeft () const;
+	void queueMessage (const std::shared_ptr<Message> &message);
+	void queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress);
+
+	void onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session);
 
 	// ChatRoomListener
 	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
@@ -80,11 +94,11 @@ private:
 		const std::string &message
 	) override;
 
-	std::list<std::shared_ptr<Participant>> removedParticipants;
+	std::list<std::shared_ptr<Participant>> filteredParticipants;
 	ChatRoomListener *chatRoomListener = this;
 	ServerGroupChatRoom::CapabilitiesMask capabilities = ServerGroupChatRoom::Capabilities::Conference;
 	bool joiningPendingAfterCreation = false;
-	std::list<Message> queuedMessages;
+	std::unordered_map<std::string, std::queue<std::shared_ptr<Message>>> queuedMessages;
 
 	L_DECLARE_PUBLIC(ServerGroupChatRoom);
 };

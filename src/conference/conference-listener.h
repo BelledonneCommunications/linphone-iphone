@@ -36,16 +36,16 @@ class IdentityAddress;
 
 class ConferenceListener {
 public:
-	virtual void onConferenceCreated (const IdentityAddress &addr) = 0;
+	virtual void onConferenceCreated (const IdentityAddress &addr) {}
 	virtual void onConferenceKeywordsChanged (const std::vector<std::string> &keywords) {}
-	virtual void onConferenceTerminated (const IdentityAddress &addr) = 0;
-	virtual void onFirstNotifyReceived (const IdentityAddress &addr) = 0;
-	virtual void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
-	virtual void onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
-	virtual void onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) = 0;
-	virtual void onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) = 0;
-	virtual void onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) = 0;
-	virtual void onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) = 0;
+	virtual void onConferenceTerminated (const IdentityAddress &addr) {}
+	virtual void onFirstNotifyReceived (const IdentityAddress &addr) {}
+	virtual void onParticipantAdded (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {}
+	virtual void onParticipantRemoved (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {}
+	virtual void onParticipantSetAdmin (const std::shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {}
+	virtual void onSubjectChanged (const std::shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {}
+	virtual void onParticipantDeviceAdded (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {}
+	virtual void onParticipantDeviceRemoved (const std::shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {}
 };
 
 LINPHONE_END_NAMESPACE
