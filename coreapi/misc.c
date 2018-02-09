@@ -907,17 +907,18 @@ void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 
 	// TODO: This is a workaround that has to be removed ASAP
 	// Do not add calls made to the conference factory in the history
-	char *to = linphone_address_as_string(call_log->to);
 	const char *conference_factory_uri = linphone_core_get_conference_factory_uri(lc);
-	if (conference_factory_uri && (strcmp(conference_factory_uri, to) == 0)) {
-		bctbx_free(to);
-		return;
+	if (conference_factory_uri) {
+		LinphoneAddress *conference_factory_addr = linphone_address_new(conference_factory_uri);
+		if (linphone_address_weak_equal(call_log->to, conference_factory_addr)) {
+			linphone_address_unref(conference_factory_addr);
+			return;
+		}
+		linphone_address_unref(conference_factory_addr);
 	}
-	if (strstr(to, "chatroom-") == to) {
-		bctbx_free(to);
+	const char *username = linphone_address_get_username(call_log->to);
+	if (strstr(username, "chatroom-") == username)
 		return;
-	}
-	bctbx_free(to);
 	// End of workaround
 
 #ifdef SQLITE_STORAGE_ENABLED
