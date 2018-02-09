@@ -23,8 +23,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	self.allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
-	self.sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+	_allContacts = [[NSMutableDictionary alloc] initWithDictionary:LinphoneManager.instance.fastAddressBook.addressBookMap];
+	_sortedAddresses = [[LinphoneManager.instance.fastAddressBook.addressBookMap allKeys] sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
 		Contact* first =  [_allContacts objectForKey:a];
 		Contact* second =  [_allContacts objectForKey:b];
 		if([[first.firstName lowercaseString] compare:[second.firstName lowercaseString]] == NSOrderedSame)
@@ -33,13 +33,13 @@
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 
+	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
 		}
 		return;
 	}
-	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_allFilter = TRUE;
 
@@ -199,8 +199,8 @@
 						 completion:nil];
 	}
 	[_collectionView reloadData];
-	if(!cell.selectedImage.hidden) {
-		index = _contactsGroup.count-1;
+	if (!cell.selectedImage.hidden) {
+		index = _contactsGroup.count - 1;
 	}
 
 	dispatch_async(dispatch_get_main_queue(), ^{
