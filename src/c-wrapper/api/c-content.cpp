@@ -280,11 +280,20 @@ LinphoneContent * linphone_content_from_sal_body_handler(SalBodyHandler *body_ha
 
 SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
 	if (content == NULL) return NULL;
-    SalBodyHandler *body_handler = sal_body_handler_new();
+    SalBodyHandler *body_handler;
+    if (L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType() == LinphonePrivate::ContentType::Multipart) {
+        size_t size = linphone_content_get_size(content);
+        char *buffer = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
+        const char *boundary = L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getParameter());
+        belle_sip_multipart_body_handler_t *bh = belle_sip_multipart_body_handler_new_from_buffer(buffer, size, boundary);
+        body_handler = (SalBodyHandler *)BELLE_SIP_BODY_HANDLER(bh);
+    } else {
+        body_handler = sal_body_handler_new();
+	    sal_body_handler_set_data(body_handler, belle_sip_strdup(linphone_content_get_string_buffer(content)));
+    }
     sal_body_handler_set_type(body_handler, linphone_content_get_type(content));
     sal_body_handler_set_subtype(body_handler, linphone_content_get_subtype(content));
     sal_body_handler_set_size(body_handler, linphone_content_get_size(content));
-	sal_body_handler_set_data(body_handler, belle_sip_strdup(linphone_content_get_string_buffer(content)));
     if (content->encoding) sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
 	return body_handler;
 }
