@@ -1828,6 +1828,8 @@ static void real_time_text_conversation(void) {
 			}
 		}
 
+		linphone_chat_message_unref(pauline_rtt_message);
+		linphone_chat_message_unref(marie_rtt_message);
 		reset_counters(&pauline->stat);
 		reset_counters(&marie->stat);
 		pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
@@ -1863,6 +1865,8 @@ static void real_time_text_conversation(void) {
 				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_2);
 			}
 		}
+		linphone_chat_message_unref(pauline_rtt_message);
+		linphone_chat_message_unref(marie_rtt_message);
 	}
 	end_call(marie, pauline);
 	linphone_call_params_unref(marie_params);
@@ -1980,6 +1984,7 @@ static void real_time_text_message_accented_chars(void) {
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
 			BC_ASSERT_EQUAL(strcmp(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "ãæçéîøùÿ"), 0, int, "%i");
+			linphone_chat_message_unref(rtt_message);
 		}
 		end_call(marie, pauline);
 	}
@@ -2032,6 +2037,7 @@ static void real_time_text_copy_paste(void) {
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			linphone_chat_message_unref(rtt_message);
 		}
 
 		end_call(marie, pauline);

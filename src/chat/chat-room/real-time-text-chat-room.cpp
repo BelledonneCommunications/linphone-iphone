@@ -55,19 +55,11 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, cons
 		linphone_core_notify_is_composing_received(cCore, L_GET_C_BACK_PTR(q));
 
 		if ((character == new_line) || (character == crlf) || (character == lf)) {
-			/* End of message */
+			// End of message
 			lDebug() << "New line received, forge a message with content " << pendingMessage->getPrivate()->getText().c_str();
-			// TODO: REPAIR ME.
-			// pendingMessage->setFromAddress(peerAddress);
-			// pendingMessage->setToAddress(
-			// 	Address(
-			// 		linphone_call_get_dest_proxy(call)
-			// 			? linphone_address_as_string(linphone_call_get_dest_proxy(call)->identity_address)
-			// 			: linphone_core_get_identity(cCore)
-			// 	)
-			// );
 			pendingMessage->getPrivate()->setState(ChatMessage::State::Delivered);
 			pendingMessage->getPrivate()->setDirection(ChatMessage::Direction::Incoming);
+			pendingMessage->getPrivate()->setTime(::ms_time(0));
 
 			if (lp_config_get_int(linphone_core_get_config(cCore), "misc", "store_rtt_messages", 1) == 1)
 				 pendingMessage->getPrivate()->storeInDb();
@@ -80,7 +72,7 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, cons
 			string text(pendingMessage->getPrivate()->getText());
 			text += string(value);
 			pendingMessage->getPrivate()->setText(text);
-			lInfo() << "Received RTT character: " << value << " (" << character << "), pending text is " << pendingMessage->getPrivate()->getText();
+			lDebug() << "Received RTT character: " << value << " (" << character << "), pending text is " << pendingMessage->getPrivate()->getText();
 			delete[] value;
 		}
 	}
