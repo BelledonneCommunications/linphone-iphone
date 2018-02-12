@@ -265,13 +265,9 @@
 
 	if (![sip isEqualToString:@" "]) {
 		if (_person) {
-			normSip = sip;
+			normSip = [sip containsString:@"@"] ? [sip componentsSeparatedByString:@"@"][0] : sip;
 			CNInstantMessageAddress *cNSipMsgAddr;
-			if ([normSip containsString:@"@"])
-				cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:[normSip componentsSeparatedByString:@"@"][0] service:@"SIP"]; //service:[normSip componentsSeparatedByString:@"@"][1]];
-           	else
-				cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"];
-
+			cNSipMsgAddr = [[CNInstantMessageAddress alloc] initWithUsername:normSip service:@"SIP"]; //service:[normSip componentsSeparatedByString:@"@"][1]];
 			CNLabeledValue *sipAddress = [CNLabeledValue labeledValueWithLabel:NULL value:cNSipMsgAddr];
 			NSMutableArray<CNLabeledValue<CNInstantMessageAddress *> *> *tmpSipAddresses = [_person.instantMessageAddresses mutableCopy];
            	[tmpSipAddresses addObject:sipAddress];
