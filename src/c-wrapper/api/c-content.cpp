@@ -91,7 +91,7 @@ void linphone_content_set_subtype(LinphoneContent *content, const char *subtype)
 }
 
 uint8_t * linphone_content_get_buffer(const LinphoneContent *content) {
-    return (uint8_t *)L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBody().data();
+    return (uint8_t *)linphone_content_get_string_buffer(content);
 }
 
 void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer, size_t size) {
