@@ -61,7 +61,8 @@ bool ChatRoomId::operator!= (const ChatRoomId &chatRoomId) const {
 bool ChatRoomId::operator< (const ChatRoomId &chatRoomId) const {
 	L_D();
 	const ChatRoomIdPrivate *dChatRoomId = chatRoomId.getPrivate();
-	return d->peerAddress < dChatRoomId->peerAddress || d->localAddress < dChatRoomId->localAddress;
+	return d->peerAddress < dChatRoomId->peerAddress
+		|| (d->peerAddress == dChatRoomId->peerAddress && d->localAddress < dChatRoomId->localAddress);
 }
 
 const IdentityAddress &ChatRoomId::getPeerAddress () const {
