@@ -29,9 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 ParticipantDevice::ParticipantDevice () {}
 
-ParticipantDevice::ParticipantDevice (const IdentityAddress &gruu) {
-	mGruu = gruu;
-}
+ParticipantDevice::ParticipantDevice (const Participant *participant, const IdentityAddress &gruu)
+	: mParticipant(participant), mGruu(gruu) {}
 
 ParticipantDevice::~ParticipantDevice () {
 	if (mConferenceSubscribeEvent)
