@@ -92,13 +92,14 @@
 + (BOOL)isSipAddress:(CNLabeledValue<CNInstantMessageAddress *> *)sipAddr {
 	NSString *username = sipAddr.value.username;
 	NSString *service = sipAddr.value.service;
-	if (!username)
+	LOGI(@"Parsing contact with username : %@ and service : %@", username, service);
+	if (!username || [username isEqualToString:@""])
 		return FALSE;
 
-	if ([service isEqualToString:LinphoneManager.instance.contactSipField])
-		return TRUE;
+	if (!service || [service isEqualToString:@""])
+		return [FastAddressBook isSipURI:username];
 
-	if (([service isEqualToString:@"INSTANT_MESSAGING_NAME"] || [service isEqualToString:@"IM_SERVICE_NAME"]) && [FastAddressBook isSipURI:username])
+	if ([service isEqualToString:LinphoneManager.instance.contactSipField])
 		return TRUE;
 
 	return FALSE;
