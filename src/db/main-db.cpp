@@ -87,13 +87,17 @@ public:
 		try {
 			mResult = mFunction();
 		} catch (const soci::soci_error &e) {
-			lWarning() << "Catched exception in MainDb::" << info.name << ".";
+			lWarning() << "Catched exception in MainDb::" << info.name << "(" << e.what() << ").";
 			soci::soci_error::error_category category = e.get_error_category();
 			if (
 				(category == soci::soci_error::connection_error || category == soci::soci_error::unknown) &&
 				info.mainDb->forceReconnect()
 			) {
-				mResult = mFunction();
+				try {
+					mResult = mFunction();
+				} catch (const exception &e) {
+					lWarning() << "Unable to execute query after reconnect in MainDb::" << info.name << "(" << e.what() << ").";
+				}
 				return;
 			}
 			lError() << "Unhandled [" << getErrorCategoryAsString(category) << "] exception in MainDb::" <<
