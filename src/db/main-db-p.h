@@ -156,6 +156,7 @@ private:
 
 	unsigned int getModuleVersion (const std::string &name);
 	void updateModuleVersion (const std::string &name, unsigned int version);
+	void updateSchema ();
 
 	// ---------------------------------------------------------------------------
 	// Import.

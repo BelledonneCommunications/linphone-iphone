@@ -38,6 +38,7 @@ class Core;
 class EventLog;
 class MainDbKey;
 class MainDbPrivate;
+class ParticipantDevice;
 
 class MainDb : public AbstractDb, public CoreAccessor {
 	friend class MainDbChatMessageKey;
@@ -134,6 +135,8 @@ public:
 		const IdentityAddress &participantB
 	) const;
 	void insertOneToOneConferenceChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+
+	void updateChatRoomParticipantDevice (const std::shared_ptr<AbstractChatRoom> &chatRoom, const std::shared_ptr<ParticipantDevice> &device);
 
 	// ---------------------------------------------------------------------------
 	// Other.

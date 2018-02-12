@@ -42,6 +42,14 @@ shared_ptr<Participant> ServerGroupChatRoomPrivate::findFilteredParticipant (con
 	return nullptr;
 }
 
+ParticipantDevice::State ServerGroupChatRoomPrivate::getParticipantDeviceState (const std::shared_ptr<const ParticipantDevice> &device) const {
+	return device->getState();
+}
+
+void ServerGroupChatRoomPrivate::setParticipantDeviceState (const std::shared_ptr<ParticipantDevice> &device, ParticipantDevice::State state) {
+	device->setState(state);
+}
+
 // -----------------------------------------------------------------------------
 
 void ServerGroupChatRoomPrivate::confirmCreation () {}

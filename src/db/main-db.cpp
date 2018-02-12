@@ -36,7 +36,7 @@
 #include "main-db-key-p.h"
 #include "main-db-p.h"
 
-#define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 0)
+#define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 1)
 #define DB_MODULE_VERSION_FRIENDS L_VERSION(1, 0, 0)
 #define DB_MODULE_VERSION_LEGACY_FRIENDS_IMPORT L_VERSION(1, 0, 0)
 #define DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT L_VERSION(1, 0, 0)
@@ -1133,6 +1133,15 @@ void MainDbPrivate::updateModuleVersion (const string &name, unsigned int versio
 		soci::use(name), soci::use(version);
 }
 
+void MainDbPrivate::updateSchema () {
+	soci::session *session = dbSession.getBackendSession();
+	unsigned int version = getModuleVersion("events");
+
+	if (version < L_VERSION(1, 0, 1)) {
+		*session << "ALTER TABLE chat_room_participant_device ADD COLUMN state TINYINT UNSIGNED DEFAULT 0";
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 #define CHECK_LEGACY_TABLE_EXISTS(SESSION, NAME) \
@@ -1751,6 +1760,8 @@ void MainDb::init () {
 		"  name" + varcharPrimaryKeyStr(255) + ","
 		"  version INT UNSIGNED NOT NULL"
 		") " + charset;
+
+	d->updateSchema();
 
 	d->updateModuleVersion("events", DB_MODULE_VERSION_EVENTS);
 	d->updateModuleVersion("friends", DB_MODULE_VERSION_FRIENDS);
@@ -2689,6 +2700,28 @@ void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable)
 			capabilities &= ~static_cast<int>(ChatRoom::Capabilities::Migratable);
 		*session << "UPDATE chat_room SET capabilities = :capabilities WHERE id = :chatRoomId",
 			soci::use(capabilities), soci::use(dbChatRoomId);
+
+		tr.commit();
+
+		return true;
+	};
+}
+
+void MainDb::updateChatRoomParticipantDevice (const shared_ptr<AbstractChatRoom> &chatRoom, const shared_ptr<ParticipantDevice> &device) {
+	L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+		soci::transaction tr(*session);
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
+		const long long &participantSipAddressId = d->selectSipAddressId(device->getParticipant()->getAddress().asString());
+		const long long &participantId = d->selectChatRoomParticipantId(dbChatRoomId, participantSipAddressId);
+		const long long &participantSipDeviceAddressId = d->selectSipAddressId(device->getAddress().asString());
+		unsigned int stateInt = static_cast<unsigned int>(device->getState());
+		*session << "UPDATE chat_room_participant_device SET state = :state"
+			"  WHERE chat_room_participant_id = :participantId AND participant_device_sip_address_id = :participantSipDeviceAddressId",
+			soci::use(stateInt), soci::use(participantId), soci::use(participantSipDeviceAddressId);
 
 		tr.commit();
 

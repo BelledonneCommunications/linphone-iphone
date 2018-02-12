@@ -26,6 +26,7 @@
 
 #include "chat-room-p.h"
 #include "server-group-chat-room.h"
+#include "conference/participant-device.h"
 
 // =============================================================================
 
@@ -40,6 +41,9 @@ public:
 
 	std::shared_ptr<Participant> findFilteredParticipant (const std::shared_ptr<const CallSession> &session) const;
 	std::shared_ptr<Participant> findFilteredParticipant (const IdentityAddress &participantAddress) const;
+
+	ParticipantDevice::State getParticipantDeviceState (const std::shared_ptr<const ParticipantDevice> &device) const;
+	void setParticipantDeviceState (const std::shared_ptr<ParticipantDevice> &device, ParticipantDevice::State state);
 
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
