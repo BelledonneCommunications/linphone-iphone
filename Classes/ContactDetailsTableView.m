@@ -102,11 +102,8 @@
 	NSInteger count = 0;
 	if (mCNContact.instantMessageAddresses != NULL) {
 		for (CNLabeledValue<CNInstantMessageAddress *> *sipAddr in mCNContact.instantMessageAddresses) {
-			NSString *username =  sipAddr.value.username;
-			NSString *service =  sipAddr.value.service;
-			if (username && ([service isEqualToString:LinphoneManager.instance.contactSipField] || ([service isEqualToString:@"INSTANT_MESSAGING_NAME"] && [FastAddressBook isSipURI:username]))){
-				count ++;
-			}
+			if ([FastAddressBook isSipAddress:sipAddr])
+				count++;
 		}
 	}
 	return count;
