@@ -51,8 +51,9 @@
 + (NSString *)displayNameForContact:(Contact *)person;
 + (NSString *)displayNameForAddress:(const LinphoneAddress *)addr;
 
-+ (BOOL)isSipURI:(NSString *)address;						  // should be removed
-+ (NSString *)normalizeSipURI:(NSString *)address;			  // should be removed
++ (BOOL)isSipURI:(NSString *)address;
++ (BOOL)isSipAddress:(CNLabeledValue<CNInstantMessageAddress *> *)sipAddr;
++ (NSString *)normalizeSipURI:(NSString *)address;
 
 + (NSString *)localizedLabel:(NSString *)label;
 - (void)registerAddrsFor:(Contact *)contact;

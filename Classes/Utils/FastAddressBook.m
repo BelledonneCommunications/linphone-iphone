@@ -89,6 +89,21 @@
 	return [address hasPrefix:@"sip:"] || [address hasPrefix:@"sips:"];
 }
 
++ (BOOL)isSipAddress:(CNLabeledValue<CNInstantMessageAddress *> *)sipAddr {
+	NSString *username = sipAddr.value.username;
+	NSString *service = sipAddr.value.service;
+	if (!username)
+		return FALSE;
+
+	if ([service isEqualToString:LinphoneManager.instance.contactSipField])
+		return TRUE;
+
+	if (([service isEqualToString:@"INSTANT_MESSAGING_NAME"] || [service isEqualToString:@"IM_SERVICE_NAME"]) && [FastAddressBook isSipURI:username])
+		return TRUE;
+
+	return FALSE;
+}
+
 + (NSString *)normalizeSipURI:(NSString *)address {
 	// replace all whitespaces (non-breakable, utf8 nbsp etc.) by the "classical" whitespace
 	NSString *normalizedSipAddress = nil;

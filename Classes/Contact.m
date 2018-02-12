@@ -39,10 +39,9 @@
 	  if ([_person respondsToSelector:NSSelectorFromString( CNInstantMessageAddressUsernameKey)] || [_person respondsToSelector:NSSelectorFromString(CNContactInstantMessageAddressesKey)]) {
 		  if (_person.instantMessageAddresses != NULL) {
 			  for (CNLabeledValue<CNInstantMessageAddress *> *sipAddr in _person.instantMessageAddresses) {
-				  NSString *username =  sipAddr.value.username;
-				  NSString *service =  sipAddr.value.service;
-				  if (username && ([service isEqualToString:LinphoneManager.instance.contactSipField] || ([service isEqualToString:@"INSTANT_MESSAGING_NAME"] && [FastAddressBook isSipURI:username]))){
-				 	  [_sipAddresses addObject:username];
+				  if ([FastAddressBook isSipAddress:sipAddr]) {
+					  NSString *username =  sipAddr.value.username;
+					[_sipAddresses addObject:username];
 				  }
 			  }
 		  }
