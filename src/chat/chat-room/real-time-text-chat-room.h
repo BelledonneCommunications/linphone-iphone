@@ -26,18 +26,20 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Call;
 class RealTimeTextChatRoomPrivate;
 
 class LINPHONE_PUBLIC RealTimeTextChatRoom : public BasicChatRoom {
+	friend class CallPrivate;
 	friend class CorePrivate;
 
 public:
-	~RealTimeTextChatRoom ();
+	~RealTimeTextChatRoom () = default;
 
 	CapabilitiesMask getCapabilities () const override;
 
 	uint32_t getChar () const;
-	LinphoneCall *getCall () const;
+	std::shared_ptr<Call> getCall () const;
 
 private:
 	RealTimeTextChatRoom (const std::shared_ptr<Core> &core, const ChatRoomId &chatRoomId);

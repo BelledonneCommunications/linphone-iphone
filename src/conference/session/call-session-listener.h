@@ -22,6 +22,8 @@
 
 #include "conference/session/call-session.h"
 
+#include <mediastreamer2/msrtt4103.h>
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
@@ -75,6 +77,8 @@ public:
 
 	virtual bool areSoundResourcesAvailable (const std::shared_ptr<const CallSession> &session) { return true; }
 	virtual bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) { return false; }
+
+	virtual void onRealTimeTextCharacterReceived (const std::shared_ptr<const CallSession> &session, RealtimeTextReceivedCharacter *data) {}
 };
 
 LINPHONE_END_NAMESPACE

@@ -1709,6 +1709,7 @@ static void real_time_text(bool_t audio_stream_enabled, bool_t srtp_enabled, boo
 			}
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			linphone_chat_message_unref(rtt_message);
 
 			if (sql_storage) {
 				bctbx_list_t *marie_messages = linphone_chat_room_get_history(marie_chat_room, 0);

@@ -1226,6 +1226,12 @@ const LinphoneErrorInfo * CallSession::getErrorInfo () const {
 	return d->ei;
 }
 
+const Address& CallSession::getLocalAddress () const {
+	L_D();
+	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
+		? linphone_call_log_get_to(d->log) : linphone_call_log_get_from(d->log));
+}
+
 LinphoneCallLog * CallSession::getLog () const {
 	L_D();
 	return d->log;
@@ -1249,10 +1255,6 @@ const Address& CallSession::getRemoteAddress () const {
 	L_D();
 	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
 		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log));
-}
-
-string CallSession::getRemoteAddressAsString () const {
-	return getRemoteAddress().asString();
 }
 
 string CallSession::getRemoteContact () const {

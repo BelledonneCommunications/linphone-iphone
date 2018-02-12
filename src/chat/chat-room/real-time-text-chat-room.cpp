@@ -18,6 +18,7 @@
  */
 
 #include "c-wrapper/c-wrapper.h"
+#include "call/call.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "conference/participant.h"
 #include "core/core.h"
@@ -32,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, LinphoneCall *call) {
+void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, const shared_ptr<Call> &call) {
 	L_Q();
 	const uint32_t new_line = 0x2028;
 	const uint32_t crlf = 0x0D0A;
@@ -41,14 +42,13 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 	shared_ptr<Core> core = q->getCore();
 	LinphoneCore *cCore = core->getCCore();
 
-	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
-		LinphoneChatMessageCharacter *cmc = bctbx_new0(LinphoneChatMessageCharacter, 1);
-
+	if (call && call->getCurrentParams()->realtimeTextEnabled()) {
 		if (!pendingMessage)
 			pendingMessage = q->createChatMessage("");
 
-		cmc->value = character;
-		cmc->has_been_read = FALSE;
+		Character cmc;
+		cmc.value = character;
+		cmc.hasBeenRead = false;
 		receivedRttCharacters.push_back(cmc);
 
 		remoteIsComposing.push_back(q->getPeerAddress());
@@ -74,23 +74,24 @@ void RealTimeTextChatRoomPrivate::realtimeTextReceived (uint32_t character, Linp
 
 			onChatMessageReceived(pendingMessage);
 			pendingMessage = nullptr;
-			for (auto &rttChars : receivedRttCharacters)
-				ms_free(rttChars);
 			receivedRttCharacters.clear();
 		} else {
 			char *value = Utils::utf8ToChar(character);
-			char *text = (char *)pendingMessage->getPrivate()->getText().c_str();
-			pendingMessage->getPrivate()->setText(ms_strcat_printf(text, value));
-			lDebug() << "Received RTT character: " << value << " (" << character << "), pending text is " << pendingMessage->getPrivate()->getText();
-			delete value;
+			string text(pendingMessage->getPrivate()->getText());
+			text += string(value);
+			pendingMessage->getPrivate()->setText(text);
+			lInfo() << "Received RTT character: " << value << " (" << character << "), pending text is " << pendingMessage->getPrivate()->getText();
+			delete[] value;
 		}
 	}
 }
 
 void RealTimeTextChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) {
-	if (call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(call))) {
-		uint32_t new_line = 0x2028;
-		chatMessage->putCharacter(new_line);
+	L_Q();
+	shared_ptr<Call> call = q->getCall();
+	if (call && call->getCurrentParams()->realtimeTextEnabled()) {
+		uint32_t newLine = 0x2028;
+		chatMessage->putCharacter(newLine);
 	}
 }
 
@@ -99,26 +100,16 @@ void RealTimeTextChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage>
 RealTimeTextChatRoom::RealTimeTextChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
 	BasicChatRoom(*new RealTimeTextChatRoomPrivate, core, chatRoomId) {}
 
-RealTimeTextChatRoom::~RealTimeTextChatRoom () {
-	L_D();
-
-	if (!d->receivedRttCharacters.empty())
-		for (auto &rttChars : d->receivedRttCharacters)
-			bctbx_free(rttChars);
-}
-
 RealTimeTextChatRoom::CapabilitiesMask RealTimeTextChatRoom::getCapabilities () const {
 	return BasicChatRoom::getCapabilities() | Capabilities::RealTimeText;
 }
 
 uint32_t RealTimeTextChatRoom::getChar () const {
 	L_D();
-	if (!d->receivedRttCharacters.empty()) {
-		for (auto &cmc : d->receivedRttCharacters) {
-			if (!cmc->has_been_read) {
-				cmc->has_been_read = TRUE;
-				return cmc->value;
-			}
+	for (const auto &cmc : d->receivedRttCharacters) {
+		if (!cmc.hasBeenRead) {
+			const_cast<RealTimeTextChatRoomPrivate::Character *>(&cmc)->hasBeenRead = true;
+			return cmc.value;
 		}
 	}
 	return 0;
@@ -126,9 +117,9 @@ uint32_t RealTimeTextChatRoom::getChar () const {
 
 // -----------------------------------------------------------------------------
 
-LinphoneCall *RealTimeTextChatRoom::getCall () const {
+shared_ptr<Call> RealTimeTextChatRoom::getCall () const {
 	L_D();
-	return d->call;
+	return d->call.lock();
 }
 
 LINPHONE_END_NAMESPACE

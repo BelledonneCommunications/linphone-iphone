@@ -19,6 +19,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "call-p.h"
+#include "chat/chat-room/real-time-text-chat-room-p.h"
 #include "conference/params/media-session-params-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/media-session-p.h"
@@ -35,6 +36,17 @@ LINPHONE_BEGIN_NAMESPACE
 
 bool CallPrivate::getAudioMuted () const {
 	return static_pointer_cast<MediaSession>(getActiveSession())->getPrivate()->getAudioMuted();
+}
+
+shared_ptr<RealTimeTextChatRoom> CallPrivate::getChatRoom () {
+	L_Q();
+	if (!chatRoom && (q->getState() != CallSession::State::End) && (q->getState() != CallSession::State::Released)) {
+		ChatRoomId chatRoomId(q->getRemoteAddress(), q->getLocalAddress());
+		RealTimeTextChatRoom *rttcr = new RealTimeTextChatRoom(q->getCore(), chatRoomId);
+		chatRoom.reset(rttcr);
+		rttcr->getPrivate()->setCall(q->getSharedFromThis());
+	}
+	return chatRoom;
 }
 
 LinphoneProxyConfig *CallPrivate::getDestProxy () const {
@@ -167,7 +179,7 @@ void CallPrivate::startRemoteRing () {
 
 void CallPrivate::terminateBecauseOfLostMedia () {
 	L_Q();
-	lInfo() << "Call [" << q << "]: Media connectivity with " << q->getRemoteAddressAsString()
+	lInfo() << "Call [" << q << "]: Media connectivity with " << q->getRemoteAddress().asString()
 		<< " is lost, call is going to be terminated";
 	static_pointer_cast<MediaSession>(getActiveSession())->terminateBecauseOfLostMedia();
 	linphone_core_play_named_tone(q->getCore()->getCCore(), LinphoneToneCallLost);
@@ -459,6 +471,11 @@ bool CallPrivate::isPlayingRingbackTone (const shared_ptr<const CallSession> &se
 	return playingRingbackTone;
 }
 
+void CallPrivate::onRealTimeTextCharacterReceived (const shared_ptr<const CallSession> &session, RealtimeTextReceivedCharacter *data) {
+	L_Q();
+	getChatRoom()->getPrivate()->realtimeTextReceived(data->character, q->getSharedFromThis());
+}
+
 // =============================================================================
 
 Call::Call (CallPrivate &p, shared_ptr<Core> core) : Object(p), CoreAccessor(core) {
@@ -682,6 +699,11 @@ const LinphoneErrorInfo *Call::getErrorInfo () const {
 	return d->getActiveSession()->getErrorInfo();
 }
 
+const Address &Call::getLocalAddress () const {
+	L_D();
+	return d->getActiveSession()->getLocalAddress();
+}
+
 LinphoneCallLog *Call::getLog () const {
 	L_D();
 	return d->getActiveSession()->getLog();
@@ -754,11 +776,6 @@ string Call::getReferTo () const {
 const Address &Call::getRemoteAddress () const {
 	L_D();
 	return d->getActiveSession()->getRemoteAddress();
-}
-
-string Call::getRemoteAddressAsString () const {
-	L_D();
-	return d->getActiveSession()->getRemoteAddressAsString();
 }
 
 string Call::getRemoteContact () const {

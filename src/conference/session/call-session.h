@@ -78,23 +78,23 @@ public:
 
 	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;
-	const Address& getDiversionAddress () const;
+	const Address &getDiversionAddress () const;
 	int getDuration () const;
 	const LinphoneErrorInfo * getErrorInfo () const;
-	LinphoneCallLog * getLog () const;
+	const Address &getLocalAddress () const;
+	LinphoneCallLog *getLog () const;
 	virtual const CallSessionParams *getParams () const;
 	LinphoneReason getReason () const;
 	std::shared_ptr<CallSession> getReferer () const;
 	std::string getReferTo () const;
-	const Address& getRemoteAddress () const;
-	std::string getRemoteAddressAsString () const;
+	const Address &getRemoteAddress () const;
 	std::string getRemoteContact () const;
 	const Address *getRemoteContactAddress () const;
 	const CallSessionParams *getRemoteParams ();
 	std::string getRemoteUserAgent () const;
 	std::shared_ptr<CallSession> getReplacedCallSession () const;
 	CallSession::State getState () const;
-	const Address& getToAddress () const;
+	const Address &getToAddress () const;
 	CallSession::State getTransferState () const;
 	std::shared_ptr<CallSession> getTransferTarget () const;
 	std::string getToHeader (const std::string &name) const;

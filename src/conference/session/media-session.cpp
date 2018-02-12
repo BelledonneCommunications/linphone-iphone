@@ -2830,7 +2830,7 @@ void MediaSessionPrivate::startTextStream () {
 				rtp_session_set_multicast_ttl(textStream->ms.sessions.rtp_session, tstream->ttl);
 			text_stream_start(textStream, textProfile, rtpAddr, tstream->rtp_port, rtcpAddr,
 				(linphone_core_rtcp_enabled(q->getCore()->getCCore()) && !isMulticast) ? (tstream->rtcp_port ? tstream->rtcp_port : tstream->rtp_port + 1) : 0, usedPt);
-			ms_filter_add_notify_callback(textStream->rttsink, realTimeTextCharacterReceived, q, false);
+			ms_filter_add_notify_callback(textStream->rttsink, realTimeTextCharacterReceived, this, false);
 			ms_media_stream_sessions_set_encryption_mandatory(&textStream->ms.sessions, isEncryptionMandatory());
 		}
 	} else
@@ -3806,12 +3806,11 @@ void MediaSessionPrivate::videoStreamEventCb (const MSFilter *f, const unsigned 
 #endif
 
 void MediaSessionPrivate::realTimeTextCharacterReceived (MSFilter *f, unsigned int id, void *arg) {
+	L_Q();
 	if (id == MS_RTT_4103_RECEIVED_CHAR) {
-#if 0
 		RealtimeTextReceivedCharacter *data = reinterpret_cast<RealtimeTextReceivedCharacter *>(arg);
-		LinphoneChatRoom * chat_room = linphone_call_get_chat_room(call);
-		linphone_core_real_time_text_received(call->core, chat_room, data->character, call);
-#endif
+		if (listener)
+			listener->onRealTimeTextCharacterReceived(q->getSharedFromThis(), data);
 	}
 }
 

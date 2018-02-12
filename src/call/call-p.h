@@ -34,6 +34,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CallSession;
+class RealTimeTextChatRoom;
 
 class CallPrivate :	public ObjectPrivate, public CallSessionListener {
 public:
@@ -50,6 +51,7 @@ public:
 
 	virtual std::shared_ptr<CallSession> getActiveSession () const { return nullptr; }
 	bool getAudioMuted () const;
+	std::shared_ptr<RealTimeTextChatRoom> getChatRoom ();
 
 	LinphoneProxyConfig *getDestProxy () const;
 	IceSession *getIceSession () const;
@@ -109,6 +111,7 @@ private:
 	void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) override;
 	bool areSoundResourcesAvailable (const std::shared_ptr<const CallSession> &session) override;
 	bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) override;
+	void onRealTimeTextCharacterReceived (const std::shared_ptr<const CallSession> &session, RealtimeTextReceivedCharacter *character) override;
 
 	mutable LinphonePlayer *player = nullptr;
 
@@ -118,6 +121,8 @@ private:
 	bool playingRingbackTone = false;
 
 	BackgroundTask bgTask;
+
+	mutable std::shared_ptr<RealTimeTextChatRoom> chatRoom;
 
 	L_DECLARE_PUBLIC(Call);
 };

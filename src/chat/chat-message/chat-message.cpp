@@ -25,7 +25,7 @@
 
 #include "address/address.h"
 #include "c-wrapper/c-wrapper.h"
-#include "call/call.h"
+#include "call/call-p.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/client-group-to-basic-chat-room.h"
@@ -981,48 +981,50 @@ void ChatMessage::cancelFileTransfer () {
 int ChatMessage::putCharacter (uint32_t character) {
 	L_D();
 
-	shared_ptr<Core> core = getCore();
-	if (linphone_core_realtime_text_enabled(core->getCCore())) {
-		static const uint32_t new_line = 0x2028;
-		static const uint32_t crlf = 0x0D0A;
-		static const uint32_t lf = 0x0A;
+	static const uint32_t new_line = 0x2028;
+	static const uint32_t crlf = 0x0D0A;
+	static const uint32_t lf = 0x0A;
 
-		shared_ptr<AbstractChatRoom> chatRoom = getChatRoom();
+	shared_ptr<AbstractChatRoom> chatRoom = getChatRoom();
+	if (!(chatRoom->getCapabilities() & LinphonePrivate::ChatRoom::Capabilities::RealTimeText))
+		return -1;
 
-		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(chatRoom);
-		LinphoneCall *call = rttcr->getCall();
+	shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
+		static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(chatRoom);
+	if (!rttcr)
+		return -1;
 
-		if (!call || !linphone_call_get_stream(call, LinphoneStreamTypeText))
-			return -1;
+	shared_ptr<Call> call = rttcr->getCall();
+	if (!call || !call->getPrivate()->getMediaStream(LinphoneStreamTypeText))
+		return -1;
 
-		if (character == new_line || character == crlf || character == lf) {
-			if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
-				// TODO: History.
-				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
-				d->setTime(ms_time(0));
-				d->state = State::Displayed;
-				// d->direction = Direction::Outgoing;
-				// setFromAddress(Address(
-				// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
-				// ));
-				// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
-				d->rttMessage = "";
-			}
-		} else {
-			char *value = LinphonePrivate::Utils::utf8ToChar(character);
-			d->rttMessage = d->rttMessage + string(value);
-			lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character <<
-				"), pending text is " << d->rttMessage.c_str();
-			delete value;
+	if (character == new_line || character == crlf || character == lf) {
+		shared_ptr<Core> core = getCore();
+		if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
+			// TODO: History.
+			lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
+			d->setTime(ms_time(0));
+			d->state = State::Displayed;
+			// d->direction = Direction::Outgoing;
+			// setFromAddress(Address(
+			// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
+			// ));
+			// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
+			d->rttMessage = "";
 		}
-
-		text_stream_putchar32(reinterpret_cast<TextStream *>(
-			linphone_call_get_stream(call, LinphoneStreamTypeText)), character
-		);
-		return 0;
+	} else {
+		char *value = LinphonePrivate::Utils::utf8ToChar(character);
+		d->rttMessage = d->rttMessage + string(value);
+		lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character <<
+			"), pending text is " << d->rttMessage.c_str();
+		delete[] value;
 	}
-	return -1;
+
+	text_stream_putchar32(
+		reinterpret_cast<TextStream *>(call->getPrivate()->getMediaStream(LinphoneStreamTypeText)),
+		character
+	);
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

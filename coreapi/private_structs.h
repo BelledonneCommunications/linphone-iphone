@@ -151,11 +151,6 @@ struct _LinphoneAuthInfo
 	char *algorithm;
 };
 
-struct _LinphoneChatMessageCharacter {
-	uint32_t value;
-	bool_t has_been_read;
-};
-
 struct _LinphoneFriendPresence {
 	char *uri_or_tel;
 	LinphonePresenceModel *presence;
