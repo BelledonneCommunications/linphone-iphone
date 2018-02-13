@@ -80,12 +80,18 @@ struct SafeTransactionInfo {
 
 template<typename Function>
 class SafeTransaction {
+	using InternalReturnType = typename remove_reference<decltype(declval<Function>()())>::type;
+
 public:
-	using ReturnType = typename remove_reference<decltype(declval<Function>()())>::type;
+	using ReturnType = typename std::conditional<
+		std::is_same<InternalReturnType, void>::value,
+		bool,
+		InternalReturnType
+	>::type;
 
 	SafeTransaction (SafeTransactionInfo &info, Function function) : mFunction(move(function)) {
 		try {
-			mResult = mFunction();
+			mResult= exec<InternalReturnType>();
 		} catch (const soci::soci_error &e) {
 			lWarning() << "Catched exception in MainDb::" << info.name << "(" << e.what() << ").";
 			soci::soci_error::error_category category = e.get_error_category();
@@ -94,9 +100,9 @@ public:
 				info.mainDb->forceReconnect()
 			) {
 				try {
-					mResult = mFunction();
+					mResult = exec<InternalReturnType>();
 				} catch (const exception &e) {
-					lWarning() << "Unable to execute query after reconnect in MainDb::" << info.name << "(" << e.what() << ").";
+					lError() << "Unable to execute query after reconnect in MainDb::" << info.name << "(" << e.what() << ").";
 				}
 				return;
 			}
@@ -114,6 +120,17 @@ public:
 	}
 
 private:
+	template<typename T>
+	typename std::enable_if<std::is_same<T, void>::value, bool>::type exec () const {
+		mFunction();
+		return true;
+	}
+
+	template<typename T>
+	typename std::enable_if<!std::is_same<T, void>::value, T>::type exec () const {
+		return mFunction();
+	}
+
 	static const char *getErrorCategoryAsString (soci::soci_error::error_category category) {
 		switch (category) {
 			case soci::soci_error::connection_error:
@@ -2104,8 +2121,6 @@ void MainDb::markChatMessagesAsRead (const ChatRoomId &chatRoomId) const {
 			*session << query, soci::use(dbChatRoomId);
 			tr.commit();
 		}
-
-		return true;
 	};
 }
 
@@ -2337,8 +2352,6 @@ void MainDb::cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask) {
 		*session << "DELETE FROM event WHERE id IN (" + query + ")", soci::use(dbChatRoomId);
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2492,8 +2505,6 @@ void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
 		d->insertChatRoom(chatRoom);
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2518,8 +2529,6 @@ void MainDb::deleteChatRoom (const ChatRoomId &chatRoomId) {
 		*session << "DELETE FROM chat_room WHERE id = :chatRoomId", soci::use(dbChatRoomId);
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2585,8 +2594,6 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 		}
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2681,8 +2688,6 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 		}
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2706,8 +2711,6 @@ void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable)
 			soci::use(capabilities), soci::use(dbChatRoomId);
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2728,8 +2731,6 @@ void MainDb::updateChatRoomParticipantDevice (const shared_ptr<AbstractChatRoom>
 			soci::use(stateInt), soci::use(participantId), soci::use(participantSipDeviceAddressId);
 
 		tr.commit();
-
-		return true;
 	};
 }
 
@@ -2751,12 +2752,10 @@ bool MainDb::import (Backend, const string &parameters) {
 		// TODO: Remove condition after cpp migration in friends/friends list.
 		if (false)
 			d->importLegacyFriends(inDbSession);
-		return true;
 	};
 
 	L_SAFE_TRANSACTION {
 		d->importLegacyHistory(inDbSession);
-		return true;
 	};
 
 	return true;
