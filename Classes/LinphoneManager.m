@@ -2142,8 +2142,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 [[UIApplication sharedApplication] backgroundTimeRemaining]);
 }
 
-- (void)startPushLongRunningTask:(BOOL)msg callId:(NSString *)callId {
-	if (msg) {
+- (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId {
+	if ([loc_key isEqualToString:@"IM_MSG"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
 		pushBgTaskMsg = 0;
 		pushBgTaskMsg = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -2174,7 +2174,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		}];
 		LOGI(@"Message long running task started for call-id [%@], remaining [%g s] because a push has been received",
 			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
-	} else {
+	} else if ([loc_key isEqualToString:@"IC_MSG"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
 		pushBgTaskCall = 0;
 		pushBgTaskCall = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
@@ -2204,6 +2204,23 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		  pushBgTaskCall = 0;
 		}];
 		LOGI(@"Call long running task started for call-id [%@], remaining [%g s] because a push has been received",
+			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+	} else if ([loc_key isEqualToString:@"IC_SIL"]) {
+		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
+		pushBgTaskRefer = 0;
+		pushBgTaskRefer = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+			// Could be or not an error since the app doesn't know when to end the background task for a REFER
+			// TODO: Manage pushes in the SDK
+			if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+				LOGI(@"Incomming refer long running task with call-id [%@] has expired", callId);
+
+			for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
+				[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:0] forKey:key];
+			}
+			[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
+			pushBgTaskRefer = 0;
+		}];
+		LOGI(@"Refer long running task started for call-id [%@], remaining [%g s] because a push has been received",
 			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
 	}
 }

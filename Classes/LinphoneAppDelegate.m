@@ -441,12 +441,8 @@
 		return;
 	}
 
-	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-		if ([loc_key isEqualToString:@"IC_MSG"])
-			[LinphoneManager.instance startPushLongRunningTask:FALSE callId:callId];
-		else if ([loc_key isEqualToString:@"IM_MSG"])
-			[LinphoneManager.instance startPushLongRunningTask:TRUE callId:callId];
-	}
+	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
+		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE

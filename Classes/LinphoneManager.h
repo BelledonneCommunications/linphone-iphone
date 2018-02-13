@@ -109,6 +109,7 @@ typedef struct _LinphoneManagerSounds {
 	Connectivity connectivity;
 	UIBackgroundTaskIdentifier pausedCallBgTask;
 	UIBackgroundTaskIdentifier incallBgTask;
+	UIBackgroundTaskIdentifier pushBgTaskRefer;
 	UIBackgroundTaskIdentifier pushBgTaskCall;
 	UIBackgroundTaskIdentifier pushBgTaskMsg;
 	CTCallCenter* mCallCenter;
@@ -143,7 +144,7 @@ typedef struct _LinphoneManagerSounds {
 - (LinphoneCall *)callByCallId:(NSString *)call_id;
 - (void)cancelLocalNotifTimerForCallId:(NSString*)callid;
 - (void)alertLIME:(LinphoneChatRoom *)room;
-- (void)startPushLongRunningTask:(BOOL)msg callId:(NSString *)callId;
+- (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId;
 + (BOOL)langageDirectionIsRTL;
 + (void)kickOffNetworkConnection;
 - (void)setupNetworkReachabilityCallback;
