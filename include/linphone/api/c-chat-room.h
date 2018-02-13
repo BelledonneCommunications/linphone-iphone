@@ -299,6 +299,13 @@ LINPHONE_PUBLIC LinphoneChatRoomState linphone_chat_room_get_state (const Linpho
 LINPHONE_PUBLIC bool_t linphone_chat_room_has_been_left (const LinphoneChatRoom *cr);
 
 /**
+ * Return the last updated time for the chat room
+ * @param[in] cr LinphoneChatRoom object
+ * @return the last updated time
+ */
+LINPHONE_PUBLIC time_t linphone_chat_room_get_last_update_time(const LinphoneChatRoom *cr);
+
+/**
  * Add a participant to a chat room. This may fail if this type of chat room does not handle participants.
  * Use linphone_chat_room_can_handle_participants() to know if this chat room handles participants.
  * @param[in] cr A LinphoneChatRoom object
