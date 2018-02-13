@@ -96,9 +96,9 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 			return -1;
 	}
 	if (last_new_event)
-		return 1;
+		return -1;
 	
-	return -1;
+	return 1;
 }
 
 - (MSList *)sortChatRooms {
