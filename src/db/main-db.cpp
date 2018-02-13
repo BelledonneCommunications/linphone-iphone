@@ -120,14 +120,16 @@ public:
 	}
 
 private:
+	// Exec function with no return type.
 	template<typename T>
-	typename std::enable_if<std::is_same<T, void>::value, bool>::type exec () const {
+	constexpr typename std::enable_if<std::is_same<T, void>::value, bool>::type exec () const {
 		mFunction();
 		return true;
 	}
 
+	// Exec function with return type.
 	template<typename T>
-	typename std::enable_if<!std::is_same<T, void>::value, T>::type exec () const {
+	constexpr typename std::enable_if<!std::is_same<T, void>::value, T>::type exec () const {
 		return mFunction();
 	}
 
