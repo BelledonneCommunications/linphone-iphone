@@ -28,6 +28,13 @@
 
 // =============================================================================
 
+#ifndef SOCI_ENABLED
+	namespace soci {
+		class row;
+		class session;
+	}
+#endif // ifndef SOCI_ENABLED
+
 LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionPrivate;
@@ -44,9 +51,7 @@ public:
 
 	operator bool () const;
 
-	#ifdef SOCI_ENABLED
-		soci::session *getBackendSession () const;
-	#endif // ifdef SOCI_ENABLED
+	soci::session *getBackendSession () const;
 
 	std::string primaryKeyStr (const std::string &type = "INT") const;
 	std::string primaryKeyRefStr (const std::string &type = "INT") const;
@@ -61,6 +66,8 @@ public:
 	void enableForeignKeys (bool status);
 
 	bool checkTableExists (const std::string &table) const;
+
+	long long resolveId (const soci::row &row, int col) const;
 
 private:
 	L_DECLARE_PRIVATE(DbSession);

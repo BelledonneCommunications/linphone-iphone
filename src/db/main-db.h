@@ -136,7 +136,10 @@ public:
 	) const;
 	void insertOneToOneConferenceChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 
-	void updateChatRoomParticipantDevice (const std::shared_ptr<AbstractChatRoom> &chatRoom, const std::shared_ptr<ParticipantDevice> &device);
+	void updateChatRoomParticipantDevice (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const std::shared_ptr<ParticipantDevice> &device
+	);
 
 	// ---------------------------------------------------------------------------
 	// Other.

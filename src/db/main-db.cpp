@@ -258,17 +258,6 @@ static constexpr string &blobToString (string &in) {
 
 // -----------------------------------------------------------------------------
 
-long long MainDbPrivate::resolveId (const soci::row &row, int col) const {
-	L_Q();
-	// See: http://soci.sourceforge.net/doc/master/backends/
-	// `row id` is not supported by soci on Sqlite3. It's necessary to cast id to int...
-	return q->getBackend() == AbstractDb::Sqlite3
-		? static_cast<long long>(row.get<int>(0))
-		: static_cast<long long>(row.get<unsigned long long>(0));
-}
-
-// -----------------------------------------------------------------------------
-
 long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 	soci::session *session = dbSession.getBackendSession();
 
@@ -698,7 +687,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
 		for (const auto &row : rows) {
 			ContentType contentType(row.get<string>(2));
-			const long long &contentId = resolveId(row, 0);
+			const long long &contentId = dbSession.resolveId(row, 0);
 			Content *content;
 
 			if (contentType == ContentType::FileTransfer) {
@@ -1121,7 +1110,7 @@ void MainDbPrivate::invalidConferenceEventsFromQuery (const string &query, long 
 	soci::session *session = dbSession.getBackendSession();
 	soci::rowset<soci::row> rows = (session->prepare << query, soci::use(chatRoomId));
 	for (const auto &row : rows) {
-		long long eventId = resolveId(row, 0);
+		long long eventId = dbSession.resolveId(row, 0);
 		shared_ptr<EventLog> eventLog = getEventFromCache(eventId);
 		if (eventLog) {
 			const EventLogPrivate *dEventLog = eventLog->getPrivate();
@@ -2015,7 +2004,7 @@ list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
 		list<shared_ptr<EventLog>> events;
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId), soci::use(lastNotifyId));
 		for (const auto &row : rows) {
-			long long eventId = d->resolveId(row, 0);
+			long long eventId = d->dbSession.resolveId(row, 0);
 			shared_ptr<EventLog> eventLog = d->getEventFromCache(eventId);
 
 			events.push_back(eventLog ? eventLog : d->selectGenericConferenceEvent(
@@ -2161,7 +2150,7 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 			: (session->prepare << query);
 
 		for (const auto &row : rows) {
-			long long eventId = d->resolveId(row, 0);
+			long long eventId = d->dbSession.resolveId(row, 0);
 			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
 
 			if (!event)
@@ -2215,7 +2204,7 @@ list<shared_ptr<ChatMessage>> MainDb::findChatMessages (
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(imdnMessageId), soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
-			long long eventId = d->resolveId(row, 0);
+			long long eventId = d->dbSession.resolveId(row, 0);
 			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
 
 			if (!event)
@@ -2290,7 +2279,7 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
-			long long eventId = d->resolveId(row, 0);
+			long long eventId = d->dbSession.resolveId(row, 0);
 			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
 
 			if (!event)
@@ -2405,7 +2394,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 			} else if (capabilities & ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)) {
 				list<shared_ptr<Participant>> participants;
 
-				const long long &dbChatRoomId = d->resolveId(row, 0);
+				const long long &dbChatRoomId = d->dbSession.resolveId(row, 0);
 				static const string query = "SELECT chat_room_participant.id, sip_address.value, is_admin"
 					"  FROM sip_address, chat_room, chat_room_participant"
 					"  WHERE chat_room.id = :chatRoomId"
@@ -2422,7 +2411,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 
 					// Fetch devices.
 					{
-						const long long &participantId = d->resolveId(row, 0);
+						const long long &participantId = d->dbSession.resolveId(row, 0);
 						static const string query = "SELECT sip_address.value, state FROM chat_room_participant_device, sip_address"
 							"  WHERE chat_room_participant_id = :participantId"
 							"  AND participant_device_sip_address_id = sip_address.id";
