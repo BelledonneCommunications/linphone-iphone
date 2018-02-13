@@ -84,21 +84,14 @@
 #pragma mark -
 
 static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRoom *elem) {
-	LinphoneEventLog *last_new_event = (LinphoneEventLog *)linphone_chat_room_get_history_events(to_insert, 1) ? linphone_chat_room_get_history_events(to_insert, 1)->data : NULL;
-	LinphoneEventLog *last_elem_event = (LinphoneEventLog *)linphone_chat_room_get_history_events(elem, 1) ? linphone_chat_room_get_history_events(elem, 1)->data : NULL;
-
-	if (last_new_event && last_elem_event) {
-		time_t new = linphone_event_log_get_creation_time(last_new_event);
-		time_t old = linphone_event_log_get_creation_time(last_elem_event);
-		if (new < old)
-			return 1;
-		else if (new > old)
-			return -1;
-	}
-	if (last_new_event)
+	time_t new = linphone_chat_room_get_last_update_time(to_insert);
+	time_t old = linphone_chat_room_get_last_update_time(elem);
+	if (new < old)
+		return 1;
+	else if (new > old)
 		return -1;
-	
-	return 1;
+
+	return 0;
 }
 
 - (MSList *)sortChatRooms {

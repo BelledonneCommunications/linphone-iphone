@@ -81,12 +81,7 @@
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	}
 
-	LinphoneEventLog *last_event = (LinphoneEventLog *)linphone_chat_room_get_history_events(chatRoom, 1)
-		? linphone_chat_room_get_history_events(chatRoom, 1)->data
-		: NULL;
-	_chatLatestTimeLabel.hidden = !last_event;
-	if (last_event)
-		_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_event_log_get_creation_time(last_event) withFormat:LinphoneDateChatList];
+	_chatLatestTimeLabel.text = [LinphoneUtils timeToString:linphone_chat_room_get_last_update_time(chatRoom) withFormat:LinphoneDateChatList];
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
