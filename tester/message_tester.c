@@ -1983,7 +1983,13 @@ static void real_time_text_message_accented_chars(void) {
 
 			linphone_chat_room_send_chat_message(pauline_chat_room, rtt_message);
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-			BC_ASSERT_EQUAL(strcmp(linphone_chat_message_get_text(marie->stat.last_received_chat_message), "ãæçéîøùÿ"), 0, int, "%i");
+			BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
+			if (marie->stat.last_received_chat_message) {
+				const char *text = linphone_chat_message_get_text(marie->stat.last_received_chat_message);
+				BC_ASSERT_PTR_NOT_NULL(text);
+				if (text)
+					BC_ASSERT_STRING_EQUAL(text, "ãæçéîøùÿ");
+			}
 			linphone_chat_message_unref(rtt_message);
 		}
 		end_call(marie, pauline);
