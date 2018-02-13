@@ -1186,18 +1186,18 @@ void MainDbPrivate::updateSchema () {
 
 // -----------------------------------------------------------------------------
 
-#define CHECK_LEGACY_TABLE_EXISTS(SESSION, NAME) \
-	do { \
-		SESSION << "SELECT name FROM sqlite_master WHERE type='table' AND name='" NAME "'"; \
-		return SESSION.got_data() > 0; \
-	} while (false);
+// NOTE: Legacy supports only sqlite.
+static inline bool checkLegacyTableExists (soci::session &session, const string &name) {
+	session << "SELECT name FROM sqlite_master WHERE type='table' AND name = :name", soci::use(name);
+	return session.got_data() > 0;
+}
 
 static inline bool checkLegacyFriendsTableExists (soci::session &session) {
-	CHECK_LEGACY_TABLE_EXISTS(session, "friends");
+	return checkLegacyTableExists(session, "friends");
 }
 
 static inline bool checkLegacyHistoryTableExists (soci::session &session) {
-	CHECK_LEGACY_TABLE_EXISTS(session, "history");
+	return checkLegacyTableExists(session, "history");
 }
 
 template<typename T>
