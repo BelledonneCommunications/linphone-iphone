@@ -81,6 +81,12 @@
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	}
 
+	LinphoneEventLog *last_event = (LinphoneEventLog *)linphone_chat_room_get_history_events(chatRoom, 1) ? linphone_chat_room_get_history_events(chatRoom, 1)->data : NULL;
+	if (last_event) {
+		_chatLatestTimeLabel.text =
+		[LinphoneUtils timeToString:linphone_event_log_get_creation_time(last_event) withFormat:LinphoneDateChatList];
+		_chatLatestTimeLabel.hidden = NO;
+	}
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
 		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_msg];
@@ -89,9 +95,6 @@
 			message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
 		}
 		_chatContentLabel.text = message;
-		_chatLatestTimeLabel.text =
-			[LinphoneUtils timeToString:linphone_chat_message_get_time(last_msg) withFormat:LinphoneDateChatList];
-		_chatLatestTimeLabel.hidden = NO;
 	} else {
 		_chatContentLabel.text = nil;
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
