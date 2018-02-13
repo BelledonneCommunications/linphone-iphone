@@ -2421,13 +2421,19 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 					// Fetch devices.
 					{
 						const long long &participantId = d->resolveId(row, 0);
-						static const string query = "SELECT sip_address.value FROM chat_room_participant_device, sip_address"
+						static const string query = "SELECT sip_address.value, state FROM chat_room_participant_device, sip_address"
 							"  WHERE chat_room_participant_id = :participantId"
 							"  AND participant_device_sip_address_id = sip_address.id";
 
 						soci::rowset<soci::row> rows = (session->prepare << query, soci::use(participantId));
-						for (const auto &row : rows)
-							dParticipant->addDevice(IdentityAddress(row.get<string>(0)));
+						for (const auto &row : rows) {
+							shared_ptr<ParticipantDevice> device = dParticipant->addDevice(IdentityAddress(row.get<string>(0)));
+							ParticipantDevice::State state = static_cast<ParticipantDevice::State>(getBackend() == Backend::Mysql
+								? row.get<unsigned int>(1, 0)
+								: static_cast<unsigned int>(row.get<int>(1, 0))
+							);
+							device->setState(state);
+						}
 					}
 
 					if (participant->getAddress() == chatRoomId.getLocalAddress().getAddressWithoutGruu())
