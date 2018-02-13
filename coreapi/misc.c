@@ -917,7 +917,7 @@ void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 		linphone_address_unref(conference_factory_addr);
 	}
 	const char *username = linphone_address_get_username(call_log->to);
-	if (strstr(username, "chatroom-") == username)
+	if (username && (strstr(username, "chatroom-") == username))
 		return;
 	// End of workaround
 
