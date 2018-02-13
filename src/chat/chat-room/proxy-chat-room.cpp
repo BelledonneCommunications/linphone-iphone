@@ -195,6 +195,16 @@ bool ProxyChatRoom::hasBeenLeft () const {
 
 // -----------------------------------------------------------------------------
 
+list<shared_ptr<EventLog>> ProxyChatRoom::getMessageHistory (int nLast) const {
+	L_D();
+	return d->chatRoom->getMessageHistory(nLast);
+}
+
+list<shared_ptr<EventLog>> ProxyChatRoom::getMessageHistoryRange (int begin, int end) const {
+	L_D();
+	return d->chatRoom->getMessageHistoryRange(begin, end);
+}
+
 list<shared_ptr<EventLog>> ProxyChatRoom::getHistory (int nLast) const {
 	L_D();
 	return d->chatRoom->getHistory(nLast);

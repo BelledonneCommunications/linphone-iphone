@@ -204,15 +204,22 @@ void linphone_chat_room_delete_history (LinphoneChatRoom *cr) {
 
 bctbx_list_t *linphone_chat_room_get_history_range (LinphoneChatRoom *cr, int startm, int endm) {
 	list<shared_ptr<LinphonePrivate::ChatMessage>> chatMessages;
-	for (auto &event : L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getHistoryRange(startm, endm))
-		if (event->getType() == LinphonePrivate::EventLog::Type::ConferenceChatMessage)
-			chatMessages.push_back(static_pointer_cast<LinphonePrivate::ConferenceChatMessageEvent>(event)->getChatMessage());
+	for (auto &event : L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getMessageHistoryRange(startm, endm))
+		chatMessages.push_back(static_pointer_cast<LinphonePrivate::ConferenceChatMessageEvent>(event)->getChatMessage());
 
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(chatMessages);
 }
 
 bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *cr, int nb_message) {
 	return linphone_chat_room_get_history_range(cr, 0, nb_message);
+}
+
+bctbx_list_t *linphone_chat_room_get_history_range_message_events (LinphoneChatRoom *cr, int startm, int endm) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getMessageHistoryRange(startm, endm));
+}
+
+bctbx_list_t *linphone_chat_room_get_history_message_events (LinphoneChatRoom *cr, int nb_events) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getMessageHistory(nb_events));
 }
 
 bctbx_list_t *linphone_chat_room_get_history_events (LinphoneChatRoom *cr, int nb_events) {
