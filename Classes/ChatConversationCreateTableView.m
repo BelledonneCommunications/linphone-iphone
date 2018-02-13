@@ -33,13 +33,14 @@
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 
+	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
 		}
+		[self searchBar:_searchBar textDidChange:_searchBar.text];
 		return;
 	}
-	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	_contactsGroup = [[NSMutableArray alloc] init];
 	_allFilter = TRUE;
 
