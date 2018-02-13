@@ -75,10 +75,10 @@ LINPHONE_BEGIN_NAMESPACE
 // Debug.
 // -----------------------------------------------------------------------------
 
-void l_assert (const char *condition, const char *file, int line);
+void lAssert (const char *condition, const char *file, int line);
 
 #ifdef DEBUG
-	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::l_assert(#CONDITION, __FILE__, __LINE__))
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::lAssert(#CONDITION, __FILE__, __LINE__))
 #else
 	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #endif
@@ -100,7 +100,9 @@ void l_assert (const char *condition, const char *file, int line);
 // -----------------------------------------------------------------------------
 
 // Define an integer version like: 0xXXYYZZ, XX=MAJOR, YY=MINOR, and ZZ=PATCH.
-#define L_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
+constexpr unsigned int makeVersion (unsigned int major, unsigned int minor, unsigned int patch) {
+	return ((major << 16) | (minor << 8) | patch);
+}
 
 // Not available in C++11...
 template<typename T, typename... Args>

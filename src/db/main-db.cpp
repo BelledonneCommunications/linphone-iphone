@@ -36,11 +36,6 @@
 #include "main-db-key-p.h"
 #include "main-db-p.h"
 
-#define DB_MODULE_VERSION_EVENTS L_VERSION(1, 0, 1)
-#define DB_MODULE_VERSION_FRIENDS L_VERSION(1, 0, 0)
-#define DB_MODULE_VERSION_LEGACY_FRIENDS_IMPORT L_VERSION(1, 0, 0)
-#define DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT L_VERSION(1, 0, 0)
-
 // =============================================================================
 
 // See: http://soci.sourceforge.net/doc/3.2/exchange.html
@@ -51,6 +46,13 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+namespace {
+	constexpr unsigned int ModuleVersionEvents = makeVersion(1, 0, 1);
+	constexpr unsigned int ModuleVersionFriends = makeVersion(1, 0, 0);
+	constexpr unsigned int ModuleVersionLegacyFriendsImport = makeVersion(1, 0, 0);
+	constexpr unsigned int ModuleVersionLegacyHistoryImport = makeVersion(1, 0, 0);
+}
 
 // -----------------------------------------------------------------------------
 
@@ -1160,7 +1162,7 @@ void MainDbPrivate::updateSchema () {
 	soci::session *session = dbSession.getBackendSession();
 	unsigned int version = getModuleVersion("events");
 
-	if (version < L_VERSION(1, 0, 1)) {
+	if (version < makeVersion(1, 0, 1)) {
 		*session << "ALTER TABLE chat_room_participant_device ADD COLUMN state TINYINT UNSIGNED DEFAULT 0";
 	}
 }
@@ -1216,9 +1218,9 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 	soci::session *inSession = inDbSession.getBackendSession();
 	soci::transaction tr(*dbSession.getBackendSession());
 
-	if (getModuleVersion("legacy-friends-import") >= L_VERSION(1, 0, 0))
+	if (getModuleVersion("legacy-friends-import") >= makeVersion(1, 0, 0))
 		return;
-	updateModuleVersion("legacy-friends-import", DB_MODULE_VERSION_LEGACY_FRIENDS_IMPORT);
+	updateModuleVersion("legacy-friends-import", ModuleVersionLegacyFriendsImport);
 
 	if (!checkLegacyFriendsTableExists(*inSession))
 		return;
@@ -1311,9 +1313,9 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 	soci::transaction tr(*dbSession.getBackendSession());
 
 	unsigned int version = getModuleVersion("legacy-history-import");
-	if (version >= L_VERSION(1, 0, 0))
+	if (version >= makeVersion(1, 0, 0))
 		return;
-	updateModuleVersion("legacy-history-import", DB_MODULE_VERSION_LEGACY_HISTORY_IMPORT);
+	updateModuleVersion("legacy-history-import", ModuleVersionLegacyHistoryImport);
 
 	if (!checkLegacyHistoryTableExists(*inSession))
 		return;
@@ -1786,8 +1788,8 @@ void MainDb::init () {
 
 	d->updateSchema();
 
-	d->updateModuleVersion("events", DB_MODULE_VERSION_EVENTS);
-	d->updateModuleVersion("friends", DB_MODULE_VERSION_FRIENDS);
+	d->updateModuleVersion("events", ModuleVersionEvents);
+	d->updateModuleVersion("friends", ModuleVersionFriends);
 }
 
 bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
