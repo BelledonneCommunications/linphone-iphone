@@ -133,7 +133,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self callUpdateEvent:nil];
 	PhoneMainView.instance.currentRoom = _chatRoom;
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
+	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
@@ -378,8 +378,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)updateSuperposedButtons {
 	[_backToCallButton update];
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	_infoButton.hidden = ((capabilities & LinphoneChatRoomCapabilitiesBasic)
-						|| (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
+	_infoButton.hidden = ((capabilities & LinphoneChatRoomCapabilitiesOneToOne)
 						|| !_backToCallButton.hidden
 						|| _tableController.tableView.isEditing);
 	_callButton.hidden = !_backToCallButton.hidden || !_infoButton.hidden || _tableController.tableView.isEditing;
@@ -387,7 +386,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)updateParticipantLabel {
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
+	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
 		_particpantsLabel.hidden = TRUE;
 	} else {
 		_particpantsLabel.hidden = FALSE;

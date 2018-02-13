@@ -49,7 +49,10 @@
 	if (!_chatRoom)
 		return;
 	[self clearEventList];
-	eventList = linphone_chat_room_get_history_events(_chatRoom, 0);
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	eventList = (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
+		? linphone_chat_room_get_history_message_events(_chatRoom, 0)
+		: linphone_chat_room_get_history_events(_chatRoom, 0);
 
 	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =

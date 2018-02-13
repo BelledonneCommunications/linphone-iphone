@@ -65,7 +65,7 @@
 	}
 
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(chatRoom);
-	if ((capabilities & LinphoneChatRoomCapabilitiesBasic) || (capabilities & LinphoneChatRoomCapabilitiesOneToOne)) {
+	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
 		bctbx_list_t *participants = linphone_chat_room_get_participants(chatRoom);
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(chatRoom);
