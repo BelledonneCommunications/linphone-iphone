@@ -15,6 +15,7 @@
 @property(nonatomic, strong) NSMutableArray *contactsGroup;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
 @property (weak, nonatomic) IBOutlet UIIconButton *controllerNextButton;
+@property (weak, nonatomic) IBOutlet UIView *waitView;
 
 @property(nonatomic) Boolean isForEditing;
 - (void) loadData;

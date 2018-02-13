@@ -33,6 +33,20 @@
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 
+	int y = _contactsGroup.count > 0
+		? _collectionView.frame.origin.y + _collectionView.frame.size.height
+		: _searchBar.frame.origin.y + _searchBar.frame.size.height;
+	[UIView animateWithDuration:0
+						  delay:0
+						options:UIViewAnimationOptionCurveEaseOut
+					 animations:^{
+						 [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x,
+															 y,
+															 self.tableView.frame.size.width,
+															 _waitView.frame.size.height - _waitView.frame.origin.y - y)];
+						 }
+					 completion:nil];
+
 	_contacts = [[NSMutableDictionary alloc] initWithCapacity:_sortedAddresses.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
@@ -47,19 +61,6 @@
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
-	if (_contactsGroup.count > 0) {
-		[UIView animateWithDuration:0
-							  delay:0
-							options:UIViewAnimationOptionCurveEaseOut
-						 animations:^{
-							 [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x,
-															_collectionView.frame.origin.y + _collectionView.frame.size.height,
-															self.tableView.frame.size.width,
-															self.tableView.frame.size.height - _collectionView.frame.size.height)];
-
-						 }
-						 completion:nil];
-	}
 }
 
 - (void) viewWillDisappear:(BOOL)animated {

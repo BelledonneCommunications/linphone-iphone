@@ -84,6 +84,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	ChatConversationCreateView *view = VIEW(ChatConversationCreateView);
 	view.isForEditing = false;
 	view.tableController.notFirstTime = FALSE;
+	[view.tableController.contactsGroup removeAllObjects];
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
