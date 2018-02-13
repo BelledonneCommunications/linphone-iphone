@@ -2556,19 +2556,6 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 		const long long &localSipAddressId = d->insertSipAddress(newChatRoomId.getLocalAddress().asString());
 		const int &capabilities = clientGroupChatRoom->getCapabilities();
 
-		{
-			shared_ptr<AbstractChatRoom> buggyChatRoom = getCore()->findChatRoom(newChatRoomId);
-			if (buggyChatRoom) {
-				lError() << "Chat room was found with the same chat room id of a new migrated ClientGroupChatRoom!!!";
-				AbstractChatRoom::CapabilitiesMask capabilities = buggyChatRoom->getCapabilities();
-				if (capabilities & AbstractChatRoom::Capabilities::Basic) {
-					lError() << "Delete invalid basic chat room...";
-					Core::deleteChatRoom(buggyChatRoom);
-				} else
-					lError() << "Unable to delete invalid chat room with capabilities: " << capabilities << ".";
-			}
-		}
-
 		*session << "UPDATE chat_room"
 			"  SET capabilities = :capabilities,"
 			"    peer_sip_address_id = :peerSipAddressId,"
