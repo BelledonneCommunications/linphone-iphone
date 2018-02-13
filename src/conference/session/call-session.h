@@ -57,7 +57,7 @@ public:
 	virtual ~CallSession ();
 
 	LinphoneStatus accept (const CallSessionParams *csp = nullptr);
-	LinphoneStatus acceptUpdate (const CallSessionParams *csp);
+	LinphoneStatus acceptUpdate (const CallSessionParams *csp = nullptr);
 	virtual void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to);
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);

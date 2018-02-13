@@ -52,14 +52,14 @@ public:
 		setState(AbstractChatRoom::State::Deleted);
 	}
 
-	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override {
+	void onCallSessionSetReleased (const shared_ptr<CallSession> &session) override {
 		if (!(chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference))
 			return;
 		static_pointer_cast<ClientGroupChatRoom>(chatRoom)->getPrivate()->onCallSessionSetReleased(session);
 	}
 
 	void onCallSessionStateChanged (
-		const shared_ptr<const CallSession> &session,
+		const shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const string &message
 	) override {
@@ -111,7 +111,7 @@ void ClientGroupToBasicChatRoom::addParticipant (
 	ProxyChatRoom::addParticipant(participantAddress, params, hasMedia);
 }
 void ClientGroupToBasicChatRoom::addParticipants (
-	const std::list<IdentityAddress> &addresses,
+	const list<IdentityAddress> &addresses,
 	const CallSessionParams *params,
 	bool hasMedia
 ) {

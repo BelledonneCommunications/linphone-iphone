@@ -52,6 +52,8 @@ void ServerGroupChatRoomPrivate::setParticipantDeviceState (const std::shared_pt
 
 // -----------------------------------------------------------------------------
 
+void ServerGroupChatRoomPrivate::acceptSession (const shared_ptr<CallSession> &session) {}
+
 void ServerGroupChatRoomPrivate::confirmCreation () {}
 
 void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
@@ -117,7 +119,7 @@ void ServerGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<Abs
 // -----------------------------------------------------------------------------
 
 void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
-	const shared_ptr<const CallSession> &,
+	const shared_ptr<CallSession> &,
 	CallSession::State,
 	const string &
 ) {}

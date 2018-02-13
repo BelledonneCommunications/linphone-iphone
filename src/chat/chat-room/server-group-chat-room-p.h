@@ -45,6 +45,7 @@ public:
 	ParticipantDevice::State getParticipantDeviceState (const std::shared_ptr<const ParticipantDevice> &device) const;
 	void setParticipantDeviceState (const std::shared_ptr<ParticipantDevice> &device, ParticipantDevice::State state);
 
+	void acceptSession (const std::shared_ptr<CallSession> &session);
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
 	void confirmRecreation (SalCallOp *op);
@@ -93,7 +94,7 @@ private:
 
 	// CallSessionListener
 	void onCallSessionStateChanged (
-		const std::shared_ptr<const CallSession> &session,
+		const std::shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const std::string &message
 	) override;

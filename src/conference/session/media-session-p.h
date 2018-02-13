@@ -135,7 +135,7 @@ private:
 	void updateRemoteSessionIdAndVer ();
 
 	void initStats (LinphoneCallStats *stats, LinphoneStreamType type);
-	void notifyStatsUpdated (int streamIndex) const;
+	void notifyStatsUpdated (int streamIndex);
 
 	OrtpEvQueue *getEventQueue (int streamIndex) const;
 	MediaStream *getMediaStream (int streamIndex) const;

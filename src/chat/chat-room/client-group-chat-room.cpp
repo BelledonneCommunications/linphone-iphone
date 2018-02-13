@@ -119,7 +119,7 @@ void ClientGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<Abs
 
 // -----------------------------------------------------------------------------
 
-void ClientGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<const CallSession> &session) {
+void ClientGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<CallSession> &session) {
 	L_Q_T(RemoteConference, qConference);
 
 	ParticipantPrivate *participantPrivate = qConference->getPrivate()->focus->getPrivate();
@@ -128,7 +128,7 @@ void ClientGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<cons
 }
 
 void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
-	const shared_ptr<const CallSession> &session,
+	const shared_ptr<CallSession> &session,
 	CallSession::State newState,
 	const string &message
 ) {

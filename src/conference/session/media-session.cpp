@@ -933,7 +933,7 @@ void MediaSessionPrivate::initStats (LinphoneCallStats *stats, LinphoneStreamTyp
 	_linphone_call_stats_set_ice_state(stats, LinphoneIceStateNotActivated);
 }
 
-void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) const {
+void MediaSessionPrivate::notifyStatsUpdated (int streamIndex) {
 	L_Q();
 	LinphoneCallStats *stats = nullptr;
 	if (streamIndex == mainAudioStreamIndex)

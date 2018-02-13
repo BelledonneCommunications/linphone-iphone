@@ -521,7 +521,7 @@ LinphoneStatus CallSessionPrivate::acceptUpdate (const CallSessionParams *csp, C
 	return startAcceptUpdate(nextState, stateInfo);
 }
 
-LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
+LinphoneStatus CallSessionPrivate::checkForAcceptation () {
 	L_Q();
 	switch (state) {
 		case CallSession::State::IncomingReceived:

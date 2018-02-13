@@ -75,7 +75,7 @@ protected:
 
 	void accept (const CallSessionParams *params);
 	virtual LinphoneStatus acceptUpdate (const CallSessionParams *csp, CallSession::State nextState, const std::string &stateInfo);
-	LinphoneStatus checkForAcceptation () const;
+	LinphoneStatus checkForAcceptation ();
 	virtual void handleIncomingReceivedStateInIncomingNotification ();
 	virtual bool isReadyForInvite () const;
 	bool isUpdateAllowed (CallSession::State &nextState) const;
