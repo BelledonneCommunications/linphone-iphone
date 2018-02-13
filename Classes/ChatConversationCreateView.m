@@ -82,10 +82,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)createChatRoom {
 	NSString *addr = _tableController.contactsGroup[0];
+	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
 	LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
-	bctbx_list_t *addresses = bctbx_list_new((void *)linphoneAddress);
-	[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:_waitView];
-	bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, linphoneAddress);
+	if (!room) {
+		bctbx_list_t *addresses = bctbx_list_new((void*)linphoneAddress);
+		[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:_waitView];
+		bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
+		return;
+	}
+	ChatConversationView *view = VIEW(ChatConversationView);
+	[view setChatRoom:room];
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	linphone_address_destroy(linphoneAddress);
 }
 
 #pragma mark - Buttons signals
