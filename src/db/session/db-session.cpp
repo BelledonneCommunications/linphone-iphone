@@ -34,7 +34,7 @@ DbSession::DbSession (const string &uri) : DbSession() {
 	#ifdef SOCI_ENABLED
 		try {
 			L_D();
-			d->backendSession = make_unique<soci::session>(uri);
+			d->backendSession = makeUnique<soci::session>(uri);
 			d->backend = !uri.find("mysql") ? DbSessionPrivate::Backend::Mysql : DbSessionPrivate::Backend::Sqlite3;
 		} catch (const exception &e) {
 			lWarning() << "Unable to build db session with uri: " << e.what();
