@@ -665,7 +665,7 @@ void ChatMessagePrivate::send () {
 	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	}
-	
+
 	// Restore FileContents and remove FileTransferContents
 	list<Content*>::iterator it = contents.begin();
 	while (it != contents.end()) {
@@ -712,7 +712,7 @@ void ChatMessagePrivate::storeInDb () {
 		updateInDb();
 	} else {
 		shared_ptr<EventLog> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
-		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+		q->getChatRoom()->getPrivate()->addEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
 			if (hasFileTransferContent()) {

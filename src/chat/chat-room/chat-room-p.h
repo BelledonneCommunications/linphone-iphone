@@ -46,6 +46,8 @@ public:
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	void sendIsComposingNotification ();
 
+	void addEvent (const std::shared_ptr<EventLog> &eventLog) override;
+
 	void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 	void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 

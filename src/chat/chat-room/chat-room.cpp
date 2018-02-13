@@ -90,6 +90,13 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 
 // -----------------------------------------------------------------------------
 
+void ChatRoomPrivate::addEvent (const shared_ptr<EventLog> &eventLog) {
+	L_Q();
+
+	q->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+	setLastUpdateTime(eventLog->getCreationTime());
+}
+
 void ChatRoomPrivate::addTransientEvent (const shared_ptr<EventLog> &eventLog) {
 	auto it = find(transientEvents.begin(), transientEvents.end(), eventLog);
 	if (it == transientEvents.end())

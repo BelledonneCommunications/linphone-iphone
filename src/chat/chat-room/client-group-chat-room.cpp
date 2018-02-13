@@ -20,16 +20,14 @@
 #include "linphone/utils/utils.h"
 
 #include "address/address-p.h"
-#include "c-wrapper/c-wrapper.h"
-#include "basic-chat-room.h"
 #include "basic-to-client-group-chat-room.h"
+#include "c-wrapper/c-wrapper.h"
 #include "client-group-chat-room-p.h"
 #include "conference/handlers/remote-conference-event-handler.h"
 #include "conference/participant-p.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
 #include "core/core-p.h"
-#include "event-log/events.h"
 #include "logger/logger.h"
 #include "sal/refer-op.h"
 
@@ -65,12 +63,11 @@ shared_ptr<CallSession> ClientGroupChatRoomPrivate::createSession () {
 	if (capabilities & ClientGroupChatRoom::Capabilities::OneToOne)
 		csp.addCustomHeader("One-To-One-Chat-Room", "true");
 
-	shared_ptr<Participant> focus = qConference->getPrivate()->focus;
-	shared_ptr<CallSession> session = focus->getPrivate()->createSession(*q, &csp, false, callSessionListener);
-	const Address &myAddress = q->getMe()->getAddress();
-	Address myCleanedAddress(myAddress);
-	myCleanedAddress.removeUriParam("gr"); // Remove gr parameter for INVITE
-	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, focus->getPrivate()->getDevices().front()->getAddress());
+	ParticipantPrivate *dFocus = qConference->getPrivate()->focus->getPrivate();
+	shared_ptr<CallSession> session = dFocus->createSession(*q, &csp, false, callSessionListener);
+	Address myCleanedAddress(q->getMe()->getAddress());
+	myCleanedAddress.removeUriParam("gr"); // Remove gr parameter for INVITE.
+	session->configure(LinphoneCallOutgoing, nullptr, nullptr, myCleanedAddress, dFocus->getDevices().front()->getAddress());
 	session->initiateOutgoing();
 	session->getPrivate()->createOp();
 	return session;
@@ -442,7 +439,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D_T(RemoteConference, dConference);
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
-	getCore()->getPrivate()->mainDb->addEvent(make_shared<ConferenceEvent>(
+	d->addEvent(make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceTerminated,
 		time(nullptr),
 		d->chatRoomId
@@ -471,7 +468,7 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	// TODO: Bug. Event is inserted many times.
 	// Avoid this in the future. Deal with signals/slots system.
 	#if 0
-	getCore()->getPrivate()->mainDb->addEvent(make_shared<ConferenceEvent>(
+	d->addEvent(make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceCreated,
 		time(nullptr),
 		d->chatRoomId
@@ -481,6 +478,7 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	L_D();
 	L_D_T(RemoteConference, dConference);
 
 	const IdentityAddress &addr = event->getParticipantAddress();
@@ -499,7 +497,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 	if (isFullState)
 		return;
 
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -511,6 +509,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState;
 
+	L_D();
 	L_D_T(RemoteConference, dConference);
 
 	const IdentityAddress &addr = event->getParticipantAddress();
@@ -521,7 +520,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 	}
 
 	dConference->participants.remove(participant);
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -531,6 +530,8 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
+	L_D();
+
 	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -550,7 +551,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 	if (isFullState)
 		return;
 
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -560,6 +561,8 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 }
 
 void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {
+	L_D();
+
 	if (getSubject() == event->getSubject())
 		return; // No change in the local subject, do not notify
 	RemoteConference::setSubject(event->getSubject());
@@ -567,7 +570,7 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 	if (isFullState)
 		return;
 
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -577,6 +580,8 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 }
 
 void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
+	L_D();
+
 	const IdentityAddress &addr = event->getParticipantAddress();
 	shared_ptr<Participant> participant;
 	if (isMe(addr))
@@ -592,7 +597,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 	if (isFullState)
 		return;
 
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
@@ -602,6 +607,8 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 }
 
 void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
+	L_D();
+
 	(void)isFullState;
 
 	const IdentityAddress &addr = event->getParticipantAddress();
@@ -615,7 +622,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 		return;
 	}
 	participant->getPrivate()->removeDevice(event->getDeviceAddress());
-	getCore()->getPrivate()->mainDb->addEvent(event);
+	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
