@@ -142,7 +142,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	_emptyLabel.hidden = YES;
 
-	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	_addContactButton.hidden = ([FastAddressBook getContactWithAddress:addr] != nil);
 	[ContactDisplay setDisplayNameLabel:_contactLabel forAddress:addr withAddressLabel:_addressLabel];
 	[_avatarImage setImage:[FastAddressBook imageForAddress:addr] bordered:NO withRoundedRadius:YES];
@@ -160,7 +160,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onContactClick:(id)event {
-	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	Contact *contact = [FastAddressBook getContactWithAddress:addr];
 	if (contact) {
 		ContactDetailsView *view = VIEW(ContactDetailsView);
@@ -171,7 +171,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onAddContactClick:(id)event {
-	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	char *lAddress = linphone_address_as_string_uri_only(addr);
 	if (lAddress != NULL) {
 		[ContactSelection setAddAddress:[NSString stringWithUTF8String:lAddress]];
@@ -186,12 +186,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onCallClick:(id)event {
-	LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	[LinphoneManager.instance call:addr];
 }
 
 - (IBAction)onChatClick:(id)event {
-	const LinphoneAddress *addr = linphone_address_ref(linphone_call_log_get_remote_address(callLog));
+	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 	if (addr == NULL)
 		return;
 	ChatConversationView *view = VIEW(ChatConversationView);

@@ -236,7 +236,7 @@
 				UIHistoryCell *cell = (UIHistoryCell *)[self tableView:tableView cellForRowAtIndexPath:indexPath];
 				[cell onDetails:self];
 			} else {
-				LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
+				const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
 				[LinphoneManager.instance call:addr];
 			}
 		}
