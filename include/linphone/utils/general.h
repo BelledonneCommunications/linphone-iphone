@@ -275,7 +275,8 @@ namespace Private {
 }
 
 // Useful to select a specific overloaded function. (Avoid usage of static_cast.)
-#define L_RESOLVE_OVERLOAD(ARGS) LinphonePrivate::Private::ResolveOverload<ARGS>
+template<typename... Args>
+using resolveOverload = Private::ResolveOverload<Args...>;
 
 // -----------------------------------------------------------------------------
 // Wrapper public.
