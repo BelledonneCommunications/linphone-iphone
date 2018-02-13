@@ -745,6 +745,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 			content->setBody(row.get<string>(3));
 
 			// 2.2 - Fetch contents' app data.
+			// TODO: Do not test backend, encapsulate!!!
 			if (q->getBackend() == MainDb::Backend::Sqlite3) {
 				soci::blob data(*session);
 				fetchContentAppData(session, *content, contentId, data);
