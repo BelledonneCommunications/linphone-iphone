@@ -92,6 +92,7 @@ bool AbstractDb::forceReconnect () {
 				try {
 					lInfo() << "Reconnect... Try: " << i;
 					session->reconnect();
+					init();
 					lInfo() << "Database reconnection successful!";
 					return true;
 				} catch (const soci::soci_error &e) {

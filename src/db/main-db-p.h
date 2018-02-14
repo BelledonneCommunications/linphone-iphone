@@ -28,20 +28,22 @@
 
 // =============================================================================
 
-namespace soci {
-	class row;
-}
-
 LINPHONE_BEGIN_NAMESPACE
 
 class Content;
 
 class MainDbPrivate : public AbstractDbPrivate {
 public:
+	struct Statements;
+
 	mutable std::unordered_map<long long, std::weak_ptr<EventLog>> storageIdToEvent;
 	mutable std::unordered_map<long long, std::weak_ptr<ChatMessage>> storageIdToChatMessage;
 
 private:
+	std::unique_ptr<Statements> statements;
+
+	void initStatements ();
+
 	// ---------------------------------------------------------------------------
 	// Low level API.
 	// ---------------------------------------------------------------------------

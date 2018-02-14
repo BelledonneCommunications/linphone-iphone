@@ -282,6 +282,59 @@ static constexpr string &blobToString (string &in) {
 }
 
 // -----------------------------------------------------------------------------
+// Statements and helpers.
+// -----------------------------------------------------------------------------
+
+class StatementBind {
+public:
+	StatementBind (soci::statement &stmt) : mStmt(stmt) {}
+
+	~StatementBind () {
+		mStmt.bind_clean_up();
+	}
+
+	template<typename T>
+	void bind (const T &var, const char *name) {
+		mStmt.exchange(soci::use(var, name));
+	}
+
+	template<typename T>
+	void bindResult (T &var) {
+		mStmt.exchange(soci::into(var));
+	}
+
+	bool exec () {
+		mStmt.define_and_bind();
+		return mStmt.execute(true);
+	}
+
+private:
+	soci::statement &mStmt;
+};
+
+static inline unique_ptr<soci::statement> makeStatement (soci::session &session, const char *stmt) {
+	return makeUnique<soci::statement>(session.prepare << stmt);
+}
+
+struct MainDbPrivate::Statements {
+	typedef unique_ptr<soci::statement> Statement;
+
+	Statement selectSipAddressId;
+	Statement selectChatRoomId;
+};
+
+void MainDbPrivate::initStatements () {
+	soci::session *session = dbSession.getBackendSession();
+	statements = makeUnique<Statements>();
+
+	statements->selectSipAddressId = makeStatement(*session, "SELECT id FROM sip_address WHERE value = :sipAddress");
+	statements->selectChatRoomId = makeStatement(
+		*session,
+		"SELECT id FROM chat_room WHERE peer_sip_address_id = :peerSipAddressId AND local_sip_address_id = :localSipAddressId"
+	);
+}
+
+// -----------------------------------------------------------------------------
 
 long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 	soci::session *session = dbSession.getBackendSession();
@@ -481,21 +534,24 @@ void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long s
 // -----------------------------------------------------------------------------
 
 long long MainDbPrivate::selectSipAddressId (const string &sipAddress) const {
-	soci::session *session = dbSession.getBackendSession();
-
 	long long id;
-	*session << "SELECT id FROM sip_address WHERE value = :sipAddress", soci::use(sipAddress), soci::into(id);
-	return session->got_data() ? id : -1;
+
+	StatementBind stmt(*statements->selectSipAddressId);
+	stmt.bind(sipAddress, "sipAddress");
+	stmt.bindResult(id);
+
+	return stmt.exec() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const {
-	soci::session *session = dbSession.getBackendSession();
-
 	long long id;
-	*session << "SELECT id FROM chat_room"
-		"  WHERE peer_sip_address_id = :peerSipAddressId AND local_sip_address_id = :localSipAddressId",
-		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::into(id);
-	return session->got_data() ? id : -1;
+
+	StatementBind stmt(*statements->selectChatRoomId);
+	stmt.bind(peerSipAddressId, "peerSipAddressId");
+	stmt.bind(localSipAddressId, "localSipAddressId");
+	stmt.bindResult(id);
+
+	return stmt.exec() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (const ChatRoomId &chatRoomId) const {
@@ -1768,6 +1824,8 @@ void MainDb::init () {
 
 	d->updateModuleVersion("events", ModuleVersionEvents);
 	d->updateModuleVersion("friends", ModuleVersionFriends);
+
+	d->initStatements();
 }
 
 bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
