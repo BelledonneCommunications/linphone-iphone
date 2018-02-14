@@ -516,19 +516,12 @@ void MainDbPrivate::insertChatRoomParticipantDevice (
 }
 
 void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long sipAddressId, int state) {
-	// TODO: Deal with read messages.
-	// Remove if displayed? Think a good alorithm for mark as read.
-	soci::session *session = dbSession.getBackendSession();
-	soci::statement statement = (
-		session->prepare << "UPDATE chat_message_participant SET state = :state"
-			" WHERE event_id = :eventId AND participant_sip_address_id = :sipAddressId",
-			soci::use(state), soci::use(eventId), soci::use(sipAddressId)
-	);
-	statement.execute();
-	if (statement.get_affected_rows() == 0 && state != int(ChatMessage::State::Displayed))
+	if (state != static_cast<int>(ChatMessage::State::Displayed)) {
+		soci::session *session = dbSession.getBackendSession();
 		*session << "INSERT INTO chat_message_participant (event_id, participant_sip_address_id, state)"
 			" VALUES (:eventId, :sipAddressId, :state)",
 			soci::use(eventId), soci::use(sipAddressId), soci::use(state);
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -991,6 +984,11 @@ long long MainDbPrivate::insertConferenceChatMessageEvent (const shared_ptr<Even
 
 	for (const Content *content : chatMessage->getContents())
 		insertContent(eventId, *content);
+
+	for (const auto &participant : chatRoom->getParticipants()) {
+		const long long &participantSipAddressId = selectSipAddressId(participant->getAddress().asString());
+		insertChatMessageParticipant(eventId, participantSipAddressId, state);
+	}
 
 	return eventId;
 }
@@ -2213,6 +2211,75 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 		}
 
 		return chatMessages;
+	};
+}
+
+list<ChatMessage::State> MainDb::getChatMessageParticipantStates (const shared_ptr<EventLog> &eventLog) const {
+	return L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+		const long long &eventId = dEventKey->storageId;
+		list<ChatMessage::State> states;
+		unsigned int state;
+
+		soci::statement statement = (session->prepare
+			<< "SELECT state FROM chat_message_participant WHERE event_id = :eventId",
+			soci::into(state), soci::use(eventId)
+		);
+		statement.execute();
+		while (statement.fetch())
+			states.push_back(static_cast<ChatMessage::State>(state));
+
+		return states;
+	};
+}
+
+ChatMessage::State MainDb::getChatMessageParticipantState (
+	const shared_ptr<EventLog> &eventLog,
+	const IdentityAddress &participantAddress
+) const {
+	return L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+		const long long &eventId = dEventKey->storageId;
+		const long long &participantSipAddressId = d->selectSipAddressId(participantAddress.asString());
+		unsigned int state;
+
+		*session << "SELECT state FROM chat_message_participant"
+			" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
+			soci::into(state), soci::use(eventId), soci::use(participantSipAddressId);
+
+		return static_cast<ChatMessage::State>(state);
+	};
+}
+
+void MainDb::setChatMessageParticipantState (
+	const shared_ptr<EventLog> &eventLog,
+	const IdentityAddress &participantAddress,
+	ChatMessage::State state
+) {
+	L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+		const long long &eventId = dEventKey->storageId;
+		const long long &participantSipAddressId = d->selectSipAddressId(participantAddress.asString());
+		int stateInt = static_cast<int>(state);
+
+		*session << "UPDATE chat_message_participant SET state = :state"
+			" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
+			soci::use(stateInt), soci::use(eventId), soci::use(participantSipAddressId);
 	};
 }
 

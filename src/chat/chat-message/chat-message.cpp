@@ -63,28 +63,65 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
+void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState) {
+	L_Q();
+
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)) {
+		setState(newState);
+		return;
+	}
+
+	if (!dbKey.isValid())
+		return;
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	ChatMessage::State currentState = mainDb->getChatMessageParticipantState(eventLog, participantAddress);
+	if (!validStateTransition(currentState, newState))
+		return;
+
+	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState);
+
+	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
+	size_t nbDisplayedStates = 0;
+	size_t nbDeliveredToUserStates = 0;
+	size_t nbNotDeliveredStates = 0;
+	for (const auto &state : states) {
+		switch (state) {
+			case ChatMessage::State::Displayed:
+				nbDisplayedStates++;
+				break;
+			case ChatMessage::State::DeliveredToUser:
+				nbDeliveredToUserStates++;
+				break;
+			case ChatMessage::State::NotDelivered:
+				nbNotDeliveredStates++;
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (nbNotDeliveredStates > 0)
+		setState(ChatMessage::State::NotDelivered);
+	else if (nbDisplayedStates == states.size())
+		setState(ChatMessage::State::Displayed);
+	else if ((nbDisplayedStates + nbDeliveredToUserStates) == states.size())
+		setState(ChatMessage::State::DeliveredToUser);
+}
+
+void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 	L_Q();
 
 	if (force)
-		state = s;
+		state = newState;
 
-	if (s == state)
-		return;
-
-	if (
-		(state == ChatMessage::State::Displayed || state == ChatMessage::State::DeliveredToUser) &&
-		(
-			s == ChatMessage::State::DeliveredToUser ||
-			s == ChatMessage::State::Delivered ||
-			s == ChatMessage::State::NotDelivered
-		)
-	)
+	if (!validStateTransition(state, newState))
 		return;
 
 	lInfo() << "Chat message " << this << ": moving from " << Utils::toString(state) <<
-		" to " << Utils::toString(s);
-	state = s;
+		" to " << Utils::toString(newState);
+	state = newState;
 
 	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
 	if (linphone_chat_message_get_message_state_changed_cb(msg))
@@ -756,6 +793,24 @@ void ChatMessagePrivate::updateInDb () {
 
 // -----------------------------------------------------------------------------
 
+bool ChatMessagePrivate::validStateTransition (ChatMessage::State currentState, ChatMessage::State newState) {
+	if (newState == currentState)
+		return false;
+
+	if (
+		(currentState == ChatMessage::State::Displayed || currentState == ChatMessage::State::DeliveredToUser) &&
+		(
+			newState == ChatMessage::State::DeliveredToUser ||
+			newState == ChatMessage::State::Delivered ||
+			newState == ChatMessage::State::NotDelivered
+		)
+	)
+		return false;
+	return true;
+}
+
+// -----------------------------------------------------------------------------
+
 ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
 	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
 	L_D();
@@ -929,12 +984,6 @@ void ChatMessage::removeCustomHeader (const string &headerName) {
 	if (d->isReadOnly) return;
 
 	d->customHeaders.erase(headerName);
-}
-
-void ChatMessage::updateState (State state) {
-	L_D();
-
-	d->setState(state);
 }
 
 void ChatMessage::send () {

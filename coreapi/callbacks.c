@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
@@ -565,7 +566,7 @@ static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status) 
 
 	// Check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
 	if (msg->getChatRoom())
-		msg->updateState((LinphonePrivate::ChatMessage::State)chatStatusSal2Linphone(status));
+		L_GET_PRIVATE(msg)->setState((LinphonePrivate::ChatMessage::State)chatStatusSal2Linphone(status));
 }
 
 static void info_received(SalOp *op, SalBodyHandler *body_handler) {

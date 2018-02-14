@@ -38,10 +38,10 @@ public:
 	};
 
 	static std::string createXml (const std::string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason);
-	static void parse (ChatRoom &cr, const std::string &content);
+	static void parse (const std::shared_ptr<ChatMessage> &chatMessage);
 
 private:
-	static void parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx);
+	static void parse (const std::shared_ptr<ChatMessage> &chatMessage, xmlparsing_context_t *xmlCtx);
 
 private:
 	static const std::string imdnPrefix;

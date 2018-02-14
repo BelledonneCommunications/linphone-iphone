@@ -25,6 +25,7 @@
 #include "linphone/utils/enum-mask.h"
 
 #include "abstract/abstract-db.h"
+#include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room-id.h"
 #include "core/core-accessor.h"
 
@@ -84,6 +85,17 @@ public:
 	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+
+	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
+	ChatMessage::State getChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress
+	) const;
+	void setChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress,
+		ChatMessage::State state
+	);
 
 	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId) const;
 

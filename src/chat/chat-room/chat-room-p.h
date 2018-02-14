@@ -61,7 +61,7 @@ public:
 
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
-	void onImdnReceived (const std::string &text);
+	void onImdnReceived (const std::shared_ptr<ChatMessage> &chatMessage);
 	void onIsComposingReceived (const Address &remoteAddress, const std::string &text);
 	void onIsComposingRefreshNeeded () override;
 	void onIsComposingStateChanged (bool isComposing) override;

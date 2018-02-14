@@ -355,7 +355,6 @@ LinphoneChatMessageStateChangedCb linphone_chat_message_get_message_state_change
 void linphone_chat_message_set_message_state_changed_cb(LinphoneChatMessage* msg, LinphoneChatMessageStateChangedCb cb);
 void linphone_chat_message_set_message_state_changed_cb_user_data(LinphoneChatMessage* msg, void *user_data);
 void * linphone_chat_message_get_message_state_changed_cb_user_data(LinphoneChatMessage* msg);
-void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state);
 LinphoneChatRoom *_linphone_core_create_chat_room_from_call(LinphoneCall *call);
 
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID id);

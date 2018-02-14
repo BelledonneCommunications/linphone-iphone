@@ -47,6 +47,7 @@ class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class ChatRoomPrivate;
 	friend class CpimChatMessageModifier;
 	friend class FileTransferChatMessageModifier;
+	friend class Imdn;
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class RealTimeTextChatRoomPrivate;
@@ -63,7 +64,6 @@ public:
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
-	void updateState (State state);
 	void sendDeliveryNotification (LinphoneReason reason);
 	void sendDisplayNotification ();
 	void setIsSecured (bool isSecured);
