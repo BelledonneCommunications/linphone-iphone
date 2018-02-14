@@ -23,8 +23,6 @@
 #include "content-type.h"
 #include "content/content.h"
 
-#define MULTIPART_BOUNDARY "---------------------------14737809831466499882746641449"
-
 // =============================================================================
 
 using namespace std;
