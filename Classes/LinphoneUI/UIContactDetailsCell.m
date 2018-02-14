@@ -138,17 +138,7 @@
 	if (addr == NULL)
 		return;
 
-	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
-	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, addr);
-	if (!room) {
-		bctbx_list_t *addresses = bctbx_list_new(addr);
-		[PhoneMainView.instance createChatRoomWithSubject:LINPHONE_DUMMY_SUBJECT addresses:addresses andWaitView:_waitView];
-		bctbx_list_free_with_data(addresses, (void (*)(void *))linphone_address_unref);
-		return;
-	}
-	ChatConversationView *view = VIEW(ChatConversationView);
-	[view setChatRoom:room];
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
 	linphone_address_destroy(addr);
 }
 
