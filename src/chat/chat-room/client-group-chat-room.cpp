@@ -393,7 +393,10 @@ void ClientGroupChatRoom::join () {
 	if (!session && ((getState() == ChatRoom::State::Instantiated) || (getState() == ChatRoom::State::Terminated))) {
 		d->bgTask.start();
 		session = d->createSession();
-		session->startInvite(nullptr, "", nullptr);
+	}
+	if (session) {
+		if (getState() != ChatRoom::State::TerminationPending)
+			session->startInvite(nullptr, "", nullptr);
 		d->setState(ChatRoom::State::CreationPending);
 	}
 }
