@@ -1353,7 +1353,7 @@ static void group_chat_room_create_room_with_disconnected_friends_and_initial_me
 	group_chat_room_create_room_with_disconnected_friends_base(TRUE);
 }
 
-static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_removed) {
+static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_removed, bool_t offline_when_reinvited) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
@@ -1394,35 +1394,50 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 
 	// Marie removes Laure from the chat room
 	LinphoneParticipant *laureParticipant = linphone_chat_room_find_participant(marieCr, laureAddr);
-	linphone_address_unref(laureAddr);
 	BC_ASSERT_PTR_NOT_NULL(laureParticipant);
 	linphone_chat_room_remove_participant(marieCr, laureParticipant);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_participants_removed, initialMarieStats.number_of_participants_removed + 1, 1000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_participants_removed, initialPaulineStats.number_of_participants_removed + 1, 1000));
 
-	if (offline_when_removed) {
+	if (offline_when_removed && !offline_when_reinvited) {
 		linphone_core_manager_configure(laure);
 		lp_config_set_string(linphone_core_get_config(laure->lc), "misc", "uuid", savedLaureUuid);
 		bctbx_free(savedLaureUuid);
 		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, laure);
 		init_core_for_conference(tmpCoresManagerList);
 		bctbx_list_free(tmpCoresManagerList);
+		initialLaureStats = laure->stat;
 		linphone_core_manager_start(laure, TRUE);
 		coresList = bctbx_list_append(coresList, laure->lc);
 		coresManagerList = bctbx_list_append(coresManagerList, laure);
-		initialLaureStats = laure->stat;
 	}
-	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateTerminated, initialLaureStats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+	if (!offline_when_reinvited)
+		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateTerminated, initialLaureStats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
 
 	// Marie adds Laure to the chat room
-	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
+	participantsAddresses = bctbx_list_append(participantsAddresses, laureAddr);
 	linphone_chat_room_add_participants(marieCr, participantsAddresses);
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
 	participantsAddresses = NULL;
-	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
-	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 1, 5000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_participants_added, initialMarieStats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_participants_added, initialPaulineStats.number_of_participants_added + 1, 1000));
+	if (offline_when_reinvited) {
+		linphone_core_manager_configure(laure);
+		lp_config_set_string(linphone_core_get_config(laure->lc), "misc", "uuid", savedLaureUuid);
+		bctbx_free(savedLaureUuid);
+		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, laure);
+		init_core_for_conference(tmpCoresManagerList);
+		bctbx_list_free(tmpCoresManagerList);
+		initialLaureStats = laure->stat;
+		linphone_core_manager_start(laure, TRUE);
+		coresList = bctbx_list_append(coresList, laure->lc);
+		coresManagerList = bctbx_list_append(coresManagerList, laure);
+		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 2, 5000));
+	} else {
+		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 1, 5000));
+	}
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 2, int, "%d");
 	laureAddr = linphone_address_new(linphone_core_get_device_identity(laure->lc));
@@ -1446,11 +1461,15 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 }
 
 static void group_chat_room_reinvited_after_removed (void) {
-	group_chat_room_reinvited_after_removed_base(FALSE);
+	group_chat_room_reinvited_after_removed_base(FALSE, FALSE);
 }
 
 static void group_chat_room_reinvited_after_removed_while_offline (void) {
-	group_chat_room_reinvited_after_removed_base(TRUE);
+	group_chat_room_reinvited_after_removed_base(TRUE, FALSE);
+}
+
+static void group_chat_room_reinvited_after_removed_while_offline_2 (void) {
+	group_chat_room_reinvited_after_removed_base(TRUE, TRUE);
 }
 
 static void group_chat_room_notify_after_disconnection (void) {
@@ -2615,6 +2634,7 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Create chat room with disconnected friends and initial message", group_chat_room_create_room_with_disconnected_friends_and_initial_message, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room while offline", group_chat_room_reinvited_after_removed_while_offline, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Reinvited after removed from group chat room while offline 2", group_chat_room_reinvited_after_removed_while_offline_2, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
 	// TODO: Use when we support adding a new device in created conf
