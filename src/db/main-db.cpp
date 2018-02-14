@@ -294,36 +294,21 @@ public:
 	}
 
 	template<typename T>
-	StatementBind &in (const T &var) {
-		mStmt.exchange(soci::use(var));
-		return *this;
+	void bind (const T &var, const char *name) {
+		mStmt.exchange(soci::use(var, name));
 	}
 
 	template<typename T>
-	StatementBind &out (T &var) {
+	void bindResult (T &var) {
 		mStmt.exchange(soci::into(var));
-		return *this;
-	}
-
-	StatementBind &out (soci::row &row) {
-		mUseRow = true;
-		mStmt.define_and_bind();
-		mStmt.exchange_for_rowset(soci::into(row));
-		return *this;
-	}
-
-	soci::statement &getStatement () const {
-		return mStmt;
 	}
 
 	bool exec () {
-		if (!mUseRow)
-			mStmt.define_and_bind();
+		mStmt.define_and_bind();
 		return mStmt.execute(true);
 	}
 
 private:
-	bool mUseRow = false;
 	soci::statement &mStmt;
 };
 
@@ -336,10 +321,6 @@ struct MainDbPrivate::Statements {
 
 	Statement selectSipAddressId;
 	Statement selectChatRoomId;
-
-	Statement selectConferenceChatMessageEvent;
-	Statement selectConferenceChatMessageContent;
-	Statement selectConferenceChatMessageFileContent;
 };
 
 void MainDbPrivate::initStatements () {
@@ -350,29 +331,6 @@ void MainDbPrivate::initStatements () {
 	statements->selectChatRoomId = makeStatement(
 		*session,
 		"SELECT id FROM chat_room WHERE peer_sip_address_id = :peerSipAddressId AND local_sip_address_id = :localSipAddressId"
-	);
-
-	statements->selectConferenceChatMessageEvent = makeStatement(
-		*session,
-		"SELECT from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured"
-		" FROM event, conference_chat_message_event, sip_address AS from_sip_address, sip_address AS to_sip_address"
-		" WHERE event_id = :eventId"
-		" AND event_id = event.id"
-		" AND from_sip_address_id = from_sip_address.id"
-		" AND to_sip_address_id = to_sip_address.id"
-	);
-
-	statements->selectConferenceChatMessageContent = makeStatement(
-		*session,
-		"SELECT chat_message_content.id, content_type.id, content_type.value, body"
-		" FROM chat_message_content, content_type"
-		" WHERE event_id = :eventId AND content_type_id = content_type.id"
-	);
-
-	statements->selectConferenceChatMessageFileContent = makeStatement(
-		*session,
-		"SELECT name, size, path FROM chat_message_file_content"
-		" WHERE chat_message_content_id = :contentId"
 	);
 }
 
@@ -577,14 +535,23 @@ void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long s
 
 long long MainDbPrivate::selectSipAddressId (const string &sipAddress) const {
 	long long id;
-	return StatementBind(*statements->selectSipAddressId)
-		.in(sipAddress).out(id).exec() ? id : -1;
+
+	StatementBind stmt(*statements->selectSipAddressId);
+	stmt.bind(sipAddress, "sipAddress");
+	stmt.bindResult(id);
+
+	return stmt.exec() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const {
 	long long id;
-	return StatementBind(*statements->selectChatRoomId)
-		.in(peerSipAddressId).in(localSipAddressId).out(id).exec() ? id : -1;
+
+	StatementBind stmt(*statements->selectChatRoomId);
+	stmt.bind(peerSipAddressId, "peerSipAddressId");
+	stmt.bind(localSipAddressId, "localSipAddressId");
+	stmt.bindResult(id);
+
+	return stmt.exec() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (const ChatRoomId &chatRoomId) const {
@@ -739,18 +706,21 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 ) const {
 	L_Q();
 
-	shared_ptr<AbstractChatRoom> chatRoom = q->getCore()->findChatRoom(chatRoomId);
-	if (!chatRoom)
+	shared_ptr<Core> core = q->getCore();
+	shared_ptr<AbstractChatRoom> chatRoom = core->findChatRoom(chatRoomId);
+	if (!chatRoom) {
+		lError() << "Unable to find chat room storage id of (peer=" +
+			chatRoomId.getPeerAddress().asString() +
+			", local=" + chatRoomId.getLocalAddress().asString() + "`).";
 		return nullptr;
+	}
+
+	bool hasFileTransferContent = false;
 
 	// 1 - Fetch chat message.
 	shared_ptr<ChatMessage> chatMessage = getChatMessageFromCache(eventId);
 	if (chatMessage)
-		return make_shared<ConferenceChatMessageEvent>(
-			creationTime,
-			chatMessage
-		);
-
+		goto end;
 	{
 		string fromSipAddress;
 		string toSipAddress;
@@ -763,16 +733,15 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		int direction;
 		int isSecured;
 
-		StatementBind(*statements->selectConferenceChatMessageEvent)
-			.in(eventId)
-			.out(fromSipAddress)
-			.out(toSipAddress)
-			.out(messageTime)
-			.out(imdnMessageId)
-			.out(state)
-			.out(direction)
-			.out(isSecured)
-			.exec();
+		soci::session *session = dbSession.getBackendSession();
+		*session << "SELECT from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured"
+			" FROM event, conference_chat_message_event, sip_address AS from_sip_address, sip_address AS to_sip_address"
+			" WHERE event_id = :eventId"
+			" AND event_id = event.id"
+			" AND from_sip_address_id = from_sip_address.id"
+			" AND to_sip_address_id = to_sip_address.id", soci::into(fromSipAddress), soci::into(toSipAddress),
+			soci::into(messageTime), soci::into(imdnMessageId), soci::into(state), soci::into(direction),
+			soci::into(isSecured), soci::use(eventId);
 
 		chatMessage = shared_ptr<ChatMessage>(new ChatMessage(
 			chatRoom,
@@ -791,17 +760,13 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 	}
 
 	// 2 - Fetch contents.
-	bool hasFileTransferContent = false;
 	{
 		soci::session *session = dbSession.getBackendSession();
-
-		soci::row row;
-		StatementBind stmtBind(*statements->selectConferenceChatMessageContent);
-		stmtBind.in(eventId).out(row).exec();
-
-		for (soci::rowset_iterator<soci::row> it(stmtBind.getStatement(), row), end; it != end; ++it) {
-			const soci::row &row = *it;
-
+		static const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body"
+			" FROM chat_message_content, content_type"
+			" WHERE event_id = :eventId AND content_type_id = content_type.id";
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
+		for (const auto &row : rows) {
 			ContentType contentType(row.get<string>(2));
 			const long long &contentId = dbSession.resolveId(row, 0);
 			Content *content;
@@ -816,8 +781,9 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 				int size;
 				string path;
 
-				StatementBind(*statements->selectConferenceChatMessageFileContent)
-				  .in(contentId).out(name).out(size).out(path).exec();
+				*session << "SELECT name, size, path FROM chat_message_file_content"
+					" WHERE chat_message_content_id = :contentId",
+					soci::into(name), soci::into(size), soci::into(path), soci::use(contentId);
 
 				FileContent *fileContent = new FileContent();
 				fileContent->setFileName(name);
@@ -850,6 +816,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 
 	cache(chatMessage, eventId);
 
+end:
 	return make_shared<ConferenceChatMessageEvent>(
 		creationTime,
 		chatMessage
