@@ -898,10 +898,20 @@ static RootViewManager *rootViewManagerInstance = nil;
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	PhoneMainView *view = PhoneMainView.instance;
 	switch (newState) {
-		case LinphoneChatRoomStateCreated:
+		case LinphoneChatRoomStateCreated: {
 			LOGI(@"Chat room [%p] created on server.", cr);
 			[view goToChatRoom:cr];
+			if (!IPAD)
+				break;
+
+			if (PhoneMainView.instance.currentView != ChatsListView.compositeViewDescription && PhoneMainView.instance.currentView != ChatConversationView.compositeViewDescription)
+				break;
+
+			ChatsListView *mainView = VIEW(ChatsListView);
+			[mainView.tableController loadData];
+			[mainView.tableController selectFirstRow];
 			break;
+		}
 		case LinphoneChatRoomStateCreationFailed:
 			view.waitView.hidden = YES;
 			[ChatConversationInfoView displayCreationError];

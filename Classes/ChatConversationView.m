@@ -108,44 +108,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
-
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
-	linphone_chat_room_cbs_set_state_changed(cbs, on_chat_room_state_changed);
-	linphone_chat_room_cbs_set_subject_changed(cbs, on_chat_room_subject_changed);
-	linphone_chat_room_cbs_set_participant_added(cbs, on_chat_room_participant_added);
-	linphone_chat_room_cbs_set_participant_removed(cbs, on_chat_room_participant_removed);
-	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, on_chat_room_participant_admin_status_changed);
-	linphone_chat_room_cbs_set_chat_message_received(cbs, on_chat_room_chat_message_received);
-	linphone_chat_room_cbs_set_chat_message_sent(cbs, on_chat_room_chat_message_sent);
-	linphone_chat_room_cbs_set_is_composing_received(cbs, on_chat_room_is_composing_received);
-	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
-
-	[self updateSuperposedButtons];
-	
-	if (_tableController.isEditing)
-		[_tableController setEditing:NO];
-
-	[[_tableController tableView] reloadData];
-
-	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
-	[_pictureButton setEnabled:fileSharingEnabled];
-
-	[self callUpdateEvent:nil];
-	PhoneMainView.instance.currentRoom = _chatRoom;
-	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
-		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
-		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
-		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
-		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	} else
-		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
-
-	[self updateParticipantLabel];
-
-	_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
-	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
-	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -187,8 +149,44 @@ static UICompositeViewDescription *compositeDescription = nil;
 #pragma mark -
 
 - (void)setChatRoom:(LinphoneChatRoom *)chatRoom {
-
 	_chatRoom = chatRoom;
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
+	linphone_chat_room_cbs_set_state_changed(cbs, on_chat_room_state_changed);
+	linphone_chat_room_cbs_set_subject_changed(cbs, on_chat_room_subject_changed);
+	linphone_chat_room_cbs_set_participant_added(cbs, on_chat_room_participant_added);
+	linphone_chat_room_cbs_set_participant_removed(cbs, on_chat_room_participant_removed);
+	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, on_chat_room_participant_admin_status_changed);
+	linphone_chat_room_cbs_set_chat_message_received(cbs, on_chat_room_chat_message_received);
+	linphone_chat_room_cbs_set_chat_message_sent(cbs, on_chat_room_chat_message_sent);
+	linphone_chat_room_cbs_set_is_composing_received(cbs, on_chat_room_is_composing_received);
+	linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+
+	[self updateSuperposedButtons];
+
+	if (_tableController.isEditing)
+		[_tableController setEditing:NO];
+
+	[[_tableController tableView] reloadData];
+
+	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
+	[_pictureButton setEnabled:fileSharingEnabled];
+
+	[self callUpdateEvent:nil];
+	PhoneMainView.instance.currentRoom = _chatRoom;
+	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
+	if (capabilities & LinphoneChatRoomCapabilitiesOneToOne) {
+		bctbx_list_t *participants = linphone_chat_room_get_participants(_chatRoom);
+		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
+		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
+		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
+	} else
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+
+	[self updateParticipantLabel];
+
+	_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
+	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
+	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
 	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
 
@@ -223,10 +221,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)markAsRead {
 	linphone_chat_room_mark_as_read(_chatRoom);
 	if (IPAD) {
-		if (IPAD) {
-			ChatsListView *listView = VIEW(ChatsListView);
-			[listView.tableController markCellAsRead:_chatRoom];
-		}
+		ChatsListView *listView = VIEW(ChatsListView);
+		[listView.tableController markCellAsRead:_chatRoom];
 	}
 }
 
