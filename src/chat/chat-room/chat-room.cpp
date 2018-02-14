@@ -189,7 +189,6 @@ void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<C
 LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessage *message) {
 	L_Q();
 
-	bool increaseMsgCount = true;
 	LinphoneReason reason = LinphoneReasonNone;
 	shared_ptr<ChatMessage> msg;
 
@@ -224,28 +223,17 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		onIsComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
-		increaseMsgCount = FALSE;
 		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		onImdnReceived(msg->getPrivate()->getText());
-		increaseMsgCount = FALSE;
 		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	}
 
-	if (increaseMsgCount) {
-		/* Mark the message as pending so that if ChatRoom::markAsRead() is called in the
-		 * ChatRoomPrivate::chatMessageReceived() callback, it will effectively be marked as
-		 * being read before being stored. */
-		pendingMessage = msg;
-	}
-
 	onChatMessageReceived(msg);
-
-	pendingMessage = nullptr;
 
 end:
 	return reason;
@@ -438,11 +426,6 @@ void ChatRoom::markAsRead () {
 		chatMessage->sendDisplayNotification();
 
 	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
-
-	if (d->pendingMessage) {
-		d->pendingMessage->updateState(ChatMessage::State::Displayed);
-		d->pendingMessage->sendDisplayNotification();
-	}
 }
 
 LINPHONE_END_NAMESPACE

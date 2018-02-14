@@ -78,7 +78,6 @@ private:
 	time_t creationTime = std::time(nullptr);
 	time_t lastUpdateTime = std::time(nullptr);
 
-	std::shared_ptr<ChatMessage> pendingMessage;
 	std::unique_ptr<IsComposing> isComposingHandler;
 
 	bool isComposing = false;

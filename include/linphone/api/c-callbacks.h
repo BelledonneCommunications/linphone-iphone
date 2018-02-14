@@ -250,6 +250,13 @@ typedef void (*LinphoneChatRoomCbsParticipantDeviceFetchedCb) (LinphoneChatRoom 
 typedef void (*LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb) (LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsAddr);
 
 /**
+ * Callback used to tell the core whether or not to store the incoming message in db or not using linphone_chat_message_set_to_be_stored().
+ * @param[in] cr #LinphoneChatRoom object
+ * @param[in] msg The #LinphoneChatMessage that is being received
+ */
+typedef void (*LinphoneChatRoomCbsShouldChatMessageBeStoredCb) (LinphoneChatRoom *cr, LinphoneChatMessage *msg);
+
+/**
  * @}
 **/
 

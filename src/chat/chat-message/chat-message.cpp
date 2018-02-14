@@ -401,17 +401,22 @@ void ChatMessagePrivate::notifyReceiving () {
 
 	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
-	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
-	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
-		::time(nullptr), q->getSharedFromThis()
-	);
-	if (cb)
-		cb(chatRoom, L_GET_C_BACK_PTR(event));
-	// Legacy
-	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
+
+	LinphoneChatRoomCbsShouldChatMessageBeStoredCb shouldMessageBeStoredCb = linphone_chat_room_cbs_get_chat_message_should_be_stored(cbs);
+	if (shouldMessageBeStoredCb)
+		shouldMessageBeStoredCb(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 
 	if (toBeStored)
 		storeInDb();
+
+	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
+		::time(nullptr), q->getSharedFromThis()
+	);
+	LinphoneChatRoomCbsChatMessageReceivedCb messageReceivedCb = linphone_chat_room_cbs_get_chat_message_received(cbs);
+	if (messageReceivedCb)
+		messageReceivedCb(chatRoom, L_GET_C_BACK_PTR(event));
+	// Legacy
+	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 
 	q->sendDeliveryNotification(LinphoneReasonNone);
 }
