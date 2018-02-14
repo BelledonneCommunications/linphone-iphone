@@ -22,9 +22,6 @@
 
 #include "object/clonable-object.h"
 
-
-#define MULTIPART_BOUNDARY "---------------------------14737809831466499882746641449"
-
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE

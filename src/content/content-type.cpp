@@ -45,7 +45,7 @@ const ContentType ContentType::ExternalBody("message/external-body");
 const ContentType ContentType::FileTransfer("application/vnd.gsma.rcs-ft-http+xml");
 const ContentType ContentType::Imdn("message/imdn+xml");
 const ContentType ContentType::ImIsComposing("application/im-iscomposing+xml");
-const ContentType ContentType::Multipart("multipart/mixed;boundary=" MULTIPART_BOUNDARY);
+const ContentType ContentType::Multipart("multipart/mixed");
 const ContentType ContentType::PlainText("text/plain");
 const ContentType ContentType::ResourceLists("application/resource-lists+xml");
 const ContentType ContentType::Sdp("application/sdp");
