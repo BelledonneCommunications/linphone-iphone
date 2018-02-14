@@ -2466,10 +2466,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						soci::rowset<soci::row> rows = (session->prepare << query, soci::use(participantId));
 						for (const auto &row : rows) {
 							shared_ptr<ParticipantDevice> device = dParticipant->addDevice(IdentityAddress(row.get<string>(0)));
-							device->setState(ParticipantDevice::State(getBackend() == Backend::Mysql
-								? row.get<unsigned int>(1, 0)
-								: static_cast<unsigned int>(row.get<int>(1, 0))
-							));
+							device->setState(ParticipantDevice::State(static_cast<unsigned int>(row.get<int>(1, 0))));
 						}
 					}
 
