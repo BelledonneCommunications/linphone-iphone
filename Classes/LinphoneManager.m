@@ -1128,9 +1128,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 	if (linphone_chat_message_is_outgoing(msg))
 		return;
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		return;
-
 	if ((PhoneMainView.instance.currentView == ChatsListView.compositeViewDescription))
 		return;
 
