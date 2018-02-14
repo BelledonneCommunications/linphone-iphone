@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <list>
 #include <sstream>
 
 #include <bctoolbox/port.h>

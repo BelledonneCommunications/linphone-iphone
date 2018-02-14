@@ -144,6 +144,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/property-container.h
 	object/singleton.h
 	sal/sal.h
+	search/magic-search.h
+	search/magic-search-p.h
+	search/search-result.h
+	search/search-result-p.h
 	utils/background-task.h
 	utils/payload-type-handler.h
 	variant/variant.h
@@ -167,7 +171,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-core.cpp
 	c-wrapper/api/c-dial-plan.cpp
 	c-wrapper/api/c-event-log.cpp
+	c-wrapper/api/c-magic-search.cpp
 	c-wrapper/api/c-participant.cpp
+	c-wrapper/api/c-search-result.cpp
 	c-wrapper/internal/c-sal.cpp
 	c-wrapper/internal/c-tools.cpp
 	call/call.cpp
@@ -249,6 +255,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/refer-op.cpp
 	sal/register-op.cpp
 	sal/sal.cpp
+	search/magic-search.cpp
+	search/search-result.cpp
 	utils/background-task.cpp
 	utils/fs.cpp
 	utils/general.cpp

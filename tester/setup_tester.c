@@ -23,6 +23,21 @@
 #include "linphone/lpconfig.h"
 #include "tester_utils.h"
 
+static const char *sFriends[5] = {
+	"sip:test@sip.example.org",
+	"sip:test2@sip.example.org",
+	"sip:allo@sip.example.org",
+	"sip:hello@sip.example.org",
+	"sip:hello@sip.test.org"
+};
+
+static void _create_friend_from_tab(LinphoneCore *lc, LinphoneFriendList *list, const char *friends[], const unsigned int size) {
+	for (unsigned int i = 0 ; i <= size ; i++) {
+		LinphoneFriend *fr = linphone_core_create_friend_with_address(lc, friends[i]);
+		linphone_friend_list_add_friend(list, fr);
+	}
+}
+
 static void linphone_version_test(void){
 	const char *version=linphone_core_get_version();
 	/*make sure the git version is always included in the version number*/
@@ -393,6 +408,17 @@ static void custom_tones_setup(void){
 	linphone_core_manager_destroy(mgr);
 }
 
+static void search_friend_all_domains(void) {
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+	LinphoneFriend *lf = linphone_core_create_friend_with_address(manager->lc, "sip:toto@sip.linphone.org");
+
+	_create_friend_from_tab(manager->lc, lfl, sFriends, 5);
+
+	linphone_friend_unref(lf);
+	linphone_core_manager_destroy(manager);
+}
+
 test_t setup_tests[] = {
 	TEST_NO_TAG("Version check", linphone_version_test),
 	TEST_NO_TAG("Linphone Address", linphone_address_test),
@@ -409,7 +435,8 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Devices reload", devices_reload_test),
 	TEST_NO_TAG("Codec usability", codec_usability_test),
 	TEST_NO_TAG("Codec setup", codec_setup),
-	TEST_NO_TAG("Custom tones setup", custom_tones_setup)
+	TEST_NO_TAG("Custom tones setup", custom_tones_setup),
+	TEST_NO_TAG("Search friend from all domains", search_friend_all_domains)
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

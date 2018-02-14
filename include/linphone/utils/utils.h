@@ -21,7 +21,9 @@
 #define _L_UTILS_H_
 
 #include <ctime>
+#include <list>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "linphone/utils/enum-generator.h"

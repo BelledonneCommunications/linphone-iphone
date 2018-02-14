@@ -39,8 +39,10 @@
 	F(Core, Core) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
+	F(MagicSearch, MagicSearch) \
 	F(MediaSessionParams, CallParams) \
-	F(Participant, Participant)
+	F(Participant, Participant) \
+	F(SearchResult, SearchResult)
 
 #define L_REGISTER_SUBTYPES(F) \
 	F(AbstractChatRoom, BasicChatRoom) \
