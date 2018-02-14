@@ -40,7 +40,8 @@ string Imdn::createXml (const string &id, time_t time, Imdn::Type imdnType, Linp
 	char *datetime = nullptr;
 
 	// Check that the chat message has a message id.
-	if (id.empty()) return nullptr;
+	if (id.empty())
+		return content;
 
 	buf = xmlBufferCreate();
 	if (buf == nullptr) {
