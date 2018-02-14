@@ -758,9 +758,14 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 
 	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
-	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
+	if (!chat)
+		return;
 
-	if (from == NULL || chat == NULL)
+	if (linphone_chat_message_is_outgoing(chat))
+		return;
+
+	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
+	if (!from)
 		return;
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
