@@ -2282,6 +2282,52 @@ void im_encryption_engine_b64_async(void) {
 	im_encryption_engine_b64_base(TRUE);
 }
 
+void unread_message_count(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	text_message_base(marie, pauline);
+
+	BC_ASSERT_PTR_NOT_NULL(marie->stat.last_received_chat_message);
+	if (marie->stat.last_received_chat_message != NULL) {
+		LinphoneChatRoom *marie_room = linphone_chat_message_get_chat_room(marie->stat.last_received_chat_message);
+		BC_ASSERT_EQUAL(1, linphone_chat_room_get_unread_messages_count(marie_room), int, "%d");
+		linphone_chat_room_mark_as_read(marie_room);
+		BC_ASSERT_EQUAL(0, linphone_chat_room_get_unread_messages_count(marie_room), int, "%d");
+	}
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void message_received_callback(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage* msg) {
+	BC_ASSERT_PTR_NOT_NULL(room);
+	BC_ASSERT_EQUAL(1, linphone_chat_room_get_unread_messages_count(room), int, "%d");
+	BC_ASSERT_PTR_NOT_NULL(msg);
+	if (room != NULL) {
+		linphone_chat_room_mark_as_read(room);
+	}
+	BC_ASSERT_EQUAL(0, linphone_chat_room_get_unread_messages_count(room), int, "%d");
+}
+	
+void unread_message_count_callback(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	int dummy = 0;
+
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	linphone_core_cbs_set_message_received(cbs, message_received_callback);
+	linphone_core_add_callbacks(marie->lc, cbs);
+
+	text_message_base(marie, pauline);
+
+	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 5000);
+
+	linphone_core_cbs_unref(cbs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
 test_t message_tests[] = {
 	TEST_NO_TAG("Text message", text_message),
 	TEST_NO_TAG("Text message with credentials from auth callback", text_message_with_credential_from_auth_callback),
@@ -2305,6 +2351,8 @@ test_t message_tests[] = {
 	TEST_NO_TAG("IMDN notifications", imdn_notifications),
 	TEST_NO_TAG("IM notification policy", im_notification_policy),
 #ifdef SQLITE_STORAGE_ENABLED
+	TEST_NO_TAG("Unread message count", unread_message_count),
+	TEST_NO_TAG("Unread message count in callback", unread_message_count_callback),
 	TEST_ONE_TAG("IsComposing notification lime", is_composing_notification_with_lime, "LIME"),
 	TEST_ONE_TAG("IMDN notifications with lime", imdn_notifications_with_lime, "LIME"),
 	TEST_ONE_TAG("IM notification policy with lime", im_notification_policy_with_lime, "LIME"),
