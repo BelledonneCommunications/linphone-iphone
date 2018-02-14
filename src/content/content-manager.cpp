@@ -97,7 +97,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 	Content content;
 	content.setBody(desc);
 	ContentType contentType = ContentType::Multipart;
-	contentType.setParameter("boundary=" + boundary);
+	contentType.setParameter("boundary=" + MULTIPART_BOUNDARY);
 	content.setContentType(contentType);
 
 	belle_sip_free(desc);
