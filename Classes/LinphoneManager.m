@@ -1112,9 +1112,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		pushBgTaskMsg = 0;
 	}
 
-	if (linphone_chat_message_is_outgoing(msg))
-		return;
-
 	if (!linphone_chat_message_is_file_transfer(msg) && !linphone_chat_message_is_text(msg))
 		return;
 
@@ -1127,6 +1124,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 						   };
 
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:self userInfo:dict];
+
+	if (linphone_chat_message_is_outgoing(msg))
+		return;
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 		return;

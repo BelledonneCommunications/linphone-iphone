@@ -104,9 +104,9 @@
 }
 
 - (void)scrollToLastUnread:(BOOL)animated {
-	if (eventList == nil || _chatRoom == nil) {
+	if (eventList == nil || _chatRoom == nil)
 		return;
-	}
+
 	int index = -1;
 	size_t count = bctbx_list_size(eventList);
 	// Find first unread & set all entry read

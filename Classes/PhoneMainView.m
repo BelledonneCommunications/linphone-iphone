@@ -287,9 +287,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 	LinphoneChatMessage *msg = [[notif.userInfo objectForKey:@"message"] pointerValue];
 	NSString *callID = [notif.userInfo objectForKey:@"call-id"];
 	[self updateApplicationBadgeNumber];
-	LinphoneChatRoom *room = msg ? linphone_chat_message_get_chat_room(msg) : NULL;
 
-	if (!room)
+	if (!msg)
+		return;
+
+	if (linphone_chat_message_is_outgoing(msg))
 		return;
 
 	ChatConversationView *view = VIEW(ChatConversationView);

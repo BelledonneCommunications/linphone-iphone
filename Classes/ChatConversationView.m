@@ -761,9 +761,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	if (!chat)
 		return;
 
-	if (linphone_chat_message_is_outgoing(chat))
-		return;
-
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 	if (!from)
 		return;
