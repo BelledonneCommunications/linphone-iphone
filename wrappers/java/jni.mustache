@@ -375,6 +375,7 @@ void Java_{{jniPackage}}{{className}}Impl_addListener(JNIEnv* env, jobject thiz,
 	{{/callbacksList}}
 	{{#isMultiListener}}
 	{{cPrefix}}_add_callbacks(cptr, cbs);
+	{{cPrefix}}_cbs_unref(cbs);
 	{{/isMultiListener}}
 }
 {{#isMultiListener}}
