@@ -220,7 +220,8 @@ static constexpr const char *mapEnumToSql (const EnumToSql<T> enumToSql[], size_
 static constexpr EnumToSql<MainDb::Filter> eventFilterToSql[] = {
 	{ MainDb::ConferenceCallFilter, "3, 4" },
 	{ MainDb::ConferenceChatMessageFilter, "5" },
-	{ MainDb::ConferenceInfoFilter, "1, 2, 6, 7, 8, 9, 10, 11, 12" }
+	{ MainDb::ConferenceInfoFilter, "1, 2, 6, 7, 8, 9, 10, 11, 12" },
+	{ MainDb::ConferenceInfoNoDeviceFilter, "1, 2, 6, 7, 8, 9, 12" }
 };
 
 static constexpr const char *mapEventFilterToSql (MainDb::Filter filter) {
@@ -1958,7 +1959,7 @@ bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
 
 int MainDb::getEventCount (FilterMask mask) const {
 	string query = "SELECT COUNT(*) FROM event" +
-		buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter }, mask);
+		buildSqlEventFilter({ ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter }, mask);
 
 	DurationLogger durationLogger(
 		"Get events count with mask=" + Utils::toString(mask) + "."
@@ -2364,7 +2365,7 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		"    SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
 		"  )";
 	query += buildSqlEventFilter({
-		ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+		ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 	}, mask, "AND");
 	query += "  ORDER BY creation_time DESC";
 
@@ -2416,7 +2417,7 @@ int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const
 	const string query = "SELECT COUNT(*) FROM event, conference_event"
 		"  WHERE chat_room_id = :chatRoomId"
 		"  AND event_id = event.id" + buildSqlEventFilter({
-			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 		}, mask, "AND");
 
 	return L_SAFE_TRANSACTION {
@@ -2436,7 +2437,7 @@ int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const
 void MainDb::cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask) {
 	const string query = "SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId" +
 		buildSqlEventFilter({
-			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter
+			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 		}, mask);
 
 	DurationLogger durationLogger(
