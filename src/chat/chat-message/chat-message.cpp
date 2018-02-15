@@ -66,7 +66,11 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState) {
 	L_Q();
 
-	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)) {
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
+		|| (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
+			"misc", "enable_simple_group_chat_message_state", TRUE
+		))
+	) {
 		setState(newState);
 		return;
 	}

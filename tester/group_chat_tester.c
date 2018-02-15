@@ -2635,6 +2635,9 @@ static void imdn_for_group_chat_room (void) {
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(chloe->lc));
+	linphone_config_set_bool(linphone_core_get_config(marie->lc), "misc", "enable_simple_group_chat_message_state", FALSE);
+	linphone_config_set_bool(linphone_core_get_config(pauline->lc), "misc", "enable_simple_group_chat_message_state", FALSE);
+	linphone_config_set_bool(linphone_core_get_config(chloe->lc), "misc", "enable_simple_group_chat_message_state", FALSE);
 
 	// Marie creates a new group chat room
 	const char *initialSubject = "Colleagues";
