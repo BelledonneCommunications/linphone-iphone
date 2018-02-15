@@ -108,6 +108,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+	if (_chatRoom)
+		[self setChatRoom:_chatRoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
