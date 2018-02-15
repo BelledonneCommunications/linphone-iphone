@@ -126,6 +126,12 @@ public:
 	void cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask = NoFilter);
 
 	// ---------------------------------------------------------------------------
+	// Chat messages.
+	// ---------------------------------------------------------------------------
+
+	void loadChatMessageContents (const std::shared_ptr<ChatMessage> &chatMessage);
+
+	// ---------------------------------------------------------------------------
 	// Chat rooms.
 	// ---------------------------------------------------------------------------
 

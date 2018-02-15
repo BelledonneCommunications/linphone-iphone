@@ -36,6 +36,11 @@
 #include "main-db-key-p.h"
 #include "main-db-p.h"
 
+#ifdef SOCI_ENABLED
+	#include "internal/safe-transaction.h"
+	#include "internal/statements.h"
+#endif // ifdef SOCI_ENABLED
+
 // =============================================================================
 
 // See: http://soci.sourceforge.net/doc/3.2/exchange.html
@@ -87,117 +92,6 @@ namespace {
 MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), CoreAccessor(core) {}
 
 #ifdef SOCI_ENABLED
-
-// -----------------------------------------------------------------------------
-// Errors handling.
-// -----------------------------------------------------------------------------
-
-#define L_SAFE_TRANSACTION_C(CONTEXT) \
-	LinphonePrivate::SafeTransactionInfo().set(__func__, CONTEXT) * [&]()
-
-#define L_SAFE_TRANSACTION L_SAFE_TRANSACTION_C(this)
-
-struct SafeTransactionInfo {
-	SafeTransactionInfo &set (const char *_name, const MainDb *_mainDb) {
-		name = _name;
-		mainDb = const_cast<MainDb *>(_mainDb);
-		return *this;
-	}
-
-	const char *name = nullptr;
-	MainDb *mainDb = nullptr;
-};
-
-template<typename Function>
-class SafeTransaction {
-	using InternalReturnType = typename remove_reference<decltype(declval<Function>()())>::type;
-
-public:
-	using ReturnType = typename std::conditional<
-		std::is_same<InternalReturnType, void>::value,
-		bool,
-		InternalReturnType
-	>::type;
-
-	SafeTransaction (SafeTransactionInfo &info, Function function) : mFunction(move(function)) {
-		try {
-			mResult= exec<InternalReturnType>();
-		} catch (const soci::soci_error &e) {
-			lWarning() << "Catched exception in MainDb::" << info.name << "(" << e.what() << ").";
-			soci::soci_error::error_category category = e.get_error_category();
-			if (
-				(category == soci::soci_error::connection_error || category == soci::soci_error::unknown) &&
-				info.mainDb->forceReconnect()
-			) {
-				try {
-					mResult = exec<InternalReturnType>();
-				} catch (const exception &e) {
-					lError() << "Unable to execute query after reconnect in MainDb::" << info.name << "(" << e.what() << ").";
-				}
-				return;
-			}
-			lError() << "Unhandled [" << getErrorCategoryAsString(category) << "] exception in MainDb::" <<
-				info.name << ": `" << e.what() << "`.";
-		} catch (const exception &e) {
-			lError() << "Unhandled generic exception in MainDb::" << info.name << ": `" << e.what() << "`.";
-		}
-	}
-
-	SafeTransaction (SafeTransaction &&safeTransaction) : mFunction(move(safeTransaction.mFunction)) {}
-
-	operator ReturnType () const {
-		return mResult;
-	}
-
-private:
-	// Exec function with no return type.
-	template<typename T>
-	typename std::enable_if<std::is_same<T, void>::value, bool>::type exec () const {
-		mFunction();
-		return true;
-	}
-
-	// Exec function with return type.
-	template<typename T>
-	typename std::enable_if<!std::is_same<T, void>::value, T>::type exec () const {
-		return mFunction();
-	}
-
-	static const char *getErrorCategoryAsString (soci::soci_error::error_category category) {
-		switch (category) {
-			case soci::soci_error::connection_error:
-				return "CONNECTION ERROR";
-			case soci::soci_error::invalid_statement:
-				return "INVALID STATEMENT";
-			case soci::soci_error::no_privilege:
-				return "NO PRIVILEGE";
-			case soci::soci_error::no_data:
-				return "NO DATA";
-			case soci::soci_error::constraint_violation:
-				return "CONSTRAINT VIOLATION";
-			case soci::soci_error::unknown_transaction_state:
-				return "UNKNOWN TRANSACTION STATE";
-			case soci::soci_error::system_error:
-				return "SYSTEM ERROR";
-			case soci::soci_error::unknown:
-				return "UNKNOWN";
-		}
-
-		// Unreachable.
-		L_ASSERT(false);
-		return nullptr;
-	}
-
-	Function mFunction;
-	ReturnType mResult{};
-
-	L_DISABLE_COPY(SafeTransaction);
-};
-
-template<typename Function>
-typename SafeTransaction<Function>::ReturnType operator* (SafeTransactionInfo &info, Function &&function) {
-	return SafeTransaction<Function>(info, forward<Function>(function));
-}
 
 // -----------------------------------------------------------------------------
 // Soci backend.
@@ -709,13 +603,8 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		return nullptr;
 	}
 
-	bool hasFileTransferContent = false;
-
-	// 1 - Fetch chat message.
 	shared_ptr<ChatMessage> chatMessage = getChatMessageFromCache(eventId);
-	if (chatMessage)
-		goto end;
-	{
+	if (!chatMessage) {
 		string fromSipAddress;
 		string toSipAddress;
 
@@ -737,6 +626,42 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 			soci::into(messageTime), soci::into(imdnMessageId), soci::into(state), soci::into(direction),
 			soci::into(isSecured), soci::use(eventId);
 
+		return selectConferenceChatMessageEvent (
+			eventId,
+			type,
+			creationTime,
+			chatRoom,
+			fromSipAddress,
+			toSipAddress,
+			messageTime,
+			imdnMessageId,
+			state,
+			direction,
+			isSecured
+		);
+	}
+
+	return make_shared<ConferenceChatMessageEvent>(
+		creationTime,
+		chatMessage
+	);
+}
+
+shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
+	long long eventId,
+	EventLog::Type type,
+	time_t creationTime,
+	shared_ptr<AbstractChatRoom> &chatRoom,
+	const string &fromSipAddress,
+	const string &toSipAddress,
+	const tm &messageTime,
+	const string &imdnMessageId,
+	int state,
+	int direction,
+	int isSecured
+) const {
+	shared_ptr<ChatMessage> chatMessage = getChatMessageFromCache(eventId);
+	if (!chatMessage) {
 		chatMessage = shared_ptr<ChatMessage>(new ChatMessage(
 			chatRoom,
 			ChatMessage::Direction(direction)
@@ -751,66 +676,13 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 
 		dChatMessage->setTime(Utils::getTmAsTimeT(messageTime));
 		dChatMessage->setImdnMessageId(imdnMessageId);
+
+		dChatMessage->markContentsAsNotLoaded();
+		dChatMessage->setIsReadOnly(true);
+
+		cache(chatMessage, eventId);
 	}
 
-	// 2 - Fetch contents.
-	{
-		soci::session *session = dbSession.getBackendSession();
-		static const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body"
-			" FROM chat_message_content, content_type"
-			" WHERE event_id = :eventId AND content_type_id = content_type.id";
-		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
-		for (const auto &row : rows) {
-			ContentType contentType(row.get<string>(2));
-			const long long &contentId = dbSession.resolveId(row, 0);
-			Content *content;
-
-			if (contentType == ContentType::FileTransfer) {
-				hasFileTransferContent = true;
-				content = new FileTransferContent();
-			}
-			else if (contentType.isFile()) {
-				// 2.1 - Fetch contents' file informations.
-				string name;
-				int size;
-				string path;
-
-				*session << "SELECT name, size, path FROM chat_message_file_content"
-					" WHERE chat_message_content_id = :contentId",
-					soci::into(name), soci::into(size), soci::into(path), soci::use(contentId);
-
-				FileContent *fileContent = new FileContent();
-				fileContent->setFileName(name);
-				fileContent->setFileSize(size_t(size));
-				fileContent->setFilePath(path);
-
-				content = fileContent;
-			} else
-				content = new Content();
-
-			content->setContentType(contentType);
-			content->setBody(row.get<string>(3));
-
-			// 2.2 - Fetch contents' app data.
-			// TODO: Do not test backend, encapsulate!!!
-			if (q->getBackend() == MainDb::Backend::Sqlite3) {
-				soci::blob data(*session);
-				fetchContentAppData(session, *content, contentId, data);
-			} else {
-				string data;
-				fetchContentAppData(session, *content, contentId, data);
-			}
-			chatMessage->addContent(*content);
-		}
-	}
-
-	// 3 - Load external body url from body into FileTransferContent if needed.
-	if (hasFileTransferContent)
-		chatMessage->getPrivate()->loadFileTransferUrlFromBodyToContent();
-
-	cache(chatMessage, eventId);
-
-end:
 	return make_shared<ConferenceChatMessageEvent>(
 		creationTime,
 		chatMessage
@@ -1470,7 +1342,9 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 void MainDb::init () {
 	L_D();
 
-	const string charset = getBackend() == Mysql ? "DEFAULT CHARSET=utf8" : "";
+	Backend backend = getBackend();
+
+	const string charset = backend == Mysql ? "DEFAULT CHARSET=utf8" : "";
 	soci::session *session = d->dbSession.getBackendSession();
 
 	using namespace placeholders;
@@ -1479,6 +1353,13 @@ void MainDb::init () {
 	auto timestampType = bind(&DbSession::timestampType, d->dbSession);
 	auto varcharPrimaryKeyStr = bind(&DbSession::varcharPrimaryKeyStr, d->dbSession, _1);
 
+	auto createTableSanitizer = [this](const char *statement) {
+		// TODO.
+		string sanitized = statement;
+		return sanitized;
+	};
+
+	// TODO: Migrate all statements in statements.cpp.
 	*session <<
 		"CREATE TABLE IF NOT EXISTS sip_address ("
 		"  id" + primaryKeyStr("BIGINT UNSIGNED") + ","
@@ -1796,6 +1677,9 @@ void MainDb::init () {
 		"    REFERENCES friend(id)"
 		"    ON DELETE CASCADE"
 		") " + charset;
+
+	for (int i = 0; i < int(Statements::CreateCount); ++i)
+		*session << createTableSanitizer(Statements::get(static_cast<Statements::Create>(i), backend));
 
 	*session <<
 		"CREATE TABLE IF NOT EXISTS db_module_version ("
@@ -2364,10 +2248,7 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		return events;
 	}
 
-	string query = "SELECT id, type, creation_time FROM event"
-		"  WHERE id IN ("
-		"    SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
-		"  )";
+	string query = Statements::get(Statements::SelectConferenceEvents, Backend::Sqlite3);
 	query += buildSqlEventFilter({
 		ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 	}, mask, "AND");
@@ -2393,19 +2274,47 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		soci::session *session = d->dbSession.getBackendSession();
 		soci::transaction tr(*session);
 
+		shared_ptr<Core> core = getCore();
+		shared_ptr<AbstractChatRoom> chatRoom = core->findChatRoom(chatRoomId);
+		if (!chatRoom) {
+			lError() << "Unable to find chat room storage id of (peer=" +
+				chatRoomId.getPeerAddress().asString() +
+				", local=" + chatRoomId.getLocalAddress().asString() + "`).";
+			return events;
+		}
+
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 		for (const auto &row : rows) {
 			long long eventId = d->dbSession.resolveId(row, 0);
 			shared_ptr<EventLog> event = d->getEventFromCache(eventId);
 
-			if (!event)
-				event = d->selectGenericConferenceEvent(
-					eventId,
-					EventLog::Type(row.get<int>(1)),
-					Utils::getTmAsTimeT(row.get<tm>(2)),
-					chatRoomId
-				);
+			if (!event) {
+				EventLog::Type type = EventLog::Type(row.get<int>(1));
+
+				// TODO: Remove me. Performance workaround.
+				if (type == EventLog::Type::ConferenceChatMessage)
+					event = d->selectConferenceChatMessageEvent(
+						eventId,
+						type,
+						Utils::getTmAsTimeT(row.get<tm>(2)),
+						chatRoom,
+						row.get<string>(3),
+						row.get<string>(4),
+						row.get<tm>(5),
+						row.get<string>(6),
+						row.get<int>(7),
+						row.get<int>(8),
+						row.get<int>(9)
+					);
+				else
+					event = d->selectGenericConferenceEvent(
+						eventId,
+						type,
+						Utils::getTmAsTimeT(row.get<tm>(2)),
+						chatRoomId
+					);
+			}
 
 			if (event)
 				events.push_front(event);
@@ -2435,6 +2344,71 @@ int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const
 		*session << query, soci::into(count), soci::use(dbChatRoomId);
 
 		return count;
+	};
+}
+
+void MainDb::loadChatMessageContents (const shared_ptr<ChatMessage> &chatMessage) {
+	L_SAFE_TRANSACTION {
+		L_D();
+
+		soci::session *session = d->dbSession.getBackendSession();
+		soci::transaction tr(*session);
+
+		bool hasFileTransferContent = false;
+
+		ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dChatMessage->dbKey).getPrivate();
+		const long long &eventId = dEventKey->storageId;
+
+		static const string query = "SELECT chat_message_content.id, content_type.id, content_type.value, body"
+			" FROM chat_message_content, content_type"
+			" WHERE event_id = :eventId AND content_type_id = content_type.id";
+		soci::rowset<soci::row> rows = (session->prepare << query, soci::use(eventId));
+		for (const auto &row : rows) {
+			ContentType contentType(row.get<string>(2));
+			const long long &contentId = d->dbSession.resolveId(row, 0);
+			Content *content;
+
+			if (contentType == ContentType::FileTransfer) {
+				hasFileTransferContent = true;
+				content = new FileTransferContent();
+			} else if (contentType.isFile()) {
+				// 1.1 - Fetch contents' file informations.
+				string name;
+				int size;
+				string path;
+
+				*session << "SELECT name, size, path FROM chat_message_file_content"
+					" WHERE chat_message_content_id = :contentId",
+					soci::into(name), soci::into(size), soci::into(path), soci::use(contentId);
+
+				FileContent *fileContent = new FileContent();
+				fileContent->setFileName(name);
+				fileContent->setFileSize(size_t(size));
+				fileContent->setFilePath(path);
+
+				content = fileContent;
+			} else
+				content = new Content();
+
+			content->setContentType(contentType);
+			content->setBody(row.get<string>(3));
+
+			// 1.2 - Fetch contents' app data.
+			// TODO: Do not test backend, encapsulate!!!
+			if (getBackend() == MainDb::Backend::Sqlite3) {
+				soci::blob data(*session);
+				fetchContentAppData(session, *content, contentId, data);
+			} else {
+				string data;
+				fetchContentAppData(session, *content, contentId, data);
+			}
+			chatMessage->addContent(*content);
+		}
+
+		// 2 - Load external body url from body into FileTransferContent if needed.
+		if (hasFileTransferContent)
+			dChatMessage->loadFileTransferUrlFromBodyToContent();
 	};
 }
 
@@ -2948,6 +2922,8 @@ IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
 ) const {
 	return IdentityAddress();
 }
+
+void MainDb::loadChatMessageContents (const shared_ptr<ChatMessage> &) {}
 
 void MainDb::cleanHistory (const ChatRoomId &, FilterMask) {}
 

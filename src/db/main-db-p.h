@@ -103,6 +103,21 @@ private:
 		const ChatRoomId &chatRoomId
 	) const;
 
+	// TODO: Remove me. Workaround to increase fetch performance.
+	std::shared_ptr<EventLog> selectConferenceChatMessageEvent (
+		long long eventId,
+		EventLog::Type type,
+		time_t creationTime,
+		std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const std::string &fromSipAddress,
+		const std::string &toSipAddress,
+		const tm &messageTime,
+		const std::string &imdnMessageId,
+		int state,
+		int direction,
+		int isSecured
+	) const;
+
 	std::shared_ptr<EventLog> selectConferenceParticipantEvent (
 		long long eventId,
 		EventLog::Type type,

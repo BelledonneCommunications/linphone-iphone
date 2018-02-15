@@ -272,15 +272,12 @@ set(LINPHONE_OBJC_SOURCE_FILES)
 if (APPLE)
 	list(APPEND LINPHONE_OBJC_SOURCE_FILES core/paths/paths-apple.mm)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-apple.h)
-
 elseif (ANDROID)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-android.cpp core/platform-helpers/android-platform-helpers.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-android.h)
-
 elseif (WIN32)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-windows.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-windows.h)
-
 elseif (UNIX)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-linux.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-linux.h)
@@ -293,6 +290,15 @@ set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
 if (SOCI_FOUND)
 	list(APPEND LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES})
 	add_definitions(-DSOCI_ENABLED)
+
+	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
+		db/internal/safe-transaction.h
+		db/internal/statements.h
+	)
+
+	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES
+		db/internal/statements.cpp
+	)
 endif ()
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
