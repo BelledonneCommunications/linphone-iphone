@@ -366,7 +366,17 @@ void Java_{{jniPackage}}{{className}}Impl_setListener(JNIEnv* env, jobject thiz,
 			env->DeleteGlobalRef(listener);
 		}
 	} else {
-		jobject listener = env->NewGlobalRef(jlistener);
+		jobject listener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+		if (listener == NULL) {
+			listener = env->NewGlobalRef(jlistener);
+		} else {
+			if (env->IsSameObject(listener, jlistener)) {
+				return;
+			} else {
+				env->DeleteGlobalRef(listener);
+				listener = env->NewGlobalRef(jlistener);
+			}
+		}
 		{{cPrefix}}_cbs_set_user_data(cbs, listener);
 		{{#callbacksList}}
 		{{cPrefix}}_cbs_set_{{callback}}(cbs, {{callbackName}});
