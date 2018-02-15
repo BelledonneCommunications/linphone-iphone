@@ -12,7 +12,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatConversationInfoView">
             <connections>
                 <outlet property="addButton" destination="XSI-9T-NtW" id="BlB-bn-XWt"/>
-                <outlet property="backButton" destination="HVD-Ql-SJG" id="iHL-Rf-gT2"/>
                 <outlet property="nameLabel" destination="69I-Un-ASz" id="qmU-o2-TmF"/>
                 <outlet property="nextButton" destination="0v1-qv-lPd" id="nPu-w2-iy3"/>
                 <outlet property="quitButton" destination="Hnm-7C-dBQ" id="Kp1-Aw-FQq"/>
