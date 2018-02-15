@@ -1256,13 +1256,11 @@ template<typename T>
 static T getValueFromRow (const soci::row &row, int index, bool &isNull) {
 	isNull = false;
 
-	try {
-		return row.get<T>(size_t(index));
-	} catch (const exception &) {
+	if (row.get_indicator(size_t(index)) == soci::i_null){
 		isNull = true;
+		return T();
 	}
-
-	return T();
+	return row.get<T>(size_t(index));
 }
 
 // -----------------------------------------------------------------------------
