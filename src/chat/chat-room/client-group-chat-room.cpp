@@ -149,9 +149,14 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 		if (q->getState() == ChatRoom::State::CreationPending)
 			setState(ChatRoom::State::CreationFailed);
 		else if (q->getState() == ChatRoom::State::TerminationPending) {
-			// Go to state TerminationFailed and then back to Created since it has not been terminated
-			setState(ChatRoom::State::TerminationFailed);
-			setState(ChatRoom::State::Created);
+			if (session->getReason() == LinphoneReasonNotFound) {
+				// Somehow the chat room is no longer know on the server, so terminate it
+				q->onConferenceTerminated(q->getConferenceAddress());
+			} else {
+				// Go to state TerminationFailed and then back to Created since it has not been terminated
+				setState(ChatRoom::State::TerminationFailed);
+				setState(ChatRoom::State::Created);
+			}
 		}
 	}
 }
