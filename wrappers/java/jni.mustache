@@ -377,6 +377,7 @@ void Java_{{jniPackage}}{{className}}Impl_setListener(JNIEnv* env, jobject thiz,
 
 {{#isMultiListener}}
 void Java_{{jniPackage}}{{className}}Impl_addListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	if (jlistener == NULL) return;
 	{{classCName}} *cptr = ({{classCName}}*)ptr;
 	jobject listener = env->NewGlobalRef(jlistener);
 	{{classCName}}Cbs *cbs = linphone_factory_create_{{factoryName}}_cbs(NULL);
