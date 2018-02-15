@@ -22,7 +22,6 @@
 @property(nonatomic) LinphoneChatRoom *room;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
-@property (weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property (weak, nonatomic) IBOutlet UIRoundBorderedButton *quitButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *addButton;
 @property (weak, nonatomic) IBOutlet UITextField *nameLabel;

@@ -35,10 +35,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	// if we use fragments, remove back button
-	if (IPAD) {
-		_backButton.hidden = YES;
-	}
 	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
 								   initWithTarget:self
 								   action:@selector(dismissKeyboards)];
