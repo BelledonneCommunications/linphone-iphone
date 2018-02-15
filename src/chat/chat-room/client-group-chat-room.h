@@ -55,6 +55,8 @@ public:
 		unsigned int lastNotifyId
 	);
 
+	~ClientGroupChatRoom ();
+
 	std::shared_ptr<Core> getCore () const;
 
 	void allowCpim (bool value) override;

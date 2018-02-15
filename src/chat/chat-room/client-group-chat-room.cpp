@@ -208,6 +208,11 @@ RemoteConference(core, me->getAddress(), nullptr) {
 	dConference->eventHandler->subscribe(getChatRoomId());
 }
 
+ClientGroupChatRoom::~ClientGroupChatRoom () {
+	L_D();
+	d->setCallSessionListener(nullptr);
+}
+
 shared_ptr<Core> ClientGroupChatRoom::getCore () const {
 	return ChatRoom::getCore();
 }
