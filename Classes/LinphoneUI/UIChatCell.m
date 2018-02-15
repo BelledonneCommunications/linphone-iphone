@@ -85,12 +85,13 @@
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
-		NSString *message = [UIChatBubbleTextCell TextMessageForChat:last_msg];
+		NSString *text = [[FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)]
+						  stringByAppendingFormat:@" : %@", [UIChatBubbleTextCell TextMessageForChat:last_msg]];
 		// shorten long messages
-		if ([message length] > 50) {
-			message = [[message substringToIndex:50] stringByAppendingString:@"[...]"];
+		if ([text length] > 50) {
+			text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
 		}
-		_chatContentLabel.text = message;
+		_chatContentLabel.text = text;
 	} else {
 		_chatContentLabel.text = nil;
 		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
