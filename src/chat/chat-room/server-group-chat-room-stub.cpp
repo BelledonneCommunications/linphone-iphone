@@ -104,7 +104,7 @@ void ServerGroupChatRoomPrivate::queueMessage (const shared_ptr<Message> &messag
 
 void ServerGroupChatRoomPrivate::queueMessage (const shared_ptr<Message> &msg, const IdentityAddress &deviceAddress) {}
 
-void ServerGroupChatRoomPrivate::removeLeftParticipants (const list <IdentityAddress> &compatibleParticipants) {}
+void ServerGroupChatRoomPrivate::removeNonPresentParticipants (const list <IdentityAddress> &compatibleParticipants) {}
 
 // -----------------------------------------------------------------------------
 

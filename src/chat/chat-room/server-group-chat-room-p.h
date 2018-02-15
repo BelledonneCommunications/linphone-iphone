@@ -84,7 +84,7 @@ private:
 	bool isAdminLeft () const;
 	void queueMessage (const std::shared_ptr<Message> &message);
 	void queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress);
-	void removeLeftParticipants (const std::list <IdentityAddress> &compatibleParticipants);
+	void removeNonPresentParticipants (const std::list <IdentityAddress> &compatibleParticipants);
 
 	void onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session);
 
