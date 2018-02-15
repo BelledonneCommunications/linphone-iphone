@@ -243,7 +243,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onQuitClick:(id)sender {
-	linphone_chat_room_leave(_room);
+	NSString *msg =
+	[NSString stringWithFormat:NSLocalizedString(@"Do you want to leave this conversation?", nil)];
+	[UIConfirmationDialog ShowWithMessage:msg
+							cancelMessage:nil
+						   confirmMessage:nil
+							onCancelClick:^() {}
+					  onConfirmationClick:^() {
+						  linphone_chat_room_leave(_room);
+					  }];
 }
 
 - (IBAction)onAddClick:(id)sender {

@@ -225,9 +225,17 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
-		_chatRooms = bctbx_list_new((void *)chatRoom);
-		[self deleteChatRooms];
+		NSString *msg =
+		[NSString stringWithFormat:NSLocalizedString(@"Do you want to delete this conversation?", nil)];
+		[UIConfirmationDialog ShowWithMessage:msg
+								cancelMessage:nil
+							   confirmMessage:nil
+								onCancelClick:^() {}
+						  onConfirmationClick:^() {
+							  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+							  _chatRooms = bctbx_list_new((void *)chatRoom);
+							  [self deleteChatRooms];
+						  }];
 	}
 }
 
@@ -240,7 +248,7 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 	NSArray *copy = [[NSArray alloc] initWithArray:self.selectedItems];
 	for (NSIndexPath *indexPath in copy) {
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
-		_chatRooms = _chatRooms ? bctbx_list_append(_chatRooms, chatRoom) : bctbx_list_new(chatRoom);
+		_chatRooms = bctbx_list_append(_chatRooms, chatRoom);
 	}
 	[self deleteChatRooms];
 	[self.selectedItems removeAllObjects];
