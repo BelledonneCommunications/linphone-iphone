@@ -871,7 +871,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 		return;
 	}
 	ChatConversationView *view = VIEW(ChatConversationView);
-	[view setChatRoom:room];
+	view.chatRoom = room;
 	[self changeCurrentView:view.compositeViewDescription];
 }
 

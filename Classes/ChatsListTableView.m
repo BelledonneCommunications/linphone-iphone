@@ -164,7 +164,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	if (![self isEditing]) {
 		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
 		ChatConversationView *view = VIEW(ChatConversationView);
-		[view setChatRoom:chatRoom];
+		view.chatRoom = chatRoom;
 		// on iPad, force unread bubble to disappear by reloading the cell
 		if (IPAD) {
 			UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];

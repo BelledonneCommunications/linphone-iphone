@@ -109,7 +109,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCallUpdate
 											 object:nil];
 	if (_chatRoom)
-		[self setChatRoom:_chatRoom];
+		[self setRoom:_chatRoom];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -150,7 +150,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark -
 
-- (void)setChatRoom:(LinphoneChatRoom *)chatRoom {
+- (void)setRoom:(LinphoneChatRoom *)chatRoom {
 	_chatRoom = chatRoom;
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
 	linphone_chat_room_cbs_set_state_changed(cbs, on_chat_room_state_changed);
@@ -197,9 +197,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[self update];
 		linphone_chat_room_mark_as_read(_chatRoom);
 		[self setComposingVisible:linphone_chat_room_is_remote_composing(_chatRoom) withDelay:0];
-		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-			getCachedController:NSStringFromClass(TabBarView.class)];
-		[tab update:YES];
 		[PhoneMainView.instance updateApplicationBadgeNumber];
 	} else {
 		_chatView.hidden = YES;
