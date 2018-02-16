@@ -77,7 +77,7 @@
 		}
 	} else {
 		const char *subject = linphone_chat_room_get_subject(chatRoom);
-		_addressLabel.text = [NSString stringWithUTF8String:subject];
+		_addressLabel.text = [NSString stringWithUTF8String:subject ?: LINPHONE_DUMMY_SUBJECT];
 		[_avatarImage setImage:[UIImage imageNamed:@"chat_group_avatar.png"] bordered:NO withRoundedRadius:YES];
 	}
 

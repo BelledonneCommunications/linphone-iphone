@@ -127,7 +127,6 @@
 	if (!addr)
 		return cell;
 	
-
 	cell.linphoneImage.hidden = !linphoneContact;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
