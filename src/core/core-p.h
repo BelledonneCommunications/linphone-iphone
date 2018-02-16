@@ -57,6 +57,7 @@ public:
 	void postConfigureAudioStream (AudioStream *stream, bool muted);
 	void setPlaybackGainDb (AudioStream *stream, float gain);
 
+	void loadChatRooms ();
 	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	void insertChatRoomWithDb (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	std::shared_ptr<AbstractChatRoom> createBasicChatRoom (const ChatRoomId &chatRoomId, AbstractChatRoom::CapabilitiesMask capabilities);

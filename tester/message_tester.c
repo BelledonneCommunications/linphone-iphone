@@ -1467,7 +1467,7 @@ static void lime_unit(void) {
  * Destination file is truncated if existing.
  * Return 0 on success, positive value on error.
  */
-int message_tester_copy_file(const char *from, const char *to)
+static int message_tester_copy_file(const char *from, const char *to)
 {
 	FILE *in, *out;
 	char buf[256];
@@ -2309,7 +2309,7 @@ static void message_received_callback(LinphoneCore *lc, LinphoneChatRoom *room, 
 	}
 	BC_ASSERT_EQUAL(0, linphone_chat_room_get_unread_messages_count(room), int, "%d");
 }
-	
+
 void unread_message_count_callback(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -2326,6 +2326,26 @@ void unread_message_count_callback(void) {
 	linphone_core_cbs_unref(cbs);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void migration_from_messages_db (void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	char *src_db = bc_tester_res("db/messages.db");
+	char *tmp_db  = bc_tester_file("tmp.db");
+
+	BC_ASSERT_EQUAL(message_tester_copy_file(src_db, tmp_db), 0, int, "%d");
+
+	// The messages.db has 10000 dummy messages with the very first DB scheme.
+	// This will test the migration procedure
+	linphone_core_set_chat_database_path(marie->lc, tmp_db);
+
+	const bctbx_list_t *chatrooms = linphone_core_get_chat_rooms(marie->lc);
+	BC_ASSERT(bctbx_list_size(chatrooms) > 0);
+
+	linphone_core_manager_destroy(marie);
+	remove(tmp_db);
+	bctbx_free(src_db);
+	bctbx_free(tmp_db);
 }
 
 test_t message_tests[] = {
@@ -2404,6 +2424,7 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Crash during file transfer", crash_during_file_transfer),
 	TEST_NO_TAG("Text status after destroying chat room", text_status_after_destroying_chat_room),
 	TEST_NO_TAG("Transfer io error after destroying chatroom", file_transfer_io_error_after_destroying_chatroom),
+	TEST_NO_TAG("Migration from messages db", migration_from_messages_db)
 };
 
 static int message_tester_before_suite(void) {

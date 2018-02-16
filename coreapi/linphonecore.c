@@ -6709,11 +6709,13 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc){
 
 void linphone_core_set_chat_database_path (LinphoneCore *lc, const char *path) {
 	if (!linphone_core_conference_server_enabled(lc)) {
-		auto &mainDb = L_GET_PRIVATE(lc->cppPtr)->mainDb;
-		if (mainDb)
+		auto &mainDb = L_GET_PRIVATE_FROM_C_OBJECT(lc)->mainDb;
+		if (mainDb) {
 			mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
-		else
+			L_GET_PRIVATE_FROM_C_OBJECT(lc)->loadChatRooms();
+		} else {
 			ms_warning("linphone_core_set_chat_database_path() needs to be called once linphone_core_start() has been called");
+		}
 	}
 }
 

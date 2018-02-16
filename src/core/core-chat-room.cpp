@@ -118,6 +118,11 @@ void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chat
 	mainDb->insertChatRoom(chatRoom);
 }
 
+void CorePrivate::loadChatRooms () {
+	for (auto &chatRoom : mainDb->getChatRooms())
+		insertChatRoom(chatRoom);
+}
+
 void CorePrivate::replaceChatRoom (const shared_ptr<AbstractChatRoom> &replacedChatRoom, const shared_ptr<AbstractChatRoom> &newChatRoom) {
 	const ChatRoomId &replacedChatRoomId = replacedChatRoom->getChatRoomId();
 	const ChatRoomId &newChatRoomId = newChatRoom->getChatRoomId();

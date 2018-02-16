@@ -57,8 +57,7 @@ void CorePrivate::init () {
 	if (!mainDb->connect(backend, uri))
 		lFatal() << "Unable to open linphone database.";
 
-	for (auto &chatRoom : mainDb->getChatRooms())
-		insertChatRoom(chatRoom);
+	loadChatRooms();
 }
 
 void CorePrivate::registerListener (CoreListener *listener) {

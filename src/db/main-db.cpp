@@ -1423,8 +1423,12 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 				soci::use(eventType), soci::use(creationTime);
 
 			const long long &eventId = dbSession.getLastInsertId();
-			const long long &localSipAddressId = insertSipAddress(message.get<string>(LegacyMessageColLocalAddress));
-			const long long &remoteSipAddressId = insertSipAddress(message.get<string>(LegacyMessageColRemoteAddress));
+			const long long &localSipAddressId = insertSipAddress(
+				IdentityAddress(message.get<string>(LegacyMessageColLocalAddress)).asString()
+			);
+			const long long &remoteSipAddressId = insertSipAddress(
+				IdentityAddress(message.get<string>(LegacyMessageColRemoteAddress)).asString()
+			);
 			const long long &chatRoomId = insertOrUpdateImportedBasicChatRoom(
 				remoteSipAddressId,
 				localSipAddressId,
