@@ -13,7 +13,7 @@
 
 @interface ChatConversationCreateTableView ()
 
-@property(nonatomic, strong) NSMutableDictionary *contacts;
+@property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSDictionary *allContacts;
 @property(nonatomic, strong) NSMutableArray *contactsAddresses;
 @property(nonatomic, strong) NSArray *sortedAddresses;
@@ -32,24 +32,23 @@
 		else
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
-	self.contacts = [[NSMutableDictionary alloc] initWithCapacity:_allContacts.count];
+
 	self.contactsAddresses = [NSMutableArray array];
-	[_searchBar becomeFirstResponder];
+	_addresses = [[NSMutableArray alloc] initWithCapacity:_sortedAddresses.count];
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
 }
 
 - (void)reloadDataWithFilter:(NSString *)filter {
-	[_contacts removeAllObjects];
+	[_addresses removeAllObjects];
 	[_contactsAddresses removeAllObjects];
 	for (NSString* key in _sortedAddresses){
 		NSString *address = (NSString *)key;
 		NSString *name = [FastAddressBook displayNameForContact:[_allContacts objectForKey:key]];
 		if ((filter.length == 0) || ([name.lowercaseString containsSubstring:filter.lowercaseString]) ||
 			([address.lowercaseString containsSubstring:filter.lowercaseString])) {
-			[_contacts setObject:name forKey:address] ;
-			[_contactsAddresses insertObject:address atIndex:[_contactsAddresses count]];
+			[_addresses addObject:key];
 		}
 	}
 	// also add current entry, if not listed
@@ -61,10 +60,10 @@
 		ms_free(uri);
 		linphone_address_destroy(addr);
 	}
-	if (nsuri.length > 0 && [_contacts valueForKey:nsuri] == nil) {
-		[_contacts setObject:filter forKey:nsuri] ;
-		[_contactsAddresses insertObject:nsuri atIndex:[_contactsAddresses count]];
-	}
+
+	if (nsuri.length > 0 && ![_addresses containsObject:nsuri])
+		[_addresses addObject:nsuri];
+
 	[self.tableView reloadData];
 }
 
@@ -73,7 +72,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [self.contacts count];
+	return _addresses.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -81,14 +80,11 @@
 	UIChatCreateCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
 	if (cell == nil) {
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
-	}
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contactsAddresses objectAtIndex:indexPath.row]];
-	cell.displayNameLabel.text =  [_contacts objectForKey:[_contactsAddresses objectAtIndex:indexPath.row]];
-	if (addr) {
-		cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
-	} else {
-		cell.addressLabel.text = [_contacts.allKeys objectAtIndex:indexPath.row];
-	}
+
+	NSString *key = [_addresses objectAtIndex:indexPath.row];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
+	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
+	cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
 	return cell;
 }
 
@@ -99,7 +95,7 @@
 	if (addr) {
 		uri = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
 	} else {
-		uri = [_contacts.allKeys objectAtIndex:indexPath.row];
+		uri = [_addresses objectAtIndex:indexPath.row];
 	}
 	LinphoneChatRoom *room = linphone_core_get_chat_room_from_uri(LC, uri.UTF8String);
 	if (!room) {
@@ -108,7 +104,7 @@
 																		 message:NSLocalizedString(@"Please specify the entire SIP address for the chat",
 																									   nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-			
+
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																style:UIAlertActionStyleDefault
 																handler:^(UIAlertAction * action) {}];
