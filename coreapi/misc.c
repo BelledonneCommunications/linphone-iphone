@@ -1768,7 +1768,7 @@ static void _create_ice_check_lists_and_parse_ice_attributes(LinphoneCall *call,
 		}
 		if (ice_restarted == FALSE) {
 			bool_t losing_pairs_added = FALSE;
-			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 				const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
 				addr = NULL;
 				port = 0;
