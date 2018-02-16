@@ -124,6 +124,9 @@
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
+	if (!addr)
+		return cell;
+	
 
 	cell.linphoneImage.hidden = !linphoneContact;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
