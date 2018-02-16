@@ -181,8 +181,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
 		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	} else
+	} else if (linphone_chat_room_get_subject(_chatRoom))
 		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+	else
+		_addressLabel.text=@LINPHONE_DUMMY_SUBJECT;
 
 	[self updateParticipantLabel];
 
@@ -541,7 +543,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.oldContacts = [contactsArray mutableCopy];
 	view.admins = [admins mutableCopy];
 	view.oldAdmins = [admins mutableCopy];
-	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
+	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)?linphone_chat_room_get_subject(_chatRoom):LINPHONE_DUMMY_SUBJECT];
 	view.room = _chatRoom;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
