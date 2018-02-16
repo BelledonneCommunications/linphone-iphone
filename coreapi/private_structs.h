@@ -106,6 +106,7 @@ struct _LinphoneProxyConfig
 	LinphoneRegistrationState state;
 	LinphoneAVPFMode avpf_mode;
 	LinphoneNatPolicy *nat_policy;
+	int quality_reporting_interval;
 
 	bool_t commit;
 	bool_t reg_sendregister;
@@ -115,15 +116,14 @@ struct _LinphoneProxyConfig
 	bool_t send_publish;
 	bool_t quality_reporting_enabled;
 	uint8_t avpf_rr_interval;
-	uint8_t quality_reporting_interval;
+	bool_t register_changed;
 
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
-	bool_t register_changed;
-	bool_t unused[3];
+	
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
 	LinphoneEvent *presence_publish_event;
