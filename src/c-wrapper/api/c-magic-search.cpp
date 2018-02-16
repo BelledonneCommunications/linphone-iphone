@@ -65,6 +65,14 @@ void linphone_magic_search_set_delimiter(LinphoneMagicSearch *magicSearch, const
 	L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->setDelimiter(L_C_TO_STRING(delimiter));
 }
 
+bool_t linphone_magic_search_get_use_delimiter(LinphoneMagicSearch *magicSearch) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->getUseDelimiter();
+}
+
+void linphone_magic_search_set_use_delimiter(LinphoneMagicSearch *magicSearch, bool_t enable) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->setUseDelimiter(enable);
+}
+
 unsigned int linphone_magic_search_get_search_limit(const LinphoneMagicSearch *magicSearch) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->getSearchLimit();
 }
@@ -81,6 +89,10 @@ void linphone_magic_search_set_limited_search(LinphoneMagicSearch *magicSearch, 
 	L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->setLimitedSearch(limited);
 }
 
-bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(const LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain) {
+void linphone_magic_search_reset_search_cache(LinphoneMagicSearch *magicSearch) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->resetSearchCache();
+}
+
+bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain) {
 	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(magicSearch)->getContactListFromFilter(L_C_TO_STRING(filter), L_C_TO_STRING(withDomain)));
 }

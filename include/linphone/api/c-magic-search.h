@@ -80,6 +80,17 @@ LINPHONE_PUBLIC const char *linphone_magic_search_get_delimiter(const LinphoneMa
 LINPHONE_PUBLIC void linphone_magic_search_set_delimiter(LinphoneMagicSearch *magicSearch, const char *delimiter);
 
 /**
+ * @return if the delimiter search is used
+ **/
+LINPHONE_PUBLIC bool_t linphone_magic_search_get_use_delimiter(LinphoneMagicSearch *magicSearch);
+
+/**
+ * Enable or disable the delimiter in search
+ * @param[in] enable
+ **/
+LINPHONE_PUBLIC void linphone_magic_search_set_use_delimiter(LinphoneMagicSearch *magicSearch, bool_t enable);
+
+/**
  * @return the number of the maximum SearchResult which will be return
  **/
 LINPHONE_PUBLIC unsigned int linphone_magic_search_get_search_limit(const LinphoneMagicSearch *magicSearch);
@@ -102,13 +113,18 @@ LINPHONE_PUBLIC bool_t linphone_magic_search_get_limited_search(const LinphoneMa
 LINPHONE_PUBLIC void linphone_magic_search_set_limited_search(LinphoneMagicSearch *magicSearch, const bool_t limited);
 
 /**
+ * Reset the cache to begin a new search
+ **/
+LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache(LinphoneMagicSearch *magicSearch);
+
+/**
  * Create a sorted list of SearchResult from SipUri, Contact name,
  * Contact displayname, Contact phone number, which match with a filter word
  * @param[in] filter word we search
  * @param[in] withDomain domain which we want to search only
  * @return sorted list of \bctbx_list{LinphoneSearchResult}
  **/
-LINPHONE_PUBLIC bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(const LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain);
+LINPHONE_PUBLIC bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain);
 
 /**
  * @}

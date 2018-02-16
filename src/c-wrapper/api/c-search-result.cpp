@@ -31,14 +31,14 @@ void linphone_search_result_unref(LinphoneSearchResult *searchResult) {
 	belle_sip_object_unref(searchResult);
 }
 
-const LinphoneFriend* linphone_search_result_get_friend(LinphoneSearchResult *searchResult) {
+const LinphoneFriend* linphone_search_result_get_friend(const LinphoneSearchResult *searchResult) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getFriend();
 }
 
-const LinphoneAddress* linphone_search_result_get_address(LinphoneSearchResult *searchResult) {
+const LinphoneAddress* linphone_search_result_get_address(const LinphoneSearchResult *searchResult) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getAddress();
 }
 
-unsigned int linphone_search_result_get_weight(LinphoneSearchResult *searchResult) {
+unsigned int linphone_search_result_get_weight(const LinphoneSearchResult *searchResult) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getWeight();
 }

@@ -44,17 +44,17 @@ LINPHONE_PUBLIC void linphone_search_result_unref(LinphoneSearchResult *searchRe
 /**
  * @return LinphoneFriend associed
  **/
-LINPHONE_PUBLIC const LinphoneFriend* linphone_search_result_get_friend(LinphoneSearchResult *searchResult);
+LINPHONE_PUBLIC const LinphoneFriend* linphone_search_result_get_friend(const LinphoneSearchResult *searchResult);
 
 /**
  * @return LinphoneAddress associed
  **/
-LINPHONE_PUBLIC const LinphoneAddress* linphone_search_result_get_address(LinphoneSearchResult *searchResult);
+LINPHONE_PUBLIC const LinphoneAddress* linphone_search_result_get_address(const LinphoneSearchResult *searchResult);
 
 /**
  * @return the result weight
  **/
-LINPHONE_PUBLIC unsigned int linphone_search_result_get_weight(LinphoneSearchResult *searchResult);
+LINPHONE_PUBLIC unsigned int linphone_search_result_get_weight(const LinphoneSearchResult *searchResult);
 
 /**
  * @}

@@ -116,7 +116,7 @@ LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const 
  * @param lf #LinphoneFriend object
  * @return \bctbx_list{const char *}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
+LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_phone_numbers(const LinphoneFriend *lf);
 
 /**
  * Removes a phone number in this friend

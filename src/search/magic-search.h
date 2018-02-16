@@ -36,6 +36,7 @@ class LINPHONE_PUBLIC MagicSearch : public CoreAccessor, public Object{
 public:
 
 	MagicSearch(const std::shared_ptr<Core> &core);
+	MagicSearch(const MagicSearch &ms) = delete;
 	~MagicSearch();
 
 	/**
@@ -72,6 +73,17 @@ public:
 	void setDelimiter(const std::string &delimiter);
 
 	/**
+	 * @return if the delimiter search is used
+	 **/
+	bool getUseDelimiter() const;
+
+	/**
+	 * Enable or disable the delimiter in search
+	 * @param[in] enable
+	 **/
+	void setUseDelimiter(bool enable);
+
+	/**
 	 * @return the number of the maximum SearchResult which will be return
 	 **/
 	unsigned int getSearchLimit() const;
@@ -94,20 +106,67 @@ public:
 	void setLimitedSearch(const bool limited);
 
 	/**
+	 * Reset the cache to begin a new search
+	 **/
+	void resetSearchCache();
+
+	/**
 	 * Create a sorted list of SearchResult from SipUri, Contact name,
 	 * Contact displayname, Contact phone number, which match with a filter word
+	 * During the first search, a cache is created and used for the next search and so on
+	 * Use resetSearchCache() to begin a new search
 	 * @param[in] filter word we search
 	 * @param[in] withDomain domain which we want to search only
-	 * @return sorted list of SearchResult with "filter"
+	 * @return sorted list of SearchResult with "filter" or an empty list if "filter" is empty
 	 **/
-	std::list<SearchResult> getContactListFromFilter(const std::string &filter, const std::string &withDomain = "") const;
+	std::list<SearchResult> getContactListFromFilter(const std::string &filter, const std::string &withDomain = "");
 
 private:
+
+	/**
+	 * @return the cache of precedent result
+	 * @private
+	 **/
+	std::list<SearchResult> *getSearchCache() const;
+
+	/**
+	 * Save a result for future search
+	 * @param[in] cache result we want to save
+	 * @private
+	 **/
+	void setSearchCache(std::list<SearchResult> *cache);
+
+	/**
+	 * Begin the search from friend list
+	 * @param[in] filter word we search
+	 * @param[in] withDomain domain which we want to search only
+	 * @private
+	 **/
+	std::list<SearchResult> *beginNewSearch(const std::string &filter, const std::string &withDomain);
+
+	/**
+	 * Continue the search from the cache of precedent search
+	 * @param[in] filter word we search
+	 * @param[in] withDomain domain which we want to search only
+	 * @private
+	 **/
+	std::list<SearchResult> *continueSearch(const std::string &filter, const std::string &withDomain);
+
+	/**
+	 * Continue the search from the cache of precedent search
+	 * @param[in] lFriend friend whose informations will be check
+	 * @param[in] filter word we search
+	 * @param[in] withDomain domain which we want to search only
+	 * @private
+	 **/
+	SearchResult search(const LinphoneFriend* lFriend, const std::string &filter, const std::string &withDomain);
+
 	/**
 	 * Return a weight for a searched in with a filter
 	 * @param[in] stringWords which where we are searching
 	 * @param[in] filter what we are searching
 	 * @return calculate weight
+	 * @private
 	 **/
 	unsigned int getWeight(const std::string &stringWords, const std::string &filter) const;
 

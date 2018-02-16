@@ -40,11 +40,19 @@ SearchResult::SearchResult(const SearchResult &sr) : ClonableObject(*new SearchR
 
 SearchResult::~SearchResult() {};
 
-bool SearchResult::operator<(const SearchResult& rsr) {
+bool SearchResult::operator<(const SearchResult& rsr) const{
 	return this->getWeight() < rsr.getWeight();
 }
 
-bool SearchResult::operator=(const SearchResult& rsr) {
+bool SearchResult::operator>(const SearchResult& rsr) const{
+	return this->getWeight() > rsr.getWeight();
+}
+
+bool SearchResult::operator>=(const SearchResult& rsr) const{
+	return this->getWeight() >= rsr.getWeight();
+}
+
+bool SearchResult::operator=(const SearchResult& rsr) const{
 	return this->getWeight() == rsr.getWeight();
 }
 

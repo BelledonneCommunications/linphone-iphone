@@ -36,8 +36,10 @@ public:
 	SearchResult(const SearchResult &sr);
 	~SearchResult();
 
-	bool operator<(const SearchResult& rsr);
-	bool operator=(const SearchResult& rsr);
+	bool operator<(const SearchResult& rsr) const;
+	bool operator>(const SearchResult& rsr) const;
+	bool operator>=(const SearchResult& rsr) const;
+	bool operator=(const SearchResult& rsr) const;
 
 	/**
 	 * @return LinphoneFriend associed

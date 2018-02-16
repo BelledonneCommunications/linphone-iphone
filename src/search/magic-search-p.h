@@ -32,6 +32,8 @@ private:
 	unsigned int mSearchLimit; // Number of ResultSearch maximum when the search is limited
 	bool mLimitedSearch; // Limit the search
 	std::string mDelimiter; // Delimiter use for the search
+	bool mUseDelimiter;
+	std::list<SearchResult> *mCacheResult;
 
 	L_DECLARE_PUBLIC(MagicSearch);
 };
