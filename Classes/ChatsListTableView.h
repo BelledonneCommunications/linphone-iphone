@@ -26,6 +26,7 @@
 @property (nonatomic) NSInteger nbOfChatRoomToDelete;
 @property (nonatomic) bctbx_list_t *chatRooms;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
+@property bctbx_list_t *data;
 
 - (void)loadData;
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom;

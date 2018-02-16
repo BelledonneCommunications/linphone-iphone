@@ -94,8 +94,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onDeleteClick:(id)sender {
-	NSString *msg =
-		[NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave the selected conversations?", nil)];
+	BOOL group = false;
+	NSArray *copy = [[NSArray alloc] initWithArray:_tableController.selectedItems];
+	for (NSIndexPath *indexPath in copy) {
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_tableController.data, (int)[indexPath row]);
+		if (LinphoneChatRoomCapabilitiesConference & linphone_chat_room_get_capabilities(chatRoom)) {
+			group = true;
+			break;
+		}
+	}
+	NSString *msg = group
+		? [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave the selected conversations?", nil)]
+		: [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete the selected conversations?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

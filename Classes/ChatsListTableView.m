@@ -26,16 +26,14 @@
 #import "PhoneMainView.h"
 #import "Utils.h"
 
-@implementation ChatsListTableView {
-	bctbx_list_t *data;
-}
+@implementation ChatsListTableView
 
 #pragma mark - Lifecycle Functions
 
 - (instancetype)init {
 	self = super.init;
 	if (self) {
-		data = nil;
+		_data = nil;
 		_nbOfChatRoomToDelete = 0;
 		_waitView.hidden = TRUE;
 	}
@@ -109,11 +107,11 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 - (void)loadData {
-	data = [self sortChatRooms];
+	_data = [self sortChatRooms];
 	[super loadData];
 
 	if (IPAD) {
-		int idx = bctbx_list_index(data, VIEW(ChatConversationView).chatRoom);
+		int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 		// if conversation view is using a chatroom that does not exist anymore, update it
 		if (idx != -1) {
 			NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
@@ -127,7 +125,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
-	int idx = bctbx_list_index(data, VIEW(ChatConversationView).chatRoom);
+	int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
 	if (IPAD) {
 		UIChatCell *cell = (UIChatCell *)[self.tableView cellForRowAtIndexPath:indexPath];
@@ -142,7 +140,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return bctbx_list_size(data);
+	return bctbx_list_size(_data);
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -152,7 +150,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		cell = [[UIChatCell alloc] initWithIdentifier:kCellId];
 	}
 
-	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row])];
+	[cell setChatRoom:(LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row])];
 	[super accessoryForCell:cell atPath:indexPath];
 	return cell;
 }
@@ -162,7 +160,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
 	if (![self isEditing]) {
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
 		ChatConversationView *view = VIEW(ChatConversationView);
 		view.chatRoom = chatRoom;
 		// on iPad, force unread bubble to disappear by reloading the cell
@@ -225,14 +223,15 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		NSString *msg =
-		[NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave this conversation?", nil)];
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
+		NSString *msg = (LinphoneChatRoomCapabilitiesOneToOne & linphone_chat_room_get_capabilities(chatRoom))
+			? [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete this conversation?", nil)]
+			: [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave this conversation?", nil)];
 		[UIConfirmationDialog ShowWithMessage:msg
 								cancelMessage:nil
 							   confirmMessage:nil
 								onCancelClick:^() {}
 						  onConfirmationClick:^() {
-							  LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
 							  _chatRooms = bctbx_list_new((void *)chatRoom);
 							  [self deleteChatRooms];
 						  }];
@@ -247,7 +246,7 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 	}];
 	NSArray *copy = [[NSArray alloc] initWithArray:self.selectedItems];
 	for (NSIndexPath *indexPath in copy) {
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(data, (int)[indexPath row]);
+		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
 		_chatRooms = bctbx_list_append(_chatRooms, chatRoom);
 	}
 	[self deleteChatRooms];
