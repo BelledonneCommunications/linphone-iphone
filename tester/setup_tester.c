@@ -25,19 +25,21 @@
 #include "linphone/api/c-magic-search.h"
 #include "tester_utils.h"
 
-#define S_SIZE_FRIEND 10
+#define S_SIZE_FRIEND 12
 static const unsigned int sSizeFriend = S_SIZE_FRIEND;
 static const char *sFriends[S_SIZE_FRIEND] = {
-	"sip:test@sip.example.org",
-	"sip:test2@sip.example.org",
-	"sip:allo@sip.example.org",
-	"sip:hello@sip.example.org",
-	"sip:hello@sip.test.org",
-	"sip:marie@sip.example.org",
-	"sip:laura@sip.example.org",
-	"sip:loic@sip.example.org",
-	"sip:laure@sip.test.org",
-	"sip:loic@sip.test.org"
+	"sip:test@sip.example.org",//0
+	"sip:test2@sip.example.org",//1
+	"sip:allo@sip.example.org",//2
+	"sip:hello@sip.example.org",//3
+	"sip:hello@sip.test.org",//4
+	"sip:marie@sip.example.org",//5
+	"sip:laura@sip.example.org",//6
+	"sip:loic@sip.example.org",//7
+	"sip:laure@sip.test.org",//8
+	"sip:loic@sip.test.org",//9
+	"sip:+111223344@sip.example.org",//10
+	"sip:+33655667788@sip.example.org"//11
 };
 
 static void _create_friends_from_tab(LinphoneCore *lc, LinphoneFriendList *list, const char *friends[], const unsigned int size) {
@@ -583,6 +585,38 @@ static void search_friend_research_estate_reset(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void search_friend_with_phone_number(void) {
+	LinphoneMagicSearch *magicSearch = NULL;
+	bctbx_list_t *resultList = NULL;
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+	const char* mariePhoneNumber = {"0633556644"};
+
+	_create_friends_from_tab(manager->lc, lfl, sFriends, sSizeFriend);
+
+	linphone_friend_add_phone_number(linphone_friend_list_find_friend_by_uri(lfl, sFriends[5]), mariePhoneNumber);
+
+	magicSearch = linphone_magic_search_new(manager->lc);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "33", "");
+
+	BC_ASSERT_PTR_NOT_NULL(resultList);
+
+	if (resultList != NULL) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 3, int, "%d");
+		_check_friend_result_list(resultList, 0, sFriends[11]);//"sip:+111223344@sip.example.org"
+		_check_friend_result_list(resultList, 1, sFriends[10]);//"sip:+33655667788@sip.example.org"
+		_check_friend_result_list(resultList, 2, sFriends[5]);//"sip:marie@sip.example.org"
+	}
+
+	free(resultList);
+
+
+	_remove_friends_from_list(lfl, sFriends, sSizeFriend);
+
+	linphone_core_manager_destroy(manager);
+}
+
 test_t setup_tests[] = {
 	TEST_NO_TAG("Version check", linphone_version_test),
 	TEST_NO_TAG("Linphone Address", linphone_address_test),
@@ -603,7 +637,8 @@ test_t setup_tests[] = {
 	TEST_TWO_TAGS("Search friend from all domains", search_friend_all_domains, "MagicSearch", "LeaksMemory"),
 	TEST_TWO_TAGS("Search friend from one domain", search_friend_one_domain, "MagicSearch", "LeaksMemory"),
 	TEST_TWO_TAGS("Multiple looking for friends with the same cache", search_friend_research_estate, "MagicSearch", "LeaksMemory"),
-	TEST_TWO_TAGS("Multiple looking for friends with cache resetting", search_friend_research_estate_reset, "MagicSearch", "LeaksMemory")
+	TEST_TWO_TAGS("Multiple looking for friends with cache resetting", search_friend_research_estate_reset, "MagicSearch", "LeaksMemory"),
+	TEST_TWO_TAGS("Search friend with phone number", search_friend_with_phone_number, "MagicSearch", "LeaksMemory")
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
