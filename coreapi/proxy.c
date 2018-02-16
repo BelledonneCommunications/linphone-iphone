@@ -133,7 +133,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->realm = realm ? ms_strdup(realm) : NULL;
 	cfg->quality_reporting_enabled = lc ? !!lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
 	cfg->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
-	cfg->quality_reporting_interval = lc ? !!lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
+	cfg->quality_reporting_interval = lc ? lp_config_get_default_int(lc->config, "proxy", "quality_reporting_interval", 0) : 0;
 	cfg->contact_params = contact_params ? ms_strdup(contact_params) : NULL;
 	cfg->contact_uri_params = contact_uri_params ? ms_strdup(contact_uri_params) : NULL;
 	cfg->avpf_mode = lc ? static_cast<LinphoneAVPFMode>(lp_config_get_default_int(lc->config, "proxy", "avpf", LinphoneAVPFDefault)) : LinphoneAVPFDefault;
@@ -565,7 +565,7 @@ bool_t linphone_proxy_config_quality_reporting_enabled(LinphoneProxyConfig *cfg)
 }
 
 void linphone_proxy_config_set_quality_reporting_interval(LinphoneProxyConfig *cfg, int interval) {
-	cfg->quality_reporting_interval = !!interval;
+	cfg->quality_reporting_interval = interval;
 }
 
 int linphone_proxy_config_get_quality_reporting_interval(LinphoneProxyConfig *cfg) {
