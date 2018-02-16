@@ -130,9 +130,9 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 				log->connected_date_time = ms_time(nullptr);
 				break;
 			case CallSession::State::Released:
-				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
+				getPlatformHelpers(q->getCore()->getCCore())->releaseWifiLock();
+				getPlatformHelpers(q->getCore()->getCCore())->releaseMcastLock();
+				getPlatformHelpers(q->getCore()->getCCore())->releaseCpuLock();
 				break;
 			default:
 				break;
