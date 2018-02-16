@@ -1353,7 +1353,7 @@ void MainDb::init () {
 	auto timestampType = bind(&DbSession::timestampType, d->dbSession);
 	auto varcharPrimaryKeyStr = bind(&DbSession::varcharPrimaryKeyStr, d->dbSession, _1);
 
-	auto createTableSanitizer = [this](const char *statement) {
+	auto createTableSanitizer = [](const char *statement) {
 		// TODO.
 		string sanitized = statement;
 		return sanitized;
