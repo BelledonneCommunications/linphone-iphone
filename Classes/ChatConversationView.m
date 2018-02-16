@@ -183,10 +183,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		LinphoneParticipant *firstParticipant = participants ? (LinphoneParticipant *)participants->data : NULL;
 		const LinphoneAddress *addr = firstParticipant ? linphone_participant_get_address(firstParticipant) : linphone_chat_room_get_peer_address(_chatRoom);
 		[ContactDisplay setDisplayNameLabel:_addressLabel forAddress:addr];
-	} else if (linphone_chat_room_get_subject(_chatRoom))
-		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)];
-	else
-		_addressLabel.text=@LINPHONE_DUMMY_SUBJECT;
+	} else
+		_addressLabel.text = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 
 	[self updateParticipantLabel];
 
@@ -363,11 +361,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 					 animations:^{
 						 _tableController.tableView.frame = newTableFrame;
 						 _composeIndicatorView.frame = newComposingFrame;
-						 _composeLabel.hidden = !composingVisible;
 						 _composeIndicatorView.hidden = !composingVisible;
 					 }
-					 completion:^(BOOL finished) {
-					 }];
+					 completion:^(BOOL finished) {}];
 }
 
 - (void)updateSuperposedButtons {
@@ -541,7 +537,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	view.oldContacts = [contactsArray mutableCopy];
 	view.admins = [admins mutableCopy];
 	view.oldAdmins = [admins mutableCopy];
-	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom)?linphone_chat_room_get_subject(_chatRoom):LINPHONE_DUMMY_SUBJECT];
+	view.oldSubject = [NSString stringWithUTF8String:linphone_chat_room_get_subject(_chatRoom) ?: LINPHONE_DUMMY_SUBJECT];
 	view.room = _chatRoom;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
