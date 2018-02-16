@@ -108,8 +108,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
-	if (_chatRoom)
-		[self setRoom:_chatRoom];
+	[self configureForRoom:false];
+	composingVisible = true;
+	[self setComposingVisible:!composingVisible withDelay:0];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -128,7 +129,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_messageField resignFirstResponder];
 
-	[self setComposingVisible:FALSE withDelay:0]; // will hide the "user is composing.." message
+	[self setComposingVisible:false withDelay:0]; // will hide the "user is composing.." message
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
@@ -138,20 +139,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	// force offset recomputing
 	[_messageField refreshHeight];
+	[self configureForRoom:true];
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
-	[self updateSuperposedButtons];
 	_backButton.hidden = _tableController.isEditing;
-	if (_tableController.isEditing)
-		[_tableController setEditing:YES];
-
 	[_tableController scrollToBottom:true];
 }
 
 #pragma mark -
 
-- (void)setRoom:(LinphoneChatRoom *)chatRoom {
-	_chatRoom = chatRoom;
+- (void)configureForRoom:(BOOL)editing {
+	if (!_chatRoom) {
+		_chatView.hidden = YES;
+		return;
+	}
+
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_chatRoom);
 	linphone_chat_room_cbs_set_state_changed(cbs, on_chat_room_state_changed);
 	linphone_chat_room_cbs_set_subject_changed(cbs, on_chat_room_subject_changed);
@@ -166,7 +168,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self updateSuperposedButtons];
 
 	if (_tableController.isEditing)
-		[_tableController setEditing:NO];
+		[_tableController setEditing:editing];
 
 	[[_tableController tableView] reloadData];
 
@@ -194,15 +196,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
 
-	if (_chatRoom != NULL) {
-		_chatView.hidden = NO;
-		[self update];
-		linphone_chat_room_mark_as_read(_chatRoom);
-		[self setComposingVisible:linphone_chat_room_is_remote_composing(_chatRoom) withDelay:0];
-		[PhoneMainView.instance updateApplicationBadgeNumber];
-	} else {
-		_chatView.hidden = YES;
-	}
+	_chatView.hidden = NO;
+	[self update];
+	linphone_chat_room_mark_as_read(_chatRoom);
+	[PhoneMainView.instance updateApplicationBadgeNumber];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
@@ -330,7 +327,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)setComposingVisible:(BOOL)visible withDelay:(CGFloat)delay {
-	Boolean shouldAnimate = composingVisible == visible;
+	Boolean shouldAnimate = composingVisible != visible;
 	CGRect keyboardFrame = [_messageView frame];
 	CGRect newComposingFrame = [_composeIndicatorView frame];
 	CGRect newTableFrame = [_tableController.tableView frame];
@@ -342,13 +339,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 		const bctbx_list_t *addresses = linphone_chat_room_get_composing_addresses(_chatRoom);
 		NSString *composingAddresses = @"";
 		if (bctbx_list_size(addresses) == 1) {
-			composingAddresses = [NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)];
+			composingAddresses = [FastAddressBook displayNameForAddress:(LinphoneAddress *)addresses->data];
 			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), composingAddresses];
 		} else {
 			while (addresses) {
 				if (![composingAddresses isEqualToString:@""])
 					composingAddresses = [composingAddresses stringByAppendingString:@", "];
-				composingAddresses = [composingAddresses stringByAppendingString:[NSString stringWithUTF8String:linphone_address_get_username((LinphoneAddress *)addresses->data)]];
+				composingAddresses = [composingAddresses stringByAppendingString:[FastAddressBook displayNameForAddress:(LinphoneAddress *)addresses->data]];
 				addresses = addresses->next;
 			}
 			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ are composing...", nil), composingAddresses];
@@ -359,17 +356,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 		newComposingFrame.origin.y = keyboardFrame.origin.y;
 	}
 	composingVisible = visible;
+	if (!shouldAnimate)
+		return;
+
 	[UIView animateWithDuration:delay
-		animations:^{
-			if (shouldAnimate)
-				return;
-			_tableController.tableView.frame = newTableFrame;
-			_composeIndicatorView.frame = newComposingFrame;
-		}
-		completion:^(BOOL finished) {
-		  [_tableController scrollToBottom:TRUE];
-		  _composeIndicatorView.hidden = !visible;
-		}];
+					 animations:^{
+						 _tableController.tableView.frame = newTableFrame;
+						 _composeIndicatorView.frame = newComposingFrame;
+						 _composeLabel.hidden = !composingVisible;
+						 _composeIndicatorView.hidden = !composingVisible;
+					 }
+					 completion:^(BOOL finished) {
+					 }];
 }
 
 - (void)updateSuperposedButtons {
@@ -767,8 +765,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	[view setComposingVisible:FALSE withDelay:0];
-	//[view.tableController.tableView reloadData];
 	[view.tableController scrollToLastUnread:TRUE];
 }
 
@@ -780,7 +776,7 @@ void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog
 
 void on_chat_room_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
-	BOOL composing = linphone_chat_room_is_remote_composing(view.chatRoom);
+	BOOL composing = linphone_chat_room_is_remote_composing(cr) || bctbx_list_size(linphone_chat_room_get_composing_addresses(cr)) > 0;
 	[view setComposingVisible:composing withDelay:0.3];
 }
 

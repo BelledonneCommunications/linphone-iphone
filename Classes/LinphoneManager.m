@@ -1729,7 +1729,6 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 
 /** Should be called once per linphone_core_new() */
 - (void)finishCoreConfiguration {
-	
 	//Force keep alive to workaround push notif on chat message
 	linphone_core_enable_keep_alive(theLinphoneCore, true);
 
