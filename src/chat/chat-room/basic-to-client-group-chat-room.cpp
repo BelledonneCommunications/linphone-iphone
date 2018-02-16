@@ -77,7 +77,7 @@ public:
 	}
 
 	void onCallSessionStateChanged (
-		const shared_ptr<const CallSession> &session,
+		const shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const string &message
 	) override {

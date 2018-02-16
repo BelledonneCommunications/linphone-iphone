@@ -90,6 +90,13 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 
 // -----------------------------------------------------------------------------
 
+void ChatRoomPrivate::addEvent (const shared_ptr<EventLog> &eventLog) {
+	L_Q();
+
+	q->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+	setLastUpdateTime(eventLog->getCreationTime());
+}
+
 void ChatRoomPrivate::addTransientEvent (const shared_ptr<EventLog> &eventLog) {
 	auto it = find(transientEvents.begin(), transientEvents.end(), eventLog);
 	if (it == transientEvents.end())
@@ -182,7 +189,6 @@ void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<C
 LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessage *message) {
 	L_Q();
 
-	bool increaseMsgCount = true;
 	LinphoneReason reason = LinphoneReasonNone;
 	shared_ptr<ChatMessage> msg;
 
@@ -217,28 +223,17 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		onIsComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
-		increaseMsgCount = FALSE;
 		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
-		onImdnReceived(msg->getPrivate()->getText());
-		increaseMsgCount = FALSE;
+		onImdnReceived(msg);
 		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
 			goto end;
 		}
 	}
 
-	if (increaseMsgCount) {
-		/* Mark the message as pending so that if ChatRoom::markAsRead() is called in the
-		 * ChatRoomPrivate::chatMessageReceived() callback, it will effectively be marked as
-		 * being read before being stored. */
-		pendingMessage = msg;
-	}
-
 	onChatMessageReceived(msg);
-
-	pendingMessage = nullptr;
 
 end:
 	return reason;
@@ -251,9 +246,8 @@ void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &chat
 	chatMessage->getPrivate()->notifyReceiving();
 }
 
-void ChatRoomPrivate::onImdnReceived (const string &text) {
-	L_Q();
-	Imdn::parse(*q, text);
+void ChatRoomPrivate::onImdnReceived (const shared_ptr<ChatMessage> &chatMessage) {
+	Imdn::parse(chatMessage);
 }
 
 void ChatRoomPrivate::onIsComposingReceived (const Address &remoteAddress, const string &text) {
@@ -321,12 +315,20 @@ ChatRoom::State ChatRoom::getState () const {
 
 // -----------------------------------------------------------------------------
 
+list<shared_ptr<EventLog>> ChatRoom::getMessageHistory (int nLast) const {
+	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast, MainDb::Filter::ConferenceChatMessageFilter);
+}
+
+list<shared_ptr<EventLog>> ChatRoom::getMessageHistoryRange (int begin, int end) const {
+	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end, MainDb::Filter::ConferenceChatMessageFilter);
+}
+
 list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) const {
-	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast);
+	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast, MainDb::Filter::ConferenceInfoNoDeviceFilter);
 }
 
 list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) const {
-	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end);
+	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end, MainDb::Filter::ConferenceInfoNoDeviceFilter);
 }
 
 int ChatRoom::getHistorySize () const {
@@ -423,11 +425,6 @@ void ChatRoom::markAsRead () {
 		chatMessage->sendDisplayNotification();
 
 	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
-
-	if (d->pendingMessage) {
-		d->pendingMessage->updateState(ChatMessage::State::Displayed);
-		d->pendingMessage->sendDisplayNotification();
-	}
 }
 
 LINPHONE_END_NAMESPACE

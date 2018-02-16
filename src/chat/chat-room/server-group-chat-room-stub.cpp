@@ -42,7 +42,17 @@ shared_ptr<Participant> ServerGroupChatRoomPrivate::findFilteredParticipant (con
 	return nullptr;
 }
 
+ParticipantDevice::State ServerGroupChatRoomPrivate::getParticipantDeviceState (const shared_ptr<const ParticipantDevice> &device) const {
+	return device->getState();
+}
+
+void ServerGroupChatRoomPrivate::setParticipantDeviceState (const shared_ptr<ParticipantDevice> &device, ParticipantDevice::State state) {
+	device->setState(state);
+}
+
 // -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::acceptSession (const shared_ptr<CallSession> &session) {}
 
 void ServerGroupChatRoomPrivate::confirmCreation () {}
 
@@ -80,23 +90,25 @@ LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const 
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
 
-void ServerGroupChatRoomPrivate::dispatchMessage (const std::shared_ptr<Message> &message, const std::string &uri) {}
+void ServerGroupChatRoomPrivate::dispatchMessage (const shared_ptr<Message> &message, const string &uri) {}
 
 void ServerGroupChatRoomPrivate::finalizeCreation () {}
 
-void ServerGroupChatRoomPrivate::inviteDevice (const std::shared_ptr<ParticipantDevice> &device) {}
+void ServerGroupChatRoomPrivate::inviteDevice (const shared_ptr<ParticipantDevice> &device) {}
 
 bool ServerGroupChatRoomPrivate::isAdminLeft () const {
 	return false;
 }
 
-void ServerGroupChatRoomPrivate::queueMessage (const std::shared_ptr<Message> &message) {}
+void ServerGroupChatRoomPrivate::queueMessage (const shared_ptr<Message> &message) {}
 
-void ServerGroupChatRoomPrivate::queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress) {}
+void ServerGroupChatRoomPrivate::queueMessage (const shared_ptr<Message> &msg, const IdentityAddress &deviceAddress) {}
+
+void ServerGroupChatRoomPrivate::removeNonPresentParticipants (const list <IdentityAddress> &compatibleParticipants) {}
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session) {}
+void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const shared_ptr<const CallSession> &session) {}
 
 // -----------------------------------------------------------------------------
 
@@ -109,7 +121,7 @@ void ServerGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<Abs
 // -----------------------------------------------------------------------------
 
 void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
-	const shared_ptr<const CallSession> &,
+	const shared_ptr<CallSession> &,
 	CallSession::State,
 	const string &
 ) {}

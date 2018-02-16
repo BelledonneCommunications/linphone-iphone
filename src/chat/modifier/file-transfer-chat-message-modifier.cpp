@@ -364,24 +364,24 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				message->removeContent(*fileContent);
 				message->addContent(*fileTransferContent);
 
-				message->updateState(ChatMessage::State::FileTransferDone);
+				message->getPrivate()->setState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
 				message->getPrivate()->send();
 				fileUploadEndBackgroundTask();
 			} else {
 				lWarning() << "Received empty response from server, file transfer failed";
-				message->updateState(ChatMessage::State::NotDelivered);
+				message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
 		} else if (code == 400) {
 			lWarning() << "Received HTTP code response " << code << " for file transfer, probably meaning file is too large";
-			message->updateState(ChatMessage::State::FileTransferError);
+			message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		} else {
 			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
-			message->updateState(ChatMessage::State::NotDelivered);
+			message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		}
@@ -398,7 +398,7 @@ void FileTransferChatMessageModifier::processIoErrorUpload (const belle_sip_io_e
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::NotDelivered);
+	message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 }
 
@@ -412,7 +412,7 @@ void FileTransferChatMessageModifier::processAuthRequestedUpload (const belle_si
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::NotDelivered);
+	message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 }
 
@@ -844,7 +844,7 @@ void FileTransferChatMessageModifier::processAuthRequestedDownload (const belle_
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::FileTransferError);
+	message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -858,7 +858,7 @@ void FileTransferChatMessageModifier::processIoErrorDownload (const belle_sip_io
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::FileTransferError);
+	message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 

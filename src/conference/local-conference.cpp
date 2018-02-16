@@ -21,6 +21,7 @@
 #include "content/content-type.h"
 #include "handlers/local-conference-event-handler.h"
 #include "local-conference-p.h"
+#include "logger/logger.h"
 #include "participant-p.h"
 #include "xml/resource-lists.h"
 
@@ -46,8 +47,10 @@ LocalConference::~LocalConference () {
 void LocalConference::addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) {
 	L_D();
 	shared_ptr<Participant> participant = findParticipant(addr);
-	if (participant)
+	if (participant) {
+		lInfo() << "Not adding participant '" << addr.asString() << "' because it is already a participant of the LocalConference";
 		return;
+	}
 	participant = make_shared<Participant>(addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, d->listener);
 	d->participants.push_back(participant);

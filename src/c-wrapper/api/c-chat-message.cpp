@@ -209,10 +209,6 @@ void linphone_chat_message_resend_2(LinphoneChatMessage *msg) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->send();
 }
 
-void linphone_chat_message_update_state(LinphoneChatMessage *msg, LinphoneChatMessageState new_state) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->updateState((LinphonePrivate::ChatMessage::State) new_state);
-}
-
 LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg, uint32_t character) {
 	return ((LinphoneStatus)L_GET_CPP_PTR_FROM_C_OBJECT(msg)->putCharacter(character));
 }

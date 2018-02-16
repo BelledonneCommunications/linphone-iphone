@@ -338,7 +338,7 @@ public:
 		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
-		return getCppPtrFromC<CType, CppType>(const_cast<CType *>(cObject));
+		return getCppPtrFromC<typename std::remove_const<CType>::type, CppType>(const_cast<CType *>(cObject));
 	}
 
 	template<

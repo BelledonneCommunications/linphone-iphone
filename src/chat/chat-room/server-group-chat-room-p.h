@@ -26,6 +26,7 @@
 
 #include "chat-room-p.h"
 #include "server-group-chat-room.h"
+#include "conference/participant-device.h"
 
 // =============================================================================
 
@@ -41,6 +42,10 @@ public:
 	std::shared_ptr<Participant> findFilteredParticipant (const std::shared_ptr<const CallSession> &session) const;
 	std::shared_ptr<Participant> findFilteredParticipant (const IdentityAddress &participantAddress) const;
 
+	ParticipantDevice::State getParticipantDeviceState (const std::shared_ptr<const ParticipantDevice> &device) const;
+	void setParticipantDeviceState (const std::shared_ptr<ParticipantDevice> &device, ParticipantDevice::State state);
+
+	void acceptSession (const std::shared_ptr<CallSession> &session);
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
 	void confirmRecreation (SalCallOp *op);
@@ -79,6 +84,7 @@ private:
 	bool isAdminLeft () const;
 	void queueMessage (const std::shared_ptr<Message> &message);
 	void queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress);
+	void removeNonPresentParticipants (const std::list <IdentityAddress> &compatibleParticipants);
 
 	void onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session);
 
@@ -89,7 +95,7 @@ private:
 
 	// CallSessionListener
 	void onCallSessionStateChanged (
-		const std::shared_ptr<const CallSession> &session,
+		const std::shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const std::string &message
 	) override;

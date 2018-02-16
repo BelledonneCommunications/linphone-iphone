@@ -61,11 +61,8 @@ void Conference::addParticipants (const list<IdentityAddress> &addresses, const 
 	list<IdentityAddress> sortedAddresses(addresses);
 	sortedAddresses.sort();
 	sortedAddresses.unique();
-	for (const auto &addr: sortedAddresses) {
-		shared_ptr<Participant> participant = findParticipant(addr);
-		if (!participant)
-			addParticipant(addr, params, hasMedia);
-	}
+	for (const auto &addr: sortedAddresses)
+		addParticipant(addr, params, hasMedia);
 }
 
 bool Conference::canHandleParticipants () const {

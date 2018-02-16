@@ -198,7 +198,11 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 	return cl->refkey;
 }
 
-LinphoneAddress *linphone_call_log_get_remote_address(const LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_local_address(const LinphoneCallLog *cl) {
+	return (cl->dir == LinphoneCallIncoming) ? cl->to : cl->from;
+}
+
+const LinphoneAddress *linphone_call_log_get_remote_address(const LinphoneCallLog *cl){
 	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
 }
 

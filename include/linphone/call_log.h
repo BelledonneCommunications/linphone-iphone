@@ -91,11 +91,18 @@ LINPHONE_PUBLIC float linphone_call_log_get_quality(const LinphoneCallLog *cl);
 LINPHONE_PUBLIC const char * linphone_call_log_get_ref_key(const LinphoneCallLog *cl);
 
 /**
+ * Get the local address (that is from or to depending on call direction)
+ * @param[in] cl LinphoneCallLog object
+ * @return The local address of the call
+ */
+LINPHONE_PUBLIC const LinphoneAddress *linphone_call_log_get_local_address(const LinphoneCallLog *cl);
+
+/**
  * Get the remote address (that is from or to depending on call direction).
  * @param[in] cl LinphoneCallLog object
  * @return The remote address of the call.
 **/
-LINPHONE_PUBLIC LinphoneAddress * linphone_call_log_get_remote_address(const LinphoneCallLog *cl);
+LINPHONE_PUBLIC const LinphoneAddress * linphone_call_log_get_remote_address(const LinphoneCallLog *cl);
 
 /**
  * Get the RTP statistics computed by the remote end and sent back via RTCP.

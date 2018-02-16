@@ -46,6 +46,8 @@ public:
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	void sendIsComposingNotification ();
 
+	void addEvent (const std::shared_ptr<EventLog> &eventLog) override;
+
 	void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 	void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 
@@ -59,7 +61,7 @@ public:
 
 	LinphoneReason onSipMessageReceived (SalOp *op, const SalMessage *message) override;
 	void onChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
-	void onImdnReceived (const std::string &text);
+	void onImdnReceived (const std::shared_ptr<ChatMessage> &chatMessage);
 	void onIsComposingReceived (const Address &remoteAddress, const std::string &text);
 	void onIsComposingRefreshNeeded () override;
 	void onIsComposingStateChanged (bool isComposing) override;
@@ -76,7 +78,6 @@ private:
 	time_t creationTime = std::time(nullptr);
 	time_t lastUpdateTime = std::time(nullptr);
 
-	std::shared_ptr<ChatMessage> pendingMessage;
 	std::unique_ptr<IsComposing> isComposingHandler;
 
 	bool isComposing = false;

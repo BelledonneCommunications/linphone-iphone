@@ -60,7 +60,8 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setState (ChatMessage::State state, bool force = false);
+	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState);
+	void setState (ChatMessage::State newState, bool force = false);
 
 	void setTime (time_t time);
 
@@ -134,6 +135,8 @@ public:
 	void updateInDb ();
 
 private:
+	static bool validStateTransition (ChatMessage::State currentState, ChatMessage::State newState);
+
 	// TODO: Clean attributes.
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string imdnId;

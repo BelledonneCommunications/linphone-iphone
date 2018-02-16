@@ -34,7 +34,7 @@ DbSession::DbSession (const string &uri) : DbSession() {
 	#ifdef SOCI_ENABLED
 		try {
 			L_D();
-			d->backendSession = make_unique<soci::session>(uri);
+			d->backendSession = makeUnique<soci::session>(uri);
 			d->backend = !uri.find("mysql") ? DbSessionPrivate::Backend::Mysql : DbSessionPrivate::Backend::Sqlite3;
 		} catch (const exception &e) {
 			lWarning() << "Unable to build db session with uri: " << e.what();
@@ -51,12 +51,14 @@ DbSession::operator bool () const {
 
 L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(DbSession);
 
-#ifdef SOCI_ENABLED
-	soci::session *DbSession::getBackendSession () const {
+soci::session *DbSession::getBackendSession () const {
+	#ifdef SOCI_ENABLED
 		L_D();
 		return d->backendSession.get();
-	}
-#endif // ifdef SOCI_ENABLED
+	#else
+		return nullptr;
+	#endif // ifdef SOCI_ENABLED
+}
 
 string DbSession::primaryKeyStr (const string &type) const {
 	L_D();
@@ -195,10 +197,31 @@ bool DbSession::checkTableExists (const string &table) const {
 				return false;
 		}
 		L_ASSERT(false);
+	#else
+		(void)table;
 	#endif // ifdef SOCI_ENABLED
 
-	(void)table;
 	return false;
+}
+
+long long DbSession::resolveId (const soci::row &row, int col) const {
+	#ifdef SOCI_ENABLED
+		L_D();
+		switch (d->backend) {
+			case DbSessionPrivate::Backend::Mysql:
+				return static_cast<long long>(row.get<unsigned long long>(0));
+			case DbSessionPrivate::Backend::Sqlite3:
+				return static_cast<long long>(row.get<int>(0));
+			case DbSessionPrivate::Backend::None:
+				return 0;
+		}
+		L_ASSERT(false);
+	#else
+		(void)row;
+		(void)col;
+	#endif // ifdef SOCI_ENABLED
+
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

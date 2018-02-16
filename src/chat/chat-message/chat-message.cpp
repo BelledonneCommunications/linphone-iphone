@@ -25,7 +25,7 @@
 
 #include "address/address.h"
 #include "c-wrapper/c-wrapper.h"
-#include "call/call.h"
+#include "call/call-p.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/client-group-to-basic-chat-room.h"
@@ -63,28 +63,69 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setState (ChatMessage::State s, bool force) {
+void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState) {
+	L_Q();
+
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
+		|| (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
+			"misc", "enable_simple_group_chat_message_state", TRUE
+		))
+	) {
+		setState(newState);
+		return;
+	}
+
+	if (!dbKey.isValid())
+		return;
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	ChatMessage::State currentState = mainDb->getChatMessageParticipantState(eventLog, participantAddress);
+	if (!validStateTransition(currentState, newState))
+		return;
+
+	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState);
+
+	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
+	size_t nbDisplayedStates = 0;
+	size_t nbDeliveredToUserStates = 0;
+	size_t nbNotDeliveredStates = 0;
+	for (const auto &state : states) {
+		switch (state) {
+			case ChatMessage::State::Displayed:
+				nbDisplayedStates++;
+				break;
+			case ChatMessage::State::DeliveredToUser:
+				nbDeliveredToUserStates++;
+				break;
+			case ChatMessage::State::NotDelivered:
+				nbNotDeliveredStates++;
+				break;
+			default:
+				break;
+		}
+	}
+
+	if (nbNotDeliveredStates > 0)
+		setState(ChatMessage::State::NotDelivered);
+	else if (nbDisplayedStates == states.size())
+		setState(ChatMessage::State::Displayed);
+	else if ((nbDisplayedStates + nbDeliveredToUserStates) == states.size())
+		setState(ChatMessage::State::DeliveredToUser);
+}
+
+void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 	L_Q();
 
 	if (force)
-		state = s;
+		state = newState;
 
-	if (s == state)
-		return;
-
-	if (
-		(state == ChatMessage::State::Displayed || state == ChatMessage::State::DeliveredToUser) &&
-		(
-			s == ChatMessage::State::DeliveredToUser ||
-			s == ChatMessage::State::Delivered ||
-			s == ChatMessage::State::NotDelivered
-		)
-	)
+	if (!validStateTransition(state, newState))
 		return;
 
 	lInfo() << "Chat message " << this << ": moving from " << Utils::toString(state) <<
-		" to " << Utils::toString(s);
-	state = s;
+		" to " << Utils::toString(newState);
+	state = newState;
 
 	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
 	if (linphone_chat_message_get_message_state_changed_cb(msg))
@@ -401,17 +442,22 @@ void ChatMessagePrivate::notifyReceiving () {
 
 	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
 	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
-	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_chat_message_received(cbs);
-	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
-		::time(nullptr), q->getSharedFromThis()
-	);
-	if (cb)
-		cb(chatRoom, L_GET_C_BACK_PTR(event));
-	// Legacy
-	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
+
+	LinphoneChatRoomCbsShouldChatMessageBeStoredCb shouldMessageBeStoredCb = linphone_chat_room_cbs_get_chat_message_should_be_stored(cbs);
+	if (shouldMessageBeStoredCb)
+		shouldMessageBeStoredCb(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 
 	if (toBeStored)
 		storeInDb();
+
+	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
+		::time(nullptr), q->getSharedFromThis()
+	);
+	LinphoneChatRoomCbsChatMessageReceivedCb messageReceivedCb = linphone_chat_room_cbs_get_chat_message_received(cbs);
+	if (messageReceivedCb)
+		messageReceivedCb(chatRoom, L_GET_C_BACK_PTR(event));
+	// Legacy
+	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 
 	q->sendDeliveryNotification(LinphoneReasonNone);
 }
@@ -665,7 +711,7 @@ void ChatMessagePrivate::send () {
 	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	}
-	
+
 	// Restore FileContents and remove FileTransferContents
 	list<Content*>::iterator it = contents.begin();
 	while (it != contents.end()) {
@@ -712,7 +758,7 @@ void ChatMessagePrivate::storeInDb () {
 		updateInDb();
 	} else {
 		shared_ptr<EventLog> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
-		q->getChatRoom()->getCore()->getPrivate()->mainDb->addEvent(eventLog);
+		q->getChatRoom()->getPrivate()->addEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
 			if (hasFileTransferContent()) {
@@ -747,6 +793,24 @@ void ChatMessagePrivate::updateInDb () {
 			q->getChatRoom()->getPrivate()->removeTransientEvent(eventLog);
 		}
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+bool ChatMessagePrivate::validStateTransition (ChatMessage::State currentState, ChatMessage::State newState) {
+	if (newState == currentState)
+		return false;
+
+	if (
+		(currentState == ChatMessage::State::Displayed || currentState == ChatMessage::State::DeliveredToUser) &&
+		(
+			newState == ChatMessage::State::DeliveredToUser ||
+			newState == ChatMessage::State::Delivered ||
+			newState == ChatMessage::State::NotDelivered
+		)
+	)
+		return false;
+	return true;
 }
 
 // -----------------------------------------------------------------------------
@@ -926,12 +990,6 @@ void ChatMessage::removeCustomHeader (const string &headerName) {
 	d->customHeaders.erase(headerName);
 }
 
-void ChatMessage::updateState (State state) {
-	L_D();
-
-	d->setState(state);
-}
-
 void ChatMessage::send () {
 	L_D();
 
@@ -981,48 +1039,50 @@ void ChatMessage::cancelFileTransfer () {
 int ChatMessage::putCharacter (uint32_t character) {
 	L_D();
 
-	shared_ptr<Core> core = getCore();
-	if (linphone_core_realtime_text_enabled(core->getCCore())) {
-		static const uint32_t new_line = 0x2028;
-		static const uint32_t crlf = 0x0D0A;
-		static const uint32_t lf = 0x0A;
+	static const uint32_t new_line = 0x2028;
+	static const uint32_t crlf = 0x0D0A;
+	static const uint32_t lf = 0x0A;
 
-		shared_ptr<AbstractChatRoom> chatRoom = getChatRoom();
+	shared_ptr<AbstractChatRoom> chatRoom = getChatRoom();
+	if (!(chatRoom->getCapabilities() & LinphonePrivate::ChatRoom::Capabilities::RealTimeText))
+		return -1;
 
-		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(chatRoom);
-		LinphoneCall *call = rttcr->getCall();
+	shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
+		static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(chatRoom);
+	if (!rttcr)
+		return -1;
 
-		if (!call || !linphone_call_get_stream(call, LinphoneStreamTypeText))
-			return -1;
+	shared_ptr<Call> call = rttcr->getCall();
+	if (!call || !call->getPrivate()->getMediaStream(LinphoneStreamTypeText))
+		return -1;
 
-		if (character == new_line || character == crlf || character == lf) {
-			if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
-				// TODO: History.
-				lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
-				d->setTime(ms_time(0));
-				d->state = State::Displayed;
-				// d->direction = Direction::Outgoing;
-				// setFromAddress(Address(
-				// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
-				// ));
-				// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
-				d->rttMessage = "";
-			}
-		} else {
-			char *value = LinphonePrivate::Utils::utf8ToChar(character);
-			d->rttMessage = d->rttMessage + string(value);
-			lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character <<
-				"), pending text is " << d->rttMessage.c_str();
-			delete value;
+	if (character == new_line || character == crlf || character == lf) {
+		shared_ptr<Core> core = getCore();
+		if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
+			// TODO: History.
+			lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
+			d->setTime(ms_time(0));
+			d->state = State::Displayed;
+			// d->direction = Direction::Outgoing;
+			// setFromAddress(Address(
+			// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
+			// ));
+			// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
+			d->rttMessage = "";
 		}
-
-		text_stream_putchar32(reinterpret_cast<TextStream *>(
-			linphone_call_get_stream(call, LinphoneStreamTypeText)), character
-		);
-		return 0;
+	} else {
+		char *value = LinphonePrivate::Utils::utf8ToChar(character);
+		d->rttMessage = d->rttMessage + string(value);
+		lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character <<
+			"), pending text is " << d->rttMessage.c_str();
+		delete[] value;
 	}
-	return -1;
+
+	text_stream_putchar32(
+		reinterpret_cast<TextStream *>(call->getPrivate()->getMediaStream(LinphoneStreamTypeText)),
+		character
+	);
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

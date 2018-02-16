@@ -27,8 +27,6 @@ typedef struct StunCandidate StunCandidate;
 
 typedef struct _PortConfig PortConfig;
 
-typedef struct _LinphoneChatMessageCharacter LinphoneChatMessageCharacter;
-
 typedef struct _LinphoneFriendPresence LinphoneFriendPresence;
 
 typedef struct _LinphoneFriendPhoneNumberSipUri LinphoneFriendPhoneNumberSipUri;

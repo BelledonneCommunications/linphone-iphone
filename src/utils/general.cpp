@@ -25,7 +25,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-void l_assert (const char *condition, const char *file, int line) {
+void lAssert (const char *condition, const char *file, int line) {
 	lFatal() << "ASSERT: " << condition << " in " << file << " line " << line << ".";
 }
 

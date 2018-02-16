@@ -42,6 +42,8 @@ public:
 
 	virtual void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
 
+	virtual void addEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
+
 	virtual void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 	virtual void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 

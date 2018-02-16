@@ -272,6 +272,19 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_ch
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participants_capabilities_checked (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb cb);
 
 /**
+ * Get the message should be stored callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The message should be stored getting callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsShouldChatMessageBeStoredCb linphone_chat_room_cbs_get_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs);
+/**
+ * Set the message should be stored callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The message should be stored callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsShouldChatMessageBeStoredCb cb);
+
+/**
  * @}
  */
 

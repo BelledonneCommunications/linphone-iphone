@@ -41,6 +41,7 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsConferenceAddressGenerationCb conferenceAddressGenerationCb;
 	LinphoneChatRoomCbsParticipantDeviceFetchedCb participantDeviceFetchedCb;
 	LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb participantsCapabilitiesChecked;
+	LinphoneChatRoomCbsShouldChatMessageBeStoredCb shouldMessageBeStoredCb;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatRoomCbs);
@@ -195,4 +196,12 @@ LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_chat_room_cbs_get_
 
 void linphone_chat_room_cbs_set_participants_capabilities_checked (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb cb) {
 	cbs->participantsCapabilitiesChecked = cb;
+}
+
+LinphoneChatRoomCbsShouldChatMessageBeStoredCb linphone_chat_room_cbs_get_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs) {
+	return cbs->shouldMessageBeStoredCb;
+}
+
+void linphone_chat_room_cbs_set_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsShouldChatMessageBeStoredCb cb) {
+	cbs->shouldMessageBeStoredCb = cb;
 }
