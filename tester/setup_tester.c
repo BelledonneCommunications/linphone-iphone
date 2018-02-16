@@ -536,6 +536,53 @@ static void search_friend_research_estate(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void search_friend_research_estate_reset(void) {
+	LinphoneMagicSearch *magicSearch = NULL;
+	bctbx_list_t *resultList = NULL;
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+
+	_create_friends_from_tab(manager->lc, lfl, sFriends, sSizeFriend);
+
+	magicSearch = linphone_magic_search_new(manager->lc);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "la", "");
+
+	BC_ASSERT_PTR_NOT_NULL(resultList);
+
+	if (resultList != NULL) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 2, int, "%d");
+		_check_friend_result_list(resultList, 0, sFriends[6]);//"sip:laura@sip.example.org"
+		_check_friend_result_list(resultList, 1, sFriends[8]);//"sip:laure@sip.test.org"
+	}
+
+	free(resultList);
+
+	linphone_magic_search_reset_search_cache(magicSearch);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "l", "");
+
+	BC_ASSERT_PTR_NOT_NULL(resultList);
+
+	if (resultList != NULL) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 7, int, "%d");
+		_check_friend_result_list(resultList, 0, sFriends[6]);//"sip:laura@sip.example.org"
+		_check_friend_result_list(resultList, 1, sFriends[7]);//"sip:loic@sip.example.org"
+		_check_friend_result_list(resultList, 2, sFriends[8]);//"sip:laure@sip.test.org"
+		_check_friend_result_list(resultList, 3, sFriends[9]);//"sip:loic@sip.test.org"
+		_check_friend_result_list(resultList, 4, sFriends[2]);//"sip:allo@sip.example.org"
+		_check_friend_result_list(resultList, 5, sFriends[3]);//"sip:hello@sip.example.org"
+		_check_friend_result_list(resultList, 6, sFriends[4]);//"sip:hello@sip.test.org"
+	}
+
+	free(resultList);
+
+
+	_remove_friends_from_list(lfl, sFriends, sSizeFriend);
+
+	linphone_core_manager_destroy(manager);
+}
+
 test_t setup_tests[] = {
 	TEST_NO_TAG("Version check", linphone_version_test),
 	TEST_NO_TAG("Linphone Address", linphone_address_test),
@@ -555,7 +602,8 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Custom tones setup", custom_tones_setup),
 	TEST_TWO_TAGS("Search friend from all domains", search_friend_all_domains, "MagicSearch", "LeaksMemory"),
 	TEST_TWO_TAGS("Search friend from one domain", search_friend_one_domain, "MagicSearch", "LeaksMemory"),
-	TEST_TWO_TAGS("Multiple looking for friends", search_friend_research_estate, "MagicSearch", "LeaksMemory")
+	TEST_TWO_TAGS("Multiple looking for friends with the same cache", search_friend_research_estate, "MagicSearch", "LeaksMemory"),
+	TEST_TWO_TAGS("Multiple looking for friends with cache resetting", search_friend_research_estate_reset, "MagicSearch", "LeaksMemory")
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
