@@ -31,13 +31,14 @@
     BOOL startedInBackground;
 }
 
-- (void)registerForNotifications:(UIApplication *)app;
+- (void)registerForNotifications;
 
 @property (nonatomic, retain) UIAlertController *waitingIndicator;
 @property (nonatomic, retain) NSString *configURL;
 @property (nonatomic, strong) UIWindow* window;
 @property PKPushRegistry* voipRegistry;
 @property ProviderDelegate *del;
+@property BOOL alreadyRegisteredForNotification;
 
 @end
 

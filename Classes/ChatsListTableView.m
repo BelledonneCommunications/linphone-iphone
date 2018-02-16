@@ -226,7 +226,7 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
 		NSString *msg =
-		[NSString stringWithFormat:NSLocalizedString(@"Do you want to delete this conversation?", nil)];
+		[NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave this conversation?", nil)];
 		[UIConfirmationDialog ShowWithMessage:msg
 								cancelMessage:nil
 							   confirmMessage:nil

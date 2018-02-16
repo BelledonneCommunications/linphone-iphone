@@ -510,7 +510,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		// we have to register again to the iOS notification, because we change the actions associated with IM_MSG
 		UIApplication *app = [UIApplication sharedApplication];
 		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)app.delegate;
-		[delegate registerForNotifications:app];
+		[delegate registerForNotifications];
 	}
 
 	for (NSString *key in keys) {

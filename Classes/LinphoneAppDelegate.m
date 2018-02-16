@@ -43,6 +43,7 @@
 	if (self != nil) {
 		startedInBackground = FALSE;
 	}
+	_alreadyRegisteredForNotification = false;
 	return self;
 	[[UIApplication sharedApplication] setDelegate:self];
 }
@@ -58,25 +59,22 @@
 	LOGI(@"%@", NSStringFromSelector(_cmd));
 	LinphoneCall *call = linphone_core_get_current_call(LC);
 
-	if (call) {
-		/* save call context */
-		LinphoneManager *instance = LinphoneManager.instance;
-		instance->currentCallContextBeforeGoingBackground.call = call;
-		instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
+	if (!call)
+		return;
 
-		const LinphoneCallParams *params = linphone_call_get_current_params(call);
-		if (linphone_call_params_video_enabled(params)) {
-			linphone_call_enable_camera(call, false);
-		}
-	}
+	/* save call context */
+	LinphoneManager *instance = LinphoneManager.instance;
+	instance->currentCallContextBeforeGoingBackground.call = call;
+	instance->currentCallContextBeforeGoingBackground.cameraIsEnabled = linphone_call_camera_enabled(call);
 
-	if (![LinphoneManager.instance resignActive]) {
-	}
+	const LinphoneCallParams *params = linphone_call_get_current_params(call);
+	if (linphone_call_params_video_enabled(params))
+		linphone_call_enable_camera(call, false);
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	[self registerForNotifications:[UIApplication sharedApplication]];
+	[self registerForNotifications];
 	if (startedInBackground) {
 		startedInBackground = FALSE;
 		[PhoneMainView.instance startUp];
@@ -219,85 +217,89 @@
 }
 
 
-- (void)registerForNotifications:(UIApplication *)app {
+- (void)registerForNotifications {
+	if (_alreadyRegisteredForNotification)
+		return;
+
+	_alreadyRegisteredForNotification = true;
 	self.voipRegistry = [[PKPushRegistry alloc] initWithQueue:dispatch_get_main_queue()];
 	self.voipRegistry.delegate = self;
 
 	// Initiate registration.
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
-	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-		// Call category
-		UNNotificationAction *act_ans =
-		[UNNotificationAction actionWithIdentifier:@"Answer"
-											 title:NSLocalizedString(@"Answer", nil)
-										   options:UNNotificationActionOptionForeground];
-		UNNotificationAction *act_dec = [UNNotificationAction actionWithIdentifier:@"Decline"
-																			 title:NSLocalizedString(@"Decline", nil)
+	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
+		return;
+
+	LOGI(@"Registering for UNNotifications");
+	// Call category
+	UNNotificationAction *act_ans =
+	[UNNotificationAction actionWithIdentifier:@"Answer"
+										 title:NSLocalizedString(@"Answer", nil)
+									   options:UNNotificationActionOptionForeground];
+	UNNotificationAction *act_dec = [UNNotificationAction actionWithIdentifier:@"Decline"
+																		 title:NSLocalizedString(@"Decline", nil)
+																	   options:UNNotificationActionOptionNone];
+	UNNotificationCategory *cat_call =
+	[UNNotificationCategory categoryWithIdentifier:@"call_cat"
+										   actions:[NSArray arrayWithObjects:act_ans, act_dec, nil]
+								 intentIdentifiers:[[NSMutableArray alloc] init]
+										   options:UNNotificationCategoryOptionCustomDismissAction];
+	// Msg category
+	UNTextInputNotificationAction *act_reply =
+	[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
+												  title:NSLocalizedString(@"Reply", nil)
+												options:UNNotificationActionOptionNone];
+	UNNotificationAction *act_seen =
+	[UNNotificationAction actionWithIdentifier:@"Seen"
+										 title:NSLocalizedString(@"Mark as seen", nil)
+									   options:UNNotificationActionOptionNone];
+	UNNotificationCategory *cat_msg =
+	[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
+										   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
+								 intentIdentifiers:[[NSMutableArray alloc] init]
+										   options:UNNotificationCategoryOptionCustomDismissAction];
+
+	// Video Request Category
+	UNNotificationAction *act_accept =
+	[UNNotificationAction actionWithIdentifier:@"Accept"
+										 title:NSLocalizedString(@"Accept", nil)
+									   options:UNNotificationActionOptionForeground];
+
+	UNNotificationAction *act_refuse = [UNNotificationAction actionWithIdentifier:@"Cancel"
+																			title:NSLocalizedString(@"Cancel", nil)
+																		  options:UNNotificationActionOptionNone];
+	UNNotificationCategory *video_call =
+	[UNNotificationCategory categoryWithIdentifier:@"video_request"
+										   actions:[NSArray arrayWithObjects:act_accept, act_refuse, nil]
+								 intentIdentifiers:[[NSMutableArray alloc] init]
+										   options:UNNotificationCategoryOptionCustomDismissAction];
+
+	// ZRTP verification category
+	UNNotificationAction *act_confirm = [UNNotificationAction actionWithIdentifier:@"Confirm"
+																			 title:NSLocalizedString(@"Accept", nil)
 																		   options:UNNotificationActionOptionNone];
-		UNNotificationCategory *cat_call =
-		[UNNotificationCategory categoryWithIdentifier:@"call_cat"
-											   actions:[NSArray arrayWithObjects:act_ans, act_dec, nil]
-									 intentIdentifiers:[[NSMutableArray alloc] init]
-											   options:UNNotificationCategoryOptionCustomDismissAction];
-		// Msg category
-		UNTextInputNotificationAction *act_reply =
-		[UNTextInputNotificationAction actionWithIdentifier:@"Reply"
-													  title:NSLocalizedString(@"Reply", nil)
-													options:UNNotificationActionOptionNone];
-		UNNotificationAction *act_seen =
-		[UNNotificationAction actionWithIdentifier:@"Seen"
-											 title:NSLocalizedString(@"Mark as seen", nil)
-										   options:UNNotificationActionOptionNone];
-		UNNotificationCategory *cat_msg =
-		[UNNotificationCategory categoryWithIdentifier:@"msg_cat"
-											   actions:[NSArray arrayWithObjects:act_reply, act_seen, nil]
-									 intentIdentifiers:[[NSMutableArray alloc] init]
-											   options:UNNotificationCategoryOptionCustomDismissAction];
 
-		// Video Request Category
-		UNNotificationAction *act_accept =
-		[UNNotificationAction actionWithIdentifier:@"Accept"
-											 title:NSLocalizedString(@"Accept", nil)
-										   options:UNNotificationActionOptionForeground];
+	UNNotificationAction *act_deny = [UNNotificationAction actionWithIdentifier:@"Deny"
+																		  title:NSLocalizedString(@"Deny", nil)
+																		options:UNNotificationActionOptionNone];
+	UNNotificationCategory *cat_zrtp =
+	[UNNotificationCategory categoryWithIdentifier:@"zrtp_request"
+										   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
+								 intentIdentifiers:[[NSMutableArray alloc] init]
+										   options:UNNotificationCategoryOptionCustomDismissAction];
 
-		UNNotificationAction *act_refuse = [UNNotificationAction actionWithIdentifier:@"Cancel"
-																				title:NSLocalizedString(@"Cancel", nil)
-																			  options:UNNotificationActionOptionNone];
-		UNNotificationCategory *video_call =
-		[UNNotificationCategory categoryWithIdentifier:@"video_request"
-											   actions:[NSArray arrayWithObjects:act_accept, act_refuse, nil]
-									 intentIdentifiers:[[NSMutableArray alloc] init]
-											   options:UNNotificationCategoryOptionCustomDismissAction];
-
-		// ZRTP verification category
-		UNNotificationAction *act_confirm = [UNNotificationAction actionWithIdentifier:@"Confirm"
-																				 title:NSLocalizedString(@"Accept", nil)
-																			   options:UNNotificationActionOptionNone];
-
-		UNNotificationAction *act_deny = [UNNotificationAction actionWithIdentifier:@"Deny"
-																			  title:NSLocalizedString(@"Deny", nil)
-																			options:UNNotificationActionOptionNone];
-		UNNotificationCategory *cat_zrtp =
-		[UNNotificationCategory categoryWithIdentifier:@"zrtp_request"
-											   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
-									 intentIdentifiers:[[NSMutableArray alloc] init]
-											   options:UNNotificationCategoryOptionCustomDismissAction];
-
-		[UNUserNotificationCenter currentNotificationCenter].delegate = self;
-		[[UNUserNotificationCenter currentNotificationCenter]
-		 requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
-										  UNAuthorizationOptionBadge)
-		 completionHandler:^(BOOL granted, NSError *_Nullable error) {
-			 // Enable or disable features based on authorization.
-			 if (error) {
-				 LOGD(error.description);
-			 }
-		 }];
-		NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
-		[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
-	}
+	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
+	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
+																		completionHandler:^(BOOL granted, NSError *_Nullable error) {
+																			// Enable or disable features based on authorization.
+																			if (error)
+																				LOGD(error.description);
+																		}];
+	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
+	[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 }
+
 #pragma deploymate pop
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -443,6 +445,8 @@
 
 	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
+
+	[self registerForNotifications];
 
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE

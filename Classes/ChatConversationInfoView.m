@@ -247,7 +247,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[NSString stringWithFormat:NSLocalizedString(@"Do you want to leave this conversation?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 							cancelMessage:nil
-						   confirmMessage:nil
+						   confirmMessage:NSLocalizedString(@"LEAVE", nil)
 							onCancelClick:^() {}
 					  onConfirmationClick:^() {
 						  linphone_chat_room_leave(_room);
