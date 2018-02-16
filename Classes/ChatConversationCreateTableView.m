@@ -56,8 +56,6 @@
 		return;
 	}
 	_contactsGroup = [[NSMutableArray alloc] init];
-	_allFilter = TRUE;
-
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";

@@ -71,7 +71,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	[_collectionView reloadData];
 	_tableController.isForEditing = _isForEditing;
-	[self changeView:ContactsAll];
+	[self changeView:ContactsLinphone];
 }
 
 #pragma mark - Chat room functions
