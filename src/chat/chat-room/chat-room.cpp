@@ -241,8 +241,12 @@ end:
 
 void ChatRoomPrivate::onChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	const IdentityAddress &fromAddress = chatMessage->getFromAddress();
-	isComposingHandler->stopRemoteRefreshTimer(fromAddress.asString());
-	notifyIsComposingReceived(fromAddress, false);
+	if ((chatMessage->getPrivate()->getContentType() != ContentType::ImIsComposing)
+		&& (chatMessage->getPrivate()->getContentType() != ContentType::Imdn)
+	) {
+		isComposingHandler->stopRemoteRefreshTimer(fromAddress.asString());
+		notifyIsComposingReceived(fromAddress, false);
+	}
 	chatMessage->getPrivate()->notifyReceiving();
 }
 
