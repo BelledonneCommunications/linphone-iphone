@@ -20,16 +20,26 @@
 #include "linphone/utils/utils.h"
 
 #include "address.h"
-#include "identity-address-p.h"
 #include "c-wrapper/c-wrapper.h"
-#include "identity-address-p.h"
+#include "identity-address.h"
 #include "logger/logger.h"
+#include "object/clonable-object-p.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+// -----------------------------------------------------------------------------
+
+class IdentityAddressPrivate : public ClonableObjectPrivate {
+public:
+	std::string scheme;
+	std::string username;
+	std::string domain;
+	std::string gruu;
+};
 
 // -----------------------------------------------------------------------------
 

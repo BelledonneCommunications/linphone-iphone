@@ -23,7 +23,6 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
-	address/identity-address-p.h
 	address/identity-address.h
 	c-wrapper/c-wrapper.h
 	c-wrapper/internal/c-sal.h
@@ -93,9 +92,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/media-session.h
 	conference/session/port-config.h
 	content/content-manager.h
+	content/content-p.h
 	content/content-type.h
 	content/content.h
-	content/content-p.h
 	content/file-content.h
 	content/file-transfer-content.h
 	core/core-accessor.h
@@ -144,10 +143,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/property-container.h
 	object/singleton.h
 	sal/sal.h
-	search/magic-search.h
 	search/magic-search-p.h
-	search/search-result.h
+	search/magic-search.h
 	search/search-result-p.h
+	search/search-result.h
 	utils/background-task.h
 	utils/payload-type-handler.h
 	variant/variant.h
