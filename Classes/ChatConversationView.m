@@ -36,7 +36,7 @@
 			initWithObjectsAndKeys:[NSNumber numberWithFloat:0.9], NSLocalizedString(@"Maximum", nil),
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
-		composingVisible = TRUE;
+		composingVisible = false;
 	}
 	return self;
 }
@@ -109,8 +109,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCallUpdate
 											 object:nil];
 	[self configureForRoom:false];
-	composingVisible = true;
-	[self setComposingVisible:!composingVisible withDelay:0];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -361,9 +359,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 					 animations:^{
 						 _tableController.tableView.frame = newTableFrame;
 						 _composeIndicatorView.frame = newComposingFrame;
-						 _composeIndicatorView.hidden = !composingVisible;
 					 }
-					 completion:^(BOOL finished) {}];
+					 completion:^(BOOL finished) {
+						 [_tableController scrollToBottom:TRUE];
+						 _composeIndicatorView.hidden = !visible;
+					 }];
 }
 
 - (void)updateSuperposedButtons {
