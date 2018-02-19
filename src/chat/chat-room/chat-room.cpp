@@ -328,11 +328,20 @@ list<shared_ptr<EventLog>> ChatRoom::getMessageHistoryRange (int begin, int end)
 }
 
 list<shared_ptr<EventLog>> ChatRoom::getHistory (int nLast) const {
-	return getCore()->getPrivate()->mainDb->getHistory(getChatRoomId(), nLast, MainDb::Filter::ConferenceInfoNoDeviceFilter);
+	return getCore()->getPrivate()->mainDb->getHistory(
+		getChatRoomId(),
+		nLast,
+		MainDb::FilterMask({ MainDb::Filter::ConferenceChatMessageFilter, MainDb::Filter::ConferenceInfoNoDeviceFilter })
+	);
 }
 
 list<shared_ptr<EventLog>> ChatRoom::getHistoryRange (int begin, int end) const {
-	return getCore()->getPrivate()->mainDb->getHistoryRange(getChatRoomId(), begin, end, MainDb::Filter::ConferenceInfoNoDeviceFilter);
+	return getCore()->getPrivate()->mainDb->getHistoryRange(
+		getChatRoomId(),
+		begin,
+		end,
+		MainDb::FilterMask({ MainDb::Filter::ConferenceChatMessageFilter, MainDb::Filter::ConferenceInfoNoDeviceFilter })
+	);
 }
 
 int ChatRoom::getHistorySize () const {
