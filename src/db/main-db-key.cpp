@@ -37,23 +37,23 @@ MainDbKey::MainDbKey (const shared_ptr<Core> &core, long long storageId) : MainD
 	d->storageId = storageId;
 }
 
-MainDbKey::MainDbKey (const MainDbKey &src) : MainDbKey() {
+MainDbKey::MainDbKey (const MainDbKey &other) : MainDbKey() {
 	L_D();
-	const MainDbKeyPrivate *dSrc = src.getPrivate();
+	const MainDbKeyPrivate *dOther = other.getPrivate();
 
-	d->core = dSrc->core;
-	d->storageId = dSrc->storageId;
+	d->core = dOther->core;
+	d->storageId = dOther->storageId;
 }
 
 MainDbKey::~MainDbKey () {}
 
-MainDbKey &MainDbKey::operator= (const MainDbKey &src) {
+MainDbKey &MainDbKey::operator= (const MainDbKey &other) {
 	L_D();
 
-	if (this != &src) {
-		const MainDbKeyPrivate *dSrc = src.getPrivate();
-		d->core = dSrc->core;
-		d->storageId = dSrc->storageId;
+	if (this != &other) {
+		const MainDbKeyPrivate *dOther = other.getPrivate();
+		d->core = dOther->core;
+		d->storageId = dOther->storageId;
 	}
 
 	return *this;

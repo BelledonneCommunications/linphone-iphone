@@ -45,9 +45,9 @@ class DbSession : public ClonableObject {
 public:
 	DbSession ();
 	explicit DbSession (const std::string &uri);
-	DbSession (const DbSession &src);
+	DbSession (const DbSession &other);
 
-	DbSession &operator= (const DbSession &src);
+	DbSession &operator= (const DbSession &other);
 
 	operator bool () const;
 

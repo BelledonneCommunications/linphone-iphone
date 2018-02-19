@@ -53,35 +53,35 @@ IdentityAddress::IdentityAddress (const Address &address) : ClonableObject(*new 
 		d->gruu = address.getUriParamValue("gr");
 }
 
-IdentityAddress::IdentityAddress (const IdentityAddress &src) : ClonableObject(*new IdentityAddressPrivate) {
+IdentityAddress::IdentityAddress (const IdentityAddress &other) : ClonableObject(*new IdentityAddressPrivate) {
 	L_D();
-	d->scheme = src.getScheme();
-	d->username = src.getUsername();
-	d->domain = src.getDomain();
-	d->gruu = src.getGruu();
+	d->scheme = other.getScheme();
+	d->username = other.getUsername();
+	d->domain = other.getDomain();
+	d->gruu = other.getGruu();
 }
 
-IdentityAddress &IdentityAddress::operator= (const IdentityAddress &src) {
+IdentityAddress &IdentityAddress::operator= (const IdentityAddress &other) {
 	L_D();
-	if (this != &src) {
-		d->scheme = src.getScheme();
-		d->username = src.getUsername();
-		d->domain = src.getDomain();
-		d->gruu = src.getGruu();
+	if (this != &other) {
+		d->scheme = other.getScheme();
+		d->username = other.getUsername();
+		d->domain = other.getDomain();
+		d->gruu = other.getGruu();
 	}
 	return *this;
 }
 
-bool IdentityAddress::operator== (const IdentityAddress &address) const {
-	return asString() == address.asString();
+bool IdentityAddress::operator== (const IdentityAddress &other) const {
+	return asString() == other.asString();
 }
 
-bool IdentityAddress::operator!= (const IdentityAddress &address) const {
-	return !(*this == address);
+bool IdentityAddress::operator!= (const IdentityAddress &other) const {
+	return !(*this == other);
 }
 
-bool IdentityAddress::operator< (const IdentityAddress &address) const {
-	return asString() < address.asString();
+bool IdentityAddress::operator< (const IdentityAddress &other) const {
+	return asString() < other.asString();
 }
 
 bool IdentityAddress::isValid () const {

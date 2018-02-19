@@ -32,13 +32,13 @@ class FileTransferContentPrivate;
 class LINPHONE_PUBLIC FileTransferContent : public Content {
 public:
 	FileTransferContent ();
-	FileTransferContent (const FileTransferContent &src);
-	FileTransferContent (FileTransferContent &&src);
+	FileTransferContent (const FileTransferContent &other);
+	FileTransferContent (FileTransferContent &&other);
 
-	FileTransferContent &operator= (const FileTransferContent &src);
-	FileTransferContent &operator= (FileTransferContent &&src);
+	FileTransferContent &operator= (const FileTransferContent &other);
+	FileTransferContent &operator= (FileTransferContent &&other);
 
-	bool operator== (const FileTransferContent &content) const;
+	bool operator== (const FileTransferContent &other) const;
 
 	void setFileName (const std::string &name);
 	const std::string &getFileName () const;

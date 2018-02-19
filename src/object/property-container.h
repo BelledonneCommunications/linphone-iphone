@@ -31,10 +31,10 @@ class PropertyContainerPrivate;
 class LINPHONE_PUBLIC PropertyContainer {
 public:
 	PropertyContainer ();
-	PropertyContainer (const PropertyContainer &src);
+	PropertyContainer (const PropertyContainer &other);
 	virtual ~PropertyContainer ();
 
-	PropertyContainer &operator= (const PropertyContainer &src);
+	PropertyContainer &operator= (const PropertyContainer &other);
 
 	Variant getProperty (const std::string &name) const;
 	void setProperty (const std::string &name, const Variant &value);

@@ -34,18 +34,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
-Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), AppDataContainer(src) {
+Content::Content (const Content &other) : ClonableObject(*new ContentPrivate), AppDataContainer(other) {
 	L_D();
-	d->body = src.getBody();
-	d->contentType = src.getContentType();
-	d->contentDisposition = src.getContentDisposition();
+	d->body = other.getBody();
+	d->contentType = other.getContentType();
+	d->contentDisposition = other.getContentDisposition();
 }
 
-Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(move(src)) {
+Content::Content (Content &&other) : ClonableObject(*new ContentPrivate), AppDataContainer(move(other)) {
 	L_D();
-	d->body = move(src.getPrivate()->body);
-	d->contentType = move(src.getPrivate()->contentType);
-	d->contentDisposition = move(src.getPrivate()->contentDisposition);
+	d->body = move(other.getPrivate()->body);
+	d->contentType = move(other.getPrivate()->contentType);
+	d->contentDisposition = move(other.getPrivate()->contentDisposition);
 }
 
 Content::Content (ContentPrivate &p) : ClonableObject(p) {}
@@ -59,32 +59,32 @@ Content::~Content () {
 	d->body.assign(d->body.size(), 0);
 }
 
-Content &Content::operator= (const Content &src) {
+Content &Content::operator= (const Content &other) {
 	L_D();
-	if (this != &src) {
-		d->body = src.getBody();
-		d->contentType = src.getContentType();
-		d->contentDisposition = src.getContentDisposition();
-		AppDataContainer::operator=(src);
+	if (this != &other) {
+		d->body = other.getBody();
+		d->contentType = other.getContentType();
+		d->contentDisposition = other.getContentDisposition();
+		AppDataContainer::operator=(other);
 	}
 
 	return *this;
 }
 
-Content &Content::operator= (Content &&src) {
+Content &Content::operator= (Content &&other) {
 	L_D();
-	d->body = move(src.getPrivate()->body);
-	d->contentType = move(src.getPrivate()->contentType);
-	d->contentDisposition = move(src.getPrivate()->contentDisposition);
-	AppDataContainer::operator=(move(src));
+	d->body = move(other.getPrivate()->body);
+	d->contentType = move(other.getPrivate()->contentType);
+	d->contentDisposition = move(other.getPrivate()->contentDisposition);
+	AppDataContainer::operator=(move(other));
 	return *this;
 }
 
-bool Content::operator== (const Content &content) const {
+bool Content::operator== (const Content &other) const {
 	L_D();
-	return d->contentType == content.getContentType() &&
-		d->body == content.getBody() &&
-		d->contentDisposition == content.getContentDisposition();
+	return d->contentType == other.getContentType() &&
+		d->body == other.getBody() &&
+		d->contentDisposition == other.getContentDisposition();
 }
 
 const ContentType &Content::getContentType () const {

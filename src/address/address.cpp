@@ -68,9 +68,9 @@ Address::Address (const IdentityAddress &identityAddress) : ClonableObject(*new 
 	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
 }
 
-Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
+Address::Address (const Address &other) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	SalAddress *salAddress = src.getPrivate()->internalAddress;
+	SalAddress *salAddress = other.getPrivate()->internalAddress;
 	if (salAddress)
 		d->internalAddress = sal_address_clone(salAddress);
 }
@@ -81,28 +81,28 @@ Address::~Address () {
 		sal_address_destroy(d->internalAddress);
 }
 
-Address &Address::operator= (const Address &src) {
+Address &Address::operator= (const Address &other) {
 	L_D();
-	if (this != &src) {
+	if (this != &other) {
 		if (d->internalAddress)
 			sal_address_destroy(d->internalAddress);
-		SalAddress *salAddress = src.getPrivate()->internalAddress;
+		SalAddress *salAddress = other.getPrivate()->internalAddress;
 		d->internalAddress = salAddress ? sal_address_clone(salAddress) : nullptr;
 	}
 
 	return *this;
 }
 
-bool Address::operator== (const Address &address) const {
-	return asString() == address.asString();
+bool Address::operator== (const Address &other) const {
+	return asString() == other.asString();
 }
 
-bool Address::operator!= (const Address &address) const {
-	return !(*this == address);
+bool Address::operator!= (const Address &other) const {
+	return !(*this == other);
 }
 
-bool Address::operator< (const Address &address) const {
-	return asString() < address.asString();
+bool Address::operator< (const Address &other) const {
+	return asString() < other.asString();
 }
 
 bool Address::isValid () const {

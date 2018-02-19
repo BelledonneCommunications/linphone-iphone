@@ -283,24 +283,24 @@ DialPlan::DialPlan (
 	d->internationalCallPrefix = icp;
 }
 
-DialPlan::DialPlan (const DialPlan &src) : ClonableObject(*new DialPlanPrivate) {
+DialPlan::DialPlan (const DialPlan &other) : ClonableObject(*new DialPlanPrivate) {
 	L_D();
-	d->country = src.getCountry();
-	d->isoCountryCode = src.getIsoCountryCode();
-	d->countryCallingCode = src.getCountryCallingCode();
-	d->nationalNumberLength = src.getNationalNumberLength();
-	d->internationalCallPrefix = src.getInternationalCallPrefix();
+	d->country = other.getCountry();
+	d->isoCountryCode = other.getIsoCountryCode();
+	d->countryCallingCode = other.getCountryCallingCode();
+	d->nationalNumberLength = other.getNationalNumberLength();
+	d->internationalCallPrefix = other.getInternationalCallPrefix();
 }
 
-DialPlan &DialPlan::operator= (const DialPlan &src) {
+DialPlan &DialPlan::operator= (const DialPlan &other) {
 	L_D();
 
-	if (this != &src) {
-		d->country = src.getCountry();
-		d->isoCountryCode = src.getIsoCountryCode();
-		d->countryCallingCode = src.getCountryCallingCode();
-		d->nationalNumberLength = src.getNationalNumberLength();
-		d->internationalCallPrefix = src.getInternationalCallPrefix();
+	if (this != &other) {
+		d->country = other.getCountry();
+		d->isoCountryCode = other.getIsoCountryCode();
+		d->countryCallingCode = other.getCountryCallingCode();
+		d->nationalNumberLength = other.getNationalNumberLength();
+		d->internationalCallPrefix = other.getInternationalCallPrefix();
 	}
 
 	return *this;

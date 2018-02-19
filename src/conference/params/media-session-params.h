@@ -38,10 +38,10 @@ class MediaSessionParams : public CallSessionParams {
 
 public:
 	MediaSessionParams ();
-	MediaSessionParams (const MediaSessionParams &src);
+	MediaSessionParams (const MediaSessionParams &other);
 	virtual ~MediaSessionParams ();
 
-	MediaSessionParams &operator= (const MediaSessionParams &src);
+	MediaSessionParams &operator= (const MediaSessionParams &other);
 
 	void initDefault (const std::shared_ptr<Core> &core) override;
 

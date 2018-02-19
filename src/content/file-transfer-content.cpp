@@ -44,56 +44,56 @@ public:
 
 FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {}
 
-FileTransferContent::FileTransferContent (const FileTransferContent &src) : Content(*new FileTransferContentPrivate) {
+FileTransferContent::FileTransferContent (const FileTransferContent &other) : Content(*new FileTransferContentPrivate) {
 	L_D();
-	d->fileName = src.getFileName();
-	d->fileUrl = src.getFileUrl();
-	d->filePath = src.getFilePath();
-	d->fileContent = src.getFileContent();
-	d->fileSize = src.getFileSize();
+	d->fileName = other.getFileName();
+	d->fileUrl = other.getFileUrl();
+	d->filePath = other.getFilePath();
+	d->fileContent = other.getFileContent();
+	d->fileSize = other.getFileSize();
 }
 
-FileTransferContent::FileTransferContent (FileTransferContent &&src) : Content(*new FileTransferContentPrivate) {
+FileTransferContent::FileTransferContent (FileTransferContent &&other) : Content(*new FileTransferContentPrivate) {
 	L_D();
-	d->fileName = move(src.getPrivate()->fileName);
-	d->fileUrl = move(src.getPrivate()->fileUrl);
-	d->filePath = move(src.getPrivate()->filePath);
-	d->fileContent = move(src.getPrivate()->fileContent);
-	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileName = move(other.getPrivate()->fileName);
+	d->fileUrl = move(other.getPrivate()->fileUrl);
+	d->filePath = move(other.getPrivate()->filePath);
+	d->fileContent = move(other.getPrivate()->fileContent);
+	d->fileSize = move(other.getPrivate()->fileSize);
 }
 
-FileTransferContent &FileTransferContent::operator= (const FileTransferContent &src) {
+FileTransferContent &FileTransferContent::operator= (const FileTransferContent &other) {
 	L_D();
-	if (this != &src) {
-		Content::operator=(src);
-		d->fileName = src.getFileName();
-		d->fileUrl = src.getFileUrl();
-		d->filePath = src.getFilePath();
-		d->fileContent = src.getFileContent();
-		d->fileSize = src.getFileSize();
+	if (this != &other) {
+		Content::operator=(other);
+		d->fileName = other.getFileName();
+		d->fileUrl = other.getFileUrl();
+		d->filePath = other.getFilePath();
+		d->fileContent = other.getFileContent();
+		d->fileSize = other.getFileSize();
 	}
 
 	return *this;
 }
 
-FileTransferContent &FileTransferContent::operator= (FileTransferContent &&src) {
+FileTransferContent &FileTransferContent::operator= (FileTransferContent &&other) {
 	L_D();
-	Content::operator=(move(src));
-	d->fileName = move(src.getPrivate()->fileName);
-	d->fileUrl = move(src.getPrivate()->fileUrl);
-	d->filePath = move(src.getPrivate()->filePath);
-	d->fileContent = move(src.getPrivate()->fileContent);
-	d->fileSize = move(src.getPrivate()->fileSize);
+	Content::operator=(move(other));
+	d->fileName = move(other.getPrivate()->fileName);
+	d->fileUrl = move(other.getPrivate()->fileUrl);
+	d->filePath = move(other.getPrivate()->filePath);
+	d->fileContent = move(other.getPrivate()->fileContent);
+	d->fileSize = move(other.getPrivate()->fileSize);
 	return *this;
 }
 
-bool FileTransferContent::operator== (const FileTransferContent &content) const {
+bool FileTransferContent::operator== (const FileTransferContent &other) const {
 	L_D();
-	return Content::operator==(content) &&
-		d->fileName == content.getFileName() &&
-		d->fileUrl == content.getFileUrl() &&
-		d->filePath == content.getFilePath() &&
-		d->fileSize == content.getFileSize();
+	return Content::operator==(other) &&
+		d->fileName == other.getFileName() &&
+		d->fileUrl == other.getFileUrl() &&
+		d->filePath == other.getFilePath() &&
+		d->fileSize == other.getFileSize();
 }
 
 void FileTransferContent::setFileName (const string &name) {

@@ -33,15 +33,15 @@ class LINPHONE_PUBLIC IdentityAddress : public ClonableObject {
 public:
 	explicit IdentityAddress (const std::string &address = "");
 	IdentityAddress (const Address &address);
-	IdentityAddress (const IdentityAddress &src);
+	IdentityAddress (const IdentityAddress &other);
 	~IdentityAddress () = default;
 
-	IdentityAddress &operator= (const IdentityAddress &src);
+	IdentityAddress &operator= (const IdentityAddress &other);
 
-	bool operator== (const IdentityAddress &address) const;
-	bool operator!= (const IdentityAddress &address) const;
+	bool operator== (const IdentityAddress &other) const;
+	bool operator!= (const IdentityAddress &other) const;
 
-	bool operator< (const IdentityAddress &address) const;
+	bool operator< (const IdentityAddress &other) const;
 
 	bool isValid () const;
 

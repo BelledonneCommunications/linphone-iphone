@@ -37,14 +37,14 @@ class ContentPrivate;
 class LINPHONE_PUBLIC Content : public ClonableObject, public AppDataContainer {
 public:
 	Content ();
-	Content (const Content &src);
-	Content (Content &&src);
+	Content (const Content &other);
+	Content (Content &&other);
 	~Content ();
 
-	Content &operator= (const Content &src);
-	Content &operator= (Content &&src);
+	Content &operator= (const Content &other);
+	Content &operator= (Content &&other);
 
-	bool operator== (const Content &content) const;
+	bool operator== (const Content &other) const;
 
 	const ContentType &getContentType () const;
 	void setContentType (const ContentType &contentType);
