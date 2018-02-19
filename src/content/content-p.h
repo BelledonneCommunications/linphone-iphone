@@ -21,6 +21,7 @@
 #define _L_CONTENT_P_H_
 
 #include <vector>
+#include <list>
 
 #include "content-type.h"
 #include "content.h"
@@ -35,6 +36,7 @@ private:
 	std::vector<char> body;
 	ContentType contentType;
 	std::string contentDisposition;
+	std::list<std::pair<std::string,std::string>> headers;
 
 	L_DECLARE_PUBLIC(Content);
 };

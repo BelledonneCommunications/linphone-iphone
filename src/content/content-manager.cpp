@@ -90,6 +90,18 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 			(void *)body.c_str(), body.length(), nullptr, nullptr
 		);
 		belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(mbh), cContentType);
+
+		const list<pair<string,string>> headers = content.getHeaders();
+		for (const auto &header : headers) {
+			belle_sip_header_t *additionalHeader = BELLE_SIP_HEADER(
+				belle_sip_header_create(
+					header.first.c_str(),
+					header.second.c_str()
+				)
+			);
+			belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(mbh), additionalHeader);
+		}
+
 		belle_sip_multipart_body_handler_add_part(mpbh, BELLE_SIP_BODY_HANDLER(mbh));
 	}
 	char *desc = belle_sip_object_to_string(mpbh);

@@ -21,6 +21,8 @@
 #include "linphone/core.h"
 #include "linphone/utils/utils.h"
 
+#include <algorithm>
+
 #include "content-p.h"
 #include "content-type.h"
 
@@ -38,7 +40,8 @@ Content::Content (const Content &other) : ClonableObject(*new ContentPrivate), A
 	L_D();
 	d->body = other.getBody();
 	d->contentType = other.getContentType();
-	d->contentDisposition = other.getContentDisposition();
+	d->contentDisposition = other.getContentDisposition();;
+	d->headers = other.getHeaders();
 }
 
 Content::Content (Content &&other) : ClonableObject(*new ContentPrivate), AppDataContainer(move(other)) {
@@ -46,6 +49,7 @@ Content::Content (Content &&other) : ClonableObject(*new ContentPrivate), AppDat
 	d->body = move(other.getPrivate()->body);
 	d->contentType = move(other.getPrivate()->contentType);
 	d->contentDisposition = move(other.getPrivate()->contentDisposition);
+	d->headers = other.getHeaders();
 }
 
 Content::Content (ContentPrivate &p) : ClonableObject(p) {}
@@ -66,8 +70,8 @@ Content &Content::operator= (const Content &other) {
 		d->contentType = other.getContentType();
 		d->contentDisposition = other.getContentDisposition();
 		AppDataContainer::operator=(other);
+		d->headers = other.getHeaders();
 	}
-
 	return *this;
 }
 
@@ -76,6 +80,7 @@ Content &Content::operator= (Content &&other) {
 	d->body = move(other.getPrivate()->body);
 	d->contentType = move(other.getPrivate()->contentType);
 	d->contentDisposition = move(other.getPrivate()->contentDisposition);
+	d->headers = other.getHeaders();
 	AppDataContainer::operator=(move(other));
 	return *this;
 }
@@ -84,7 +89,8 @@ bool Content::operator== (const Content &other) const {
 	L_D();
 	return d->contentType == other.getContentType() &&
 		d->body == other.getBody() &&
-		d->contentDisposition == other.getContentDisposition();
+		d->contentDisposition == other.getContentDisposition() &&
+		d->headers == other.getHeaders();
 }
 
 const ContentType &Content::getContentType () const {
@@ -170,6 +176,31 @@ bool Content::isValid () const {
 
 bool Content::isFile () const {
 	return false;
+}
+
+void Content::addHeader (const string &headerName, const string &headerValue) {
+	L_D();
+	removeHeader(headerName);
+	d->headers.push_back(make_pair(headerName, headerValue));
+}
+
+const list<pair<string,string>> &Content::getHeaders () const {
+	L_D();
+	return d->headers;
+}
+
+void Content::removeHeader (const string &headerName) {
+	L_D();
+	auto it = findHeader(headerName);
+	if (it != d->headers.cend())
+		d->headers.remove(*it);
+}
+
+list<pair<string,string>>::const_iterator Content::findHeader (const string &headerName) {
+	L_D();
+	return find_if(d->headers.cbegin(), d->headers.cend(), [&headerName](const pair<string,string> &pair) {
+		return pair.first == headerName;
+	});
 }
 
 LinphoneContent *Content::toLinphoneContent () const {
