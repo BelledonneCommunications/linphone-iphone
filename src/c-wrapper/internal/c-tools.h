@@ -155,7 +155,7 @@ private:
 	// Runtime checker.
 	// ---------------------------------------------------------------------------
 
-	static inline void abort (const char *message) {
+	[[noreturn]] static inline void abort (const char *message) {
 		std::cerr << "[FATAL C-WRAPPER]" << message << std::endl;
 		std::terminate();
 	}
