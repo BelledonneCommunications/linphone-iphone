@@ -72,6 +72,8 @@ private:
 	L_DISABLE_COPY(ParticipantDevice);
 };
 
+std::ostream &operator<< (std::ostream &stream, ParticipantDevice::State state);
+
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _L_PARTICIPANT_DEVICE_H_

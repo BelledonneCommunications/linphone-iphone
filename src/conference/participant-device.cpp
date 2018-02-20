@@ -47,4 +47,18 @@ void ParticipantDevice::setConferenceSubscribeEvent (LinphoneEvent *ev) {
 	mConferenceSubscribeEvent = linphone_event_ref(ev);
 }
 
+ostream &operator<< (ostream &stream, ParticipantDevice::State state) {
+	switch (state) {
+		case ParticipantDevice::State::Joining:
+			return stream << "Joining";
+		case ParticipantDevice::State::Present:
+			return stream << "Present";
+		case ParticipantDevice::State::Leaving:
+			return stream << "Leaving";
+		case ParticipantDevice::State::Left:
+			return stream << "Left";
+	}
+	return stream;
+}
+
 LINPHONE_END_NAMESPACE

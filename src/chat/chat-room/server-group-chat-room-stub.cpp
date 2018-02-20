@@ -215,4 +215,10 @@ void ServerGroupChatRoom::leave () {}
 
 void ServerGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {}
 
+// -----------------------------------------------------------------------------
+
+ostream &operator<< (ostream &stream, const ServerGroupChatRoom *chatRoom) {
+	return stream << "ServerGroupChatRoom [" << chatRoom << "]";
+}
+
 LINPHONE_END_NAMESPACE

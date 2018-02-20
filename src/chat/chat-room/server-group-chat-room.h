@@ -93,6 +93,8 @@ private:
 	L_DISABLE_COPY(ServerGroupChatRoom);
 };
 
+std::ostream &operator<< (std::ostream &stream, const ServerGroupChatRoom *chatRoom);
+
 LINPHONE_END_NAMESPACE
 
 #endif // ifndef _L_SERVER_GROUP_CHAT_ROOM_H_
