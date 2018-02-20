@@ -20,6 +20,7 @@
 #include <mediastreamer2/mscommon.h>
 #include <xercesc/util/PlatformUtils.hpp>
 
+#include "address/address-p.h"
 #include "call/call.h"
 #include "core/core-listener.h"
 #include "core/core-p.h"
@@ -75,6 +76,8 @@ void CorePrivate::uninit () {
 		linphone_core_iterate(L_GET_C_BACK_PTR(q));
 		ms_usleep(10000);
 	}
+
+	AddressPrivate::clearSipAddressesCache();
 }
 
 // -----------------------------------------------------------------------------

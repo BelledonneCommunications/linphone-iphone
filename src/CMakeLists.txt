@@ -91,6 +91,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/call-session.h
 	conference/session/media-session.h
 	conference/session/port-config.h
+	containers/lru-cache.h
 	content/content-manager.h
 	content/content-p.h
 	content/content-type.h
