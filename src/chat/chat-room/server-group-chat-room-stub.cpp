@@ -218,7 +218,7 @@ void ServerGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {}
 // -----------------------------------------------------------------------------
 
 ostream &operator<< (ostream &stream, const ServerGroupChatRoom *chatRoom) {
-	return stream << "ServerGroupChatRoom [" << chatRoom << "]";
+	return stream << "ServerGroupChatRoom [" << reinterpret_cast<const void *>(chatRoom) << "]";
 }
 
 LINPHONE_END_NAMESPACE
