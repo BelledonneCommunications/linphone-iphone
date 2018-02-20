@@ -150,6 +150,9 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
 		linphone_proxy_config_set_dial_prefix(cfg, buff);
 	}
+	if (linphone_proxy_config_get_server_addr(cfg) == NULL && creator->domain != NULL) {
+		linphone_proxy_config_set_server_addr(cfg, creator->domain);
+	}
 
 	linphone_proxy_config_enable_register(cfg, TRUE);
 
