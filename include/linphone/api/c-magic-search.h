@@ -120,8 +120,13 @@ LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache(LinphoneMagicSearc
 /**
  * Create a sorted list of SearchResult from SipUri, Contact name,
  * Contact displayname, Contact phone number, which match with a filter word
+ * During the first search, a cache is created and used for the next search and so on
+ * Use linphone_magic_search_reset_search_cache() to begin a new search
  * @param[in] filter word we search
  * @param[in] withDomain domain which we want to search only
+ * - "" for searching in all contact
+ * - "*" for searching in contact with sip SipUri
+ * - "yourdomain" for searching in contact from "yourdomain" domain
  * @return sorted list of \bctbx_list{LinphoneSearchResult}
  **/
 LINPHONE_PUBLIC bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain);

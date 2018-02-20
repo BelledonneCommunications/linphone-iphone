@@ -116,7 +116,10 @@ public:
 	 * During the first search, a cache is created and used for the next search and so on
 	 * Use resetSearchCache() to begin a new search
 	 * @param[in] filter word we search
-	 * @param[in] withDomain domain which we want to search only
+	 * @param[in] withDomain
+	 * - "" for searching in all contact
+	 * - "*" for searching in contact with sip SipUri
+	 * - "yourdomain" for searching in contact from "yourdomain" domain
 	 * @return sorted list of SearchResult with "filter" or an empty list if "filter" is empty
 	 **/
 	std::list<SearchResult> getContactListFromFilter(const std::string &filter, const std::string &withDomain = "");
