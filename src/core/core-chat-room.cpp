@@ -106,12 +106,14 @@ shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const strin
 
 void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_ASSERT(chatRoom);
-	L_ASSERT(!chatRoomsById[chatRoom->getChatRoomId()]
-		|| (chatRoomsById[chatRoom->getChatRoomId()] == chatRoom)
-	);
-	if (!chatRoomsById[chatRoom->getChatRoomId()]) {
+
+	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
+	auto it = chatRoomsById.find(chatRoomId);
+	// Chat room not exist or yes but with the same pointer!
+	L_ASSERT(it == chatRoomsById.end() || it->second == chatRoom);
+	if (it == chatRoomsById.end()) {
 		chatRooms.push_back(chatRoom);
-		chatRoomsById[chatRoom->getChatRoomId()] = chatRoom;
+		chatRoomsById[chatRoomId] = chatRoom;
 	}
 }
 
