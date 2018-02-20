@@ -188,21 +188,6 @@ Variant::~Variant () {
 	delete d;
 }
 
-bool Variant::operator!= (const Variant &other) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator< (const Variant &other) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator<= (const Variant &other) const {
-	// TODO.
-	return false;
-}
-
 Variant &Variant::operator= (const Variant &other) {
 	L_D();
 
@@ -225,21 +210,6 @@ Variant &Variant::operator= (const Variant &other) {
 Variant &Variant::operator= (Variant &&other) {
 	::swap(mPrivate, other.mPrivate);
 	return *this;
-}
-
-bool Variant::operator== (const Variant &other) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator> (const Variant &other) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator>= (const Variant &other) const {
-	// TODO.
-	return false;
 }
 
 bool Variant::isValid () const {

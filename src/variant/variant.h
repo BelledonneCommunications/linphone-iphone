@@ -87,14 +87,8 @@ public:
 
 	~Variant ();
 
-	bool operator!= (const Variant &other) const;
-	bool operator< (const Variant &other) const;
-	bool operator<= (const Variant &other) const;
 	Variant &operator= (const Variant &other);
 	Variant &operator= (Variant &&other);
-	bool operator== (const Variant &other) const;
-	bool operator> (const Variant &other) const;
-	bool operator>= (const Variant &other) const;
 
 	template<typename T>
 	void setValue (const T &value) {
