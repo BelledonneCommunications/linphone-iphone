@@ -19,9 +19,9 @@
 
 // TODO: Remove me later.
 #include "linphone/core.h"
-#include "linphone/utils/utils.h"
 
-#include <algorithm>
+#include "linphone/utils/algorithm.h"
+#include "linphone/utils/utils.h"
 
 #include "content-p.h"
 #include "content-type.h"
@@ -186,7 +186,7 @@ void Content::addHeader (const string &headerName, const string &headerValue) {
 	d->headers.push_back(make_pair(headerName, headerValue));
 }
 
-const list<pair<string,string>> &Content::getHeaders () const {
+const list<pair<string, string>> &Content::getHeaders () const {
 	L_D();
 	return d->headers;
 }
@@ -198,9 +198,9 @@ void Content::removeHeader (const string &headerName) {
 		d->headers.remove(*it);
 }
 
-list<pair<string,string>>::const_iterator Content::findHeader (const string &headerName) {
+list<pair<string, string>>::const_iterator Content::findHeader (const string &headerName) const {
 	L_D();
-	return find_if(d->headers.cbegin(), d->headers.cend(), [&headerName](const pair<string,string> &pair) {
+	return findIf(d->headers, [&headerName](const pair<string, string> &pair) {
 		return pair.first == headerName;
 	});
 }
