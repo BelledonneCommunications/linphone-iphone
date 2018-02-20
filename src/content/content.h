@@ -20,8 +20,8 @@
 #ifndef _L_CONTENT_H_
 #define _L_CONTENT_H_
 
-#include <vector>
 #include <list>
+#include <vector>
 
 #include "object/app-data-container.h"
 #include "object/clonable-object.h"
@@ -72,10 +72,10 @@ public:
 
 	virtual bool isFile () const;
 
+	const std::list<std::pair<std::string, std::string>> &getHeaders () const;
 	void addHeader (const std::string &headerName, const std::string &headerValue);
-	const std::list<std::pair<std::string,std::string>> &getHeaders () const;
 	void removeHeader (const std::string &headerName);
-	std::list<std::pair<std::string,std::string>>::const_iterator findHeader (const std::string &headerName);
+	std::list<std::pair<std::string, std::string>>::const_iterator findHeader (const std::string &headerName);
 
 	// TODO: Remove me later.
 	virtual LinphoneContent *toLinphoneContent () const;
