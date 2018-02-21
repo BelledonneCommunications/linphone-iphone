@@ -109,6 +109,18 @@ namespace Statements {
 	};
 
 	// ---------------------------------------------------------------------------
+	// Select statements.
+	// ---------------------------------------------------------------------------
+
+	constexpr const char *insert[InsertCount] = {
+		[InsertOneToOneChatRoom] = R"(
+			INSERT INTO one_to_one_chat_room (
+				chat_room_id, participant_a_sip_address_id, participant_b_sip_address_id
+			) VALUES (:1, :2, :3)
+		)"
+	};
+
+	// ---------------------------------------------------------------------------
 	// Getters.
 	// ---------------------------------------------------------------------------
 
@@ -120,6 +132,11 @@ namespace Statements {
 	const char *get (Select selectStmt, AbstractDb::Backend backend) {
 		(void)backend;
 		return selectStmt >= Select::SelectCount ? nullptr : select[selectStmt];
+	}
+
+	const char *get (Insert insertStmt, AbstractDb::Backend backend) {
+		(void)backend;
+		return insertStmt >= Insert::InsertCount ? nullptr : insert[insertStmt];
 	}
 }
 

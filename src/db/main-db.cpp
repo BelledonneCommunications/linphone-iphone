@@ -215,6 +215,7 @@ struct MainDbPrivate::PreparedStatements {
 	typedef unique_ptr<soci::statement> Statement;
 
 	Statement select[Statements::SelectCount];
+	Statement insert[Statements::InsertCount];
 };
 
 void MainDbPrivate::initPreparedStatements () {
@@ -226,6 +227,8 @@ void MainDbPrivate::initPreparedStatements () {
 	preparedStatements = makeUnique<PreparedStatements>();
 	for (int i = 0; i < int(Statements::SelectCount); ++i)
 		preparedStatements->select[i] = makeStatement(*session, Statements::get(Statements::Select(i), backend));
+	for (int i = 0; i < int(Statements::InsertCount); ++i)
+		preparedStatements->insert[i] = makeStatement(*session, Statements::get(Statements::Insert(i), backend));
 }
 
 // -----------------------------------------------------------------------------
@@ -2587,9 +2590,7 @@ void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
 		L_D();
 
 		soci::transaction tr(*d->dbSession.getBackendSession());
-
 		d->insertChatRoom(chatRoom);
-
 		tr.commit();
 	};
 }
@@ -2742,8 +2743,7 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 	L_SAFE_TRANSACTION {
 		L_D();
 
-		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		soci::transaction tr(*d->dbSession.getBackendSession());
 
 		const list<shared_ptr<Participant>> &participants = chatRoom->getParticipants();
 		const long long &participantASipAddressId = d->selectSipAddressId(participants.front()->getAddress().asString());
@@ -2753,11 +2753,12 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 
 		long long chatRoomId = d->selectOneToOneChatRoomId(participantASipAddressId, participantBSipAddressId);
 		if (chatRoomId == -1) {
-			chatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
-			*session << "INSERT INTO one_to_one_chat_room ("
-				"  chat_room_id, participant_a_sip_address_id, participant_b_sip_address_id"
-				") VALUES (:chatRoomId, :participantASipAddressId, :participantBSipAddressId)",
-				soci::use(chatRoomId), soci::use(participantASipAddressId), soci::use(participantBSipAddressId);
+			StatementBind stmt(*d->preparedStatements->insert[Statements::InsertOneToOneChatRoom]);
+			stmt.bind(chatRoomId);
+			stmt.bind(participantASipAddressId);
+			stmt.bind(participantBSipAddressId);
+
+			stmt.exec();
 		}
 
 		tr.commit();
