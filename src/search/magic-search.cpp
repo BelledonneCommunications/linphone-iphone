@@ -130,7 +130,7 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 	}
 
 	resultList->sort([](const SearchResult& lsr, const SearchResult& rsr){
-		return lsr >= rsr;
+		return (!rsr.getFriend() && lsr.getFriend()) || lsr >= rsr;
 	});
 
 	proxy = linphone_core_get_default_proxy_config(this->getCore()->getCCore());
