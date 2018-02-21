@@ -116,6 +116,7 @@ void MagicSearch::resetSearchCache() {
 
 list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, const string &withDomain) {
 	list<SearchResult> *resultList;
+	LinphoneProxyConfig *proxy = nullptr;
 
 	if (filter.empty()) return list<SearchResult>();
 
@@ -132,6 +133,16 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 		return lsr >= rsr;
 	});
 
+	proxy = linphone_core_get_default_proxy_config(this->getCore()->getCCore());
+	// Adding last item if proxy exist
+	if (proxy) {
+		const char *domain = linphone_proxy_config_get_domain(proxy);
+		if (domain) {
+			string filterAddress = "sip:" + filter + "@" + domain;
+			LinphoneAddress *lastResult = linphone_core_create_address(this->getCore()->getCCore(), filterAddress.c_str());
+			if (lastResult) resultList->push_back(SearchResult(0, lastResult, nullptr));
+		}
+	}
 	setSearchCache(resultList);
 
 	return *resultList;
