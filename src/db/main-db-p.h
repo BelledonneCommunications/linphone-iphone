@@ -34,15 +34,15 @@ class Content;
 
 class MainDbPrivate : public AbstractDbPrivate {
 public:
-	struct Statements;
+	struct PreparedStatements;
 
 	mutable std::unordered_map<long long, std::weak_ptr<EventLog>> storageIdToEvent;
 	mutable std::unordered_map<long long, std::weak_ptr<ChatMessage>> storageIdToChatMessage;
 
 private:
-	std::unique_ptr<Statements> statements;
+	std::unique_ptr<PreparedStatements> preparedStatements;
 
-	void initStatements ();
+	void initPreparedStatements ();
 
 	// ---------------------------------------------------------------------------
 	// Low level API.

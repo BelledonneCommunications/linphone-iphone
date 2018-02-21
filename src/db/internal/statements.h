@@ -33,6 +33,10 @@ namespace Statements {
 	};
 
 	enum Select {
+		SelectSipAddressId,
+		SelectChatRoomId,
+		SelectChatRoomParticipantId,
+		SelectOneToOneChatRoomId,
 		SelectConferenceEvents,
 		SelectCount
 	};
