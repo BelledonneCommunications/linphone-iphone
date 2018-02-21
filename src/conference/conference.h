@@ -34,6 +34,7 @@ class CallSession;
 class CallSessionListener;
 class CallSessionPrivate;
 class ConferencePrivate;
+class ParticipantDevice;
 
 class LINPHONE_PUBLIC Conference :
 	public ConferenceInterface,
@@ -47,6 +48,7 @@ public:
 	std::shared_ptr<Participant> getActiveParticipant () const;
 
 	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
+	std::shared_ptr<ParticipantDevice> findParticipantDevice (const std::shared_ptr<const CallSession> &session) const;
 
 	/* ConferenceInterface */
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;

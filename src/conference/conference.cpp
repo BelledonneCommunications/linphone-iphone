@@ -141,6 +141,19 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 	return nullptr;
 }
 
+shared_ptr<ParticipantDevice> Conference::findParticipantDevice (const shared_ptr<const CallSession> &session) const {
+	L_D();
+
+	for (const auto &participant : d->participants) {
+		for (const auto &device : participant->getPrivate()->getDevices()) {
+			if (device->getSession() == session)
+				return device;
+		}
+	}
+
+	return nullptr;
+}
+
 bool Conference::isMe (const IdentityAddress &addr) const {
 	L_D();
 	IdentityAddress cleanedAddr(addr);
