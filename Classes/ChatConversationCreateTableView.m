@@ -78,7 +78,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	NSString *kCellId = NSStringFromClass(UIChatCreateCell.class);
 	UIChatCreateCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-	if (cell == nil) {
+	if (cell == nil)
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
