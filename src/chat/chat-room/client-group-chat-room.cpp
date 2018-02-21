@@ -513,10 +513,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantAddedCb cb = linphone_chat_room_cbs_get_participant_added(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_participant_added(cr, L_GET_C_BACK_PTR(event));
 }
 
 void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
@@ -536,10 +533,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantRemovedCb cb = linphone_chat_room_cbs_get_participant_removed(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_participant_removed(cr, L_GET_C_BACK_PTR(event));
 }
 
 void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
@@ -567,10 +561,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantAdminStatusChangedCb cb = linphone_chat_room_cbs_get_participant_admin_status_changed(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_participant_admin_status_changed(cr, L_GET_C_BACK_PTR(event));
 }
 
 void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEvent> &event, bool isFullState) {
@@ -586,10 +577,7 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsSubjectChangedCb cb = linphone_chat_room_cbs_get_subject_changed(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_subject_changed(cr, L_GET_C_BACK_PTR(event));
 }
 
 void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
@@ -613,10 +601,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantDeviceAddedCb cb = linphone_chat_room_cbs_get_participant_device_added(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_participant_device_added(cr, L_GET_C_BACK_PTR(event));
 }
 
 void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<ConferenceParticipantDeviceEvent> &event, bool isFullState) {
@@ -638,10 +623,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 	d->addEvent(event);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsParticipantDeviceRemovedCb cb = linphone_chat_room_cbs_get_participant_device_removed(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(event));
+	linphone_chat_room_notify_participant_device_removed(cr, L_GET_C_BACK_PTR(event));
 }
 
 LINPHONE_END_NAMESPACE

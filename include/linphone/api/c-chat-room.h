@@ -278,9 +278,33 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
 
 /**
+ * Add a listener in order to be notified of LinphoneChatRoom events. Once an event is received, registred LinphoneChatRoomCbs are
+ * invoked sequencially.
+ * @param[in] call LinphoneChatRoom object to monitor.
+ * @param[in] cbs A LinphoneChatRoomCbs object holding the callbacks you need. A reference is taken by the LinphoneChatRoom until you invoke linphone_call_remove_callbacks().
+ */
+LINPHONE_PUBLIC void linphone_chat_room_add_callbacks(LinphoneChatRoom *cr, LinphoneChatRoomCbs *cbs);
+
+/**
+ * Remove a listener from a LinphoneChatRoom
+ * @param[in] call LinphoneChatRoom object
+ * @param[in] cbs LinphoneChatRoomCbs object to remove.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_remove_callbacks(LinphoneChatRoom *cr, LinphoneChatRoomCbs *cbs);
+
+/**
+ * Gets the current LinphoneChatRoomCbs.
+ * This is meant only to be called from a callback to be able to get the user_data associated with the LinphoneChatRoomCbs that is calling the callback.
+ * @param[in] call LinphoneChatRoom object
+ * @return The LinphoneChatRoomCbs that has called the last callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbs *linphone_chat_room_get_current_callbacks(const LinphoneChatRoom *cr);
+ 
+/**
  * Get the LinphoneChatRoomCbs object associated with the LinphoneChatRoom.
  * @param[in] cr LinphoneChatRoom object
  * @return The LinphoneChatRoomCbs object associated with the LinphoneChatRoom
+ * @deprecated, use linphone_chat_room_add_callbacks instead
  */
 LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr);
 

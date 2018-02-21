@@ -50,19 +50,16 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 	dChatMessage->setTime(ms_time(0));
 	dChatMessage->send();
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsChatMessageSentCb cb = linphone_chat_room_cbs_get_chat_message_sent(cbs);
-
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);	
 	// TODO: server currently don't stock message, remove condition in the future.
-	if (cb && !linphone_core_conference_server_enabled(q->getCore()->getCCore())) {
+	if (!linphone_core_conference_server_enabled(q->getCore()->getCCore())) {
 		shared_ptr<ConferenceChatMessageEvent> event = static_pointer_cast<ConferenceChatMessageEvent>(
 			q->getCore()->getPrivate()->mainDb->getEventFromKey(dChatMessage->dbKey)
 		);
 		if (!event)
 			event = make_shared<ConferenceChatMessageEvent>(time(nullptr), chatMessage);
 
-		cb(cr, L_GET_C_BACK_PTR(event));
+		linphone_chat_room_notify_chat_message_sent(cr, L_GET_C_BACK_PTR(event));
 	}
 
 	if (isComposing)
@@ -137,10 +134,7 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 		);
 		linphone_address_unref(fromAddress);
 	}
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsMessageReceivedCb cb = linphone_chat_room_cbs_get_message_received(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(chatMessage));
+	linphone_chat_room_notify_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
 	linphone_core_notify_message_received(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(chatMessage));
 }
 
@@ -153,13 +147,9 @@ void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddress, b
 		remoteIsComposing.remove(remoteAddress);
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsIsComposingReceivedCb cb = linphone_chat_room_cbs_get_is_composing_received(cbs);
-	if (cb) {
-		LinphoneAddress *lAddr = linphone_address_new(remoteAddress.asString().c_str());
-		cb(cr, lAddr, !!isComposing);
-		linphone_address_unref(lAddr);
-	}
+	LinphoneAddress *lAddr = linphone_address_new(remoteAddress.asString().c_str());
+	linphone_chat_room_notify_is_composing_received(cr, lAddr, !!isComposing);
+	linphone_address_unref(lAddr);
 	// Legacy notification
 	linphone_core_notify_is_composing_received(q->getCore()->getCCore(), cr);
 }
@@ -168,19 +158,13 @@ void ChatRoomPrivate::notifyStateChanged () {
 	L_Q();
 	linphone_core_notify_chat_room_state_changed(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q), (LinphoneChatRoomState)state);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsStateChangedCb cb = linphone_chat_room_cbs_get_state_changed(cbs);
-	if (cb)
-		cb(cr, (LinphoneChatRoomState)state);
+	linphone_chat_room_notify_state_changed(cr, (LinphoneChatRoomState)state);
 }
 
 void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-	LinphoneChatRoomCbsUndecryptableMessageReceivedCb cb = linphone_chat_room_cbs_get_undecryptable_message_received(cbs);
-	if (cb)
-		cb(cr, L_GET_C_BACK_PTR(chatMessage));
+	linphone_chat_room_notify_undecryptable_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
 	linphone_core_notify_message_received_unable_decrypt(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(chatMessage));
 }
 

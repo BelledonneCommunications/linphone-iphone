@@ -77,6 +77,7 @@ public:
 	void teardownCallbacks ();
 
 	std::shared_ptr<AbstractChatRoom> chatRoom;
+	LinphoneChatRoomCbs *callbacks;
 
 	L_DECLARE_PUBLIC(ProxyChatRoom);
 };

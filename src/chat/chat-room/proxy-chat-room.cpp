@@ -29,12 +29,10 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 #define PROXY_CALLBACK(callback, ...) \
-	LinphoneChatRoomCbs *proxiedCbs = linphone_chat_room_get_callbacks(cr); \
+	LinphoneChatRoomCbs *proxiedCbs = linphone_chat_room_get_current_callbacks(cr); \
 	ProxyChatRoom *pcr = static_cast<ProxyChatRoom *>(linphone_chat_room_cbs_get_user_data(proxiedCbs)); \
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(pcr->getSharedFromThis()); \
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(lcr); \
-	if (linphone_chat_room_cbs_get_ ## callback(cbs)) \
-		linphone_chat_room_cbs_get_ ## callback(cbs)(lcr, ##__VA_ARGS__)
+	linphone_chat_room_notify_ ## callback(lcr, ##__VA_ARGS__)
 
 static void chatMessageReceived (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	PROXY_CALLBACK(chat_message_received, event_log);
@@ -99,7 +97,8 @@ static void undecryptableMessageReceived (LinphoneChatRoom *cr, LinphoneChatMess
 void ProxyChatRoomPrivate::setupCallbacks () {
 	L_Q();
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(lcr);
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_cbs_new();
+	callbacks = cbs;
 	linphone_chat_room_cbs_set_user_data(cbs, q);
 	linphone_chat_room_cbs_set_chat_message_received(cbs, chatMessageReceived);
 	linphone_chat_room_cbs_set_chat_message_sent(cbs, chatMessageSent);
@@ -116,26 +115,12 @@ void ProxyChatRoomPrivate::setupCallbacks () {
 	linphone_chat_room_cbs_set_state_changed(cbs, stateChanged);
 	linphone_chat_room_cbs_set_subject_changed(cbs, subjectChanged);
 	linphone_chat_room_cbs_set_undecryptable_message_received(cbs, undecryptableMessageReceived);
+	linphone_chat_room_add_callbacks(lcr, cbs);
 }
 
 void ProxyChatRoomPrivate::teardownCallbacks () {
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(lcr);
-	linphone_chat_room_cbs_set_chat_message_received(cbs, nullptr);
-	linphone_chat_room_cbs_set_chat_message_sent(cbs, nullptr);
-	linphone_chat_room_cbs_set_conference_address_generation(cbs, nullptr);
-	linphone_chat_room_cbs_set_is_composing_received(cbs, nullptr);
-	linphone_chat_room_cbs_set_message_received(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_added(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_device_added(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_device_fetched(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_device_removed(cbs, nullptr);
-	linphone_chat_room_cbs_set_participant_removed(cbs, nullptr);
-	linphone_chat_room_cbs_set_participants_capabilities_checked(cbs, nullptr);
-	linphone_chat_room_cbs_set_state_changed(cbs, nullptr);
-	linphone_chat_room_cbs_set_subject_changed(cbs, nullptr);
-	linphone_chat_room_cbs_set_undecryptable_message_received(cbs, nullptr);
+	linphone_chat_room_remove_callbacks(lcr, callbacks);
 }
 
 // -----------------------------------------------------------------------------

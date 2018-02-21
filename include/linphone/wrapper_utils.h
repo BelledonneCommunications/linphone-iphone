@@ -55,6 +55,14 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_core_get_callbacks_list(const LinphoneCor
 LINPHONE_PUBLIC const bctbx_list_t *linphone_call_get_callbacks_list(const LinphoneCall *call);
 
 /**
+ * @brief Gets the list of listener in the chat room.
+ * @param[in] call #LinphoneChatRoom object.
+ * @return The list of #LinphoneChatRoomCbs.
+ * @donotwrap
+ */
+LINPHONE_PUBLIC const bctbx_list_t *linphone_chat_room_get_callbacks_list(const LinphoneChatRoom *cr);
+
+/**
  * Send a message to peer member of this chat room.
  *
  * The state of the sending message will be notified via the callbacks defined in the #LinphoneChatMessageCbs object that can be obtained
