@@ -447,15 +447,13 @@ static void forceUtf8Content (Content &content) {
 void ChatMessagePrivate::notifyReceiving () {
 	L_Q();
 
-	if ((getContentType() == ContentType::Imdn) || (getContentType() == ContentType::ImIsComposing))
-		return;
-
 	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
-	linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
-
-	if (toBeStored)
-		storeInDb();
-
+	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
+		linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
+		
+		if (toBeStored)
+			storeInDb();
+	}
 	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
 		::time(nullptr), q->getSharedFromThis()
 	);
@@ -463,7 +461,9 @@ void ChatMessagePrivate::notifyReceiving () {
 	// Legacy
 	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 
-	q->sendDeliveryNotification(LinphoneReasonNone);
+	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
+		q->sendDeliveryNotification(LinphoneReasonNone);
+	}
 }
 
 LinphoneReason ChatMessagePrivate::receive () {
