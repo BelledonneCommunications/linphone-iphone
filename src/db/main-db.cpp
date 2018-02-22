@@ -2254,6 +2254,7 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 	string query = Statements::get(Statements::SelectConferenceEvents, Backend::Sqlite3) + buildSqlEventFilter({
 		ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 	}, mask, "AND");
+	query += "  ORDER BY event_id DESC";
 
 	if (end > 0)
 		query += "  LIMIT " + Utils::toString(end - begin);
