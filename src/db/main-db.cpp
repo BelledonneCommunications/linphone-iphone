@@ -2251,11 +2251,9 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		return events;
 	}
 
-	string query = Statements::get(Statements::SelectConferenceEvents, Backend::Sqlite3);
-	query += buildSqlEventFilter({
+	string query = Statements::get(Statements::SelectConferenceEvents, Backend::Sqlite3) + buildSqlEventFilter({
 		ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 	}, mask, "AND");
-	query += "  ORDER BY creation_time DESC";
 
 	if (end > 0)
 		query += "  LIMIT " + Utils::toString(end - begin);
@@ -2788,7 +2786,10 @@ void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable)
 	};
 }
 
-void MainDb::updateChatRoomParticipantDevice (const shared_ptr<AbstractChatRoom> &chatRoom, const shared_ptr<ParticipantDevice> &device) {
+void MainDb::updateChatRoomParticipantDevice (
+	const shared_ptr<AbstractChatRoom> &chatRoom,
+	const shared_ptr<ParticipantDevice> &device
+) {
 	L_SAFE_TRANSACTION {
 		L_D();
 
@@ -2799,10 +2800,10 @@ void MainDb::updateChatRoomParticipantDevice (const shared_ptr<AbstractChatRoom>
 		const long long &participantSipAddressId = d->selectSipAddressId(device->getParticipant()->getAddress().asString());
 		const long long &participantId = d->selectChatRoomParticipantId(dbChatRoomId, participantSipAddressId);
 		const long long &participantSipDeviceAddressId = d->selectSipAddressId(device->getAddress().asString());
-		unsigned int stateInt = static_cast<unsigned int>(device->getState());
+		unsigned int state = static_cast<unsigned int>(device->getState());
 		*session << "UPDATE chat_room_participant_device SET state = :state"
 			"  WHERE chat_room_participant_id = :participantId AND participant_device_sip_address_id = :participantSipDeviceAddressId",
-			soci::use(stateInt), soci::use(participantId), soci::use(participantSipDeviceAddressId);
+			soci::use(state), soci::use(participantId), soci::use(participantSipDeviceAddressId);
 
 		tr.commit();
 	};
