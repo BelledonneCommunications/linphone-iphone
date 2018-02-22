@@ -958,8 +958,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
     // Enable speaker when video
     if (state == LinphoneCallIncomingReceived || state == LinphoneCallOutgoingInit ||
 			state == LinphoneCallConnected || state == LinphoneCallStreamsRunning) {
-		if (linphone_call_params_video_enabled( linphone_call_get_current_params(call)) &&
-              !speaker_already_enabled) {
+		if (linphone_call_params_video_enabled( linphone_call_get_current_params(call)) && !speaker_already_enabled && !_bluetoothEnabled) {
 			[self setSpeakerEnabled:TRUE];
 			speaker_already_enabled = TRUE;
 		}
