@@ -221,12 +221,14 @@ SearchResult MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const st
 	if (!checkDomain(lFriend, lAddress, withDomain)) return SearchResult(weight, nullptr);
 
 	// NAME
-	if (linphone_friend_get_name(lFriend) != nullptr) {
-		weight += getWeight(linphone_friend_get_name(lFriend), filter);
+	if (linphone_core_vcard_supported()) {
+		if (linphone_friend_get_vcard(lFriend)) {
+			weight += getWeight(linphone_vcard_get_full_name(linphone_friend_get_vcard(lFriend)), filter) * 3;
+		}
 	}
 
 	//SIP URI
-	weight += searchInAddress(lAddress, filter, withDomain);
+	weight += searchInAddress(lAddress, filter, withDomain) * 1;
 
 	// PHONE NUMBER
 	bctbx_list_t *begin, *phoneNumbers = linphone_friend_get_phone_numbers(lFriend);
@@ -236,7 +238,7 @@ SearchResult MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const st
 		const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lFriend, number.c_str());
 		weight += getWeight(number, filter);
 		if (presence != nullptr) {
-			weight += getWeight(linphone_presence_model_get_contact(presence), filter);
+			weight += getWeight(linphone_presence_model_get_contact(presence), filter) * 2;
 		}
 		phoneNumbers = phoneNumbers->next;
 	}

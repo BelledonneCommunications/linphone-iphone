@@ -306,7 +306,7 @@ LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr)
  * Returns the vCard object associated to this friend, if any
  * @param[in] fr LinphoneFriend object
  */
-LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr);
+LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(const LinphoneFriend *fr);
 
 /**
  * Binds a vCard object to a friend

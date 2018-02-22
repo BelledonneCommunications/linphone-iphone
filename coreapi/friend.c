@@ -1134,7 +1134,7 @@ void linphone_friend_destroy(LinphoneFriend *lf) {
 	linphone_friend_unref(lf);
 }
 
-LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr) {
+LinphoneVcard* linphone_friend_get_vcard(const LinphoneFriend *fr) {
 	if (fr && linphone_core_vcard_supported()) return fr->vcard;
 	return NULL;
 }
