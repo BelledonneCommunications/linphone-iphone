@@ -321,11 +321,7 @@ void LocalConferenceEventHandlerPrivate::notifyResponseCb (const LinphoneEvent *
 // -----------------------------------------------------------------------------
 
 string LocalConferenceEventHandlerPrivate::createNotify (ConferenceType confInfo, int notifyId, bool isFullState) {
-	if (notifyId == -1) {
-		lastNotify = lastNotify + 1;
-		confInfo.setVersion(lastNotify);
-	} else
-		confInfo.setVersion(static_cast<unsigned int>(notifyId));
+	confInfo.setVersion(notifyId == -1 ? ++lastNotify : static_cast<unsigned int>(notifyId));
 
 	confInfo.setState(isFullState ? StateType::full : StateType::partial);
 	if (!confInfo.getConferenceDescription()) {
