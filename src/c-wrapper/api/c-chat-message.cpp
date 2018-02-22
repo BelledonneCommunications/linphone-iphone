@@ -301,11 +301,11 @@ LinphoneReason linphone_chat_message_get_reason(LinphoneChatMessage *msg) {
 }
 
 bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType(linphone_chat_message_get_content_type(msg)) == LinphonePrivate::ContentType::FileTransfer;
+	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->hasFileTransferContent();
 }
 
 bool_t linphone_chat_message_is_text(LinphoneChatMessage *msg) {
-	return LinphonePrivate::ContentType(linphone_chat_message_get_content_type(msg)) == LinphonePrivate::ContentType::PlainText;
+	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->hasTextContent();
 }
 
 const char *linphone_chat_message_state_to_string(const LinphoneChatMessageState state) {
