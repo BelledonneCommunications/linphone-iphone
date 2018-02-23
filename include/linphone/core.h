@@ -116,6 +116,14 @@ LINPHONE_PUBLIC LinphonePlayer *linphone_core_create_local_player(LinphoneCore *
 LINPHONE_PUBLIC LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore*lc);
 
 /**
+ * Create a #LinphoneMagicSearch object.
+ * @param[in] lc #LinphoneCore object
+ * @return The create #LinphoneMagicSearch object
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC LinphoneMagicSearch *linphone_core_create_magic_search(LinphoneCore *lc);
+
+/**
  * Checks if a new version of the application is available.
  * @param lc LinphoneCore object
  * @param current_version The current version of the application

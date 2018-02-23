@@ -24,12 +24,16 @@ using namespace std;
 
 L_DECLARE_C_OBJECT_IMPL(MagicSearch);
 
-LinphoneMagicSearch *linphone_magic_search_new(LinphoneCore *lc) {
+LinphoneMagicSearch *linphone_core_create_magic_search(LinphoneCore *lc) {
 	shared_ptr<LinphonePrivate::MagicSearch> cppPtr = make_shared<LinphonePrivate::MagicSearch>(L_GET_CPP_PTR_FROM_C_OBJECT(lc));
 
 	LinphoneMagicSearch *object = L_INIT(MagicSearch);
 	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
 	return object;
+}
+
+LinphoneMagicSearch *linphone_new_magic_search(LinphoneCore *lc) {
+	return linphone_core_create_magic_search(lc);
 }
 
 LinphoneMagicSearch *linphone_magic_search_ref(LinphoneMagicSearch *magicSearch) {
