@@ -332,12 +332,14 @@
 
 	// network section
 	{
+		LinphoneNatPolicy *np = linphone_core_get_nat_policy(LC);
 		[self setBool:[lm lpConfigBoolForKey:@"edge_opt_preference" withDefault:NO] forKey:@"edge_opt_preference"];
 		[self setBool:[lm lpConfigBoolForKey:@"wifi_only_preference" withDefault:NO] forKey:@"wifi_only_preference"];
-		[self setCString:linphone_core_get_stun_server(LC) forKey:@"stun_preference"];
-		[self setBool:linphone_nat_policy_ice_enabled(linphone_core_get_nat_policy(LC)) forKey:@"ice_preference"];
-		[self setBool:linphone_nat_policy_turn_enabled(linphone_core_get_nat_policy(LC)) forKey:@"turn_preference"];
-		[self setCString:linphone_nat_policy_get_stun_server_username(linphone_core_get_nat_policy(LC))
+		[self setCString:linphone_nat_policy_get_stun_server(np) forKey:@"stun_preference"];
+		[self setBool:linphone_nat_policy_ice_enabled(np) forKey:@"ice_preference"];
+		[self setBool:linphone_nat_policy_turn_enabled(np) forKey:@"turn_preference"];
+		
+		[self setCString:linphone_nat_policy_get_stun_server_username(np)
 				  forKey:@"turn_username"];
 
 		int random_port_preference = [lm lpConfigIntForKey:@"random_port_preference" withDefault:1];
@@ -777,13 +779,16 @@
 			[LinphoneManager.instance setupNetworkReachabilityCallback];
 
 		LinphoneNatPolicy *LNP = linphone_core_get_nat_policy(LC);
+		
+		BOOL ice_preference = [self boolForKey:@"ice_preference"];
+		linphone_nat_policy_enable_ice(LNP, ice_preference);
+		
+		linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
+		
 		NSString *stun_server = [self stringForKey:@"stun_preference"];
 		if ([stun_server length] > 0) {
-			linphone_core_set_stun_server(LC, [stun_server UTF8String]);
 			linphone_nat_policy_set_stun_server(LNP, [stun_server UTF8String]);
-			BOOL ice_preference = [self boolForKey:@"ice_preference"];
-			linphone_nat_policy_enable_ice(LNP, ice_preference);
-			linphone_nat_policy_enable_turn(LNP, [self boolForKey:@"turn_preference"]);
+			linphone_nat_policy_enable_stun(LNP, ice_preference); /*we always use STUN with ICE*/
 			NSString *turn_username = [self stringForKey:@"turn_username"];
 			NSString *turn_password = [self stringForKey:@"turn_password"];
 
@@ -800,7 +805,6 @@
 		} else {
 			linphone_nat_policy_enable_stun(LNP, FALSE);
 			linphone_nat_policy_set_stun_server(LNP, NULL);
-			linphone_core_set_stun_server(LC, NULL);
 		}
 		linphone_core_set_nat_policy(LC, LNP);
 
