@@ -36,6 +36,7 @@
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
+	BOOL isAppearing;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

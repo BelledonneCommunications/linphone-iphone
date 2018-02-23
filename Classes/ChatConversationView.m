@@ -37,6 +37,7 @@
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
+		isAppearing = false;
 	}
 	return self;
 }
@@ -109,6 +110,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 											   name:kLinphoneCallUpdate
 											 object:nil];
 	[self configureForRoom:false];
+	isAppearing = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -131,10 +133,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
+	isAppearing = FALSE;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	if (!isAppearing) return; //no need to do all that stuff if the view isn't yet appeared.
 	// force offset recomputing
 	[_messageField refreshHeight];
 	[self configureForRoom:true];
@@ -168,7 +172,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (_tableController.isEditing)
 		[_tableController setEditing:editing];
 
-	[[_tableController tableView] reloadData];
+	//[[_tableController tableView] reloadData];
 
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
