@@ -32,7 +32,7 @@ LinphoneMagicSearch *linphone_core_create_magic_search(LinphoneCore *lc) {
 	return object;
 }
 
-LinphoneMagicSearch *linphone_new_magic_search(LinphoneCore *lc) {
+LinphoneMagicSearch *linphone_magic_search_new(LinphoneCore *lc) {
 	return linphone_core_create_magic_search(lc);
 }
 
