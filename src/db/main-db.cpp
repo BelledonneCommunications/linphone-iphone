@@ -1410,11 +1410,6 @@ void MainDb::init () {
 		return sanitized;
 	};
 
-	// Disable locking. (Issue on Android on crash.)
-	// See: https://stackoverflow.com/questions/17348480/how-do-i-prevent-sqlite-database-locks
-	if (backend == Sqlite3)
-		*session << "PRAGMA read_uncommitted = ON";
-
 	// TODO: Migrate all statements in statements.cpp.
 	*session <<
 		"CREATE TABLE IF NOT EXISTS sip_address ("

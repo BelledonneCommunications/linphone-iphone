@@ -450,7 +450,7 @@ void ChatMessagePrivate::notifyReceiving () {
 	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
 	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
 		linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
-		
+
 		if (toBeStored)
 			storeInDb();
 	}
@@ -784,6 +784,9 @@ void ChatMessagePrivate::updateInDb () {
 
 	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
 	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+
+	// Avoid transaction in transaction if contents are not loaded.
+	loadContentsFromDatabase();
 	mainDb->updateEvent(eventLog);
 
 	if (direction == ChatMessage::Direction::Incoming) {
