@@ -1697,7 +1697,9 @@ void MainDb::init () {
 
 	if (getBackend() == Backend::Mysql)
 		*session <<
-			"CREATE TRIGGER IF NOT EXISTS chat_message_participant_deleter"
+			"DROP TRIGGER IF EXISTS chat_message_participant_deleter";
+		*session <<
+			"CREATE TRIGGER chat_message_participant_deleter"
 			"  AFTER UPDATE ON conference_chat_message_event FOR EACH ROW"
 			"  BEGIN"
 			"    IF NEW.state = " + Utils::toString(int(ChatMessage::State::Displayed)) + " THEN"

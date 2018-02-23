@@ -42,7 +42,7 @@ namespace Statements {
 		// TODO: Improve, check backends.
 		constexpr AbstractStatement (const Statement &a, const Statement &b) : mSql{ a.sql, b.sql } {}
 
-		const char *getSql (Backend backend) const {
+		const char *get (Backend backend) const {
 			return backend == Backend::Mysql && mSql[1] ? mSql[1] : mSql[0];
 		}
 
@@ -85,7 +85,7 @@ namespace Statements {
 	// Select statements.
 	// ---------------------------------------------------------------------------
 
-	constexpr const char *select[SelectCount] = {
+	constexpr AbstractStatement select[SelectCount] = {
 		[SelectSipAddressId] = R"(
 			SELECT id
 			FROM sip_address
@@ -126,7 +126,7 @@ namespace Statements {
 	// Select statements.
 	// ---------------------------------------------------------------------------
 
-	constexpr const char *insert[InsertCount] = {
+	constexpr AbstractStatement insert[InsertCount] = {
 		[InsertOneToOneChatRoom] = R"(
 			INSERT INTO one_to_one_chat_room (
 				chat_room_id, participant_a_sip_address_id, participant_b_sip_address_id
@@ -139,18 +139,15 @@ namespace Statements {
 	// ---------------------------------------------------------------------------
 
 	const char *get (Create createStmt, AbstractDb::Backend backend) {
-		(void)backend;
-		return createStmt >= Create::CreateCount ? nullptr : create[createStmt].getSql(backend);
+		return createStmt >= Create::CreateCount ? nullptr : create[createStmt].get(backend);
 	}
 
 	const char *get (Select selectStmt, AbstractDb::Backend backend) {
-		(void)backend;
-		return selectStmt >= Select::SelectCount ? nullptr : select[selectStmt];
+		return selectStmt >= Select::SelectCount ? nullptr : select[selectStmt].get(backend);
 	}
 
 	const char *get (Insert insertStmt, AbstractDb::Backend backend) {
-		(void)backend;
-		return insertStmt >= Insert::InsertCount ? nullptr : insert[insertStmt];
+		return insertStmt >= Insert::InsertCount ? nullptr : insert[insertStmt].get(backend);
 	}
 }
 
