@@ -1,3 +1,4 @@
+
 /* Utils.m
  *
  * Copyright (C) 2012  Belledonne Comunications, Grenoble, France
@@ -70,6 +71,12 @@
 		duration = duration % 3600;
 	}
 	return [result stringByAppendingString:[NSString stringWithFormat:@"%02i:%02i", (duration / 60), (duration % 60)]];
+}
+
++ (NSString *) intervalToString:(NSTimeInterval)interval {
+	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
+	formatter.allowedUnits = NSCalendarUnitSecond;
+	return [formatter stringFromTimeInterval:interval];
 }
 
 + (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format {

@@ -47,6 +47,7 @@ typedef enum {
 + (UIImage *)selfAvatar;
 
 + (NSString *)durationToString:(int)duration;
++ (NSString *)intervalToString:(NSTimeInterval)interval ;
 
 @end
 

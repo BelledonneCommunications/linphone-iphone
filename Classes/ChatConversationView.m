@@ -751,7 +751,10 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event_log);
 	if (!chat)
 		return;
-
+	
+	if (!linphone_chat_message_is_file_transfer(chat) && !linphone_chat_message_is_text(chat)) /*probably an imdn*/
+		return;
+		
 	const LinphoneAddress *from = linphone_chat_message_get_from_address(chat);
 	if (!from)
 		return;
