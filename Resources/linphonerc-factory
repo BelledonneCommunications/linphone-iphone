@@ -43,6 +43,7 @@ tcp_tls_keepalive=30000
 #by default it is set to 30 by liblinphone
 history_max_size=-1
 conference_factory_uri=sip:conference-factory@sip.linphone.org
+enable_basic_to_client_group_chat_room_migration=1
 
 [sound]
 dtmf_player_amp=0.007
