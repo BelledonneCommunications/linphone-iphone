@@ -142,7 +142,11 @@ static void _configure_core_for_conference (LinphoneCoreManager *lcm, LinphoneAd
 	configure_core_for_conference(lcm->lc, NULL, factoryAddr, FALSE);
 }
 
+static void legacy_is_composing_received(LinphoneCore *lc, LinphoneChatRoom *room) {
+	ms_message("Legacy is composing function on core [%p] for chatroom [%p]",lc , room);
+}
 static void _configure_core_for_callbacks(LinphoneCoreManager *lcm, LinphoneCoreCbs *cbs) {
+	linphone_core_cbs_set_is_composing_received(linphone_core_get_current_callbacks(lcm->lc), legacy_is_composing_received);
 	linphone_core_add_callbacks(lcm->lc, cbs);
 	linphone_core_set_user_data(lcm->lc, lcm);
 }
@@ -1935,7 +1939,7 @@ static void multiple_is_composing_notification(void) {
 
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 2, 1000)); // + 1
 	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingActiveReceived, 3, 1000)); // + 2
-	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, 1, 2000));
 
 	// Laure side
 	composing_addresses = linphone_chat_room_get_composing_addresses(laureCr);
