@@ -267,7 +267,7 @@ namespace Private {
 	template<typename... Args>
 	struct ResolveConstMemberFunctionOverload {
 		template<typename Ret, typename Obj>
-		constexpr auto operator() (Ret (Obj::*func)(Args...) const) L_AUTO_RETURN(func);
+		constexpr auto operator() (Ret (Obj::*func)(Args...) const) const L_AUTO_RETURN(func);
 	};
 
 	template<typename... Args>
