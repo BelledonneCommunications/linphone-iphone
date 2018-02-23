@@ -114,6 +114,8 @@ std::unique_ptr<T> makeUnique(Args && ...args) {
 	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+#define L_AUTO_RETURN(VALUE) -> decltype(VALUE) { return VALUE; }
+
 // -----------------------------------------------------------------------------
 // Class tools.
 // -----------------------------------------------------------------------------
@@ -259,17 +261,13 @@ namespace Private {
 	template<typename... Args>
 	struct ResolveMemberFunctionOverload {
 		template<typename Ret, typename Obj>
-		constexpr auto operator() (Ret (Obj::*func)(Args...)) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (Obj::*func)(Args...)) const L_AUTO_RETURN(func);
 	};
 
 	template<typename... Args>
 	struct ResolveConstMemberFunctionOverload {
 		template<typename Ret, typename Obj>
-		constexpr auto operator() (Ret (Obj::*func)(Args...) const) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (Obj::*func)(Args...) const) L_AUTO_RETURN(func);
 	};
 
 	template<typename... Args>
@@ -278,15 +276,47 @@ namespace Private {
 		using ResolveConstMemberFunctionOverload<Args...>::operator();
 
 		template<typename Ret>
-		constexpr auto operator() (Ret (*func)(Args...)) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (*func)(Args...)) const L_AUTO_RETURN(func);
 	};
 }
 
 // Useful to select a specific overloaded function. (Avoid usage of static_cast.)
 template<typename... Args>
 using resolveOverload = Private::ResolveOverload<Args...>;
+
+// -----------------------------------------------------------------------------
+// Math.
+// -----------------------------------------------------------------------------
+
+// Get the length of one integer.
+constexpr int getIntLength (int n) {
+	return n < 0 ? 1 + getIntLength(-n) : (n < 10 ? 1 : 1 + getIntLength(n / 10));
+}
+
+namespace Private {
+	constexpr int pow10Impl (int n, int acc) {
+		return n == 0 ? acc : pow10Impl(n - 1, acc * 10);
+	}
+}
+
+template<typename T>
+constexpr T abs (const T &value) {
+	return value < 0 ? -value : value;
+}
+
+constexpr int pow10 (int n) {
+	return (n < 0 ? -1 : +1) * Private::pow10Impl(abs(n), 1);
+}
+
+// Returns the sum of n elements.
+constexpr int sums () {
+	return 0;
+}
+
+template<typename T, typename... Args>
+constexpr int sums (T i, Args... args) {
+	return i + sums(args...);
+}
 
 // -----------------------------------------------------------------------------
 // Wrapper public.

@@ -21,6 +21,7 @@
 
 #include "linphone/utils/algorithm.h"
 #include "linphone/utils/utils.h"
+#include "linphone/utils/static-string.h"
 
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
@@ -94,9 +95,10 @@ MainDb::MainDb (const shared_ptr<Core> &core) : AbstractDb(*new MainDbPrivate), 
 #ifdef SOCI_ENABLED
 
 // -----------------------------------------------------------------------------
-// Soci backend.
+// Event filter tools.
 // -----------------------------------------------------------------------------
 
+// Some tools to build filters at compile time.
 template<typename T>
 struct EnumToSql {
 	T first;
@@ -110,17 +112,61 @@ static constexpr const char *mapEnumToSql (const EnumToSql<T> enumToSql[], size_
 	);
 }
 
-// Update me event-log-enums values are changed!
-static constexpr EnumToSql<MainDb::Filter> eventFilterToSql[] = {
-	{ MainDb::ConferenceCallFilter, "3, 4" },
-	{ MainDb::ConferenceChatMessageFilter, "5" },
-	{ MainDb::ConferenceInfoFilter, "1, 2, 6, 7, 8, 9, 10, 11, 12" },
-	{ MainDb::ConferenceInfoNoDeviceFilter, "1, 2, 6, 7, 8, 9, 12" }
+template<EventLog::Type ...Type>
+struct SqlEventFilterBuilder {};
+
+template<EventLog::Type Type, EventLog::Type... List>
+struct SqlEventFilterBuilder<Type, List...> {
+	static constexpr Private::StaticString<1 + getIntLength(int(Type)) + sums((1 + getIntLength(int(List)))...)> get () {
+		return StaticIntString<int(Type)>() + "," + SqlEventFilterBuilder<List...>::get();
+	}
 };
 
-static constexpr const char *mapEventFilterToSql (MainDb::Filter filter) {
+template<EventLog::Type Type>
+struct SqlEventFilterBuilder<Type> {
+	static constexpr Private::StaticString<1 + getIntLength(int(Type))> get () {
+		return StaticIntString<int(Type)>();
+	}
+};
+
+// -----------------------------------------------------------------------------
+// Event filters.
+// -----------------------------------------------------------------------------
+
+namespace {
+	constexpr auto ConferenceCallFilter = SqlEventFilterBuilder<
+		EventLog::Type::ConferenceCallStart,
+		EventLog::Type::ConferenceCallEnd
+	>::get();
+
+	constexpr auto ConferenceChatMessageFilter = SqlEventFilterBuilder<EventLog::Type::ConferenceChatMessage>::get();
+
+	constexpr auto ConferenceInfoNoDeviceFilter = SqlEventFilterBuilder<
+		EventLog::Type::ConferenceCreated,
+		EventLog::Type::ConferenceTerminated,
+		EventLog::Type::ConferenceParticipantAdded,
+		EventLog::Type::ConferenceParticipantRemoved,
+		EventLog::Type::ConferenceParticipantSetAdmin,
+		EventLog::Type::ConferenceParticipantUnsetAdmin,
+		EventLog::Type::ConferenceSubjectChanged
+	>::get();
+
+	constexpr auto ConferenceInfoFilter = ConferenceInfoNoDeviceFilter + "," + SqlEventFilterBuilder<
+		EventLog::Type::ConferenceParticipantDeviceAdded,
+		EventLog::Type::ConferenceParticipantDeviceRemoved
+	>::get();
+
+	constexpr EnumToSql<MainDb::Filter> EventFilterToSql[] = {
+		{ MainDb::ConferenceCallFilter, ConferenceCallFilter },
+		{ MainDb::ConferenceChatMessageFilter, ConferenceChatMessageFilter },
+		{ MainDb::ConferenceInfoNoDeviceFilter, ConferenceInfoNoDeviceFilter },
+		{ MainDb::ConferenceInfoFilter, ConferenceInfoFilter }
+	};
+}
+
+static const char *mapEventFilterToSql (MainDb::Filter filter) {
 	return mapEnumToSql(
-		eventFilterToSql, sizeof eventFilterToSql / sizeof eventFilterToSql[0], filter
+		EventFilterToSql, sizeof EventFilterToSql / sizeof EventFilterToSql[0], filter
 	);
 }
 
