@@ -137,7 +137,7 @@ void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 
 	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
-		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, linphone_chat_message_get_state(msg));
+		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, (LinphoneChatMessageState)state);
 
 	updateInDb();
 }
