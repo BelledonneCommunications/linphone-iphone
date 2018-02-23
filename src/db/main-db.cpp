@@ -1695,7 +1695,7 @@ void MainDb::init () {
 		"  version INT UNSIGNED NOT NULL"
 		") " + charset;
 
-	if (getBackend() == Backend::Mysql)
+	if (getBackend() == Backend::Mysql) {
 		*session <<
 			"DROP TRIGGER IF EXISTS chat_message_participant_deleter";
 		*session <<
@@ -1706,7 +1706,7 @@ void MainDb::init () {
 			"      DELETE FROM chat_message_participant WHERE event_id = NEW.event_id;"
 			"    END IF;"
 			"  END ";
-	else
+	} else
 		*session <<
 			"CREATE TRIGGER IF NOT EXISTS chat_message_participant_deleter"
 			"  AFTER UPDATE OF state ON conference_chat_message_event FOR EACH ROW"
