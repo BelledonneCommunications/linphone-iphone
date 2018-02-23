@@ -506,9 +506,11 @@
 	while (rooms) {
 		const LinphoneAddress *room_from_address = linphone_chat_room_get_peer_address((LinphoneChatRoom *)rooms->data);
 		char *room_from = linphone_address_as_string_uri_only(room_from_address);
-		if (room_from && strcmp(from, room_from) == 0)
+		if (room_from && strcmp(from, room_from) == 0){
+			ms_free(room_from);
 			return rooms->data;
-
+		}
+		if (room_from) ms_free(room_from);
 		rooms = rooms->next;
 	}
 	return NULL;
