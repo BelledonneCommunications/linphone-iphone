@@ -39,6 +39,7 @@ namespace Statements {
 		template<size_t N>
 		constexpr AbstractStatement (const char (&_sql)[N]) : mSql{ _sql, nullptr } {}
 
+		// TODO: Improve, check backends.
 		constexpr AbstractStatement (const Statement &a, const Statement &b) : mSql{ a.sql, b.sql } {}
 
 		const char *getSql (Backend backend) const {
@@ -54,17 +55,30 @@ namespace Statements {
 	// ---------------------------------------------------------------------------
 
 	constexpr AbstractStatement create[CreateCount] = {
-		[CreateConferenceEventView] = R"(
-			CREATE VIEW IF NOT EXISTS conference_event_view AS
-			SELECT id, type, creation_time, chat_room_id, from_sip_address_id, to_sip_address_id, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address_id, participant_sip_address_id, subject
-			FROM event
-			LEFT JOIN conference_event ON conference_event.event_id = event.id
-			LEFT JOIN conference_chat_message_event ON conference_chat_message_event.event_id = event.id
-			LEFT JOIN conference_notified_event ON conference_notified_event.event_id = event.id
-			LEFT JOIN conference_participant_device_event ON conference_participant_device_event.event_id = event.id
-			LEFT JOIN conference_participant_event ON conference_participant_event.event_id = event.id
-			LEFT JOIN conference_subject_event ON conference_subject_event.event_id = event.id
-		)"
+		[CreateConferenceEventView] = { {
+			Backend::Sqlite3, R"(
+				CREATE VIEW IF NOT EXISTS conference_event_view AS
+				SELECT id, type, creation_time, chat_room_id, from_sip_address_id, to_sip_address_id, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address_id, participant_sip_address_id, subject
+				FROM event
+				LEFT JOIN conference_event ON conference_event.event_id = event.id
+				LEFT JOIN conference_chat_message_event ON conference_chat_message_event.event_id = event.id
+				LEFT JOIN conference_notified_event ON conference_notified_event.event_id = event.id
+				LEFT JOIN conference_participant_device_event ON conference_participant_device_event.event_id = event.id
+				LEFT JOIN conference_participant_event ON conference_participant_event.event_id = event.id
+				LEFT JOIN conference_subject_event ON conference_subject_event.event_id = event.id
+			)" }, {
+			Backend::Mysql, R"(
+				CREATE OR REPLACE VIEW conference_event_view AS
+				SELECT id, type, creation_time, chat_room_id, from_sip_address_id, to_sip_address_id, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address_id, participant_sip_address_id, subject
+				FROM event
+				LEFT JOIN conference_event ON conference_event.event_id = event.id
+				LEFT JOIN conference_chat_message_event ON conference_chat_message_event.event_id = event.id
+				LEFT JOIN conference_notified_event ON conference_notified_event.event_id = event.id
+				LEFT JOIN conference_participant_device_event ON conference_participant_device_event.event_id = event.id
+				LEFT JOIN conference_participant_event ON conference_participant_event.event_id = event.id
+				LEFT JOIN conference_subject_event ON conference_subject_event.event_id = event.id
+			)"
+		} }
 	};
 
 	// ---------------------------------------------------------------------------
