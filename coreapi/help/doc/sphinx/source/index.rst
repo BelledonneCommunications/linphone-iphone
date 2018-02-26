@@ -12,6 +12,7 @@ Welcome to Linphone API's documentation!
    
    c/index.rst
    cpp/index.rst
+   java/index.rst
    csharp/index.rst
 
 

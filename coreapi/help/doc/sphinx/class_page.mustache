@@ -1,6 +1,13 @@
 {{#make_chapter}}{{{className}}} class{{/make_chapter}}
 
+{{#isNotJava}}
 .. {{#write_declarator}}class{{/write_declarator}}:: {{{fullClassName}}}
+{{/isNotJava}}
+{{#isJava}}
+.. java:package:: {{{namespace}}}
+
+.. java:type:: public interface {{{className}}};
+{{/isJava}}
 	
 	{{#briefDoc}}
 	{{#lines}}

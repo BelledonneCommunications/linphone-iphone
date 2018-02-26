@@ -559,6 +559,14 @@ class SphinxTranslator(Translator):
 			self.enumReferencer = 'type'
 			self.enumeratorReferencer = 'enum'
 			self.methodReferencer = 'meth'
+		elif langCode == 'Java':
+			self.domain = 'java'
+			self.classDeclarator = 'type'
+			self.methodDeclarator = 'method'
+			self.enumDeclarator = 'type'
+			self.enumeratorDeclarator = 'field'
+			self.namespaceDeclarator = 'package'
+			self.methodReferencer = 'meth'
 		else:
 			raise ValueError('invalid language code: {0}'.format(langCode))
 	

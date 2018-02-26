@@ -125,22 +125,23 @@ class RstTools:
 
 class LangInfo:
 	def __init__(self, langCode):
+		if langCode not in LangInfo._displayNames:
+			raise ValueError("Invalid language code '{0}'".format(langCode))
 		self.langCode = langCode
-		self.displayName = LangInfo._lang_code_to_display_name(langCode)
 		self.nameTranslator = metaname.Translator.get(langCode)
 		self.langTranslator = abstractapi.Translator.get(langCode)
 		self.docTranslator = metadoc.SphinxTranslator(langCode)
-	
-	@staticmethod
-	def _lang_code_to_display_name(langCode):
-		if langCode == 'C':
-			return 'C'
-		elif langCode == 'Cpp':
-			return 'C++'
-		elif langCode == 'CSharp':
-			return 'C#'
-		else:
-			raise ValueError("Invalid language code: '{0}'".format(langCode))
+
+	@property
+	def displayName(self):
+		return LangInfo._displayNames[self.langCode]
+
+	_displayNames = {
+		'C'     : 'C',
+		'Cpp'   : 'C++',
+		'Java'  : 'Java',
+		'CSharp': 'C#'
+	}
 
 
 class SphinxPage(object):
@@ -331,6 +332,14 @@ class ClassPage(SphinxPage):
 			table.addrow([method['link'], briefDoc])
 		return table
 
+	@property
+	def isJava(self):
+		return self.lang.langCode == 'Java'
+
+	@property
+	def isNotJava(self):
+		return not self.isJava
+
 
 class DocGenerator:
 	def __init__(self, api):
@@ -338,6 +347,7 @@ class DocGenerator:
 		self.languages = [
 			LangInfo('C'),
 			LangInfo('Cpp'),
+			LangInfo('Java'),
 			LangInfo('CSharp')
 		]
 	
