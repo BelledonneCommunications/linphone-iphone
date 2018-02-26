@@ -183,8 +183,7 @@ string ChatMessagePrivate::getSalCustomHeaderValue (const string &name) {
 // -----------------------------------------------------------------------------
 
 bool ChatMessagePrivate::hasTextContent() const {
-	loadContentsFromDatabase();
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->getContentType() == ContentType::PlainText) {
 			return true;
 		}
@@ -193,8 +192,7 @@ bool ChatMessagePrivate::hasTextContent() const {
 }
 
 const Content* ChatMessagePrivate::getTextContent() const {
-	loadContentsFromDatabase();
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->getContentType() == ContentType::PlainText) {
 			return c;
 		}
@@ -203,8 +201,7 @@ const Content* ChatMessagePrivate::getTextContent() const {
 }
 
 bool ChatMessagePrivate::hasFileTransferContent() const {
-	loadContentsFromDatabase();
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->getContentType() == ContentType::FileTransfer) {
 			return true;
 		}
@@ -213,7 +210,7 @@ bool ChatMessagePrivate::hasFileTransferContent() const {
 }
 
 const Content* ChatMessagePrivate::getFileTransferContent() const {
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->getContentType() == ContentType::FileTransfer) {
 			return c;
 		}
@@ -230,8 +227,7 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 }
 
 const string &ChatMessagePrivate::getAppdata () const {
-	loadContentsFromDatabase();
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			return fileContent->getAppData("legacy");
@@ -241,8 +237,7 @@ const string &ChatMessagePrivate::getAppdata () const {
 }
 
 void ChatMessagePrivate::setAppdata (const string &data) {
-	loadContentsFromDatabase();
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			fileContent->setAppData("legacy", data);
@@ -338,13 +333,13 @@ LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
 	if (hasFileTransferContent()) {
 		return getFileTransferContent()->toLinphoneContent();
 	}
-	for (const Content *c : contents) {
+	for (const Content *c : getContents()) {
 		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
 			return fileContent->toLinphoneContent();
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_content) {
@@ -356,7 +351,7 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 	fileContent->setContentType(contentType);
 	fileContent->setFileSize(linphone_content_get_size(c_content));
 	fileContent->setFileName(linphone_content_get_name(c_content));
-	if (linphone_content_get_string_buffer(c_content) != NULL) {
+	if (linphone_content_get_string_buffer(c_content)) {
 		fileContent->setBody(linphone_content_get_string_buffer(c_content));
 	}
 
@@ -365,9 +360,8 @@ void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_co
 
 bool ChatMessagePrivate::downloadFile () {
 	L_Q();
-	loadContentsFromDatabase();
 
-	for (auto &content : contents)
+	for (auto &content : getContents())
 		if (content->getContentType() == ContentType::FileTransfer)
 			return q->downloadFile(*static_cast<FileTransferContent *>(content));
 
@@ -961,22 +955,19 @@ bool ChatMessage::isReadOnly () const {
 
 const list<Content *> &ChatMessage::getContents () const {
 	L_D();
-	d->loadContentsFromDatabase();
-	return d->contents;
+	return d->getContents();
 }
 
 void ChatMessage::addContent (Content &content) {
 	L_D();
-	if (d->isReadOnly) return;
-
-	d->contents.push_back(&content);
+	if (!d->isReadOnly)
+		d->getContents().push_back(&content);
 }
 
 void ChatMessage::removeContent (const Content &content) {
 	L_D();
-	if (d->isReadOnly) return;
-
-	d->contents.remove(&const_cast<Content &>(content));
+	if (!d->isReadOnly)
+		d->getContents().remove(&const_cast<Content &>(content));
 }
 
 const Content &ChatMessage::getInternalContent () const {

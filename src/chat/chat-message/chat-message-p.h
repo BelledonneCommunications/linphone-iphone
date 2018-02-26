@@ -83,6 +83,16 @@ public:
 
 	void loadContentsFromDatabase () const;
 
+	std::list<Content* > &getContents () {
+		loadContentsFromDatabase();
+		return contents;
+	}
+
+	const std::list<Content* > &getContents () const {
+		loadContentsFromDatabase();
+		return contents;
+	}
+
 	belle_http_request_t *getHttpRequest () const;
 	void setHttpRequest (belle_http_request_t *request);
 
@@ -149,7 +159,6 @@ private:
 	std::string rttMessage;
 	bool isSecured = false;
 	mutable bool isReadOnly = false;
-	std::list<Content* > contents;
 	Content internalContent;
 	std::unordered_map<std::string, std::string> customHeaders;
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
@@ -179,6 +188,8 @@ private:
 
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
+
+	std::list<Content* > contents;
 
 	bool encryptionPrevented = false;
 	bool toBeStored = true;
