@@ -762,6 +762,9 @@ void ChatMessagePrivate::storeInDb () {
 		updateInDb();
 	} else {
 		shared_ptr<EventLog> eventLog = make_shared<ConferenceChatMessageEvent>(time, q->getSharedFromThis());
+
+		// Avoid transaction in transaction if contents are not loaded.
+		loadContentsFromDatabase();
 		q->getChatRoom()->getPrivate()->addEvent(eventLog);
 
 		if (direction == ChatMessage::Direction::Incoming) {
