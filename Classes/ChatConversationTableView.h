@@ -35,7 +35,7 @@
 
 @interface ChatConversationTableView : UICheckBoxTableView {
   @private
-	MSList *eventList;
+	NSMutableArray *eventList;
 }
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;

@@ -138,12 +138,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	if (!isAppearing) return; //no need to do all that stuff if the view isn't yet appeared.
+	composingVisible = !composingVisible;
+	[self setComposingVisible:!composingVisible withDelay:0];
+	if (!isAppearing)
+		return; //no need to do all that stuff if the view isn't yet appeared.
+
 	// force offset recomputing
 	[_messageField refreshHeight];
 	[self configureForRoom:true];
-	composingVisible = !composingVisible;
-	[self setComposingVisible:!composingVisible withDelay:0];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
 }
@@ -721,7 +723,6 @@ void on_chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *
 	if (subject) {
 		view.addressLabel.text = [NSString stringWithUTF8String:subject];
 		[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-		[view.tableController.tableView reloadData];
 		[view.tableController scrollToBottom:true];
 	}
 }
@@ -730,7 +731,6 @@ void on_chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view updateParticipantLabel];
-	[view.tableController.tableView reloadData];
 	[view.tableController scrollToBottom:true];
 }
 
@@ -738,14 +738,12 @@ void on_chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventL
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view updateParticipantLabel];
-	[view.tableController.tableView reloadData];
 	[view.tableController scrollToBottom:true];
 }
 
 void on_chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	[view.tableController.tableView reloadData];
 	[view.tableController scrollToBottom:true];
 }
 
@@ -763,11 +761,11 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 	if (!from)
 		return;
 
+	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 		linphone_chat_room_mark_as_read(view.chatRoom);
 
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
-	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToLastUnread:TRUE];
 }
 
