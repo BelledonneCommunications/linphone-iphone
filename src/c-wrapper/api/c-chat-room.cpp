@@ -430,12 +430,14 @@ const bctbx_list_t *linphone_chat_room_get_callbacks_list(const LinphoneChatRoom
 	LinphoneChatRoomCbs ## cbName ## Cb cb = linphone_chat_room_cbs_get_ ## functionName (cr->cbs); \
 	if (cb) \
 		cb(__VA_ARGS__); \
-	for (bctbx_list_t *it = cr->callbacks; it; it = bctbx_list_next(it)) { \
+	bctbx_list_t *callbacks_copy = bctbx_list_copy(cr->callbacks); \
+	for (bctbx_list_t *it = callbacks_copy; it; it = bctbx_list_next(it)) { \
 		cr->currentCbs = reinterpret_cast<LinphoneChatRoomCbs *>(bctbx_list_get_data(it)); \
 		cb = linphone_chat_room_cbs_get_ ## functionName (cr->currentCbs); \
 		if (cb) \
 			cb(__VA_ARGS__); \
-	}
+	} \
+	bctbx_free(callbacks_copy);
 
 void linphone_chat_room_notify_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
 	NOTIFY_IF_EXIST(IsComposingReceived, is_composing_received, cr, remoteAddr, isComposing)
