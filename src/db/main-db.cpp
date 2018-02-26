@@ -223,14 +223,6 @@ static constexpr string &blobToString (string &in) {
 }
 
 // -----------------------------------------------------------------------------
-// Transaction.
-// -----------------------------------------------------------------------------
-
-class Transaction {
-
-};
-
-// -----------------------------------------------------------------------------
 // Statements and helpers.
 // -----------------------------------------------------------------------------
 
@@ -384,6 +376,7 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 		", local=" << localSipAddressId << ").";
 
 	const tm &creationTime = Utils::getTimeTAsTm(chatRoom->getCreationTime());
+	const tm &lastUpdateTime = Utils::getTimeTAsTm(chatRoom->getLastUpdateTime());
 	// Remove capabilities like `Proxy`.
 	const int &capabilities = chatRoom->getCapabilities() & ~ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Proxy);
 
@@ -1198,21 +1191,21 @@ static T getValueFromRow (const soci::row &row, int index, bool &isNull) {
 // -----------------------------------------------------------------------------
 
 void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
-	soci::session *inSession = inDbSession.getBackendSession();
-	SmartTransaction tr(dbSession.getBackendSession(), __func__);
+	L_Q();
+	L_DB_EXCEPTION_HANDLER_C(q) {
+		if (getModuleVersion("legacy-friends-import") >= makeVersion(1, 0, 0))
+			return;
+		updateModuleVersion("legacy-friends-import", ModuleVersionLegacyFriendsImport);
 
-	if (getModuleVersion("legacy-friends-import") >= makeVersion(1, 0, 0))
-		return;
-	updateModuleVersion("legacy-friends-import", ModuleVersionLegacyFriendsImport);
+		soci::session *inSession = inDbSession.getBackendSession();
+		if (!checkLegacyFriendsTableExists(*inSession))
+			return;
 
-	if (!checkLegacyFriendsTableExists(*inSession))
-		return;
+		unordered_map<int, long long> resolvedListsIds;
+		soci::session *session = dbSession.getBackendSession();
 
-	unordered_map<int, long long> resolvedListsIds;
-	soci::session *session = dbSession.getBackendSession();
+		soci::rowset<soci::row> friendsLists = (inSession->prepare << "SELECT * FROM friends_lists");
 
-	soci::rowset<soci::row> friendsLists = (inSession->prepare << "SELECT * FROM friends_lists");
-	try {
 		set<string> names;
 		for (const auto &friendList : friendsLists) {
 			const string &name = friendList.get<string>(LegacyFriendListColName, "");
@@ -1229,13 +1222,8 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 				")", soci::use(uniqueName), soci::use(rlsUri), soci::use(syncUri), soci::use(revision);
 			resolvedListsIds[friendList.get<int>(LegacyFriendListColId)] = dbSession.getLastInsertId();
 		}
-	} catch (const exception &e) {
-		lWarning() << "Failed to import legacy friends list: " << e.what() << ".";
-		return;
-	}
 
-	soci::rowset<soci::row> friends = (inSession->prepare << "SELECT * FROM friends");
-	try {
+		soci::rowset<soci::row> friends = (inSession->prepare << "SELECT * FROM friends");
 		for (const auto &friendInfo : friends) {
 			long long friendsListId;
 			{
@@ -1270,28 +1258,24 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 					soci::use(dbSession.getLastInsertId()), soci::use(data);
 		}
 		tr.commit();
-	} catch (const exception &e) {
-		lWarning() << "Failed to import legacy friends: " << e.what() << ".";
-		return;
-	}
-
-	lInfo() << "Successful import of legacy friends.";
+		lInfo() << "Successful import of legacy friends.";
+	};
 }
 
 void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
-	soci::session *inSession = inDbSession.getBackendSession();
-	SmartTransaction tr(dbSession.getBackendSession(), __func__);
+	L_Q();
+	L_DB_EXCEPTION_HANDLER_C(q) {
 
-	unsigned int version = getModuleVersion("legacy-history-import");
-	if (version >= makeVersion(1, 0, 0))
-		return;
-	updateModuleVersion("legacy-history-import", ModuleVersionLegacyHistoryImport);
+		unsigned int version = getModuleVersion("legacy-history-import");
+		if (version >= makeVersion(1, 0, 0))
+			return;
+		updateModuleVersion("legacy-history-import", ModuleVersionLegacyHistoryImport);
 
-	if (!checkLegacyHistoryTableExists(*inSession))
-		return;
+		soci::session *inSession = inDbSession.getBackendSession();
+		if (!checkLegacyHistoryTableExists(*inSession))
+			return;
 
-	soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
-	try {
+		soci::rowset<soci::row> messages = (inSession->prepare << "SELECT * FROM history");
 		for (const auto &message : messages) {
 			const int direction = message.get<int>(LegacyMessageColDirection);
 			if (direction != 0 && direction != 1) {
@@ -1388,12 +1372,8 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 		}
 
 		tr.commit();
-	} catch (const exception &e) {
-		lInfo() << "Failed to import legacy messages: " << e.what() << ".";
-		return;
-	}
-
-	lInfo() << "Successful import of legacy messages.";
+		lInfo() << "Successful import of legacy messages.";
+	};
 }
 
 // -----------------------------------------------------------------------------
@@ -2855,15 +2835,11 @@ bool MainDb::import (Backend, const string &parameters) {
 		return false;
 	}
 
-	L_DB_EXCEPTION_HANDLER {
-		// TODO: Remove condition after cpp migration in friends/friends list.
-		if (false)
-			d->importLegacyFriends(inDbSession);
-	};
+	// TODO: Remove condition after cpp migration in friends/friends list.
+	if (false)
+		d->importLegacyFriends(inDbSession);
 
-	L_DB_EXCEPTION_HANDLER {
-		d->importLegacyHistory(inDbSession);
-	};
+	d->importLegacyHistory(inDbSession);
 
 	return true;
 }
