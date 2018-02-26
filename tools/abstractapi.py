@@ -1263,7 +1263,7 @@ class JavaLangTranslator(CLikeLangTranslator):
 		return '{0} {1}'.format(arg.type.translate(self, native=native, jni=jni), arg.name.translate(self.nameTranslator))
 
 	def translate_method_as_prototype(self, method, namespace=None):
-		return 'public interface {returnType} {methodName}({arguments})'.format(
+		return 'public {returnType} {methodName}({arguments})'.format(
 			returnType=method.returnType.translate(self),
 			methodName=method.name.translate(self.nameTranslator),
 			arguments=', '.join([arg.translate(self) for arg in method.args])
