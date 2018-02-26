@@ -88,14 +88,12 @@
 		NSString *text = [[FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)]
 						  stringByAppendingFormat:@" : %@", [UIChatBubbleTextCell TextMessageForChat:last_msg]];
 		// shorten long messages
-		if ([text length] > 50) {
+		if ([text length] > 50)
 			text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
-		}
+
 		_chatContentLabel.text = text;
-	} else {
+	} else
 		_chatContentLabel.text = nil;
-		_chatLatestTimeLabel.text = NSLocalizedString(@"Now", nil);
-	}
 
 	[self updateUnreadBadge];
 }
