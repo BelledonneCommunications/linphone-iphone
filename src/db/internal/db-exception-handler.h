@@ -37,15 +37,15 @@ LINPHONE_BEGIN_NAMESPACE
 class SmartTransaction {
 public:
 	SmartTransaction (soci::session *session, const char *name) : mTransaction(*session), mName(name) {
-		lInfo() << "Start transaction " << this << " in `" << mName << "`.";
+		lInfo() << "Start transaction " << this << " in MainDb::" << mName << ".";
 	}
 
 	~SmartTransaction () {
-		lInfo() << "Rollback transaction " << this << " in `" << mName << "`.";
+		lInfo() << "Rollback transaction " << this << " in MainDb::" << mName << ".";
 	}
 
 	void commit () {
-		lInfo() << "Commit transaction " << this << " in `" << mName << "`.";
+		lInfo() << "Commit transaction " << this << " in MainDb::" << mName << ".";
 		mTransaction.commit();
 	}
 
