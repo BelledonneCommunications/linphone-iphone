@@ -42,6 +42,9 @@ class MainDbPrivate;
 class ParticipantDevice;
 
 class MainDb : public AbstractDb, public CoreAccessor {
+	template<typename Function>
+	friend class DbExceptionHandler;
+
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 

@@ -294,7 +294,6 @@ if (SOCI_FOUND)
 
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 		db/internal/db-exception-handler.h
-		db/internal/smart-transaction.h
 		db/internal/statements.h
 	)
 

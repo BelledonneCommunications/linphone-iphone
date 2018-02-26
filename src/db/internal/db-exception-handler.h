@@ -22,17 +22,39 @@
 
 #include <soci/soci.h>
 
-#include "db/main-db.h"
+#include "db/main-db-p.h"
 #include "logger/logger.h"
 
 // =============================================================================
 
 #define L_DB_EXCEPTION_HANDLER_C(CONTEXT) \
-	LinphonePrivate::DbExceptionHandlerInfo().set(__func__, CONTEXT) * [&]()
+	LinphonePrivate::DbExceptionHandlerInfo().set(__func__, CONTEXT) * [&](SmartTransaction &tr)
 
 #define L_DB_EXCEPTION_HANDLER L_DB_EXCEPTION_HANDLER_C(this)
 
 LINPHONE_BEGIN_NAMESPACE
+
+class SmartTransaction {
+public:
+	SmartTransaction (soci::session *session, const char *name) : mTransaction(*session), mName(name) {
+		lInfo() << "Start transaction " << this << " in `" << mName << "`.";
+	}
+
+	~SmartTransaction () {
+		lInfo() << "Rollback transaction " << this << " in `" << mName << "`.";
+	}
+
+	void commit () {
+		lInfo() << "Commit transaction " << this << " in `" << mName << "`.";
+		mTransaction.commit();
+	}
+
+private:
+	soci::transaction mTransaction;
+	const char *mName;
+
+	L_DISABLE_COPY(SmartTransaction);
+};
 
 struct DbExceptionHandlerInfo {
 	DbExceptionHandlerInfo &set (const char *_name, const MainDb *_mainDb) {
@@ -47,7 +69,9 @@ struct DbExceptionHandlerInfo {
 
 template<typename Function>
 class DbExceptionHandler {
-	using InternalReturnType = typename std::remove_reference<decltype(std::declval<Function>()())>::type;
+	using InternalReturnType = typename std::remove_reference<
+		decltype(std::declval<Function>()(std::declval<SmartTransaction &>()))
+	>::type;
 
 public:
 	using ReturnType = typename std::conditional<
@@ -57,26 +81,29 @@ public:
 	>::type;
 
 	DbExceptionHandler (DbExceptionHandlerInfo &info, Function function) : mFunction(std::move(function)) {
+		const char *name = info.name;
 		try {
-			mResult= exec<InternalReturnType>();
+			SmartTransaction tr(info.mainDb->getPrivate()->dbSession.getBackendSession(), name);
+			mResult = exec<InternalReturnType>(tr);
 		} catch (const soci::soci_error &e) {
-			lWarning() << "Catched exception in MainDb::" << info.name << "(" << e.what() << ").";
+			lWarning() << "Catched exception in MainDb::" << name << "(" << e.what() << ").";
 			soci::soci_error::error_category category = e.get_error_category();
 			if (
 				(category == soci::soci_error::connection_error || category == soci::soci_error::unknown) &&
 				info.mainDb->forceReconnect()
 			) {
 				try {
-					mResult = exec<InternalReturnType>();
+					SmartTransaction tr(info.mainDb->getPrivate()->dbSession.getBackendSession(), name);
+					mResult = exec<InternalReturnType>(tr);
 				} catch (const std::exception &e) {
-					lError() << "Unable to execute query after reconnect in MainDb::" << info.name << "(" << e.what() << ").";
+					lError() << "Unable to execute query after reconnect in MainDb::" << name << "(" << e.what() << ").";
 				}
 				return;
 			}
 			lError() << "Unhandled [" << getErrorCategoryAsString(category) << "] exception in MainDb::" <<
-				info.name << ": `" << e.what() << "`.";
+				name << ": `" << e.what() << "`.";
 		} catch (const std::exception &e) {
-			lError() << "Unhandled generic exception in MainDb::" << info.name << ": `" << e.what() << "`.";
+			lError() << "Unhandled generic exception in MainDb::" << name << ": `" << e.what() << "`.";
 		}
 	}
 
@@ -89,15 +116,15 @@ public:
 private:
 	// Exec function with no return type.
 	template<typename T>
-	typename std::enable_if<std::is_same<T, void>::value, bool>::type exec () const {
-		mFunction();
+	typename std::enable_if<std::is_same<T, void>::value, bool>::type exec (SmartTransaction &tr) const {
+		mFunction(tr);
 		return true;
 	}
 
 	// Exec function with return type.
 	template<typename T>
-	typename std::enable_if<!std::is_same<T, void>::value, T>::type exec () const {
-		return mFunction();
+	typename std::enable_if<!std::is_same<T, void>::value, T>::type exec (SmartTransaction &tr) const {
+		return mFunction(tr);
 	}
 
 	static const char *getErrorCategoryAsString (soci::soci_error::error_category category) {
