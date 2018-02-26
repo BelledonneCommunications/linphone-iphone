@@ -293,7 +293,8 @@ if (SOCI_FOUND)
 	add_definitions(-DSOCI_ENABLED)
 
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
-		db/internal/safe-transaction.h
+		db/internal/db-exception-handler.h
+		db/internal/smart-transaction.h
 		db/internal/statements.h
 	)
 

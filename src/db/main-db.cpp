@@ -38,7 +38,8 @@
 #include "main-db-p.h"
 
 #ifdef SOCI_ENABLED
-	#include "internal/safe-transaction.h"
+	#include "internal/db-exception-handler.h"
+	#include "internal/smart-transaction.h"
 	#include "internal/statements.h"
 #endif // ifdef SOCI_ENABLED
 
@@ -221,6 +222,14 @@ static inline string blobToString (soci::blob &in) {
 static constexpr string &blobToString (string &in) {
 	return in;
 }
+
+// -----------------------------------------------------------------------------
+// Transaction.
+// -----------------------------------------------------------------------------
+
+class Transaction {
+
+};
 
 // -----------------------------------------------------------------------------
 // Statements and helpers.
@@ -1191,7 +1200,7 @@ static T getValueFromRow (const soci::row &row, int index, bool &isNull) {
 
 void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 	soci::session *inSession = inDbSession.getBackendSession();
-	soci::transaction tr(*dbSession.getBackendSession());
+	SmartTransaction tr(dbSession.getBackendSession(), __func__);
 
 	if (getModuleVersion("legacy-friends-import") >= makeVersion(1, 0, 0))
 		return;
@@ -1272,7 +1281,7 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 
 void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 	soci::session *inSession = inDbSession.getBackendSession();
-	soci::transaction tr(*dbSession.getBackendSession());
+	SmartTransaction tr(dbSession.getBackendSession(), __func__);
 
 	unsigned int version = getModuleVersion("legacy-history-import");
 	if (version >= makeVersion(1, 0, 0))
@@ -1771,12 +1780,12 @@ bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
 		return false;
 	}
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		long long storageId = 0;
 
-		soci::transaction tr(*d->dbSession.getBackendSession());
+		SmartTransaction tr(d->dbSession.getBackendSession(), __func__);
 
 		EventLog::Type type = eventLog->getType();
 		switch (type) {
@@ -1835,10 +1844,10 @@ bool MainDb::updateEvent (const shared_ptr<EventLog> &eventLog) {
 		return false;
 	}
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
-		soci::transaction tr(*d->dbSession.getBackendSession());
+		SmartTransaction tr(d->dbSession.getBackendSession(), __func__);
 
 		switch (eventLog->getType()) {
 			case EventLog::Type::None:
@@ -1881,7 +1890,7 @@ bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
 
 	MainDb &mainDb = *core->getPrivate()->mainDb.get();
 
-	return L_SAFE_TRANSACTION_C(&mainDb) {
+	return L_DB_EXCEPTION_HANDLER_C(&mainDb) {
 		soci::session *session = mainDb.getPrivate()->dbSession.getBackendSession();
 		*session << "DELETE FROM event WHERE id = :id", soci::use(dEventKey->storageId);
 
@@ -1904,7 +1913,7 @@ int MainDb::getEventCount (FilterMask mask) const {
 		"Get events count with mask=" + Utils::toString(mask) + "."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		int count;
@@ -1939,9 +1948,9 @@ shared_ptr<EventLog> MainDb::getEventFromKey (const MainDbKey &dbKey) {
 		"  AND chat_room.peer_sip_address_id = peer_sip_address.id"
 		"  AND chat_room.local_sip_address_id = local_sip_address.id";
 
-	return L_SAFE_TRANSACTION_C(q.get()) {
+	return L_DB_EXCEPTION_HANDLER_C(q.get()) {
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		string peerSipAddress;
 		string localSipAddress;
@@ -1976,11 +1985,11 @@ list<shared_ptr<EventLog>> MainDb::getConferenceNotifiedEvents (
 		", lastNotifyId=" + Utils::toString(lastNotifyId) + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
@@ -2008,7 +2017,7 @@ int MainDb::getChatMessageCount (const ChatRoomId &chatRoomId) const {
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		int count;
@@ -2023,7 +2032,7 @@ int MainDb::getChatMessageCount (const ChatRoomId &chatRoomId) const {
 				"  SELECT event_id FROM conference_event WHERE chat_room_id = :chatRoomId"
 				")";
 
-			soci::transaction tr(*session);
+			SmartTransaction tr(session, __func__);
 			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 			*session << query, soci::use(dbChatRoomId), soci::into(count);
 		}
@@ -2047,7 +2056,7 @@ int MainDb::getUnreadChatMessageCount (const ChatRoomId &chatRoomId) const {
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		int count = 0;
@@ -2057,7 +2066,7 @@ int MainDb::getUnreadChatMessageCount (const ChatRoomId &chatRoomId) const {
 		if (!chatRoomId.isValid())
 			*session << query, soci::into(count);
 		else {
-			soci::transaction tr(*session);
+			SmartTransaction tr(session, __func__);
 			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 			*session << query, soci::use(dbChatRoomId), soci::into(count);
 		}
@@ -2084,7 +2093,7 @@ void MainDb::markChatMessagesAsRead (const ChatRoomId &chatRoomId) const {
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
@@ -2092,7 +2101,7 @@ void MainDb::markChatMessagesAsRead (const ChatRoomId &chatRoomId) const {
 		if (!chatRoomId.isValid())
 			*session << query;
 		else {
-			soci::transaction tr(*session);
+			SmartTransaction tr(session, __func__);
 			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 			*session << query, soci::use(dbChatRoomId);
 			tr.commit();
@@ -2117,11 +2126,11 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		long long dbChatRoomId;
 		if (chatRoomId.isValid())
@@ -2153,7 +2162,7 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 }
 
 list<ChatMessage::State> MainDb::getChatMessageParticipantStates (const shared_ptr<EventLog> &eventLog) const {
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
@@ -2180,7 +2189,7 @@ ChatMessage::State MainDb::getChatMessageParticipantState (
 	const shared_ptr<EventLog> &eventLog,
 	const IdentityAddress &participantAddress
 ) const {
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
@@ -2204,7 +2213,7 @@ void MainDb::setChatMessageParticipantState (
 	const IdentityAddress &participantAddress,
 	ChatMessage::State state
 ) {
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
@@ -2245,11 +2254,11 @@ list<shared_ptr<ChatMessage>> MainDb::findChatMessages (
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		list<shared_ptr<ChatMessage>> chatMessages;
 
@@ -2318,11 +2327,11 @@ list<shared_ptr<EventLog>> MainDb::getHistoryRange (
 		", begin=" + Utils::toString(begin) + ", end=" + Utils::toString(end) + ")."
 	);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		shared_ptr<Core> core = getCore();
 		shared_ptr<AbstractChatRoom> chatRoom = core->findChatRoom(chatRoomId);
@@ -2383,11 +2392,11 @@ int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const
 			ConferenceCallFilter, ConferenceChatMessageFilter, ConferenceInfoFilter, ConferenceInfoNoDeviceFilter
 		}, mask, "AND");
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		int count;
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
@@ -2398,11 +2407,11 @@ int MainDb::getHistorySize (const ChatRoomId &chatRoomId, FilterMask mask) const
 }
 
 void MainDb::loadChatMessageContents (const shared_ptr<ChatMessage> &chatMessage) {
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		bool hasFileTransferContent = false;
 
@@ -2474,11 +2483,11 @@ void MainDb::cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask) {
 		", mask=" + Utils::toString(mask) + ")."
 	);
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
@@ -2500,14 +2509,14 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 
 	DurationLogger durationLogger("Get chat rooms.");
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		list<shared_ptr<AbstractChatRoom>> chatRooms;
 		shared_ptr<Core> core = getCore();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		soci::rowset<soci::row> rows = (session->prepare << query);
 		for (const auto &row : rows) {
@@ -2633,10 +2642,10 @@ void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
 		", local=" + chatRoomId.getLocalAddress().asString() + ")."
 	);
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
-		soci::transaction tr(*d->dbSession.getBackendSession());
+		SmartTransaction tr(d->dbSession.getBackendSession(), __func__);
 		d->insertChatRoom(chatRoom);
 		tr.commit();
 	};
@@ -2648,10 +2657,10 @@ void MainDb::deleteChatRoom (const ChatRoomId &chatRoomId) {
 		", local=" + chatRoomId.getLocalAddress().asString() + "`)."
 	);
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
@@ -2673,13 +2682,13 @@ void MainDb::migrateBasicToClientGroupChatRoom (
 	L_ASSERT(basicChatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Basic));
 	L_ASSERT(clientGroupChatRoom->getCapabilities().isSet(ChatRoom::Capabilities::Conference));
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		// TODO: Update events and chat messages. (Or wait signals.)
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(basicChatRoom->getChatRoomId());
 
@@ -2726,11 +2735,11 @@ IdentityAddress MainDb::findMissingOneToOneConferenceChatRoomParticipantAddress 
 	L_ASSERT(chatRoom->getCapabilities() & ChatRoom::Capabilities::OneToOne);
 	L_ASSERT(chatRoom->getParticipantCount() == 1);
 
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		string missingParticipantAddress;
 		string participantASipAddress;
@@ -2760,11 +2769,11 @@ IdentityAddress MainDb::findOneToOneConferenceChatRoomAddress (
 	const IdentityAddress &participantA,
 	const IdentityAddress &participantB
 ) const {
-	return L_SAFE_TRANSACTION {
+	return L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &participantASipAddressId = d->selectSipAddressId(participantA.asString());
 		const long long &participantBSipAddressId = d->selectSipAddressId(participantB.asString());
@@ -2787,10 +2796,10 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 	L_ASSERT(linphone_core_conference_server_enabled(chatRoom->getCore()->getCCore()));
 	L_ASSERT(chatRoom->getCapabilities() & ChatRoom::Capabilities::OneToOne);
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
-		soci::transaction tr(*d->dbSession.getBackendSession());
+		SmartTransaction tr(d->dbSession.getBackendSession(), __func__);
 
 		const list<shared_ptr<Participant>> &participants = chatRoom->getParticipants();
 		const long long &participantASipAddressId = d->selectSipAddressId(participants.front()->getAddress().asString());
@@ -2813,11 +2822,11 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 }
 
 void MainDb::enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable) {
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 
@@ -2839,11 +2848,11 @@ void MainDb::updateChatRoomParticipantDevice (
 	const shared_ptr<AbstractChatRoom> &chatRoom,
 	const shared_ptr<ParticipantDevice> &device
 ) {
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		L_D();
 
 		soci::session *session = d->dbSession.getBackendSession();
-		soci::transaction tr(*session);
+		SmartTransaction tr(session, __func__);
 
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
 		const long long &participantSipAddressId = d->selectSipAddressId(device->getParticipant()->getAddress().asString());
@@ -2872,13 +2881,13 @@ bool MainDb::import (Backend, const string &parameters) {
 		return false;
 	}
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		// TODO: Remove condition after cpp migration in friends/friends list.
 		if (false)
 			d->importLegacyFriends(inDbSession);
 	};
 
-	L_SAFE_TRANSACTION {
+	L_DB_EXCEPTION_HANDLER {
 		d->importLegacyHistory(inDbSession);
 	};
 

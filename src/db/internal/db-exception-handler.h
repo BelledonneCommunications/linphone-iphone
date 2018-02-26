@@ -1,5 +1,5 @@
 /*
- * safe-transaction.h
+ * db-exception-handler.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_SAFE_TRANSACTION_H_
-#define _L_SAFE_TRANSACTION_H_
+#ifndef _L_DB_EXCEPTION_HANDLER_H_
+#define _L_DB_EXCEPTION_HANDLER_H_
 
 #include <soci/soci.h>
 
@@ -27,15 +27,15 @@
 
 // =============================================================================
 
-#define L_SAFE_TRANSACTION_C(CONTEXT) \
-	LinphonePrivate::SafeTransactionInfo().set(__func__, CONTEXT) * [&]()
+#define L_DB_EXCEPTION_HANDLER_C(CONTEXT) \
+	LinphonePrivate::DbExceptionHandlerInfo().set(__func__, CONTEXT) * [&]()
 
-#define L_SAFE_TRANSACTION L_SAFE_TRANSACTION_C(this)
+#define L_DB_EXCEPTION_HANDLER L_DB_EXCEPTION_HANDLER_C(this)
 
 LINPHONE_BEGIN_NAMESPACE
 
-struct SafeTransactionInfo {
-	SafeTransactionInfo &set (const char *_name, const MainDb *_mainDb) {
+struct DbExceptionHandlerInfo {
+	DbExceptionHandlerInfo &set (const char *_name, const MainDb *_mainDb) {
 		name = _name;
 		mainDb = const_cast<MainDb *>(_mainDb);
 		return *this;
@@ -46,7 +46,7 @@ struct SafeTransactionInfo {
 };
 
 template<typename Function>
-class SafeTransaction {
+class DbExceptionHandler {
 	using InternalReturnType = typename std::remove_reference<decltype(std::declval<Function>()())>::type;
 
 public:
@@ -56,7 +56,7 @@ public:
 		InternalReturnType
 	>::type;
 
-	SafeTransaction (SafeTransactionInfo &info, Function function) : mFunction(std::move(function)) {
+	DbExceptionHandler (DbExceptionHandlerInfo &info, Function function) : mFunction(std::move(function)) {
 		try {
 			mResult= exec<InternalReturnType>();
 		} catch (const soci::soci_error &e) {
@@ -80,7 +80,7 @@ public:
 		}
 	}
 
-	SafeTransaction (SafeTransaction &&safeTransaction) : mFunction(std::move(safeTransaction.mFunction)) {}
+	DbExceptionHandler (DbExceptionHandler &&dbExceptionHandler) : mFunction(std::move(dbExceptionHandler.mFunction)) {}
 
 	operator ReturnType () const {
 		return mResult;
@@ -128,14 +128,14 @@ private:
 	Function mFunction;
 	ReturnType mResult{};
 
-	L_DISABLE_COPY(SafeTransaction);
+	L_DISABLE_COPY(DbExceptionHandler);
 };
 
 template<typename Function>
-typename SafeTransaction<Function>::ReturnType operator* (SafeTransactionInfo &info, Function &&function) {
-	return SafeTransaction<Function>(info, std::forward<Function>(function));
+typename DbExceptionHandler<Function>::ReturnType operator* (DbExceptionHandlerInfo &info, Function &&function) {
+	return DbExceptionHandler<Function>(info, std::forward<Function>(function));
 }
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_SAFE_TRANSACTION_H_
+#endif // ifndef _L_DB_EXCEPTION_HANDLER_H_
