@@ -113,11 +113,11 @@ namespace Private {
 	private:
 		template<std::size_t... Index, typename Int = int, typename std::enable_if<Int(Value) >= 0, int>::type* = nullptr>
 		constexpr StaticIntStringHelper (const IndexSequence<Index...> &) :
-			raw{ ('0' + Value / pow10(N - Index - 2) % 10 )..., '\0' } {}
+			raw{ char('0' + Value / pow10(N - Index - 2) % 10 )..., '\0' } {}
 
 		template<std::size_t... Index, typename Int = int, typename std::enable_if<Int(Value) < 0, int>::type* = nullptr>
 		constexpr StaticIntStringHelper (const IndexSequence<Index...> &) :
-			raw{ '-', ('0' + abs(Value) / pow10(N - Index - 3) % 10 )..., '\0' } {}
+			raw{ '-', char('0' + abs(Value) / pow10(N - Index - 3) % 10 )..., '\0' } {}
 	};
 };
 
