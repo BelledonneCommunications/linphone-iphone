@@ -36,15 +36,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 class SmartTransaction {
 public:
-	SmartTransaction (soci::session *session, const char *name) : mTransaction(*session), mName(name) {
+	SmartTransaction (soci::session *session, const char *name) :
+	mTransaction(*session), mName(name), mIsCommitted(false) {
 		lInfo() << "Start transaction " << this << " in MainDb::" << mName << ".";
 	}
 
 	~SmartTransaction () {
-		lInfo() << "Rollback transaction " << this << " in MainDb::" << mName << ".";
+		if (!mIsCommitted)
+			lInfo() << "Rollback transaction " << this << " in MainDb::" << mName << ".";
 	}
 
 	void commit () {
+		mIsCommitted = true;
 		lInfo() << "Commit transaction " << this << " in MainDb::" << mName << ".";
 		mTransaction.commit();
 	}
@@ -52,6 +55,7 @@ public:
 private:
 	soci::transaction mTransaction;
 	const char *mName;
+	bool mIsCommitted;
 
 	L_DISABLE_COPY(SmartTransaction);
 };
