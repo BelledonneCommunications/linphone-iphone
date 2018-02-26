@@ -47,9 +47,9 @@ public:
 	}
 
 	void commit () {
+		mTransaction.commit();
 		mIsCommitted = true;
 		lInfo() << "Commit transaction " << this << " in MainDb::" << mName << ".";
-		mTransaction.commit();
 	}
 
 private:
