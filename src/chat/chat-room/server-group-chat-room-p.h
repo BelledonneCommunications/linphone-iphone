@@ -51,8 +51,6 @@ public:
 	void confirmRecreation (SalCallOp *op);
 	void dispatchQueuedMessages ();
 
-	IdentityAddress generateConferenceAddress (const std::shared_ptr<Participant> &me) const;
-
 	void subscribeReceived (LinphoneEvent *event);
 
 	bool update (SalCallOp *op);

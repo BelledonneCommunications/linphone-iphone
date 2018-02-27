@@ -64,10 +64,6 @@ void ServerGroupChatRoomPrivate::dispatchQueuedMessages () {}
 
 // -----------------------------------------------------------------------------
 
-IdentityAddress ServerGroupChatRoomPrivate::generateConferenceAddress (const shared_ptr<Participant> &me) const {
-	return IdentityAddress();
-}
-
 void ServerGroupChatRoomPrivate::subscribeReceived (LinphoneEvent *) {}
 
 bool ServerGroupChatRoomPrivate::update (SalCallOp *) { return true; }
