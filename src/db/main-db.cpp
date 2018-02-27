@@ -1370,7 +1370,6 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 			if (state != int(ChatMessage::State::Displayed))
 				insertChatMessageParticipant(eventId, remoteSipAddressId, state);
 		}
-
 		tr.commit();
 		lInfo() << "Successful import of legacy messages.";
 	};
@@ -1875,6 +1874,8 @@ bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
 			static_pointer_cast<const ConferenceChatMessageEvent>(
 				eventLog
 			)->getChatMessage()->getPrivate()->dbKey = MainDbChatMessageKey();
+
+		tr.commit();
 
 		return true;
 	};
