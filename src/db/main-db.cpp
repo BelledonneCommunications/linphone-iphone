@@ -1867,6 +1867,7 @@ bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
 	return L_DB_EXCEPTION_HANDLER_C(&mainDb) {
 		soci::session *session = mainDb.getPrivate()->dbSession.getBackendSession();
 		*session << "DELETE FROM event WHERE id = :id", soci::use(dEventKey->storageId);
+		tr.commit();
 
 		dEventLog->dbKey = MainDbEventKey();
 
@@ -1874,8 +1875,6 @@ bool MainDb::deleteEvent (const shared_ptr<const EventLog> &eventLog) {
 			static_pointer_cast<const ConferenceChatMessageEvent>(
 				eventLog
 			)->getChatMessage()->getPrivate()->dbKey = MainDbChatMessageKey();
-
-		tr.commit();
 
 		return true;
 	};
@@ -2075,8 +2074,8 @@ void MainDb::markChatMessagesAsRead (const ChatRoomId &chatRoomId) const {
 		else {
 			const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 			*session << query, soci::use(dbChatRoomId);
-			tr.commit();
 		}
+		tr.commit();
 	};
 }
 
