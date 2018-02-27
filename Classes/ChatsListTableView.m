@@ -64,9 +64,7 @@
 		if (!chatRoom)
 			continue;
 
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
-		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
-		linphone_chat_room_cbs_set_user_data(cbs, NULL);
+		linphone_chat_room_remove_callbacks(chatRoom, linphone_chat_room_get_current_callbacks(chatRoom));
 		_chatRooms = _chatRooms->next;
 	}
 }
@@ -173,14 +171,13 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
-	ChatsListTableView *view = (__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr)) ?: NULL;
+	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_current_callbacks(cr);
+	ChatsListTableView *view = (__bridge ChatsListTableView *)linphone_chat_room_cbs_get_user_data(cbs) ?: NULL;
 	if (!view)
 		return;
 	
 	if (newState == LinphoneChatRoomStateDeleted || newState == LinphoneChatRoomStateTerminationFailed) {
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(cr);
-		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
-		linphone_chat_room_cbs_set_user_data(cbs, NULL);
+		linphone_chat_room_remove_callbacks(cr, cbs);
 		view.chatRooms = bctbx_list_remove(view.chatRooms, cr);
 		view.nbOfChatRoomToDelete--;
 	}
@@ -201,9 +198,10 @@ void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomStat
 			continue;
 
 		_nbOfChatRoomToDelete++;
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(chatRoom);
+		LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 		linphone_chat_room_cbs_set_state_changed(cbs, deletion_chat_room_state_changed);
 		linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+		linphone_chat_room_add_callbacks(chatRoom, cbs);
 
 		FileTransferDelegate *ftdToDelete = nil;
 		for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {

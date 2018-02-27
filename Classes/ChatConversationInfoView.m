@@ -65,6 +65,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_oldAdmins = [[NSMutableArray alloc] init];
 	_oldContacts = [[NSMutableArray alloc] init];
 	_room = NULL;
+	_chatRoomCbs = NULL;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -100,28 +101,25 @@ static UICompositeViewDescription *compositeDescription = nil;
 	)];
 
 	if (_room) {
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
-		linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
-		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
-		linphone_chat_room_cbs_set_participant_added(cbs, chat_room_participant_added);
-		linphone_chat_room_cbs_set_participant_removed(cbs, chat_room_participant_removed);
-		linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, chat_room_participant_admin_status_changed);
-		linphone_chat_room_cbs_set_user_data(cbs, (__bridge void*)self);
+		_chatRoomCbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
+		linphone_chat_room_cbs_set_state_changed(_chatRoomCbs, main_view_chat_room_state_changed);
+		linphone_chat_room_cbs_set_subject_changed(_chatRoomCbs, chat_room_subject_changed);
+		linphone_chat_room_cbs_set_participant_added(_chatRoomCbs, chat_room_participant_added);
+		linphone_chat_room_cbs_set_participant_removed(_chatRoomCbs, chat_room_participant_removed);
+		linphone_chat_room_cbs_set_participant_admin_status_changed(_chatRoomCbs, chat_room_participant_admin_status_changed);
+		linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
+		linphone_chat_room_add_callbacks(_room, _chatRoomCbs);
 	}
 
 	[_tableView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-	if (_room) {
-		LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(_room);
-		linphone_chat_room_cbs_set_state_changed(cbs, NULL);
-		linphone_chat_room_cbs_set_subject_changed(cbs, NULL);
-		linphone_chat_room_cbs_set_participant_added(cbs, NULL);
-		linphone_chat_room_cbs_set_participant_removed(cbs, NULL);
-		linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, NULL);
-		linphone_chat_room_cbs_set_user_data(cbs, NULL);
-	}
+	if (!_room || !_chatRoomCbs)
+		return;
+
+	linphone_chat_room_remove_callbacks(_room, _chatRoomCbs);
+	_chatRoomCbs = NULL;
 }
 
 #pragma mark - next functions
@@ -333,12 +331,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 void chat_room_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	view.nameLabel.text = [NSString stringWithUTF8String:linphone_event_log_get_subject(event_log)];
 }
 
 void chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
 	[view.oldContacts addObject:participantAddress];
 	[view.contacts addObject:participantAddress];
@@ -346,7 +344,7 @@ void chat_room_participant_added(LinphoneChatRoom *cr, const LinphoneEventLog *e
 }
 
 void chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
 	[view.oldContacts removeObject:participantAddress];
 	[view.contacts removeObject:participantAddress];
@@ -354,7 +352,7 @@ void chat_room_participant_removed(LinphoneChatRoom *cr, const LinphoneEventLog 
 }
 
 void chat_room_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_callbacks(cr));
+	ChatConversationInfoView *view = (__bridge ChatConversationInfoView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	NSString *participantAddress = [NSString stringWithUTF8String:linphone_address_as_string(linphone_event_log_get_participant_address(event_log))];
 
 	LinphoneParticipant *me = linphone_chat_room_get_me(cr);

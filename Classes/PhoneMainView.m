@@ -882,8 +882,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (!room)
 		return;
 
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_get_callbacks(room);
+	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
+	linphone_chat_room_add_callbacks(room, cbs);
+
 	linphone_chat_room_add_participants(room, addresses);
 }
 
@@ -900,6 +902,7 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 	switch (newState) {
 		case LinphoneChatRoomStateCreated: {
 			LOGI(@"Chat room [%p] created on server.", cr);
+			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
 			[view goToChatRoom:cr];
 			if (!IPAD)
 				break;
@@ -913,9 +916,10 @@ void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomSta
 			break;
 		}
 		case LinphoneChatRoomStateCreationFailed:
+			LOGE(@"Chat room [%p] could not be created on server.", cr);
+			linphone_chat_room_remove_callbacks(cr, linphone_chat_room_get_current_callbacks(cr));
 			view.waitView.hidden = YES;
 			[ChatConversationInfoView displayCreationError];
-			LOGE(@"Chat room [%p] could not be created on server.", cr);
 			break;
 		case LinphoneChatRoomStateTerminated:
 			LOGI(@"Chat room [%p] has been terminated.", cr);

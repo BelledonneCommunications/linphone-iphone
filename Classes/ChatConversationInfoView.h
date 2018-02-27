@@ -20,6 +20,7 @@
 @property(nonatomic, strong) NSMutableArray *oldAdmins;
 @property(nonatomic) NSString *oldSubject;
 @property(nonatomic) LinphoneChatRoom *room;
+@property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
 
 @property (weak, nonatomic) IBOutlet UIIconButton *nextButton;
 @property (weak, nonatomic) IBOutlet UIRoundBorderedButton *quitButton;
