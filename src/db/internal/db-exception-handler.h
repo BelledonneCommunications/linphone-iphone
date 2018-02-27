@@ -37,23 +37,31 @@ LINPHONE_BEGIN_NAMESPACE
 class SmartTransaction {
 public:
 	SmartTransaction (soci::session *session, const char *name) :
-	mTransaction(*session), mName(name), mIsCommitted(false) {
+	mSession(session), mName(name), mIsCommitted(false) {
 		lInfo() << "Start transaction " << this << " in MainDb::" << mName << ".";
+		mSession->begin();
 	}
 
 	~SmartTransaction () {
-		if (!mIsCommitted)
+		if (!mIsCommitted) {
 			lInfo() << "Rollback transaction " << this << " in MainDb::" << mName << ".";
+			mSession->rollback();
+		}
 	}
 
 	void commit () {
-		mTransaction.commit();
-		mIsCommitted = true;
+		if (mIsCommitted) {
+			lError() << "Transaction " << this << " in MainDb::" << mName << " already committed!!!";
+			return;
+		}
+
 		lInfo() << "Commit transaction " << this << " in MainDb::" << mName << ".";
+		mIsCommitted = true;
+		mSession->commit();
 	}
 
 private:
-	soci::transaction mTransaction;
+	soci::session *mSession;
 	const char *mName;
 	bool mIsCommitted;
 
@@ -86,8 +94,6 @@ public:
 
 	DbExceptionHandler (DbExceptionHandlerInfo &info, Function &&function) : mFunction(std::move(function)) {
 		MainDb *mainDb = info.mainDb;
-		L_ASSERT(mainDb->getPrivate()->threadId == std::this_thread::get_id());
-
 		const char *name = info.name;
 		soci::session *session = mainDb->getPrivate()->dbSession.getBackendSession();
 

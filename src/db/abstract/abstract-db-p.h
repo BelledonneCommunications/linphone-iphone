@@ -20,8 +20,6 @@
 #ifndef _L_ABSTRACT_DB_P_H_
 #define _L_ABSTRACT_DB_P_H_
 
-#include <thread>
-
 #include "abstract-db.h"
 #include "db/session/db-session.h"
 #include "object/object-p.h"
@@ -35,8 +33,6 @@ public:
 	AbstractDbPrivate () = default;
 
 	DbSession dbSession;
-
-	const std::thread::id threadId = std::this_thread::get_id();
 
 private:
 	AbstractDb::Backend backend;
