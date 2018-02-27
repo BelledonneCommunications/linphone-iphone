@@ -2767,6 +2767,7 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 
 		long long chatRoomId = d->selectOneToOneChatRoomId(participantASipAddressId, participantBSipAddressId);
 		if (chatRoomId == -1) {
+			chatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
 			StatementBind stmt(*d->preparedStatements->insert[Statements::InsertOneToOneChatRoom]);
 			stmt.bind(chatRoomId);
 			stmt.bind(participantASipAddressId);
