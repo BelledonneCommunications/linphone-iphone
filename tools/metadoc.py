@@ -138,12 +138,25 @@ class Reference(ParagraphPart):
 		ParagraphPart.__init__(self)
 		self.cname = cname
 		self.relatedObject = None
-	
-	def translate(self, docTranslator, **kargs):
-		return docTranslator.translate_reference(self, **kargs)
+
+	@staticmethod
+	def make_ref_from_object(cname, obj):
+		if isinstance(obj, (abstractapi.Enum, abstractapi.Enumerator, abstractapi.Class, abstractapi.Interface)):
+			ref = ClassReference(cname)
+		elif isinstance(obj, abstractapi.Method):
+			ref = FunctionReference(cname)
+		else:
+			raise TypeError('cannot create documentation reference from {0}'.format(str(obj)))
+		ref.relatedObject = obj
+		return ref
 
 
 class ClassReference(Reference):
+	def translate(self, docTranslator, **kargs):
+		if self.relatedObject is None:
+			raise ReferenceTranslationError(self.cname)
+		return docTranslator.translate_class_reference(self, **kargs)
+
 	def resolve(self, api):
 		try:
 			self.relatedObject = api.classesIndex[self.cname]
@@ -152,6 +165,11 @@ class ClassReference(Reference):
 
 
 class FunctionReference(Reference):
+	def translate(self, docTranslator, **kargs):
+		if self.relatedObject is None:
+			raise ReferenceTranslationError(self.cname)
+		return docTranslator.translate_function_reference(self, **kargs)
+
 	def resolve(self, api):
 		try:
 			self.relatedObject = api.methodsIndex[self.cname]
@@ -495,13 +513,16 @@ class DoxygenTranslator(Translator):
 	def _tag_as_brief(self, lines):
 		if len(lines) > 0:
 			lines[0] = '@brief ' + lines[0]
-	
-	def translate_reference(self, ref):
-		refStr = Translator.translate_reference(self, ref)
+
+	def translate_class_reference(self, ref, **kargs):
 		if isinstance(ref.relatedObject, (abstractapi.Class, abstractapi.Enum)):
-			return '#' + refStr
-		elif isinstance(ref.relatedObject, abstractapi.Method):
-			return refStr + '()'
+			return '#' + Translator.translate_reference(self, ref)
+		else:
+			raise ReferenceTranslationError(ref.cname)
+
+	def translate_function_reference(self, ref, **kargs):
+		if isinstance(ref.relatedObject, abstractapi.Method):
+			return Translator.translate_reference(self, ref) + '()'
 		else:
 			raise ReferenceTranslationError(ref.cname)
 	
@@ -588,18 +609,24 @@ class SphinxTranslator(Translator):
 				return self.get_declarator(typeName)
 		except AttributeError:
 			raise ValueError("'{0}' referencer type not supported".format(typeName))
-	
-	def translate_reference(self, ref, label=None, namespace=None):
-		strRef = Translator.translate_reference(self, ref, absName=True)
-		kargs = {
-			'tag'   : self._sphinx_ref_tag(ref),
-			'ref'   : strRef,
-		}
-		kargs['label'] = label if label is not None else Translator.translate_reference(self, ref, namespace=namespace)
-		if isinstance(ref, FunctionReference):
-			kargs['label'] += '()'
-		
-		return ':{tag}:`{label} <{ref}>`'.format(**kargs)
+
+	def translate_class_reference(self, ref, label=None, namespace=None):
+		return ':{tag}:`{label} <{ref}>`'.format(
+			tag=self._sphinx_ref_tag(ref),
+			label=label if label is not None else Translator.translate_reference(self, ref, namespace=namespace),
+			ref=Translator.translate_reference(self, ref, absName=True)
+		)
+
+	def translate_function_reference(self, ref, label=None, namespace=None):
+		paramTypes = []
+		if self.domain != 'c':
+			for arg in ref.relatedObject.args:
+				paramTypes.append(arg._type.translate(self.langTranslator))
+		return ':{tag}:`{label} <{ref}>`'.format(
+			tag=self._sphinx_ref_tag(ref),
+			label=label if label is not None else '{0}()'.format(Translator.translate_reference(self, ref, namespace=namespace)),
+			ref='{0}({1})'.format(Translator.translate_reference(self, ref, absName=True), ', '.join(paramTypes))
+		)
 	
 	def translate_keyword(self, keyword):
 		translatedKeyword = Translator.translate_keyword(self, keyword)

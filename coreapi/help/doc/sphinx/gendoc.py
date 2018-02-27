@@ -187,8 +187,7 @@ class SphinxPage(object):
 	
 	def _make_selector(self, obj):
 		links = []
-		ref = metadoc.Reference(None)
-		ref.relatedObject = obj
+		ref = metadoc.Reference.make_ref_from_object(None, obj)
 		for lang in self.langs:
 			if lang is self.lang:
 				link = lang.displayName
