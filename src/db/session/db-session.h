@@ -39,15 +39,16 @@ LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionPrivate;
 
-class DbSession : public ClonableObject {
+class DbSession {
 	friend class DbSessionProvider;
 
 public:
 	DbSession ();
 	explicit DbSession (const std::string &uri);
-	DbSession (const DbSession &other);
+	DbSession (DbSession &&other);
+	~DbSession ();
 
-	DbSession &operator= (const DbSession &other);
+	DbSession &operator= (DbSession &&other);
 
 	operator bool () const;
 
@@ -70,6 +71,8 @@ public:
 	long long resolveId (const soci::row &row, int col) const;
 
 private:
+	DbSessionPrivate *mPrivate;
+
 	L_DECLARE_PRIVATE(DbSession);
 };
 

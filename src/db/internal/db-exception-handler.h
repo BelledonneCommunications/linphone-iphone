@@ -85,19 +85,24 @@ public:
 	>::type;
 
 	DbExceptionHandler (DbExceptionHandlerInfo &info, Function &&function) : mFunction(std::move(function)) {
+		MainDb *mainDb = info.mainDb;
+		L_ASSERT(mainDb->getPrivate()->threadId == std::this_thread::get_id());
+
 		const char *name = info.name;
+		soci::session *session = mainDb->getPrivate()->dbSession.getBackendSession();
+
 		try {
-			SmartTransaction tr(info.mainDb->getPrivate()->dbSession.getBackendSession(), name);
+			SmartTransaction tr(session, name);
 			mResult = exec<InternalReturnType>(tr);
 		} catch (const soci::soci_error &e) {
 			lWarning() << "Catched exception in MainDb::" << name << "(" << e.what() << ").";
 			soci::soci_error::error_category category = e.get_error_category();
 			if (
 				(category == soci::soci_error::connection_error || category == soci::soci_error::unknown) &&
-				info.mainDb->forceReconnect()
+				mainDb->forceReconnect()
 			) {
 				try {
-					SmartTransaction tr(info.mainDb->getPrivate()->dbSession.getBackendSession(), name);
+					SmartTransaction tr(session, name);
 					mResult = exec<InternalReturnType>(tr);
 				} catch (const std::exception &e) {
 					lError() << "Unable to execute query after reconnect in MainDb::" << name << "(" << e.what() << ").";

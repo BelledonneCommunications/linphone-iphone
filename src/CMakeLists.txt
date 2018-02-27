@@ -112,7 +112,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	db/main-db-key.h
 	db/main-db-p.h
 	db/main-db.h
-	db/session/db-session-p.h
+	db/session/db-session.h
 	dial-plan/dial-plan-p.h
 	dial-plan/dial-plan.h
 	enums.h

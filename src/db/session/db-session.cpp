@@ -19,7 +19,7 @@
 
 #include "linphone/utils/utils.h"
 
-#include "db-session-p.h"
+#include "db-session.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -28,7 +28,20 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-DbSession::DbSession () : ClonableObject(*new DbSessionPrivate) {}
+class DbSessionPrivate {
+public:
+	enum class Backend {
+		None,
+		Mysql,
+		Sqlite3
+	} backend = Backend::None;
+
+	#ifdef SOCI_ENABLED
+		std::unique_ptr<soci::session> backendSession;
+	#endif // ifdef SOCI_ENABLED
+};
+
+DbSession::DbSession () : mPrivate(new DbSessionPrivate) {}
 
 DbSession::DbSession (const string &uri) : DbSession() {
 	#ifdef SOCI_ENABLED
@@ -44,12 +57,23 @@ DbSession::DbSession (const string &uri) : DbSession() {
 	#endif // ifdef SOCI_ENABLED
 }
 
+DbSession::DbSession (DbSession &&other) : mPrivate(other.mPrivate) {
+	other.mPrivate = nullptr;
+}
+
+DbSession::~DbSession () {
+	delete mPrivate;
+}
+
+DbSession &DbSession::operator= (DbSession &&other) {
+	std::swap(mPrivate, other.mPrivate);
+	return *this;
+}
+
 DbSession::operator bool () const {
 	L_D();
 	return d->backend != DbSessionPrivate::Backend::None;
 }
-
-L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(DbSession);
 
 soci::session *DbSession::getBackendSession () const {
 	#ifdef SOCI_ENABLED

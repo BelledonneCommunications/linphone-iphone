@@ -1386,10 +1386,10 @@ void MainDb::init () {
 	soci::session *session = d->dbSession.getBackendSession();
 
 	using namespace placeholders;
-	auto primaryKeyRefStr = bind(&DbSession::primaryKeyRefStr, d->dbSession, _1);
-	auto primaryKeyStr = bind(&DbSession::primaryKeyStr, d->dbSession, _1);
-	auto timestampType = bind(&DbSession::timestampType, d->dbSession);
-	auto varcharPrimaryKeyStr = bind(&DbSession::varcharPrimaryKeyStr, d->dbSession, _1);
+	auto primaryKeyRefStr = bind(&DbSession::primaryKeyRefStr, &d->dbSession, _1);
+	auto primaryKeyStr = bind(&DbSession::primaryKeyStr, &d->dbSession, _1);
+	auto timestampType = bind(&DbSession::timestampType, &d->dbSession);
+	auto varcharPrimaryKeyStr = bind(&DbSession::varcharPrimaryKeyStr, &d->dbSession, _1);
 
 	auto createTableSanitizer = [](const char *statement) {
 		// TODO.
