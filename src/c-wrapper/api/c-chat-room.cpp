@@ -419,19 +419,23 @@ LinphoneChatRoomCbs *linphone_chat_room_get_current_callbacks (const LinphoneCha
 	return cr->currentCbs;
 }
 
+void linphone_chat_room_set_current_callbacks(LinphoneChatRoom *cr, LinphoneChatRoomCbs *cbs) {
+	cr->currentCbs = cbs;
+}
+
 const bctbx_list_t *linphone_chat_room_get_callbacks_list(const LinphoneChatRoom *cr) {
 	return cr->callbacks;
 }
 
 #define NOTIFY_IF_EXIST(cbName, functionName, ...) \
-	bctbx_list_t *callbacks_copy = bctbx_list_copy(cr->callbacks); \
-	for (bctbx_list_t *it = callbacks_copy; it; it = bctbx_list_next(it)) { \
-		cr->currentCbs = reinterpret_cast<LinphoneChatRoomCbs *>(bctbx_list_get_data(it)); \
-		LinphoneChatRoomCbs ## cbName ## Cb cb = linphone_chat_room_cbs_get_ ## functionName (cr->currentCbs); \
+	bctbx_list_t *callbacksCopy = bctbx_list_copy(linphone_chat_room_get_callbacks_list(cr)); \
+	for (bctbx_list_t *it = callbacksCopy; it; it = bctbx_list_next(it)) { \
+		linphone_chat_room_set_current_callbacks(cr, reinterpret_cast<LinphoneChatRoomCbs *>(bctbx_list_get_data(it))); \
+		LinphoneChatRoomCbs ## cbName ## Cb cb = linphone_chat_room_cbs_get_ ## functionName (linphone_chat_room_get_current_callbacks(cr)); \
 		if (cb) \
 			cb(__VA_ARGS__); \
 	} \
-	bctbx_free(callbacks_copy);
+	bctbx_free(callbacksCopy);
 
 void _linphone_chat_room_notify_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
 	NOTIFY_IF_EXIST(IsComposingReceived, is_composing_received, cr, remoteAddr, isComposing)

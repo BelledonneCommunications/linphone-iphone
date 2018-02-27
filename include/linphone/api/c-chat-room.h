@@ -299,7 +299,7 @@ LINPHONE_PUBLIC void linphone_chat_room_remove_callbacks(LinphoneChatRoom *cr, L
  * @return The LinphoneChatRoomCbs that has called the last callback
  */
 LINPHONE_PUBLIC LinphoneChatRoomCbs *linphone_chat_room_get_current_callbacks(const LinphoneChatRoom *cr);
- 
+
 /**
  * Get the state of the chat room.
  * @param[in] cr LinphoneChatRoom object
