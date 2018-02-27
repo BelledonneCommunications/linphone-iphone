@@ -84,7 +84,7 @@ public:
 		InternalReturnType
 	>::type;
 
-	DbExceptionHandler (DbExceptionHandlerInfo &info, Function function) : mFunction(std::move(function)) {
+	DbExceptionHandler (DbExceptionHandlerInfo &info, Function &&function) : mFunction(std::move(function)) {
 		const char *name = info.name;
 		try {
 			SmartTransaction tr(info.mainDb->getPrivate()->dbSession.getBackendSession(), name);
