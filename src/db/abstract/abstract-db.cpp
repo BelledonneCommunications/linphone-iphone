@@ -21,6 +21,10 @@
 	#include <TargetConditionals.h>
 #endif // ifdef __APPLE__
 
+#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+	#include <sqlite3.h>
+#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+
 #include "abstract-db-p.h"
 #include "logger/logger.h"
 
@@ -30,19 +34,29 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
-
-// Force static sqlite3 linking for IOS and Android.
 #if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+	// Force static sqlite3 linking for IOS and Android.
 	extern "C" void register_factory_sqlite3();
+
+	static void sqlite3Log (void *, int iErrCode, const char *zMsg) {
+		lInfo() << "[sqlite3][" << iErrCode << "]" << zMsg;
+	}
 #endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+
+AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
 
 	#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
-		if (backend == Sqlite3)
-			register_factory_sqlite3();
+		if (backend == Sqlite3) {
+			static bool registered = false;
+			if (!registered) {
+				registered = true;
+				register_factory_sqlite3();
+				sqlite3_config(SQLITE_CONFIG_LOG, sqlite3Log, nullptr);
+			}
+		}
 	#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 	d->backend = backend;
