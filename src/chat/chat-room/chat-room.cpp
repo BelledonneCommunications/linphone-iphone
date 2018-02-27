@@ -59,7 +59,7 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 		if (!event)
 			event = make_shared<ConferenceChatMessageEvent>(time(nullptr), chatMessage);
 
-		linphone_chat_room_notify_chat_message_sent(cr, L_GET_C_BACK_PTR(event));
+		_linphone_chat_room_notify_chat_message_sent(cr, L_GET_C_BACK_PTR(event));
 	}
 
 	if (isComposing)
@@ -134,7 +134,7 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 		);
 		linphone_address_unref(fromAddress);
 	}
-	linphone_chat_room_notify_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
+	_linphone_chat_room_notify_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
 	linphone_core_notify_message_received(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(chatMessage));
 }
 
@@ -148,7 +148,7 @@ void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddress, b
 
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	LinphoneAddress *lAddr = linphone_address_new(remoteAddress.asString().c_str());
-	linphone_chat_room_notify_is_composing_received(cr, lAddr, !!isComposing);
+	_linphone_chat_room_notify_is_composing_received(cr, lAddr, !!isComposing);
 	linphone_address_unref(lAddr);
 	// Legacy notification
 	linphone_core_notify_is_composing_received(q->getCore()->getCCore(), cr);
@@ -158,13 +158,13 @@ void ChatRoomPrivate::notifyStateChanged () {
 	L_Q();
 	linphone_core_notify_chat_room_state_changed(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q), (LinphoneChatRoomState)state);
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	linphone_chat_room_notify_state_changed(cr, (LinphoneChatRoomState)state);
+	_linphone_chat_room_notify_state_changed(cr, (LinphoneChatRoomState)state);
 }
 
 void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	L_Q();
 	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
-	linphone_chat_room_notify_undecryptable_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
+	_linphone_chat_room_notify_undecryptable_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
 	linphone_core_notify_message_received_unable_decrypt(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(chatMessage));
 }
 
@@ -418,8 +418,10 @@ void ChatRoom::markAsRead () {
 	L_D();
 
 	CorePrivate *dCore = getCore()->getPrivate();
-	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId))
+	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId)) {
 		chatMessage->sendDisplayNotification();
+		chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, true);
+	}
 
 	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
 }

@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 	LinphoneChatRoomCbs *proxiedCbs = linphone_chat_room_get_current_callbacks(cr); \
 	ProxyChatRoom *pcr = static_cast<ProxyChatRoom *>(linphone_chat_room_cbs_get_user_data(proxiedCbs)); \
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(pcr->getSharedFromThis()); \
-	linphone_chat_room_notify_ ## callback(lcr, ##__VA_ARGS__)
+	_linphone_chat_room_notify_ ## callback(lcr, ##__VA_ARGS__)
 
 static void chatMessageReceived (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	PROXY_CALLBACK(chat_message_received, event_log);
@@ -97,8 +97,7 @@ static void undecryptableMessageReceived (LinphoneChatRoom *cr, LinphoneChatMess
 void ProxyChatRoomPrivate::setupCallbacks () {
 	L_Q();
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	LinphoneChatRoomCbs *cbs = linphone_chat_room_cbs_new();
-	callbacks = cbs;
+	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 	linphone_chat_room_cbs_set_user_data(cbs, q);
 	linphone_chat_room_cbs_set_chat_message_received(cbs, chatMessageReceived);
 	linphone_chat_room_cbs_set_chat_message_sent(cbs, chatMessageSent);
@@ -120,7 +119,7 @@ void ProxyChatRoomPrivate::setupCallbacks () {
 
 void ProxyChatRoomPrivate::teardownCallbacks () {
 	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	linphone_chat_room_remove_callbacks(lcr, callbacks);
+	_linphone_chat_room_clear_callbacks(lcr);
 }
 
 // -----------------------------------------------------------------------------

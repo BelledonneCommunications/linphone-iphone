@@ -239,7 +239,7 @@ LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factor
 }
 
 LinphoneChatRoomCbs * linphone_factory_create_chat_room_cbs(const LinphoneFactory *factory) {
-	return linphone_chat_room_cbs_new();
+	return _linphone_chat_room_cbs_new();
 }
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {

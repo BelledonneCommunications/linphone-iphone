@@ -301,14 +301,6 @@ LINPHONE_PUBLIC void linphone_chat_room_remove_callbacks(LinphoneChatRoom *cr, L
 LINPHONE_PUBLIC LinphoneChatRoomCbs *linphone_chat_room_get_current_callbacks(const LinphoneChatRoom *cr);
  
 /**
- * Get the LinphoneChatRoomCbs object associated with the LinphoneChatRoom.
- * @param[in] cr LinphoneChatRoom object
- * @return The LinphoneChatRoomCbs object associated with the LinphoneChatRoom
- * @deprecated, use linphone_chat_room_add_callbacks instead
- */
-LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr);
-
-/**
  * Get the state of the chat room.
  * @param[in] cr LinphoneChatRoom object
  * @return The state of the chat room

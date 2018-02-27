@@ -84,6 +84,8 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 	if (!validStateTransition(currentState, newState))
 		return;
 
+	lInfo() << "Chat message " << this << ": moving participant '" << participantAddress.asString() << "' state to "
+		<< Utils::toString(newState);
 	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState);
 
 	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
@@ -443,15 +445,14 @@ void ChatMessagePrivate::notifyReceiving () {
 
 	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
 	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
-		linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
-
+		_linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 		if (toBeStored)
 			storeInDb();
 	}
 	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
 		::time(nullptr), q->getSharedFromThis()
 	);
-	linphone_chat_room_notify_chat_message_received(chatRoom, L_GET_C_BACK_PTR(event));
+	_linphone_chat_room_notify_chat_message_received(chatRoom, L_GET_C_BACK_PTR(event));
 	// Legacy
 	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 

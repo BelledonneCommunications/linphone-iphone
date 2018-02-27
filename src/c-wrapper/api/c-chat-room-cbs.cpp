@@ -57,7 +57,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoomCbs, belle_sip_object_t,
 
 // =============================================================================
 
-LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void) {
+LinphoneChatRoomCbs * _linphone_chat_room_cbs_new (void) {
 	return belle_sip_object_new(LinphoneChatRoomCbs);
 }
 
