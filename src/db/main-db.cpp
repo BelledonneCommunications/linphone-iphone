@@ -2196,6 +2196,8 @@ void MainDb::setChatMessageParticipantState (
 		*session << "UPDATE chat_message_participant SET state = :state"
 			" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
 			soci::use(stateInt), soci::use(eventId), soci::use(participantSipAddressId);
+
+		tr.commit();
 	};
 }
 
