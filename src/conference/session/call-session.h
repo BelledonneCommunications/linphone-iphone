@@ -69,7 +69,7 @@ public:
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
 	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus redirect (const Address &redirectAddr);
-	virtual void startIncomingNotification ();
+	virtual void startIncomingNotification (bool notifyRinging = true);
 	virtual int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
 	LinphoneStatus transfer (const std::shared_ptr<CallSession> &dest);

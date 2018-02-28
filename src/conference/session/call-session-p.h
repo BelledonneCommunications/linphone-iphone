@@ -138,6 +138,7 @@ protected:
 	bool deferUpdate = false;
 	bool needLocalIpRefresh = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
+	bool notifyRinging = true;
 	bool referPending = false;
 	bool reinviteOnCancelResponseRequested = false;
 

@@ -4202,7 +4202,7 @@ void MediaSession::sendVfuRequest () {
 #endif
 }
 
-void MediaSession::startIncomingNotification () {
+void MediaSession::startIncomingNotification (bool notifyRinging) {
 	L_D();
 	d->makeLocalMediaDescription();
 	d->op->set_local_media_description(d->localDesc);
@@ -4218,7 +4218,7 @@ void MediaSession::startIncomingNotification () {
 		}
 	}
 
-	CallSession::startIncomingNotification();
+	CallSession::startIncomingNotification(notifyRinging);
 }
 
 int MediaSession::startInvite (const Address *destination, const string &subject, const Content *content) {

@@ -550,7 +550,8 @@ void CallSessionPrivate::handleIncomingReceivedStateInIncomingNotification () {
 	L_Q();
 	/* Try to be best-effort in giving real local or routable contact address for 100Rel case */
 	setContactOp();
-	op->notify_ringing(false);
+	if (notifyRinging)
+		op->notify_ringing(false);
 	if (op->get_replaces() && lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sip", "auto_answer_replacing_calls", 1))
 		q->accept();
 }

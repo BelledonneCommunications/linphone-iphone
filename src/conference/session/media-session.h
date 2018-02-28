@@ -56,7 +56,7 @@ public:
 	LinphoneStatus sendDtmf (char dtmf);
 	LinphoneStatus sendDtmfs (const std::string &dtmfs);
 	void sendVfuRequest ();
-	void startIncomingNotification () override;
+	void startIncomingNotification (bool notifyRinging = true) override;
 	int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr) override;
 	void startRecording ();
 	void stopRecording ();
