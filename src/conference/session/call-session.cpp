@@ -1297,6 +1297,11 @@ CallSession::State CallSession::getState () const {
 	return d->state;
 }
 
+CallSession::State CallSession::getPreviousState () const {
+	L_D();
+	return d->prevState;
+}
+
 const Address& CallSession::getToAddress () const {
 	L_D();
 	d->toAddress = Address(d->op->get_to());

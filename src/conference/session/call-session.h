@@ -103,6 +103,7 @@ public:
 
 protected:
 	explicit CallSession (CallSessionPrivate &p, const std::shared_ptr<Core> &core);
+	CallSession::State getPreviousState () const;
 
 private:
 	L_DECLARE_PRIVATE(CallSession);
