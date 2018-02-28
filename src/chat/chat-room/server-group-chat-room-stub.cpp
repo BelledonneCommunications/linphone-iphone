@@ -60,6 +60,8 @@ void ServerGroupChatRoomPrivate::confirmJoining (SalCallOp *) {}
 
 void ServerGroupChatRoomPrivate::confirmRecreation (SalCallOp *) {}
 
+void ServerGroupChatRoomPrivate::declineSession (const shared_ptr<CallSession> &session, LinphoneReason reason) {}
+
 void ServerGroupChatRoomPrivate::dispatchQueuedMessages () {}
 
 // -----------------------------------------------------------------------------

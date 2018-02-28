@@ -49,6 +49,7 @@ public:
 	void confirmCreation ();
 	void confirmJoining (SalCallOp *op);
 	void confirmRecreation (SalCallOp *op);
+	void declineSession (const std::shared_ptr<CallSession> &session, LinphoneReason reason);
 	void dispatchQueuedMessages ();
 
 	void subscribeReceived (LinphoneEvent *event);
