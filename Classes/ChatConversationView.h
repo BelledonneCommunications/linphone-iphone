@@ -60,6 +60,7 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 
+- (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
 - (IBAction)onMessageChange:(id)sender;

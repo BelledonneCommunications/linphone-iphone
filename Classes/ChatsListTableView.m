@@ -157,17 +157,19 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[super tableView:tableView didSelectRowAtIndexPath:indexPath];
-	if (![self isEditing]) {
-		LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
-		ChatConversationView *view = VIEW(ChatConversationView);
-		view.chatRoom = chatRoom;
-		// on iPad, force unread bubble to disappear by reloading the cell
-		if (IPAD) {
-			UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
-			[cell updateUnreadBadge];
-		}
-		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	if ([self isEditing])
+		return;
+
+	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
+	ChatConversationView *view = VIEW(ChatConversationView);
+	view.chatRoom = chatRoom;
+	// on iPad, force unread bubble to disappear by reloading the cell
+	if (IPAD) {
+		UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
+		[cell updateUnreadBadge];
+		[view configureForRoom:false];
 	}
+	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
