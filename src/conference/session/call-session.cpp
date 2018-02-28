@@ -1067,8 +1067,9 @@ LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
 	return 0;
 }
 
-void CallSession::startIncomingNotification () {
+void CallSession::startIncomingNotification (bool notifyRinging) {
 	L_D();
+	d->notifyRinging = notifyRinging;
 	if (d->listener) {
 		d->listener->onIncomingCallSessionNotified(getSharedFromThis());
 		d->listener->onBackgroundTaskToBeStarted(getSharedFromThis());
