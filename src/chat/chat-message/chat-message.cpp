@@ -582,7 +582,7 @@ void ChatMessagePrivate::send () {
 
 	currentSendStep |= ChatMessagePrivate::Step::Started;
 
-	if (toBeStored || currentSendStep == (ChatMessagePrivate::Step::Started | ChatMessagePrivate::Step::None))
+	if (toBeStored && currentSendStep == (ChatMessagePrivate::Step::Started | ChatMessagePrivate::Step::None))
 		storeInDb();
 
 	if ((currentSendStep & ChatMessagePrivate::Step::FileUpload) == ChatMessagePrivate::Step::FileUpload) {
