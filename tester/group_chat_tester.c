@@ -2309,6 +2309,9 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, initialMarieStats.number_of_LinphoneMessageReceived + 1, 1000));
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 4, int, "%d");
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 4, int, "%d");
+
+		BC_ASSERT_EQUAL((int)bctbx_list_size(linphone_core_get_chat_rooms(marie->lc)), 1, int, "%d");
+		BC_ASSERT_EQUAL((int)bctbx_list_size(linphone_core_get_chat_rooms(pauline->lc)), 1, int, "%d");
 	}
 
 	// Clean db from chat room
