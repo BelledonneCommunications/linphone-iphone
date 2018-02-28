@@ -222,63 +222,6 @@ static constexpr string &blobToString (string &in) {
 	return in;
 }
 
-// -----------------------------------------------------------------------------
-// Statements and helpers.
-// -----------------------------------------------------------------------------
-
-class StatementBind {
-public:
-	StatementBind (soci::statement &stmt) : mStmt(stmt) {}
-
-	~StatementBind () {
-		mStmt.bind_clean_up();
-	}
-
-	template<typename T>
-	void bind (const T &var) {
-		mStmt.exchange(soci::use(var));
-	}
-
-	template<typename T>
-	void bindResult (T &var) {
-		mStmt.exchange(soci::into(var));
-	}
-
-	bool exec () {
-		mStmt.define_and_bind();
-		return mStmt.execute(true);
-	}
-
-private:
-	soci::statement &mStmt;
-};
-
-static inline unique_ptr<soci::statement> makeStatement (soci::session &session, const char *stmt) {
-	return makeUnique<soci::statement>(session.prepare << stmt);
-}
-
-struct MainDbPrivate::PreparedStatements {
-	typedef unique_ptr<soci::statement> Statement;
-
-	Statement select[Statements::SelectCount];
-	Statement insert[Statements::InsertCount];
-};
-
-void MainDbPrivate::initPreparedStatements () {
-	L_Q();
-
-	soci::session *session = dbSession.getBackendSession();
-	AbstractDb::Backend backend = q->getBackend();
-
-	preparedStatements = makeUnique<PreparedStatements>();
-	for (int i = 0; i < int(Statements::SelectCount); ++i)
-		preparedStatements->select[i] = makeStatement(*session, Statements::get(Statements::Select(i), backend));
-	for (int i = 0; i < int(Statements::InsertCount); ++i)
-		preparedStatements->insert[i] = makeStatement(*session, Statements::get(Statements::Insert(i), backend));
-}
-
-// -----------------------------------------------------------------------------
-
 long long MainDbPrivate::insertSipAddress (const string &sipAddress) {
 	soci::session *session = dbSession.getBackendSession();
 
@@ -471,24 +414,27 @@ void MainDbPrivate::insertChatMessageParticipant (long long eventId, long long s
 // -----------------------------------------------------------------------------
 
 long long MainDbPrivate::selectSipAddressId (const string &sipAddress) const {
+	L_Q();
+
 	long long id;
 
-	StatementBind stmt(*preparedStatements->select[Statements::SelectSipAddressId]);
-	stmt.bind(sipAddress);
-	stmt.bindResult(id);
+	soci::session *session = dbSession.getBackendSession();
+	*session << Statements::get(Statements::SelectSipAddressId, q->getBackend()),
+		soci::use(sipAddress), soci::into(id);
 
-	return stmt.exec() ? id : -1;
+	return session->got_data() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const {
+	L_Q();
+
 	long long id;
 
-	StatementBind stmt(*preparedStatements->select[Statements::SelectChatRoomId]);
-	stmt.bind(peerSipAddressId);
-	stmt.bind(localSipAddressId);
-	stmt.bindResult(id);
+	soci::session *session = dbSession.getBackendSession();
+	*session << Statements::get(Statements::SelectChatRoomId, q->getBackend()),
+		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::into(id);
 
-	return stmt.exec() ? id : -1;
+	return session->got_data() ? id : -1;
 }
 
 long long MainDbPrivate::selectChatRoomId (const ChatRoomId &chatRoomId) const {
@@ -504,27 +450,28 @@ long long MainDbPrivate::selectChatRoomId (const ChatRoomId &chatRoomId) const {
 }
 
 long long MainDbPrivate::selectChatRoomParticipantId (long long chatRoomId, long long participantSipAddressId) const {
+	L_Q();
+
 	long long id;
 
-	StatementBind stmt(*preparedStatements->select[Statements::SelectChatRoomParticipantId]);
-	stmt.bind(chatRoomId);
-	stmt.bind(participantSipAddressId);
-	stmt.bindResult(id);
+	soci::session *session = dbSession.getBackendSession();
+	*session << Statements::get(Statements::SelectChatRoomParticipantId, q->getBackend()),
+		soci::use(chatRoomId), soci::use(participantSipAddressId), soci::into(id);
 
-	return stmt.exec() ? id : -1;
+	return session->got_data() ? id : -1;
 }
 
 long long MainDbPrivate::selectOneToOneChatRoomId (long long sipAddressIdA, long long sipAddressIdB) const {
+	L_Q();
+
 	long long id;
 
-	StatementBind stmt(*preparedStatements->select[Statements::SelectOneToOneChatRoomId]);
-	stmt.bind(sipAddressIdA);
-	stmt.bind(sipAddressIdB);
-	stmt.bind(sipAddressIdA);
-	stmt.bind(sipAddressIdB);
-	stmt.bindResult(id);
+	soci::session *session = dbSession.getBackendSession();
+	*session << Statements::get(Statements::SelectChatRoomParticipantId, q->getBackend()),
+		soci::use(sipAddressIdA), soci::use(sipAddressIdB), soci::use(sipAddressIdA), soci::use(sipAddressIdB),
+		soci::into(id);
 
-	return stmt.exec() ? id : -1;
+	return session->got_data() ? id : -1;
 }
 
 // -----------------------------------------------------------------------------
@@ -1747,8 +1694,6 @@ void MainDb::init () {
 
 	d->updateModuleVersion("events", ModuleVersionEvents);
 	d->updateModuleVersion("friends", ModuleVersionFriends);
-
-	d->initPreparedStatements();
 }
 
 bool MainDb::addEvent (const shared_ptr<EventLog> &eventLog) {
@@ -2768,12 +2713,8 @@ void MainDb::insertOneToOneConferenceChatRoom (const shared_ptr<AbstractChatRoom
 		long long chatRoomId = d->selectOneToOneChatRoomId(participantASipAddressId, participantBSipAddressId);
 		if (chatRoomId == -1) {
 			chatRoomId = d->selectChatRoomId(chatRoom->getChatRoomId());
-			StatementBind stmt(*d->preparedStatements->insert[Statements::InsertOneToOneChatRoom]);
-			stmt.bind(chatRoomId);
-			stmt.bind(participantASipAddressId);
-			stmt.bind(participantBSipAddressId);
-
-			stmt.exec();
+			*d->dbSession.getBackendSession() << Statements::get(Statements::InsertOneToOneChatRoom, getBackend()),
+				soci::use(chatRoomId), soci::use(participantASipAddressId), soci::use(participantBSipAddressId);
 		}
 
 		tr.commit();
