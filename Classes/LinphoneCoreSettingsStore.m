@@ -167,6 +167,8 @@
 		[self setInteger:-1 forKey:@"current_proxy_config_preference"];
 		[self setCString:"" forKey:@"account_prefix_preference"];
 		[self setBool:NO forKey:@"account_substitute_+_by_00_preference"];
+		[self setBool:NO forKey:@"account_ice_preference"];
+		[self setCString:"" forKey:@"account_stun_preference"];
 	}
 
 	if (proxies) {
@@ -235,6 +237,12 @@
 
 			int expires = linphone_proxy_config_get_expires(proxy);
 			[self setInteger:expires forKey:@"account_expire_preference"];
+
+			LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxy);
+			if (policy) {
+				[self setBool:linphone_nat_policy_ice_enabled(policy) forKey:@"account_ice_preference"];
+				[self setCString:linphone_nat_policy_get_stun_server(policy) forKey:@"account_stun_preference"];
+			}
 		}
 
 		// call section
@@ -483,6 +491,8 @@
 	BOOL use_avpf = [self boolForKey:@"account_avpf_preference"];
 	BOOL is_default = [self boolForKey:@"account_is_default_preference"];
 	BOOL is_enabled = [self boolForKey:@"account_is_enabled_preference"];
+	BOOL use_ise = [self boolForKey:@"account_ice_preference"];
+	NSString *stun_preference = [self stringForKey:@"account_stun_preference"];
 
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
 		int expire = [self integerForKey:@"account_expire_preference"];
@@ -522,9 +532,9 @@
 		proxyCfg = bctbx_list_nth_data(linphone_core_get_proxy_config_list(LC),
 									   [self integerForKey:@"current_proxy_config_preference"]);
 		// if account was deleted, it is not present anymore
-		if (proxyCfg == NULL) {
+		if (proxyCfg == NULL)
 			goto bad_proxy;
-		}
+
 
 		LinphoneAddress *linphoneAddress = linphone_core_interpret_url(LC, "sip:user@domain.com");
 		linphone_address_set_username(linphoneAddress, username.UTF8String);
@@ -556,6 +566,11 @@
 			error = NSLocalizedString(@"Invalid route", nil);
 			goto bad_proxy;
 		}
+
+		LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxyCfg) ?: linphone_core_create_nat_policy(LC);
+		linphone_nat_policy_enable_ice(policy, use_ise);
+		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
+		linphone_proxy_config_set_nat_policy(proxyCfg, policy);
 
 		if ([prefix length] > 0) {
 			linphone_proxy_config_set_dial_prefix(proxyCfg, [prefix UTF8String]);
@@ -638,7 +653,7 @@
 		}
 	}
 	// reload address book to prepend proxy config domain to contacts' phone number
-        [[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
+	[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
 }
 
 - (void)synchronizeCodecs:(const MSList *)codecs {

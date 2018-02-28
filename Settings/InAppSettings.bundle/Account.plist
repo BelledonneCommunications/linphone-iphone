@@ -187,6 +187,32 @@
 			</array>
 		</dict>
 		<dict>
+			<key>Key</key>
+			<string>account_stun_preference</string>
+			<key>Title</key>
+			<string>Stun Server</string>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>DefaultValue</key>
+			<true/>
+			<key>IASKTextAlignment</key>
+			<string>IASKUITextAlignmentRight</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>ICE</string>
+			<key>Key</key>
+			<string>account_ice_preference</string>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>Title</key>
 			<string>Outbound proxy</string>
 			<key>DefaultValue</key>

@@ -14,6 +14,12 @@
 		<entry name="reg_sendregister" overwrite="true">1</entry>
 		<entry name="refkey" overwrite="true">push_notification</entry>
 		<entry name="realm" overwrite="true">sip.linphone.org</entry>
+		<entry name="nat_policy_ref" overwrite="true">nat_policy_default_values</entry>
+	</section>
+
+	<section name="nat_policy_default_values">
+		<entry name="stun_server" overwrite="true">stun.linphone.org</entry>
+		<entry name="protocols" overwrite="true">stun,ice</entry>
 	</section>
 
 	<section name="sip">
