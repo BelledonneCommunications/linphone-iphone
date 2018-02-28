@@ -162,6 +162,15 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
 	ChatConversationView *view = VIEW(ChatConversationView);
+	LinphoneChatRoom *oldRoom = view.chatRoom;
+	if (oldRoom) {
+		LinphoneChatRoomCbs *oldCbs = linphone_chat_room_get_current_callbacks(oldRoom);
+		if (oldCbs && view.chatRoomCbs && oldCbs == view.chatRoomCbs) {
+			linphone_chat_room_remove_callbacks(oldRoom, view.chatRoomCbs);
+			view.chatRoomCbs = NULL;
+		}
+	}
+
 	view.chatRoom = chatRoom;
 	// on iPad, force unread bubble to disappear by reloading the cell
 	if (IPAD) {
