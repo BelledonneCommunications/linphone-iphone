@@ -43,6 +43,15 @@ LINPHONE_BEGIN_NAMESPACE
 	}
 #endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
 
+void AbstractDbPrivate::safeInit () {
+	#ifdef SOCI_ENABLED
+		L_Q();
+		dbSession.enableForeignKeys(false);
+		q->init();
+		dbSession.enableForeignKeys(true);
+	#endif // ifdef SOCI_ENABLED
+}
+
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 
 bool AbstractDb::connect (Backend backend, const string &parameters) {
@@ -66,11 +75,7 @@ bool AbstractDb::connect (Backend backend, const string &parameters) {
 
 	if (d->dbSession) {
 		try {
-			#ifdef SOCI_ENABLED
-				d->dbSession.enableForeignKeys(false);
-				init();
-				d->dbSession.enableForeignKeys(true);
-			#endif // ifdef SOCI_ENABLED
+			d->safeInit();
 		} catch (const exception &e) {
 			lWarning() << "Unable to init database: " << e.what();
 
@@ -99,14 +104,11 @@ bool AbstractDb::forceReconnect () {
 		lInfo() << "Trying sql backend reconnect...";
 
 		try {
-			soci::session *session = d->dbSession.getBackendSession();
-			session->close();
-
 			for (int i = 0; i < retryCount; ++i) {
 				try {
 					lInfo() << "Reconnect... Try: " << i;
-					session->reconnect();
-					init();
+					d->dbSession.getBackendSession()->reconnect(); // Equivalent to close and connect.
+					d->safeInit();
 					lInfo() << "Database reconnection successful!";
 					return true;
 				} catch (const soci::soci_error &e) {
