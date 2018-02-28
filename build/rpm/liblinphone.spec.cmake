@@ -1,12 +1,7 @@
 # -*- rpm-spec -*-
 
-## rpmbuild options
-# These 2 lines are here because we can build the RPM for flexisip, in which
-# case we prefix the entire installation so that we don't break compatibility
-# with the user's libs.
-# To compile with bc prefix, use rpmbuild -ba --with bc [SPEC]
-%define                 pkg_name        %{?_with_bc:bc-liblinphone}%{!?_with_bc:liblinphone}
-%{?_with_bc: %define    _prefix         /opt/belledonne-communications}
+%define _prefix    @CMAKE_INSTALL_PREFIX@
+%define pkg_prefix @BC_PACKAGE_NAME_PREFIX@
 
 # re-define some directories for older RPMBuild versions which don't. This messes up the doc/ dir
 # taken from https://fedoraproject.org/wiki/Packaging:RPMMacros?rd=Packaging/RPMMacros
@@ -15,18 +10,20 @@
 %define _docdir            %{_datadir}/doc
 
 %define build_number @PROJECT_VERSION_BUILD@
+%if %{build_number}
+%define build_number_ext -%{build_number}
+%endif
 
 
-
-Name:           %{pkg_name}
+Name:           @CPACK_PACKAGE_NAME@
 Version:        @PROJECT_VERSION@
-Release:        %build_number%{?dist}
+Release:        %{build_number}%{?dist}
 Summary:        Phone anywhere in the whole world by using the Internet
 
 Group:          Applications/Communications
 License:        GPL
 URL:            http://www.linphone.org
-Source0:        %{name}-%{version}-%{build_number}.tar.gz
+Source0:        %{name}-%{version}%{?build_number_ext}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 Requires:	%{pkg_prefix}bctoolbox
@@ -34,14 +31,12 @@ Requires:	%{pkg_prefix}ortp
 Requires:	%{pkg_prefix}mediastreamer
 Requires:	%{pkg_prefix}belle-sip
 Requires:	%{pkg_prefix}belr
-%if %{?_with_soci:1}%{!?_with_soci:0}
+%if @ENABLE_SOCI_STORAGE@
 Requires:	%{pkg_prefix}soci
 %endif
 
 %description
 liblinphone is the voip sdk used by Linphone
-
-%define         video           %{?_without_video:0}%{!?_without_video:1}
 
 
 %package devel
@@ -61,11 +56,15 @@ develop programs using the liblinphone library.
 %define ctest_name ctest
 %endif
 
+# This is for debian builds where debug_package has to be manually specified, whereas in centos it does not
+%define custom_debug_package %{!?_enable_debug_packages:%debug_package}%{?_enable_debug_package:%{nil}}
+%custom_debug_package
+
 %prep
-%setup -n %{name}-%{version}-%build_number
+%setup -n %{name}-%{version}%{?build_number_ext}
 
 %build
-%{expand:%%%cmake_name} . -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} -DCMAKE_PREFIX_PATH:PATH=%{_prefix} -DENABLE_VIDEO=%{video}
+%{expand:%%%cmake_name} . -DCMAKE_BUILD_TYPE=@CMAKE_BUILD_TYPE@ -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} -DCMAKE_PREFIX_PATH:PATH=%{_prefix} @RPM_ALL_CMAKE_OPTIONS@
 make %{?_smp_mflags}
 
 %install
@@ -84,25 +83,32 @@ rm -rf $RPM_BUILD_ROOT
 %files 
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README.md TODO
-%{_bindir}/linphonec
-%{_bindir}/linphonecsh
-%{_bindir}/lp-auto-answer
-%{_bindir}/lp-test-ecc
+%if @ENABLE_DAEMON@ || @ENABLE_CONSOLE_UI@
+%{_bindir}/*
+%endif
 %{_libdir}/*.so.*
 #%{_mandir}/*
 %{_datadir}/linphone
 %{_datadir}/sounds/linphone
-%{_datadir}/Linphone/rootca.pem
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/*
 %{_includedir}/linphone
+%if @ENABLE_CXX_WRAPPER@
+%{_includedir}/linphone++
+%endif
+%if @ENABLE_STATIC@
 %{_libdir}/*.a
+%endif
+%if @ENABLE_SHARED@
 %{_libdir}/*.so
-#%{_docdir}
+%endif
+%if @ENABLE_DOC@
+%{_docdir}/linphone*/html
+%{_docdir}/linphone*/xml
+%endif
 %{_datadir}/Linphone/cmake/*.cmake
-%{_datadir}/liblinphone_tester
+%{_datadir}/LinphoneCxx/cmake/*.cmake
 %{_datadir}/belr/grammars/cpim_grammar
 
 
