@@ -2587,6 +2587,8 @@ static void group_chat_room_send_file_with_or_without_text (bool_t with_text) {
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	remove(receivePaulineFilepath);
+	remove(receiveChloeFilepath);
 	bc_free(sendFilepath);
 	bc_free(receivePaulineFilepath);
 	bc_free(receiveChloeFilepath);
