@@ -153,24 +153,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 		return;
 	}
 
-	_chatRoomCbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
-	linphone_chat_room_cbs_set_state_changed(_chatRoomCbs, on_chat_room_state_changed);
-	linphone_chat_room_cbs_set_subject_changed(_chatRoomCbs, on_chat_room_subject_changed);
-	linphone_chat_room_cbs_set_participant_added(_chatRoomCbs, on_chat_room_participant_added);
-	linphone_chat_room_cbs_set_participant_removed(_chatRoomCbs, on_chat_room_participant_removed);
-	linphone_chat_room_cbs_set_participant_admin_status_changed(_chatRoomCbs, on_chat_room_participant_admin_status_changed);
-	linphone_chat_room_cbs_set_chat_message_received(_chatRoomCbs, on_chat_room_chat_message_received);
-	linphone_chat_room_cbs_set_chat_message_sent(_chatRoomCbs, on_chat_room_chat_message_sent);
-	linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
-	linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
-	linphone_chat_room_add_callbacks(_chatRoom, _chatRoomCbs);
+	if (!_chatRoomCbs) {
+		_chatRoomCbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
+		linphone_chat_room_cbs_set_state_changed(_chatRoomCbs, on_chat_room_state_changed);
+		linphone_chat_room_cbs_set_subject_changed(_chatRoomCbs, on_chat_room_subject_changed);
+		linphone_chat_room_cbs_set_participant_added(_chatRoomCbs, on_chat_room_participant_added);
+		linphone_chat_room_cbs_set_participant_removed(_chatRoomCbs, on_chat_room_participant_removed);
+		linphone_chat_room_cbs_set_participant_admin_status_changed(_chatRoomCbs, on_chat_room_participant_admin_status_changed);
+		linphone_chat_room_cbs_set_chat_message_received(_chatRoomCbs, on_chat_room_chat_message_received);
+		linphone_chat_room_cbs_set_chat_message_sent(_chatRoomCbs, on_chat_room_chat_message_sent);
+		linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
+		linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
+		linphone_chat_room_add_callbacks(_chatRoom, _chatRoomCbs);
+	}
 
 	[self updateSuperposedButtons];
 
 	if (_tableController.isEditing)
 		[_tableController setEditing:editing];
-
-	//[[_tableController tableView] reloadData];
 
 	BOOL fileSharingEnabled = linphone_core_get_file_transfer_server(LC) != NULL;
 	[_pictureButton setEnabled:fileSharingEnabled];
