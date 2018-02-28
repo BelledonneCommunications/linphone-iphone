@@ -349,6 +349,12 @@ static void linphone_chat_message_process_response_from_post_file(void *data,
 				file_upload_end_background_task(msg);
 				linphone_chat_message_unref(msg);
 			}
+		} else if (code == 400) {
+			ms_warning("Received HTTP code response %d for file transfer, probably meaning file is too large", code);
+			linphone_chat_message_update_state(msg, LinphoneChatMessageStateFileTransferError);
+			_release_http_request(msg);
+			file_upload_end_background_task(msg);
+			linphone_chat_message_unref(msg);
 		} else {
 			ms_warning("Unhandled HTTP code response %d for file transfer", code);
 			linphone_chat_message_update_state(msg, LinphoneChatMessageStateNotDelivered);
