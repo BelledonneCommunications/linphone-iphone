@@ -462,13 +462,11 @@ static void group_chat_room_creation_server (void) {
 	linphone_core_manager_destroy(chloe);
 }
 
-#if 0
 static void group_chat_room_add_participant (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
 	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
-	
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
@@ -476,29 +474,28 @@ static void group_chat_room_add_participant (void) {
 	coresManagerList = bctbx_list_append(coresManagerList, laure);
 	coresManagerList = bctbx_list_append(coresManagerList, chloe);
 	bctbx_list_t *coresList = init_core_for_conference(coresManagerList);
-	linphone_core_set_linphone_specs(chloe->lc, ""); //disable group chat for chloe
-	
+	linphone_core_set_linphone_specs(chloe->lc, ""); // Disable group chat for Chloe
+
 	start_core_for_conference(coresManagerList);
-	
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(marie->lc)));
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(laure->lc)));
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
 	stats initialLaureStats = laure->stat;
 	stats initialChloeStats = chloe->stat;
-	
+
 	// Pauline creates a new group chat room
 	const char *initialSubject = "Colleagues";
 	LinphoneChatRoom *paulineCr = create_chat_room_client_side(coresList, pauline, &initialPaulineStats, participantsAddresses, initialSubject, -1);
 	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(paulineCr);
-	
+
 	// Check that the chat room is correctly created on Pauline's side and that the participants are added
 	LinphoneChatRoom *marieCr = check_creation_chat_room_client_side(coresList, marie, &initialMarieStats, confAddr, initialSubject, 2, FALSE);
-	
+
 	// Check that the chat room is correctly created on Laure's side and that the participants are added
 	LinphoneChatRoom *laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, FALSE);
-	
-	//to simulate dialog removal for pauline
+
+	// To simulate dialog removal for Pauline
 	linphone_core_set_network_reachable(pauline->lc, FALSE);
 	coresList=bctbx_list_remove(coresList, pauline->lc);
 	linphone_core_manager_reinit(pauline);
@@ -509,45 +506,44 @@ static void group_chat_room_add_participant (void) {
 	linphone_core_manager_start(pauline, TRUE);
 	LinphoneChatRoom *olpaulineCr = paulineCr;
 	paulineCr = linphone_core_get_chat_room(pauline->lc, linphone_chat_room_get_peer_address(olpaulineCr));
-	
+
 	// Pauline adds Chloe to the chat room
 	participantsAddresses = NULL;
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(chloe->lc)));
 	linphone_chat_room_add_participants(paulineCr, participantsAddresses);
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
 	participantsAddresses = NULL;
-	
-	//refused by server because group chat disabled for chloe
+
+	// Refused by server because group chat disabled for Chloe
 	BC_ASSERT_FALSE(wait_for_list(coresList, &marie->stat.number_of_participants_added, initialMarieStats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_FALSE(wait_for_list(coresList, &pauline->stat.number_of_participants_added, initialPaulineStats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_FALSE(wait_for_list(coresList, &laure->stat.number_of_participants_added, initialLaureStats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(laureCr), 2, int, "%d");
-	
+
 	// Pauline begins composing a message
 	linphone_chat_room_compose(paulineCr);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneIsComposingActiveReceived, initialMarieStats.number_of_LinphoneIsComposingActiveReceived + 1, 10000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneIsComposingActiveReceived, initialPaulineStats.number_of_LinphoneIsComposingActiveReceived + 1, 10000));
-	
-	
-	//Now, chloe is upgrading to group chat client
+
+	// Now, Chloe is upgrading to group chat client
 	linphone_core_set_network_reachable(chloe->lc, FALSE);
-	coresList=bctbx_list_remove(coresList, chloe->lc);
+	coresList = bctbx_list_remove(coresList, chloe->lc);
 	linphone_core_manager_reinit(chloe);
 	tmpCoresManagerList = bctbx_list_append(NULL, chloe);
 	init_core_for_conference(tmpCoresManagerList);
 	bctbx_list_free(tmpCoresManagerList);
 	coresList = bctbx_list_append(coresList, chloe->lc);
 	linphone_core_manager_start(chloe, TRUE);
-	
+
 	// Pauline adds Chloe to the chat room
 	participantsAddresses = NULL;
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(chloe->lc)));
 	linphone_chat_room_add_participants(paulineCr, participantsAddresses);
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
 	participantsAddresses = NULL;
-	
+
 	// Check that the chat room is correctly created on Chloe's side and that she was added everywhere
 	LinphoneChatRoom *chloeCr = check_creation_chat_room_client_side(coresList, chloe, &initialChloeStats, confAddr, initialSubject, 3, FALSE);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_participants_added, initialMarieStats.number_of_participants_added + 1, 10000));
@@ -562,12 +558,12 @@ static void group_chat_room_add_participant (void) {
 	linphone_core_manager_delete_chat_room(laure, laureCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 	linphone_core_manager_delete_chat_room(chloe, chloeCr, coresList);
-	
+
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(marie->lc), 0, int,"%i");
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(laure->lc), 0, int,"%i");
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(pauline->lc), 0, int,"%i");
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(chloe->lc), 0, int,"%i");
-	
+
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
 	linphone_core_manager_destroy(marie);
@@ -575,7 +571,6 @@ static void group_chat_room_add_participant (void) {
 	linphone_core_manager_destroy(laure);
 	linphone_core_manager_destroy(chloe);
 }
-#endif
 
 static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
 	if (linphone_chat_message_get_content_type(msg)) {
@@ -2980,7 +2975,7 @@ end:
 
 test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Group chat room creation server", group_chat_room_creation_server, "Server", "LeaksMemory"),
-	//TEST_TWO_TAGS("Add participant", group_chat_room_add_participant, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Add participant", group_chat_room_add_participant, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send message", group_chat_room_send_message, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send encrypted message", group_chat_room_send_message_encrypted, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send invite on a multi register account", group_chat_room_invite_multi_register_account, "Server", "LeaksMemory"),
