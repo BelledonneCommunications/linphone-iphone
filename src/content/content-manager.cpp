@@ -111,7 +111,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 
 	ContentType contentType = ContentType::Multipart;
 	contentType.setParameter("boundary=" + string(MultipartBoundary));
-	content.setContentType(ContentType::Multipart);
+	content.setContentType(contentType);
 
 	return content;
 }
