@@ -4768,6 +4768,7 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 	if (jmessage) {
 		env->DeleteLocalRef(jmessage);
 	}
+	env->DeleteLocalRef(listener);
 }
 
 static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* content, const LinphoneBuffer *buffer) {
@@ -4797,6 +4798,7 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 	if (jmessage) {
 		env->DeleteLocalRef(jmessage);
 	}
+	env->DeleteLocalRef(listener);
 }
 
 static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
@@ -4827,6 +4829,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 
 	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
 	env->DeleteLocalRef(jbuffer);
+	env->DeleteLocalRef(listener);
 	return buffer;
 }
 
