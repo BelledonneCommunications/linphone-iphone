@@ -2169,6 +2169,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 #ifdef __ANDROID__
 	if (system_context)
 		lc->platform_helper = LinphonePrivate::createAndroidPlatformHelpers(lc, system_context);
+#elif TARGET_OS_IPHONE
+	lc->platform_helper = LinphonePrivate::createIosPlatformHelpers(lc, system_context);
 #endif
 	if (lc->platform_helper == NULL)
 		lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);

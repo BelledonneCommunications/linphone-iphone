@@ -125,6 +125,7 @@ set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
 	platform-helpers.cpp
 	android-helpers.cpp
+	ios-helpers.cpp
 )
 if(ANDROID)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX linphonecore_jni.cc)

@@ -58,6 +58,7 @@ public:
 };
 
 PlatformHelpers *createAndroidPlatformHelpers(LinphoneCore *lc, void *system_context);
+PlatformHelpers *createIosPlatformHelpers(LinphoneCore *lc, void *system_context);
 
 }//end of namespace
 
