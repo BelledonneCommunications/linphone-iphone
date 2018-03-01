@@ -435,12 +435,11 @@ class Translator:
 		else:
 			if namespace is None:
 				description = ref.find_root()
-				namespaceObj = description.relatedObject.find_first_ancestor_by_type(abstractapi.Namespace, abstractapi.Class)
-				namespace = namespaceObj.name
-			if namespace.is_prefix_of(ref.relatedObject.name):
-				commonName = namespace
+				namespace = description.relatedObject.find_first_ancestor_by_type(abstractapi.Namespace, abstractapi.Class)
+			if namespace.name.is_prefix_of(ref.relatedObject.name):
+				commonName = namespace.name
 			else:
-				commonName = metaname.Name.find_common_parent(ref.relatedObject.name, namespace)
+				commonName = metaname.Name.find_common_parent(ref.relatedObject.name, namespace.name)
 		return ref.relatedObject.name.translate(self.nameTranslator, recursive=True, topAncestor=commonName)
 	
 	def translate_keyword(self, keyword):
@@ -617,15 +616,21 @@ class SphinxTranslator(Translator):
 			ref=Translator.translate_reference(self, ref, absName=True)
 		)
 
-	def translate_function_reference(self, ref, label=None, namespace=None):
-		paramTypes = []
-		if self.domain != 'c':
-			for arg in ref.relatedObject.args:
-				paramTypes.append(arg._type.translate(self.langTranslator))
+	def translate_function_reference(self, ref, label=None, useNamespace=True, namespace=None):
+		if self.domain == 'csharp':
+			refStr = ref.relatedObject.name.translate(self.nameTranslator, **abstractapi.Translator._namespace_to_name_translator_params(namespace))
+		else:
+			refStr = ref.relatedObject.translate_as_prototype(self.langTranslator,
+				hideArguments=self.domain != 'java',
+				hideArgNames=self.domain == 'java',
+				hideReturnType=True,
+				stripDeclarators=True,
+				namespace=namespace
+			)
 		return ':{tag}:`{label} <{ref}>`'.format(
 			tag=self._sphinx_ref_tag(ref),
 			label=label if label is not None else '{0}()'.format(Translator.translate_reference(self, ref, namespace=namespace)),
-			ref='{0}({1})'.format(Translator.translate_reference(self, ref, absName=True), ', '.join(paramTypes))
+			ref=refStr
 		)
 	
 	def translate_keyword(self, keyword):

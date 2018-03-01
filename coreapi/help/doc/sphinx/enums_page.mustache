@@ -1,7 +1,19 @@
+{{#namespace}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{namespace}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
+{{/namespace}}
+
 {{#enums}}
 {{{sectionName}}}
 
-.. {{#write_declarator}}enum{{/write_declarator}}:: {{{fullName}}}
+{{#isNotJava}}
+	.. {{#write_declarator}}enum{{/write_declarator}}:: {{{fullName}}}
+{{/isNotJava}}
+{{#isJava}}
+.. java:type:: public enum {{{name}}};
+{{/isJava}}
 	
 	{{#briefDesc}}
 	{{#lines}}
@@ -11,10 +23,7 @@
 	
 	{{{selector}}}
 	
-	{{#hasNamespaceDeclarator}}
-	.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{namespace}}}
-	{{/hasNamespaceDeclarator}}
-	
+	{{#isNotJava}}
 	{{#enumerators}}
 	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}{{#value}} = {{{value}}}{{/value}}
 		
@@ -27,4 +36,5 @@
 		{{{selector}}}
 	
 	{{/enumerators}}
+	{{/isNotJava}}
 {{/enums}}

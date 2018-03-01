@@ -162,6 +162,14 @@ class SphinxPage(object):
 	@property
 	def docTranslator(self):
 		return self.lang.docTranslator
+
+	@property
+	def isJava(self):
+		return self.lang.langCode == 'Java'
+
+	@property
+	def isNotJava(self):
+		return not self.isJava
 	
 	def make_chapter(self):
 		return lambda text: RstTools.make_chapter(pystache.render(text, self))
@@ -193,9 +201,7 @@ class SphinxPage(object):
 				link = lang.displayName
 			else:
 				link = ref.translate(lang.docTranslator, label=lang.displayName)
-			
 			links.append(link)
-		
 		return ' '.join(links)
 	
 	@staticmethod
@@ -213,9 +219,10 @@ class IndexPage(SphinxPage):
 
 
 class EnumsPage(SphinxPage):
-	def __init__(self, lang, langs, enums):
+	def __init__(self, lang, langs, api):
 		SphinxPage.__init__(self, lang, langs, 'enums.rst')
-		self._translate_enums(enums)
+		self.namespace = api.namespace.name.translate(lang.nameTranslator) if lang.langCode != 'C' else None
+		self._translate_enums(api.namespace.enums)
 	
 	def _translate_enums(self, enums):
 		self.enums = []
@@ -227,7 +234,6 @@ class EnumsPage(SphinxPage):
 				'enumerators'  : self._translate_enum_values(enum),
 				'selector'    : self._make_selector(enum)
 			}
-			translatedEnum['namespace'] = self._get_translated_namespace(enum) if self.lang.langCode == 'Cpp' else translatedEnum['fullName']
 			translatedEnum['sectionName'] = RstTools.make_section(translatedEnum['name'])
 			self.enums.append(translatedEnum)
 	
@@ -249,7 +255,8 @@ class ClassPage(SphinxPage):
 	def __init__(self, _class, lang, langs):
 		filename = SphinxPage._classname_to_filename(_class.name)
 		SphinxPage.__init__(self, lang, langs, filename)
-		self.namespace = self._get_translated_namespace(_class)
+		namespace = _class.find_first_ancestor_by_type(abstractapi.Namespace)
+		self.namespace = namespace.name.translate(self.lang.nameTranslator, recursive=True)
 		self.className = _class.name.translate(self.lang.nameTranslator)
 		self.fullClassName = _class.name.translate(self.lang.nameTranslator, recursive=True)
 		self.briefDoc = _class.briefDescription.translate(self.docTranslator)
@@ -258,6 +265,10 @@ class ClassPage(SphinxPage):
 		self.methods = self._translate_methods(_class.instanceMethods)
 		self.classMethods = self._translate_methods(_class.classMethods)
 		self.selector = self._make_selector(_class)
+
+	@property
+	def classDeclaration(self):
+		return 'public interface {0}'.format(self.className) if self.lang.langCode == 'Java' else self.className
 	
 	@property
 	def hasMethods(self):
@@ -276,11 +287,12 @@ class ClassPage(SphinxPage):
 		for property_ in properties:
 			propertyAttr = {
 				'name'         : property_.name.translate(self.lang.nameTranslator),
-				'ref_label'    : '{0}_{1}'.format(self.lang.langCode, property_.name.to_snake_case(fullName=True)),
 				'getter'       : self._translate_method(property_.getter) if property_.getter is not None else None,
 				'setter'       : self._translate_method(property_.setter) if property_.setter is not None else None
 			}
 			propertyAttr['title'] = RstTools.make_subsubsection(propertyAttr['name'])
+			propertyAttr['ref_label'] = (self.lang.langCode + '_')
+			propertyAttr['ref_label'] += (property_.getter.name.to_snake_case(fullName=True) if property_.getter is not None else property_.setter.name.to_snake_case(fullName=True))
 			translatedProperties.append(propertyAttr)
 		return translatedProperties
 	
@@ -291,18 +303,16 @@ class ClassPage(SphinxPage):
 		return translatedMethods
 	
 	def _translate_method(self, method):
-		prototypeParams = {}
-		if self.lang.langCode == 'Cpp':
-			prototypeParams['showStdNs'] = True
+		namespace = method.find_first_ancestor_by_type(abstractapi.Class)
 		methAttr = {
-			'prototype'    : method.translate_as_prototype(self.lang.langTranslator, **prototypeParams),
+			'prototype'    : method.translate_as_prototype(self.lang.langTranslator, namespace=namespace),
 			'briefDoc'     : method.briefDescription.translate(self.docTranslator),
 			'detailedDoc'  : method.detailedDescription.translate(self.docTranslator),
 			'selector'     : self._make_selector(method)
 		}
 		reference = metadoc.FunctionReference(None)
 		reference.relatedObject = method
-		methAttr['link'] = reference.translate(self.lang.docTranslator)
+		methAttr['link'] = reference.translate(self.lang.docTranslator, namespace=method.find_first_ancestor_by_type(abstractapi.Class, abstractapi.Interface))
 		return methAttr
 	
 	@property
@@ -331,14 +341,6 @@ class ClassPage(SphinxPage):
 			table.addrow([method['link'], briefDoc])
 		return table
 
-	@property
-	def isJava(self):
-		return self.lang.langCode == 'Java'
-
-	@property
-	def isNotJava(self):
-		return not self.isJava
-
 
 class DocGenerator:
 	def __init__(self, api):
@@ -357,7 +359,7 @@ class DocGenerator:
 			if not os.path.exists(directory):
 				os.mkdir(directory)
 			
-			enumsPage = EnumsPage(lang, self.languages, self.api.namespace.enums)
+			enumsPage = EnumsPage(lang, self.languages, self.api)
 			enumsPage.write(directory)
 			
 			indexPage = IndexPage(lang, self.languages)
