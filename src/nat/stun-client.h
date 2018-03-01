@@ -38,7 +38,7 @@ LINPHONE_BEGIN_NAMESPACE
 class StunClient : public CoreAccessor {
 	struct Candidate {
 		std::string address;
-		int port;
+		int port = 0;
 	};
 
 public:
@@ -67,6 +67,7 @@ private:
 	Candidate audioCandidate;
 	Candidate videoCandidate;
 	Candidate textCandidate;
+	bool stunDiscoveryDone = false;
 };
 
 LINPHONE_END_NAMESPACE
