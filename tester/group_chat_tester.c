@@ -135,7 +135,6 @@ static void configure_core_for_conference (LinphoneCore *core, const char* usern
 	char *factoryUri = linphone_address_as_string(factoryAddr);
 	linphone_core_set_conference_factory_uri(core, factoryUri);
 	bctbx_free(factoryUri);
-	linphone_config_set_int(linphone_core_get_config(core), "sip", "use_cpim", 1);
 	linphone_core_set_linphone_specs(core, "groupchat");
 }
 
