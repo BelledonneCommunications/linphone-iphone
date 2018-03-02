@@ -27,16 +27,12 @@
 LINPHONE_BEGIN_NAMESPACE
 
 namespace Statements {
-	enum Create {
-		CreateConferenceEventView,
-		CreateCount
-	};
-
 	enum Select {
 		SelectSipAddressId,
 		SelectChatRoomId,
 		SelectChatRoomParticipantId,
 		SelectOneToOneChatRoomId,
+		SelectConferenceEvent,
 		SelectConferenceEvents,
 		SelectCount
 	};
@@ -46,8 +42,7 @@ namespace Statements {
 		InsertCount
 	};
 
-	const char *get (Create createStmt, AbstractDb::Backend backend);
-	const char *get (Select selectStmt, AbstractDb::Backend backend);
+	const char *get (Select selectStmt);
 	const char *get (Insert insertStmt, AbstractDb::Backend backend);
 }
 

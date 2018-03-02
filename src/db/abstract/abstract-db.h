@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AbstractDbPrivate;
 
-class LINPHONE_PUBLIC AbstractDb : public Object {
+class AbstractDb : public Object {
 public:
 	enum Backend {
 		Mysql,

@@ -21,9 +21,9 @@
 	#include <TargetConditionals.h>
 #endif // ifdef __APPLE__
 
-#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+#if (TARGET_OS_IPHONE || defined(__ANDROID__))
 	#include <sqlite3.h>
-#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+#endif // if (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 #include "abstract-db-p.h"
 #include "logger/logger.h"
@@ -34,22 +34,20 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+#if (TARGET_OS_IPHONE || defined(__ANDROID__))
 	// Force static sqlite3 linking for IOS and Android.
 	extern "C" void register_factory_sqlite3();
 
 	static void sqlite3Log (void *, int iErrCode, const char *zMsg) {
 		lInfo() << "[sqlite3][" << iErrCode << "]" << zMsg;
 	}
-#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+#endif // if (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 void AbstractDbPrivate::safeInit () {
-	#ifdef SOCI_ENABLED
-		L_Q();
-		dbSession.enableForeignKeys(false);
-		q->init();
-		dbSession.enableForeignKeys(true);
-	#endif // ifdef SOCI_ENABLED
+	L_Q();
+	dbSession.enableForeignKeys(false);
+	q->init();
+	dbSession.enableForeignKeys(true);
 }
 
 AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
@@ -57,7 +55,7 @@ AbstractDb::AbstractDb (AbstractDbPrivate &p) : Object(p) {}
 bool AbstractDb::connect (Backend backend, const string &parameters) {
 	L_D();
 
-	#if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+	#if (TARGET_OS_IPHONE || defined(__ANDROID__))
 		if (backend == Sqlite3) {
 			static bool registered = false;
 			if (!registered) {
@@ -66,7 +64,7 @@ bool AbstractDb::connect (Backend backend, const string &parameters) {
 				sqlite3_config(SQLITE_CONFIG_LOG, sqlite3Log, nullptr);
 			}
 		}
-	#endif // if defined(SOCI_ENABLED) && (TARGET_OS_IPHONE || defined(__ANDROID__))
+	#endif // if (TARGET_OS_IPHONE || defined(__ANDROID__))
 
 	d->backend = backend;
 	d->dbSession = DbSession(
@@ -99,30 +97,28 @@ bool AbstractDb::forceReconnect () {
 		return false;
 	}
 
-	#ifdef SOCI_ENABLED
-		constexpr int retryCount = 2;
-		lInfo() << "Trying sql backend reconnect...";
+	constexpr int retryCount = 2;
+	lInfo() << "Trying sql backend reconnect...";
 
-		try {
-			for (int i = 0; i < retryCount; ++i) {
-				try {
-					lInfo() << "Reconnect... Try: " << i;
-					d->dbSession.getBackendSession()->reconnect(); // Equivalent to close and connect.
-					d->safeInit();
-					lInfo() << "Database reconnection successful!";
-					return true;
-				} catch (const soci::soci_error &e) {
-					if (e.get_error_category() != soci::soci_error::connection_error)
-						throw e;
-				}
+	try {
+		for (int i = 0; i < retryCount; ++i) {
+			try {
+				lInfo() << "Reconnect... Try: " << i;
+				d->dbSession.getBackendSession()->reconnect(); // Equivalent to close and connect.
+				d->safeInit();
+				lInfo() << "Database reconnection successful!";
+				return true;
+			} catch (const soci::soci_error &e) {
+				if (e.get_error_category() != soci::soci_error::connection_error)
+				throw e;
 			}
-		} catch (const exception &e) {
-			lError() << "Unable to reconnect: `" << e.what() << "`.";
-			return false;
 		}
+	} catch (const exception &e) {
+		lError() << "Unable to reconnect: `" << e.what() << "`.";
+		return false;
+	}
 
-		lError() << "Database reconnection failed!";
-	#endif // ifdef SOCI_ENABLED
+	lError() << "Database reconnection failed!";
 
 	return false;
 }

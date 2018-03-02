@@ -1,5 +1,5 @@
 /*
- * db-exception-handler.h
+ * db-transaction.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,20 +17,18 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_DB_EXCEPTION_HANDLER_H_
-#define _L_DB_EXCEPTION_HANDLER_H_
-
-#include <soci/soci.h>
+#ifndef _L_DB_TRANSACTION_H_
+#define _L_DB_TRANSACTION_H_
 
 #include "db/main-db-p.h"
 #include "logger/logger.h"
 
 // =============================================================================
 
-#define L_DB_EXCEPTION_HANDLER_C(CONTEXT) \
-	LinphonePrivate::DbExceptionHandlerInfo().set(__func__, CONTEXT) * [&](SmartTransaction &tr)
+#define L_DB_TRANSACTION_C(CONTEXT) \
+	LinphonePrivate::DbTransactionInfo().set(__func__, CONTEXT) * [&](SmartTransaction &tr)
 
-#define L_DB_EXCEPTION_HANDLER L_DB_EXCEPTION_HANDLER_C(this)
+#define L_DB_TRANSACTION L_DB_TRANSACTION_C(this)
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -68,8 +66,8 @@ private:
 	L_DISABLE_COPY(SmartTransaction);
 };
 
-struct DbExceptionHandlerInfo {
-	DbExceptionHandlerInfo &set (const char *_name, const MainDb *_mainDb) {
+struct DbTransactionInfo {
+	DbTransactionInfo &set (const char *_name, const MainDb *_mainDb) {
 		name = _name;
 		mainDb = const_cast<MainDb *>(_mainDb);
 		return *this;
@@ -80,7 +78,7 @@ struct DbExceptionHandlerInfo {
 };
 
 template<typename Function>
-class DbExceptionHandler {
+class DbTransaction {
 	using InternalReturnType = typename std::remove_reference<
 		decltype(std::declval<Function>()(std::declval<SmartTransaction &>()))
 	>::type;
@@ -92,7 +90,7 @@ public:
 		InternalReturnType
 	>::type;
 
-	DbExceptionHandler (DbExceptionHandlerInfo &info, Function &&function) : mFunction(std::move(function)) {
+	DbTransaction (DbTransactionInfo &info, Function &&function) : mFunction(std::move(function)) {
 		MainDb *mainDb = info.mainDb;
 		const char *name = info.name;
 		soci::session *session = mainDb->getPrivate()->dbSession.getBackendSession();
@@ -122,7 +120,7 @@ public:
 		}
 	}
 
-	DbExceptionHandler (DbExceptionHandler &&dbExceptionHandler) : mFunction(std::move(dbExceptionHandler.mFunction)) {}
+	DbTransaction (DbTransaction &&DbTransaction) : mFunction(std::move(DbTransaction.mFunction)) {}
 
 	operator ReturnType () const {
 		return mResult;
@@ -170,14 +168,14 @@ private:
 	Function mFunction;
 	ReturnType mResult{};
 
-	L_DISABLE_COPY(DbExceptionHandler);
+	L_DISABLE_COPY(DbTransaction);
 };
 
 template<typename Function>
-typename DbExceptionHandler<Function>::ReturnType operator* (DbExceptionHandlerInfo &info, Function &&function) {
-	return DbExceptionHandler<Function>(info, std::forward<Function>(function));
+typename DbTransaction<Function>::ReturnType operator* (DbTransactionInfo &info, Function &&function) {
+	return DbTransaction<Function>(info, std::forward<Function>(function));
 }
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_DB_EXCEPTION_HANDLER_H_
+#endif // ifndef _L_DB_TRANSACTION_H_

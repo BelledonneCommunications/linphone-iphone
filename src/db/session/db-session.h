@@ -20,28 +20,17 @@
 #ifndef _L_DB_SESSION_H_
 #define _L_DB_SESSION_H_
 
-#ifdef SOCI_ENABLED
-	#include <soci/soci.h>
-#endif // ifdef SOCI_ENABLED
+#include <soci/soci.h>
 
-#include "object/clonable-object.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
-
-#ifndef SOCI_ENABLED
-	namespace soci {
-		class row;
-		class session;
-	}
-#endif // ifndef SOCI_ENABLED
 
 LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionPrivate;
 
 class DbSession {
-	friend class DbSessionProvider;
-
 public:
 	DbSession ();
 	explicit DbSession (const std::string &uri);

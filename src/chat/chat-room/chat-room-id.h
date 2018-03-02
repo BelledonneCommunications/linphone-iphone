@@ -50,6 +50,11 @@ private:
 	L_DECLARE_PRIVATE(ChatRoomId);
 };
 
+inline std::ostream &operator<< (std::ostream &os, const ChatRoomId &chatRoomId) {
+	os << "ChatRoomId(" << chatRoomId.getPeerAddress() << ", local=" << chatRoomId.getLocalAddress() << ")";
+	return os;
+}
+
 LINPHONE_END_NAMESPACE
 
 // Add map key support.

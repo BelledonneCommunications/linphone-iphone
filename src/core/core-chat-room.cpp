@@ -162,10 +162,8 @@ shared_ptr<AbstractChatRoom> Core::findChatRoom (const ChatRoomId &chatRoomId) c
 	if (it != d->chatRoomsById.cend())
 		return it->second;
 
-	lInfo() << "Unable to find chat room in RAM: (peer=" <<
-		chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";
-
-	return shared_ptr<ChatRoom>();
+	lInfo() << "Unable to find chat room in RAM: " << chatRoomId << ".";
+	return nullptr;
 }
 
 list<shared_ptr<AbstractChatRoom>> Core::findChatRooms (const IdentityAddress &peerAddress) const {

@@ -106,6 +106,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	core/platform-helpers/platform-helpers.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
+	db/internal/db-transaction.h
+	db/internal/statements.h
 	db/main-db-chat-message-key.h
 	db/main-db-event-key.h
 	db/main-db-key-p.h
@@ -225,6 +227,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	core/paths/paths.cpp
 	core/platform-helpers/platform-helpers.cpp
 	db/abstract/abstract-db.cpp
+	db/internal/statements.cpp
 	db/main-db-chat-message-key.cpp
 	db/main-db-event-key.cpp
 	db/main-db-key.cpp
@@ -284,23 +287,14 @@ elseif (UNIX)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-linux.h)
 endif ()
 
-set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS
+	${BELR_INCLUDE_DIRS}
+	${LIBXSD_INCLUDE_DIRS}
+	${SOCI_INCLUDE_DIRS}
+	${SOCI_MYSQL_INCLUDES}
+)
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
-
-if (SOCI_FOUND)
-	list(APPEND LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES})
-	add_definitions(-DSOCI_ENABLED)
-
-	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
-		db/internal/db-exception-handler.h
-		db/internal/statements.h
-	)
-
-	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES
-		db/internal/statements.cpp
-	)
-endif ()
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
 foreach (header ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES})

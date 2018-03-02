@@ -20,6 +20,8 @@
 #ifndef _L_ADDRESS_H_
 #define _L_ADDRESS_H_
 
+#include <ostream>
+
 #include "enums.h"
 #include "object/clonable-object.h"
 
@@ -106,6 +108,11 @@ public:
 private:
 	L_DECLARE_PRIVATE(Address);
 };
+
+inline std::ostream &operator<< (std::ostream &os, const Address &address) {
+	os << "Address(" << address.asString() << ")";
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 

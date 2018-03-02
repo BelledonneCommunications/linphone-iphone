@@ -43,7 +43,7 @@ class ParticipantDevice;
 
 class MainDb : public AbstractDb, public CoreAccessor {
 	template<typename Function>
-	friend class DbExceptionHandler;
+	friend class DbTransaction;
 
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
@@ -87,8 +87,8 @@ public:
 
 	int getChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	void markChatMessagesAsRead (const ChatRoomId &chatRoomId) const;
+	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
 
 	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
 	ChatMessage::State getChatMessageParticipantState (

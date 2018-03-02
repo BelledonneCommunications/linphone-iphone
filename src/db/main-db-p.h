@@ -22,6 +22,8 @@
 
 #include <unordered_map>
 
+#include "linphone/utils/utils.h"
+
 #include "abstract/abstract-db-p.h"
 #include "event-log/event-log.h"
 #include "main-db.h"
@@ -39,11 +41,17 @@ public:
 
 private:
 	// ---------------------------------------------------------------------------
+	// Misc helpers.
+	// ---------------------------------------------------------------------------
+
+	std::shared_ptr<AbstractChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
+
+	// ---------------------------------------------------------------------------
 	// Low level API.
 	// ---------------------------------------------------------------------------
 
 	long long insertSipAddress (const std::string &sipAddress);
-	void insertContent (long long messageEventId, const Content &content);
+	void insertContent (long long chatMessageId, const Content &content);
 	long long insertContentType (const std::string &contentType);
 	long long insertOrUpdateImportedBasicChatRoom (
 		long long peerSipAddressId,
@@ -53,7 +61,7 @@ private:
 	long long insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	long long insertChatRoomParticipant (long long chatRoomId, long long participantSipAddressId, bool isAdmin);
 	void insertChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
-	void insertChatMessageParticipant (long long messageEventId, long long sipAddressId, int state);
+	void insertChatMessageParticipant (long long chatMessageId, long long sipAddressId, int state);
 
 	long long selectSipAddressId (const std::string &sipAddress) const;
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
@@ -61,7 +69,7 @@ private:
 	long long selectChatRoomParticipantId (long long chatRoomId, long long participantSipAddressId) const;
 	long long selectOneToOneChatRoomId (long long sipAddressIdA, long long sipAddressIdB) const;
 
-	void deleteContents (long long messageEventId);
+	void deleteContents (long long chatMessageId);
 	void deleteChatRoomParticipant (long long chatRoomId, long long participantSipAddressId);
 	void deleteChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
 
@@ -69,68 +77,65 @@ private:
 	// Events API.
 	// ---------------------------------------------------------------------------
 
+	long long getConferenceEventIdFromRow (const soci::row &row) const {
+		return dbSession.resolveId(row, -1);
+	}
+
+	time_t getConferenceEventCreationTimeFromRow (const soci::row &row) const {
+		return Utils::getTmAsTimeT(row.get<tm>(2));
+	}
+
+	unsigned int getConferenceEventNotifyIdFromRow (const soci::row &row) const {
+		L_Q();
+		return q->getBackend() == MainDb::Backend::Mysql
+			? row.get<unsigned int>(10, 0)
+			: static_cast<unsigned int>(row.get<int>(10, 0));
+	}
+
 	std::shared_ptr<EventLog> selectGenericConferenceEvent (
-		long long eventId,
-		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const soci::row &row
+	) const;
+
+	std::shared_ptr<EventLog> selectGenericConferenceNotifiedEvent (
+		const ChatRoomId &chatRoomId,
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceEvent (
-		long long eventId,
+		const ChatRoomId &chatRoomId,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceCallEvent (
-		long long eventId,
+		const ChatRoomId &chatRoomId,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceChatMessageEvent (
-		long long eventId,
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
-	) const;
-
-	// TODO: Remove me. Workaround to increase fetch performance.
-	std::shared_ptr<EventLog> selectConferenceChatMessageEvent (
-		long long eventId,
-		EventLog::Type type,
-		time_t creationTime,
-		std::shared_ptr<AbstractChatRoom> &chatRoom,
-		const std::string &fromSipAddress,
-		const std::string &toSipAddress,
-		const tm &messageTime,
-		const std::string &imdnMessageId,
-		int state,
-		int direction,
-		int isSecured
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceParticipantEvent (
-		long long eventId,
+		const ChatRoomId &chatRoomId,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceParticipantDeviceEvent (
-		long long eventId,
+		const ChatRoomId &chatRoomId,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const soci::row &row
 	) const;
 
 	std::shared_ptr<EventLog> selectConferenceSubjectEvent (
-		long long eventId,
+		const ChatRoomId &chatRoomId,
 		EventLog::Type type,
-		time_t creationTime,
-		const ChatRoomId &chatRoomId
+		const soci::row &row
 	) const;
 
 	long long insertEvent (const std::shared_ptr<EventLog> &eventLog);

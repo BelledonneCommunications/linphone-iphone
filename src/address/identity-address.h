@@ -20,6 +20,8 @@
 #ifndef _L_IDENTITY_ADDRESS_H_
 #define _L_IDENTITY_ADDRESS_H_
 
+#include <ostream>
+
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -64,6 +66,11 @@ public:
 private:
 	L_DECLARE_PRIVATE(IdentityAddress);
 };
+
+inline std::ostream &operator<< (std::ostream &os, const IdentityAddress &identityAddress) {
+	os << "IdentityAddress(" << identityAddress.asString() << ")";
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 
