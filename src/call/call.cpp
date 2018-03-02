@@ -285,6 +285,21 @@ void CallPrivate::onCallSessionStartReferred (const shared_ptr<CallSession> &ses
 
 void CallPrivate::onCallSessionStateChanged (const shared_ptr<CallSession> &session, CallSession::State state, const string &message) {
 	L_Q();
+	switch(state){
+		case CallSession::State::OutgoingInit:
+		case CallSession::State::IncomingReceived:
+			getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
+			getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
+			getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
+			break;
+		case CallSession::State::Released:
+			getPlatformHelpers(q->getCore()->getCCore())->releaseWifiLock();
+			getPlatformHelpers(q->getCore()->getCCore())->releaseMcastLock();
+			getPlatformHelpers(q->getCore()->getCCore())->releaseCpuLock();
+			break;
+		default:
+			break;
+	}
 	linphone_call_notify_state_changed(L_GET_C_BACK_PTR(q), static_cast<LinphoneCallState>(state), message.c_str());
 }
 

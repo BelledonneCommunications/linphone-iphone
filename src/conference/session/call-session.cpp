@@ -86,12 +86,6 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 		}
 
 		switch (newState) {
-			case CallSession::State::OutgoingInit:
-			case CallSession::State::IncomingReceived:
-				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
-				break;
 			case CallSession::State::End:
 			case CallSession::State::Error:
 				switch (linphone_error_info_get_reason(q->getErrorInfo())) {
@@ -128,11 +122,6 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 			case CallSession::State::Connected:
 				log->status = LinphoneCallSuccess;
 				log->connected_date_time = ms_time(nullptr);
-				break;
-			case CallSession::State::Released:
-				getPlatformHelpers(q->getCore()->getCCore())->releaseWifiLock();
-				getPlatformHelpers(q->getCore()->getCCore())->releaseMcastLock();
-				getPlatformHelpers(q->getCore()->getCCore())->releaseCpuLock();
 				break;
 			default:
 				break;
