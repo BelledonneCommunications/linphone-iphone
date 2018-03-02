@@ -2208,8 +2208,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
 		  pushBgTaskCall = 0;
 		}];
-		LOGI(@"Call long running task started for call-id [%@], remaining [%g s] because a push has been received",
-			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+		LOGI(@"Call long running task started for call-id [%@], remaining [%@ s] because a push has been received",
+			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 	} else if ([loc_key isEqualToString:@"IC_SIL"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
 		pushBgTaskRefer = 0;
@@ -2225,8 +2225,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
 			pushBgTaskRefer = 0;
 		}];
-		LOGI(@"Refer long running task started for call-id [%@], remaining [%g s] because a push has been received",
-			 callId, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+		LOGI(@"Refer long running task started for call-id [%@], remaining [%@ s] because a push has been received",
+			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 	}
 }
 

@@ -76,6 +76,8 @@
 + (NSString *) intervalToString:(NSTimeInterval)interval {
 	NSDateComponentsFormatter *formatter = [[NSDateComponentsFormatter alloc] init];
 	formatter.allowedUnits = NSCalendarUnitSecond;
+	formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleAbbreviated;
+	formatter.zeroFormattingBehavior = NSDateComponentsFormatterZeroFormattingBehaviorDropAll;
 	return [formatter stringFromTimeInterval:interval];
 }
 
