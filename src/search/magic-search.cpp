@@ -137,7 +137,7 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 
 	if (getLimitedSearch() && returnList.size() > getSearchLimit()) {
 		auto limitIterator = returnList.begin();
-		advance(limitIterator, getSearchLimit());
+		advance(limitIterator, (int)getSearchLimit());
 		returnList.erase(limitIterator, returnList.end());
 	}
 
