@@ -121,7 +121,7 @@ LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache(LinphoneMagicSearc
  * Create a sorted list of SearchResult from SipUri, Contact name,
  * Contact displayname, Contact phone number, which match with a filter word
  * The last item list will be an address formed with "filter" if a proxy config exist
- * During the first search, a cache is created and used for the next search and so on
+ * During the first search, a cache is created and used for the next search
  * Use linphone_magic_search_reset_search_cache() to begin a new search
  * @param[in] filter word we search
  * @param[in] withDomain domain which we want to search only

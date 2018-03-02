@@ -116,15 +116,14 @@ void MagicSearch::resetSearchCache() {
 
 list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, const string &withDomain) {
 	list<SearchResult> *resultList;
+	list<SearchResult> returnList;
 	LinphoneProxyConfig *proxy = nullptr;
 
 	if (filter.empty()) return list<SearchResult>();
 
-	// We begin a new search if the last result size is superior or equal of the search limit size
-	if (getSearchCache() != nullptr &&
-		(getLimitedSearch() && getSearchLimit() > getSearchCache()->size())
-	) {
+	if (getSearchCache() != nullptr) {
 		resultList = continueSearch(filter, withDomain);
+		resetSearchCache();
 	} else {
 		resultList = beginNewSearch(filter, withDomain);
 	}
@@ -133,6 +132,15 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 		return (!rsr.getFriend() && lsr.getFriend()) || lsr >= rsr;
 	});
 
+	setSearchCache(resultList);
+	returnList = *resultList;
+
+	if (getLimitedSearch() && returnList.size() > getSearchLimit()) {
+		auto limitIterator = returnList.begin();
+		advance(limitIterator, getSearchLimit());
+		returnList.erase(limitIterator, returnList.cend());
+	}
+
 	proxy = linphone_core_get_default_proxy_config(this->getCore()->getCCore());
 	// Adding last item if proxy exist
 	if (proxy) {
@@ -140,12 +148,11 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 		if (domain) {
 			string filterAddress = "sip:" + filter + "@" + domain;
 			LinphoneAddress *lastResult = linphone_core_create_address(this->getCore()->getCCore(), filterAddress.c_str());
-			if (lastResult) resultList->push_back(SearchResult(0, lastResult, nullptr));
+			if (lastResult) returnList.push_back(SearchResult(0, lastResult, nullptr));
 		}
 	}
-	setSearchCache(resultList);
 
-	return *resultList;
+	return returnList;
 }
 
 /////////////////////
@@ -169,10 +176,7 @@ list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const stri
 	const bctbx_list_t *callLog = linphone_core_get_call_logs(this->getCore()->getCCore());
 
 	// For all friends or when we reach the search limit
-	for (bctbx_list_t *f = list->friends;
-		 f != nullptr && (!getLimitedSearch() || resultList->size() < getSearchLimit());
-		 f = bctbx_list_next(f)
-	) {
+	for (bctbx_list_t *f = list->friends ; f != nullptr ; f = bctbx_list_next(f)) {
 		SearchResult result = searchInFriend(reinterpret_cast<LinphoneFriend*>(f->data), filter, withDomain);
 		if (result.getWeight() > getMinWeight()) {
 			resultList->push_back(result);
@@ -180,10 +184,7 @@ list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const stri
 	}
 
 	// For all call log or when we reach the search limit
-	for (const bctbx_list_t *f = callLog;
-		f != nullptr && (!getLimitedSearch() || resultList->size() < getSearchLimit());
-		f = bctbx_list_next(f)
-	) {
+	for (const bctbx_list_t *f = callLog ; f != nullptr ; f = bctbx_list_next(f)) {
 		LinphoneCallLog *log = reinterpret_cast<LinphoneCallLog*>(f->data);
 		const LinphoneAddress *addr = (linphone_call_log_get_dir(log) == LinphoneCallDir::LinphoneCallIncoming) ?
 			linphone_call_log_get_from_address(log) : linphone_call_log_get_to_address(log);
@@ -269,7 +270,7 @@ unsigned int MagicSearch::getWeight(const string &stringWords, const string &fil
 	for (size_t w = stringWords.find(filter);
 		 w != string::npos;
 		 w = stringWords.find(filter, w + filter.length())
-		) {
+	) {
 		// weight max if occurence find at beginning
 		if (w == 0) {
 			weight = getMaxWeight();
