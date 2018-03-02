@@ -36,6 +36,8 @@ class ParticipantDevice;
 
 class ServerGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
+	void setState (ChatRoom::State state) override;
+
 	std::shared_ptr<Participant> addParticipant (const IdentityAddress &participantAddress);
 	void removeParticipant (const std::shared_ptr<const Participant> &participant);
 
@@ -98,6 +100,7 @@ private:
 		CallSession::State newState,
 		const std::string &message
 	) override;
+	void onCallSessionSetReleased (const std::shared_ptr<CallSession> &session) override;
 
 	std::list<std::shared_ptr<Participant>> filteredParticipants;
 	ChatRoomListener *chatRoomListener = this;

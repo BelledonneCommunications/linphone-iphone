@@ -28,6 +28,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+void ServerGroupChatRoomPrivate::setState (ChatRoom::State state) {
+	ChatRoomPrivate::setState(state);
+}
+
 shared_ptr<Participant> ServerGroupChatRoomPrivate::addParticipant (const IdentityAddress &) {
 	return nullptr;
 }
@@ -123,6 +127,8 @@ void ServerGroupChatRoomPrivate::onCallSessionStateChanged (
 	CallSession::State,
 	const string &
 ) {}
+
+void ServerGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<CallSession> &session) {}
 
 // =============================================================================
 
