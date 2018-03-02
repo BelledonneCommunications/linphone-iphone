@@ -184,11 +184,28 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 	L_D();
 	for (const auto &chatRoom : d->chatRooms) {
 		const IdentityAddress &curLocalAddress = chatRoom->getLocalAddress();
+		ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
+
+		// We are looking fo a one to one chatroom
+		// Do not return a group chat room that everyone except one person has left
+		if (!(capabilities & ChatRoom::Capabilities::OneToOne))
+			continue;
+
+		// One to one client group chat room
+		// The only participant's address must match the participantAddress argument
 		if (
-			chatRoom->getParticipantCount() == 1 && (
-				(curLocalAddress == localAddress && participantAddress == chatRoom->getParticipants().front()->getAddress()) ||
-				(curLocalAddress == localAddress.getAddressWithoutGruu() && chatRoom->getPeerAddress() == participantAddress)
-			)
+			localAddress == curLocalAddress &&
+			participantAddress.getAddressWithoutGruu() == chatRoom->getParticipants().front()->getAddress() &&
+			(capabilities & ChatRoom::Capabilities::Conference)
+		)
+			return chatRoom;
+
+		// One to one basic chat room (addresses without gruu)
+		// The peer address must match the participantAddress argument
+		if (
+			localAddress.getAddressWithoutGruu() == curLocalAddress.getAddressWithoutGruu() &&
+			participantAddress.getAddressWithoutGruu() == chatRoom->getPeerAddress().getAddressWithoutGruu() &&
+			(capabilities & ChatRoom::Capabilities::Basic)
 		)
 			return chatRoom;
 	}
