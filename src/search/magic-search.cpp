@@ -138,7 +138,7 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 	if (getLimitedSearch() && returnList.size() > getSearchLimit()) {
 		auto limitIterator = returnList.begin();
 		advance(limitIterator, getSearchLimit());
-		returnList.erase(limitIterator, returnList.cend());
+		returnList.erase(limitIterator, returnList.end());
 	}
 
 	proxy = linphone_core_get_default_proxy_config(this->getCore()->getCCore());
