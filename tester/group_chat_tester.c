@@ -1580,7 +1580,6 @@ static void group_chat_room_reinvited_after_removed_while_offline_2 (void) {
 	group_chat_room_reinvited_after_removed_base(TRUE, TRUE);
 }
 
-#if 0
 static void group_chat_room_reinvited_after_removed_with_several_devices (void) {
 	LinphoneCoreManager *marie1 = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *marie2 = linphone_core_manager_create("marie_rc");
@@ -1635,6 +1634,7 @@ static void group_chat_room_reinvited_after_removed_with_several_devices (void) 
 	LinphoneChatRoom *marie2Cr = check_creation_chat_room_client_side(coresList, marie2, &initialMarie2Stats, confAddr, initialSubject, 1, TRUE);
 
 	// Marie2 adds Pauline back to the chat room
+	initialPauline1Stats = pauline1->stat;
 	participantsAddresses = bctbx_list_append(participantsAddresses, paulineAddr);
 	linphone_chat_room_add_participants(marie2Cr, participantsAddresses);
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
@@ -1642,14 +1642,10 @@ static void group_chat_room_reinvited_after_removed_with_several_devices (void) 
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie1->stat.number_of_participants_added, initialMarie1Stats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie2->stat.number_of_participants_added, initialMarie2Stats.number_of_participants_added + 1, 1000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_participants_added, initialLaureStats.number_of_participants_added + 1, 1000));
-	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
-	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 1, 5000));
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marie1Cr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marie2Cr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(laureCr), 2, int, "%d");
-	paulineAddr = linphone_address_new(linphone_core_get_device_identity(pauline1->lc));
-	LinphoneChatRoom *newPauline1Cr = linphone_core_find_chat_room(pauline1->lc, confAddr, paulineAddr);
-	linphone_address_unref(paulineAddr);
+	LinphoneChatRoom *newPauline1Cr = check_creation_chat_room_client_side(coresList, pauline1, &initialPauline1Stats, confAddr, initialSubject, 2, FALSE);
 	BC_ASSERT_PTR_EQUAL(newPauline1Cr, pauline1Cr);
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(newPauline1Cr), 2, int, "%d");
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(newPauline1Cr), initialSubject);
@@ -1669,7 +1665,6 @@ static void group_chat_room_reinvited_after_removed_with_several_devices (void) 
 	linphone_core_manager_destroy(pauline2);
 	linphone_core_manager_destroy(laure);
 }
-#endif
 
 static void group_chat_room_notify_after_disconnection (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
@@ -3082,7 +3077,7 @@ test_t group_chat_tests[] = {
 	TEST_TWO_TAGS("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room while offline", group_chat_room_reinvited_after_removed_while_offline, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Reinvited after removed from group chat room while offline 2", group_chat_room_reinvited_after_removed_while_offline_2, "Server", "LeaksMemory"),
-	//TEST_TWO_TAGS("Reinvited after removed from group chat room with several devices", group_chat_room_reinvited_after_removed_with_several_devices, "Server", "LeaksMemory"),
+	TEST_TWO_TAGS("Reinvited after removed from group chat room with several devices", group_chat_room_reinvited_after_removed_with_several_devices, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Notify after disconnection", group_chat_room_notify_after_disconnection, "Server", "LeaksMemory"),
 	TEST_TWO_TAGS("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices, "Server", "LeaksMemory"),
 	// TODO: Use when we support adding a new device in created conf
