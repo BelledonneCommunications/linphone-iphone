@@ -45,6 +45,12 @@ void IceAgent::checkSession (IceRole role, bool isReinvite) {
 		return;
 
 	LinphoneConfig *config = linphone_core_get_config(mediaSession.getCore()->getCCore());
+	
+	if (lp_config_get_int(config, "net", "force_ice_disablement", 0)){
+		lWarning()<<"ICE is disabled in this version";
+		return;
+	}
+	
 	if (isReinvite && (lp_config_get_int(config, "net", "allow_late_ice", 0) == 0))
 		return;
 
