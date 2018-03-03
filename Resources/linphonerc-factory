@@ -27,6 +27,7 @@ password_length=-1
 username_length=-1
 
 [net]
+force_ice_disablement=1
 download_bw=0
 upload_bw=0
 
@@ -43,7 +44,7 @@ tcp_tls_keepalive=30000
 #by default it is set to 30 by liblinphone
 history_max_size=-1
 conference_factory_uri=sip:conference-factory@sip.linphone.org
-enable_basic_to_client_group_chat_room_migration=1
+enable_basic_to_client_group_chat_room_migration=0
 
 [sound]
 dtmf_player_amp=0.007
