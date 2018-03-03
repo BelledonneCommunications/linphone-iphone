@@ -105,6 +105,7 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 }
 
 - (void)loadData {
+	if (_data) bctbx_list_free(_data);
 	_data = [self sortChatRooms];
 	[super loadData];
 

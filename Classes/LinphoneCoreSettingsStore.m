@@ -491,7 +491,7 @@
 	BOOL use_avpf = [self boolForKey:@"account_avpf_preference"];
 	BOOL is_default = [self boolForKey:@"account_is_default_preference"];
 	BOOL is_enabled = [self boolForKey:@"account_is_enabled_preference"];
-	BOOL use_ise = [self boolForKey:@"account_ice_preference"];
+	BOOL use_ice = [self boolForKey:@"account_ice_preference"];
 	NSString *stun_preference = [self stringForKey:@"account_stun_preference"];
 
 	if (username && [username length] > 0 && domain && [domain length] > 0) {
@@ -568,7 +568,8 @@
 		}
 
 		LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxyCfg) ?: linphone_core_create_nat_policy(LC);
-		linphone_nat_policy_enable_ice(policy, use_ise);
+		linphone_nat_policy_enable_stun(policy, use_ice); /*we always use STUN with ICE*/
+		linphone_nat_policy_enable_ice(policy, use_ice);
 		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
 		linphone_proxy_config_set_nat_policy(proxyCfg, policy);
 
