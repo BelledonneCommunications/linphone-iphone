@@ -5880,6 +5880,22 @@ static void call_with_ice_without_stun2(void){
 	linphone_core_manager_destroy(pauline);
 }
 
+#if 0
+static void call_with_ice_stun_not_responding(void){
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	/*set dummy stun servers*/
+	linphone_core_set_stun_server(marie->lc, "belledonne-communications.com:443");
+	linphone_core_set_stun_server(pauline->lc, "belledonne-communications.com:443");
+	/*we expect ICE to continue without stun candidates*/
+	_call_with_ice_base(marie, pauline, TRUE, TRUE, TRUE, FALSE);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+#endif
+
 static void call_with_zrtp_configured_calling_side(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -6490,6 +6506,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server one side", call_with_ice_without_stun2, "ICE"),
+	/*TEST_ONE_TAG("Call with ICE and stun server not responding", call_with_ice_stun_not_responding, "ICE"),*/
 	TEST_NO_TAG("Call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
 	TEST_NO_TAG("Call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side),
 	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),

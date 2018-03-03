@@ -185,6 +185,17 @@ void linphone_nat_policy_set_stun_server(LinphoneNatPolicy *policy, const char *
 	if (new_stun_server != NULL) {
 		policy->stun_server = new_stun_server;
 	}
+	if (policy->stun_addrinfo) {
+		bctbx_freeaddrinfo(policy->stun_addrinfo);
+		policy->stun_addrinfo = NULL;
+	}
+	if (policy->stun_resolver_context){
+		belle_sip_resolver_context_cancel(policy->stun_resolver_context);
+		belle_sip_object_unref(policy->stun_resolver_context);
+		policy->stun_resolver_context = NULL;
+		
+	}
+	linphone_nat_policy_resolve_stun_server(policy);
 }
 
 const char * linphone_nat_policy_get_stun_server_username(const LinphoneNatPolicy *policy) {
