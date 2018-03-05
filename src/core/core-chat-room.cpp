@@ -199,19 +199,19 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 		// One to one client group chat room
 		// The only participant's address must match the participantAddress argument
 		if (
+			(capabilities & ChatRoom::Capabilities::Conference) &&
+			!chatRoom->getParticipants().empty() &&
 			localAddress == curLocalAddress &&
-			! chatRoom->getParticipants().empty() &&
-			participantAddress.getAddressWithoutGruu() == chatRoom->getParticipants().front()->getAddress() &&
-			(capabilities & ChatRoom::Capabilities::Conference)
+			participantAddress.getAddressWithoutGruu() == chatRoom->getParticipants().front()->getAddress()
 		)
 			return chatRoom;
 
 		// One to one basic chat room (addresses without gruu)
 		// The peer address must match the participantAddress argument
 		if (
+			(capabilities & ChatRoom::Capabilities::Basic) &&
 			localAddress.getAddressWithoutGruu() == curLocalAddress.getAddressWithoutGruu() &&
-			participantAddress.getAddressWithoutGruu() == chatRoom->getPeerAddress().getAddressWithoutGruu() &&
-			(capabilities & ChatRoom::Capabilities::Basic)
+			participantAddress.getAddressWithoutGruu() == chatRoom->getPeerAddress().getAddressWithoutGruu()
 		)
 			return chatRoom;
 	}
