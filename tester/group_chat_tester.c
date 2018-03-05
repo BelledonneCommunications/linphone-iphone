@@ -262,7 +262,8 @@ static LinphoneChatRoom * check_creation_chat_room_client_side(bctbx_list_t *lcs
 		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(chatRoom), participantNumber, int, "%d");
 		LinphoneParticipant *participant = linphone_chat_room_get_me(chatRoom);
 		BC_ASSERT_PTR_NOT_NULL(participant);
-		BC_ASSERT(isAdmin == linphone_participant_is_admin(participant));
+		if (!(linphone_chat_room_get_capabilities(chatRoom) & LinphoneChatRoomCapabilitiesOneToOne))
+			BC_ASSERT(isAdmin == linphone_participant_is_admin(participant));
 		BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(chatRoom), subject);
 	}
 	return chatRoom;
