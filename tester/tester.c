@@ -517,7 +517,7 @@ void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr) {
 }
 
 void linphone_core_manager_destroy(LinphoneCoreManager* mgr) {
-	if (!linphone_core_is_network_reachable(mgr->lc)) {
+	if (mgr->lc && !linphone_core_is_network_reachable(mgr->lc)) {
 		int previousNbRegistrationOk = mgr->stat.number_of_LinphoneRegistrationOk;
 		linphone_core_set_network_reachable(mgr->lc, TRUE);
 		wait_for_until(mgr->lc, NULL, &mgr->stat.number_of_LinphoneRegistrationOk, previousNbRegistrationOk + 1, 2000);
