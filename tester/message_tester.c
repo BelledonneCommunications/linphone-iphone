@@ -891,6 +891,7 @@ static void _is_composing_notification(bool_t lime_enabled) {
 
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "deliver_imdn", 1);
 
 	if (lime_enabled) {
 		if (enable_lime_for_message_test(marie, pauline) < 0) goto end;
@@ -900,15 +901,42 @@ static void _is_composing_notification(bool_t lime_enabled) {
 	marie_chat_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 	linphone_core_get_chat_room(marie->lc, pauline->identity); /*make marie create the chatroom with pauline, which is necessary for receiving the is-composing*/
 	linphone_chat_room_compose(pauline_chat_room);
-	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 1500); /*just to sleep while iterating*/
-	linphone_chat_room_send_message(pauline_chat_room, "Composing a msg");
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, 1));
 	composing_addresses = linphone_chat_room_get_composing_addresses(marie_chat_room);
 	BC_ASSERT_GREATER(bctbx_list_size(composing_addresses), 0, int, "%i");
 	if (bctbx_list_size(composing_addresses) > 0) {
 		LinphoneAddress *addr = (LinphoneAddress *)bctbx_list_get_data(composing_addresses);
-		BC_ASSERT_STRING_EQUAL(linphone_address_as_string(addr), linphone_address_as_string(pauline->identity));
+		char *address_string = linphone_address_as_string(addr);
+		char *pauline_address = linphone_address_as_string(pauline->identity);
+		BC_ASSERT_STRING_EQUAL(address_string, pauline_address);
+		bctbx_free(address_string);
+		bctbx_free(pauline_address);
 	}
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+	LinphoneChatMessage *is_composing_msg = marie->stat.last_received_chat_message;
+	if (BC_ASSERT_PTR_NOT_NULL(is_composing_msg)) {
+		const char *expires = linphone_chat_message_get_custom_header(is_composing_msg, "Expires");
+		if (BC_ASSERT_PTR_NOT_NULL(expires))
+			BC_ASSERT_STRING_EQUAL(expires, "0");
+
+		const char *priority = linphone_chat_message_get_custom_header(is_composing_msg, "Priority");
+		if (BC_ASSERT_PTR_NOT_NULL(priority))
+			BC_ASSERT_STRING_EQUAL(priority, "non-urgent");
+	}
+	wait_for_until(pauline->lc, marie->lc, &dummy, 1, 1500); /*just to sleep while iterating*/
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 1));
+	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 2));
+	is_composing_msg = marie->stat.last_received_chat_message;
+	if (BC_ASSERT_PTR_NOT_NULL(is_composing_msg)) {
+		const char *expires = linphone_chat_message_get_custom_header(is_composing_msg, "Expires");
+		if (BC_ASSERT_PTR_NOT_NULL(expires))
+			BC_ASSERT_STRING_EQUAL(expires, "0");
+
+		const char *priority = linphone_chat_message_get_custom_header(is_composing_msg, "Priority");
+		if (BC_ASSERT_PTR_NOT_NULL(priority))
+			BC_ASSERT_STRING_EQUAL(priority, "non-urgent");
+	}
+	linphone_chat_room_send_message(pauline_chat_room, "Composing a msg");
 	BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingIdleReceived, 2));
 	composing_addresses = linphone_chat_room_get_composing_addresses(marie_chat_room);
 	BC_ASSERT_EQUAL(bctbx_list_size(composing_addresses), 0, int, "%i");
@@ -933,6 +961,7 @@ static void is_composing_notification_with_lime(void) {
 static void _imdn_notifications(bool_t with_lime) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "deliver_imdn", 1);
 	LinphoneChatRoom *pauline_chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
 	LinphoneChatRoom *marie_chat_room;
 	LinphoneChatMessage *sent_cm;
@@ -959,8 +988,22 @@ static void _imdn_notifications(bool_t with_lime) {
 		BC_ASSERT_PTR_NOT_NULL(received_cm);
 		if (received_cm != NULL) {
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDeliveredToUser, 1));
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
+			LinphoneChatMessage *imdn_message = pauline->stat.last_received_chat_message;
+			if (BC_ASSERT_PTR_NOT_NULL(imdn_message)) {
+				const char *priority = linphone_chat_message_get_custom_header(imdn_message, "Priority");
+				if (BC_ASSERT_PTR_NOT_NULL(priority))
+					BC_ASSERT_STRING_EQUAL(priority, "non-urgent");
+			}
 			linphone_chat_room_mark_as_read(marie_chat_room); /* This sends the display notification */
 			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageDisplayed, 1));
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 2));
+			imdn_message = pauline->stat.last_received_chat_message;
+			if (BC_ASSERT_PTR_NOT_NULL(imdn_message)) {
+				const char *priority = linphone_chat_message_get_custom_header(imdn_message, "Priority");
+				if (BC_ASSERT_PTR_NOT_NULL(priority))
+					BC_ASSERT_STRING_EQUAL(priority, "non-urgent");
+			}
 			bctbx_list_free_with_data(history, (bctbx_list_free_func)linphone_chat_message_unref);
 		}
 	}
