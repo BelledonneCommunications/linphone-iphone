@@ -195,6 +195,7 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 		// The only participant's address must match the participantAddress argument
 		if (
 			localAddress == curLocalAddress &&
+			! chatRoom->getParticipants().empty() &&
 			participantAddress.getAddressWithoutGruu() == chatRoom->getParticipants().front()->getAddress() &&
 			(capabilities & ChatRoom::Capabilities::Conference)
 		)
