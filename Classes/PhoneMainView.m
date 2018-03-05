@@ -876,6 +876,27 @@ static RootViewManager *rootViewManagerInstance = nil;
 }
 
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
+	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))) {
+		// If there's no factory uri, create a basic chat room
+		if (bctbx_list_size(addresses) != 1) {
+			// Display Error: unsuported group chat
+			UIAlertController *errView =
+			[UIAlertController alertControllerWithTitle:NSLocalizedString(@"Conversation creation error", nil)
+												message:NSLocalizedString(@"Group conversation is not supported.", nil)
+										 preferredStyle:UIAlertControllerStyleAlert];
+
+			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+																	style:UIAlertActionStyleDefault
+																  handler:^(UIAlertAction *action) {}];
+			[errView addAction:defaultAction];
+			[self presentViewController:errView animated:YES completion:nil];
+			return;
+		}
+		LinphoneChatRoom *basicRoom = linphone_core_get_chat_room(LC, addresses->data);
+		[self goToChatRoom:basicRoom];
+		return;
+	}
+
 	_waitView = waitView;
 	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT);

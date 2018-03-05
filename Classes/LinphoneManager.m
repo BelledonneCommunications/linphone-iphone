@@ -435,6 +435,19 @@ static int check_should_migrate_images(void *data, int argc, char **argv, char *
 		linphone_core_set_file_transfer_server(LC, newURL);
 		[self lpConfigSetBool:TRUE forKey:@"file_transfer_migration_done"];
 	}
+	const bctbx_list_t * proxies = linphone_core_get_proxy_config_list(LC);
+	NSString *appDomain  = [LinphoneManager.instance lpConfigStringForKey:@"domain_name"
+																inSection:@"app"
+															  withDefault:@"sip.linphone.org"];
+	while (proxies) {
+		LinphoneProxyConfig *config = proxies->data;
+		if (!linphone_proxy_config_get_conference_factory_uri(config)) {
+			if (strcmp(appDomain.UTF8String, linphone_proxy_config_get_domain(config)) == 0) {
+				linphone_proxy_config_set_conference_factory_uri(config, "sip:conference-factory@sip.linphone.org");
+			}
+		}
+		proxies = proxies->next;
+	}
 }
 
 static void migrateWizardToAssistant(const char *entry, void *user_data) {

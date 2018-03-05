@@ -135,8 +135,17 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	UIChatCreateCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+
+	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))) {
+		// Create directly a basic chat room if there's no factory uri
+		bctbx_list_t *addresses = NULL;
+		addresses = bctbx_list_append(addresses, (void *)cell.addressLabel.text.UTF8String);
+		[PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL];
+		return;
+	}
+
+	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	NSInteger index = 0;
 	_searchBar.text = @"";
 	[self searchBar:_searchBar textDidChange:@""];
