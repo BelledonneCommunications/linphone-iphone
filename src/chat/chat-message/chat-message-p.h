@@ -160,7 +160,10 @@ private:
 	bool isSecured = false;
 	mutable bool isReadOnly = false;
 	Content internalContent;
+
+	// TODO: to replace salCustomheaders
 	std::unordered_map<std::string, std::string> customHeaders;
+
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
 	SalOp *salOp = nullptr;
 	SalCustomHeader *salCustomHeaders = nullptr;

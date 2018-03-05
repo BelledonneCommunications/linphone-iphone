@@ -25,6 +25,7 @@
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
+#include "sip-tools/sip-headers.h"
 
 // =============================================================================
 
@@ -50,7 +51,7 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 	dChatMessage->setTime(ms_time(0));
 	dChatMessage->send();
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);	
+	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
 	// TODO: server currently don't stock message, remove condition in the future.
 	if (!linphone_core_conference_server_enabled(q->getCore()->getCCore())) {
 		shared_ptr<ConferenceChatMessageEvent> event = static_pointer_cast<ConferenceChatMessageEvent>(
@@ -71,18 +72,23 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 void ChatRoomPrivate::sendIsComposingNotification () {
 	L_Q();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
-	if (linphone_im_notif_policy_get_send_is_composing(policy)) {
-		string payload = isComposingHandler->marshal(isComposing);
-		if (!payload.empty()) {
-			shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
-			chatMessage->setToBeStored(false);
-			Content *content = new Content();
-			content->setContentType(ContentType::ImIsComposing);
-			content->setBody(payload);
-			chatMessage->addContent(*content);
-			chatMessage->getPrivate()->send();
-		}
-	}
+	if (!linphone_im_notif_policy_get_send_is_composing(policy))
+		return;
+
+	string payload = isComposingHandler->marshal(isComposing);
+	if (payload.empty())
+		return;
+
+	Content *content = new Content();
+	content->setContentType(ContentType::ImIsComposing);
+	content->setBody(payload);
+
+	shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
+	chatMessage->setToBeStored(false);
+	chatMessage->addContent(*content);
+	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
+
+	chatMessage->getPrivate()->send();
 }
 
 // -----------------------------------------------------------------------------

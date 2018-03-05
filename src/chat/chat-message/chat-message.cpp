@@ -40,6 +40,7 @@
 #include "core/core-p.h"
 #include "logger/logger.h"
 #include "chat/notification/imdn.h"
+#include "sip-tools/sip-headers.h"
 
 #include "ortp/b64.h"
 
@@ -402,7 +403,9 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 
 	if (reason != LinphoneReasonNone)
 		msg->getPrivate()->setEncryptionPrevented(true);
+
 	msg->setToBeStored(false);
+	msg->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
 
 	msg->getPrivate()->send();
 }

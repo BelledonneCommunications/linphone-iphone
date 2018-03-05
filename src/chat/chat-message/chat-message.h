@@ -100,6 +100,7 @@ public:
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
 
+	// TODO: to replace salCustomheaders
 	std::string getCustomHeaderValue (const std::string &headerName) const;
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
