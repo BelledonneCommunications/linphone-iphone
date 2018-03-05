@@ -87,6 +87,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	chatMessage->setToBeStored(false);
 	chatMessage->addContent(*content);
 	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
+	chatMessage->getPrivate()->addSalCustomHeader("Expires", "0");
 
 	chatMessage->getPrivate()->send();
 }
