@@ -133,7 +133,8 @@ static void configure_core_for_conference (LinphoneCore *core, const char* usern
 	bctbx_free(newIdentity);
 	linphone_core_enable_conference_server(core, server);
 	char *factoryUri = linphone_address_as_string(factoryAddr);
-	linphone_core_set_conference_factory_uri(core, factoryUri);
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(core);
+	linphone_proxy_config_set_conference_factory_uri(proxy, factoryUri);
 	bctbx_free(factoryUri);
 	linphone_core_set_linphone_specs(core, "groupchat");
 }
@@ -2264,11 +2265,12 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 	// Enable chat room migration and restart core for Marie
 	_linphone_chat_room_enable_migration(marieCr, TRUE);
 	coresList = bctbx_list_remove(coresList, marie->lc);
-	linphone_core_manager_restart(marie, TRUE);
+	linphone_core_manager_reinit(marie);
 	bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, marie);
 	init_core_for_conference(tmpCoresManagerList);
 	bctbx_list_free(tmpCoresManagerList);
 	coresList = bctbx_list_append(coresList, marie->lc);
+	linphone_core_manager_start(marie, TRUE);
 
 	// Send a new message to initiate chat room migration
 	marieCr = linphone_core_get_chat_room(marie->lc, paulineAddr);
@@ -2364,11 +2366,12 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 	// Enable chat room migration and restart core for Marie
 	_linphone_chat_room_enable_migration(marieCr, TRUE);
 	coresList = bctbx_list_remove(coresList, marie->lc);
-	linphone_core_manager_restart(marie, TRUE);
+	linphone_core_manager_reinit(marie);
 	bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, marie);
 	init_core_for_conference(tmpCoresManagerList);
 	bctbx_list_free(tmpCoresManagerList);
 	coresList = bctbx_list_append(coresList, marie->lc);
+	linphone_core_manager_start(marie, TRUE);
 
 	// Send a new message to initiate chat room migration
 	LinphoneAddress *paulineAddr = linphone_address_new(linphone_core_get_identity(pauline->lc));

@@ -5812,20 +5812,6 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
-	elem = config->proxies;
-	config->proxies=NULL; /*to make sure proxies cannot be refferenced during deletion*/
-	bctbx_list_free_with_data(elem,(void (*)(void*)) _linphone_proxy_config_release);
-
-	config->deleted_proxies=bctbx_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
-
-	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
-
-	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_unref);
-
-	if (lc->vcard_context) {
-		linphone_vcard_context_destroy(lc->vcard_context);
-	}
-
 	lc->sal->reset_transports();
 	lc->sal->unlisten_ports(); /*to make sure no new messages are received*/
 	if (lc->http_provider) {
@@ -5849,6 +5835,20 @@ void sip_config_uninit(LinphoneCore *lc)
 	lc->sal->iterate(); /*make sure event are purged*/
 	delete lc->sal;
 	lc->sal=NULL;
+
+	elem = config->proxies;
+	config->proxies=NULL; /*to make sure proxies cannot be refferenced during deletion*/
+	bctbx_list_free_with_data(elem,(void (*)(void*)) _linphone_proxy_config_release);
+
+	config->deleted_proxies=bctbx_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
+
+	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
+
+	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_unref);
+
+	if (lc->vcard_context) {
+		linphone_vcard_context_destroy(lc->vcard_context);
+	}
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);
@@ -7042,20 +7042,15 @@ LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
 	return lc->conf_ctx;
 }
 
-void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri) {
-	lp_config_set_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", uri);
-}
-
-const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
-	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
-}
-
 void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
 	lp_config_set_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", enable);
 }
 
 bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const LinphoneAddress *addr) {
-	const char *uri = linphone_core_get_conference_factory_uri(lc);
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
+	if (!proxy)
+		return FALSE;
+	const char *uri = linphone_proxy_config_get_conference_factory_uri(proxy);
 	if (!uri)
 		return FALSE;
 

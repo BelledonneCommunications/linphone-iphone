@@ -249,6 +249,8 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->nat_policy != NULL) {
 		linphone_nat_policy_unref(cfg->nat_policy);
 	}
+	if (cfg->conference_factory_uri)
+		bctbx_free(cfg->conference_factory_uri);
 	if (cfg->ei){
 		linphone_error_info_unref(cfg->ei);
 	}
@@ -1089,7 +1091,7 @@ int linphone_core_get_default_proxy(LinphoneCore *lc, LinphoneProxyConfig **conf
 	return linphone_core_get_default_proxy_config_index(lc);
 }
 
-LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc) {
+LinphoneProxyConfig * linphone_core_get_default_proxy_config(const LinphoneCore *lc) {
 	return lc->default_proxy;
 }
 
@@ -1147,6 +1149,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 		lp_config_set_string(config, key, "nat_policy_ref", cfg->nat_policy->ref);
 		linphone_nat_policy_save_to_config(cfg->nat_policy);
 	}
+
+	lp_config_set_string(config, key, "conference_factory_uri", cfg->conference_factory_uri);
 }
 
 
@@ -1212,6 +1216,8 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	if (nat_policy_ref != NULL) {
 		cfg->nat_policy = linphone_core_create_nat_policy_from_config(lc, nat_policy_ref);
 	}
+
+	CONFIGURE_STRING_VALUE(cfg, config, key, conference_factory_uri, "conference_factory_uri");
 
 	return cfg;
 }
@@ -1494,4 +1500,17 @@ void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg
 		linphone_event_unref(cfg->presence_publish_event);
 		cfg->presence_publish_event = NULL;
 	}
+}
+
+void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, const char *uri) {
+	if (cfg->conference_factory_uri) {
+		bctbx_free(cfg->conference_factory_uri);
+		cfg->conference_factory_uri = nullptr;
+	}
+	if (uri)
+		cfg->conference_factory_uri = bctbx_strdup(uri);
+}
+
+const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg) {
+	return cfg->conference_factory_uri;
 }

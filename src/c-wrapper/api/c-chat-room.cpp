@@ -527,10 +527,20 @@ void linphone_chat_room_set_user_data (LinphoneChatRoom *cr, void *ud) {
 // =============================================================================
 
 LinphoneChatRoom *_linphone_client_group_chat_room_new (LinphoneCore *core, const char *uri, const char *subject, bool_t fallback) {
-	LinphoneAddress *addr = linphone_address_new(uri);
-	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(core, addr);
-	linphone_address_unref(addr);
 	string from;
+	LinphoneProxyConfig *proxy = nullptr;
+	if (uri) {
+		LinphoneAddress *addr = linphone_address_new(uri);
+		proxy = linphone_core_lookup_known_proxy(core, addr);
+		linphone_address_unref(addr);
+	} else {
+		proxy = linphone_core_get_default_proxy_config(core);
+		if (!proxy)
+			return nullptr;
+		uri = linphone_proxy_config_get_conference_factory_uri(proxy);
+		if (!uri)
+			return nullptr;
+	}
 	if (proxy) {
 		const LinphoneAddress *contactAddr = linphone_proxy_config_get_contact(proxy);
 		if (contactAddr) {
@@ -568,9 +578,4 @@ LinphoneChatRoom *_linphone_server_group_chat_room_new (LinphoneCore *core, Linp
 	L_GET_PRIVATE_FROM_C_OBJECT(cr)->setState(LinphonePrivate::ChatRoom::State::Instantiated);
 	L_GET_PRIVATE_FROM_C_OBJECT(cr, ServerGroupChatRoom)->confirmCreation();
 	return cr;
-}
-
-/* DEPRECATED */
-void linphone_chat_room_destroy (LinphoneChatRoom *cr) {
-	linphone_chat_room_unref(cr);
 }

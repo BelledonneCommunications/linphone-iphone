@@ -74,9 +74,15 @@ shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 		chatRoom.reset(new RealTimeTextChatRoom(q->getSharedFromThis(), chatRoomId));
 	else {
 		BasicChatRoom *basicChatRoom = new BasicChatRoom(q->getSharedFromThis(), chatRoomId);
+		LinphoneAddress *lAddr = linphone_address_new(chatRoomId.getLocalAddress().asString().c_str());
+		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(q->getCCore(), lAddr);
+		linphone_address_unref(lAddr);
+		const char *conferenceFactoryUri = nullptr;
+		if (proxy)
+			conferenceFactoryUri = linphone_proxy_config_get_conference_factory_uri(proxy);
 		if (
 			capabilities & ChatRoom::Capabilities::Migratable &&
-			linphone_core_get_conference_factory_uri(q->getCCore()) &&
+			conferenceFactoryUri &&
 			linphone_config_get_bool(linphone_core_get_config(q->getCCore()),
 				"misc", "enable_basic_to_client_group_chat_room_migration", FALSE)
 		)
@@ -94,14 +100,13 @@ shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 
 shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const string &subject, bool fallback) {
 	L_Q();
-	return L_GET_CPP_PTR_FROM_C_OBJECT(
-		_linphone_client_group_chat_room_new(
-			q->getCCore(),
-			linphone_core_get_conference_factory_uri(q->getCCore()),
-			L_STRING_TO_C(subject),
-			fallback ? TRUE : FALSE
-		)
+	LinphoneChatRoom *lcr = _linphone_client_group_chat_room_new(
+		q->getCCore(),
+		nullptr,
+		L_STRING_TO_C(subject),
+		fallback ? TRUE : FALSE
 	);
+	return lcr ? L_GET_CPP_PTR_FROM_C_OBJECT(lcr) : nullptr;
 }
 
 void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {

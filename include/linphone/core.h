@@ -2017,7 +2017,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED int linphone_core_get_default_proxy(Linphone
  * @param[in] lc LinphoneCore object
  * @return The default proxy configuration.
 **/
-LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_get_default_proxy_config(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneProxyConfig * linphone_core_get_default_proxy_config(const LinphoneCore *lc);
 
 /**
  * Sets the default proxy.
@@ -4251,20 +4251,6 @@ LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_conference_recording(LinphoneC
  * @return A pointer on #LinphoneConference or NULL if no conference are going on
  */
 LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *lc);
-
-/**
- * Set the conference factory uri.
- * @param[in] lc A #LinphoneCore object
- * @param[in] uri The uri of the conference factory
- */
-void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri);
-
-/**
- * Get the conference factory uri.
- * @param[in] lc A #LinphoneCore object
- * @return The uri of the conference factory
- */
-const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc);
 
 /**
  * Enable the conference server feature. This has the effect to listen of the conference factory uri

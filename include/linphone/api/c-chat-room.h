@@ -478,14 +478,6 @@ LINPHONE_PUBLIC void linphone_chat_room_add_compatible_participants (LinphoneCha
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(const LinphoneChatRoom *cr);
 
 /**
- * Destroy a LinphoneChatRoom.
- * @param cr #LinphoneChatRoom object
- * @deprecated Use linphone_chat_room_unref() instead.
- * @donotwrap
- */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_destroy(LinphoneChatRoom *cr);
-
-/**
  * @}
  */
 

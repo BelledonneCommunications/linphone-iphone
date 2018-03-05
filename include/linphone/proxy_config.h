@@ -586,6 +586,20 @@ LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const L
 LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy);
 
 /**
+ * Set the conference factory uri.
+ * @param[in] cfg A #LinphoneProxyConfig object
+ * @param[in] uri The uri of the conference factory
+ */
+void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, const char *uri);
+
+/**
+ * Get the conference factory uri.
+ * @param[in] cfg A #LinphoneProxyConfig object
+ * @return The uri of the conference factory
+ */
+const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg);
+
+/**
  * @}
  */
 
