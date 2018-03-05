@@ -568,7 +568,7 @@
 		}
 
 		LinphoneNatPolicy *policy = linphone_proxy_config_get_nat_policy(proxyCfg) ?: linphone_core_create_nat_policy(LC);
-		linphone_nat_policy_enable_stun(policy, use_ice); /*we always use STUN with ICE*/
+		linphone_nat_policy_enable_stun(policy, use_ice); // We always use STUN with ICE
 		linphone_nat_policy_enable_ice(policy, use_ice);
 		linphone_nat_policy_set_stun_server(policy, stun_preference.UTF8String);
 		linphone_proxy_config_set_nat_policy(proxyCfg, policy);
