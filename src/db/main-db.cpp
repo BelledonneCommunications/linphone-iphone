@@ -301,7 +301,7 @@ long long MainDbPrivate::insertOrUpdateImportedBasicChatRoom (
 		return id;
 	}
 
-	constexpr int capabilities = ChatRoom::CapabilitiesMask(
+	const int capabilities = ChatRoom::CapabilitiesMask(
 		{ ChatRoom::Capabilities::Basic, ChatRoom::Capabilities::Migratable }
 	);
 	lInfo() << "Insert new chat room in database: (peer=" << peerSipAddressId <<
