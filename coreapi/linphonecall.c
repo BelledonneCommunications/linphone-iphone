@@ -2760,8 +2760,14 @@ void linphone_call_init_audio_stream(LinphoneCall *call){
 
 		/* init zrtp even if we didn't explicitely set it, just in case peer offers it */
 		if (linphone_core_media_encryption_supported(lc, LinphoneMediaEncryptionZRTP)) {
-			char *peerUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to);
-			char *selfUri = linphone_address_as_string_uri_only((call->dir==LinphoneCallIncoming) ? call->log->to : call->log->from);
+			LinphoneAddress *peerAddr = (call->dir==LinphoneCallIncoming) ? call->log->from : call->log->to;
+			LinphoneAddress *selfAddr = (call->dir==LinphoneCallIncoming) ? call->log->to : call->log->from;
+			char *peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(peerAddr)
+											 			, linphone_address_get_username(peerAddr)
+											 			, linphone_address_get_domain(peerAddr));
+			char *selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(selfAddr)
+											 			, linphone_address_get_username(selfAddr)
+											 			, linphone_address_get_domain(selfAddr));
 			MSZrtpParams params;
 			memset(&params,0,sizeof(MSZrtpParams));
 			/*call->current_params.media_encryption will be set later when zrtp is activated*/
