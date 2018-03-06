@@ -143,8 +143,17 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 				qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
 		} else if (q->getState() == ChatRoom::State::TerminationPending)
 			qConference->getPrivate()->focus->getPrivate()->getSession()->terminate();
-	} else if ((newState == CallSession::State::Released) && (q->getState() == ChatRoom::State::TerminationPending)) {
-		q->onConferenceTerminated(q->getConferenceAddress());
+	} else if (newState == CallSession::State::Released) {
+		if (q->getState() == ChatRoom::State::TerminationPending) {
+			if (session->getReason() == LinphoneReasonNone) {
+				// Everything is fine, the chat room has been left on the server side
+				q->onConferenceTerminated(q->getConferenceAddress());
+			} else {
+				// Go to state TerminationFailed and then back to Created since it has not been terminated
+				setState(ChatRoom::State::TerminationFailed);
+				setState(ChatRoom::State::Created);
+			}
+		}
 	} else if (newState == CallSession::State::Error) {
 		if (q->getState() == ChatRoom::State::CreationPending)
 			setState(ChatRoom::State::CreationFailed);
