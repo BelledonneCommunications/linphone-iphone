@@ -106,6 +106,7 @@ public:
 	void removeCustomHeader (const std::string &headerName);
 
 	bool downloadFile (FileTransferContent &content);
+	bool isDownloadInProgress();
 
 private:
 	ChatMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);

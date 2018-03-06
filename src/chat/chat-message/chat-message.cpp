@@ -1040,6 +1040,11 @@ bool ChatMessage::downloadFile(FileTransferContent &fileTransferContent) {
 	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), &fileTransferContent);
 }
 
+bool ChatMessage::isDownloadInProgress() {
+	L_D();
+	return d->fileTransferChatMessageModifier.isFileTransferInProgressAndValid();
+}
+
 void ChatMessage::cancelFileTransfer () {
 	L_D();
 	if (d->fileTransferChatMessageModifier.isFileTransferInProgressAndValid()) {
