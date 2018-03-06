@@ -242,8 +242,8 @@ const char *linphone_chat_message_get_text_content(const LinphoneChatMessage *ms
 	return L_STRING_TO_C(msg->cache.textContentBody);
 }
 
-bool_t linphone_chat_message_is_download_in_progress(LinphoneChatMessage *msg) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isDownloadInProgress();
+bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *msg) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isFileTransferInProgress();
 }
 
 // =============================================================================

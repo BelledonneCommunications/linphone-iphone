@@ -363,11 +363,11 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_has_text_content(const LinphoneChat
 LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const LinphoneChatMessage *msg);
 
 /**
- * Gets whether or not a received file is currently being downloaded
+ * Gets whether or not a file is currently being downloaded or uploaded
  * @param[in] msg LinphoneChatMessage object
- * @return true if download is in progress, false otherwise
+ * @return true if download or upload is in progress, false otherwise
  */
-LINPHONE_PUBLIC bool_t linphone_chat_message_is_download_in_progress(LinphoneChatMessage *msg);
+LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *msg);
 
 /**
  * @}
