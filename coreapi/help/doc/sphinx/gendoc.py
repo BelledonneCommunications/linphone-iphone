@@ -195,11 +195,14 @@ class SphinxPage(object):
 	
 	def _make_selector(self, obj):
 		links = []
-		ref = metadoc.Reference.make_ref_from_object(None, obj)
 		for lang in self.langs:
 			if lang is self.lang:
 				link = lang.displayName
 			else:
+				if lang.langCode == 'Java' and type(obj) is abstractapi.Enumerator:
+					ref = metadoc.Reference.make_ref_from_object(None, obj.parent)
+				else:
+					ref = metadoc.Reference.make_ref_from_object(None, obj)
 				link = ref.translate(lang.docTranslator, label=lang.displayName)
 			links.append(link)
 		return ' '.join(links)

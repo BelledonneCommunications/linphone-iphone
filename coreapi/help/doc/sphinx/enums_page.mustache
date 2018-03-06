@@ -18,10 +18,14 @@
 	
 	{{{selector}}}
 	
-	{{#isNotJava}}
 	{{#enumerators}}
+	{{#isNotJava}}
 	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}
 		
+	{{/isNotJava}}
+	{{#isJava}}
+	**{{{name}}}**
+	{{/isJava}}
 		{{#briefDesc}}
 		{{#lines}}
 		{{{line}}}
@@ -31,5 +35,4 @@
 		{{{selector}}}
 	
 	{{/enumerators}}
-	{{/isNotJava}}
 {{/enums}}
