@@ -1395,6 +1395,9 @@ static void sip_config_read(LinphoneCore *lc) {
 	/*this is to filter out unsupported encryption schemes*/
 	linphone_core_set_media_encryption(lc,linphone_core_get_media_encryption(lc));
 
+	/*enable the reconnection to the primary server when it is up again asap*/
+	lc->sal->enable_reconnect_to_primary_asap(!!lp_config_get_int(lc->config,"sip","reconnect_to_primary_asap",0));
+
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack = !!lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.register_only_when_network_is_up=
