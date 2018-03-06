@@ -209,25 +209,22 @@
 }
 
 - (void)registerAddrsFor:(Contact *)contact {
+	if(!_addressBookMap)
+		return;
 	Contact* mContact = contact;
-		for (NSString *phone in mContact.phones) {
-			char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
-			NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
-			if (phone != NULL) {
-				if(_addressBookMap){
-					if(mContact){
-						[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
-					}else{
-						// Dosomte
-					}
-				}
-			}
+	for (NSString *phone in mContact.phones) {
+		char *normalizedPhone = linphone_proxy_config_normalize_phone_number(linphone_core_get_default_proxy_config(LC), phone.UTF8String);
+		NSString *name = [FastAddressBook normalizeSipURI:normalizedPhone ? [NSString stringWithUTF8String:normalizedPhone] : phone];
+		if (phone != NULL) {
+			if(mContact)
+				[_addressBookMap setObject:mContact forKey:(name ?: [FastAddressBook localizedLabel:phone])];
 			if (normalizedPhone)
 				ms_free(normalizedPhone);
 		}
-		for (NSString *sip in mContact.sipAddresses) {
-			[_addressBookMap setObject:mContact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
-		}
+	}
+	for (NSString *sip in mContact.sipAddresses) {
+		[_addressBookMap setObject:mContact forKey:([FastAddressBook normalizeSipURI:sip] ?: sip)];
+	}
 }
 
 #pragma mark - Tools
