@@ -189,7 +189,7 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 		const IdentityAddress &curLocalAddress = chatRoom->getLocalAddress();
 		ChatRoom::CapabilitiesMask capabilities = chatRoom->getCapabilities();
 
-		// We are looking fo a one to one chatroom
+		// We are looking for a one to one chatroom
 		// Do not return a group chat room that everyone except one person has left
 		if (!(capabilities & ChatRoom::Capabilities::OneToOne))
 			continue;
