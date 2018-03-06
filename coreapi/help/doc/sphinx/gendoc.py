@@ -235,6 +235,7 @@ class EnumsPage(SphinxPage):
 				'selector'    : self._make_selector(enum)
 			}
 			translatedEnum['sectionName'] = RstTools.make_section(translatedEnum['name'])
+			translatedEnum['declaration'] = 'public enum {0}'.format(translatedEnum['name']) if self.lang.langCode == 'Java' else translatedEnum['name']
 			self.enums.append(translatedEnum)
 	
 	def _translate_enum_values(self, enum):

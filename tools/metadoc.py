@@ -403,6 +403,7 @@ class ReferenceTranslationError(TranslationError):
 
 class Translator:
 	def __init__(self, langCode):
+		self.langCode = langCode
 		self.textWidth = 80
 		self.nameTranslator = metaname.Translator.get(langCode)
 		self.langTranslator = abstractapi.Translator.get(langCode)
@@ -553,12 +554,11 @@ class SphinxTranslator(Translator):
 	def __init__(self, langCode):
 		Translator.__init__(self, langCode)
 		if langCode == 'C':
-			self.domain = 'c'
+			self.domain = 'cpp'
 			self.classDeclarator = 'type'
 			self.methodDeclarator = 'function'
-			self.enumDeclarator = 'type'
-			self.enumeratorDeclarator = 'var'
-			self.enumeratorReferencer = 'data'
+			self.enumDeclarator = 'enum'
+			self.enumeratorDeclarator = 'enumerator'
 			self.methodReferencer = 'func'
 		elif langCode == 'Cpp':
 			self.domain = 'cpp'

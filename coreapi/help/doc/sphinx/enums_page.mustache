@@ -8,12 +8,7 @@
 {{#enums}}
 {{{sectionName}}}
 
-{{#isNotJava}}
-	.. {{#write_declarator}}enum{{/write_declarator}}:: {{{fullName}}}
-{{/isNotJava}}
-{{#isJava}}
-.. java:type:: public enum {{{name}}};
-{{/isJava}}
+.. {{#write_declarator}}enum{{/write_declarator}}:: {{{declaration}}}
 	
 	{{#briefDesc}}
 	{{#lines}}
@@ -25,7 +20,7 @@
 	
 	{{#isNotJava}}
 	{{#enumerators}}
-	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}{{#value}} = {{{value}}}{{/value}}
+	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}
 		
 		{{#briefDesc}}
 		{{#lines}}
