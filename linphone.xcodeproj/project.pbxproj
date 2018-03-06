@@ -4644,7 +4644,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
@@ -4744,7 +4744,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
@@ -4843,7 +4843,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
@@ -4942,7 +4942,7 @@
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
-				ENABLE_BITCODE = NO;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/liblinphone-sdk/x86_64-apple-darwin.ios/lib",
 					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
