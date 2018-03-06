@@ -775,8 +775,9 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 				if (zrtp_cache_db != NULL) {
 					bool_t res;
 					limeURIKeys_t associatedKeys;
-					char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-
+					char *peer = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(cr))
+												  				, linphone_address_get_username(linphone_chat_room_get_peer_address(cr))
+												  				, linphone_address_get_domain(linphone_chat_room_get_peer_address(cr)));
 					/* retrieve keys associated to the peer URI */
 					associatedKeys.peerURI = bctbx_strdup(peer);
 					associatedKeys.selfURI = NULL; /* TODO : there is no sender associated to chatroom so check for any local URI available, shall we add sender to chatroom? */
@@ -818,10 +819,15 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			errcode = 500;
 			return errcode;
 		}
-		peerUri = linphone_address_as_string_uri_only(linphone_chat_message_get_from_address(msg));
-		selfUri = linphone_address_as_string_uri_only(linphone_chat_message_get_to_address(msg));
+		peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
+								   				, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
+								   				, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
+		selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_to_address(msg))
+								   				, linphone_address_get_username(linphone_chat_message_get_to_address(msg))
+								   				, linphone_address_get_domain(linphone_chat_message_get_to_address(msg)));
+
 		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &decrypted_body, &decrypted_content_type,
-									bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
 		ms_free(peerUri);
 		ms_free(selfUri);
 		if (retval != 0) {
@@ -881,8 +887,12 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			} else {
 				int retval;
 				uint8_t *crypted_body = NULL;
-				char *selfUri = linphone_address_as_string_uri_only(linphone_chat_message_get_from_address(msg));
-				char *peerUri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+				char *peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(room))
+															, linphone_address_get_username(linphone_chat_room_get_peer_address(room))
+										   					, linphone_address_get_domain(linphone_chat_room_get_peer_address(room)));
+				char *selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
+										   					, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
+										   					, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
 
 				retval = lime_createMultipartMessage(zrtp_cache_db, linphone_chat_message_get_content_type(msg), (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &crypted_body);
 				if (retval != 0) { /* fail to encrypt */
