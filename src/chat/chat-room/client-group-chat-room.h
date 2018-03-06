@@ -33,6 +33,7 @@ class LINPHONE_PUBLIC ClientGroupChatRoom : public ChatRoom, public RemoteConfer
 	friend class BasicToClientGroupChatRoomPrivate;
 	friend class ClientGroupToBasicChatRoomPrivate;
 	friend class Core;
+	friend class CorePrivate;
 
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(ClientGroupChatRoom);

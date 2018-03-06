@@ -33,6 +33,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatRoomPrivate : public AbstractChatRoomPrivate, public IsComposingListener {
 public:
+	inline void setProxyChatRoom (AbstractChatRoom *value) { proxyChatRoom = value; }
+
 	inline void setCreationTime (time_t creationTime) override {
 		this->creationTime = creationTime;
 	}
@@ -67,12 +69,16 @@ public:
 	void onIsComposingStateChanged (bool isComposing) override;
 	void onIsRemoteComposingStateChanged (const Address &remoteAddress, bool isComposing) override;
 
+	LinphoneChatRoom *getCChatRoom () const;
+
 	std::list<IdentityAddress> remoteIsComposing;
 	std::list<std::shared_ptr<EventLog>> transientEvents;
 
 	ChatRoomId chatRoomId;
 
 private:
+	AbstractChatRoom *proxyChatRoom = nullptr;
+
 	ChatRoom::State state = ChatRoom::State::None;
 
 	time_t creationTime = std::time(nullptr);

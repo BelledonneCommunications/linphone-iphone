@@ -59,12 +59,14 @@ void SalReferOp::process_request_event_cb(void *op_base, const belle_sip_request
 	if (!refer_to){
 		ms_warning("cannot do anything with the refer without destination");
 		op->reply(SalReasonUnknown);/*is mapped on bad request*/
+		op->unref();
 		return;
 	}
 	SalAddress *referToAddr = sal_address_new(belle_sip_header_get_unparsed_value(BELLE_SIP_HEADER(refer_to)));
 	op->root->callbacks.refer_received(op, referToAddr);
 	/*the app is expected to reply in the callback*/
 	sal_address_unref(referToAddr);
+	op->unref();
 }
 
 void SalReferOp::fill_cbs() {

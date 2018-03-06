@@ -73,8 +73,8 @@ public:
 		chatRoom->getPrivate()->onChatMessageReceived(chatMessage);
 	}
 
-	void setupCallbacks ();
-	void teardownCallbacks ();
+	void setupProxy ();
+	void teardownProxy ();
 
 	std::shared_ptr<AbstractChatRoom> chatRoom;
 

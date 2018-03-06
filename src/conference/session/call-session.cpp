@@ -62,6 +62,8 @@ void CallSessionPrivate::notifyReferState () {
 
 void CallSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
+	// Keep a ref on the CallSession, otherwise it might get destroyed before the end of the method
+	shared_ptr<CallSession> ref = q->getSharedFromThis();
 	if (state != newState){
 		prevState = state;
 

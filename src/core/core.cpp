@@ -77,6 +77,10 @@ void CorePrivate::uninit () {
 		ms_usleep(10000);
 	}
 
+	chatRooms.clear();
+	chatRoomsById.clear();
+	noCreatedClientGroupChatRooms.clear();
+
 	AddressPrivate::clearSipAddressesCache();
 }
 

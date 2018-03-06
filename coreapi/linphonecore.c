@@ -2145,6 +2145,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 				while ((part = linphone_content_get_part(body, i))) {
 					i++;
 					L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(part));
+					linphone_content_unref(part);
 				}
 			} else
 				L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(body));
@@ -3449,7 +3450,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
 
 	if (linphone_address_get_domain(uri) == NULL) {
-		ms_message("cannot seach for proxy for uri [%p] if no domain set. returning default",uri);
+		ms_message("Cannot look for proxy for uri [%p] that has no domain set, returning default", uri);
 		return default_cfg;
 	}
 	/*return default proxy if it is matching the destination uri*/

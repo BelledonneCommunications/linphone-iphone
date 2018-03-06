@@ -748,10 +748,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to()))));
-				if (!cr)
-					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr, FALSE);
-				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
+				shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+					ChatRoomId(addr, IdentityAddress(op->get_to()))
+				);
+				if (!chatRoom)
+					chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), false);
+				chatRoom->join();
 				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 				return;
 			}

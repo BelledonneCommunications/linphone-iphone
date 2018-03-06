@@ -30,6 +30,8 @@ class ChatRoom;
 class ProxyChatRoomPrivate;
 
 class LINPHONE_PUBLIC ProxyChatRoom : public AbstractChatRoom {
+	friend class CorePrivate;
+
 public:
 	const ChatRoomId &getChatRoomId () const override;
 

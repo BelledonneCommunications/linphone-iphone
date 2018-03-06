@@ -18,7 +18,7 @@
  */
 
 #include "basic-to-client-group-chat-room.h"
-#include "chat-room.h"
+#include "chat-room-p.h"
 #include "proxy-chat-room-p.h"
 #include "c-wrapper/c-wrapper.h"
 
@@ -28,98 +28,13 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-#define PROXY_CALLBACK(callback, ...) \
-	LinphoneChatRoomCbs *proxiedCbs = linphone_chat_room_get_current_callbacks(cr); \
-	ProxyChatRoom *pcr = static_cast<ProxyChatRoom *>(linphone_chat_room_cbs_get_user_data(proxiedCbs)); \
-	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(pcr->getSharedFromThis()); \
-	_linphone_chat_room_notify_ ## callback(lcr, ##__VA_ARGS__)
-
-static void chatMessageReceived (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(chat_message_received, event_log);
-}
-
-static void chatMessageSent (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(chat_message_sent, event_log);
-}
-
-static void conferenceAddressGeneration (LinphoneChatRoom *cr) {
-	PROXY_CALLBACK(conference_address_generation);
-}
-
-static void isComposingReceived (LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
-	PROXY_CALLBACK(is_composing_received, remoteAddr, isComposing);
-}
-
-static void messageReceived (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	PROXY_CALLBACK(message_received, msg);
-}
-
-static void participantAdded (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(participant_added, event_log);
-}
-
-static void participantAdminStatusChanged (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(participant_admin_status_changed, event_log);
-}
-
-static void participantDeviceAdded (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(participant_device_added, event_log);
-}
-
-static void participantDeviceFetched (LinphoneChatRoom *cr, const LinphoneAddress *participantAddr) {
-	PROXY_CALLBACK(participant_device_fetched, participantAddr);
-}
-
-static void participantDeviceRemoved (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(participant_device_removed, event_log);
-}
-
-static void participantRemoved (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(participant_removed, event_log);
-}
-
-static void participantsCapabilitiesChecked (LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsAddr) {
-	PROXY_CALLBACK(participants_capabilities_checked, deviceAddr, participantsAddr);
-}
-
-static void stateChanged (LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
-	PROXY_CALLBACK(state_changed, newState);
-}
-
-static void subjectChanged (LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
-	PROXY_CALLBACK(subject_changed, event_log);
-}
-
-static void undecryptableMessageReceived (LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
-	PROXY_CALLBACK(undecryptable_message_received, msg);
-}
-
-void ProxyChatRoomPrivate::setupCallbacks () {
+void ProxyChatRoomPrivate::setupProxy () {
 	L_Q();
-	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
-	linphone_chat_room_cbs_set_user_data(cbs, q);
-	linphone_chat_room_cbs_set_chat_message_received(cbs, chatMessageReceived);
-	linphone_chat_room_cbs_set_chat_message_sent(cbs, chatMessageSent);
-	linphone_chat_room_cbs_set_conference_address_generation(cbs, conferenceAddressGeneration);
-	linphone_chat_room_cbs_set_is_composing_received(cbs, isComposingReceived);
-	linphone_chat_room_cbs_set_message_received(cbs, messageReceived);
-	linphone_chat_room_cbs_set_participant_added(cbs, participantAdded);
-	linphone_chat_room_cbs_set_participant_admin_status_changed(cbs, participantAdminStatusChanged);
-	linphone_chat_room_cbs_set_participant_device_added(cbs, participantDeviceAdded);
-	linphone_chat_room_cbs_set_participant_device_fetched(cbs, participantDeviceFetched);
-	linphone_chat_room_cbs_set_participant_device_removed(cbs, participantDeviceRemoved);
-	linphone_chat_room_cbs_set_participant_removed(cbs, participantRemoved);
-	linphone_chat_room_cbs_set_participants_capabilities_checked(cbs, participantsCapabilitiesChecked);
-	linphone_chat_room_cbs_set_state_changed(cbs, stateChanged);
-	linphone_chat_room_cbs_set_subject_changed(cbs, subjectChanged);
-	linphone_chat_room_cbs_set_undecryptable_message_received(cbs, undecryptableMessageReceived);
-	linphone_chat_room_add_callbacks(lcr, cbs);
+	static_pointer_cast<ChatRoom>(chatRoom)->getPrivate()->setProxyChatRoom(q);
 }
 
-void ProxyChatRoomPrivate::teardownCallbacks () {
-	LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(chatRoom);
-	_linphone_chat_room_clear_callbacks(lcr);
+void ProxyChatRoomPrivate::teardownProxy () {
+	static_pointer_cast<ChatRoom>(chatRoom)->getPrivate()->setProxyChatRoom(nullptr);
 }
 
 // -----------------------------------------------------------------------------
@@ -128,7 +43,7 @@ void ProxyChatRoomPrivate::teardownCallbacks () {
 	AbstractChatRoom(p, chatRoom->getCore()) {
 	L_D();
 	d->chatRoom = chatRoom;
-	d->setupCallbacks();
+	d->setupProxy();
 }
 
 // -----------------------------------------------------------------------------

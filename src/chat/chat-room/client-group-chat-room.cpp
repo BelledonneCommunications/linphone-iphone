@@ -521,7 +521,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_participant_added(cr, L_GET_C_BACK_PTR(event));
 }
 
@@ -541,7 +541,7 @@ void ClientGroupChatRoom::onParticipantRemoved (const shared_ptr<ConferenceParti
 	dConference->participants.remove(participant);
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_participant_removed(cr, L_GET_C_BACK_PTR(event));
 }
 
@@ -569,7 +569,7 @@ void ClientGroupChatRoom::onParticipantSetAdmin (const shared_ptr<ConferencePart
 
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_participant_admin_status_changed(cr, L_GET_C_BACK_PTR(event));
 }
 
@@ -585,7 +585,7 @@ void ClientGroupChatRoom::onSubjectChanged (const shared_ptr<ConferenceSubjectEv
 
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_subject_changed(cr, L_GET_C_BACK_PTR(event));
 }
 
@@ -609,7 +609,7 @@ void ClientGroupChatRoom::onParticipantDeviceAdded (const shared_ptr<ConferenceP
 
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_participant_device_added(cr, L_GET_C_BACK_PTR(event));
 }
 
@@ -631,7 +631,7 @@ void ClientGroupChatRoom::onParticipantDeviceRemoved (const shared_ptr<Conferenc
 	participant->getPrivate()->removeDevice(event->getDeviceAddress());
 	d->addEvent(event);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(this);
+	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_participant_device_removed(cr, L_GET_C_BACK_PTR(event));
 }
 

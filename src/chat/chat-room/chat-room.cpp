@@ -51,7 +51,7 @@ void ChatRoomPrivate::sendChatMessage (const shared_ptr<ChatMessage> &chatMessag
 	dChatMessage->setTime(ms_time(0));
 	dChatMessage->send();
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoom *cr = getCChatRoom();
 	// TODO: server currently don't stock message, remove condition in the future.
 	if (!linphone_core_conference_server_enabled(q->getCore()->getCCore())) {
 		shared_ptr<ConferenceChatMessageEvent> event = static_pointer_cast<ConferenceChatMessageEvent>(
@@ -129,7 +129,7 @@ list<shared_ptr<ChatMessage>> ChatRoomPrivate::findChatMessages (const string &m
 
 void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	L_Q();
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoom *cr = getCChatRoom();
 	if (!chatMessage->getPrivate()->getText().empty()) {
 		/* Legacy API */
 		LinphoneAddress *fromAddress = linphone_address_new(chatMessage->getFromAddress().asString().c_str());
@@ -153,7 +153,7 @@ void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddress, b
 	else
 		remoteIsComposing.remove(remoteAddress);
 
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoom *cr = getCChatRoom();
 	LinphoneAddress *lAddr = linphone_address_new(remoteAddress.asString().c_str());
 	_linphone_chat_room_notify_is_composing_received(cr, lAddr, !!isComposing);
 	linphone_address_unref(lAddr);
@@ -163,14 +163,14 @@ void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddress, b
 
 void ChatRoomPrivate::notifyStateChanged () {
 	L_Q();
-	linphone_core_notify_chat_room_state_changed(q->getCore()->getCCore(), L_GET_C_BACK_PTR(q), (LinphoneChatRoomState)state);
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoom *cr = getCChatRoom();
+	linphone_core_notify_chat_room_state_changed(q->getCore()->getCCore(), cr, (LinphoneChatRoomState)state);
 	_linphone_chat_room_notify_state_changed(cr, (LinphoneChatRoomState)state);
 }
 
 void ChatRoomPrivate::notifyUndecryptableChatMessageReceived (const shared_ptr<ChatMessage> &chatMessage) {
 	L_Q();
-	LinphoneChatRoom *cr = L_GET_C_BACK_PTR(q);
+	LinphoneChatRoom *cr = getCChatRoom();
 	_linphone_chat_room_notify_undecryptable_message_received(cr, L_GET_C_BACK_PTR(chatMessage));
 	linphone_core_notify_message_received_unable_decrypt(q->getCore()->getCCore(), cr, L_GET_C_BACK_PTR(chatMessage));
 }
@@ -262,6 +262,16 @@ void ChatRoomPrivate::onIsRemoteComposingStateChanged (const Address &remoteAddr
 	notifyIsComposingReceived(remoteAddress, isComposing);
 }
 
+// -----------------------------------------------------------------------------
+
+LinphoneChatRoom *ChatRoomPrivate::getCChatRoom () const {
+	L_Q();
+	if (proxyChatRoom)
+		return L_GET_C_BACK_PTR(proxyChatRoom);
+	else
+		return L_GET_C_BACK_PTR(q);
+}
+
 // =============================================================================
 
 ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
@@ -341,7 +351,9 @@ int ChatRoom::getHistorySize () const {
 
 void ChatRoom::deleteFromDb () {
 	L_D();
-	Core::deleteChatRoom(this->getSharedFromThis());
+	// Keep a ref, otherwise the object might be destroyed before we can set the Deleted state
+	shared_ptr<AbstractChatRoom> ref = this->getSharedFromThis();
+	Core::deleteChatRoom(ref);
 	d->setState(ChatRoom::State::Deleted);
 }
 
