@@ -15,7 +15,6 @@
 
 @property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSDictionary *allContacts;
-@property(nonatomic, strong) NSMutableArray *contactsAddresses;
 @property(nonatomic, strong) NSArray *sortedAddresses;
 @end
 
@@ -33,7 +32,6 @@
 			return [[first.firstName lowercaseString] compare:[second.firstName lowercaseString]];
 	}];
 
-	self.contactsAddresses = [NSMutableArray array];
 	_addresses = [[NSMutableArray alloc] initWithCapacity:_sortedAddresses.count];
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
@@ -42,7 +40,6 @@
 
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_addresses removeAllObjects];
-	[_contactsAddresses removeAllObjects];
 	for (NSString* key in _sortedAddresses){
 		NSString *address = (NSString *)key;
 		NSString *name = [FastAddressBook displayNameForContact:[_allContacts objectForKey:key]];
@@ -91,7 +88,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
 	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 	NSString *uri;
-	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_contactsAddresses objectAtIndex:indexPath.row]];
+	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:[_addresses objectAtIndex:indexPath.row]];
 	if (addr) {
 		uri = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
 	} else {
