@@ -34,23 +34,23 @@
  */
 
 /**
- * Constructs a LinphoneAddress object by parsing the user supplied address,
+ * Constructs a #LinphoneAddress object by parsing the user supplied address,
  * given as a string.
  **/
 LINPHONE_PUBLIC LinphoneAddress *linphone_address_new (const char *address);
 
 /**
- * Clones a LinphoneAddress object.
+ * Clones a #LinphoneAddress object.
  **/
 LINPHONE_PUBLIC LinphoneAddress *linphone_address_clone (const LinphoneAddress *address);
 
 /**
- * Increment reference count of LinphoneAddress object.
+ * Increment reference count of #LinphoneAddress object.
  **/
 LINPHONE_PUBLIC LinphoneAddress *linphone_address_ref (LinphoneAddress *address);
 
 /**
- * Decrement reference count of LinphoneAddress object. When dropped to zero, memory is freed.
+ * Decrement reference count of #LinphoneAddress object. When dropped to zero, memory is freed.
  **/
 LINPHONE_PUBLIC void linphone_address_unref (LinphoneAddress *address);
 
@@ -147,7 +147,7 @@ LINPHONE_PUBLIC const char *linphone_address_get_password (const LinphoneAddress
 /**
  * Set the password encoded in the address.
  * It is used for basic authentication (not recommended).
- * @param address the LinphoneAddress
+ * @param address the #LinphoneAddress
  * @param password the password to set.
  **/
 LINPHONE_PUBLIC void linphone_address_set_password (LinphoneAddress *address, const char *password);
@@ -170,19 +170,19 @@ LINPHONE_PUBLIC char *linphone_address_as_string (const LinphoneAddress *address
 LINPHONE_PUBLIC char *linphone_address_as_string_uri_only (const LinphoneAddress *address);
 
 /**
- * Compare two LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
- * @param[in] address1 LinphoneAddress object
- * @param[in] address2 LinphoneAddress object
- * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * Compare two #LinphoneAddress ignoring tags and headers, basically just domain, username, and port.
+ * @param[in] address1 #LinphoneAddress object
+ * @param[in] address2 #LinphoneAddress object
+ * @return Boolean value telling if the #LinphoneAddress objects are equal.
  * @see linphone_address_equal()
  **/
 LINPHONE_PUBLIC bool_t linphone_address_weak_equal (const LinphoneAddress *address1, const LinphoneAddress *address2);
 
 /**
- * Compare two LinphoneAddress taking the tags and headers into account.
- * @param[in] address1 LinphoneAddress object
- * @param[in] address2 LinphoneAddress object
- * @return Boolean value telling if the LinphoneAddress objects are equal.
+ * Compare two #LinphoneAddress taking the tags and headers into account.
+ * @param[in] address1 #LinphoneAddress object
+ * @param[in] address2 #LinphoneAddress object
+ * @return Boolean value telling if the #LinphoneAddress objects are equal.
  * @see linphone_address_weak_equal()
  */
 LINPHONE_PUBLIC bool_t linphone_address_equal (const LinphoneAddress *address1, const LinphoneAddress *address2);
@@ -204,7 +204,7 @@ LINPHONE_PUBLIC void linphone_address_set_header (LinphoneAddress *address, cons
 
 /**
  * Tell whether a parameter is present in the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] param_name The name of the parameter
  * @return A boolean value telling whether the parameter is present in the address
  */
@@ -212,7 +212,7 @@ LINPHONE_PUBLIC bool_t linphone_address_has_param (const LinphoneAddress *addres
 
 /**
  * Get the value of a parameter of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] param_name The name of the parameter
  * @return The value of the parameter
  */
@@ -220,7 +220,7 @@ LINPHONE_PUBLIC const char *linphone_address_get_param (const LinphoneAddress *a
 
 /**
  * Set the value of a parameter of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] param_name The name of the parameter
  * @param[in] param_value The new value of the parameter
  */
@@ -230,7 +230,7 @@ LINPHONE_PUBLIC void linphone_address_set_params (LinphoneAddress *address, cons
 
 /**
  * Tell whether a parameter is present in the URI of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] uri_param_name The name of the parameter
  * @return A boolean value telling whether the parameter is present in the URI of the address
  */
@@ -238,7 +238,7 @@ LINPHONE_PUBLIC bool_t linphone_address_has_uri_param (const LinphoneAddress *ad
 
 /**
  * Get the value of a parameter of the URI of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] uri_param_name The name of the parameter
  * @return The value of the parameter
  */
@@ -246,7 +246,7 @@ LINPHONE_PUBLIC const char *linphone_address_get_uri_param (const LinphoneAddres
 
 /**
  * Set the value of a parameter of the URI of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] uri_param_name The name of the parameter
  * @param[in] uri_param_value The new value of the parameter
  */
@@ -256,13 +256,13 @@ LINPHONE_PUBLIC void linphone_address_set_uri_params (LinphoneAddress *address, 
 
 /**
  * Removes the value of a parameter of the URI of the address
- * @param[in] address LinphoneAddress object
+ * @param[in] address #LinphoneAddress object
  * @param[in] uri_param_name The name of the parameter
  */
 LINPHONE_PUBLIC void linphone_address_remove_uri_param (LinphoneAddress *address, const char *uri_param_name);
 
 /**
- * Destroys a LinphoneAddress object (actually calls linphone_address_unref()).
+ * Destroys a #LinphoneAddress object (actually calls linphone_address_unref()).
  * @deprecated Use linphone_address_unref() instead
  * @donotwrap
  **/

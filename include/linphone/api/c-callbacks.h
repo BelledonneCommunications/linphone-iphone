@@ -37,14 +37,14 @@
 
 /**
  * Callback for being notified of received DTMFs.
- * @param call LinphoneCall object that received the dtmf
+ * @param call #LinphoneCall object that received the dtmf
  * @param dtmf The ascii code of the dtmf
  */
 typedef void (*LinphoneCallCbsDtmfReceivedCb)(LinphoneCall *call, int dtmf);
 
 /**
  * Call encryption changed callback.
- * @param call LinphoneCall object whose encryption is changed.
+ * @param call #LinphoneCall object whose encryption is changed.
  * @param on Whether encryption is activated.
  * @param authentication_token An authentication_token, currently set for ZRTP kind of encryption only.
  */
@@ -52,14 +52,14 @@ typedef void (*LinphoneCallCbsEncryptionChangedCb)(LinphoneCall *call, bool_t on
 
 /**
  * Callback for receiving info messages.
- * @param call LinphoneCall whose info message belongs to.
- * @param msg LinphoneInfoMessage object.
+ * @param call #LinphoneCall whose info message belongs to.
+ * @param msg #LinphoneInfoMessage object.
  */
 typedef void (*LinphoneCallCbsInfoMessageReceivedCb)(LinphoneCall *call, const LinphoneInfoMessage *msg);
 
 /**
  * Call state notification callback.
- * @param call LinphoneCall whose state is changed.
+ * @param call #LinphoneCall whose state is changed.
  * @param cstate The new state of the call
  * @param message An informational message about the state.
  */
@@ -67,21 +67,21 @@ typedef void (*LinphoneCallCbsStateChangedCb)(LinphoneCall *call, LinphoneCallSt
 
 /**
  * Callback for receiving quality statistics for calls.
- * @param call LinphoneCall object whose statistics are notified
- * @param stats LinphoneCallStats object
+ * @param call #LinphoneCall object whose statistics are notified
+ * @param stats #LinphoneCallStats object
  */
 typedef void (*LinphoneCallCbsStatsUpdatedCb)(LinphoneCall *call, const LinphoneCallStats *stats);
 
 /**
  * Callback for notifying progresses of transfers.
- * @param call LinphoneCall that was transfered
+ * @param call #LinphoneCall that was transfered
  * @param cstate The state of the call to transfer target at the far end.
  */
 typedef void (*LinphoneCallCbsTransferStateChangedCb)(LinphoneCall *call, LinphoneCallState cstate);
 
 /**
  * Callback for notifying the processing SIP ACK messages.
- * @param call LinphoneCall for which an ACK is being received or sent
+ * @param call #LinphoneCall for which an ACK is being received or sent
  * @param ack the ACK message
  * @param is_received if TRUE this ACK is an incoming one, otherwise it is an ACK about to be sent.
  */
@@ -100,9 +100,9 @@ typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeade
  /**
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
- * @param status LinphoneChatMessageState
+ * @param status #LinphoneChatMessageState
  * @param ud application user data
- * @deprecated Use LinphoneChatMessageCbsMsgStateChangedCb instead.
+ * @deprecated Use #LinphoneChatMessageCbsMsgStateChangedCb instead.
  * @donotwrap
  */
 typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,LinphoneChatMessageState state,void* ud);
@@ -110,7 +110,7 @@ typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg,Linph
 /**
  * Call back used to notify message delivery status
  * @param msg #LinphoneChatMessage object
- * @param status LinphoneChatMessageState
+ * @param status #LinphoneChatMessageState
  */
 typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg, LinphoneChatMessageState state);
 
@@ -128,7 +128,7 @@ typedef void (*LinphoneChatMessageCbsFileTransferRecvCb)(LinphoneChatMessage *me
  * @param content #LinphoneContent outgoing content
  * @param offset the offset in the file from where to get the data to be sent
  * @param size the number of bytes expected by the framework
- * @return A LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
+ * @return A #LinphoneBuffer object holding the data written by the application. An empty buffer means end of file.
  */
 typedef LinphoneBuffer * (*LinphoneChatMessageCbsFileTransferSendCb)(LinphoneChatMessage *message,  const LinphoneContent* content, size_t offset, size_t size);
 
