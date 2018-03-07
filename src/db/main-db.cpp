@@ -601,7 +601,11 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		chatMessage->setIsSecured(bool(row.get<int>(9)));
 
 		ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
-		dChatMessage->setState(ChatMessage::State(row.get<int>(7)), true);
+		ChatMessage::State messageState = (ChatMessage::State) row.get<int>(7);
+		// This is necessary if linphone has crashed while sending a message. It will set the correct state so the user can resend it.
+		if (messageState == ChatMessage::State::Idle || messageState == ChatMessage::State::InProgress)
+			messageState = ChatMessage::State::NotDelivered;
+		dChatMessage->setState(messageState, true);
 
 		dChatMessage->forceFromAddress(IdentityAddress(row.get<string>(3)));
 		dChatMessage->forceToAddress(IdentityAddress(row.get<string>(4)));
