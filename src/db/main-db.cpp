@@ -1073,51 +1073,45 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 	};
 }
 
-static string extractFileContentType (const string &xml) {
-	string contentTypeString;
-	xmlDocPtr xmlMessageBody;
-	xmlNodePtr cur;
-	/* parse the msg body to get all informations from it */
-	xmlMessageBody = xmlParseDoc((const xmlChar *)xml.c_str());
-
-	cur = xmlDocGetRootElement(xmlMessageBody);
-	if (cur) {
-		cur = cur->xmlChildrenNode;
-		while (cur) {
-			if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) {
-				xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
-				if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) {         /* this is the node we are looking for */
-					cur = cur->xmlChildrenNode;           /* now loop on the content of the file-info node */
-					while (cur) {
-						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
-							xmlChar *content_type = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
-							int contentTypeIndex = 0;
-							char *type;
-							char *subtype;
-							while (content_type[contentTypeIndex] != '/' && content_type[contentTypeIndex] != '\0') {
-								contentTypeIndex++;
-							}
-							type = ms_strndup((char *)content_type, contentTypeIndex);
-							subtype = ms_strdup(((char *)content_type + contentTypeIndex + 1));
-							ContentType contentType(type, subtype);
-							contentTypeString = contentType.asString();
-							ms_free(subtype);
-							ms_free(type);
-							ms_free(content_type);
-							break;
-						}
-						cur = cur->next;
-					}
-					xmlFree(typeAttribute);
-					break;
-				}
-				xmlFree(typeAttribute);
-			}
-			cur = cur->next;
-		}
+// TODO: Move in a helper file? With others xml.
+struct XmlCharObjectDeleter {
+	void operator() (void *ptr) const {
+		xmlFree(ptr);
 	}
-	xmlFreeDoc(xmlMessageBody);
-	return contentTypeString;
+};
+using XmlCharObject = unique_ptr<xmlChar, XmlCharObjectDeleter>;
+
+struct XmlDocObjectDeleter {
+	void operator() (xmlDocPtr ptr) const {
+		xmlFreeDoc(ptr);
+	}
+};
+using XmlDocObject = unique_ptr<remove_pointer<xmlDocPtr>::type, XmlDocObjectDeleter>;
+
+typedef const xmlChar* XmlCharPtr;
+
+static string extractLegacyFileContentType (const string &xml) {
+	XmlDocObject xmlMessageBody(xmlParseDoc(XmlCharPtr(xml.c_str())));
+	xmlNodePtr xmlElement = xmlDocGetRootElement(xmlMessageBody.get());
+	if (!xmlElement)
+		return "";
+
+	for (xmlElement = xmlElement->xmlChildrenNode; xmlElement; xmlElement = xmlElement->next) {
+		if (xmlStrcmp(xmlElement->name, XmlCharPtr("file-info")))
+			continue;
+
+		XmlCharObject typeAttribute(xmlGetProp(xmlElement, XmlCharPtr("type")));
+		if (xmlStrcmp(typeAttribute.get(), XmlCharPtr("file")))
+			continue;
+
+		for (xmlElement = xmlElement->xmlChildrenNode; xmlElement; xmlElement = xmlElement->next)
+			if (!xmlStrcmp(xmlElement->name, XmlCharPtr("content-type"))) {
+				XmlCharObject xmlContentType(xmlNodeListGetString(xmlMessageBody.get(), xmlElement->xmlChildrenNode, 1));
+				return ContentType(reinterpret_cast<const char *>(xmlContentType.get())).asString();
+			}
+	}
+
+	return "";
 }
 
 void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
@@ -1173,7 +1167,7 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 					continue;
 				}
 
-				string contentTypeString = extractFileContentType(text);
+				string contentTypeString = extractLegacyFileContentType(text);
 				if (contentTypeString.empty()) {
 					lWarning() << "Unable to extract file content type form legacy transfer message";
 					continue;
