@@ -371,6 +371,14 @@ bool ChatMessagePrivate::downloadFile () {
 	return false;
 }
 
+void ChatMessagePrivate::addContent (Content &content) {
+	getContents().push_back(&content);
+}
+
+void ChatMessagePrivate::removeContent (const Content &content) {
+	getContents().remove(&const_cast<Content &>(content));
+}
+
 void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
 	L_Q();
 	int errorCode = 0;
@@ -718,7 +726,7 @@ void ChatMessagePrivate::send () {
 		if (content->getContentType() == ContentType::FileTransfer) {
 			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
 			it = contents.erase(it);
-			q->addContent(*fileTransferContent->getFileContent());
+			addContent(*fileTransferContent->getFileContent());
 			delete fileTransferContent;
 		} else {
 			it++;
@@ -962,13 +970,13 @@ const list<Content *> &ChatMessage::getContents () const {
 void ChatMessage::addContent (Content &content) {
 	L_D();
 	if (!d->isReadOnly)
-		d->getContents().push_back(&content);
+		d->addContent(content);
 }
 
 void ChatMessage::removeContent (const Content &content) {
 	L_D();
 	if (!d->isReadOnly)
-		d->getContents().remove(&const_cast<Content &>(content));
+		d->removeContent(content);
 }
 
 const Content &ChatMessage::getInternalContent () const {

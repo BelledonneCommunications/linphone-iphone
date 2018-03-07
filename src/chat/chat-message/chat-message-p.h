@@ -138,6 +138,9 @@ public:
 
 	LinphoneContent *getFileTransferInformation () const;
 	void setFileTransferInformation (const LinphoneContent *content);
+	
+	void addContent (Content &content);
+	void removeContent (const Content &content);
 
 	bool downloadFile ();
 

@@ -750,12 +750,12 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 	if (retval <= 0 && message->getState() != ChatMessage::State::FileTransferError) {
 		// Remove the FileTransferContent from the message and store the FileContent
 		FileContent *fileContent = currentFileContentToTransfer;
-		message->addContent(*fileContent);
+		message->getPrivate()->addContent(*fileContent);
 		for (Content *content : message->getContents()) {
 			if (content->getContentType() == ContentType::FileTransfer) {
 				FileTransferContent *fileTransferContent = (FileTransferContent*)content;
 				if (fileTransferContent->getFileContent() == fileContent) {
-					message->removeContent(*content);
+					message->getPrivate()->removeContent(*content);
 					delete fileTransferContent;
 					break;
 				}
