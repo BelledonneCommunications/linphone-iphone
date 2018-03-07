@@ -1226,9 +1226,9 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 				soci::use(creationTime), soci::use(state), soci::use(direction),
 				soci::use(isSecured);
 
-			if (content != nullptr) {
+			if (content) {
 				insertContent(eventId, *content);
-				free(content);
+				delete content;
 			}
 			insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
 
