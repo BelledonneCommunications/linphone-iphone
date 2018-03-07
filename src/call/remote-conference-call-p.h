@@ -29,8 +29,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferenceCallPrivate : public CallPrivate {
 public:
-	RemoteConferenceCallPrivate () = default;
-
 	std::shared_ptr<CallSession> getActiveSession () const override;
 
 private:

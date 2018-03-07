@@ -34,8 +34,6 @@ class CallSession;
 
 class CallSessionParamsPrivate : public ClonableObjectPrivate {
 public:
-	CallSessionParamsPrivate () = default;
-
 	void clone (const CallSessionParamsPrivate *src);
 
 	bool getInConference () const { return inConference; }

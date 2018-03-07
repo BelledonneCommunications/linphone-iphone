@@ -30,8 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	ClientGroupChatRoomPrivate () = default;
-
 	std::list<IdentityAddress> cleanAddressesList (const std::list<IdentityAddress> &addresses) const;
 	std::shared_ptr<CallSession> createSession ();
 	void notifyReceived (const std::string &body);

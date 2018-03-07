@@ -34,8 +34,6 @@ public:
 		bool hasBeenRead;
 	};
 
-	RealTimeTextChatRoomPrivate () = default;
-
 	void realtimeTextReceived (uint32_t character, const std::shared_ptr<Call> &call);
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	void setCall (const std::shared_ptr<Call> &value) { call = value; }

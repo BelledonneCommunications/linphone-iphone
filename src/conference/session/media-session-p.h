@@ -20,8 +20,6 @@
 #ifndef _L_MEDIA_SESSION_P_H_
 #define _L_MEDIA_SESSION_P_H_
 
-#include <utility>
-
 #include "call-session-p.h"
 
 #include "media-session.h"
@@ -36,9 +34,6 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class MediaSessionPrivate : public CallSessionPrivate {
-public:
-	MediaSessionPrivate () = default;
-
 public:
 	static int resumeAfterFailedTransfer (void *userData, unsigned int);
 	static bool_t startPendingRefer (void *userData);

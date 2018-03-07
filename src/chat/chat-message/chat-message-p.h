@@ -54,8 +54,6 @@ public:
 		Started = 1 << 5,
 	};
 
-	ChatMessagePrivate () = default;
-
 	void setApplyModifiers (bool value) { applyModifiers = value; }
 
 	void setDirection (ChatMessage::Direction dir);
@@ -138,7 +136,7 @@ public:
 
 	LinphoneContent *getFileTransferInformation () const;
 	void setFileTransferInformation (const LinphoneContent *content);
-	
+
 	void addContent (Content &content);
 	void removeContent (const Content &content);
 
