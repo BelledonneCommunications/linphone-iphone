@@ -1069,7 +1069,7 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 	};
 }
 
-static string extractFileContentType(string xml) {
+static string extractFileContentType (const string &xml) {
 	string contentTypeString;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
