@@ -268,6 +268,7 @@ else()
 		"-Wfloat-equal"
 		"-Winit-self"
 		"-Wno-error=deprecated-declarations"
+		"-Wnon-virtual-dtor"
 		"-Wpointer-arith"
 		"-Wuninitialized"
 		"-Wunused"
@@ -284,7 +285,7 @@ else()
 		list(APPEND STRICT_OPTIONS_C "-fno-inline-small-functions")
 	endif()
 	if(CMAKE_C_COMPILER_ID MATCHES "Clang")
-		list(APPEND STRICT_OPTIONS_CPP "-Qunused-arguments" "-Wno-array-bounds -Wdelete-non-virtual-dtor")
+		list(APPEND STRICT_OPTIONS_CPP "-Qunused-arguments" "-Wno-array-bounds")
 	endif()
 	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 		list(APPEND STRICT_OPTIONS_CXX "-x c++")

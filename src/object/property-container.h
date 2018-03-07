@@ -41,9 +41,7 @@ public:
 	void setProperty (const std::string &name, Variant &&value);
 
 private:
-	PropertyContainerPrivate *mPrivate = nullptr;
-
-	L_DECLARE_PRIVATE(PropertyContainer);
+	PropertyContainerPrivate *mPrivate;
 };
 
 LINPHONE_END_NAMESPACE
