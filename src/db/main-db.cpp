@@ -1069,6 +1069,53 @@ void MainDbPrivate::importLegacyFriends (DbSession &inDbSession) {
 	};
 }
 
+static string extractFileContentType(string xml) {
+	string contentTypeString;
+	xmlDocPtr xmlMessageBody;
+	xmlNodePtr cur;
+	/* parse the msg body to get all informations from it */
+	xmlMessageBody = xmlParseDoc((const xmlChar *)xml.c_str());
+
+	cur = xmlDocGetRootElement(xmlMessageBody);
+	if (cur) {
+		cur = cur->xmlChildrenNode;
+		while (cur) {
+			if (!xmlStrcmp(cur->name, (const xmlChar *)"file-info")) {
+				xmlChar *typeAttribute = xmlGetProp(cur, (const xmlChar *)"type");
+				if (!xmlStrcmp(typeAttribute, (const xmlChar *)"file")) {         /* this is the node we are looking for */
+					cur = cur->xmlChildrenNode;           /* now loop on the content of the file-info node */
+					while (cur) {
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"content-type")) {
+							xmlChar *content_type = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							int contentTypeIndex = 0;
+							char *type;
+							char *subtype;
+							while (content_type[contentTypeIndex] != '/' && content_type[contentTypeIndex] != '\0') {
+								contentTypeIndex++;
+							}
+							type = ms_strndup((char *)content_type, contentTypeIndex);
+							subtype = ms_strdup(((char *)content_type + contentTypeIndex + 1));
+							ContentType contentType(type, subtype);
+							contentTypeString = contentType.asString();
+							ms_free(subtype);
+							ms_free(type);
+							ms_free(content_type);
+							break;
+						}
+						cur = cur->next;
+					}
+					xmlFree(typeAttribute);
+					break;
+				}
+				xmlFree(typeAttribute);
+			}
+			cur = cur->next;
+		}
+	}
+	xmlFreeDoc(xmlMessageBody);
+	return contentTypeString;
+}
+
 void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 	L_Q();
 	L_DB_TRANSACTION_C(q) {
@@ -1114,27 +1161,37 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 
 			const string &text = getValueFromRow<string>(message, LegacyMessageColText, isNull);
 
-			Content content;
-			content.setContentType(contentType);
-			if (contentType == ContentType::PlainText) {
-				if (isNull) {
-					lWarning() << "Unable to import legacy message with no text.";
-					continue;
-				}
-				content.setBody(text);
-			} else {
-				if (contentType != ContentType::FileTransfer) {
-					lWarning() << "Unable to import unsupported legacy content.";
-					continue;
-				}
-
+			Content *content = nullptr;
+			if (contentType == ContentType::FileTransfer) {
 				const string appData = getValueFromRow<string>(message, LegacyMessageColAppData, isNull);
 				if (isNull) {
 					lWarning() << "Unable to import legacy file message without app data.";
 					continue;
 				}
 
-				content.setAppData("legacy", appData);
+				string contentTypeString = extractFileContentType(text);
+				if (contentTypeString.empty()) {
+					lWarning() << "Unable to extract file content type form legacy transfer message";
+					continue;
+				}
+				ContentType fileContentType(contentTypeString);
+				content = new FileContent();
+				content->setContentType(fileContentType);
+				content->setAppData("legacy", appData);
+				content->setBody(text);
+			} else {
+				content = new Content();
+				content->setContentType(contentType);
+				if (contentType == ContentType::PlainText) {
+					if (isNull) {
+						lWarning() << "Unable to import legacy message with no text.";
+						continue;
+					}
+					content->setBody(text);
+				} else {
+					lWarning() << "Unable to import unsupported legacy content.";
+					continue;
+				}
 			}
 
 			soci::session *session = dbSession.getBackendSession();
@@ -1169,7 +1226,10 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 				soci::use(creationTime), soci::use(state), soci::use(direction),
 				soci::use(isSecured);
 
-			insertContent(eventId, content);
+			if (content != nullptr) {
+				insertContent(eventId, *content);
+				free(content);
+			}
 			insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
 
 			if (state != int(ChatMessage::State::Displayed))
