@@ -2156,7 +2156,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	  LOGW(@"Call cannot be paused any more, too late");
 	  [[UIApplication sharedApplication] endBackgroundTask:pausedCallBgTask];
 	}];
-	LOGI(@"Long running task started, remaining [%@ s] because at least one call is paused",
+	LOGI(@"Long running task started, remaining [%@] because at least one call is paused",
 		 [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 }
 
@@ -2190,7 +2190,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
 		  pushBgTaskMsg = 0;
 		}];
-		LOGI(@"Message long running task started for call-id [%@], remaining [%@ s] because a push has been received",
+		LOGI(@"Message long running task started for call-id [%@], remaining [%@] because a push has been received",
 			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 	} else if ([loc_key isEqualToString:@"IC_MSG"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
@@ -2221,7 +2221,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		  [[UIApplication sharedApplication] endBackgroundTask:pushBgTaskCall];
 		  pushBgTaskCall = 0;
 		}];
-		LOGI(@"Call long running task started for call-id [%@], remaining [%@ s] because a push has been received",
+		LOGI(@"Call long running task started for call-id [%@], remaining [%@] because a push has been received",
 			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 	} else if ([loc_key isEqualToString:@"IC_SIL"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
@@ -2238,7 +2238,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 			[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskRefer];
 			pushBgTaskRefer = 0;
 		}];
-		LOGI(@"Refer long running task started for call-id [%@], remaining [%@ s] because a push has been received",
+		LOGI(@"Refer long running task started for call-id [%@], remaining [%@] because a push has been received",
 			 callId, [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 	}
 }
