@@ -38,8 +38,6 @@ class RealTimeTextChatRoom;
 
 class CallPrivate :	public ObjectPrivate, public CallSessionListener {
 public:
-	CallPrivate () = default;
-
 	void initiateIncoming ();
 	bool initiateOutgoing ();
 	void iterate (time_t currentRealTime, bool oneSecondElapsed);

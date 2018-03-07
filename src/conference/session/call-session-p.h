@@ -31,8 +31,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionPrivate : public ObjectPrivate, public CoreListener {
 public:
-	CallSessionPrivate () = default;
-
 	int computeDuration () const;
 	virtual void initializeParamsAccordingToIncomingCallParams ();
 	void notifyReferState ();

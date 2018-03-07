@@ -20,11 +20,7 @@
 #ifndef _L_CONFERENCE_LISTENER_H_
 #define _L_CONFERENCE_LISTENER_H_
 
-#include <ctime>
-#include <string>
 #include <vector>
-
-#include "linphone/utils/general.h"
 
 #include "event-log/events.h"
 
@@ -32,10 +28,10 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class IdentityAddress;
-
 class ConferenceListener {
 public:
+	virtual ~ConferenceListener () = default;
+
 	virtual void onConferenceCreated (const IdentityAddress &addr) {}
 	virtual void onConferenceKeywordsChanged (const std::vector<std::string> &keywords) {}
 	virtual void onConferenceTerminated (const IdentityAddress &addr) {}

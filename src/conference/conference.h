@@ -43,7 +43,7 @@ class LINPHONE_PUBLIC Conference :
 	friend class CallSessionPrivate;
 
 public:
-	virtual ~Conference();
+	~Conference();
 
 	std::shared_ptr<Participant> getActiveParticipant () const;
 

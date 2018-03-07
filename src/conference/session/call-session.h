@@ -54,7 +54,7 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CALL_SESSION_STATE);
 
 	CallSession (const std::shared_ptr<Core> &core, const CallSessionParams *params, CallSessionListener *listener);
-	virtual ~CallSession ();
+	~CallSession ();
 
 	LinphoneStatus accept (const CallSessionParams *csp = nullptr);
 	LinphoneStatus acceptUpdate (const CallSessionParams *csp = nullptr);

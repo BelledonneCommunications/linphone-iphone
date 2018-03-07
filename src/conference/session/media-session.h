@@ -40,7 +40,7 @@ class LINPHONE_PUBLIC MediaSession : public CallSession {
 
 public:
 	MediaSession (const std::shared_ptr<Core> &core, std::shared_ptr<Participant> me, const CallSessionParams *params, CallSessionListener *listener);
-	virtual ~MediaSession ();
+	~MediaSession ();
 
 	LinphoneStatus accept (const MediaSessionParams *msp = nullptr);
 	LinphoneStatus acceptEarlyMedia (const MediaSessionParams *msp = nullptr);
