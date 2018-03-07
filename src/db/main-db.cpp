@@ -1161,7 +1161,7 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 
 			const string &text = getValueFromRow<string>(message, LegacyMessageColText, isNull);
 
-			Content *content = nullptr;
+			unique_ptr<Content> content;
 			if (contentType == ContentType::FileTransfer) {
 				const string appData = getValueFromRow<string>(message, LegacyMessageColAppData, isNull);
 				if (isNull) {
@@ -1175,12 +1175,12 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 					continue;
 				}
 				ContentType fileContentType(contentTypeString);
-				content = new FileContent();
+				content.reset(new FileContent());
 				content->setContentType(fileContentType);
 				content->setAppData("legacy", appData);
 				content->setBody(text);
 			} else {
-				content = new Content();
+				content.reset(new Content());
 				content->setContentType(contentType);
 				if (contentType == ContentType::PlainText) {
 					if (isNull) {
@@ -1226,10 +1226,8 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 				soci::use(creationTime), soci::use(state), soci::use(direction),
 				soci::use(isSecured);
 
-			if (content) {
+			if (content)
 				insertContent(eventId, *content);
-				delete content;
-			}
 			insertChatRoomParticipant(chatRoomId, remoteSipAddressId, false);
 
 			if (state != int(ChatMessage::State::Displayed))
