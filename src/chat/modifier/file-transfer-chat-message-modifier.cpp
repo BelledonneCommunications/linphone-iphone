@@ -361,8 +361,8 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				fileTransferContent->setContentType(ContentType::FileTransfer);
 				fileTransferContent->setFileContent(fileContent);
 
-				message->removeContent(*fileContent);
-				message->addContent(*fileTransferContent);
+				message->getPrivate()->removeContent(*fileContent);
+				message->getPrivate()->addContent(*fileTransferContent);
 
 				message->getPrivate()->setState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
