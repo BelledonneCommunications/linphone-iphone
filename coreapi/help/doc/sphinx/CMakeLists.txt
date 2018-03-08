@@ -42,6 +42,7 @@ if (ENABLE_SPHINX_DOC)
 	)
 	configure_file(conf.py.in source/conf.py)
 	configure_file(source/index.rst source/index.rst COPYONLY)
+	configure_file(logo.png source/logo.png COPYONLY)
 	add_custom_command(OUTPUT ${GENERATED_SPHINX_SOURCES}
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${DOCUMENTATION_DIRS}
 		COMMAND ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
