@@ -140,8 +140,10 @@
 	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))) {
 		// Create directly a basic chat room if there's no factory uri
 		bctbx_list_t *addresses = NULL;
-		addresses = bctbx_list_append(addresses, (void *)cell.addressLabel.text.UTF8String);
+		LinphoneAddress *addr = linphone_address_new(cell.addressLabel.text.UTF8String);
+		addresses = bctbx_list_append(addresses, addr);
 		[PhoneMainView.instance createChatRoomWithSubject:NULL addresses:addresses andWaitView:NULL];
+		linphone_address_unref(addr);
 		return;
 	}
 
