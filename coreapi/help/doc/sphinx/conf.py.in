@@ -103,6 +103,8 @@ html_static_path = ['_static']
 # Path to the picture to use as logo.
 html_logo = 'logo.png'
 
+# Enable html5
+html_experimental_html5_writer = True
 
 # -- Options for HTMLHelp output ------------------------------------------
 
