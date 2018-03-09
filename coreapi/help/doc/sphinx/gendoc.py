@@ -210,10 +210,10 @@ class EnumPart(SphinxPart):
 		self.selector = self._make_selector(enum)
 		self.sectionName = RstTools.make_section(self.name)
 		self.declaration = 'public enum {0}'.format(self.name) if self.lang.langCode == 'Java' else self.name
-		self.ref_label = '{langCode}_{name}'.format(
-			langCode=lang.langCode,
-			name=enum.name.to_c()
-		)
+
+		ref = metadoc.ClassReference(None)
+		ref.relatedObject = enum
+		self.link = ref.translate(lang.docTranslator)
 
 	def _translate_enumerator(self, enumerator):
 			return {
@@ -333,9 +333,8 @@ class ClassPage(SphinxPage):
 	def enumsSummary(self):
 		table = RstTools.Table()
 		for enum in self.enums:
-			reference = ':ref:`{0}`'.format(enum.ref_label)
 			briefDoc = '\n'.join([line['line'] for line in enum.briefDesc['lines']])
-			table.addrow([reference, briefDoc])
+			table.addrow((enum.link, briefDoc))
 		return table
 	
 	@property

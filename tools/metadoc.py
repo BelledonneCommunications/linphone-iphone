@@ -437,7 +437,9 @@ class Translator:
 			if namespace is None:
 				description = ref.find_root()
 				namespace = description.relatedObject.find_first_ancestor_by_type(abstractapi.Namespace, abstractapi.Class)
-			if namespace.name.is_prefix_of(ref.relatedObject.name):
+			if namespace is abstractapi.GlobalNs:
+				commonName = None
+			elif namespace.name.is_prefix_of(ref.relatedObject.name):
 				commonName = namespace.name
 			else:
 				commonName = metaname.Name.find_common_parent(ref.relatedObject.name, namespace.name)
