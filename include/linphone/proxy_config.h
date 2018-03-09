@@ -257,8 +257,16 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_realm(LinphoneProxyConfig *cfg, c
 
 /**
  * @return the route set for this proxy configuration.
+ * @deprecated Use linphone_proxy_config_get_routes() instead.
 **/
 LINPHONE_PUBLIC const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *cfg);
+
+/**
+ * Gets the list of the routes set for this proxy config.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return \bctbx_list{const char *} the list of routes.
+ */ 
+LINPHONE_PUBLIC const bctbx_list_t* linphone_proxy_config_get_routes(const LinphoneProxyConfig *cfg);
 
 /**
  * @return the SIP identity that belongs to this proxy configuration.
