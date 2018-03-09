@@ -147,24 +147,24 @@
                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no" returnKeyType="next" enablesReturnKeyAutomatically="YES"/>
                         </textField>
+                        <view hidden="YES" tag="8" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nt8-fb-6Re" userLabel="waitView">
+                            <rect key="frame" x="0.0" y="0.0" width="768" height="916"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" fixedFrame="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="SNK-Vt-iQa" userLabel="activityIndicatorView">
+                                    <rect key="frame" x="377" y="444" width="20" height="20"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                </activityIndicatorView>
+                            </subviews>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            <gestureRecognizers/>
+                        </view>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-            <point key="canvasLocation" x="31.5" y="88"/>
-        </view>
-        <view hidden="YES" tag="8" contentMode="scaleToFill" id="nt8-fb-6Re" userLabel="waitView">
-            <rect key="frame" x="0.0" y="0.0" width="768" height="1024"/>
-            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-            <subviews>
-                <activityIndicatorView opaque="NO" tag="9" contentMode="scaleToFill" fixedFrame="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="SNK-Vt-iQa" userLabel="activityIndicatorView">
-                    <rect key="frame" x="377" y="497" width="20" height="20"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                </activityIndicatorView>
-            </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-            <gestureRecognizers/>
+            <point key="canvasLocation" x="31" y="88"/>
         </view>
     </objects>
     <resources>
