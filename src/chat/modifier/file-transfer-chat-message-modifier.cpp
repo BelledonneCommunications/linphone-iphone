@@ -485,7 +485,10 @@ error:
 }
 
 void FileTransferChatMessageModifier::fileUploadBeginBackgroundTask () {
-	bgTask.start();
+	shared_ptr<ChatMessage> message = chatMessage.lock();
+	if (!message)
+		return;
+	bgTask.start(message->getCore());
 }
 
 void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {

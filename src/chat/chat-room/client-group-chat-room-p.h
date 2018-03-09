@@ -53,7 +53,6 @@ private:
 	ClientGroupChatRoom::CapabilitiesMask capabilities = ClientGroupChatRoom::Capabilities::Conference;
 	bool deletionOnTerminationEnabled = false;
 	BackgroundTask bgTask;
-
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

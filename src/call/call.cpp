@@ -198,7 +198,8 @@ void CallPrivate::onAckReceived (const shared_ptr<CallSession> &session, Linphon
 }
 
 void CallPrivate::onBackgroundTaskToBeStarted (const shared_ptr<CallSession> &session) {
-	bgTask.start();
+	L_Q();
+	bgTask.start(q->getCore(),30);
 }
 
 void CallPrivate::onBackgroundTaskToBeStopped (const shared_ptr<CallSession> &session) {
