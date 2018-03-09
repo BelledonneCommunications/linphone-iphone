@@ -144,24 +144,23 @@ class LangInfo:
 	}
 
 
-class SphinxPage(object):
-	def __init__(self, lang, langs, filename):
+class SphinxPart(object):
+	def __init__(self, lang, langs):
 		object.__init__(self)
 		self.lang = lang
 		self.langs = langs
-		self.filename = filename
-	
-	@property
-	def hasNamespaceDeclarator(self):
-		return ('namespaceDeclarator' in dir(self.docTranslator))
-	
+
 	@property
 	def language(self):
 		return self.lang.displayName
-	
+
 	@property
 	def docTranslator(self):
 		return self.lang.docTranslator
+
+	@property
+	def hasNamespaceDeclarator(self):
+		return ('namespaceDeclarator' in dir(self.docTranslator))
 
 	@property
 	def isJava(self):
@@ -170,29 +169,22 @@ class SphinxPage(object):
 	@property
 	def isNotJava(self):
 		return not self.isJava
-	
+
 	def make_chapter(self):
 		return lambda text: RstTools.make_chapter(pystache.render(text, self))
-	
+
 	def make_section(self):
 		return lambda text: RstTools.make_section(pystache.render(text, self))
-	
+
 	def make_subsection(self):
-		return lambda text: RstTools.make_subsection(pystache.render(text, self.properties))
-	
+		return lambda text: RstTools.make_subsection(pystache.render(text, self))
+
+	def make_subsection(self):
+		return lambda text: RstTools.make_subsubsection(pystache.render(text, self))
+
 	def write_declarator(self):
 		return lambda text: self.docTranslator.get_declarator(text)
-	
-	def write(self, directory):
-		r = pystache.Renderer()
-		filepath = os.path.join(directory, self.filename)
-		with open(filepath, mode='w') as f:
-			f.write(r.render(self))
-	
-	def _get_translated_namespace(self, obj):
-		namespace = obj.find_first_ancestor_by_type(abstractapi.Namespace)
-		return namespace.name.translate(self.lang.nameTranslator, recursive=True)
-	
+
 	def _make_selector(self, obj):
 		links = []
 		for lang in self.langs:
@@ -206,6 +198,46 @@ class SphinxPage(object):
 				link = ref.translate(lang.docTranslator, label=lang.displayName)
 			links.append(link)
 		return ' '.join(links)
+
+
+class EnumPart(SphinxPart):
+	def __init__(self, enum, lang, langs, namespace=None):
+		SphinxPart.__init__(self, lang, langs)
+		self.name = enum.name.translate(self.lang.nameTranslator)
+		self.fullName = enum.name.translate(self.lang.nameTranslator, recursive=True)
+		self.briefDesc = enum.briefDescription.translate(self.docTranslator)
+		self.enumerators = [self._translate_enumerator(enumerator) for enumerator in enum.enumerators]
+		self.selector = self._make_selector(enum)
+		self.sectionName = RstTools.make_section(self.name)
+		self.declaration = 'public enum {0}'.format(self.name) if self.lang.langCode == 'Java' else self.name
+		self.ref_label = '{langCode}_{name}'.format(
+			langCode=lang.langCode,
+			name=enum.name.to_c()
+		)
+
+	def _translate_enumerator(self, enumerator):
+			return {
+				'name'      : enumerator.name.translate(self.lang.nameTranslator),
+				'briefDesc' : enumerator.briefDescription.translate(self.docTranslator),
+				'value'     : enumerator.translate_value(self.lang.langTranslator),
+				'selector' : self._make_selector(enumerator)
+			}
+
+
+class SphinxPage(SphinxPart):
+	def __init__(self, lang, langs, filename):
+		SphinxPart.__init__(self, lang, langs)
+		self.filename = filename
+	
+	def write(self, directory):
+		r = pystache.Renderer()
+		filepath = os.path.join(directory, self.filename)
+		with open(filepath, mode='w') as f:
+			f.write(r.render(self))
+	
+	def _get_translated_namespace(self, obj):
+		namespace = obj.find_first_ancestor_by_type(abstractapi.Namespace)
+		return namespace.name.translate(self.lang.nameTranslator, recursive=True)
 	
 	@staticmethod
 	def _classname_to_filename(classname):
@@ -225,34 +257,7 @@ class EnumsPage(SphinxPage):
 	def __init__(self, lang, langs, api):
 		SphinxPage.__init__(self, lang, langs, 'enums.rst')
 		self.namespace = api.namespace.name.translate(lang.nameTranslator) if lang.langCode != 'C' else None
-		self._translate_enums(api.namespace.enums)
-	
-	def _translate_enums(self, enums):
-		self.enums = []
-		for enum in enums:
-			translatedEnum = {
-				'name'         : enum.name.translate(self.lang.nameTranslator),
-				'fullName'     : enum.name.translate(self.lang.nameTranslator, recursive=True),
-				'briefDesc'    : enum.briefDescription.translate(self.docTranslator),
-				'enumerators'  : self._translate_enum_values(enum),
-				'selector'    : self._make_selector(enum)
-			}
-			translatedEnum['sectionName'] = RstTools.make_section(translatedEnum['name'])
-			translatedEnum['declaration'] = 'public enum {0}'.format(translatedEnum['name']) if self.lang.langCode == 'Java' else translatedEnum['name']
-			self.enums.append(translatedEnum)
-	
-	def _translate_enum_values(self, enum):
-		translatedEnumerators = []
-		for enumerator in enum.enumerators:
-			translatedValue = {
-				'name'      : enumerator.name.translate(self.lang.nameTranslator),
-				'briefDesc' : enumerator.briefDescription.translate(self.docTranslator),
-				'value'     : enumerator.translate_value(self.lang.langTranslator),
-				'selector' : self._make_selector(enumerator)
-			}
-			translatedEnumerators.append(translatedValue)
-		
-		return translatedEnumerators
+		self.enums = [EnumPart(enum, lang, langs, namespace=api.namespace) for enum in api.namespace.enums]
 
 
 class ClassPage(SphinxPage):
@@ -265,6 +270,7 @@ class ClassPage(SphinxPage):
 		self.fullClassName = _class.name.translate(self.lang.nameTranslator, recursive=True)
 		self.briefDoc = _class.briefDescription.translate(self.docTranslator)
 		self.detailedDoc = _class.detailedDescription.translate(self.docTranslator) if _class.detailedDescription is not None else None
+		self.enums = [EnumPart(enum, lang, langs) for enum in _class.enums]
 		self.properties = self._translate_properties(_class.properties)
 		self.methods = self._translate_methods(_class.instanceMethods)
 		self.classMethods = self._translate_methods(_class.classMethods)
@@ -285,6 +291,10 @@ class ClassPage(SphinxPage):
 	@property
 	def hasProperties(self):
 		return len(self.properties) > 0
+
+	@property
+	def hasEnums(self):
+		return len(self.enums) > 0
 	
 	def _translate_properties(self, properties):
 		translatedProperties = []
@@ -318,6 +328,15 @@ class ClassPage(SphinxPage):
 		reference.relatedObject = method
 		methAttr['link'] = reference.translate(self.lang.docTranslator, namespace=method.find_first_ancestor_by_type(abstractapi.Class, abstractapi.Interface))
 		return methAttr
+
+	@property
+	def enumsSummary(self):
+		table = RstTools.Table()
+		for enum in self.enums:
+			reference = ':ref:`{0}`'.format(enum.ref_label)
+			briefDoc = '\n'.join([line['line'] for line in enum.briefDesc['lines']])
+			table.addrow([reference, briefDoc])
+		return table
 	
 	@property
 	def propertiesSummary(self):

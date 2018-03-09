@@ -35,6 +35,13 @@
 Summary
 =======
 
+{{#hasEnums}}
+Enums
+-----
+
+{{{enumsSummary}}}
+{{/hasEnums}}
+
 {{#hasProperties}}
 Properties
 ----------
@@ -56,8 +63,48 @@ Class methods
 {{{classMethodsSummary}}}
 {{/hasClassMethods}}
 
+
 Detailed descriptions
 =====================
+
+{{#hasEnums}}
+Enums
+-----
+
+{{#enums}}
+
+.. _{{{ref_label}}}:
+
+{{#make_subsection}}{{{name}}}{{/make_subsection}}
+.. {{#write_declarator}}enum{{/write_declarator}}:: {{{declaration}}}
+
+	{{#briefDesc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDesc}}
+
+	{{{selector}}}
+
+	{{#enumerators}}
+	{{#isNotJava}}
+	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}
+
+	{{/isNotJava}}
+	{{#isJava}}
+	**{{{name}}}**
+	{{/isJava}}
+		{{#briefDesc}}
+		{{#lines}}
+		{{{line}}}
+		{{/lines}}
+		{{/briefDesc}}
+
+		{{{selector}}}
+
+	{{/enumerators}}
+{{/enums}}
+{{/hasEnums}}
 
 {{#hasProperties}}
 Properties
