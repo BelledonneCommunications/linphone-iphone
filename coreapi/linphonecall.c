@@ -1216,44 +1216,42 @@ void linphone_call_create_op(LinphoneCall *call){
  * Choose IP version we are going to use for RTP streams IP address advertised in SDP.
  * The algorithm is as follows:
  * - if ipv6 is disabled at the core level, it is always AF_INET
- * - Otherwise, if the destination address for the call is an IPv6 address, use IPv6.
  * - Otherwise, if the call is done through a known proxy config, then use the information obtained during REGISTER
+ * - Otherwise if the destination address for the call is an IPv6 address, use IPv6.
  * to know if IPv6 is supported by the server.
 **/
 static void linphone_call_outgoing_select_ip_version(LinphoneCall *call, LinphoneAddress *to, LinphoneProxyConfig *cfg){
+	char ipv4[LINPHONE_IPADDR_SIZE];
+	char ipv6[LINPHONE_IPADDR_SIZE];
+	bool_t have_ipv6 = FALSE;
+	bool_t have_ipv4 = FALSE;
+	
+	call->af = AF_UNSPEC;
+	if (linphone_core_get_local_ip_for(AF_INET, NULL, ipv4) == 0){
+		have_ipv4 = TRUE;
+	}
 	if (linphone_core_ipv6_enabled(call->core)){
-		if (sal_address_is_ipv6((SalAddress*)to)){
-			call->af=AF_INET6;
-		}else if (cfg && cfg->op){
-			call->af=sal_op_get_address_family(cfg->op);
-		}else{
-			call->af=AF_UNSPEC;
+		if (linphone_core_get_local_ip_for(AF_INET6, NULL, ipv6) == 0){
+			have_ipv6 = TRUE;
 		}
-		if (call->af == AF_UNSPEC) {
-			char ipv4[LINPHONE_IPADDR_SIZE];
-			char ipv6[LINPHONE_IPADDR_SIZE];
-			bool_t have_ipv6 = FALSE;
-			bool_t have_ipv4 = FALSE;
-			/*check connectivity for IPv4 and IPv6*/
-			if (linphone_core_get_local_ip_for(AF_INET6, NULL, ipv6) == 0){
-				have_ipv6 = TRUE;
-			}
-			if (linphone_core_get_local_ip_for(AF_INET, NULL, ipv4) == 0){
-				have_ipv4 = TRUE;
-			}
-			if (have_ipv6){
-				if (!have_ipv4) {
-					call->af = AF_INET6;
-				}else if (lp_config_get_int(call->core->config, "rtp", "prefer_ipv6", 1)){ /*this property tells whether ipv6 is prefered if two versions are available*/
-					call->af = AF_INET6;
-				}else{
-					call->af = AF_INET;
-				}
-			}else call->af = AF_INET;
-			/*fill the media_localip default value since we have it here*/
-			strncpy(call->media_localip,call->af == AF_INET6 ? ipv6 : ipv4, LINPHONE_IPADDR_SIZE);
+		if (cfg && cfg->op){
+			/*we can determine from the proxy connection whether IPv6 works - this is the most reliable*/
+			call->af = sal_op_get_address_family(cfg->op);
+		}else if (sal_address_is_ipv6((SalAddress*)to)){
+			call->af = AF_INET6;
+		}
+		
+		if (lp_config_get_int(call->core->config, "rtp", "prefer_ipv6", 1) == 0 && have_ipv4){ 
+			/* This is the case where ipv4 is to be prefered if both are available.*/
+			call->af = AF_INET; /*we'll use IPv4*/
+			ms_message("prefer_ipv6 is set to false, as both IP versions are available we are going to use IPv4");
+		}
+		if (call->af == AF_UNSPEC){
+			call->af = have_ipv6 ? AF_INET6 : AF_INET;
 		}
 	}else call->af=AF_INET;
+	/*fill the media_localip default value since we have it here*/
+	strncpy(call->media_localip,call->af == AF_INET6 ? ipv6 : ipv4, LINPHONE_IPADDR_SIZE);
 }
 
 /**
