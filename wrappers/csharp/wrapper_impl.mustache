@@ -183,7 +183,11 @@ namespace Linphone
 				obj.nativePtr = ptr;
 				obj.handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
 				objPtr = GCHandle.ToIntPtr(obj.handle);
-				belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+#if WINDOWS_UWP
+                belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+#else
+                belle_sip_object_data_set(ptr, "cs_obj", objPtr, null);
+#endif
 
 				return obj;
 			}
