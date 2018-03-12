@@ -900,8 +900,10 @@ static RootViewManager *rootViewManagerInstance = nil;
 	_waitView = waitView;
 	_waitView.hidden = NO;
 	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT);
-	if (!room)
+	if (!room) {
+		_waitView.hidden = YES;
 		return;
+	}
 
 	LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
 	linphone_chat_room_cbs_set_state_changed(cbs, main_view_chat_room_state_changed);
