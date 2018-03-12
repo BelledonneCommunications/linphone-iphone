@@ -461,7 +461,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 					objectForKey:[NSString stringWithUTF8String:linphone_call_log_get_call_id(
 																	linphone_call_get_call_log(call))]];
 				if (!uuid) {
-					return;
+					break;
 				}
 				CXSetHeldCallAction *act = [[CXSetHeldCallAction alloc] initWithCallUUID:uuid onHold:NO];
 				CXTransaction *tr = [[CXTransaction alloc] initWithAction:act];
@@ -474,7 +474,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 		case LinphoneCallUpdating:
 			break;
 	}
-	[self updateApplicationBadgeNumber];
+	if (state == LinphoneCallEnd || state == LinphoneCallError || floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
+		[self updateApplicationBadgeNumber];
 }
 
 #pragma mark -
