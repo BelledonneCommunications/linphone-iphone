@@ -34,10 +34,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	Cpim::Message cpimMessage;
+
+	// TODO: Remove this buggy Content-Type header
 	Cpim::GenericHeader cpimContentTypeHeader;
 	cpimContentTypeHeader.setName("Content-Type");
 	cpimContentTypeHeader.setValue(ContentType::Cpim.asString());
 	cpimMessage.addCpimHeader(cpimContentTypeHeader);
+	// TODO: Remove this buggy Content-Type header
 
 	Cpim::FromHeader cpimFromHeader;
 	cpimFromHeader.setValue(cpimAddressAsString(message->getFromAddress()));
@@ -71,11 +74,13 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	const string contentBody = content->getBodyAsString();
 	cpimMessage.setContent(contentBody);
 
+	// TODO: Remove this check because of buggy Content-Type header
 	if (!cpimMessage.isValid()) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
 		errorCode = 500;
 		return ChatMessageModifier::Result::Error;
 	}
+	// TODO: Remove this check because of buggy Content-Type header
 
 	Content newContent;
 	newContent.setContentType(ContentType::Cpim);
@@ -99,7 +104,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 
 	const string contentBody = content->getBodyAsString();
 	const shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
-	if (!cpimMessage || !cpimMessage->isValid()) {
+	if (!cpimMessage) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
 		errorCode = 500;
 		return ChatMessageModifier::Result::Error;
