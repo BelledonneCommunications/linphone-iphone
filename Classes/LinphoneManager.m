@@ -2161,6 +2161,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId {
+	if (!callId)
+		return;
+
+	if ([callId isEqualToString:@""])
+		return;
+
 	if ([loc_key isEqualToString:@"IM_MSG"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
 		pushBgTaskMsg = 0;
