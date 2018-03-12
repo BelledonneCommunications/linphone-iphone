@@ -434,7 +434,7 @@
 		return;
 	}
 
-	NSString *loc_key = [aps objectForKey:@"loc-key"];
+	NSString *loc_key = [aps objectForKey:@"loc-key"] ?: [[aps objectForKey:@"alert"] objectForKey:@"loc-key"];
 	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
 	if (!loc_key) {
 		LOGE(@"Notification [%p] has no loc_key, it's impossible to process it.", userInfo);
@@ -486,6 +486,12 @@
 }
 
 - (BOOL)addLongTaskIDforCallID:(NSString *)callId {
+	if (!callId)
+		return FALSE;
+
+	if ([callId isEqualToString:@""])
+		return FALSE;
+
 	NSDictionary *dict = LinphoneManager.instance.pushDict;
 	if ([[dict allKeys] indexOfObject:callId] != NSNotFound)
 		return FALSE;
