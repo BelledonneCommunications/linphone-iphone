@@ -9,6 +9,8 @@
 "Domain" = "Domain";
 "Proxy" = "Proxy";
 "Transport" = "Transport";
+"Stun Server" = "Stun Server";
+"ICE" = "ICE";
 "Outbound proxy" = "Outbound proxy";
 "AVPF" = "AVPF";
 "Expire" = "Expire";

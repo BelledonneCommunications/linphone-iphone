@@ -18,6 +18,7 @@
 "iSAC" = "iSAC";
 "PCMU" = "PCMU";
 "PCMA" = "PCMA";
+"codec2" = "codec2";
 "Advanced" = "Advanced";
 "Playback gain" = "Playback gain";
 "Microphone gain" = "Microphone gain";
