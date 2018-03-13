@@ -1095,7 +1095,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		_silentPushCompletion = nil;
 	}
 #pragma deploymate pop
-	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_message_id(msg)];
+	NSString *callID = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(msg, "Call-ID")];
 	const LinphoneAddress *peerAddress = linphone_chat_room_get_peer_address(room);
 	NSString *from = [FastAddressBook displayNameForAddress:peerAddress];
 
@@ -1256,11 +1256,10 @@ static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom 
 static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, LinphoneChatRoom *room,
 															LinphoneChatMessage *message) {
 
-	NSString *msgId = [NSString stringWithUTF8String:linphone_chat_message_get_message_id(message)];
-
-	int index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:msgId] intValue] - 1;
-	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", msgId, index);
-	[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:msgId];
+	NSString *callId = [NSString stringWithUTF8String:linphone_chat_message_get_custom_header(message, "Call-ID")];
+	int index = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:callId] intValue] - 1;
+	LOGI(@"Decrementing index of long running task for call id : %@ with index : %d", callId, index);
+	[LinphoneManager.instance.pushDict setValue:[NSNumber numberWithInt:index] forKey:callId];
 	BOOL need_bg_task = FALSE;
 	for (NSString *key in [LinphoneManager.instance.pushDict allKeys]) {
 		int value = [(NSNumber *)[LinphoneManager.instance.pushDict objectForKey:key] intValue];
@@ -1270,7 +1269,7 @@ static void linphone_iphone_message_received_unable_decrypt(LinphoneCore *lc, Li
 		}
 	}
 	if (theLinphoneManager->pushBgTaskMsg && !need_bg_task) {
-		LOGI(@"Message received, stopping message background task for call-id [%@]", msgId);
+		LOGI(@"Message received, stopping message background task for call-id [%@]", callId);
 		[[UIApplication sharedApplication] endBackgroundTask:theLinphoneManager->pushBgTaskMsg];
 		theLinphoneManager->pushBgTaskMsg = 0;
 	}
