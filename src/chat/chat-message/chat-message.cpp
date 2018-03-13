@@ -621,8 +621,8 @@ void ChatMessagePrivate::send () {
 				|| (call->getState() == CallSession::State::Pausing)
 				|| (call->getState() == CallSession::State::PausedByRemote)
 			) {
-				lInfo() << "send SIP msg through the existing call.";
-				op = linphone_call_get_op(lcall);
+				lInfo() << "Send SIP msg through the existing call";
+				op = call->getPrivate()->getOp();
 				string identity = linphone_core_find_best_identity(core->getCCore(), linphone_call_get_remote_address(lcall));
 				if (identity.empty()) {
 					LinphoneAddress *addr = linphone_address_new(q->getToAddress().asString().c_str());
@@ -1019,7 +1019,7 @@ void ChatMessage::send () {
 	// Do not allow sending a message that is already being sent or that has been correctly delivered/displayed
 	if ((d->state == State::InProgress) || (d->state == State::Delivered) || (d->state == State::FileTransferDone) ||
 			(d->state == State::DeliveredToUser) || (d->state == State::Displayed)) {
-		lWarning() << "Cannot send chat message in state " << linphone_chat_message_state_to_string((LinphoneChatMessageState)d->state);
+		lWarning() << "Cannot send chat message in state " << Utils::toString(d->state);
 		return;
 	}
 

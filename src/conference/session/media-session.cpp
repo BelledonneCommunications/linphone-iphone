@@ -4254,7 +4254,7 @@ int MediaSession::startInvite (const Address *destination, const string &subject
 void MediaSession::startRecording () {
 	L_D();
 	if (d->getParams()->getRecordFilePath().empty()) {
-		lError() << "MediaSession::startRecording(): no output file specified. Use linphone_call_params_set_record_file()";
+		lError() << "MediaSession::startRecording(): no output file specified. Use MediaSessionParams::setRecordFilePath()";
 		return;
 	}
 	if (d->audioStream && !d->getParams()->getPrivate()->getInConference())

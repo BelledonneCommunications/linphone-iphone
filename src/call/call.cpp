@@ -311,25 +311,24 @@ void CallPrivate::onCallSessionTransferStateChanged (const shared_ptr<CallSessio
 
 void CallPrivate::onCheckForAcceptation (const shared_ptr<CallSession> &session) {
 	L_Q();
-	LinphoneCall *lcall = L_GET_C_BACK_PTR(q);
-	bctbx_list_t *copy = bctbx_list_copy(linphone_core_get_calls(q->getCore()->getCCore()));
-	for (bctbx_list_t *it = copy; it != nullptr; it = bctbx_list_next(it)) {
-		LinphoneCall *call = reinterpret_cast<LinphoneCall *>(bctbx_list_get_data(it));
-		if (call == lcall) continue;
-		switch (L_GET_CPP_PTR_FROM_C_OBJECT(call)->getState()) {
+	list<shared_ptr<Call>> calls = q->getCore()->getCalls();
+	shared_ptr<Call> currentCall = q->getSharedFromThis();
+	for (const auto &call : calls) {
+		if (call == currentCall)
+			continue;
+		switch (call->getState()) {
 			case CallSession::State::OutgoingInit:
 			case CallSession::State::OutgoingProgress:
 			case CallSession::State::OutgoingRinging:
 			case CallSession::State::OutgoingEarlyMedia:
-				lInfo() << "Already existing call [" << call << "] in state [" << linphone_call_state_to_string(linphone_call_get_state(call)) <<
-					"], canceling it before accepting new call [" << lcall << "]";
-				linphone_call_terminate(call);
+				lInfo() << "Already existing call [" << call << "] in state [" << Utils::toString(call->getState())
+					<< "], canceling it before accepting new call [" << currentCall << "]";
+				call->terminate();
 				break;
 			default:
-				break; /* Nothing to do */
+				break; // Nothing to do
 		}
 	}
-	bctbx_list_free(copy);
 }
 
 void CallPrivate::onDtmfReceived (const shared_ptr<CallSession> &session, char dtmf) {

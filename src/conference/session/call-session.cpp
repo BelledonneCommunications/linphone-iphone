@@ -469,13 +469,13 @@ void CallSessionPrivate::updatedByRemote () {
 	setState(CallSession::State::UpdatedByRemote,"Call updated by remote");
 	if (deferUpdate) {
 		if (state == CallSession::State::UpdatedByRemote)
-			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_core_accept_call_update() later.";
+			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call CallSession::acceptUpdate() later";
 	} else {
 		if (state == CallSession::State::UpdatedByRemote)
 			q->acceptUpdate(nullptr);
 		else {
-			/* Otherwise it means that the app responded by linphone_core_accept_call_update
-			 * within the callback, so job is already done. */
+			// Otherwise it means that the app responded by CallSession::acceptUpdate() within the callback,
+			// so job is already done
 		}
 	}
 }

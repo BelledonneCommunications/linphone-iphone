@@ -37,6 +37,7 @@ class MediaSessionPrivate;
 class Call : public Object, public CoreAccessor {
 	friend class CallSessionPrivate;
 	friend class ChatMessage;
+	friend class ChatMessagePrivate;
 	friend class CorePrivate;
 	friend class MediaSessionPrivate;
 
