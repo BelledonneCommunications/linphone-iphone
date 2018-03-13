@@ -100,6 +100,16 @@ LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_identity_address(Linpho
 LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route);
 
 /**
+ * Sets a list of SIP route.
+ * When a route is set, all outgoing calls will go to the route's destination if this proxy
+ * is the default one (see linphone_core_set_default_proxy() ).
+ * @param[in] cfg the #LinphoneProxyConfig
+ * @param[in] routes A \bctbx_list{const char *} of routes
+ * @return -1 if routes are invalid, 0 otherwise.
+**/
+LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_set_routes(LinphoneProxyConfig *cfg, const bctbx_list_t *routes);
+
+/**
  * Sets the registration expiration time in seconds.
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_expires(LinphoneProxyConfig *cfg, int expires);

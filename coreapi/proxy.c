@@ -353,9 +353,9 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
 
 LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 {
-	if (cfg->reg_routes!=NULL){
+	if (cfg->reg_routes != NULL) {
 		bctbx_list_free_with_data(cfg->reg_routes, ms_free);
-		cfg->reg_routes=NULL;
+		cfg->reg_routes = NULL;
 	}
 	if (route!=NULL && route[0] !='\0'){
 		SalAddress *addr;
@@ -376,6 +376,37 @@ LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const c
 	} else {
 		return 0;
 	}
+}
+
+LinphoneStatus linphone_proxy_config_set_routes(LinphoneProxyConfig *cfg, const bctbx_list_t *routes) {
+	if (cfg->reg_routes != NULL) {
+		bctbx_list_free_with_data(cfg->reg_routes, ms_free);
+		cfg->reg_routes = NULL;
+	}
+	bctbx_list_t *iterator = (bctbx_list_t *)routes;
+	while (iterator != NULL) {
+		char *route = (char *)bctbx_list_get_data(iterator);
+		if (route != NULL && route[0] !='\0') {
+			SalAddress *addr;
+			char *tmp;
+			/*try to prepend 'sip:' */
+			if (strstr(route,"sip:") == NULL && strstr(route,"sips:") == NULL) {
+				tmp = ms_strdup_printf("sip:%s",route);
+			} else {
+				tmp = ms_strdup(route);
+			}
+			addr = sal_address_new(tmp);
+			if (addr != NULL) {
+				sal_address_destroy(addr);
+				cfg->reg_routes = bctbx_list_append(cfg->reg_routes, tmp);
+			} else {
+				ms_free(tmp);
+				return -1;
+			}
+		}
+		iterator = bctbx_list_next(iterator);
+	}
+	return 0;
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
@@ -1197,7 +1228,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,identity,"reg_identity")
 	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
-	cfg->reg_routes = linphone_config_get_string_list(config, key, "reg_route", NULL);
+	linphone_proxy_config_set_routes(cfg, linphone_config_get_string_list(config, key, "reg_route", NULL));
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,realm,"realm")
 
