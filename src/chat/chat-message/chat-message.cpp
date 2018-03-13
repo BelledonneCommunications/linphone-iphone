@@ -52,6 +52,11 @@ using namespace B64_NAMESPACE;
 
 LINPHONE_BEGIN_NAMESPACE
 
+ChatMessagePrivate::ChatMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir):fileTransferChatMessageModifier(cr->getCore()->getCCore()->http_provider) {
+	direction = dir;
+	setChatRoom(cr);
+}
+
 void ChatMessagePrivate::setDirection (ChatMessage::Direction dir) {
 	direction = dir;
 }
@@ -829,15 +834,12 @@ bool ChatMessagePrivate::validStateTransition (ChatMessage::State currentState, 
 // -----------------------------------------------------------------------------
 
 ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
-	Object(*new ChatMessagePrivate), CoreAccessor(chatRoom->getCore()) {
-	L_D();
-
-	d->direction = direction;
-	d->setChatRoom(chatRoom);
+	Object(*new ChatMessagePrivate(chatRoom,direction)), CoreAccessor(chatRoom->getCore()) {
 }
 
 ChatMessage::~ChatMessage () {
 	L_D();
+	
 	for (Content *content : d->contents)
 		delete content;
 

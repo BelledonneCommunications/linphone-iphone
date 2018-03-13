@@ -35,7 +35,7 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-FileTransferChatMessageModifier::FileTransferChatMessageModifier () {
+FileTransferChatMessageModifier::FileTransferChatMessageModifier (belle_http_provider_t *prov) : provider(prov) {
 	bgTask.setName("File transfer upload");
 }
 
@@ -48,7 +48,10 @@ void FileTransferChatMessageModifier::setHttpRequest (belle_http_request_t *requ
 }
 
 FileTransferChatMessageModifier::~FileTransferChatMessageModifier () {
-	releaseHttpRequest();
+	if (isFileTransferInProgressAndValid())
+		cancelFileTransfer(); //to avoid body handler to still refference zombie FileTransferChatMessageModifier
+	else
+		releaseHttpRequest();
 }
 
 ChatMessageModifier::Result FileTransferChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
@@ -474,7 +477,7 @@ int FileTransferChatMessageModifier::startHttpTransfer (const string &url, const
 
 	// give msg to listener to be able to start the actual file upload when server answer a 204 No content
 	httpListener = belle_http_request_listener_create_from_callbacks(cbs, this);
-	belle_http_provider_send_request(message->getCore()->getCCore()->http_provider, httpRequest, httpListener);
+	belle_http_provider_send_request(provider, httpRequest, httpListener);
 	return 0;
 
 error:
@@ -941,10 +944,11 @@ void FileTransferChatMessageModifier::cancelFileTransfer () {
 					? L_C_TO_STRING(linphone_core_get_file_transfer_server(message->getCore()->getCCore()))
 					: currentFileContentToTransfer->getFilePath().c_str()
 				);
-			belle_http_provider_cancel_request(message->getCore()->getCCore()->http_provider, httpRequest);
+			
 		} else {
 			lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";
 		}
+		belle_http_provider_cancel_request(provider, httpRequest);
 	}
 	releaseHttpRequest();
 }

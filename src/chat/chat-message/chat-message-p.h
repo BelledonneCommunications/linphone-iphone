@@ -152,6 +152,9 @@ public:
 	void updateInDb ();
 
 private:
+	
+	ChatMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir);
+	
 	static bool validStateTransition (ChatMessage::State currentState, ChatMessage::State newState);
 
 	// TODO: Clean attributes.
@@ -198,7 +201,6 @@ private:
 	bool encryptionPrevented = false;
 	bool toBeStored = true;
 	mutable bool contentsNotLoadedFromDatabase = false;
-
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 
