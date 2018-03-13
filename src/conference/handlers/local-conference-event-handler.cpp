@@ -372,6 +372,10 @@ void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &
 		content,
 		multipart ? "mixed;boundary=---------------------------14737809831466499882746641449" : "conference-info"
 	);
+	// TODO: Activate compression
+	//if (linphone_core_content_encoding_supported(conf->getCore()->getCCore(), "deflate"))
+	//	linphone_content_set_encoding(content, "deflate");
+	// TODO: Activate compression
 	linphone_event_notify(ev, content);
 	linphone_content_unref(content);
 }

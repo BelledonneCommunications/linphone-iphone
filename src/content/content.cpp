@@ -40,7 +40,8 @@ Content::Content (const Content &other) : ClonableObject(*new ContentPrivate), A
 	L_D();
 	d->body = other.getBody();
 	d->contentType = other.getContentType();
-	d->contentDisposition = other.getContentDisposition();;
+	d->contentDisposition = other.getContentDisposition();
+	d->contentEncoding = other.getContentEncoding();
 	d->headers = other.getHeaders();
 }
 
@@ -50,6 +51,7 @@ Content::Content (Content &&other) : ClonableObject(*new ContentPrivate), AppDat
 	d->body = move(dOther->body);
 	d->contentType = move(dOther->contentType);
 	d->contentDisposition = move(dOther->contentDisposition);
+	d->contentEncoding = move(dOther->contentEncoding);
 	d->headers = move(dOther->headers);
 }
 
@@ -71,6 +73,7 @@ Content &Content::operator= (const Content &other) {
 		d->body = other.getBody();
 		d->contentType = other.getContentType();
 		d->contentDisposition = other.getContentDisposition();
+		d->contentEncoding = other.getContentEncoding();
 		d->headers = other.getHeaders();
 	}
 	return *this;
@@ -83,6 +86,7 @@ Content &Content::operator= (Content &&other) {
 	d->body = move(dOther->body);
 	d->contentType = move(dOther->contentType);
 	d->contentDisposition = move(dOther->contentDisposition);
+	d->contentEncoding = move(dOther->contentEncoding);
 	d->headers = move(dOther->headers);
 	return *this;
 }
@@ -92,6 +96,7 @@ bool Content::operator== (const Content &other) const {
 	return d->contentType == other.getContentType() &&
 		d->body == other.getBody() &&
 		d->contentDisposition == other.getContentDisposition() &&
+		d->contentEncoding == other.getContentEncoding() &&
 		d->headers == other.getHeaders();
 }
 
@@ -118,6 +123,16 @@ const string &Content::getContentDisposition () const {
 void Content::setContentDisposition (const string &contentDisposition) {
 	L_D();
 	d->contentDisposition = contentDisposition;
+}
+
+const string &Content::getContentEncoding () const {
+	L_D();
+	return d->contentEncoding;
+}
+
+void Content::setContentEncoding (const string &contentEncoding) {
+	L_D();
+	d->contentEncoding = contentEncoding;
 }
 
 const vector<char> &Content::getBody () const {

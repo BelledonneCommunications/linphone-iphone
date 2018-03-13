@@ -33,6 +33,7 @@ private:
 	std::vector<char> body;
 	ContentType contentType;
 	std::string contentDisposition;
+	std::string contentEncoding;
 	std::list<std::pair<std::string, std::string>> headers;
 
 	L_DECLARE_PUBLIC(Content);

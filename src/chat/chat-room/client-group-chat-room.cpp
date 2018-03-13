@@ -310,6 +310,10 @@ void ClientGroupChatRoom::addParticipants (
 	content.setBody(getResourceLists(addressesList));
 	content.setContentType("application/resource-lists+xml");
 	content.setContentDisposition("recipient-list");
+	// TODO: Activate compression
+	//if (linphone_core_content_encoding_supported(getCore()->getCCore(), "deflate"))
+	//	content.setContentEncoding("deflate");
+	// TODO: Activate compression
 
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
 	if (session)

@@ -54,6 +54,9 @@ public:
 	const std::string &getContentDisposition () const;
 	void setContentDisposition (const std::string &contentDisposition);
 
+	const std::string &getContentEncoding () const;
+	void setContentEncoding (const std::string &contentEncoding);
+
 	const std::vector<char> &getBody () const;
 	std::string getBodyAsString () const;
 	std::string getBodyAsUtf8String () const;
