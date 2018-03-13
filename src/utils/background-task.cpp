@@ -21,39 +21,45 @@
 #include "c-wrapper/internal/c-sal.h"
 #include "logger/logger.h"
 #include "core/core-p.h"
-#include "private.h" //to get access to the Sal
+
+// TODO: Remove me
+#include "private.h" // To get access to the Sal
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-void BackgroundTask::sHandleTimeout(void *context) {
+void BackgroundTask::sHandleTimeout (void *context) {
 	static_cast<BackgroundTask *>(context)->handleTimeout();
 }
 
-int BackgroundTask::sHandleSalTimeout(void *data, unsigned int events){
+int BackgroundTask::sHandleSalTimeout (void *data, unsigned int events) {
 	static_cast<BackgroundTask *>(data)->handleSalTimeout();
 	return BELLE_SIP_STOP;
 }
 
-void BackgroundTask::handleSalTimeout(){
-	lWarning() << "Background task [" << mId << "] with name : [" << mName << "] is now expiring.";
+void BackgroundTask::handleSalTimeout () {
+	lWarning() << "Background task [" << mId << "] with name: [" << mName << "] is now expiring";
 	stop();
 }
 
-void BackgroundTask::start (const std::shared_ptr<Core> &core, int max_duration_seconds) {
+void BackgroundTask::start (const std::shared_ptr<Core> &core, int maxDurationSeconds) {
 	if (mName.empty()) {
-		lError() << "No name was set on background task.";
+		lError() << "No name was set on background task";
 		return;
 	}
 
 	unsigned long newId = sal_begin_background_task(mName.c_str(), sHandleTimeout, this);
-	lInfo() << "Starting background task [" << newId << "] with name : [" << mName << "] and expiration of ["<<max_duration_seconds<<"].";
 	stop();
+	if (newId == 0)
+		return;
+
+	lInfo() << "Starting background task [" << newId << "] with name: [" << mName
+		<< "] and expiration of [" << maxDurationSeconds << "]";
 	mId = newId;
-	if (max_duration_seconds > 0){
+	if (maxDurationSeconds > 0) {
 		mSal = core->getCCore()->sal;
-		mTimeout = mSal->create_timer(sHandleSalTimeout, this, (unsigned int) max_duration_seconds * 1000, mName.c_str());
+		mTimeout = mSal->create_timer(sHandleSalTimeout, this, (unsigned int)maxDurationSeconds * 1000, mName.c_str());
 	}
 }
 
@@ -61,18 +67,19 @@ void BackgroundTask::stop () {
 	if (mId == 0)
 		return;
 
-	lInfo() << "Ending background task [" << mId << "] with name : [" << mName << "].";
+	lInfo() << "Ending background task [" << mId << "] with name: [" << mName << "]";
 	sal_end_background_task(mId);
-	if (mTimeout){
+	if (mTimeout) {
 		mSal->cancel_timer(mTimeout);
 		belle_sip_object_unref(mTimeout);
-		mTimeout = NULL;
+		mTimeout = nullptr;
 	}
 	mId = 0;
 }
 
 void BackgroundTask::handleTimeout () {
-	lWarning() << "Background task [" << mId << "] with name : [" << mName << "] is expiring from OS before completion...";
+	lWarning() << "Background task [" << mId << "] with name: [" << mName
+		<< "] is expiring from OS before completion...";
 	stop();
 }
 

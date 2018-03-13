@@ -139,8 +139,8 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 		if (q->getState() == ChatRoom::State::CreationPending) {
 			IdentityAddress addr(session->getRemoteContactAddress()->asStringUriOnly());
 			q->onConferenceCreated(addr);
-			if (session->getRemoteContactAddress()->hasParam("isfocus")){
-				bgTask.start(q->getCore(), 32); /*it will be stopped when receiving the first notify*/
+			if (session->getRemoteContactAddress()->hasParam("isfocus")) {
+				bgTask.start(q->getCore(), 32); // It will be stopped when receiving the first notify
 				qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
 			}
 		} else if (q->getState() == ChatRoom::State::TerminationPending)
@@ -484,12 +484,13 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 		shared_ptr<AbstractChatRoom> chatRoom = getCore()->findChatRoom(id);
 		if (chatRoom && (chatRoom->getCapabilities() & ChatRoom::Capabilities::Basic)) {
 			BasicToClientGroupChatRoom::migrate(getSharedFromThis(), chatRoom);
-			goto end;
+			d->bgTask.stop();
+			return;
 		}
 	}
 
 	d->chatRoomListener->onChatRoomInsertInDatabaseRequested(getSharedFromThis());
-end:
+
 	d->bgTask.stop();
 	// TODO: Bug. Event is inserted many times.
 	// Avoid this in the future. Deal with signals/slots system.
