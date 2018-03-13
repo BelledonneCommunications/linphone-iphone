@@ -1284,8 +1284,13 @@ static void linphone_call_get_local_ip(LinphoneCall *call, const LinphoneAddress
 	* from the socket that connect to this proxy */
 	if (call->dest_proxy && call->dest_proxy->op){
 		if ((ip = sal_op_get_local_address(call->dest_proxy->op, NULL)) != NULL){
-			ms_message("Found media local-ip from signaling.");
-			goto found;
+			if (strchr(ip, ':') != NULL && af == AF_INET){
+				/*case where we've decided to use IPv4 in select_outgoing_ip_version(), but the signaling local ip address is IPv6*/
+				/*we'll use the default media localip*/
+			}else{
+				ms_message("Found media local-ip from signaling.");
+				goto found;
+			}
 		}
 	}
 
