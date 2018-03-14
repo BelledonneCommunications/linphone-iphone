@@ -404,15 +404,14 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool on
 
 	const LinphoneAddress *lContactAddr = linphone_event_get_remote_contact(lev);
 	char *contactAddrStr = linphone_address_as_string(lContactAddr);
-	Address contactAddr(contactAddrStr);
+	IdentityAddress contactAddr(contactAddrStr);
 	bctbx_free(contactAddrStr);
-	if (contactAddr.getUriParamValue("gr").empty()) {
+	shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(contactAddr);
+	if (!device) {
 		lError() << "received SUBSCRIBE for conference: " << d->conf->getConferenceAddress().asString()
-			<< "has no GRUU in it's contact address:" << contactAddr.asString() << ", no NOTIFY sent.";
+			<< "device sending subscribe: " << contactAddr.asString() << " is not known, no NOTIFY sent.";
 		return;
 	}
-	IdentityAddress gruu(contactAddr);
-	shared_ptr<ParticipantDevice> device = participant->getPrivate()->addDevice(gruu);
 
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
 		unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
