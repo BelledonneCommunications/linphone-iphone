@@ -256,7 +256,7 @@ static void call_terminated(SalOp *op, const char *from) {
 }
 
 static void call_failure(SalOp *op) {
-	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	std::shared_ptr<LinphonePrivate::CallSession> session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer())->getSharedFromThis();
 	if (!session) {
 		ms_warning("Failure reported on already terminated CallSession");
 		return;
