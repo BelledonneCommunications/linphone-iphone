@@ -236,23 +236,23 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 
 const string &ChatMessagePrivate::getAppdata () const {
 	for (const Content *c : getContents()) {
-		if (c->isFile()) {
-			FileContent *fileContent = (FileContent *)c;
-			return fileContent->getAppData("legacy");
+		if (!c->getAppData("legacy").empty()) {
+			return c->getAppData("legacy");
 		}
 	}
 	return Utils::getEmptyConstRefObject<string>();
 }
 
 void ChatMessagePrivate::setAppdata (const string &data) {
-	for (const Content *c : getContents()) {
-		if (c->isFile()) {
-			FileContent *fileContent = (FileContent *)c;
-			fileContent->setAppData("legacy", data);
-			break;
-		}
+	bool contentFound = false;
+	for (Content *c : getContents()) {
+		c->setAppData("legacy", data);
+		contentFound = true;
+		break;
 	}
-	updateInDb();
+	if (contentFound) {
+		updateInDb();
+	}
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
