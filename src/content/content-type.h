@@ -71,6 +71,7 @@ public:
 	static const ContentType Multipart;
 	static const ContentType PlainText;
 	static const ContentType ResourceLists;
+	static const ContentType Rlmi;
 	static const ContentType Sdp;
 
 private:

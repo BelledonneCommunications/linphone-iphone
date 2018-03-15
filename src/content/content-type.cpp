@@ -48,6 +48,7 @@ const ContentType ContentType::ImIsComposing("application/im-iscomposing+xml");
 const ContentType ContentType::Multipart("multipart/mixed");
 const ContentType ContentType::PlainText("text/plain");
 const ContentType ContentType::ResourceLists("application/resource-lists+xml");
+const ContentType ContentType::Rlmi("application/rlmi+xml");
 const ContentType ContentType::Sdp("application/sdp");
 
 // -----------------------------------------------------------------------------
@@ -186,6 +187,7 @@ bool ContentType::isFile (const ContentType &contentType) {
 		contentType != Imdn &&
 		contentType != ImIsComposing &&
 		contentType != ResourceLists &&
+		contentType != Rlmi &&
 		contentType != Sdp &&
 		contentType != Cpim &&
 		contentType != ConferenceInfo;

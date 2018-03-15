@@ -183,7 +183,7 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 RemoteConference(core, me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 	L_D();
-	
+
 	IdentityAddress focusAddr(uri);
 	dConference->focus = make_shared<Participant>(focusAddr);
 	dConference->focus->getPrivate()->addDevice(focusAddr);
@@ -215,7 +215,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
 	dConference->eventHandler->setLastNotify(lastNotifyId);
-	dConference->eventHandler->subscribe(getChatRoomId());
+	// dConference->eventHandler->subscribe(getChatRoomId());
 }
 
 ClientGroupChatRoom::~ClientGroupChatRoom () {
@@ -478,7 +478,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	L_D();
 	d->setState(ChatRoom::State::Created);
-	
+
 	if (getParticipantCount() == 1) {
 		ChatRoomId id(getParticipants().front()->getAddress(), getMe()->getAddress());
 		shared_ptr<AbstractChatRoom> chatRoom = getCore()->findChatRoom(id);

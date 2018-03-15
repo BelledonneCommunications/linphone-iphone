@@ -101,6 +101,7 @@ def main(argv = None):
 	generate("xml")
 	generate("conference-info")
 	generate("resource-lists")
+	generate("rlmi")
 
 if __name__ == "__main__":
 	sys.exit(main())
