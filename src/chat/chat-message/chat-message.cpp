@@ -722,7 +722,7 @@ void ChatMessagePrivate::send () {
 	if (internalContent.isEmpty()) {
 		if (contents.size() > 0) {
 			internalContent = *(contents.front());
-		} else if (!externalBodyUrl.empty()) { // When using external body url, there is no content
+		} else if (externalBodyUrl.empty()) { // When using external body url, there is no content
 			lError() << "Trying to send a message without any content !";
 			return;
 		}
@@ -730,7 +730,7 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (!externalBodyUrl.empty()) {
-		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl);
+		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
 		msgOp->send_message(content_type, NULL);
 		ms_free(content_type);
 	} else if (internalContent.getContentType().isValid()) {

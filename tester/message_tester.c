@@ -730,6 +730,52 @@ static void file_transfer_2_messages_simultaneously(void) {
 	}
 }
 
+static void file_transfer_external_body_url(bool_t use_file_body_handler_in_download) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	LinphoneChatRoom* chat_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
+	LinphoneChatMessage* msg = linphone_chat_room_create_message(chat_room, NULL);
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	char *receive_filepath = bc_tester_file("receive_file.dump");
+
+	linphone_chat_message_set_external_body_url(msg, "https://www.linphone.org/img/linphone-open-source-voip-projectX2.png");
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_room_send_chat_message(chat_room, msg);
+	linphone_chat_message_unref(msg);
+
+	BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceivedWithFile, 1, 60000));
+
+	if (pauline->stat.last_received_chat_message) {
+		LinphoneChatMessage *recv_msg = pauline->stat.last_received_chat_message;
+		cbs = linphone_chat_message_get_callbacks(recv_msg);
+		linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
+		linphone_chat_message_cbs_set_file_transfer_recv(cbs, file_transfer_received);
+		linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
+		if (use_file_body_handler_in_download) {
+			/* Remove any previously downloaded file */
+			remove(receive_filepath);
+			linphone_chat_message_set_file_transfer_filepath(recv_msg, receive_filepath);
+		}
+		linphone_chat_message_download_file(recv_msg);
+
+		/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
+		BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneFileTransferDownloadSuccessful, 1, 55000));
+	}
+
+	remove(receive_filepath);
+	bc_free(receive_filepath);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void file_transfer_using_external_body_url(void) {
+	file_transfer_external_body_url(FALSE);
+}
+
+static void file_transfer_using_external_body_url_2(void) {
+	file_transfer_external_body_url(TRUE);
+}
+
 static void text_message_denied(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
@@ -2439,6 +2485,8 @@ test_t message_tests[] = {
 	TEST_NO_TAG("Transfer message upload cancelled", transfer_message_upload_cancelled),
 	TEST_NO_TAG("Transfer message download cancelled", transfer_message_download_cancelled),
 	TEST_NO_TAG("Transfer 2 messages simultaneously", file_transfer_2_messages_simultaneously),
+	TEST_NO_TAG("Transfer using external body URL", file_transfer_using_external_body_url),
+	TEST_NO_TAG("Transfer using external body URL 2", file_transfer_using_external_body_url_2),
 	TEST_NO_TAG("Text message denied", text_message_denied),
 	TEST_NO_TAG("IsComposing notification", is_composing_notification),
 	TEST_NO_TAG("IMDN notifications", imdn_notifications),

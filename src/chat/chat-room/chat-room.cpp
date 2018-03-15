@@ -26,6 +26,7 @@
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "sip-tools/sip-headers.h"
+#include "logger/logger.h"
 
 // =============================================================================
 
@@ -194,6 +195,7 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 
 	Content content;
 	if (message->url && strcmp(message->content_type, ContentType::ExternalBody.asString().c_str()) == 0) {
+		lInfo() << "Received a message with an external body URL " << message->url;
 		content.setContentType(ContentType::FileTransfer);
 		content.setBody(msg->getPrivate()->createFakeFileTransferFromUrl(message->url));
 	} else {
