@@ -20,25 +20,38 @@
 #ifndef _L_REMOTE_CONFERENCE_LIST_EVENT_HANDLER_H_
 #define _L_REMOTE_CONFERENCE_LIST_EVENT_HANDLER_H_
 
+#include <list>
+#include <map>
+#include <memory>
+
+#include "linphone/types.h"
+#include "linphone/utils/general.h"
+
+#include "chat/chat-room/chat-room-id.h"
+#include "content/content.h"
+#include "core/core-accessor.h"
+
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class LinphoneEvent;
+class Address;
 class RemoteConferenceEventHandler;
 
-class RemoteConferenceListEventHandler : public Object {
+class RemoteConferenceListEventHandler : public Object, public CoreAccessor {
 public:
 	void subscribe ();
 	void unsubscribe ();
-	void notifyReceived ();
+	void notifyReceived (Content *multipart);
 	void addHandler (std::shared_ptr<RemoteConferenceEventHandler> handler);
 	std::shared_ptr<RemoteConferenceEventHandler> findHandler (const ChatRoomId &chatRoomId) const;
 	const std::list<std::shared_ptr<RemoteConferenceEventHandler>> &getHandlers () const;
 
 private:
 	std::list<std::shared_ptr<RemoteConferenceEventHandler>> handlers;
-	LinphoneEvent *lev;
+	LinphoneEvent *lev = nullptr;
+
+	std::map<Address, Address> parseRlmi (const std::string &xmlBody) const;
 };
 
 LINPHONE_END_NAMESPACE

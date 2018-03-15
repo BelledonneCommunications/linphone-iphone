@@ -73,8 +73,10 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/conference.h
 	conference/handlers/local-conference-event-handler-p.h
 	conference/handlers/local-conference-event-handler.h
+	conference/handlers/local-conference-list-event-handler.h
 	conference/handlers/remote-conference-event-handler-p.h
 	conference/handlers/remote-conference-event-handler.h
+	conference/handlers/remote-conference-list-event-handler.h
 	conference/local-conference-p.h
 	conference/local-conference.h
 	conference/params/call-session-params-p.h
@@ -156,6 +158,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	variant/variant.h
 	xml/conference-info.h
 	xml/resource-lists.h
+	xml/rlmi.h
 	xml/xml.h
 )
 
@@ -206,7 +209,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	chat/notification/is-composing.cpp
 	conference/conference.cpp
 	conference/handlers/local-conference-event-handler.cpp
+	conference/handlers/local-conference-list-event-handler.cpp
 	conference/handlers/remote-conference-event-handler.cpp
+	conference/handlers/remote-conference-list-event-handler.cpp
 	conference/local-conference.cpp
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
@@ -269,6 +274,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	variant/variant.cpp
 	xml/conference-info.cpp
 	xml/resource-lists.cpp
+	xml/rlmi.cpp
 	xml/xml.cpp
 )
 

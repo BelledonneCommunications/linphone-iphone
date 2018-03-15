@@ -34,6 +34,14 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+const list<pair<string, string>>::const_iterator ContentPrivate::findHeader (const string &headerName) const {
+	return findIf(headers, [&headerName](const pair<string, string> &pair) {
+		return pair.first == headerName;
+	});
+}
+
+// =============================================================================
+
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
 Content::Content (const Content &other) : ClonableObject(*new ContentPrivate), AppDataContainer(other) {
@@ -208,16 +216,18 @@ const list<pair<string, string>> &Content::getHeaders () const {
 
 void Content::removeHeader (const string &headerName) {
 	L_D();
-	auto it = findHeader(headerName);
+	auto it = d->findHeader(headerName);
 	if (it != d->headers.cend())
 		d->headers.remove(*it);
 }
 
-list<pair<string, string>>::const_iterator Content::findHeader (const string &headerName) const {
+const string &Content::getHeaderValue (const string &headerName) const {
 	L_D();
-	return findIf(d->headers, [&headerName](const pair<string, string> &pair) {
-		return pair.first == headerName;
-	});
+	auto it = d->findHeader(headerName);
+	if (it != d->headers.cend())
+		return (*it).second;
+
+	return Utils::getEmptyConstRefObject<string>();
 }
 
 LinphoneContent *Content::toLinphoneContent () const {
