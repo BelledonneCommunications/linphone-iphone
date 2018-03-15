@@ -256,6 +256,9 @@ void ChatMessagePrivate::setAppdata (const string &data) {
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
+	if (!externalBodyUrl.empty()) {
+		return externalBodyUrl;
+	}
 	if (hasFileTransferContent()) {
 		FileTransferContent *content = (FileTransferContent*) getFileTransferContent();
 		return content->getFileUrl();
@@ -264,7 +267,7 @@ const string &ChatMessagePrivate::getExternalBodyUrl () const {
 }
 
 void ChatMessagePrivate::setExternalBodyUrl (const string &url) {
-	//TODO
+	externalBodyUrl = url;
 }
 
 const ContentType &ChatMessagePrivate::getContentType () {
@@ -719,14 +722,18 @@ void ChatMessagePrivate::send () {
 	if (internalContent.isEmpty()) {
 		if (contents.size() > 0) {
 			internalContent = *(contents.front());
-		} else {
+		} else if (!externalBodyUrl.empty()) { // When using external body url, there is no content
 			lError() << "Trying to send a message without any content !";
 			return;
 		}
 	}
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-	if (internalContent.getContentType().isValid()) {
+	if (!externalBodyUrl.empty()) {
+		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl);
+		msgOp->send_message(content_type, NULL);
+		ms_free(content_type);
+	} else if (internalContent.getContentType().isValid()) {
 		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());

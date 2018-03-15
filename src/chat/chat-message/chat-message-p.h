@@ -163,6 +163,7 @@ private:
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string imdnId;
 	std::string rttMessage;
+	std::string externalBodyUrl;
 	bool isSecured = false;
 	mutable bool isReadOnly = false;
 	Content internalContent;
