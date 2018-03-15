@@ -968,4 +968,8 @@ void FileTransferChatMessageModifier::releaseHttpRequest () {
 	}
 }
 
+string FileTransferChatMessageModifier::createFakeFileTransferFromUrl(const string &url) {
+	return ""; //TODO
+}
+
 LINPHONE_END_NAMESPACE

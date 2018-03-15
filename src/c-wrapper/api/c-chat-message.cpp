@@ -108,7 +108,7 @@ const char *linphone_chat_message_get_external_body_url(const LinphoneChatMessag
 }
 
 void linphone_chat_message_set_external_body_url(LinphoneChatMessage *msg, const char *url) {
-
+	L_GET_PRIVATE_FROM_C_OBJECT(msg)->setExternalBodyUrl(L_C_TO_STRING(url));
 }
 
 time_t linphone_chat_message_get_time(const LinphoneChatMessage *msg) {

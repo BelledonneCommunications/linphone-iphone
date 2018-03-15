@@ -263,6 +263,10 @@ const string &ChatMessagePrivate::getExternalBodyUrl () const {
 	return Utils::getEmptyConstRefObject<string>();
 }
 
+void ChatMessagePrivate::setExternalBodyUrl (const string &url) {
+	//TODO
+}
+
 const ContentType &ChatMessagePrivate::getContentType () {
 	loadContentsFromDatabase();
 	if (direction == ChatMessage::Direction::Incoming) {
@@ -388,6 +392,10 @@ void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
 	L_Q();
 	int errorCode = 0;
 	fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
+}
+
+std::string ChatMessagePrivate::createFakeFileTransferFromUrl(const std::string &url) {
+	return fileTransferChatMessageModifier.createFakeFileTransferFromUrl(url);
 }
 
 void ChatMessagePrivate::setChatRoom (const shared_ptr<AbstractChatRoom> &cr) {

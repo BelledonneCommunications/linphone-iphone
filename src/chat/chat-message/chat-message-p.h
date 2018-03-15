@@ -105,6 +105,7 @@ public:
 	std::string getSalCustomHeaderValue (const std::string &name);
 
 	void loadFileTransferUrlFromBodyToContent ();
+	std::string createFakeFileTransferFromUrl(const std::string &url);
 
 	void setChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 
@@ -127,6 +128,7 @@ public:
 	void setAppdata (const std::string &appData);
 
 	const std::string &getExternalBodyUrl () const;
+	void setExternalBodyUrl (const std::string &url);
 
 	bool hasTextContent () const;
 	const Content* getTextContent () const;
