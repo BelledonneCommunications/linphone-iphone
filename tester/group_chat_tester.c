@@ -2874,7 +2874,6 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 	linphone_core_manager_destroy(pauline2);
 }
 
-#if 0
 static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	LinphoneCoreManager *marie1 = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
@@ -2925,15 +2924,10 @@ static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	coresManagerList = bctbx_list_concat(coresManagerList, newCoresManagerList);
 	coresList = bctbx_list_concat(coresList, newCoresList);
 
-	// Marie2 creates a new one-to-one chat room with Pauline
+	// Marie2 gets the one-to-one chat room with Pauline
 	stats initialMarie2Stats = marie2->stat;
-	participantsAddresses = bctbx_list_append(NULL, linphone_address_new(linphone_core_get_identity(pauline->lc)));
-	LinphoneChatRoom *marie2Cr = create_chat_room_client_side(coresList, marie2, &initialMarie2Stats, participantsAddresses, initialSubject, -1);
+	LinphoneChatRoom *marie2Cr = check_creation_chat_room_client_side(coresList, marie2, &initialMarie2Stats, confAddr, initialSubject, 1, FALSE);
 	BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marie2Cr) & LinphoneChatRoomCapabilitiesOneToOne);
-
-	// Check that the created address is the same as before
-	const LinphoneAddress *newConfAddr = linphone_chat_room_get_conference_address(marie2Cr);
-	BC_ASSERT_TRUE(linphone_address_weak_equal(confAddr, newConfAddr));
 
 	// Marie2 sends a new message
 	textMessage = "Fine and you?";
@@ -2963,7 +2957,6 @@ static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(pauline);
 }
-#endif
 
 static void group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
@@ -3278,7 +3271,7 @@ test_t group_chat_tests[] = {
 	TEST_NO_TAG("Unique one-to-one chatroom", group_chat_room_unique_one_to_one_chat_room),
 	TEST_NO_TAG("Unique one-to-one chatroom recreated from message", group_chat_room_unique_one_to_one_chat_room_recreated_from_message),
 	TEST_ONE_TAG("Unique one-to-one chatroom recreated from message with app restart", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_with_app_restart, "LeaksMemory"),
-	//TEST_NO_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device),
+	TEST_NO_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device),
 	TEST_NO_TAG("New unique one-to-one chatroom after both participants left", group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left),
 	TEST_NO_TAG("Unique one-to-one chatroom re-created from the party that deleted it, with inactive devices", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2),
 	TEST_NO_TAG("IMDN for group chat room", imdn_for_group_chat_room),
