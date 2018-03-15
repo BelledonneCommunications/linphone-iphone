@@ -1388,7 +1388,7 @@ static void on_refer_received(SalOp *op, const SalAddress *refer_to) {
 	Sal *sal = sal_op_get_sal(op);
 	LinphoneCoreManager *receiver = (LinphoneCoreManager*)sal_get_user_pointer(sal);
 	receiver->stat.number_of_LinphoneCallRefered++;
-	sal_release_op(op);
+	
 }
 
 void resend_refer_other_devices(void) {
