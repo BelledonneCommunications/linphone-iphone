@@ -2238,6 +2238,7 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 }
 
 void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
+	L_Q();
 	MediaStream *ms = (streamIndex == mainAudioStreamIndex) ? &audioStream->ms :
 		(streamIndex == mainVideoStreamIndex ? &videoStream->ms : &textStream->ms);
 	if (ms) {
@@ -2272,14 +2273,28 @@ void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
 			stats = videoStats;
 		else
 			stats = textStats;
+
+		OrtpEventType evt = ortp_event_get_type(ev);
+		OrtpEventData *evd = ortp_event_get_data(ev);
+
+		/*This MUST be done before any call to "linphone_call_stats_fill" since it has ownership over evd->packet*/
+		if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+			do {
+				if (evd->packet && rtcp_is_RTPFB(evd->packet)) {
+					if (rtcp_RTPFB_get_type(evd->packet) == RTCP_RTPFB_TMMBR) {
+						listener->onTmmbrReceived(q->getSharedFromThis(), streamIndex, (int)rtcp_RTPFB_tmmbr_get_max_bitrate(evd->packet));
+					}
+				}
+			} while (rtcp_next_packet(evd->packet));
+			rtcp_rewind(evd->packet);
+		}
+
 		/* And yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
 		 * in this loop*/
 		ms = getMediaStream(streamIndex);
 		if (ms)
 			linphone_call_stats_fill(stats, ms, ev);
 		notifyStatsUpdated(streamIndex);
-		OrtpEventType evt = ortp_event_get_type(ev);
-		OrtpEventData *evd = ortp_event_get_data(ev);
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED) {
 			if (streamIndex == mainAudioStreamIndex)
 				audioStreamEncryptionChanged(!!evd->info.zrtp_stream_encrypted);

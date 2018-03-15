@@ -206,6 +206,10 @@ void linphone_call_notify_ack_processing (LinphoneCall *call, LinphoneHeaders *m
 	NOTIFY_IF_EXIST(AckProcessing, ack_processing, call, msg, is_received)
 }
 
+void linphone_call_notify_tmmbr_received (LinphoneCall *call, int stream_index, int tmmbr) {
+	NOTIFY_IF_EXIST(TmmbrReceived, tmmbr_received, call, stream_index, tmmbr)
+}
+
 
 // =============================================================================
 // Public functions.

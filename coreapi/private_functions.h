@@ -47,6 +47,7 @@ void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCal
 void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
 void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
 void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received);
+void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
