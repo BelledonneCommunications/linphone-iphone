@@ -971,7 +971,8 @@ void FileTransferChatMessageModifier::releaseHttpRequest () {
 string FileTransferChatMessageModifier::createFakeFileTransferFromUrl(const string &url) {
 	string fileName = url.substr(url.find_last_of("/") + 1);
 	stringstream fakeXml;
-	fakeXml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><file xmlns=\"urn:gsma:params:xml:ns:rcs:rcs:fthttp\">\r\n";
+	fakeXml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+	fakeXml << "<file xmlns=\"urn:gsma:params:xml:ns:rcs:rcs:fthttp\">\r\n";
 	fakeXml << "<file-info type=\"file\">\r\n";
 	fakeXml << "<file-name>" << fileName << "</file-name>\r\n";
 	fakeXml << "<content-type>application/binary</content-type>\r\n";
