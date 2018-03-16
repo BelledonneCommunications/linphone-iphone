@@ -20,6 +20,7 @@
 #ifndef _L_CONTENT_P_H_
 #define _L_CONTENT_P_H_
 
+#include "content-disposition.h"
 #include "content-type.h"
 #include "content.h"
 #include "object/clonable-object-p.h"
@@ -32,7 +33,7 @@ class ContentPrivate : public ClonableObjectPrivate {
 private:
 	std::vector<char> body;
 	ContentType contentType;
-	std::string contentDisposition;
+	ContentDisposition contentDisposition;
 	std::string contentEncoding;
 	std::list<std::pair<std::string, std::string>> headers;
 

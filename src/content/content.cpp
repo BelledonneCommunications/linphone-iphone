@@ -110,17 +110,12 @@ void Content::setContentType (const ContentType &contentType) {
 	d->contentType = contentType;
 }
 
-void Content::setContentType (const string &contentType) {
-	L_D();
-	d->contentType = ContentType(contentType);
-}
-
-const string &Content::getContentDisposition () const {
+const ContentDisposition &Content::getContentDisposition () const {
 	L_D();
 	return d->contentDisposition;
 }
 
-void Content::setContentDisposition (const string &contentDisposition) {
+void Content::setContentDisposition (const ContentDisposition &contentDisposition) {
 	L_D();
 	d->contentDisposition = contentDisposition;
 }

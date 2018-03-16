@@ -427,7 +427,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	shared_ptr<ChatMessage> msg = q->getChatRoom()->createChatMessage();
 
 	Content *content = new Content();
-	content->setContentType("message/imdn+xml");
+	content->setContentType(ContentType::Imdn);
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(*content);
 

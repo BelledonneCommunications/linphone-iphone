@@ -27,6 +27,8 @@
 #include "conference/participant-p.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
+#include "content/content-disposition.h"
+#include "content/content-type.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
 #include "sal/refer-op.h"
@@ -308,8 +310,8 @@ void ClientGroupChatRoom::addParticipants (
 
 	Content content;
 	content.setBody(getResourceLists(addressesList));
-	content.setContentType("application/resource-lists+xml");
-	content.setContentDisposition("recipient-list");
+	content.setContentType(ContentType::ResourceLists);
+	content.setContentDisposition(ContentDisposition::RecipientList);
 	// TODO: Activate compression
 	//if (linphone_core_content_encoding_supported(getCore()->getCCore(), "deflate"))
 	//	content.setContentEncoding("deflate");

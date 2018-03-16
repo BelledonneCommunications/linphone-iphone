@@ -50,7 +50,7 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	if (first_file_transfer) {
 		char *send_filepath = bc_tester_res("sounds/sintel_trailer_opus_h264.mkv");
 		FileContent *content = new FileContent();
-		content->setContentType("video/mkv");
+		content->setContentType(ContentType("video/mkv"));
 		content->setFilePath(send_filepath);
 		content->setFileName("sintel_trailer_opus_h264.mkv");
 		marieMessage->addContent(*content);
@@ -65,7 +65,7 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	if (second_file_transfer) {
 		char *send_filepath = bc_tester_res("vcards/vcards.vcf");
 		FileContent *content = new FileContent();
-		content->setContentType("file/vcf");
+		content->setContentType(ContentType("file/vcf"));
 		content->setFilePath(send_filepath);
 		content->setFileName("vcards.vcf");
 		marieMessage->addContent(*content);
