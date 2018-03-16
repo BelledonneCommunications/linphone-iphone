@@ -3422,11 +3422,16 @@ LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *
 	 system.
 */
 static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *dest){
-	bctbx_list_t *ret=NULL;
-	const char *local_route=linphone_proxy_config_get_route(proxy);
-	const LinphoneAddress *srv_route=linphone_proxy_config_get_service_route(proxy);
-	if (local_route){
-		ret=bctbx_list_append(ret,sal_address_new(local_route));
+	bctbx_list_t *ret = NULL;
+	const bctbx_list_t *proxy_routes = linphone_proxy_config_get_routes(proxy);
+	bctbx_list_t *proxy_routes_iterator = (bctbx_list_t *)proxy_routes;
+	const LinphoneAddress *srv_route = linphone_proxy_config_get_service_route(proxy);
+	while (proxy_routes_iterator) {
+		const char *local_route = (const char *)bctbx_list_get_data(proxy_routes_iterator);
+		if (local_route) {
+			ret = bctbx_list_append(ret, sal_address_new(local_route));
+		}
+		proxy_routes_iterator = bctbx_list_next(proxy_routes_iterator);
 	}
 	if (srv_route){
 		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_OBJECT(srv_route)->getInternalAddress()));
