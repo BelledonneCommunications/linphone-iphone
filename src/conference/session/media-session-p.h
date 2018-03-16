@@ -74,7 +74,7 @@ public:
 	void setParams (MediaSessionParams *msp);
 	void setRemoteParams (MediaSessionParams *msp);
 
-	IceSession *getIceSession () const { return iceAgent->getIceSession(); }
+	IceSession *getIceSession () const { return iceAgent ? iceAgent->getIceSession() : nullptr; }
 
 	SalMediaDescription *getLocalDesc () const { return localDesc; }
 
@@ -284,8 +284,8 @@ private:
 	int mainTextStreamIndex = LINPHONE_CALL_STATS_TEXT;
 
 	LinphoneNatPolicy *natPolicy = nullptr;
-	StunClient *stunClient = nullptr;
-	IceAgent *iceAgent = nullptr;
+	std::unique_ptr<StunClient> stunClient;
+	std::unique_ptr<IceAgent> iceAgent;
 
 	// The address family to prefer for RTP path, guessed from signaling path.
 	int af;

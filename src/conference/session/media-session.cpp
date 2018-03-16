@@ -1177,7 +1177,7 @@ string MediaSessionPrivate::getPublicIpForStream (int streamIndex) {
 void MediaSessionPrivate::runStunTestsIfNeeded () {
 	L_Q();
 	if (linphone_nat_policy_stun_enabled(natPolicy) && !(linphone_nat_policy_ice_enabled(natPolicy) || linphone_nat_policy_turn_enabled(natPolicy))) {
-		stunClient = new StunClient(q->getCore());
+		stunClient = makeUnique<StunClient>(q->getCore());
 		int ret = stunClient->run(mediaPorts[mainAudioStreamIndex].rtpPort, mediaPorts[mainVideoStreamIndex].rtpPort, mediaPorts[mainTextStreamIndex].rtpPort);
 		if (ret >= 0)
 			pingTime = ret;
@@ -3939,7 +3939,7 @@ MediaSession::MediaSession (const shared_ptr<Core> &core, shared_ptr<Participant
 	d->setPortConfig(d->mainTextStreamIndex, make_pair(minPort, maxPort));
 
 	memset(d->sessions, 0, sizeof(d->sessions));
-	d->iceAgent = new IceAgent(*this);
+	d->iceAgent = makeUnique<IceAgent>(*this);
 
 	lInfo() << "New MediaSession [" << this << "] initialized (LinphoneCore version: " << linphone_core_get_version() << ")";
 }
@@ -3957,9 +3957,6 @@ MediaSession::~MediaSession () {
 		linphone_call_stats_unref(d->textStats);
 	if (d->natPolicy)
 		linphone_nat_policy_unref(d->natPolicy);
-	if (d->stunClient)
-		delete d->stunClient;
-	delete d->iceAgent;
 	if (d->localDesc)
 		sal_media_description_unref(d->localDesc);
 	if (d->biggestDesc)
