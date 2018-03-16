@@ -1228,7 +1228,10 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,identity,"reg_identity")
 	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
-	linphone_proxy_config_set_routes(cfg, linphone_config_get_string_list(config, key, "reg_route", NULL));
+	bctbx_list_t *routes = linphone_config_get_string_list(config, key, "reg_route", NULL);
+	linphone_proxy_config_set_routes(cfg, routes);
+	if (routes)
+		bctbx_list_free_with_data(routes, (bctbx_list_free_func)bctbx_free);
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,realm,"realm")
 
