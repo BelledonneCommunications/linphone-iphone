@@ -524,4 +524,10 @@ void LocalConferenceEventHandler::setChatRoomId (const ChatRoomId &chatRoomId) {
 	d->chatRoomId = chatRoomId;
 }
 
+ChatRoomId LocalConferenceEventHandler::getChatRoomId () const {
+	L_D();
+	return d->chatRoomId;
+}
+
+
 LINPHONE_END_NAMESPACE

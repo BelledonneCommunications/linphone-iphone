@@ -51,6 +51,7 @@ public:
 
 	void setLastNotify (unsigned int lastNotify);
 	void setChatRoomId (const ChatRoomId &chatRoomId);
+	ChatRoomId getChatRoomId () const;
 
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);
