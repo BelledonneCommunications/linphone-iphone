@@ -147,7 +147,13 @@ void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
 		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, (LinphoneChatMessageState)state);
 
-	updateInDb();
+	if (state == ChatMessage::State::FileTransferDone && !hasFileTransferContent()) {
+		// We wait until the file has been downloaded to send the displayed IMDN
+		q->sendDisplayNotification();
+		setState(ChatMessage::State::Displayed);
+	} else {
+		updateInDb();
+	}
 }
 
 belle_http_request_t *ChatMessagePrivate::getHttpRequest () const {

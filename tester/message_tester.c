@@ -503,9 +503,13 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 	} else {
 		BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1, 60000));
 		if (marie->stat.last_received_chat_message) {
+			LinphoneChatRoom *marie_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
+			linphone_chat_room_mark_as_read(marie_room);
+			// We shoudln't get displayed IMDN until file has been downloaded
+			BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDisplayed,1, 5000));
+
 			LinphoneChatMessage *recv_msg;
 			if (download_from_history) {
-				LinphoneChatRoom *marie_room = linphone_core_get_chat_room(marie->lc, pauline->identity);
 				msg_list = linphone_chat_room_get_history(marie_room,1);
 				BC_ASSERT_PTR_NOT_NULL(msg_list);
 				if (!msg_list)  goto end;
@@ -529,12 +533,13 @@ void transfer_message_base2(LinphoneCoreManager* marie, LinphoneCoreManager* pau
 				belle_http_provider_set_recv_error(linphone_core_get_http_provider(marie->lc), -1);
 				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneMessageNotDelivered,1, 10000));
 				belle_http_provider_set_recv_error(linphone_core_get_http_provider(marie->lc), 0);
+				BC_ASSERT_FALSE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDisplayed,1, 5000));
 			} else {
 				/* wait for a long time in case the DNS SRV resolution takes times - it should be immediate though */
 				if (BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneFileTransferDownloadSuccessful,1,55000))) {
 					compare_files(send_filepath, receive_filepath);
-
 				}
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageDisplayed,1, 5000));
 			}
 		}
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,2, int, "%d"); //sent twice because of file transfer
@@ -549,41 +554,48 @@ end:
 }
 
 void transfer_message_base(bool_t upload_error, bool_t download_error, bool_t use_file_body_handler_in_upload,
-						   bool_t use_file_body_handler_in_download, bool_t download_from_history) {
+						   bool_t use_file_body_handler_in_download, bool_t download_from_history, bool_t enable_imdn) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+		if (enable_imdn) {
+			lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "deliver_imdn", 1);
+			lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "deliver_imdn", 1);
+			linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
+			linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
+		}
 		transfer_message_base2(marie,pauline,upload_error,download_error, use_file_body_handler_in_upload, use_file_body_handler_in_download, download_from_history);
 		linphone_core_manager_destroy(pauline);
 		linphone_core_manager_destroy(marie);
 	}
 }
 static void transfer_message(void) {
-	transfer_message_base(FALSE, FALSE, FALSE, FALSE, FALSE);
+	transfer_message_base(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
 }
 
 static void transfer_message_2(void) {
-	transfer_message_base(FALSE, FALSE, TRUE, FALSE, FALSE);
+	transfer_message_base(FALSE, FALSE, TRUE, FALSE, FALSE, TRUE);
 }
 
 static void transfer_message_3(void) {
-	transfer_message_base(FALSE, FALSE, FALSE, TRUE, FALSE);
+	transfer_message_base(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE);
 }
 
 static void transfer_message_4(void) {
-	transfer_message_base(FALSE, FALSE, TRUE, TRUE, FALSE);
+	transfer_message_base(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE);
 }
 
 static void transfer_message_from_history(void) {
-	transfer_message_base(FALSE, FALSE, TRUE, TRUE, TRUE);
+	transfer_message_base(FALSE, FALSE, TRUE, TRUE, TRUE, TRUE);
 }
 
 static void transfer_message_with_upload_io_error(void) {
-	transfer_message_base(TRUE, FALSE, FALSE, FALSE, FALSE);
+	transfer_message_base(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE);
 }
 
 static void transfer_message_with_download_io_error(void) {
-	transfer_message_base(FALSE, TRUE, FALSE, FALSE, FALSE);
+	transfer_message_base(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE);
 }
 
 static void transfer_message_upload_cancelled(void) {
@@ -2176,6 +2188,10 @@ void file_transfer_with_http_proxy(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 		LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+		lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "deliver_imdn", 1);
+		lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "deliver_imdn", 1);
+		linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
+		linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(pauline->lc));
 		linphone_core_set_http_proxy_host(marie->lc, "sip.linphone.org");
 		transfer_message_base2(marie,pauline,FALSE,FALSE,FALSE,FALSE,FALSE);
 		linphone_core_manager_destroy(pauline);
