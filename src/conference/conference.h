@@ -34,6 +34,7 @@ class CallSession;
 class CallSessionListener;
 class CallSessionPrivate;
 class ConferencePrivate;
+class Content;
 class ParticipantDevice;
 
 class LINPHONE_PUBLIC Conference :
@@ -62,10 +63,13 @@ public:
 	const std::string &getSubject () const override;
 	void join () override;
 	void leave () override;
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipant (const std::shared_ptr<Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 	void setParticipantAdminStatus (const std::shared_ptr<Participant> &participant, bool isAdmin) override;
 	void setSubject (const std::string &subject) override;
+
+	std::string getResourceLists (const std::list<IdentityAddress> &addresses) const;
+	static std::list<IdentityAddress> parseResourceLists (const Content &content);
 
 protected:
 	explicit Conference (

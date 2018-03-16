@@ -236,6 +236,12 @@ typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *c
 typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
+ * Callback used to notify a chat room has received all its information.
+ * @param[in] cr #LinphoneChatRoom object
+ */
+typedef void (*LinphoneChatRoomCbsAllInformationReceivedCb) (LinphoneChatRoom *cr);
+
+/**
  * Callback used when a group chat room is created server-side to generate the address of the chat room.
  * The function linphone_chat_room_set_conference_address() needs to be called by this callback.
  * @param[in] cr #LinphoneChatRoom object

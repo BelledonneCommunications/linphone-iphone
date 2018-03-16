@@ -237,7 +237,7 @@ void SalCallOp::cancelling_invite(const SalErrorInfo *info) {
 Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	Content body;
 	belle_sip_header_content_type_t *content_type = belle_sip_message_get_header_by_type(message, belle_sip_header_content_type_t);
-	belle_sip_header_content_disposition_t *contentDisposition = belle_sip_message_get_header_by_type(message, belle_sip_header_content_disposition_t);
+	belle_sip_header_content_disposition_t *contentDispositionHeader = belle_sip_message_get_header_by_type(message, belle_sip_header_content_disposition_t);
 	belle_sip_header_content_length_t *content_length = belle_sip_message_get_header_by_type(message, belle_sip_header_content_length_t);
 	const char *type_str = content_type ? belle_sip_header_content_type_get_type(content_type) : NULL;
 	const char *subtype_str = content_type ? belle_sip_header_content_type_get_subtype(content_type) : NULL;
@@ -245,10 +245,13 @@ Content SalCallOp::extract_body(belle_sip_message_t *message) {
 	const char *body_str = belle_sip_message_get_body(message);
 
 	if (type_str && subtype_str) body.setContentType(ContentType(type_str, subtype_str));
-	if (contentDisposition)
-		body.setContentDisposition(
-			ContentDisposition(belle_sip_header_content_disposition_get_content_disposition(contentDisposition))
-		);
+	if (contentDispositionHeader) {
+		auto contentDisposition = ContentDisposition(belle_sip_header_content_disposition_get_content_disposition(contentDispositionHeader));
+		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contentDispositionHeader), "handling")) {
+			contentDisposition.setParameter("handling=" + string(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(contentDispositionHeader), "handling")));
+		}
+		body.setContentDisposition(contentDisposition);
+	}
 	if (length > 0 && body_str) body.setBody(body_str, length);
 	return body;
 }
@@ -497,7 +500,9 @@ void SalCallOp::process_response_cb(void *op_base, const belle_sip_response_even
 		}
 		break;
 		case BELLE_SIP_DIALOG_TERMINATED: {
-			if (strcmp("INVITE",method)==0 && code >= 300){
+			if ((code >= 300)
+				&& ((strcmp("INVITE", method) == 0) || (strcmp("BYE", method) == 0))
+			) {
 				op->set_error(response, TRUE);
 			}
 		}

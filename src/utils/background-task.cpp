@@ -27,6 +27,8 @@
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
 void BackgroundTask::sHandleTimeout (void *context) {
@@ -43,7 +45,7 @@ void BackgroundTask::handleSalTimeout () {
 	stop();
 }
 
-void BackgroundTask::start (const std::shared_ptr<Core> &core, int maxDurationSeconds) {
+void BackgroundTask::start (const shared_ptr<Core> &core, int maxDurationSeconds) {
 	if (mName.empty()) {
 		lError() << "No name was set on background task";
 		return;
