@@ -53,6 +53,8 @@ public:
 	void setChatRoomId (const ChatRoomId &chatRoomId);
 	ChatRoomId getChatRoomId () const;
 
+	void getNotifyForId (int notifyId) const {};
+
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);
 	L_DISABLE_COPY(LocalConferenceEventHandler);

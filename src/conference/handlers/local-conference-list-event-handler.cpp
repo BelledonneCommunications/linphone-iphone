@@ -17,8 +17,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "linphone/utils/utils.h"
+
+#include "address/address.h"
 #include "local-conference-event-handler.h"
 #include "local-conference-list-event-handler.h"
+#include "xml/resource-lists.h"
 
 // =============================================================================
 
@@ -29,7 +33,25 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) {
+	istringstream data(xmlBody);
+	unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(
+		data,
+		Xsd::XmlSchema::Flags::dont_validate
+	));
+	for (const auto &l : rl->getList()) {
+		for (const auto &entry : l.getEntry()) {
+			Address addr(entry.getUri());
+			string notifyIdStr = addr.getUriParamValue("Last-Notify");
+			addr.removeUriParam("Last-Notify");
+			int notifyId = notifyIdStr.empty() ? 0 : Utils::stoi(notifyIdStr);
+			ChatRoomId chatRoomId(addr, addr);
+			shared_ptr<LocalConferenceEventHandler> handler = findHandler(chatRoomId);
+			if (!handler)
+				continue;
 
+			handler->getNotifyForId(notifyId);
+		}
+	}
 }
 
 void LocalConferenceListEventHandler::notify () {
