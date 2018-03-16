@@ -38,6 +38,7 @@ class LocalConference;
 class LocalConferenceEventHandlerPrivate;
 
 class LocalConferenceEventHandler : public Object {
+friend class LocalConferenceListEventHandler;
 public:
 	LocalConferenceEventHandler (LocalConference *localConference, unsigned int notify = 0);
 
@@ -53,7 +54,7 @@ public:
 	void setChatRoomId (const ChatRoomId &chatRoomId);
 	ChatRoomId getChatRoomId () const;
 
-	void getNotifyForId (int notifyId) const {};
+	std::string getNotifyForId (int notifyId);
 
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);

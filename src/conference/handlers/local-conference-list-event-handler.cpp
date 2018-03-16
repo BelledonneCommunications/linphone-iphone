@@ -49,7 +49,10 @@ void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) 
 			if (!handler)
 				continue;
 
-			handler->getNotifyForId(notifyId);
+			string notifyBody = handler->getNotifyForId(notifyId);
+			if (notifyBody.empty())
+				continue;
+
 		}
 	}
 }

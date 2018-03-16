@@ -529,5 +529,14 @@ ChatRoomId LocalConferenceEventHandler::getChatRoomId () const {
 	return d->chatRoomId;
 }
 
+string LocalConferenceEventHandler::getNotifyForId (int notifyId) {
+	L_D();
+	if (notifyId == 0)
+		return d->createNotifyFullState(static_cast<int>(d->lastNotify)); // oneToOne ?
+	else if (notifyId < static_cast<int>(d->lastNotify))
+		return d->createNotifyMultipart(notifyId);
+
+	return Utils::getEmptyConstRefObject<string>();
+}
 
 LINPHONE_END_NAMESPACE
