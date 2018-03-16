@@ -46,9 +46,13 @@ public:
 	bool isEmpty () const;
 	bool isValid () const;
 
+	const std::string &getParameter () const;
+	void setParameter (const std::string &parameter);
+
 	std::string asString () const;
 
 	static const ContentDisposition RecipientList;
+	static const ContentDisposition RecipientListHistory;
 
 private:
 	L_DECLARE_PRIVATE(ContentDisposition);

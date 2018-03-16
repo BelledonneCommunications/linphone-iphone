@@ -33,33 +33,40 @@ LINPHONE_BEGIN_NAMESPACE
 class ContentDispositionPrivate : public ClonableObjectPrivate {
 public:
 	string disposition;
+	string parameter;
 };
 
 // -----------------------------------------------------------------------------
 
 const ContentDisposition ContentDisposition::RecipientList("recipient-list");
+const ContentDisposition ContentDisposition::RecipientListHistory("recipient-list-history; handling=optional");
 
 // -----------------------------------------------------------------------------
 
 ContentDisposition::ContentDisposition (const string &disposition) : ClonableObject(*new ContentDispositionPrivate) {
 	L_D();
-	d->disposition = disposition;
+	size_t posParam = disposition.find(";");
+	d->disposition = Utils::trim(disposition.substr(0, posParam));
+	if (posParam != string::npos)
+		setParameter(Utils::trim(disposition.substr(posParam + 1)));
 }
 
 ContentDisposition::ContentDisposition (const ContentDisposition &other)
-	: ContentDisposition(other.getPrivate()->disposition) {}
+	: ContentDisposition(other.asString()) {}
 
 ContentDisposition &ContentDisposition::operator= (const ContentDisposition &other) {
 	L_D();
 	if (this != &other) {
 		d->disposition = other.getPrivate()->disposition;
+		setParameter(other.getParameter());
 	}
 	return *this;
 }
 
 bool ContentDisposition::operator== (const ContentDisposition &other) const {
 	L_D();
-	return d->disposition == other.getPrivate()->disposition;
+	return d->disposition == other.getPrivate()->disposition
+		&& getParameter() == other.getParameter();
 }
 
 bool ContentDisposition::operator!= (const ContentDisposition &other) const {
@@ -76,10 +83,24 @@ bool ContentDisposition::isValid () const {
 	return !d->disposition.empty();
 }
 
+const string &ContentDisposition::getParameter () const {
+	L_D();
+	return d->parameter;
+}
+
+void ContentDisposition::setParameter (const string &parameter) {
+	L_D();
+	d->parameter = parameter;
+}
+
 string ContentDisposition::asString () const {
 	L_D();
-	if (isValid())
-		return d->disposition;
+	if (isValid()) {
+		string asString = d->disposition;
+		if (!d->parameter.empty())
+			asString += ";" + d->parameter;
+		return asString;
+	}
 	return "";
 }
 
