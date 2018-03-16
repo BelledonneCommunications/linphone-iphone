@@ -105,6 +105,7 @@ void RemoteConferenceListEventHandler::unsubscribe () {
 		return;
 
 	linphone_event_terminate(lev);
+	linphone_event_unref(lev);
 	lev = nullptr;
 }
 
