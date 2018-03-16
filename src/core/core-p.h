@@ -31,6 +31,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CoreListener;
+class RemoteConferenceListEventHandler;
 
 class CorePrivate : public ObjectPrivate {
 public:
@@ -65,6 +66,7 @@ public:
 	void replaceChatRoom (const std::shared_ptr<AbstractChatRoom> &replacedChatRoom, const std::shared_ptr<AbstractChatRoom> &newChatRoom);
 
 	std::unique_ptr<MainDb> mainDb;
+	std::unique_ptr<RemoteConferenceListEventHandler> remoteListEventHandler;
 
 private:
 	std::list<CoreListener *> listeners;

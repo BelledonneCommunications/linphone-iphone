@@ -44,6 +44,23 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+RemoteConferenceListEventHandler::RemoteConferenceListEventHandler (const std::shared_ptr<Core> &core) : CoreAccessor(core) {
+	getCore()->getPrivate()->registerListener(this);
+}
+
+RemoteConferenceListEventHandler::~RemoteConferenceListEventHandler () {
+	try {
+		getCore()->getPrivate()->unregisterListener(this);
+	} catch (const bad_weak_ptr &) {
+		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
+	}
+
+	if (lev)
+		unsubscribe();
+}
+
+// -----------------------------------------------------------------------------
+
 void RemoteConferenceListEventHandler::subscribe () {
 	if (lev)
 		return;
@@ -56,7 +73,7 @@ void RemoteConferenceListEventHandler::subscribe () {
 	for (const auto &handler : handlers) {
 		Address addr = handler->getChatRoomId().getPeerAddress();
 		addr.setUriParam("Last-Notify", Utils::toString(handler->getLastNotify()));
-		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asString());
+		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asStringUriOnly());
 		l.getEntry().push_back(entry);
 	}
 	rl.getList().push_back(l);
@@ -123,6 +140,25 @@ void RemoteConferenceListEventHandler::notifyReceived (Content *multipart) {
 	}
 }
 
+// -----------------------------------------------------------------------------
+
+shared_ptr<RemoteConferenceEventHandler> RemoteConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
+	for (const auto &handler : handlers) {
+		if (handler->getChatRoomId() == chatRoomId)
+			return handler;
+	}
+
+	return nullptr;
+}
+
+const list<shared_ptr<RemoteConferenceEventHandler>> &RemoteConferenceListEventHandler::getHandlers () const {
+	return handlers;
+}
+
+void RemoteConferenceListEventHandler::addHandler (std::shared_ptr<RemoteConferenceEventHandler> handler) {
+	handlers.push_back(handler);
+}
+
 map<Address, Address> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::Rlmi::List> rlmi(Xsd::Rlmi::parseList(
@@ -146,21 +182,16 @@ map<Address, Address> RemoteConferenceListEventHandler::parseRlmi (const string 
 	return addresses;
 }
 
-void RemoteConferenceListEventHandler::addHandler (std::shared_ptr<RemoteConferenceEventHandler> handler) {
-	handlers.push_back(handler);
+// -----------------------------------------------------------------------------
+
+void RemoteConferenceListEventHandler::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
+	if (!sipNetworkReachable)
+		unsubscribe();
 }
 
-shared_ptr<RemoteConferenceEventHandler> RemoteConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
-	for (const auto &handler : handlers) {
-		if (handler->getChatRoomId() == chatRoomId)
-			return handler;
-	}
-
-	return nullptr;
-}
-
-const list<shared_ptr<RemoteConferenceEventHandler>> &RemoteConferenceListEventHandler::getHandlers () const {
-	return handlers;
+void RemoteConferenceListEventHandler::onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {
+	if (state == LinphoneRegistrationOk)
+		subscribe();
 }
 
 LINPHONE_END_NAMESPACE

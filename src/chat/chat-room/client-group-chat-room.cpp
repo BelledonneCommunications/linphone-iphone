@@ -23,7 +23,8 @@
 #include "basic-to-client-group-chat-room.h"
 #include "c-wrapper/c-wrapper.h"
 #include "client-group-chat-room-p.h"
-#include "conference/handlers/remote-conference-event-handler.h"
+#include "conference/handlers/remote-conference-event-handler-p.h"
+#include "conference/handlers/remote-conference-list-event-handler.h"
 #include "conference/participant-p.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
@@ -214,8 +215,9 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	getMe()->getPrivate()->setAdmin(me->isAdmin());
 
+	dConference->eventHandler->setChatRoomId(chatRoomId);
 	dConference->eventHandler->setLastNotify(lastNotifyId);
-	// dConference->eventHandler->subscribe(getChatRoomId());
+	getCore()->getPrivate()->remoteListEventHandler->addHandler(dConference->eventHandler);
 }
 
 ClientGroupChatRoom::~ClientGroupChatRoom () {

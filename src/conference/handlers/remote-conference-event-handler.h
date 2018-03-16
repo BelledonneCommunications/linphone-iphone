@@ -40,6 +40,7 @@ public:
 	void multipartNotifyReceived (const std::string &xmlBody);
 	void unsubscribe ();
 
+	void setChatRoomId (ChatRoomId chatRoomId);
 	const ChatRoomId &getChatRoomId () const;
 
 	unsigned int getLastNotify () const;

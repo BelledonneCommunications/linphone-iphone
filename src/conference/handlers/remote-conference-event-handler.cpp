@@ -299,6 +299,11 @@ void RemoteConferenceEventHandler::multipartNotifyReceived (const string &xmlBod
 
 // -----------------------------------------------------------------------------
 
+void RemoteConferenceEventHandler::setChatRoomId (ChatRoomId chatRoomId) {
+	L_D();
+	d->chatRoomId = chatRoomId;
+}
+
 const ChatRoomId &RemoteConferenceEventHandler::getChatRoomId () const {
 	L_D();
 	return d->chatRoomId;

@@ -32,7 +32,7 @@ class RemoteConferenceEventHandler;
 class RemoteConferencePrivate : public ConferencePrivate {
 public:
 	std::shared_ptr<Participant> focus;
-	std::unique_ptr<RemoteConferenceEventHandler> eventHandler;
+	std::shared_ptr<RemoteConferenceEventHandler> eventHandler;
 
 private:
 	L_DECLARE_PUBLIC(RemoteConference);
