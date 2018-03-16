@@ -29,10 +29,6 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-namespace {
-	constexpr const char MultipartBoundary[] = "---------------------------14737809831466499882746641449";
-}
-
 // -----------------------------------------------------------------------------
 
 list<Content> ContentManager::multipartToContentList (const Content &content) {
@@ -69,9 +65,9 @@ list<Content> ContentManager::multipartToContentList (const Content &content) {
 	return contents;
 }
 
-Content ContentManager::contentListToMultipart (const list<Content> &contents) {
+Content ContentManager::contentListToMultipart (const list<Content> &contents, const string &boundary) {
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new(
-		nullptr, nullptr, nullptr, MultipartBoundary
+		nullptr, nullptr, nullptr, boundary.c_str()
 	);
 	belle_sip_object_ref(mpbh);
 
@@ -110,7 +106,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents) {
 	belle_sip_object_unref(mpbh);
 
 	ContentType contentType = ContentType::Multipart;
-	contentType.setParameter("boundary=" + string(MultipartBoundary));
+	contentType.setParameter("boundary=" + boundary);
 	content.setContentType(contentType);
 
 	return content;

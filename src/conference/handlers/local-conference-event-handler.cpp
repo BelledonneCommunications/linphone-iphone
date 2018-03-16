@@ -184,7 +184,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 	}
 
 	if (contents.empty())
-		return "";
+		return Utils::getEmptyConstRefObject<string>();
+
 	return ContentManager::contentListToMultipart(contents).getBodyAsString();
 }
 

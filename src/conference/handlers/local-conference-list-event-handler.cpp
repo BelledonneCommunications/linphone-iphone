@@ -35,7 +35,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 namespace {
-	constexpr const char MultipartBoundary[] = "---------------------------14737809831412343453453";
+	constexpr const char MultipartBoundaryListEventHandler[] = "---------------------------14737809831412343453453";
 }
 
 // -----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) 
 	}
 
 	contents.push_front(rlmiContent);
-	Content multipart = ContentManager::contentListToMultipart(contents);
+	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
 	(void) multipart;
 }
 
