@@ -254,7 +254,6 @@ private:
 	int sendDtmf ();
 
 	void stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
-
 private:
 	static const std::string ecStateStore;
 	static const int ecStateMaxLen;
@@ -325,6 +324,7 @@ private:
 	bool automaticallyPaused = false;
 	bool pausedByApp = false;
 	bool recordActive = false;
+	bool incomingIceReinvitePending = false;
 
 	std::string onHoldFile;
 

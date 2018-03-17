@@ -382,6 +382,8 @@ void MediaSessionPrivate::updated (bool isUpdate) {
 	CallSessionPrivate::updated(isUpdate);
 }
 
+
+
 void MediaSessionPrivate::updating (bool isUpdate) {
 	L_Q();
 	SalMediaDescription *rmd = op->get_remote_media_description();
@@ -702,6 +704,10 @@ shared_ptr<Participant> MediaSessionPrivate::getMe () const {
 
 void MediaSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
+	SalMediaDescription *rmd;
+	
+	lInfo()<<"MediaSessionPrivate::setState";
+	
 	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
 	shared_ptr<CallSession> sessionRef = q->getSharedFromThis();
 	if ((newState != state) && (newState != CallSession::State::StreamsRunning))
@@ -709,6 +715,21 @@ void MediaSessionPrivate::setState (CallSession::State newState, const string &m
 	CallSessionPrivate::setState(newState, message);
 	if (listener)
 		listener->onCallSessionStateChangedForReporting(q->getSharedFromThis());
+	switch(newState){
+		case CallSession::State::UpdatedByRemote:
+			/*Handle specifically the case of an incoming ICE-concluded reINVITE*/
+			lInfo()<<"Checking for ICE reINVITE";
+			rmd = op->get_remote_media_description();
+			if (iceAgent && rmd != nullptr && iceAgent->checkIceReinviteNeedsDeferedResponse(rmd)){
+				deferUpdate = true;
+				deferUpdateInternal = true;
+				incomingIceReinvitePending = true;
+				lInfo()<<"CallSession [" << q << "]: ICE reinvite received, but one or more check-lists are not completed. Response will be sent later, when ICE has completed";
+			}
+		break;
+		default:
+		break;
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -2191,11 +2212,14 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 	OrtpEventData *evd = ortp_event_get_data(ev);
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 		if (iceAgent->hasCompletedCheckList()) {
-			/* At least one ICE session has succeeded, so perform a call update */
+			/* The ICE session has succeeded, so perform a call update */
 			if (iceAgent->isControlling() && q->getCurrentParams()->getPrivate()->getUpdateCallWhenIceCompleted()) {
 				MediaSessionParams newParams(*getParams());
 				newParams.getPrivate()->setInternalCallUpdate(true);
 				q->update(&newParams);
+			}else if (!iceAgent->isControlling() && incomingIceReinvitePending){
+				q->acceptUpdate(nullptr);
+				incomingIceReinvitePending = false;
 			}
 			startDtlsOnAllStreams();
 		}
