@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "belle-sip/utils.h"
 #include "linphone/utils/utils.h"
 
 #include "address/address.h"
@@ -74,7 +75,13 @@ void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) 
 				content.setContentType(ContentType::ConferenceInfo);
 
 			content.setBody(notifyBody);
-			content.addHeader("Content-Id", addr.asStringUriOnly());
+			char token[17];
+			ostringstream os;
+			belle_sip_random_token(token, sizeof(token));
+			os << "@sip.linphone.org";
+			Address cid(os.str());
+			os.str("");
+			content.addHeader("Content-Id", cid.asStringUriOnly());
 			contents.push_back(content);
 
 			// Add entry into the rlmi content of the notify body
