@@ -46,6 +46,10 @@ void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) 
 	Content rlmiContent;
 	rlmiContent.setContentType(ContentType::Rlmi);
 
+	// Create Rlmi body
+	Xsd::Rlmi::List::ResourceSequence resources;
+
+	// Parse resource list
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(
 		data,
@@ -84,9 +88,22 @@ void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) 
 			content.addHeader("Content-Id", cid.asStringUriOnly());
 			contents.push_back(content);
 
-			// Add entry into the rlmi content of the notify body
+			// Add entry into the Rlmi content of the notify body
+			Xsd::Rlmi::Resource resource(addr.asStringUriOnly());
+			Xsd::Rlmi::Resource::InstanceSequence instances;
+			Xsd::Rlmi::Instance instance(cid.asStringUriOnly(), Xsd::Rlmi::State::Value::active);
+			instances.push_back(instance);
+			resource.setInstance(instances);
+			resources.push_back(resource);
 		}
 	}
+
+	Xsd::Rlmi::List list("", 0, TRUE);
+	list.setResource(resources);
+	Xsd::XmlSchema::NamespaceInfomap map;
+	stringstream rlmiBody;
+	Xsd::Rlmi::serializeList(rlmiBody, list, map);
+	rlmiContent.setBody(rlmiBody.str());
 
 	contents.push_front(rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
