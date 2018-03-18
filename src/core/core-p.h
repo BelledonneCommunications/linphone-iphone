@@ -31,6 +31,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CoreListener;
+class LocalConferenceListEventHandler;
 class RemoteConferenceListEventHandler;
 
 class CorePrivate : public ObjectPrivate {
@@ -67,6 +68,7 @@ public:
 
 	std::unique_ptr<MainDb> mainDb;
 	std::unique_ptr<RemoteConferenceListEventHandler> remoteListEventHandler;
+	std::unique_ptr<LocalConferenceListEventHandler> localListEventHandler;
 
 private:
 	std::list<CoreListener *> listeners;
