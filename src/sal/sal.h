@@ -58,7 +58,7 @@ public:
 	typedef void (*OnNotifyReferCb)(SalOp *op, SalReferStatus state);
 	typedef void (*OnSubscribeResponseCb)(SalOp *op, SalSubscribeStatus status, int will_retry);
 	typedef void (*OnNotifyCb)(SalSubscribeOp *op, SalSubscribeStatus status, const char *event, SalBodyHandler *body);
-	typedef void (*OnSubscribeReceivedCb)(SalSubscribeOp *salop, const char *event, const SalBodyHandler *body);
+	typedef void (*OnSubscribeReceivedCb)(SalSubscribeOp *salop, const char *event, SalBodyHandler *body);
 	typedef void (*OnIncomingSubscribeClosedCb)(SalOp *salop);
 	typedef void (*OnParsePresenceRequestedCb)(SalOp *salop, const char *content_type, const char *content_subtype, const char *content, SalPresenceModel **result);
 	typedef void (*OnConvertPresenceToXMLRequestedCb)(SalOp *salop, SalPresenceModel *presence, const char *contact, char **content);
@@ -89,7 +89,7 @@ public:
 		OnRegisterFailureCb register_failure;
 		OnVfuRequestCb vfu_request;
 		OnDtmfReceivedCb dtmf_received;
-		
+
 		OnMessageReceivedCb message_received;
 		OnMessageDeliveryUpdateCb message_delivery_update;
 		OnNotifyReferCb notify_refer;

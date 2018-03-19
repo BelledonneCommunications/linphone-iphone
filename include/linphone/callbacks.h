@@ -425,6 +425,16 @@ typedef void (*LinphoneCoreCbsNotifyReceivedCb)(LinphoneCore *lc, LinphoneEvent 
 typedef LinphoneCoreCbsNotifyReceivedCb LinphoneCoreNotifyReceivedCb;
 
 /**
+ * Callback prototype for notifying the application about subscription received from the network.
+**/
+typedef void (*LinphoneCoreCbsSubscribeReceivedCb)(LinphoneCore *lc, LinphoneEvent *lev, const char *subscribe_event, const LinphoneContent *body);
+
+/**
+ * Old name of #LinphoneCoreCbsSubscribeReceivedCb.
+ */
+typedef LinphoneCoreCbsSubscribeReceivedCb LinphoneCoreSubscribeReceivedCb;
+
+/**
  * Callback prototype for notifying the application about changes of subscription states, including arrival of new subscriptions.
 **/
 typedef void (*LinphoneCoreCbsSubscriptionStateChangedCb)(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state);

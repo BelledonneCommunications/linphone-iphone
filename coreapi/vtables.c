@@ -253,6 +253,11 @@ void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, 
 	cleanup_dead_vtable_refs(lc);
 }
 
+void linphone_core_notify_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const char *subscribe_event, const LinphoneContent *body) {
+	NOTIFY_IF_EXIST_INTERNAL(subscribe_received, linphone_event_is_internal(lev), lc, lev, subscribe_event, body);
+	cleanup_dead_vtable_refs(lc);
+}
+
 void linphone_core_notify_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	NOTIFY_IF_EXIST_INTERNAL(subscription_state_changed,linphone_event_is_internal(lev), lc,lev,state);
 	cleanup_dead_vtable_refs(lc);

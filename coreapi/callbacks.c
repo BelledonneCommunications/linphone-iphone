@@ -616,14 +616,18 @@ static void notify(SalSubscribeOp *op, SalSubscribeStatus st, const char *eventn
 	}
 }
 
-static void subscribe_received(SalSubscribeOp *op, const char *eventname, const SalBodyHandler *body_handler){
+static void subscribe_received(SalSubscribeOp *op, const char *eventname, SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)op->get_user_pointer();
 	LinphoneCore *lc=(LinphoneCore *)op->get_sal()->get_user_pointer();
 
 	if (lev==NULL) {
 		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionIncoming,eventname);
 		linphone_event_set_state(lev,LinphoneSubscriptionIncomingReceived);
-	}else{
+		LinphoneContent *ct = linphone_content_from_sal_body_handler(body_handler);
+		linphone_core_notify_subscribe_received(lc,lev,eventname,ct);
+		if (ct)
+			linphone_content_unref(ct);
+	} else {
 		/*subscribe refresh, unhandled*/
 	}
 

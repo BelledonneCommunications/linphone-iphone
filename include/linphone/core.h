@@ -180,6 +180,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreInfoReceivedCb info_received; /**<Notifies an incoming informational message received.*/
 	LinphoneCoreSubscriptionStateChangedCb subscription_state_changed; /**<Notifies subscription state change */
 	LinphoneCoreNotifyReceivedCb notify_received; /**< Notifies a an event notification, see linphone_core_subscribe() */
+	LinphoneCoreSubscribeReceivedCb subscribe_received; /**< Notifies a subscribe has been received, see linphone_core_subscribe() */
 	LinphoneCorePublishStateChangedCb publish_state_changed;/**Notifies publish state change (only from #LinphoneEvent api)*/
 	LinphoneCoreConfiguringStatusCb configuring_status; /** Notifies configuring status changes */
 	LINPHONE_DEPRECATED LinphoneCoreTextMessageReceivedCb text_received; /**< @deprecated, use #message_received instead <br> A text message has been received */
@@ -546,6 +547,20 @@ LINPHONE_PUBLIC void linphone_core_cbs_set_notify_received(LinphoneCoreCbs *cbs,
  * @return The callback.
  */
 LINPHONE_PUBLIC LinphoneCoreCbsNotifyReceivedCb linphone_core_cbs_get_notify_received(LinphoneCoreCbs *cbs);
+
+/**
+ * Set the #LinphoneCoreCbsSubscribeReceivedCb callback.
+ * @param[in] cbs A #LinphoneCoreCbs.
+ * @param[in] cb The callback.
+ */
+LINPHONE_PUBLIC void linphone_core_cbs_set_subscribe_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsSubscribeReceivedCb cb);
+
+/**
+ * Get the #LinphoneCoreCbsSubscribeReceivedCb callback.
+ * @param[in] cbs A #LinphoneCoreCbs.
+ * @return The callback.
+ */
+LINPHONE_PUBLIC LinphoneCoreCbsSubscribeReceivedCb linphone_core_cbs_get_subscribe_received(LinphoneCoreCbs *cbs);
 
 /**
  * Set the #LinphoneCoreCbsPublishStateChangedCb callback.

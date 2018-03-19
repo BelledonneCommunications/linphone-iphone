@@ -53,6 +53,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "chat/chat-room/client-group-chat-room-p.h"
 #include "chat/chat-room/client-group-to-basic-chat-room.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
+#include "conference/handlers/local-conference-list-event-handler.h"
 #include "conference/handlers/remote-conference-event-handler.h"
 #include "content/content-manager.h"
 #include "content/content-type.h"
@@ -365,6 +366,14 @@ LinphoneCoreCbsNotifyReceivedCb linphone_core_cbs_get_notify_received(LinphoneCo
 
 void linphone_core_cbs_set_notify_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsNotifyReceivedCb cb) {
 	cbs->vtable->notify_received = cb;
+}
+
+LinphoneCoreCbsSubscribeReceivedCb linphone_core_cbs_get_subscribe_received(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->subscribe_received;
+}
+
+void linphone_core_cbs_set_subscribe_received(LinphoneCoreCbs *cbs, LinphoneCoreCbsSubscribeReceivedCb cb) {
+	cbs->vtable->subscribe_received = cb;
 }
 
 LinphoneCoreCbsPublishStateChangedCb linphone_core_cbs_get_rpublish_state_changed(LinphoneCoreCbs *cbs) {
@@ -2153,29 +2162,34 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 	}
 }
 
-static void _linphone_core_conference_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
-	if (
-		linphone_event_get_subscription_dir(lev) == LinphoneSubscriptionIncoming &&
-		state == LinphoneSubscriptionIncomingReceived
-	) {
-		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
-			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
-			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
-		));
-		if (chatRoom) {
-			linphone_event_accept_subscription(lev);
-			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->subscribeReceived(lev);
-		} else
-			linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
+static void _linphone_core_conference_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const LinphoneContent *body) {
+	if (body) {
+		// List subscription
+		L_GET_PRIVATE_FROM_C_OBJECT(lc)->localListEventHandler->subscribeReceived(lev, body);
+		return;
+	}
+
+	const LinphoneAddress *resource = linphone_event_get_resource(lev);
+	shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
+		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
+		IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource))
+	));
+	if (chatRoom) {
+		linphone_event_accept_subscription(lev);
+		L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->subscribeReceived(lev);
+	} else
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
+}
+
+static void linphone_core_internal_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const char *subscribe_event, const LinphoneContent *body) {
+	if (strcmp(linphone_event_get_name(lev), "conference") == 0) {
+		_linphone_core_conference_subscribe_received(lc, lev, body);
 	}
 }
 
 static void linphone_core_internal_subscription_state_changed(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
 	if (strcasecmp(linphone_event_get_name(lev), "Presence") == 0) {
 		linphone_friend_list_subscription_state_changed(lc, lev, state);
-	} else if (strcmp(linphone_event_get_name(lev), "conference") == 0) {
-		_linphone_core_conference_subscription_state_changed(lc, lev, state);
 	}
 }
 
@@ -2254,6 +2268,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	_linphone_core_init_account_creator_service(lc);
 
 	linphone_core_cbs_set_notify_received(internal_cbs, linphone_core_internal_notify_received);
+	linphone_core_cbs_set_subscribe_received(internal_cbs, linphone_core_internal_subscribe_received);
 	linphone_core_cbs_set_subscription_state_changed(internal_cbs, linphone_core_internal_subscription_state_changed);
 	linphone_core_cbs_set_publish_state_changed(internal_cbs, linphone_core_internal_publish_state_changed);
 	_linphone_core_add_callbacks(lc, internal_cbs, TRUE);

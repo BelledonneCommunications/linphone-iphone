@@ -36,6 +36,9 @@
 #include "xml/resource-lists.h"
 #include "xml/rlmi.h"
 
+// TODO: Remove me later.
+#include "private.h"
+
 // =============================================================================
 
 using namespace std;
@@ -48,7 +51,11 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev) {
+void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body) {
+	const string &xmlBody = string(linphone_content_get_string_buffer(body));
+	if (xmlBody.empty())
+		return;
+
 	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
 	char *addrStr = linphone_address_as_string(lAddr);
 	IdentityAddress participantAddr(addrStr);
@@ -59,31 +66,6 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev) {
 	IdentityAddress deviceAddr(deviceAddrStr);
 	bctbx_free(deviceAddrStr);
 
-	for (const auto &handler : handlers) {
-		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_event_get_core(lev))->findChatRoom(handler->getChatRoomId());
-		if (!chatRoom) {
-			lError() << "Received subscribe for unknown chat room: " << handler->getChatRoomId();
-			continue;
-		}
-
-		shared_ptr<Participant> participant = chatRoom->findParticipant(participantAddr);
-		if (!participant) {
-			lError() << "Received subscribe for unknown participant: " << participantAddr <<  " for chat room: " << handler->getChatRoomId();
-			continue;
-		}
-
-		shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(deviceAddr);
-		if (!device) {
-			lError() << "Received subscribe for unknown device: " << deviceAddr << " for participant: "
-				<< participantAddr <<  " for chat room: " << handler->getChatRoomId();
-			return;
-		}
-
-		device->setConferenceSubscribeEvent((linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) ? lev : nullptr);
-	}
-}
-
-void LocalConferenceListEventHandler::parseBody (const string &xmlBody) {
 	list<Content> contents;
 	Content rlmiContent;
 	rlmiContent.setContentType(ContentType::Rlmi);
@@ -111,6 +93,24 @@ void LocalConferenceListEventHandler::parseBody (const string &xmlBody) {
 			string notifyBody = handler->getNotifyForId(notifyId);
 			if (notifyBody.empty())
 				continue;
+
+			shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_event_get_core(lev))->findChatRoom(chatRoomId);
+			if (!chatRoom) {
+				lError() << "Received subscribe for unknown chat room: " << chatRoomId;
+				continue;
+			}
+			shared_ptr<Participant> participant = chatRoom->findParticipant(participantAddr);
+			if (!participant) {
+				lError() << "Received subscribe for unknown participant: " << participantAddr <<  " for chat room: " << chatRoomId;
+				continue;
+			}
+			shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(deviceAddr);
+			if (!device) {
+				lError() << "Received subscribe for unknown device: " << deviceAddr << " for participant: "
+					<< participantAddr <<  " for chat room: " << chatRoomId;
+				continue;
+			}
+			device->setConferenceSubscribeEvent((linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) ? lev : nullptr);
 
 			Content content;
 			if (notifyId > 0) {
@@ -149,11 +149,7 @@ void LocalConferenceListEventHandler::parseBody (const string &xmlBody) {
 
 	contents.push_front(rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
-	(void) multipart;
-}
-
-void LocalConferenceListEventHandler::notify () {
-
+	linphone_event_notify(lev, multipart.toLinphoneContent());
 }
 
 // -----------------------------------------------------------------------------
