@@ -20,7 +20,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 #include <ctype.h>
 
-#include "linphone/api/c-content.h"
+#include <bctoolbox/defs.h>
 #include "linphone/core_utils.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
@@ -1547,11 +1547,12 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 }
 
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
-	
+
 	if (cfg->presence_publish_event != NULL) {
 		switch (state) {
 			case LinphonePublishCleared:
 				linphone_proxy_config_set_etag(cfg,NULL);
+				BCTBX_NO_BREAK;
 			case LinphonePublishError:
 				linphone_event_unref(cfg->presence_publish_event);
 				cfg->presence_publish_event = NULL;
@@ -1561,7 +1562,7 @@ void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg
 				break;
 			default:
 				break;
-				
+
 		}
 	}
 }

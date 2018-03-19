@@ -2660,7 +2660,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 			if (playcard) {
 				ms_snd_card_set_stream_type(playcard, MS_SND_CARD_STREAM_VOICE);
 			}
-
+			media_stream_set_max_network_bitrate(&audioStream->ms, linphone_core_get_upload_bandwidth(q->getCore()->getCCore()) * 1000);
 			bool useEc = captcard && linphone_core_echo_cancellation_enabled(q->getCore()->getCCore());
 			audio_stream_enable_echo_canceller(audioStream, useEc);
 			if (playcard && (stream->max_rate > 0))
@@ -2899,6 +2899,7 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 			getCurrentParams()->getPrivate()->setUsedVideoCodec(rtp_profile_get_payload(videoProfile, usedPt));
 			getCurrentParams()->enableVideo(true);
 			rtp_session_enable_rtcp_mux(videoStream->ms.sessions.rtp_session, vstream->rtcp_mux);
+			media_stream_set_max_network_bitrate(&videoStream->ms, linphone_core_get_upload_bandwidth(q->getCore()->getCCore()) * 1000);
 			if (q->getCore()->getCCore()->video_conf.preview_vsize.width != 0)
 				video_stream_set_preview_size(videoStream, q->getCore()->getCCore()->video_conf.preview_vsize);
 			video_stream_set_fps(videoStream, linphone_core_get_preferred_framerate(q->getCore()->getCCore()));
