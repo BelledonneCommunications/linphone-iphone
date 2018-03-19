@@ -298,7 +298,6 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			if (body && strlen(body) > 0) {
 				FileTransferContent *fileTransferContent = new FileTransferContent();
 				fileTransferContent->setContentType(ContentType::FileTransfer);
-				message->addContent(fileTransferContent);
 
 				LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 				bool_t is_file_encryption_enabled = FALSE;
