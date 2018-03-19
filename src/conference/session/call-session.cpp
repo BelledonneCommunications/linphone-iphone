@@ -821,8 +821,9 @@ void CallSessionPrivate::repairIfBroken () {
 		case CallSession::State::Pausing:
 			if (op->dialog_request_pending()) {
 				// Need to cancel first re-INVITE as described in section 5.5 of RFC 6141
-				op->cancel_invite();
-				reinviteOnCancelResponseRequested = true;
+				if (op->cancel_invite() == 0){
+					reinviteOnCancelResponseRequested = true;
+				}
 			}
 			break;
 		case CallSession::State::StreamsRunning:
@@ -840,8 +841,9 @@ void CallSessionPrivate::repairIfBroken () {
 			break;
 		case CallSession::State::OutgoingInit:
 		case CallSession::State::OutgoingProgress:
-			op->cancel_invite();
-			reinviteOnCancelResponseRequested = true;
+			if (op->cancel_invite() == 0){
+				reinviteOnCancelResponseRequested = true;
+			}
 			break;
 		case CallSession::State::OutgoingEarlyMedia:
 		case CallSession::State::OutgoingRinging:
