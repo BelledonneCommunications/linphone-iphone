@@ -30,6 +30,7 @@ class Content;
 class LocalConferencePrivate;
 
 class LocalConference : public Conference {
+	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
 
 public:
