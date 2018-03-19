@@ -96,6 +96,15 @@ void RemoteConferenceListEventHandler::subscribe () {
 	bctbx_free(from);
 	linphone_address_unref(rlsAddr);
 	linphone_event_set_internal(lev, TRUE);
+	linphone_event_add_custom_header(lev, "Require", "recipient-list-subscribe");
+	linphone_event_add_custom_header(lev, "Accept", "multipart/related, application/conference-info+xml, application/rlmi+xml");
+	linphone_event_add_custom_header(lev, "Content-Disposition", "recipient-list");
+	/* TODO: enable compression
+	if (linphone_core_content_encoding_supported(lc, "deflate")) {
+		content.setContentEncoding("deflate");
+		linphone_event_add_custom_header(lev, "Accept-Encoding", "deflate");
+	}
+	*/
 	linphone_event_set_user_data(lev, this);
 	linphone_event_send_subscribe(lev, content.toLinphoneContent());
 }
