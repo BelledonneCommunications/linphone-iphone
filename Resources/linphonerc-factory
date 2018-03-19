@@ -27,7 +27,7 @@ password_length=-1
 username_length=-1
 
 [net]
-force_ice_disablement=1
+force_ice_disablement=0
 download_bw=0
 upload_bw=0
 
