@@ -38,12 +38,13 @@ class LocalConferenceEventHandler;
 class LocalConferenceListEventHandler {
 public:
 	void subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body);
-	void addHandler (std::shared_ptr<LocalConferenceEventHandler> handler);
-	std::shared_ptr<LocalConferenceEventHandler> findHandler (const ChatRoomId &chatRoomId) const;
-	const std::list<std::shared_ptr<LocalConferenceEventHandler>> &getHandlers () const;
+	void addHandler (LocalConferenceEventHandler *handler);
+	void removeHandler (LocalConferenceEventHandler *handler);
+	LocalConferenceEventHandler *findHandler (const ChatRoomId &chatRoomId) const;
+	const std::list<LocalConferenceEventHandler *> &getHandlers () const;
 
 private:
-	std::list<std::shared_ptr<LocalConferenceEventHandler>> handlers;
+	std::list<LocalConferenceEventHandler *> handlers;
 
 };
 

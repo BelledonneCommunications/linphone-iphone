@@ -86,7 +86,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			addr.removeUriParam("Last-Notify");
 			int notifyId = notifyIdStr.empty() ? 0 : Utils::stoi(notifyIdStr);
 			ChatRoomId chatRoomId(addr, addr);
-			shared_ptr<LocalConferenceEventHandler> handler = findHandler(chatRoomId);
+			LocalConferenceEventHandler *handler = findHandler(chatRoomId);
 			if (!handler)
 				continue;
 
@@ -154,11 +154,17 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceListEventHandler::addHandler (shared_ptr<LocalConferenceEventHandler> handler) {
-	handlers.push_back(handler);
+void LocalConferenceListEventHandler::addHandler (LocalConferenceEventHandler *handler) {
+	if (handler)
+		handlers.push_back(handler);
 }
 
-shared_ptr<LocalConferenceEventHandler> LocalConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
+void LocalConferenceListEventHandler::removeHandler (LocalConferenceEventHandler *handler) {
+	if (handler)
+		handlers.remove(handler);
+}
+
+LocalConferenceEventHandler *LocalConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
 	for (const auto &handler : handlers) {
 		if (handler->getChatRoomId() == chatRoomId)
 			return handler;
@@ -167,7 +173,7 @@ shared_ptr<LocalConferenceEventHandler> LocalConferenceListEventHandler::findHan
 	return nullptr;
 }
 
-const list<shared_ptr<LocalConferenceEventHandler>> &LocalConferenceListEventHandler::getHandlers () const {
+const list<LocalConferenceEventHandler *> &LocalConferenceListEventHandler::getHandlers () const {
 	return handlers;
 }
 

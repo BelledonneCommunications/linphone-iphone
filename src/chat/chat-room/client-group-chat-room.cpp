@@ -218,11 +218,14 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	dConference->eventHandler->setChatRoomId(chatRoomId);
 	dConference->eventHandler->setLastNotify(lastNotifyId);
-	getCore()->getPrivate()->remoteListEventHandler->addHandler(dConference->eventHandler);
+	getCore()->getPrivate()->remoteListEventHandler->addHandler(dConference->eventHandler.get());
 }
 
 ClientGroupChatRoom::~ClientGroupChatRoom () {
 	L_D();
+	L_D_T(RemoteConference, dConference);
+
+	getCore()->getPrivate()->remoteListEventHandler->removeHandler(dConference->eventHandler.get());
 	d->setCallSessionListener(nullptr);
 }
 

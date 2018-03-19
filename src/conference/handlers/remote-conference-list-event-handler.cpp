@@ -142,7 +142,7 @@ void RemoteConferenceListEventHandler::notifyReceived (Content *multipart) {
 		Address cid(value);
 		Address peer = addresses[cid];
 		ChatRoomId id(local, peer);
-		shared_ptr<RemoteConferenceEventHandler> handler = findHandler(id);
+		RemoteConferenceEventHandler *handler = findHandler(id);
 		if (!handler)
 			continue;
 
@@ -155,7 +155,7 @@ void RemoteConferenceListEventHandler::notifyReceived (Content *multipart) {
 
 // -----------------------------------------------------------------------------
 
-shared_ptr<RemoteConferenceEventHandler> RemoteConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
+RemoteConferenceEventHandler *RemoteConferenceListEventHandler::findHandler (const ChatRoomId &chatRoomId) const {
 	for (const auto &handler : handlers) {
 		if (handler->getChatRoomId() == chatRoomId)
 			return handler;
@@ -164,12 +164,18 @@ shared_ptr<RemoteConferenceEventHandler> RemoteConferenceListEventHandler::findH
 	return nullptr;
 }
 
-const list<shared_ptr<RemoteConferenceEventHandler>> &RemoteConferenceListEventHandler::getHandlers () const {
+const list<RemoteConferenceEventHandler *> &RemoteConferenceListEventHandler::getHandlers () const {
 	return handlers;
 }
 
-void RemoteConferenceListEventHandler::addHandler (std::shared_ptr<RemoteConferenceEventHandler> handler) {
-	handlers.push_back(handler);
+void RemoteConferenceListEventHandler::addHandler (RemoteConferenceEventHandler *handler) {
+	if (handler)
+		handlers.push_back(handler);
+}
+
+void RemoteConferenceListEventHandler::removeHandler (RemoteConferenceEventHandler *handler) {
+	if (handler)
+		handlers.remove(handler);
 }
 
 map<Address, Address> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {

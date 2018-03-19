@@ -87,6 +87,9 @@ void CorePrivate::uninit () {
 	chatRoomsById.clear();
 	noCreatedClientGroupChatRooms.clear();
 
+	remoteListEventHandler = nullptr;
+	localListEventHandler = nullptr;
+
 	AddressPrivate::clearSipAddressesCache();
 }
 

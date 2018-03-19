@@ -47,12 +47,13 @@ public:
 	void subscribe ();
 	void unsubscribe ();
 	void notifyReceived (Content *multipart);
-	void addHandler (std::shared_ptr<RemoteConferenceEventHandler> handler);
-	std::shared_ptr<RemoteConferenceEventHandler> findHandler (const ChatRoomId &chatRoomId) const;
-	const std::list<std::shared_ptr<RemoteConferenceEventHandler>> &getHandlers () const;
+	void addHandler (RemoteConferenceEventHandler *handler);
+	void removeHandler (RemoteConferenceEventHandler *handler);
+	RemoteConferenceEventHandler *findHandler (const ChatRoomId &chatRoomId) const;
+	const std::list<RemoteConferenceEventHandler *> &getHandlers () const;
 
 private:
-	std::list<std::shared_ptr<RemoteConferenceEventHandler>> handlers;
+	std::list<RemoteConferenceEventHandler *> handlers;
 	LinphoneEvent *lev = nullptr;
 
 	std::map<Address, Address> parseRlmi (const std::string &xmlBody) const;

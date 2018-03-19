@@ -149,16 +149,18 @@ ServerGroupChatRoom::ServerGroupChatRoom (
 ) : ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(peerAddress, peerAddress)),
 	LocalConference(core, peerAddress, nullptr) {}
 
+ServerGroupChatRoom::~ServerGroupChatRoom () {};
+
 ServerGroupChatRoom::CapabilitiesMask ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
 void ServerGroupChatRoom::allowCpim (bool value) {
-	
+
 }
 
 void ServerGroupChatRoom::allowMultipart (bool value) {
-	
+
 }
 
 bool ServerGroupChatRoom::canHandleCpim () const {
