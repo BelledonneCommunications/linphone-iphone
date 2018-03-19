@@ -225,7 +225,12 @@ ClientGroupChatRoom::~ClientGroupChatRoom () {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	getCore()->getPrivate()->remoteListEventHandler->removeHandler(dConference->eventHandler.get());
+	try {
+		if (getCore()->getPrivate()->remoteListEventHandler)
+			getCore()->getPrivate()->remoteListEventHandler->removeHandler(dConference->eventHandler.get());
+	} catch (const bad_weak_ptr &) {
+		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
+	}
 	d->setCallSessionListener(nullptr);
 }
 
