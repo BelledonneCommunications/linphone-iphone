@@ -243,12 +243,36 @@ static void load_dynamic_proxy_config(void) {
 
 }
 
+static void single_route(void) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneProxyConfig *marie_cfg = linphone_core_get_default_proxy_config(marie->lc);
+	BC_ASSERT_PTR_NOT_NULL(marie_cfg);
+
+	const bctbx_list_t *routes = linphone_proxy_config_get_routes(marie_cfg);
+	BC_ASSERT_PTR_NOT_NULL(routes);
+	BC_ASSERT_EQUAL(bctbx_list_size(routes), 1, int, "%d");
+	const char *route = (const char *)bctbx_list_get_data(routes);
+	BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_route(marie_cfg), "sip:sip.example.org;transport=tcp;lr");
+	BC_ASSERT_STRING_EQUAL(route, "sip:sip.example.org;transport=tcp;lr");
+
+	linphone_proxy_config_set_route(marie_cfg, "sip.linphone.org");
+	routes = linphone_proxy_config_get_routes(marie_cfg);
+	BC_ASSERT_PTR_NOT_NULL(routes);
+	BC_ASSERT_EQUAL(bctbx_list_size(routes), 1, int, "%d");
+	route = (const char *)bctbx_list_get_data(routes);
+	BC_ASSERT_STRING_EQUAL(linphone_proxy_config_get_route(marie_cfg), "sip:sip.linphone.org");
+	BC_ASSERT_STRING_EQUAL(route, "sip:sip.linphone.org");
+
+	linphone_core_manager_destroy(marie);
+}
+
 test_t proxy_config_tests[] = {
 	TEST_NO_TAG("Phone normalization without proxy", phone_normalization_without_proxy),
 	TEST_NO_TAG("Phone normalization with proxy", phone_normalization_with_proxy),
 	TEST_NO_TAG("Phone normalization with dial escape plus", phone_normalization_with_dial_escape_plus),
 	TEST_NO_TAG("SIP URI normalization", sip_uri_normalization),
-	TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config)
+	TEST_NO_TAG("Load new default value for proxy config", load_dynamic_proxy_config),
+	TEST_NO_TAG("Single route", single_route)
 };
 
 test_suite_t proxy_config_test_suite = {"Proxy config", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

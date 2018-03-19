@@ -39,9 +39,9 @@ public:
 		int nnl = 0,
 		const std::string &icp = ""
 	);
-	DialPlan (const DialPlan &src);
+	DialPlan (const DialPlan &other);
 
-	DialPlan &operator= (const DialPlan &src);
+	DialPlan &operator= (const DialPlan &other);
 
 	const std::string &getCountry () const;
 	const std::string &getIsoCountryCode () const;

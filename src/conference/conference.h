@@ -23,6 +23,7 @@
 #include "linphone/types.h"
 
 #include "conference/conference-interface.h"
+#include "conference/conference-listener.h"
 #include "core/core-accessor.h"
 
 // =============================================================================
@@ -33,18 +34,21 @@ class CallSession;
 class CallSessionListener;
 class CallSessionPrivate;
 class ConferencePrivate;
+class ParticipantDevice;
 
 class LINPHONE_PUBLIC Conference :
 	public ConferenceInterface,
+	public ConferenceListener,
 	public CoreAccessor {
 	friend class CallSessionPrivate;
 
 public:
-	virtual ~Conference();
+	~Conference();
 
 	std::shared_ptr<Participant> getActiveParticipant () const;
 
 	std::shared_ptr<Participant> findParticipant (const std::shared_ptr<const CallSession> &session) const;
+	std::shared_ptr<ParticipantDevice> findParticipantDevice (const std::shared_ptr<const CallSession> &session) const;
 
 	/* ConferenceInterface */
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;

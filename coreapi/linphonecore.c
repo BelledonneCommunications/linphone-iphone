@@ -1397,6 +1397,9 @@ static void sip_config_read(LinphoneCore *lc) {
 	/*this is to filter out unsupported encryption schemes*/
 	linphone_core_set_media_encryption(lc,linphone_core_get_media_encryption(lc));
 
+	/*enable the reconnection to the primary server when it is up again asap*/
+	lc->sal->enable_reconnect_to_primary_asap(!!lp_config_get_int(lc->config,"sip","reconnect_to_primary_asap",0));
+
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack = !!lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
 	lc->sip_conf.register_only_when_network_is_up=
@@ -2144,6 +2147,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 				while ((part = linphone_content_get_part(body, i))) {
 					i++;
 					L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(part));
+					linphone_content_unref(part);
 				}
 			} else
 				L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(body));
@@ -2386,7 +2390,8 @@ LinphoneCore *linphone_core_new(const LinphoneCoreVTable *vtable,
 }
 
 LinphoneCore *linphone_core_ref(LinphoneCore *lc) {
-	return reinterpret_cast<LinphoneCore *>(belle_sip_object_ref(BELLE_SIP_OBJECT(lc)));
+	belle_sip_object_ref(BELLE_SIP_OBJECT(lc));
+	return lc;
 }
 
 void linphone_core_unref(LinphoneCore *lc) {
@@ -3419,11 +3424,16 @@ LinphoneCall * linphone_core_start_refered_call(LinphoneCore *lc, LinphoneCall *
 	 system.
 */
 static bctbx_list_t *make_routes_for_proxy(LinphoneProxyConfig *proxy, const LinphoneAddress *dest){
-	bctbx_list_t *ret=NULL;
-	const char *local_route=linphone_proxy_config_get_route(proxy);
-	const LinphoneAddress *srv_route=linphone_proxy_config_get_service_route(proxy);
-	if (local_route){
-		ret=bctbx_list_append(ret,sal_address_new(local_route));
+	bctbx_list_t *ret = NULL;
+	const bctbx_list_t *proxy_routes = linphone_proxy_config_get_routes(proxy);
+	bctbx_list_t *proxy_routes_iterator = (bctbx_list_t *)proxy_routes;
+	const LinphoneAddress *srv_route = linphone_proxy_config_get_service_route(proxy);
+	while (proxy_routes_iterator) {
+		const char *local_route = (const char *)bctbx_list_get_data(proxy_routes_iterator);
+		if (local_route) {
+			ret = bctbx_list_append(ret, sal_address_new(local_route));
+		}
+		proxy_routes_iterator = bctbx_list_next(proxy_routes_iterator);
 	}
 	if (srv_route){
 		ret=bctbx_list_append(ret,sal_address_clone(L_GET_PRIVATE_FROM_C_OBJECT(srv_route)->getInternalAddress()));
@@ -3447,7 +3457,7 @@ LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const L
 	LinphoneProxyConfig *default_cfg=lc->default_proxy;
 
 	if (linphone_address_get_domain(uri) == NULL) {
-		ms_message("cannot seach for proxy for uri [%p] if no domain set. returning default",uri);
+		ms_message("Cannot look for proxy for uri [%p] that has no domain set, returning default", uri);
 		return default_cfg;
 	}
 	/*return default proxy if it is matching the destination uri*/
@@ -5814,15 +5824,17 @@ void sip_config_uninit(LinphoneCore *lc)
 		}
 		if (i>=20) ms_warning("Cannot complete unregistration, giving up");
 	}
+
 	elem = config->proxies;
-	config->proxies=NULL; /*to make sure proxies cannot be refferenced during deletion*/
+	config->proxies=NULL; /*to make sure proxies cannot be referenced during deletion*/
 	bctbx_list_free_with_data(elem,(void (*)(void*)) _linphone_proxy_config_release);
 
 	config->deleted_proxies=bctbx_list_free_with_data(config->deleted_proxies,(void (*)(void*)) _linphone_proxy_config_release);
 
-	/*no longuer need to write proxy config if not changedlinphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
+	/*no longuer need to write proxy config if not changed linphone_proxy_config_write_to_config_file(lc->config,NULL,i);*/	/*mark the end */
 
 	lc->auth_info=bctbx_list_free_with_data(lc->auth_info,(void (*)(void*))linphone_auth_info_unref);
+	lc->default_proxy = NULL;
 
 	if (lc->vcard_context) {
 		linphone_vcard_context_destroy(lc->vcard_context);
@@ -5851,6 +5863,7 @@ void sip_config_uninit(LinphoneCore *lc)
 	lc->sal->iterate(); /*make sure event are purged*/
 	delete lc->sal;
 	lc->sal=NULL;
+
 
 	if (lc->sip_conf.guessed_contact)
 		ms_free(lc->sip_conf.guessed_contact);
@@ -6711,11 +6724,13 @@ int linphone_core_get_video_dscp(const LinphoneCore *lc){
 
 void linphone_core_set_chat_database_path (LinphoneCore *lc, const char *path) {
 	if (!linphone_core_conference_server_enabled(lc)) {
-		auto &mainDb = L_GET_PRIVATE(lc->cppPtr)->mainDb;
-		if (mainDb)
+		auto &mainDb = L_GET_PRIVATE_FROM_C_OBJECT(lc)->mainDb;
+		if (mainDb) {
 			mainDb->import(LinphonePrivate::MainDb::Sqlite3, path);
-		else
+			L_GET_PRIVATE_FROM_C_OBJECT(lc)->loadChatRooms();
+		} else {
 			ms_warning("linphone_core_set_chat_database_path() needs to be called once linphone_core_start() has been called");
+		}
 	}
 }
 
@@ -7042,20 +7057,15 @@ LinphoneConference *linphone_core_get_conference(LinphoneCore *lc) {
 	return lc->conf_ctx;
 }
 
-void linphone_core_set_conference_factory_uri(LinphoneCore *lc, const char *uri) {
-	lp_config_set_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", uri);
-}
-
-const char * linphone_core_get_conference_factory_uri(const LinphoneCore *lc) {
-	return lp_config_get_string(linphone_core_get_config(lc), "misc", "conference_factory_uri", nullptr);
-}
-
 void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable) {
 	lp_config_set_int(linphone_core_get_config(lc), "misc", "conference_server_enabled", enable);
 }
 
 bool_t _linphone_core_is_conference_creation (const LinphoneCore *lc, const LinphoneAddress *addr) {
-	const char *uri = linphone_core_get_conference_factory_uri(lc);
+	LinphoneProxyConfig *proxy = linphone_core_get_default_proxy_config(lc);
+	if (!proxy)
+		return FALSE;
+	const char *uri = linphone_proxy_config_get_conference_factory_uri(proxy);
 	if (!uri)
 		return FALSE;
 

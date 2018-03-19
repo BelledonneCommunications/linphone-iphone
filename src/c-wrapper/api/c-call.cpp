@@ -27,6 +27,7 @@
 #include "call/call.h"
 #include "call/local-conference-call.h"
 #include "call/remote-conference-call.h"
+#include "chat/chat-room/real-time-text-chat-room.h"
 #include "conference/params/media-session-params-p.h"
 #include "core/core-p.h"
 
@@ -205,6 +206,10 @@ void linphone_call_notify_ack_processing (LinphoneCall *call, LinphoneHeaders *m
 	NOTIFY_IF_EXIST(AckProcessing, ack_processing, call, msg, is_received)
 }
 
+void linphone_call_notify_tmmbr_received (LinphoneCall *call, int stream_index, int tmmbr) {
+	NOTIFY_IF_EXIST(TmmbrReceived, tmmbr_received, call, stream_index, tmmbr)
+}
+
 
 // =============================================================================
 // Public functions.
@@ -246,7 +251,7 @@ const char *linphone_call_get_to_header (const LinphoneCall *call, const char *n
 }
 
 char *linphone_call_get_remote_address_as_string (const LinphoneCall *call) {
-	return ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteAddressAsString().c_str());
+	return ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteAddress().asString().c_str());
 }
 
 const LinphoneAddress *linphone_call_get_diversion_address (const LinphoneCall *call) {
@@ -538,16 +543,10 @@ bool_t linphone_call_echo_limiter_enabled (const LinphoneCall *call) {
 }
 
 LinphoneChatRoom *linphone_call_get_chat_room (LinphoneCall *call) {
-#if 0
-	if (!call->chat_room){
-		if (call->state != LinphoneCallReleased && call->state != LinphoneCallEnd){
-			call->chat_room = _linphone_core_create_chat_room_from_call(call);
-		}
-	}
-	return call->chat_room;
-#else
+	shared_ptr<LinphonePrivate::RealTimeTextChatRoom> acr = L_GET_PRIVATE_FROM_C_OBJECT(call)->getChatRoom();
+	if (acr)
+		return L_GET_C_BACK_PTR(acr);
 	return nullptr;
-#endif
 }
 
 float linphone_call_get_play_volume (const LinphoneCall *call) {

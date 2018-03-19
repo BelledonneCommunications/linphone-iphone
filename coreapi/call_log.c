@@ -170,6 +170,23 @@ bctbx_list_t * linphone_core_read_call_logs_from_config_file(LinphoneCore *lc){
  * Public functions                                                            *
  ******************************************************************************/
 
+LinphoneCallLog *linphone_core_create_call_log(LinphoneCore *lc, LinphoneAddress *from, LinphoneAddress *to, LinphoneCallDir dir, 
+		int duration, time_t start_time, time_t connected_time, LinphoneCallStatus status, bool_t video_enabled, float quality) {
+	LinphoneCallLog *log = linphone_call_log_new(dir, linphone_address_ref(from), linphone_address_ref(to));
+
+	log->duration = duration;
+	log->start_date_time = start_time;
+	set_call_log_date(log,log->start_date_time);
+	log->connected_date_time = connected_time;
+	log->status = status;
+	log->video_enabled = video_enabled;
+	log->quality = quality;
+
+	linphone_core_store_call_log(lc, log);
+
+	return log;
+}
+
 const char *linphone_call_log_get_call_id(const LinphoneCallLog *cl){
 	return cl->call_id;
 }
@@ -198,7 +215,11 @@ const char *linphone_call_log_get_ref_key(const LinphoneCallLog *cl){
 	return cl->refkey;
 }
 
-LinphoneAddress *linphone_call_log_get_remote_address(const LinphoneCallLog *cl){
+const LinphoneAddress *linphone_call_log_get_local_address(const LinphoneCallLog *cl) {
+	return (cl->dir == LinphoneCallIncoming) ? cl->to : cl->from;
+}
+
+const LinphoneAddress *linphone_call_log_get_remote_address(const LinphoneCallLog *cl){
 	return (cl->dir == LinphoneCallIncoming) ? cl->from : cl->to;
 }
 
@@ -610,7 +631,10 @@ int linphone_core_get_call_history_size(LinphoneCore *lc) {
 	sqlite3_stmt *selectStatement;
 	int returnValue;
 
-	if (!lc || lc->logs_db == NULL) return 0;
+	if (!lc)
+		return 0;
+	if (!lc->logs_db)
+		return (int)bctbx_list_size(lc->call_logs);
 
 	buf = sqlite3_mprintf("SELECT count(*) FROM call_history");
 	returnValue = sqlite3_prepare_v2(lc->logs_db, buf, -1, &selectStatement, NULL);

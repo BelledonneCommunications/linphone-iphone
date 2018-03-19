@@ -30,6 +30,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 int StunClient::run (int audioPort, int videoPort, int textPort) {
+	stunDiscoveryDone = false;
 	if (linphone_core_ipv6_enabled(getCore()->getCCore())) {
 		lWarning() << "STUN support is not implemented for ipv6";
 		return -1;
@@ -139,10 +140,12 @@ int StunClient::run (int audioPort, int videoPort, int textPort) {
 	close_socket(sockAudio);
 	if (sockVideo != -1) close_socket(sockVideo);
 	if (sockText != -1) close_socket(sockText);
+	stunDiscoveryDone = true;
 	return ret;
 }
 
 void StunClient::updateMediaDescription (SalMediaDescription *md) const {
+	if (!stunDiscoveryDone) return;
 	for (int i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; i++) {
 		if (!sal_stream_description_active(&md->streams[i]))
 			continue;

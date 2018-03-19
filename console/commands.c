@@ -930,6 +930,7 @@ lpc_cmd_firewall(LinphoneCore *lc, char *args)
 				return 1;
 			}
 			linphone_core_set_firewall_policy(lc,LinphonePolicyUseNatAddress);
+			setting = linphone_core_get_nat_address(lc);
 		}
 	}
 

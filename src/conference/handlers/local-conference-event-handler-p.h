@@ -40,11 +40,11 @@ public:
 	std::string createNotifyFullState (int notifyId = -1, bool oneToOne = false);
 	std::string createNotifyMultipart (int notifyId);
 	std::string createNotifyParticipantAdded (const Address &addr, int notifyId = -1);
+	std::string createNotifyParticipantAdminStatusChanged (const Address &addr, bool isAdmin, int notifyId = -1);
 	std::string createNotifyParticipantRemoved (const Address &addr, int notifyId = -1);
-	std::string createNotifyParticipantAdmined (const Address &addr, bool isAdmin, int notifyId = -1);
-	std::string createNotifySubjectChanged (int notifyId = -1);
 	std::string createNotifyParticipantDeviceAdded (const Address &addr, const Address &gruu, int notifyId = -1);
 	std::string createNotifyParticipantDeviceRemoved (const Address &addr, const Address &gruu, int notifyId = -1);
+	std::string createNotifySubjectChanged (int notifyId = -1);
 
 	inline unsigned int getLastNotify () const { return lastNotify; };
 
@@ -53,6 +53,8 @@ private:
 
 	LocalConference *conf = nullptr;
 	unsigned int lastNotify = 1;
+
+	static void notifyResponseCb (const LinphoneEvent *ev);
 
 	std::string createNotify (Xsd::ConferenceInfo::ConferenceType confInfo, int notifyId = -1, bool isFullState = false);
 	std::string createNotifySubjectChanged (const std::string &subject, int notifyId = -1);

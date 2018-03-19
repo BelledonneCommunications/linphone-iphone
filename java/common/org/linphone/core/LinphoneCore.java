@@ -2557,4 +2557,10 @@ public interface LinphoneCore {
 	 * @return a new LinphoneFriend with the given address link with this LinphoneCore
 	 */
 	public LinphoneFriend createFriendWithAddress(String address);
+
+	/**
+	  * Creates and stores a fake LinphoneCallLog
+	  * @return the LinphoneCallLog created and stored 
+	  */
+	public LinphoneCallLog createCallLog(LinphoneAddress from, LinphoneAddress to, CallDirection dir, int duration, long start, long connected, LinphoneCallLog.CallStatus status, boolean videoEnabled, float quality);
 }

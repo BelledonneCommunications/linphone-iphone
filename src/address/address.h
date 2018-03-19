@@ -20,6 +20,8 @@
 #ifndef _L_ADDRESS_H_
 #define _L_ADDRESS_H_
 
+#include <ostream>
+
 #include "enums.h"
 #include "object/clonable-object.h"
 
@@ -42,15 +44,15 @@ class LINPHONE_PUBLIC Address : public ClonableObject {
 public:
 	explicit Address (const std::string &address = "");
 	Address (const IdentityAddress &identityAddress);
-	Address (const Address &src);
+	Address (const Address &other);
 	~Address ();
 
-	Address &operator= (const Address &src);
+	Address &operator= (const Address &other);
 
-	bool operator== (const Address &address) const;
-	bool operator!= (const Address &address) const;
+	bool operator== (const Address &other) const;
+	bool operator!= (const Address &other) const;
 
-	bool operator< (const Address &address) const;
+	bool operator< (const Address &other) const;
 
 	bool isValid () const;
 
@@ -106,6 +108,11 @@ public:
 private:
 	L_DECLARE_PRIVATE(Address);
 };
+
+inline std::ostream &operator<< (std::ostream &os, const Address &address) {
+	os << "Address(" << address.asString() << ")";
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 

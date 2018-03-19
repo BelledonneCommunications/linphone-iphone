@@ -20,6 +20,8 @@
 #ifndef _L_IDENTITY_ADDRESS_H_
 #define _L_IDENTITY_ADDRESS_H_
 
+#include <ostream>
+
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -33,15 +35,15 @@ class LINPHONE_PUBLIC IdentityAddress : public ClonableObject {
 public:
 	explicit IdentityAddress (const std::string &address = "");
 	IdentityAddress (const Address &address);
-	IdentityAddress (const IdentityAddress &src);
+	IdentityAddress (const IdentityAddress &other);
 	~IdentityAddress () = default;
 
-	IdentityAddress &operator= (const IdentityAddress &src);
+	IdentityAddress &operator= (const IdentityAddress &other);
 
-	bool operator== (const IdentityAddress &address) const;
-	bool operator!= (const IdentityAddress &address) const;
+	bool operator== (const IdentityAddress &other) const;
+	bool operator!= (const IdentityAddress &other) const;
 
-	bool operator< (const IdentityAddress &address) const;
+	bool operator< (const IdentityAddress &other) const;
 
 	bool isValid () const;
 
@@ -64,6 +66,11 @@ public:
 private:
 	L_DECLARE_PRIVATE(IdentityAddress);
 };
+
+inline std::ostream &operator<< (std::ostream &os, const IdentityAddress &identityAddress) {
+	os << "IdentityAddress(" << identityAddress.asString() << ")";
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 

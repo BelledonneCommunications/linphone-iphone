@@ -47,6 +47,7 @@ class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class ChatRoomPrivate;
 	friend class CpimChatMessageModifier;
 	friend class FileTransferChatMessageModifier;
+	friend class Imdn;
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class RealTimeTextChatRoomPrivate;
@@ -63,7 +64,6 @@ public:
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
-	void updateState (State state);
 	void sendDeliveryNotification (LinphoneReason reason);
 	void sendDisplayNotification ();
 	void setIsSecured (bool isSecured);
@@ -95,16 +95,18 @@ public:
 
 	const std::list<Content *> &getContents () const;
 	void addContent (Content *content);
-	void removeContent (const Content *content);
+	void removeContent (Content *content);
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
 
+	// TODO: to replace salCustomheaders
 	std::string getCustomHeaderValue (const std::string &headerName) const;
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
 	bool downloadFile (FileTransferContent *content);
+	bool isFileTransferInProgress();
 
 private:
 	ChatMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);

@@ -40,10 +40,10 @@ class CallSessionParams : public ClonableObject {
 
 public:
 	CallSessionParams ();
-	CallSessionParams (const CallSessionParams &src);
+	CallSessionParams (const CallSessionParams &other);
 	virtual ~CallSessionParams ();
 
-	CallSessionParams &operator= (const CallSessionParams &src);
+	CallSessionParams &operator= (const CallSessionParams &other);
 
 	virtual void initDefault (const std::shared_ptr<Core> &core);
 

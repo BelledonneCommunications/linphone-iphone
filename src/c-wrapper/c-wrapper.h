@@ -40,8 +40,10 @@
 	F(Content, Content) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
+	F(MagicSearch, MagicSearch) \
 	F(MediaSessionParams, CallParams) \
-	F(Participant, Participant)
+	F(Participant, Participant) \
+	F(SearchResult, SearchResult)
 
 #define L_REGISTER_SUBTYPES(F) \
 	F(AbstractChatRoom, BasicChatRoom) \
@@ -87,6 +89,7 @@ BELLE_SIP_TYPE_ID(LinphoneContactSearch),
 BELLE_SIP_TYPE_ID(LinphoneCoreCbs),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneEvent),
+BELLE_SIP_TYPE_ID(LinphoneEventCbs),
 BELLE_SIP_TYPE_ID(LinphoneFactory),
 BELLE_SIP_TYPE_ID(LinphoneFriend),
 BELLE_SIP_TYPE_ID(LinphoneFriendList),

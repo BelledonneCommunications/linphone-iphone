@@ -68,6 +68,8 @@ public:
 	virtual State getState () const = 0;
 	virtual bool hasBeenLeft () const = 0;
 
+	virtual std::list<std::shared_ptr<EventLog>> getMessageHistory (int nLast) const = 0;
+	virtual std::list<std::shared_ptr<EventLog>> getMessageHistoryRange (int begin, int end) const = 0;
 	virtual std::list<std::shared_ptr<EventLog>> getHistory (int nLast) const = 0;
 	virtual std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const = 0;
 	virtual int getHistorySize () const = 0;

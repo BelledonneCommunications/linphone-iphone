@@ -54,7 +54,7 @@ class JNINameTranslator(metaname.Translator):
 
     def translate_class_name(self, name, **params):
         translated_name = name.to_camel_case()
-        if name.prev is not None:
+        if name.prev is not None and type(name.prev) is not metaname.NamespaceName:
             return name.prev.translate(self) + self._getseparator(name.prev) + translated_name
         else:
             return translated_name

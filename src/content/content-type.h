@@ -33,17 +33,17 @@ public:
 	explicit ContentType (const std::string &contentType = "");
 	ContentType (const std::string &type, const std::string &subType);
 	ContentType (const std::string &type, const std::string &subType, const std::string &parameter);
-	ContentType (const ContentType &src);
+	ContentType (const ContentType &other);
 
-	ContentType &operator= (const ContentType &src);
+	ContentType &operator= (const ContentType &other);
 
-	bool operator== (const ContentType &contentType) const;
-	bool operator!= (const ContentType &contentType) const;
+	bool operator== (const ContentType &other) const;
+	bool operator!= (const ContentType &other) const;
 
 	// Delete these operators to prevent putting complicated content-type strings
 	// in the code. Instead define static const ContentType objects below.
-	bool operator== (const std::string &contentType) const = delete;
-	bool operator!= (const std::string &contentType) const = delete;
+	bool operator== (const std::string &other) const = delete;
+	bool operator!= (const std::string &other) const = delete;
 
 	bool isEmpty () const;
 	bool isValid () const;

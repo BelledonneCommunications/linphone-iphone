@@ -20,11 +20,9 @@
 #ifndef _L_DB_SESSION_H_
 #define _L_DB_SESSION_H_
 
-#ifdef SOCI_ENABLED
-	#include <soci/soci.h>
-#endif // ifdef SOCI_ENABLED
+#include <soci/soci.h>
 
-#include "object/clonable-object.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
@@ -32,21 +30,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 class DbSessionPrivate;
 
-class DbSession : public ClonableObject {
-	friend class DbSessionProvider;
-
+class DbSession {
 public:
 	DbSession ();
 	explicit DbSession (const std::string &uri);
-	DbSession (const DbSession &src);
+	DbSession (DbSession &&other);
+	~DbSession ();
 
-	DbSession &operator= (const DbSession &src);
+	DbSession &operator= (DbSession &&other);
 
 	operator bool () const;
 
-	#ifdef SOCI_ENABLED
-		soci::session *getBackendSession () const;
-	#endif // ifdef SOCI_ENABLED
+	soci::session *getBackendSession () const;
 
 	std::string primaryKeyStr (const std::string &type = "INT") const;
 	std::string primaryKeyRefStr (const std::string &type = "INT") const;
@@ -62,7 +57,11 @@ public:
 
 	bool checkTableExists (const std::string &table) const;
 
+	long long resolveId (const soci::row &row, int col) const;
+
 private:
+	DbSessionPrivate *mPrivate;
+
 	L_DECLARE_PRIVATE(DbSession);
 };
 

@@ -171,32 +171,42 @@ namespace Cpim {
 		// Warning: Call this function one time!
 		shared_ptr<Message> createMessage () const {
 			size_t size = mHeaders->size();
-			if (size < 2 || size > 3) {
+			if (size < 2 || size > 3) { // TODO: Check that size is == 2
 				lWarning() << "Bad headers lists size.";
 				return nullptr;
 			}
 
 			const shared_ptr<Message> message = make_shared<Message>();
-			const shared_ptr<ListHeaderNode> cpimHeaders = mHeaders->front();
 
-			if (find_if(cpimHeaders->cbegin(), cpimHeaders->cend(),
-						[](const shared_ptr<const HeaderNode> &headerNode) {
-							return Utils::iequals(headerNode->getName(), "content-type") && (ContentType(headerNode->getValue()) == ContentType::Cpim);
-						}) == cpimHeaders->cend()) {
-				lWarning() << "No MIME `Content-Type` found!";
-				return nullptr;
-			}
-
-			// Add MIME headers.
-			for (const auto &headerNode : *cpimHeaders) {
-				const shared_ptr<const Header> header = headerNode->createHeader();
-				if (!header || !message->addCpimHeader(*header))
+			// TODO: To remove
+			if (size == 3) {
+				const shared_ptr<ListHeaderNode> cpimHeaders = mHeaders->front();
+				if (find_if(cpimHeaders->cbegin(), cpimHeaders->cend(),
+							[](const shared_ptr<const HeaderNode> &headerNode) {
+								return Utils::iequals(headerNode->getName(), "content-type") && (ContentType(headerNode->getValue()) == ContentType::Cpim);
+							}) == cpimHeaders->cend()) {
+					lWarning() << "No MIME `Content-Type` found!";
 					return nullptr;
-			}
+				}
 
-			// Add message headers.
-			if (mHeaders->size() > 2) {
+				// Add MIME headers.
+				for (const auto &headerNode : *cpimHeaders) {
+					const shared_ptr<const Header> header = headerNode->createHeader();
+					if (!header || !message->addCpimHeader(*header))
+						return nullptr;
+				}
+
+				// Add message headers.
 				for (const auto &headerNode : **(++mHeaders->cbegin())) {
+					const shared_ptr<const Header> header = headerNode->createHeader();
+					if (!header || !message->addMessageHeader(*header))
+						return nullptr;
+				}
+			}
+			// TODO: To remove
+			else {
+				// Add message headers.
+				for (const auto &headerNode : *mHeaders->front()) {
 					const shared_ptr<const Header> header = headerNode->createHeader();
 					if (!header || !message->addMessageHeader(*header))
 						return nullptr;

@@ -61,11 +61,8 @@ void Conference::addParticipants (const list<IdentityAddress> &addresses, const 
 	list<IdentityAddress> sortedAddresses(addresses);
 	sortedAddresses.sort();
 	sortedAddresses.unique();
-	for (const auto &addr: sortedAddresses) {
-		shared_ptr<Participant> participant = findParticipant(addr);
-		if (!participant)
-			addParticipant(addr, params, hasMedia);
-	}
+	for (const auto &addr: sortedAddresses)
+		addParticipant(addr, params, hasMedia);
 }
 
 bool Conference::canHandleParticipants () const {
@@ -83,8 +80,7 @@ shared_ptr<Participant> Conference::getMe () const {
 }
 
 int Conference::getParticipantCount () const {
-	L_D();
-	return static_cast<int>(d->participants.size());
+	return static_cast<int>(getParticipants().size());
 }
 
 const list<shared_ptr<Participant>> &Conference::getParticipants () const {
@@ -140,6 +136,19 @@ shared_ptr<Participant> Conference::findParticipant (const shared_ptr<const Call
 	for (const auto &participant : d->participants) {
 		if (participant->getPrivate()->getSession() == session)
 			return participant;
+	}
+
+	return nullptr;
+}
+
+shared_ptr<ParticipantDevice> Conference::findParticipantDevice (const shared_ptr<const CallSession> &session) const {
+	L_D();
+
+	for (const auto &participant : d->participants) {
+		for (const auto &device : participant->getPrivate()->getDevices()) {
+			if (device->getSession() == session)
+				return device;
+		}
 	}
 
 	return nullptr;

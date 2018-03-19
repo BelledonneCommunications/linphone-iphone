@@ -31,8 +31,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class CallSessionPrivate : public ObjectPrivate, public CoreListener {
 public:
-	CallSessionPrivate () = default;
-
 	int computeDuration () const;
 	virtual void initializeParamsAccordingToIncomingCallParams ();
 	void notifyReferState ();
@@ -75,7 +73,7 @@ protected:
 
 	void accept (const CallSessionParams *params);
 	virtual LinphoneStatus acceptUpdate (const CallSessionParams *csp, CallSession::State nextState, const std::string &stateInfo);
-	LinphoneStatus checkForAcceptation () const;
+	LinphoneStatus checkForAcceptation ();
 	virtual void handleIncomingReceivedStateInIncomingNotification ();
 	virtual bool isReadyForInvite () const;
 	bool isUpdateAllowed (CallSession::State &nextState) const;
@@ -136,8 +134,10 @@ protected:
 	bool broken = false;
 	bool deferIncomingNotification = false;
 	bool deferUpdate = false;
+	bool deferUpdateInternal = false;
 	bool needLocalIpRefresh = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
+	bool notifyRinging = true;
 	bool referPending = false;
 	bool reinviteOnCancelResponseRequested = false;
 

@@ -244,18 +244,18 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsConferenceAddressGenerationCb linphone_chat_r
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_conference_address_generation (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceAddressGenerationCb cb);
 
 /**
- * Get the participant device getting callback.
+ * Get the participant device fetching callback.
  * @param[in] cbs LinphoneChatRoomCbs object
- * @return The participant device getting callback
+ * @return The participant device fetching callback
  */
-LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceFetchedCb linphone_chat_room_cbs_get_participant_device_fetched (const LinphoneChatRoomCbs *cbs);
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb linphone_chat_room_cbs_get_participant_device_fetch_requested (const LinphoneChatRoomCbs *cbs);
 
 /**
- * Set the participant device getting callback.
+ * Set the participant device fetching callback.
  * @param[in] cbs LinphoneChatRoomCbs object
- * @param[in] cb The participant device getting callback to be used
+ * @param[in] cb The participant device fetching callback to be used
  */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_fetched (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceFetchedCb cb);
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_fetch_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb cb);
 
 /**
  * Get the participants capabilities callback.
@@ -270,6 +270,47 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_ch
  * @param[in] cb The participants capabilities callback to be used
  */
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participants_capabilities_checked (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb cb);
+
+/**
+ * Get the participant registration subscription callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The participant registration subscription callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantRegistrationSubscriptionRequestedCb linphone_chat_room_cbs_get_participant_registration_subscription_requested (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant registration subscription callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The participant registration subscription callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_registration_subscription_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRegistrationSubscriptionRequestedCb cb);
+
+/**
+ * Get the participant registration unsubscription callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The participant registration unsubscription callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantRegistrationUnsubscriptionRequestedCb linphone_chat_room_cbs_get_participant_registration_unsubscription_requested (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the participant registration unsubscription callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The participant registration unsubscription callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_registration_unsubscription_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRegistrationUnsubscriptionRequestedCb cb);
+
+/**
+ * Get the message should be stored callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @return The message should be stored getting callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsShouldChatMessageBeStoredCb linphone_chat_room_cbs_get_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs);
+/**
+ * Set the message should be stored callback.
+ * @param[in] cbs LinphoneChatRoomCbs object
+ * @param[in] cb The message should be stored callback to be used
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsShouldChatMessageBeStoredCb cb);
 
 /**
  * @}

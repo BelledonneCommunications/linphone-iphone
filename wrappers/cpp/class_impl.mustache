@@ -38,7 +38,7 @@ static {{{returnType}}} {{{cbName}}}({{{declArgs}}}) {
 	
 	{{#ismultilistenable}}
 	{{{cListenerName}}} *cbs = {{{currentCallbacksGetter}}}({{{firstArgName}}});
-	std::list<std::shared_ptr<Listener> > &listeners = *(std::list<std::shared_ptr<Listener> > *){{{userDataGetter}}}(cbs);
+	std::list<std::shared_ptr<Listener> > listeners = *(std::list<std::shared_ptr<Listener> > *){{{userDataGetter}}}(cbs);
 	for(auto it=listeners.begin(); it!=listeners.end(); it++) {
 		std::shared_ptr<{{{cppListenerName}}}> listener = std::static_pointer_cast<{{{cppListenerName}}},Listener>(*it);
 		{{{cppMethodCallingLine}}};

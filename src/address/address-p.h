@@ -38,6 +38,8 @@ public:
 	}
 	void setInternalAddress (const SalAddress *value);
 
+	static void clearSipAddressesCache ();
+
 private:
 	struct AddressCache {
 		std::string scheme;

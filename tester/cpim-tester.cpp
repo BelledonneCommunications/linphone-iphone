@@ -402,7 +402,6 @@ static int fake_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncry
 static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
-	LpConfig *config = linphone_core_get_config(marie->lc);
 
 	// We use a fake encryption engine just to check the internal content type during the sending/receiving process
 	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new();
@@ -413,8 +412,6 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	linphone_im_encryption_engine_cbs_set_process_incoming_message(pauline_cbs, fake_im_encryption_engine_process_incoming_message_cb);
 	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
 	linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
-
-	lp_config_set_int(config, "sip", "use_cpim", 1);
 
 	IdentityAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
 	shared_ptr<AbstractChatRoom> marieRoom = marie->lc->cppPtr->getOrCreateBasicChatRoom(paulineAddress);

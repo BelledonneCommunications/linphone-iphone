@@ -54,7 +54,7 @@ class DurationLoggerPrivate;
 
 class DurationLogger : public BaseObject {
 public:
-	DurationLogger (const std::string &label, Logger::Level level = Logger::Debug);
+	DurationLogger (const std::string &label, Logger::Level level = Logger::Info);
 	~DurationLogger ();
 
 private:

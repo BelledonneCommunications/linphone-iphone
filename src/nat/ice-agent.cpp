@@ -45,6 +45,12 @@ void IceAgent::checkSession (IceRole role, bool isReinvite) {
 		return;
 
 	LinphoneConfig *config = linphone_core_get_config(mediaSession.getCore()->getCCore());
+	
+	if (lp_config_get_int(config, "net", "force_ice_disablement", 0)){
+		lWarning()<<"ICE is disabled in this version";
+		return;
+	}
+	
 	if (isReinvite && (lp_config_get_int(config, "net", "allow_late_ice", 0) == 0))
 		return;
 
@@ -539,7 +545,7 @@ void IceAgent::createIceCheckListsAndParseIceAttributes (const SalMediaDescripti
 		}
 		if (!iceRestarted) {
 			bool_t losingPairsAdded = false;
-			for (int j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+			for (int j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 				const SalIceRemoteCandidate *remoteCandidate = &stream->ice_remote_candidates[j];
 				const char *addr = nullptr;
 				int port = 0;
@@ -730,6 +736,37 @@ void IceAgent::updateIceStateInCallStatsForStream (LinphoneCallStats *stats, Ice
 			L_ASSERT(false);
 			break;
 	}
+}
+
+bool IceAgent::checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md){
+	int i,j;
+	IceCheckList *cl;
+	
+	if (!iceSession) return false;
+
+	if (ice_session_state(iceSession) != IS_Running ) return false;
+	
+	for (i = 0; i < md->nb_streams; i++) {
+		SalStreamDescription *stream = &md->streams[i];
+		cl = ice_session_check_list(iceSession, i);
+
+		if (cl==NULL) continue;
+		if (stream->ice_mismatch == TRUE) {
+			return false;
+		}
+		if (stream->rtp_port == 0) {
+			continue;
+		}
+		
+		if (ice_check_list_state(cl) != ICL_Running) continue;
+
+		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
+			if (remote_candidate->addr[0] != '\0') return true;
+
+		}
+	}
+	return false;
 }
 
 LINPHONE_END_NAMESPACE

@@ -116,7 +116,7 @@ LINPHONE_PUBLIC void linphone_friend_add_phone_number(LinphoneFriend *lf, const 
  * @param lf #LinphoneFriend object
  * @return \bctbx_list{const char *}
  */
-LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_phone_numbers(LinphoneFriend *lf);
+LINPHONE_PUBLIC bctbx_list_t* linphone_friend_get_phone_numbers(const LinphoneFriend *lf);
 
 /**
  * Removes a phone number in this friend
@@ -306,7 +306,7 @@ LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr)
  * Returns the vCard object associated to this friend, if any
  * @param[in] fr LinphoneFriend object
  */
-LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr);
+LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(const LinphoneFriend *fr);
 
 /**
  * Binds a vCard object to a friend

@@ -54,13 +54,12 @@ public:
 		Started = 1 << 5,
 	};
 
-	ChatMessagePrivate () = default;
-
 	void setApplyModifiers (bool value) { applyModifiers = value; }
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setState (ChatMessage::State state, bool force = false);
+	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState);
+	void setState (ChatMessage::State newState, bool force = false);
 
 	void setTime (time_t time);
 
@@ -68,12 +67,28 @@ public:
 
 	void setImdnMessageId (const std::string &imdnMessageId);
 
-	inline void forceFromAddress (const IdentityAddress &fromAddress) {
+	void forceFromAddress (const IdentityAddress &fromAddress) {
 		this->fromAddress = fromAddress;
 	}
 
-	inline void forceToAddress (const IdentityAddress &toAddress) {
+	void forceToAddress (const IdentityAddress &toAddress) {
 		this->toAddress = toAddress;
+	}
+
+	void markContentsAsNotLoaded () {
+		contentsNotLoadedFromDatabase = true;
+	}
+
+	void loadContentsFromDatabase () const;
+
+	std::list<Content* > &getContents () {
+		loadContentsFromDatabase();
+		return contents;
+	}
+
+	const std::list<Content* > &getContents () const {
+		loadContentsFromDatabase();
+		return contents;
 	}
 
 	belle_http_request_t *getHttpRequest () const;
@@ -85,11 +100,12 @@ public:
 	SalCustomHeader *getSalCustomHeaders () const;
 	void setSalCustomHeaders (SalCustomHeader *headers);
 
-	void addSalCustomHeader (const std::string& name, const std::string& value);
-	void removeSalCustomHeader (const std::string& name);
-	std::string getSalCustomHeaderValue (const std::string& name);
+	void addSalCustomHeader (const std::string &name, const std::string &value);
+	void removeSalCustomHeader (const std::string &name);
+	std::string getSalCustomHeaderValue (const std::string &name);
 
 	void loadFileTransferUrlFromBodyToContent ();
+	std::string createFakeFileTransferFromUrl(const std::string &url);
 
 	void setChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 
@@ -112,6 +128,7 @@ public:
 	void setAppdata (const std::string &appData);
 
 	const std::string &getExternalBodyUrl () const;
+	void setExternalBodyUrl (const std::string &url);
 
 	bool hasTextContent () const;
 	const Content* getTextContent () const;
@@ -121,6 +138,9 @@ public:
 
 	const Content* getFileTransferInformation () const;
 	void setFileTransferInformation (Content *content);
+
+	void addContent (Content *content);
+	void removeContent (Content *content);
 
 	bool downloadFile ();
 
@@ -134,15 +154,23 @@ public:
 	void updateInDb ();
 
 private:
+	
+	ChatMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir);
+	
+	static bool validStateTransition (ChatMessage::State currentState, ChatMessage::State newState);
+
 	// TODO: Clean attributes.
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string imdnId;
 	std::string rttMessage;
+	std::string externalBodyUrl;
 	bool isSecured = false;
-	bool isReadOnly = false;
-	std::list<Content* > contents;
+	mutable bool isReadOnly = false;
 	Content internalContent;
+
+	// TODO: to replace salCustomheaders
 	std::unordered_map<std::string, std::string> customHeaders;
+
 	mutable LinphoneErrorInfo * errorInfo = nullptr;
 	SalOp *salOp = nullptr;
 	SalCustomHeader *salCustomHeaders = nullptr;
@@ -171,9 +199,11 @@ private:
 	ChatMessage::State state = ChatMessage::State::Idle;
 	ChatMessage::Direction direction = ChatMessage::Direction::Incoming;
 
+	std::list<Content* > contents;
+
 	bool encryptionPrevented = false;
 	bool toBeStored = true;
-
+	mutable bool contentsNotLoadedFromDatabase = false;
 	L_DECLARE_PUBLIC(ChatMessage);
 };
 

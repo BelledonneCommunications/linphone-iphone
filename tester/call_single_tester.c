@@ -1450,18 +1450,21 @@ static void call_declined_with_error(void) {
 	linphone_core_manager_destroy(caller_mgr);
 }
 
-static void call_declined(void) {
+static void call_declined_base(bool_t use_timeout) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 
 	LinphoneCall* in_call;
 	LinphoneCall* out_call = linphone_core_invite_address(pauline->lc,marie->identity);
+	if (use_timeout)
+		linphone_core_set_inc_timeout(marie->lc, 1);
 	linphone_call_ref(out_call);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallIncomingReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(in_call=linphone_core_get_current_call(marie->lc));
 	if (in_call) {
 		linphone_call_ref(in_call);
-		linphone_call_terminate(in_call);
+		if (!use_timeout)
+			linphone_call_terminate(in_call);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1, int, "%d");
@@ -1475,6 +1478,14 @@ static void call_declined(void) {
 	linphone_call_unref(out_call);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
+}
+
+static void call_declined(void) {
+	call_declined_base(FALSE);
+}
+
+static void call_declined_on_timeout(void) {
+	call_declined_base(TRUE);
 }
 
 static void call_terminated_by_caller(void) {
@@ -5869,6 +5880,22 @@ static void call_with_ice_without_stun2(void){
 	linphone_core_manager_destroy(pauline);
 }
 
+#if 0
+static void call_with_ice_stun_not_responding(void){
+	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	
+	/*set dummy stun servers*/
+	linphone_core_set_stun_server(marie->lc, "belledonne-communications.com:443");
+	linphone_core_set_stun_server(pauline->lc, "belledonne-communications.com:443");
+	/*we expect ICE to continue without stun candidates*/
+	_call_with_ice_base(marie, pauline, TRUE, TRUE, TRUE, FALSE);
+
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+#endif
+
 static void call_with_zrtp_configured_calling_side(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -6339,6 +6366,7 @@ end:
 test_t call_tests[] = {
 	TEST_NO_TAG("Early declined call", early_declined_call),
 	TEST_NO_TAG("Call declined", call_declined),
+	TEST_NO_TAG("Call declined on timeout",call_declined_on_timeout),
 	TEST_NO_TAG("Call declined with error", call_declined_with_error),
 	TEST_NO_TAG("Cancelled call", cancelled_call),
 	TEST_NO_TAG("Early cancelled call", early_cancelled_call),
@@ -6478,6 +6506,7 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Call with ICE with default candidate not stun", call_with_ice_with_default_candidate_not_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server", call_with_ice_without_stun, "ICE"),
 	TEST_ONE_TAG("Call with ICE without stun server one side", call_with_ice_without_stun2, "ICE"),
+	/*TEST_ONE_TAG("Call with ICE and stun server not responding", call_with_ice_stun_not_responding, "ICE"),*/
 	TEST_NO_TAG("Call with ZRTP configured calling side only", call_with_zrtp_configured_calling_side),
 	TEST_NO_TAG("Call with ZRTP configured receiver side only", call_with_zrtp_configured_callee_side),
 	TEST_NO_TAG("Call from plain RTP to ZRTP mandatory should be silent", call_from_plain_rtp_to_zrtp),

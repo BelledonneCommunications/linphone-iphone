@@ -36,6 +36,7 @@
 #include "linphone/wrapper_utils.h"
 
 #include "c-wrapper/c-wrapper.h"
+#include "call/call.h"
 #include "chat/chat-room/basic-chat-room.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/client-group-to-basic-chat-room.h"
@@ -149,12 +150,9 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 }
 
 void linphone_core_real_time_text_received(LinphoneCore *lc, LinphoneChatRoom *cr, uint32_t character, LinphoneCall *call) {
-	if (linphone_core_realtime_text_enabled(lc)) {
-		shared_ptr<LinphonePrivate::RealTimeTextChatRoom> rttcr =
-			static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr));
-		L_GET_PRIVATE(rttcr)->realtimeTextReceived(character, call);
-		//L_GET_PRIVATE(static_pointer_cast<LinphonePrivate::RealTimeTextChatRoom>(L_GET_CPP_PTR_FROM_C_OBJECT(cr)))->realtimeTextReceived(character, call);
-	}
+	if (!(L_GET_CPP_PTR_FROM_C_OBJECT(cr)->getCapabilities() & LinphonePrivate::ChatRoom::Capabilities::RealTimeText))
+		return;
+	L_GET_PRIVATE_FROM_C_OBJECT(cr, RealTimeTextChatRoom)->realtimeTextReceived(character, L_GET_CPP_PTR_FROM_C_OBJECT(call));
 }
 
 unsigned int linphone_chat_message_store(LinphoneChatMessage *msg) {

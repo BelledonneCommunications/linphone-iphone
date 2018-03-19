@@ -59,7 +59,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 	multipartMessage << "--";
 
 	Content newContent;
-	ContentType newContentType("multipart/mixed");
+	ContentType newContentType(ContentType::Multipart);
 	newContentType.setParameter("boundary=" + boundary);
 	newContent.setContentType(newContentType);
 	newContent.setBody(multipartMessage.str());

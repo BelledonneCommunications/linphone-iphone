@@ -61,6 +61,8 @@ void CallSessionPrivate::notifyReferState () {
 
 void CallSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
+	// Keep a ref on the CallSession, otherwise it might get destroyed before the end of the method
+	shared_ptr<CallSession> ref = q->getSharedFromThis();
 	if (state != newState){
 		prevState = state;
 
@@ -85,12 +87,6 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 		}
 
 		switch (newState) {
-			case CallSession::State::OutgoingInit:
-			case CallSession::State::IncomingReceived:
-				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
-				break;
 			case CallSession::State::End:
 			case CallSession::State::Error:
 				switch (linphone_error_info_get_reason(q->getErrorInfo())) {
@@ -127,11 +123,6 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 			case CallSession::State::Connected:
 				log->status = LinphoneCallSuccess;
 				log->connected_date_time = ms_time(nullptr);
-				break;
-			case CallSession::State::Released:
-				getPlatformHelpers(q->getCore()->getCCore())->acquireWifiLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireMcastLock();
-				getPlatformHelpers(q->getCore()->getCCore())->acquireCpuLock();
 				break;
 			default:
 				break;
@@ -475,15 +466,16 @@ void CallSessionPrivate::updated (bool isUpdate) {
 void CallSessionPrivate::updatedByRemote () {
 	L_Q();
 	setState(CallSession::State::UpdatedByRemote,"Call updated by remote");
-	if (deferUpdate) {
-		if (state == CallSession::State::UpdatedByRemote)
-			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_core_accept_call_update() later.";
+	if (deferUpdate || deferUpdateInternal) {
+		if (state == CallSession::State::UpdatedByRemote && !deferUpdateInternal){
+			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_call_accept_update() later";
+		}	
 	} else {
 		if (state == CallSession::State::UpdatedByRemote)
 			q->acceptUpdate(nullptr);
 		else {
-			/* Otherwise it means that the app responded by linphone_core_accept_call_update
-			 * within the callback, so job is already done. */
+			// Otherwise it means that the app responded by CallSession::acceptUpdate() within the callback,
+			// so job is already done
 		}
 	}
 }
@@ -520,7 +512,7 @@ LinphoneStatus CallSessionPrivate::acceptUpdate (const CallSessionParams *csp, C
 	return startAcceptUpdate(nextState, stateInfo);
 }
 
-LinphoneStatus CallSessionPrivate::checkForAcceptation () const {
+LinphoneStatus CallSessionPrivate::checkForAcceptation () {
 	L_Q();
 	switch (state) {
 		case CallSession::State::IncomingReceived:
@@ -549,7 +541,8 @@ void CallSessionPrivate::handleIncomingReceivedStateInIncomingNotification () {
 	L_Q();
 	/* Try to be best-effort in giving real local or routable contact address for 100Rel case */
 	setContactOp();
-	op->notify_ringing(false);
+	if (notifyRinging)
+		op->notify_ringing(false);
 	if (op->get_replaces() && lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "sip", "auto_answer_replacing_calls", 1))
 		q->accept();
 }
@@ -1065,8 +1058,9 @@ LinphoneStatus CallSession::redirect (const Address &redirectAddr) {
 	return 0;
 }
 
-void CallSession::startIncomingNotification () {
+void CallSession::startIncomingNotification (bool notifyRinging) {
 	L_D();
+	d->notifyRinging = notifyRinging;
 	if (d->listener) {
 		d->listener->onIncomingCallSessionNotified(getSharedFromThis());
 		d->listener->onBackgroundTaskToBeStarted(getSharedFromThis());
@@ -1225,6 +1219,12 @@ const LinphoneErrorInfo * CallSession::getErrorInfo () const {
 	return d->ei;
 }
 
+const Address& CallSession::getLocalAddress () const {
+	L_D();
+	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
+		? linphone_call_log_get_to(d->log) : linphone_call_log_get_from(d->log));
+}
+
 LinphoneCallLog * CallSession::getLog () const {
 	L_D();
 	return d->log;
@@ -1248,10 +1248,6 @@ const Address& CallSession::getRemoteAddress () const {
 	L_D();
 	return *L_GET_CPP_PTR_FROM_C_OBJECT((d->direction == LinphoneCallIncoming)
 		? linphone_call_log_get_from(d->log) : linphone_call_log_get_to(d->log));
-}
-
-string CallSession::getRemoteAddressAsString () const {
-	return getRemoteAddress().asString();
 }
 
 string CallSession::getRemoteContact () const {
@@ -1292,6 +1288,11 @@ const CallSessionParams * CallSession::getRemoteParams () {
 CallSession::State CallSession::getState () const {
 	L_D();
 	return d->state;
+}
+
+CallSession::State CallSession::getPreviousState () const {
+	L_D();
+	return d->prevState;
 }
 
 const Address& CallSession::getToAddress () const {

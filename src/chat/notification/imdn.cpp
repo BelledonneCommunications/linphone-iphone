@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "chat/chat-message/chat-message.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
 #include "core/core.h"
 #include "logger/logger.h"
@@ -40,7 +40,8 @@ string Imdn::createXml (const string &id, time_t time, Imdn::Type imdnType, Linp
 	char *datetime = nullptr;
 
 	// Check that the chat message has a message id.
-	if (id.empty()) return nullptr;
+	if (id.empty())
+		return content;
 
 	buf = xmlBufferCreate();
 	if (buf == nullptr) {
@@ -132,18 +133,18 @@ string Imdn::createXml (const string &id, time_t time, Imdn::Type imdnType, Linp
 	return content;
 }
 
-void Imdn::parse (ChatRoom &cr, const string &text) {
+void Imdn::parse (const shared_ptr<ChatMessage> &chatMessage) {
 	xmlparsing_context_t *xmlCtx = linphone_xmlparsing_context_new();
 	xmlSetGenericErrorFunc(xmlCtx, linphone_xmlparsing_genericxml_error);
-	xmlCtx->doc = xmlReadDoc((const unsigned char *)text.c_str(), 0, nullptr, 0);
+	xmlCtx->doc = xmlReadDoc((const unsigned char *)chatMessage->getPrivate()->getText().c_str(), 0, nullptr, 0);
 	if (xmlCtx->doc)
-		parse(cr, xmlCtx);
+		parse(chatMessage, xmlCtx);
 	else
 		lWarning() << "Wrongly formatted IMDN XML: " << xmlCtx->errorBuffer;
 	linphone_xmlparsing_context_destroy(xmlCtx);
 }
 
-void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
+void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context_t *xmlCtx) {
 	char xpathStr[MAX_XPATH_LENGTH];
 	char *messageIdStr = nullptr;
 	char *datetimeStr = nullptr;
@@ -163,11 +164,13 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 	}
 
 	if (messageIdStr && datetimeStr) {
-		shared_ptr<ChatMessage> cm = cr.findChatMessage(messageIdStr, ChatMessage::Direction::Outgoing);
+		shared_ptr<AbstractChatRoom> cr = imdnMessage->getChatRoom();
+		shared_ptr<ChatMessage> cm = cr->findChatMessage(messageIdStr, ChatMessage::Direction::Outgoing);
+		const IdentityAddress &participantAddress = imdnMessage->getFromAddress().getAddressWithoutGruu();
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
 		} else {
-			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(cr.getCore()->getCCore());
+			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(cr->getCore()->getCCore());
 			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:delivery-notification/imdn:status", imdnPrefix.c_str());
 			xmlXPathObjectPtr deliveryStatusObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, xpathStr);
 			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:display-notification/imdn:status", imdnPrefix.c_str());
@@ -177,9 +180,9 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 					xmlNodePtr node = deliveryStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "delivered") == 0) {
-							cm->updateState(ChatMessage::State::DeliveredToUser);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::DeliveredToUser);
 						} else if (strcmp((const char *)node->children->name, "error") == 0) {
-							cm->updateState(ChatMessage::State::NotDelivered);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::NotDelivered);
 						}
 					}
 				}
@@ -190,7 +193,7 @@ void Imdn::parse (ChatRoom &cr, xmlparsing_context_t *xmlCtx) {
 					xmlNodePtr node = displayStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "displayed") == 0) {
-							cm->updateState(ChatMessage::State::Displayed);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::Displayed);
 						}
 					}
 				}

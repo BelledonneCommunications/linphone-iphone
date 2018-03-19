@@ -34,7 +34,7 @@ class Participant;
 
 class LINPHONE_PUBLIC ConferenceInterface {
 public:
-	virtual ~ConferenceInterface() = default;
+	virtual ~ConferenceInterface () = default;
 
 	virtual void addParticipant (
 		const IdentityAddress &participantAddress,

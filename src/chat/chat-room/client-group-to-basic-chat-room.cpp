@@ -48,40 +48,41 @@ public:
 
 	void onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
 		L_Q();
-		q->getCore()->deleteChatRoom(q->getSharedFromThis());
+		// Keep a ref, otherwise the object might be destroyed before we can set the Deleted state
+		shared_ptr<AbstractChatRoom> ref = q->getSharedFromThis();
+		q->getCore()->deleteChatRoom(ref);
 		setState(AbstractChatRoom::State::Deleted);
 	}
 
-	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override {
+	void onCallSessionSetReleased (const shared_ptr<CallSession> &session) override {
 		if (!(chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference))
 			return;
 		static_pointer_cast<ClientGroupChatRoom>(chatRoom)->getPrivate()->onCallSessionSetReleased(session);
 	}
 
 	void onCallSessionStateChanged (
-		const shared_ptr<const CallSession> &session,
+		const shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const string &message
 	) override {
 		L_Q();
+		// Keep a ref, otherwise the object might be destroyed when calling Core::deleteChatRoom()
+		shared_ptr<AbstractChatRoom> ref = q->getSharedFromThis();
+		// TODO: Avoid cast, use capabilities.
 		shared_ptr<ClientGroupChatRoom> cgcr = dynamic_pointer_cast<ClientGroupChatRoom>(chatRoom);
 		if (!cgcr)
 			return;
 		if ((newState == CallSession::State::Error) && (cgcr->getState() == ChatRoom::State::CreationPending)
 			&& (session->getReason() == LinphoneReasonNotAcceptable) && (invitedAddresses.size() == 1)) {
-			teardownCallbacks();
+			teardownProxy();
 			cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);
 			cgcr->getPrivate()->setCallSessionListener(nullptr);
 			cgcr->getPrivate()->setChatRoomListener(nullptr);
 			Core::deleteChatRoom(q->getSharedFromThis());
-			setupCallbacks();
+			setupProxy();
 			LinphoneChatRoom *lcr = L_GET_C_BACK_PTR(q);
-			shared_ptr<AbstractChatRoom> bcr = cgcr->getCore()->onlyGetOrCreateBasicChatRoom(invitedAddresses.front());
+			shared_ptr<AbstractChatRoom> bcr = cgcr->getCore()->getOrCreateBasicChatRoom(invitedAddresses.front());
 			L_SET_CPP_PTR_FROM_C_OBJECT(lcr, bcr);
-			bcr->getPrivate()->setState(ChatRoom::State::Instantiated);
-			bcr->getPrivate()->setState(ChatRoom::State::Created);
-			cgcr->getCore()->getPrivate()->insertChatRoom(bcr);
-			cgcr->getCore()->getPrivate()->insertChatRoomWithDb(bcr);
 			return;
 		}
 		cgcr->getPrivate()->onCallSessionStateChanged(session, newState, message);
@@ -111,7 +112,7 @@ void ClientGroupToBasicChatRoom::addParticipant (
 	ProxyChatRoom::addParticipant(participantAddress, params, hasMedia);
 }
 void ClientGroupToBasicChatRoom::addParticipants (
-	const std::list<IdentityAddress> &addresses,
+	const list<IdentityAddress> &addresses,
 	const CallSessionParams *params,
 	bool hasMedia
 ) {

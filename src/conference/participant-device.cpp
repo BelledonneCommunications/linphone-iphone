@@ -29,9 +29,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 ParticipantDevice::ParticipantDevice () {}
 
-ParticipantDevice::ParticipantDevice (const IdentityAddress &gruu) {
-	mGruu = gruu;
-}
+ParticipantDevice::ParticipantDevice (const Participant *participant, const IdentityAddress &gruu)
+	: mParticipant(participant), mGruu(gruu) {}
 
 ParticipantDevice::~ParticipantDevice () {
 	if (mConferenceSubscribeEvent)
@@ -46,6 +45,20 @@ void ParticipantDevice::setConferenceSubscribeEvent (LinphoneEvent *ev) {
 	if (mConferenceSubscribeEvent)
 		linphone_event_unref(mConferenceSubscribeEvent);
 	mConferenceSubscribeEvent = linphone_event_ref(ev);
+}
+
+ostream &operator<< (ostream &stream, ParticipantDevice::State state) {
+	switch (state) {
+		case ParticipantDevice::State::Joining:
+			return stream << "Joining";
+		case ParticipantDevice::State::Present:
+			return stream << "Present";
+		case ParticipantDevice::State::Leaving:
+			return stream << "Leaving";
+		case ParticipantDevice::State::Left:
+			return stream << "Left";
+	}
+	return stream;
 }
 
 LINPHONE_END_NAMESPACE

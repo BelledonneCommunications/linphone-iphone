@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef LINPHONE_EVENT_H_
 #define LINPHONE_EVENT_H_
 
+#include "linphone/callbacks.h"
 #include "linphone/types.h"
 
 #ifdef __cplusplus
@@ -202,6 +203,55 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_get_remote_contact (const 
  * Returns back pointer to the LinphoneCore that created this LinphoneEvent
 **/
 LINPHONE_PUBLIC LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev);
+
+/**
+ * Get the LinphoneEventCbs object associated with a LinphoneEvent.
+ * @param[in] ev LinphoneEvent object
+ * @return The LinphoneEventCbs object associated with the LinphoneEvent.
+**/
+
+LINPHONE_PUBLIC LinphoneEventCbs *linphone_event_get_callbacks(const LinphoneEvent *ev);
+
+/**
+ * Acquire a reference to a LinphoneEventCbs object.
+ * @param[in] cbs LinphoneEventCbs object.
+ * @return The same LinphoneEventCbs object.
+**/
+LINPHONE_PUBLIC LinphoneEventCbs *linphone_event_cbs_ref(LinphoneEventCbs *cbs);
+
+/**
+ * Release a reference to a LinphoneEventCbs object.
+ * @param[in] cbs LinphoneEventCbs object.
+**/
+LINPHONE_PUBLIC void linphone_event_cbs_unref(LinphoneEventCbs *cbs);
+
+/**
+ * Retrieve the user pointer associated with a LinphoneEventCbs object.
+ * @param[in] cbs LinphoneEventCbs object.
+ * @return The user pointer associated with the LinphoneEventCbs object.
+**/
+LINPHONE_PUBLIC void *linphone_event_cbs_get_user_data(const LinphoneEventCbs *cbs);
+
+/**
+ * Assign a user pointer to a LinphoneEventCbs object.
+ * @param[in] cbs LinphoneEventCbs object.
+ * @param[in] ud The user pointer to associate with the LinphoneEventCbs object.
+**/
+LINPHONE_PUBLIC void linphone_event_cbs_set_user_data(LinphoneEventCbs *cbs, void *ud);
+
+/**
+ * Get the notify response callback.
+ * @param[in] cbs LinphoneEventCbs object.
+ * @return The current notify response callback.
+**/
+LINPHONE_PUBLIC LinphoneEventCbsNotifyResponseCb linphone_event_cbs_get_notify_response(const LinphoneEventCbs *cbs);
+
+/**
+ * Set the notify response callback.
+ * @param[in] cbs LinphoneEventCbs object.
+ * @param[in] cb The notify response callback to be used.
+**/
+LINPHONE_PUBLIC void linphone_event_cbs_set_notify_response(LinphoneEventCbs *cbs, LinphoneEventCbsNotifyResponseCb cb);
 
 /**
  * @}

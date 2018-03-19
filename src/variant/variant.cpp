@@ -92,27 +92,27 @@ Variant::Variant (Type type) : Variant() {
 	d->setType(type);
 }
 
-Variant::Variant (const Variant &src) {
+Variant::Variant (const Variant &other) {
 	// Don't call placement new.
 	L_ASSERT(!mPrivate);
 	mPrivate = new VariantPrivate();
 
 	L_D();
 
-	int type = src.getPrivate()->getType();
+	int type = other.getPrivate()->getType();
 	d->setType(type);
 
-	const VariantPrivate::Value &value = src.getPrivate()->value;
+	const VariantPrivate::Value &value = other.getPrivate()->value;
 	if (type == String)
 		*d->value.str = *value.str;
 	else
 		d->value = value;
 }
 
-Variant::Variant (Variant &&src) {
+Variant::Variant (Variant &&other) {
 	// Don't call placement new.
 	L_ASSERT(!mPrivate);
-	::swap(mPrivate, src.mPrivate);
+	::swap(mPrivate, other.mPrivate);
 }
 
 Variant::Variant (int value) : Variant(Int) {
@@ -188,31 +188,16 @@ Variant::~Variant () {
 	delete d;
 }
 
-bool Variant::operator!= (const Variant &variant) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator< (const Variant &variant) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator<= (const Variant &variant) const {
-	// TODO.
-	return false;
-}
-
-Variant &Variant::operator= (const Variant &variant) {
+Variant &Variant::operator= (const Variant &other) {
 	L_D();
 
-	if (this != &variant) {
+	if (this != &other) {
 		// Update type.
-		int type = variant.getPrivate()->getType();
+		int type = other.getPrivate()->getType();
 		d->setType(type);
 
 		// Update value.
-		const VariantPrivate::Value &value = variant.getPrivate()->value;
+		const VariantPrivate::Value &value = other.getPrivate()->value;
 		if (type == String)
 			*d->value.str = *value.str;
 		else
@@ -222,24 +207,9 @@ Variant &Variant::operator= (const Variant &variant) {
 	return *this;
 }
 
-Variant &Variant::operator= (Variant &&variant) {
-	::swap(mPrivate, variant.mPrivate);
+Variant &Variant::operator= (Variant &&other) {
+	::swap(mPrivate, other.mPrivate);
 	return *this;
-}
-
-bool Variant::operator== (const Variant &variant) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator> (const Variant &variant) const {
-	// TODO.
-	return false;
-}
-
-bool Variant::operator>= (const Variant &variant) const {
-	// TODO.
-	return false;
 }
 
 bool Variant::isValid () const {
@@ -252,7 +222,7 @@ void Variant::clear () {
 	d->setType(Invalid);
 }
 
-void Variant::swap (const Variant &variant) {
+void Variant::swap (const Variant &other) {
 	// TODO.
 }
 

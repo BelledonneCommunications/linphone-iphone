@@ -31,13 +31,10 @@ void SalSubscribeOp::subscribe_process_io_error_cb(void *user_ctx, const belle_s
 		belle_sip_request_t* req = belle_sip_transaction_get_request((belle_sip_transaction_t*)tr);
 		const char *method=belle_sip_request_get_method(req);
 	
-		if (!op->dialog) {
-			/*this is handling outgoing out-of-dialog notifies*/
-			if (strcmp(method,"NOTIFY")==0){
-				SalErrorInfo *ei=&op->error_info;
-				sal_error_info_set(ei,SalReasonIOError, "SIP", 0,NULL,NULL);
-				op->root->callbacks.on_notify_response(op);
-			}
+		if (strcmp(method,"NOTIFY")==0){
+			SalErrorInfo *ei=&op->error_info;
+			sal_error_info_set(ei,SalReasonIOError, "SIP", 0,NULL,NULL);
+			op->root->callbacks.on_notify_response(op);
 		}
 	}
 }
@@ -52,11 +49,9 @@ void SalSubscribeOp::subscribe_response_event_cb(void *op_base, const belle_sip_
 	req = belle_sip_transaction_get_request((belle_sip_transaction_t*)tr);
 	method = belle_sip_request_get_method(req);
 	
-	if (!op->dialog) {
-		if (strcmp(method,"NOTIFY")==0){
-			op->set_error_info_from_response(belle_sip_response_event_get_response(event));
-			op->root->callbacks.on_notify_response(op);
-		}
+	if (strcmp(method,"NOTIFY")==0){
+		op->set_error_info_from_response(belle_sip_response_event_get_response(event));
+		op->root->callbacks.on_notify_response(op);
 	}
 }
 
@@ -70,13 +65,10 @@ void SalSubscribeOp::subscribe_process_timeout_cb(void *user_ctx, const belle_si
 	req = belle_sip_transaction_get_request((belle_sip_transaction_t*)tr);
 	method = belle_sip_request_get_method(req);
 	
-	if (!op->dialog) {
-		/*this is handling outgoing out-of-dialog notifies*/
-		if (strcmp(method,"NOTIFY")==0){
-			SalErrorInfo *ei=&op->error_info;
-			sal_error_info_set(ei,SalReasonRequestTimeout, "SIP", 0,NULL,NULL);
-			op->root->callbacks.on_notify_response(op);
-		}
+	if (strcmp(method,"NOTIFY")==0){
+		SalErrorInfo *ei=&op->error_info;
+		sal_error_info_set(ei,SalReasonRequestTimeout, "SIP", 0,NULL,NULL);
+		op->root->callbacks.on_notify_response(op);
 	}
 }
 

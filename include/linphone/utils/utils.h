@@ -21,7 +21,9 @@
 #define _L_UTILS_H_
 
 #include <ctime>
+#include <list>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "linphone/utils/enum-generator.h"
@@ -104,6 +106,8 @@ namespace Utils {
 	LINPHONE_PUBLIC inline std::string cStringToCppString (const char *str) {
 		return str ? str : "";
 	}
+
+	LINPHONE_PUBLIC std::string trim (const std::string &str);
 
 	template<typename T>
 	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {

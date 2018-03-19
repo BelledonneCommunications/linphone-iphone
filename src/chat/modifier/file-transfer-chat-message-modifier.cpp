@@ -37,6 +37,10 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
+FileTransferChatMessageModifier::FileTransferChatMessageModifier (belle_http_provider_t *prov) : provider(prov) {
+	bgTask.setName("File transfer upload");
+}
+
 belle_http_request_t *FileTransferChatMessageModifier::getHttpRequest () const {
 	return httpRequest;
 }
@@ -46,7 +50,10 @@ void FileTransferChatMessageModifier::setHttpRequest (belle_http_request_t *requ
 }
 
 FileTransferChatMessageModifier::~FileTransferChatMessageModifier () {
-	releaseHttpRequest();
+	if (isFileTransferInProgressAndValid())
+		cancelFileTransfer(); //to avoid body handler to still refference zombie FileTransferChatMessageModifier
+	else
+		releaseHttpRequest();
 }
 
 ChatMessageModifier::Result FileTransferChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
@@ -374,26 +381,27 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				FileContent *fileContent = currentFileContentToTransfer;
 				fileTransferContent->setFileContent(fileContent);
 
-				message->removeContent(fileContent);
+				message->getPrivate()->removeContent(fileContent);
+				message->getPrivate()->addContent(fileTransferContent);
 
-				message->updateState(ChatMessage::State::FileTransferDone);
+				message->getPrivate()->setState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
 				message->getPrivate()->send();
 				fileUploadEndBackgroundTask();
 			} else {
 				lWarning() << "Received empty response from server, file transfer failed";
-				message->updateState(ChatMessage::State::NotDelivered);
+				message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
 		} else if (code == 400) {
 			lWarning() << "Received HTTP code response " << code << " for file transfer, probably meaning file is too large";
-			message->updateState(ChatMessage::State::FileTransferError);
+			message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		} else {
 			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
-			message->updateState(ChatMessage::State::NotDelivered);
+			message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		}
@@ -410,7 +418,7 @@ void FileTransferChatMessageModifier::processIoErrorUpload (const belle_sip_io_e
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::NotDelivered);
+	message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 }
 
@@ -424,7 +432,7 @@ void FileTransferChatMessageModifier::processAuthRequestedUpload (const belle_si
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::NotDelivered);
+	message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 	releaseHttpRequest();
 }
 
@@ -486,7 +494,7 @@ int FileTransferChatMessageModifier::startHttpTransfer (const string &url, const
 
 	// give msg to listener to be able to start the actual file upload when server answer a 204 No content
 	httpListener = belle_http_request_listener_create_from_callbacks(cbs, this);
-	belle_http_provider_send_request(message->getCore()->getCCore()->http_provider, httpRequest, httpListener);
+	belle_http_provider_send_request(provider, httpRequest, httpListener);
 	return 0;
 
 error:
@@ -496,29 +504,15 @@ error:
 	return -1;
 }
 
-static void _chat_message_file_upload_background_task_ended (void *data) {
-	FileTransferChatMessageModifier *d = (FileTransferChatMessageModifier *)data;
-	d->fileUploadBackgroundTaskEnded();
-}
-
-void FileTransferChatMessageModifier::fileUploadBackgroundTaskEnded () {
-	lWarning() << "channel [" << this << "]: file upload background task has to be ended now, but work isn't finished.";
-	fileUploadEndBackgroundTask();
-}
-
 void FileTransferChatMessageModifier::fileUploadBeginBackgroundTask () {
-	if (backgroundTaskId == 0) {
-		backgroundTaskId = sal_begin_background_task("file transfer upload", _chat_message_file_upload_background_task_ended, this);
-		if (backgroundTaskId) lInfo() << "channel [" << this << "]: starting file upload background task with id=[" << backgroundTaskId << "].";
-	}
+	shared_ptr<ChatMessage> message = chatMessage.lock();
+	if (!message)
+		return;
+	bgTask.start(message->getCore());
 }
 
 void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {
-	if (backgroundTaskId) {
-		lInfo() << "channel [" << this << "]: ending file upload background task with id=[" << backgroundTaskId << "].";
-		sal_end_background_task(backgroundTaskId);
-		backgroundTaskId = 0;
-	}
+	bgTask.stop();
 }
 
 // ----------------------------------------------------------
@@ -777,12 +771,12 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 	if (retval <= 0 && message->getState() != ChatMessage::State::FileTransferError) {
 		// Remove the FileTransferContent from the message and store the FileContent
 		FileContent *fileContent = currentFileContentToTransfer;
-		message->addContent(fileContent);
+		message->getPrivate()->addContent(fileContent);
 		for (Content *content : message->getContents()) {
 			if (content->isFileTransfer()) {
 				FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
 				if (fileTransferContent->getFileContent() == fileContent) {
-					message->removeContent(content);
+					message->getPrivate()->removeContent(content);
 					delete fileTransferContent;
 					break;
 				}
@@ -871,7 +865,7 @@ void FileTransferChatMessageModifier::processAuthRequestedDownload (const belle_
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::FileTransferError);
+	message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -885,7 +879,7 @@ void FileTransferChatMessageModifier::processIoErrorDownload (const belle_sip_io
 	shared_ptr<ChatMessage> message = chatMessage.lock();
 	if (!message)
 		return;
-	message->updateState(ChatMessage::State::FileTransferError);
+	message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 	releaseHttpRequest();
 }
 
@@ -965,10 +959,11 @@ void FileTransferChatMessageModifier::cancelFileTransfer () {
 					? L_C_TO_STRING(linphone_core_get_file_transfer_server(message->getCore()->getCCore()))
 					: currentFileContentToTransfer->getFilePath().c_str()
 				);
-			belle_http_provider_cancel_request(message->getCore()->getCCore()->http_provider, httpRequest);
+			
 		} else {
 			lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";
 		}
+		belle_http_provider_cancel_request(provider, httpRequest);
 	}
 	releaseHttpRequest();
 }
@@ -986,6 +981,20 @@ void FileTransferChatMessageModifier::releaseHttpRequest () {
 			httpListener = nullptr;
 		}
 	}
+}
+
+string FileTransferChatMessageModifier::createFakeFileTransferFromUrl(const string &url) {
+	string fileName = url.substr(url.find_last_of("/") + 1);
+	stringstream fakeXml;
+	fakeXml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
+	fakeXml << "<file xmlns=\"urn:gsma:params:xml:ns:rcs:rcs:fthttp\">\r\n";
+	fakeXml << "<file-info type=\"file\">\r\n";
+	fakeXml << "<file-name>" << fileName << "</file-name>\r\n";
+	fakeXml << "<content-type>application/binary</content-type>\r\n";
+	fakeXml << "<data url = \"" << url << "\"/>\r\n";
+	fakeXml << "</file-info>\r\n";
+	fakeXml << "</file>";
+	return fakeXml.str();
 }
 
 LINPHONE_END_NAMESPACE

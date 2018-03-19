@@ -180,6 +180,23 @@ LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history (LinphoneChatRoom *
 LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range(LinphoneChatRoom *cr, int begin, int end);
 
 /**
+ * Gets nb_events most recent chat message events from cr chat room, sorted from oldest to most recent.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which events should be retrieved
+ * @param[in] nb_events Number of events to retrieve. 0 means everything.
+ * @return \bctbx_list{LinphoneEventLog}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_message_events (LinphoneChatRoom *cr, int nb_events);
+
+/**
+ * Gets the partial list of chat message events in the given range, sorted from oldest to most recent.
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which events should be retrieved
+ * @param[in] begin The first event of the range to be retrieved. History most recent event has index 0.
+ * @param[in] end The last event of the range to be retrieved. History oldest event has index of history size - 1
+ * @return \bctbx_list{LinphoneEventLog}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_room_get_history_range_message_events (LinphoneChatRoom *cr, int begin, int end);
+
+/**
  * Gets nb_events most recent events from cr chat room, sorted from oldest to most recent.
  * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which events should be retrieved
  * @param[in] nb_events Number of events to retrieve. 0 means everything.
@@ -261,11 +278,27 @@ LINPHONE_PUBLIC bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr);
 LINPHONE_PUBLIC LinphoneCall *linphone_chat_room_get_call(const LinphoneChatRoom *room);
 
 /**
- * Get the LinphoneChatRoomCbs object associated with the LinphoneChatRoom.
- * @param[in] cr LinphoneChatRoom object
- * @return The LinphoneChatRoomCbs object associated with the LinphoneChatRoom
+ * Add a listener in order to be notified of LinphoneChatRoom events. Once an event is received, registred LinphoneChatRoomCbs are
+ * invoked sequencially.
+ * @param[in] call LinphoneChatRoom object to monitor.
+ * @param[in] cbs A LinphoneChatRoomCbs object holding the callbacks you need. A reference is taken by the LinphoneChatRoom until you invoke linphone_call_remove_callbacks().
  */
-LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_chat_room_get_callbacks (const LinphoneChatRoom *cr);
+LINPHONE_PUBLIC void linphone_chat_room_add_callbacks(LinphoneChatRoom *cr, LinphoneChatRoomCbs *cbs);
+
+/**
+ * Remove a listener from a LinphoneChatRoom
+ * @param[in] call LinphoneChatRoom object
+ * @param[in] cbs LinphoneChatRoomCbs object to remove.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_remove_callbacks(LinphoneChatRoom *cr, LinphoneChatRoomCbs *cbs);
+
+/**
+ * Gets the current LinphoneChatRoomCbs.
+ * This is meant only to be called from a callback to be able to get the user_data associated with the LinphoneChatRoomCbs that is calling the callback.
+ * @param[in] call LinphoneChatRoom object
+ * @return The LinphoneChatRoomCbs that has called the last callback
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbs *linphone_chat_room_get_current_callbacks(const LinphoneChatRoom *cr);
 
 /**
  * Get the state of the chat room.
@@ -280,6 +313,13 @@ LINPHONE_PUBLIC LinphoneChatRoomState linphone_chat_room_get_state (const Linpho
  * @return whether or not the chat room has been left
  */
 LINPHONE_PUBLIC bool_t linphone_chat_room_has_been_left (const LinphoneChatRoom *cr);
+
+/**
+ * Return the last updated time for the chat room
+ * @param[in] cr LinphoneChatRoom object
+ * @return the last updated time
+ */
+LINPHONE_PUBLIC time_t linphone_chat_room_get_last_update_time(const LinphoneChatRoom *cr);
 
 /**
  * Add a participant to a chat room. This may fail if this type of chat room does not handle participants.
@@ -414,12 +454,21 @@ LINPHONE_PUBLIC void linphone_chat_room_set_conference_address (LinphoneChatRoom
 
 /**
  * Set the participant device. This function needs to be called from the
- * LinphoneChatRoomCbsParticipantDeviceFetchedCb callback and only there.
+ * LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb callback and only there.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] partAddr The participant address
  * @param[in] partDevices \bctbx_list{LinphoneAddress} list of the participant devices to be used by the group chat room
  */
 LINPHONE_PUBLIC void linphone_chat_room_set_participant_devices (LinphoneChatRoom *cr, const LinphoneAddress *partAddr, const bctbx_list_t *partDevices);
+
+/**
+ * Add a participant device.
+ * This is to used if a new device registers itself after the chat room creation.
+ * @param[in] cr A #LinphoneChatRoom object
+ * @param[in] participantAddress The address of the participant for which a new device is to be added
+ * @param[in] deviceAddress The address of the new device to be added
+ */
+LINPHONE_PUBLIC void linphone_chat_room_add_participant_device (LinphoneChatRoom *cr, const LinphoneAddress *participantAddress, const LinphoneAddress *deviceAddress);
 
 /**
  * Set the participant device. This function needs to be called from the
@@ -436,14 +485,6 @@ LINPHONE_PUBLIC void linphone_chat_room_add_compatible_participants (LinphoneCha
  * @donotwrap
 **/
 LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneCore* linphone_chat_room_get_lc(const LinphoneChatRoom *cr);
-
-/**
- * Destroy a LinphoneChatRoom.
- * @param cr #LinphoneChatRoom object
- * @deprecated Use linphone_chat_room_unref() instead.
- * @donotwrap
- */
-LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_room_destroy(LinphoneChatRoom *cr);
 
 /**
  * @}

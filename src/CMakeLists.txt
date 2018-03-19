@@ -23,7 +23,6 @@
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
-	address/identity-address-p.h
 	address/identity-address.h
 	c-wrapper/c-wrapper.h
 	c-wrapper/internal/c-sal.h
@@ -92,10 +91,12 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/session/call-session.h
 	conference/session/media-session.h
 	conference/session/port-config.h
+	containers/lru-cache.h
+	content/content-disposition.h
 	content/content-manager.h
+	content/content-p.h
 	content/content-type.h
 	content/content.h
-	content/content-p.h
 	content/file-content.h
 	content/file-transfer-content.h
 	core/core-accessor.h
@@ -106,13 +107,15 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	core/platform-helpers/platform-helpers.h
 	db/abstract/abstract-db-p.h
 	db/abstract/abstract-db.h
+	db/internal/db-transaction.h
+	db/internal/statements.h
 	db/main-db-chat-message-key.h
 	db/main-db-event-key.h
 	db/main-db-key-p.h
 	db/main-db-key.h
 	db/main-db-p.h
 	db/main-db.h
-	db/session/db-session-p.h
+	db/session/db-session.h
 	dial-plan/dial-plan-p.h
 	dial-plan/dial-plan.h
 	enums.h
@@ -137,6 +140,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/base-object.h
 	object/clonable-object-p.h
 	object/clonable-object.h
+	object/clonable-shared-pointer.h
 	object/object-head-p.h
 	object/object-head.h
 	object/object-p.h
@@ -144,6 +148,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	object/property-container.h
 	object/singleton.h
 	sal/sal.h
+	search/magic-search-p.h
+	search/magic-search.h
+	search/search-result-p.h
+	search/search-result.h
+	utils/background-task.h
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
@@ -167,7 +176,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-content.cpp
 	c-wrapper/api/c-dial-plan.cpp
 	c-wrapper/api/c-event-log.cpp
+	c-wrapper/api/c-magic-search.cpp
 	c-wrapper/api/c-participant.cpp
+	c-wrapper/api/c-search-result.cpp
 	c-wrapper/internal/c-sal.cpp
 	c-wrapper/internal/c-tools.cpp
 	call/call.cpp
@@ -206,6 +217,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp
 	conference/session/media-session.cpp
+	content/content-disposition.cpp
 	content/content-manager.cpp
 	content/content-type.cpp
 	content/content.cpp
@@ -218,6 +230,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	core/paths/paths.cpp
 	core/platform-helpers/platform-helpers.cpp
 	db/abstract/abstract-db.cpp
+	db/internal/statements.cpp
 	db/main-db-chat-message-key.cpp
 	db/main-db-event-key.cpp
 	db/main-db-key.cpp
@@ -249,6 +262,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	sal/refer-op.cpp
 	sal/register-op.cpp
 	sal/sal.cpp
+	search/magic-search.cpp
+	search/search-result.cpp
+	utils/background-task.cpp
 	utils/fs.cpp
 	utils/general.cpp
 	utils/payload-type-handler.cpp
@@ -263,28 +279,25 @@ set(LINPHONE_OBJC_SOURCE_FILES)
 if (APPLE)
 	list(APPEND LINPHONE_OBJC_SOURCE_FILES core/paths/paths-apple.mm)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-apple.h)
-
 elseif (ANDROID)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-android.cpp core/platform-helpers/android-platform-helpers.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-android.h)
-
 elseif (WIN32)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-windows.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-windows.h)
-
 elseif (UNIX)
 	list(APPEND LINPHONE_CXX_OBJECTS_SOURCE_FILES core/paths/paths-linux.cpp)
 	list(APPEND LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES core/paths/paths-linux.h)
 endif ()
 
-set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS} ${LIBXSD_INCLUDE_DIRS})
+set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS
+	${BELR_INCLUDE_DIRS}
+	${LIBXSD_INCLUDE_DIRS}
+	${SOCI_INCLUDE_DIRS}
+	${SOCI_MYSQL_INCLUDES}
+)
 set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
-
-if (SOCI_FOUND)
-	list(APPEND LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${SOCI_INCLUDE_DIRS} ${SOCI_MYSQL_INCLUDES})
-	add_definitions(-DSOCI_ENABLED)
-endif ()
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
 foreach (header ${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES})

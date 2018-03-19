@@ -19,6 +19,8 @@
 
 // TODO: Remove me later.
 #include "linphone/core.h"
+
+#include "linphone/utils/algorithm.h"
 #include "linphone/utils/utils.h"
 
 #include "content-p.h"
@@ -34,18 +36,23 @@ LINPHONE_BEGIN_NAMESPACE
 
 Content::Content () : ClonableObject(*new ContentPrivate) {}
 
-Content::Content (const Content &src) : ClonableObject(*new ContentPrivate), AppDataContainer(src) {
+Content::Content (const Content &other) : ClonableObject(*new ContentPrivate), AppDataContainer(other) {
 	L_D();
-	d->body = src.getBody();
-	d->contentType = src.getContentType();
-	d->contentDisposition = src.getContentDisposition();
+	d->body = other.getBody();
+	d->contentType = other.getContentType();
+	d->contentDisposition = other.getContentDisposition();
+	d->contentEncoding = other.getContentEncoding();
+	d->headers = other.getHeaders();
 }
 
-Content::Content (Content &&src) : ClonableObject(*new ContentPrivate), AppDataContainer(move(src)) {
+Content::Content (Content &&other) : ClonableObject(*new ContentPrivate), AppDataContainer(move(other)) {
 	L_D();
-	d->body = move(src.getPrivate()->body);
-	d->contentType = move(src.getPrivate()->contentType);
-	d->contentDisposition = move(src.getPrivate()->contentDisposition);
+	ContentPrivate *dOther = other.getPrivate();
+	d->body = move(dOther->body);
+	d->contentType = move(dOther->contentType);
+	d->contentDisposition = move(dOther->contentDisposition);
+	d->contentEncoding = move(dOther->contentEncoding);
+	d->headers = move(dOther->headers);
 }
 
 Content::Content (ContentPrivate &p) : ClonableObject(p) {}
@@ -59,32 +66,38 @@ Content::~Content () {
 	d->body.assign(d->body.size(), 0);
 }
 
-Content &Content::operator= (const Content &src) {
+Content &Content::operator= (const Content &other) {
 	L_D();
-	if (this != &src) {
-		d->body = src.getBody();
-		d->contentType = src.getContentType();
-		d->contentDisposition = src.getContentDisposition();
-		AppDataContainer::operator=(src);
+	if (this != &other) {
+		AppDataContainer::operator=(other);
+		d->body = other.getBody();
+		d->contentType = other.getContentType();
+		d->contentDisposition = other.getContentDisposition();
+		d->contentEncoding = other.getContentEncoding();
+		d->headers = other.getHeaders();
 	}
-
 	return *this;
 }
 
-Content &Content::operator= (Content &&src) {
+Content &Content::operator= (Content &&other) {
 	L_D();
-	d->body = move(src.getPrivate()->body);
-	d->contentType = move(src.getPrivate()->contentType);
-	d->contentDisposition = move(src.getPrivate()->contentDisposition);
-	AppDataContainer::operator=(move(src));
+	AppDataContainer::operator=(move(other));
+	ContentPrivate *dOther = other.getPrivate();
+	d->body = move(dOther->body);
+	d->contentType = move(dOther->contentType);
+	d->contentDisposition = move(dOther->contentDisposition);
+	d->contentEncoding = move(dOther->contentEncoding);
+	d->headers = move(dOther->headers);
 	return *this;
 }
 
-bool Content::operator== (const Content &content) const {
+bool Content::operator== (const Content &other) const {
 	L_D();
-	return d->contentType == content.getContentType() &&
-		d->body == content.getBody() &&
-		d->contentDisposition == content.getContentDisposition();
+	return d->contentType == other.getContentType() &&
+		d->body == other.getBody() &&
+		d->contentDisposition == other.getContentDisposition() &&
+		d->contentEncoding == other.getContentEncoding() &&
+		d->headers == other.getHeaders();
 }
 
 const ContentType &Content::getContentType () const {
@@ -97,19 +110,24 @@ void Content::setContentType (const ContentType &contentType) {
 	d->contentType = contentType;
 }
 
-void Content::setContentType (const string &contentType) {
-	L_D();
-	d->contentType = ContentType(contentType);
-}
-
-const string &Content::getContentDisposition () const {
+const ContentDisposition &Content::getContentDisposition () const {
 	L_D();
 	return d->contentDisposition;
 }
 
-void Content::setContentDisposition (const string &contentDisposition) {
+void Content::setContentDisposition (const ContentDisposition &contentDisposition) {
 	L_D();
 	d->contentDisposition = contentDisposition;
+}
+
+const string &Content::getContentEncoding () const {
+	L_D();
+	return d->contentEncoding;
+}
+
+void Content::setContentEncoding (const string &contentEncoding) {
+	L_D();
+	d->contentEncoding = contentEncoding;
 }
 
 const vector<char> &Content::getBody () const {
@@ -174,6 +192,31 @@ bool Content::isFile () const {
 
 bool Content::isFileTransfer () const {
 	return false;
+}
+
+void Content::addHeader (const string &headerName, const string &headerValue) {
+	L_D();
+	removeHeader(headerName);
+	d->headers.push_back(make_pair(headerName, headerValue));
+}
+
+const list<pair<string, string>> &Content::getHeaders () const {
+	L_D();
+	return d->headers;
+}
+
+void Content::removeHeader (const string &headerName) {
+	L_D();
+	auto it = findHeader(headerName);
+	if (it != d->headers.cend())
+		d->headers.remove(*it);
+}
+
+list<pair<string, string>>::const_iterator Content::findHeader (const string &headerName) const {
+	L_D();
+	return findIf(d->headers, [&headerName](const pair<string, string> &pair) {
+		return pair.first == headerName;
+	});
 }
 
 LINPHONE_END_NAMESPACE

@@ -38,7 +38,7 @@ class Cpim::MessagePrivate : public ObjectPrivate {
 public:
 	typedef list<shared_ptr<const Header> > PrivHeaderList;
 
-	shared_ptr<PrivHeaderList> cpimHeaders = make_shared<PrivHeaderList>();
+	shared_ptr<PrivHeaderList> cpimHeaders = make_shared<PrivHeaderList>(); // TODO: Remove this useless variable
 	shared_ptr<PrivHeaderList> messageHeaders = make_shared<PrivHeaderList>();
 	shared_ptr<PrivHeaderList> contentHeaders = make_shared<PrivHeaderList>();
 	string content;
@@ -148,10 +148,11 @@ string Cpim::Message::asString () const {
 	L_D();
 
 	string output;
+	// TODO: Remove cpimHeaders
 	for (const auto &cpimHeader : *d->cpimHeaders)
 		output += cpimHeader->asString();
-
 	output += "\r\n";
+	// TODO Remove cpimHeaders
 
 	if (d->messageHeaders->size() > 0) {
 		for (const auto &messageHeader : *d->messageHeaders)

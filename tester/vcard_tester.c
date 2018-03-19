@@ -795,9 +795,9 @@ static void carddav_integration(void) {
 	linphone_friend_done(lf);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(linphone_friend_get_friend_list(lf))), 1, unsigned int, "%u");
 
-	ms_free(stats);
 	linphone_friend_list_unref(lfl);
 	linphone_core_manager_destroy(manager);
+	ms_free(stats);
 }
 
 static void carddav_clean(void) {  // This is to ensure the content of the test addressbook is in the correct state for the following tests

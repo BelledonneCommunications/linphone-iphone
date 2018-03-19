@@ -48,20 +48,21 @@ ChatRoomId::ChatRoomId (
 
 L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(ChatRoomId);
 
-bool ChatRoomId::operator== (const ChatRoomId &chatRoomId) const {
+bool ChatRoomId::operator== (const ChatRoomId &other) const {
 	L_D();
-	const ChatRoomIdPrivate *dChatRoomId = chatRoomId.getPrivate();
+	const ChatRoomIdPrivate *dChatRoomId = other.getPrivate();
 	return d->peerAddress == dChatRoomId->peerAddress && d->localAddress == dChatRoomId->localAddress;
 }
 
-bool ChatRoomId::operator!= (const ChatRoomId &chatRoomId) const {
-	return !(*this == chatRoomId);
+bool ChatRoomId::operator!= (const ChatRoomId &other) const {
+	return !(*this == other);
 }
 
-bool ChatRoomId::operator< (const ChatRoomId &chatRoomId) const {
+bool ChatRoomId::operator< (const ChatRoomId &other) const {
 	L_D();
-	const ChatRoomIdPrivate *dChatRoomId = chatRoomId.getPrivate();
-	return d->peerAddress < dChatRoomId->peerAddress || d->localAddress < dChatRoomId->localAddress;
+	const ChatRoomIdPrivate *dChatRoomId = other.getPrivate();
+	return d->peerAddress < dChatRoomId->peerAddress
+		|| (d->peerAddress == dChatRoomId->peerAddress && d->localAddress < dChatRoomId->localAddress);
 }
 
 const IdentityAddress &ChatRoomId::getPeerAddress () const {

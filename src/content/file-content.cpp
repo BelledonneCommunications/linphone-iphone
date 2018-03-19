@@ -42,47 +42,45 @@ public:
 
 FileContent::FileContent () : Content(*new FileContentPrivate) {}
 
-FileContent::FileContent (const FileContent &src) : Content(*new FileContentPrivate) {
+FileContent::FileContent (const FileContent &other) : Content(*new FileContentPrivate) {
 	L_D();
-	d->fileName = src.getFileName();
-	d->filePath = src.getFilePath();
-	d->fileSize = src.getFileSize();
+	d->fileName = other.getFileName();
+	d->filePath = other.getFilePath();
+	d->fileSize = other.getFileSize();
 }
 
-FileContent::FileContent (FileContent &&src) : Content(*new FileContentPrivate) {
+FileContent::FileContent (FileContent &&other) : Content(*new FileContentPrivate) {
 	L_D();
-	d->fileName = move(src.getPrivate()->fileName);
-	d->filePath = move(src.getPrivate()->filePath);
-	d->fileSize = move(src.getPrivate()->fileSize);
+	d->fileName = move(other.getPrivate()->fileName);
+	d->filePath = move(other.getPrivate()->filePath);
+	d->fileSize = move(other.getPrivate()->fileSize);
 }
 
-FileContent &FileContent::operator= (const FileContent &src) {
+FileContent &FileContent::operator= (const FileContent &other) {
 	L_D();
-	if (this != &src) {
-		Content::operator=(src);
-		d->fileName = src.getFileName();
-		d->filePath = src.getFilePath();
-		d->fileSize = src.getFileSize();
-	}
+		Content::operator=(other);
+		d->fileName = other.getFileName();
+		d->filePath = other.getFilePath();
+		d->fileSize = other.getFileSize();
 
 	return *this;
 }
 
-FileContent &FileContent::operator= (FileContent &&src) {
+FileContent &FileContent::operator= (FileContent &&other) {
 	L_D();
-	Content::operator=(move(src));
-	d->fileName = move(src.getPrivate()->fileName);
-	d->filePath = move(src.getPrivate()->filePath);
-	d->fileSize = move(src.getPrivate()->fileSize);
+	Content::operator=(move(other));
+	d->fileName = move(other.getPrivate()->fileName);
+	d->filePath = move(other.getPrivate()->filePath);
+	d->fileSize = move(other.getPrivate()->fileSize);
 	return *this;
 }
 
-bool FileContent::operator== (const FileContent &content) const {
+bool FileContent::operator== (const FileContent &other) const {
 	L_D();
-	return Content::operator==(content) &&
-		d->fileName == content.getFileName() &&
-		d->filePath == content.getFilePath() &&
-		d->fileSize == content.getFileSize();
+	return Content::operator==(other) &&
+		d->fileName == other.getFileName() &&
+		d->filePath == other.getFilePath() &&
+		d->fileSize == other.getFileSize();
 }
 
 void FileContent::setFileSize (size_t size) {

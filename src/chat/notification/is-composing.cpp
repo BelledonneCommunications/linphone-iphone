@@ -288,7 +288,6 @@ int IsComposing::refreshTimerExpired (void *data, unsigned int revents) {
 int IsComposing::remoteRefreshTimerExpired (void *data, unsigned int revents) {
 	IsRemoteComposingData *d = reinterpret_cast<IsRemoteComposingData *>(data);
 	int result = d->isComposingHandler->remoteRefreshTimerExpired(d->uri);
-	delete d;
 	return result;
 }
 

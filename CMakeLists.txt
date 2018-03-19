@@ -68,6 +68,7 @@ cmake_dependent_option(ENABLE_NOTIFY "Enable libnotify support." YES "ENABLE_GTK
 cmake_dependent_option(ENABLE_ASSISTANT "Turn on assistant compiling." YES "ENABLE_GTK_UI" NO)
 
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_EXTENSIONS NO)
 
 if(NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release")
@@ -272,6 +273,7 @@ else()
 		"-Wunused"
 	)
 	list(APPEND STRICT_OPTIONS_CXX
+		"-Wnon-virtual-dtor"
 		"-Woverloaded-virtual"
 	)
 	CHECK_CXX_COMPILER_FLAG("-Wsuggest-override" SUGGEST_OVERRIDE)

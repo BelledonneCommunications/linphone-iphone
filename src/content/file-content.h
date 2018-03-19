@@ -31,13 +31,13 @@ class FileContentPrivate;
 class LINPHONE_PUBLIC FileContent : public Content {
 public:
 	FileContent ();
-	FileContent (const FileContent &src);
-	FileContent (FileContent &&src);
+	FileContent (const FileContent &other);
+	FileContent (FileContent &&other);
 
-	FileContent &operator= (const FileContent &src);
-	FileContent &operator= (FileContent &&src);
+	FileContent &operator= (const FileContent &other);
+	FileContent &operator= (FileContent &&other);
 
-	bool operator== (const FileContent &content) const;
+	bool operator== (const FileContent &other) const;
 
 	void setFileSize (size_t size);
 	size_t getFileSize () const;

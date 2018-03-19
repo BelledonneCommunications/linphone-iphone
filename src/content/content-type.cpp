@@ -56,20 +56,20 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 	L_D();
 
 	size_t pos = contentType.find('/');
-	size_t posParam = contentType.find("; ");
+	size_t posParam = contentType.find(";");
 	size_t end = contentType.length();
 	if (pos == string::npos)
 		return;
 
-	if (setType(contentType.substr(0, pos))) {
+	if (setType(Utils::trim(contentType.substr(0, pos)))) {
 		if (posParam != string::npos)
 			end = posParam;
-		if (!setSubType(contentType.substr(pos + 1, end - (pos + 1))))
+		if (!setSubType(Utils::trim(contentType.substr(pos + 1, end - (pos + 1)))))
 			d->type.clear();
 	}
 
 	if (posParam != string::npos)
-		setParameter(contentType.substr(posParam + 2)); // We remove the blankspace after the ;.
+		setParameter(Utils::trim(contentType.substr(posParam + 1)));
 }
 
 ContentType::ContentType (const string &type, const string &subType) : ClonableObject(*new ContentTypePrivate) {
@@ -91,26 +91,26 @@ ContentType::ContentType (
 	setParameter(parameter);
 }
 
-ContentType::ContentType (const ContentType &src) : ContentType(src.getType(), src.getSubType(), src.getParameter()) {}
+ContentType::ContentType (const ContentType &other) : ContentType(other.getType(), other.getSubType(), other.getParameter()) {}
 
-ContentType &ContentType::operator= (const ContentType &src) {
-	if (this != &src) {
-		setType(src.getType());
-		setSubType(src.getSubType());
-		setParameter(src.getParameter());
+ContentType &ContentType::operator= (const ContentType &other) {
+	if (this != &other) {
+		setType(other.getType());
+		setSubType(other.getSubType());
+		setParameter(other.getParameter());
 	}
 
 	return *this;
 }
 
-bool ContentType::operator== (const ContentType &contentType) const {
-	return getType() == contentType.getType() &&
-		getSubType() == contentType.getSubType() &&
-		getParameter() == contentType.getParameter();
+bool ContentType::operator== (const ContentType &other) const {
+	return getType() == other.getType() &&
+		getSubType() == other.getSubType() &&
+		getParameter() == other.getParameter();
 }
 
-bool ContentType::operator!= (const ContentType &contentType) const {
-	return !(*this == contentType);
+bool ContentType::operator!= (const ContentType &other) const {
+	return !(*this == other);
 }
 
 const string &ContentType::getType () const {

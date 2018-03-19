@@ -53,10 +53,19 @@ public:
 	}
 
 	void sendChatMessage (const shared_ptr<ChatMessage> &chatMessage) override {
+		L_Q();
 		ProxyChatRoomPrivate::sendChatMessage(chatMessage);
 		const char *specs = linphone_core_get_linphone_specs(chatMessage->getCore()->getCCore());
 		time_t currentRealTime = ms_time(nullptr);
-		if (!linphone_core_get_conference_factory_uri(chatMessage->getCore()->getCCore())
+		LinphoneAddress *lAddr = linphone_address_new(
+			chatMessage->getChatRoom()->getChatRoomId().getLocalAddress().asString().c_str()
+		);
+		LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(q->getCore()->getCCore(), lAddr);
+		linphone_address_unref(lAddr);
+		const char *conferenceFactoryUri = nullptr;
+		if (proxy)
+			conferenceFactoryUri = linphone_proxy_config_get_conference_factory_uri(proxy);
+		if (!conferenceFactoryUri
 			|| (chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference)
 			|| clientGroupChatRoom
 			|| !specs || !strstr(specs, "groupchat")
@@ -69,7 +78,7 @@ public:
 		}
 		migrationRealTime = currentRealTime;
 		clientGroupChatRoom = static_pointer_cast<ClientGroupChatRoom>(
-			chatRoom->getCore()->getPrivate()->createClientGroupChatRoom(chatRoom->getSubject(), false)
+			chatRoom->getCore()->getPrivate()->createClientGroupChatRoom(chatRoom->getSubject(), "", false)
 		);
 		clientGroupChatRoom->getPrivate()->setCallSessionListener(this);
 		clientGroupChatRoom->getPrivate()->setChatRoomListener(this);
@@ -77,7 +86,7 @@ public:
 	}
 
 	void onCallSessionStateChanged (
-		const shared_ptr<const CallSession> &session,
+		const shared_ptr<CallSession> &session,
 		CallSession::State newState,
 		const string &message
 	) override {

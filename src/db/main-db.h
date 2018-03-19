@@ -25,6 +25,7 @@
 #include "linphone/utils/enum-mask.h"
 
 #include "abstract/abstract-db.h"
+#include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room-id.h"
 #include "core/core-accessor.h"
 
@@ -38,8 +39,12 @@ class Core;
 class EventLog;
 class MainDbKey;
 class MainDbPrivate;
+class ParticipantDevice;
 
 class MainDb : public AbstractDb, public CoreAccessor {
+	template<typename Function>
+	friend class DbTransaction;
+
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 
@@ -48,7 +53,8 @@ public:
 		NoFilter = 0x0,
 		ConferenceCallFilter = 0x1,
 		ConferenceChatMessageFilter = 0x2,
-		ConferenceInfoFilter = 0x4
+		ConferenceInfoFilter = 0x4,
+		ConferenceInfoNoDeviceFilter = 0x8
 	};
 
 	typedef EnumMask<Filter> FilterMask;
@@ -81,8 +87,19 @@ public:
 
 	int getChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	void markChatMessagesAsRead (const ChatRoomId &chatRoomId = ChatRoomId()) const;
-	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId = ChatRoomId()) const;
+	void markChatMessagesAsRead (const ChatRoomId &chatRoomId) const;
+	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
+
+	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
+	ChatMessage::State getChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress
+	) const;
+	void setChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress,
+		ChatMessage::State state
+	);
 
 	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId) const;
 
@@ -112,6 +129,12 @@ public:
 	void cleanHistory (const ChatRoomId &chatRoomId, FilterMask mask = NoFilter);
 
 	// ---------------------------------------------------------------------------
+	// Chat messages.
+	// ---------------------------------------------------------------------------
+
+	void loadChatMessageContents (const std::shared_ptr<ChatMessage> &chatMessage);
+
+	// ---------------------------------------------------------------------------
 	// Chat rooms.
 	// ---------------------------------------------------------------------------
 
@@ -134,6 +157,11 @@ public:
 		const IdentityAddress &participantB
 	) const;
 	void insertOneToOneConferenceChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+
+	void updateChatRoomParticipantDevice (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const std::shared_ptr<ParticipantDevice> &device
+	);
 
 	// ---------------------------------------------------------------------------
 	// Other.
