@@ -26,6 +26,7 @@
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/chat-room/client-group-chat-room.h"
 #include "chat/chat-room/server-group-chat-room.h"
+#include "conference/participant-device.h"
 #include "conference/participant-p.h"
 #include "core/core-p.h"
 #include "event-log/event-log-p.h"

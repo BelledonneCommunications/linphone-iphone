@@ -18,6 +18,7 @@
  */
 
 #include "conference-p.h"
+#include "conference/participant-device.h"
 #include "conference/session/call-session-p.h"
 #include "logger/logger.h"
 #include "participant-p.h"

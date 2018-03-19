@@ -19,13 +19,20 @@
 
 #include "belle-sip/utils.h"
 #include "linphone/utils/utils.h"
+#include "linphone/api/c-address.h"
 
 #include "address/address.h"
+#include "c-wrapper/c-wrapper.h"
+#include "chat/chat-room/abstract-chat-room.h"
+#include "conference/participant-p.h"
+#include "conference/participant-device.h"
 #include "content/content.h"
 #include "content/content-manager.h"
 #include "content/content-type.h"
+#include "core/core.h"
 #include "local-conference-event-handler.h"
 #include "local-conference-list-event-handler.h"
+#include "logger/logger.h"
 #include "xml/resource-lists.h"
 #include "xml/rlmi.h"
 
@@ -41,7 +48,42 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
-void LocalConferenceListEventHandler::subscribeReceived (const string &xmlBody) {
+void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev) {
+	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
+	char *addrStr = linphone_address_as_string(lAddr);
+	IdentityAddress participantAddr(addrStr);
+	bctbx_free(addrStr);
+
+	const LinphoneAddress *lDeviceAddr = linphone_event_get_remote_contact(lev);
+	char *deviceAddrStr = linphone_address_as_string(lDeviceAddr);
+	IdentityAddress deviceAddr(deviceAddrStr);
+	bctbx_free(deviceAddrStr);
+
+	for (const auto &handler : handlers) {
+		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_event_get_core(lev))->findChatRoom(handler->getChatRoomId());
+		if (!chatRoom) {
+			lError() << "Received subscribe for unknown chat room: " << handler->getChatRoomId();
+			continue;
+		}
+
+		shared_ptr<Participant> participant = chatRoom->findParticipant(participantAddr);
+		if (!participant) {
+			lError() << "Received subscribe for unknown participant: " << participantAddr <<  " for chat room: " << handler->getChatRoomId();
+			continue;
+		}
+
+		shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(deviceAddr);
+		if (!device) {
+			lError() << "Received subscribe for unknown device: " << deviceAddr << " for participant: "
+				<< participantAddr <<  " for chat room: " << handler->getChatRoomId();
+			return;
+		}
+
+		device->setConferenceSubscribeEvent((linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) ? lev : nullptr);
+	}
+}
+
+void LocalConferenceListEventHandler::parseBody (const string &xmlBody) {
 	list<Content> contents;
 	Content rlmiContent;
 	rlmiContent.setContentType(ContentType::Rlmi);

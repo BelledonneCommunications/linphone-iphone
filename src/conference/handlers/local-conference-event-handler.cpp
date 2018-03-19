@@ -22,6 +22,7 @@
 #include "linphone/utils/utils.h"
 
 #include "conference/local-conference.h"
+#include "conference/participant-device.h"
 #include "conference/participant-p.h"
 #include "content/content-manager.h"
 #include "content/content-type.h"

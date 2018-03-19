@@ -26,6 +26,7 @@
 #include "conference/handlers/remote-conference-event-handler-p.h"
 #include "conference/handlers/remote-conference-list-event-handler.h"
 #include "conference/participant-p.h"
+#include "conference/participant-device.h"
 #include "conference/remote-conference-p.h"
 #include "conference/session/call-session-p.h"
 #include "core/core-p.h"

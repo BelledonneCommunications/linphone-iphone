@@ -23,6 +23,8 @@
 #include <memory>
 #include <list>
 
+#include "linphone/event.h"
+
 #include "chat/chat-room/chat-room-id.h"
 #include "linphone/utils/general.h"
 
@@ -34,7 +36,8 @@ class LocalConferenceEventHandler;
 
 class LocalConferenceListEventHandler {
 public:
-	void subscribeReceived (const std::string &xmlBody);
+	void subscribeReceived (LinphoneEvent *lev);
+	void parseBody (const std::string &xmlBody);
 	void notify ();
 	void addHandler (std::shared_ptr<LocalConferenceEventHandler> handler);
 	std::shared_ptr<LocalConferenceEventHandler> findHandler (const ChatRoomId &chatRoomId) const;
