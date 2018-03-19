@@ -65,6 +65,9 @@ void RemoteConferenceListEventHandler::subscribe () {
 	if (lev)
 		return;
 
+	if (handlers.size() == 0)
+		return;
+
 	Content content;
 	content.setContentType(ContentType::ResourceLists);
 
