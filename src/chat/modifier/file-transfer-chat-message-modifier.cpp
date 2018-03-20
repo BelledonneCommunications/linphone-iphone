@@ -723,6 +723,7 @@ void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t 
 				// Legacy: call back given by application level
 				linphone_core_notify_file_transfer_recv(message->getCore()->getCCore(), msg, content, (const char *)buffer, size);
 			}
+			linphone_content_unref(content);
 		}
 	} else {
 		lWarning() << "File transfer decrypt failed with code " << (int)retval;
