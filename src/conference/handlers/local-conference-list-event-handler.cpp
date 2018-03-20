@@ -61,7 +61,6 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
-	linphone_event_accept_subscription(lev);
 
 	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
 	char *addrStr = linphone_address_as_string(lAddr);
@@ -81,6 +80,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 	Xsd::Rlmi::List::ResourceSequence resources;
 
 	// Parse resource list
+	bool noContent = true;
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(
 		data,
@@ -119,6 +119,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			}
 			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
 
+			noContent = false;
 			Content content;
 			if (notifyId > 0) {
 				ContentType contentType(ContentType::Multipart);
@@ -146,6 +147,12 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			resources.push_back(resource);
 		}
 	}
+
+	if (noContent) {
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
+		return;
+	}
+	linphone_event_accept_subscription(lev);
 
 	Xsd::Rlmi::List list("", 0, TRUE);
 	list.setResource(resources);
