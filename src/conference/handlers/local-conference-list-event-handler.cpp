@@ -52,6 +52,10 @@ namespace {
 // -----------------------------------------------------------------------------
 
 void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body) {
+	LinphoneSubscriptionState subscriptionState = linphone_event_get_subscription_state(lev);
+	if (subscriptionState != LinphoneSubscriptionIncomingReceived && subscriptionState != LinphoneSubscriptionTerminated)
+		return;
+
 	const string &xmlBody = string(linphone_content_get_string_buffer(body));
 	if (xmlBody.empty())
 		return;
@@ -110,7 +114,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 					<< participantAddr <<  " for chat room: " << chatRoomId;
 				continue;
 			}
-			device->setConferenceSubscribeEvent((linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) ? lev : nullptr);
+			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
 
 			Content content;
 			if (notifyId > 0) {
