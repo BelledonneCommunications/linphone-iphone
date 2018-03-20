@@ -131,10 +131,10 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			content.setBody(notifyBody);
 			char token[17];
 			ostringstream os;
-			belle_sip_random_token(token, sizeof(token));
-			os << "@sip.linphone.org";
-			Address cid(os.str());
 			os.str("");
+			belle_sip_random_token(token, sizeof(token));
+			os << token << "@sip.linphone.org";
+			Address cid(os.str());
 			content.addHeader("Content-Id", cid.asStringUriOnly());
 			contents.push_back(content);
 

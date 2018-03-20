@@ -228,7 +228,8 @@ const string &Content::getHeaderValue (const string &headerName) const {
 LinphoneContent *Content::toLinphoneContent () const {
 	LinphoneContent *content = linphone_core_create_content(nullptr);
 	linphone_content_set_type(content, getContentType().getType().c_str());
-	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
+	string subtype = getContentType().getSubType() + getContentType().getParameter();
+	linphone_content_set_subtype(content, subtype.c_str());
 	linphone_content_set_buffer(content, (const uint8_t *)getBodyAsUtf8String().c_str(), getBodyAsUtf8String().size());
 	return content;
 }
