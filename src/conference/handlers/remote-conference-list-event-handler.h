@@ -28,7 +28,6 @@
 #include "linphone/utils/general.h"
 
 #include "chat/chat-room/chat-room-id.h"
-#include "content/content.h"
 #include "core/core-accessor.h"
 #include "core/core-listener.h"
 
@@ -37,6 +36,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class Address;
+class Content;
 class RemoteConferenceEventHandler;
 
 class RemoteConferenceListEventHandler : public CoreAccessor , public CoreListener {
@@ -46,7 +46,7 @@ public:
 
 	void subscribe ();
 	void unsubscribe ();
-	void notifyReceived (Content *multipart);
+	void notifyReceived (const Content *notifyContent);
 	void addHandler (RemoteConferenceEventHandler *handler);
 	void removeHandler (RemoteConferenceEventHandler *handler);
 	RemoteConferenceEventHandler *findHandler (const ChatRoomId &chatRoomId) const;
@@ -56,7 +56,7 @@ private:
 	std::list<RemoteConferenceEventHandler *> handlers;
 	LinphoneEvent *lev = nullptr;
 
-	std::map<Address, Address> parseRlmi (const std::string &xmlBody) const;
+	std::map<IdentityAddress, IdentityAddress> parseRlmi (const std::string &xmlBody) const;
 
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;

@@ -28,8 +28,10 @@
 #include "content/content-manager.h"
 #include "content/content-type.h"
 #include "core/core-p.h"
+#include "logger/logger.h"
 #include "remote-conference-event-handler.h"
 #include "remote-conference-list-event-handler.h"
+#include "xml/conference-info.h"
 #include "xml/resource-lists.h"
 #include "xml/rlmi.h"
 
@@ -109,7 +111,9 @@ void RemoteConferenceListEventHandler::subscribe () {
 	}
 	*/
 	linphone_event_set_user_data(lev, this);
-	linphone_event_send_subscribe(lev, content.toLinphoneContent());
+	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
+	linphone_event_send_subscribe(lev, cContent);
+	linphone_content_unref(cContent);
 }
 
 void RemoteConferenceListEventHandler::unsubscribe () {
@@ -121,12 +125,30 @@ void RemoteConferenceListEventHandler::unsubscribe () {
 	lev = nullptr;
 }
 
-void RemoteConferenceListEventHandler::notifyReceived (Content *multipart) {
-	list<Content> contents = ContentManager::multipartToContentList(*multipart);
+void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyContent) {
 	char *from = linphone_address_as_string(linphone_event_get_from(lev));
-	const Address local(from);
+	const IdentityAddress local(from);
+
+	if (notifyContent->getContentType() != ContentType::Multipart) {
+		// Simple notify received directly from a chat-room
+		const string &xmlBody = notifyContent->getBodyAsString();
+		istringstream data(xmlBody);
+		unique_ptr<Xsd::ConferenceInfo::ConferenceType> confInfo = Xsd::ConferenceInfo::parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
+
+		IdentityAddress entityAddress(confInfo->getEntity().c_str());
+		lError() << entityAddress;
+		ChatRoomId id(entityAddress, local);
+		lError() << id;
+		RemoteConferenceEventHandler *handler = findHandler(id);
+		if (!handler)
+			return;
+
+		handler->notifyReceived(xmlBody);
+	}
+
+	list<Content> contents = ContentManager::multipartToContentList(*notifyContent);
 	bctbx_free(from);
-	map<Address, Address> addresses;
+	map<IdentityAddress, IdentityAddress> addresses;
 	for (const auto &content : contents) {
 		const string &body = content.getBodyAsString();
 		const ContentType &contentType = content.getContentType();
@@ -139,9 +161,9 @@ void RemoteConferenceListEventHandler::notifyReceived (Content *multipart) {
 		if (value.empty())
 			continue;
 
-		Address cid(value);
-		Address peer = addresses[cid];
-		ChatRoomId id(local, peer);
+		IdentityAddress cid(value);
+		IdentityAddress peer = addresses[cid];
+		ChatRoomId id(peer, local);
 		RemoteConferenceEventHandler *handler = findHandler(id);
 		if (!handler)
 			continue;
@@ -178,23 +200,23 @@ void RemoteConferenceListEventHandler::removeHandler (RemoteConferenceEventHandl
 		handlers.remove(handler);
 }
 
-map<Address, Address> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {
+map<IdentityAddress, IdentityAddress> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::Rlmi::List> rlmi(Xsd::Rlmi::parseList(
 		data,
 		Xsd::XmlSchema::Flags::dont_validate
 	));
-	map<Address, Address> addresses;
+	map<IdentityAddress, IdentityAddress> addresses;
 	for (const auto &resource : rlmi->getResource()) {
 		if (resource.getInstance().empty())
 			continue;
 
-		Address peer(resource.getUri());
+		IdentityAddress peer(resource.getUri());
 		for (const auto &instance : resource.getInstance()) {
 			if (!instance.getCid().present())
 				continue;
 
-			Address cid(instance.getCid().get());
+			IdentityAddress cid(instance.getCid().get());
 			addresses[cid] = peer;
 		}
 	}

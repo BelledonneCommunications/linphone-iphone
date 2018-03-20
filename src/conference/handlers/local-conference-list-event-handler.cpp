@@ -163,7 +163,9 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 
 	contents.push_front(rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
-	linphone_event_notify(lev, multipart.toLinphoneContent());
+	LinphoneContent *cContent = L_GET_C_BACK_PTR(&multipart);
+	linphone_event_notify(lev, cContent);
+	linphone_content_unref(cContent);
 }
 
 // -----------------------------------------------------------------------------
