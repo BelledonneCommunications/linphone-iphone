@@ -176,6 +176,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-chat-room-cbs.cpp
 	c-wrapper/api/c-chat-room.cpp
 	c-wrapper/api/c-core.cpp
+	c-wrapper/api/c-content.cpp
 	c-wrapper/api/c-dial-plan.cpp
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-magic-search.cpp

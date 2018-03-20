@@ -89,8 +89,7 @@ public:
 	virtual std::shared_ptr<ChatMessage> createChatMessage () = 0;
 	virtual std::shared_ptr<ChatMessage> createChatMessage (const std::string &text) = 0;
 
-	// TODO: Remove LinphoneContent by LinphonePrivate::Content.
-	virtual std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent) = 0;
+	virtual std::shared_ptr<ChatMessage> createFileTransferMessage (Content *initialContent) = 0;
 
 	virtual std::shared_ptr<ChatMessage> findChatMessage (const std::string &messageId) const = 0;
 	virtual std::shared_ptr<ChatMessage> findChatMessage (

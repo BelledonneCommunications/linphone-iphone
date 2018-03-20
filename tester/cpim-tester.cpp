@@ -423,7 +423,7 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 	}
 	marieMessage->send();
 

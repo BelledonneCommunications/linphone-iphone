@@ -53,13 +53,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType(ContentType("video/mkv"));
 		content->setFilePath(send_filepath);
 		content->setFileName("sintel_trailer_opus_h264.mkv");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 1");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 	}
 
 	if (second_file_transfer) {
@@ -68,13 +68,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType(ContentType("file/vcf"));
 		content->setFilePath(send_filepath);
 		content->setFileName("vcards.vcf");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 	}
 
 	linphone_core_set_file_transfer_server(marie->lc,"https://www.linphone.org:444/lft.php");

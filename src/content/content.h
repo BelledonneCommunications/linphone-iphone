@@ -74,14 +74,12 @@ public:
 	bool isEmpty () const;
 
 	virtual bool isFile () const;
+	virtual bool isFileTransfer () const;
 
 	const std::list<std::pair<std::string, std::string>> &getHeaders () const;
 	void addHeader (const std::string &headerName, const std::string &headerValue);
 	void removeHeader (const std::string &headerName);
 	const std::string &getHeaderValue (const std::string &headerName) const;
-
-	// TODO: Remove me later.
-	virtual LinphoneContent *toLinphoneContent () const;
 
 protected:
 	explicit Content (ContentPrivate &p);

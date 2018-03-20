@@ -198,6 +198,10 @@ bool Content::isFile () const {
 	return false;
 }
 
+bool Content::isFileTransfer () const {
+	return false;
+}
+
 void Content::addHeader (const string &headerName, const string &headerValue) {
 	L_D();
 	removeHeader(headerName);
@@ -223,20 +227,6 @@ const string &Content::getHeaderValue (const string &headerName) const {
 		return (*it).second;
 
 	return Utils::getEmptyConstRefObject<string>();
-}
-
-LinphoneContent *Content::toLinphoneContent () const {
-	LinphoneContent *content = linphone_core_create_content(nullptr);
-	linphone_content_set_type(content, getContentType().getType().c_str());
-	string subtype;
-	string parameter = getContentType().getParameter();
-	subtype = (parameter.empty())
-		? getContentType().getSubType()
-		: getContentType().getSubType() + ";" + parameter;
-
-	linphone_content_set_subtype(content, subtype.c_str());
-	linphone_content_set_buffer(content, (const uint8_t *)getBodyAsUtf8String().c_str(), getBodyAsUtf8String().size());
-	return content;
 }
 
 LINPHONE_END_NAMESPACE
