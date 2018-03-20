@@ -2163,7 +2163,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 }
 
 static void _linphone_core_conference_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const LinphoneContent *body) {
-	if (body && linphone_content_get_custom_header(body, "Content-Disposition") && strcasecmp(linphone_content_get_custom_header(body, "Content-Disposition"), "recipient-list") == 0) {
+	if (body && linphone_event_get_custom_header(body, "Content-Disposition") && strcasecmp(linphone_event_get_custom_header(body, "Content-Disposition"), "recipient-list") == 0) {
 		// List subscription
 		L_GET_PRIVATE_FROM_C_OBJECT(lc)->localListEventHandler->subscribeReceived(lev, body);
 		return;
