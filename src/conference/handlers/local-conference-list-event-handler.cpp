@@ -57,8 +57,11 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 		return;
 
 	const string &xmlBody = string(linphone_content_get_string_buffer(body));
-	if (xmlBody.empty())
+	if (xmlBody.empty()) {
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
+	}
+	linphone_event_accept_subscription(lev);
 
 	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
 	char *addrStr = linphone_address_as_string(lAddr);
