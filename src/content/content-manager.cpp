@@ -45,23 +45,25 @@ list<Content> ContentManager::multipartToContentList (const Content &content) {
 	list<Content> contents;
 	for (const belle_sip_list_t *parts = belle_sip_multipart_body_handler_get_parts(mpbh); parts; parts = parts->next) {
 		belle_sip_body_handler_t *part = BELLE_SIP_BODY_HANDLER(parts->data);
-		belle_sip_header_content_type_t *partContentType = nullptr;
+		Content content;
+
 		for (const belle_sip_list_t *it = belle_sip_body_handler_get_headers(part); it; it = it->next) {
 			belle_sip_header_t *header = BELLE_SIP_HEADER(it->data);
 			if (strcasecmp("Content-Type", belle_sip_header_get_name(header)) == 0) {
-				partContentType = BELLE_SIP_HEADER_CONTENT_TYPE(header);
-				break;
+				belle_sip_header_content_type_t * partContentType = BELLE_SIP_HEADER_CONTENT_TYPE(header);
+				content.setContentType(ContentType(
+					belle_sip_header_content_type_get_type(partContentType),
+					belle_sip_header_content_type_get_subtype(partContentType)
+				));
+			} else {
+				content.addHeader(belle_sip_header_get_name(header), belle_sip_header_get_unparsed_value(header));
 			}
 		}
 
-		Content content;
 		content.setBody(static_cast<const char *>(
 			belle_sip_memory_body_handler_get_buffer(BELLE_SIP_MEMORY_BODY_HANDLER(part))
 		));
-		content.setContentType(ContentType(
-			belle_sip_header_content_type_get_type(partContentType),
-			belle_sip_header_content_type_get_subtype(partContentType)
-		));
+		
 		contents.push_back(move(content));
 	}
 
