@@ -40,9 +40,18 @@ static void core_init_test(void) {
 }
 
 static void linphone_address_test(void) {
+	LinphoneAddress *address;
+
 	linphone_address_unref(create_linphone_address(NULL));
 	BC_ASSERT_PTR_NULL(linphone_address_new("sip:@sip.linphone.org"));
 
+	address = linphone_address_new("sip:90.110.127.31");
+	if (!BC_ASSERT_PTR_NOT_NULL(address)) return;
+	linphone_address_unref(address);
+
+	address = linphone_address_new("sip:[::ffff:90.110.127.31]");
+	if (!BC_ASSERT_PTR_NOT_NULL(address)) return;
+	linphone_address_unref(address);
 }
 
 static void core_sip_transport_test(void) {
@@ -184,8 +193,8 @@ static void linphone_lpconfig_from_xml_zerolen_value(void){
 	 * This test makes a provisionning by xml outside of the Configuring state of the LinphoneCore.
 	 * It is leaking memory because the config is litterally erased and rewritten by the invocation
 	 * of the private function linphone_remote_provisioning_load_file .
-	 */ 
-	
+	 */
+
 	BC_ASSERT_EQUAL(linphone_remote_provisioning_load_file(mgr->lc, xml_path), 0, int, "%d");
 
 	conf = mgr->lc->config;
@@ -349,7 +358,7 @@ static void codec_setup(void){
 	BC_ASSERT_TRUE(codecs->data == vp8);
 	BC_ASSERT_TRUE(codecs->next->data == h264);
 	linphone_core_manager_destroy(mgr);
-	
+
 	mgr = linphone_core_manager_new2("marie_h264_rc", FALSE);
 	vp8 = linphone_core_find_payload_type(mgr->lc, "VP8", 90000, -1);
 	h264 = linphone_core_find_payload_type(mgr->lc, "H264", 90000, -1);
@@ -360,7 +369,7 @@ static void codec_setup(void){
 	BC_ASSERT_TRUE(codecs->data == vp8);
 	BC_ASSERT_TRUE(codecs->next->data == h264);
 	linphone_core_manager_destroy(mgr);
-	
+
 	mgr = linphone_core_manager_new2("marie_rc", FALSE);
 	vp8 = linphone_core_find_payload_type(mgr->lc, "VP8", 90000, -1);
 	h264 = linphone_core_find_payload_type(mgr->lc, "H264", 90000, -1);
@@ -371,13 +380,13 @@ static void codec_setup(void){
 	BC_ASSERT_TRUE(codecs->data == vp8);
 	BC_ASSERT_TRUE(codecs->next->data == h264);
 	linphone_core_manager_destroy(mgr);
-	
+
 }
 
 static void custom_tones_setup(void){
 	LinphoneCoreManager *mgr = linphone_core_manager_new2("empty_rc", FALSE);
 	const char *tone;
-	
+
 	linphone_core_set_tone(mgr->lc, LinphoneToneCallOnHold, "callonhold.wav");
 	tone = linphone_core_get_tone_file(mgr->lc, LinphoneToneCallOnHold);
 	BC_ASSERT_PTR_NOT_NULL(tone);
@@ -409,7 +418,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Devices reload", devices_reload_test),
 	TEST_NO_TAG("Codec usability", codec_usability_test),
 	TEST_NO_TAG("Codec setup", codec_setup),
-	TEST_NO_TAG("Custom tones setup", custom_tones_setup) 
+	TEST_NO_TAG("Custom tones setup", custom_tones_setup)
 };
 
 test_suite_t setup_test_suite = {"Setup", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
