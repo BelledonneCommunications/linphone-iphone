@@ -252,6 +252,7 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
                 }
 
                 contents.push_back(*L_GET_CPP_PTR_FROM_C_OBJECT(part_content));
+                linphone_content_unref(part_content);
             }
             LinphonePrivate::Content multipartContent = LinphonePrivate::ContentManager::contentListToMultipart(contents);
             linphone_content_set_string_buffer(content, multipartContent.getBodyAsUtf8String().c_str());
