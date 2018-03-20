@@ -74,7 +74,7 @@ public:
 	void setParams (MediaSessionParams *msp);
 	void setRemoteParams (MediaSessionParams *msp);
 
-	IceSession *getIceSession () const { return iceAgent->getIceSession(); }
+	IceSession *getIceSession () const { return iceAgent ? iceAgent->getIceSession() : nullptr; }
 
 	SalMediaDescription *getLocalDesc () const { return localDesc; }
 
@@ -254,7 +254,6 @@ private:
 	int sendDtmf ();
 
 	void stunAuthRequestedCb (const char *realm, const char *nonce, const char **username, const char **password, const char **ha1);
-
 private:
 	static const std::string ecStateStore;
 	static const int ecStateMaxLen;
@@ -284,8 +283,8 @@ private:
 	int mainTextStreamIndex = LINPHONE_CALL_STATS_TEXT;
 
 	LinphoneNatPolicy *natPolicy = nullptr;
-	StunClient *stunClient = nullptr;
-	IceAgent *iceAgent = nullptr;
+	std::unique_ptr<StunClient> stunClient;
+	std::unique_ptr<IceAgent> iceAgent;
 
 	// The address family to prefer for RTP path, guessed from signaling path.
 	int af;
@@ -325,6 +324,7 @@ private:
 	bool automaticallyPaused = false;
 	bool pausedByApp = false;
 	bool recordActive = false;
+	bool incomingIceReinvitePending = false;
 
 	std::string onHoldFile;
 

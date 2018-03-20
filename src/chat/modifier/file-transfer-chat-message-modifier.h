@@ -63,6 +63,7 @@ public:
 	int downloadFile(const std::shared_ptr<ChatMessage> &message, FileTransferContent *fileTransferContent);
 	void cancelFileTransfer();
 	bool isFileTransferInProgressAndValid();
+	std::string createFakeFileTransferFromUrl(const std::string &url);
 
 private:
 	int uploadFile();

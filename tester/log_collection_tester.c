@@ -28,9 +28,14 @@
 #include <zlib.h>
 #endif
 
+#ifdef __ANDROID__
+#include "android/api-level.h"
+#endif
 
 /*getline is POSIX 2008, not available on many systems.*/
-#if (defined(__ANDROID__) && !defined(__LP64__)) || defined(_WIN32) || defined(__QNX__)
+
+/*It is declared since NDK14 unified headers, that can be detected by the presence of __ANDROID_API_O__ define*/
+#if (defined(__ANDROID__) &&  __ANDROID_API__ <= 16) || defined(_WIN32) || defined(__QNX__)
 /* This code is public domain -- Will Hartung 4/9/09 */
 static ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
 	char *bufptr = NULL;

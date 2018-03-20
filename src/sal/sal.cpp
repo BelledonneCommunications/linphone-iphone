@@ -118,7 +118,6 @@ void Sal::process_request_event_cb (void *ud, const belle_sip_request_event_t *e
 			op->fill_cbs();
 		}else if (strcmp("REFER",method)==0) {
 			op=new SalReferOp(sal);
-			op->fill_cbs();
 		}else if (strcmp("OPTIONS",method)==0) {
 			resp=belle_sip_response_create_from_request(req,200);
 			belle_sip_provider_send_response(sal->prov,resp);

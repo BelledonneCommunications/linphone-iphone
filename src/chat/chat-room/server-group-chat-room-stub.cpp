@@ -80,6 +80,8 @@ void ServerGroupChatRoomPrivate::setConferenceAddress (const IdentityAddress &) 
 
 void ServerGroupChatRoomPrivate::setParticipantDevices (const IdentityAddress &addr, const list<IdentityAddress> &devices) {}
 
+void ServerGroupChatRoomPrivate::addParticipantDevice (const IdentityAddress &participantAddress, const IdentityAddress &deviceAddress) {}
+
 void ServerGroupChatRoomPrivate::addCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &participantCompatible) {}
 
 // -----------------------------------------------------------------------------

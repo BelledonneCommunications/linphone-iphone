@@ -20,6 +20,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 
 #include <ctype.h>
 
+#include <bctoolbox/defs.h>
 #include "linphone/core_utils.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
@@ -113,7 +114,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	const char *dial_prefix = lc ? lp_config_get_default_string(lc->config,"proxy","dial_prefix",NULL) : NULL;
 	const char *identity = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_identity", NULL) : NULL;
 	const char *proxy = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_proxy", NULL) : NULL;
-	const char *route = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_route", NULL) : NULL;
+	const char *route = lc ? lp_config_get_default_string(lc->config, "proxy", "reg_route", NULL) : NULL; //TODO return list instead of string
 	const char *realm = lc ? lp_config_get_default_string(lc->config, "proxy", "realm", NULL) : NULL;
 	const char *quality_reporting_collector = lc ? lp_config_get_default_string(lc->config, "proxy", "quality_reporting_collector", NULL) : NULL;
 	const char *contact_params = lc ? lp_config_get_default_string(lc->config, "proxy", "contact_parameters", NULL) : NULL;
@@ -130,7 +131,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->identity_address = identity ? linphone_address_new(identity) : NULL;
 	cfg->reg_identity = cfg->identity_address ? linphone_address_as_string(cfg->identity_address) : NULL;
 	cfg->reg_proxy = proxy ? ms_strdup(proxy) : NULL;
-	cfg->reg_route = route ? ms_strdup(route) : NULL;
+	cfg->reg_routes = route ? bctbx_list_append(cfg->reg_routes, ms_strdup(route)) : NULL; //TODO get list directly
 	cfg->realm = realm ? ms_strdup(realm) : NULL;
 	cfg->quality_reporting_enabled = lc ? !!lp_config_get_default_int(lc->config, "proxy", "quality_reporting_enabled", 0) : 0;
 	cfg->quality_reporting_collector = quality_reporting_collector ? ms_strdup(quality_reporting_collector) : NULL;
@@ -183,13 +184,18 @@ bool_t linphone_proxy_config_compute_publish_params_hash(LinphoneProxyConfig * c
 	char hash[33];
 	char saved;
 	unsigned long long previous_hash[2];
+	bctbx_list_t *routes_iterator = cfg->reg_routes;
 	previous_hash[0] = cfg->previous_publish_config_hash[0];
 	previous_hash[1] = cfg->previous_publish_config_hash[1];
 
 	source = ms_strcat_printf(source, "%i",cfg->privacy);
 	source=append_linphone_address(cfg->identity_address, source);
 	source=append_string(cfg->reg_proxy,source);
-	source=append_string(cfg->reg_route,source);
+	while (routes_iterator) {
+		const char *route = (const char *)bctbx_list_get_data(routes_iterator);
+		source=append_string(route,source);
+		routes_iterator = bctbx_list_next(routes_iterator);
+	}
 	source=append_string(cfg->realm,source);
 	source = ms_strcat_printf(source, "%i",cfg->publish_expires);
 	source = ms_strcat_printf(source, "%i",cfg->publish);
@@ -235,7 +241,7 @@ void _linphone_proxy_config_destroy(LinphoneProxyConfig *cfg){
 	if (cfg->reg_proxy!=NULL) ms_free(cfg->reg_proxy);
 	if (cfg->reg_identity!=NULL) ms_free(cfg->reg_identity);
 	if (cfg->identity_address!=NULL) linphone_address_unref(cfg->identity_address);
-	if (cfg->reg_route!=NULL) ms_free(cfg->reg_route);
+	if (cfg->reg_routes!=NULL) bctbx_list_free_with_data(cfg->reg_routes, ms_free);
 	if (cfg->quality_reporting_collector!=NULL) ms_free(cfg->quality_reporting_collector);
 	if (cfg->ssctx!=NULL) sip_setup_context_free(cfg->ssctx);
 	if (cfg->realm!=NULL) ms_free(cfg->realm);
@@ -348,9 +354,9 @@ const char *linphone_proxy_config_get_domain(const LinphoneProxyConfig *cfg){
 
 LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const char *route)
 {
-	if (cfg->reg_route!=NULL){
-		ms_free(cfg->reg_route);
-		cfg->reg_route=NULL;
+	if (cfg->reg_routes != NULL) {
+		bctbx_list_free_with_data(cfg->reg_routes, ms_free);
+		cfg->reg_routes = NULL;
 	}
 	if (route!=NULL && route[0] !='\0'){
 		SalAddress *addr;
@@ -362,7 +368,7 @@ LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const c
 		addr=sal_address_new(tmp);
 		if (addr!=NULL){
 			sal_address_destroy(addr);
-			cfg->reg_route=tmp;
+			cfg->reg_routes = bctbx_list_append(cfg->reg_routes, tmp);
 			return 0;
 		}else{
 			ms_free(tmp);
@@ -371,6 +377,37 @@ LinphoneStatus linphone_proxy_config_set_route(LinphoneProxyConfig *cfg, const c
 	} else {
 		return 0;
 	}
+}
+
+LinphoneStatus linphone_proxy_config_set_routes(LinphoneProxyConfig *cfg, const bctbx_list_t *routes) {
+	if (cfg->reg_routes != NULL) {
+		bctbx_list_free_with_data(cfg->reg_routes, ms_free);
+		cfg->reg_routes = NULL;
+	}
+	bctbx_list_t *iterator = (bctbx_list_t *)routes;
+	while (iterator != NULL) {
+		char *route = (char *)bctbx_list_get_data(iterator);
+		if (route != NULL && route[0] !='\0') {
+			SalAddress *addr;
+			char *tmp;
+			/*try to prepend 'sip:' */
+			if (strstr(route,"sip:") == NULL && strstr(route,"sips:") == NULL) {
+				tmp = ms_strdup_printf("sip:%s",route);
+			} else {
+				tmp = ms_strdup(route);
+			}
+			addr = sal_address_new(tmp);
+			if (addr != NULL) {
+				sal_address_destroy(addr);
+				cfg->reg_routes = bctbx_list_append(cfg->reg_routes, tmp);
+			} else {
+				ms_free(tmp);
+				return -1;
+			}
+		}
+		iterator = bctbx_list_next(iterator);
+	}
+	return 0;
 }
 
 bool_t linphone_proxy_config_check(LinphoneCore *lc, LinphoneProxyConfig *cfg){
@@ -790,6 +827,13 @@ LinphoneAddress* linphone_proxy_config_normalize_sip_uri(LinphoneProxyConfig *pr
 	return NULL;
 }
 
+void linphone_proxy_config_set_etag(LinphoneProxyConfig *cfg,const char* sip_etag) {
+	if (cfg->sip_etag) ms_free(cfg->sip_etag);
+	if (sip_etag)
+		cfg->sip_etag = ms_strdup(sip_etag);
+	else
+		cfg->sip_etag = NULL;
+}
 /**
  * Commits modification made to the proxy configuration.
 **/
@@ -831,11 +875,7 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 		ms_message("Publish params have changed on proxy config [%p]",cfg);
 		if (cfg->presence_publish_event) {
 			if (cfg->publish) {
-				const char * sip_etag = linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag");
-				if (sip_etag) {
-					if (cfg->sip_etag) ms_free(cfg->sip_etag);
-					cfg->sip_etag = ms_strdup(sip_etag);
-				}
+				linphone_proxy_config_set_etag(cfg, linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag"));
 			}
 			/*publish is terminated*/
 			linphone_event_terminate(cfg->presence_publish_event);
@@ -934,8 +974,13 @@ void _linphone_proxy_config_unpublish(LinphoneProxyConfig *obj) {
 	}
 }
 
-const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *cfg){
-	return cfg->reg_route;
+const char *linphone_proxy_config_get_route(const LinphoneProxyConfig *cfg) {
+	if (cfg->reg_routes) return (const char *)bctbx_list_get_data(cfg->reg_routes);
+	return NULL;
+}
+
+const bctbx_list_t* linphone_proxy_config_get_routes(const LinphoneProxyConfig *cfg) {
+	return cfg->reg_routes;
 }
 
 const LinphoneAddress *linphone_proxy_config_get_identity_address(const LinphoneProxyConfig *cfg){
@@ -1116,8 +1161,8 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	if (cfg->reg_proxy!=NULL){
 		lp_config_set_string(config,key,"reg_proxy",cfg->reg_proxy);
 	}
-	if (cfg->reg_route!=NULL){
-		lp_config_set_string(config,key,"reg_route",cfg->reg_route);
+	if (cfg->reg_routes != NULL) {
+		lp_config_set_string_list(config, key, "reg_route", cfg->reg_routes);
 	}
 	if (cfg->reg_identity!=NULL){
 		lp_config_set_string(config,key,"reg_identity",cfg->reg_identity);
@@ -1187,7 +1232,10 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,identity,"reg_identity")
 	CONFIGURE_STRING_VALUE(cfg,config,key,server_addr,"reg_proxy")
-	CONFIGURE_STRING_VALUE(cfg,config,key,route,"reg_route")
+	bctbx_list_t *routes = linphone_config_get_string_list(config, key, "reg_route", NULL);
+	linphone_proxy_config_set_routes(cfg, routes);
+	if (routes)
+		bctbx_list_free_with_data(routes, (bctbx_list_free_func)bctbx_free);
 
 	CONFIGURE_STRING_VALUE(cfg,config,key,realm,"realm")
 
@@ -1498,9 +1546,23 @@ void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatP
 }
 
 void linphone_proxy_config_notify_publish_state_changed(LinphoneProxyConfig *cfg, LinphonePublishState state) {
-	if ((cfg->presence_publish_event != NULL) && ((state == LinphonePublishCleared) || (state == LinphonePublishError))) {
-		linphone_event_unref(cfg->presence_publish_event);
-		cfg->presence_publish_event = NULL;
+
+	if (cfg->presence_publish_event != NULL) {
+		switch (state) {
+			case LinphonePublishCleared:
+				linphone_proxy_config_set_etag(cfg,NULL);
+				BCTBX_NO_BREAK;
+			case LinphonePublishError:
+				linphone_event_unref(cfg->presence_publish_event);
+				cfg->presence_publish_event = NULL;
+				break;
+			case LinphonePublishOk:
+				linphone_proxy_config_set_etag(cfg,linphone_event_get_custom_header(cfg->presence_publish_event, "SIP-ETag"));
+				break;
+			default:
+				break;
+
+		}
 	}
 }
 

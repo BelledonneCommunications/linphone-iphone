@@ -454,12 +454,21 @@ LINPHONE_PUBLIC void linphone_chat_room_set_conference_address (LinphoneChatRoom
 
 /**
  * Set the participant device. This function needs to be called from the
- * LinphoneChatRoomCbsParticipantDeviceFetchedCb callback and only there.
+ * LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb callback and only there.
  * @param[in] cr A LinphoneChatRoom object
  * @param[in] partAddr The participant address
  * @param[in] partDevices \bctbx_list{LinphoneAddress} list of the participant devices to be used by the group chat room
  */
 LINPHONE_PUBLIC void linphone_chat_room_set_participant_devices (LinphoneChatRoom *cr, const LinphoneAddress *partAddr, const bctbx_list_t *partDevices);
+
+/**
+ * Add a participant device.
+ * This is to used if a new device registers itself after the chat room creation.
+ * @param[in] cr A #LinphoneChatRoom object
+ * @param[in] participantAddress The address of the participant for which a new device is to be added
+ * @param[in] deviceAddress The address of the new device to be added
+ */
+LINPHONE_PUBLIC void linphone_chat_room_add_participant_device (LinphoneChatRoom *cr, const LinphoneAddress *participantAddress, const LinphoneAddress *deviceAddress);
 
 /**
  * Set the participant device. This function needs to be called from the

@@ -18,6 +18,7 @@
  */
 
 #include "content/content.h"
+#include "content/content-disposition.h"
 #include "content/content-type.h"
 #include "handlers/local-conference-event-handler.h"
 #include "local-conference-p.h"
@@ -70,7 +71,7 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 
 list<IdentityAddress> LocalConference::parseResourceLists (const Content &content) {
 	if ((content.getContentType() == ContentType::ResourceLists)
-		&& (content.getContentDisposition() == "recipient-list")
+		&& (content.getContentDisposition() == ContentDisposition::RecipientList)
 	) {
 		istringstream data(content.getBodyAsString());
 		unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(

@@ -107,6 +107,8 @@ namespace Utils {
 		return str ? str : "";
 	}
 
+	LINPHONE_PUBLIC std::string trim (const std::string &str);
+
 	template<typename T>
 	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {
 		static const T object;

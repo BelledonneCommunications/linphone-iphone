@@ -491,6 +491,11 @@ void CallPrivate::onRealTimeTextCharacterReceived (const shared_ptr<CallSession>
 	getChatRoom()->getPrivate()->realtimeTextReceived(data->character, q->getSharedFromThis());
 }
 
+void CallPrivate::onTmmbrReceived (const shared_ptr<CallSession> &session, int streamIndex, int tmmbr) {
+	L_Q();
+	linphone_call_notify_tmmbr_received(L_GET_C_BACK_PTR(q), streamIndex, tmmbr);
+}
+
 // =============================================================================
 
 Call::Call (CallPrivate &p, shared_ptr<Core> core) : Object(p), CoreAccessor(core) {

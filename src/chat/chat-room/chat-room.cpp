@@ -26,6 +26,7 @@
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "sip-tools/sip-headers.h"
+#include "logger/logger.h"
 
 // =============================================================================
 
@@ -193,8 +194,14 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	);
 
 	Content content;
-	content.setContentType(message->content_type);
-	content.setBodyFromUtf8(message->text ? message->text : "");
+	if (message->url && (ContentType(message->content_type) == ContentType::ExternalBody)) {
+		lInfo() << "Received a message with an external body URL " << message->url;
+		content.setContentType(ContentType::FileTransfer);
+		content.setBody(msg->getPrivate()->createFakeFileTransferFromUrl(message->url));
+	} else {
+		content.setContentType(ContentType(message->content_type));
+		content.setBodyFromUtf8(message->text ? message->text : "");
+	}
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(message->time);
@@ -438,8 +445,11 @@ void ChatRoom::markAsRead () {
 
 	CorePrivate *dCore = getCore()->getPrivate();
 	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId)) {
-		chatMessage->sendDisplayNotification();
-		chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, true);
+		// Do not send display notification for file transfer until it has been downloaded (it won't have a file transfer content anymore)
+		if (!chatMessage->getPrivate()->hasFileTransferContent()) {
+			chatMessage->sendDisplayNotification();
+			chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, true); // True will ensure the setState won't update the database so it will be done below by the markChatMessagesAsRead
+		}
 	}
 
 	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);

@@ -467,9 +467,10 @@ void CallSessionPrivate::updated (bool isUpdate) {
 void CallSessionPrivate::updatedByRemote () {
 	L_Q();
 	setState(CallSession::State::UpdatedByRemote,"Call updated by remote");
-	if (deferUpdate) {
-		if (state == CallSession::State::UpdatedByRemote)
-			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call CallSession::acceptUpdate() later";
+	if (deferUpdate || deferUpdateInternal) {
+		if (state == CallSession::State::UpdatedByRemote && !deferUpdateInternal){
+			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_call_accept_update() later";
+		}	
 	} else {
 		if (state == CallSession::State::UpdatedByRemote)
 			q->acceptUpdate(nullptr);
@@ -820,8 +821,9 @@ void CallSessionPrivate::repairIfBroken () {
 		case CallSession::State::Pausing:
 			if (op->dialog_request_pending()) {
 				// Need to cancel first re-INVITE as described in section 5.5 of RFC 6141
-				op->cancel_invite();
-				reinviteOnCancelResponseRequested = true;
+				if (op->cancel_invite() == 0){
+					reinviteOnCancelResponseRequested = true;
+				}
 			}
 			break;
 		case CallSession::State::StreamsRunning:
@@ -839,8 +841,9 @@ void CallSessionPrivate::repairIfBroken () {
 			break;
 		case CallSession::State::OutgoingInit:
 		case CallSession::State::OutgoingProgress:
-			op->cancel_invite();
-			reinviteOnCancelResponseRequested = true;
+			if (op->cancel_invite() == 0){
+				reinviteOnCancelResponseRequested = true;
+			}
 			break;
 		case CallSession::State::OutgoingEarlyMedia:
 		case CallSession::State::OutgoingRinging:

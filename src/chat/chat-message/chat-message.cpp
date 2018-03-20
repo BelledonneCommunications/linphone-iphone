@@ -147,7 +147,13 @@ void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 	if (cbs && linphone_chat_message_cbs_get_msg_state_changed(cbs))
 		linphone_chat_message_cbs_get_msg_state_changed(cbs)(msg, (LinphoneChatMessageState)state);
 
-	updateInDb();
+	if (state == ChatMessage::State::FileTransferDone && !hasFileTransferContent()) {
+		// We wait until the file has been downloaded to send the displayed IMDN
+		q->sendDisplayNotification();
+		setState(ChatMessage::State::Displayed);
+	} else {
+		updateInDb();
+	}
 }
 
 belle_http_request_t *ChatMessagePrivate::getHttpRequest () const {
@@ -236,31 +242,38 @@ void ChatMessagePrivate::setFileTransferFilepath (const string &path) {
 
 const string &ChatMessagePrivate::getAppdata () const {
 	for (const Content *c : getContents()) {
-		if (c->isFile()) {
-			FileContent *fileContent = (FileContent *)c;
-			return fileContent->getAppData("legacy");
+		if (!c->getAppData("legacy").empty()) {
+			return c->getAppData("legacy");
 		}
 	}
 	return Utils::getEmptyConstRefObject<string>();
 }
 
 void ChatMessagePrivate::setAppdata (const string &data) {
-	for (const Content *c : getContents()) {
-		if (c->isFile()) {
-			FileContent *fileContent = (FileContent *)c;
-			fileContent->setAppData("legacy", data);
-			break;
-		}
+	bool contentFound = false;
+	for (Content *c : getContents()) {
+		c->setAppData("legacy", data);
+		contentFound = true;
+		break;
 	}
-	updateInDb();
+	if (contentFound) {
+		updateInDb();
+	}
 }
 
 const string &ChatMessagePrivate::getExternalBodyUrl () const {
+	if (!externalBodyUrl.empty()) {
+		return externalBodyUrl;
+	}
 	if (hasFileTransferContent()) {
 		FileTransferContent *content = (FileTransferContent*) getFileTransferContent();
 		return content->getFileUrl();
 	}
 	return Utils::getEmptyConstRefObject<string>();
+}
+
+void ChatMessagePrivate::setExternalBodyUrl (const string &url) {
+	externalBodyUrl = url;
 }
 
 const ContentType &ChatMessagePrivate::getContentType () {
@@ -390,6 +403,10 @@ void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
 	fileTransferChatMessageModifier.decode(q->getSharedFromThis(), errorCode);
 }
 
+std::string ChatMessagePrivate::createFakeFileTransferFromUrl(const std::string &url) {
+	return fileTransferChatMessageModifier.createFakeFileTransferFromUrl(url);
+}
+
 void ChatMessagePrivate::setChatRoom (const shared_ptr<AbstractChatRoom> &cr) {
 	chatRoom = cr;
 	chatRoomId = cr->getChatRoomId();
@@ -410,7 +427,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	shared_ptr<ChatMessage> msg = q->getChatRoom()->createChatMessage();
 
 	Content *content = new Content();
-	content->setContentType("message/imdn+xml");
+	content->setContentType(ContentType::Imdn);
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(*content);
 
@@ -711,14 +728,18 @@ void ChatMessagePrivate::send () {
 	if (internalContent.isEmpty()) {
 		if (contents.size() > 0) {
 			internalContent = *(contents.front());
-		} else {
+		} else if (externalBodyUrl.empty()) { // When using external body url, there is no content
 			lError() << "Trying to send a message without any content !";
 			return;
 		}
 	}
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
-	if (internalContent.getContentType().isValid()) {
+	if (!externalBodyUrl.empty()) {
+		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
+		msgOp->send_message(content_type, NULL);
+		ms_free(content_type);
+	} else if (internalContent.getContentType().isValid()) {
 		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
 	} else {
 		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());

@@ -32,6 +32,7 @@ L_DECL_C_STRUCT(LinphoneContent);
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ContentDisposition;
 class ContentType;
 class ContentPrivate;
 
@@ -49,10 +50,9 @@ public:
 
 	const ContentType &getContentType () const;
 	void setContentType (const ContentType &contentType);
-	void setContentType (const std::string &contentType);
 
-	const std::string &getContentDisposition () const;
-	void setContentDisposition (const std::string &contentDisposition);
+	const ContentDisposition &getContentDisposition () const;
+	void setContentDisposition (const ContentDisposition &contentDisposition);
 
 	const std::string &getContentEncoding () const;
 	void setContentEncoding (const std::string &contentEncoding);

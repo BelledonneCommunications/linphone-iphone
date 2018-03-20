@@ -134,6 +134,7 @@ protected:
 	bool broken = false;
 	bool deferIncomingNotification = false;
 	bool deferUpdate = false;
+	bool deferUpdateInternal = false;
 	bool needLocalIpRefresh = false;
 	bool nonOpError = false; /* Set when the LinphoneErrorInfo was set at higher level than sal */
 	bool notifyRinging = true;

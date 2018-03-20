@@ -382,6 +382,8 @@ void MediaSessionPrivate::updated (bool isUpdate) {
 	CallSessionPrivate::updated(isUpdate);
 }
 
+
+
 void MediaSessionPrivate::updating (bool isUpdate) {
 	L_Q();
 	SalMediaDescription *rmd = op->get_remote_media_description();
@@ -702,6 +704,10 @@ shared_ptr<Participant> MediaSessionPrivate::getMe () const {
 
 void MediaSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
+	SalMediaDescription *rmd;
+	
+	lInfo()<<"MediaSessionPrivate::setState";
+	
 	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
 	shared_ptr<CallSession> sessionRef = q->getSharedFromThis();
 	if ((newState != state) && (newState != CallSession::State::StreamsRunning))
@@ -709,6 +715,21 @@ void MediaSessionPrivate::setState (CallSession::State newState, const string &m
 	CallSessionPrivate::setState(newState, message);
 	if (listener)
 		listener->onCallSessionStateChangedForReporting(q->getSharedFromThis());
+	switch(newState){
+		case CallSession::State::UpdatedByRemote:
+			/*Handle specifically the case of an incoming ICE-concluded reINVITE*/
+			lInfo()<<"Checking for ICE reINVITE";
+			rmd = op->get_remote_media_description();
+			if (iceAgent && rmd != nullptr && iceAgent->checkIceReinviteNeedsDeferedResponse(rmd)){
+				deferUpdate = true;
+				deferUpdateInternal = true;
+				incomingIceReinvitePending = true;
+				lInfo()<<"CallSession [" << q << "]: ICE reinvite received, but one or more check-lists are not completed. Response will be sent later, when ICE has completed";
+			}
+		break;
+		default:
+		break;
+	}
 }
 
 // -----------------------------------------------------------------------------
@@ -1177,7 +1198,7 @@ string MediaSessionPrivate::getPublicIpForStream (int streamIndex) {
 void MediaSessionPrivate::runStunTestsIfNeeded () {
 	L_Q();
 	if (linphone_nat_policy_stun_enabled(natPolicy) && !(linphone_nat_policy_ice_enabled(natPolicy) || linphone_nat_policy_turn_enabled(natPolicy))) {
-		stunClient = new StunClient(q->getCore());
+		stunClient = makeUnique<StunClient>(q->getCore());
 		int ret = stunClient->run(mediaPorts[mainAudioStreamIndex].rtpPort, mediaPorts[mainVideoStreamIndex].rtpPort, mediaPorts[mainTextStreamIndex].rtpPort);
 		if (ret >= 0)
 			pingTime = ret;
@@ -2191,11 +2212,14 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 	OrtpEventData *evd = ortp_event_get_data(ev);
 	if (evt == ORTP_EVENT_ICE_SESSION_PROCESSING_FINISHED) {
 		if (iceAgent->hasCompletedCheckList()) {
-			/* At least one ICE session has succeeded, so perform a call update */
+			/* The ICE session has succeeded, so perform a call update */
 			if (iceAgent->isControlling() && q->getCurrentParams()->getPrivate()->getUpdateCallWhenIceCompleted()) {
 				MediaSessionParams newParams(*getParams());
 				newParams.getPrivate()->setInternalCallUpdate(true);
 				q->update(&newParams);
+			}else if (!iceAgent->isControlling() && incomingIceReinvitePending){
+				q->acceptUpdate(nullptr);
+				incomingIceReinvitePending = false;
 			}
 			startDtlsOnAllStreams();
 		}
@@ -2238,6 +2262,7 @@ void MediaSessionPrivate::handleIceEvents (OrtpEvent *ev) {
 }
 
 void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
+	L_Q();
 	MediaStream *ms = (streamIndex == mainAudioStreamIndex) ? &audioStream->ms :
 		(streamIndex == mainVideoStreamIndex ? &videoStream->ms : &textStream->ms);
 	if (ms) {
@@ -2272,14 +2297,28 @@ void MediaSessionPrivate::handleStreamEvents (int streamIndex) {
 			stats = videoStats;
 		else
 			stats = textStats;
+
+		OrtpEventType evt = ortp_event_get_type(ev);
+		OrtpEventData *evd = ortp_event_get_data(ev);
+
+		/*This MUST be done before any call to "linphone_call_stats_fill" since it has ownership over evd->packet*/
+		if (evt == ORTP_EVENT_RTCP_PACKET_RECEIVED) {
+			do {
+				if (evd->packet && rtcp_is_RTPFB(evd->packet)) {
+					if (rtcp_RTPFB_get_type(evd->packet) == RTCP_RTPFB_TMMBR) {
+						listener->onTmmbrReceived(q->getSharedFromThis(), streamIndex, (int)rtcp_RTPFB_tmmbr_get_max_bitrate(evd->packet));
+					}
+				}
+			} while (rtcp_next_packet(evd->packet));
+			rtcp_rewind(evd->packet);
+		}
+
 		/* And yes the MediaStream must be taken at each iteration, because it may have changed due to the handling of events
 		 * in this loop*/
 		ms = getMediaStream(streamIndex);
 		if (ms)
 			linphone_call_stats_fill(stats, ms, ev);
 		notifyStatsUpdated(streamIndex);
-		OrtpEventType evt = ortp_event_get_type(ev);
-		OrtpEventData *evd = ortp_event_get_data(ev);
 		if (evt == ORTP_EVENT_ZRTP_ENCRYPTION_CHANGED) {
 			if (streamIndex == mainAudioStreamIndex)
 				audioStreamEncryptionChanged(!!evd->info.zrtp_stream_encrypted);
@@ -2621,7 +2660,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 			if (playcard) {
 				ms_snd_card_set_stream_type(playcard, MS_SND_CARD_STREAM_VOICE);
 			}
-
+			media_stream_set_max_network_bitrate(&audioStream->ms, linphone_core_get_upload_bandwidth(q->getCore()->getCCore()) * 1000);
 			bool useEc = captcard && linphone_core_echo_cancellation_enabled(q->getCore()->getCCore());
 			audio_stream_enable_echo_canceller(audioStream, useEc);
 			if (playcard && (stream->max_rate > 0))
@@ -2860,6 +2899,7 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 			getCurrentParams()->getPrivate()->setUsedVideoCodec(rtp_profile_get_payload(videoProfile, usedPt));
 			getCurrentParams()->enableVideo(true);
 			rtp_session_enable_rtcp_mux(videoStream->ms.sessions.rtp_session, vstream->rtcp_mux);
+			media_stream_set_max_network_bitrate(&videoStream->ms, linphone_core_get_upload_bandwidth(q->getCore()->getCCore()) * 1000);
 			if (q->getCore()->getCCore()->video_conf.preview_vsize.width != 0)
 				video_stream_set_preview_size(videoStream, q->getCore()->getCCore()->video_conf.preview_vsize);
 			video_stream_set_fps(videoStream, linphone_core_get_preferred_framerate(q->getCore()->getCCore()));
@@ -3924,7 +3964,7 @@ MediaSession::MediaSession (const shared_ptr<Core> &core, shared_ptr<Participant
 	d->setPortConfig(d->mainTextStreamIndex, make_pair(minPort, maxPort));
 
 	memset(d->sessions, 0, sizeof(d->sessions));
-	d->iceAgent = new IceAgent(*this);
+	d->iceAgent = makeUnique<IceAgent>(*this);
 
 	lInfo() << "New MediaSession [" << this << "] initialized (LinphoneCore version: " << linphone_core_get_version() << ")";
 }
@@ -3942,9 +3982,6 @@ MediaSession::~MediaSession () {
 		linphone_call_stats_unref(d->textStats);
 	if (d->natPolicy)
 		linphone_nat_policy_unref(d->natPolicy);
-	if (d->stunClient)
-		delete d->stunClient;
-	delete d->iceAgent;
 	if (d->localDesc)
 		sal_media_description_unref(d->localDesc);
 	if (d->biggestDesc)

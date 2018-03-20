@@ -33,6 +33,7 @@ struct _LinphoneCallCbs {
 	LinphoneCallCbsStatsUpdatedCb statsUpdatedCb;
 	LinphoneCallCbsTransferStateChangedCb transferStateChangedCb;
 	LinphoneCallCbsAckProcessingCb ackProcessing;
+	LinphoneCallCbsTmmbrReceivedCb tmmbrReceivedCb;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallCbs);
@@ -123,4 +124,12 @@ LinphoneCallCbsAckProcessingCb linphone_call_cbs_get_ack_processing (LinphoneCal
 
 void linphone_call_cbs_set_ack_processing (LinphoneCallCbs *cbs, LinphoneCallCbsAckProcessingCb cb){
 	cbs->ackProcessing = cb;
+}
+
+LinphoneCallCbsTmmbrReceivedCb linphone_call_cbs_get_tmmbr_received (LinphoneCallCbs *cbs) {
+	return cbs->tmmbrReceivedCb;
+}
+
+void linphone_call_cbs_set_tmmbr_received (LinphoneCallCbs *cbs, LinphoneCallCbsTmmbrReceivedCb cb) {
+	cbs->tmmbrReceivedCb = cb;
 }

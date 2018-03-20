@@ -47,6 +47,7 @@ void linphone_call_notify_transfer_state_changed(LinphoneCall *call, LinphoneCal
 void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallStats *stats);
 void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
 void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received);
+void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
@@ -291,8 +292,10 @@ void _linphone_chat_room_notify_undecryptable_message_received(LinphoneChatRoom 
 void _linphone_chat_room_notify_chat_message_received(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 void _linphone_chat_room_notify_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 void _linphone_chat_room_notify_conference_address_generation(LinphoneChatRoom *cr);
-void _linphone_chat_room_notify_participant_device_fetched(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
+void _linphone_chat_room_notify_participant_device_fetch_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
 void _linphone_chat_room_notify_participants_capabilities_checked(LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsAddr);
+void _linphone_chat_room_notify_participant_registration_subscription_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
+void _linphone_chat_room_notify_participant_registration_unsubscription_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
 void _linphone_chat_room_notify_chat_message_should_be_stored(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 void _linphone_chat_room_clear_callbacks (LinphoneChatRoom *cr);
 

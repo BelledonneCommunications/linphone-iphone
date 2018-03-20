@@ -382,6 +382,16 @@ void linphone_chat_room_set_participant_devices (LinphoneChatRoom *cr, const Lin
 	bctbx_free(addrStr);
 }
 
+void linphone_chat_room_add_participant_device (LinphoneChatRoom *cr, const LinphoneAddress *participantAddress, const LinphoneAddress *deviceAddress) {
+	char *participantAddressStr = linphone_address_as_string(participantAddress);
+	char *deviceAddressStr = linphone_address_as_string(deviceAddress);
+	LinphonePrivate::ServerGroupChatRoomPrivate *sgcr = dynamic_cast<LinphonePrivate::ServerGroupChatRoomPrivate *>(L_GET_PRIVATE_FROM_C_OBJECT(cr));
+	if (sgcr)
+		sgcr->addParticipantDevice(LinphonePrivate::IdentityAddress(participantAddressStr), LinphonePrivate::IdentityAddress(deviceAddressStr));
+	bctbx_free(participantAddressStr);
+	bctbx_free(deviceAddressStr);
+}
+
 void linphone_chat_room_add_compatible_participants (LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsCompatible) {
 	list<LinphonePrivate::Address> lPartsComp = L_GET_RESOLVED_CPP_LIST_FROM_C_LIST(participantsCompatible, Address);
 	LinphonePrivate::ServerGroupChatRoomPrivate *sgcr = dynamic_cast<LinphonePrivate::ServerGroupChatRoomPrivate *>(L_GET_PRIVATE_FROM_C_OBJECT(cr));
@@ -486,12 +496,20 @@ void _linphone_chat_room_notify_conference_address_generation(LinphoneChatRoom *
 	NOTIFY_IF_EXIST(ConferenceAddressGeneration, conference_address_generation, cr)
 }
 
-void _linphone_chat_room_notify_participant_device_fetched(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr) {
-	NOTIFY_IF_EXIST(ParticipantDeviceFetched, participant_device_fetched, cr, participantAddr)
+void _linphone_chat_room_notify_participant_device_fetch_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr) {
+	NOTIFY_IF_EXIST(ParticipantDeviceFetchRequested, participant_device_fetch_requested, cr, participantAddr)
 }
 
 void _linphone_chat_room_notify_participants_capabilities_checked(LinphoneChatRoom *cr, const LinphoneAddress *deviceAddr, const bctbx_list_t *participantsAddr) {
 	NOTIFY_IF_EXIST(ParticipantsCapabilitiesChecked, participants_capabilities_checked, cr, deviceAddr, participantsAddr)
+}
+
+void _linphone_chat_room_notify_participant_registration_subscription_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr) {
+	NOTIFY_IF_EXIST(ParticipantRegistrationSubscriptionRequested, participant_registration_subscription_requested, cr, participantAddr)
+}
+
+void _linphone_chat_room_notify_participant_registration_unsubscription_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr) {
+	NOTIFY_IF_EXIST(ParticipantRegistrationUnsubscriptionRequested, participant_registration_unsubscription_requested, cr, participantAddr)
 }
 
 void _linphone_chat_room_notify_chat_message_should_be_stored(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {
