@@ -348,6 +348,26 @@ void sal_body_handler_set_subtype(SalBodyHandler *body_handler, const char *subt
 	belle_sip_header_content_type_set_subtype(content_type, subtype);
 }
 
+char * sal_body_handler_get_content_type_parameters(const SalBodyHandler *body_handler) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		char buff[2048];
+		size_t buff_size = sizeof(buff);
+		size_t offset = 0;
+		belle_sip_parameters_marshal(BELLE_SIP_PARAMETERS(content_type), buff, buff_size, &offset);
+		buff[offset]='\0';
+		return strdup(buff);
+	}
+	return NULL;
+}
+
+void sal_body_handler_set_content_type_parameters(SalBodyHandler *body_handler, const char *params) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		belle_sip_parameters_set(BELLE_SIP_PARAMETERS(content_type), params);
+	}
+}
+
 const char * sal_body_handler_get_encoding(const SalBodyHandler *body_handler) {
 	belle_sip_header_t *content_encoding = sal_body_handler_find_header(body_handler, "Content-Encoding");
 	if (content_encoding != NULL) {
