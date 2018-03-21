@@ -56,7 +56,7 @@ private:
 	std::list<RemoteConferenceEventHandler *> handlers;
 	LinphoneEvent *lev = nullptr;
 
-	std::map<IdentityAddress, IdentityAddress> parseRlmi (const std::string &xmlBody) const;
+	std::map<std::string, IdentityAddress> parseRlmi (const std::string &xmlBody) const;
 
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;

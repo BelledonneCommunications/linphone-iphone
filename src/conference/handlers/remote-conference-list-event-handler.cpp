@@ -148,7 +148,7 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 
 	list<Content> contents = ContentManager::multipartToContentList(*notifyContent);
 	bctbx_free(from);
-	map<IdentityAddress, IdentityAddress> addresses;
+	map<string, IdentityAddress> addresses;
 	for (const auto &content : contents) {
 		const string &body = content.getBodyAsString();
 		const ContentType &contentType = content.getContentType();
@@ -157,11 +157,10 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 			continue;
 		}
 
-		const string &value = content.getHeaderValue("Content-Id");
-		if (value.empty())
+		const string &cid = content.getHeaderValue("Content-Id");
+		if (cid.empty())
 			continue;
 
-		IdentityAddress cid(value);
 		IdentityAddress peer = addresses[cid];
 		ChatRoomId id(peer, local);
 		RemoteConferenceEventHandler *handler = findHandler(id);
@@ -200,13 +199,13 @@ void RemoteConferenceListEventHandler::removeHandler (RemoteConferenceEventHandl
 		handlers.remove(handler);
 }
 
-map<IdentityAddress, IdentityAddress> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {
+map<string, IdentityAddress> RemoteConferenceListEventHandler::parseRlmi (const string &xmlBody) const {
 	istringstream data(xmlBody);
 	unique_ptr<Xsd::Rlmi::List> rlmi(Xsd::Rlmi::parseList(
 		data,
 		Xsd::XmlSchema::Flags::dont_validate
 	));
-	map<IdentityAddress, IdentityAddress> addresses;
+	map<string, IdentityAddress> addresses;
 	for (const auto &resource : rlmi->getResource()) {
 		if (resource.getInstance().empty())
 			continue;
@@ -216,7 +215,7 @@ map<IdentityAddress, IdentityAddress> RemoteConferenceListEventHandler::parseRlm
 			if (!instance.getCid().present())
 				continue;
 
-			IdentityAddress cid(instance.getCid().get());
+			string cid = instance.getCid().get();
 			addresses[cid] = peer;
 		}
 	}

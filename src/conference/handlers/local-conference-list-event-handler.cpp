@@ -130,18 +130,14 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 
 			content.setBody(notifyBody);
 			char token[17];
-			ostringstream os;
-			os.str("");
 			belle_sip_random_token(token, sizeof(token));
-			os << token << "@sip.linphone.org";
-			Address cid(os.str());
-			content.addHeader("Content-Id", cid.asStringUriOnly());
+			content.addHeader("Content-Id", token);
 			contents.push_back(content);
 
 			// Add entry into the Rlmi content of the notify body
 			Xsd::Rlmi::Resource resource(addr.asStringUriOnly());
 			Xsd::Rlmi::Resource::InstanceSequence instances;
-			Xsd::Rlmi::Instance instance(cid.asStringUriOnly(), Xsd::Rlmi::State::Value::active);
+			Xsd::Rlmi::Instance instance(token, Xsd::Rlmi::State::Value::active);
 			instances.push_back(instance);
 			resource.setInstance(instances);
 			resources.push_back(resource);
