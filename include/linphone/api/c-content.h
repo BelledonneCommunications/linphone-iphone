@@ -89,6 +89,14 @@ LINPHONE_PUBLIC const char * linphone_content_get_subtype(const LinphoneContent 
 LINPHONE_PUBLIC void linphone_content_set_subtype(LinphoneContent *content, const char *subtype);
 
 /**
+ * Adds a parameter to the ContentType header.
+ * @param[in] content LinphoneContent object.
+ * @param[in] name the name of the parameter to add.
+ * @param[in] value the value of the parameter to add.
+ */
+LINPHONE_PUBLIC void linphone_content_add_content_type_parameter(LinphoneContent *content, const char *name, const char *value);
+
+/**
  * Get the content data buffer, usually a string.
  * @param[in] content LinphoneContent object.
  * @return The content data buffer.

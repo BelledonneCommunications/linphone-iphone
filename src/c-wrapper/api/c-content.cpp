@@ -24,6 +24,7 @@
 
 #include "content/content.h"
 #include "content/content-type.h"
+#include "content/header-param.h"
 #include "content/content-manager.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
@@ -87,6 +88,12 @@ const char * linphone_content_get_subtype(const LinphoneContent *content) {
 void linphone_content_set_subtype(LinphoneContent *content, const char *subtype) {
     LinphonePrivate::ContentType ct = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
     ct.setSubType(L_C_TO_STRING(subtype));
+    L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(ct);
+}
+
+void linphone_content_add_content_type_parameter(LinphoneContent *content, const char *name, const char *value) {
+    LinphonePrivate::ContentType ct = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
+    ct.addParameter(L_C_TO_STRING(name), L_C_TO_STRING(value));
     L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(ct);
 }
 
@@ -235,13 +242,15 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
     L_SET_CPP_PTR_FROM_C_OBJECT(content, c);
 
     if (body_handler != NULL) {
-        LinphonePrivate::ContentType ct = c->getContentType();
-        ct.setType(sal_body_handler_get_type(body_handler));
-        ct.setSubType(sal_body_handler_get_subtype(body_handler));
-        ct.setParameter(sal_body_handler_get_content_type_parameters(body_handler));
-        c->setContentType(ct);
+        linphone_content_set_type(content, sal_body_handler_get_type(body_handler));
+        linphone_content_set_subtype(content, sal_body_handler_get_subtype(body_handler));
+        for (const belle_sip_list_t *params = sal_body_handler_get_content_type_parameters_names(body_handler); params; params = params->next) {
+            const char *paramName = (const char *)(params->data);
+            const char *paramValue = sal_body_handler_get_content_type_parameter(body_handler, paramName);
+            linphone_content_add_content_type_parameter(content, paramName, paramValue);
+        }
 
-        if (!sal_body_handler_is_multipart(body_handler)) {
+        if (!linphone_content_is_multipart(content)) {
             linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
         } else {
             belle_sip_multipart_body_handler_t *mpbh = BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler);
@@ -302,7 +311,7 @@ SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
     if (contentType.isMultipart()) {
         size_t size = linphone_content_get_size(content);
         char *buffer = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
-        const char *boundary = L_STRING_TO_C(contentType.getParameter());
+        const char *boundary = L_STRING_TO_C(contentType.getParameter("boundary").getValue());
         belle_sip_multipart_body_handler_t *bh = belle_sip_multipart_body_handler_new_from_buffer(buffer, size, boundary);
         body_handler = (SalBodyHandler *)BELLE_SIP_BODY_HANDLER(bh);
     } else {
@@ -323,7 +332,9 @@ SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
     sal_body_handler_set_type(body_handler, contentType.getType().c_str());
     sal_body_handler_set_subtype(body_handler, contentType.getSubType().c_str());
     sal_body_handler_set_size(body_handler, linphone_content_get_size(content));
-    sal_body_handler_set_content_type_parameters(body_handler, contentType.getParameter().c_str());
+    for (const auto &param : contentType.getParameters()) {
+        sal_body_handler_set_content_type_parameter(body_handler, param.getName().c_str(), param.getValue().c_str());
+    }
     if (content->encoding) sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
 
 	return body_handler;

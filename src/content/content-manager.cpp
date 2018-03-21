@@ -59,7 +59,7 @@ list<Content> ContentManager::multipartToContentList (const Content &content) {
 		content.setBody(static_cast<const char *>(
 			belle_sip_memory_body_handler_get_buffer(BELLE_SIP_MEMORY_BODY_HANDLER(part))
 		));
-		
+
 		contents.push_back(move(content));
 	}
 
@@ -108,7 +108,7 @@ Content ContentManager::contentListToMultipart (const list<Content> &contents, c
 	belle_sip_object_unref(mpbh);
 
 	ContentType contentType = ContentType::Multipart;
-	contentType.setParameter("boundary=" + boundary);
+	contentType.addParameter("boundary", string(boundary));
 	content.setContentType(contentType);
 
 	return content;

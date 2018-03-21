@@ -24,6 +24,7 @@
 #include "chat/chat-message/chat-message.h"
 #include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
+#include "content/header-param.h"
 #include "content/file-transfer-content.h"
 #include "logger/logger.h"
 #include "core/core.h"
@@ -60,7 +61,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 
 	Content newContent;
 	ContentType newContentType(ContentType::Multipart);
-	newContentType.setParameter("boundary=" + boundary);
+	newContentType.addParameter("boundary", boundary);
 	newContent.setContentType(newContentType);
 	newContent.setBody(multipartMessage.str());
 	message->setInternalContent(newContent);
@@ -70,7 +71,7 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 
 ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	if (message->getInternalContent().getContentType().getType() == "multipart") {
-		string boundary = message->getInternalContent().getContentType().getParameter();
+		string boundary = message->getInternalContent().getContentType().getParameter("boundary").getValue();
 		if (boundary.empty()) {
 			lError() << "Boundary parameter of content-type not found: " << message->getInternalContent().getContentType().asString();
 			return ChatMessageModifier::Result::Error;

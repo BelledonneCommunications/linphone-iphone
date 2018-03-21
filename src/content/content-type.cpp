@@ -18,8 +18,10 @@
  */
 
 #include "linphone/utils/utils.h"
+#include "linphone/utils/algorithm.h"
 
 #include "content-type.h"
+#include "header-param.h"
 #include "object/clonable-object-p.h"
 
 // =============================================================================
@@ -34,7 +36,7 @@ class ContentTypePrivate : public ClonableObjectPrivate {
 public:
 	string type;
 	string subType;
-	string parameter;
+	std::list<HeaderParam> parameters;
 };
 
 // -----------------------------------------------------------------------------
@@ -69,8 +71,15 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 			d->type.clear();
 	}
 
-	if (posParam != string::npos)
-		setParameter(Utils::trim(contentType.substr(posParam + 1)));
+	if (posParam != string::npos) {
+		string params = contentType.substr(posParam, end);
+		string token;
+		while ((pos = params.find(";")) != std::string::npos) {
+			token = params.substr(0, pos);
+			addParameter(HeaderParam(token));
+			params.erase(0, pos + 1);
+		}
+	}
 }
 
 ContentType::ContentType (const string &type, const string &subType) : ClonableObject(*new ContentTypePrivate) {
@@ -83,22 +92,34 @@ ContentType::ContentType (const string &type, const string &subType) : ClonableO
 ContentType::ContentType (
 	const string &type,
 	const string &subType,
-	const string &parameter
+	const HeaderParam &parameter
 ) : ClonableObject(*new ContentTypePrivate) {
 	L_D();
 
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
-	setParameter(parameter);
+	addParameter(parameter);
 }
 
-ContentType::ContentType (const ContentType &other) : ContentType(other.getType(), other.getSubType(), other.getParameter()) {}
+ContentType::ContentType (
+	const string &type,
+	const string &subType,
+	const std::list<HeaderParam> &parameters
+) : ClonableObject(*new ContentTypePrivate) {
+	L_D();
+
+	if (setType(type) && !setSubType(subType))
+		d->type.clear();
+	addParameters(parameters);
+}
+
+ContentType::ContentType (const ContentType &other) : ContentType(other.getType(), other.getSubType(), other.getParameters()) {}
 
 ContentType &ContentType::operator= (const ContentType &other) {
 	if (this != &other) {
 		setType(other.getType());
 		setSubType(other.getSubType());
-		setParameter(other.getParameter());
+		addParameters(other.getParameters());
 	}
 
 	return *this;
@@ -107,7 +128,7 @@ ContentType &ContentType::operator= (const ContentType &other) {
 bool ContentType::operator== (const ContentType &other) const {
 	return getType() == other.getType() &&
 		getSubType() == other.getSubType() &&
-		getParameter() == other.getParameter();
+		getParameters() == other.getParameters();
 }
 
 bool ContentType::operator!= (const ContentType &other) const {
@@ -142,14 +163,54 @@ bool ContentType::setSubType (const string &subType) {
 	return false;
 }
 
-const string &ContentType::getParameter () const {
+const std::list<HeaderParam> &ContentType::getParameters () const {
 	L_D();
-	return d->parameter;
+
+	return d->parameters;
 }
 
-void ContentType::setParameter (const string &parameter) {
+void ContentType::addParameter (const std::string &paramName, const std::string &paramValue) {
+	addParameter(HeaderParam(paramName, paramValue));
+}
+
+void ContentType::addParameter (const HeaderParam &param) {
 	L_D();
-	d->parameter = parameter;
+	removeParameter(param);
+	d->parameters.push_back(param);
+}
+
+void ContentType::addParameters(const std::list<HeaderParam> &params) {
+	for (auto it = std::begin(params); it!=std::end(params); ++it) {
+		HeaderParam param = *it;
+    	addParameter(param.getName(), param.getValue());
+	}
+}
+
+void ContentType::removeParameter (const std::string &paramName) {
+	L_D();
+	auto it = findParameter(paramName);
+	if (it != d->parameters.cend())
+		d->parameters.remove(*it);
+}
+
+void ContentType::removeParameter (const HeaderParam &param) {
+	removeParameter(param.getName());
+}
+
+std::list<HeaderParam>::const_iterator ContentType::findParameter (const std::string &paramName) const {
+	L_D();
+	return findIf(d->parameters, [&paramName](const HeaderParam &param) {
+		return param.getName() == paramName;
+	});
+}
+
+const HeaderParam &ContentType::getParameter (const std::string &paramName) const {
+	L_D();
+	std::list<HeaderParam>::const_iterator it = findParameter(paramName);
+	if (it != d->parameters.cend()) {
+		return *it;
+	}
+	return Utils::getEmptyConstRefObject<HeaderParam>();
 }
 
 bool ContentType::isEmpty () const {
@@ -166,8 +227,10 @@ string ContentType::asString () const {
 	L_D();
 	if (isValid()) {
 		string asString = d->type + "/" + d->subType;
-		if (!d->parameter.empty())
-			asString += "; " + d->parameter;
+		for (auto it = std::begin(getParameters()); it!=std::end(getParameters()); ++it) {
+			HeaderParam param = *it;
+			asString += param.asString();
+		}
 		return asString;
 	}
 	return "";

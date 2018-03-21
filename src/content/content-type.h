@@ -20,6 +20,8 @@
 #ifndef _L_CONTENT_TYPE_H_
 #define _L_CONTENT_TYPE_H_
 
+#include <list>
+
 #include "object/clonable-object.h"
 
 // =============================================================================
@@ -27,12 +29,14 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ContentTypePrivate;
+class HeaderParam;
 
 class LINPHONE_PUBLIC ContentType : public ClonableObject {
 public:
 	explicit ContentType (const std::string &contentType = "");
 	ContentType (const std::string &type, const std::string &subType);
-	ContentType (const std::string &type, const std::string &subType, const std::string &parameter);
+	ContentType (const std::string &type, const std::string &subType, const HeaderParam &parameter);
+	ContentType (const std::string &type, const std::string &subType, const std::list<HeaderParam> &parameters);
 	ContentType (const ContentType &other);
 
 	ContentType &operator= (const ContentType &other);
@@ -55,8 +59,14 @@ public:
 	const std::string &getSubType () const;
 	bool setSubType (const std::string &subType);
 
-	const std::string &getParameter () const;
-	void setParameter (const std::string &parameter);
+	const std::list<HeaderParam> &getParameters () const;
+	void addParameter (const std::string &paramName, const std::string &paramValue);
+	void addParameter (const HeaderParam &param);
+	void addParameters(const std::list<HeaderParam> &params);
+	void removeParameter (const std::string &paramName);
+	void removeParameter (const HeaderParam &param);
+	std::list<HeaderParam>::const_iterator findParameter (const std::string &paramName) const;
+	const HeaderParam &getParameter (const std::string &paramName) const;
 
 	std::string asString () const;
 
