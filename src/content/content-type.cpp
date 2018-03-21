@@ -72,13 +72,18 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 	}
 
 	if (posParam != string::npos) {
-		string params = contentType.substr(posParam, end);
+		string params = contentType.substr(posParam + 1);
 		string token;
-		while ((pos = params.find(";")) != std::string::npos) {
-			token = params.substr(0, pos);
+		do {
+			posParam = params.find(";");
+			if (posParam != string::npos) {
+				token = params;
+			} else {
+				token = params.substr(0, posParam);
+			}
 			addParameter(HeaderParam(token));
 			params.erase(0, pos + 1);
-		}
+		} while (posParam != std::string::npos);
 	}
 }
 

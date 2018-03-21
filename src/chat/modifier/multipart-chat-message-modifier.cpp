@@ -77,18 +77,13 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 			return ChatMessageModifier::Result::Error;
 		}
 
-		size_t pos = boundary.find("=");
-		if (pos == string::npos) {
-			lError() << "Parameter seems invalid: " << boundary;
-			return ChatMessageModifier::Result::Error;
-		}
-		boundary = "--" + boundary.substr(pos + 1);
+		boundary = "--" + boundary;
 		lInfo() << "Multipart boundary is " << boundary;
 
 		const vector<char> body = message->getInternalContent().getBody();
 		string contentsString(body.begin(), body.end());
 
-		pos = contentsString.find(boundary);
+		size_t pos = contentsString.find(boundary);
 		if (pos == string::npos) {
 			lError() << "Boundary not found in body !";
 			return ChatMessageModifier::Result::Error;
