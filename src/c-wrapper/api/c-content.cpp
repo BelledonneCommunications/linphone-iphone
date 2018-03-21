@@ -283,7 +283,7 @@ LinphoneContent * linphone_content_new(void) {
 }
 
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref) {
-	return (LinphoneContent *)belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
+	return (LinphoneContent *)(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
 }
 
 LinphoneContent * linphone_core_create_content(LinphoneCore *lc) {
