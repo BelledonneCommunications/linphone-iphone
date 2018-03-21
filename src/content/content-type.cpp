@@ -173,6 +173,9 @@ string ContentType::asString () const {
 	return "";
 }
 
+bool ContentType::isMultipart() const {
+	return getType() == "multipart";
+}
 
 bool ContentType::isFile () const {
 	// TODO Remove when not needed anymore in step 2.1 of maindb

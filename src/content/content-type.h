@@ -60,6 +60,8 @@ public:
 
 	std::string asString () const;
 
+	bool isMultipart() const;
+
 	static bool isFile (const ContentType &contentType);
 
 	static const ContentType ConferenceInfo;
