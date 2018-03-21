@@ -46,7 +46,7 @@ HeaderParam::HeaderParam (const string &param) : ClonableObject(*new HeaderParam
 		setName(param);
 	} else {
 		setName(param.substr(0, pos));
-		setValue(param.substr(pos + 1, end));
+		setValue(param.substr(pos + 1, end - (pos + 1)));
 	}
 }
 
