@@ -376,7 +376,7 @@ void SalCallOp::set_error(belle_sip_response_t* response, bool_t fatal){
 int SalCallOp::vfu_retry_cb (void *user_data, unsigned int events) {
 	SalCallOp *op=(SalCallOp *)user_data;
 	op->send_vfu_request();
-	op->ref();
+	op->unref();
 	return BELLE_SIP_STOP;
 }
 
@@ -476,7 +476,7 @@ void SalCallOp::process_response_cb(void *op_base, const belle_sip_response_even
 							&& strcmp("media_control+xml",belle_sip_header_content_type_get_subtype(header_content_type))==0) {
 							unsigned int retry_in = rand() % 1001; // [0;1000]
 							belle_sip_source_t *s=op->root->create_timer(vfu_retry_cb,op->ref(), retry_in, "vfu request retry");
-							ms_message("Rejected vfu request on op [%p], just retry in [%ui] ms",op,retry_in);
+							ms_message("Rejected vfu request on op [%p], just retry in [%u] ms",op,retry_in);
 							belle_sip_object_unref(s);
 						}else {
 								/*ignoring*/
