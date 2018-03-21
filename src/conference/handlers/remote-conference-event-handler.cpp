@@ -278,8 +278,7 @@ void RemoteConferenceEventHandler::unsubscribe () {
 void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	L_D();
 
-	lInfo() << "NOTIFY received for conference: (remote=" << d->chatRoomId.getPeerAddress().asString() <<
-		", local=" << d->chatRoomId.getLocalAddress().asString() << ").";
+	lInfo() << "NOTIFY received for conference: " << d->chatRoomId;
 
 	d->simpleNotifyReceived(xmlBody);
 }
@@ -287,8 +286,7 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 void RemoteConferenceEventHandler::multipartNotifyReceived (const string &xmlBody) {
 	L_D();
 
-	lInfo() << "multipart NOTIFY received for conference: (remote=" << d->chatRoomId.getPeerAddress().asString() <<
-		", local=" << d->chatRoomId.getLocalAddress().asString() << ").";
+	lInfo() << "multipart NOTIFY received for conference: " << d->chatRoomId;
 
 	Content multipart;
 	multipart.setBody(xmlBody);
