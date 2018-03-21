@@ -18,6 +18,7 @@
  */
 
 #include "belle-sip/utils.h"
+#include "linphone/enums/chat-room-enums.h"
 #include "linphone/utils/utils.h"
 #include "linphone/api/c-address.h"
 
@@ -97,15 +98,16 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			if (!handler)
 				continue;
 
-			string notifyBody = handler->getNotifyForId(notifyId);
-			if (notifyBody.empty())
-				continue;
-
 			shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(linphone_event_get_core(lev))->findChatRoom(chatRoomId);
 			if (!chatRoom) {
 				lError() << "Received subscribe for unknown chat room: " << chatRoomId;
 				continue;
 			}
+
+			string notifyBody = handler->getNotifyForId(notifyId, (chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
+			if (notifyBody.empty())
+				continue;
+
 			shared_ptr<Participant> participant = chatRoom->findParticipant(participantAddr);
 			if (!participant) {
 				lError() << "Received subscribe for unknown participant: " << participantAddr <<  " for chat room: " << chatRoomId;

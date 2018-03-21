@@ -54,7 +54,7 @@ public:
 	void setChatRoomId (const ChatRoomId &chatRoomId);
 	ChatRoomId getChatRoomId () const;
 
-	std::string getNotifyForId (int notifyId);
+	std::string getNotifyForId (int notifyId, bool oneToOne = false);
 
 private:
 	L_DECLARE_PRIVATE(LocalConferenceEventHandler);

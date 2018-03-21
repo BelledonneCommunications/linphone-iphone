@@ -532,10 +532,10 @@ ChatRoomId LocalConferenceEventHandler::getChatRoomId () const {
 	return d->chatRoomId;
 }
 
-string LocalConferenceEventHandler::getNotifyForId (int notifyId) {
+string LocalConferenceEventHandler::getNotifyForId (int notifyId, bool oneToOne) {
 	L_D();
 	if (notifyId == 0)
-		return d->createNotifyFullState(static_cast<int>(d->lastNotify)); // oneToOne ?
+		return d->createNotifyFullState(static_cast<int>(d->lastNotify), oneToOne);
 	else if (notifyId < static_cast<int>(d->lastNotify))
 		return d->createNotifyMultipart(notifyId);
 
