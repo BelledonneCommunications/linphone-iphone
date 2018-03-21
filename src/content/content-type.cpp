@@ -76,7 +76,7 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 		string token;
 		do {
 			posParam = params.find(";");
-			if (posParam != string::npos) {
+			if (posParam == string::npos) {
 				token = params;
 			} else {
 				token = params.substr(0, posParam);
