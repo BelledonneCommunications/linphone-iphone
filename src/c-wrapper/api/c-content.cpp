@@ -254,22 +254,9 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
             linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
         } else {
             belle_sip_multipart_body_handler_t *mpbh = BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler);
-            list<LinphonePrivate::Content> contents;
-            for (const belle_sip_list_t *parts = belle_sip_multipart_body_handler_get_parts(mpbh); parts; parts = parts->next) {
-                belle_sip_body_handler_t *part = BELLE_SIP_BODY_HANDLER(parts->data);
-                LinphoneContent *part_content = linphone_content_new_with_body_handler((SalBodyHandler *)part);
-
-                const belle_sip_list_t *headers = belle_sip_body_handler_get_headers(part);
-                for (; headers != NULL; headers = headers->next) {
-                    belle_sip_header_t *header = BELLE_SIP_HEADER(headers->data);
-                    L_GET_CPP_PTR_FROM_C_OBJECT(part_content)->addHeader(belle_sip_header_get_name(header), belle_sip_header_get_unparsed_value(header));
-                }
-
-                contents.push_back(*L_GET_CPP_PTR_FROM_C_OBJECT(part_content));
-                linphone_content_unref(part_content);
-            }
-            LinphonePrivate::Content multipartContent = LinphonePrivate::ContentManager::contentListToMultipart(contents);
-            linphone_content_set_string_buffer(content, multipartContent.getBodyAsUtf8String().c_str());
+            char *body = belle_sip_object_to_string(mpbh);
+            linphone_content_set_string_buffer(content, body);
+            belle_sip_free(body);
         }
         
         if (sal_body_handler_get_encoding(body_handler)) linphone_content_set_encoding(content, sal_body_handler_get_encoding(body_handler));
