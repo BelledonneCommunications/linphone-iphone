@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 list<Content> ContentManager::multipartToContentList (const Content &content) {
-	string boundary = content.getContentType.getParameter("boundary").empty() ? MultipartBoundary : content.getContentType.getParameter("boundary");
+	string boundary = content.getContentType().getParameter("boundary").empty() ? MultipartBoundary : content.getContentType.getParameter("boundary");
 	const string body = content.getBodyAsString();
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new_from_buffer(
 		body.c_str(), body.length(), boundary.c_str()
