@@ -42,11 +42,12 @@ HeaderParam::HeaderParam (const string &param) : ClonableObject(*new HeaderParam
 	size_t pos = param.find("=");
 	size_t end = param.length();
 
-	if (pos == string::npos)
-		return;
-
-	setName(param.substr(0, pos));
-	setValue(param.substr(pos + 1, end));
+	if (pos == string::npos) {
+		setName(param);
+	} else {
+		setName(param.substr(0, pos));
+		setValue(param.substr(pos + 1, end));
+	}
 }
 
 HeaderParam::HeaderParam (const string &name, const string &value) : ClonableObject(*new HeaderParamPrivate) {
@@ -98,7 +99,9 @@ bool HeaderParam::setValue (const string &value) {
 
 string HeaderParam::asString () const {
 	L_D();
-	string asString = ";" + d->name + "=" + d->value;
+	string asString = ";" + d->name;
+	if (!d->value.empty())
+		asString += "=" + d->value;
 	return asString;
 }
 
