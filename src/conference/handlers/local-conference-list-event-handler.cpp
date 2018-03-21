@@ -125,7 +125,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			Content content;
 			if (notifyId > 0) {
 				ContentType contentType(ContentType::Multipart);
-				contentType.setParameter("boundary=" + string(MultipartBoundary));
+				contentType.addParameter("boundary", string(MultipartBoundary));
 				content.setContentType(contentType);
 			} else
 				content.setContentType(ContentType::ConferenceInfo);
