@@ -22,6 +22,7 @@
 #include "content-manager.h"
 #include "content-type.h"
 #include "content/content.h"
+#include "content/header-param.h"
 
 // =============================================================================
 
@@ -32,7 +33,7 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 list<Content> ContentManager::multipartToContentList (const Content &content) {
-	string boundary = content.getContentType().getParameter("boundary").getValue().empty() ? MultipartBoundary : content.getContentType.getParameter("boundary").getValue();
+	string boundary = content.getContentType().getParameter("boundary").getValue().empty() ? MultipartBoundary : content.getContentType().getParameter("boundary").getValue();
 	const string body = content.getBodyAsString();
 	belle_sip_multipart_body_handler_t *mpbh = belle_sip_multipart_body_handler_new_from_buffer(
 		body.c_str(), body.length(), boundary.c_str()
