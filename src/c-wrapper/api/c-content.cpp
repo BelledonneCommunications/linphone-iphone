@@ -210,7 +210,7 @@ const char *linphone_content_get_key(const LinphoneContent *content) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
         content->key = ms_strdup(ftc->getFileKeyAsString());
     }
-    
+
     return content->key;
 }
 
@@ -271,7 +271,7 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
             LinphonePrivate::Content multipartContent = LinphonePrivate::ContentManager::contentListToMultipart(contents);
             linphone_content_set_string_buffer(content, multipartContent.getBodyAsUtf8String().c_str());
         }
-        
+
         if (sal_body_handler_get_encoding(body_handler)) linphone_content_set_encoding(content, sal_body_handler_get_encoding(body_handler));
 	}
 
@@ -283,7 +283,7 @@ LinphoneContent * linphone_content_new(void) {
 }
 
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref) {
-	return (LinphoneContent *)(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
+	return (LinphoneContent *)belle_sip_object_ref(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
 }
 
 LinphoneContent * linphone_core_create_content(LinphoneCore *lc) {
