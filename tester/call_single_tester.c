@@ -5829,6 +5829,10 @@ static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, Li
 	}
 }
 
+static bool_t is_matching_local_v4_or_v6(const char *ip, const char *localv4, const char *localv6){
+	if (strlen(ip)==0) return FALSE;
+	return strcmp(ip, localv4) == 0 || strcmp(ip, localv6) == 0;
+}
 
 /*
  * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host
@@ -5836,20 +5840,24 @@ static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, Li
 static void call_with_ice_with_default_candidate_not_stun(void){
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	char localip[LINPHONE_IPADDR_SIZE];
+	char localip[LINPHONE_IPADDR_SIZE]={0};
+	char localip6[LINPHONE_IPADDR_SIZE]={0};
 	bool_t call_ok;
 
 	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "dont_default_to_stun_candidates", 1);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 	linphone_core_get_local_ip(marie->lc, AF_INET, NULL, localip);
+	linphone_core_get_local_ip(marie->lc, AF_INET6, NULL, localip6);
 	call_ok = call(marie, pauline);
 	if (call_ok){
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->streams[0].rtp_addr, "");
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->streams[0].rtp_addr, localip, localip6)
+				|| is_matching_local_v4_or_v6(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->addr, localip, localip6)
+		);
 	}
 	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
