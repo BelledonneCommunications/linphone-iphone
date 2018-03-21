@@ -810,10 +810,22 @@ static void multiple_answers_call_with_media_relay(void) {
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
 	 *   Both linphones answer at the same time, and only one should get the
 	 *   call running, the other should be terminated */
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc" );
-	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
-	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_tcp_rc", FALSE);
+	LinphoneCoreManager* marie1  = linphone_core_manager_new2( "marie_rc", FALSE);
+	LinphoneCoreManager* marie2  = linphone_core_manager_new2( "marie_rc", FALSE );
 
+	/* This tests a feature of the proxy (nta_msg_ackbye()) that doesn't work with gruu.
+	 * Actually nta_msg_ackbye() is deprecated because it is not the task of the proxy to handle the race conditions of 200 Ok arriving at the same time.
+	 * It is the job of the user-agent, see test multiple_answers_call() above.
+	 */
+	linphone_core_remove_supported_tag(pauline->lc,"gruu");
+	linphone_core_remove_supported_tag(marie1->lc,"gruu");
+	linphone_core_remove_supported_tag(marie2->lc,"gruu");
+	
+	linphone_core_manager_start(pauline, TRUE);
+	linphone_core_manager_start(marie1, TRUE);
+	linphone_core_manager_start(marie2, TRUE);
+	
 	LinphoneCall* call1, *call2;
 
 	bctbx_list_t* lcs = bctbx_list_append(NULL,pauline->lc);
