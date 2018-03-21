@@ -36,6 +36,7 @@
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
 #include "content/file-content.h"
+#include "content/header-param.h"
 #include "content/content.h"
 #include "core/core.h"
 #include "core/core-p.h"
@@ -450,7 +451,7 @@ static void forceUtf8Content (Content &content) {
 	if (contentType != ContentType::PlainText)
 		return;
 
-	string charset = contentType.getParameter();
+	string charset = contentType.getParameter("charset").getValue();
 	if (charset.empty())
 		return;
 
@@ -469,7 +470,7 @@ static void forceUtf8Content (Content &content) {
 		if (!utf8Body.empty()) {
 			// TODO: use move operator if possible in the future!
 			content.setBodyFromUtf8(utf8Body);
-			contentType.setParameter(string(contentType.getParameter()).replace(begin, end - begin, "UTF-8"));
+			contentType.addParameter("charset", "UTF-8");
 			content.setContentType(contentType);
 		}
 	}

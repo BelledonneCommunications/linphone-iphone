@@ -99,6 +99,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	content/content.h
 	content/file-content.h
 	content/file-transfer-content.h
+	content/header-param.h
 	core/core-accessor.h
 	core/core-listener.h
 	core/core-p.h
@@ -223,6 +224,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	content/content.cpp
 	content/file-content.cpp
 	content/file-transfer-content.cpp
+	content/header-param.cpp
 	core/core-accessor.cpp
 	core/core-call.cpp
 	core/core-chat-room.cpp
