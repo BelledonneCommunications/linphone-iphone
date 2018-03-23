@@ -24,7 +24,7 @@
 
 #include "content/content.h"
 #include "content/content-type.h"
-#include "content/header-param.h"
+#include "content/header/header-param.h"
 #include "content/content-manager.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
