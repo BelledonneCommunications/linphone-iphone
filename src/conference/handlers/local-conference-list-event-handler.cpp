@@ -74,8 +74,8 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 	bctbx_free(deviceAddrStr);
 
 	list<Content *> contents;
-	Content rlmiContent;
-	rlmiContent.setContentType(ContentType::Rlmi);
+	Content *rlmiContent = new Content();
+	rlmiContent->setContentType(ContentType::Rlmi);
 
 	// Create Rlmi body
 	Xsd::Rlmi::List::ResourceSequence resources;
@@ -122,19 +122,19 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
 
 			noContent = false;
-			Content content;
+			Content *content = new Content();
 			if (notifyId > 0) {
 				ContentType contentType(ContentType::Multipart);
 				contentType.addParameter("boundary", string(MultipartBoundary));
-				content.setContentType(contentType);
+				content->setContentType(contentType);
 			} else
-				content.setContentType(ContentType::ConferenceInfo);
+				content->setContentType(ContentType::ConferenceInfo);
 
-			content.setBody(notifyBody);
+			content->setBody(notifyBody);
 			char token[17];
 			belle_sip_random_token(token, sizeof(token));
-			content.addHeader("Content-Id", token);
-			contents.push_back(&content);
+			content->addHeader("Content-Id", token);
+			contents.push_back(content);
 
 			// Add entry into the Rlmi content of the notify body
 			Xsd::Rlmi::Resource resource(addr.asStringUriOnly());
@@ -157,13 +157,14 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 	Xsd::XmlSchema::NamespaceInfomap map;
 	stringstream rlmiBody;
 	Xsd::Rlmi::serializeList(rlmiBody, list, map);
-	rlmiContent.setBody(rlmiBody.str());
+	rlmiContent->setBody(rlmiBody.str());
 
-	contents.push_front(&rlmiContent);
+	contents.push_front(rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&multipart);
 	linphone_event_notify(lev, cContent);
 	linphone_content_unref(cContent);
+	contents.clear();
 }
 
 // -----------------------------------------------------------------------------
