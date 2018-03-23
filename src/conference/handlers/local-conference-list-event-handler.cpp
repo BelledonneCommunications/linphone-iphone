@@ -73,7 +73,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 	IdentityAddress deviceAddr(deviceAddrStr);
 	bctbx_free(deviceAddrStr);
 
-	list<Content> contents;
+	list<Content *> contents;
 	Content rlmiContent;
 	rlmiContent.setContentType(ContentType::Rlmi);
 
@@ -134,7 +134,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			char token[17];
 			belle_sip_random_token(token, sizeof(token));
 			content.addHeader("Content-Id", token);
-			contents.push_back(content);
+			contents.push_back(&content);
 
 			// Add entry into the Rlmi content of the notify body
 			Xsd::Rlmi::Resource resource(addr.asStringUriOnly());
@@ -159,7 +159,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 	Xsd::Rlmi::serializeList(rlmiBody, list, map);
 	rlmiContent.setBody(rlmiBody.str());
 
-	contents.push_front(rlmiContent);
+	contents.push_front(&rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&multipart);
 	linphone_event_notify(lev, cContent);
