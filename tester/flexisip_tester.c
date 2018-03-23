@@ -1257,9 +1257,10 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 	}else{
 		BC_ASSERT_TRUE(wait_for(lcm->lc, NULL, &lcm->stat.number_of_LinphoneRegistrationFailed, 1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationOk,0, int, "%d");
-		/*we should expect 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401.*/
+		/*we should expect at least 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401, 
+		 with eventually MD5 + SHA256 challenge*/
 		/*If the certificate isn't recognized at all, the connection will not happen and no SIP response will be received from server.*/
-		if (with_good_cert) BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,2, int, "%d");
+		if (with_good_cert) BC_ASSERT_GREATER(lcm->stat.number_of_auth_info_requested,2, int, "%d");
 		else BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,1, int, "%d");
 	}
 

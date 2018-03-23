@@ -35,7 +35,7 @@ namespace {
 }
 namespace ContentManager {
 	std::list<Content> multipartToContentList (const Content &content);
-	Content contentListToMultipart (const std::list<Content> &contents, const std::string &boundary = MultipartBoundary);
+	Content contentListToMultipart (const std::list<Content *> &contents, const std::string &boundary = MultipartBoundary);
 }
 
 LINPHONE_END_NAMESPACE

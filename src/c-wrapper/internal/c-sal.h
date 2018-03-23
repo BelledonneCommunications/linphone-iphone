@@ -647,6 +647,7 @@ size_t sal_body_handler_get_size(const SalBodyHandler *body_handler);
 void sal_body_handler_set_size(SalBodyHandler *body_handler, size_t size);
 bool_t sal_body_handler_is_multipart(const SalBodyHandler *body_handler);
 SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, int idx);
+const belle_sip_list_t * sal_body_handler_get_parts(const SalBodyHandler *body_handler);
 SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value);
 const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, const char *header_name);
 

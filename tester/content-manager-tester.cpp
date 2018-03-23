@@ -27,7 +27,7 @@
 using namespace LinphonePrivate;
 using namespace std;
 
-static const char* multipart = \
+static const char* source_multipart = \
 "-----------------------------14737809831466499882746641449\r\n" \
 "Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
@@ -78,6 +78,78 @@ static const char* multipart = \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
 "Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
+"	<tuple id=\"oc3e08\">" \
+"		<status>" \
+"			<basic>open</basic>" \
+"		</status>" \
+"		<contact>sip:someone@sip.linphone.org</contact>" \
+"		<timestamp>2017-10-25T13:18:26</timestamp>" \
+"	</tuple>" \
+"	<p1:person id=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p2=\"urn:ietf:params:xml:ns:pidf:rpid\">" \
+"		<p2:activities>" \
+"			<p2:away/>" \
+"		</p2:activities>" \
+"	</p1:person>" \
+"</presence>" \
+"-----------------------------14737809831466499882746641449--\r\n";
+
+static const char* generated_multipart = \
+"-----------------------------14737809831466499882746641449\r\n" \
+"Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n\r\n" \
+"Content-Length:582" \
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
+"<list xmlns=\"urn:ietf:params:xml:ns:rlmi\" fullState=\"false\" uri=\"sip:rls@sip.linphone.org\" version=\"1\">" \
+"	<resource uri=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\">" \
+"	<instance cid=\"LO3VOS4@sip.linphone.org\" id=\"1\" state=\"active\"/>" \
+"		</resource>" \
+"	<resource uri=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\">" \
+"		<instance cid=\"5v6tTNM@sip.linphone.org\" id=\"1\" state=\"active\"/>" \
+"	</resource>" \
+"	<resource uri=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\">" \
+"		<instance cid=\"P2WAj~Y@sip.linphone.org\" id=\"1\" state=\"active\"/>" \
+"	</resource>" \
+"</list>" \
+"-----------------------------14737809831466499882746641449\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
+"Content-Length:561" \
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
+"	<tuple id=\"qmht-9\">" \
+"		<status>" \
+"			<basic>open</basic>" \
+"		</status>" \
+"		<contact>sip:+YYYYYYYYYY@sip.linphone.org;user=phone</contact>" \
+"		<timestamp>2017-10-25T13:18:26</timestamp>" \
+"	</tuple>" \
+"	<p1:person id=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\" xmlns:p2=\"urn:ietf:params:xml:ns:pidf:rpid\">" \
+"		<p2:activities>" \
+"			<p2:away/>" \
+"		</p2:activities>" \
+"	</p1:person>" \
+"</presence>" \
+"-----------------------------14737809831466499882746641449\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
+"Content-Length:561" \
+"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
+"<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
+"	<tuple id=\"szohvt\">" \
+"		<status>" \
+"			<basic>open</basic>" \
+"		</status>" \
+"		<contact>sip:+XXXXXXXXXX@sip.linphone.org;user=phone</contact>" \
+"		<timestamp>2017-10-25T13:18:26</timestamp>" \
+"	</tuple>" \
+"	<p1:person id=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p2=\"urn:ietf:params:xml:ns:pidf:rpid\">" \
+"		<p2:activities>" \
+"			<p2:away/>" \
+"		</p2:activities>" \
+"	</p1:person>" \
+"</presence>" \
+"-----------------------------14737809831466499882746641449\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
+"Content-Length:546" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"oc3e08\">" \
@@ -162,7 +234,7 @@ static const char* part4 = \
 
 void multipart_to_list () {
 	Content multipartContent;
-	multipartContent.setBody(multipart);
+	multipartContent.setBody(source_multipart);
 	multipartContent.setContentType(ContentType("multipart", "related"));
 
 	list<Content> contents = ContentManager::multipartToContentList(multipartContent);
@@ -234,29 +306,33 @@ void multipart_to_list () {
 	generatedStr4.erase(std::remove(generatedStr4.begin(), generatedStr4.end(), '\r'), generatedStr4.end());
 	generatedStr4.erase(std::remove(generatedStr4.begin(), generatedStr4.end(), '\n'), generatedStr4.end());
 	ms_message("\n\n----- Generated part 4 -----");
-	ms_message("%s", generatedStr3.c_str());
+	ms_message("%s", generatedStr4.c_str());
 	ms_message("\n\n----- Original part 4 -----");
 	ms_message("%s", originalStr4.c_str());
 	BC_ASSERT_TRUE(originalStr4 == generatedStr4);
 }
 
 void list_to_multipart () {
+	ContentType contentType = ContentType("application", "rlmi+xml");
+	contentType.addParameter("charset", "\"UTF-8\"");
 	Content content1;
 	content1.setBody(part1);
-	content1.setContentType(ContentType("application", "rlmi+xml"));
+	content1.setContentType(contentType);
+	contentType = ContentType("application", "pidf+xml");
+	contentType.addParameter("charset", "\"UTF-8\"");
 	Content content2;
 	content2.setBody(part2);
-	content2.setContentType(ContentType("application", "pidf+xml"));
+	content2.setContentType(contentType);
 	Content content3;
 	content3.setBody(part3);
-	content3.setContentType(ContentType("application", "pidf+xml"));
+	content3.setContentType(contentType);
 	Content content4;
 	content4.setBody(part4);
-	content4.setContentType(ContentType("application", "pidf+xml"));
-	list<Content> contents = {content1, content2, content3, content4};
+	content4.setContentType(contentType);
+	list<Content *> contents = {&content1, &content2, &content3, &content4};
 
 	Content multipartContent = ContentManager::contentListToMultipart(contents);
-	string originalStr(multipart);
+	string originalStr(generated_multipart);
 	originalStr.erase(std::remove(originalStr.begin(), originalStr.end(), ' '), originalStr.end());
 	originalStr.erase(std::remove(originalStr.begin(), originalStr.end(), '\t'), originalStr.end());
 	originalStr.erase(std::remove(originalStr.begin(), originalStr.end(), '\r'), originalStr.end());

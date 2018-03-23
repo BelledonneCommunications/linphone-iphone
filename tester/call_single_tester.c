@@ -810,10 +810,22 @@ static void multiple_answers_call_with_media_relay(void) {
 	/* Scenario is this: pauline calls marie, which is registered 2 times.
 	 *   Both linphones answer at the same time, and only one should get the
 	 *   call running, the other should be terminated */
-	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc" );
-	LinphoneCoreManager* marie1  = linphone_core_manager_new( "marie_rc" );
-	LinphoneCoreManager* marie2  = linphone_core_manager_new( "marie_rc" );
+	LinphoneCoreManager* pauline = linphone_core_manager_new2( "pauline_tcp_rc", FALSE);
+	LinphoneCoreManager* marie1  = linphone_core_manager_new2( "marie_rc", FALSE);
+	LinphoneCoreManager* marie2  = linphone_core_manager_new2( "marie_rc", FALSE );
 
+	/* This tests a feature of the proxy (nta_msg_ackbye()) that doesn't work with gruu.
+	 * Actually nta_msg_ackbye() is deprecated because it is not the task of the proxy to handle the race conditions of 200 Ok arriving at the same time.
+	 * It is the job of the user-agent, see test multiple_answers_call() above.
+	 */
+	linphone_core_remove_supported_tag(pauline->lc,"gruu");
+	linphone_core_remove_supported_tag(marie1->lc,"gruu");
+	linphone_core_remove_supported_tag(marie2->lc,"gruu");
+	
+	linphone_core_manager_start(pauline, TRUE);
+	linphone_core_manager_start(marie1, TRUE);
+	linphone_core_manager_start(marie2, TRUE);
+	
 	LinphoneCall* call1, *call2;
 
 	bctbx_list_t* lcs = bctbx_list_append(NULL,pauline->lc);
@@ -5829,6 +5841,10 @@ static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, Li
 	}
 }
 
+static bool_t is_matching_local_v4_or_v6(const char *ip, const char *localv4, const char *localv6){
+	if (strlen(ip)==0) return FALSE;
+	return strcmp(ip, localv4) == 0 || strcmp(ip, localv6) == 0;
+}
 
 /*
  * this test checks the 'dont_default_to_stun_candidates' mode, where the c= line is left to host
@@ -5836,20 +5852,24 @@ static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, Li
 static void call_with_ice_with_default_candidate_not_stun(void){
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	char localip[LINPHONE_IPADDR_SIZE];
+	char localip[LINPHONE_IPADDR_SIZE]={0};
+	char localip6[LINPHONE_IPADDR_SIZE]={0};
 	bool_t call_ok;
 
 	lp_config_set_int(linphone_core_get_config(marie->lc), "net", "dont_default_to_stun_candidates", 1);
 	linphone_core_set_firewall_policy(marie->lc, LinphonePolicyUseIce);
 	linphone_core_set_firewall_policy(pauline->lc, LinphonePolicyUseIce);
 	linphone_core_get_local_ip(marie->lc, AF_INET, NULL, localip);
+	linphone_core_get_local_ip(marie->lc, AF_INET6, NULL, localip6);
 	call_ok = call(marie, pauline);
 	if (call_ok){
 		check_ice(marie, pauline, LinphoneIceStateHostConnection);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip);
-		BC_ASSERT_STRING_EQUAL(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->streams[0].rtp_addr, "");
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_local_desc(linphone_core_get_current_call(marie->lc))->streams[0].rtp_addr, localip, localip6));
+		BC_ASSERT_TRUE(is_matching_local_v4_or_v6(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->streams[0].rtp_addr, localip, localip6)
+				|| is_matching_local_v4_or_v6(_linphone_call_get_result_desc(linphone_core_get_current_call(pauline->lc))->addr, localip, localip6)
+		);
 	}
 	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);

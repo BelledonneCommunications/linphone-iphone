@@ -842,6 +842,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 				linphone_core_iterate(callee->lc);
 				linphone_call_stats_unref(stats1);
 				linphone_call_stats_unref(stats2);
+				stats1 = stats2 = NULL;
 			}
 			ms_usleep(20000);
 		} while (!liblinphone_tester_clock_elapsed(&ts,10000));
@@ -870,6 +871,7 @@ bool_t check_ice(LinphoneCoreManager* caller, LinphoneCoreManager* callee, Linph
 				linphone_core_iterate(callee->lc);
 				linphone_call_stats_unref(stats1);
 				linphone_call_stats_unref(stats2);
+				stats1 = stats2 = NULL;
 			}
 			ms_usleep(20000);
 		} while (!liblinphone_tester_clock_elapsed(&ts,10000));
