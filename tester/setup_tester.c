@@ -43,14 +43,16 @@ static const char *sFriends[S_SIZE_FRIEND] = {
 };
 
 static void _create_friends_from_tab(LinphoneCore *lc, LinphoneFriendList *list, const char *friends[], const unsigned int size) {
-	for (unsigned int i = 0 ; i < size ; i++) {
+	unsigned int i;
+	for (i = 0 ; i < size ; i++) {
 		LinphoneFriend *fr = linphone_core_create_friend_with_address(lc, friends[i]);
 		linphone_friend_list_add_friend(list, fr);
 	}
 }
 
 static void _remove_friends_from_list(LinphoneFriendList *list, const char *friends[], const unsigned int size) {
-	for (unsigned int i = 0 ; i < size ; i++) {
+	unsigned int i;
+	for (i = 0 ; i < size ; i++) {
 		LinphoneFriend *fr = linphone_friend_list_find_friend_by_uri(list, friends[i]);
 		if (fr) linphone_friend_list_remove_friend(list, fr);
 	}
@@ -81,7 +83,8 @@ static void _check_friend_result_list(LinphoneCore *lc, const bctbx_list_t *resu
 		}
 	} else {
 		const bctbx_list_t *callLog = linphone_core_get_call_logs(lc);
-		for (const bctbx_list_t *f = callLog ; f != NULL ; f = bctbx_list_next(f)) {
+		const bctbx_list_t *f;
+		for (f = callLog ; f != NULL ; f = bctbx_list_next(f)) {
 			LinphoneCallLog *log = (LinphoneCallLog*)(f->data);
 			const LinphoneAddress *addr = (linphone_call_log_get_dir(log) == LinphoneCallIncoming) ?
 			linphone_call_log_get_from_address(log) : linphone_call_log_get_to_address(log);
@@ -842,11 +845,13 @@ static void search_friend_large_database(void) {
 	char searchedFriend[] = {"6295103032641994169"};
 	char subBuff[30];
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	unsigned int i;
+
 	linphone_core_set_friends_database_path(manager->lc, dbPath);
 
 	magicSearch = linphone_magic_search_new(manager->lc);
 
-	for (unsigned int i = 1; i < sizeof(searchedFriend) ; i++) {
+	for (i = 1; i < sizeof(searchedFriend) ; i++) {
 		memcpy(subBuff, &searchedFriend, i);
 		subBuff[i] = '\0';
 		liblinphone_tester_clock_start(&start);
