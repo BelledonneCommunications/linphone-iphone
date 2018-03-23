@@ -129,7 +129,7 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 	char *from = linphone_address_as_string(linphone_event_get_from(lev));
 	const IdentityAddress local(from);
 
-	if (notifyContent->getContentType() != ContentType::Multipart) {
+	if (notifyContent->getContentType() == ContentType::ConferenceInfo) {
 		// Simple notify received directly from a chat-room
 		const string &xmlBody = notifyContent->getBodyAsString();
 		istringstream data(xmlBody);
