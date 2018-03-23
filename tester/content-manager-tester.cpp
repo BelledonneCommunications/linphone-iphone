@@ -234,26 +234,28 @@ void multipart_to_list () {
 	generatedStr4.erase(std::remove(generatedStr4.begin(), generatedStr4.end(), '\r'), generatedStr4.end());
 	generatedStr4.erase(std::remove(generatedStr4.begin(), generatedStr4.end(), '\n'), generatedStr4.end());
 	ms_message("\n\n----- Generated part 4 -----");
-	ms_message("%s", generatedStr3.c_str());
+	ms_message("%s", generatedStr4.c_str());
 	ms_message("\n\n----- Original part 4 -----");
 	ms_message("%s", originalStr4.c_str());
 	BC_ASSERT_TRUE(originalStr4 == generatedStr4);
 }
 
 void list_to_multipart () {
+	ContentType contentType = ContentType("application", "rlmi+xml");
+	contentType.addParameter("charset", "\"UTF-8\"");
 	Content content1;
 	content1.setBody(part1);
-	content1.setContentType(ContentType("application", "rlmi+xml"));
+	content1.setContentType(contentType);
 	Content content2;
 	content2.setBody(part2);
-	content2.setContentType(ContentType("application", "pidf+xml"));
+	content2.setContentType(contentType);
 	Content content3;
 	content3.setBody(part3);
-	content3.setContentType(ContentType("application", "pidf+xml"));
+	content3.setContentType(contentType);
 	Content content4;
 	content4.setBody(part4);
-	content4.setContentType(ContentType("application", "pidf+xml"));
-	list<Content> contents = {content1, content2, content3, content4};
+	content4.setContentType(contentType);
+	list<Content *> contents = {&content1, &content2, &content3, &content4};
 
 	Content multipartContent = ContentManager::contentListToMultipart(contents);
 	string originalStr(multipart);

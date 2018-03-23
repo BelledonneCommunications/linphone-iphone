@@ -419,6 +419,11 @@ SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, i
 	return (SalBodyHandler *)belle_sip_list_nth_data(l, idx);
 }
 
+const belle_sip_list_t * sal_body_handler_get_parts(const SalBodyHandler *body_handler) {
+	if (!sal_body_handler_is_multipart(body_handler)) return NULL;
+	return belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
+}
+
 SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value) {
 	const belle_sip_list_t *l = belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
 	for (; l != NULL; l = l->next) {
