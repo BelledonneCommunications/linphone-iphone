@@ -36,7 +36,7 @@
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
 #include "content/file-content.h"
-#include "content/header-param.h"
+#include "content/header/header-param.h"
 #include "content/content.h"
 #include "core/core.h"
 #include "core/core-p.h"
