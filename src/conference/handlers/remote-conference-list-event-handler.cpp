@@ -136,9 +136,7 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 		unique_ptr<Xsd::ConferenceInfo::ConferenceType> confInfo = Xsd::ConferenceInfo::parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
 
 		IdentityAddress entityAddress(confInfo->getEntity().c_str());
-		lError() << entityAddress;
 		ChatRoomId id(entityAddress, local);
-		lError() << id;
 		RemoteConferenceEventHandler *handler = findHandler(id);
 		if (!handler)
 			return;
