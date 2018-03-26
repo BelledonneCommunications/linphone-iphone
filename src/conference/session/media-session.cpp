@@ -2697,7 +2697,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 						io.output.soundcard = playcard;
 					} else {
 						io.output.type = MSResourceFile;
-						io.output.file = recfile.c_str();
+						io.output.file = recfile.empty() ? nullptr : recfile.c_str();
 					}
 				} else {
 					io.input.type = io.output.type = MSResourceRtp;
@@ -2711,7 +2711,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 					io.output.soundcard = playcard;
 				} else {
 					io.output.type = MSResourceFile;
-					io.output.file = recfile.c_str();
+					io.output.file = recfile.empty() ? nullptr : recfile.c_str();
 				}
 				if (captcard) {
 					io.input.type = MSResourceSoundcard;
