@@ -35,6 +35,11 @@ Header::Header(HeaderPrivate &p) : ClonableObject(p) {
 
 }
 
+void Header::cleanParameters() {
+	L_D();
+	d->parameters.clear();
+}
+
 const std::list<HeaderParam> &Header::getParameters () const {
 	L_D();
 

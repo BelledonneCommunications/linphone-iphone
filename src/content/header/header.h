@@ -33,6 +33,7 @@ class HeaderParam;
 
 class LINPHONE_PUBLIC Header : public ClonableObject {
 public:
+	void cleanParameters();
 	const std::list<HeaderParam> &getParameters () const;
 	void addParameter (const std::string &paramName, const std::string &paramValue);
 	void addParameter (const HeaderParam &param);

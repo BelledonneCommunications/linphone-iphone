@@ -82,9 +82,19 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
-	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), "multipart/mixed");
-	if (!first_file_transfer) {
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), "Hello part 1");
+
+	if (first_file_transfer || second_file_transfer) {
+		LinphoneContent *content = linphone_chat_message_get_file_transfer_information(pauline->stat.last_received_chat_message);
+		BC_ASSERT_PTR_NOT_NULL(content);
+		linphone_content_unref(content);
+	}
+	if (!first_file_transfer || !second_file_transfer) {
+		const char *content = linphone_chat_message_get_text_content(pauline->stat.last_received_chat_message);
+		BC_ASSERT_PTR_NOT_NULL(content);
+		if (!first_file_transfer)
+			BC_ASSERT_STRING_EQUAL(content, "Hello part 1");
+		else if (!second_file_transfer)
+			BC_ASSERT_STRING_EQUAL(content, "Hello part 2");
 	}
 
 	linphone_core_manager_destroy(marie);

@@ -121,6 +121,7 @@ ContentType &ContentType::operator= (const ContentType &other) {
 	if (this != &other) {
 		setType(other.getType());
 		setSubType(other.getSubType());
+		cleanParameters();
 		addParameters(other.getParameters());
 	}
 
