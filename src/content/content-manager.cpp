@@ -26,7 +26,7 @@
 #include "content-manager.h"
 #include "content-type.h"
 #include "content/content.h"
-#include "content/header-param.h"
+#include "content/header/header-param.h"
 
 // =============================================================================
 
