@@ -142,6 +142,7 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 			return;
 
 		handler->notifyReceived(xmlBody);
+		return;
 	}
 
 	list<Content> contents = ContentManager::multipartToContentList(*notifyContent);
