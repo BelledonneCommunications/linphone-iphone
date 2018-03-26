@@ -130,8 +130,7 @@ ContentType &ContentType::operator= (const ContentType &other) {
 
 bool ContentType::operator== (const ContentType &other) const {
 	return getType() == other.getType() &&
-		getSubType() == other.getSubType() &&
-		getParameters() == other.getParameters();
+		getSubType() == other.getSubType();
 }
 
 bool ContentType::operator!= (const ContentType &other) const {
