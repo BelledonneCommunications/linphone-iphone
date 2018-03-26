@@ -80,7 +80,7 @@ ContentType::ContentType (const string &contentType) : Header(*new ContentTypePr
 				token = params.substr(0, posParam);
 			}
 			addParameter(HeaderParam(token));
-			params.erase(0, pos + 1);
+			params.erase(0, posParam + 1);
 		} while (posParam != std::string::npos);
 	}
 }
@@ -131,8 +131,7 @@ ContentType &ContentType::operator= (const ContentType &other) {
 
 bool ContentType::operator== (const ContentType &other) const {
 	return getType() == other.getType() &&
-		getSubType() == other.getSubType() &&
-		getParameters() == other.getParameters();
+		getSubType() == other.getSubType();
 }
 
 bool ContentType::operator!= (const ContentType &other) const {

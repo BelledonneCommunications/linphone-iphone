@@ -741,7 +741,7 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (!externalBodyUrl.empty()) {
-		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
+		char *content_type = ms_strdup_printf("message/external-body;access-type=URL;URL=\"%s\"", externalBodyUrl.c_str());
 		msgOp->send_message(content_type, NULL);
 		ms_free(content_type);
 	} else if (internalContent.getContentType().isValid()) {

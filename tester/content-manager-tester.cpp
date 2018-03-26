@@ -352,9 +352,18 @@ void list_to_multipart () {
 	BC_ASSERT_TRUE(originalStr == generatedStr);
 }
 
+static void content_type_parsing(void) {
+	const string type = "message/external-body;access-type=URL;URL=\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"";
+	ContentType contentType = ContentType(type);
+	BC_ASSERT_STRING_EQUAL("message", contentType.getType().c_str());
+	BC_ASSERT_STRING_EQUAL("external-body", contentType.getSubType().c_str());
+	BC_ASSERT_TRUE(type == contentType.asString());
+}
+
 test_t content_manager_tests[] = {
 	TEST_NO_TAG("Multipart to list", multipart_to_list),
-	TEST_NO_TAG("List to multipart", list_to_multipart)
+	TEST_NO_TAG("List to multipart", list_to_multipart),
+	TEST_NO_TAG("Content type parsing", content_type_parsing)
 };
 
 test_suite_t content_manager_test_suite = {
