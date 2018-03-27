@@ -21,6 +21,7 @@
 #include "content/content-manager.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "content/header/header-param.h"
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
 
@@ -353,10 +354,31 @@ void list_to_multipart () {
 }
 
 static void content_type_parsing(void) {
-	const string type = "message/external-body;access-type=URL;URL=\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"";
+	string type = "message/external-body;access-type=URL;URL=\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"";
 	ContentType contentType = ContentType(type);
 	BC_ASSERT_STRING_EQUAL("message", contentType.getType().c_str());
 	BC_ASSERT_STRING_EQUAL("external-body", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("URL", contentType.getParameter("access-type").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"", contentType.getParameter("URL").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_EQUAL(2, contentType.getParameters().size(), int, "%d");
+	BC_ASSERT_TRUE(type == contentType.asString());
+
+	type = "multipart/mixed;boundary=-----------------------------14737809831466499882746641450";
+	contentType = ContentType(type);
+	BC_ASSERT_STRING_EQUAL("multipart", contentType.getType().c_str());
+	BC_ASSERT_STRING_EQUAL("mixed", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("-----------------------------14737809831466499882746641450", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("access-type").getValue().c_str());
+	BC_ASSERT_EQUAL(1, contentType.getParameters().size(), int, "%d");
+	BC_ASSERT_TRUE(type == contentType.asString());
+
+	type = "plain/text";
+	contentType = ContentType(type);
+	BC_ASSERT_STRING_EQUAL("plain", contentType.getType().c_str());
+	BC_ASSERT_STRING_EQUAL("text", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_EQUAL(0, contentType.getParameters().size(), int, "%d");
 	BC_ASSERT_TRUE(type == contentType.asString());
 }
 
