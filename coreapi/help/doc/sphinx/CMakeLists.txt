@@ -41,7 +41,7 @@ if (ENABLE_SPHINX_DOC)
 		index_page.mustache
 	)
 	configure_file(conf.py.in source/conf.py)
-	configure_file(source/index.rst source/index.rst COPYONLY)
+	configure_file(index.rst source/index.rst COPYONLY)
 	configure_file(logo.png source/logo.png COPYONLY)
 	add_custom_command(OUTPUT ${GENERATED_SPHINX_SOURCES}
 		COMMAND ${CMAKE_COMMAND} -E remove -f ${DOCUMENTATION_DIRS}
