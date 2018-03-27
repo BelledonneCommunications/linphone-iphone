@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <sstream>
+
 #include "linphone/utils/utils.h"
 #include "linphone/utils/algorithm.h"
 
@@ -141,11 +143,15 @@ const HeaderParam &Header::getParameter (const std::string &paramName) const {
 }
 
 string Header::asString () const {
-	string asString = getName() + ":" + getValue();
+	stringstream asString;
+	if (!getName().empty()) {
+		asString << getName() << ":";
+	} 
+	asString << getValue();
 	for (const auto &param : getParameters()) {
-		asString += param.asString();
+		asString << param.asString();
 	}
-	return asString;
+	return asString.str();
 }
 
 ostream &operator<<(ostream& stream, const Header& header) {

@@ -55,7 +55,6 @@ const ContentType ContentType::Sdp("application/sdp");
 ContentType::ContentType (const string &contentType) : Header(*new ContentTypePrivate) {
 	L_D();
 
-	setName("Content-Type");
 	size_t pos = contentType.find('/');
 	size_t posParam = contentType.find(";");
 	size_t end = contentType.length();
@@ -89,7 +88,6 @@ ContentType::ContentType (const string &contentType) : Header(*new ContentTypePr
 ContentType::ContentType (const string &type, const string &subType) : Header(*new ContentTypePrivate) {
 	L_D();
 
-	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 }
@@ -101,7 +99,6 @@ ContentType::ContentType (
 ) : Header(*new ContentTypePrivate) {
 	L_D();
 
-	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 	addParameter(parameter);
@@ -114,7 +111,6 @@ ContentType::ContentType (
 ) : Header(*new ContentTypePrivate) {
 	L_D();
 
-	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 	addParameters(parameters);
@@ -124,7 +120,6 @@ ContentType::ContentType (const ContentType &other) : ContentType(other.getType(
 
 ContentType &ContentType::operator= (const ContentType &other) {
 	if (this != &other) {
-		setName("Content-Type");
 		setType(other.getType());
 		setSubType(other.getSubType());
 		cleanParameters();
@@ -181,23 +176,6 @@ bool ContentType::isEmpty () const {
 bool ContentType::isValid () const {
 	L_D();
 	return !d->type.empty() && !d->subType.empty();
-}
-
-string ContentType::asString () const {
-	L_D();
-	if (isValid()) {
-		string asString = d->type + "/" + d->subType;
-		for (const auto &param : getParameters()) {
-			asString += param.asString();
-		}
-		return asString;
-	}
-	return "";
-}
-
-ostream &operator<<(ostream& stream, const ContentType& contentType) {
-	stream << contentType.asString();
-	return stream;
 }
 
 bool ContentType::isMultipart() const {
