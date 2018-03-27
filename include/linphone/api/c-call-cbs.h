@@ -160,6 +160,20 @@ LINPHONE_PUBLIC LinphoneCallCbsAckProcessingCb linphone_call_cbs_get_ack_process
 LINPHONE_PUBLIC void linphone_call_cbs_set_ack_processing (LinphoneCallCbs *cbs, LinphoneCallCbsAckProcessingCb cb);
 
 /**
+ * Get the TMMBR received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current TMMBR received callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsTmmbrReceivedCb linphone_call_cbs_get_tmmbr_received(LinphoneCallCbs *cbs);
+
+/**
+ * Set the TMMBR received callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The TMMBR received callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_tmmbr_received(LinphoneCallCbs *cbs, LinphoneCallCbsTmmbrReceivedCb cb);
+
+/**
  * @}
  */
 

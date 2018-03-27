@@ -225,6 +225,13 @@ LINPHONE_PUBLIC LinphoneAuthInfo *linphone_factory_create_auth_info(const Linpho
 LINPHONE_PUBLIC LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factory);
 
 /**
+ * Create a LinphoneChatRoomCbs object that holds callbacks for events happening on a chat room.
+ * @param[in] factory LinphoneFactory singletion object
+ * @return A new LinphoneChatRoomCbs object
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbs * linphone_factory_create_chat_room_cbs(const LinphoneFactory *factory);
+
+/**
  * Create an empty #LinphoneVcard.
  * @return a new #LinphoneVcard.
  * @ingroup initializing

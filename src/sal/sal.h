@@ -171,6 +171,7 @@ public:
 	void enable_test_features(bool_t enabled) {this->_enable_test_features=enabled;}
 	void use_no_initial_route(bool_t enabled) {this->no_initial_route=enabled;}
 	void enable_unconditional_answer(int value) {belle_sip_provider_enable_unconditional_answer(this->prov,value);}
+	void enable_reconnect_to_primary_asap(bool_t enabled) {belle_sip_stack_enable_reconnect_to_primary_asap(this->stack,enabled);}
 
 	bctbx_list_t *get_pending_auths() const {return bctbx_list_copy(this->pending_auths);}
 

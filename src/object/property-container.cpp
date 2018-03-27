@@ -36,14 +36,14 @@ public:
 
 // -----------------------------------------------------------------------------
 
-PropertyContainer::PropertyContainer () : mPrivate(new PropertyContainerPrivate) {}
+PropertyContainer::PropertyContainer () : mPrivate(nullptr) {}
 
 /*
  * Empty copy constructor. Don't change this pattern.
  * PropertyContainer is an Entity component, not a simple structure.
  * An Entity is UNIQUE.
  */
-PropertyContainer::PropertyContainer (const PropertyContainer &) : mPrivate(new PropertyContainerPrivate) {}
+PropertyContainer::PropertyContainer (const PropertyContainer &) : mPrivate(nullptr) {}
 
 PropertyContainer::~PropertyContainer () {
 	delete mPrivate;
@@ -54,19 +54,23 @@ PropertyContainer &PropertyContainer::operator= (const PropertyContainer &) {
 }
 
 Variant PropertyContainer::getProperty (const string &name) const {
-	L_D();
-	auto it = d->properties.find(name);
-	return it == d->properties.cend() ? Variant() : it->second;
+	if (!mPrivate)
+		return Variant();
+	auto &properties = mPrivate->properties;
+	auto it = properties.find(name);
+	return it == properties.cend() ? Variant() : it->second;
 }
 
 void PropertyContainer::setProperty (const string &name, const Variant &value) {
-	L_D();
-	d->properties[name] = value;
+	if (!mPrivate)
+		mPrivate = new PropertyContainerPrivate();
+	mPrivate->properties[name] = value;
 }
 
 void PropertyContainer::setProperty (const string &name, Variant &&value) {
-	L_D();
-	d->properties[name] = move(value);
+	if (!mPrivate)
+		mPrivate = new PropertyContainerPrivate();
+	mPrivate->properties[name] = move(value);
 }
 
 LINPHONE_END_NAMESPACE

@@ -171,19 +171,28 @@ public class AndroidPlatformHelper {
 		mWakeLock.acquire();
 	}
 
-	public void releaseCpuLock(){
+	public void releaseCpuLock() {
 		Log.i("releaseCpuLock()");
 		mWakeLock.release();
 	}
 
+	private int getResourceIdentifierFromName(String name) {
+		int resId = mResources.getIdentifier(name, "raw", mContext.getPackageName());
+		if (resId == 0) {
+			Log.d("App doesn't seem to embed resource " + name + "in it's res/raw/ directory, use linphone's instead");
+			resId = mResources.getIdentifier(name, "raw", "org.linphone");
+		}
+		return resId;
+	}
+
 	private void copyAssetsFromPackage() throws IOException {
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/notes_of_the_optimistic", null, null), mRingSoundFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/ringback", null, null), mRingbackSoundFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/hold", null, null), mPauseSoundFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/incoming_chat", null, null), mErrorToneFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/cpim_grammar", null, null), mGrammarCpimFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/vcard_grammar", null, null), mGrammarVcardFile);
-		copyIfNotExist(mResources.getIdentifier("org.linphone:raw/rootca", null, null), mLinphoneRootCaFile);
+		copyIfNotExist(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
+		copyIfNotExist(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
+		copyIfNotExist(getResourceIdentifierFromName("hold"), mPauseSoundFile);
+		copyIfNotExist(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
+		copyIfNotExist(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
+		copyIfNotExist(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
+		copyIfNotExist(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
@@ -193,9 +202,9 @@ public class AndroidPlatformHelper {
 		}
 	}
 
-	public void copyFromPackage(int ressourceId, String target) throws IOException{
-		FileOutputStream lOutputStream = mContext.openFileOutput (target, 0);
+	public void copyFromPackage(int ressourceId, String target) throws IOException {
 		InputStream lInputStream = mResources.openRawResource(ressourceId);
+		FileOutputStream lOutputStream = mContext.openFileOutput (target, 0);
 		int readByte;
 		byte[] buff = new byte[8048];
 		while (( readByte = lInputStream.read(buff)) != -1) {

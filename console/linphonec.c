@@ -975,7 +975,7 @@ linphonec_idle_call ()
 	linphone_core_iterate(opm);
 	if (answer_call){
 		fprintf (stdout, "-------auto answering to call-------\n" );
-		linphone_core_accept_call(opm,NULL);
+		linphone_core_accept_call(opm, linphone_core_get_current_call(opm));
 		answer_call=FALSE;
 	}
 	/* auto call handling */

@@ -47,10 +47,11 @@ shared_ptr<CallSession> ParticipantPrivate::createSession (
 // -----------------------------------------------------------------------------
 
 shared_ptr<ParticipantDevice> ParticipantPrivate::addDevice (const IdentityAddress &gruu) {
+	L_Q();
 	shared_ptr<ParticipantDevice> device = findDevice(gruu);
 	if (device)
 		return device;
-	device = make_shared<ParticipantDevice>(gruu);
+	device = make_shared<ParticipantDevice>(q, gruu);
 	devices.push_back(device);
 	return device;
 }

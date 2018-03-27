@@ -20,7 +20,6 @@
 #ifndef _L_REMOTE_CONFERENCE_H_
 #define _L_REMOTE_CONFERENCE_H_
 
-#include "conference-listener.h"
 #include "conference.h"
 #include "core/core-accessor.h"
 
@@ -30,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RemoteConferencePrivate;
 
-class LINPHONE_PUBLIC RemoteConference : public Conference, public ConferenceListener {
+class LINPHONE_PUBLIC RemoteConference : public Conference {
 	friend class ClientGroupChatRoomPrivate;
 
 public:

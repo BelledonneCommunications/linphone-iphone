@@ -449,6 +449,21 @@ typedef LinphoneCoreCbsPublishStateChangedCb LinphoneCorePublishStateChangedCb;
 **/
 
 /**
+ * @addtogroup event_api
+ * @{
+ */
+
+/**
+ * Callback used to notify the response to a sent NOTIFY
+ * @param ev The LinphoneEvent object that has sent the NOTIFY and for which we received a response
+**/
+typedef void (*LinphoneEventCbsNotifyResponseCb)(const LinphoneEvent *ev);
+
+/**
+ * @}
+ */
+
+/**
  * @addtogroup buddy_list
  * @{
  */

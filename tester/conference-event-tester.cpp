@@ -1023,7 +1023,7 @@ void send_admined_notify() {
 	BC_ASSERT_TRUE(!tester->participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester->participants.find(aliceAddr.asString())->second);
 
-	notify = localHandlerPrivate->createNotifyParticipantAdmined(bobAddr, true);
+	notify = localHandlerPrivate->createNotifyParticipantAdminStatusChanged(bobAddr, true);
 	tester->handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester->participants.size(), 2, int, "%d");
@@ -1078,7 +1078,7 @@ void send_unadmined_notify() {
 	BC_ASSERT_TRUE(!tester->participants.find(bobAddr.asString())->second);
 	BC_ASSERT_TRUE(tester->participants.find(aliceAddr.asString())->second);
 
-	notify = localHandlerPrivate->createNotifyParticipantAdmined(aliceAddr, false);
+	notify = localHandlerPrivate->createNotifyParticipantAdminStatusChanged(aliceAddr, false);
 	tester->handler->notifyReceived(notify);
 
 	BC_ASSERT_EQUAL(tester->participants.size(), 2, int, "%d");

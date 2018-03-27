@@ -19,7 +19,7 @@
 
 #include "linphone/utils/utils.h"
 
-#include "db-session-p.h"
+#include "db-session.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -28,20 +28,40 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-DbSession::DbSession () : ClonableObject(*new DbSessionPrivate) {}
+class DbSessionPrivate {
+public:
+	enum class Backend {
+		None,
+		Mysql,
+		Sqlite3
+	} backend = Backend::None;
+
+	std::unique_ptr<soci::session> backendSession;
+};
+
+DbSession::DbSession () : mPrivate(new DbSessionPrivate) {}
 
 DbSession::DbSession (const string &uri) : DbSession() {
-	#ifdef SOCI_ENABLED
-		try {
-			L_D();
-			d->backendSession = make_unique<soci::session>(uri);
-			d->backend = !uri.find("mysql") ? DbSessionPrivate::Backend::Mysql : DbSessionPrivate::Backend::Sqlite3;
-		} catch (const exception &e) {
-			lWarning() << "Unable to build db session with uri: " << e.what();
-		}
-	#else
-		lWarning() << "Unable to build db session with uri: soci not enabled.";
-	#endif // ifdef SOCI_ENABLED
+	try {
+		L_D();
+		d->backendSession = makeUnique<soci::session>(uri);
+		d->backend = !uri.find("mysql") ? DbSessionPrivate::Backend::Mysql : DbSessionPrivate::Backend::Sqlite3;
+	} catch (const exception &e) {
+		lWarning() << "Unable to build db session with uri: " << e.what();
+	}
+}
+
+DbSession::DbSession (DbSession &&other) : mPrivate(other.mPrivate) {
+	other.mPrivate = nullptr;
+}
+
+DbSession::~DbSession () {
+	delete mPrivate;
+}
+
+DbSession &DbSession::operator= (DbSession &&other) {
+	std::swap(mPrivate, other.mPrivate);
+	return *this;
 }
 
 DbSession::operator bool () const {
@@ -49,14 +69,10 @@ DbSession::operator bool () const {
 	return d->backend != DbSessionPrivate::Backend::None;
 }
 
-L_USE_DEFAULT_CLONABLE_OBJECT_SHARED_IMPL(DbSession);
-
-#ifdef SOCI_ENABLED
-	soci::session *DbSession::getBackendSession () const {
-		L_D();
-		return d->backendSession.get();
-	}
-#endif // ifdef SOCI_ENABLED
+soci::session *DbSession::getBackendSession () const {
+	L_D();
+	return d->backendSession.get();
+}
 
 string DbSession::primaryKeyStr (const string &type) const {
 	L_D();
@@ -157,48 +173,59 @@ long long DbSession::getLastInsertId () const {
 			break;
 	}
 
-	#ifdef SOCI_ENABLED
-		*d->backendSession << sql, soci::into(id);
-	#endif // ifdef SOCI_ENABLED
+	*d->backendSession << sql, soci::into(id);
 
 	return id;
 }
 
 void DbSession::enableForeignKeys (bool status) {
-	#ifdef SOCI_ENABLED
-		L_D();
-		switch (d->backend) {
-			case DbSessionPrivate::Backend::Mysql:
-				*d->backendSession << string("SET FOREIGN_KEY_CHECKS = ") + (status ? "1" : "0");
-				break;
-			case DbSessionPrivate::Backend::Sqlite3:
-				*d->backendSession << string("PRAGMA foreign_keys = ") + (status ? "ON" : "OFF");
-				break;
-			case DbSessionPrivate::Backend::None:
-				break;
-		}
-	#endif // ifdef SOCI_ENABLED
+	L_D();
+
+	switch (d->backend) {
+		case DbSessionPrivate::Backend::Mysql:
+			*d->backendSession << string("SET FOREIGN_KEY_CHECKS = ") + (status ? "1" : "0");
+			break;
+		case DbSessionPrivate::Backend::Sqlite3:
+			*d->backendSession << string("PRAGMA foreign_keys = ") + (status ? "ON" : "OFF");
+			break;
+		case DbSessionPrivate::Backend::None:
+			break;
+	}
 }
 
 bool DbSession::checkTableExists (const string &table) const {
-	#ifdef SOCI_ENABLED
-		L_D();
-		soci::session *session = d->backendSession.get();
-		switch (d->backend) {
-			case DbSessionPrivate::Backend::Mysql:
-				*session << "SHOW TABLES LIKE :table", soci::use(table);
-				return session->got_data() > 0;
-			case DbSessionPrivate::Backend::Sqlite3:
-				*session << "SELECT name FROM sqlite_master WHERE type='table' AND name=:table", soci::use(table);
-				return session->got_data() > 0;
-			case DbSessionPrivate::Backend::None:
-				return false;
-		}
-		L_ASSERT(false);
-	#endif // ifdef SOCI_ENABLED
+	L_D();
 
-	(void)table;
+	soci::session *session = d->backendSession.get();
+	switch (d->backend) {
+		case DbSessionPrivate::Backend::Mysql:
+			*session << "SHOW TABLES LIKE :table", soci::use(table);
+			return session->got_data() > 0;
+		case DbSessionPrivate::Backend::Sqlite3:
+			*session << "SELECT name FROM sqlite_master WHERE type='table' AND name=:table", soci::use(table);
+			return session->got_data() > 0;
+		case DbSessionPrivate::Backend::None:
+			return false;
+	}
+
+	L_ASSERT(false);
 	return false;
+}
+
+long long DbSession::resolveId (const soci::row &row, int col) const {
+	L_D();
+
+	switch (d->backend) {
+		case DbSessionPrivate::Backend::Mysql:
+			return static_cast<long long>(row.get<unsigned long long>(0));
+		case DbSessionPrivate::Backend::Sqlite3:
+			return static_cast<long long>(row.get<int>(0));
+		case DbSessionPrivate::Backend::None:
+			return 0;
+	}
+
+	L_ASSERT(false);
+	return 0;
 }
 
 LINPHONE_END_NAMESPACE

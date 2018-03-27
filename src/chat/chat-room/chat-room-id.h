@@ -32,14 +32,14 @@ class LINPHONE_PUBLIC ChatRoomId : public ClonableObject {
 public:
 	ChatRoomId ();
 	ChatRoomId (const IdentityAddress &peerAddress, const IdentityAddress &localAddress);
-	ChatRoomId (const ChatRoomId &src);
+	ChatRoomId (const ChatRoomId &other);
 
-	ChatRoomId &operator= (const ChatRoomId &src);
+	ChatRoomId &operator= (const ChatRoomId &other);
 
-	bool operator== (const ChatRoomId &chatRoomId) const;
-	bool operator!= (const ChatRoomId &chatRoomId) const;
+	bool operator== (const ChatRoomId &other) const;
+	bool operator!= (const ChatRoomId &other) const;
 
-	bool operator< (const ChatRoomId &chatRoomId) const;
+	bool operator< (const ChatRoomId &other) const;
 
 	const IdentityAddress &getPeerAddress () const;
 	const IdentityAddress &getLocalAddress () const;
@@ -49,6 +49,11 @@ public:
 private:
 	L_DECLARE_PRIVATE(ChatRoomId);
 };
+
+inline std::ostream &operator<< (std::ostream &os, const ChatRoomId &chatRoomId) {
+	os << "ChatRoomId(" << chatRoomId.getPeerAddress() << ", local=" << chatRoomId.getLocalAddress() << ")";
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 

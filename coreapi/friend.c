@@ -413,7 +413,7 @@ void linphone_friend_add_phone_number(LinphoneFriend *lf, const char *phone) {
 	}
 }
 
-bctbx_list_t* linphone_friend_get_phone_numbers(LinphoneFriend *lf) {
+bctbx_list_t* linphone_friend_get_phone_numbers(const LinphoneFriend *lf) {
 	if (!lf || !lf->vcard) return NULL;
 
 	if (linphone_core_vcard_supported()) {
@@ -1134,7 +1134,7 @@ void linphone_friend_destroy(LinphoneFriend *lf) {
 	linphone_friend_unref(lf);
 }
 
-LinphoneVcard* linphone_friend_get_vcard(LinphoneFriend *fr) {
+LinphoneVcard* linphone_friend_get_vcard(const LinphoneFriend *fr) {
 	if (fr && linphone_core_vcard_supported()) return fr->vcard;
 	return NULL;
 }

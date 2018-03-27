@@ -24,6 +24,7 @@
 #include "conference/conference.h"
 #include "conference/session/call-session-listener.h"
 #include "object/object-p.h"
+#include "utils/background-task.h"
 
 // TODO: Remove me later.
 #include "private.h"
@@ -33,11 +34,10 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class CallSession;
+class RealTimeTextChatRoom;
 
 class CallPrivate :	public ObjectPrivate, public CallSessionListener {
 public:
-	CallPrivate () = default;
-
 	void initiateIncoming ();
 	bool initiateOutgoing ();
 	void iterate (time_t currentRealTime, bool oneSecondElapsed);
@@ -49,6 +49,7 @@ public:
 
 	virtual std::shared_ptr<CallSession> getActiveSession () const { return nullptr; }
 	bool getAudioMuted () const;
+	std::shared_ptr<RealTimeTextChatRoom> getChatRoom ();
 
 	LinphoneProxyConfig *getDestProxy () const;
 	IceSession *getIceSession () const;
@@ -71,52 +72,56 @@ private:
 	void terminateBecauseOfLostMedia ();
 
 	/* CallSessionListener */
-	void onAckBeingSent (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) override;
-	void onAckReceived (const std::shared_ptr<const CallSession> &session, LinphoneHeaders *headers) override;
-	void onBackgroundTaskToBeStarted (const std::shared_ptr<const CallSession> &session) override;
-	void onBackgroundTaskToBeStopped (const std::shared_ptr<const CallSession> &session) override;
-	bool onCallSessionAccepted (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionConferenceStreamStarting (const std::shared_ptr<const CallSession> &session, bool mute) override;
-	void onCallSessionConferenceStreamStopping (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionEarlyFailed (const std::shared_ptr<const CallSession> &session, LinphoneErrorInfo *ei) override;
-	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionSetTerminated (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionStartReferred (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state, const std::string &message) override;
-	void onCallSessionTransferStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state) override;
-	void onCheckForAcceptation (const std::shared_ptr<const CallSession> &session) override;
-	void onDtmfReceived (const std::shared_ptr<const CallSession> &session, char dtmf) override;
-	void onIncomingCallSessionNotified (const std::shared_ptr<const CallSession> &session) override;
-	void onIncomingCallSessionStarted (const std::shared_ptr<const CallSession> &session) override;
-	void onIncomingCallSessionTimeoutCheck (const std::shared_ptr<const CallSession> &session, int elapsed, bool oneSecondElapsed) override;
-	void onInfoReceived (const std::shared_ptr<const CallSession> &session, const LinphoneInfoMessage *im) override;
-	void onNoMediaTimeoutCheck (const std::shared_ptr<const CallSession> &session, bool oneSecondElapsed) override;
-	void onEncryptionChanged (const std::shared_ptr<const CallSession> &session, bool activated, const std::string &authToken) override;
-	void onCallSessionStateChangedForReporting (const std::shared_ptr<const CallSession> &session) override;
-	void onRtcpUpdateForReporting (const std::shared_ptr<const CallSession> &session, SalStreamType type) override;
-	void onStatsUpdated (const std::shared_ptr<const CallSession> &session, const LinphoneCallStats *stats) override;
-	void onUpdateMediaInfoForReporting (const std::shared_ptr<const CallSession> &session, int statsType) override;
-	void onResetCurrentSession (const std::shared_ptr<const CallSession> &session) override;
-	void onSetCurrentSession (const std::shared_ptr<const CallSession> &session) override;
-	void onFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) override;
-	void onResetFirstVideoFrameDecoded (const std::shared_ptr<const CallSession> &session) override;
-	void onPlayErrorTone (const std::shared_ptr<const CallSession> &session, LinphoneReason reason) override;
-	void onRingbackToneRequested (const std::shared_ptr<const CallSession> &session, bool requested) override;
-	void onStartRinging (const std::shared_ptr<const CallSession> &session) override;
-	void onStopRinging (const std::shared_ptr<const CallSession> &session) override;
-	void onStopRingingIfInCall (const std::shared_ptr<const CallSession> &session) override;
-	void onStopRingingIfNeeded (const std::shared_ptr<const CallSession> &session) override;
-	bool areSoundResourcesAvailable (const std::shared_ptr<const CallSession> &session) override;
-	bool isPlayingRingbackTone (const std::shared_ptr<const CallSession> &session) override;
+	void onAckBeingSent (const std::shared_ptr<CallSession> &session, LinphoneHeaders *headers) override;
+	void onAckReceived (const std::shared_ptr<CallSession> &session, LinphoneHeaders *headers) override;
+	void onBackgroundTaskToBeStarted (const std::shared_ptr<CallSession> &session) override;
+	void onBackgroundTaskToBeStopped (const std::shared_ptr<CallSession> &session) override;
+	bool onCallSessionAccepted (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionConferenceStreamStarting (const std::shared_ptr<CallSession> &session, bool mute) override;
+	void onCallSessionConferenceStreamStopping (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionEarlyFailed (const std::shared_ptr<CallSession> &session, LinphoneErrorInfo *ei) override;
+	void onCallSessionSetReleased (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionSetTerminated (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionStartReferred (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<CallSession> &session, CallSession::State state, const std::string &message) override;
+	void onCallSessionTransferStateChanged (const std::shared_ptr<CallSession> &session, CallSession::State state) override;
+	void onCheckForAcceptation (const std::shared_ptr<CallSession> &session) override;
+	void onDtmfReceived (const std::shared_ptr<CallSession> &session, char dtmf) override;
+	void onIncomingCallSessionNotified (const std::shared_ptr<CallSession> &session) override;
+	void onIncomingCallSessionStarted (const std::shared_ptr<CallSession> &session) override;
+	void onIncomingCallSessionTimeoutCheck (const std::shared_ptr<CallSession> &session, int elapsed, bool oneSecondElapsed) override;
+	void onInfoReceived (const std::shared_ptr<CallSession> &session, const LinphoneInfoMessage *im) override;
+	void onNoMediaTimeoutCheck (const std::shared_ptr<CallSession> &session, bool oneSecondElapsed) override;
+	void onEncryptionChanged (const std::shared_ptr<CallSession> &session, bool activated, const std::string &authToken) override;
+	void onCallSessionStateChangedForReporting (const std::shared_ptr<CallSession> &session) override;
+	void onRtcpUpdateForReporting (const std::shared_ptr<CallSession> &session, SalStreamType type) override;
+	void onStatsUpdated (const std::shared_ptr<CallSession> &session, const LinphoneCallStats *stats) override;
+	void onUpdateMediaInfoForReporting (const std::shared_ptr<CallSession> &session, int statsType) override;
+	void onResetCurrentSession (const std::shared_ptr<CallSession> &session) override;
+	void onSetCurrentSession (const std::shared_ptr<CallSession> &session) override;
+	void onFirstVideoFrameDecoded (const std::shared_ptr<CallSession> &session) override;
+	void onResetFirstVideoFrameDecoded (const std::shared_ptr<CallSession> &session) override;
+	void onPlayErrorTone (const std::shared_ptr<CallSession> &session, LinphoneReason reason) override;
+	void onRingbackToneRequested (const std::shared_ptr<CallSession> &session, bool requested) override;
+	void onStartRinging (const std::shared_ptr<CallSession> &session) override;
+	void onStopRinging (const std::shared_ptr<CallSession> &session) override;
+	void onStopRingingIfInCall (const std::shared_ptr<CallSession> &session) override;
+	void onStopRingingIfNeeded (const std::shared_ptr<CallSession> &session) override;
+	bool areSoundResourcesAvailable (const std::shared_ptr<CallSession> &session) override;
+	bool isPlayingRingbackTone (const std::shared_ptr<CallSession> &session) override;
+	void onRealTimeTextCharacterReceived (const std::shared_ptr<CallSession> &session, RealtimeTextReceivedCharacter *character) override;
+	void onTmmbrReceived(const std::shared_ptr<CallSession> &session, int streamIndex, int tmmbr) override;
 
 	mutable LinphonePlayer *player = nullptr;
 
 	CallCallbackObj nextVideoFrameDecoded;
 
-	unsigned long backgroundTaskId = 0;
-
 	bool ringingBeep = false;
 	bool playingRingbackTone = false;
+
+	BackgroundTask bgTask;
+
+	mutable std::shared_ptr<RealTimeTextChatRoom> chatRoom;
 
 	L_DECLARE_PUBLIC(Call);
 };

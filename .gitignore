@@ -106,3 +106,4 @@ tools/lp-test-ecc
 tools/lp-sendmsg
 
 *.pyc
+liblinphone.spec

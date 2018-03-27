@@ -17,12 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "linphone/utils/utils.h"
-
 #include "address-p.h"
 #include "address/identity-address.h"
 #include "c-wrapper/c-wrapper.h"
-#include "c-wrapper/internal/c-sal.h"
+#include "containers/lru-cache.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -30,6 +28,49 @@
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
+
+namespace {
+	class SalAddressWrap {
+	public:
+		explicit SalAddressWrap (SalAddress *salAddress = nullptr) : mSalAddress(salAddress) {}
+
+		SalAddressWrap (const SalAddressWrap &other) : mSalAddress(other.mSalAddress) {
+			if (mSalAddress)
+				sal_address_ref(mSalAddress);
+		}
+
+		SalAddressWrap (SalAddressWrap &&other) : mSalAddress(other.mSalAddress) {
+			other.mSalAddress = nullptr;
+		}
+
+		~SalAddressWrap () {
+			if (mSalAddress)
+				sal_address_unref(mSalAddress);
+		}
+
+		const SalAddress *get () {
+			return mSalAddress;
+		}
+
+	private:
+		SalAddress *mSalAddress;
+	};
+	LruCache<string, SalAddressWrap> addressesCache;
+}
+
+static SalAddress *getSalAddressFromCache (const string &uri) {
+	SalAddressWrap *wrap = addressesCache[uri];
+	if (wrap)
+		return sal_address_clone(wrap->get());
+
+	SalAddress *address = sal_address_new(L_STRING_TO_C(uri));
+	if (address) {
+		addressesCache.insert(uri, SalAddressWrap(address));
+		return sal_address_clone(address);
+	}
+
+	return nullptr;
+}
 
 // -----------------------------------------------------------------------------
 
@@ -39,11 +80,16 @@ void AddressPrivate::setInternalAddress (const SalAddress *addr) {
 	internalAddress = sal_address_clone(addr);
 }
 
+void AddressPrivate::clearSipAddressesCache () {
+	addressesCache.clear();
+}
+
 // -----------------------------------------------------------------------------
 
 Address::Address (const string &address) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	if (!(d->internalAddress = sal_address_new(L_STRING_TO_C(address)))) {
+
+	if (!(d->internalAddress = getSalAddressFromCache(address))) {
 		lWarning() << "Cannot create Address, bad uri [" << address << "]";
 	}
 }
@@ -65,12 +111,12 @@ Address::Address (const IdentityAddress &identityAddress) : ClonableObject(*new 
 	if (identityAddress.hasGruu())
 		uri += ";gr=" + identityAddress.getGruu();
 
-	d->internalAddress = sal_address_new(L_STRING_TO_C(uri));
+	d->internalAddress = getSalAddressFromCache(uri);
 }
 
-Address::Address (const Address &src) : ClonableObject(*new AddressPrivate) {
+Address::Address (const Address &other) : ClonableObject(*new AddressPrivate) {
 	L_D();
-	SalAddress *salAddress = src.getPrivate()->internalAddress;
+	SalAddress *salAddress = other.getPrivate()->internalAddress;
 	if (salAddress)
 		d->internalAddress = sal_address_clone(salAddress);
 }
@@ -81,28 +127,28 @@ Address::~Address () {
 		sal_address_destroy(d->internalAddress);
 }
 
-Address &Address::operator= (const Address &src) {
+Address &Address::operator= (const Address &other) {
 	L_D();
-	if (this != &src) {
+	if (this != &other) {
 		if (d->internalAddress)
 			sal_address_destroy(d->internalAddress);
-		SalAddress *salAddress = src.getPrivate()->internalAddress;
+		SalAddress *salAddress = other.getPrivate()->internalAddress;
 		d->internalAddress = salAddress ? sal_address_clone(salAddress) : nullptr;
 	}
 
 	return *this;
 }
 
-bool Address::operator== (const Address &address) const {
-	return asString() == address.asString();
+bool Address::operator== (const Address &other) const {
+	return asString() == other.asString();
 }
 
-bool Address::operator!= (const Address &address) const {
-	return !(*this == address);
+bool Address::operator!= (const Address &other) const {
+	return !(*this == other);
 }
 
-bool Address::operator< (const Address &address) const {
-	return asString() < address.asString();
+bool Address::operator< (const Address &other) const {
+	return asString() < other.asString();
 }
 
 bool Address::isValid () const {

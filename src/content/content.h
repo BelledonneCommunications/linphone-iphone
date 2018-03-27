@@ -20,6 +20,7 @@
 #ifndef _L_CONTENT_H_
 #define _L_CONTENT_H_
 
+#include <list>
 #include <vector>
 
 #include "object/app-data-container.h"
@@ -31,27 +32,30 @@ L_DECL_C_STRUCT(LinphoneContent);
 
 LINPHONE_BEGIN_NAMESPACE
 
+class ContentDisposition;
 class ContentType;
 class ContentPrivate;
 
 class LINPHONE_PUBLIC Content : public ClonableObject, public AppDataContainer {
 public:
 	Content ();
-	Content (const Content &src);
-	Content (Content &&src);
+	Content (const Content &other);
+	Content (Content &&other);
 	~Content ();
 
-	Content &operator= (const Content &src);
-	Content &operator= (Content &&src);
+	Content &operator= (const Content &other);
+	Content &operator= (Content &&other);
 
-	bool operator== (const Content &content) const;
+	bool operator== (const Content &other) const;
 
 	const ContentType &getContentType () const;
 	void setContentType (const ContentType &contentType);
-	void setContentType (const std::string &contentType);
 
-	const std::string &getContentDisposition () const;
-	void setContentDisposition (const std::string &contentDisposition);
+	const ContentDisposition &getContentDisposition () const;
+	void setContentDisposition (const ContentDisposition &contentDisposition);
+
+	const std::string &getContentEncoding () const;
+	void setContentEncoding (const std::string &contentEncoding);
 
 	const std::vector<char> &getBody () const;
 	std::string getBodyAsString () const;
@@ -70,6 +74,11 @@ public:
 	bool isEmpty () const;
 
 	virtual bool isFile () const;
+
+	const std::list<std::pair<std::string, std::string>> &getHeaders () const;
+	void addHeader (const std::string &headerName, const std::string &headerValue);
+	void removeHeader (const std::string &headerName);
+	std::list<std::pair<std::string, std::string>>::const_iterator findHeader (const std::string &headerName) const;
 
 	// TODO: Remove me later.
 	virtual LinphoneContent *toLinphoneContent () const;

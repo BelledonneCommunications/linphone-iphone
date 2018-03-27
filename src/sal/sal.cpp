@@ -118,7 +118,6 @@ void Sal::process_request_event_cb (void *ud, const belle_sip_request_event_t *e
 			op->fill_cbs();
 		}else if (strcmp("REFER",method)==0) {
 			op=new SalReferOp(sal);
-			op->fill_cbs();
 		}else if (strcmp("OPTIONS",method)==0) {
 			resp=belle_sip_response_create_from_request(req,200);
 			belle_sip_provider_send_response(sal->prov,resp);
@@ -219,11 +218,14 @@ void Sal::process_request_event_cb (void *ud, const belle_sip_request_event_t *e
 	if (!op->call_id) {
 		op->call_id=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req), belle_sip_header_call_id_t))));
 	}
-	/*It is worth noting that proxies can (and
-   will) remove this header field*/
+	/*It is worth noting that proxies can (and will) remove this header field*/
 	op->set_privacy_from_message((belle_sip_message_t*)req);
-
-	op->assign_recv_headers((belle_sip_message_t*)req);
+	
+	if (strcmp("ACK",method) != 0){
+		/*The ACK custom header is processed specifically later on*/
+		op->assign_recv_headers((belle_sip_message_t*)req);
+	}
+	
 	if (op->callbacks && op->callbacks->process_request_event) {
 		op->callbacks->process_request_event(op,event);
 	} else {

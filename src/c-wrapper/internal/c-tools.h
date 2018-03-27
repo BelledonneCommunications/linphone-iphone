@@ -155,7 +155,7 @@ private:
 	// Runtime checker.
 	// ---------------------------------------------------------------------------
 
-	static inline void abort (const char *message) {
+	[[noreturn]] static inline void abort (const char *message) {
 		std::cerr << "[FATAL C-WRAPPER]" << message << std::endl;
 		std::terminate();
 	}
@@ -338,7 +338,7 @@ public:
 		typename = typename std::enable_if<IsDefinedBaseCppObject<CppType>::value, CppType>::type
 	>
 	static inline std::shared_ptr<const CppType> getCppPtrFromC (const CType *cObject) {
-		return getCppPtrFromC<CType, CppType>(const_cast<CType *>(cObject));
+		return getCppPtrFromC<typename std::remove_const<CType>::type, CppType>(const_cast<CType *>(cObject));
 	}
 
 	template<
@@ -562,7 +562,7 @@ public:
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<CppType> &cppList) {
 		bctbx_list_t *result = nullptr;
 		for (const auto &value : cppList)
-			result = bctbx_list_append(result, belle_sip_object_ref(getCBackPtr(&value)));
+			result = bctbx_list_append(result, getCBackPtr(&value));
 		return result;
 	}
 

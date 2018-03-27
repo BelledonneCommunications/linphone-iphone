@@ -30,8 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoomPrivate : public ChatRoomPrivate {
 public:
-	ClientGroupChatRoomPrivate () = default;
-
 	std::list<IdentityAddress> cleanAddressesList (const std::list<IdentityAddress> &addresses) const;
 	std::shared_ptr<CallSession> createSession ();
 	void notifyReceived (const std::string &body);
@@ -46,8 +44,8 @@ public:
 	void onChatRoomDeleteRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
 
 	// CallSessionListener
-	void onCallSessionSetReleased (const std::shared_ptr<const CallSession> &session) override;
-	void onCallSessionStateChanged (const std::shared_ptr<const CallSession> &session, CallSession::State state, const std::string &message) override;
+	void onCallSessionSetReleased (const std::shared_ptr<CallSession> &session) override;
+	void onCallSessionStateChanged (const std::shared_ptr<CallSession> &session, CallSession::State state, const std::string &message) override;
 
 private:
 	CallSessionListener *callSessionListener = this;
@@ -55,7 +53,6 @@ private:
 	ClientGroupChatRoom::CapabilitiesMask capabilities = ClientGroupChatRoom::Capabilities::Conference;
 	bool deletionOnTerminationEnabled = false;
 	BackgroundTask bgTask;
-
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 
+#include "address/address-p.h"
+
 // TODO: From coreapi. Remove me later.
 #include "private.h"
 
@@ -145,6 +147,7 @@ LinphoneFactory *linphone_factory_get(void) {
 }
 
 void linphone_factory_clean(void){
+	LinphonePrivate::AddressPrivate::clearSipAddressesCache();
 	if (_factory){
 		belle_sip_object_unref(_factory);
 		_factory = NULL;
@@ -236,6 +239,10 @@ LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *facto
 
 LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factory) {
 	return _linphone_call_cbs_new();
+}
+
+LinphoneChatRoomCbs * linphone_factory_create_chat_room_cbs(const LinphoneFactory *factory) {
+	return _linphone_chat_room_cbs_new();
 }
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {

@@ -34,6 +34,8 @@
 #include "linphone/api/c-dial-plan.h"
 #include "linphone/api/c-event-log.h"
 #include "linphone/api/c-participant.h"
+#include "linphone/api/c-magic-search.h"
+#include "linphone/api/c-search-result.h"
 #include "linphone/api/c-types.h"
 
 #endif // ifndef _L_C_API_H_

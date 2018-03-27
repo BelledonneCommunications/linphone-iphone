@@ -90,7 +90,7 @@ struct _LinphoneProxyConfig
 	LinphoneAddress* identity_address;
 	LinphoneAddress *contact_address;
 	LinphoneAddress *contact_address_without_params;
-	char *reg_route;
+	bctbx_list_t *reg_routes;
 	char *quality_reporting_collector;
 	char *realm;
 	char *contact_params;
@@ -106,6 +106,7 @@ struct _LinphoneProxyConfig
 	LinphoneRegistrationState state;
 	LinphoneAVPFMode avpf_mode;
 	LinphoneNatPolicy *nat_policy;
+	int quality_reporting_interval;
 
 	bool_t commit;
 	bool_t reg_sendregister;
@@ -115,15 +116,14 @@ struct _LinphoneProxyConfig
 	bool_t send_publish;
 	bool_t quality_reporting_enabled;
 	uint8_t avpf_rr_interval;
-	uint8_t quality_reporting_interval;
+	bool_t register_changed;
 
 	time_t deletion_date;
 	LinphonePrivacyMask privacy;
 	/*use to check if server config has changed  between edit() and done()*/
 	LinphoneAddress *saved_proxy;
 	LinphoneAddress *saved_identity;
-	bool_t register_changed;
-	bool_t unused[3];
+	
 	/*---*/
 	LinphoneAddress *pending_contact; /*use to store previous contact in case of network failure*/
 	LinphoneEvent *presence_publish_event;
@@ -131,6 +131,7 @@ struct _LinphoneProxyConfig
 
 	char *refkey;
 	char *sip_etag; /*publish context*/
+	char *conference_factory_uri;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneProxyConfig);
@@ -149,11 +150,6 @@ struct _LinphoneAuthInfo
 	char *tls_cert_path;
 	char *tls_key_path;
 	char *algorithm;
-};
-
-struct _LinphoneChatMessageCharacter {
-	uint32_t value;
-	bool_t has_been_read;
 };
 
 struct _LinphoneFriendPresence {
@@ -378,6 +374,14 @@ struct _LCCallbackObj {
 	void *_user_data;
 };
 
+struct _LinphoneEventCbs {
+	belle_sip_object_t base;
+	void *user_data;
+	LinphoneEventCbsNotifyResponseCb notify_response_cb;
+};
+
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneEventCbs);
+
 struct _LinphoneEvent{
 	belle_sip_object_t base;
 	LinphoneErrorInfo *ei;
@@ -389,6 +393,7 @@ struct _LinphoneEvent{
 	LinphonePublishState publish_state;
 	void *userdata;
 	char *name;
+	LinphoneEventCbs *callbacks;
 	int expires;
 	bool_t terminating;
 	bool_t is_out_of_dialog_op; /*used for out of dialog notify*/

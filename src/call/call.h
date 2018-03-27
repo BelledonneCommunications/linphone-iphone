@@ -36,6 +36,8 @@ class MediaSessionPrivate;
 
 class Call : public Object, public CoreAccessor {
 	friend class CallSessionPrivate;
+	friend class ChatMessage;
+	friend class ChatMessagePrivate;
 	friend class CorePrivate;
 	friend class MediaSessionPrivate;
 
@@ -85,6 +87,7 @@ public:
 	const Address &getDiversionAddress () const;
 	int getDuration () const;
 	const LinphoneErrorInfo *getErrorInfo () const;
+	const Address &getLocalAddress () const;
 	LinphoneCallLog *getLog () const;
 	RtpTransport *getMetaRtcpTransport (int streamIndex) const;
 	RtpTransport *getMetaRtpTransport (int streamIndex) const;
@@ -98,7 +101,6 @@ public:
 	std::shared_ptr<Call> getReferer () const;
 	std::string getReferTo () const;
 	const Address &getRemoteAddress () const;
-	std::string getRemoteAddressAsString () const;
 	std::string getRemoteContact () const;
 	const MediaSessionParams *getRemoteParams () const;
 	std::string getRemoteUserAgent () const;

@@ -28,7 +28,6 @@ pol=accept
 subscribe=0
 
 [misc]
-conference_factory_uri=sip:conference-factory@conf.example.org
 enable_basic_to_client_group_chat_room_migration=1
 basic_to_client_group_chat_room_migration_timer=10
 

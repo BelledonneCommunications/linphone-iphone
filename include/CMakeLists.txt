@@ -86,7 +86,9 @@ set(C_API_HEADER_FILES
 	c-chat-room.h
 	c-dial-plan.h
 	c-event-log.h
+	c-magic-search.h
 	c-participant.h
+	c-search-result.h
 	c-types.h
 )
 

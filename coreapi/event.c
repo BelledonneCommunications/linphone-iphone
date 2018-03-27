@@ -76,6 +76,46 @@ LINPHONE_PUBLIC const char *linphone_publish_state_to_string(LinphonePublishStat
 	return NULL;
 }
 
+
+BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneEventCbs);
+
+BELLE_SIP_INSTANCIATE_VPTR(LinphoneEventCbs, belle_sip_object_t,
+	NULL, // destroy
+	NULL, // clone
+	NULL, // marshal
+	FALSE
+);
+
+static LinphoneEventCbs *linphone_event_cbs_new(void) {
+	return belle_sip_object_new(LinphoneEventCbs);
+}
+
+LinphoneEventCbs *linphone_event_cbs_ref(LinphoneEventCbs *cbs) {
+	belle_sip_object_ref(cbs);
+	return cbs;
+}
+
+void linphone_event_cbs_unref(LinphoneEventCbs *cbs) {
+	belle_sip_object_unref(cbs);
+}
+
+void *linphone_event_cbs_get_user_data(const LinphoneEventCbs *cbs) {
+	return cbs->user_data;
+}
+
+void linphone_event_cbs_set_user_data(LinphoneEventCbs *cbs, void *ud) {
+	cbs->user_data = ud;
+}
+
+LinphoneEventCbsNotifyResponseCb linphone_event_cbs_get_notify_response(const LinphoneEventCbs *cbs) {
+	return cbs->notify_response_cb;
+}
+
+void linphone_event_cbs_set_notify_response(LinphoneEventCbs *cbs, LinphoneEventCbsNotifyResponseCb cb) {
+	cbs->notify_response_cb = cb;
+}
+
+
 static void linphone_event_release(LinphoneEvent *lev){
 	if (lev->op) {
 		/*this will stop the refresher*/
@@ -86,6 +126,7 @@ static void linphone_event_release(LinphoneEvent *lev){
 
 static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscriptionDir dir, const char *name, LinphonePrivate::SalEventOp *op){
 	LinphoneEvent *lev=belle_sip_object_new(LinphoneEvent);
+	lev->callbacks = linphone_event_cbs_new();
 	lev->lc=lc;
 	lev->dir=dir;
 	lev->op=op;
@@ -446,6 +487,7 @@ static void linphone_event_destroy(LinphoneEvent *lev){
 	if (lev->to_address) linphone_address_unref(lev->to_address);
 	if (lev->from_address) linphone_address_unref(lev->from_address);
 	if (lev->remote_contact_address) linphone_address_unref(lev->remote_contact_address);
+	linphone_event_cbs_unref(lev->callbacks);
 
 	ms_free(lev->name);
 }
@@ -521,6 +563,16 @@ static belle_sip_error_code _linphone_event_marshall(belle_sip_object_t *obj, ch
 		"Incoming Subscribe" : (ev->dir == LinphoneSubscriptionOutgoing ? "Outgoing subscribe" : "Publish"), ev->name);
 
 	return err;
+}
+
+void _linphone_event_notify_notify_response(const LinphoneEvent *lev) {
+	LinphoneEventCbsNotifyResponseCb cb = linphone_event_cbs_get_notify_response(lev->callbacks);
+	if (cb)
+		cb(lev);
+}
+
+LinphoneEventCbs *linphone_event_get_callbacks(const LinphoneEvent *ev) {
+	return ev->callbacks;
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneEvent);

@@ -30,11 +30,11 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AbstractDbPrivate : public ObjectPrivate {
 public:
-	AbstractDbPrivate () = default;
-
 	DbSession dbSession;
 
 private:
+	void safeInit ();
+
 	AbstractDb::Backend backend;
 
 	L_DECLARE_PUBLIC(AbstractDb);

@@ -23,15 +23,19 @@
 #include <string>
 
 #include "linphone/utils/general.h"
+#include "sal/sal.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
+class Sal;
+class Core;
+
 class BackgroundTask {
 public:
-	BackgroundTask () = default;
-	BackgroundTask (const std::string &name) : mName(name) {}
+	BackgroundTask () {}
+	BackgroundTask (const std::string &name) {}
 	virtual ~BackgroundTask () {
 		stop();
 	}
@@ -40,16 +44,26 @@ public:
 		mName = name;
 	}
 
-	void start ();
-	void stop ();
-
 	const std::string &getName () const {
 		return mName;
 	}
 
+	/**
+	 * Start a long running task for at most max_duration_seconds, after which it is automatically terminated
+	 */
+	void start (const std::shared_ptr<Core> &core, int maxDurationSeconds = 15 * 60);  // 15 min by default, like on iOS
+	void stop ();
+
+protected:
 	virtual void handleTimeout ();
 
 private:
+	static int sHandleSalTimeout(void *data, unsigned int events);
+	static void sHandleTimeout(void *data);
+	void handleSalTimeout();
+
+	belle_sip_source_t *mTimeout = nullptr;
+	Sal *mSal = nullptr;
 	std::string mName;
 	unsigned long mId = 0;
 };

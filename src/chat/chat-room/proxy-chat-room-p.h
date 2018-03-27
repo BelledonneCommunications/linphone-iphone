@@ -21,6 +21,7 @@
 #define _L_PROXY_CHAT_ROOM_P_H_
 
 #include "abstract-chat-room-p.h"
+#include "proxy-chat-room.h"
 
 // =============================================================================
 
@@ -42,6 +43,10 @@ public:
 
 	inline void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override {
 		chatRoom->getPrivate()->sendChatMessage(chatMessage);
+	}
+
+	inline void addEvent (const std::shared_ptr<EventLog> &eventLog) override {
+		chatRoom->getPrivate()->addEvent(eventLog);
 	}
 
 	inline void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) override {
@@ -68,8 +73,8 @@ public:
 		chatRoom->getPrivate()->onChatMessageReceived(chatMessage);
 	}
 
-	void setupCallbacks ();
-	void teardownCallbacks ();
+	void setupProxy ();
+	void teardownProxy ();
 
 	std::shared_ptr<AbstractChatRoom> chatRoom;
 

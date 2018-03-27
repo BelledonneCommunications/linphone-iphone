@@ -20,38 +20,66 @@
 #include "background-task.h"
 #include "c-wrapper/internal/c-sal.h"
 #include "logger/logger.h"
+#include "core/core-p.h"
+
+// TODO: Remove me
+#include "private.h" // To get access to the Sal
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-static void notifier (void *context) {
+void BackgroundTask::sHandleTimeout (void *context) {
 	static_cast<BackgroundTask *>(context)->handleTimeout();
 }
 
-void BackgroundTask::start () {
+int BackgroundTask::sHandleSalTimeout (void *data, unsigned int events) {
+	static_cast<BackgroundTask *>(data)->handleSalTimeout();
+	return BELLE_SIP_STOP;
+}
+
+void BackgroundTask::handleSalTimeout () {
+	lWarning() << "Background task [" << mId << "] with name: [" << mName << "] is now expiring";
+	stop();
+}
+
+void BackgroundTask::start (const std::shared_ptr<Core> &core, int maxDurationSeconds) {
 	if (mName.empty()) {
-		lError() << "No name was set on background task.";
+		lError() << "No name was set on background task";
 		return;
 	}
 
-	unsigned long newId = sal_begin_background_task(mName.c_str(), notifier, this);
-	lInfo() << "Starting background task [" << newId << "] with name : [" << mName << "].";
+	unsigned long newId = sal_begin_background_task(mName.c_str(), sHandleTimeout, this);
 	stop();
+	if (newId == 0)
+		return;
+
+	lInfo() << "Starting background task [" << newId << "] with name: [" << mName
+		<< "] and expiration of [" << maxDurationSeconds << "]";
 	mId = newId;
+	if (maxDurationSeconds > 0) {
+		mSal = core->getCCore()->sal;
+		mTimeout = mSal->create_timer(sHandleSalTimeout, this, (unsigned int)maxDurationSeconds * 1000, mName.c_str());
+	}
 }
 
 void BackgroundTask::stop () {
 	if (mId == 0)
 		return;
 
-	lInfo() << "Ending background task [" << mId << "] with name : [" << mName << "].";
+	lInfo() << "Ending background task [" << mId << "] with name: [" << mName << "]";
 	sal_end_background_task(mId);
+	if (mTimeout) {
+		mSal->cancel_timer(mTimeout);
+		belle_sip_object_unref(mTimeout);
+		mTimeout = nullptr;
+	}
 	mId = 0;
 }
 
 void BackgroundTask::handleTimeout () {
-	lWarning() << "Background task [" << mId << "] with name : [" << mName << "] has expired before completion...";
+	lWarning() << "Background task [" << mId << "] with name: [" << mName
+		<< "] is expiring from OS before completion...";
 	stop();
 }
 

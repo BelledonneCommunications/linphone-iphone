@@ -36,10 +36,10 @@ class MainDbKey : public ClonableObject {
 public:
 	MainDbKey ();
 	MainDbKey (const std::shared_ptr<Core> &core, long long storageId);
-	MainDbKey (const MainDbKey &src);
+	MainDbKey (const MainDbKey &other);
 	virtual ~MainDbKey () = 0;
 
-	MainDbKey &operator= (const MainDbKey &src);
+	MainDbKey &operator= (const MainDbKey &other);
 
 	bool isValid () const;
 

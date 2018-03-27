@@ -39,8 +39,11 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsChatMessageReceivedCb chatMessageReceivedCb;
 	LinphoneChatRoomCbsChatMessageSentCb chatMessageSentCb;
 	LinphoneChatRoomCbsConferenceAddressGenerationCb conferenceAddressGenerationCb;
-	LinphoneChatRoomCbsParticipantDeviceFetchedCb participantDeviceFetchedCb;
+	LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb participantDeviceFetchRequestedCb;
 	LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb participantsCapabilitiesChecked;
+	LinphoneChatRoomCbsParticipantRegistrationSubscriptionRequestedCb participantRegistrationSubscriptionRequestedCb;
+	LinphoneChatRoomCbsParticipantRegistrationUnsubscriptionRequestedCb participantRegistrationUnsubscriptionRequestedCb;
+	LinphoneChatRoomCbsShouldChatMessageBeStoredCb shouldMessageBeStoredCb;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatRoomCbs);
@@ -56,7 +59,7 @@ BELLE_SIP_INSTANCIATE_VPTR(LinphoneChatRoomCbs, belle_sip_object_t,
 
 // =============================================================================
 
-LinphoneChatRoomCbs * linphone_chat_room_cbs_new (void) {
+LinphoneChatRoomCbs * _linphone_chat_room_cbs_new (void) {
 	return belle_sip_object_new(LinphoneChatRoomCbs);
 }
 
@@ -181,12 +184,12 @@ void linphone_chat_room_cbs_set_conference_address_generation (LinphoneChatRoomC
 	cbs->conferenceAddressGenerationCb = cb;
 }
 
-LinphoneChatRoomCbsParticipantDeviceFetchedCb linphone_chat_room_cbs_get_participant_device_fetched (const LinphoneChatRoomCbs *cbs) {
-	return cbs->participantDeviceFetchedCb;
+LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb linphone_chat_room_cbs_get_participant_device_fetch_requested (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantDeviceFetchRequestedCb;
 }
 
-void linphone_chat_room_cbs_set_participant_device_fetched (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceFetchedCb cb) {
-	cbs->participantDeviceFetchedCb = cb;
+void linphone_chat_room_cbs_set_participant_device_fetch_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceFetchRequestedCb cb) {
+	cbs->participantDeviceFetchRequestedCb = cb;
 }
 
 LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_chat_room_cbs_get_participants_capabilities_checked (const LinphoneChatRoomCbs *cbs) {
@@ -195,4 +198,28 @@ LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb linphone_chat_room_cbs_get_
 
 void linphone_chat_room_cbs_set_participants_capabilities_checked (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantsCapabilitiesCheckedCb cb) {
 	cbs->participantsCapabilitiesChecked = cb;
+}
+
+LinphoneChatRoomCbsParticipantRegistrationSubscriptionRequestedCb linphone_chat_room_cbs_get_participant_registration_subscription_requested (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantRegistrationSubscriptionRequestedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_registration_subscription_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRegistrationSubscriptionRequestedCb cb) {
+	cbs->participantRegistrationSubscriptionRequestedCb = cb;
+}
+
+LinphoneChatRoomCbsParticipantRegistrationUnsubscriptionRequestedCb linphone_chat_room_cbs_get_participant_registration_unsubscription_requested (const LinphoneChatRoomCbs *cbs) {
+	return cbs->participantRegistrationUnsubscriptionRequestedCb;
+}
+
+void linphone_chat_room_cbs_set_participant_registration_unsubscription_requested (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantRegistrationUnsubscriptionRequestedCb cb) {
+	cbs->participantRegistrationUnsubscriptionRequestedCb = cb;
+}
+
+LinphoneChatRoomCbsShouldChatMessageBeStoredCb linphone_chat_room_cbs_get_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs) {
+	return cbs->shouldMessageBeStoredCb;
+}
+
+void linphone_chat_room_cbs_set_chat_message_should_be_stored( LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsShouldChatMessageBeStoredCb cb) {
+	cbs->shouldMessageBeStoredCb = cb;
 }

@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cstdlib>
+#include <list>
 #include <sstream>
 
 #include <bctoolbox/port.h>
@@ -172,6 +173,12 @@ char *Utils::utf8ToChar (uint32_t ic) {
 	}
 	result[size] = '\0';
 	return result;
+}
+
+string Utils::trim (const string &str) {
+	auto itFront = find_if_not(str.begin(), str.end(), [] (int c) { return isspace(c); });
+	auto itBack = find_if_not(str.rbegin(), str.rend(), [] (int c) { return isspace(c); }).base();
+	return (itBack <= itFront ? string() : string(itFront, itBack));
 }
 
 // -----------------------------------------------------------------------------

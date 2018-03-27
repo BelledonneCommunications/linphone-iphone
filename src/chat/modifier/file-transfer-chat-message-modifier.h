@@ -23,6 +23,7 @@
 #include <belle-sip/belle-sip.h>
 
 #include "chat-message-modifier.h"
+#include "utils/background-task.h"
 
 // =============================================================================
 
@@ -35,7 +36,7 @@ class FileTransferContent;
 
 class FileTransferChatMessageModifier : public ChatMessageModifier {
 public:
-	FileTransferChatMessageModifier () = default;
+	FileTransferChatMessageModifier (belle_http_provider_t *prov);
 	~FileTransferChatMessageModifier ();
 
 	Result encode (const std::shared_ptr<ChatMessage> &message, int &errorCode) override;
@@ -62,20 +63,24 @@ public:
 	int downloadFile(const std::shared_ptr<ChatMessage> &message, FileTransferContent *fileTransferContent);
 	void cancelFileTransfer();
 	bool isFileTransferInProgressAndValid();
+	std::string createFakeFileTransferFromUrl(const std::string &url);
 
 private:
-	std::weak_ptr<ChatMessage> chatMessage;
-	FileContent* currentFileContentToTransfer;
-	unsigned long backgroundTaskId = 0;
-	belle_http_request_t *httpRequest = nullptr;
-	belle_http_request_listener_t *httpListener = nullptr;
-
 	int uploadFile();
 	int startHttpTransfer(const std::string &url, const std::string &action, belle_http_request_listener_callbacks_t *cbs);
 	void fileUploadBeginBackgroundTask();
 	void fileUploadEndBackgroundTask();
 
 	void releaseHttpRequest();
+
+	std::weak_ptr<ChatMessage> chatMessage;
+	FileContent* currentFileContentToTransfer;
+
+	belle_http_request_t *httpRequest = nullptr;
+	belle_http_request_listener_t *httpListener = nullptr;
+	belle_http_provider_t *provider  = nullptr;
+
+	BackgroundTask bgTask;
 };
 
 LINPHONE_END_NAMESPACE

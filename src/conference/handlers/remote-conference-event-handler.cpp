@@ -19,6 +19,7 @@
 
 #include <sstream>
 
+#include "linphone/utils/algorithm.h"
 #include "linphone/utils/utils.h"
 
 #include "conference/remote-conference.h"
@@ -45,135 +46,150 @@ using namespace Xsd::ConferenceInfo;
 void RemoteConferenceEventHandlerPrivate::simpleNotifyReceived (const string &xmlBody) {
 	istringstream data(xmlBody);
 	unique_ptr<ConferenceType> confInfo = parseConferenceInfo(data, Xsd::XmlSchema::Flags::dont_validate);
-	time_t tm = time(nullptr);
-	if (confInfo->getConferenceDescription()->getFreeText().present())
-		tm = static_cast<time_t>(Utils::stoll(confInfo->getConferenceDescription()->getFreeText().get()));
-
-	bool isFullState = (confInfo->getState() == StateType::full);
-
-	ConferenceListener *confListener = static_cast<ConferenceListener *>(conf);
 
 	IdentityAddress entityAddress(confInfo->getEntity().c_str());
-	if (entityAddress == chatRoomId.getPeerAddress()) {
-		if (confInfo->getVersion().present())
-			lastNotify = confInfo->getVersion().get();
+	if (entityAddress != chatRoomId.getPeerAddress())
+		return;
 
-		if (confInfo->getConferenceDescription().present()) {
-			if (confInfo->getConferenceDescription().get().getSubject().present() &&
-				!confInfo->getConferenceDescription().get().getSubject().get().empty()
-			) {
-				confListener->onSubjectChanged(
-					make_shared<ConferenceSubjectEvent>(
-						tm,
-						chatRoomId,
-						lastNotify,
-						confInfo->getConferenceDescription().get().getSubject().get()
-					),
-					isFullState
-				);
-			}
-			if (confInfo->getConferenceDescription().get().getKeywords().present()
-				&& !confInfo->getConferenceDescription().get().getKeywords().get().empty()
-			) {
-				KeywordsType xmlKeywords = confInfo->getConferenceDescription().get().getKeywords().get();
-				vector<string> keywords;
-				for (const auto &k : xmlKeywords)
-					keywords.push_back(k);
-				confListener->onConferenceKeywordsChanged(keywords);
-			}
-		}
+	auto &confDescription = confInfo->getConferenceDescription();
 
-		if (!confInfo->getUsers().present())
-			return;
-
-		for (const auto &user : confInfo->getUsers()->getUser()) {
-			LinphoneAddress *cAddr = linphone_core_interpret_url(conf->getCore()->getCCore(), user.getEntity()->c_str());
-			char *cAddrStr = linphone_address_as_string(cAddr);
-			Address addr(cAddrStr);
-			bctbx_free(cAddrStr);
-			if (user.getState() == StateType::deleted) {
-				confListener->onParticipantRemoved(
-					make_shared<ConferenceParticipantEvent>(
-						EventLog::Type::ConferenceParticipantRemoved,
-						tm,
-						chatRoomId,
-						lastNotify,
-						addr
-					),
-					isFullState
-				);
-			} else {
-				if (user.getState() == StateType::full) {
-					confListener->onParticipantAdded(
-						make_shared<ConferenceParticipantEvent>(
-							EventLog::Type::ConferenceParticipantAdded,
-							tm,
-							chatRoomId,
-							lastNotify,
-							addr
-						),
-						isFullState
-					);
-				}
-
-				if (user.getRoles()) {
-					bool isAdmin = false;
-					for (const auto &entry : user.getRoles()->getEntry()) {
-						if (entry == "admin") {
-							isAdmin = true;
-							break;
-						}
-					}
-					confListener->onParticipantSetAdmin(
-						make_shared<ConferenceParticipantEvent>(
-							isAdmin ? EventLog::Type::ConferenceParticipantSetAdmin : EventLog::Type::ConferenceParticipantUnsetAdmin,
-							tm,
-							chatRoomId,
-							lastNotify,
-							addr
-						),
-						isFullState
-					);
-				}
-
-				for (const auto &endpoint : user.getEndpoint()) {
-					if (!endpoint.getEntity().present())
-						break;
-
-					Address gruu(endpoint.getEntity().get());
-					if (endpoint.getState() == StateType::deleted) {
-						confListener->onParticipantDeviceRemoved(
-							make_shared<ConferenceParticipantDeviceEvent>(
-								EventLog::Type::ConferenceParticipantDeviceRemoved,
-								tm,
-								chatRoomId,
-								lastNotify,
-								addr,
-								gruu
-							),
-							isFullState
-						);
-					} else if (endpoint.getState() == StateType::full) {
-						confListener->onParticipantDeviceAdded(
-							make_shared<ConferenceParticipantDeviceEvent>(
-								EventLog::Type::ConferenceParticipantDeviceAdded,
-								tm,
-								chatRoomId,
-								lastNotify,
-								addr,
-								gruu
-							),
-							isFullState
-						);
-					}
-				}
-			}
-			linphone_address_unref(cAddr);
-		}
-
-		if (isFullState)
-			confListener->onFirstNotifyReceived(chatRoomId.getPeerAddress());
+	// 1. Compute event time.
+	time_t creationTime = time(nullptr);
+	{
+		auto &freeText = confDescription->getFreeText();
+		if (freeText.present())
+			creationTime = static_cast<time_t>(Utils::stoll(freeText.get()));
 	}
+
+	// 2. Update last notify.
+	{
+		auto &version = confInfo->getVersion();
+		if (version.present())
+			lastNotify = version.get();
+	}
+
+	bool isFullState = confInfo->getState() == StateType::full;
+	ConferenceListener *confListener = static_cast<ConferenceListener *>(conf);
+
+	// 3. Notify subject and keywords.
+	if (confDescription.present()) {
+		auto &subject = confDescription.get().getSubject();
+		if (subject.present() && !subject.get().empty())
+			confListener->onSubjectChanged(
+				make_shared<ConferenceSubjectEvent>(
+					creationTime,
+					chatRoomId,
+					lastNotify,
+					subject.get()
+				),
+				isFullState
+			);
+
+		auto &keywords = confDescription.get().getKeywords();
+		if (keywords.present() && !keywords.get().empty()) {
+			KeywordsType xmlKeywords = keywords.get();
+			confListener->onConferenceKeywordsChanged(
+				vector<string>(xmlKeywords.begin(), xmlKeywords.end())
+			);
+		}
+	}
+
+	auto &users = confInfo->getUsers();
+	if (!users.present())
+		return;
+
+	// 4. Notify changes on users.
+	for (auto &user : users->getUser()) {
+		LinphoneAddress *cAddr = linphone_core_interpret_url(conf->getCore()->getCCore(), user.getEntity()->c_str());
+		char *cAddrStr = linphone_address_as_string(cAddr);
+		linphone_address_unref(cAddr);
+
+		Address addr(cAddrStr);
+		bctbx_free(cAddrStr);
+
+		StateType state = user.getState();
+
+		if (state == StateType::deleted) {
+			confListener->onParticipantRemoved(
+				make_shared<ConferenceParticipantEvent>(
+					EventLog::Type::ConferenceParticipantRemoved,
+					creationTime,
+					chatRoomId,
+					lastNotify,
+					addr
+				),
+				isFullState
+			);
+
+			continue;
+		}
+
+		if (state == StateType::full)
+			confListener->onParticipantAdded(
+				make_shared<ConferenceParticipantEvent>(
+					EventLog::Type::ConferenceParticipantAdded,
+					creationTime,
+					chatRoomId,
+					lastNotify,
+					addr
+				),
+				isFullState
+			);
+
+		auto &roles = user.getRoles();
+		if (roles) {
+			auto &entry = roles->getEntry();
+			confListener->onParticipantSetAdmin(
+				make_shared<ConferenceParticipantEvent>(
+					find(entry, "admin") != entry.end()
+						? EventLog::Type::ConferenceParticipantSetAdmin
+						: EventLog::Type::ConferenceParticipantUnsetAdmin,
+					creationTime,
+					chatRoomId,
+					lastNotify,
+					addr
+				),
+				isFullState
+			);
+		}
+
+		for (const auto &endpoint : user.getEndpoint()) {
+			if (!endpoint.getEntity().present())
+				break;
+
+			Address gruu(endpoint.getEntity().get());
+			StateType state = endpoint.getState();
+
+			if (state == StateType::deleted) {
+				confListener->onParticipantDeviceRemoved(
+					make_shared<ConferenceParticipantDeviceEvent>(
+						EventLog::Type::ConferenceParticipantDeviceRemoved,
+						creationTime,
+						chatRoomId,
+						lastNotify,
+						addr,
+						gruu
+					),
+					isFullState
+				);
+			} else if (state == StateType::full) {
+				confListener->onParticipantDeviceAdded(
+					make_shared<ConferenceParticipantDeviceEvent>(
+						EventLog::Type::ConferenceParticipantDeviceAdded,
+						creationTime,
+						chatRoomId,
+						lastNotify,
+						addr,
+						gruu
+					),
+					isFullState
+				);
+			}
+		}
+	}
+
+	if (isFullState)
+		confListener->onFirstNotifyReceived(chatRoomId.getPeerAddress());
 }
 
 // -----------------------------------------------------------------------------

@@ -64,8 +64,8 @@ public:
 	Variant ();
 	Variant (Type type);
 
-	Variant (const Variant &src);
-	Variant (Variant &&src);
+	Variant (const Variant &other);
+	Variant (Variant &&other);
 
 	Variant (int value);
 	Variant (unsigned int value);
@@ -87,14 +87,8 @@ public:
 
 	~Variant ();
 
-	bool operator!= (const Variant &variant) const;
-	bool operator< (const Variant &variant) const;
-	bool operator<= (const Variant &variant) const;
-	Variant &operator= (const Variant &variant);
-	Variant &operator= (Variant &&variant);
-	bool operator== (const Variant &variant) const;
-	bool operator> (const Variant &variant) const;
-	bool operator>= (const Variant &variant) const;
+	Variant &operator= (const Variant &other);
+	Variant &operator= (Variant &&other);
 
 	template<typename T>
 	void setValue (const T &value) {

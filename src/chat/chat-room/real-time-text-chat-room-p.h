@@ -29,13 +29,17 @@ LINPHONE_BEGIN_NAMESPACE
 
 class RealTimeTextChatRoomPrivate : public BasicChatRoomPrivate {
 public:
-	RealTimeTextChatRoomPrivate () = default;
+	struct Character {
+		uint32_t value;
+		bool hasBeenRead;
+	};
 
-	void realtimeTextReceived (uint32_t character, LinphoneCall *call);
+	void realtimeTextReceived (uint32_t character, const std::shared_ptr<Call> &call);
 	void sendChatMessage (const std::shared_ptr<ChatMessage> &chatMessage) override;
+	void setCall (const std::shared_ptr<Call> &value) { call = value; }
 
-	LinphoneCall *call = nullptr;
-	std::list<LinphoneChatMessageCharacter *> receivedRttCharacters;
+	std::weak_ptr<Call> call;
+	std::list<Character> receivedRttCharacters;
 	std::shared_ptr<ChatMessage> pendingMessage = nullptr;
 
 private:

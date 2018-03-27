@@ -45,8 +45,8 @@ public:
 	int decline(SalReason reason, const char *redirection /*optional*/);
 	int decline_with_error_info(const SalErrorInfo *info, const SalAddress *redirectionAddr /*optional*/);
 	int update(const char *subject, bool_t no_user_consent);
-	void cancel_invite() {cancel_invite_with_info(NULL);}
-	void cancel_invite_with_info(const SalErrorInfo *info);
+	int cancel_invite() { return cancel_invite_with_info(NULL);}
+	int cancel_invite_with_info(const SalErrorInfo *info);
 	int refer(const char *refer_to_);
 	int refer_with_replaces(SalCallOp *other_call_op);
 	int set_referer(SalCallOp *refered_call);

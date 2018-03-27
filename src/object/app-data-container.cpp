@@ -41,19 +41,19 @@ AppDataContainer::AppDataContainer () : mPrivate(new AppDataContainerPrivate) {
 	d->appData = make_shared<unordered_map<string, string>>();
 }
 
-AppDataContainer::AppDataContainer (const AppDataContainer &src) : mPrivate(new AppDataContainerPrivate) {
+AppDataContainer::AppDataContainer (const AppDataContainer &other) : mPrivate(new AppDataContainerPrivate) {
 	L_D();
-	d->appData = src.getPrivate()->appData;
+	d->appData = other.getPrivate()->appData;
 }
 
 AppDataContainer::~AppDataContainer () {
 	delete mPrivate;
 }
 
-AppDataContainer &AppDataContainer::operator= (const AppDataContainer &src) {
+AppDataContainer &AppDataContainer::operator= (const AppDataContainer &other) {
 	L_D();
-	if (this != &src)
-		d->appData = src.getPrivate()->appData;
+	if (this != &other)
+		d->appData = other.getPrivate()->appData;
 	return *this;
 }
 

@@ -34,10 +34,10 @@ class AppDataContainerPrivate;
 class LINPHONE_PUBLIC AppDataContainer {
 public:
 	AppDataContainer ();
-	AppDataContainer (const AppDataContainer &src);
+	AppDataContainer (const AppDataContainer &other);
 	virtual ~AppDataContainer ();
 
-	AppDataContainer &operator= (const AppDataContainer &src);
+	AppDataContainer &operator= (const AppDataContainer &other);
 
 	const std::unordered_map<std::string, std::string> &getAppDataMap () const;
 

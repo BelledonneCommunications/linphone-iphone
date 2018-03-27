@@ -39,6 +39,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
+#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
@@ -255,7 +256,9 @@ static void call_terminated(SalOp *op, const char *from) {
 }
 
 static void call_failure(SalOp *op) {
-	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
+	shared_ptr<LinphonePrivate::CallSession> session;
+	if (op->get_user_pointer())
+		session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer())->getSharedFromThis();
 	if (!session) {
 		ms_warning("Failure reported on already terminated CallSession");
 		return;
@@ -565,7 +568,7 @@ static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status) 
 
 	// Check that the message does not belong to an already destroyed chat room - if so, do not invoke callbacks
 	if (msg->getChatRoom())
-		msg->updateState((LinphonePrivate::ChatMessage::State)chatStatusSal2Linphone(status));
+		L_GET_PRIVATE(msg)->setState((LinphonePrivate::ChatMessage::State)chatStatusSal2Linphone(status));
 }
 
 static void info_received(SalOp *op, SalBodyHandler *body_handler) {
@@ -668,20 +671,25 @@ static void on_expire(SalOp *op){
 
 static void on_notify_response(SalOp *op){
 	LinphoneEvent *lev=(LinphoneEvent*)op->get_user_pointer();
+	if (!lev)
+		return;
 
-	if (lev==NULL) return;
-	/*this is actually handling out of dialogs notify - for the moment*/
-	if (!lev->is_out_of_dialog_op) return;
-	switch (linphone_event_get_subscription_state(lev)){
-		case LinphoneSubscriptionIncomingReceived:
-			if (op->get_error_info()->reason == SalReasonNone){
-				linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
-			}else{
-				linphone_event_set_state(lev, LinphoneSubscriptionError);
-			}
-		break;
-		default:
-			ms_warning("Unhandled on_notify_response() case %s", linphone_subscription_state_to_string(linphone_event_get_subscription_state(lev)));
+	if (lev->is_out_of_dialog_op) {
+		switch (linphone_event_get_subscription_state(lev)) {
+			case LinphoneSubscriptionIncomingReceived:
+				if (op->get_error_info()->reason == SalReasonNone)
+					linphone_event_set_state(lev, LinphoneSubscriptionTerminated);
+				else
+					linphone_event_set_state(lev, LinphoneSubscriptionError);
+				break;
+			default:
+				ms_warning("Unhandled on_notify_response() case %s",
+					linphone_subscription_state_to_string(linphone_event_get_subscription_state(lev)));
+				break;
+		}
+	} else {
+		ms_warning("on_notify_response in dialog");
+		_linphone_event_notify_notify_response(lev);
 	}
 }
 
@@ -742,10 +750,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					return;
 				}
 			} else {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(ChatRoomId(addr, IdentityAddress(op->get_to()))));
-				if (!cr)
-					cr = _linphone_client_group_chat_room_new(lc, addr.asString().c_str(), nullptr, FALSE);
-				L_GET_CPP_PTR_FROM_C_OBJECT(cr)->join();
+				shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+					ChatRoomId(addr, IdentityAddress(op->get_to()))
+				);
+				if (!chatRoom)
+					chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), false);
+				chatRoom->join();
 				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 				return;
 			}

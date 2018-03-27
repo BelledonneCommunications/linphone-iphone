@@ -151,10 +151,21 @@ typedef struct _LinphoneEventLog LinphoneEventLog;
 typedef struct _LinphoneDialPlan LinphoneDialPlan;
 
 /**
- * The #LinphoneParticipant object represents a participant of a conference.
+ * A #LinphoneMagicSearch is used to do specifics searchs
+ * @ingroup misc
+**/
+typedef struct _LinphoneMagicSearch LinphoneMagicSearch;
+
+/**
  * @ingroup misc
 **/
 typedef struct _LinphoneParticipant LinphoneParticipant;
+
+/**
+ * The LinphoneSearchResult object represents a result of a search
+ * @ingroup misc
+ **/
+typedef struct _LinphoneSearchResult LinphoneSearchResult;
 
 // =============================================================================
 // C Enums.

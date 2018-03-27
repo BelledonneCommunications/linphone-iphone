@@ -54,10 +54,10 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CALL_SESSION_STATE);
 
 	CallSession (const std::shared_ptr<Core> &core, const CallSessionParams *params, CallSessionListener *listener);
-	virtual ~CallSession ();
+	~CallSession ();
 
 	LinphoneStatus accept (const CallSessionParams *csp = nullptr);
-	LinphoneStatus acceptUpdate (const CallSessionParams *csp);
+	LinphoneStatus acceptUpdate (const CallSessionParams *csp = nullptr);
 	virtual void configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg, SalCallOp *op, const Address &from, const Address &to);
 	LinphoneStatus decline (LinphoneReason reason);
 	LinphoneStatus decline (const LinphoneErrorInfo *ei);
@@ -69,7 +69,7 @@ public:
 	virtual void iterate (time_t currentRealTime, bool oneSecondElapsed);
 	LinphoneStatus redirect (const std::string &redirectUri);
 	LinphoneStatus redirect (const Address &redirectAddr);
-	virtual void startIncomingNotification ();
+	virtual void startIncomingNotification (bool notifyRinging = true);
 	virtual int startInvite (const Address *destination, const std::string &subject = "", const Content *content = nullptr);
 	LinphoneStatus terminate (const LinphoneErrorInfo *ei = nullptr);
 	LinphoneStatus transfer (const std::shared_ptr<CallSession> &dest);
@@ -78,23 +78,23 @@ public:
 
 	CallSessionParams *getCurrentParams () const;
 	LinphoneCallDir getDirection () const;
-	const Address& getDiversionAddress () const;
+	const Address &getDiversionAddress () const;
 	int getDuration () const;
 	const LinphoneErrorInfo * getErrorInfo () const;
-	LinphoneCallLog * getLog () const;
+	const Address &getLocalAddress () const;
+	LinphoneCallLog *getLog () const;
 	virtual const CallSessionParams *getParams () const;
 	LinphoneReason getReason () const;
 	std::shared_ptr<CallSession> getReferer () const;
 	std::string getReferTo () const;
-	const Address& getRemoteAddress () const;
-	std::string getRemoteAddressAsString () const;
+	const Address &getRemoteAddress () const;
 	std::string getRemoteContact () const;
 	const Address *getRemoteContactAddress () const;
 	const CallSessionParams *getRemoteParams ();
 	std::string getRemoteUserAgent () const;
 	std::shared_ptr<CallSession> getReplacedCallSession () const;
 	CallSession::State getState () const;
-	const Address& getToAddress () const;
+	const Address &getToAddress () const;
 	CallSession::State getTransferState () const;
 	std::shared_ptr<CallSession> getTransferTarget () const;
 	std::string getToHeader (const std::string &name) const;
@@ -103,6 +103,7 @@ public:
 
 protected:
 	explicit CallSession (CallSessionPrivate &p, const std::shared_ptr<Core> &core);
+	CallSession::State getPreviousState () const;
 
 private:
 	L_DECLARE_PRIVATE(CallSession);

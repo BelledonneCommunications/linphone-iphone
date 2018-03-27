@@ -203,11 +203,11 @@ MediaSessionParams::MediaSessionParams () : CallSessionParams(*new MediaSessionP
 	memset(d->customSdpMediaAttributes, 0, sizeof(d->customSdpMediaAttributes));
 }
 
-MediaSessionParams::MediaSessionParams (const MediaSessionParams &src)
+MediaSessionParams::MediaSessionParams (const MediaSessionParams &other)
 	: CallSessionParams(*new MediaSessionParamsPrivate) {
 	L_D();
 	memset(d->customSdpMediaAttributes, 0, sizeof(d->customSdpMediaAttributes));
-	d->clone(src.getPrivate());
+	d->clone(other.getPrivate());
 }
 
 MediaSessionParams::~MediaSessionParams () {
@@ -215,10 +215,10 @@ MediaSessionParams::~MediaSessionParams () {
 	d->clean();
 }
 
-MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &src) {
+MediaSessionParams &MediaSessionParams::operator= (const MediaSessionParams &other) {
 	L_D();
-	if (this != &src)
-		d->clone(src.getPrivate());
+	if (this != &other)
+		d->clone(other.getPrivate());
 	return *this;
 }
 

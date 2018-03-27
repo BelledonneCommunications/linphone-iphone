@@ -30,6 +30,8 @@ class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public AbstractChatRoom {
 public:
+	friend class ProxyChatRoomPrivate;
+
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
 
 	const ChatRoomId &getChatRoomId () const override;
@@ -42,6 +44,8 @@ public:
 
 	State getState () const override;
 
+	std::list<std::shared_ptr<EventLog>> getMessageHistory (int nLast) const override;
+	std::list<std::shared_ptr<EventLog>> getMessageHistoryRange (int begin, int end) const override;
 	std::list<std::shared_ptr<EventLog>> getHistory (int nLast) const override;
 	std::list<std::shared_ptr<EventLog>> getHistoryRange (int begin, int end) const override;
 	int getHistorySize () const override;

@@ -27,6 +27,10 @@
 
 // =============================================================================
 
+// -----------------------------------------------------------------------------
+// Namespace.
+// -----------------------------------------------------------------------------
+
 #ifdef __cplusplus
 	#define LINPHONE_BEGIN_NAMESPACE namespace LinphonePrivate {
 	#define LINPHONE_END_NAMESPACE }
@@ -75,10 +79,10 @@ LINPHONE_BEGIN_NAMESPACE
 // Debug.
 // -----------------------------------------------------------------------------
 
-void l_assert (const char *condition, const char *file, int line);
+void lAssert (const char *condition, const char *file, int line);
 
 #ifdef DEBUG
-	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::l_assert(#CONDITION, __FILE__, __LINE__))
+	#define L_ASSERT(CONDITION) ((CONDITION) ? static_cast<void>(0) : LinphonePrivate::lAssert(#CONDITION, __FILE__, __LINE__))
 #else
 	#define L_ASSERT(CONDITION) static_cast<void>(false && (CONDITION))
 #endif
@@ -100,16 +104,28 @@ void l_assert (const char *condition, const char *file, int line);
 // -----------------------------------------------------------------------------
 
 // Define an integer version like: 0xXXYYZZ, XX=MAJOR, YY=MINOR, and ZZ=PATCH.
-#define L_VERSION(MAJOR, MINOR, PATCH) (((MAJOR) << 16) | ((MINOR) << 8) | (PATCH))
+constexpr unsigned int makeVersion (unsigned int major, unsigned int minor, unsigned int patch) {
+	return ((major << 16) | (minor << 8) | patch);
+}
 
 // Not available in C++11...
 template<typename T, typename... Args>
-std::unique_ptr<T> make_unique(Args && ...args) {
+std::unique_ptr<T> makeUnique(Args && ...args) {
 	return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
+#define L_AUTO_RETURN(VALUE) -> decltype(VALUE) { return VALUE; }
+
 // -----------------------------------------------------------------------------
-// Data access.
+// Class tools.
+// -----------------------------------------------------------------------------
+
+#define L_DISABLE_COPY(CLASS) \
+	CLASS (const CLASS &) = delete; \
+	CLASS &operator= (const CLASS &) = delete;
+
+// -----------------------------------------------------------------------------
+// PImpl tools.
 // -----------------------------------------------------------------------------
 
 class BaseObject;
@@ -119,34 +135,68 @@ class ClonableObjectPrivate;
 class Object;
 class ObjectPrivate;
 
+namespace Private {
+	template<typename T>
+	using BetterPrivateAncestor = typename std::conditional<
+		std::is_base_of<BaseObject, T>::value,
+		BaseObject,
+		typename std::conditional<
+			std::is_base_of<ClonableObject, T>::value,
+			ClonableObject,
+			T
+		>::type
+	>::type;
+
+	// Generic public helper.
+	template<
+		typename R,
+		typename P,
+		typename C
+	>
+	constexpr R *getPublicHelper (P *object, const C *) {
+		return static_cast<R *>(object);
+	}
+
+	// Generic public helper. Deal with shared data.
+	template<
+		typename R,
+		typename P,
+		typename C
+	>
+	inline R *getPublicHelper (const P &objectSet, const C *) {
+		auto it = objectSet.cbegin();
+		L_ASSERT(it != objectSet.cend());
+		return static_cast<R *>(*it);
+	}
+
+	template<typename T, typename U>
+	struct AddConstMirror {
+		typedef U type;
+	};
+
+	template<typename T, typename U>
+	struct AddConstMirror<const T, U> {
+		typedef typename std::add_const<U>::type type;
+	};
+}
+
 #define L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS) \
 	static_assert( \
 		!(std::is_base_of<BaseObject, CLASS>::value && std::is_base_of<ClonableObject, CLASS>::value), \
 		"Multiple inheritance between BaseObject and ClonableObject is not allowed." \
 	);
 
-#define L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS) \
-	std::conditional< \
-		std::is_base_of<BaseObject, CLASS>::value, \
-		BaseObject, \
-		std::conditional< \
-			std::is_base_of<ClonableObject, CLASS>::value, \
-			ClonableObject, \
-			CLASS \
-		>::type \
-	>::type
-
 #define L_INTERNAL_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private *getPrivate () { \
 		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
 		return reinterpret_cast<CLASS ## Private *>( \
-			L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS)::mPrivate \
+			LinphonePrivate::Private::BetterPrivateAncestor<CLASS>::mPrivate \
 		); \
 	} \
 	inline const CLASS ## Private *getPrivate () const { \
 		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
 		return reinterpret_cast<const CLASS ## Private *>( \
-			L_INTERNAL_GET_BETTER_PRIVATE_ANCESTOR(CLASS)::mPrivate \
+			LinphonePrivate::Private::BetterPrivateAncestor<CLASS>::mPrivate \
 		); \
 	} \
 	friend class CLASS ## Private; \
@@ -162,40 +212,14 @@ class ObjectPrivate;
 		friend class Tester;
 #endif
 
-// Generic public helper.
-template<
-	typename R,
-	typename P,
-	typename C
->
-constexpr R *getPublicHelper (P *object, const C *) {
-	return static_cast<R *>(object);
-}
-
-// Generic public helper. Deal with shared data.
-template<
-	typename R,
-	typename P,
-	typename C
->
-inline R *getPublicHelper (const P &objectSet, const C *) {
-	auto it = objectSet.cbegin();
-	L_ASSERT(it != objectSet.cend());
-	return static_cast<R *>(*it);
-}
-
 #define L_DECLARE_PUBLIC(CLASS) \
-	inline CLASS *getPublic () { \
-		return getPublicHelper<CLASS>(mPublic, this); \
+	CLASS *getPublic () { \
+		return LinphonePrivate::Private::getPublicHelper<CLASS>(mPublic, this); \
 	} \
-	inline const CLASS *getPublic () const { \
-		return getPublicHelper<const CLASS>(mPublic, this); \
+	const CLASS *getPublic () const { \
+		return LinphonePrivate::Private::getPublicHelper<const CLASS>(mPublic, this); \
 	} \
 	friend class CLASS;
-
-#define L_DISABLE_COPY(CLASS) \
-	CLASS (const CLASS &) = delete; \
-	CLASS &operator= (const CLASS &) = delete;
 
 // Get Private data.
 #define L_D() decltype(getPrivate()) const d = getPrivate();
@@ -203,20 +227,10 @@ inline R *getPublicHelper (const P &objectSet, const C *) {
 // Get Public data.
 #define L_Q() decltype(getPublic()) const q = getPublic();
 
-template<typename T, typename U>
-struct AddConstMirror {
-	typedef U type;
-};
-
-template<typename T, typename U>
-struct AddConstMirror<const T, U> {
-	typedef typename std::add_const<U>::type type;
-};
-
 // Get Private data of class in a multiple inheritance case.
 #define L_D_T(CLASS, NAME) \
 	auto const NAME = static_cast< \
-		AddConstMirror< \
+		LinphonePrivate::Private::AddConstMirror< \
 			std::remove_reference<decltype(*this)>::type, \
 			CLASS ## Private \
 		>::type * \
@@ -225,11 +239,15 @@ struct AddConstMirror<const T, U> {
 // Get Private data of class in a multiple inheritance case.
 #define L_Q_T(CLASS, NAME) \
 	auto const NAME = static_cast< \
-		AddConstMirror< \
+		LinphonePrivate::Private::AddConstMirror< \
 			std::remove_reference<decltype(*this)>::type, \
 			CLASS \
 		>::type * \
 	>(getPublic());
+
+// -----------------------------------------------------------------------------
+// Overload.
+// -----------------------------------------------------------------------------
 
 #define L_OVERRIDE_SHARED_FROM_THIS(CLASS) \
 	inline std::shared_ptr<CLASS> getSharedFromThis () { \
@@ -239,25 +257,17 @@ struct AddConstMirror<const T, U> {
 		return std::static_pointer_cast<const CLASS>(Object::getSharedFromThis()); \
 	}
 
-// -----------------------------------------------------------------------------
-// Overload.
-// -----------------------------------------------------------------------------
-
 namespace Private {
 	template<typename... Args>
 	struct ResolveMemberFunctionOverload {
 		template<typename Ret, typename Obj>
-		constexpr auto operator() (Ret (Obj::*func)(Args...)) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (Obj::*func)(Args...)) const L_AUTO_RETURN(func);
 	};
 
 	template<typename... Args>
 	struct ResolveConstMemberFunctionOverload {
 		template<typename Ret, typename Obj>
-		constexpr auto operator() (Ret (Obj::*func)(Args...) const) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (Obj::*func)(Args...) const) const L_AUTO_RETURN(func);
 	};
 
 	template<typename... Args>
@@ -266,14 +276,47 @@ namespace Private {
 		using ResolveConstMemberFunctionOverload<Args...>::operator();
 
 		template<typename Ret>
-		constexpr auto operator() (Ret (*func)(Args...)) const -> decltype(func) {
-			return func;
-		}
+		constexpr auto operator() (Ret (*func)(Args...)) const L_AUTO_RETURN(func);
 	};
 }
 
 // Useful to select a specific overloaded function. (Avoid usage of static_cast.)
-#define L_RESOLVE_OVERLOAD(ARGS) LinphonePrivate::Private::ResolveOverload<ARGS>
+template<typename... Args>
+using resolveOverload = Private::ResolveOverload<Args...>;
+
+// -----------------------------------------------------------------------------
+// Math.
+// -----------------------------------------------------------------------------
+
+// Get the length of one integer.
+constexpr int getIntLength (int n) {
+	return n < 0 ? 1 + getIntLength(-n) : (n < 10 ? 1 : 1 + getIntLength(n / 10));
+}
+
+namespace Private {
+	constexpr int pow10Impl (int n, int acc) {
+		return n == 0 ? acc : pow10Impl(n - 1, acc * 10);
+	}
+}
+
+template<typename T>
+constexpr T abs (const T &value) {
+	return value < 0 ? -value : value;
+}
+
+constexpr int pow10 (int n) {
+	return (n < 0 ? -1 : +1) * Private::pow10Impl(abs(n), 1);
+}
+
+// Returns the sum of n elements.
+constexpr int sums () {
+	return 0;
+}
+
+template<typename T, typename... Args>
+constexpr int sums (T i, Args... args) {
+	return i + sums(args...);
+}
 
 // -----------------------------------------------------------------------------
 // Wrapper public.
