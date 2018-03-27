@@ -148,4 +148,9 @@ string Header::asString () const {
 	return asString;
 }
 
+ostream &operator<<(ostream& stream, const Header& header) {
+	stream << header.asString();
+	return stream;
+}
+
 LINPHONE_END_NAMESPACE

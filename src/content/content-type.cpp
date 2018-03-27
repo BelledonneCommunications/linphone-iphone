@@ -55,6 +55,7 @@ const ContentType ContentType::Sdp("application/sdp");
 ContentType::ContentType (const string &contentType) : Header(*new ContentTypePrivate) {
 	L_D();
 
+	setName("Content-Type");
 	size_t pos = contentType.find('/');
 	size_t posParam = contentType.find(";");
 	size_t end = contentType.length();
@@ -82,11 +83,13 @@ ContentType::ContentType (const string &contentType) : Header(*new ContentTypePr
 			params.erase(0, posParam + 1);
 		} while (posParam != std::string::npos);
 	}
+	setValue(d->type + "/" + d->subType);
 }
 
 ContentType::ContentType (const string &type, const string &subType) : Header(*new ContentTypePrivate) {
 	L_D();
 
+	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 }
@@ -98,6 +101,7 @@ ContentType::ContentType (
 ) : Header(*new ContentTypePrivate) {
 	L_D();
 
+	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 	addParameter(parameter);
@@ -110,6 +114,7 @@ ContentType::ContentType (
 ) : Header(*new ContentTypePrivate) {
 	L_D();
 
+	setName("Content-Type");
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
 	addParameters(parameters);
@@ -119,6 +124,7 @@ ContentType::ContentType (const ContentType &other) : ContentType(other.getType(
 
 ContentType &ContentType::operator= (const ContentType &other) {
 	if (this != &other) {
+		setName("Content-Type");
 		setType(other.getType());
 		setSubType(other.getSubType());
 		cleanParameters();
@@ -146,6 +152,7 @@ bool ContentType::setType (const string &type) {
 	L_D();
 	if (type.find('/') == string::npos) {
 		d->type = Utils::stringToLower(type);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
@@ -160,6 +167,7 @@ bool ContentType::setSubType (const string &subType) {
 	L_D();
 	if (subType.find('/') == string::npos) {
 		d->subType = Utils::stringToLower(subType);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
@@ -185,6 +193,11 @@ string ContentType::asString () const {
 		return asString;
 	}
 	return "";
+}
+
+ostream &operator<<(ostream& stream, const ContentType& contentType) {
+	stream << contentType.asString();
+	return stream;
 }
 
 bool ContentType::isMultipart() const {

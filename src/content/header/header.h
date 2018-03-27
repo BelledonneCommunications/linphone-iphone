@@ -59,6 +59,7 @@ public:
 	const HeaderParam &getParameter (const std::string &paramName) const;
 
 	std::string asString () const;
+	friend std::ostream &operator<<(std::ostream&, const Header&);
 
 protected:
 	explicit Header (HeaderPrivate &p);

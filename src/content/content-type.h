@@ -59,6 +59,7 @@ public:
 	bool setSubType (const std::string &subType);
 
 	std::string asString () const;
+	friend std::ostream &operator<<(std::ostream&, const ContentType&);
 
 	bool isMultipart() const;
 

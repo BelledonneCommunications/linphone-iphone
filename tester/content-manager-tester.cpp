@@ -24,6 +24,7 @@
 #include "content/header/header-param.h"
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
+#include "logger/logger.h"
 
 using namespace LinphonePrivate;
 using namespace std;
@@ -372,6 +373,7 @@ static void content_type_parsing(void) {
 	BC_ASSERT_STRING_EQUAL("\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"", contentType.getParameter("URL").getValue().c_str());
 	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
 	BC_ASSERT_EQUAL(2, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
 	BC_ASSERT_TRUE(type == contentType.asString());
 
 	type = "multipart/mixed;boundary=-----------------------------14737809831466499882746641450";
@@ -381,6 +383,7 @@ static void content_type_parsing(void) {
 	BC_ASSERT_STRING_EQUAL("-----------------------------14737809831466499882746641450", contentType.getParameter("boundary").getValue().c_str());
 	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("access-type").getValue().c_str());
 	BC_ASSERT_EQUAL(1, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
 	BC_ASSERT_TRUE(type == contentType.asString());
 
 	type = "plain/text";
@@ -389,6 +392,7 @@ static void content_type_parsing(void) {
 	BC_ASSERT_STRING_EQUAL("text", contentType.getSubType().c_str());
 	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
 	BC_ASSERT_EQUAL(0, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
 	BC_ASSERT_TRUE(type == contentType.asString());
 }
 
