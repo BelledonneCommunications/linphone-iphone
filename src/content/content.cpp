@@ -25,6 +25,7 @@
 
 #include "content-p.h"
 #include "content-type.h"
+#include "header/header.h"
 
 // =============================================================================
 
@@ -197,10 +198,17 @@ bool Content::isFileTransfer () const {
 void Content::addHeader (const string &headerName, const string &headerValue) {
 	L_D();
 	removeHeader(headerName);
-	d->headers.push_back(make_pair(headerName, headerValue));
+	Header header = Header(headerName, headerValue);
+	d->headers.push_back(header);
 }
 
-const list<pair<string, string>> &Content::getHeaders () const {
+void Content::addHeader (const Header &header) {
+	L_D();
+	removeHeader(header.getName());
+	d->headers.push_back(header);
+}
+
+const list<Header> &Content::getHeaders () const {
 	L_D();
 	return d->headers;
 }
@@ -212,10 +220,10 @@ void Content::removeHeader (const string &headerName) {
 		d->headers.remove(*it);
 }
 
-list<pair<string, string>>::const_iterator Content::findHeader (const string &headerName) const {
+list<Header>::const_iterator Content::findHeader (const string &headerName) const {
 	L_D();
-	return findIf(d->headers, [&headerName](const pair<string, string> &pair) {
-		return pair.first == headerName;
+	return findIf(d->headers, [&headerName](const Header &header) {
+		return header.getName() == headerName;
 	});
 }
 

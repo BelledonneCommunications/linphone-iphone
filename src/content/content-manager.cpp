@@ -29,13 +29,13 @@
 
 // =============================================================================
 
-using namespace std;
-
-LINPHONE_BEGIN_NAMESPACE
-
 namespace {
 	constexpr const char MultipartBoundary[] = "---------------------------14737809831466499882746641449";
 }
+
+using namespace std;
+
+LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 

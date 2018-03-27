@@ -61,6 +61,7 @@ static const char* source_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
+"Content-Encoding: b64\r\n" \
 "Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
@@ -78,6 +79,7 @@ static const char* source_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
+"Content-Id: toto;param1=value1;param2;param3=value3\r\n" \
 "Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
@@ -98,8 +100,8 @@ static const char* source_multipart = \
 
 static const char* generated_multipart = \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:582" \
+"Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:582\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<list xmlns=\"urn:ietf:params:xml:ns:rlmi\" fullState=\"false\" uri=\"sip:rls@sip.linphone.org\" version=\"1\">" \
 "	<resource uri=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\">" \
@@ -113,8 +115,8 @@ static const char* generated_multipart = \
 "	</resource>" \
 "</list>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:561" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:561\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"qmht-9\">" \
@@ -131,8 +133,9 @@ static const char* generated_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:561" \
+"Content-Encoding:b64\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:561\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"szohvt\">" \
@@ -149,8 +152,9 @@ static const char* generated_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:546" \
+"Content-Id:toto;param1=value1;param2;param3=value3\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:546\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"oc3e08\">" \
@@ -326,8 +330,14 @@ void list_to_multipart () {
 	content2.setContentType(contentType);
 	Content content3;
 	content3.setBody(part3);
+	content3.addHeader("Content-Encoding", "b64");
 	content3.setContentType(contentType);
 	Content content4;
+	Header header = Header("Content-Id", "toto");
+	header.addParameter("param1", "value1");
+	header.addParameter("param2", "");
+	header.addParameter("param3", "value3");
+	content4.addHeader(header);
 	content4.setBody(part4);
 	content4.setContentType(contentType);
 	list<Content *> contents = {&content1, &content2, &content3, &content4};

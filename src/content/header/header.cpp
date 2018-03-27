@@ -35,14 +35,64 @@ Header::Header(HeaderPrivate &p) : ClonableObject(p) {
 
 }
 
-void Header::cleanParameters() {
+Header::Header (const string &name, const string &value) : ClonableObject(*new HeaderPrivate) {
+	setName(name);
+	setValue(value);
+}
+
+Header::Header (const string &name, const string &value, const list<HeaderParam> &params) : Header(name, value) {
+	addParameters(params);
+}
+
+Header::Header (const Header &other) : Header(other.getName(), other.getValue(), other.getParameters()) {}
+
+Header &Header::operator= (const Header &other) {
+	if (this != &other) {
+		setName(other.getName());
+		setValue(other.getValue());
+		cleanParameters();
+		addParameters(other.getParameters());
+	}
+
+	return *this;
+}
+
+bool Header::operator== (const Header &other) const {
+	return getName() == other.getName() &&
+		getValue() == other.getValue();
+}
+
+bool Header::operator!= (const Header &other) const {
+	return !(*this == other);
+}
+
+void Header::setName (const string &name) {
+	L_D();
+	d->name = name;
+}
+
+string Header::getName () const {
+	L_D();
+	return d->name;
+}
+
+void Header::setValue (const string &value) {
+	L_D();
+	d->value = value;
+}
+
+string Header::getValue () const {
+	L_D();
+	return d->value;
+}
+
+void Header::cleanParameters () {
 	L_D();
 	d->parameters.clear();
 }
 
 const std::list<HeaderParam> &Header::getParameters () const {
 	L_D();
-
 	return d->parameters;
 }
 
@@ -88,6 +138,14 @@ const HeaderParam &Header::getParameter (const std::string &paramName) const {
 		return *it;
 	}
 	return Utils::getEmptyConstRefObject<HeaderParam>();
+}
+
+string Header::asString () const {
+	string asString = getName() + ":" + getValue();
+	for (const auto &param : getParameters()) {
+		asString += param.asString();
+	}
+	return asString;
 }
 
 LINPHONE_END_NAMESPACE

@@ -179,8 +179,7 @@ string ContentType::asString () const {
 	L_D();
 	if (isValid()) {
 		string asString = d->type + "/" + d->subType;
-		for (auto it = std::begin(getParameters()); it!=std::end(getParameters()); ++it) {
-			HeaderParam param = *it;
+		for (const auto &param : getParameters()) {
 			asString += param.asString();
 		}
 		return asString;
