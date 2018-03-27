@@ -213,6 +213,15 @@ const list<Header> &Content::getHeaders () const {
 	return d->headers;
 }
 
+const Header &Content::getHeader (const string &headerName) const {
+	L_D();
+	list<Header>::const_iterator it = findHeader(headerName);
+	if (it != d->headers.cend()) {
+		return *it;
+	}
+	return Utils::getEmptyConstRefObject<Header>();
+}
+
 void Content::removeHeader (const string &headerName) {
 	L_D();
 	auto it = findHeader(headerName);

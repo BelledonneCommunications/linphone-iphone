@@ -78,6 +78,7 @@ public:
 	virtual bool isFileTransfer () const;
 
 	const std::list<Header> &getHeaders () const;
+	const Header &getHeader (const std::string &headerName) const;
 	void addHeader (const std::string &headerName, const std::string &headerValue);
 	void addHeader (const Header &header);
 	void removeHeader (const std::string &headerName);

@@ -298,6 +298,7 @@ void multipart_to_list () {
 	ms_message("\n\n----- Original part 3 -----");
 	ms_message("%s", originalStr3.c_str());
 	BC_ASSERT_TRUE(originalStr3 == generatedStr3);
+	BC_ASSERT_TRUE(content3.getHeader("Content-Encoding").getValue() == "b64");
 
 	Content content4 = contents.front();
 	contents.pop_front();
@@ -316,6 +317,10 @@ void multipart_to_list () {
 	ms_message("\n\n----- Original part 4 -----");
 	ms_message("%s", originalStr4.c_str());
 	BC_ASSERT_TRUE(originalStr4 == generatedStr4);
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getValue() == "toto");
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param1").getValue() == "value1");
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param2").getValue().empty());
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param3").getValue() == "value3");
 }
 
 void list_to_multipart () {
@@ -396,17 +401,35 @@ static void content_type_parsing(void) {
 	BC_ASSERT_TRUE(type == contentType.asString());
 }
 
-test_t content_manager_tests[] = {
+static void content_header_parsing(void) {
+	string value = "toto;param1=value1;param2;param3=value3";
+	Header header = Header("Content-Id", value);
+	BC_ASSERT_TRUE(header.getValue() == "toto");
+	BC_ASSERT_TRUE(header.getParameter("param1").getValue() == "value1");
+	BC_ASSERT_TRUE(header.getParameter("param2").getValue().empty());
+	BC_ASSERT_TRUE(header.getParameter("param3").getValue() == "value3");
+	BC_ASSERT_EQUAL(3, header.getParameters().size(), int, "%d");
+	BC_ASSERT_STRING_EQUAL("", header.getParameter("encoding").getValue().c_str());
+
+	value = "b64";
+	header = Header("Content-Encoding", value);
+	BC_ASSERT_TRUE(header.getValue() == value);
+	BC_ASSERT_EQUAL(0, header.getParameters().size(), int, "%d");
+	BC_ASSERT_STRING_EQUAL("", header.getParameter("access-type").getValue().c_str());
+}
+
+test_t contents_tests[] = {
 	TEST_NO_TAG("Multipart to list", multipart_to_list),
 	TEST_NO_TAG("List to multipart", list_to_multipart),
-	TEST_NO_TAG("Content type parsing", content_type_parsing)
+	TEST_NO_TAG("Content type parsing", content_type_parsing),
+	TEST_NO_TAG("Content header parsing", content_header_parsing)
 };
 
-test_suite_t content_manager_test_suite = {
-	"Content manager",
+test_suite_t contents_test_suite = {
+	"Contents",
 	nullptr,
 	nullptr,
 	liblinphone_tester_before_each,
 	liblinphone_tester_after_each,
-	sizeof(content_manager_tests) / sizeof(content_manager_tests[0]), content_manager_tests
+	sizeof(contents_tests) / sizeof(contents_tests[0]), contents_tests
 };

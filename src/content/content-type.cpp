@@ -82,7 +82,6 @@ ContentType::ContentType (const string &contentType) : Header(*new ContentTypePr
 			params.erase(0, posParam + 1);
 		} while (posParam != std::string::npos);
 	}
-	setValue(d->type + "/" + d->subType);
 }
 
 ContentType::ContentType (const string &type, const string &subType) : Header(*new ContentTypePrivate) {
