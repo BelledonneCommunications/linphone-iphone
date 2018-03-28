@@ -582,7 +582,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 				foundSupportContentType = true;
 				break;
 			} else
-			lError() << "Unsupported content-type: " << c->getContentType().asString();
+			lError() << "Unsupported content-type: " << c->getContentType();
 		}
 
 		if (!foundSupportContentType) {

@@ -25,20 +25,13 @@
 
 #include "content-p.h"
 #include "content-type.h"
+#include "header/header.h"
 
 // =============================================================================
 
 using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
-
-// -----------------------------------------------------------------------------
-
-const list<pair<string, string>>::const_iterator ContentPrivate::findHeader (const string &headerName) const {
-	return findIf(headers, [&headerName](const pair<string, string> &pair) {
-		return pair.first == headerName;
-	});
-}
 
 // =============================================================================
 
@@ -205,28 +198,42 @@ bool Content::isFileTransfer () const {
 void Content::addHeader (const string &headerName, const string &headerValue) {
 	L_D();
 	removeHeader(headerName);
-	d->headers.push_back(make_pair(headerName, headerValue));
+	Header header = Header(headerName, headerValue);
+	d->headers.push_back(header);
 }
 
-const list<pair<string, string>> &Content::getHeaders () const {
+void Content::addHeader (const Header &header) {
+	L_D();
+	removeHeader(header.getName());
+	d->headers.push_back(header);
+}
+
+const list<Header> &Content::getHeaders () const {
 	L_D();
 	return d->headers;
 }
 
+const Header &Content::getHeader (const string &headerName) const {
+	L_D();
+	list<Header>::const_iterator it = findHeader(headerName);
+	if (it != d->headers.cend()) {
+		return *it;
+	}
+	return Utils::getEmptyConstRefObject<Header>();
+}
+
 void Content::removeHeader (const string &headerName) {
 	L_D();
-	auto it = d->findHeader(headerName);
+	auto it = findHeader(headerName);
 	if (it != d->headers.cend())
 		d->headers.remove(*it);
 }
 
-const string &Content::getHeaderValue (const string &headerName) const {
+list<Header>::const_iterator Content::findHeader (const string &headerName) const {
 	L_D();
-	auto it = d->findHeader(headerName);
-	if (it != d->headers.cend())
-		return (*it).second;
-
-	return Utils::getEmptyConstRefObject<string>();
+	return findIf(d->headers, [&headerName](const Header &header) {
+		return header.getName() == headerName;
+	});
 }
 
 LINPHONE_END_NAMESPACE

@@ -156,7 +156,7 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 			continue;
 		}
 
-		const string &cid = content.getHeaderValue("Content-Id");
+		const string &cid = content.getHeader("Content-Id").getValue();
 		if (cid.empty())
 			continue;
 

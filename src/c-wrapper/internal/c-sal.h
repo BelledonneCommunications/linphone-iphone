@@ -650,6 +650,7 @@ SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, i
 const belle_sip_list_t * sal_body_handler_get_parts(const SalBodyHandler *body_handler);
 SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value);
 const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, const char *header_name);
+const belle_sip_list_t* sal_body_handler_get_headers(const SalBodyHandler *body_handler);
 
 /*this function parses a document with key=value pairs separated by new lines, and extracts the value for a given key*/
 int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size);

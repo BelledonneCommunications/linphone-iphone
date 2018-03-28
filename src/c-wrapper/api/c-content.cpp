@@ -25,6 +25,7 @@
 #include "content/content.h"
 #include "content/content-type.h"
 #include "content/header/header-param.h"
+#include "content/header/header.h"
 #include "content/content-manager.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
@@ -259,6 +260,13 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
             belle_sip_free(body);
         }
         
+        belle_sip_list_t *headers = (belle_sip_list_t *)sal_body_handler_get_headers(body_handler);
+        while (headers) {
+            belle_sip_header_t *cHeader = BELLE_SIP_HEADER(headers->data);
+            LinphonePrivate::Header header = LinphonePrivate::Header(belle_sip_header_get_name(cHeader), belle_sip_header_get_unparsed_value(cHeader));
+            L_GET_CPP_PTR_FROM_C_OBJECT(content)->addHeader(header);
+            headers = headers->next;
+        }
         if (sal_body_handler_get_encoding(body_handler)) linphone_content_set_encoding(content, sal_body_handler_get_encoding(body_handler));
 	}
 
@@ -307,12 +315,7 @@ SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
     }
 
     for (const auto &header : L_GET_CPP_PTR_FROM_C_OBJECT(content)->getHeaders()) {
-        belle_sip_header_t *additionalHeader = BELLE_SIP_HEADER(
-            belle_sip_header_create(
-                header.first.c_str(),
-                header.second.c_str()
-            )
-        );
+        belle_sip_header_t *additionalHeader = belle_sip_header_parse(header.asString().c_str());
         belle_sip_body_handler_add_header(BELLE_SIP_BODY_HANDLER(body_handler), additionalHeader);
     }
 

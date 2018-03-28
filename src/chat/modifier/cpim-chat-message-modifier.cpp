@@ -98,7 +98,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 		content = message->getContents().front();
 
 	if (content->getContentType() != ContentType::Cpim) {
-		lError() << "[CPIM] Message is not CPIM but " << content->getContentType().asString();
+		lError() << "[CPIM] Message is not CPIM but " << content->getContentType();
 		return ChatMessageModifier::Result::Skipped;
 	}
 

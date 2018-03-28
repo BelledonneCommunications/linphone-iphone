@@ -32,6 +32,8 @@ LINPHONE_BEGIN_NAMESPACE
 
 class HeaderPrivate : public ClonableObjectPrivate {
 private:
+	std::string name;
+	std::string value;
 	std::list<HeaderParam> parameters;
 	L_DECLARE_PUBLIC(Header);
 };

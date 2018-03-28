@@ -58,8 +58,6 @@ public:
 	const std::string &getSubType () const;
 	bool setSubType (const std::string &subType);
 
-	std::string asString () const;
-
 	bool isMultipart() const;
 
 	static bool isFile (const ContentType &contentType);

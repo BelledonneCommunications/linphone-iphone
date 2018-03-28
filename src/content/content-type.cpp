@@ -147,6 +147,7 @@ bool ContentType::setType (const string &type) {
 	L_D();
 	if (type.find('/') == string::npos) {
 		d->type = Utils::stringToLower(type);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
@@ -161,6 +162,7 @@ bool ContentType::setSubType (const string &subType) {
 	L_D();
 	if (subType.find('/') == string::npos) {
 		d->subType = Utils::stringToLower(subType);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
@@ -174,19 +176,6 @@ bool ContentType::isEmpty () const {
 bool ContentType::isValid () const {
 	L_D();
 	return !d->type.empty() && !d->subType.empty();
-}
-
-string ContentType::asString () const {
-	L_D();
-	if (isValid()) {
-		string asString = d->type + "/" + d->subType;
-		for (auto it = std::begin(getParameters()); it!=std::end(getParameters()); ++it) {
-			HeaderParam param = *it;
-			asString += param.asString();
-		}
-		return asString;
-	}
-	return "";
 }
 
 bool ContentType::isMultipart() const {

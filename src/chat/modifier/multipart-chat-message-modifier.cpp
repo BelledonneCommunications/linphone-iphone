@@ -22,6 +22,7 @@
 
 #include "chat/chat-message/chat-message.h"
 #include "content/content-type.h"
+#include "content/header/header.h"
 #include "content/content-manager.h"
 #include "content/file-transfer-content.h"
 
@@ -55,8 +56,8 @@ ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_p
 				content->setContentType(c.getContentType());
 				content->setContentDisposition(c.getContentDisposition());
 				content->setContentEncoding(c.getContentEncoding());
-				for (const pair<string, string> &pair : c.getHeaders()) {
-					content->addHeader(pair.first, pair.second);
+				for (const Header &header : c.getHeaders()) {
+					content->addHeader(header);
 				}
 				content->setBodyFromUtf8(c.getBodyAsUtf8String());
 			} else {

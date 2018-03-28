@@ -33,7 +33,23 @@ class HeaderParam;
 
 class LINPHONE_PUBLIC Header : public ClonableObject {
 public:
-	void cleanParameters();
+	Header ();
+	Header (const std::string &name, const std::string &value);
+	Header (const std::string &name, const std::string &value, const std::list<HeaderParam> &params);
+	Header (const Header &other);
+
+	Header &operator= (const Header &other);
+
+	bool operator== (const Header &other) const;
+	bool operator!= (const Header &other) const;
+
+	void setName (const std::string &name);
+	std::string getName () const;
+
+	void setValue (const std::string &value);
+	std::string getValue () const;
+
+	void cleanParameters ();
 	const std::list<HeaderParam> &getParameters () const;
 	void addParameter (const std::string &paramName, const std::string &paramValue);
 	void addParameter (const HeaderParam &param);
@@ -42,6 +58,9 @@ public:
 	void removeParameter (const HeaderParam &param);
 	std::list<HeaderParam>::const_iterator findParameter (const std::string &paramName) const;
 	const HeaderParam &getParameter (const std::string &paramName) const;
+
+	std::string asString () const;
+	friend std::ostream &operator<<(std::ostream&, const Header&);
 
 protected:
 	explicit Header (HeaderPrivate &p);

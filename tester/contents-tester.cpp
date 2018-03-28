@@ -21,8 +21,10 @@
 #include "content/content-manager.h"
 #include "content/content-type.h"
 #include "content/content.h"
+#include "content/header/header-param.h"
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
+#include "logger/logger.h"
 
 using namespace LinphonePrivate;
 using namespace std;
@@ -60,6 +62,7 @@ static const char* source_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
+"Content-Encoding: b64\r\n" \
 "Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
@@ -77,6 +80,7 @@ static const char* source_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
+"Content-Id: toto;param1=value1;param2;param3=value3\r\n" \
 "Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
@@ -97,8 +101,8 @@ static const char* source_multipart = \
 
 static const char* generated_multipart = \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:582" \
+"Content-Type: application/rlmi+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:582\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<list xmlns=\"urn:ietf:params:xml:ns:rlmi\" fullState=\"false\" uri=\"sip:rls@sip.linphone.org\" version=\"1\">" \
 "	<resource uri=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\">" \
@@ -112,8 +116,8 @@ static const char* generated_multipart = \
 "	</resource>" \
 "</list>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:561" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:561\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+YYYYYYYYYY@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"qmht-9\">" \
@@ -130,8 +134,9 @@ static const char* generated_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:561" \
+"Content-Encoding:b64\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:561\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+XXXXXXXXXX@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"szohvt\">" \
@@ -148,8 +153,9 @@ static const char* generated_multipart = \
 "	</p1:person>" \
 "</presence>" \
 "-----------------------------14737809831466499882746641449\r\n" \
-"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n\r\n" \
-"Content-Length:546" \
+"Content-Id:toto;param1=value1;param2;param3=value3\r\n" \
+"Content-Type: application/pidf+xml;charset=\"UTF-8\"\r\n" \
+"Content-Length:546\r\n\r\n" \
 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>" \
 "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"sip:+ZZZZZZZZZZ@sip.linphone.org;user=phone\" xmlns:p1=\"urn:ietf:params:xml:ns:pidf:data-model\">" \
 "	<tuple id=\"oc3e08\">" \
@@ -292,6 +298,7 @@ void multipart_to_list () {
 	ms_message("\n\n----- Original part 3 -----");
 	ms_message("%s", originalStr3.c_str());
 	BC_ASSERT_TRUE(originalStr3 == generatedStr3);
+	BC_ASSERT_TRUE(content3.getHeader("Content-Encoding").getValue() == "b64");
 
 	Content content4 = contents.front();
 	contents.pop_front();
@@ -310,6 +317,10 @@ void multipart_to_list () {
 	ms_message("\n\n----- Original part 4 -----");
 	ms_message("%s", originalStr4.c_str());
 	BC_ASSERT_TRUE(originalStr4 == generatedStr4);
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getValue() == "toto");
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param1").getValue() == "value1");
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param2").getValue().empty());
+	BC_ASSERT_TRUE(content4.getHeader("Content-Id").getParameter("param3").getValue() == "value3");
 }
 
 void list_to_multipart () {
@@ -325,8 +336,14 @@ void list_to_multipart () {
 	content2.setContentType(contentType);
 	Content content3;
 	content3.setBody(part3);
+	content3.addHeader("Content-Encoding", "b64");
 	content3.setContentType(contentType);
 	Content content4;
+	Header header = Header("Content-Id", "toto");
+	header.addParameter("param1", "value1");
+	header.addParameter("param2", "");
+	header.addParameter("param3", "value3");
+	content4.addHeader(header);
 	content4.setBody(part4);
 	content4.setContentType(contentType);
 	list<Content *> contents = {&content1, &content2, &content3, &content4};
@@ -353,24 +370,66 @@ void list_to_multipart () {
 }
 
 static void content_type_parsing(void) {
-	const string type = "message/external-body;access-type=URL;URL=\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"";
+	string type = "message/external-body;access-type=URL;URL=\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"";
 	ContentType contentType = ContentType(type);
 	BC_ASSERT_STRING_EQUAL("message", contentType.getType().c_str());
 	BC_ASSERT_STRING_EQUAL("external-body", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("URL", contentType.getParameter("access-type").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("\"https://www.linphone.org/img/linphone-open-source-voip-projectX2.png\"", contentType.getParameter("URL").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_EQUAL(2, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
+	BC_ASSERT_TRUE(type == contentType.asString());
+
+	type = "multipart/mixed;boundary=-----------------------------14737809831466499882746641450";
+	contentType = ContentType(type);
+	BC_ASSERT_STRING_EQUAL("multipart", contentType.getType().c_str());
+	BC_ASSERT_STRING_EQUAL("mixed", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("-----------------------------14737809831466499882746641450", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("access-type").getValue().c_str());
+	BC_ASSERT_EQUAL(1, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
+	BC_ASSERT_TRUE(type == contentType.asString());
+
+	type = "plain/text";
+	contentType = ContentType(type);
+	BC_ASSERT_STRING_EQUAL("plain", contentType.getType().c_str());
+	BC_ASSERT_STRING_EQUAL("text", contentType.getSubType().c_str());
+	BC_ASSERT_STRING_EQUAL("", contentType.getParameter("boundary").getValue().c_str());
+	BC_ASSERT_EQUAL(0, contentType.getParameters().size(), int, "%d");
+	lInfo() << "Content-Type is " << contentType;
 	BC_ASSERT_TRUE(type == contentType.asString());
 }
 
-test_t content_manager_tests[] = {
+static void content_header_parsing(void) {
+	string value = "toto;param1=value1;param2;param3=value3";
+	Header header = Header("Content-Id", value);
+	BC_ASSERT_TRUE(header.getValue() == "toto");
+	BC_ASSERT_TRUE(header.getParameter("param1").getValue() == "value1");
+	BC_ASSERT_TRUE(header.getParameter("param2").getValue().empty());
+	BC_ASSERT_TRUE(header.getParameter("param3").getValue() == "value3");
+	BC_ASSERT_EQUAL(3, header.getParameters().size(), int, "%d");
+	BC_ASSERT_STRING_EQUAL("", header.getParameter("encoding").getValue().c_str());
+
+	value = "b64";
+	header = Header("Content-Encoding", value);
+	BC_ASSERT_TRUE(header.getValue() == value);
+	BC_ASSERT_EQUAL(0, header.getParameters().size(), int, "%d");
+	BC_ASSERT_STRING_EQUAL("", header.getParameter("access-type").getValue().c_str());
+}
+
+test_t contents_tests[] = {
 	TEST_NO_TAG("Multipart to list", multipart_to_list),
 	TEST_NO_TAG("List to multipart", list_to_multipart),
-	TEST_NO_TAG("Content type parsing", content_type_parsing)
+	TEST_NO_TAG("Content type parsing", content_type_parsing),
+	TEST_NO_TAG("Content header parsing", content_header_parsing)
 };
 
-test_suite_t content_manager_test_suite = {
-	"Content manager",
+test_suite_t contents_test_suite = {
+	"Contents",
 	nullptr,
 	nullptr,
 	liblinphone_tester_before_each,
 	liblinphone_tester_after_each,
-	sizeof(content_manager_tests) / sizeof(content_manager_tests[0]), content_manager_tests
+	sizeof(contents_tests) / sizeof(contents_tests[0]), contents_tests
 };
