@@ -51,6 +51,7 @@ int liblinphonetester_transport_timeout = 9000; /*milliseconds. it is set to suc
 			Thanks to the timeout, it will fallback to IPv4*/
 
 const char *liblinphone_tester_mire_id="Mire: Mire (synthetic moving picture)";
+const char *liblinphone_tester_static_image_id="StaticImage: Static picture";
 
 static void network_reachable(LinphoneCore *lc, bool_t reachable) {
 	stats* counters;

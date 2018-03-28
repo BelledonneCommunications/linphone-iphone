@@ -326,6 +326,7 @@ struct video_config{
 	float fps;
 	bool_t capture;
 	bool_t show_local;
+	bool_t qrcode_decoder;
 	bool_t display;
 	bool_t selfview; /*during calls*/
 	bool_t reuse_preview_source;

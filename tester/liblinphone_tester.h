@@ -128,6 +128,7 @@ extern bool_t liblinphone_tester_keep_uuid;
 extern bool_t liblinphone_tester_tls_support_disabled;
 extern const MSAudioDiffParams audio_cmp_params;
 extern const char *liblinphone_tester_mire_id;
+extern const char *liblinphone_tester_static_image_id;
 extern bool_t liblinphonetester_ipv6;
 extern bool_t liblinphonetester_show_account_manager_logs;
 

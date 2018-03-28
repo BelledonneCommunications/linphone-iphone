@@ -406,6 +406,13 @@ typedef void (*LinphoneCoreCbsVersionUpdateCheckResultReceivedCb) (LinphoneCore 
 typedef void (*LinphoneCoreCbsChatRoomStateChangedCb) (LinphoneCore *lc, LinphoneChatRoom *cr, LinphoneChatRoomState state);
 
 /**
+ * Callback prototype telling the result of decoded qrcode
+ * @param[in] lc LinphoneCore object
+ * @param[in] result The result of the decoded qrcode
+ */
+typedef void (*LinphoneCoreCbsQrcodeFoundedCb)(LinphoneCore *lc, const char *result);
+
+/**
  * @}
 **/
 

@@ -48,6 +48,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
+#include "mediastreamer2/msqrcodereader.h"
 #include "bctoolbox/charconv.h"
 
 #include "chat/chat-room/client-group-chat-room-p.h"
@@ -445,6 +446,14 @@ LinphoneCoreCbsChatRoomStateChangedCb linphone_core_cbs_get_chat_room_state_chan
 
 void linphone_core_cbs_set_chat_room_state_changed (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomStateChangedCb cb) {
 	cbs->vtable->chat_room_state_changed = cb;
+}
+
+LinphoneCoreCbsQrcodeFoundedCb linphone_core_cbs_get_qrcode_founded(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->qrcode_founded;
+}
+
+void linphone_core_cbs_set_qrcode_founded(LinphoneCoreCbs *cbs, LinphoneCoreCbsQrcodeFoundedCb cb) {
+	cbs->vtable->qrcode_founded = cb;
 }
 
 void linphone_core_cbs_set_ec_calibration_result(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationResultCb cb) {
@@ -3129,15 +3138,15 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	bool_t new_status=lc->network_last_status;
 	char newip[LINPHONE_IPADDR_SIZE];
 
-	/* only do the network up checking every five seconds */
+	// only do the network up checking every five seconds
 	if (lc->network_last_check==0 || (curtime-lc->network_last_check)>=5){
 		linphone_core_get_local_ip(lc,AF_UNSPEC,NULL,newip);
 		if (strcmp(newip,"::1")!=0 && strcmp(newip,"127.0.0.1")!=0){
 			new_status=TRUE;
-		}else new_status=FALSE; /*no network*/
+		}else new_status=FALSE; //no network
 
 		if (new_status==lc->network_last_status && new_status==TRUE && strcmp(newip,lc->localip)!=0){
-			/*IP address change detected*/
+			//IP address change detected
 			ms_message("IP address change detected.");
 			set_network_reachable(lc,FALSE,curtime);
 			lc->network_last_status=FALSE;
@@ -4791,11 +4800,22 @@ void linphone_core_migrate_logs_from_rc_to_db(LinphoneCore *lc) {
  * Video related functions                                                  *
  ******************************************************************************/
 
+
 #ifdef VIDEO_ENABLED
-static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
-	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
-		LinphoneCore *lc = (LinphoneCore *)userdata;
-		linphone_core_enable_video_preview(lc, FALSE);
+static void video_filter_callback(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	switch(id) {
+		case  MS_JPEG_WRITER_SNAPSHOT_TAKEN: {
+			LinphoneCore *lc = (LinphoneCore *)userdata;
+			linphone_core_enable_video_preview(lc, FALSE);
+			break;
+		}
+		case MS_QRCODE_READER_QRCODE_FOUND: {
+			LinphoneCore *lc = (LinphoneCore *)userdata;
+			if (linphone_core_cbs_get_qrcode_founded(linphone_core_get_current_callbacks(lc)) != NULL) {
+				linphone_core_notify_qrcode_founded(lc, (const char*)arg);
+			}
+			break;
+		}
 	}
 }
 #endif
@@ -4818,7 +4838,7 @@ LinphoneStatus linphone_core_take_preview_snapshot(LinphoneCore *lc, const char 
 			lc->previewstream->ms.factory = lc->factory;
 			linphone_core_enable_video_preview(lc, TRUE);
 
-			ms_filter_add_notify_callback(lc->previewstream->local_jpegwriter, snapshot_taken, lc, TRUE);
+			ms_filter_add_notify_callback(lc->previewstream->local_jpegwriter, video_filter_callback, lc, TRUE);
 			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
 		} else {
 			ms_filter_call_method(lc->previewstream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void*)file);
@@ -4848,7 +4868,11 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 			if (lc->preview_window_id != NULL)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
+			if (linphone_core_qrcode_video_preview_enabled(lc))
+				video_preview_enable_qrcode(lc->previewstream, TRUE);
 			video_preview_start(lc->previewstream,lc->video_conf.device);
+			if (video_preview_qrcode_enabled(lc->previewstream))
+				ms_filter_add_notify_callback(lc->previewstream->qrcode, video_filter_callback, lc, TRUE);
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -5021,6 +5045,16 @@ void linphone_core_enable_video_preview(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_video_preview_enabled(const LinphoneCore *lc){
 	return lc->video_conf.show_local;
+}
+
+void linphone_core_enable_qrcode_video_preview(LinphoneCore *lc, bool_t val) {
+	lc->video_conf.qrcode_decoder=val;
+	if (linphone_core_ready(lc))
+		lp_config_set_int(lc->config,"video","qrcode_decoder",val);
+}
+
+bool_t linphone_core_qrcode_video_preview_enabled(const LinphoneCore *lc) {
+	return lc->video_conf.qrcode_decoder;
 }
 
 void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){
