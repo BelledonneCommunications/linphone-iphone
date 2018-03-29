@@ -606,10 +606,9 @@ static void notify(SalSubscribeOp *op, SalSubscribeStatus st, const char *eventn
 	}
 	{
 		LinphoneContent *ct=linphone_content_from_sal_body_handler(body_handler);
-		if (ct) {
+		if (ct)
 			linphone_core_notify_notify_received(lc,lev,eventname,ct);
-			linphone_content_unref(ct);
-		}
+
 	}
 	if (out_of_dialog){
 		/*out of dialog NOTIFY do not create an implicit subscription*/
