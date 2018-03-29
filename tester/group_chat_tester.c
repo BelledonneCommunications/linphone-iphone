@@ -2809,7 +2809,7 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 
 	linphone_core_set_network_reachable(marie2->lc, FALSE);
 	linphone_core_set_network_reachable(pauline2->lc, FALSE);
-	
+
 	// Marie creates a new group chat room
 	const char *initialSubject = "Pauline";
 	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject, -1);
@@ -2918,6 +2918,7 @@ static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	coresManagerList = bctbx_list_remove(coresManagerList, marie1);
 	coresList = bctbx_list_remove(coresList, marie1->lc);
 	LinphoneCoreManager *marie2 = linphone_core_manager_create("marie_rc");
+	stats initialMarie2Stats = marie2->stat;
 	bctbx_list_t *newCoresManagerList = bctbx_list_append(NULL, marie2);
 	bctbx_list_t *newCoresList = init_core_for_conference(newCoresManagerList);
 	start_core_for_conference(newCoresManagerList);
@@ -2925,7 +2926,6 @@ static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	coresList = bctbx_list_concat(coresList, newCoresList);
 
 	// Marie2 gets the one-to-one chat room with Pauline
-	stats initialMarie2Stats = marie2->stat;
 	LinphoneChatRoom *marie2Cr = check_creation_chat_room_client_side(coresList, marie2, &initialMarie2Stats, confAddr, initialSubject, 1, FALSE);
 	BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marie2Cr) & LinphoneChatRoomCapabilitiesOneToOne);
 
