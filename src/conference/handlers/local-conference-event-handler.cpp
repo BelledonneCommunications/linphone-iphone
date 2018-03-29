@@ -22,6 +22,7 @@
 #include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 
+#include "c-wrapper/c-wrapper.h"
 #include "conference/local-conference.h"
 #include "conference/participant-device.h"
 #include "conference/participant-p.h"
@@ -368,22 +369,24 @@ void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &
 	LinphoneEventCbs *cbs = linphone_event_get_callbacks(ev);
 	linphone_event_cbs_set_user_data(cbs, this);
 	linphone_event_cbs_set_notify_response(cbs, notifyResponseCb);
-	LinphoneContent *content = linphone_core_create_content(ev->lc);
-	linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
-	linphone_content_set_type(
-		content,
-		multipart ? "multipart" : "application"
-	);
-	linphone_content_set_subtype(
-		content,
-		multipart ? "mixed;boundary=---------------------------14737809831466499882746641449" : "conference-info+xml"
-	);
+
+	Content content;
+	content.setBody(notify);
+	ContentType contentType;
+	if (multipart) {
+		contentType = ContentType(ContentType::Multipart);
+		contentType.addParameter("boundary", MultipartBoundary);
+	} else
+		contentType = ContentType(ContentType::ConferenceInfo);
+
+	content.setContentType(contentType);
 	// TODO: Activate compression
 	//if (linphone_core_content_encoding_supported(conf->getCore()->getCCore(), "deflate"))
 	//	linphone_content_set_encoding(content, "deflate");
 	// TODO: Activate compression
-	linphone_event_notify(ev, content);
-	linphone_content_unref(content);
+	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
+	linphone_event_notify(ev, cContent);
+	linphone_content_unref(cContent);
 }
 
 // =============================================================================
