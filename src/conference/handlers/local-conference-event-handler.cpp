@@ -111,7 +111,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 	list<Content *> contents;
 	for (const auto &eventLog : events) {
 		Content *content = new Content();
-		content->setContentType(ContentType("application","conference-info"));
+		content->setContentType(ContentType::ConferenceInfo);
 		string body;
 		shared_ptr<ConferenceNotifiedEvent> notifiedEvent = static_pointer_cast<ConferenceNotifiedEvent>(eventLog);
 		int eventNotifyId = static_cast<int>(notifiedEvent->getNotifyId());
@@ -376,7 +376,7 @@ void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &
 	);
 	linphone_content_set_subtype(
 		content,
-		multipart ? "mixed;boundary=---------------------------14737809831466499882746641449" : "conference-info"
+		multipart ? "mixed;boundary=---------------------------14737809831466499882746641449" : "conference-info+xml"
 	);
 	// TODO: Activate compression
 	//if (linphone_core_content_encoding_supported(conf->getCore()->getCCore(), "deflate"))
