@@ -23,9 +23,6 @@
 #include <memory>
 #include <list>
 
-#include "linphone/event.h"
-#include "linphone/content.h"
-
 #include "chat/chat-room/chat-room-id.h"
 #include "linphone/utils/general.h"
 
