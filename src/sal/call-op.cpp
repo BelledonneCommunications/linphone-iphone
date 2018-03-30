@@ -1037,7 +1037,7 @@ int SalCallOp::decline(SalReason reason, const char *redirection /*optional*/){
 }
 
 belle_sip_header_reason_t *SalCallOp::make_reason_header( const SalErrorInfo *info){
-	if (info != NULL){
+	if (info && info->reason != SalReasonNone) {
 		belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
 		belle_sip_header_reason_set_text(reason, info->status_string);
 		belle_sip_header_reason_set_protocol(reason,info->protocol);
@@ -1123,12 +1123,12 @@ int SalCallOp::update(const char *subject, bool_t no_user_consent) {
 int SalCallOp::cancel_invite_with_info(const SalErrorInfo *info) {
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",get_from(), get_to());
-	
+
 	if (this->pending_client_trans == NULL){
 		ms_warning("There is no transaction to cancel.");
 		return -1;
 	}
-	
+
 	cancel = belle_sip_client_transaction_create_cancel(this->pending_client_trans);
 	if (cancel){
 		if (info != NULL){
