@@ -92,7 +92,7 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 			case CallSession::State::Error:
 				switch (linphone_error_info_get_reason(q->getErrorInfo())) {
 					case LinphoneReasonDeclined:
-						if(log->status == LinphoneCallSuccess) // Do not re-change the status of a call if it's already set
+						if (log->status != LinphoneCallMissed) // Do not re-change the status of a call if it's already set
 							log->status = LinphoneCallDeclined;
 						break;
 					case LinphoneReasonNotAnswered:

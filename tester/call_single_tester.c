@@ -821,11 +821,11 @@ static void multiple_answers_call_with_media_relay(void) {
 	linphone_core_remove_supported_tag(pauline->lc,"gruu");
 	linphone_core_remove_supported_tag(marie1->lc,"gruu");
 	linphone_core_remove_supported_tag(marie2->lc,"gruu");
-	
+
 	linphone_core_manager_start(pauline, TRUE);
 	linphone_core_manager_start(marie1, TRUE);
 	linphone_core_manager_start(marie2, TRUE);
-	
+
 	LinphoneCall* call1, *call2;
 
 	bctbx_list_t* lcs = bctbx_list_append(NULL,pauline->lc);
@@ -1038,7 +1038,7 @@ static void terminate_call_with_error(void) {
 
 	linphone_call_ref(out_call);
 	ei = linphone_error_info_new();
-	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 200, "Call refused for security reason", NULL);
+	linphone_error_info_set(ei, NULL, LinphoneReasonUnknown, 200, "Call refused for security reason", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -1093,7 +1093,7 @@ static void cancel_call_with_error(void) {
 
 	linphone_call_ref(out_call);
 	ei = linphone_error_info_new();
-	linphone_error_info_set(ei, NULL, LinphoneReasonNone, 600, "Call has been cancelled", NULL);
+	linphone_error_info_set(ei, NULL, LinphoneReasonUnknown, 600, "Call has been cancelled", NULL);
 
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &caller_mgr->stat.number_of_LinphoneCallOutgoingInit,1));
 	BC_ASSERT_TRUE(wait_for(caller_mgr->lc, callee_mgr->lc, &callee_mgr->stat.number_of_LinphoneCallIncomingReceived, 1));
@@ -1421,8 +1421,8 @@ static void call_declined_with_error(void) {
 	LinphoneErrorInfo *ei = linphone_factory_create_error_info(factory);
 	LinphoneErrorInfo *reason_ei = linphone_factory_create_error_info(factory);
 
-	linphone_error_info_set(ei, "SIP", LinphoneReasonUnknown,  603, "Decline", NULL); //ordre des arguments à vérifier
-	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonUnknown,  66, "J'ai plus de batterie", NULL);
+	linphone_error_info_set(ei, "SIP", LinphoneReasonDeclined,  603, "Decline", NULL); //ordre des arguments à vérifier
+	linphone_error_info_set(reason_ei, "hardware", LinphoneReasonDeclined,  66, "J'ai plus de batterie", NULL);
 
 	linphone_error_info_set_sub_error_info(ei, reason_ei);
 
@@ -5908,7 +5908,7 @@ static void call_with_ice_without_stun2(void){
 static void call_with_ice_stun_not_responding(void){
 	LinphoneCoreManager * marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
-	
+
 	/*set dummy stun servers*/
 	linphone_core_set_stun_server(marie->lc, "belledonne-communications.com:443");
 	linphone_core_set_stun_server(pauline->lc, "belledonne-communications.com:443");
