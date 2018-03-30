@@ -33,6 +33,10 @@ import metadoc
 
 class RstTools:
 	@staticmethod
+	def make_part(text):
+		return RstTools.make_section(text, char='#', overline=True)
+
+	@staticmethod
 	def make_chapter(text):
 		return RstTools.make_section(text, char='*', overline=True)
 	
@@ -170,6 +174,9 @@ class SphinxPart(object):
 	def isNotJava(self):
 		return not self.isJava
 
+	def make_part(self):
+		return lambda text: RstTools.make_part(pystache.render(text, self))
+
 	def make_chapter(self):
 		return lambda text: RstTools.make_chapter(pystache.render(text, self))
 
@@ -245,19 +252,38 @@ class SphinxPage(SphinxPart):
 
 
 class IndexPage(SphinxPage):
-	def __init__(self, lang, langs):
-		SphinxPage.__init__(self, lang, langs, 'index.rst')
-		self.tocEntries = []
-	
-	def add_class_entry(self, _class):
-		self.tocEntries.append({'entryName': SphinxPage._classname_to_filename(_class.name)})
+	def __init__(self, lang, filename):
+		SphinxPage.__init__(self, lang, None, filename)
+		self._entries = []
+		self._sorted = True
+
+	@property
+	def title(self):
+		return RstTools.make_chapter("{0} API".format(self.lang.displayName))
+
+	@property
+	def dir(self):
+		return self.lang.langCode.lower()
+
+	@property
+	def entries(self):
+		if not self._sorted:
+			self._entries.sort(key=lambda x: x['filename'])
+			self._sorted = True
+		return self._entries
+
+	def add_entry(self, filename):
+		self.entries.append({'filename': filename})
+		self._sorted = False
 
 
-class EnumsPage(SphinxPage):
-	def __init__(self, lang, langs, api):
-		SphinxPage.__init__(self, lang, langs, 'enums.rst')
-		self.namespace = api.namespace.name.translate(lang.nameTranslator) if lang.langCode != 'C' else None
-		self.enums = [EnumPart(enum, lang, langs, namespace=api.namespace) for enum in api.namespace.enums]
+class EnumPage(SphinxPage):
+	def __init__(self, enum, lang, langs):
+		filename = SphinxPage._classname_to_filename(enum.name)
+		SphinxPage.__init__(self, lang, langs, filename)
+		namespace = enum.find_first_ancestor_by_type(abstractapi.Namespace)
+		self.namespace = namespace.name.translate(lang.nameTranslator) if lang.langCode != 'C' else None
+		self.enum = EnumPart(enum, lang, langs, namespace=namespace)
 
 
 class ClassPage(SphinxPage):
@@ -376,20 +402,19 @@ class DocGenerator:
 	
 	def generate(self, outputdir):
 		for lang in self.languages:
+			indexPage = IndexPage(lang, 'index.rst')
 			subdirectory = lang.langCode.lower()
 			directory = os.path.join(args.outputdir, subdirectory)
 			if not os.path.exists(directory):
 				os.mkdir(directory)
-			
-			enumsPage = EnumsPage(lang, self.languages, self.api)
-			enumsPage.write(directory)
-			
-			indexPage = IndexPage(lang, self.languages)
-			for _class in self.api.namespace.classes:
-				page = ClassPage(_class, lang, self.languages)
+			for enum in self.api.namespace.enums:
+				page = EnumPage(enum, lang, self.languages)
 				page.write(directory)
-				indexPage.add_class_entry(_class)
-			
+				indexPage.add_entry(page.filename)
+			for class_ in self.api.namespace.classes:
+				page = ClassPage(class_, lang, self.languages)
+				page.write(directory)
+				indexPage.add_entry(page.filename)
 			indexPage.write(directory)
 
 

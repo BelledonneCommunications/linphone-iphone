@@ -83,7 +83,6 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'alabaster'
 html_theme = 'classic'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -91,6 +90,7 @@ html_theme = 'classic'
 # documentation.
 #
 html_theme_options = {
+	'sidebarwidth': '360',
 	'body_max_width': '100%',
 	'collapsiblesidebar': 'true'
 }
@@ -108,7 +108,7 @@ html_experimental_html5_writer = True
 
 # Side bar customization
 html_sidebars = {
-	'**': ['searchbox.html']
+	'**': ['searchbox.html', 'globaltoc.html']
 }
 
 # -- Options for HTMLHelp output ------------------------------------------

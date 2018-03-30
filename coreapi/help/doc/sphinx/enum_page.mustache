@@ -5,8 +5,8 @@
 	{{/isJava}}
 {{/namespace}}
 
-{{#enums}}
-{{#make_section}}{{{name}}}{{/make_section}}
+{{#enum}}
+{{#make_chapter}}{{{name}}} enum{{/make_chapter}}
 
 .. {{#write_declarator}}enum{{/write_declarator}}:: {{{declaration}}}
 	
@@ -35,4 +35,5 @@
 		{{{selector}}}
 	
 	{{/enumerators}}
-{{/enums}}
+
+{{/enum}}

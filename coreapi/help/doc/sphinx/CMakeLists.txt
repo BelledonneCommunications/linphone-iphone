@@ -29,7 +29,6 @@ if (ENABLE_SPHINX_DOC)
 		list(APPEND DOCUMENTATION_DIRS ${DOCUMENTATION_DIR})
 		list(APPEND GENERATED_SPHINX_SOURCES ${DOCUMENTATION_DIR}/index.rst)
 	endforeach(LANGUAGE_)
-	
 	set(PYTHON_SCRIPTS gendoc.py
 		${linphone_SOURCE_DIR}/tools/abstractapi.py
 		${linphone_SOURCE_DIR}/tools/genapixml.py
@@ -37,7 +36,7 @@ if (ENABLE_SPHINX_DOC)
 		${linphone_SOURCE_DIR}/tools/metaname.py
 	)
 	set(MUSTACHE_TEMPLATES class_page.mustache
-		enums_page.mustache
+		enum_page.mustache
 		index_page.mustache
 	)
 	configure_file(conf.py.in source/conf.py)
