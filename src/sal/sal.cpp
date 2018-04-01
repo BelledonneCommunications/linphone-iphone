@@ -469,6 +469,7 @@ void Sal::setTlsProperties(){
 		if (!mRootCaData.empty())
 			belle_tls_crypto_config_set_root_ca_data(crypto_config, mRootCaData.c_str());
 		if (mSslConfig != NULL) belle_tls_crypto_config_set_ssl_config(crypto_config, mSslConfig);
+		if (mTlsPostcheckCb) belle_tls_crypto_config_set_postcheck_callback(crypto_config, mTlsPostcheckCb, mTlsPostcheckCbData);
 		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
 		belle_sip_object_unref(crypto_config);
 	}
@@ -705,6 +706,11 @@ void Sal::verifyServerCn(bool verify) {
 void Sal::setSslConfig(void *ssl_config) {
 	mSslConfig = ssl_config;
 	setTlsProperties();
+}
+
+void Sal::setTlsPostcheckCallback(int (*cb)(void *, const bctbx_x509_certificate_t *), void *data){
+	mTlsPostcheckCb = cb;
+	mTlsPostcheckCbData = data;
 }
 
 int Sal::createUuid(char *uuid, size_t len) {

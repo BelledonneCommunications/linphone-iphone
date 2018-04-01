@@ -224,7 +224,7 @@ public:
 
 	void verifyServerCertificates (bool value);
 	void verifyServerCn (bool value);
-
+	void setTlsPostcheckCallback(int (*cb)(void *, const bctbx_x509_certificate_t *), void *data);
 
 	// ---------------------------------------------------------------------------
 	// DNS resolution
@@ -317,6 +317,8 @@ private:
 	void *mSslConfig = nullptr;
 	std::vector<std::string> mSupportedContentTypes;
 	std::string mLinphoneSpecs;
+	belle_tls_crypto_config_postcheck_callback_t mTlsPostcheckCb;
+	void *mTlsPostcheckCbData;
 
 	// Cache values
 	mutable std::string mDnsUserHostsFile;
