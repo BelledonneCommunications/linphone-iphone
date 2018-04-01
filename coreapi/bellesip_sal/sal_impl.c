@@ -765,9 +765,15 @@ static void set_tls_properties(Sal *ctx){
 		if (ctx->root_ca != NULL) belle_tls_crypto_config_set_root_ca(crypto_config, ctx->root_ca);
 		if (ctx->root_ca_data != NULL) belle_tls_crypto_config_set_root_ca_data(crypto_config, ctx->root_ca_data);
 		if (ctx->ssl_config != NULL) belle_tls_crypto_config_set_ssl_config(crypto_config, ctx->ssl_config);
+		if (ctx->tls_postcheck_cb) belle_tls_crypto_config_set_postcheck_callback(crypto_config, ctx->tls_postcheck_cb, ctx->tls_postcheck_cb_data);
 		belle_sip_tls_listening_point_set_crypto_config(tlp, crypto_config);
 		belle_sip_object_unref(crypto_config);
 	}
+}
+
+void sal_set_tls_postcheck_callback(Sal *ctx, int (*cb)(void *, const bctbx_x509_certificate_t *), void *data){
+	ctx->tls_postcheck_cb = cb;
+	ctx->tls_postcheck_cb_data = data;
 }
 
 void sal_set_root_ca(Sal* ctx, const char* rootCa) {

@@ -56,6 +56,8 @@ struct Sal{
 	bool_t pending_trans_checking; /*testing purpose*/
 	void *ssl_config;
 	bctbx_list_t *supported_content_types; /* list of char* */
+	belle_tls_crypto_config_postcheck_callback_t tls_postcheck_cb;
+	void *tls_postcheck_cb_data;
 };
 
 typedef enum SalOpState {

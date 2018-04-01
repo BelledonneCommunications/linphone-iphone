@@ -33,6 +33,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
 #include "belle-sip/belle-sip.h"
+#include "bctoolbox/crypto.h"
 
 #ifndef LINPHONE_PUBLIC
 #if defined(_MSC_VER)
@@ -661,6 +662,7 @@ const char *sal_get_root_ca(Sal* ctx);
 void sal_verify_server_certificates(Sal *ctx, bool_t verify);
 void sal_verify_server_cn(Sal *ctx, bool_t verify);
 void sal_set_ssl_config(Sal *ctx, void *ssl_config);
+void sal_set_tls_postcheck_callback(Sal *ctx, int (*cb)(void *, const bctbx_x509_certificate_t *), void *data );
 LINPHONE_PUBLIC void sal_set_uuid(Sal*ctx, const char *uuid);
 LINPHONE_PUBLIC int sal_create_uuid(Sal*ctx, char *uuid, size_t len);
 int sal_generate_uuid(char *uuid, size_t len);

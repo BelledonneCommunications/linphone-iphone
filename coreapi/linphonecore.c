@@ -38,7 +38,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
-#include <bctoolbox/defs.h>
+
+#include "bctoolbox/defs.h"
+#include "bctoolbox/crypto.h"
+#include "bctoolbox/regex.h"
+
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
 #include "mediastreamer2/msequalizer.h"
@@ -47,6 +51,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msjpegwriter.h"
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
+
+
+
 #include <errno.h>
 
 #ifdef INET6
@@ -1235,6 +1242,34 @@ static void sound_config_read(LinphoneCore *lc)
 	_linphone_core_set_tone(lc,LinphoneReasonBusy,LinphoneToneBusy,NULL);
 }
 
+static int _linphone_core_tls_postcheck_callback(void *data, const bctbx_x509_certificate_t *peer_cert){
+	LinphoneCore *lc = (LinphoneCore *) data;
+	const char *tls_certificate_subject_regexp = lp_config_get_string(lc->config,"sip","tls_certificate_subject_regexp", NULL);
+	int ret = 0;
+	if (tls_certificate_subject_regexp){
+		ret = -1;
+		/*the purpose of this handling is to a peer certificate for which there is no single subject matching the regexp given
+		 * in the "tls_certificate_subject_regexp" property.
+		 */
+		bctbx_list_t *subjects = bctbx_x509_certificate_get_subjects(peer_cert);
+		bctbx_list_t *elem;
+		for(elem = subjects; elem != NULL; elem = elem->next){
+			const char *subject = (const char *)elem->data;
+			ms_message("_linphone_core_tls_postcheck_callback: subject=%s", subject);
+			if (bctbx_is_matching_regex(subject, tls_certificate_subject_regexp)){
+				ret = 0;
+				ms_message("_linphone_core_tls_postcheck_callback(): successful by matching '%s'", subject);
+				break;
+			}
+		}
+		bctbx_list_free_with_data(subjects, bctbx_free);
+	}
+	if (ret == -1){
+		ms_message("_linphone_core_tls_postcheck_callback(): postcheck failed, nothing matched.");
+	}
+	return ret;
+}
+
 static void certificates_config_read(LinphoneCore *lc) {
 	LinphoneFactory *factory = linphone_factory_get();
 	const char *data_dir = linphone_factory_get_data_resources_dir(factory);
@@ -1258,6 +1293,8 @@ static void certificates_config_read(LinphoneCore *lc) {
 	linphone_core_verify_server_certificates(lc,lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc,lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);
+	
+	sal_set_tls_postcheck_callback(lc->sal, _linphone_core_tls_postcheck_callback, lc);
 }
 
 static void sip_config_read(LinphoneCore *lc) {
