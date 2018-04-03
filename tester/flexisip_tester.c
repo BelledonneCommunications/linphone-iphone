@@ -1411,14 +1411,28 @@ static void tls_authentication_requested_bad(LinphoneCore *lc, LinphoneAuthInfo 
 	}
 }
 
-static void tls_client_auth_try_register(const char *identity, bool_t with_good_cert, bool_t must_work){
+static void tls_authentication_provide_altname_cert(LinphoneCore *lc, LinphoneAuthInfo *auth_info, LinphoneAuthMethod method){
+	if (method == LinphoneAuthTls){
+
+		char *cert = bc_tester_res("certificates/client/cert3.pem");
+		char *key = bc_tester_res("certificates/client/key3.pem");
+
+		linphone_auth_info_set_tls_cert_path(auth_info, cert);
+		linphone_auth_info_set_tls_key_path(auth_info, key);
+		linphone_core_add_auth_info(lc, auth_info);
+		bc_free(cert);
+		bc_free(key);
+	}
+}
+
+static void tls_client_auth_try_register(const char *identity, LinphoneCoreAuthenticationRequestedCb cb, bool_t good_cert, bool_t must_work){
 	LinphoneCoreManager *lcm;
 	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	LinphoneProxyConfig *cfg;
 
 	lcm = linphone_core_manager_new(NULL);
 
-	linphone_core_cbs_set_authentication_requested(cbs, with_good_cert ? tls_authentication_requested_good : tls_authentication_requested_bad);
+	linphone_core_cbs_set_authentication_requested(cbs, cb);
 	linphone_core_add_callbacks(lcm->lc, cbs);
 	linphone_core_cbs_unref(cbs);
 	cfg = linphone_core_create_proxy_config(lcm->lc);
@@ -1436,7 +1450,7 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationOk,0, int, "%d");
 		/*we should expect 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401.*/
 		/*If the certificate isn't recognized at all, the connection will not happen and no SIP response will be received from server.*/
-		if (with_good_cert) BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,2, int, "%d");
+		if (good_cert) BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,2, int, "%d");
 		else BC_ASSERT_EQUAL(lcm->stat.number_of_auth_info_requested,1, int, "%d");
 	}
 
@@ -1448,9 +1462,9 @@ void tls_client_auth_bad_certificate_cn(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		/*first register to the proxy with galadrielle's identity, and authenticate by supplying galadrielle's certificate.
 		* It must work.*/
-		tls_client_auth_try_register("sip:galadrielle@sip.example.org", TRUE, TRUE);
+		tls_client_auth_try_register("sip:galadrielle@sip.example.org", tls_authentication_requested_good, TRUE, TRUE);
 		/*now do the same thing, but trying to register as "Arwen". It must fail.*/
-		tls_client_auth_try_register("sip:arwen@sip.example.org", TRUE, FALSE);
+		tls_client_auth_try_register("sip:arwen@sip.example.org", tls_authentication_requested_good, TRUE, FALSE);
 	}
 }
 
@@ -1458,7 +1472,18 @@ void tls_client_auth_bad_certificate(void) {
 	if (transport_supported(LinphoneTransportTls)) {
 		/*first register to the proxy with galadrielle's identity, and authenticate by supplying galadrielle's certificate.
 		* It must work.*/
-		tls_client_auth_try_register("sip:galadrielle@sip.example.org", FALSE, FALSE);
+		tls_client_auth_try_register("sip:galadrielle@sip.example.org", tls_authentication_requested_bad, FALSE, FALSE);
+	}
+}
+
+/*
+ * This test verifies that the flexisip certificate postcheck works.
+ * Here, the certificate presented for gandalf is valid and matches the SIP from. However we've set the regexp in flexisip.conf to only accept
+ * certificates with subjects containing either galadrielle or sip:sip.example.org.
+ */
+static void tls_client_rejected_due_to_unmatched_subject(void){
+	if (transport_supported(LinphoneTransportTls)) {
+		tls_client_auth_try_register("sip:gandalf@sip.example.org", tls_authentication_provide_altname_cert, TRUE, FALSE);
 	}
 }
 
@@ -1605,6 +1630,7 @@ test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Redis Publish/subscribe", redis_publish_subscribe, "Skip"),
 	TEST_NO_TAG("TLS authentication - client rejected due to CN mismatch", tls_client_auth_bad_certificate_cn),
 	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
+	TEST_NO_TAG("TLS authentication - client rejected due to unmatched certificate subject", tls_client_rejected_due_to_unmatched_subject),
 	TEST_NO_TAG("Transcoder", transcoder_tester),
 	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport),
 	TEST_NO_TAG("Registered contact does not have regid param", register_without_regid)
