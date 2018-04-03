@@ -317,10 +317,12 @@ void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
 		}
 		if (firstCl)
 			result = !!ice_check_list_selected_valid_local_candidate(firstCl, &rtpCandidate, nullptr);
-		if (result)
+		if (result) {
 			strncpy(desc->addr, rtpCandidate->taddr.ip, sizeof(desc->addr));
-		else
+		} else {
 			lWarning() << "If ICE has completed successfully, rtp_candidate should be set!";
+			ice_dump_valid_list(firstCl);
+		}
 	}
 
 	strncpy(desc->ice_pwd, ice_session_local_pwd(iceSession), sizeof(desc->ice_pwd));
