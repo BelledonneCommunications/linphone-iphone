@@ -19,6 +19,7 @@
 
 
 import argparse
+import hashlib
 import logging
 import os
 import pystache
@@ -29,6 +30,13 @@ import abstractapi
 import genapixml as capi
 import metaname
 import metadoc
+
+
+def md5sum(file):
+	hasher = hashlib.md5()
+	with open(file, mode='rb') as f:
+		hasher.update(f.read())
+	return hasher.hexdigest()
 
 
 class RstTools:
@@ -140,6 +148,10 @@ class LangInfo:
 	def displayName(self):
 		return LangInfo._displayNames[self.langCode]
 
+	@property
+	def directory(self):
+		return self.langCode.lower()
+
 	_displayNames = {
 		'C'     : 'C',
 		'Cpp'   : 'C++',
@@ -239,9 +251,15 @@ class SphinxPage(SphinxPart):
 	def write(self, directory):
 		r = pystache.Renderer()
 		filepath = os.path.join(directory, self.filename)
-		with open(filepath, mode='w') as f:
+		tmpFilepath = filepath + '.tmp'
+		with open(tmpFilepath, mode='w') as f:
 			f.write(r.render(self))
-	
+		if os.path.exists(filepath) and md5sum(filepath) == md5sum(tmpFilepath):
+			os.remove(tmpFilepath)
+		else:
+			os.rename(tmpFilepath, filepath)
+		return filepath
+
 	def _get_translated_namespace(self, obj):
 		namespace = obj.find_first_ancestor_by_type(abstractapi.Namespace)
 		return namespace.name.translate(self.lang.nameTranslator, recursive=True)
@@ -263,7 +281,7 @@ class IndexPage(SphinxPage):
 
 	@property
 	def dir(self):
-		return self.lang.langCode.lower()
+		return self.lang.directory
 
 	@property
 	def entries(self):
@@ -390,6 +408,25 @@ class ClassPage(SphinxPage):
 		return table
 
 
+class OldFilesCleaner:
+	def __init__(self, rootDirectory):
+		self._filesToKeep = set()
+		self.root = rootDirectory
+
+	def add_directory(self, directory):
+		self._filesToKeep.add(directory)
+
+	def clean(self):
+		self._clean(self.root)
+
+	def _clean(self, dir_):
+		if os.path.isdir(dir_):
+			for filename in os.listdir(dir_):
+				self._clean(os.path.join(dir_, filename))
+		elif dir_ not in self._filesToKeep:
+			os.remove(dir_)
+
+
 class DocGenerator:
 	def __init__(self, api):
 		self.api = api
@@ -402,20 +439,24 @@ class DocGenerator:
 	
 	def generate(self, outputdir):
 		for lang in self.languages:
+			directory = os.path.join(args.outputdir, lang.directory)
+			cleaner = OldFilesCleaner(directory)
 			indexPage = IndexPage(lang, 'index.rst')
-			subdirectory = lang.langCode.lower()
-			directory = os.path.join(args.outputdir, subdirectory)
 			if not os.path.exists(directory):
 				os.mkdir(directory)
 			for enum in self.api.namespace.enums:
 				page = EnumPage(enum, lang, self.languages)
-				page.write(directory)
+				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
+				cleaner.add_directory(filepath)
 			for class_ in self.api.namespace.classes:
 				page = ClassPage(class_, lang, self.languages)
-				page.write(directory)
+				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
-			indexPage.write(directory)
+				cleaner.add_directory(filepath)
+			filepath = indexPage.write(directory)
+			cleaner.add_directory(filepath)
+			cleaner.clean()
 
 
 if __name__ == '__main__':

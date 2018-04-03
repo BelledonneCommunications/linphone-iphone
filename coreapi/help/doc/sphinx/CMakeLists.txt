@@ -42,20 +42,7 @@ if (ENABLE_SPHINX_DOC)
 	configure_file(conf.py.in source/conf.py)
 	configure_file(index.rst source/index.rst COPYONLY)
 	configure_file(logo.png source/logo.png COPYONLY)
-	add_custom_command(OUTPUT ${GENERATED_SPHINX_SOURCES}
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${DOCUMENTATION_DIRS}
-		COMMAND ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
-		DEPENDS ${PYTHON_SCRIPTS}
-		${MUSTACHE_TEMPLATES}
-		${LINPHONE_DOXYGEN_XML_DIR}/index.xml
-		linphone-doc
-	)
-	add_custom_command(OUTPUT build/html/index.html
-		COMMAND ${CMAKE_COMMAND} -E remove_directory build
+	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
 		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html 'source' 'build'
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/source/conf.py
-		${CMAKE_CURRENT_BINARY_DIR}/source/index.rst
-		${GENERATED_SPHINX_SOURCES}
-	)
-	add_custom_target(sphinx-doc ALL DEPENDS build/html/index.html)
+		DEPENDS linphone-doc)
 endif()
