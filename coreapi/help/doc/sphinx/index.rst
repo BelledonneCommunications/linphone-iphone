@@ -5,12 +5,62 @@
 
 Welcome to Linphone API's documentation!
 ========================================
+What is liblinphone
+-------------------
+
+Liblinphone is a high level library for bringing SIP video call functionnality
+into an application. It aims at making easy the integration of the SIP
+video calls into any applications. All variants of linphone are directly based
+on it:
+
+* linphone (gtk interface)
+* linphonec (console interface)
+* linphone for iOS
+* linphone for Android
+
+Liblinphone is GPL (see COPYING file). Please understand the licencing details
+before using it!
+
+For any use of this library beyond the rights granted to you by the
+GPL license, please contact Belledonne Communications
+(contact@belledonne-communications.com).
+
+
+Beginners' guides
+-----------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+	:maxdepth: 1
+
+	initializing
+	call_control
+	call_misc
+	media_parameters
+	proxies
+	network_parameters
+	authentication
+	buddy_list
+	chatroom
+	call_logs
+	linphone_address
+	conferencing
+	event_api
+	misc
+
+
+Code samples
+------------
+
+
+
+
+API's reference documentation
+-----------------------------
+
+.. toctree::
+   :maxdepth: 1
    
-   c/index.rst
-   cpp/index.rst
-   java/index.rst
-   csharp/index.rst
+   c/index
+   cpp/index
+   java/index
+   csharp/index

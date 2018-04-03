@@ -39,9 +39,27 @@ if (ENABLE_SPHINX_DOC)
 		enum_page.mustache
 		index_page.mustache
 	)
+	set(STATIC_DOCUMENTATION_FILES authentication.rst
+		buddy_list.rst
+		call_control.rst
+		call_logs.rst
+		call_misc.rst
+		chatroom.rst
+		conferencing.rst
+		event_api.rst
+		index.rst
+		initializing.rst
+		linphone_address.rst
+		logo.png
+		media_parameters.rst
+		misc.rst
+		network_parameters.rst
+		proxies.rst
+	)
 	configure_file(conf.py.in source/conf.py)
-	configure_file(index.rst source/index.rst COPYONLY)
-	configure_file(logo.png source/logo.png COPYONLY)
+	foreach(file ${STATIC_DOCUMENTATION_FILES})
+		configure_file(${file} source/${files} COPYONLY)
+	endforeach(file)
 	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
 		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html 'source' 'build'
 		DEPENDS linphone-doc)
