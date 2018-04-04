@@ -46,6 +46,7 @@ Beginners' guides
 	conferencing
 	event_api
 	misc
+	ios_portability
 
 
 Code samples

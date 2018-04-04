@@ -49,6 +49,7 @@ if (ENABLE_SPHINX_DOC)
 		event_api.rst
 		index.rst
 		initializing.rst
+		ios_portability.rst
 		linphone_address.rst
 		logo.png
 		media_parameters.rst
