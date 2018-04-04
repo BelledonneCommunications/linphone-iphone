@@ -196,7 +196,7 @@ void linphone_logging_service_set_log_level(LinphoneLoggingService *log_service,
 void linphone_logging_service_set_log_level_mask(LinphoneLoggingService *log_service, unsigned int mask) {
 	const char **domain;
 	for (domain=_linphone_logging_service_log_domains; *domain; domain++) {
-		bctbx_set_log_level_mask(*domain, _linphone_log_mask_to_bctbx_log_mask(mask));
+		bctbx_set_log_level_mask(*domain, (int)_linphone_log_mask_to_bctbx_log_mask(mask));
 	}
 }
 
