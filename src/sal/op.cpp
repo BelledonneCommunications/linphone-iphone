@@ -1029,12 +1029,18 @@ void SalOp::process_incoming_message(const belle_sip_request_event_t *event) {
 		/* if we just deciphered a message, use the deciphered part(which can be a rcs xml body pointing to the file to retreive from server)*/
 		salmsg.text=(!external_body)?belle_sip_message_get_body(BELLE_SIP_MESSAGE(req)):NULL;
 		salmsg.url=NULL;
-		salmsg.content_type = ms_strdup_printf("%s/%s", belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type));
+
+		char buffer[1024];
+		size_t offset = 0;
+		belle_sip_parameters_marshal(BELLE_SIP_PARAMETERS(content_type), buffer, 1024, &offset);
+		buffer[offset] = '\0';
+		salmsg.content_type = ms_strdup_printf("%s/%s%s", belle_sip_header_content_type_get_type(content_type), belle_sip_header_content_type_get_subtype(content_type), buffer);
 		if (external_body && belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")) {
 			size_t url_length=strlen(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL"));
 			salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/
 			((char*)salmsg.url)[url_length-2]='\0'; /*remove trailing "*/
 		}
+		
 		salmsg.message_id=message_id;
 		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
 		this->root->callbacks.message_received(this,&salmsg);

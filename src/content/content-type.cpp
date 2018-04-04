@@ -20,7 +20,8 @@
 #include "linphone/utils/utils.h"
 
 #include "content-type.h"
-#include "object/clonable-object-p.h"
+#include "header/header-p.h"
+#include "header/header-param.h"
 
 // =============================================================================
 
@@ -30,11 +31,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-class ContentTypePrivate : public ClonableObjectPrivate {
+class ContentTypePrivate : public HeaderPrivate {
 public:
 	string type;
 	string subType;
-	string parameter;
 };
 
 // -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ const ContentType ContentType::Sdp("application/sdp");
 
 // -----------------------------------------------------------------------------
 
-ContentType::ContentType (const string &contentType) : ClonableObject(*new ContentTypePrivate) {
+ContentType::ContentType (const string &contentType) : Header(*new ContentTypePrivate) {
 	L_D();
 
 	size_t pos = contentType.find('/');
@@ -68,11 +68,23 @@ ContentType::ContentType (const string &contentType) : ClonableObject(*new Conte
 			d->type.clear();
 	}
 
-	if (posParam != string::npos)
-		setParameter(Utils::trim(contentType.substr(posParam + 1)));
+	if (posParam != string::npos) {
+		string params = contentType.substr(posParam + 1);
+		string token;
+		do {
+			posParam = params.find(";");
+			if (posParam == string::npos) {
+				token = params;
+			} else {
+				token = params.substr(0, posParam);
+			}
+			addParameter(HeaderParam(token));
+			params.erase(0, posParam + 1);
+		} while (posParam != std::string::npos);
+	}
 }
 
-ContentType::ContentType (const string &type, const string &subType) : ClonableObject(*new ContentTypePrivate) {
+ContentType::ContentType (const string &type, const string &subType) : Header(*new ContentTypePrivate) {
 	L_D();
 
 	if (setType(type) && !setSubType(subType))
@@ -82,22 +94,35 @@ ContentType::ContentType (const string &type, const string &subType) : ClonableO
 ContentType::ContentType (
 	const string &type,
 	const string &subType,
-	const string &parameter
-) : ClonableObject(*new ContentTypePrivate) {
+	const HeaderParam &parameter
+) : Header(*new ContentTypePrivate) {
 	L_D();
 
 	if (setType(type) && !setSubType(subType))
 		d->type.clear();
-	setParameter(parameter);
+	addParameter(parameter);
 }
 
-ContentType::ContentType (const ContentType &other) : ContentType(other.getType(), other.getSubType(), other.getParameter()) {}
+ContentType::ContentType (
+	const string &type,
+	const string &subType,
+	const std::list<HeaderParam> &parameters
+) : Header(*new ContentTypePrivate) {
+	L_D();
+
+	if (setType(type) && !setSubType(subType))
+		d->type.clear();
+	addParameters(parameters);
+}
+
+ContentType::ContentType (const ContentType &other) : ContentType(other.getType(), other.getSubType(), other.getParameters()) {}
 
 ContentType &ContentType::operator= (const ContentType &other) {
 	if (this != &other) {
 		setType(other.getType());
 		setSubType(other.getSubType());
-		setParameter(other.getParameter());
+		cleanParameters();
+		addParameters(other.getParameters());
 	}
 
 	return *this;
@@ -105,8 +130,7 @@ ContentType &ContentType::operator= (const ContentType &other) {
 
 bool ContentType::operator== (const ContentType &other) const {
 	return getType() == other.getType() &&
-		getSubType() == other.getSubType() &&
-		getParameter() == other.getParameter();
+		getSubType() == other.getSubType();
 }
 
 bool ContentType::operator!= (const ContentType &other) const {
@@ -122,6 +146,7 @@ bool ContentType::setType (const string &type) {
 	L_D();
 	if (type.find('/') == string::npos) {
 		d->type = Utils::stringToLower(type);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
@@ -136,19 +161,10 @@ bool ContentType::setSubType (const string &subType) {
 	L_D();
 	if (subType.find('/') == string::npos) {
 		d->subType = Utils::stringToLower(subType);
+		setValue(d->type + "/" + d->subType);
 		return true;
 	}
 	return false;
-}
-
-const string &ContentType::getParameter () const {
-	L_D();
-	return d->parameter;
-}
-
-void ContentType::setParameter (const string &parameter) {
-	L_D();
-	d->parameter = parameter;
 }
 
 bool ContentType::isEmpty () const {
@@ -161,17 +177,9 @@ bool ContentType::isValid () const {
 	return !d->type.empty() && !d->subType.empty();
 }
 
-string ContentType::asString () const {
-	L_D();
-	if (isValid()) {
-		string asString = d->type + "/" + d->subType;
-		if (!d->parameter.empty())
-			asString += "; " + d->parameter;
-		return asString;
-	}
-	return "";
+bool ContentType::isMultipart() const {
+	return getType() == "multipart";
 }
-
 
 bool ContentType::isFile () const {
 	// TODO Remove when not needed anymore in step 2.1 of maindb

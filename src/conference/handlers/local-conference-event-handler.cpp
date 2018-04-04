@@ -19,6 +19,7 @@
 
 #include <ctime>
 
+#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 
 #include "conference/local-conference.h"
@@ -106,7 +107,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 		static_cast<unsigned int>(notifyId)
 	);
 
-	list<Content> contents;
+	list<Content *> contents;
 	for (const auto &eventLog : events) {
 		Content content;
 		content.setContentType(ContentType("application","conference-info"));
@@ -180,7 +181,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 				continue;
 		}
 		content.setBody(body);
-		contents.push_back(content);
+		contents.push_back(&content);
 	}
 
 	if (contents.empty())

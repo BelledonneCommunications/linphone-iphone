@@ -86,7 +86,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 
 	shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
 	chatMessage->setToBeStored(false);
-	chatMessage->addContent(*content);
+	chatMessage->addContent(content);
 	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
 	chatMessage->getPrivate()->addSalCustomHeader("Expires", "0");
 
@@ -414,11 +414,11 @@ shared_ptr<ChatMessage> ChatRoom::createChatMessage (const string &text) {
 	Content *content = new Content();
 	content->setContentType(ContentType::PlainText);
 	content->setBody(text);
-	chatMessage->addContent(*content);
+	chatMessage->addContent(content);
 	return chatMessage;
 }
 
-shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
+shared_ptr<ChatMessage> ChatRoom::createFileTransferMessage (Content *initialContent) {
 	shared_ptr<ChatMessage> chatMessage = createChatMessage();
 	chatMessage->getPrivate()->setFileTransferInformation(initialContent);
 	return chatMessage;

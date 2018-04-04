@@ -90,7 +90,7 @@ LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message_2(Linphon
  * @param initial_content #LinphoneContent initial content. #LinphoneCoreVTable.file_transfer_send is invoked later to notify file transfer progress and collect next chunk of the message if LinphoneContent.data is NULL.
  * @return a new #LinphoneChatMessage
  */
-LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent* initial_content);
+LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent* initial_content);
 
 /**
  * get peer address \link linphone_core_get_chat_room() associated to \endlink this #LinphoneChatRoom

@@ -95,8 +95,8 @@ public:
 	void setToBeStored (bool value);
 
 	const std::list<Content *> &getContents () const;
-	void addContent (Content &content);
-	void removeContent (const Content &content);
+	void addContent (Content *content);
+	void removeContent (Content *content);
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
@@ -106,7 +106,7 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-	bool downloadFile (FileTransferContent &content);
+	bool downloadFile (FileTransferContent *content);
 	bool isFileTransferInProgress();
 
 private:

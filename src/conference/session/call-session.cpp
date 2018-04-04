@@ -19,18 +19,17 @@
 
 #include <bctoolbox/defs.h>
 
-#include "c-wrapper/c-wrapper.h"
+#include "linphone/api/c-content.h"
+#include "linphone/core.h"
 
 #include "address/address-p.h"
+#include "c-wrapper/c-wrapper.h"
 #include "call/call-p.h"
 #include "conference/params/call-session-params-p.h"
 #include "conference/session/call-session-p.h"
 #include "conference/session/call-session.h"
 #include "core/core-p.h"
-
 #include "logger/logger.h"
-
-#include "linphone/core.h"
 
 #include "private.h"
 

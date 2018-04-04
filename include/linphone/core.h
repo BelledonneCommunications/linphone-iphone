@@ -42,7 +42,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/call_stats.h"
 #include "linphone/chat.h"
 #include "linphone/conference.h"
-#include "linphone/content.h"
 #include "linphone/dictionary.h"
 #include "linphone/error_info.h"
 #include "linphone/event.h"

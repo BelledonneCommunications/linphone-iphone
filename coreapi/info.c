@@ -23,6 +23,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 
