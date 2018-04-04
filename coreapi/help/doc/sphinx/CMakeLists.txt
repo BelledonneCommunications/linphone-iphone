@@ -56,6 +56,7 @@ if (ENABLE_SPHINX_DOC)
 		misc.rst
 		network_parameters.rst
 		proxies.rst
+		toc.rst
 	)
 	configure_file(conf.py.in source/conf.py)
 	foreach(file ${STATIC_DOCUMENTATION_FILES})
