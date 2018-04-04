@@ -1920,8 +1920,7 @@ int MediaSessionPrivate::getVideoBandwidth (const SalMediaDescription *md, const
 	else if (md->bandwidth > 0) {
 		/* Case where b=AS is given globally, not per stream */
 		remoteBandwidth = PayloadTypeHandler::getRemainingBandwidthForVideo(md->bandwidth, audioBandwidth);
-	} else
-		remoteBandwidth = lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "net", "default_max_bandwidth", 1500);
+	}
 	return PayloadTypeHandler::getMinBandwidth(PayloadTypeHandler::getRemainingBandwidthForVideo(linphone_core_get_upload_bandwidth(q->getCore()->getCCore()), audioBandwidth), remoteBandwidth);
 }
 
@@ -2697,7 +2696,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 						io.output.soundcard = playcard;
 					} else {
 						io.output.type = MSResourceFile;
-						io.output.file = recfile.c_str();
+						io.output.file = recfile.empty() ? nullptr : recfile.c_str();
 					}
 				} else {
 					io.input.type = io.output.type = MSResourceRtp;
@@ -2711,7 +2710,7 @@ void MediaSessionPrivate::startAudioStream (CallSession::State targetState, bool
 					io.output.soundcard = playcard;
 				} else {
 					io.output.type = MSResourceFile;
-					io.output.file = recfile.c_str();
+					io.output.file = recfile.empty() ? nullptr : recfile.c_str();
 				}
 				if (captcard) {
 					io.input.type = MSResourceSoundcard;

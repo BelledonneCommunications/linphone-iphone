@@ -338,6 +338,7 @@ LINPHONE_PUBLIC LinphoneConference *linphone_call_get_conference (const Linphone
  * Change the playback output device (currently only used for blackberry)
  * @param call
  * @param route the wanted audio route (earpiece, speaker, ...)
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_call_set_audio_route (LinphoneCall *call, LinphoneAudioRoute route);
 

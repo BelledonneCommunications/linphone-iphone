@@ -227,6 +227,12 @@ LINPHONE_PUBLIC int linphone_chat_room_get_history_events_size(LinphoneChatRoom 
  */
 LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_room_get_last_message_in_history(LinphoneChatRoom *cr);
 
+/**
+ * Gets the chat message sent or received in this chat room that matches the message_id
+ * @param[in] cr The #LinphoneChatRoom object corresponding to the conversation for which the message should be retrieved
+ * @param[in] message_id The id of the message to find
+ * @return the #LinphoneChatMessage
+ */
 LINPHONE_PUBLIC LinphoneChatMessage * linphone_chat_room_find_message(LinphoneChatRoom *cr, const char *message_id);
 
 /**

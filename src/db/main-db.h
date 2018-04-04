@@ -91,6 +91,7 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
 
 	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
+	std::list<IdentityAddress> getChatMessageParticipantsInState (const std::shared_ptr<EventLog> &eventLog, const ChatMessage::State state) const;
 	ChatMessage::State getChatMessageParticipantState (
 		const std::shared_ptr<EventLog> &eventLog,
 		const IdentityAddress &participantAddress

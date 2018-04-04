@@ -59,6 +59,7 @@ public:
 	void setDirection (ChatMessage::Direction dir);
 
 	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState);
+	std::list<std::shared_ptr<Participant>> getParticipantsInState (const ChatMessage::State state) const;
 	void setState (ChatMessage::State newState, bool force = false);
 
 	void setTime (time_t time);
