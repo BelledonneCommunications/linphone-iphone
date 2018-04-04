@@ -143,11 +143,11 @@ LINPHONE_PUBLIC void linphone_proxy_config_edit(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg);
 
 /**
- * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
- * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
- * @param[in] cfg #LinphoneProxyConfig object.
- * @param val if true, publish will be engaged
+ * @brief Indicates either or not, PUBLISH must be issued for this #LinphoneProxyConfig.
  *
+ * In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the #linphone_proxy_config_edit() rule.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param val if TRUE, publish will be engaged
  */
 LINPHONE_PUBLIC void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val);
 
