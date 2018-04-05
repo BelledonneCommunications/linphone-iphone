@@ -4976,13 +4976,14 @@ LINPHONE_DEPRECATED LINPHONE_PUBLIC const char *linphone_core_get_chat_database_
 
 /**
  * Create a client-side group chat room. When calling this function the chat room is only created
- * at the client-side and is empty. Pou need to call linphone_chat_room_add_participants() to
+ * at the client-side and is empty. You need to call linphone_chat_room_add_participants() to
  * create at the server side and add participants to it.
  * @param[in] lc A #LinphoneCore object
  * @param[in] subject The subject of the group chat room
+ * @param[in] fallback Boolean value telling whether we should plan on being able to fallback to a basic chat room if the client-side group chat room creation fails
  * @return The newly created client-side group chat room.
  */
-LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject);
+LINPHONE_PUBLIC LinphoneChatRoom * linphone_core_create_client_group_chat_room(LinphoneCore *lc, const char *subject, bool_t fallback);
 
 /**
  * Get a basic chat room whose peer is the supplied address. If it does not exist yet, it will be created.

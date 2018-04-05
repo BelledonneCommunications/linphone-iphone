@@ -500,7 +500,7 @@ static void forceUtf8Content (Content &content) {
 void ChatMessagePrivate::notifyReceiving () {
 	L_Q();
 
-	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
+	LinphoneChatRoom *chatRoom = static_pointer_cast<ChatRoom>(q->getChatRoom())->getPrivate()->getCChatRoom();
 	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
 		_linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 		if (toBeStored)

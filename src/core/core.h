@@ -101,7 +101,7 @@ public:
 		const IdentityAddress &participantAddress
 	) const;
 
-	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject);
+	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject, bool fallback = true);
 	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (
 		const std::string &subject,
 		const IdentityAddress &localAddress

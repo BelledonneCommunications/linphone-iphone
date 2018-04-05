@@ -265,9 +265,9 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 	return nullptr;
 }
 
-shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject) {
+shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject, bool fallback) {
 	L_D();
-	return d->createClientGroupChatRoom(subject);
+	return d->createClientGroupChatRoom(subject, "", Content(), fallback);
 }
 
 shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {
