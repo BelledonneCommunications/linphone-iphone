@@ -72,5 +72,5 @@ This pseudo code shows how to unregister a user associated to a #LinphoneProxyCo
 	linphone_proxy_config_enable_register(proxy_cfg,FALSE); /*de-activate registration for this proxy config*/
 	linphone_proxy_config_done(proxy_cfg); /*initiate REGISTER with expire = 0*/
 
-A complete tutorial can be found at : \ref registration_tutorials "Registration tutorial"
+.. seealso:: A complete tutorial can be found at: :ref:`"Basic registration" <basic_registration_code_sample>` source code.
 

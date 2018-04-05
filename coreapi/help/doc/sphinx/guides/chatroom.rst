@@ -24,5 +24,5 @@ Incoming message are received from call back LinphoneCoreVTable.text_received
 		printf(" Message [%s] received from [%s] \n",message,linphone_address_as_string (from));
 	}
 
-A complete tutorial can be found at : \ref chatroom_tuto "Chat room tutorial"
+.. seealso:: A complete tutorial can be found at :ref:`"Chatroom and messaging" <chatroom_code_sample>` source code.
 

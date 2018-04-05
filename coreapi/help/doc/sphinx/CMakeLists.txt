@@ -57,12 +57,16 @@ if (ENABLE_SPHINX_DOC)
 		guides/proxies.rst
 		index.rst
 		logo.png
+		samples/samples.rst
 		toc.rst
 	)
 	configure_file(conf.py.in source/conf.py)
 	foreach(file ${STATIC_DOCUMENTATION_FILES})
 		configure_file(${file} source/${file} COPYONLY)
 	endforeach(file)
+	foreach(source ${LINPHONE_C_EXAMPLES_SOURCE})
+		configure_file(${source} source/samples/ COPYONLY)
+	endforeach(source)
 	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
 		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html 'source' 'build'
 		DEPENDS linphone-doc)

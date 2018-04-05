@@ -52,7 +52,10 @@ Beginners' guides
 Code samples
 ------------
 
+.. toctree::
+	:maxdepth: 1
 
+	samples/samples
 
 
 API's reference documentation
