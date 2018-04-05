@@ -2294,19 +2294,15 @@ void text_message_with_custom_content_type_and_lime(void) {
 
 
 static int im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	ms_debug("IM encryption process incoming message with content type %s", linphone_chat_message_get_content_type(msg));
 	if (linphone_chat_message_get_content_type(msg)) {
 		if (strcmp(linphone_chat_message_get_content_type(msg), "cipher/b64") == 0) {
 			size_t b64Size = 0;
 			unsigned char *output;
-			const char *data = linphone_chat_message_get_text(msg);
-			ms_debug("IM encryption process incoming message crypted message is %s", data);
-			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)data, strlen(data));
+			bctbx_base64_decode(NULL, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 			output = (unsigned char *)ms_malloc(b64Size+1),
-			bctbx_base64_decode(output, &b64Size, (unsigned char *)data, strlen(data));
+			bctbx_base64_decode(output, &b64Size, (unsigned char *)linphone_chat_message_get_text(msg), strlen(linphone_chat_message_get_text(msg)));
 			output[b64Size] = '\0';
 			linphone_chat_message_set_text(msg, (char *)output);
-			ms_debug("IM encryption process incoming message decrypted message is %s", output);
 			ms_free(output);
 			linphone_chat_message_set_content_type(msg, "text/plain");
 			return 0;

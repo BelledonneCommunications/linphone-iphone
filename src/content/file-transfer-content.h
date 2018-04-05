@@ -20,8 +20,6 @@
 #ifndef _L_FILE_TRANSFER_CONTENT_H_
 #define _L_FILE_TRANSFER_CONTENT_H_
 
-#include <vector>
-
 #include "content.h"
 
 // =============================================================================
@@ -57,13 +55,10 @@ public:
 	void setFileSize (size_t size);
 	size_t getFileSize () const;
 
-	void setFileKey (const char *key, size_t size);
-	const std::vector<char> &getFileKey () const;
-	const char *getFileKeyAsString () const;
-	size_t getFileKeySize() const;
-
 	bool isFile () const override;
-	bool isFileTransfer () const override;
+
+	// TODO: Remove me later.
+	LinphoneContent *toLinphoneContent () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileTransferContent);

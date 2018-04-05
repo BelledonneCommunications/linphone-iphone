@@ -25,7 +25,6 @@
 
 #include "content-p.h"
 #include "content-type.h"
-#include "header/header.h"
 
 // =============================================================================
 
@@ -191,35 +190,15 @@ bool Content::isFile () const {
 	return false;
 }
 
-bool Content::isFileTransfer () const {
-	return false;
-}
-
 void Content::addHeader (const string &headerName, const string &headerValue) {
 	L_D();
 	removeHeader(headerName);
-	Header header = Header(headerName, headerValue);
-	d->headers.push_back(header);
+	d->headers.push_back(make_pair(headerName, headerValue));
 }
 
-void Content::addHeader (const Header &header) {
-	L_D();
-	removeHeader(header.getName());
-	d->headers.push_back(header);
-}
-
-const list<Header> &Content::getHeaders () const {
+const list<pair<string, string>> &Content::getHeaders () const {
 	L_D();
 	return d->headers;
-}
-
-const Header &Content::getHeader (const string &headerName) const {
-	L_D();
-	list<Header>::const_iterator it = findHeader(headerName);
-	if (it != d->headers.cend()) {
-		return *it;
-	}
-	return Utils::getEmptyConstRefObject<Header>();
 }
 
 void Content::removeHeader (const string &headerName) {
@@ -229,11 +208,18 @@ void Content::removeHeader (const string &headerName) {
 		d->headers.remove(*it);
 }
 
-list<Header>::const_iterator Content::findHeader (const string &headerName) const {
+list<pair<string, string>>::const_iterator Content::findHeader (const string &headerName) const {
 	L_D();
-	return findIf(d->headers, [&headerName](const Header &header) {
-		return header.getName() == headerName;
+	return findIf(d->headers, [&headerName](const pair<string, string> &pair) {
+		return pair.first == headerName;
 	});
+}
+
+LinphoneContent *Content::toLinphoneContent () const {
+	LinphoneContent *content = linphone_core_create_content(nullptr);
+	linphone_content_set_type(content, getContentType().getType().c_str());
+	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
+	return content;
 }
 
 LINPHONE_END_NAMESPACE

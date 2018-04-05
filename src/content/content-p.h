@@ -29,15 +29,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Header;
-
 class ContentPrivate : public ClonableObjectPrivate {
 private:
 	std::vector<char> body;
 	ContentType contentType;
 	ContentDisposition contentDisposition;
 	std::string contentEncoding;
-	std::list<Header> headers;
+	std::list<std::pair<std::string, std::string>> headers;
 
 	L_DECLARE_PUBLIC(Content);
 };

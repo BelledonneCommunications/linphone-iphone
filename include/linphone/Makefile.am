@@ -14,6 +14,7 @@ linphone_include_HEADERS=\
 	chat.h \
 	conference.h \
 	contactprovider.h \
+	content.h \
 	core.h \
 	core_utils.h \
 	defs.h \

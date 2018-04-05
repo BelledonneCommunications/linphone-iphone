@@ -64,6 +64,7 @@ set(LINPHONE_SOURCE_FILES_C
 	carddav.c
 	chat.c
 	contactprovider.c
+	content.c
 	dial_plan.c
 	dict.c
 	ec-calibrator.c

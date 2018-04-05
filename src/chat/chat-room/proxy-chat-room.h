@@ -66,7 +66,8 @@ public:
 	std::shared_ptr<ChatMessage> createChatMessage () override;
 	std::shared_ptr<ChatMessage> createChatMessage (const std::string &text) override;
 
-	std::shared_ptr<ChatMessage> createFileTransferMessage (Content *initialContent) override;
+	// TODO: Remove LinphoneContent by LinphonePrivate::Content.
+	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent) override;
 
 	std::shared_ptr<ChatMessage> findChatMessage (const std::string &messageId) const override;
 	std::shared_ptr<ChatMessage> findChatMessage (

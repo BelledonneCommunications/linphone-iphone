@@ -163,12 +163,6 @@ typedef struct _LinphoneMagicSearch LinphoneMagicSearch;
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
 /**
- * The LinphoneContent object holds data that can be embedded in a signaling message.
- * @ingroup misc
-**/
-typedef struct _LinphoneContent LinphoneContent;
-
-/**
  * The LinphoneSearchResult object represents a result of a search
  * @ingroup misc
  **/

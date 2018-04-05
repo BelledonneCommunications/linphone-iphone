@@ -19,7 +19,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <bctoolbox/crypto.h>
 
-#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 
 #include "c-wrapper/c-wrapper.h"
@@ -962,7 +961,7 @@ void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, Lin
 		const char *subtype = linphone_content_get_subtype(body);
 
 		if ((strcmp(type, "multipart") != 0) || (strcmp(subtype, "related") != 0)) {
-			ms_warning("multipart presence notified but it is not 'multipart/related', instead is '%s/%s'", type, subtype);
+			ms_warning("multipart presence notified but it is not 'multipart/related'");
 			return;
 		}
 

@@ -19,7 +19,6 @@
 
 #include "object/object-p.h"
 
-#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "linphone/utils/utils.h"
@@ -37,7 +36,6 @@
 #include "chat/modifier/multipart-chat-message-modifier.h"
 #include "conference/participant.h"
 #include "content/file-content.h"
-#include "content/header/header-param.h"
 #include "content/content.h"
 #include "core/core.h"
 #include "core/core-p.h"
@@ -241,8 +239,8 @@ const Content* ChatMessagePrivate::getTextContent() const {
 }
 
 bool ChatMessagePrivate::hasFileTransferContent() const {
-	for (const Content *c : contents) {
-		if (c->isFileTransfer()) {
+	for (const Content *c : getContents()) {
+		if (c->getContentType() == ContentType::FileTransfer) {
 			return true;
 		}
 	}
@@ -250,8 +248,8 @@ bool ChatMessagePrivate::hasFileTransferContent() const {
 }
 
 const Content* ChatMessagePrivate::getFileTransferContent() const {
-	for (const Content *c : contents) {
-		if (c->isFileTransfer()) {
+	for (const Content *c : getContents()) {
+		if (c->getContentType() == ContentType::FileTransfer) {
 			return c;
 		}
 	}
@@ -376,54 +374,51 @@ void ChatMessagePrivate::setText (const string &text) {
 	}
 }
 
-const Content *ChatMessagePrivate::getFileTransferInformation () const {
+LinphoneContent *ChatMessagePrivate::getFileTransferInformation () const {
 	if (hasFileTransferContent()) {
-		return getFileTransferContent();
+		return getFileTransferContent()->toLinphoneContent();
 	}
 	for (const Content *c : getContents()) {
 		if (c->isFile()) {
 			FileContent *fileContent = (FileContent *)c;
-			return fileContent;
+			return fileContent->toLinphoneContent();
 		}
 	}
 	return nullptr;
 }
 
-void ChatMessagePrivate::setFileTransferInformation (Content *content) {
+void ChatMessagePrivate::setFileTransferInformation (const LinphoneContent *c_content) {
 	L_Q();
 
-	if (content->isFile()) {
-		q->addContent(content);
-	} else {
-		// This scenario is more likely to happen because the caller is using the C API
-		LinphoneContent *c_content = L_GET_C_BACK_PTR(content);
-		FileContent *fileContent = new FileContent();
-		fileContent->setContentType(content->getContentType());
-		fileContent->setFileSize(linphone_content_get_size(c_content)); // This information is only available from C Content if it was created from C API
-		fileContent->setFileName(linphone_content_get_name(c_content)); // This information is only available from C Content if it was created from C API
-		if (!content->isEmpty()) {
-			fileContent->setBody(content->getBody());
-		}
-		q->addContent(fileContent);
+	// Create a FileContent, it will create the FileTransferContent at upload time
+	FileContent *fileContent = new FileContent();
+	ContentType contentType(linphone_content_get_type(c_content), linphone_content_get_subtype(c_content));
+	fileContent->setContentType(contentType);
+	fileContent->setFileSize(linphone_content_get_size(c_content));
+	fileContent->setFileName(linphone_content_get_name(c_content));
+	if (linphone_content_get_string_buffer(c_content)) {
+		fileContent->setBody(linphone_content_get_string_buffer(c_content));
 	}
+
+	q->addContent(*fileContent);
 }
 
 bool ChatMessagePrivate::downloadFile () {
 	L_Q();
 
 	for (auto &content : getContents())
-		if (content->isFileTransfer())
-			return q->downloadFile(static_cast<FileTransferContent *>(content));
+		if (content->getContentType() == ContentType::FileTransfer)
+			return q->downloadFile(*static_cast<FileTransferContent *>(content));
 
 	return false;
 }
 
-void ChatMessagePrivate::addContent (Content *content) {
-	getContents().push_back(content);
+void ChatMessagePrivate::addContent (Content &content) {
+	getContents().push_back(&content);
 }
 
-void ChatMessagePrivate::removeContent (Content *content) {
-	getContents().remove(content);
+void ChatMessagePrivate::removeContent (const Content &content) {
+	getContents().remove(&const_cast<Content &>(content));
 }
 
 void ChatMessagePrivate::loadFileTransferUrlFromBodyToContent() {
@@ -458,7 +453,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	Content *content = new Content();
 	content->setContentType(ContentType::Imdn);
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
-	msg->addContent(content);
+	msg->addContent(*content);
 
 	if (reason != LinphoneReasonNone)
 		msg->getPrivate()->setEncryptionPrevented(true);
@@ -475,7 +470,7 @@ static void forceUtf8Content (Content &content) {
 	if (contentType != ContentType::PlainText)
 		return;
 
-	string charset = contentType.getParameter("charset").getValue();
+	string charset = contentType.getParameter();
 	if (charset.empty())
 		return;
 
@@ -494,7 +489,7 @@ static void forceUtf8Content (Content &content) {
 		if (!utf8Body.empty()) {
 			// TODO: use move operator if possible in the future!
 			content.setBodyFromUtf8(utf8Body);
-			contentType.addParameter("charset", "UTF-8");
+			contentType.setParameter(string(contentType.getParameter()).replace(begin, end - begin, "UTF-8"));
 			content.setContentType(contentType);
 		}
 	}
@@ -606,7 +601,7 @@ LinphoneReason ChatMessagePrivate::receive () {
 				foundSupportContentType = true;
 				break;
 			} else
-			lError() << "Unsupported content-type: " << c->getContentType();
+			lError() << "Unsupported content-type: " << c->getContentType().asString();
 		}
 
 		if (!foundSupportContentType) {
@@ -765,7 +760,7 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (!externalBodyUrl.empty()) {
-		char *content_type = ms_strdup_printf("message/external-body;access-type=URL;URL=\"%s\"", externalBodyUrl.c_str());
+		char *content_type = ms_strdup_printf("message/external-body; access-type=URL; URL=\"%s\"", externalBodyUrl.c_str());
 		msgOp->send_message(content_type, NULL);
 		ms_free(content_type);
 	} else if (internalContent.getContentType().isValid()) {
@@ -778,10 +773,10 @@ void ChatMessagePrivate::send () {
 	list<Content*>::iterator it = contents.begin();
 	while (it != contents.end()) {
 		Content *content = *it;
-		if (content->isFileTransfer()) {
-			FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
+		if (content->getContentType() == ContentType::FileTransfer) {
+			FileTransferContent *fileTransferContent = (FileTransferContent *)content;
 			it = contents.erase(it);
-			addContent(fileTransferContent->getFileContent());
+			addContent(*fileTransferContent->getFileContent());
 			delete fileTransferContent;
 		} else {
 			it++;
@@ -1019,13 +1014,13 @@ const list<Content *> &ChatMessage::getContents () const {
 	return d->getContents();
 }
 
-void ChatMessage::addContent (Content *content) {
+void ChatMessage::addContent (Content &content) {
 	L_D();
 	if (!d->isReadOnly)
 		d->addContent(content);
 }
 
-void ChatMessage::removeContent (Content *content) {
+void ChatMessage::removeContent (const Content &content) {
 	L_D();
 	if (!d->isReadOnly)
 		d->removeContent(content);
@@ -1095,9 +1090,9 @@ void ChatMessage::sendDisplayNotification () {
 		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
-bool ChatMessage::downloadFile(FileTransferContent *fileTransferContent) {
+bool ChatMessage::downloadFile(FileTransferContent &fileTransferContent) {
 	L_D();
-	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), fileTransferContent);
+	return d->fileTransferChatMessageModifier.downloadFile(getSharedFromThis(), &fileTransferContent);
 }
 
 bool ChatMessage::isFileTransferInProgress() {

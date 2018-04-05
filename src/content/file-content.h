@@ -48,8 +48,13 @@ public:
 	void setFilePath (const std::string &path);
 	const std::string &getFilePath () const;
 
+	void setFileKey (const std::string &key);
+	const std::string &getFileKey () const;
+
 	bool isFile () const override;
-	bool isFileTransfer () const override;
+
+	// TODO: Remove me later.
+	LinphoneContent *toLinphoneContent () const override;
 
 private:
 	L_DECLARE_PRIVATE(FileContent);
