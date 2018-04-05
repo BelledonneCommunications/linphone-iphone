@@ -52,6 +52,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/im_encryption_engine.h"
 #include "linphone/im_notif_policy.h"
 #include "linphone/info_message.h"
+#include "linphone/logging.h"
 #include "linphone/lpconfig.h"
 #include "linphone/misc.h"
 #include "linphone/nat_policy.h"
