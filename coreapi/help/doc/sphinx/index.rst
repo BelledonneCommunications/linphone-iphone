@@ -32,21 +32,21 @@ Beginners' guides
 .. toctree::
 	:maxdepth: 1
 
-	initializing
-	call_control
-	call_misc
-	media_parameters
-	proxies
-	network_parameters
-	authentication
-	buddy_list
-	chatroom
-	call_logs
-	linphone_address
-	conferencing
-	event_api
-	misc
-	ios_portability
+	guides/initializing
+	guides/call_control
+	guides/call_misc
+	guides/media_parameters
+	guides/proxies
+	guides/network_parameters
+	guides/authentication
+	guides/buddy_list
+	guides/chatroom
+	guides/call_logs
+	guides/linphone_address
+	guides/conferencing
+	guides/event_api
+	guides/misc
+	guides/ios_portability
 
 
 Code samples
