@@ -64,7 +64,7 @@ API's reference documentation
 .. toctree::
    :maxdepth: 1
    
-   c/index
-   cpp/index
-   java/index
-   csharp/index
+   reference/c/index
+   reference/cpp/index
+   reference/java/index
+   reference/csharp/index

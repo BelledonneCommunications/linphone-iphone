@@ -21,7 +21,10 @@
 ############################################################################
 
 if (ENABLE_SPHINX_DOC)
-	set(STATIC_DOCUMENTATION_FILES
+	set(doc_source_dir ${CMAKE_CURRENT_BINARY_DIR}/source)
+	set(doc_output_dir ${CMAKE_CURRENT_BINARY_DIR}/build)
+	set(reference_doc_source_dir ${doc_source_dir}/reference)
+	set(static_documentation_files
 		guides/authentication.rst
 		guides/buddy_list.rst
 		guides/call_control.rst
@@ -42,15 +45,15 @@ if (ENABLE_SPHINX_DOC)
 		samples/samples.rst
 		toc.rst
 	)
-	configure_file(conf.py.in source/conf.py)
-	foreach(file ${STATIC_DOCUMENTATION_FILES})
-		configure_file(${file} source/${file} COPYONLY)
+	configure_file(conf.py.in ${doc_source_dir}/conf.py)
+	foreach(file ${static_documentation_files})
+		configure_file(${file} ${doc_source_dir}/${file} COPYONLY)
 	endforeach(file)
 	foreach(source ${LINPHONE_C_EXAMPLES_SOURCE})
-		configure_file(${source} source/samples/ COPYONLY)
+		configure_file(${source} ${doc_source_dir}/samples/ COPYONLY)
 	endforeach(source)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/source/_static)
-	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
-		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html 'source' 'build'
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${doc_source_dir}/_static ${reference_doc_source_dir})
+	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o '${reference_doc_source_dir}'
+		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html '${doc_source_dir}' '${doc_output_dir}'
 		DEPENDS linphone-doc)
 endif()

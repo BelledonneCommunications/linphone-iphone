@@ -43,7 +43,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'toc'
+master_doc = 'index'
 
 # General information about the project.
 project = 'Linphone Core API'
@@ -107,9 +107,9 @@ html_logo = 'logo.png'
 html_experimental_html5_writer = True
 
 # Side bar customization
-html_sidebars = {
-	'**': ['searchbox.html', 'globaltoc.html']
-}
+#html_sidebars = {
+#	'reference/*/*'     : ['searchbox.html', 'globaltoc.html']
+#}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
