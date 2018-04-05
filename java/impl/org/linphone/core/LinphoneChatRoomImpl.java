@@ -25,7 +25,7 @@ import org.linphone.core.LinphoneCall;
 @SuppressWarnings("deprecation")
 class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	protected final long nativePtr;
-	private native long createLinphoneChatMessage(long ptr, String message);
+	private native Object createLinphoneChatMessage(long ptr, String message);
 	private native long getPeerAddress(long ptr);
 	private native void sendMessage(long ptr, String message);
 	private native void sendMessage2(long ptr, Object msg, long messagePtr, StateListener listener);
@@ -39,9 +39,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	private native boolean isRemoteComposing(long ptr);
 	private native void markAsRead(long ptr);
 	private native void deleteMessage(long room, long message);
-	private native long createLinphoneChatMessage2(long ptr, String message,
-			String url, int state, long timestamp, boolean isRead,
-			boolean isIncoming);
 	private native void sendChatMessage(long ptr, Object message, long messagePtr);
 	private native void finalize(long nativePtr);
 	private native boolean islimeAvailable(long nativePtr);
@@ -77,7 +74,7 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 	@Override
 	public LinphoneChatMessage createLinphoneChatMessage(String message) {
 		synchronized(getCore()){
-			return new LinphoneChatMessageImpl(createLinphoneChatMessage(nativePtr, message));
+			return (LinphoneChatMessage)createLinphoneChatMessage(nativePtr, message);
 		}
 	}
 
@@ -144,15 +141,6 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		}
 	}
 
-	@Override
-	public LinphoneChatMessage createLinphoneChatMessage(String message,
-			String url, State state, long timestamp, boolean isRead,
-			boolean isIncoming) {
-		synchronized(getCore()){
-			return new LinphoneChatMessageImpl(createLinphoneChatMessage2(
-					nativePtr, message, url, state.value(), timestamp / 1000, isRead, isIncoming));
-		}
-	}
 	private native Object getCore(long nativePtr);
 	@Override
 	public synchronized LinphoneCore getCore() {
@@ -162,11 +150,11 @@ class LinphoneChatRoomImpl implements LinphoneChatRoom {
 		return (LinphoneChatMessage[]) typesPtr;
 	}
 
-	private native long createFileTransferMessage(long ptr, String name, String type, String subtype, int size);
+	private native Object createFileTransferMessage(long ptr, String name, String type, String subtype, int size);
 	@Override
 	public LinphoneChatMessage createFileTransferMessage(LinphoneContent content) {
 		synchronized(getCore()) {
-			return new LinphoneChatMessageImpl(createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getRealSize()));
+			return (LinphoneChatMessage)createFileTransferMessage(nativePtr, content.getName(), content.getType(), content.getSubtype(), content.getRealSize());
 		}
 	}
 	@Override

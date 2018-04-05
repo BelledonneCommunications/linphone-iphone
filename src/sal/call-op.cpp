@@ -1037,7 +1037,7 @@ int SalCallOp::decline(SalReason reason, const char *redirection /*optional*/){
 }
 
 belle_sip_header_reason_t *SalCallOp::make_reason_header( const SalErrorInfo *info){
-	if (info != NULL){
+	if (info && info->reason != SalReasonNone) {
 		belle_sip_header_reason_t* reason = BELLE_SIP_HEADER_REASON(belle_sip_header_reason_new());
 		belle_sip_header_reason_set_text(reason, info->status_string);
 		belle_sip_header_reason_set_protocol(reason,info->protocol);
@@ -1123,25 +1123,25 @@ int SalCallOp::update(const char *subject, bool_t no_user_consent) {
 int SalCallOp::cancel_invite_with_info(const SalErrorInfo *info) {
 	belle_sip_request_t* cancel;
 	ms_message("Cancelling INVITE request from [%s] to [%s] ",get_from(), get_to());
-	
-	if (this->pending_client_trans == NULL){
+
+	if (this->pending_client_trans == NULL) {
 		ms_warning("There is no transaction to cancel.");
 		return -1;
 	}
-	
+
 	cancel = belle_sip_client_transaction_create_cancel(this->pending_client_trans);
-	if (cancel){
-		if (info != NULL){
+	if (cancel) {
+		if (info && info->reason != SalReasonNone) {
 			belle_sip_header_reason_t* reason = make_reason_header(info);
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(cancel),BELLE_SIP_HEADER(reason));
 		}
 		send_request(cancel);
 		return 0;
-	}else if (this->dialog){
+	} else if (this->dialog) {
 		belle_sip_dialog_state_t state = belle_sip_dialog_get_state(this->dialog);;
 		/*case where the response received is invalid (could not establish a dialog), but the transaction is not cancellable
 		 * because already terminated*/
-		switch(state){
+		switch(state) {
 			case BELLE_SIP_DIALOG_EARLY:
 			case BELLE_SIP_DIALOG_NULL:
 				/*force kill the dialog*/
@@ -1303,7 +1303,7 @@ int SalCallOp::terminate_with_error(const SalErrorInfo *info) {
 	int ret = 0;
 
 	memset(&sei, 0, sizeof(sei));
-	if (info == NULL && dialog_state != BELLE_SIP_DIALOG_CONFIRMED && this->dir == Dir::Incoming){
+	if (info == NULL && dialog_state != BELLE_SIP_DIALOG_CONFIRMED && this->dir == Dir::Incoming) {
 		/*the purpose of this line is to set a default SalErrorInfo for declining an incoming call (not yet established of course) */
 		sal_error_info_set(&sei,SalReasonDeclined, "SIP", 0, NULL, NULL);
 		p_sei = &sei;
@@ -1318,7 +1318,7 @@ int SalCallOp::terminate_with_error(const SalErrorInfo *info) {
 	switch(dialog_state) {
 		case BELLE_SIP_DIALOG_CONFIRMED: {
 			belle_sip_request_t * req = belle_sip_dialog_create_request(this->dialog,"BYE");
-			if (info != NULL){
+			if (info && info->reason != SalReasonNone) {
 				belle_sip_header_reason_t* reason = make_reason_header(info);
 				belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(reason));
 			}
@@ -1334,7 +1334,7 @@ int SalCallOp::terminate_with_error(const SalErrorInfo *info) {
 			} else if (this->pending_client_trans){
 				if (belle_sip_transaction_get_state(BELLE_SIP_TRANSACTION(this->pending_client_trans)) == BELLE_SIP_TRANSACTION_PROCEEDING){
 					cancelling_invite(p_sei);
-				}else{
+				} else {
 					/* Case where the CANCEL cannot be sent because no provisional response was received so far.
 					 * The Op must be kept for the time of the transaction in case a response is received later.
 					 * The state is passed to Terminating to remember to terminate later.
@@ -1351,7 +1351,7 @@ int SalCallOp::terminate_with_error(const SalErrorInfo *info) {
 			if (this->dir == Dir::Incoming) {
 				decline_with_error_info(p_sei,NULL);
 				this->state=State::Terminated;
-			} else  {
+			} else {
 				cancelling_invite(p_sei);
 			}
 			break;

@@ -1970,6 +1970,30 @@ list<ChatMessage::State> MainDb::getChatMessageParticipantStates (const shared_p
 	};
 }
 
+list<IdentityAddress> MainDb::getChatMessageParticipantsInState (const shared_ptr<EventLog> &eventLog, const ChatMessage::State state) const {
+	return L_DB_TRANSACTION {
+		L_D();
+
+		const EventLogPrivate *dEventLog = eventLog->getPrivate();
+		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+		const long long &eventId = dEventKey->storageId;
+
+		int stateInt = static_cast<int>(state);
+		list<IdentityAddress> participantsAddresses;
+
+		static const string query = "SELECT sip_address.value"
+					" FROM sip_address, chat_message_participant"
+					" WHERE event_id = :eventId AND state = :state"
+					" AND sip_address.id = chat_message_participant.participant_sip_address_id";
+		soci::rowset<soci::row> rows = (d->dbSession.getBackendSession()->prepare << query, soci::use(eventId), soci::use(stateInt));
+		for (const auto &row : rows) {
+			participantsAddresses.push_back(IdentityAddress(row.get<string>(0)));
+		}
+
+		return participantsAddresses;
+	};
+}
+
 ChatMessage::State MainDb::getChatMessageParticipantState (
 	const shared_ptr<EventLog> &eventLog,
 	const IdentityAddress &participantAddress

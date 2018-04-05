@@ -34,6 +34,7 @@
 #include "chat/modifier/encryption-chat-message-modifier.h"
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
+#include "conference/participant.h"
 #include "content/file-content.h"
 #include "content/content.h"
 #include "core/core.h"
@@ -120,6 +121,29 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 		setState(ChatMessage::State::Displayed);
 	else if ((nbDisplayedStates + nbDeliveredToUserStates) == states.size())
 		setState(ChatMessage::State::DeliveredToUser);
+}
+
+list<shared_ptr<Participant>> ChatMessagePrivate::getParticipantsInState (const ChatMessage::State state) const {
+	L_Q();
+
+	list<shared_ptr<Participant>> participantsInState;
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid()) {
+		return participantsInState;
+	}
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	list<IdentityAddress> addressesInState = mainDb->getChatMessageParticipantsInState(eventLog, state);
+	const list<shared_ptr<Participant>> &participants = q->getChatRoom()->getParticipants();
+	for (IdentityAddress addr : addressesInState) {
+		for (const auto &participant : participants) {
+			if (participant->getAddress() == addr) {
+				participantsInState.push_back(participant);
+			}
+		}
+	}
+	
+	return participantsInState;
 }
 
 void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {

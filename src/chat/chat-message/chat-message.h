@@ -39,6 +39,7 @@ class AbstractChatRoom;
 class Content;
 class FileTransferContent;
 class ChatMessagePrivate;
+class Participant;
 
 class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class BasicToClientGroupChatRoom;
