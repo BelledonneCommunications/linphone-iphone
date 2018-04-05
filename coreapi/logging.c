@@ -249,6 +249,10 @@ void linphone_logging_service_cbs_set_user_data(LinphoneLoggingServiceCbs *cbs, 
 	cbs->user_data = user_data;
 }
 
+void *linphone_logging_service_cbs_get_user_data(const LinphoneLoggingServiceCbs *cbs) {
+    return cbs->user_data;
+}
+
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneLoggingServiceCbs, belle_sip_object_t,
 	NULL, // uninit
 	NULL, // clone
