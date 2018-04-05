@@ -79,7 +79,14 @@ static void qrcode_found_cb(LinphoneCore *lc, const char *result) {
 	}
 }
 
-static void decode_qrcode_from_nowebcam(void) {
+typedef struct struct_image_rect {
+	int x;
+	int y;
+	int w;
+	int h;
+}image_rect;
+
+static void _decode_qrcode(const char* image_path, image_rect *rect) {
 	qrcode_callback_data qrcode_data;
 	char *qrcode_image;
 	LinphoneCoreManager* lcm = linphone_core_manager_create("empty_rc");
@@ -88,7 +95,7 @@ static void decode_qrcode_from_nowebcam(void) {
 	qrcode_data.text = NULL;
 	linphone_core_manager_start(lcm, FALSE);
 
-	qrcode_image = bc_tester_res("images/linphonesiteqr.jpg");
+	qrcode_image = bc_tester_res(image_path);
 
 	linphone_core_set_video_device(lcm->lc, liblinphone_tester_static_image_id);
 	linphone_core_set_static_picture(lcm->lc, qrcode_image);
@@ -97,9 +104,12 @@ static void decode_qrcode_from_nowebcam(void) {
 	cbs = linphone_core_get_current_callbacks(lcm->lc);
 	linphone_core_cbs_set_qrcode_founded(cbs, qrcode_found_cb);
 	linphone_core_cbs_set_user_data(cbs, &qrcode_data);
+	if (rect) {
+		linphone_core_set_qrcode_decode_rect(lcm->lc, rect->x, rect->y, rect->w, rect->h);
+	}
 	linphone_core_enable_video_preview(lcm->lc, TRUE);
 
-	BC_ASSERT_TRUE(wait_for_until(lcm->lc, NULL, &qrcode_data.qrcode_found, TRUE, 3000));
+	BC_ASSERT_TRUE(wait_for_until(lcm->lc, NULL, &qrcode_data.qrcode_found, TRUE, 2000));
 	if (qrcode_data.qrcode_found) {
 		if (BC_ASSERT_PTR_NOT_NULL(qrcode_data.text)) {
 			ms_message("QRCode decode: %s", qrcode_data.text);
@@ -114,9 +124,23 @@ static void decode_qrcode_from_nowebcam(void) {
 	linphone_core_manager_destroy(lcm);
 }
 
+static void decode_qrcode_from_image(void) {
+	_decode_qrcode("images/linphonesiteqr.jpg", NULL);
+}
+
+static void decode_qrcode_from_zone(void) {
+	image_rect rect;
+	rect.x = 332;
+	rect.y = 470;
+	rect.w = 268;
+	rect.h = 262;
+	_decode_qrcode("images/linphonesiteqr_captured.jpg", &rect);
+}
+
 test_t video_tests[] = {
 	TEST_NO_TAG("Enable/disable camera after camera switches", enable_disable_camera_after_camera_switches),
-	TEST_NO_TAG("Decode QRCode", decode_qrcode_from_nowebcam)
+	TEST_ONE_TAG("Decode QRCode from image", decode_qrcode_from_image, "QRCode"),
+	TEST_ONE_TAG("Decode QRCode from zone", decode_qrcode_from_zone, "QRCode")
 };
 
 test_suite_t video_test_suite = {

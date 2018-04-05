@@ -2305,6 +2305,11 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	sqlite3_bctbx_vfs_register(0);
 #endif
 
+	lc->qrcode_rect.h = 0;
+	lc->qrcode_rect.w = 0;
+	lc->qrcode_rect.x = 0;
+	lc->qrcode_rect.y = 0;
+
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
@@ -4812,7 +4817,9 @@ static void video_filter_callback(void *userdata, struct _MSFilter *f, unsigned 
 		case MS_QRCODE_READER_QRCODE_FOUND: {
 			LinphoneCore *lc = (LinphoneCore *)userdata;
 			if (linphone_core_cbs_get_qrcode_founded(linphone_core_get_current_callbacks(lc)) != NULL) {
-				linphone_core_notify_qrcode_founded(lc, (const char*)arg);
+				char* result = ms_strdup((const char*)arg);
+				linphone_core_notify_qrcode_founded(lc, result);
+				ms_free(result);
 			}
 			break;
 		}
@@ -4859,20 +4866,30 @@ static void toggle_video_preview(LinphoneCore *lc, bool_t val){
 			if (!vdef || linphone_video_definition_is_undefined(vdef)) {
 				vdef = linphone_core_get_preferred_video_definition(lc);
 			}
-			vsize.width = (int)linphone_video_definition_get_width(vdef);
-			vsize.height = (int)linphone_video_definition_get_height(vdef);
-			lc->previewstream=video_preview_new(lc->factory);
+			if (linphone_core_qrcode_video_preview_enabled(lc)) {
+				vsize.width = 720;
+				vsize.height = 1280;
+			} else {
+				vsize.width = (int)linphone_video_definition_get_width(vdef);
+				vsize.height = (int)linphone_video_definition_get_height(vdef);
+			}
+			lc->previewstream = video_preview_new(lc->factory);
 			video_preview_set_size(lc->previewstream,vsize);
 			if (display_filter)
 				video_preview_set_display_filter_name(lc->previewstream,display_filter);
 			if (lc->preview_window_id != NULL)
 				video_preview_set_native_window_id(lc->previewstream,lc->preview_window_id);
 			video_preview_set_fps(lc->previewstream,linphone_core_get_preferred_framerate(lc));
-			if (linphone_core_qrcode_video_preview_enabled(lc))
+			if (linphone_core_qrcode_video_preview_enabled(lc)) {
 				video_preview_enable_qrcode(lc->previewstream, TRUE);
+				if (lc->qrcode_rect.w != 0 && lc->qrcode_rect.h != 0) {
+					video_preview_set_decode_rect(lc->previewstream, lc->qrcode_rect);
+				}
+			}
 			video_preview_start(lc->previewstream,lc->video_conf.device);
-			if (video_preview_qrcode_enabled(lc->previewstream))
+			if (video_preview_qrcode_enabled(lc->previewstream)) {
 				ms_filter_add_notify_callback(lc->previewstream->qrcode, video_filter_callback, lc, TRUE);
+			}
 		}
 	}else{
 		if (lc->previewstream!=NULL){
@@ -5055,6 +5072,17 @@ void linphone_core_enable_qrcode_video_preview(LinphoneCore *lc, bool_t val) {
 
 bool_t linphone_core_qrcode_video_preview_enabled(const LinphoneCore *lc) {
 	return lc->video_conf.qrcode_decoder;
+}
+
+void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h) {
+	if (lc) {
+		MSRect rect;
+		rect.x = x;
+		rect.y = y;
+		rect.w = w;
+		rect.h = h;
+		lc->qrcode_rect = rect;
+	}
 }
 
 void linphone_core_enable_self_view(LinphoneCore *lc, bool_t val){

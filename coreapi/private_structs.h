@@ -794,6 +794,7 @@ namespace LinphonePrivate {
 	bool_t send_call_stats_periodical_updates; \
 	bool_t forced_ice_relay; \
 	bool_t short_turn_refresh; \
+	MSRect qrcode_rect; \
 	char localip[LINPHONE_IPADDR_SIZE]; \
 	int device_rotation; \
 	int max_calls; \

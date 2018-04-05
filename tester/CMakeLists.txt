@@ -140,6 +140,7 @@ set(RC_FILES
 set(IMAGE_FILES
 	images/linphone.svg
 	images/linphonesiteqr.jpg
+	images/linphonesiteqr_captured.jpg
 	images/nowebcamCIF.jpg
 	images/nowebcamVGA.jpg
 )

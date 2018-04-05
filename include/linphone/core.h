@@ -3630,6 +3630,17 @@ LINPHONE_PUBLIC bool_t linphone_core_video_preview_enabled(const LinphoneCore *l
 LINPHONE_PUBLIC void linphone_core_enable_qrcode_video_preview(LinphoneCore *lc, bool_t val);
 
 /**
+ * Set the rectangle where the decoder will search a QRCode
+ * @param[in] lc LinphoneCore* object
+ * @param[in] x axis
+ * @param[in] y axis
+ * @param[in] w width
+ * @param[in] h height
+ * @ingroup media_parameters
+ */
+LINPHONE_PUBLIC void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h);
+
+/**
  * Tells whether QRCode is enabled in the preview.
  * @param[in] lc LinphoneCore object
  * @return A boolean value telling whether QRCode is enabled in the preview.
