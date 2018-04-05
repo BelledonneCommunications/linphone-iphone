@@ -179,6 +179,7 @@ LinphoneLoggingServiceCbs *linphone_logging_service_get_callbacks(const Linphone
 
 static const char *_linphone_logging_service_log_domains[] = {
 	"bctbx",
+	"belle-sip",
 	"ortp",
 	"mediastreamer",
 	"bzrtp",
