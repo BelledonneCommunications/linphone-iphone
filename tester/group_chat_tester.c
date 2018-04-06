@@ -3010,6 +3010,7 @@ static void group_chat_room_new_unique_one_to_one_chat_room_after_both_participa
 	// Both participants delete the chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	wait_for_list(coresList, 0, 1, 3000);
 
 	// Marie re-creates a chat room with Pauline
 	initialMarieStats = marie->stat;
