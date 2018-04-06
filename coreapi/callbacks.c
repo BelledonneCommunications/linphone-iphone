@@ -783,34 +783,51 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					}
 					static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 				}
-			} else if (addr.hasParam("admin")) {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-					ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
-				));
-				if (cr) {
-					Address fromAddr(op->get_from());
-					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
-					if (!participant || !participant->isAdmin()) {
-						static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
-						return;
+			} else {
+				if (linphone_core_conference_server_enabled(lc)) {
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+						ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
+					);
+					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(chatRoom);
+					if (cr) {
+						Address fromAddr(op->get_from());
+						shared_ptr<Participant> participant = chatRoom->findParticipant(fromAddr);
+						if (!participant || !participant->isAdmin()) {
+							static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+							return;
+						}
+						if (addr.hasParam("admin")) {
+							participant = chatRoom->findParticipant(addr);
+							if (participant) {
+								bool value = Utils::stob(addr.getParamValue("admin"));
+								chatRoom->setParticipantAdminStatus(participant, value);
+								static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+								return;
+							}
+						} else {
+							participant = L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->findFilteredParticipant(addr);
+							if (!participant) {
+								list<IdentityAddress> identAddresses;
+								identAddresses.push_back(addr);
+								L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->checkCompatibleParticipants(
+									IdentityAddress(op->get_remote_contact()),
+									identAddresses
+								);
+								static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+								return;
+							}
+						}
 					}
-					participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
-					if (participant) {
-						bool value = Utils::stob(addr.getParamValue("admin"));
-						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setParticipantAdminStatus(participant, value);
-					}
+				} else {
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+						ChatRoomId(addr, IdentityAddress(op->get_to()))
+					);
+					if (!chatRoom)
+						chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), Content(), false);
+					chatRoom->join();
 					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 					return;
 				}
-			} else {
-				shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-					ChatRoomId(addr, IdentityAddress(op->get_to()))
-				);
-				if (!chatRoom)
-					chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), Content(), false);
-				chatRoom->join();
-				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
-				return;
 			}
 		}
 	}

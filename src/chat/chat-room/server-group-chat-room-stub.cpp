@@ -84,6 +84,8 @@ void ServerGroupChatRoomPrivate::addParticipantDevice (const IdentityAddress &pa
 
 void ServerGroupChatRoomPrivate::addCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &participantCompatible) {}
 
+void ServerGroupChatRoomPrivate::checkCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &addressesToCheck) {}
+
 // -----------------------------------------------------------------------------
 
 LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
