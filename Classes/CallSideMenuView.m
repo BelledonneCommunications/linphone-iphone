@@ -177,15 +177,16 @@
 		[result appendString:@"\n"];
 
 		if (stream == LinphoneStreamTypeVideo) {
-			MSVideoSize sentSize = linphone_call_params_get_sent_video_size(params);
-			MSVideoSize recvSize = linphone_call_params_get_received_video_size(params);
+			const LinphoneVideoDefinition *recv_definition = linphone_call_params_get_received_video_definition(params);
+			const LinphoneVideoDefinition *sent_definition = linphone_call_params_get_sent_video_definition(params);
 			float sentFPS = linphone_call_params_get_sent_framerate(params);
 			float recvFPS = linphone_call_params_get_received_framerate(params);
-			[result appendString:[NSString stringWithFormat:@"Sent video resolution: %dx%d (%.1fFPS)", sentSize.width,
-															sentSize.height, sentFPS]];
+			[result appendString:[NSString stringWithFormat:@"Sent video resolution: %dx%d (%.1fFPS)", linphone_video_definition_get_width(sent_definition),
+															linphone_video_definition_get_height(sent_definition), sentFPS]];
 			[result appendString:@"\n"];
 			[result appendString:[NSString stringWithFormat:@"Received video resolution: %dx%d (%.1fFPS)",
-															recvSize.width, recvSize.height, recvFPS]];
+								  linphone_video_definition_get_width(recv_definition),
+								  linphone_video_definition_get_height(recv_definition), recvFPS]];
 			[result appendString:@"\n"];
 		}
 	}
