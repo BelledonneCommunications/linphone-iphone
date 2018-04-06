@@ -127,6 +127,11 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
       * Gets the object stored in this object user's data
       */
     {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public Object getUserData();
+
+    /**
+      * Gets the object stored in this object user's data
+      */
+    abstract public LoggingService getLoggingService();
 }
 
 class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}implements{{/isNotLinphoneFactory}} {{className}} {
@@ -174,6 +179,12 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 	@Override
 	public Core getCore(long ptr) {
 	    return getCore(nativePtr, ptr);
+	}
+
+    @Override
+	public LoggingService getLoggingService() {
+		LoggingService l = new LoggingServiceImpl(0);
+		return l.get();
 	}
 
     @Override
