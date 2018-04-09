@@ -49,8 +49,10 @@ if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER OR ENABLE_JAVA_WRA
 				DEPENDS ${DOC_INPUT_FILES}
 			)
 			add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${XML_DIR}/index.xml")
-			install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" "${XML_DIR}"
-				DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
+			if(ENABLE_DOC)
+				install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" "${XML_DIR}"
+					DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
+			endif()
 		else()
 			if (ENABLE_CXX_WRAPPER)
 				message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")
