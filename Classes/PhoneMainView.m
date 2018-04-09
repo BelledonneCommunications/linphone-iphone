@@ -901,7 +901,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 	_waitView = waitView;
 	_waitView.hidden = NO;
-	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT);
+	LinphoneChatRoom *room = linphone_core_create_client_group_chat_room(LC, subject ?: LINPHONE_DUMMY_SUBJECT, bctbx_list_size(addresses) == 1);
 	if (!room) {
 		_waitView.hidden = YES;
 		return;
