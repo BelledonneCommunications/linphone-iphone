@@ -2320,17 +2320,6 @@ void linphone_core_start (LinphoneCore *lc) {
 	}
 }
 
-#ifdef __ANDROID__
-static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
-	if (lc->platform_helper) delete getPlatformHelpers(lc);
-	lc->platform_helper = ph;
-}
-
-static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
-}
-#endif
-
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context, bool_t automatically_start) {
 	LinphoneCore *core = L_INIT(Core);
 	Core::create(core);
