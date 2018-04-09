@@ -2278,6 +2278,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
+	
+	getPlatformHelpers(lc)->setDnsServers();
 
 	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
 	linphone_friend_list_set_display_name(list, "_default");
