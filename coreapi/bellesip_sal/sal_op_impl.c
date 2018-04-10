@@ -812,8 +812,8 @@ int sal_op_get_address_family(SalOp *op){
 	
 	
 	if (op->refresher) {
-		belle_sip_response_t *resp = belle_sip_transaction_get_response(tr);
-		belle_sip_header_via_t *via = resp ?belle_sip_message_get_header_by_type(resp,belle_sip_header_via_t):NULL;
+		belle_sip_message_t *msg = belle_sip_transaction_get_response(tr) ? (belle_sip_message_t*) belle_sip_transaction_get_response(tr) : (belle_sip_message_t*) belle_sip_transaction_get_request(tr);
+		belle_sip_header_via_t *via = msg ?belle_sip_message_get_header_by_type(msg,belle_sip_header_via_t):NULL;
 		if (!via){
 			ms_error("Unable to determine IP version from signaling operation, no via header found.");
 			return AF_UNSPEC;
