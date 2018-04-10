@@ -95,6 +95,11 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
 
     abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
 
+    /**
+      * Gets the LoggingService singleton
+      */
+    abstract public LoggingService getLoggingService();
+
     abstract public void setDebugMode(boolean enable, String tag);
 
     abstract public Core getCore(long ptr);
@@ -174,6 +179,12 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 	@Override
 	public Core getCore(long ptr) {
 	    return getCore(nativePtr, ptr);
+	}
+
+    @Override
+	public LoggingService getLoggingService() {
+		LoggingService l = new LoggingServiceImpl(0);
+		return l.get();
 	}
 
     @Override

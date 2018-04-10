@@ -103,10 +103,12 @@ ContentType &ContentType::operator= (const ContentType &other) {
 	return *this;
 }
 
+bool ContentType::weakEqual (const ContentType &other) const {
+	return (getType() == other.getType()) && (getSubType() == other.getSubType());
+}
+
 bool ContentType::operator== (const ContentType &other) const {
-	return getType() == other.getType() &&
-		getSubType() == other.getSubType() &&
-		getParameter() == other.getParameter();
+	return weakEqual(other) && (getParameter() == other.getParameter());
 }
 
 bool ContentType::operator!= (const ContentType &other) const {

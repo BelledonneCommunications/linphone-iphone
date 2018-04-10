@@ -37,6 +37,7 @@ public:
 
 	ContentType &operator= (const ContentType &other);
 
+	bool weakEqual (const ContentType &other) const;
 	bool operator== (const ContentType &other) const;
 	bool operator!= (const ContentType &other) const;
 

@@ -238,7 +238,6 @@ LinphoneFriend * linphone_friend_new_from_config_file(struct _LinphoneCore *lc, 
 void linphone_proxy_config_update(LinphoneProxyConfig *cfg);
 LinphoneProxyConfig * linphone_core_lookup_known_proxy(LinphoneCore *lc, const LinphoneAddress *uri);
 const char *linphone_core_find_best_identity(LinphoneCore *lc, const LinphoneAddress *to);
-int linphone_core_get_local_ip_for(int type, const char *dest, char *result);
 LINPHONE_PUBLIC void linphone_core_get_local_ip(LinphoneCore *lc, int af, const char *dest, char *result);
 
 LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore *lc, int index);
@@ -288,6 +287,7 @@ void _linphone_chat_room_notify_participant_device_removed(LinphoneChatRoom *cr,
 void _linphone_chat_room_notify_participant_admin_status_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 void _linphone_chat_room_notify_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState);
 void _linphone_chat_room_notify_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
+void _linphone_chat_room_notify_all_information_received(LinphoneChatRoom *cr);
 void _linphone_chat_room_notify_undecryptable_message_received(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 void _linphone_chat_room_notify_chat_message_received(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 void _linphone_chat_room_notify_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog *event_log);

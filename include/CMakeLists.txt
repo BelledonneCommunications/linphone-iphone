@@ -48,6 +48,7 @@ set(ROOT_HEADER_FILES
 	im_notif_policy.h
 	info_message.h
 	ldapprovider.h
+	logging.h
 	lpconfig.h
 	misc.h
 	nat_policy.h

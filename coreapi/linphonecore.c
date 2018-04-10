@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "linphone/sipsetup.h"
 #include "linphone/lpconfig.h"
+#include "linphone/logging.h"
 #include "private.h"
+#include "logging-private.h"
 #include "quality_reporting.h"
 #include "lime.h"
 #include "conference_private.h"
@@ -500,40 +502,17 @@ void linphone_core_set_log_file(FILE *file) {
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
-	unsigned int mask = loglevel;
-	switch (loglevel) {
-		case ORTP_TRACE:
-		case ORTP_DEBUG:
-			mask |= ORTP_DEBUG;
-			BCTBX_NO_BREAK;
-		case ORTP_MESSAGE:
-			mask |= ORTP_MESSAGE;
-			BCTBX_NO_BREAK;
-		case ORTP_WARNING:
-			mask |= ORTP_WARNING;
-			BCTBX_NO_BREAK;
-		case ORTP_ERROR:
-			mask |= ORTP_ERROR;
-			BCTBX_NO_BREAK;
-		case ORTP_FATAL:
-			mask |= ORTP_FATAL;
-			break;
-		case ORTP_LOGLEV_END:
-			break;
-	}
-	linphone_core_set_log_level_mask(mask);
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	linphone_logging_service_set_log_level(log_service, _bctbx_log_level_to_linphone_log_level(loglevel));
 }
 
-void linphone_core_set_log_level_mask(unsigned int loglevel) {
-	bctbx_set_log_level_mask("bctbx", (int)loglevel);
-	bctbx_set_log_level_mask("ortp", (int)loglevel);
-	bctbx_set_log_level_mask("mediastreamer", (int)loglevel);
-	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log level for all domains*/
-	bctbx_set_log_level_mask("linphone", (int)loglevel);
-	sal_set_log_level((OrtpLogLevel)loglevel);
+void linphone_core_set_log_level_mask(unsigned int mask) {
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	linphone_logging_service_set_log_level_mask(log_service, _bctbx_log_mask_to_linphone_log_mask(mask));
 }
 unsigned int linphone_core_get_log_level_mask(void) {
-	return bctbx_get_log_level_mask(ORTP_LOG_DOMAIN);
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	return linphone_logging_service_get_log_level_mask(log_service);
 }
 static int _open_log_collection_file_with_idx(int idx) {
 	struct stat statbuf;
@@ -2299,6 +2278,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
+	
+	getPlatformHelpers(lc)->setDnsServers();
 
 	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
 	linphone_friend_list_set_display_name(list, "_default");
@@ -2340,17 +2321,6 @@ void linphone_core_start (LinphoneCore *lc) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	}
 }
-
-#ifdef __ANDROID__
-static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
-	if (lc->platform_helper) delete getPlatformHelpers(lc);
-	lc->platform_helper = ph;
-}
-
-static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
-}
-#endif
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context, bool_t automatically_start) {
 	LinphoneCore *core = L_INIT(Core);

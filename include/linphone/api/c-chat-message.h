@@ -369,6 +369,8 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const Linphon
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *msg);
 
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_in_state (const LinphoneChatMessage *msg, const LinphoneChatMessageState state);
+
 /**
  * @}
  */

@@ -88,7 +88,7 @@ void BasicChatRoom::addParticipants (const list<IdentityAddress> &, const CallSe
 	lError() << "addParticipants() is not allowed on a BasicChatRoom";
 }
 
-void BasicChatRoom::removeParticipant (const shared_ptr<const Participant> &) {
+void BasicChatRoom::removeParticipant (const shared_ptr<Participant> &) {
 	lError() << "removeParticipant() is not allowed on a BasicChatRoom";
 }
 

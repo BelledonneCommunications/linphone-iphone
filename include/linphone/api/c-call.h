@@ -338,6 +338,7 @@ LINPHONE_PUBLIC LinphoneConference *linphone_call_get_conference (const Linphone
  * Change the playback output device (currently only used for blackberry)
  * @param call
  * @param route the wanted audio route (earpiece, speaker, ...)
+ * @donotwrap
 **/
 LINPHONE_PUBLIC void linphone_call_set_audio_route (LinphoneCall *call, LinphoneAudioRoute route);
 
@@ -474,9 +475,8 @@ LINPHONE_PUBLIC LinphoneStatus linphone_call_accept_early_media_with_params (Lin
 
 /**
  * Updates a running call according to supplied call parameters or parameters changed in the LinphoneCore.
- * In this version this is limited to the following use cases:
- * - setting up/down the video stream according to the video parameter of the #LinphoneCallParams (see linphone_call_params_enable_video() ).
- * - changing the size of the transmitted video after calling linphone_core_set_preferred_video_size()
+ *  It triggers a SIP reINVITE in order to perform a new offer/answer of media capabilities. 
+ * Changing the size of the transmitted video after calling #linphone_core_set_preferred_video_size() can be used by passing NULL as params argument.
  * In case no changes are requested through the #LinphoneCallParams argument, then this argument can be omitted and set to NULL.
  * WARNING: Updating a call in the #LinphoneCallPaused state will still result in a paused call even if the media directions set in the
  * params are sendrecv. To resume a paused call, you need to call linphone_call_resume().

@@ -34,6 +34,7 @@
 #include "chat/modifier/encryption-chat-message-modifier.h"
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
+#include "conference/participant.h"
 #include "content/file-content.h"
 #include "content/content.h"
 #include "core/core.h"
@@ -120,6 +121,29 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 		setState(ChatMessage::State::Displayed);
 	else if ((nbDisplayedStates + nbDeliveredToUserStates) == states.size())
 		setState(ChatMessage::State::DeliveredToUser);
+}
+
+list<shared_ptr<Participant>> ChatMessagePrivate::getParticipantsInState (const ChatMessage::State state) const {
+	L_Q();
+
+	list<shared_ptr<Participant>> participantsInState;
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid()) {
+		return participantsInState;
+	}
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	list<IdentityAddress> addressesInState = mainDb->getChatMessageParticipantsInState(eventLog, state);
+	const list<shared_ptr<Participant>> &participants = q->getChatRoom()->getParticipants();
+	for (IdentityAddress addr : addressesInState) {
+		for (const auto &participant : participants) {
+			if (participant->getAddress() == addr) {
+				participantsInState.push_back(participant);
+			}
+		}
+	}
+	
+	return participantsInState;
 }
 
 void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
@@ -476,7 +500,7 @@ static void forceUtf8Content (Content &content) {
 void ChatMessagePrivate::notifyReceiving () {
 	L_Q();
 
-	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
+	LinphoneChatRoom *chatRoom = static_pointer_cast<ChatRoom>(q->getChatRoom())->getPrivate()->getCChatRoom();
 	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
 		_linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 		if (toBeStored)

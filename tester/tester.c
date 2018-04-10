@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linphone/core.h"
+#include "linphone/logging.h"
+#include "logging-private.h"
 #include "liblinphone_tester.h"
 #include <bctoolbox/tester.h>
 #include "tester_utils.h"
@@ -503,7 +505,7 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 		linphone_core_cbs_unref(mgr->cbs);
 
 	manager_count--;
-	linphone_core_set_log_level(old_log_level);
+	linphone_core_set_log_level_mask(old_log_level);
 }
 
 void linphone_core_manager_wait_for_stun_resolution(LinphoneCoreManager *mgr) {
