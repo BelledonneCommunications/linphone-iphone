@@ -33,7 +33,7 @@
  */
 
 /**
- * Safely downcast a belle_sip_object into LinphoneConfig
+ * Safely downcast a belle_sip_object into #LinphoneConfig
  */
 #define LINPHONE_CONFIG(obj) BELLE_SIP_CAST(obj, LinphoneConfig);
 
@@ -42,59 +42,59 @@ extern "C" {
 #endif
 
 /**
- * Instantiates a LinphoneConfig object from a user config file.
+ * Instantiates a #LinphoneConfig object from a user config file.
  * The caller of this constructor owns a reference. linphone_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
- * @param filename the filename of the config file to read to fill the instantiated LinphoneConfig
+ * @param filename the filename of the config file to read to fill the instantiated #LinphoneConfig
  * @see linphone_config_new_with_factory
  */
 LINPHONE_PUBLIC LinphoneConfig * linphone_config_new(const char *filename);
 
 /**
- * Instantiates a LinphoneConfig object from a user provided buffer.
+ * Instantiates a #LinphoneConfig object from a user provided buffer.
  * The caller of this constructor owns a reference. linphone_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
- * @param buffer the buffer from which the LinphoneConfig will be retrieved. We expect the buffer to be null-terminated.
+ * @param buffer the buffer from which the #LinphoneConfig will be retrieved. We expect the buffer to be null-terminated.
  * @see linphone_config_new_with_factory
  * @see linphone_config_new
  */
 LINPHONE_PUBLIC LinphoneConfig * linphone_config_new_from_buffer(const char *buffer);
 
 /**
- * Instantiates a LinphoneConfig object from a user config file and a factory config file.
+ * Instantiates a #LinphoneConfig object from a user config file and a factory config file.
  * The caller of this constructor owns a reference. linphone_config_unref() must be called when this object is no longer needed.
  * @ingroup misc
- * @param config_filename the filename of the user config file to read to fill the instantiated LinphoneConfig
- * @param factory_config_filename the filename of the factory config file to read to fill the instantiated LinphoneConfig
+ * @param config_filename the filename of the user config file to read to fill the instantiated #LinphoneConfig
+ * @param factory_config_filename the filename of the factory config file to read to fill the instantiated #LinphoneConfig
  * @see linphone_config_new
  *
- * The user config file is read first to fill the LinphoneConfig and then the factory config file is read.
+ * The user config file is read first to fill the #LinphoneConfig and then the factory config file is read.
  * Therefore the configuration parameters defined in the user config file will be overwritten by the parameters
  * defined in the factory config file.
  */
 LINPHONE_PUBLIC LinphoneConfig * linphone_config_new_with_factory(const char *config_filename, const char *factory_config_filename);
 
 /**
- * Reads a user config file and fill the LinphoneConfig with the read config values.
+ * Reads a user config file and fill the #LinphoneConfig with the read config values.
  * @ingroup misc
- * @param lpconfig The LinphoneConfig object to fill with the content of the file
- * @param filename The filename of the config file to read to fill the LinphoneConfig
+ * @param lpconfig The #LinphoneConfig object to fill with the content of the file
+ * @param filename The filename of the config file to read to fill the #LinphoneConfig
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_config_read_file(LinphoneConfig *lpconfig, const char *filename);
 
 /**
- * Reads a xml config file and fill the LinphoneConfig with the read config dynamic values.
+ * Reads a xml config file and fill the #LinphoneConfig with the read config dynamic values.
  * @ingroup misc
- * @param lpconfig The LinphoneConfig object to fill with the content of the file
- * @param filename The filename of the config file to read to fill the LinphoneConfig
+ * @param lpconfig The #LinphoneConfig object to fill with the content of the file
+ * @param filename The filename of the config file to read to fill the #LinphoneConfig
  */
 LINPHONE_PUBLIC const char* linphone_config_load_from_xml_file(LinphoneConfig *lpc, const char *filename);
 
 /**
- * Reads a xml config string and fill the LinphoneConfig with the read config dynamic values.
+ * Reads a xml config string and fill the #LinphoneConfig with the read config dynamic values.
  * @ingroup misc
- * @param lpconfig The LinphoneConfig object to fill with the content of the file
- * @param buffer The string of the config file to fill the LinphoneConfig
+ * @param lpconfig The #LinphoneConfig object to fill with the content of the file
+ * @param buffer The string of the config file to fill the #LinphoneConfig
  * @return 0 in case of success
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_config_load_from_xml_string(LpConfig *lpc, const char *buffer);
@@ -214,7 +214,7 @@ LINPHONE_PUBLIC void linphone_config_clean_section(LinphoneConfig *lpconfig, con
 
 /**
  * Returns 1 if a given section  with a given key is present in the configuration.
- * @param[in] lpconfig The LinphoneConfig object
+ * @param[in] lpconfig The #LinphoneConfig object
  * @param[in] section
  * @param[in] key
  **/
@@ -222,7 +222,7 @@ LINPHONE_PUBLIC int linphone_config_has_entry(const LinphoneConfig *lpconfig, co
 
 /**
  * Removes entries for key,value in a section.
- * @param[in] lpconfig The LinphoneConfig object
+ * @param[in] lpconfig The #LinphoneConfig object
  * @param[in] section
  * @param[in] key
  **/
@@ -230,7 +230,7 @@ LINPHONE_PUBLIC void linphone_config_clean_entry(LinphoneConfig *lpconfig, const
 
 /**
  * Returns the list of sections' names in the LinphoneConfig.
- * @param[in] lpconfig The LinphoneConfig object
+ * @param[in] lpconfig The #LinphoneConfig object
  * @return a null terminated static array of strings
  * @deprecated use linphone_config_get_sections_names_list instead
  * @donotwrap
@@ -239,7 +239,7 @@ LINPHONE_PUBLIC const char** linphone_config_get_sections_names(LinphoneConfig *
 
 /**
  * Returns the list of sections' names in the LinphoneConfig.
- * @param[in] lpconfig The LinphoneConfig object
+ * @param[in] lpconfig The #LinphoneConfig object
  * @return \bctbx_list{char *} a null terminated static array of strings
 **/
 LINPHONE_PUBLIC const bctbx_list_t * linphone_config_get_sections_names_list(LpConfig *lpconfig);
@@ -303,7 +303,7 @@ LINPHONE_PUBLIC void linphone_config_unref(LinphoneConfig *lpconfig);
 
 /**
  * Write a string in a file placed relatively with the Linphone configuration file.
- * @param lpconfig LinphoneConfig instance used as a reference
+ * @param lpconfig #LinphoneConfig instance used as a reference
  * @param filename Name of the file where to write data. The name is relative to the place of the config file
  * @param data String to write
  */
@@ -311,7 +311,7 @@ LINPHONE_PUBLIC void linphone_config_write_relative_file(const LinphoneConfig *l
 
 /**
  * Read a string from a file placed beside the Linphone configuration file
- * @param lpconfig LinphoneConfig instance used as a reference
+ * @param lpconfig #LinphoneConfig instance used as a reference
  * @param filename Name of the file where data will be read from. The name is relative to the place of the config file
  * @param data Buffer where read string will be stored
  * @param max_length Length of the buffer
@@ -326,15 +326,15 @@ LINPHONE_PUBLIC LinphoneStatus linphone_config_read_relative_file(const Linphone
 LINPHONE_PUBLIC bool_t linphone_config_relative_file_exists(const LinphoneConfig *lpconfig, const char *filename);
 
 /**
- * Dumps the LinphoneConfig as XML into a buffer
- * @param[in] lpconfig The LinphoneConfig object
+ * Dumps the #LinphoneConfig as XML into a buffer
+ * @param[in] lpconfig The #LinphoneConfig object
  * @return The buffer that contains the XML dump
 **/
 LINPHONE_PUBLIC char* linphone_config_dump_as_xml(const LinphoneConfig *lpconfig);
 
 /**
- * Dumps the LinphoneConfig as INI into a buffer
- * @param[in] lpconfig The LinphoneConfig object
+ * Dumps the #LinphoneConfig as INI into a buffer
+ * @param[in] lpconfig The #LinphoneConfig object
  * @return The buffer that contains the config dump
 **/
 LINPHONE_PUBLIC char* linphone_config_dump(const LinphoneConfig *lpconfig);

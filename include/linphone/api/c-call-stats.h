@@ -46,29 +46,29 @@
 
 /**
  * Increment refcount.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneCallStats *linphone_call_stats_ref (LinphoneCallStats *stats);
 
 /**
  * Decrement refcount and possibly free the object.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void linphone_call_stats_unref (LinphoneCallStats *stats);
 
 /**
- * Gets the user data in the LinphoneCallStats object
- * @param[in] stats the LinphoneCallStats
+ * Gets the user data in the #LinphoneCallStats object
+ * @param[in] stats the #LinphoneCallStats
  * @return the user data
  * @ingroup misc
 */
 LINPHONE_PUBLIC void *linphone_call_stats_get_user_data (const LinphoneCallStats *stats);
 
 /**
- * Sets the user data in the LinphoneCallStats object
- * @param[in] stats the LinphoneCallStats object
+ * Sets the user data in the #LinphoneCallStats object
+ * @param[in] stats the #LinphoneCallStats object
  * @param[in] data the user data
  * @ingroup misc
 */
@@ -76,7 +76,7 @@ LINPHONE_PUBLIC void linphone_call_stats_set_user_data (LinphoneCallStats *stats
 
 /**
  * Get the type of the stream the stats refer to.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The type of the stream the stats refer to
  */
 LINPHONE_PUBLIC LinphoneStreamType linphone_call_stats_get_type (const LinphoneCallStats *stats);
@@ -107,14 +107,14 @@ LINPHONE_PUBLIC float linphone_call_stats_get_local_late_rate (const LinphoneCal
 
 /**
  * Gets the local interarrival jitter
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The interarrival jitter at last emitted sender report
 **/
 LINPHONE_PUBLIC float linphone_call_stats_get_sender_interarrival_jitter (const LinphoneCallStats *stats);
 
 /**
  * Gets the remote reported interarrival jitter
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The interarrival jitter at last received receiver report
 **/
 LINPHONE_PUBLIC float linphone_call_stats_get_receiver_interarrival_jitter (const LinphoneCallStats *stats);
@@ -123,77 +123,77 @@ LINPHONE_PUBLIC const rtp_stats_t *linphone_call_stats_get_rtp_stats (const Linp
 
 /**
  * Gets the cumulative number of late packets
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The cumulative number of late packets
 **/
 LINPHONE_PUBLIC uint64_t linphone_call_stats_get_late_packets_cumulative_number (const LinphoneCallStats *stats);
 
 /**
  * Get the bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The bandwidth measurement of the received stream in kbit/s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_download_bandwidth (const LinphoneCallStats *stats);
 
 /**
  * Get the bandwidth measurement of the sent stream, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The bandwidth measurement of the sent stream in kbit/s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_upload_bandwidth (const LinphoneCallStats *stats);
 
 /**
  * Get the bandwidth measurement of the received RTCP, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The bandwidth measurement of the received RTCP in kbit/s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_rtcp_download_bandwidth (const LinphoneCallStats *stats);
 
 /**
  * Get the bandwidth measurement of the sent RTCP, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The bandwidth measurement of the sent RTCP in kbit/s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_rtcp_upload_bandwidth( const LinphoneCallStats *stats);
 
 /**
  * Get the state of ICE processing.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The state of ICE processing.
  */
 LINPHONE_PUBLIC LinphoneIceState linphone_call_stats_get_ice_state (const LinphoneCallStats *stats);
 
 /**
  * Get the state of uPnP processing.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The state of uPnP processing.
  */
 LINPHONE_PUBLIC LinphoneUpnpState linphone_call_stats_get_upnp_state (const LinphoneCallStats *stats);
 
 /**
  * Get the IP address family of the remote peer.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The IP address family of the remote peer.
  */
 LINPHONE_PUBLIC LinphoneAddressFamily linphone_call_stats_get_ip_family_of_remote (const LinphoneCallStats *stats);
 
 /**
  * Get the jitter buffer size in ms.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The jitter buffer size in ms.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_jitter_buffer_size_ms (const LinphoneCallStats *stats);
 
 /**
  * Get the round trip delay in s.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The round trip delay in s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_round_trip_delay (const LinphoneCallStats *stats);
 
 /**
  * Get the estimated bandwidth measurement of the received stream, expressed in kbit/s, including IP/UDP/RTP headers.
- * @param[in] stats LinphoneCallStats object
+ * @param[in] stats #LinphoneCallStats object
  * @return The estimated bandwidth measurement of the received stream in kbit/s.
  */
 LINPHONE_PUBLIC float linphone_call_stats_get_estimated_download_bandwidth(const LinphoneCallStats *stats);

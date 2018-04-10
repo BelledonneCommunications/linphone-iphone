@@ -1,6 +1,13 @@
+{{#hasNamespaceDeclarator}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{namespace}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
+{{/hasNamespaceDeclarator}}
+
 {{#make_chapter}}{{{className}}} class{{/make_chapter}}
 
-.. {{#write_declarator}}class{{/write_declarator}}:: {{{fullClassName}}}
+.. {{#write_declarator}}class{{/write_declarator}}:: {{{classDeclaration}}}
 	
 	{{#briefDoc}}
 	{{#lines}}
@@ -17,8 +24,23 @@
 	{{{selector}}}
 
 
+{{#hasNamespaceDeclarator}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
+{{/hasNamespaceDeclarator}}
+
+
 Summary
 =======
+
+{{#hasEnums}}
+Enums
+-----
+
+{{{enumsSummary}}}
+{{/hasEnums}}
 
 {{#hasProperties}}
 Properties
@@ -41,18 +63,61 @@ Class methods
 {{{classMethodsSummary}}}
 {{/hasClassMethods}}
 
+
 Detailed descriptions
 =====================
+
+{{#hasEnums}}
+Enums
+-----
+
+{{#enums}}
+{{#make_subsection}}{{{name}}}{{/make_subsection}}
+.. {{#write_declarator}}enum{{/write_declarator}}:: {{{declaration}}}
+
+	{{#briefDesc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDesc}}
+
+	{{{selector}}}
+
+	{{#enumerators}}
+	{{#isNotJava}}
+	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}
+
+	{{/isNotJava}}
+	{{#isJava}}
+	**{{{name}}}**
+	{{/isJava}}
+		{{#briefDesc}}
+		{{#lines}}
+		{{{line}}}
+		{{/lines}}
+		{{/briefDesc}}
+
+		{{{selector}}}
+
+	{{/enumerators}}
+{{/enums}}
+{{/hasEnums}}
 
 {{#hasProperties}}
 Properties
 ----------
 
 {{#properties}}
+
+.. _{{{ref_label}}}:
+
 {{{title}}}
 
 {{#hasNamespaceDeclarator}}
 .. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
 {{/hasNamespaceDeclarator}}
 
 {{#getter}}
@@ -100,6 +165,9 @@ Public methods
 
 {{#hasNamespaceDeclarator}}
 .. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
 {{/hasNamespaceDeclarator}}
 
 {{#methods}}
@@ -128,6 +196,9 @@ Class methods
 
 {{#hasNamespaceDeclarator}}
 .. {{#write_declarator}}namespace{{/write_declarator}}:: {{{fullClassName}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
 {{/hasNamespaceDeclarator}}
 
 {{#classMethods}}

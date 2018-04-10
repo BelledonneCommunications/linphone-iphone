@@ -89,7 +89,7 @@ LINPHONE_PUBLIC void linphone_chat_room_send_chat_message_2(LinphoneChatRoom *cr
  * instead of totaly takes ownership on it. Thus, the #LinphoneChatMessage object must be released by the API user after calling
  * that function.
  *
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  */
 LINPHONE_PUBLIC void linphone_chat_message_resend_2(LinphoneChatMessage *msg);
 

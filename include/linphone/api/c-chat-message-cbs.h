@@ -65,7 +65,7 @@ LINPHONE_PUBLIC void linphone_chat_message_cbs_set_user_data (LinphoneChatMessag
 
 /**
  * Get the message state changed callback.
- * @param[in] cbs LinphoneChatMessageCbs object.
+ * @param[in] cbs #LinphoneChatMessageCbs object.
  * @return The current message state changed callback.
  */
  LINPHONE_PUBLIC LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs);

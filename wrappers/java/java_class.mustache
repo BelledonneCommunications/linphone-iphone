@@ -196,7 +196,7 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
     @Override
     synchronized public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}} {
         {{#hasCoreAccessor}}{{#isNotGetCore}}synchronized(core) { {{/isNotGetCore}}{{/hasCoreAccessor}}
-        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}({{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
         if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult);{{/exception}}{{#hasCoreAccessor}}{{#isNotGetCore}}
         }{{/isNotGetCore}}{{/hasCoreAccessor}}
     }
