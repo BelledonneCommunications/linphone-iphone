@@ -1212,11 +1212,11 @@ class JavaLangTranslator(CLikeLangTranslator):
 				ptrtype = _type.containedTypeDesc.translate(self, native=native)
 		ptrtype = ''
 		if type(_type.containedTypeDesc) is ClassType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		elif type(_type.containedTypeDesc) is BaseType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		elif type(_type.containedTypeDesc) is EnumType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		else:
 			if _type.containedTypeDesc:
 				raise Error('translation of bctbx_list_t of ' + _type.containedTypeDesc.name)
@@ -1225,7 +1225,7 @@ class JavaLangTranslator(CLikeLangTranslator):
 		return ptrtype + '[]'
 
 	def translate_argument(self, arg, native=False, jni=False, hideArgName=False, namespace=None):
-		res = arg.type.translate(self, native=native, jni=jni, namespace=None)
+		res = arg.type.translate(self, native=native, jni=jni, namespace=namespace)
 		if not hideArgName:
 			res += (' ' + arg.name.translate(self.nameTranslator))
 		return res
