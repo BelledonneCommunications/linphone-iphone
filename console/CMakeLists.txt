@@ -53,7 +53,7 @@ if(WIN32)
 endif()
 
 add_executable(linphonecsh ${LINPHONECSH_SOURCE_FILES})
-target_link_libraries(linphonecsh ${LINPHONE_LIBS_FOR_TOOLS} ${ORTP_LIBRARIES})
+target_link_libraries(linphonecsh ${LINPHONE_LIBS_FOR_TOOLS} ${BCTOOLBOX_CORE_LIBRARIES} ${ORTP_LIBRARIES})
 set_target_properties(linphonecsh PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 
 set(INSTALL_TARGETS linphonec linphonecsh)
