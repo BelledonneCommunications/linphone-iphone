@@ -72,7 +72,7 @@ LinphoneLogLevel _bctbx_log_level_to_linphone_log_level(BctbxLogLevel level) {
 	if (response != tmap.cend()) {
 		return response->first;
 	} else {
-		ms_fatal("%s(): invalid argurement [%d]", __FUNCTION__, level);
+		ms_warning("%s(): invalid argurement [%d]", __FUNCTION__, level);
 		return LinphoneLogLevelDebug;
 	}
 }
