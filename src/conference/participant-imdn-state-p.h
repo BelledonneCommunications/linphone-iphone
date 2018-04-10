@@ -1,5 +1,5 @@
 /*
- * c-api.h
+ * participant-imdn-state-p.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,26 +17,26 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_C_API_H_
-#define _L_C_API_H_
+#ifndef _L_PARTICIPANT_IMDN_STATE_P_H_
+#define _L_PARTICIPANT_IMDN_STATE_P_H_
 
-#include "linphone/utils/general.h"
+#include "object/clonable-object-p.h"
 
-#include "linphone/api/c-address.h"
-#include "linphone/api/c-call.h"
-#include "linphone/api/c-call-cbs.h"
-#include "linphone/api/c-call-stats.h"
-#include "linphone/api/c-callbacks.h"
-#include "linphone/api/c-chat-message.h"
-#include "linphone/api/c-chat-message-cbs.h"
-#include "linphone/api/c-chat-room.h"
-#include "linphone/api/c-chat-room-cbs.h"
-#include "linphone/api/c-dial-plan.h"
-#include "linphone/api/c-event-log.h"
-#include "linphone/api/c-participant.h"
-#include "linphone/api/c-participant-imdn-state.h"
-#include "linphone/api/c-magic-search.h"
-#include "linphone/api/c-search-result.h"
-#include "linphone/api/c-types.h"
+#include "conference/participant-imdn-state.h"
 
-#endif // ifndef _L_C_API_H_
+// =============================================================================
+
+LINPHONE_BEGIN_NAMESPACE
+
+class ParticipantImdnStatePrivate : public ClonableObjectPrivate {
+public:
+	std::shared_ptr<Participant> participant;
+	ChatMessage::State state = ChatMessage::State::Idle;
+	time_t stateChangeTime = 0;
+
+	L_DECLARE_PUBLIC(ParticipantImdnState);
+};
+
+LINPHONE_END_NAMESPACE
+
+#endif // ifndef _L_PARTICIPANT_IMDN_STATE_P_H_

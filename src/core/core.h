@@ -44,6 +44,7 @@ class LINPHONE_PUBLIC Core : public Object {
 	friend class BasicToClientGroupChatRoomPrivate;
 	friend class CallPrivate;
 	friend class CallSession;
+	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;

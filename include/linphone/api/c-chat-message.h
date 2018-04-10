@@ -369,7 +369,26 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const Linphon
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *msg);
 
-LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_in_state (const LinphoneChatMessage *msg, const LinphoneChatMessageState state);
+/**
+ * Gets the list of participants that displayed this message and the time at which they did.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_displayed (const LinphoneChatMessage *msg);
+
+/**
+ * Gets the list of participants that did not receive this message.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_not_received (const LinphoneChatMessage *msg);
+
+/**
+ * Gets the list of participants that received this message and the time at which they did.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_received (const LinphoneChatMessage *msg);
 
 /**
  * @}

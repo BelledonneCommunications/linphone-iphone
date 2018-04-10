@@ -163,6 +163,12 @@ typedef struct _LinphoneMagicSearch LinphoneMagicSearch;
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
 /**
+ * The LinphoneParticipantImdnState object represents the state of chat message for a participant of a conference chat room.
+ * @ingroup misc
+**/
+typedef struct _LinphoneParticipantImdnState LinphoneParticipantImdnState;
+
+/**
  * The LinphoneSearchResult object represents a result of a search
  * @ingroup misc
  **/

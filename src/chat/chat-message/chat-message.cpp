@@ -35,6 +35,7 @@
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
 #include "conference/participant.h"
+#include "conference/participant-imdn-state.h"
 #include "content/file-content.h"
 #include "content/content.h"
 #include "core/core.h"
@@ -68,6 +69,25 @@ void ChatMessagePrivate::setTime (time_t t) {
 
 void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
+}
+
+list<ParticipantImdnState> ChatMessagePrivate::getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const {
+	L_Q();
+
+	list<ParticipantImdnState> result;
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid())
+		return result;
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	list<MainDb::ParticipantState> dbResults = func(eventLog);
+	for (const auto &dbResult : dbResults) {
+		auto participant = q->getChatRoom()->findParticipant(dbResult.address);
+		if (participant)
+			result.emplace_back(participant, dbResult.state, dbResult.timestamp);
+	}
+
+	return result;
 }
 
 void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime) {
@@ -121,29 +141,6 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 		setState(ChatMessage::State::Displayed);
 	else if ((nbDisplayedStates + nbDeliveredToUserStates) == states.size())
 		setState(ChatMessage::State::DeliveredToUser);
-}
-
-list<shared_ptr<Participant>> ChatMessagePrivate::getParticipantsInState (const ChatMessage::State state) const {
-	L_Q();
-
-	list<shared_ptr<Participant>> participantsInState;
-	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid()) {
-		return participantsInState;
-	}
-
-	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
-	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
-	list<IdentityAddress> addressesInState = mainDb->getChatMessageParticipantsInState(eventLog, state);
-	const list<shared_ptr<Participant>> &participants = q->getChatRoom()->getParticipants();
-	for (IdentityAddress addr : addressesInState) {
-		for (const auto &participant : participants) {
-			if (participant->getAddress() == addr) {
-				participantsInState.push_back(participant);
-			}
-		}
-	}
-	
-	return participantsInState;
 }
 
 void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
@@ -993,6 +990,29 @@ bool ChatMessage::getToBeStored () const {
 void ChatMessage::setToBeStored (bool value) {
 	L_D();
 	d->toBeStored = value;
+}
+
+// -----------------------------------------------------------------------------
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveDisplayed () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveDisplayed, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
+}
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveNotReceived () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveNotReceived, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
+}
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveReceived () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveReceived, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
 }
 
 // -----------------------------------------------------------------------------

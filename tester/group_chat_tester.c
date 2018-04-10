@@ -3056,6 +3056,7 @@ static void imdn_for_group_chat_room (void) {
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
 	stats initialChloeStats = chloe->stat;
+	time_t initialTime = ms_time(NULL);
 
 	// Enable IMDN
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
@@ -3090,15 +3091,46 @@ static void imdn_for_group_chat_room (void) {
 	linphone_address_unref(chloeAddr);
 
 	// Check that the message has been delivered to Marie and Pauline
-	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 1000));
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_displayed(chloeMessage));
+	bctbx_list_t *participantsThatReceivedChloeMessage = linphone_chat_message_get_participants_that_have_received(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatReceivedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatReceivedChloeMessage), 2, int, "%d");
+		for (bctbx_list_t *item = participantsThatReceivedChloeMessage; item; item = bctbx_list_next(item)) {
+			LinphoneParticipantImdnState *state = (LinphoneParticipantImdnState *)bctbx_list_get_data(item);
+			BC_ASSERT_GREATER(linphone_participant_imdn_state_get_state_change_time(state), initialTime, int, "%d");
+			BC_ASSERT_EQUAL(linphone_participant_imdn_state_get_state(state), LinphoneChatMessageStateDeliveredToUser, int, "%d");
+			BC_ASSERT_PTR_NOT_NULL(linphone_participant_imdn_state_get_participant(state));
+		}
+		bctbx_list_free_with_data(participantsThatReceivedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	// Marie marks the message as read, check that the state is not yet displayed on Chloe's side
 	linphone_chat_room_mark_as_read(marieCr);
 	BC_ASSERT_FALSE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	bctbx_list_t *participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 1, int, "%d");
+		bctbx_list_free_with_data(participantsThatDisplayedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	participantsThatReceivedChloeMessage = linphone_chat_message_get_participants_that_have_received(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatReceivedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatReceivedChloeMessage), 1, int, "%d");
+		bctbx_list_free_with_data(participantsThatReceivedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	// Pauline also marks the message as read, check that the state is now displayed on Chloe's side
 	linphone_chat_room_mark_as_read(paulineCr);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 2, int, "%d");
+		bctbx_list_free_with_data(participantsThatDisplayedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_received(chloeMessage));
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	linphone_chat_message_unref(chloeMessage);
 

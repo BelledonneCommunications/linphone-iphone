@@ -40,6 +40,7 @@ class Content;
 class FileTransferContent;
 class ChatMessagePrivate;
 class Participant;
+class ParticipantImdnState;
 
 class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class BasicToClientGroupChatRoom;
@@ -93,6 +94,10 @@ public:
 
 	bool getToBeStored () const;
 	void setToBeStored (bool value);
+
+	std::list<ParticipantImdnState> getParticipantsThatHaveDisplayed () const;
+	std::list<ParticipantImdnState> getParticipantsThatHaveReceived () const;
+	std::list<ParticipantImdnState> getParticipantsThatHaveNotReceived () const;
 
 	const std::list<Content *> &getContents () const;
 	void addContent (Content &content);

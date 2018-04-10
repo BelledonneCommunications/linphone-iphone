@@ -32,6 +32,7 @@
 #include "content/content-type.h"
 #include "content/content.h"
 #include "conference/participant.h"
+#include "conference/participant-imdn-state.h"
 
 // =============================================================================
 
@@ -247,9 +248,18 @@ bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *m
 	return L_GET_CPP_PTR_FROM_C_OBJECT(msg)->isFileTransferInProgress();
 }
 
-bctbx_list_t *linphone_chat_message_get_participants_in_state (const LinphoneChatMessage *msg, const LinphoneChatMessageState state) {
-	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_PRIVATE_FROM_C_OBJECT(msg)->getParticipantsInState((LinphonePrivate::ChatMessage::State) state));
+bctbx_list_t *linphone_chat_message_get_participants_that_have_displayed (const LinphoneChatMessage *msg) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getParticipantsThatHaveDisplayed());
 }
+
+bctbx_list_t *linphone_chat_message_get_participants_that_have_not_received (const LinphoneChatMessage *msg) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getParticipantsThatHaveNotReceived());
+}
+
+bctbx_list_t *linphone_chat_message_get_participants_that_have_received (const LinphoneChatMessage *msg) {
+	return L_GET_RESOLVED_C_LIST_FROM_CPP_LIST(L_GET_CPP_PTR_FROM_C_OBJECT(msg)->getParticipantsThatHaveReceived());
+}
+
 
 // =============================================================================
 // Old listener

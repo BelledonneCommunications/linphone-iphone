@@ -20,6 +20,7 @@
 #ifndef _L_MAIN_DB_H_
 #define _L_MAIN_DB_H_
 
+#include <functional>
 #include <list>
 
 #include "linphone/utils/enum-mask.h"
@@ -59,6 +60,15 @@ public:
 
 	typedef EnumMask<Filter> FilterMask;
 
+	struct ParticipantState {
+		ParticipantState (const IdentityAddress &address, ChatMessage::State state, time_t timestamp)
+			: address(address), state(state), timestamp(timestamp) {}
+
+		IdentityAddress address;
+		ChatMessage::State state = ChatMessage::State::Idle;
+		time_t timestamp = 0;
+	};
+
 	MainDb (const std::shared_ptr<Core> &core);
 
 	// ---------------------------------------------------------------------------
@@ -85,13 +95,23 @@ public:
 	// Conference chat message events.
 	// ---------------------------------------------------------------------------
 
+	using ParticipantStateRetrievalFunc = std::function<std::list<ParticipantState>(const std::shared_ptr<EventLog> &eventLog)>;
+
 	int getChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
 
+	std::list<ParticipantState> getChatMessageParticipantsThatHaveDisplayed (
+		const std::shared_ptr<EventLog> &eventLog
+	) const;
+	std::list<ParticipantState> getChatMessageParticipantsThatHaveNotReceived (
+		const std::shared_ptr<EventLog> &eventLog
+	) const;
+	std::list<ParticipantState> getChatMessageParticipantsThatHaveReceived (
+		const std::shared_ptr<EventLog> &eventLog
+	) const;
 	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
-	std::list<IdentityAddress> getChatMessageParticipantsInState (const std::shared_ptr<EventLog> &eventLog, const ChatMessage::State state) const;
 	ChatMessage::State getChatMessageParticipantState (
 		const std::shared_ptr<EventLog> &eventLog,
 		const IdentityAddress &participantAddress

@@ -89,6 +89,7 @@ set(C_API_HEADER_FILES
 	c-event-log.h
 	c-magic-search.h
 	c-participant.h
+	c-participant-imdn-state.h
 	c-search-result.h
 	c-types.h
 )
