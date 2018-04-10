@@ -410,7 +410,7 @@ typedef void (*LinphoneCoreCbsChatRoomStateChangedCb) (LinphoneCore *lc, Linphon
  * @param[in] lc LinphoneCore object
  * @param[in] result The result of the decoded qrcode
  */
-typedef void (*LinphoneCoreCbsQrcodeFoundedCb)(LinphoneCore *lc, const char *result);
+typedef void (*LinphoneCoreCbsQrcodeFoundCb)(LinphoneCore *lc, const char *result);
 
 /**
  * @}

@@ -450,12 +450,12 @@ void linphone_core_cbs_set_chat_room_state_changed (LinphoneCoreCbs *cbs, Linpho
 	cbs->vtable->chat_room_state_changed = cb;
 }
 
-LinphoneCoreCbsQrcodeFoundedCb linphone_core_cbs_get_qrcode_founded(LinphoneCoreCbs *cbs) {
-	return cbs->vtable->qrcode_founded;
+LinphoneCoreCbsQrcodeFoundCb linphone_core_cbs_get_qrcode_found(LinphoneCoreCbs *cbs) {
+	return cbs->vtable->qrcode_found;
 }
 
-void linphone_core_cbs_set_qrcode_founded(LinphoneCoreCbs *cbs, LinphoneCoreCbsQrcodeFoundedCb cb) {
-	cbs->vtable->qrcode_founded = cb;
+void linphone_core_cbs_set_qrcode_found(LinphoneCoreCbs *cbs, LinphoneCoreCbsQrcodeFoundCb cb) {
+	cbs->vtable->qrcode_found = cb;
 }
 
 void linphone_core_cbs_set_ec_calibration_result(LinphoneCoreCbs *cbs, LinphoneCoreCbsEcCalibrationResultCb cb) {
@@ -4795,9 +4795,9 @@ static void video_filter_callback(void *userdata, struct _MSFilter *f, unsigned 
 		}
 		case MS_QRCODE_READER_QRCODE_FOUND: {
 			LinphoneCore *lc = (LinphoneCore *)userdata;
-			if (linphone_core_cbs_get_qrcode_founded(linphone_core_get_current_callbacks(lc)) != NULL) {
+			if (linphone_core_cbs_get_qrcode_found(linphone_core_get_current_callbacks(lc)) != NULL) {
 				char* result = ms_strdup((const char*)arg);
-				linphone_core_notify_qrcode_founded(lc, result);
+				linphone_core_notify_qrcode_found(lc, result);
 				ms_free(result);
 			}
 			break;
@@ -5053,7 +5053,7 @@ bool_t linphone_core_qrcode_video_preview_enabled(const LinphoneCore *lc) {
 	return lc->video_conf.qrcode_decoder;
 }
 
-void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h) {
+void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const int x, const int y, const int w, const int h) {
 	if (lc) {
 		MSRect rect;
 		rect.x = x;

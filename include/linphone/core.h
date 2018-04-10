@@ -201,7 +201,7 @@ typedef struct _LinphoneCoreVTable{
 	LinphoneCoreCbsCallCreatedCb call_created;
 	LinphoneCoreCbsVersionUpdateCheckResultReceivedCb version_update_check_result_received;
 	LinphoneCoreCbsChatRoomStateChangedCb chat_room_state_changed;
-	LinphoneCoreCbsQrcodeFoundedCb qrcode_founded;
+	LinphoneCoreCbsQrcodeFoundCb qrcode_found;
 	LinphoneCoreCbsEcCalibrationResultCb ec_calibration_result;
 	LinphoneCoreCbsEcCalibrationAudioInitCb ec_calibration_audio_init;
 	LinphoneCoreCbsEcCalibrationAudioUninitCb ec_calibration_audio_uninit;
@@ -696,18 +696,18 @@ LINPHONE_PUBLIC LinphoneCoreCbsChatRoomStateChangedCb linphone_core_cbs_get_chat
 LINPHONE_PUBLIC void linphone_core_cbs_set_chat_room_state_changed (LinphoneCoreCbs *cbs, LinphoneCoreCbsChatRoomStateChangedCb cb);
 
 /**
- * Get the qrcode founded callback.
+ * Get the qrcode found callback.
  * @param[in] cbs LinphoneCoreCbs object
  * @return The current callback
  */
-LINPHONE_PUBLIC LinphoneCoreCbsQrcodeFoundedCb linphone_core_cbs_get_qrcode_founded(LinphoneCoreCbs *cbs);
+LINPHONE_PUBLIC LinphoneCoreCbsQrcodeFoundCb linphone_core_cbs_get_qrcode_found(LinphoneCoreCbs *cbs);
 
 /**
  * Set the qrcode found callback.
  * @param[in] cbs LinphoneCoreCbs object
  * @param[in] cb The callback to use
  **/
-LINPHONE_PUBLIC void linphone_core_cbs_set_qrcode_founded(LinphoneCoreCbs *cbs, LinphoneCoreCbsQrcodeFoundedCb cb);
+LINPHONE_PUBLIC void linphone_core_cbs_set_qrcode_found(LinphoneCoreCbs *cbs, LinphoneCoreCbsQrcodeFoundCb cb);
 
 /**
  * @brief Sets a callback to call each time the echo-canceler calibration is completed.
@@ -3664,7 +3664,7 @@ LINPHONE_PUBLIC void linphone_core_enable_qrcode_video_preview(LinphoneCore *lc,
  * @param[in] h height
  * @ingroup media_parameters
  */
-LINPHONE_PUBLIC void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const unsigned int x, const unsigned int y, const unsigned int w, const unsigned int h);
+LINPHONE_PUBLIC void linphone_core_set_qrcode_decode_rect(LinphoneCore *lc, const int x, const int y, const int w, const int h);
 
 /**
  * Tells whether QRCode is enabled in the preview.

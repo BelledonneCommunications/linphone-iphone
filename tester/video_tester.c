@@ -102,7 +102,7 @@ static void _decode_qrcode(const char* image_path, image_rect *rect) {
 
 	linphone_core_enable_qrcode_video_preview(lcm->lc, TRUE);
 	cbs = linphone_core_get_current_callbacks(lcm->lc);
-	linphone_core_cbs_set_qrcode_founded(cbs, qrcode_found_cb);
+	linphone_core_cbs_set_qrcode_found(cbs, qrcode_found_cb);
 	linphone_core_cbs_set_user_data(cbs, &qrcode_data);
 	if (rect) {
 		linphone_core_set_qrcode_decode_rect(lcm->lc, rect->x, rect->y, rect->w, rect->h);
