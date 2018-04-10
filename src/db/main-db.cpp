@@ -24,7 +24,7 @@
 
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
-#include "chat/chat-room/client-group-chat-room.h"
+#include "chat/chat-room/client-group-chat-room-p.h"
 #include "chat/chat-room/server-group-chat-room.h"
 #include "conference/participant-device.h"
 #include "conference/participant-p.h"
@@ -333,13 +333,23 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 	// Remove capabilities like `Proxy`.
 	const int &capabilities = chatRoom->getCapabilities() & ~ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Proxy);
 
+	unsigned int lastNotifyId = 0;
+	if (!linphone_core_conference_server_enabled(chatRoom->getCore()->getCCore())
+		&& (chatRoom->getCapabilities() & ChatRoom::Capabilities::Conference)
+	)
+		lastNotifyId = static_cast<ClientGroupChatRoomPrivate *>(chatRoom->getPrivate())->getLastNotifyId();
+
 	const string &subject = chatRoom->getSubject();
 	const int &flags = chatRoom->hasBeenLeft();
 	*dbSession.getBackendSession() << "INSERT INTO chat_room ("
-		"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject, flags"
-		") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject, :flags)",
-		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(lastUpdateTime),
-		soci::use(capabilities), soci::use(subject), soci::use(flags);
+		"  peer_sip_address_id, local_sip_address_id, creation_time,"
+		"  last_update_time, capabilities, subject, flags, last_notify_id"
+		") VALUES ("
+		"  :peerSipAddressId, :localSipAddressId, :creationTime,"
+		"  :lastUpdateTime, :capabilities, :subject, :flags, :lastNotifyId"
+		")",
+		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime),
+		soci::use(lastUpdateTime), soci::use(capabilities), soci::use(subject), soci::use(flags), soci::use(lastNotifyId);
 
 	id = dbSession.getLastInsertId();
 	if (!chatRoom->canHandleParticipants())

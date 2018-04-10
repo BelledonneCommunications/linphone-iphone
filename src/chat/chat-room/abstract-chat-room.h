@@ -41,6 +41,7 @@ class LINPHONE_PUBLIC AbstractChatRoom : public Object, public CoreAccessor, pub
 	friend class Core;
 	friend class CorePrivate;
 	friend class MainDb;
+	friend class MainDbPrivate;
 	friend class ProxyChatRoomPrivate;
 
 public:
