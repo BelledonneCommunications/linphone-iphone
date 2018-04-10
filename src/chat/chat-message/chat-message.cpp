@@ -70,7 +70,7 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState) {
+void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime) {
 	L_Q();
 
 	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
@@ -93,7 +93,7 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 
 	lInfo() << "Chat message " << this << ": moving participant '" << participantAddress.asString() << "' state to "
 		<< Utils::toString(newState);
-	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState);
+	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState, stateChangeTime);
 
 	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
 	size_t nbDisplayedStates = 0;

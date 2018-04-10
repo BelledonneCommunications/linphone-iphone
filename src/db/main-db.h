@@ -99,7 +99,8 @@ public:
 	void setChatMessageParticipantState (
 		const std::shared_ptr<EventLog> &eventLog,
 		const IdentityAddress &participantAddress,
-		ChatMessage::State state
+		ChatMessage::State state,
+		time_t stateChangeTime
 	);
 
 	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId) const;

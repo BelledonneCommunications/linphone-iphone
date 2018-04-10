@@ -61,7 +61,7 @@ private:
 	long long insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
 	long long insertChatRoomParticipant (long long chatRoomId, long long participantSipAddressId, bool isAdmin);
 	void insertChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
-	void insertChatMessageParticipant (long long chatMessageId, long long sipAddressId, int state);
+	void insertChatMessageParticipant (long long chatMessageId, long long sipAddressId, int state, time_t stateChangeTime);
 
 	long long selectSipAddressId (const std::string &sipAddress) const;
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;

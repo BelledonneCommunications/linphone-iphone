@@ -124,6 +124,31 @@ string DbSession::varcharPrimaryKeyStr (int length) const {
 	return "";
 }
 
+string DbSession::currentTimestamp () const {
+	L_D();
+
+	switch (d->backend) {
+		case DbSessionPrivate::Backend::Mysql:
+			return " CURRENT_TIMESTAMP";
+		case DbSessionPrivate::Backend::Sqlite3:
+			// Ugly hack but Sqlite3 does not allow table alteration where we add a date column using a default value
+			// of CURRENT_TIMESTAMP
+			{
+				const tm &now = Utils::getTimeTAsTm(std::time(nullptr));
+				const size_t bufSize = 22;
+				char buffer[bufSize];
+				snprintf(buffer, bufSize, "'%d-%02d-%02d %02d:%02d:%02d'",
+					now.tm_year + 1900, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
+				return buffer;
+			}
+		case DbSessionPrivate::Backend::None:
+			return "";
+	}
+
+	L_ASSERT(false);
+	return "";
+}
+
 string DbSession::timestampType () const {
 	L_D();
 
