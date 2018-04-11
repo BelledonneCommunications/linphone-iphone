@@ -924,22 +924,3 @@ int sal_lines_get_value(const char *data, const char *key, char *value, size_t v
 	}while(read!=0);
 	return FALSE;
 }
-
-#if 0
-const char *sal_op_get_entity_tag(const SalOp* op) {
-	SalOpBase* op_base = (SalOpBase*)op;
-	return op_base->entity_tag;
-}
-
-
-void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
-	SalOpBase* op_base = (SalOpBase*)op;
-	if (op_base->entity_tag != NULL){
-		ms_free(op_base->entity_tag);
-	}
-	if (entity_tag)
-		op_base->entity_tag = ms_strdup(entity_tag);
-	else
-		op_base->entity_tag = NULL;
-}
-#endif
