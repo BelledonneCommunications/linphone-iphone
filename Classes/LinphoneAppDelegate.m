@@ -74,7 +74,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
 	LOGI(@"%@", NSStringFromSelector(_cmd));
-	[self registerForNotifications];
+	
 	if (startedInBackground) {
 		startedInBackground = FALSE;
 		[PhoneMainView.instance startUp];
@@ -309,6 +309,7 @@
 	LinphoneManager *instance = [LinphoneManager instance];
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
+	[self registerForNotifications];//register for notifications must be done ASAP to give a chance for first SIP register to be done we right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
 	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 		self.del = [[ProviderDelegate alloc] init];
 		[LinphoneManager.instance setProviderDelegate:self.del];
