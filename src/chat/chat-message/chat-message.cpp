@@ -95,7 +95,7 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 
 	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
 		|| (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
-			"misc", "enable_simple_group_chat_message_state", TRUE
+			"misc", "enable_simple_group_chat_message_state", FALSE
 		))
 	) {
 		setState(newState);
