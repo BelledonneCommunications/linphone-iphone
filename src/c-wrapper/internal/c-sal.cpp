@@ -889,7 +889,7 @@ static int line_get_value(const char *input, const char *key, char *value, size_
 	size_t len;
 
 	if (!end) len = strlen(input);
-	else len = end + 1 - input;
+	else len = (size_t)(end + 1 - input);
 	*read = len;
 	strncpy(line, input, MIN(len, sizeof(line)));
 
