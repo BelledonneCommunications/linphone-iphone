@@ -165,7 +165,7 @@ void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context
 
 	if (messageIdStr && datetimeStr) {
 		shared_ptr<AbstractChatRoom> cr = imdnMessage->getChatRoom();
-		shared_ptr<ChatMessage> cm = cr->findChatMessage(messageIdStr, ChatMessage::Direction::Outgoing);
+		shared_ptr<ChatMessage> cm = cr->findChatMessage(messageIdStr);
 		const IdentityAddress &participantAddress = imdnMessage->getFromAddress().getAddressWithoutGruu();
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
