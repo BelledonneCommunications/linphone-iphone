@@ -881,46 +881,38 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 	}
 }
 
-static void remove_trailing_spaces(char *line) {
-	size_t size = strlen(line);
-	char *end = line + size - 1;
-	while (end >= line && isspace(*end)) {
-		end--;
-	}
-    *(end + 1) = '\0';
-}
-
-static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read){
-	const char *end=strchr(input,'\n');
-	char line[256]={0};
-	char key_candidate[256];
+static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read) {
+	const char *end = strchr(input, '\n');
+	char line[256] = {0};
+	char key_candidate[256]; // key_candidate array must have the same size of line array to avoid potential invalid writes
 	char *equal;
 	size_t len;
-	if (!end) len=strlen(input);
-	else len=(size_t)(end + 1 - input);
-	*read=len;
-	strncpy(line,input,MIN(len,sizeof(line)));
-	equal=strchr(line,'=');
+
+	if (!end) len = strlen(input);
+	else len = end + 1 - input;
+	*read = len;
+	strncpy(line, input, MIN(len, sizeof(line)));
+
+	equal = strchr(line, '=');
 	if (!equal) return FALSE;
-	*equal='\0';
-	if (sscanf(line,"%s",key_candidate)!=1) return FALSE;
-	if (strcasecmp(key,key_candidate)==0){
-		equal++;
-		remove_trailing_spaces(equal);
-		strncpy(value,equal,value_size-1);
-		value[value_size-1]='\0';
-		return TRUE;
-	}
-	return FALSE;
+	*equal = '\0';
+
+	if (sscanf(line, "%s", key_candidate) != 1) return FALSE;
+	if (strcasecmp(key, key_candidate) != 0) return FALSE;
+
+	equal++;
+	if (strlen(equal) >= value_size) equal[value_size - 1] = '\0';
+	if (sscanf(equal, "%s", value) != 1) return FALSE;
+	return TRUE;
 }
 
-int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
-	size_t read=0;
+int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size) {
+	size_t read = 0;
 
-	do{
-		if (line_get_value(data,key,value,value_size,&read))
+	do {
+		if (line_get_value(data, key, value, value_size, &read))
 			return TRUE;
-		data+=read;
-	}while(read!=0);
+		data += read;
+	} while (read != 0);
 	return FALSE;
 }
