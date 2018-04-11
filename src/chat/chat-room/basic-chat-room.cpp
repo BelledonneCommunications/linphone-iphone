@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 // -----------------------------------------------------------------------------
 
 BasicChatRoom::BasicChatRoom (const shared_ptr<Core> &core, const ChatRoomId &chatRoomId) :
-	ChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
+	BasicChatRoom(*new BasicChatRoomPrivate, core, chatRoomId) {}
 
 BasicChatRoom::BasicChatRoom (
 	BasicChatRoomPrivate &p,
