@@ -93,15 +93,6 @@ list<ParticipantImdnState> ChatMessagePrivate::getParticipantsByImdnState (MainD
 void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime) {
 	L_Q();
 
-	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
-		|| (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
-			"misc", "enable_simple_group_chat_message_state", FALSE
-		))
-	) {
-		setState(newState);
-		return;
-	}
-
 	if (!dbKey.isValid())
 		return;
 
@@ -114,6 +105,14 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 	lInfo() << "Chat message " << this << ": moving participant '" << participantAddress.asString() << "' state to "
 		<< Utils::toString(newState);
 	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState, stateChangeTime);
+
+	if (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
+			"misc", "enable_simple_group_chat_message_state", FALSE
+		)
+	) {
+		setState(newState);
+		return;
+	}
 
 	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
 	size_t nbDisplayedStates = 0;
