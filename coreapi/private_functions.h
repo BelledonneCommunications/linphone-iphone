@@ -558,6 +558,8 @@ LinphoneNatPolicy * linphone_config_create_nat_policy_from_section(const Linphon
 SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *im);
 void linphone_info_message_set_headers (LinphoneInfoMessage *im, const SalCustomHeader *headers);
 
+void _linphone_core_set_log_handler(OrtpLogFunc logfunc);
+
 #ifdef __cplusplus
 }
 #endif
