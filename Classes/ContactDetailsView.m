@@ -260,52 +260,50 @@
 		_contact.lastName = _tmpContact.lastName.copy;
 		while (_contact.sipAddresses.count > 0) {
 			[_contact removeSipAddressAtIndex:0];
-			
 		}
 		NSInteger nbSipAd = 0;
 		while (_tmpContact.sipAddresses.count > nbSipAd) {
 			[_contact addSipAddress:_tmpContact.sipAddresses[nbSipAd]];
 			nbSipAd++;
 		}
+		while (_contact.phones.count > 0) {
+			[_contact removePhoneNumberAtIndex:0];
+		}
+		NSInteger nbPhone = 0;
+		while (_tmpContact.phones.count > nbPhone) {
+			[_contact addPhoneNumber:_tmpContact.phones[nbPhone]];
+			nbPhone++;
+		}
+		while (_contact.emails.count > 0) {
+			[_contact removeEmailAtIndex:0];
+		}
+		NSInteger nbEmail = 0;
+		while (_tmpContact.emails.count > nbEmail) {
+			[_contact addEmail:_tmpContact.emails[nbEmail]];
+			nbEmail++;
+		}
+		self.tmpContact = NULL;
+		[self saveData];
+	}
 
-                while (_contact.phones.count > 0) {
-                  [_contact removePhoneNumberAtIndex:0];
-                }
-                NSInteger nbPhone = 0;
-                while (_tmpContact.phones.count > nbPhone) {
-                  [_contact addPhoneNumber:_tmpContact.phones[nbPhone]];
-                  nbPhone++;
-                }
-
-                while (_contact.emails.count > 0) {
-                  [_contact removeEmailAtIndex:0];
-                }
-                NSInteger nbEmail = 0;
-                while (_tmpContact.emails.count > nbEmail) {
-                  [_contact addEmail:_tmpContact.emails[nbEmail]];
-                  nbEmail++;
-                }
-                self.tmpContact = NULL;
-                [self saveData];
-        }
-        BOOL rm = TRUE;
-        for (NSString *sip in _contact.sipAddresses) {
-          if (![sip isEqualToString:@""]) {
-            rm = FALSE;
-            break;
-          }
-        }
-        if (rm) {
-          for (NSString *phone in _contact.phones) {
-            if (![phone isEqualToString:@""]) {
-              rm = FALSE;
-              break;
-            }
-          }
-        }
-        if (rm) {
-          [LinphoneManager.instance.fastAddressBook deleteContact:_contact];
-        }
+	BOOL rm = TRUE;
+	for (NSString *sip in _contact.sipAddresses) {
+		if (![sip isEqualToString:@""]) {
+			rm = FALSE;
+			break;
+		}
+	}
+	if (rm) {
+		for (NSString *phone in _contact.phones) {
+			if (![phone isEqualToString:@""]) {
+				rm = FALSE;
+				break;
+			}
+		}
+	}
+	if (rm) {
+		[LinphoneManager.instance.fastAddressBook deleteContact:_contact];
+	}
 }
 
 #pragma mark - UICompositeViewDelegate Functions
