@@ -57,3 +57,7 @@ LinphoneChatMessageState linphone_participant_imdn_state_get_state (const Linpho
 time_t linphone_participant_imdn_state_get_state_change_time (const LinphoneParticipantImdnState *state) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(state)->getStateChangeTime();
 }
+
+const LinphoneParticipantImdnState *_linphone_participant_imdn_state_from_cpp_obj (const LinphonePrivate::ParticipantImdnState &state) {
+	return L_GET_C_BACK_PTR(&state);
+}

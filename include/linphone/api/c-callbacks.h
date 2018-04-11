@@ -123,6 +123,13 @@ typedef void (*LinphoneChatMessageStateChangedCb)(LinphoneChatMessage* msg, Linp
 typedef void (*LinphoneChatMessageCbsMsgStateChangedCb)(LinphoneChatMessage* msg, LinphoneChatMessageState state);
 
 /**
+ * Call back used to notify participant IMDN state
+ * @param msg #LinphoneChatMessage object
+ * @param state #LinphoneParticipantImdnState
+ */
+typedef void (*LinphoneChatMessageCbsParticipantImdnStateChangedCb)(LinphoneChatMessage* msg, const LinphoneParticipantImdnState *state);
+
+/**
  * File transfer receive callback prototype. This function is called by the core upon an incoming File transfer is started. This function may be call several time for the same file in case of large file.
  * @param message #LinphoneChatMessage message from which the body is received.
  * @param content #LinphoneContent incoming content information

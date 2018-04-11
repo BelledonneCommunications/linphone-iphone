@@ -106,6 +106,16 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 		<< Utils::toString(newState);
 	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState, stateChangeTime);
 
+	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	if (cbs && linphone_chat_message_cbs_get_participant_imdn_state_changed(cbs)) {
+		auto participant = q->getChatRoom()->findParticipant(participantAddress);
+		ParticipantImdnState imdnState(participant, newState, stateChangeTime);
+		linphone_chat_message_cbs_get_participant_imdn_state_changed(cbs)(msg,
+			_linphone_participant_imdn_state_from_cpp_obj(imdnState)
+		);
+	}
+
 	if (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
 			"misc", "enable_simple_group_chat_message_state", FALSE
 		)

@@ -29,6 +29,7 @@
 
 #include "private_types.h"
 #include "tester_utils.h"
+#include "conference/participant-imdn-state.h"
 #include "sal/op.h"
 #include "sal/event-op.h"
 
@@ -298,6 +299,7 @@ void _linphone_chat_room_notify_participant_registration_subscription_requested(
 void _linphone_chat_room_notify_participant_registration_unsubscription_requested(LinphoneChatRoom *cr, const LinphoneAddress *participantAddr);
 void _linphone_chat_room_notify_chat_message_should_be_stored(LinphoneChatRoom *cr, LinphoneChatMessage *msg);
 void _linphone_chat_room_clear_callbacks (LinphoneChatRoom *cr);
+const LinphoneParticipantImdnState *_linphone_participant_imdn_state_from_cpp_obj (const LinphonePrivate::ParticipantImdnState &state);
 
 LinphoneToneDescription * linphone_tone_description_new(LinphoneReason reason, LinphoneToneID id, const char *audiofile);
 void linphone_tone_description_destroy(LinphoneToneDescription *obj);
