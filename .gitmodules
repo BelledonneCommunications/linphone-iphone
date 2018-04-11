@@ -49,7 +49,7 @@
 	ignore = dirty
 [submodule "submodules/externals/libxml2"]
 	path = submodules/externals/libxml2
-	url = git://git.gnome.org/libxml2
+	url = https://github.com/GNOME/libxml2.git
 	ignore = dirty
 [submodule "submodules/externals/openh264"]
 	path = submodules/externals/openh264
