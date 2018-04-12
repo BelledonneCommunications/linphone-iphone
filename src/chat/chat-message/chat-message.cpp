@@ -33,17 +33,15 @@
 #include "chat/chat-room/real-time-text-chat-room.h"
 #include "chat/modifier/cpim-chat-message-modifier.h"
 #include "chat/modifier/encryption-chat-message-modifier.h"
-#include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
+#include "chat/notification/imdn.h"
 #include "conference/participant.h"
 #include "conference/participant-imdn-state.h"
-#include "content/file-content.h"
+#include "content/content-disposition.h"
 #include "content/header/header-param.h"
-#include "content/content.h"
 #include "core/core.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
-#include "chat/notification/imdn.h"
 #include "sip-tools/sip-headers.h"
 
 #include "ortp/b64.h"
@@ -462,6 +460,7 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	shared_ptr<ChatMessage> msg = q->getChatRoom()->createChatMessage();
 
 	Content *content = new Content();
+	content->setContentDisposition(ContentDisposition::Notification);
 	content->setContentType(ContentType::Imdn);
 	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
 	msg->addContent(content);
@@ -773,13 +772,16 @@ void ChatMessagePrivate::send () {
 
 	auto msgOp = dynamic_cast<SalMessageOpInterface *>(op);
 	if (!externalBodyUrl.empty()) {
-		char *content_type = ms_strdup_printf("message/external-body;access-type=URL;URL=\"%s\"", externalBodyUrl.c_str());
-		msgOp->send_message(content_type, NULL);
-		ms_free(content_type);
-	} else if (internalContent.getContentType().isValid()) {
-		msgOp->send_message(internalContent.getContentType().asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
+		Content content;
+		ContentType contentType(ContentType::ExternalBody);
+		contentType.addParameter("access-type", "URL");
+		contentType.addParameter("URL", "\"" + externalBodyUrl + "\"");
+		content.setContentType(contentType);
+		msgOp->sendMessage(content);
 	} else {
-		msgOp->send_message(ContentType::PlainText.asString().c_str(), internalContent.getBodyAsUtf8String().c_str());
+		if (!internalContent.getContentType().isValid())
+			internalContent.setContentType(ContentType::PlainText);
+		msgOp->sendMessage(internalContent);
 	}
 
 	// Restore FileContents and remove FileTransferContents

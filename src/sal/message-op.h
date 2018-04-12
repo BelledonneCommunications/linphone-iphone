@@ -29,7 +29,7 @@ class SalMessageOp: public SalOp, public SalMessageOpInterface {
 public:
 	SalMessageOp(Sal *sal): SalOp(sal) {}
 
-	int send_message(const char* content_type, const char *msg) override;
+	int sendMessage (const Content &content) override;
 	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
 
 private:

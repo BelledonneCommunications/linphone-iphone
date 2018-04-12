@@ -20,8 +20,9 @@
 #include "address/address.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/cpim/cpim.h"
-#include "content/content-type.h"
 #include "content/content.h"
+#include "content/content-disposition.h"
+#include "content/content-type.h"
 #include "logger/logger.h"
 
 #include "cpim-chat-message-modifier.h"
@@ -59,6 +60,12 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		content = message->getContents().front();
 	}
 
+	if (content->getContentDisposition().isValid()) {
+		Cpim::GenericHeader contentDispositionHeader;
+		contentDispositionHeader.setName("Content-Disposition");
+		contentDispositionHeader.setValue(content->getContentDisposition().asString());
+		cpimMessage.addContentHeader(contentDispositionHeader);
+	}
 	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
 	contentTypeHeader.setValue(content->getContentType().asString());
@@ -100,10 +107,11 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	Cpim::Message::HeaderList l = cpimMessage->getContentHeaders();
 	if (l) {
 		for (const auto &header : *l.get()) {
-			if (header->getName() == "Content-Type") {
+			if (header->getName() == "Content-Disposition") {
+				newContent.setContentDisposition(ContentDisposition(header->getValue()));
+			} else if (header->getName() == "Content-Type") {
 				contentTypeFound = true;
 				newContent.setContentType(ContentType(header->getValue()));
-				break;
 			}
 		}
 	}

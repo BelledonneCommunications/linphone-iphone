@@ -1040,7 +1040,7 @@ void SalOp::process_incoming_message(const belle_sip_request_event_t *event) {
 			salmsg.url = ms_strdup(belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type),"URL")+1); /* skip first "*/
 			((char*)salmsg.url)[url_length-2]='\0'; /*remove trailing "*/
 		}
-		
+
 		salmsg.message_id=message_id;
 		salmsg.time=date ? belle_sip_header_date_get_time(date) : time(NULL);
 		this->root->callbacks.message_received(this,&salmsg);

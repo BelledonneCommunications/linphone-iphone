@@ -38,6 +38,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
+const ContentDisposition ContentDisposition::Notification("notification");
 const ContentDisposition ContentDisposition::RecipientList("recipient-list");
 const ContentDisposition ContentDisposition::RecipientListHistory("recipient-list-history; handling=optional");
 
