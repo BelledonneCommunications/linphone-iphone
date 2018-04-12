@@ -762,7 +762,7 @@ bool IceAgent::checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md){
 		
 		if (ice_check_list_state(cl) != ICL_Running) continue;
 
-		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
 			if (remote_candidate->addr[0] != '\0') return true;
 
