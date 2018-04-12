@@ -279,6 +279,7 @@ void MediaSessionPrivate::remoteRinging () {
 	getCurrentParams()->setPrivacy((LinphonePrivacyMask)op->get_privacy());
 	SalMediaDescription *md = op->get_final_media_description();
 	if (md) {
+		SalMediaDescription *rmd = op->get_remote_media_description();
 		/* Initialize the remote call params by invoking linphone_call_get_remote_params(). This is useful as the SDP may not be present in the 200Ok */
 		q->getRemoteParams();
 		/* Accept early media */
@@ -300,6 +301,7 @@ void MediaSessionPrivate::remoteRinging () {
 		if (listener)
 			listener->onStopRinging(q->getSharedFromThis());
 		lInfo() << "Doing early media...";
+		iceAgent->updateFromRemoteMediaDescription(localDesc, rmd, !op->is_offerer());
 		updateStreams(md, state);
 		if ((q->getCurrentParams()->getAudioDirection() == LinphoneMediaDirectionInactive) && audioStream) {
 			if (listener)
