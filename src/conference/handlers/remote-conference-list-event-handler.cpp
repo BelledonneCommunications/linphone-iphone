@@ -160,7 +160,11 @@ void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyCont
 		if (cid.empty())
 			continue;
 
-		IdentityAddress peer = addresses[cid];
+		map<string, IdentityAddress>::const_iterator it = addresses.find(cid);
+		if (it == addresses.cend())
+			continue;
+
+		IdentityAddress peer = it->second;
 		ChatRoomId id(peer, local);
 		RemoteConferenceEventHandler *handler = findHandler(id);
 		if (!handler)
@@ -209,13 +213,17 @@ map<string, IdentityAddress> RemoteConferenceListEventHandler::parseRlmi (const 
 		if (resource.getInstance().empty())
 			continue;
 
-		IdentityAddress peer(resource.getUri());
+		const string &uri = string(resource.getUri());
+		if (uri.empty())
+			continue;
+
+		IdentityAddress peer(uri);
 		for (const auto &instance : resource.getInstance()) {
-			if (!instance.getCid().present())
+			const string &cid = string(instance.getId());
+			if (cid.empty())
 				continue;
 
-			string cid = instance.getCid().get();
-			addresses[cid] = peer;
+			addresses.emplace(cid, peer);
 		}
 	}
 	return addresses;
