@@ -17,15 +17,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+
 #include "c-wrapper/internal/c-sal.h"
 #include "sal/call-op.h"
 #include "sal/message-op.h"
 #include "sal/refer-op.h"
 
-#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 #include "linphone/utils/utils.h"
-
 #include "private.h"
 #include "mediastreamer2/mediastream.h"
 #include "linphone/lpconfig.h"
@@ -42,6 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "call/call-p.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/client-group-chat-room-p.h"
 #include "chat/chat-room/server-group-chat-room-p.h"
 #include "conference/participant.h"
 #include "conference/session/call-session-p.h"
@@ -57,8 +57,14 @@ using namespace LinphonePrivate;
 static void register_failure(SalOp *op);
 
 static void call_received(SalCallOp *h) {
-	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(h->get_sal()->get_user_pointer());
+
+	if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+		h->decline(SalReasonServiceUnavailable, nullptr);
+		return;
+	}
+
+	/* Look if this INVITE is for a call that has already been notified but broken because of network failure */
 	if (L_GET_PRIVATE_FROM_C_OBJECT(lc)->inviteReplacesABrokenCall(h))
 		return;
 
@@ -108,16 +114,28 @@ static void call_received(SalCallOp *h) {
 		// TODO: handle media conference creation if the "text" feature tag is not present
 		return;
 	} else if (sal_address_has_param(h->get_remote_contact_address(), "text")) {
-		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-			ChatRoomId(IdentityAddress(h->get_to()), IdentityAddress(h->get_to()))
-		);
-		if (chatRoom) {
-			L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
-			linphone_address_unref(toAddr);
-			linphone_address_unref(fromAddr);
+		linphone_address_unref(toAddr);
+		linphone_address_unref(fromAddr);
+		if (linphone_core_conference_server_enabled(lc)) {
+			shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+				ChatRoomId(IdentityAddress(h->get_to()), IdentityAddress(h->get_to()))
+			);
+			if (chatRoom) {
+				L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->confirmJoining(h);
+			} else {
+				//invite is for an unknown chatroom
+				h->decline(SalReasonNotFound, nullptr);
+			}
 		} else {
-			//invite is for an unknown chatroom
-			h->decline(SalReasonNotFound, nullptr);
+			shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+				ChatRoomId(IdentityAddress(h->get_from()), IdentityAddress(h->get_to()))
+			);
+			if (!chatRoom) {
+				chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom(
+					L_C_TO_STRING(h->get_subject()), h->get_remote_contact(), h->get_remote_body(), false
+				);
+			}
+			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->confirmJoining(h);
 		}
 		return;
 	} else {
@@ -202,7 +220,8 @@ static void call_rejected(SalCallOp *h){
 static void call_ringing(SalOp *h) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(h->get_user_pointer());
 	if (!session) return;
-	L_GET_PRIVATE(session)->remoteRinging();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->remoteRinging();
 }
 
 /*
@@ -216,7 +235,8 @@ static void call_accepted(SalOp *op) {
 		ms_warning("call_accepted: CallSession no longer exists");
 		return;
 	}
-	L_GET_PRIVATE(session)->accepted();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->accepted();
 }
 
 /* this callback is called when an incoming re-INVITE/ SIP UPDATE modifies the session*/
@@ -226,7 +246,8 @@ static void call_updating(SalOp *op, bool_t is_update) {
 		ms_warning("call_updating: CallSession no longer exists");
 		return;
 	}
-	L_GET_PRIVATE(session)->updating(!!is_update);
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->updating(!!is_update);
 }
 
 
@@ -236,7 +257,8 @@ static void call_ack_received(SalOp *op, SalCustomHeader *ack) {
 		ms_warning("call_ack_received(): no CallSession for which an ack is expected");
 		return;
 	}
-	L_GET_PRIVATE(session)->ackReceived(reinterpret_cast<LinphoneHeaders *>(ack));
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->ackReceived(reinterpret_cast<LinphoneHeaders *>(ack));
 }
 
 
@@ -246,25 +268,26 @@ static void call_ack_being_sent(SalOp *op, SalCustomHeader *ack) {
 		ms_warning("call_ack_being_sent(): no CallSession for which an ack is supposed to be sent");
 		return;
 	}
-	L_GET_PRIVATE(session)->ackBeingSent(reinterpret_cast<LinphoneHeaders *>(ack));
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->ackBeingSent(reinterpret_cast<LinphoneHeaders *>(ack));
 }
 
 static void call_terminated(SalOp *op, const char *from) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session)
 		return;
-	L_GET_PRIVATE(session)->terminated();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->terminated();
 }
 
 static void call_failure(SalOp *op) {
-	shared_ptr<LinphonePrivate::CallSession> session;
-	if (op->get_user_pointer())
-		session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer())->getSharedFromThis();
+	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session) {
 		ms_warning("Failure reported on already terminated CallSession");
 		return;
 	}
-	L_GET_PRIVATE(session)->failure();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->failure();
 }
 
 static void call_released(SalOp *op) {
@@ -274,7 +297,8 @@ static void call_released(SalOp *op) {
 		 * when declining an incoming call with busy because maximum number of calls is reached. */
 		return;
 	}
-	L_GET_PRIVATE(session)->setState(LinphonePrivate::CallSession::State::Released, "Call released");
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->setState(LinphonePrivate::CallSession::State::Released, "Call released");
 }
 
 static void call_cancel_done(SalOp *op) {
@@ -283,7 +307,8 @@ static void call_cancel_done(SalOp *op) {
 		ms_warning("Cancel done reported on already terminated CallSession");
 		return;
 	}
-	L_GET_PRIVATE(session)->cancelDone();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->cancelDone();
 }
 
 static void auth_failure(SalOp *op, SalAuthInfo* info) {
@@ -345,24 +370,26 @@ static void vfu_request(SalOp *op) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session)
 		return;
-	LinphonePrivate::MediaSession *mediaSession = dynamic_cast<LinphonePrivate::MediaSession *>(session);
-	if (!mediaSession) {
+	auto sessionRef = session->getSharedFromThis();
+	auto mediaSessionRef = dynamic_pointer_cast<LinphonePrivate::MediaSession>(sessionRef);
+	if (!mediaSessionRef) {
 		ms_warning("VFU request but no MediaSession!");
 		return;
 	}
-	L_GET_PRIVATE(mediaSession)->sendVfu();
+	L_GET_PRIVATE(mediaSessionRef)->sendVfu();
 }
 
 static void dtmf_received(SalOp *op, char dtmf) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session)
 		return;
-	LinphonePrivate::MediaSession *mediaSession = dynamic_cast<LinphonePrivate::MediaSession *>(session);
-	if (!mediaSession) {
+	auto sessionRef = session->getSharedFromThis();
+	auto mediaSessionRef = dynamic_pointer_cast<LinphonePrivate::MediaSession>(sessionRef);
+	if (!mediaSessionRef) {
 		ms_warning("DTMF received but no MediaSession!");
 		return;
 	}
-	L_GET_PRIVATE(mediaSession)->dtmfReceived(dtmf);
+	L_GET_PRIVATE(mediaSessionRef)->dtmfReceived(dtmf);
 }
 
 static void call_refer_received(SalOp *op, const SalAddress *referTo) {
@@ -373,7 +400,8 @@ static void call_refer_received(SalOp *op, const SalAddress *referTo) {
 	if (referToAddr.isValid())
 		method = referToAddr.getMethodParam();
 	if (session && (method.empty() || (method == "INVITE"))) {
-		L_GET_PRIVATE(session)->referred(referToAddr);
+		auto sessionRef = session->getSharedFromThis();
+		L_GET_PRIVATE(sessionRef)->referred(referToAddr);
 	} else {
 		LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
 		linphone_core_notify_refer_received(lc, addrStr);
@@ -383,6 +411,12 @@ static void call_refer_received(SalOp *op, const SalAddress *referTo) {
 
 static void message_received(SalOp *op, const SalMessage *msg){
 	LinphoneCore *lc=(LinphoneCore *)op->get_sal()->get_user_pointer();
+
+	if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+		static_cast<SalMessageOp *>(op)->reply(SalReasonServiceUnavailable);
+		return;
+	}
+
 	LinphoneCall *call=(LinphoneCall*)op->get_user_pointer();
 	LinphoneReason reason = lc->chat_deny_code;
 	if (reason == LinphoneReasonNone) {
@@ -415,6 +449,10 @@ static void notify_presence(SalOp *op, SalSubscribeStatus ss, SalPresenceModel *
 
 static void subscribe_presence_received(SalPresenceOp *op, const char *from){
 	LinphoneCore *lc=(LinphoneCore *)op->get_sal()->get_user_pointer();
+	if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+		op->decline(SalReasonServiceUnavailable);
+		return;
+	}
 	linphone_subscription_new(lc,op,from);
 }
 
@@ -429,7 +467,8 @@ static void ping_reply(SalOp *op) {
 		ms_warning("Ping reply without CallSession attached...");
 		return;
 	}
-	L_GET_PRIVATE(session)->pingReply();
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->pingReply();
 }
 
 static bool_t fill_auth_info_with_client_certificate(LinphoneCore *lc, SalAuthInfo* sai) {
@@ -532,6 +571,7 @@ static void notify_refer(SalOp *op, SalReferStatus status) {
 		ms_warning("Receiving notify_refer for unknown CallSession");
 		return;
 	}
+	auto sessionRef = session->getSharedFromThis();
 	LinphonePrivate::CallSession::State cstate;
 	switch (status) {
 		case SalReferTrying:
@@ -545,9 +585,9 @@ static void notify_refer(SalOp *op, SalReferStatus status) {
 			cstate = LinphonePrivate::CallSession::State::Error;
 			break;
 	}
-	L_GET_PRIVATE(session)->setTransferState(cstate);
+	L_GET_PRIVATE(sessionRef)->setTransferState(cstate);
 	if (cstate == LinphonePrivate::CallSession::State::Connected)
-		session->terminate(); // Automatically terminate the call as the transfer is complete
+		sessionRef->terminate(); // Automatically terminate the call as the transfer is complete
 }
 
 static LinphoneChatMessageState chatStatusSal2Linphone(SalMessageDeliveryStatus status){
@@ -576,7 +616,8 @@ static void info_received(SalOp *op, SalBodyHandler *body_handler) {
 	LinphonePrivate::CallSession *session = reinterpret_cast<LinphonePrivate::CallSession *>(op->get_user_pointer());
 	if (!session)
 		return;
-	L_GET_PRIVATE(session)->infoReceived(body_handler);
+	auto sessionRef = session->getSharedFromThis();
+	L_GET_PRIVATE(sessionRef)->infoReceived(body_handler);
 }
 
 static void subscribe_response(SalOp *op, SalSubscribeStatus status, int will_retry){
@@ -622,6 +663,11 @@ static void notify(SalSubscribeOp *op, SalSubscribeStatus st, const char *eventn
 static void subscribe_received(SalSubscribeOp *op, const char *eventname, const SalBodyHandler *body_handler){
 	LinphoneEvent *lev=(LinphoneEvent*)op->get_user_pointer();
 	LinphoneCore *lc=(LinphoneCore *)op->get_sal()->get_user_pointer();
+
+	if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+		op->decline(SalReasonServiceUnavailable);
+		return;
+	}
 
 	if (lev==NULL) {
 		lev=linphone_event_new_with_op(lc,op,LinphoneSubscriptionIncoming,eventname);
@@ -701,6 +747,12 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 		bctbx_free(refer_uri);
 		if (addr.isValid()) {
 			LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
+
+			if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+				static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+				return;
+			}
+
 			if (addr.hasUriParam("method") && (addr.getUriParamValue("method") == "BYE")) {
 				if (linphone_core_conference_server_enabled(lc)) {
 					// Removal of a participant at the server side
@@ -731,34 +783,51 @@ static void refer_received(SalOp *op, const SalAddress *refer_to){
 					}
 					static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
 				}
-			} else if (addr.hasParam("admin")) {
-				LinphoneChatRoom *cr = L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-					ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
-				));
-				if (cr) {
-					Address fromAddr(op->get_from());
-					std::shared_ptr<Participant> participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(fromAddr);
-					if (!participant || !participant->isAdmin()) {
-						static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
-						return;
+			} else {
+				if (linphone_core_conference_server_enabled(lc)) {
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+						ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))
+					);
+					LinphoneChatRoom *cr = L_GET_C_BACK_PTR(chatRoom);
+					if (cr) {
+						Address fromAddr(op->get_from());
+						shared_ptr<Participant> participant = chatRoom->findParticipant(fromAddr);
+						if (!participant || !participant->isAdmin()) {
+							static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+							return;
+						}
+						if (addr.hasParam("admin")) {
+							participant = chatRoom->findParticipant(addr);
+							if (participant) {
+								bool value = Utils::stob(addr.getParamValue("admin"));
+								chatRoom->setParticipantAdminStatus(participant, value);
+								static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+								return;
+							}
+						} else {
+							participant = L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->findFilteredParticipant(addr);
+							if (!participant) {
+								list<IdentityAddress> identAddresses;
+								identAddresses.push_back(addr);
+								L_GET_PRIVATE(static_pointer_cast<ServerGroupChatRoom>(chatRoom))->checkCompatibleParticipants(
+									IdentityAddress(op->get_remote_contact()),
+									identAddresses
+								);
+								static_cast<SalReferOp *>(op)->reply(SalReasonNone);
+								return;
+							}
+						}
 					}
-					participant = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->findParticipant(addr);
-					if (participant) {
-						bool value = Utils::stob(addr.getParamValue("admin"));
-						L_GET_CPP_PTR_FROM_C_OBJECT(cr)->setParticipantAdminStatus(participant, value);
-					}
+				} else {
+					shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
+						ChatRoomId(addr, IdentityAddress(op->get_to()))
+					);
+					if (!chatRoom)
+						chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), Content(), false);
+					chatRoom->join();
 					static_cast<SalReferOp *>(op)->reply(SalReasonNone);
 					return;
 				}
-			} else {
-				shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(
-					ChatRoomId(addr, IdentityAddress(op->get_to()))
-				);
-				if (!chatRoom)
-					chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom("", addr.asString(), false);
-				chatRoom->join();
-				static_cast<SalReferOp *>(op)->reply(SalReasonNone);
-				return;
 			}
 		}
 	}

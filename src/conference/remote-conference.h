@@ -38,9 +38,7 @@ public:
 
 	/* ConferenceInterface */
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
-
-	std::string getResourceLists (const std::list<IdentityAddress> &addresses) const;
+	void removeParticipant (const std::shared_ptr<Participant> &participant) override;
 
 protected:
 	/* ConferenceListener */

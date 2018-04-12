@@ -30,6 +30,7 @@ class ChatRoomPrivate;
 
 class LINPHONE_PUBLIC ChatRoom : public AbstractChatRoom {
 public:
+	friend class ChatMessagePrivate;
 	friend class ProxyChatRoomPrivate;
 
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
@@ -65,7 +66,8 @@ public:
 	std::shared_ptr<ChatMessage> createChatMessage () override;
 	std::shared_ptr<ChatMessage> createChatMessage (const std::string &text) override;
 
-	std::shared_ptr<ChatMessage> createFileTransferMessage (Content *initialContent) override;
+	// TODO: Remove LinphoneContent by LinphonePrivate::Content.
+	std::shared_ptr<ChatMessage> createFileTransferMessage (const LinphoneContent *initialContent) override;
 
 	std::shared_ptr<ChatMessage> findChatMessage (const std::string &messageId) const override;
 	std::shared_ptr<ChatMessage> findChatMessage (

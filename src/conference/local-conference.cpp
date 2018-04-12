@@ -17,14 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "content/content.h"
-#include "content/content-disposition.h"
-#include "content/content-type.h"
 #include "handlers/local-conference-event-handler.h"
 #include "local-conference-p.h"
 #include "logger/logger.h"
 #include "participant-p.h"
-#include "xml/resource-lists.h"
 
 // =============================================================================
 
@@ -59,7 +55,7 @@ void LocalConference::addParticipant (const IdentityAddress &addr, const CallSes
 		d->activeParticipant = participant;
 }
 
-void LocalConference::removeParticipant (const shared_ptr<const Participant> &participant) {
+void LocalConference::removeParticipant (const shared_ptr<Participant> &participant) {
 	L_D();
 	for (const auto &p : d->participants) {
 		if (participant->getAddress() == p->getAddress()) {
@@ -67,27 +63,6 @@ void LocalConference::removeParticipant (const shared_ptr<const Participant> &pa
 			return;
 		}
 	}
-}
-
-list<IdentityAddress> LocalConference::parseResourceLists (const Content &content) {
-	if ((content.getContentType() == ContentType::ResourceLists)
-		&& (content.getContentDisposition() == ContentDisposition::RecipientList)
-	) {
-		istringstream data(content.getBodyAsString());
-		unique_ptr<Xsd::ResourceLists::ResourceLists> rl(Xsd::ResourceLists::parseResourceLists(
-			data,
-			Xsd::XmlSchema::Flags::dont_validate
-		));
-		list<IdentityAddress> addresses;
-		for (const auto &l : rl->getList()) {
-			for (const auto &entry : l.getEntry()) {
-				IdentityAddress addr(entry.getUri());
-				addresses.push_back(move(addr));
-			}
-		}
-		return addresses;
-	}
-	return list<IdentityAddress>();
 }
 
 LINPHONE_END_NAMESPACE

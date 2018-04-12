@@ -25,7 +25,6 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "linphone/sipsetup.h"
-
 #include "mediastreamer2/mediastream.h"
 
 #include "enum.h"

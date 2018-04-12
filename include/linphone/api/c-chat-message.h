@@ -105,7 +105,7 @@ LINPHONE_PUBLIC const LinphoneAddress* linphone_chat_message_get_to_address(Linp
 
 /**
  * Get the content type of a chat message.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @return The content type of the chat message
  */
 LINPHONE_PUBLIC const char * linphone_chat_message_get_content_type(LinphoneChatMessage *msg);
@@ -113,7 +113,7 @@ LINPHONE_PUBLIC const char * linphone_chat_message_get_content_type(LinphoneChat
 /**
  * Set the content type of a chat message.
  * This content type must match a content that is text representable, such as text/plain, text/html or image/svg+xml.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @param[in] content_type The new content type of the chat message
  */
 LINPHONE_PUBLIC void linphone_chat_message_set_content_type(LinphoneChatMessage *msg, const char *content_type);
@@ -128,7 +128,7 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text(LinphoneChatMessage* 
 /**
  * Get the message identifier.
  * It is used to identify a message so that it can be notified as delivered and/or displayed.
- * @param[in] cm LinphoneChatMessage object
+ * @param[in] cm #LinphoneChatMessage object
  * @return The message identifier.
  */
 LINPHONE_PUBLIC const char* linphone_chat_message_get_message_id(const LinphoneChatMessage *msg);
@@ -160,7 +160,7 @@ LINPHONE_PUBLIC LinphoneChatRoom* linphone_chat_message_get_chat_room(const Linp
 
 /**
  * Get the path to the file to read from or write to during the file transfer.
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  * @return The path to the file to use for the file transfer.
  */
 LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(LinphoneChatMessage *msg);
@@ -169,7 +169,7 @@ LINPHONE_PUBLIC const char * linphone_chat_message_get_file_transfer_filepath(Li
 
 /**
  * Get if a chat message is to be stored.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @return Whether or not the message is to be stored
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_get_to_be_stored(const LinphoneChatMessage *message);
@@ -177,7 +177,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_get_to_be_stored(const LinphoneChat
 /**
  * Set if a chat message is to be stored.
  * This content type must match a content that is text representable, such as text/plain, text/html or image/svg+xml.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @param[in] to_be_stored Whether or not the chat message is to be stored
  */
 LINPHONE_PUBLIC void linphone_chat_message_set_to_be_stored(LinphoneChatMessage *message, bool_t to_be_stored);
@@ -208,7 +208,7 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_external_body_url(const Li
 /**
  * Linphone message can carry external body as defined by rfc2017
  *
- * @param message a LinphoneChatMessage
+ * @param message a #LinphoneChatMessage
  * @param url ex: access-type=URL; URL="http://www.foo.com/file"
  */
 LINPHONE_PUBLIC void linphone_chat_message_set_external_body_url(LinphoneChatMessage* message,const char* url);
@@ -217,20 +217,20 @@ LINPHONE_PUBLIC void linphone_chat_message_set_external_body_url(LinphoneChatMes
  * Get the file_transfer_information (used by call backs to recover informations during a rcs file transfer)
  *
  * @param message #LinphoneChatMessage
- * @return a pointer to the LinphoneContent structure or NULL if not present.
+ * @return a pointer to the #LinphoneContent structure or NULL if not present.
  */
 LINPHONE_PUBLIC LinphoneContent* linphone_chat_message_get_file_transfer_information(LinphoneChatMessage* message);
 
 /**
  * Return whether or not a chat message is a file tranfer.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @return Whether or not the message is a file tranfer
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer(LinphoneChatMessage *message);
 
 /**
  * Return whether or not a chat message is a text.
- * @param[in] message LinphoneChatMessage object
+ * @param[in] message #LinphoneChatMessage object
  * @return Whether or not the message is a text
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(LinphoneChatMessage *message);
@@ -239,7 +239,7 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(LinphoneChatMessage *messag
  * Start the download of the file from remote server
  *
  * @param message #LinphoneChatMessage
- * @param status_cb LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
+ * @param status_cb #LinphoneChatMessageStateChangeCb status callback invoked when file is downloaded or could not be downloaded
  * @param ud user data
  * @deprecated Use linphone_chat_message_download_file() instead.
  * @donotwrap
@@ -247,8 +247,8 @@ LINPHONE_PUBLIC bool_t linphone_chat_message_is_text(LinphoneChatMessage *messag
 LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_start_file_download(LinphoneChatMessage* message, LinphoneChatMessageStateChangedCb status_cb, void* ud);
 
 /**
- * Start the download of the file referenced in a LinphoneChatMessage from remote server.
- * @param[in] message LinphoneChatMessage object.
+ * Start the download of the file referenced in a #LinphoneChatMessage from remote server.
+ * @param[in] message #LinphoneChatMessage object.
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_download_file(LinphoneChatMessage *message);
 
@@ -260,13 +260,13 @@ LINPHONE_PUBLIC void linphone_chat_message_cancel_file_transfer(LinphoneChatMess
 
 /**
  * Send a chat message.
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  */
 LINPHONE_PUBLIC void linphone_chat_message_send (LinphoneChatMessage *msg);
 
 /**
  * Resend a chat message if it is in the 'not delivered' state for whatever reason.
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  * @deprecated Use linphone_chat_message_send instead.
  * @donotwrap
  */
@@ -313,14 +313,14 @@ LINPHONE_PUBLIC LinphoneReason linphone_chat_message_get_reason(LinphoneChatMess
 
 /**
  * Get full details about delivery error of a chat message.
- * @param msg a LinphoneChatMessage
- * @return a LinphoneErrorInfo describing the details.
+ * @param msg a #LinphoneChatMessage
+ * @return a #LinphoneErrorInfo describing the details.
 **/
 LINPHONE_PUBLIC const LinphoneErrorInfo *linphone_chat_message_get_error_info(const LinphoneChatMessage *msg);
 
 /**
  * Set the path to the file to read from or write to during the file transfer.
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  * @param[in] filepath The path to the file to use for the file transfer.
  */
 LINPHONE_PUBLIC void linphone_chat_message_set_file_transfer_filepath(LinphoneChatMessage *msg, const char *filepath);
@@ -328,37 +328,37 @@ LINPHONE_PUBLIC void linphone_chat_message_set_file_transfer_filepath(LinphoneCh
 /**
  * Fulfill a chat message char by char. Message linked to a Real Time Text Call send char in realtime following RFC 4103/T.140
  * To commit a message, use #linphone_chat_room_send_message
- * @param[in] msg LinphoneChatMessage
+ * @param[in] msg #LinphoneChatMessage
  * @param[in] character T.140 char
  * @returns 0 if succeed.
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_put_char(LinphoneChatMessage *msg,uint32_t character);
 
 /**
- * Get the LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
- * @param[in] msg LinphoneChatMessage object
- * @return The LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
+ * Get the #LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
+ * @param[in] msg #LinphoneChatMessage object
+ * @return The #LinphoneChatMessageCbs object associated with the LinphoneChatMessage.
  */
 LINPHONE_PUBLIC LinphoneChatMessageCbs * linphone_chat_message_get_callbacks(const LinphoneChatMessage *msg);
 
 /**
  * Adds a content to the ChatMessage
- * @param[in] msg LinphoneChatMessage object
- * @param[in] c_content LinphoneContent object
+ * @param[in] msg #LinphoneChatMessage object
+ * @param[in] c_content #LinphoneContent object
  */
 LINPHONE_PUBLIC void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const char *c_content);
 
 /**
  * Returns true if the chat message has a text content
- * @param[in] msg LinphoneChatMessage object
+ * @param[in] msg #LinphoneChatMessage object
  * @return true if it has one, false otherwise
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg);
 
 /**
  * Gets the text content if available as a string
- * @param[in] msg LinphoneChatMessage object
- * @return the LinphoneContent buffer if available, null otherwise
+ * @param[in] msg #LinphoneChatMessage object
+ * @return the #LinphoneContent buffer if available, null otherwise
  */
 LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const LinphoneChatMessage *msg);
 
@@ -369,7 +369,26 @@ LINPHONE_PUBLIC const char* linphone_chat_message_get_text_content(const Linphon
  */
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer_in_progress(LinphoneChatMessage *msg);
 
-LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_in_state (const LinphoneChatMessage *msg, const LinphoneChatMessageState state);
+/**
+ * Gets the list of participants that displayed this message and the time at which they did.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_displayed (const LinphoneChatMessage *msg);
+
+/**
+ * Gets the list of participants that did not receive this message.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_not_received (const LinphoneChatMessage *msg);
+
+/**
+ * Gets the list of participants that received this message and the time at which they did.
+ * @param[in] msg LinphoneChatMessage object
+ * @return \bctbx_list{LinphoneParticipantImdnState}
+ */
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_received (const LinphoneChatMessage *msg);
 
 /**
  * @}

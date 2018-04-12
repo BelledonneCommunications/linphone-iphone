@@ -18,12 +18,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "linphone/api/c-content.h"
 #include "linphone/core.h"
-#include "linphone/lpconfig.h"
 #include "linphone/sipsetup.h"
-
+#include "linphone/lpconfig.h"
+#include "linphone/logging.h"
 #include "private.h"
+#include "logging-private.h"
 #include "quality_reporting.h"
 #include "lime.h"
 #include "conference_private.h"
@@ -486,7 +486,7 @@ const LinphoneAddress *linphone_core_get_current_call_remote_address(struct _Lin
 
 static void linphone_core_log_collection_handler(const char *domain, OrtpLogLevel level, const char *fmt, va_list args);
 
-void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
+void _linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	liblinphone_user_log_func = logfunc;
 	if (liblinphone_current_log_func == linphone_core_log_collection_handler) {
 		ms_message("There is already a log collection handler, keep it");
@@ -495,48 +495,32 @@ void linphone_core_set_log_handler(OrtpLogFunc logfunc) {
 	}
 }
 
+void linphone_core_set_log_handler(OrtpLogFunc logfunc){
+	_linphone_core_set_log_handler(logfunc);
+}
+
 void linphone_core_set_log_file(FILE *file) {
 	if (file == NULL) file = stdout;
-	linphone_core_set_log_handler(NULL);
+	_linphone_core_set_log_handler(NULL);
 	bctbx_set_log_file(file); /*gather everythings*/
 }
 
 void linphone_core_set_log_level(OrtpLogLevel loglevel) {
-	unsigned int mask = loglevel;
-	switch (loglevel) {
-		case ORTP_TRACE:
-		case ORTP_DEBUG:
-			mask |= ORTP_DEBUG;
-			BCTBX_NO_BREAK;
-		case ORTP_MESSAGE:
-			mask |= ORTP_MESSAGE;
-			BCTBX_NO_BREAK;
-		case ORTP_WARNING:
-			mask |= ORTP_WARNING;
-			BCTBX_NO_BREAK;
-		case ORTP_ERROR:
-			mask |= ORTP_ERROR;
-			BCTBX_NO_BREAK;
-		case ORTP_FATAL:
-			mask |= ORTP_FATAL;
-			break;
-		case ORTP_LOGLEV_END:
-			break;
-	}
-	linphone_core_set_log_level_mask(mask);
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	linphone_logging_service_set_log_level(log_service, _bctbx_log_level_to_linphone_log_level(loglevel));
 }
 
-void linphone_core_set_log_level_mask(unsigned int loglevel) {
-	bctbx_set_log_level_mask("bctbx", (int)loglevel);
-	bctbx_set_log_level_mask("ortp", (int)loglevel);
-	bctbx_set_log_level_mask("mediastreamer", (int)loglevel);
-	bctbx_set_log_level_mask("bzrtp", (int)loglevel); /*need something to set log level for all domains*/
-	bctbx_set_log_level_mask("linphone", (int)loglevel);
-	sal_set_log_level((OrtpLogLevel)loglevel);
+
+void linphone_core_set_log_level_mask(unsigned int mask) {
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	linphone_logging_service_set_log_level_mask(log_service, _bctbx_log_mask_to_linphone_log_mask(mask));
 }
+
 unsigned int linphone_core_get_log_level_mask(void) {
-	return bctbx_get_log_level_mask(ORTP_LOG_DOMAIN);
+	LinphoneLoggingService *log_service = linphone_logging_service_get();
+	return linphone_logging_service_get_log_level_mask(log_service);
 }
+
 static int _open_log_collection_file_with_idx(int idx) {
 	struct stat statbuf;
 	char *log_filename;
@@ -639,8 +623,8 @@ static void linphone_core_log_collection_handler(const char *domain, OrtpLogLeve
 	}
 	if (liblinphone_log_collection_file) {
 		ortp_mutex_lock(&liblinphone_log_collection_mutex);
-		ret = fprintf(liblinphone_log_collection_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i %s %s\n",
-			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), lname, msg);
+		ret = fprintf(liblinphone_log_collection_file,"%i-%.2i-%.2i %.2i:%.2i:%.2i:%.3i [%s] %s %s\n",
+			1900 + lt->tm_year, lt->tm_mon + 1, lt->tm_mday, lt->tm_hour, lt->tm_min, lt->tm_sec, (int)(tp.tv_usec / 1000), domain, lname, msg);
 		fflush(liblinphone_log_collection_file);
 		if (ret > 0) {
 			liblinphone_log_collection_file_size += (size_t)ret;
@@ -1061,13 +1045,13 @@ void linphone_core_reset_log_collection(void) {
 
 void linphone_core_enable_logs(FILE *file){
 	if (file==NULL) file=stdout;
-	ortp_set_log_file(file);
+	linphone_core_set_log_file(file);
 	linphone_core_set_log_level(ORTP_MESSAGE);
 }
 
 void linphone_core_enable_logs_with_cb(OrtpLogFunc logfunc){
+	_linphone_core_set_log_handler(logfunc);
 	linphone_core_set_log_level(ORTP_MESSAGE);
-	linphone_core_set_log_handler(logfunc);
 }
 
 void linphone_core_disable_logs(void){
@@ -1877,6 +1861,15 @@ int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
 	return lc->sal->get_transport_timeout();
 }
 
+bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc) {
+	return lc->dns_set_by_app;
+}
+
+void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *servers){
+	lc->dns_set_by_app = (servers != NULL);
+	linphone_core_set_dns_servers(lc, servers);
+}
+
 void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers){
 	lc->sal->set_dns_servers(servers);
 }
@@ -2302,6 +2295,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
 
+	getPlatformHelpers(lc)->setDnsServers();
+
 	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
 	linphone_friend_list_set_display_name(list, "_default");
 	linphone_core_add_friend_list(lc, list);
@@ -2342,17 +2337,6 @@ void linphone_core_start (LinphoneCore *lc) {
 		linphone_configuring_terminated(lc, LinphoneConfiguringSkipped, NULL);
 	}
 }
-
-#ifdef __ANDROID__
-static void _linphone_core_set_platform_helpers(LinphoneCore *lc, LinphonePrivate::PlatformHelpers *ph){
-	if (lc->platform_helper) delete getPlatformHelpers(lc);
-	lc->platform_helper = ph;
-}
-
-static void _linphone_core_set_system_context(LinphoneCore *lc, void *system_context){
-	_linphone_core_set_platform_helpers(lc, LinphonePrivate::createAndroidPlatformHelpers(lc, system_context));
-}
-#endif
 
 LinphoneCore *_linphone_core_new_with_config(LinphoneCoreCbs *cbs, struct _LpConfig *config, void *userdata, void *system_context, bool_t automatically_start) {
 	LinphoneCore *core = L_INIT(Core);
@@ -5579,7 +5563,7 @@ typedef enum{
 	LinphoneLocalPlayer
 }LinphoneAudioResourceType;
 
-static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype){
+static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype, MSSndCard *card) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	AudioStream *stream=NULL;
 	RingStream *ringstream;
@@ -5593,9 +5577,17 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 		if (rtype==LinphoneLocalPlayer) return stream->local_player;
 		return NULL;
 	}
-	if (lc->ringstream==NULL){
+	if (card || lc->ringstream == NULL) {
+		if (lc->ringstream)
+			ring_stop(lc->ringstream);
+
 		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1f);
-		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		MSSndCard *ringcard=lc->sound_conf.lsd_card
+			? lc->sound_conf.lsd_card
+			: card
+				? card
+				: lc->sound_conf.ring_sndcard;
+
 		if (ringcard == NULL)
 			return NULL;
 
@@ -5612,12 +5604,15 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 	return NULL;
 }
 
-static MSFilter *get_dtmf_gen(LinphoneCore *lc){
-	return get_audio_resource(lc,LinphoneToneGenerator);
+static MSFilter *get_dtmf_gen(LinphoneCore *lc, MSSndCard *card) {
+	return get_audio_resource(lc,LinphoneToneGenerator, card);
 }
 
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
-	MSFilter *f=get_dtmf_gen(lc);
+	MSSndCard *card = linphone_core_in_call(lc)
+		? lc->sound_conf.play_sndcard
+		: lc->sound_conf.ring_sndcard;
+	MSFilter *f=get_dtmf_gen(lc, card);
 	if (f==NULL){
 		ms_error("No dtmf generator at this time !");
 		return;
@@ -5628,8 +5623,8 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
 }
 
-LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
-	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer);
+LinphoneStatus _linphone_core_play_local(LinphoneCore *lc, const char *audiofile, MSSndCard *card) {
+	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer, card);
 	int loopms=-1;
 	if (!f) return -1;
 	ms_filter_call_method(f,MS_PLAYER_SET_LOOP,&loopms);
@@ -5640,11 +5635,15 @@ LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile)
 	return 0;
 }
 
+LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile) {
+	return _linphone_core_play_local(lc, audiofile, NULL);
+}
+
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 	if (linphone_core_tone_indications_enabled(lc)){
 		const char *audiofile=linphone_core_get_tone_file(lc,toneid);
 		if (!audiofile){
-			MSFilter *f=get_dtmf_gen(lc);
+			MSFilter *f=get_dtmf_gen(lc, lc->sound_conf.play_sndcard);
 			MSDtmfGenCustomTone def;
 			if (f==NULL){
 				ms_error("No dtmf generator at this time !");
@@ -5680,7 +5679,7 @@ void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 			if (def.duration>0)
 				ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 		}else{
-			linphone_core_play_local(lc,audiofile);
+			_linphone_core_play_local(lc,audiofile, lc->sound_conf.play_sndcard);
 		}
 	}
 }
@@ -5690,16 +5689,16 @@ void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason)
 		LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
 		if (tone){
 			if (tone->audiofile){
-				linphone_core_play_local(lc,tone->audiofile);
+				_linphone_core_play_local(lc, tone->audiofile, lc->sound_conf.play_sndcard);
 			}else if (tone->toneid != LinphoneToneUndefined){
-				linphone_core_play_named_tone(lc,tone->toneid);
+				linphone_core_play_named_tone(lc, tone->toneid);
 			}
 		}
 	}
 }
 
 void linphone_core_stop_dtmf(LinphoneCore *lc){
-	MSFilter *f=get_dtmf_gen(lc);
+	MSFilter *f=get_dtmf_gen(lc, NULL);
 	if (f!=NULL)
 		ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
 }
@@ -6344,7 +6343,7 @@ bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
 }
 
 void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
-	get_dtmf_gen(lc); /*make sure ring stream is started*/
+	get_dtmf_gen(lc, lc->sound_conf.ring_sndcard); /*make sure ring stream is started*/
 	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
 }
 

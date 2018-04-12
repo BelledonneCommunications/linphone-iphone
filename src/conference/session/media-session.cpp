@@ -1997,7 +1997,7 @@ void MediaSessionPrivate::applyJitterBufferParams (RtpSession *session, Linphone
 	JBParameters params;
 	rtp_session_get_jitter_buffer_params(session, &params);
 	params.min_size = lp_config_get_int(config, "rtp", "jitter_buffer_min_size", 40);
-	params.max_size = lp_config_get_int(config, "rtp", "jitter_buffer_max_size", 250);
+	params.max_size = lp_config_get_int(config, "rtp", "jitter_buffer_max_size", 500);
 	params.max_packets = params.max_size * 200 / 1000; /* Allow 200 packet per seconds, quite large */
 	const char *algo = lp_config_get_string(config, "rtp", "jitter_buffer_algorithm", "rls");
 	params.buffer_algorithm = jitterBufferNameToAlgo(algo ? algo : "");

@@ -31,8 +31,12 @@ public interface LinphoneCall {
 	/**
 	 * LinphoneCall listener
 	 */
-	interface LinphoneCallListener {
+	public interface LinphoneCallListener {
 		void onNextVideoFrameDecoded(LinphoneCall call);
+		/**
+		 * Invoked when a TMMBR RTCP packet is received.
+		 */
+		void tmmbrReceived(LinphoneCall call, int streamIndex, int bitrate);
 	}
 
 	/**

@@ -47,6 +47,7 @@ public:
 	std::string primaryKeyRefStr (const std::string &type = "INT") const;
 	std::string varcharPrimaryKeyStr (int length) const;
 
+	std::string currentTimestamp () const;
 	std::string timestampType () const;
 
 	std::string noLimitValue () const;

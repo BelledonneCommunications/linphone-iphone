@@ -35,7 +35,6 @@ LINPHONE_BEGIN_NAMESPACE
 class ContentDisposition;
 class ContentType;
 class ContentPrivate;
-class Header;
 
 class LINPHONE_PUBLIC Content : public ClonableObject, public AppDataContainer {
 public:
@@ -75,14 +74,14 @@ public:
 	bool isEmpty () const;
 
 	virtual bool isFile () const;
-	virtual bool isFileTransfer () const;
 
-	const std::list<Header> &getHeaders () const;
-	const Header &getHeader (const std::string &headerName) const;
+	const std::list<std::pair<std::string, std::string>> &getHeaders () const;
 	void addHeader (const std::string &headerName, const std::string &headerValue);
-	void addHeader (const Header &header);
 	void removeHeader (const std::string &headerName);
-	std::list<Header>::const_iterator findHeader (const std::string &headerName) const;
+	std::list<std::pair<std::string, std::string>>::const_iterator findHeader (const std::string &headerName) const;
+
+	// TODO: Remove me later.
+	virtual LinphoneContent *toLinphoneContent () const;
 
 protected:
 	explicit Content (ContentPrivate &p);

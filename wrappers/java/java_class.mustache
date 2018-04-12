@@ -95,6 +95,11 @@ public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphon
 
     abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
 
+    /**
+      * Gets the LoggingService singleton
+      */
+    abstract public LoggingService getLoggingService();
+
     abstract public void setDebugMode(boolean enable, String tag);
 
     abstract public Core getCore(long ptr);
@@ -177,6 +182,12 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
 	}
 
     @Override
+	public LoggingService getLoggingService() {
+		LoggingService l = new LoggingServiceImpl(0);
+		return l.get();
+	}
+
+    @Override
     public native void setDebugMode(boolean enable, String tag);
 {{/isLinphoneFactory}}
 
@@ -185,7 +196,7 @@ class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#is
     @Override
     synchronized public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}} {
         {{#hasCoreAccessor}}{{#isNotGetCore}}synchronized(core) { {{/isNotGetCore}}{{/hasCoreAccessor}}
-        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}(nativePtr{{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}({{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
         if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult);{{/exception}}{{#hasCoreAccessor}}{{#isNotGetCore}}
         }{{/isNotGetCore}}{{/hasCoreAccessor}}
     }

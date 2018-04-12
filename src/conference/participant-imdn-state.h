@@ -1,5 +1,5 @@
 /*
- * header-p.h
+ * participant-imdn-state.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,27 +17,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_HEADER_P_H_
-#define _L_HEADER_P_H_
+#ifndef _L_PARTICIPANT_IMDN_STATE_H_
+#define _L_PARTICIPANT_IMDN_STATE_H_
 
-#include <list>
-
-#include "object/clonable-object-p.h"
-
-#include "header.h"
+#include "chat/chat-message/chat-message.h"
+#include "object/clonable-object.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class HeaderPrivate : public ClonableObjectPrivate {
+class Participant;
+class ParticipantImdnStatePrivate;
+
+class ParticipantImdnState : public ClonableObject {
+public:
+	ParticipantImdnState (const std::shared_ptr<Participant> &participant, ChatMessage::State state, time_t stateChangeTime);
+	ParticipantImdnState (const ParticipantImdnState &other);
+
+	std::shared_ptr<Participant> getParticipant () const;
+	ChatMessage::State getState () const;
+	time_t getStateChangeTime () const;
+
 private:
-	std::string name;
-	std::string value;
-	std::list<HeaderParam> parameters;
-	L_DECLARE_PUBLIC(Header);
+	L_DECLARE_PRIVATE(ParticipantImdnState);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_HEADER_P_H_
+#endif // ifndef _L_PARTICIPANT_IMDN_STATE_H_

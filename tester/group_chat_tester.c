@@ -69,6 +69,7 @@ static void chat_room_participant_device_added (LinphoneChatRoom *cr, const Linp
 static void chat_room_state_changed (LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
 	LinphoneCore *core = linphone_chat_room_get_core(cr);
 	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
+	ms_message("ChatRoom [%p] state changed: %d", cr, newState);
 	switch (newState) {
 		case LinphoneChatRoomStateNone:
 			break;
@@ -105,6 +106,12 @@ static void chat_room_subject_changed (LinphoneChatRoom *cr, const LinphoneEvent
 	manager->stat.number_of_subject_changed++;
 }
 
+static void chat_room_all_information_received (LinphoneChatRoom *cr) {
+	LinphoneCore *core = linphone_chat_room_get_core(cr);
+	LinphoneCoreManager *manager = (LinphoneCoreManager *)linphone_core_get_user_data(core);
+	manager->stat.number_of_LinphoneChatRoomAllInformationReceived++;
+}
+
 static void core_chat_room_state_changed (LinphoneCore *core, LinphoneChatRoom *cr, LinphoneChatRoomState state) {
 	if (state == LinphoneChatRoomStateInstantiated) {
 		LinphoneChatRoomCbs *cbs = linphone_factory_create_chat_room_cbs(linphone_factory_get());
@@ -115,6 +122,7 @@ static void core_chat_room_state_changed (LinphoneCore *core, LinphoneChatRoom *
 		linphone_chat_room_cbs_set_state_changed(cbs, chat_room_state_changed);
 		linphone_chat_room_cbs_set_subject_changed(cbs, chat_room_subject_changed);
 		linphone_chat_room_cbs_set_participant_device_added(cbs, chat_room_participant_device_added);
+		linphone_chat_room_cbs_set_all_information_received(cbs, chat_room_all_information_received);
 		linphone_chat_room_add_callbacks(cr, cbs);
 		linphone_chat_room_cbs_unref(cbs);
 	}
@@ -180,9 +188,9 @@ static void _send_file_plus_text(LinphoneChatRoom* cr, const char *sendFilepath,
 
 	cbs = linphone_chat_message_get_callbacks(msg);
 	linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
-	linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
 	linphone_chat_message_cbs_set_file_transfer_progress_indication(cbs, file_transfer_progress_indication);
-	linphone_chat_room_send_chat_message(cr, msg);
+	linphone_chat_message_send(msg);
 	linphone_content_unref(content);
 	linphone_chat_message_unref(msg);
 }
@@ -255,6 +263,7 @@ static void start_core_for_conference(bctbx_list_t *coreManagerList) {
 static LinphoneChatRoom * check_creation_chat_room_client_side(bctbx_list_t *lcs, LinphoneCoreManager *lcm, stats *initialStats, const LinphoneAddress *confAddr, const char* subject, int participantNumber, bool_t isAdmin) {
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreationPending, initialStats->number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreated, initialStats->number_of_LinphoneChatRoomStateCreated + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomAllInformationReceived, initialStats->number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 	char *deviceIdentity = linphone_core_get_device_identity(lcm->lc);
 	LinphoneAddress *localAddr = linphone_address_new(deviceIdentity);
 	bctbx_free(deviceIdentity);
@@ -273,7 +282,7 @@ static LinphoneChatRoom * check_creation_chat_room_client_side(bctbx_list_t *lcs
 }
 
 static LinphoneChatRoom * create_chat_room_client_side(bctbx_list_t *lcs, LinphoneCoreManager *lcm, stats *initialStats, bctbx_list_t *participantsAddresses, const char* initialSubject, int expectedParticipantSize) {
-	LinphoneChatRoom *chatRoom = linphone_core_create_client_group_chat_room(lcm->lc, initialSubject);
+	LinphoneChatRoom *chatRoom = linphone_core_create_client_group_chat_room(lcm->lc, initialSubject, FALSE);
 	if (!chatRoom) return NULL;
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateInstantiated, initialStats->number_of_LinphoneChatRoomStateInstantiated + 1, 100));
@@ -284,6 +293,7 @@ static LinphoneChatRoom * create_chat_room_client_side(bctbx_list_t *lcs, Linpho
 	// Check that the chat room is correctly created on Marie's side and that the participants are added
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreationPending, initialStats->number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomStateCreated, initialStats->number_of_LinphoneChatRoomStateCreated + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &lcm->stat.number_of_LinphoneChatRoomAllInformationReceived, initialStats->number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(chatRoom),
 		(expectedParticipantSize >= 0) ? expectedParticipantSize : (int)bctbx_list_size(participantsAddresses),
 		int, "%d");
@@ -1528,13 +1538,14 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, laure);
 		bctbx_list_t *tmpCoresList = init_core_for_conference(tmpCoresManagerList);
 		bctbx_list_free(tmpCoresManagerList);
-		initialLaureStats = laure->stat;
 		linphone_core_manager_start(laure, TRUE);
 		coresList = bctbx_list_concat(coresList, tmpCoresList);
 		coresManagerList = bctbx_list_append(coresManagerList, laure);
 	}
 	if (!offline_when_reinvited)
 		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateTerminated, initialLaureStats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+	wait_for_list(coresList,0, 1, 2000);
+	initialLaureStats = laure->stat;
 
 	// Marie adds Laure to the chat room
 	participantsAddresses = bctbx_list_append(participantsAddresses, laureAddr);
@@ -1550,16 +1561,13 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, laure);
 		bctbx_list_t *tmpCoresList = init_core_for_conference(tmpCoresManagerList);
 		bctbx_list_free(tmpCoresManagerList);
-		initialLaureStats = laure->stat;
 		linphone_core_manager_start(laure, TRUE);
 		coresList = bctbx_list_concat(coresList, tmpCoresList);
 		coresManagerList = bctbx_list_append(coresManagerList, laure);
-		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
-		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 2, 5000));
-	} else {
-		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
-		BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 1, 5000));
 	}
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreationPending, initialLaureStats.number_of_LinphoneChatRoomStateCreationPending + 1, 5000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomStateCreated, initialLaureStats.number_of_LinphoneChatRoomStateCreated + 1, 5000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &laure->stat.number_of_LinphoneChatRoomAllInformationReceived, initialLaureStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 5000));
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 2, int, "%d");
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 2, int, "%d");
 	char *laureIdentity = linphone_core_get_device_identity(laure->lc);
@@ -2131,7 +2139,7 @@ static void group_chat_room_fallback_to_basic_chat_room (void) {
 	stats initialPaulineStats = pauline->stat;
 
 	// Marie creates a new group chat room
-	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Fallback");
+	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Fallback", TRUE);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateInstantiated, initialMarieStats.number_of_LinphoneChatRoomStateInstantiated + 1, 100));
 
 	// Add participants
@@ -2187,13 +2195,13 @@ static void group_chat_room_creation_fails_if_invited_participants_dont_support_
 	stats initialMarieStats = marie->stat;
 
 	// Marie creates a new group chat room
-	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Hello there");
+	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Hello there", FALSE);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateInstantiated, initialMarieStats.number_of_LinphoneChatRoomStateInstantiated + 1, 100));
 
 	// Add participants
 	linphone_chat_room_add_participants(marieCr, participantsAddresses);
 
-	// Check that the group chat room creation fails and that a fallback to a basic chat room is done
+	// Check that the group chat room creation fails
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationFailed, initialMarieStats.number_of_LinphoneChatRoomStateCreationFailed + 1, 10000));
 	bctbx_list_free_with_data(participantsAddresses, (bctbx_list_free_func)linphone_address_unref);
@@ -2301,12 +2309,14 @@ static void group_chat_room_migrate_from_basic_chat_room (void) {
 		linphone_chat_message_unref(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomAllInformationReceived, initialMarieStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marieCr) & LinphoneChatRoomCapabilitiesConference);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 2, int, "%d");
 
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreationPending, initialPaulineStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreated, initialPaulineStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomAllInformationReceived, initialPaulineStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(paulineCr) & LinphoneChatRoomCapabilitiesConference);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 1, int, "%d");
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 1000));
@@ -2357,7 +2367,7 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 	stats initialPaulineStats = pauline->stat;
 
 	// Marie creates a new group chat room
-	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Fallback");
+	LinphoneChatRoom *marieCr = linphone_core_create_client_group_chat_room(marie->lc, "Fallback", TRUE);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateInstantiated, initialMarieStats.number_of_LinphoneChatRoomStateInstantiated + 1, 100));
 
 	// Add participants
@@ -2440,12 +2450,14 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 		linphone_chat_message_send(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 2, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomAllInformationReceived, initialMarieStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marieCr) & LinphoneChatRoomCapabilitiesConference);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(marieCr), 1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 5, int, "%d");
 
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreationPending, initialPaulineStats.number_of_LinphoneChatRoomStateCreationPending + 1, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateCreated, initialPaulineStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
+		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomAllInformationReceived, initialPaulineStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(paulineCr) & LinphoneChatRoomCapabilitiesConference);
 		BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(paulineCr), 1, int, "%d");
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 3, 1000));
@@ -2792,10 +2804,10 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_w
 static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2 (void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
-	/*create a second device for marie, but it is inactive after registration in this test*/
+	// Create a second device for Marie, but it is inactive after registration in this test
 	LinphoneCoreManager *marie2 = linphone_core_manager_create("marie_rc");
-	/*Create a seconde device for pauline, but again inactivate after registration*/
-	LinphoneCoreManager *pauline2 = linphone_core_manager_create("marie_rc");
+	// Create a second device for Pauline, but again inactivate it after registration
+	LinphoneCoreManager *pauline2 = linphone_core_manager_create("pauline_rc");
 	bctbx_list_t *coresManagerList = NULL;
 	bctbx_list_t *participantsAddresses = NULL;
 	coresManagerList = bctbx_list_append(coresManagerList, marie);
@@ -2807,6 +2819,8 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 	participantsAddresses = bctbx_list_append(participantsAddresses, linphone_address_new(linphone_core_get_identity(pauline->lc)));
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
+	stats initialMarie2Stats = marie2->stat;
+	stats initialPauline2Stats = pauline2->stat;
 
 	linphone_core_set_network_reachable(marie2->lc, FALSE);
 	linphone_core_set_network_reachable(pauline2->lc, FALSE);
@@ -2852,13 +2866,22 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 10000));
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), textMessage);
 		linphone_chat_message_unref(message);
-
-		// Clean db from chat room
-		linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	}
-	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
 
-	wait_for_list(coresList, 0, 1, 2000);
+	// Clean db from chat room
+	linphone_core_set_network_reachable(marie2->lc, TRUE);
+	linphone_core_set_network_reachable(pauline2->lc, TRUE);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie2->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarie2Stats.number_of_LinphoneChatRoomStateCreationPending + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie2->stat.number_of_LinphoneChatRoomStateCreated, initialMarie2Stats.number_of_LinphoneChatRoomStateCreated + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline2->stat.number_of_LinphoneChatRoomStateCreationPending, initialPauline2Stats.number_of_LinphoneChatRoomStateCreationPending + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline2->stat.number_of_LinphoneChatRoomStateCreated, initialPauline2Stats.number_of_LinphoneChatRoomStateCreated + 1, 3000));
+	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
+	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateTerminated, initialMarieStats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneChatRoomStateTerminated, initialPaulineStats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie2->stat.number_of_LinphoneChatRoomStateTerminated, initialMarie2Stats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline2->stat.number_of_LinphoneChatRoomStateTerminated, initialPauline2Stats.number_of_LinphoneChatRoomStateTerminated + 1, 3000));
+
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(marie->lc), 0, int,"%i");
 	BC_ASSERT_EQUAL(linphone_core_get_call_history_size(pauline->lc), 0, int,"%i");
 	BC_ASSERT_PTR_NULL(linphone_core_get_call_logs(marie->lc));
@@ -2867,8 +2890,6 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 	linphone_address_unref(confAddr);
 	bctbx_list_free(coresList);
 	bctbx_list_free(coresManagerList);
-	linphone_core_set_network_reachable(marie2->lc, TRUE);
-	linphone_core_set_network_reachable(pauline2->lc, TRUE);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie2);
@@ -2947,6 +2968,9 @@ static void group_chat_room_join_one_to_one_chat_room_with_a_new_device (void) {
 	linphone_chat_message_unref(message);
 
 	// Clean db from chat room
+	int previousNbRegistrationOk = marie1->stat.number_of_LinphoneRegistrationOk;
+	linphone_core_set_network_reachable(marie1->lc, TRUE);
+	wait_for_until(marie1->lc, NULL, &marie1->stat.number_of_LinphoneRegistrationOk, previousNbRegistrationOk + 1, 2000);
 	linphone_core_manager_delete_chat_room(marie2, marie2Cr, coresList);
 	linphone_core_delete_chat_room(marie1->lc, marie1Cr);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
@@ -2986,6 +3010,7 @@ static void group_chat_room_new_unique_one_to_one_chat_room_after_both_participa
 	// Both participants delete the chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
 	linphone_core_manager_delete_chat_room(pauline, paulineCr, coresList);
+	wait_for_list(coresList, 0, 1, 3000);
 
 	// Marie re-creates a chat room with Pauline
 	initialMarieStats = marie->stat;
@@ -3031,6 +3056,7 @@ static void imdn_for_group_chat_room (void) {
 	stats initialMarieStats = marie->stat;
 	stats initialPaulineStats = pauline->stat;
 	stats initialChloeStats = chloe->stat;
+	time_t initialTime = ms_time(NULL);
 
 	// Enable IMDN
 	linphone_im_notif_policy_enable_all(linphone_core_get_im_notif_policy(marie->lc));
@@ -3065,15 +3091,46 @@ static void imdn_for_group_chat_room (void) {
 	linphone_address_unref(chloeAddr);
 
 	// Check that the message has been delivered to Marie and Pauline
-	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 1000));
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_displayed(chloeMessage));
+	bctbx_list_t *participantsThatReceivedChloeMessage = linphone_chat_message_get_participants_that_have_received(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatReceivedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatReceivedChloeMessage), 2, int, "%d");
+		for (bctbx_list_t *item = participantsThatReceivedChloeMessage; item; item = bctbx_list_next(item)) {
+			LinphoneParticipantImdnState *state = (LinphoneParticipantImdnState *)bctbx_list_get_data(item);
+			BC_ASSERT_GREATER(linphone_participant_imdn_state_get_state_change_time(state), initialTime, int, "%d");
+			BC_ASSERT_EQUAL(linphone_participant_imdn_state_get_state(state), LinphoneChatMessageStateDeliveredToUser, int, "%d");
+			BC_ASSERT_PTR_NOT_NULL(linphone_participant_imdn_state_get_participant(state));
+		}
+		bctbx_list_free_with_data(participantsThatReceivedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	// Marie marks the message as read, check that the state is not yet displayed on Chloe's side
 	linphone_chat_room_mark_as_read(marieCr);
 	BC_ASSERT_FALSE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	bctbx_list_t *participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 1, int, "%d");
+		bctbx_list_free_with_data(participantsThatDisplayedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	participantsThatReceivedChloeMessage = linphone_chat_message_get_participants_that_have_received(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatReceivedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatReceivedChloeMessage), 1, int, "%d");
+		bctbx_list_free_with_data(participantsThatReceivedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	// Pauline also marks the message as read, check that the state is now displayed on Chloe's side
 	linphone_chat_room_mark_as_read(paulineCr);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
+	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
+		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 2, int, "%d");
+		bctbx_list_free_with_data(participantsThatDisplayedChloeMessage, (bctbx_list_free_func)linphone_participant_imdn_state_unref);
+	}
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_received(chloeMessage));
+	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_not_received(chloeMessage));
 
 	linphone_chat_message_unref(chloeMessage);
 
@@ -3272,7 +3329,7 @@ test_t group_chat_tests[] = {
 	TEST_NO_TAG("Unique one-to-one chatroom", group_chat_room_unique_one_to_one_chat_room),
 	TEST_NO_TAG("Unique one-to-one chatroom recreated from message", group_chat_room_unique_one_to_one_chat_room_recreated_from_message),
 	TEST_ONE_TAG("Unique one-to-one chatroom recreated from message with app restart", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_with_app_restart, "LeaksMemory"),
-	TEST_NO_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device),
+	TEST_ONE_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device, "LeaksMemory"),
 	TEST_NO_TAG("New unique one-to-one chatroom after both participants left", group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left),
 	TEST_NO_TAG("Unique one-to-one chatroom re-created from the party that deleted it, with inactive devices", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2),
 	TEST_NO_TAG("IMDN for group chat room", imdn_for_group_chat_room),

@@ -40,6 +40,7 @@ class Content;
 class FileTransferContent;
 class ChatMessagePrivate;
 class Participant;
+class ParticipantImdnState;
 
 class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class BasicToClientGroupChatRoom;
@@ -94,9 +95,13 @@ public:
 	bool getToBeStored () const;
 	void setToBeStored (bool value);
 
+	std::list<ParticipantImdnState> getParticipantsThatHaveDisplayed () const;
+	std::list<ParticipantImdnState> getParticipantsThatHaveReceived () const;
+	std::list<ParticipantImdnState> getParticipantsThatHaveNotReceived () const;
+
 	const std::list<Content *> &getContents () const;
-	void addContent (Content *content);
-	void removeContent (Content *content);
+	void addContent (Content &content);
+	void removeContent (const Content &content);
 
 	const Content &getInternalContent () const;
 	void setInternalContent (const Content &content);
@@ -106,7 +111,7 @@ public:
 	void addCustomHeader (const std::string &headerName, const std::string &headerValue);
 	void removeCustomHeader (const std::string &headerName);
 
-	bool downloadFile (FileTransferContent *content);
+	bool downloadFile (FileTransferContent &content);
 	bool isFileTransferInProgress();
 
 private:

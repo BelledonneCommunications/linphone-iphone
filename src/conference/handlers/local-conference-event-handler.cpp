@@ -19,7 +19,6 @@
 
 #include <ctime>
 
-#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 
 #include "conference/local-conference.h"
@@ -107,7 +106,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 		static_cast<unsigned int>(notifyId)
 	);
 
-	list<Content *> contents;
+	list<Content> contents;
 	for (const auto &eventLog : events) {
 		Content *content = new Content();
 		content->setContentType(ContentType("application","conference-info"));

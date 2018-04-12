@@ -44,13 +44,13 @@ public:
 	};
 
 	ParticipantDevice ();
-	explicit ParticipantDevice (const Participant *participant, const IdentityAddress &gruu);
+	explicit ParticipantDevice (Participant *participant, const IdentityAddress &gruu);
 	virtual ~ParticipantDevice ();
 
 	bool operator== (const ParticipantDevice &device) const;
 
 	inline const IdentityAddress &getAddress () const { return mGruu; }
-	const Participant *getParticipant () const { return mParticipant; }
+	Participant *getParticipant () const { return mParticipant; }
 	inline std::shared_ptr<CallSession> getSession () const { return mSession; }
 	inline void setSession (std::shared_ptr<CallSession> session) { mSession = session; }
 	inline State getState () const { return mState; }
@@ -63,7 +63,7 @@ public:
 	bool isValid () const { return mGruu.isValid(); }
 
 private:
-	const Participant *mParticipant = nullptr;
+	Participant *mParticipant = nullptr;
 	IdentityAddress mGruu;
 	std::shared_ptr<CallSession> mSession;
 	LinphoneEvent *mConferenceSubscribeEvent = nullptr;

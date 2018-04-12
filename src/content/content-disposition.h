@@ -35,6 +35,7 @@ public:
 
 	ContentDisposition &operator= (const ContentDisposition &other);
 
+	bool weakEqual (const ContentDisposition &other) const;
 	bool operator== (const ContentDisposition &other) const;
 	bool operator!= (const ContentDisposition &other) const;
 

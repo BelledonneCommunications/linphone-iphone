@@ -35,6 +35,7 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb participantAdminStatusChangedCb;
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsSubjectChangedCb subjectChangedCb;
+	LinphoneChatRoomCbsAllInformationReceivedCb allInformationReceivedCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
 	LinphoneChatRoomCbsChatMessageReceivedCb chatMessageReceivedCb;
 	LinphoneChatRoomCbsChatMessageSentCb chatMessageSentCb;
@@ -174,6 +175,14 @@ LinphoneChatRoomCbsParticipantDeviceRemovedCb linphone_chat_room_cbs_get_partici
 
 void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceRemovedCb cb) {
 	cbs->participantDeviceRemovedCb = cb;
+}
+
+LinphoneChatRoomCbsAllInformationReceivedCb linphone_chat_room_cbs_get_all_information_received (const LinphoneChatRoomCbs *cbs) {
+	return cbs->allInformationReceivedCb;
+}
+
+void linphone_chat_room_cbs_set_all_information_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsAllInformationReceivedCb cb) {
+	cbs->allInformationReceivedCb = cb;
 }
 
 LinphoneChatRoomCbsConferenceAddressGenerationCb linphone_chat_room_cbs_get_conference_address_generation (const LinphoneChatRoomCbs *cbs) {

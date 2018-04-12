@@ -35,7 +35,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_ringtoneplayer_start(MSFactory *factory,
 /**
  * Start a ringtone player
  * @param factory A MSFactory object
- * @param rp LinphoneRingtonePlayer object
+ * @param rp #LinphoneRingtonePlayer object
  * @param card unused argument
  * @param ringtone path to the ringtone to play
  * @param loop_pause_ms pause interval in milliseconds to be observed between end of play and resuming at start. A value of -1 disables loop mode

@@ -84,6 +84,8 @@ void ServerGroupChatRoomPrivate::addParticipantDevice (const IdentityAddress &pa
 
 void ServerGroupChatRoomPrivate::addCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &participantCompatible) {}
 
+void ServerGroupChatRoomPrivate::checkCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &addressesToCheck) {}
+
 // -----------------------------------------------------------------------------
 
 LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
@@ -91,6 +93,8 @@ LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const 
 }
 
 // -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::byeDevice (const shared_ptr<ParticipantDevice> &device) {}
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
 
@@ -112,7 +116,7 @@ void ServerGroupChatRoomPrivate::removeNonPresentParticipants (const list <Ident
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const shared_ptr<const CallSession> &session) {}
+void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const shared_ptr<ParticipantDevice> &device) {}
 
 // -----------------------------------------------------------------------------
 
@@ -187,7 +191,7 @@ void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSes
 
 void ServerGroupChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {}
 
-void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
+void ServerGroupChatRoom::removeParticipant (const shared_ptr<Participant> &participant) {}
 
 void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
 

@@ -34,7 +34,7 @@ extern "C" {
 
 /**
  * Send a subscription previously created by linphone_core_create_subscribe().
- * @param ev the LinphoneEvent
+ * @param ev the #LinphoneEvent
  * @param body optional content to attach with the subscription.
  * @return 0 if successful, -1 otherwise.
 **/
@@ -42,14 +42,14 @@ LINPHONE_PUBLIC LinphoneStatus linphone_event_send_subscribe(LinphoneEvent *ev, 
 
 /**
  * Update (refresh) an outgoing subscription, changing the body.
- * @param lev a LinphoneEvent
+ * @param lev a #LinphoneEvent
  * @param body an optional body to include in the subscription update, may be NULL.
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_event_update_subscribe(LinphoneEvent *lev, const LinphoneContent *body);
 
 /**
  * Refresh an outgoing subscription keeping the same body.
- * @param lev LinphoneEvent object.
+ * @param lev #LinphoneEvent object.
  * @return 0 if successful, -1 otherwise.
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_event_refresh_subscribe(LinphoneEvent *lev);
@@ -89,7 +89,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_event_update_publish(LinphoneEvent *lev,
 
 /**
  * Refresh an outgoing publish keeping the same body.
- * @param lev LinphoneEvent object.
+ * @param lev #LinphoneEvent object.
  * @return 0 if successful, -1 otherwise.
  */
 LINPHONE_PUBLIC LinphoneStatus linphone_event_refresh_publish(LinphoneEvent *lev);
@@ -141,7 +141,7 @@ LINPHONE_PUBLIC void *linphone_event_get_user_data(const LinphoneEvent *ev);
 
 /**
  * Add a custom header to an outgoing susbscription or publish.
- * @param ev the LinphoneEvent
+ * @param ev the #LinphoneEvent
  * @param name header's name
  * @param value the header's value.
 **/
@@ -149,7 +149,7 @@ LINPHONE_PUBLIC void linphone_event_add_custom_header(LinphoneEvent *ev, const c
 
 /**
  * Obtain the value of a given header for an incoming subscription.
- * @param ev the LinphoneEvent
+ * @param ev the #LinphoneEvent
  * @param name header's name
  * @return the header's value or NULL if such header doesn't exist.
 **/
@@ -157,14 +157,14 @@ LINPHONE_PUBLIC const char *linphone_event_get_custom_header(LinphoneEvent *ev, 
 
 /**
  * Terminate an incoming or outgoing subscription that was previously acccepted, or a previous publication.
- * The LinphoneEvent shall not be used anymore after this operation, unless the application explicitely took a reference on the object with
+ * The #LinphoneEvent shall not be used anymore after this operation, unless the application explicitely took a reference on the object with
  * linphone_event_ref().
 **/
 LINPHONE_PUBLIC void linphone_event_terminate(LinphoneEvent *lev);
 
 /**
  * Increase reference count of LinphoneEvent.
- * By default LinphoneEvents created by the core are owned by the core only.
+ * By default #LinphoneEvents created by the core are owned by the core only.
  * An application that wishes to retain a reference to it must call linphone_event_ref().
  * When this reference is no longer needed, linphone_event_unref() must be called.
  *
@@ -194,13 +194,13 @@ LINPHONE_PUBLIC const LinphoneAddress *linphone_event_get_resource(const Linphon
 
 /**
  * Get the "contact" address of the subscription.
- * @param[in] lev LinphoneEvent object
+ * @param[in] lev #LinphoneEvent object
  * @return The "contact" address of the subscription
  */
 LINPHONE_PUBLIC const LinphoneAddress *linphone_event_get_remote_contact (const LinphoneEvent *lev);
 
 /**
- * Returns back pointer to the LinphoneCore that created this LinphoneEvent
+ * Returns back pointer to the #LinphoneCore that created this #LinphoneEvent
 **/
 LINPHONE_PUBLIC LinphoneCore *linphone_event_get_core(const LinphoneEvent *lev);
 
