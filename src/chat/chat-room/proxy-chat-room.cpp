@@ -173,7 +173,7 @@ shared_ptr<ChatMessage> ProxyChatRoom::createChatMessage (const string &text) {
 	return d->chatRoom->createChatMessage(text);
 }
 
-shared_ptr<ChatMessage> ProxyChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
+shared_ptr<ChatMessage> ProxyChatRoom::createFileTransferMessage (Content *initialContent) {
 	L_D();
 	return d->chatRoom->createFileTransferMessage(initialContent);
 }

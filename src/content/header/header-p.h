@@ -1,5 +1,5 @@
 /*
- * content-manager.h
+ * header-p.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,24 +17,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_CONTENT_MANAGER_H_
-#define _L_CONTENT_MANAGER_H_
+#ifndef _L_HEADER_P_H_
+#define _L_HEADER_P_H_
 
 #include <list>
 
-#include "linphone/utils/general.h"
+#include "object/clonable-object-p.h"
+
+#include "header.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class Content;
-
-namespace ContentManager {
-	std::list<Content> multipartToContentList (const Content &content);
-	Content contentListToMultipart (const std::list<Content *> &contents);
-}
+class HeaderPrivate : public ClonableObjectPrivate {
+private:
+	std::string name;
+	std::string value;
+	std::list<HeaderParam> parameters;
+	L_DECLARE_PUBLIC(Header);
+};
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_CONTENT_MANAGER_H_
+#endif // ifndef _L_HEADER_P_H_

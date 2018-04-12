@@ -423,12 +423,12 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
 		content->setBody("Hello Part 2");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 	}
 	marieMessage->send();
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
-	BC_ASSERT_STRING_EQUAL(marieMessage->getInternalContent().getContentType().asString().c_str(), ""); // Internal content is cleaned after message is sent or received
+	BC_ASSERT_TRUE(marieMessage->getInternalContent().getContentType().isEmpty()); // Internal content is cleaned after message is sent or received
 
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	if (pauline->stat.last_received_chat_message != NULL) {

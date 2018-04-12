@@ -606,7 +606,7 @@ void liblinphone_tester_add_suites() {
 	bc_tester_add_suite(&stun_test_suite);
 	bc_tester_add_suite(&event_test_suite);
 	bc_tester_add_suite(&conference_event_test_suite);
-	bc_tester_add_suite(&content_manager_test_suite);
+	bc_tester_add_suite(&contents_test_suite);
 	bc_tester_add_suite(&flexisip_test_suite);
 	bc_tester_add_suite(&remote_provisioning_test_suite);
 	bc_tester_add_suite(&quality_reporting_test_suite);

@@ -53,13 +53,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType(ContentType("video/mkv"));
 		content->setFilePath(send_filepath);
 		content->setFileName("sintel_trailer_opus_h264.mkv");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
-		content->setBody("Hello Part 1");
-		marieMessage->addContent(*content);
+		content->setBody("Hello part 1");
+		marieMessage->addContent(content);
 	}
 
 	if (second_file_transfer) {
@@ -68,13 +68,13 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		content->setContentType(ContentType("file/vcf"));
 		content->setFilePath(send_filepath);
 		content->setFileName("vcards.vcf");
-		marieMessage->addContent(*content);
+		marieMessage->addContent(content);
 		bc_free(send_filepath);
 	} else {
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
-		content->setBody("Hello Part 2");
-		marieMessage->addContent(*content);
+		content->setBody("Hello part 2");
+		marieMessage->addContent(content);
 	}
 
 	linphone_core_set_file_transfer_server(marie->lc,"https://www.linphone.org:444/lft.php");
@@ -82,7 +82,20 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneMessageReceived,1));
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
-	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), "multipart/mixed");
+
+	if (first_file_transfer || second_file_transfer) {
+		LinphoneContent *content = linphone_chat_message_get_file_transfer_information(pauline->stat.last_received_chat_message);
+		BC_ASSERT_PTR_NOT_NULL(content);
+		linphone_content_unref(content);
+	}
+	if (!first_file_transfer || !second_file_transfer) {
+		const char *content = linphone_chat_message_get_text_content(pauline->stat.last_received_chat_message);
+		BC_ASSERT_PTR_NOT_NULL(content);
+		if (!first_file_transfer)
+			BC_ASSERT_STRING_EQUAL(content, "Hello part 1");
+		else if (!second_file_transfer)
+			BC_ASSERT_STRING_EQUAL(content, "Hello part 2");
+	}
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

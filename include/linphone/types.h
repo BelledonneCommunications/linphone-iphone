@@ -368,12 +368,6 @@ typedef unsigned int LinphoneContactSearchID;
 LINPHONE_DEPRECATED typedef LinphoneContactSearchID ContactSearchID;
 
 /**
- * The #LinphoneContent object holds data that can be embedded in a signaling message.
- * @ingroup misc
-**/
-typedef struct _LinphoneContent LinphoneContent;
-
-/**
  * Linphone core main object created by function linphone_core_new() .
  * @ingroup initializing
  */

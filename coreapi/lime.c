@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/api/c-content.h"
+
 #include "lime.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -419,6 +421,8 @@ int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
 	bctbx_aes_gcm_context_t *gcmContext;
 
+	if (key == NULL) return -1;
+
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
 		gcmContext = bctbx_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTBX_GCM_DECRYPT);
@@ -787,8 +791,8 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
-	if (linphone_chat_message_get_content_type(msg) && 
-		(strcmp("xml/cipher", linphone_chat_message_get_content_type(msg)) == 0 || 
+	if (linphone_chat_message_get_content_type(msg) &&
+		(strcmp("xml/cipher", linphone_chat_message_get_content_type(msg)) == 0 ||
 		strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", linphone_chat_message_get_content_type(msg)) == 0)) {
 		errcode = 0;
 		int retval;
@@ -893,6 +897,7 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEn
 	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
 	if (!content)
 		return -1;
+		
 	if (!linphone_content_get_key(content)) {
 		linphone_content_unref(content);
 		return -1;

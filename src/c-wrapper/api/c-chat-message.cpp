@@ -18,6 +18,7 @@
  */
 
 #include "linphone/api/c-chat-message.h"
+#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 #include "linphone/wrapper_utils.h"
 
@@ -229,7 +230,7 @@ void linphone_chat_message_add_text_content(LinphoneChatMessage *msg, const char
 	LinphonePrivate::ContentType contentType = LinphonePrivate::ContentType::PlainText;
 	content->setContentType(contentType);
 	content->setBody(L_C_TO_STRING(c_content));
-	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->addContent(*content);
+	L_GET_CPP_PTR_FROM_C_OBJECT(msg)->addContent(content);
 }
 
 bool_t linphone_chat_message_has_text_content(const LinphoneChatMessage *msg) {
@@ -304,7 +305,9 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 }
 
 LinphoneContent *linphone_chat_message_get_file_transfer_information(LinphoneChatMessage *msg) {
-	return L_GET_PRIVATE_FROM_C_OBJECT(msg)->getFileTransferInformation();
+	const LinphonePrivate::Content *content = L_GET_PRIVATE_FROM_C_OBJECT(msg)->getFileTransferInformation();
+	if (content) return L_GET_C_BACK_PTR(content);
+	return NULL;
 }
 
 // =============================================================================

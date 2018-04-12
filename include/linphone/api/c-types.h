@@ -145,6 +145,12 @@ typedef struct _LinphoneEventLog LinphoneEventLog;
 // -----------------------------------------------------------------------------
 
 /**
+ * The LinphoneContent object holds data that can be embedded in a signaling message.
+ * @ingroup misc
+**/
+typedef struct _LinphoneContent LinphoneContent;
+
+/**
  * Represents a dial plan
  * @ingroup misc
 **/

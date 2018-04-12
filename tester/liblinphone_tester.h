@@ -45,7 +45,7 @@ extern test_suite_t call_video_test_suite;
 extern test_suite_t clonable_object_test_suite;
 extern test_suite_t conference_event_test_suite;
 extern test_suite_t conference_test_suite;
-extern test_suite_t content_manager_test_suite;
+extern test_suite_t contents_test_suite;
 extern test_suite_t cpim_test_suite;
 extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;

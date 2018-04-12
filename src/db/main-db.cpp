@@ -2267,7 +2267,7 @@ void MainDb::loadChatMessageContents (const shared_ptr<ChatMessage> &chatMessage
 				string data;
 				fetchContentAppData(session, *content, contentId, data);
 			}
-			chatMessage->addContent(*content);
+			chatMessage->addContent(content);
 		}
 
 		// 2 - Load external body url from body into FileTransferContent if needed.
