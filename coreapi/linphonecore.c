@@ -2285,7 +2285,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->vcard_context = linphone_vcard_context_new();
 	linphone_core_initialize_supported_content_types(lc);
 	lc->bw_controller = ms_bandwidth_controller_new();
-	
+
 	getPlatformHelpers(lc)->setDnsServers();
 
 	LinphoneFriendList *list = linphone_core_create_friend_list(lc);
@@ -5554,7 +5554,7 @@ typedef enum{
 	LinphoneLocalPlayer
 }LinphoneAudioResourceType;
 
-static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype){
+static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType rtype, MSSndCard *card) {
 	LinphoneCall *call=linphone_core_get_current_call(lc);
 	AudioStream *stream=NULL;
 	RingStream *ringstream;
@@ -5568,9 +5568,17 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 		if (rtype==LinphoneLocalPlayer) return stream->local_player;
 		return NULL;
 	}
-	if (lc->ringstream==NULL){
+	if (card || lc->ringstream == NULL) {
+		if (lc->ringstream)
+			ring_stop(lc->ringstream);
+
 		float amp=lp_config_get_float(lc->config,"sound","dtmf_player_amp",0.1f);
-		MSSndCard *ringcard=lc->sound_conf.lsd_card ?lc->sound_conf.lsd_card : lc->sound_conf.ring_sndcard;
+		MSSndCard *ringcard=lc->sound_conf.lsd_card
+			? lc->sound_conf.lsd_card
+			: card
+				? card
+				: lc->sound_conf.ring_sndcard;
+
 		if (ringcard == NULL)
 			return NULL;
 
@@ -5587,12 +5595,15 @@ static MSFilter *get_audio_resource(LinphoneCore *lc, LinphoneAudioResourceType 
 	return NULL;
 }
 
-static MSFilter *get_dtmf_gen(LinphoneCore *lc){
-	return get_audio_resource(lc,LinphoneToneGenerator);
+static MSFilter *get_dtmf_gen(LinphoneCore *lc, MSSndCard *card) {
+	return get_audio_resource(lc,LinphoneToneGenerator, card);
 }
 
 void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
-	MSFilter *f=get_dtmf_gen(lc);
+	MSSndCard *card = linphone_core_in_call(lc)
+		? lc->sound_conf.play_sndcard
+		: lc->sound_conf.ring_sndcard;
+	MSFilter *f=get_dtmf_gen(lc, card);
 	if (f==NULL){
 		ms_error("No dtmf generator at this time !");
 		return;
@@ -5603,8 +5614,8 @@ void linphone_core_play_dtmf(LinphoneCore *lc, char dtmf, int duration_ms){
 	else ms_filter_call_method(f, MS_DTMF_GEN_START, &dtmf);
 }
 
-LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile){
-	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer);
+LinphoneStatus _linphone_core_play_local(LinphoneCore *lc, const char *audiofile, MSSndCard *card) {
+	MSFilter *f=get_audio_resource(lc,LinphoneLocalPlayer, card);
 	int loopms=-1;
 	if (!f) return -1;
 	ms_filter_call_method(f,MS_PLAYER_SET_LOOP,&loopms);
@@ -5615,11 +5626,15 @@ LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile)
 	return 0;
 }
 
+LinphoneStatus linphone_core_play_local(LinphoneCore *lc, const char *audiofile) {
+	return _linphone_core_play_local(lc, audiofile, NULL);
+}
+
 void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 	if (linphone_core_tone_indications_enabled(lc)){
 		const char *audiofile=linphone_core_get_tone_file(lc,toneid);
 		if (!audiofile){
-			MSFilter *f=get_dtmf_gen(lc);
+			MSFilter *f=get_dtmf_gen(lc, lc->sound_conf.play_sndcard);
 			MSDtmfGenCustomTone def;
 			if (f==NULL){
 				ms_error("No dtmf generator at this time !");
@@ -5655,7 +5670,7 @@ void linphone_core_play_named_tone(LinphoneCore *lc, LinphoneToneID toneid){
 			if (def.duration>0)
 				ms_filter_call_method(f, MS_DTMF_GEN_PLAY_CUSTOM,&def);
 		}else{
-			linphone_core_play_local(lc,audiofile);
+			_linphone_core_play_local(lc,audiofile, lc->sound_conf.play_sndcard);
 		}
 	}
 }
@@ -5665,16 +5680,16 @@ void linphone_core_play_call_error_tone(LinphoneCore *lc, LinphoneReason reason)
 		LinphoneToneDescription *tone=linphone_core_get_call_error_tone(lc,reason);
 		if (tone){
 			if (tone->audiofile){
-				linphone_core_play_local(lc,tone->audiofile);
+				_linphone_core_play_local(lc, tone->audiofile, lc->sound_conf.play_sndcard);
 			}else if (tone->toneid != LinphoneToneUndefined){
-				linphone_core_play_named_tone(lc,tone->toneid);
+				linphone_core_play_named_tone(lc, tone->toneid);
 			}
 		}
 	}
 }
 
 void linphone_core_stop_dtmf(LinphoneCore *lc){
-	MSFilter *f=get_dtmf_gen(lc);
+	MSFilter *f=get_dtmf_gen(lc, NULL);
 	if (f!=NULL)
 		ms_filter_call_method_noarg (f, MS_DTMF_GEN_STOP);
 }
@@ -6319,7 +6334,7 @@ bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
 }
 
 void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
-	get_dtmf_gen(lc); /*make sure ring stream is started*/
+	get_dtmf_gen(lc, lc->sound_conf.ring_sndcard); /*make sure ring stream is started*/
 	lc->ringstream_autorelease=FALSE; /*disable autorelease mode*/
 }
 
