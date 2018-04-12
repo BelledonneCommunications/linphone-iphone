@@ -133,7 +133,18 @@ bool ContentType::weakEqual (const ContentType &other) const {
 }
 
 bool ContentType::operator== (const ContentType &other) const {
-	return weakEqual(other) && (getParameter() == other.getParameter());
+	if (!weakEqual(other))
+		return false;
+	if (getParameters().size() != other.getParameters().size())
+		return false;
+	for (const auto &param : getParameters()) {
+		auto it = other.findParameter(param.getName());
+		if (it == other.getParameters().cend())
+			return false;
+		if (it->getValue() != param.getValue())
+			return false;
+	}
+	return true;
 }
 
 bool ContentType::operator!= (const ContentType &other) const {
