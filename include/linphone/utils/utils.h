@@ -22,6 +22,7 @@
 
 #include <ctime>
 #include <list>
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -107,6 +108,15 @@ namespace Utils {
 		return str ? str : "";
 	}
 
+	template<typename S, typename T>
+	LINPHONE_PUBLIC std::string join (const std::vector<T>& elems, const S& delim) {
+		std::stringstream ss;
+		auto e = elems.begin();
+		ss << *e++;
+		for (; e != elems.end(); ++e)
+			ss << delim << *e;
+		return ss.str();
+	}
 	LINPHONE_PUBLIC std::string trim (const std::string &str);
 
 	template<typename T>
