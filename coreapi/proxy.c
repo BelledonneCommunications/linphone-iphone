@@ -143,6 +143,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->avpf_rr_interval = lc ? !!lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
 	cfg->publish = lc ? !!lp_config_get_default_int(lc->config, "proxy", "publish", FALSE) : FALSE;
+	cfg->push_notification_allowed = lc ? !!lp_config_get_default_int(lc->config, "proxy", "push_notification_allowed", TRUE) : TRUE;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
 	if (nat_policy_ref) {
 		LinphoneNatPolicy *policy = linphone_config_create_nat_policy_from_section(lc->config,nat_policy_ref);
@@ -1190,6 +1191,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"dial_escape_plus",cfg->dial_escape_plus);
 	lp_config_set_string(config,key,"dial_prefix",cfg->dial_prefix);
 	lp_config_set_int(config,key,"privacy",(int)cfg->privacy);
+	lp_config_set_int(config,key,"push_notification_allowed",(int)cfg->push_notification_allowed);
 	if (cfg->refkey) lp_config_set_string(config,key,"refkey",cfg->refkey);
 	lp_config_set_int(config, key, "publish_expires", cfg->publish_expires);
 
@@ -1250,6 +1252,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires", int)
 	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
+	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"push_notification_allowed")
 	linphone_proxy_config_set_avpf_mode(cfg,static_cast<LinphoneAVPFMode>(lp_config_get_int(config,key,"avpf",linphone_proxy_config_get_avpf_mode(cfg))));
 	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval",uint8_t)
 	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus",bool_t)
@@ -1578,4 +1581,12 @@ void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, 
 
 const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg) {
 	return cfg->conference_factory_uri;
+}
+
+bool_t linphone_proxy_config_is_push_notification_allowed(const LinphoneProxyConfig *cfg) {
+	return cfg->push_notification_allowed;
+}
+
+void linphone_proxy_config_set_push_notification_allowed(LinphoneProxyConfig *cfg, bool_t is_allowed) {
+	cfg->push_notification_allowed = is_allowed;
 }

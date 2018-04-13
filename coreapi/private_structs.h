@@ -132,6 +132,8 @@ struct _LinphoneProxyConfig
 	char *refkey;
 	char *sip_etag; /*publish context*/
 	char *conference_factory_uri;
+
+	bool_t push_notification_allowed;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneProxyConfig);

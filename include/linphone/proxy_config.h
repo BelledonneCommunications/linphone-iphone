@@ -618,6 +618,20 @@ void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, 
 const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg);
 
 /**
+ * Indicates whether to add to the contact parameters the push notification information.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param[in] allow True to allow push notification information, false otherwise.
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_set_push_notification_allowed(LinphoneProxyConfig *cfg, bool_t allow);
+
+/**
+ * Indicates whether to add to the contact parameters the push notification information.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return True if push notification informations should be added, false otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_push_notification_allowed(LinphoneProxyConfig *cfg);
+
+/**
  * @}
  */
 
