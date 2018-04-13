@@ -23,6 +23,7 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/notification-message.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "sip-tools/sip-headers.h"
@@ -84,8 +85,7 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	content->setContentType(ContentType::ImIsComposing);
 	content->setBody(payload);
 
-	shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
-	chatMessage->setToBeStored(false);
+	shared_ptr<ChatMessage> chatMessage = createNotificationMessage(ChatMessage::Direction::Outgoing);
 	chatMessage->addContent(content);
 	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
 	chatMessage->getPrivate()->addSalCustomHeader("Expires", "0");
@@ -119,6 +119,11 @@ void ChatRoomPrivate::removeTransientEvent (const shared_ptr<EventLog> &eventLog
 shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Direction direction) {
 	L_Q();
 	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
+}
+
+shared_ptr<ChatMessage> ChatRoomPrivate::createNotificationMessage (ChatMessage::Direction direction) {
+	L_Q();
+	return shared_ptr<ChatMessage>(new NotificationMessage(q->getSharedFromThis(), direction));
 }
 
 list<shared_ptr<ChatMessage>> ChatRoomPrivate::findChatMessages (const string &messageId) const {
@@ -214,26 +219,21 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	reason = msg->getPrivate()->receive();
 
 	if (reason == LinphoneReasonNotAcceptable || reason == LinphoneReasonUnknown) {
-		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
-		reason = LinphoneReasonNone;
-		goto end;
+		// Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt
+		return LinphoneReasonNone;
 	}
 
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		onIsComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
-		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
-			goto end;
-		}
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1)
+			return reason;
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		onImdnReceived(msg);
-		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
-			goto end;
-		}
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1)
+			return reason;
 	}
 
 	onChatMessageReceived(msg);
-
-end:
 	return reason;
 }
 

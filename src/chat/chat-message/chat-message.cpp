@@ -457,7 +457,8 @@ void ChatMessagePrivate::setChatRoom (const shared_ptr<AbstractChatRoom> &cr) {
 void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	L_Q();
 
-	shared_ptr<ChatMessage> msg = q->getChatRoom()->createChatMessage();
+	auto chatRoomPrivate = static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate());
+	shared_ptr<ChatMessage> msg = chatRoomPrivate->createNotificationMessage(ChatMessage::Direction::Outgoing);
 
 	Content *content = new Content();
 	content->setContentDisposition(ContentDisposition::Notification);
@@ -468,7 +469,6 @@ void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
 	if (reason != LinphoneReasonNone)
 		msg->getPrivate()->setEncryptionPrevented(true);
 
-	msg->setToBeStored(false);
 	msg->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
 
 	msg->getPrivate()->send();
@@ -523,9 +523,8 @@ void ChatMessagePrivate::notifyReceiving () {
 	// Legacy
 	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 
-	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
+	if (getPositiveDeliveryNotificationRequired())
 		q->sendDeliveryNotification(LinphoneReasonNone);
-	}
 }
 
 LinphoneReason ChatMessagePrivate::receive () {
@@ -894,7 +893,10 @@ bool ChatMessagePrivate::validStateTransition (ChatMessage::State currentState, 
 // -----------------------------------------------------------------------------
 
 ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
-	Object(*new ChatMessagePrivate(chatRoom,direction)), CoreAccessor(chatRoom->getCore()) {
+	Object(*new ChatMessagePrivate(chatRoom, direction)), CoreAccessor(chatRoom->getCore()) {
+}
+
+ChatMessage::ChatMessage (ChatMessagePrivate &p) : Object(p), CoreAccessor(p.getPublic()->getChatRoom()->getCore()) {
 }
 
 ChatMessage::~ChatMessage () {

@@ -44,6 +44,7 @@ class ChatMessagePrivate : public ObjectPrivate {
 	friend class CpimChatMessageModifier;
 	friend class EncryptionChatMessageModifier;
 	friend class MultipartChatMessageModifier;
+	friend class NotificationMessagePrivate;
 
 public:
 	enum Step {
@@ -98,6 +99,13 @@ public:
 
 	SalOp *getSalOp () const;
 	void setSalOp (SalOp *op);
+
+	bool getDisplayNotificationRequired () const { return displayNotificationRequired; }
+	bool getNegativeDeliveryNotificationRequired () const { return negativeDeliveryNotificationRequired; }
+	bool getPositiveDeliveryNotificationRequired () const { return positiveDeliveryNotificationRequired; }
+	virtual void setDisplayNotificationRequired (bool value) { displayNotificationRequired = value; }
+	virtual void setNegativeDeliveryNotificationRequired (bool value) { negativeDeliveryNotificationRequired = value; }
+	virtual void setPositiveDeliveryNotificationRequired (bool value) { positiveDeliveryNotificationRequired = value; }
 
 	SalCustomHeader *getSalCustomHeaders () const;
 	void setSalCustomHeaders (SalCustomHeader *headers);
@@ -156,11 +164,20 @@ public:
 	void updateInDb ();
 
 private:
-	
 	ChatMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir);
-	
+
 	static bool validStateTransition (ChatMessage::State currentState, ChatMessage::State newState);
 
+public:
+	mutable MainDbChatMessageKey dbKey;
+
+protected:
+	bool displayNotificationRequired = true;
+	bool negativeDeliveryNotificationRequired = true;
+	bool positiveDeliveryNotificationRequired = true;
+	bool toBeStored = true;
+
+private:
 	// TODO: Clean attributes.
 	time_t time = ::ms_time(0); // TODO: Change me in all files.
 	std::string imdnId;
@@ -189,10 +206,6 @@ private:
 	// TODO: Remove my comment. VARIABLES OK.
 	// Do not expose.
 
-public:
-	mutable MainDbChatMessageKey dbKey;
-
-private:
 	std::weak_ptr<AbstractChatRoom> chatRoom;
 	ChatRoomId chatRoomId;
 	IdentityAddress fromAddress;
@@ -204,7 +217,6 @@ private:
 	std::list<Content* > contents;
 
 	bool encryptionPrevented = false;
-	bool toBeStored = true;
 	mutable bool contentsNotLoadedFromDatabase = false;
 	L_DECLARE_PUBLIC(ChatMessage);
 };

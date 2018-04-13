@@ -61,7 +61,7 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 	L_DECLARE_ENUM(Direction, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
-	~ChatMessage ();
+	virtual ~ChatMessage ();
 
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
@@ -93,7 +93,7 @@ public:
 	bool isReadOnly () const;
 
 	bool getToBeStored () const;
-	void setToBeStored (bool value);
+	virtual void setToBeStored (bool value);
 
 	std::list<ParticipantImdnState> getParticipantsThatHaveDisplayed () const;
 	std::list<ParticipantImdnState> getParticipantsThatHaveReceived () const;
@@ -113,6 +113,9 @@ public:
 
 	bool downloadFile (FileTransferContent *content);
 	bool isFileTransferInProgress();
+
+protected:
+	explicit ChatMessage (ChatMessagePrivate &p);
 
 private:
 	ChatMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);
