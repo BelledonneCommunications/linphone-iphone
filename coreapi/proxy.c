@@ -1252,7 +1252,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires", int)
 	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
-	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"push_notification_allowed")
+	linphone_proxy_config_set_push_notification_allowed(cfg, !!lp_config_get_int(config,key,"push_notification_allowed",linphone_proxy_config_is_push_notification_allowed(cfg)));
 	linphone_proxy_config_set_avpf_mode(cfg,static_cast<LinphoneAVPFMode>(lp_config_get_int(config,key,"avpf",linphone_proxy_config_get_avpf_mode(cfg))));
 	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval",uint8_t)
 	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus",bool_t)
