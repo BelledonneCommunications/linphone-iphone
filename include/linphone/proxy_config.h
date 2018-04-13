@@ -629,7 +629,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_push_notification_allowed(Linphon
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return True if push notification informations should be added, false otherwise.
  */
-LINPHONE_PUBLIC bool_t linphone_proxy_config_is_push_notification_allowed(LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_push_notification_allowed(const LinphoneProxyConfig *cfg);
 
 /**
  * @}
