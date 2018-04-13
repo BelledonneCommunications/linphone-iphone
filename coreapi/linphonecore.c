@@ -6485,9 +6485,20 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 
 			/* rename the newly created sqlite3 file in to the given file name */
 			rename(file, bkpFile);
+
+#ifdef _WIN32
+			/* We first have to close the file before renaming it */
+			sqlite3_close(lc->zrtp_cache_db);
+#endif
+
 			if (rename(tmpFile, file)==0) { /* set the flag if we were able to set the sqlite file in the correct place (even if migration failed) */
 				lp_config_set_int(lc->config, "sip", "zrtp_cache_migration_done", TRUE);
 			}
+
+#ifdef _WIN32
+			/* Then reopen it */
+			_linphone_sqlite3_open(file, &lc->zrtp_cache_db);
+#endif
 
 			/* clean up */
 			bctbx_free(bkpFile);
