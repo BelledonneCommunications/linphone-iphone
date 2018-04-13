@@ -654,6 +654,8 @@ class Proguard(object):
     def __init__(self, package):
         self.package = package
         self.classes = []
+        self.enums = []
+        self.listeners = []
 
     def add_class(self, javaClass):
         obj = {
@@ -662,6 +664,27 @@ class Proguard(object):
             'classImplName': javaClass.classImplName,
         }
         self.classes.append(obj)
+
+        for javaEnum in javaClass.enums:
+            enumObj = {
+                'package': self.package,
+                'className': javaClass.className + "$" + javaEnum.className,
+            }
+            self.enums.append(enumObj)
+
+    def add_enum(self, javaEnum):
+        obj = {
+            'package': self.package,
+            'className': javaEnum.className,
+        }
+        self.enums.append(obj)
+
+    def add_interface(self, javaInterface):
+        obj = {
+            'package': self.package,
+            'className': javaInterface.className,
+        }
+        self.listeners.append(obj)
 
 ##########################################################################
 
@@ -710,8 +733,10 @@ class GenWrapper(object):
 
         for name, value in self.enums.items():
             self.render(value, self.javadir + '/' + value.filename)
+            self.proguard.add_enum(value)
         for name, value in self.interfaces.items():
             self.render(value, self.javadir + '/' + value.filename)
+            self.proguard.add_interface(value)
         for name, value in self.classes.items():
             self.render(value, self.javadir + '/' + value.filename)
             self.jni.add_object(value)
