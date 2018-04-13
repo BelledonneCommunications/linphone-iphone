@@ -1340,7 +1340,7 @@ static void cancelled_ringing_call(void) {
 	const bctbx_list_t * call_history;
 	LinphoneCall* out_call;
 
-	char * db_path= bctbx_strdup_printf("%s,%s",bc_tester_get_writable_dir_prefix(),"tmp_call_log.db");
+	char * db_path= bctbx_strdup_printf("%s/%s",bc_tester_get_writable_dir_prefix(),"tmp_call_log.db");
 	linphone_core_set_call_logs_database_path(marie->lc,db_path);
 
 
