@@ -60,6 +60,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		content = message->getContents().front();
 	}
 
+	const string contentBody = content->getBodyAsString();
 	if (content->getContentDisposition().isValid()) {
 		Cpim::GenericHeader contentDispositionHeader;
 		contentDispositionHeader.setName("Content-Disposition");
@@ -70,8 +71,10 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	contentTypeHeader.setName("Content-Type");
 	contentTypeHeader.setValue(content->getContentType().asString());
 	cpimMessage.addContentHeader(contentTypeHeader);
-
-	const string contentBody = content->getBodyAsString();
+	Cpim::GenericHeader contentLengthHeader;
+	contentLengthHeader.setName("Content-Length");
+	contentLengthHeader.setValue(to_string(contentBody.size()));
+	cpimMessage.addContentHeader(contentLengthHeader);
 	cpimMessage.setContent(contentBody);
 
 	Content newContent;
