@@ -29,7 +29,7 @@
 #define unlink _unlink
 #endif
 
-
+extern jobject system_context;
 static int liblinphone_tester_keep_accounts_flag = 0;
 static bool_t liblinphone_tester_keep_record_files = FALSE;
 static bool_t liblinphone_tester_leak_detector_disabled = FALSE;
@@ -144,9 +144,9 @@ LinphoneCore *configure_lc_from(LinphoneCoreCbs *cbs, const char *path, const ch
 		lp_config_set_string(config, "sound", "remote_ring", ringbackpath);
 		lp_config_set_string(config, "sound", "local_ring" , ringpath);
 		lp_config_set_string(config, "sip",   "root_ca"    , rootcapath);
-		lc = linphone_factory_create_core_with_config_3(linphone_factory_get(), config, NULL);
+		lc = linphone_factory_create_core_with_config_3(linphone_factory_get(), config, system_context);
 	} else {
-		lc = linphone_factory_create_core_3(linphone_factory_get(), NULL, (filepath && (filepath[0] != '\0')) ? filepath : NULL, NULL);
+		lc = linphone_factory_create_core_3(linphone_factory_get(), NULL, (filepath && (filepath[0] != '\0')) ? filepath : NULL, system_context);
 		linphone_core_set_ring(lc, ringpath);
 		linphone_core_set_ringback(lc, ringbackpath);
 		linphone_core_set_root_ca(lc,rootcapath);
