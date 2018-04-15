@@ -31,6 +31,7 @@ static FILE * log_file = NULL;
 
 static JNIEnv *current_env = NULL;
 static jobject current_obj = 0;
+jobject system_context = 0; // Application context
 static const char* LogDomain = "liblinphone_tester";
 
 int main(int argc, char** argv);
@@ -96,6 +97,17 @@ void bcunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
 	(*env)->DeleteLocalRef(env,cls);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_setApplicationContext(JNIEnv *env, jclass obj, jobject context) {
+    system_context = (jobject)(*env)->NewGlobalRef(env, context);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_removeApplicationContext(JNIEnv *env, jclass obj) {
+    if (system_context) {
+        (*env)->DeleteGlobalRef(env, system_context);
+        system_context = 0;
+    }
 }
 
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
