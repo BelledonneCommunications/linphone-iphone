@@ -41,6 +41,12 @@ protected:
 			BELLE_SIP_MESSAGE(req),
 			BELLE_SIP_HEADER(belle_sip_header_date_create_from_time(&curtime))
 		);
+		std::string contentEncoding = content.getContentEncoding();
+		if (!contentEncoding.empty())
+			belle_sip_message_add_header(
+				BELLE_SIP_MESSAGE(req),
+				belle_sip_header_create("Content-Encoding", contentEncoding.c_str())
+			);
 		const ContentType &contentType = content.getContentType();
 		std::string contentTypeStr = std::string(BELLE_SIP_CONTENT_TYPE ": ") + contentType.asString();
 		belle_sip_message_add_header(

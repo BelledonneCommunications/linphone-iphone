@@ -37,6 +37,7 @@ NotificationMessage::NotificationMessage (NotificationMessagePrivate &p) : ChatM
 	d->negativeDeliveryNotificationRequired = false;
 	d->positiveDeliveryNotificationRequired = false;
 	d->toBeStored = false;
+	d->contentEncoding = "deflate";
 }
 
 void NotificationMessage::setToBeStored (bool value) {

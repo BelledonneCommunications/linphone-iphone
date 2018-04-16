@@ -174,6 +174,7 @@ protected:
 	bool negativeDeliveryNotificationRequired = true;
 	bool positiveDeliveryNotificationRequired = true;
 	bool toBeStored = true;
+	std::string contentEncoding;
 
 private:
 	// TODO: Clean attributes.

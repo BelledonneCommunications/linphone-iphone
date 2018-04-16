@@ -770,6 +770,8 @@ void ChatMessagePrivate::send () {
 	} else {
 		if (!internalContent.getContentType().isValid())
 			internalContent.setContentType(ContentType::PlainText);
+		if (!contentEncoding.empty())
+			internalContent.setContentEncoding(contentEncoding);
 		msgOp->sendMessage(internalContent);
 	}
 
