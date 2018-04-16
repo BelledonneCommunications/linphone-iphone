@@ -2249,6 +2249,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->msevq=ms_factory_create_event_queue(lc->factory);
 
 	lc->sal=sal_init(lc->factory);
+
+	sal_set_refresher_retry_after(lc->sal, lp_config_get_int(lc->config, "sip", "refresher_retry_after", 60000));
 	sal_set_http_proxy_host(lc->sal, linphone_core_get_http_proxy_host(lc));
 	sal_set_http_proxy_port(lc->sal, linphone_core_get_http_proxy_port(lc));
 
