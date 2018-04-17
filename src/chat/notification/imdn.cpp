@@ -165,6 +165,7 @@ void Imdn::startTimer () {
 		timer = chatRoom->getCore()->getCCore()->sal->create_timer(timerExpired, this, duration, "imdn timeout");
 	else
 		belle_sip_source_set_timeout(timer, duration);
+	bgTask.start(chatRoom->getCore(), 1);
 }
 
 void Imdn::stopTimer () {
@@ -175,6 +176,7 @@ void Imdn::stopTimer () {
 		belle_sip_object_unref(timer);
 		timer = nullptr;
 	}
+	bgTask.stop();
 }
 
 LINPHONE_END_NAMESPACE

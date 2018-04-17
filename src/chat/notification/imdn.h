@@ -22,6 +22,8 @@
 
 #include "linphone/utils/general.h"
 
+#include "utils/background-task.h"
+
 #include "private.h"
 
 // =============================================================================
@@ -69,6 +71,7 @@ private:
 	std::list<const std::shared_ptr<ChatMessage>> displayedMessages;
 	std::list<MessageReason> nonDeliveredMessages;
 	belle_sip_source_t *timer = nullptr;
+	BackgroundTask bgTask { "IMDN sending" };
 };
 
 LINPHONE_END_NAMESPACE
