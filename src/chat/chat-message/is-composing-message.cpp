@@ -37,7 +37,7 @@ IsComposingMessage::IsComposingMessage (
 	L_D();
 	Content *content = new Content();
 	content->setContentType(ContentType::ImIsComposing);
-	content->setBody(isComposingHandler.marshal(isComposing));
+	content->setBody(isComposingHandler.createXml(isComposing));
 	addContent(content);
 	d->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
 	d->addSalCustomHeader("Expires", "0");

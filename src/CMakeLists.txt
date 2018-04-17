@@ -165,6 +165,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	variant/variant.h
 	xml/conference-info.h
 	xml/imdn.h
+	xml/is-composing.h
 	xml/linphone-imdn.h
 	xml/resource-lists.h
 	xml/xml.h
@@ -289,6 +290,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	variant/variant.cpp
 	xml/conference-info.cpp
 	xml/imdn.cpp
+	xml/is-composing.cpp
 	xml/linphone-imdn.cpp
 	xml/resource-lists.cpp
 	xml/xml.cpp
