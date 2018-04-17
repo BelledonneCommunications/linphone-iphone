@@ -51,9 +51,10 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -240,6 +241,8 @@ namespace LinphonePrivate
       typedef ::xsd::cxx::tree::unexpected_enumerator< char > UnexpectedEnumerator;
       typedef ::xsd::cxx::tree::expected_text_content< char > ExpectedTextContent;
       typedef ::xsd::cxx::tree::no_prefix_mapping< char > NoPrefixMapping;
+      typedef ::xsd::cxx::tree::no_type_info< char > NoTypeInfo;
+      typedef ::xsd::cxx::tree::not_derived< char > NotDerived;
       typedef ::xsd::cxx::tree::serialization< char > Serialization;
 
       // Error handler callback interface.
@@ -480,7 +483,7 @@ namespace LinphonePrivate
         ListType&
         operator= (const ListType& x);
 
-        virtual
+        virtual 
         ~ListType ();
 
         // Implementation.
@@ -604,7 +607,7 @@ namespace LinphonePrivate
         EntryType&
         operator= (const EntryType& x);
 
-        virtual
+        virtual 
         ~EntryType ();
 
         // Implementation.
@@ -724,7 +727,7 @@ namespace LinphonePrivate
         EntryRefType&
         operator= (const EntryRefType& x);
 
-        virtual
+        virtual 
         ~EntryRefType ();
 
         // Implementation.
@@ -845,7 +848,7 @@ namespace LinphonePrivate
         ExternalType&
         operator= (const ExternalType& x);
 
-        virtual
+        virtual 
         ~ExternalType ();
 
         // Implementation.
@@ -913,7 +916,7 @@ namespace LinphonePrivate
         DisplayNameType&
         operator= (const DisplayNameType& x);
 
-        virtual
+        virtual 
         ~DisplayNameType ();
 
         // Implementation.
@@ -946,7 +949,7 @@ namespace LinphonePrivate
         _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
-        virtual
+        virtual 
         ~List ();
       };
 
@@ -975,7 +978,7 @@ namespace LinphonePrivate
         _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
-        virtual
+        virtual 
         ~DisplayName ();
       };
 
@@ -1018,7 +1021,7 @@ namespace LinphonePrivate
         ResourceLists&
         operator= (const ResourceLists& x);
 
-        virtual
+        virtual 
         ~ResourceLists ();
 
         // Implementation.
@@ -1209,14 +1212,14 @@ namespace LinphonePrivate
 
       void
       serializeResourceLists (::std::ostream& os,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
                               ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeResourceLists (::std::ostream& os,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
@@ -1224,7 +1227,7 @@ namespace LinphonePrivate
 
       void
       serializeResourceLists (::std::ostream& os,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               ::xercesc::DOMErrorHandler& eh,
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
@@ -1235,14 +1238,14 @@ namespace LinphonePrivate
 
       void
       serializeResourceLists (::xercesc::XMLFormatTarget& ft,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
                               ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeResourceLists (::xercesc::XMLFormatTarget& ft,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
@@ -1250,7 +1253,7 @@ namespace LinphonePrivate
 
       void
       serializeResourceLists (::xercesc::XMLFormatTarget& ft,
-                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+                              const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               ::xercesc::DOMErrorHandler& eh,
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               const ::std::string& e = "UTF-8",
@@ -1268,7 +1271,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeResourceLists (const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x,
+      serializeResourceLists (const ::LinphonePrivate::Xsd::ResourceLists::ResourceLists& x, 
                               const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                               ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
@@ -1291,6 +1294,9 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif

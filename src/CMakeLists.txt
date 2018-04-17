@@ -164,6 +164,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
+	xml/imdn.h
+	xml/linphone-imdn.h
 	xml/resource-lists.h
 	xml/xml.h
 )
@@ -286,6 +288,8 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	utils/utils.cpp
 	variant/variant.cpp
 	xml/conference-info.cpp
+	xml/imdn.cpp
+	xml/linphone-imdn.cpp
 	xml/resource-lists.cpp
 	xml/xml.cpp
 )

@@ -3077,8 +3077,8 @@ static void imdn_for_group_chat_room (void) {
 	// Chloe begins composing a message
 	const char *chloeTextMessage = "Hello";
 	LinphoneChatMessage *chloeMessage = _send_message(chloeCr, chloeTextMessage);
-	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, initialMarieStats.number_of_LinphoneMessageReceived + 1, 10000));
-	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 10000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, initialMarieStats.number_of_LinphoneMessageReceived + 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 3000));
 	LinphoneChatMessage *marieLastMsg = marie->stat.last_received_chat_message;
 	if (!BC_ASSERT_PTR_NOT_NULL(marieLastMsg))
 		goto end;
@@ -3088,7 +3088,7 @@ static void imdn_for_group_chat_room (void) {
 	linphone_address_unref(chloeAddr);
 
 	// Check that the message has been delivered to Marie and Pauline
-	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDeliveredToUser, initialChloeStats.number_of_LinphoneMessageDeliveredToUser + 1, 3000));
 	BC_ASSERT_PTR_NULL(linphone_chat_message_get_participants_that_have_displayed(chloeMessage));
 	bctbx_list_t *participantsThatReceivedChloeMessage = linphone_chat_message_get_participants_that_have_received(chloeMessage);
 	if (BC_ASSERT_PTR_NOT_NULL(participantsThatReceivedChloeMessage)) {
@@ -3105,7 +3105,7 @@ static void imdn_for_group_chat_room (void) {
 
 	// Marie marks the message as read, check that the state is not yet displayed on Chloe's side
 	linphone_chat_room_mark_as_read(marieCr);
-	BC_ASSERT_FALSE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	BC_ASSERT_FALSE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 3000));
 	bctbx_list_t *participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
 	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
 		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 1, int, "%d");
@@ -3120,7 +3120,7 @@ static void imdn_for_group_chat_room (void) {
 
 	// Pauline also marks the message as read, check that the state is now displayed on Chloe's side
 	linphone_chat_room_mark_as_read(paulineCr);
-	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 3000));
 	participantsThatDisplayedChloeMessage = linphone_chat_message_get_participants_that_have_displayed(chloeMessage);
 	if (BC_ASSERT_PTR_NOT_NULL(participantsThatDisplayedChloeMessage)) {
 		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatDisplayedChloeMessage), 2, int, "%d");

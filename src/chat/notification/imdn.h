@@ -57,7 +57,6 @@ public:
 	static void parse (const std::shared_ptr<ChatMessage> &chatMessage);
 
 private:
-	static void parse (const std::shared_ptr<ChatMessage> &chatMessage, xmlparsing_context_t *xmlCtx);
 	static int timerExpired (void *data, unsigned int revents);
 
 	void send ();
@@ -65,8 +64,6 @@ private:
 	void stopTimer ();
 
 private:
-	static const std::string imdnPrefix;
-
 	ChatRoom *chatRoom = nullptr;
 	std::list<const std::shared_ptr<ChatMessage>> deliveredMessages;
 	std::list<const std::shared_ptr<ChatMessage>> displayedMessages;

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.linphone.org/xsds/imdn.xsd" 
+	xmlns:tns="http://www.linphone.org/xsds/imdn.xsd" 
+	elementFormDefault="qualified">
+
+	<xs:element name="reason" type="tns:ImdnReason"/>
+	<xs:complexType name="ImdnReason">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="code" type="xs:int" use="optional" default="200"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+</xs:schema>

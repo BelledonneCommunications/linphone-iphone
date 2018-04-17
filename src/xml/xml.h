@@ -51,9 +51,10 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -240,6 +241,8 @@ namespace LinphonePrivate
       typedef ::xsd::cxx::tree::unexpected_enumerator< char > UnexpectedEnumerator;
       typedef ::xsd::cxx::tree::expected_text_content< char > ExpectedTextContent;
       typedef ::xsd::cxx::tree::no_prefix_mapping< char > NoPrefixMapping;
+      typedef ::xsd::cxx::tree::no_type_info< char > NoTypeInfo;
+      typedef ::xsd::cxx::tree::not_derived< char > NotDerived;
       typedef ::xsd::cxx::tree::serialization< char > Serialization;
 
       // Error handler callback interface.
@@ -510,6 +513,9 @@ namespace namespace_
 
 // Begin epilogue.
 //
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif

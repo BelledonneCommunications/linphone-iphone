@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified"
+	targetNamespace="urn:ietf:params:xml:ns:imdn"
+	xmlns:ns1="urn:ietf:params:xml:ns:imdn"
+	xmlns:ns2="http://www.linphone.org/xsds/imdn.xsd">
+	<xs:import namespace="http://www.linphone.org/xsds/imdn.xsd" schemaLocation="linphone-imdn.xsd"/>
+	<xs:element name="imdn">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="ns1:message-id"/>
+				<xs:element ref="ns1:datetime"/>
+				<xs:sequence minOccurs="0">
+					<xs:element ref="ns1:recipient-uri"/>
+					<xs:element ref="ns1:original-recipient-uri"/>
+					<xs:element minOccurs="0" ref="ns1:subject"/>
+				</xs:sequence>
+				<xs:choice minOccurs="0">
+					<xs:element ref="ns1:delivery-notification"/>
+					<xs:element ref="ns1:display-notification"/>
+					<xs:element ref="ns1:processing-notification"/>
+				</xs:choice>
+				<xs:group ref="ns1:imdnExtension"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="message-id" type="xs:token"/>
+	<xs:element name="datetime" type="xs:string"/>
+	<xs:element name="recipient-uri" type="xs:anyURI"/>
+	<xs:element name="original-recipient-uri" type="xs:anyURI"/>
+	<xs:element name="subject" type="xs:string"/>
+	<xs:element name="delivery-notification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="status">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:choice>
+								<xs:element ref="ns1:delivered"/>
+								<xs:element ref="ns1:failed"/>
+								<xs:element ref="ns1:forbidden"/>
+								<xs:element ref="ns1:error"/>
+							</xs:choice>
+							<xs:group ref="ns1:deliveryExtension"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="delivered">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="failed">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="display-notification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="status">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:choice>
+								<xs:element ref="ns1:displayed"/>
+								<xs:element ref="ns1:forbidden"/>
+								<xs:element ref="ns1:error"/>
+							</xs:choice>
+							<xs:group ref="ns1:displayExtension"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="displayed">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="processing-notification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="status">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:choice>
+								<xs:element ref="ns1:processed"/>
+								<xs:element ref="ns1:stored"/>
+								<xs:element ref="ns1:forbidden"/>
+								<xs:element ref="ns1:error"/>
+							</xs:choice>
+							<xs:group ref="ns1:processingExtension"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="processed">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="stored">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="forbidden">
+		<xs:complexType/>
+	</xs:element>
+	<xs:element name="error">
+		<xs:complexType/>
+	</xs:element>
+	<!--
+		<imdn> extension point for the extension schemas to add
+		new definitions with the combine="interleave" pattern.
+		Extension schemas should add proper cardinalities.  For
+		example, the <zeroOrMore> cardinality should be used if
+		the extension is to allow multiple elements, and the
+		<optional> cardinality should be used if the extension
+		is to allow a single optional element.
+	-->
+	<xs:group name="imdnExtension">
+		<xs:sequence>
+			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ns1:anyIMDN"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- delivery-notification <status> extension point -->
+	<xs:group name="deliveryExtension">
+		<!--<xs:sequence>
+			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ns1:anyIMDN"/>
+		</xs:sequence>-->
+		<xs:sequence>
+			<xs:element minOccurs="0" maxOccurs="1" ref="ns2:reason"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- display-notification <status> extension point -->
+	<xs:group name="displayExtension">
+		<xs:sequence>
+			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ns1:anyIMDN"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- processing-notification <status> extension point -->
+	<xs:group name="processingExtension">
+		<xs:sequence>
+			<xs:group minOccurs="0" maxOccurs="unbounded" ref="ns1:anyIMDN"/>
+		</xs:sequence>
+	</xs:group>
+	<!--
+		wildcard definition for complex elements (of mixed type)
+		unqualified or qualified in the imdn namespace.
+		Extension schemas MUST redefine this or the
+		individual, previous definitions that use this definition.
+		In other words, the extension schema MUST reduce the
+		allowable content in order to maintain deterministic
+		and unambiguous schemas with the interleave pattern.
+	-->
+	<xs:group name="anyIMDN">
+		<xs:sequence>
+			<xs:any namespace="##other" processContents="skip"/>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>
