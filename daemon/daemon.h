@@ -235,6 +235,7 @@ public:
 	void dumpCommandsHelpHtml();
 	void enableStatsEvents(bool enabled);
 	void enableLSD(bool enabled);
+	void enableAutoAnswer(bool enabled);
 	void callPlayingComplete(int id);
 	void setAutoVideo( bool enabled ){ mAutoVideo = enabled; }
 	inline bool autoVideo(){ return mAutoVideo; }
@@ -265,6 +266,7 @@ private:
 	std::string mHistfile;
 	bool mRunning;
 	bool mUseStatsEvents;
+	bool mAutoAnswer;
 	FILE *mLogFile;
 	bool mAutoVideo;
 	int mCallIds;
