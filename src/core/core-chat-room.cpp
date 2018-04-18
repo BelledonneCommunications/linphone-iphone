@@ -171,9 +171,9 @@ void CorePrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) 
 	}
 }
 
-void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chatRoom) {
+void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chatRoom, unsigned int notifyId) {
 	L_ASSERT(chatRoom->getState() == ChatRoom::State::Created);
-	mainDb->insertChatRoom(chatRoom);
+	mainDb->insertChatRoom(chatRoom, notifyId);
 }
 
 void CorePrivate::loadChatRooms () {

@@ -38,6 +38,8 @@ public:
 	void setCallSessionListener (CallSessionListener *listener);
 	void setChatRoomListener (ChatRoomListener *listener) { chatRoomListener = listener; }
 
+	unsigned int getLastNotifyId () const;
+
 	// ChatRoomListener
 	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
 	void onChatRoomInsertInDatabaseRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;

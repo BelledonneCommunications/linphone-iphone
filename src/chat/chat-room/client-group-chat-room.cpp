@@ -92,6 +92,7 @@ void ClientGroupChatRoomPrivate::multipartNotifyReceived (const string &body) {
 void ClientGroupChatRoomPrivate::setCallSessionListener (CallSessionListener *listener) {
 	L_Q();
 	L_Q_T(RemoteConference, qConference);
+
 	callSessionListener = listener;
 	shared_ptr<CallSession> session = qConference->getPrivate()->focus->getPrivate()->getSession();
 	if (session)
@@ -103,6 +104,11 @@ void ClientGroupChatRoomPrivate::setCallSessionListener (CallSessionListener *li
 	}
 }
 
+unsigned int ClientGroupChatRoomPrivate::getLastNotifyId () const {
+	L_Q_T(RemoteConference, qConference);
+	return qConference->getPrivate()->eventHandler->getLastNotify();
+}
+
 // -----------------------------------------------------------------------------
 
 void ClientGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
@@ -112,7 +118,10 @@ void ClientGroupChatRoomPrivate::onChatRoomInsertRequested (const shared_ptr<Abs
 
 void ClientGroupChatRoomPrivate::onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {
 	L_Q();
-	q->getCore()->getPrivate()->insertChatRoomWithDb(chatRoom);
+	L_Q_T(RemoteConference, qConference);
+
+	unsigned int notifyId = qConference->getPrivate()->eventHandler->getLastNotify();;
+	q->getCore()->getPrivate()->insertChatRoomWithDb(chatRoom, notifyId);
 }
 
 void ClientGroupChatRoomPrivate::onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) {

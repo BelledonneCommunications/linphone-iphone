@@ -316,7 +316,7 @@ long long MainDbPrivate::insertOrUpdateImportedBasicChatRoom (
 	return dbSession.getLastInsertId();
 }
 
-long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
+long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom, unsigned int notifyId) {
 	const ChatRoomId &chatRoomId = chatRoom->getChatRoomId();
 	const long long &peerSipAddressId = insertSipAddress(chatRoomId.getPeerAddress().asString());
 	const long long &localSipAddressId = insertSipAddress(chatRoomId.getLocalAddress().asString());
@@ -336,10 +336,14 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 	const string &subject = chatRoom->getSubject();
 	const int &flags = chatRoom->hasBeenLeft();
 	*dbSession.getBackendSession() << "INSERT INTO chat_room ("
-		"  peer_sip_address_id, local_sip_address_id, creation_time, last_update_time, capabilities, subject, flags"
-		") VALUES (:peerSipAddressId, :localSipAddressId, :creationTime, :lastUpdateTime, :capabilities, :subject, :flags)",
-		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime), soci::use(lastUpdateTime),
-		soci::use(capabilities), soci::use(subject), soci::use(flags);
+		"  peer_sip_address_id, local_sip_address_id, creation_time,"
+		"  last_update_time, capabilities, subject, flags, last_notify_id"
+		") VALUES ("
+		"  :peerSipAddressId, :localSipAddressId, :creationTime,"
+		"  :lastUpdateTime, :capabilities, :subject, :flags, :lastNotifyId"
+		")",
+		soci::use(peerSipAddressId), soci::use(localSipAddressId), soci::use(creationTime),
+		soci::use(lastUpdateTime), soci::use(capabilities), soci::use(subject), soci::use(flags), soci::use(notifyId);
 
 	id = dbSession.getLastInsertId();
 	if (!chatRoom->canHandleParticipants())
@@ -2372,11 +2376,11 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 	};
 }
 
-void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom) {
+void MainDb::insertChatRoom (const shared_ptr<AbstractChatRoom> &chatRoom, unsigned int notifyId) {
 	L_DB_TRANSACTION {
 		L_D();
 
-		d->insertChatRoom(chatRoom);
+		d->insertChatRoom(chatRoom, notifyId);
 		tr.commit();
 	};
 }

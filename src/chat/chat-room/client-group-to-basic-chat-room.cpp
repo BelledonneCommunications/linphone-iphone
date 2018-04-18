@@ -43,7 +43,8 @@ public:
 	void onChatRoomInsertInDatabaseRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
 		L_Q();
 		// Insert the proxy chat room instead of the real one
-		q->getCore()->getPrivate()->insertChatRoomWithDb(q->getSharedFromThis());
+		unsigned int notifyId = static_cast<ClientGroupChatRoomPrivate *>(chatRoom->getPrivate())->getLastNotifyId();
+		q->getCore()->getPrivate()->insertChatRoomWithDb(q->getSharedFromThis(), notifyId);
 	}
 
 	void onChatRoomDeleteRequested (const shared_ptr<AbstractChatRoom> &chatRoom) override {
