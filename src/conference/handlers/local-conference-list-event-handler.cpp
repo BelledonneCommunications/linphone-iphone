@@ -104,10 +104,6 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 				continue;
 			}
 
-			string notifyBody = handler->getNotifyForId(notifyId, (chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
-			if (notifyBody.empty())
-				continue;
-
 			shared_ptr<Participant> participant = chatRoom->findParticipant(participantAddr);
 			if (!participant) {
 				lError() << "Received subscribe for unknown participant: " << participantAddr <<  " for chat room: " << chatRoomId;
@@ -120,6 +116,10 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 				continue;
 			}
 			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
+
+			string notifyBody = handler->getNotifyForId(notifyId, (chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
+			if (notifyBody.empty())
+				continue;
 
 			noContent = false;
 			Content *content = new Content();
