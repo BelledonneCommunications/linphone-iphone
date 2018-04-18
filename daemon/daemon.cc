@@ -21,6 +21,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #ifndef _WIN32
 #include <sys/ioctl.h>
 #endif
+
+#include <signal.h>
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -82,6 +85,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "commands/play.h"
 
 #include "private.h"
+
 using namespace std;
 
 #define INT_TO_VOIDPTR(i) ((void*)(intptr_t)(i))
@@ -134,6 +138,7 @@ EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallSta
 	setBody(ostr.str().c_str());
 
 	bctbx_free(fromStr);
+	
 }
 
 DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
@@ -532,6 +537,10 @@ bool Daemon::pullEvent() {
 
 void Daemon::callStateChanged(LinphoneCall *call, LinphoneCallState state, const char *msg) {
 	mEventQueue.push(new EventResponse(this, call, state));
+	
+	if (state == LinphoneCallIncomingReceived && mAutoAnswer){
+		linphone_call_accept(call);
+	}
 }
 
 void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats) {
@@ -791,7 +800,8 @@ static void printHelp() {
 		"\t--disable-stats-events     Do not automatically raise RTP statistics events." << endl <<
 		"\t--enable-lsd               Use the linphone sound daemon." << endl <<
 		"\t-C                         Enable video capture." << endl <<
-		"\t-D                         Enable video display." << endl;
+		"\t-D                         Enable video display." << endl <<
+		"\t--auto-answer              Automatically answer incoming calls."<<endl;
 }
 
 void Daemon::startThread() {
@@ -862,6 +872,10 @@ void Daemon::enableStatsEvents(bool enabled){
 	mUseStatsEvents=enabled;
 }
 
+void Daemon::enableAutoAnswer(bool enabled){
+	mAutoAnswer = enabled;
+}
+
 void Daemon::enableLSD(bool enabled) {
 	if (mLSD) linphone_sound_daemon_destroy(mLSD);
 	linphone_core_use_sound_daemon(mLc, NULL);
@@ -899,6 +913,15 @@ Daemon::~Daemon() {
 #endif
 }
 
+static Daemon *the_app = NULL;
+
+static void sighandler(int signum){
+	if (the_app){
+		the_app->quit();
+		the_app = NULL;
+	}
+}
+
 int main(int argc, char *argv[]) {
 	const char *config_path = NULL;
 	const char *factory_config_path = NULL;
@@ -908,6 +931,7 @@ int main(int argc, char *argv[]) {
 	bool display_video = false;
 	bool stats_enabled = true;
 	bool lsd_enabled = false;
+	bool auto_answer = false;
 	int i;
 
 	for (i = 1; i < argc; ++i) {
@@ -956,15 +980,21 @@ int main(int argc, char *argv[]) {
 			display_video = true;
 		}else if (strcmp(argv[i],"--disable-stats-events")==0){
 			stats_enabled = false;
-		} else if (strcmp(argv[i], "--enable-lsd") == 0) {
+		}else if (strcmp(argv[i], "--enable-lsd") == 0) {
 			lsd_enabled = true;
+		}else if (strcmp(argv[i], "--auto-answer") == 0) {
+			auto_answer = true;
 		}
 		else{
 			fprintf(stderr, "Unrecognized option : %s", argv[i]);
 		}
 	}
 	Daemon app(config_path, factory_config_path, log_file, pipe_name, display_video, capture_video);
+	
+	the_app = &app;
+	signal(SIGINT, sighandler);
 	app.enableStatsEvents(stats_enabled);
 	app.enableLSD(lsd_enabled);
+	app.enableAutoAnswer(auto_answer);
 	return app.run();
 }
