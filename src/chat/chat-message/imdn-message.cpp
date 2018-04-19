@@ -40,6 +40,8 @@ void ImdnMessagePrivate::setState (ChatMessage::State newState, bool force) {
 		for (const auto &message : context.displayedMessages)
 			message->getPrivate()->updateInDb();
 		static_pointer_cast<ChatRoom>(context.chatRoom)->getPrivate()->getImdnHandler()->onImdnMessageDelivered(q->getSharedFromThis());
+	} else if (newState == ChatMessage::State::NotDelivered) {
+		// TODO: Maybe we should retry sending the IMDN message if we get an error here
 	}
 }
 
@@ -55,6 +57,8 @@ ImdnMessage::ImdnMessage (
 	const shared_ptr<AbstractChatRoom> &chatRoom,
 	const list<Imdn::MessageReason> &nonDeliveredMessages
 ) : ImdnMessage(Context(chatRoom, nonDeliveredMessages)) {}
+
+ImdnMessage::ImdnMessage (const std::shared_ptr<ImdnMessage> &message) : ImdnMessage(message->getPrivate()->context) {}
 
 ImdnMessage::ImdnMessage (const Context &context) : NotificationMessage(*new ImdnMessagePrivate(context)) {
 	L_D();

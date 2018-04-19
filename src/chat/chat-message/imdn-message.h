@@ -64,6 +64,7 @@ private:
 		const std::shared_ptr<AbstractChatRoom> &chatRoom,
 		const std::list<Imdn::MessageReason> &nonDeliveredMessages
 	);
+	ImdnMessage (const std::shared_ptr<ImdnMessage> &message);
 	ImdnMessage (const Context &context);
 
 	L_DECLARE_PRIVATE(ImdnMessage);

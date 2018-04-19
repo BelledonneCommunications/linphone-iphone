@@ -123,6 +123,10 @@ shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (const list<Imdn::Mes
 	return shared_ptr<ImdnMessage>(new ImdnMessage(q->getSharedFromThis(), nonDeliveredMessages));
 }
 
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (const shared_ptr<ImdnMessage> &message) {
+	return shared_ptr<ImdnMessage>(new ImdnMessage(message));
+}
+
 shared_ptr<IsComposingMessage> ChatRoomPrivate::createIsComposingMessage () {
 	L_Q();
 	return shared_ptr<IsComposingMessage>(new IsComposingMessage(q->getSharedFromThis(), *isComposingHandler.get(), isComposing));
@@ -316,6 +320,12 @@ ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const Chat
 	d->chatRoomId = chatRoomId;
 	d->imdnHandler.reset(new Imdn(this));
 	d->isComposingHandler.reset(new IsComposing(core->getCCore(), d));
+}
+
+ChatRoom::~ChatRoom () {
+	L_D();
+
+	d->imdnHandler.reset();
 }
 
 // -----------------------------------------------------------------------------

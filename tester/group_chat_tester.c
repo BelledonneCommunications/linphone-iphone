@@ -3144,7 +3144,7 @@ end:
 	linphone_core_manager_destroy(chloe);
 }
 
-static void aggregated_imdn_for_group_chat_room (void) {
+static void aggregated_imdn_for_group_chat_room_base (bool_t read_while_offline) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *chloe = linphone_core_manager_create("chloe_rc");
@@ -3196,9 +3196,19 @@ static void aggregated_imdn_for_group_chat_room (void) {
 
 	// Mark the messages as read on Marie's and Pauline's sides
 	linphone_chat_room_mark_as_read(marieCr);
-	linphone_chat_room_mark_as_read(paulineCr);
-	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 1000));
+	if (read_while_offline) {
+		linphone_core_set_network_reachable(pauline->lc, FALSE);
+		linphone_chat_room_mark_as_read(paulineCr);
+		wait_for_list(coresList, 0, 1, 2000);
+		linphone_core_set_network_reachable(pauline->lc, TRUE);
+	} else {
+		linphone_chat_room_mark_as_read(paulineCr);
+	}
+	BC_ASSERT_TRUE(wait_for_list(coresList, &chloe->stat.number_of_LinphoneMessageDisplayed, initialChloeStats.number_of_LinphoneMessageDisplayed + 1, 3000));
 	BC_ASSERT_EQUAL(chloe->stat.number_of_LinphoneMessageDeliveredToUser, 0, int, "%d");
+	if (read_while_offline) {
+		wait_for_list(coresList, 0, 1, 2000); // To prevent memory leak
+	}
 
 	linphone_chat_message_unref(chloeMessage3);
 	linphone_chat_message_unref(chloeMessage2);
@@ -3215,6 +3225,14 @@ end:
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(chloe);
+}
+
+static void aggregated_imdn_for_group_chat_room (void) {
+	aggregated_imdn_for_group_chat_room_base(FALSE);
+}
+
+static void aggregated_imdn_for_group_chat_room_read_while_offline (void) {
+	aggregated_imdn_for_group_chat_room_base(TRUE);
 }
 
 static void find_one_to_one_chat_room (void) {
@@ -3404,6 +3422,7 @@ test_t group_chat_tests[] = {
 	TEST_NO_TAG("Unique one-to-one chatroom re-created from the party that deleted it, with inactive devices", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2),
 	TEST_NO_TAG("IMDN for group chat room", imdn_for_group_chat_room),
 	TEST_NO_TAG("Aggregated IMDN for group chat room", aggregated_imdn_for_group_chat_room),
+	TEST_NO_TAG("Aggregated IMDN for group chat room read while offline", aggregated_imdn_for_group_chat_room_read_while_offline),
 	TEST_NO_TAG("Find one to one chat room", find_one_to_one_chat_room),
 	TEST_NO_TAG("New device after group chat room creation", group_chat_room_new_device_after_creation)
 };

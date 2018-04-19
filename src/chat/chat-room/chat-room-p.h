@@ -63,6 +63,7 @@ public:
 		const std::list<std::shared_ptr<ChatMessage>> &displayedMessages
 	);
 	std::shared_ptr<ImdnMessage> createImdnMessage (const std::list<Imdn::MessageReason> &nonDeliveredMessages);
+	std::shared_ptr<ImdnMessage> createImdnMessage (const std::shared_ptr<ImdnMessage> &message);
 	std::shared_ptr<IsComposingMessage> createIsComposingMessage ();
 	std::list<std::shared_ptr<ChatMessage>> findChatMessages (const std::string &messageId) const;
 

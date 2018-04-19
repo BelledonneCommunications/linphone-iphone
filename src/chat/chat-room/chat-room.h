@@ -37,6 +37,8 @@ public:
 
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);
 
+	~ChatRoom ();
+
 	const ChatRoomId &getChatRoomId () const override;
 
 	const IdentityAddress &getPeerAddress () const override;

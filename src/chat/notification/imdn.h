@@ -22,6 +22,7 @@
 
 #include "linphone/utils/general.h"
 
+#include "core/core-listener.h"
 #include "utils/background-task.h"
 
 #include "private.h"
@@ -34,7 +35,7 @@ class ChatMessage;
 class ChatRoom;
 class ImdnMessage;
 
-class Imdn {
+class Imdn : public CoreListener {
 public:
 	enum class Type {
 		Delivery,
@@ -57,6 +58,9 @@ public:
 	void notifyDisplay (const std::shared_ptr<ChatMessage> &message);
 
 	void onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message);
+
+	// CoreListener
+	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 
 	static std::string createXml (const std::string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason);
 	static void parse (const std::shared_ptr<ChatMessage> &chatMessage);

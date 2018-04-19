@@ -22,7 +22,7 @@
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-message/imdn-message.h"
 #include "chat/chat-room/chat-room-p.h"
-#include "core/core.h"
+#include "core/core-p.h"
 #include "logger/logger.h"
 #include "xml/imdn.h"
 #include "xml/linphone-imdn.h"
@@ -37,10 +37,13 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-Imdn::Imdn (ChatRoom *chatRoom) : chatRoom(chatRoom) {}
+Imdn::Imdn (ChatRoom *chatRoom) : chatRoom(chatRoom) {
+	chatRoom->getCore()->getPrivate()->registerListener(this);
+}
 
 Imdn::~Imdn () {
 	stopTimer();
+	chatRoom->getCore()->getPrivate()->unregisterListener(this);
 }
 
 // -----------------------------------------------------------------------------
@@ -76,7 +79,25 @@ void Imdn::notifyDisplay (const shared_ptr<ChatMessage> &message) {
 // -----------------------------------------------------------------------------
 
 void Imdn::onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message) {
+	// If an IMDN has been successfully delivered, remove it from the list so that
+	// it does not get sent again
 	sentImdnMessages.remove(message);
+}
+
+// -----------------------------------------------------------------------------
+
+void Imdn::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
+	if (sipNetworkReachable) {
+		// When the SIP network gets up, retry sending every IMDN message that has not
+		// successfully been delivered
+		auto messages = sentImdnMessages;
+		sentImdnMessages.clear();
+		for (const auto &message : messages) {
+			auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(message);
+			sentImdnMessages.push_back(imdnMessage);
+			imdnMessage->send();
+		}
+	}
 }
 
 // -----------------------------------------------------------------------------
