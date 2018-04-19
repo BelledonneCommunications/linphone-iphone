@@ -82,7 +82,7 @@ rm -rf $RPM_BUILD_ROOT
 %files 
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README.md TODO
-%if @ENABLE_DAEMON@ || @ENABLE_CONSOLE_UI@
+%if @ENABLE_DAEMON@ || @ENABLE_CONSOLE_UI@ || @ENABLE_TOOLS@
 %{_bindir}/*
 %endif
 %{_libdir}/*.so.*
