@@ -69,6 +69,12 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=%{buildroot}
 
+mkdir -p $RPM_BUILD_ROOT/lib/systemd/system
+mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
+install -p -m 0644 build/rpm/lp-autoanswer.service $RPM_BUILD_ROOT/lib/systemd/system
+install -p -m 0644 build/rpm/lp-autoanswer.conf $RPM_BUILD_ROOT/etc/sysconfig
+mv $RPM_BUILD_ROOT/etc/sysconfig/lp-autoanswer.conf $RPM_BUILD_ROOT/etc/sysconfig/lp-autoanswer
+
 %check
 #%{ctest_name} -V %{?_smp_mflags}
 
@@ -89,6 +95,8 @@ rm -rf $RPM_BUILD_ROOT
 #%{_mandir}/*
 %{_datadir}/linphone
 %{_datadir}/sounds/linphone
+/etc/sysconfig/lp-autoanswer
+/lib/systemd/system/lp-autoanswer.service
 
 %files devel
 %defattr(-,root,root)
