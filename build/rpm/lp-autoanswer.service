@@ -1,0 +1,11 @@
+[Unit]
+Description=Linphone autoanswer service
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/sysconfig/lp-autoanswer
+ExecStart=/usr/bin/lp-auto-answer $OPTIONS
+
+[Install]
+WantedBy=multi-user.target

@@ -51,3 +51,7 @@ bc_generate_rpm_specfile("rpm/liblinphone.spec.cmake" "${PROJECT_SOURCE_DIR}/lib
 
 include(CPack)
 
+
+install(FILES rpm/lp-autoanswer.service DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/systemd/system)
+install(FILES rpm/lp-autoanswer.conf DESTINATION ${CMAKE_INSTALL_PREFIX}/etc/sysconfig
+	RENAME lp-autoanswer)
