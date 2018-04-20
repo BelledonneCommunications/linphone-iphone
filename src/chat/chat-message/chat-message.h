@@ -66,8 +66,6 @@ public:
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
-	void sendDeliveryNotification (LinphoneReason reason);
-	void sendDisplayNotification ();
 	void setIsSecured (bool isSecured);
 	// ----- TODO: Remove me.
 

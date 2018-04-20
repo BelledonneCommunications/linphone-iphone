@@ -154,8 +154,6 @@ public:
 
 	bool downloadFile ();
 
-	void sendImdn (Imdn::Type imdnType, LinphoneReason reason);
-
 	void notifyReceiving ();
 	LinphoneReason receive ();
 	void send ();

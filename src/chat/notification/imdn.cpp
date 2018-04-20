@@ -17,8 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <algorithm>
+
 #include "chat/chat-message/chat-message-p.h"
-#include "chat/chat-room/chat-room.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "core/core.h"
 #include "logger/logger.h"
 
@@ -31,6 +33,46 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 const string Imdn::imdnPrefix = "/imdn:imdn";
+
+// -----------------------------------------------------------------------------
+
+Imdn::Imdn (ChatRoom *chatRoom) : chatRoom(chatRoom) {}
+
+Imdn::~Imdn () {
+	stopTimer();
+}
+
+// -----------------------------------------------------------------------------
+
+void Imdn::notifyDelivery (const shared_ptr<ChatMessage> &message) {
+	if (find(deliveredMessages.begin(), deliveredMessages.end(), message) == deliveredMessages.end()) {
+		deliveredMessages.push_back(message);
+		startTimer();
+	}
+}
+
+void Imdn::notifyDeliveryError (const shared_ptr<ChatMessage> &message, LinphoneReason reason) {
+	auto it = find_if(nonDeliveredMessages.begin(), nonDeliveredMessages.end(), [message](const MessageReason mr) {
+		return message == mr.message;
+	});
+	if (it == nonDeliveredMessages.end()) {
+		nonDeliveredMessages.emplace_back(message, reason);
+		startTimer();
+	}
+}
+
+void Imdn::notifyDisplay (const shared_ptr<ChatMessage> &message) {
+	auto it = find(deliveredMessages.begin(), deliveredMessages.end(), message);
+	if (it != deliveredMessages.end())
+		deliveredMessages.erase(it);
+
+	if (find(displayedMessages.begin(), displayedMessages.end(), message) == displayedMessages.end()) {
+		displayedMessages.push_back(message);
+		startTimer();
+	}
+}
+
+// -----------------------------------------------------------------------------
 
 string Imdn::createXml (const string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason) {
 	xmlBufferPtr buf;
@@ -144,6 +186,8 @@ void Imdn::parse (const shared_ptr<ChatMessage> &chatMessage) {
 	linphone_xmlparsing_context_destroy(xmlCtx);
 }
 
+// -----------------------------------------------------------------------------
+
 void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context_t *xmlCtx) {
 	char xpathStr[MAX_XPATH_LENGTH];
 	char *messageIdStr = nullptr;
@@ -206,6 +250,40 @@ void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context
 		linphone_free_xml_text_content(messageIdStr);
 	if (datetimeStr)
 		linphone_free_xml_text_content(datetimeStr);
+}
+
+int Imdn::timerExpired (void *data, unsigned int revents) {
+	Imdn *d = reinterpret_cast<Imdn *>(data);
+	d->stopTimer();
+	d->send();
+	return BELLE_SIP_STOP;
+}
+
+// -----------------------------------------------------------------------------
+
+void Imdn::send () {
+	if (!deliveredMessages.empty() || !displayedMessages.empty())
+		chatRoom->getPrivate()->createImdnMessage(deliveredMessages, displayedMessages)->send();
+	if (!nonDeliveredMessages.empty())
+		chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages)->send();
+}
+
+void Imdn::startTimer () {
+	unsigned int duration = 500;
+	if (!timer)
+		timer = chatRoom->getCore()->getCCore()->sal->create_timer(timerExpired, this, duration, "imdn timeout");
+	else
+		belle_sip_source_set_timeout(timer, duration);
+}
+
+void Imdn::stopTimer () {
+	if (timer) {
+		auto core = chatRoom->getCore()->getCCore();
+		if (core && core->sal)
+			core->sal->cancel_timer(timer);
+		belle_sip_object_unref(timer);
+		timer = nullptr;
+	}
 }
 
 LINPHONE_END_NAMESPACE

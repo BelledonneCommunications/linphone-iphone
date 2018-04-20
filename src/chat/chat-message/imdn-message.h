@@ -1,5 +1,5 @@
 /*
- * notification-message-p.h
+ * imdn-message.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,31 +17,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_NOTIFICATION_MESSAGE_P_H_
-#define _L_NOTIFICATION_MESSAGE_P_H_
+#ifndef _L_IMDN_MESSAGE_H_
+#define _L_IMDN_MESSAGE_H_
 
-#include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-message/notification-message.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class NotificationMessagePrivate : public ChatMessagePrivate {
-	friend class ImdnMessage;
-	friend class IsComposingMessage;
+class LINPHONE_PUBLIC ImdnMessage : public NotificationMessage {
+public:
+	friend class ChatRoomPrivate;
+
+	L_OVERRIDE_SHARED_FROM_THIS(ImdnMessage);
+
+	virtual ~ImdnMessage () = default;
 
 private:
-	NotificationMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir)
-		: ChatMessagePrivate(cr, dir) {}
+	ImdnMessage (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const std::list<const std::shared_ptr<ChatMessage>> &deliveredMessages,
+		const std::list<const std::shared_ptr<ChatMessage>> &displayedMessages
+	);
+	ImdnMessage (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		const std::list<Imdn::MessageReason> &nonDeliveredMessages
+	);
 
-	void setDisplayNotificationRequired (bool value) override {}
-	void setNegativeDeliveryNotificationRequired (bool value) override {}
-	void setPositiveDeliveryNotificationRequired (bool value) override {}
-
-	L_DECLARE_PUBLIC(NotificationMessage);
+	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DISABLE_COPY(ImdnMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_NOTIFICATION_MESSAGE_P_H_
+#endif // ifndef _L_IMDN_MESSAGE_H_

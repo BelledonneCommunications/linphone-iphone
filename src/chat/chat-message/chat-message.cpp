@@ -179,7 +179,7 @@ void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 
 	if (state == ChatMessage::State::FileTransferDone && !hasFileTransferContent()) {
 		// We wait until the file has been downloaded to send the displayed IMDN
-		q->sendDisplayNotification();
+		static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDisplayNotification(q->getSharedFromThis());
 		setState(ChatMessage::State::Displayed);
 	} else {
 		updateInDb();
@@ -454,26 +454,6 @@ void ChatMessagePrivate::setChatRoom (const shared_ptr<AbstractChatRoom> &cr) {
 
 // -----------------------------------------------------------------------------
 
-void ChatMessagePrivate::sendImdn (Imdn::Type imdnType, LinphoneReason reason) {
-	L_Q();
-
-	auto chatRoomPrivate = static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate());
-	shared_ptr<ChatMessage> msg = chatRoomPrivate->createNotificationMessage(ChatMessage::Direction::Outgoing);
-
-	Content *content = new Content();
-	content->setContentDisposition(ContentDisposition::Notification);
-	content->setContentType(ContentType::Imdn);
-	content->setBody(Imdn::createXml(imdnId, time, imdnType, reason));
-	msg->addContent(content);
-
-	if (reason != LinphoneReasonNone)
-		msg->getPrivate()->setEncryptionPrevented(true);
-
-	msg->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
-
-	msg->getPrivate()->send();
-}
-
 static void forceUtf8Content (Content &content) {
 	// TODO: Deal with other content type in the future.
 	ContentType contentType = content.getContentType();
@@ -524,7 +504,7 @@ void ChatMessagePrivate::notifyReceiving () {
 	q->getChatRoom()->getPrivate()->notifyChatMessageReceived(q->getSharedFromThis());
 
 	if (getPositiveDeliveryNotificationRequired())
-		q->sendDeliveryNotification(LinphoneReasonNone);
+		static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDeliveryNotification(q->getSharedFromThis());
 }
 
 LinphoneReason ChatMessagePrivate::receive () {
@@ -549,7 +529,10 @@ LinphoneReason ChatMessagePrivate::receive () {
 			chatRoom->getPrivate()->notifyUndecryptableChatMessageReceived(q->getSharedFromThis());
 			reason = linphone_error_code_to_reason(errorCode);
 			if (getNegativeDeliveryNotificationRequired()) {
-				q->sendDeliveryNotification(reason);
+				static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDeliveryErrorNotification(
+					q->getSharedFromThis(),
+					reason
+				);
 			}
 			return reason;
 		} else if (result == ChatMessageModifier::Result::Suspended) {
@@ -635,7 +618,10 @@ LinphoneReason ChatMessagePrivate::receive () {
 	if (errorCode > 0) {
 		reason = linphone_error_code_to_reason(errorCode);
 		if (getNegativeDeliveryNotificationRequired()) {
-			q->sendDeliveryNotification(reason);
+			static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDeliveryErrorNotification(
+				q->getSharedFromThis(),
+				reason
+			);
 		}
 		return reason;
 	}
@@ -1121,22 +1107,6 @@ void ChatMessage::send () {
 
 	d->loadContentsFromDatabase();
 	getChatRoom()->getPrivate()->sendChatMessage(getSharedFromThis());
-}
-
-void ChatMessage::sendDeliveryNotification (LinphoneReason reason) {
-	L_D();
-
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(getCore()->getCCore());
-	if (linphone_im_notif_policy_get_send_imdn_delivered(policy))
-		d->sendImdn(Imdn::Type::Delivery, reason);
-}
-
-void ChatMessage::sendDisplayNotification () {
-	L_D();
-
-	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(getCore()->getCCore());
-	if (linphone_im_notif_policy_get_send_imdn_displayed(policy))
-		d->sendImdn(Imdn::Type::Display, LinphoneReasonNone);
 }
 
 bool ChatMessage::downloadFile(FileTransferContent *fileTransferContent) {

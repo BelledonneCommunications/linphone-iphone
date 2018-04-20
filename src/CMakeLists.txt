@@ -35,6 +35,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/remote-conference-call.h
 	chat/chat-message/chat-message-p.h
 	chat/chat-message/chat-message.h
+	chat/chat-message/imdn-message.h
 	chat/chat-message/is-composing-message.h
 	chat/chat-message/notification-message.h
 	chat/chat-message/notification-message-p.h
@@ -193,6 +194,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	call/local-conference-call.cpp
 	call/remote-conference-call.cpp
 	chat/chat-message/chat-message.cpp
+	chat/chat-message/imdn-message.cpp
 	chat/chat-message/is-composing-message.cpp
 	chat/chat-message/notification-message.cpp
 	chat/chat-room/abstract-chat-room.cpp
