@@ -706,7 +706,7 @@ long long MainDbPrivate::insertConferenceEvent (const shared_ptr<EventLog> &even
 			soci::use(curChatRoomId);
 
 		if (eventLog->getType() == EventLog::Type::ConferenceTerminated)
-			*session << "UPDATE chat_room SET flags = 1 WHERE id = :chatRoomId", soci::use(curChatRoomId);
+			*session << "UPDATE chat_room SET flags = 1, last_notify_id = 0 WHERE id = :chatRoomId", soci::use(curChatRoomId);
 	}
 
 	if (chatRoomId)

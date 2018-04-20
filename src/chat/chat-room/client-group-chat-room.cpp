@@ -533,6 +533,7 @@ void ClientGroupChatRoom::onConferenceKeywordsChanged (const vector<string> &key
 void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
+
 	dConference->eventHandler->unsubscribe();
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
