@@ -43,7 +43,9 @@ public:
 
 // -----------------------------------------------------------------------------
 
-FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {}
+FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {
+	setContentType(ContentType::FileTransfer);
+}
 
 FileTransferContent::FileTransferContent (const FileTransferContent &other) : Content(*new FileTransferContentPrivate) {
 	L_D();
