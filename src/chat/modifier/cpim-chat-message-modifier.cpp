@@ -46,6 +46,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	cpimMessage.addMessageHeader(cpimToHeader);
 
 	if (message->getPrivate()->getPositiveDeliveryNotificationRequired()
+		|| message->getPrivate()->getNegativeDeliveryNotificationRequired()
 		|| message->getPrivate()->getDisplayNotificationRequired()
 	) {
 		const string imdnNamespace = "imdn";
@@ -66,6 +67,8 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		vector<string> dispositionNotificationValues;
 		if (message->getPrivate()->getPositiveDeliveryNotificationRequired())
 			dispositionNotificationValues.emplace_back("positive-delivery");
+		if (message->getPrivate()->getNegativeDeliveryNotificationRequired())
+			dispositionNotificationValues.emplace_back("negative-delivery");
 		if (message->getPrivate()->getDisplayNotificationRequired())
 			dispositionNotificationValues.emplace_back("display");
 		dispositionNotificationHeader.setValue(Utils::join(dispositionNotificationValues, ", "));
@@ -184,6 +187,8 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 				for (const auto &value : values)
 					if (value == "positive-delivery")
 						message->getPrivate()->setPositiveDeliveryNotificationRequired(true);
+					else if (value == "negative-delivery")
+						message->getPrivate()->setNegativeDeliveryNotificationRequired(true);
 					else if (value == "display")
 						message->getPrivate()->setDisplayNotificationRequired(true);
 			}

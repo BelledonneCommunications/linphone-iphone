@@ -548,7 +548,9 @@ LinphoneReason ChatMessagePrivate::receive () {
 			/* Unable to decrypt message */
 			chatRoom->getPrivate()->notifyUndecryptableChatMessageReceived(q->getSharedFromThis());
 			reason = linphone_error_code_to_reason(errorCode);
-			q->sendDeliveryNotification(reason);
+			if (getNegativeDeliveryNotificationRequired()) {
+				q->sendDeliveryNotification(reason);
+			}
 			return reason;
 		} else if (result == ChatMessageModifier::Result::Suspended) {
 			currentRecvStep |= ChatMessagePrivate::Step::Encryption;
@@ -632,7 +634,9 @@ LinphoneReason ChatMessagePrivate::receive () {
 
 	if (errorCode > 0) {
 		reason = linphone_error_code_to_reason(errorCode);
-		q->sendDeliveryNotification(reason);
+		if (getNegativeDeliveryNotificationRequired()) {
+			q->sendDeliveryNotification(reason);
+		}
 		return reason;
 	}
 
