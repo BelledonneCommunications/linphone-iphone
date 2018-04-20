@@ -29,13 +29,13 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 namespace PriorityHeader {
-	constexpr const char HeaderName[] = "Priority";
+	constexpr char HeaderName[] = "Priority";
 
 	// Values
-	constexpr const char NonUrgent[] = "non-urgent";
-	constexpr const char Urgent[] = "urgent";
-	constexpr const char Emergency[] = "emergency";
-	constexpr const char Normal[] = "normal";
+	constexpr char NonUrgent[] = "non-urgent";
+	constexpr char Urgent[] = "urgent";
+	constexpr char Emergency[] = "emergency";
+	constexpr char Normal[] = "normal";
 }
 
 LINPHONE_END_NAMESPACE
