@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 EnvironmentFile=/etc/sysconfig/lp-autoanswer
-ExecStart=/usr/bin/lp-auto-answer $OPTIONS
+ExecStart=/opt/com.belledonne-communications/linphone/bin/lp-auto-answer $OPTIONS
 
 [Install]
 WantedBy=multi-user.target
