@@ -53,6 +53,8 @@ public:
 	Imdn (ChatRoom *chatRoom);
 	~Imdn ();
 
+	int getDisplayNotificationCount () const;
+
 	void notifyDelivery (const std::shared_ptr<ChatMessage> &message);
 	void notifyDeliveryError (const std::shared_ptr<ChatMessage> &message, LinphoneReason reason);
 	void notifyDisplay (const std::shared_ptr<ChatMessage> &message);

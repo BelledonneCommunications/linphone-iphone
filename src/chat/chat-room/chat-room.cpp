@@ -416,7 +416,11 @@ int ChatRoom::getChatMessageCount () const {
 }
 
 int ChatRoom::getUnreadChatMessageCount () const {
-	return getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
+	L_D();
+	int dbUnreadCount = getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
+	int notifiedCount = d->imdnHandler->getDisplayNotificationCount();
+	L_ASSERT(dbUnreadCount >= notifiedCount);
+	return dbUnreadCount - notifiedCount;
 }
 
 // -----------------------------------------------------------------------------

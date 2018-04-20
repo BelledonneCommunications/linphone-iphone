@@ -48,6 +48,12 @@ Imdn::~Imdn () {
 
 // -----------------------------------------------------------------------------
 
+int Imdn::getDisplayNotificationCount () const {
+	return static_cast<int>(displayedMessages.size());
+}
+
+// -----------------------------------------------------------------------------
+
 void Imdn::notifyDelivery (const shared_ptr<ChatMessage> &message) {
 	if (find(deliveredMessages.begin(), deliveredMessages.end(), message) == deliveredMessages.end()) {
 		deliveredMessages.push_back(message);
