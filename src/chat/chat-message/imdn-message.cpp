@@ -17,9 +17,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "chat/chat-message/notification-message-p.h"
-#include "chat/chat-message/imdn-message.h"
+#include "chat/chat-message/imdn-message-p.h"
+#include "chat/chat-room/chat-room-p.h"
 #include "content/content-disposition.h"
+#include "logger/logger.h"
 #include "sip-tools/sip-headers.h"
 
 // =============================================================================
@@ -30,38 +31,49 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
+void ImdnMessagePrivate::setState (ChatMessage::State newState, bool force) {
+	L_Q();
+
+	if (newState == ChatMessage::State::Delivered) {
+		for (const auto &message : context.deliveredMessages)
+			message->getPrivate()->updateInDb();
+		for (const auto &message : context.displayedMessages)
+			message->getPrivate()->updateInDb();
+		static_pointer_cast<ChatRoom>(context.chatRoom)->getPrivate()->getImdnHandler()->onImdnMessageDelivered(q->getSharedFromThis());
+	}
+}
+
+// -----------------------------------------------------------------------------
+
 ImdnMessage::ImdnMessage (
 	const shared_ptr<AbstractChatRoom> &chatRoom,
-	const list<const shared_ptr<ChatMessage>> &deliveredMessages,
-	const list<const shared_ptr<ChatMessage>> &displayedMessages
-) : NotificationMessage(*new NotificationMessagePrivate(chatRoom, ChatMessage::Direction::Outgoing)) {
+	const list<shared_ptr<ChatMessage>> &deliveredMessages,
+	const list<shared_ptr<ChatMessage>> &displayedMessages
+) : ImdnMessage(Context(chatRoom, deliveredMessages, displayedMessages)) {}
+
+ImdnMessage::ImdnMessage (
+	const shared_ptr<AbstractChatRoom> &chatRoom,
+	const list<Imdn::MessageReason> &nonDeliveredMessages
+) : ImdnMessage(Context(chatRoom, nonDeliveredMessages)) {}
+
+ImdnMessage::ImdnMessage (const Context &context) : NotificationMessage(*new ImdnMessagePrivate(context)) {
 	L_D();
 
-	for (const auto &message : deliveredMessages) {
+	for (const auto &message : d->context.deliveredMessages) {
 		Content *content = new Content();
 		content->setContentDisposition(ContentDisposition::Notification);
 		content->setContentType(ContentType::Imdn);
 		content->setBody(Imdn::createXml(message->getImdnMessageId(), message->getTime(), Imdn::Type::Delivery, LinphoneReasonNone));
 		addContent(content);
 	}
-	for (const auto &message : displayedMessages) {
+	for (const auto &message : d->context.displayedMessages) {
 		Content *content = new Content();
 		content->setContentDisposition(ContentDisposition::Notification);
 		content->setContentType(ContentType::Imdn);
 		content->setBody(Imdn::createXml(message->getImdnMessageId(), message->getTime(), Imdn::Type::Display, LinphoneReasonNone));
 		addContent(content);
 	}
-
-	d->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
-}
-
-ImdnMessage::ImdnMessage (
-	const shared_ptr<AbstractChatRoom> &chatRoom,
-	const list<Imdn::MessageReason> &nonDeliveredMessages
-) : NotificationMessage(*new NotificationMessagePrivate(chatRoom, ChatMessage::Direction::Outgoing)) {
-	L_D();
-
-	for (const auto &mr : nonDeliveredMessages) {
+	for (const auto &mr : d->context.nonDeliveredMessages) {
 		Content *content = new Content();
 		content->setContentDisposition(ContentDisposition::Notification);
 		content->setContentType(ContentType::Imdn);
@@ -70,7 +82,8 @@ ImdnMessage::ImdnMessage (
 	}
 
 	d->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
-	d->setEncryptionPrevented(true);
+	if (!d->context.nonDeliveredMessages.empty())
+		d->setEncryptionPrevented(true);
 }
 
 LINPHONE_END_NAMESPACE

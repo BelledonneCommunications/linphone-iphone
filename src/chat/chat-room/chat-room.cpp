@@ -25,6 +25,7 @@
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/chat-message/imdn-message.h"
 #include "chat/chat-message/is-composing-message.h"
+#include "chat/chat-message/notification-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
@@ -109,22 +110,22 @@ shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Directi
 	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
 }
 
-shared_ptr<ChatMessage> ChatRoomPrivate::createImdnMessage (
-	const list<const shared_ptr<ChatMessage>> &deliveredMessages,
-	const list<const shared_ptr<ChatMessage>> &displayedMessages
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (
+	const list<shared_ptr<ChatMessage>> &deliveredMessages,
+	const list<shared_ptr<ChatMessage>> &displayedMessages
 ) {
 	L_Q();
-	return shared_ptr<ChatMessage>(new ImdnMessage(q->getSharedFromThis(), deliveredMessages, displayedMessages));
+	return shared_ptr<ImdnMessage>(new ImdnMessage(q->getSharedFromThis(), deliveredMessages, displayedMessages));
 }
 
-shared_ptr<ChatMessage> ChatRoomPrivate::createImdnMessage (const list<Imdn::MessageReason> &nonDeliveredMessages) {
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (const list<Imdn::MessageReason> &nonDeliveredMessages) {
 	L_Q();
-	return shared_ptr<ChatMessage>(new ImdnMessage(q->getSharedFromThis(), nonDeliveredMessages));
+	return shared_ptr<ImdnMessage>(new ImdnMessage(q->getSharedFromThis(), nonDeliveredMessages));
 }
 
-shared_ptr<ChatMessage> ChatRoomPrivate::createIsComposingMessage () {
+shared_ptr<IsComposingMessage> ChatRoomPrivate::createIsComposingMessage () {
 	L_Q();
-	return shared_ptr<ChatMessage>(new IsComposingMessage(q->getSharedFromThis(), *isComposingHandler.get(), isComposing));
+	return shared_ptr<IsComposingMessage>(new IsComposingMessage(q->getSharedFromThis(), *isComposingHandler.get(), isComposing));
 }
 
 list<shared_ptr<ChatMessage>> ChatRoomPrivate::findChatMessages (const string &messageId) const {
@@ -148,11 +149,14 @@ void ChatRoomPrivate::sendDeliveryNotification (const shared_ptr<ChatMessage> &m
 		imdnHandler->notifyDelivery(message);
 }
 
-void ChatRoomPrivate::sendDisplayNotification (const shared_ptr<ChatMessage> &message) {
+bool ChatRoomPrivate::sendDisplayNotification (const shared_ptr<ChatMessage> &message) {
 	L_Q();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
-	if (linphone_im_notif_policy_get_send_imdn_displayed(policy))
+	if (linphone_im_notif_policy_get_send_imdn_displayed(policy)) {
 		imdnHandler->notifyDisplay(message);
+		return true;
+	}
+	return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -468,16 +472,21 @@ shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId, Chat
 void ChatRoom::markAsRead () {
 	L_D();
 
+	bool globallyMarkAsReadInDb = true;
 	CorePrivate *dCore = getCore()->getPrivate();
 	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId)) {
 		// Do not send display notification for file transfer until it has been downloaded (it won't have a file transfer content anymore)
 		if (!chatMessage->getPrivate()->hasFileTransferContent()) {
-			d->sendDisplayNotification(chatMessage);
-			chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, true); // True will ensure the setState won't update the database so it will be done below by the markChatMessagesAsRead
+			bool doNotStoreInDb = d->sendDisplayNotification(chatMessage);
+			// Force the state so it is stored directly in DB, but when the IMDN has successfully been delivered
+			chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, doNotStoreInDb);
+			if (doNotStoreInDb)
+				globallyMarkAsReadInDb = false;
 		}
 	}
 
-	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
+	if (globallyMarkAsReadInDb)
+		dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
 }
 
 LINPHONE_END_NAMESPACE

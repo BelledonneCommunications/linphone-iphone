@@ -179,8 +179,9 @@ void ChatMessagePrivate::setState (ChatMessage::State newState, bool force) {
 
 	if (state == ChatMessage::State::FileTransferDone && !hasFileTransferContent()) {
 		// We wait until the file has been downloaded to send the displayed IMDN
-		static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDisplayNotification(q->getSharedFromThis());
-		setState(ChatMessage::State::Displayed);
+		bool doNotStoreInDb = static_cast<ChatRoomPrivate *>(q->getChatRoom()->getPrivate())->sendDisplayNotification(q->getSharedFromThis());
+		// Force the state so it is stored directly in DB, but when the IMDN has successfully been delivered
+		setState(ChatMessage::State::Displayed, doNotStoreInDb);
 	} else {
 		updateInDb();
 	}

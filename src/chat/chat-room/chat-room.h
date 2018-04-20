@@ -32,6 +32,7 @@ class LINPHONE_PUBLIC ChatRoom : public AbstractChatRoom {
 public:
 	friend class ChatMessagePrivate;
 	friend class Imdn;
+	friend class ImdnMessagePrivate;
 	friend class ProxyChatRoomPrivate;
 
 	L_OVERRIDE_SHARED_FROM_THIS(ChatRoom);

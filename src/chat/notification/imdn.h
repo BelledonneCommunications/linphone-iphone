@@ -32,6 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ChatMessage;
 class ChatRoom;
+class ImdnMessage;
 
 class Imdn {
 public:
@@ -55,6 +56,8 @@ public:
 	void notifyDeliveryError (const std::shared_ptr<ChatMessage> &message, LinphoneReason reason);
 	void notifyDisplay (const std::shared_ptr<ChatMessage> &message);
 
+	void onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message);
+
 	static std::string createXml (const std::string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason);
 	static void parse (const std::shared_ptr<ChatMessage> &chatMessage);
 
@@ -67,9 +70,10 @@ private:
 
 private:
 	ChatRoom *chatRoom = nullptr;
-	std::list<const std::shared_ptr<ChatMessage>> deliveredMessages;
-	std::list<const std::shared_ptr<ChatMessage>> displayedMessages;
+	std::list<std::shared_ptr<ChatMessage>> deliveredMessages;
+	std::list<std::shared_ptr<ChatMessage>> displayedMessages;
 	std::list<MessageReason> nonDeliveredMessages;
+	std::list<std::shared_ptr<ImdnMessage>> sentImdnMessages;
 	belle_sip_source_t *timer = nullptr;
 	BackgroundTask bgTask { "IMDN sending" };
 };

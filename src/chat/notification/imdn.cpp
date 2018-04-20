@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/imdn-message.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core.h"
 #include "logger/logger.h"
@@ -70,6 +71,12 @@ void Imdn::notifyDisplay (const shared_ptr<ChatMessage> &message) {
 		displayedMessages.push_back(message);
 		startTimer();
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+void Imdn::onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message) {
+	sentImdnMessages.remove(message);
 }
 
 // -----------------------------------------------------------------------------
@@ -153,10 +160,22 @@ int Imdn::timerExpired (void *data, unsigned int revents) {
 // -----------------------------------------------------------------------------
 
 void Imdn::send () {
-	if (!deliveredMessages.empty() || !displayedMessages.empty())
-		chatRoom->getPrivate()->createImdnMessage(deliveredMessages, displayedMessages)->send();
-	if (!nonDeliveredMessages.empty())
-		chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages)->send();
+	bool networkReachable = linphone_core_is_network_reachable(chatRoom->getCore()->getCCore());
+	if (!deliveredMessages.empty() || !displayedMessages.empty()) {
+		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(deliveredMessages, displayedMessages);
+		sentImdnMessages.push_back(imdnMessage);
+		if (networkReachable)
+			imdnMessage->send();
+		deliveredMessages.clear();
+		displayedMessages.clear();
+	}
+	if (!nonDeliveredMessages.empty()) {
+		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages);
+		sentImdnMessages.push_back(imdnMessage);
+		if (networkReachable)
+			imdnMessage->send();
+		nonDeliveredMessages.clear();
+	}
 }
 
 void Imdn::startTimer () {

@@ -1,5 +1,5 @@
 /*
- * notification-message-p.h
+ * imdn-message-p.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,34 +17,28 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_NOTIFICATION_MESSAGE_P_H_
-#define _L_NOTIFICATION_MESSAGE_P_H_
+#ifndef _L_IMDN_MESSAGE_P_H_
+#define _L_IMDN_MESSAGE_P_H_
 
-#include "chat/chat-message/chat-message-p.h"
-#include "chat/chat-message/notification-message.h"
+#include "chat/chat-message/imdn-message.h"
+#include "chat/chat-message/notification-message-p.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class NotificationMessagePrivate : public ChatMessagePrivate {
-	friend class ImdnMessage;
-	friend class IsComposingMessage;
-
-protected:
-	NotificationMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir)
-		: ChatMessagePrivate(cr, dir) {}
-
-	void setState (ChatMessage::State newState, bool force = false) override {};
-
+class ImdnMessagePrivate : public NotificationMessagePrivate {
 private:
-	void setDisplayNotificationRequired (bool value) override {}
-	void setNegativeDeliveryNotificationRequired (bool value) override {}
-	void setPositiveDeliveryNotificationRequired (bool value) override {}
+	ImdnMessagePrivate (const ImdnMessage::Context &context)
+		: NotificationMessagePrivate(context.chatRoom, ChatMessage::Direction::Outgoing), context(context) {}
 
-	L_DECLARE_PUBLIC(NotificationMessage);
+	void setState (ChatMessage::State newState, bool force = false) override;
+
+	ImdnMessage::Context context;
+
+	L_DECLARE_PUBLIC(ImdnMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_NOTIFICATION_MESSAGE_P_H_
+#endif // ifndef _L_IMDN_MESSAGE_P_H_

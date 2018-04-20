@@ -50,6 +50,7 @@ class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class CpimChatMessageModifier;
 	friend class FileTransferChatMessageModifier;
 	friend class Imdn;
+	friend class ImdnMessagePrivate;
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class RealTimeTextChatRoomPrivate;

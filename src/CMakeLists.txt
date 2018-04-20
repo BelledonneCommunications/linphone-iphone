@@ -36,6 +36,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	chat/chat-message/chat-message-p.h
 	chat/chat-message/chat-message.h
 	chat/chat-message/imdn-message.h
+	chat/chat-message/imdn-message-p.h
 	chat/chat-message/is-composing-message.h
 	chat/chat-message/notification-message.h
 	chat/chat-message/notification-message-p.h

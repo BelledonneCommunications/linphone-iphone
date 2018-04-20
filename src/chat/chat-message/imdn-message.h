@@ -21,10 +21,13 @@
 #define _L_IMDN_MESSAGE_H_
 
 #include "chat/chat-message/notification-message.h"
+#include "chat/notification/imdn.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
+
+class ImdnMessagePrivate;
 
 class LINPHONE_PUBLIC ImdnMessage : public NotificationMessage {
 public:
@@ -35,17 +38,35 @@ public:
 	virtual ~ImdnMessage () = default;
 
 private:
+	struct Context {
+		Context (
+			const std::shared_ptr<AbstractChatRoom> &chatRoom,
+			const std::list<std::shared_ptr<ChatMessage>> &deliveredMessages,
+			const std::list<std::shared_ptr<ChatMessage>> &displayedMessages
+		) : chatRoom(chatRoom), deliveredMessages(deliveredMessages), displayedMessages(displayedMessages) {}
+		Context (
+			const std::shared_ptr<AbstractChatRoom> &chatRoom,
+			const std::list<Imdn::MessageReason> &nonDeliveredMessages
+		) : chatRoom(chatRoom), nonDeliveredMessages(nonDeliveredMessages) {}
+
+		std::shared_ptr<AbstractChatRoom> chatRoom;
+		std::list<std::shared_ptr<ChatMessage>> deliveredMessages;
+		std::list<std::shared_ptr<ChatMessage>> displayedMessages;
+		std::list<Imdn::MessageReason> nonDeliveredMessages;
+	};
+
 	ImdnMessage (
 		const std::shared_ptr<AbstractChatRoom> &chatRoom,
-		const std::list<const std::shared_ptr<ChatMessage>> &deliveredMessages,
-		const std::list<const std::shared_ptr<ChatMessage>> &displayedMessages
+		const std::list<std::shared_ptr<ChatMessage>> &deliveredMessages,
+		const std::list<std::shared_ptr<ChatMessage>> &displayedMessages
 	);
 	ImdnMessage (
 		const std::shared_ptr<AbstractChatRoom> &chatRoom,
 		const std::list<Imdn::MessageReason> &nonDeliveredMessages
 	);
+	ImdnMessage (const Context &context);
 
-	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DECLARE_PRIVATE(ImdnMessage);
 	L_DISABLE_COPY(ImdnMessage);
 };
 

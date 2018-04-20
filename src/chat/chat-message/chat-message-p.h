@@ -62,7 +62,7 @@ public:
 
 	std::list<ParticipantImdnState> getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const;
 	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime);
-	void setState (ChatMessage::State newState, bool force = false);
+	virtual void setState (ChatMessage::State newState, bool force = false);
 
 	void setTime (time_t time);
 
