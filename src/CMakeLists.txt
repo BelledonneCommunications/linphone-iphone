@@ -84,6 +84,8 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	conference/params/media-session-params-p.h
 	conference/params/media-session-params.h
 	conference/participant-device.h
+	conference/participant-imdn-state.h
+	conference/participant-imdn-state-p.h
 	conference/participant-p.h
 	conference/participant.h
 	conference/remote-conference-p.h
@@ -184,6 +186,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	c-wrapper/api/c-event-log.cpp
 	c-wrapper/api/c-magic-search.cpp
 	c-wrapper/api/c-participant.cpp
+	c-wrapper/api/c-participant-imdn-state.cpp
 	c-wrapper/api/c-search-result.cpp
 	c-wrapper/internal/c-sal.cpp
 	c-wrapper/internal/c-tools.cpp
@@ -221,6 +224,7 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	conference/params/call-session-params.cpp
 	conference/params/media-session-params.cpp
 	conference/participant-device.cpp
+	conference/participant-imdn-state.cpp
 	conference/participant.cpp
 	conference/remote-conference.cpp
 	conference/session/call-session.cpp

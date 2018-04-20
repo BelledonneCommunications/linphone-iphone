@@ -128,7 +128,7 @@ const list<DialPlan> DialPlanPrivate::DialPlans = {
 	{ "Hungary", "HU", "36", 9, "00" },
 	{ "Iceland", "IS", "354", 9, "00" },
 	{ "India", "IN", "91", 10, "00" },
-	{ "Indonesia", "ID", "62", 10, "001" },
+	{ "Indonesia", "ID", "62", 12, "001" },
 	{ "Iran", "IR", "98", 10, "00" },
 	{ "Iraq", "IQ", "964", 10, "00" },
 	{ "Ireland", "IE", "353", 9, "00" },

@@ -165,11 +165,12 @@ void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context
 
 	if (messageIdStr && datetimeStr) {
 		shared_ptr<AbstractChatRoom> cr = imdnMessage->getChatRoom();
-		shared_ptr<ChatMessage> cm = cr->findChatMessage(messageIdStr, ChatMessage::Direction::Outgoing);
+		shared_ptr<ChatMessage> cm = cr->findChatMessage(messageIdStr);
 		const IdentityAddress &participantAddress = imdnMessage->getFromAddress().getAddressWithoutGruu();
 		if (!cm) {
 			lWarning() << "Received IMDN for unknown message " << messageIdStr;
 		} else {
+			time_t imdnTime = imdnMessage->getTime();
 			LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(cr->getCore()->getCCore());
 			snprintf(xpathStr, sizeof(xpathStr), "%s[1]/imdn:delivery-notification/imdn:status", imdnPrefix.c_str());
 			xmlXPathObjectPtr deliveryStatusObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, xpathStr);
@@ -180,9 +181,9 @@ void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context
 					xmlNodePtr node = deliveryStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "delivered") == 0) {
-							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::DeliveredToUser);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::DeliveredToUser, imdnTime);
 						} else if (strcmp((const char *)node->children->name, "error") == 0) {
-							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::NotDelivered);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::NotDelivered, imdnTime);
 						}
 					}
 				}
@@ -193,7 +194,7 @@ void Imdn::parse (const shared_ptr<ChatMessage> &imdnMessage, xmlparsing_context
 					xmlNodePtr node = displayStatusObject->nodesetval->nodeTab[0];
 					if (node->children && node->children->name) {
 						if (strcmp((const char *)node->children->name, "displayed") == 0) {
-							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::Displayed);
+							cm->getPrivate()->setParticipantState(participantAddress, ChatMessage::State::Displayed, imdnTime);
 						}
 					}
 				}

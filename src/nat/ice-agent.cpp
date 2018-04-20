@@ -317,10 +317,12 @@ void IceAgent::updateLocalMediaDescriptionFromIce (SalMediaDescription *desc) {
 		}
 		if (firstCl)
 			result = !!ice_check_list_selected_valid_local_candidate(firstCl, &rtpCandidate, nullptr);
-		if (result)
+		if (result) {
 			strncpy(desc->addr, rtpCandidate->taddr.ip, sizeof(desc->addr));
-		else
+		} else {
 			lWarning() << "If ICE has completed successfully, rtp_candidate should be set!";
+			ice_dump_valid_list(firstCl);
+		}
 	}
 
 	strncpy(desc->ice_pwd, ice_session_local_pwd(iceSession), sizeof(desc->ice_pwd));
@@ -760,7 +762,7 @@ bool IceAgent::checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md){
 		
 		if (ice_check_list_state(cl) != ICL_Running) continue;
 
-		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
+		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
 			if (remote_candidate->addr[0] != '\0') return true;
 

@@ -38,10 +38,11 @@
       Content-Length: [len]
 
       <?xml version="1.0" encoding="UTF-8"?>
-      <presence xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model" xmlns:rpid="urn:ietf:params:xml:ns:pidf:rpid" entity="sip:[service]@sip.example.org" xmlns="urn:ietf:params:xml:ns:pidf">
+      <presence xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model" xmlns:rpid="urn:ietf:params:xml:ns:pidf:rpid"  xmlns:pidfonline="http://www.linphone.org/xsds/pidfonline.xsd" entity="sip:[service]@sip.example.org" xmlns="urn:ietf:params:xml:ns:pidf">
             <tuple id="jjlson">
                   <status>
                         <basic>open</basic>
+			 <pidfonline:online/>
                   </status>
                   <contact priority="0.8">sip:[service]@[local_ip]:[local_port]</contact>
                   <timestamp>2015-09-28T15:49:00Z</timestamp>
@@ -74,10 +75,11 @@
       Content-Length: [len]
 
       <?xml version="1.0" encoding="UTF-8"?>
-      <presence xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model" xmlns:rpid="urn:ietf:params:xml:ns:pidf:rpid" entity="sip:[service]@sip.example.org" xmlns="urn:ietf:params:xml:ns:pidf">
+      <presence xmlns:dm="urn:ietf:params:xml:ns:pidf:data-model" xmlns:rpid="urn:ietf:params:xml:ns:pidf:rpid"  xmlns:pidfonline="http://www.linphone.org/xsds/pidfonline.xsd" entity="sip:[service]@sip.example.org" xmlns="urn:ietf:params:xml:ns:pidf">
             <tuple id="jjlson">
                   <status>
                         <basic>open</basic>
+			<pidfonline:online/>
                   </status>
                   <contact priority="0.8">sip:[service]@[local_ip]:[local_port]</contact>
                   <timestamp>2015-09-28T15:49:00Z</timestamp>

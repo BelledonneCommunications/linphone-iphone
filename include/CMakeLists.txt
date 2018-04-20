@@ -47,6 +47,7 @@ set(ROOT_HEADER_FILES
 	im_notif_policy.h
 	info_message.h
 	ldapprovider.h
+	logging.h
 	lpconfig.h
 	misc.h
 	nat_policy.h
@@ -88,6 +89,7 @@ set(C_API_HEADER_FILES
 	c-event-log.h
 	c-magic-search.h
 	c-participant.h
+	c-participant-imdn-state.h
 	c-search-result.h
 	c-types.h
 )

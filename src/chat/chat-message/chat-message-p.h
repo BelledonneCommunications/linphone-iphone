@@ -30,6 +30,7 @@
 #include "content/content.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
+#include "db/main-db.h"
 #include "db/main-db-chat-message-key.h"
 #include "event-log/conference/conference-chat-message-event.h"
 #include "object/object-p.h"
@@ -58,7 +59,8 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState);
+	std::list<ParticipantImdnState> getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const;
+	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime);
 	void setState (ChatMessage::State newState, bool force = false);
 
 	void setTime (time_t time);

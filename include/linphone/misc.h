@@ -102,9 +102,9 @@ LINPHONE_PUBLIC const char *linphone_configuring_state_to_string(LinphoneConfigu
 LINPHONE_PUBLIC	const char* linphone_chat_message_state_to_string(const LinphoneChatMessageState state);
 
 /**
- * Converts a LinphoneReason enum to a string.
+ * Converts a #LinphoneReason enum to a string.
  * @param[in] err A #LinphoneReason
- * @return The string representation of the specified LinphoneReason
+ * @return The string representation of the specified #LinphoneReason
  * @ingroup misc
 **/
 LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
@@ -118,10 +118,10 @@ LINPHONE_PUBLIC const char *linphone_reason_to_string(LinphoneReason err);
 LINPHONE_PUBLIC LINPHONE_DEPRECATED const char *linphone_online_status_to_string(LinphoneOnlineStatus ss);
 
 /**
- * Convert a string into LinphoneTunnelMode enum
+ * Convert a string into #LinphoneTunnelMode enum
  * @param string String to convert
- * @return An LinphoneTunnelMode enum. If the passed string is NULL or
- * does not match with any mode, the LinphoneTunnelModeDisable is returned.
+ * @return An #LinphoneTunnelMode enum. If the passed string is NULL or
+ * does not match with any mode, the #LinphoneTunnelModeDisable is returned.
  */
 LINPHONE_PUBLIC LinphoneTunnelMode linphone_tunnel_mode_from_string(const char *string);
 
@@ -139,59 +139,59 @@ LINPHONE_PUBLIC const char *linphone_tunnel_mode_to_string(LinphoneTunnelMode mo
 LINPHONE_PUBLIC bool_t linphone_local_player_matroska_supported(void);
 
 /**
- * Converts a LinphoneTransportType enum to a lowercase string.
+ * Converts a #LinphoneTransportType enum to a lowercase string.
  * @ingroup misc
 **/
 LINPHONE_PUBLIC const char* linphone_transport_to_string(LinphoneTransportType transport);
 
 /**
- * Converts a lowercase string to a LinphoneTransportType enum.
+ * Converts a lowercase string to a #LinphoneTransportType enum.
  * @ingroup misc
- * @return Transport matching input, or LinphoneTransportUdp if nothing is found
+ * @return Transport matching input, or #LinphoneTransportUdp if nothing is found
 **/
 LINPHONE_PUBLIC LinphoneTransportType linphone_transport_parse(const char* transport);
 
 /**
  * Converts an error code to a LinphoneReason.
  * @param[in] err An error code
- * @return The LinphoneReason corresponding to the specified error code
+ * @return The #LinphoneReason corresponding to the specified error code
  * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneReason linphone_error_code_to_reason(int err);
 
 /**
- * Converts a LinphoneReason to an error code.
- * @param[in] reason A LinphoneReason
- * @return The error code corresponding to the specified LinphoneReason
+ * Converts a #LinphoneReason to an error code.
+ * @param[in] reason A #LinphoneReason
+ * @return The error code corresponding to the specified #LinphoneReason
  * @ingroup misc
  */
 LINPHONE_PUBLIC int linphone_reason_to_error_code(LinphoneReason reason);
 
 /**
  * Increment refcount.
- * @param[in] range LinphoneRange object
+ * @param[in] range #LinphoneRange object
  * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneRange *linphone_range_ref(LinphoneRange *range);
 
 /**
  * Decrement refcount and possibly free the object.
- * @param[in] range LinphoneRange object
+ * @param[in] range #LinphoneRange object
  * @ingroup misc
 **/
 LINPHONE_PUBLIC void linphone_range_unref(LinphoneRange *range);
 
 /**
- * Gets the user data in the LinphoneRange object
- * @param[in] range the LinphoneRange
+ * Gets the user data in the #LinphoneRange object
+ * @param[in] range the #LinphoneRange
  * @return the user data
  * @ingroup misc
 */
 LINPHONE_PUBLIC void *linphone_range_get_user_data(const LinphoneRange *range);
 
 /**
- * Sets the user data in the LinphoneRange object
- * @param[in] range the LinphoneRange object
+ * Sets the user data in the #LinphoneRange object
+ * @param[in] range the #LinphoneRange object
  * @param[in] data the user data
  * @ingroup misc
 */
@@ -199,7 +199,7 @@ LINPHONE_PUBLIC void linphone_range_set_user_data(LinphoneRange *range, void *da
 
 /**
  * Gets the lower value of the range
- * @param[in] range a LinphoneRange
+ * @param[in] range a #LinphoneRange
  * @return The lower value
  * @ingroup misc
  */
@@ -207,7 +207,7 @@ LINPHONE_PUBLIC int linphone_range_get_min(const LinphoneRange *range);
 
 /**
  * Gets the higher value of the range
- * @param[in] range a LinphoneRange
+ * @param[in] range a #LinphoneRange
  * @return The higher value
  * @ingroup misc
  */
@@ -215,7 +215,7 @@ LINPHONE_PUBLIC int linphone_range_get_max(const LinphoneRange *range);
 
 /**
  * Sets the lower value of the range
- * @param[in] range a LinphoneRange
+ * @param[in] range a #LinphoneRange
  * @param[in] min the value to set
  * @ingroup misc
  */
@@ -223,7 +223,7 @@ LINPHONE_PUBLIC void linphone_range_set_min(LinphoneRange *range, int min);
 
 /**
  * Sets the higher value of the range
- * @param[in] range a LinphoneRange
+ * @param[in] range a #LinphoneRange
  * @param[in] max the value to set
  * @ingroup misc
  */

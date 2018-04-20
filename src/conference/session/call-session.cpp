@@ -91,7 +91,8 @@ void CallSessionPrivate::setState (CallSession::State newState, const string &me
 			case CallSession::State::Error:
 				switch (linphone_error_info_get_reason(q->getErrorInfo())) {
 					case LinphoneReasonDeclined:
-						log->status = LinphoneCallDeclined;
+						if (log->status != LinphoneCallMissed) // Do not re-change the status of a call if it's already set
+							log->status = LinphoneCallDeclined;
 						break;
 					case LinphoneReasonNotAnswered:
 						if (log->dir == LinphoneCallIncoming)
@@ -469,7 +470,7 @@ void CallSessionPrivate::updatedByRemote () {
 	if (deferUpdate || deferUpdateInternal) {
 		if (state == CallSession::State::UpdatedByRemote && !deferUpdateInternal){
 			lInfo() << "CallSession [" << q << "]: UpdatedByRemoted was signaled but defered. LinphoneCore expects the application to call linphone_call_accept_update() later";
-		}	
+		}
 	} else {
 		if (state == CallSession::State::UpdatedByRemote)
 			q->acceptUpdate(nullptr);

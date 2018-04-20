@@ -423,8 +423,9 @@ int sal_stream_description_equals(const SalStreamDescription *sd1, const SalStre
 	if (sd1->dir != sd2->dir) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 
 	/* ICE */
-	if (strcmp(sd1->ice_ufrag, sd2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
-	if (strcmp(sd1->ice_pwd, sd2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(sd1->ice_ufrag, sd2->ice_ufrag) != 0 && sd2->ice_ufrag[0] != '\0') result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(sd1->ice_pwd, sd2->ice_pwd) != 0 && sd2->ice_pwd[0] != '\0') result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+
 
 	/*DTLS*/
 	if (sd1->dtls_role != sd2->dtls_role) result |= SAL_MEDIA_DESCRIPTION_CRYPTO_KEYS_CHANGED;
@@ -485,8 +486,8 @@ int sal_media_description_equals(const SalMediaDescription *md1, const SalMediaD
 	if (md1->bandwidth != md2->bandwidth) result |= SAL_MEDIA_DESCRIPTION_CODEC_CHANGED;
 
 	/* ICE */
-	if (strcmp(md1->ice_ufrag, md2->ice_ufrag) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
-	if (strcmp(md1->ice_pwd, md2->ice_pwd) != 0) result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(md1->ice_ufrag, md2->ice_ufrag) != 0 && md2->ice_ufrag[0] != '\0') result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
+	if (strcmp(md1->ice_pwd, md2->ice_pwd) != 0 && md2->ice_pwd[0] != '\0') result |= SAL_MEDIA_DESCRIPTION_ICE_RESTART_DETECTED;
 
 	for(i = 0; i < SAL_MEDIA_DESCRIPTION_MAX_STREAMS; ++i){
 		if (!sal_stream_description_active(&md1->streams[i]) && !sal_stream_description_active(&md2->streams[i])) continue;
@@ -881,65 +882,38 @@ const char* sal_privacy_to_string(SalPrivacy privacy) {
 	}
 }
 
-static void remove_trailing_spaces(char *line) {
-	size_t size = strlen(line);
-	char *end = line + size - 1;
-	while (end >= line && isspace(*end)) {
-		end--;
-	}
-    *(end + 1) = '\0';
-}
-
-static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read){
-	const char *end=strchr(input,'\n');
-	char line[256]={0};
-	char key_candidate[256];
+static int line_get_value(const char *input, const char *key, char *value, size_t value_size, size_t *read) {
+	const char *end = strchr(input, '\n');
+	char line[256] = {0};
+	char key_candidate[256]; // key_candidate array must have the same size of line array to avoid potential invalid writes
 	char *equal;
 	size_t len;
-	if (!end) len=strlen(input);
-	else len=(size_t)(end + 1 - input);
-	*read=len;
-	strncpy(line,input,MIN(len,sizeof(line)));
-	equal=strchr(line,'=');
+
+	if (!end) len = strlen(input);
+	else len = (size_t)(end + 1 - input);
+	*read = len;
+	strncpy(line, input, MIN(len, sizeof(line)));
+
+	equal = strchr(line, '=');
 	if (!equal) return FALSE;
-	*equal='\0';
-	if (sscanf(line,"%s",key_candidate)!=1) return FALSE;
-	if (strcasecmp(key,key_candidate)==0){
-		equal++;
-		remove_trailing_spaces(equal);
-		strncpy(value,equal,value_size-1);
-		value[value_size-1]='\0';
-		return TRUE;
-	}
-	return FALSE;
+	*equal = '\0';
+
+	if (sscanf(line, "%s", key_candidate) != 1) return FALSE;
+	if (strcasecmp(key, key_candidate) != 0) return FALSE;
+
+	equal++;
+	if (strlen(equal) >= value_size) equal[value_size - 1] = '\0';
+	if (sscanf(equal, "%s", value) != 1) return FALSE;
+	return TRUE;
 }
 
-int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size){
-	size_t read=0;
+int sal_lines_get_value(const char *data, const char *key, char *value, size_t value_size) {
+	size_t read = 0;
 
-	do{
-		if (line_get_value(data,key,value,value_size,&read))
+	do {
+		if (line_get_value(data, key, value, value_size, &read))
 			return TRUE;
-		data+=read;
-	}while(read!=0);
+		data += read;
+	} while (read != 0);
 	return FALSE;
 }
-
-#if 0
-const char *sal_op_get_entity_tag(const SalOp* op) {
-	SalOpBase* op_base = (SalOpBase*)op;
-	return op_base->entity_tag;
-}
-
-
-void sal_op_set_entity_tag(SalOp *op, const char* entity_tag) {
-	SalOpBase* op_base = (SalOpBase*)op;
-	if (op_base->entity_tag != NULL){
-		ms_free(op_base->entity_tag);
-	}
-	if (entity_tag)
-		op_base->entity_tag = ms_strdup(entity_tag);
-	else
-		op_base->entity_tag = NULL;
-}
-#endif

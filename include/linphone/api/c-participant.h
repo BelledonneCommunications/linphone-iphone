@@ -34,39 +34,39 @@
  */
 
 /**
- * Increment reference count of LinphoneParticipant object.
+ * Increment reference count of #LinphoneParticipant object.
  **/
 LINPHONE_PUBLIC LinphoneParticipant *linphone_participant_ref (LinphoneParticipant *participant);
 
 /**
- * Decrement reference count of LinphoneParticipant object.
+ * Decrement reference count of #LinphoneParticipant object.
  **/
 LINPHONE_PUBLIC void linphone_participant_unref (LinphoneParticipant *participant);
 
 /**
  * Retrieve the user pointer associated with the conference participant.
- * @param[in] participant A LinphoneParticipant object
+ * @param[in] participant A #LinphoneParticipant object
  * @return The user pointer associated with the participant.
 **/
 LINPHONE_PUBLIC void * linphone_participant_get_user_data(const LinphoneParticipant *participant);
 
 /**
  * Assign a user pointer to the conference participant.
- * @param[in] participant A LinphoneParticipant object
+ * @param[in] participant A #LinphoneParticipant object
  * @param[in] ud The user pointer to associate with the participant
 **/
 LINPHONE_PUBLIC void linphone_participant_set_user_data(LinphoneParticipant *participant, void *ud);
 
 /**
  * Get the address of a conference participant.
- * @param[in] participant A LinphoneParticipant object
+ * @param[in] participant A #LinphoneParticipant object
  * @return The address of the participant
  */
 LINPHONE_PUBLIC const LinphoneAddress * linphone_participant_get_address (const LinphoneParticipant *participant);
 
 /**
  * Tells whether a conference participant is an administrator of the conference.
- * @param[in] participant A LinphoneParticipant object
+ * @param[in] participant A #LinphoneParticipant object
  * @return A boolean value telling whether the participant is an administrator
  */
 LINPHONE_PUBLIC bool_t linphone_participant_is_admin (const LinphoneParticipant *participant);

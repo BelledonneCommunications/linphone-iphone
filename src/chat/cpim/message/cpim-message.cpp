@@ -149,9 +149,11 @@ string Cpim::Message::asString () const {
 
 	string output;
 	// TODO: Remove cpimHeaders
-	for (const auto &cpimHeader : *d->cpimHeaders)
-		output += cpimHeader->asString();
-	output += "\r\n";
+	if (d->cpimHeaders->size() > 0) {
+		for (const auto &cpimHeader : *d->cpimHeaders)
+			output += cpimHeader->asString();
+		output += "\r\n";
+	}
 	// TODO Remove cpimHeaders
 
 	if (d->messageHeaders->size() > 0) {

@@ -791,7 +791,7 @@ static void presence_list_subscribe_network_changes(void) {
 	linphone_core_set_presence_model(pauline->lc, presence);
 	linphone_presence_model_unref(presence);
 
-	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityAway, 1, 6000));
+	BC_ASSERT_TRUE(wait_for_until(laure->lc, pauline->lc, &laure->stat.number_of_LinphonePresenceActivityAway, 2, 6000));
 	lf = linphone_friend_list_find_friend_by_uri(linphone_core_get_default_friend_list(laure->lc), pauline_identity);
 	BC_ASSERT_EQUAL(linphone_friend_get_status(lf), LinphoneStatusAway, int, "%d");
 
@@ -832,6 +832,28 @@ static void long_term_presence_base(const char* addr, bool_t exist, const char* 
 	linphone_friend_unref(friend2);
 	linphone_core_manager_destroy(pauline);
 }
+
+static void long_term_presence_large_number_of_subs(void) {
+	int i=0;
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	linphone_core_set_user_agent(pauline->lc, "bypass", NULL);
+	LinphoneFriendList *friends = linphone_core_create_friend_list(pauline->lc);
+	linphone_friend_list_set_rls_uri(friends, "sip:rls@sip.example.org");
+	for (i = 0 ; i <1000; i++ ) {
+		char user_id[256];
+		snprintf(user_id, sizeof(user_id), "sip:user_%i@sip.example.org",i);
+		LinphoneFriend* friend2 =linphone_core_create_friend_with_address(pauline->lc, user_id);
+		linphone_friend_list_add_friend(friends,friend2);
+		linphone_friend_unref(friend2);
+	}
+	linphone_core_add_friend_list(pauline->lc, friends);
+	linphone_friend_list_unref(friends);
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc,NULL,&pauline->stat.number_of_NotifyPresenceReceived,i));
+
+	linphone_core_manager_destroy(pauline);
+}
+
 static void long_term_presence_existing_friend(void) {
 	// this friend is not online, but is known from flexisip to be registered (see flexisip/userdb.conf),
 	// so we expect to get a report that he is currently not online
@@ -1742,6 +1764,7 @@ test_t presence_server_tests[] = {
 	TEST_ONE_TAG("Long term presence with +164 phone, without sip",long_term_presence_with_e164_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with phone, without sip",long_term_presence_with_phone_without_sip, "longterm"),
 	TEST_ONE_TAG("Long term presence with cross references", long_term_presence_with_crossed_references,"longtern"),
+	TEST_ONE_TAG("Long term presence with large number of subs", long_term_presence_large_number_of_subs,"longtern"),
 	TEST_NO_TAG("Subscriber no longer reachable using server",subscriber_no_longer_reachable),
 	TEST_NO_TAG("Subscribe with late publish", subscribe_with_late_publish),
 	TEST_NO_TAG("Multiple publish aggregation", multiple_publish_aggregation),

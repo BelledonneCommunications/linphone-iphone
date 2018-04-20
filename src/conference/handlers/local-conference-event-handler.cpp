@@ -109,7 +109,7 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 		static_cast<unsigned int>(notifyId)
 	);
 
-	list<Content *> contents;
+	list<Content> contents;
 	for (const auto &eventLog : events) {
 		Content *content = new Content();
 		content->setContentType(ContentType::ConferenceInfo);
@@ -182,17 +182,19 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 				L_ASSERT(false);
 				continue;
 		}
-		content->setBody(body);
-		contents.push_back(content);
+		contents.emplace_back(Content());
+		contents.back().setContentType(ContentType::ConferenceInfo);
+		contents.back().setBody(body);
 	}
 
 	if (contents.empty())
 		return Utils::getEmptyConstRefObject<string>();
 
-	Content multipart = ContentManager::contentListToMultipart(contents);
-	contents.clear();
-
-	return multipart.getBodyAsString();
+	list<Content *> contentPtrs;
+	for (auto &content : contents)
+		contentPtrs.push_back(&content);
+	string multipart = ContentManager::contentListToMultipart(contentPtrs).getBodyAsString();
+	return multipart;
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr, int notifyId) {

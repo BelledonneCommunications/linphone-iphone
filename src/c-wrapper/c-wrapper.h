@@ -43,6 +43,7 @@
 	F(MagicSearch, MagicSearch) \
 	F(MediaSessionParams, CallParams) \
 	F(Participant, Participant) \
+	F(ParticipantImdnState, ParticipantImdnState) \
 	F(SearchResult, SearchResult)
 
 #define L_REGISTER_SUBTYPES(F) \
@@ -100,6 +101,8 @@ BELLE_SIP_TYPE_ID(LinphoneImNotifPolicy),
 BELLE_SIP_TYPE_ID(LinphoneInfoMessage),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneLDAPContactSearch),
+BELLE_SIP_TYPE_ID(LinphoneLoggingService),
+BELLE_SIP_TYPE_ID(LinphoneLoggingServiceCbs),
 BELLE_SIP_TYPE_ID(LinphoneNatPolicy),
 BELLE_SIP_TYPE_ID(LinphonePayloadType),
 BELLE_SIP_TYPE_ID(LinphonePlayer),

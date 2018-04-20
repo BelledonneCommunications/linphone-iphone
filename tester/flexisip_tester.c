@@ -1447,6 +1447,310 @@ void resend_refer_other_devices(void) {
 	bctbx_list_free(lcs);
 }
 
+void sequential_forking(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_create("marie_rc");
+
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+
+	/*we don't set marie "q" because it is by default at 1.0 if it is not present (RFC 4596)*/
+	linphone_proxy_config_set_contact_parameters(
+		linphone_core_get_default_proxy_config(marie2->lc),
+		"q=0.5;");
+
+	linphone_core_manager_start(marie2, TRUE);
+
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+
+	linphone_core_invite_address(pauline->lc,marie->identity);
+	/*pauline should hear ringback*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*first device from Marie should be ringing*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	/*the second should not*/
+	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+
+	/*marie accepts the call on its second device*/
+	linphone_call_accept(linphone_core_get_current_call(marie->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+
+	/*second device should have received nothing*/
+	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneCallEnd, 0, int, "%d");
+
+	linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	bctbx_list_free(lcs);
+}
+
+void sequential_forking_with_timeout_for_highest_priority(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_create("marie_rc");
+	LinphoneCoreManager* marie3 = linphone_core_manager_create("marie_rc");
+
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+
+	/*we don't set marie "q" because it is by default at 1.0 if it is not present (RFC 4596)*/
+	linphone_proxy_config_set_contact_parameters(
+		linphone_core_get_default_proxy_config(marie2->lc),
+		"q=0.5;");
+
+	linphone_proxy_config_set_contact_parameters(
+		linphone_core_get_default_proxy_config(marie3->lc),
+		"q=0.5;");
+
+	linphone_core_manager_start(marie2, TRUE);
+	linphone_core_manager_start(marie3, TRUE);
+
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+	lcs=bctbx_list_append(lcs,marie3->lc);
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+
+	/*set first device not reachable*/
+	linphone_core_set_network_reachable(marie->lc,FALSE);
+
+	linphone_core_invite_address(pauline->lc,marie->identity);
+
+	/*pauline should hear ringback*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*first device should receive nothing since it is disconnected*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	/*second and third devices should have received the call*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+
+	/*marie accepts the call on her third device*/
+	linphone_call_accept(linphone_core_get_current_call(marie3->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+
+	/*second device should stop ringing*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+
+	linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallEnd,1,1000));
+
+	/*first device should have received nothing*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd, 0, int, "%d");
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie3);
+	bctbx_list_free(lcs);
+}
+
+void sequential_forking_with_no_response_for_highest_priority(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_create("marie_rc");
+
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+
+	/*we don't set marie "q" because it is by default at 1.0 if it is not present (RFC 4596)*/
+	linphone_proxy_config_set_contact_parameters(
+		linphone_core_get_default_proxy_config(marie2->lc),
+		"q=0.5;");
+
+	linphone_core_manager_start(marie2, TRUE);
+
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+
+	linphone_core_invite_address(pauline->lc,marie->identity);
+
+	/*pauline should hear ringback*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*first device should receive the call*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+	/*second device should have not received the call yet*/
+	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+
+	/*we wait for the call to try the next branches*/
+	wait_for_list(lcs,NULL,0,10000);
+
+	/*then the second device should receive the call*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
+
+	/*marie accepts the call on her second device*/
+	linphone_call_accept(linphone_core_get_current_call(marie2->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+
+	/*the first device should finish*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd, 1, 3000));
+
+	linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	bctbx_list_free(lcs);
+}
+
+void sequential_forking_with_insertion_of_higher_priority(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie2 = linphone_core_manager_create("marie_rc");
+
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+
+	/*we don't set marie "q" because it is by default at 1.0 if it is not present (RFC 4596)*/
+	linphone_proxy_config_set_contact_parameters(
+		linphone_core_get_default_proxy_config(marie2->lc),
+		"q=0.5;");
+
+	linphone_core_manager_start(marie2, TRUE);
+
+	lcs=bctbx_list_append(lcs,marie->lc);
+	lcs=bctbx_list_append(lcs,marie2->lc);
+
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+
+	/*set first device not reachable*/
+	linphone_core_set_network_reachable(marie->lc,FALSE);
+
+	linphone_core_invite_address(pauline->lc,marie->identity);
+
+	/*pauline should hear ringback*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*first device should receive nothing since it is disconnected*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+	/*second device should have received the call*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+
+	/*we create a new device*/
+	LinphoneCoreManager* marie3 = linphone_core_manager_new("marie_rc");
+	lcs=bctbx_list_append(lcs,marie3->lc);
+	linphone_core_set_user_agent(marie3->lc,"Natted Linphone",NULL);
+
+	/*this device should receive the call*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+
+	/*marie accepts the call on her third device*/
+	linphone_call_accept(linphone_core_get_current_call(marie3->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+
+	/*second device should stop ringing*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
+
+	linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallEnd,1,1000));
+
+	/*first device should have received nothing*/
+	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd, 0, int, "%d");
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(marie2);
+	linphone_core_manager_destroy(marie3);
+	bctbx_list_free(lcs);
+}
+
+void sequential_forking_with_fallback_route(void) {
+	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* pauline2 = linphone_core_manager_create(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
+	LinphoneCoreManager* marie = linphone_core_manager_create("marie_rc");
+
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+
+	/*we set pauline2 and marie to another test server that is configured with a fallback route*/
+	linphone_proxy_config_set_server_addr(
+		linphone_core_get_default_proxy_config(pauline2->lc),
+		"sip:sip2.linphone.org:5071;transport=tls");
+
+	linphone_proxy_config_set_route(
+		linphone_core_get_default_proxy_config(pauline2->lc),
+		"sip:sip2.linphone.org:5071;transport=tls");
+
+	linphone_proxy_config_set_server_addr(
+		linphone_core_get_default_proxy_config(marie->lc),
+		"sip:sip2.linphone.org:5070;transport=tcp");
+
+	linphone_proxy_config_set_route(
+		linphone_core_get_default_proxy_config(marie->lc),
+		"sip:sip2.linphone.org:5070;transport=tcp;lr");
+
+	linphone_core_manager_start(pauline2, TRUE);
+	linphone_core_manager_start(marie, TRUE);
+
+	lcs=bctbx_list_append(lcs,pauline2->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+
+	linphone_core_set_user_agent(pauline->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(pauline2->lc,"Natted Linphone",NULL);
+	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
+
+	/*set pauline2 not reachable*/
+	linphone_core_set_network_reachable(pauline2->lc,FALSE);
+
+	/*marie invites pauline2 on the other server*/
+	linphone_core_invite_address(marie->lc,pauline2->identity);
+
+	/*marie should hear ringback*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallOutgoingRinging,1,3000));
+	/*pauline2 should receive nothing since it is disconnected*/
+	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
+
+	/*the call should be routed to the first server with pauline account*/
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
+
+	/*pauline accepts the call*/
+	linphone_call_accept(linphone_core_get_current_call(pauline->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
+
+	linphone_call_terminate(linphone_core_get_current_call(marie->lc));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
+
+	/*first device should have received nothing*/
+	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphoneCallEnd, 0, int, "%d");
+
+	linphone_core_manager_destroy(pauline);
+	linphone_core_manager_destroy(pauline2);
+	linphone_core_manager_destroy(marie);
+	bctbx_list_free(lcs);
+}
+
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
 	TEST_NO_TAG("Message forking", message_forking),
@@ -1484,7 +1788,12 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
 	TEST_NO_TAG("Transcoder", transcoder_tester),
 	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport),
-	TEST_NO_TAG("Resend of REFER with other devices", resend_refer_other_devices)
+	TEST_NO_TAG("Resend of REFER with other devices", resend_refer_other_devices),
+	TEST_NO_TAG("Sequential forking", sequential_forking),
+	TEST_NO_TAG("Sequential forking with timeout for highest priority", sequential_forking_with_timeout_for_highest_priority),
+	TEST_NO_TAG("Sequential forking with no response from highest priority", sequential_forking_with_no_response_for_highest_priority),
+	TEST_NO_TAG("Sequential forking with insertion of higher priority", sequential_forking_with_insertion_of_higher_priority),
+	TEST_NO_TAG("Sequential forking with fallback route", sequential_forking_with_fallback_route)
 };
 
 

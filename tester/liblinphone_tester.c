@@ -148,7 +148,7 @@ static void log_handler(int lev, const char *fmt, va_list args) {
 #endif
 	va_end(cap);
 #endif
-	bctbx_logv(ORTP_LOG_DOMAIN, lev, fmt, args);
+	bctbx_logv(BCTBX_LOG_DOMAIN, lev, fmt, args);
 }
 
 void liblinphone_tester_init(void(*ftester_printf)(int level, const char *fmt, va_list args)) {

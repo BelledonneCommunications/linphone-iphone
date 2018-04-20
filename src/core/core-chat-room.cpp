@@ -100,7 +100,7 @@ shared_ptr<AbstractChatRoom> CorePrivate::createBasicChatRoom (
 	return chatRoom;
 }
 
-shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const string &subject, const string &uri, bool fallback) {
+shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const string &subject, const string &uri, const Content &content, bool fallback) {
 	L_Q();
 
 	string usedUri;
@@ -135,7 +135,7 @@ shared_ptr<AbstractChatRoom> CorePrivate::createClientGroupChatRoom (const strin
 	shared_ptr<AbstractChatRoom> chatRoom;
 	{
 		shared_ptr<ClientGroupChatRoom> clientGroupChatRoom = make_shared<ClientGroupChatRoom>(
-			q->getSharedFromThis(), usedUri, IdentityAddress(from), subject
+			q->getSharedFromThis(), usedUri, IdentityAddress(from), subject, content
 		);
 		ClientGroupChatRoomPrivate *dClientGroupChatRoom = clientGroupChatRoom->getPrivate();
 
@@ -265,9 +265,9 @@ shared_ptr<AbstractChatRoom> Core::findOneToOneChatRoom (
 	return nullptr;
 }
 
-shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject) {
+shared_ptr<AbstractChatRoom> Core::createClientGroupChatRoom (const string &subject, bool fallback) {
 	L_D();
-	return d->createClientGroupChatRoom(subject);
+	return d->createClientGroupChatRoom(subject, "", Content(), fallback);
 }
 
 shared_ptr<AbstractChatRoom> Core::getOrCreateBasicChatRoom (const ChatRoomId &chatRoomId, bool isRtt) {

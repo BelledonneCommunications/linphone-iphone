@@ -143,11 +143,11 @@ LINPHONE_PUBLIC void linphone_proxy_config_edit(LinphoneProxyConfig *cfg);
 LINPHONE_PUBLIC LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg);
 
 /**
- * Indicates  either or not, PUBLISH must be issued for this #LinphoneProxyConfig .
- * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
- * @param[in] cfg #LinphoneProxyConfig object.
- * @param val if true, publish will be engaged
+ * @brief Indicates either or not, PUBLISH must be issued for this #LinphoneProxyConfig.
  *
+ * In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the #linphone_proxy_config_edit() rule.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param val if TRUE, publish will be engaged
  */
 LINPHONE_PUBLIC void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val);
 
@@ -406,7 +406,7 @@ LINPHONE_PUBLIC const char* linphone_proxy_config_get_transport(const LinphonePr
 
 /**
  * Destroys a proxy config.
- * @note: LinphoneProxyConfig that have been removed from LinphoneCore with
+ * @note: #LinphoneProxyConfig that have been removed from #LinphoneCore with
  * linphone_core_remove_proxy_config() must not be freed.
  * @deprecated
  * @donotwrap
@@ -467,7 +467,7 @@ LINPHONE_PUBLIC LinphoneAddress* linphone_proxy_config_normalize_sip_uri(Linphon
 /**
  * Set default privacy policy for all calls routed through this proxy.
  * @param[in] cfg #LinphoneProxyConfig object.
- * @param privacy LinphonePrivacy to configure privacy
+ * @param privacy #LinphonePrivacy to configure privacy
  * */
 LINPHONE_PUBLIC void linphone_proxy_config_set_privacy(LinphoneProxyConfig *cfg, LinphonePrivacyMask privacy);
 
@@ -529,14 +529,14 @@ LINPHONE_PUBLIC uint8_t linphone_proxy_config_get_avpf_rr_interval(const Linphon
 /**
  * Get enablement status of RTCP feedback (also known as AVPF profile).
  * @param[in] cfg #LinphoneProxyConfig object.
- * @return the enablement mode, which can be LinphoneAVPFDefault (use LinphoneCore's mode), LinphoneAVPFEnabled (avpf is enabled), or LinphoneAVPFDisabled (disabled).
+ * @return the enablement mode, which can be #LinphoneAVPFDefault (use LinphoneCore's mode), #LinphoneAVPFEnabled (avpf is enabled), or #LinphoneAVPFDisabled (disabled).
 **/
 LINPHONE_PUBLIC LinphoneAVPFMode linphone_proxy_config_get_avpf_mode(const LinphoneProxyConfig *cfg);
 
 /**
  * Enable the use of RTCP feedback (also known as AVPF profile).
  * @param[in] cfg #LinphoneProxyConfig object.
- * @param[in] mode the enablement mode, which can be LinphoneAVPFDefault (use LinphoneCore's mode), LinphoneAVPFEnabled (avpf is enabled), or LinphoneAVPFDisabled (disabled).
+ * @param[in] mode the enablement mode, which can be #LinphoneAVPFDefault (use LinphoneCore's mode), #LinphoneAVPFEnabled (avpf is enabled), or #LinphoneAVPFDisabled (disabled).
 **/
 LINPHONE_PUBLIC void linphone_proxy_config_set_avpf_mode(LinphoneProxyConfig *cfg, LinphoneAVPFMode mode);
 
@@ -589,7 +589,7 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_ref_key(LinphoneProxyConfig *cfg,
  * Get The policy that is used to pass through NATs/firewalls when using this proxy config.
  * If it is set to NULL, the default NAT policy from the core will be used instead.
  * @param[in] cfg #LinphoneProxyConfig object
- * @return LinphoneNatPolicy object in use.
+ * @return #LinphoneNatPolicy object in use.
  * @see linphone_core_get_nat_policy()
  */
 LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConfig *cfg);
@@ -598,7 +598,7 @@ LINPHONE_PUBLIC LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const L
  * Set the policy to use to pass through NATs/firewalls when using this proxy config.
  * If it is set to NULL, the default NAT policy from the core will be used instead.
  * @param[in] cfg #LinphoneProxyConfig object
- * @param[in] policy LinphoneNatPolicy object
+ * @param[in] policy #LinphoneNatPolicy object
  * @see linphone_core_set_nat_policy()
  */
 LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy);
@@ -616,6 +616,20 @@ void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, 
  * @return The uri of the conference factory
  */
 const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg);
+
+/**
+ * Indicates whether to add to the contact parameters the push notification information.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @param[in] allow True to allow push notification information, false otherwise.
+ */
+LINPHONE_PUBLIC void linphone_proxy_config_set_push_notification_allowed(LinphoneProxyConfig *cfg, bool_t allow);
+
+/**
+ * Indicates whether to add to the contact parameters the push notification information.
+ * @param[in] cfg #LinphoneProxyConfig object.
+ * @return True if push notification informations should be added, false otherwise.
+ */
+LINPHONE_PUBLIC bool_t linphone_proxy_config_is_push_notification_allowed(const LinphoneProxyConfig *cfg);
 
 /**
  * @}

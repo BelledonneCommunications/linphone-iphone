@@ -129,9 +129,23 @@ ContentType &ContentType::operator= (const ContentType &other) {
 	return *this;
 }
 
+bool ContentType::weakEqual (const ContentType &other) const {
+	return (getType() == other.getType()) && (getSubType() == other.getSubType());
+}
+
 bool ContentType::operator== (const ContentType &other) const {
-	return getType() == other.getType() &&
-		getSubType() == other.getSubType();
+	if (!weakEqual(other))
+		return false;
+	if (getParameters().size() != other.getParameters().size())
+		return false;
+	for (const auto &param : getParameters()) {
+		auto it = other.findParameter(param.getName());
+		if (it == other.getParameters().cend())
+			return false;
+		if (it->getValue() != param.getValue())
+			return false;
+	}
+	return true;
 }
 
 bool ContentType::operator!= (const ContentType &other) const {

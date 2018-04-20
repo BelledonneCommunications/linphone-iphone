@@ -35,6 +35,8 @@
 #include "chat/modifier/encryption-chat-message-modifier.h"
 #include "chat/modifier/file-transfer-chat-message-modifier.h"
 #include "chat/modifier/multipart-chat-message-modifier.h"
+#include "conference/participant.h"
+#include "conference/participant-imdn-state.h"
 #include "content/file-content.h"
 #include "content/header/header-param.h"
 #include "content/content.h"
@@ -71,17 +73,27 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState) {
+list<ParticipantImdnState> ChatMessagePrivate::getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const {
 	L_Q();
 
-	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference)
-		|| (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
-			"misc", "enable_simple_group_chat_message_state", TRUE
-		))
-	) {
-		setState(newState);
-		return;
+	list<ParticipantImdnState> result;
+	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid())
+		return result;
+
+	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
+	list<MainDb::ParticipantState> dbResults = func(eventLog);
+	for (const auto &dbResult : dbResults) {
+		auto participant = q->getChatRoom()->findParticipant(dbResult.address);
+		if (participant)
+			result.emplace_back(participant, dbResult.state, dbResult.timestamp);
 	}
+
+	return result;
+}
+
+void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime) {
+	L_Q();
 
 	if (!dbKey.isValid())
 		return;
@@ -94,7 +106,25 @@ void ChatMessagePrivate::setParticipantState (const IdentityAddress &participant
 
 	lInfo() << "Chat message " << this << ": moving participant '" << participantAddress.asString() << "' state to "
 		<< Utils::toString(newState);
-	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState);
+	mainDb->setChatMessageParticipantState(eventLog, participantAddress, newState, stateChangeTime);
+
+	LinphoneChatMessage *msg = L_GET_C_BACK_PTR(q);
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(msg);
+	if (cbs && linphone_chat_message_cbs_get_participant_imdn_state_changed(cbs)) {
+		auto participant = q->getChatRoom()->findParticipant(participantAddress);
+		ParticipantImdnState imdnState(participant, newState, stateChangeTime);
+		linphone_chat_message_cbs_get_participant_imdn_state_changed(cbs)(msg,
+			_linphone_participant_imdn_state_from_cpp_obj(imdnState)
+		);
+	}
+
+	if (linphone_config_get_bool(linphone_core_get_config(q->getChatRoom()->getCore()->getCCore()),
+			"misc", "enable_simple_group_chat_message_state", FALSE
+		)
+	) {
+		setState(newState);
+		return;
+	}
 
 	list<ChatMessage::State> states = mainDb->getChatMessageParticipantStates(eventLog);
 	size_t nbDisplayedStates = 0;
@@ -481,7 +511,7 @@ static void forceUtf8Content (Content &content) {
 void ChatMessagePrivate::notifyReceiving () {
 	L_Q();
 
-	LinphoneChatRoom *chatRoom = L_GET_C_BACK_PTR(q->getChatRoom());
+	LinphoneChatRoom *chatRoom = static_pointer_cast<ChatRoom>(q->getChatRoom())->getPrivate()->getCChatRoom();
 	if ((getContentType() != ContentType::Imdn) && (getContentType() != ContentType::ImIsComposing)) {
 		_linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 		if (toBeStored)
@@ -974,6 +1004,29 @@ bool ChatMessage::getToBeStored () const {
 void ChatMessage::setToBeStored (bool value) {
 	L_D();
 	d->toBeStored = value;
+}
+
+// -----------------------------------------------------------------------------
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveDisplayed () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveDisplayed, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
+}
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveNotReceived () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveNotReceived, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
+}
+
+list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveReceived () const {
+	L_D();
+	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
+	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveReceived, mainDb.get(), std::placeholders::_1);
+	return d->getParticipantsByImdnState(func);
 }
 
 // -----------------------------------------------------------------------------

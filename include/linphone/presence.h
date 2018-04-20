@@ -197,8 +197,8 @@ LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_notes(LinphonePrese
 
 /**
  * Get the consolidated presence from a presence model.
- * @param[in] model LinphonePresenceModel object
- * @return The LinphoneConsolidatedPresence corresponding to the presence model
+ * @param[in] model #LinphonePresenceModel object
+ * @return The #LinphoneConsolidatedPresence corresponding to the presence model
  */
 LINPHONE_PUBLIC LinphoneConsolidatedPresence linphone_presence_model_get_consolidated_presence(const LinphonePresenceModel *model);
 
@@ -282,7 +282,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_presence_model_clear_persons(LinphonePre
  * It is any of theses cases:
  *  - basic status is'open' and no activities
  *  - explicit 'online' tag in the status
- * @param[in] model LinphonePresenceModel object
+ * @param[in] model #LinphonePresenceModel object
  * @return A boolean value telling whether the presence model is considered online or not.
  */
 LINPHONE_PUBLIC bool_t linphone_presence_model_is_online(const LinphonePresenceModel *model);
@@ -294,7 +294,7 @@ LINPHONE_PUBLIC bool_t linphone_presence_model_is_online(const LinphonePresenceM
 
 /**
  * Gets the string representation of a presence basic status.
- * @param[in] basic_status A LinphonePresenceBasicStatus for which to get a string representation.
+ * @param[in] basic_status A #LinphonePresenceBasicStatus for which to get a string representation.
  * @return A pointer a dynamically allocated string representing the given basic status.
  *
  * The returned string is to be freed by calling ms_free().

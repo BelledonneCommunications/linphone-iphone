@@ -248,7 +248,7 @@ void ProxyChatRoom::addParticipants (
 	return d->chatRoom->addParticipants(addresses, params, hasMedia);
 }
 
-void ProxyChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
+void ProxyChatRoom::removeParticipant (const shared_ptr<Participant> &participant) {
 	L_D();
 	d->chatRoom->removeParticipant(participant);
 }

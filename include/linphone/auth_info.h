@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 /**
- * Safely cast a belle_sip_object_t into LinphoneAuthInfo
+ * Safely cast a belle_sip_object_t into #LinphoneAuthInfo
  */
 #define LINPHONE_AUTH_INFO(obj) BELLE_SIP_CAST(obj, LinphoneAuthInfo)
 
@@ -48,7 +48,7 @@ extern "C" {
  * @param ha1 The ha1-encrypted password if password is not given in clear text.
  * @param realm The authentication domain (which can be larger than the sip domain. Unfortunately many SIP servers don't use this parameter.
  * @param domain The SIP domain for which this authentication information is valid, if it has to be restricted for a single SIP domain.
- * @return A #LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The LinphoneCore makes a copy of LinphoneAuthInfo
+ * @return A #LinphoneAuthInfo object. linphone_auth_info_destroy() must be used to destroy it when no longer needed. The #LinphoneCore makes a copy of #LinphoneAuthInfo
  * passed through linphone_core_add_auth_info().
 **/
 LINPHONE_PUBLIC LinphoneAuthInfo *linphone_auth_info_new(
