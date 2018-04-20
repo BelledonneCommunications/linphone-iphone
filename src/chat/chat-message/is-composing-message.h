@@ -1,5 +1,5 @@
 /*
- * notification-message.cpp
+ * is-composing-message.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,29 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "chat/chat-message/notification-message-p.h"
+#ifndef _L_IS_COMPOSING_MESSAGE_H_
+#define _L_IS_COMPOSING_MESSAGE_H_
+
+#include "chat/chat-message/notification-message.h"
+#include "chat/notification/is-composing.h"
 
 // =============================================================================
 
-using namespace std;
-
 LINPHONE_BEGIN_NAMESPACE
 
-// -----------------------------------------------------------------------------
+class LINPHONE_PUBLIC IsComposingMessage : public NotificationMessage {
+public:
+	friend class ChatRoomPrivate;
 
-NotificationMessage::NotificationMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
-	NotificationMessage(*new NotificationMessagePrivate(chatRoom, direction)) {
-}
+	L_OVERRIDE_SHARED_FROM_THIS(IsComposingMessage);
 
-NotificationMessage::NotificationMessage (NotificationMessagePrivate &p) : ChatMessage(p) {
-	L_D();
-	d->displayNotificationRequired = false;
-	d->negativeDeliveryNotificationRequired = false;
-	d->positiveDeliveryNotificationRequired = false;
-	d->toBeStored = false;
-}
+	virtual ~IsComposingMessage () = default;
 
-void NotificationMessage::setToBeStored (bool value) {
-}
+private:
+	IsComposingMessage (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		IsComposing &isComposingHandler,
+		bool isComposing
+	);
+
+	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DISABLE_COPY(IsComposingMessage);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _L_IS_COMPOSING_MESSAGE_H_

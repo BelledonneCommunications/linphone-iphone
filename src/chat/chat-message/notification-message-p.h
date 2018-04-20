@@ -1,5 +1,5 @@
 /*
- * notification-message.cpp
+ * notification-message-p.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,29 +17,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "chat/chat-message/notification-message-p.h"
+#ifndef _L_NOTIFICATION_MESSAGE_P_H_
+#define _L_NOTIFICATION_MESSAGE_P_H_
+
+#include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/notification-message.h"
 
 // =============================================================================
 
-using namespace std;
-
 LINPHONE_BEGIN_NAMESPACE
 
-// -----------------------------------------------------------------------------
+class NotificationMessagePrivate : public ChatMessagePrivate {
+	friend class IsComposingMessage;
 
-NotificationMessage::NotificationMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
-	NotificationMessage(*new NotificationMessagePrivate(chatRoom, direction)) {
-}
+private:
+	NotificationMessagePrivate(const std::shared_ptr<AbstractChatRoom> &cr, ChatMessage::Direction dir)
+		: ChatMessagePrivate(cr, dir) {}
 
-NotificationMessage::NotificationMessage (NotificationMessagePrivate &p) : ChatMessage(p) {
-	L_D();
-	d->displayNotificationRequired = false;
-	d->negativeDeliveryNotificationRequired = false;
-	d->positiveDeliveryNotificationRequired = false;
-	d->toBeStored = false;
-}
+	void setDisplayNotificationRequired (bool value) override {}
+	void setNegativeDeliveryNotificationRequired (bool value) override {}
+	void setPositiveDeliveryNotificationRequired (bool value) override {}
 
-void NotificationMessage::setToBeStored (bool value) {
-}
+	L_DECLARE_PUBLIC(NotificationMessage);
+};
 
 LINPHONE_END_NAMESPACE
+
+#endif // ifndef _L_NOTIFICATION_MESSAGE_P_H_

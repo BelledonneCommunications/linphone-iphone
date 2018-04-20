@@ -1,5 +1,5 @@
 /*
- * notification-message.cpp
+ * is-composing-message.cpp
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -18,6 +18,8 @@
  */
 
 #include "chat/chat-message/notification-message-p.h"
+#include "chat/chat-message/is-composing-message.h"
+#include "sip-tools/sip-headers.h"
 
 // =============================================================================
 
@@ -27,19 +29,18 @@ LINPHONE_BEGIN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
-NotificationMessage::NotificationMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
-	NotificationMessage(*new NotificationMessagePrivate(chatRoom, direction)) {
-}
-
-NotificationMessage::NotificationMessage (NotificationMessagePrivate &p) : ChatMessage(p) {
+IsComposingMessage::IsComposingMessage (
+	const shared_ptr<AbstractChatRoom> &chatRoom,
+	IsComposing &isComposingHandler,
+	bool isComposing
+) : NotificationMessage(*new NotificationMessagePrivate(chatRoom, ChatMessage::Direction::Outgoing)) {
 	L_D();
-	d->displayNotificationRequired = false;
-	d->negativeDeliveryNotificationRequired = false;
-	d->positiveDeliveryNotificationRequired = false;
-	d->toBeStored = false;
-}
-
-void NotificationMessage::setToBeStored (bool value) {
+	Content *content = new Content();
+	content->setContentType(ContentType::ImIsComposing);
+	content->setBody(isComposingHandler.marshal(isComposing));
+	addContent(content);
+	d->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
+	d->addSalCustomHeader("Expires", "0");
 }
 
 LINPHONE_END_NAMESPACE

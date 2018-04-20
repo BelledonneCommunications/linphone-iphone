@@ -23,10 +23,10 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/is-composing-message.h"
 #include "chat/chat-message/notification-message.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
-#include "sip-tools/sip-headers.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -77,20 +77,8 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	if (!linphone_im_notif_policy_get_send_is_composing(policy))
 		return;
 
-	string payload = isComposingHandler->marshal(isComposing);
-	if (payload.empty())
-		return;
-
-	Content *content = new Content();
-	content->setContentType(ContentType::ImIsComposing);
-	content->setBody(payload);
-
-	shared_ptr<ChatMessage> chatMessage = createNotificationMessage(ChatMessage::Direction::Outgoing);
-	chatMessage->addContent(content);
-	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
-	chatMessage->getPrivate()->addSalCustomHeader("Expires", "0");
-
-	chatMessage->getPrivate()->send();
+	auto isComposingMsg = createIsComposingMessage();
+	isComposingMsg->getPrivate()->send();
 }
 
 // -----------------------------------------------------------------------------
@@ -119,6 +107,11 @@ void ChatRoomPrivate::removeTransientEvent (const shared_ptr<EventLog> &eventLog
 shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Direction direction) {
 	L_Q();
 	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
+}
+
+shared_ptr<ChatMessage> ChatRoomPrivate::createIsComposingMessage () {
+	L_Q();
+	return shared_ptr<ChatMessage>(new IsComposingMessage(q->getSharedFromThis(), *isComposingHandler.get(), isComposing));
 }
 
 shared_ptr<ChatMessage> ChatRoomPrivate::createNotificationMessage (ChatMessage::Direction direction) {

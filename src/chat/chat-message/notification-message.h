@@ -38,6 +38,9 @@ public:
 
 	void setToBeStored (bool value) override;
 
+protected:
+	explicit NotificationMessage (NotificationMessagePrivate &p);
+
 private:
 	NotificationMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);
 
