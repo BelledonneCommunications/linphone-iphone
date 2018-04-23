@@ -917,8 +917,10 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEn
 
 int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer) {
 	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+
 	if (!content)
 		return -1;
+
 	if (!linphone_content_get_key(content)) {
 		linphone_content_unref(content);
 		return -1;

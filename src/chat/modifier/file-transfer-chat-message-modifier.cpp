@@ -253,12 +253,25 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 					is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()));
 				}
 			}
+
+			FileTransferContent *fileTransferContent = new FileTransferContent();
+			fileTransferContent->setContentType(ContentType::FileTransfer);
+			fileTransferContent->setFileSize(currentFileContentToTransfer->getFileSize()); // Copy file size information
+			message->getPrivate()->addContent(fileTransferContent);
+
 			// shall we encrypt the file
 			if (is_file_encryption_enabled && message->getChatRoom()) {
 				// temporary storage for the Content-disposition header value : use a generic filename to not leak it
 				// Actual filename stored in msg->file_transfer_information->name will be set in encrypted msg
 				// sended to the
 				first_part_header = "form-data; name=\"File\"; filename=\"filename.txt\"";
+				
+				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
+				LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key_cb =
+					linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(imee_cbs);
+				if (generate_file_transfer_key_cb) {
+					generate_file_transfer_key_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()), L_GET_C_BACK_PTR(message));
+				}
 			} else {
 				// temporary storage for the Content-disposition header value
 				first_part_header = "form-data; name=\"File\"; filename=\"" + currentFileContentToTransfer->getFileName() + "\"";
@@ -273,6 +286,8 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				// No need to add again the callback for progression, otherwise it will be called twice
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_file_body_handler_new(currentFileContentToTransfer->getFilePath().c_str(), nullptr, this);
 				belle_sip_file_body_handler_set_user_body_handler((belle_sip_file_body_handler_t *)first_part_bh, body_handler);
+				// Ensure the file size has been set to the correct value
+				fileTransferContent->setFileSize(belle_sip_file_body_handler_get_file_size((belle_sip_file_body_handler_t *)first_part_bh));
 			} else if (!currentFileContentToTransfer->isEmpty()) {
 				first_part_bh = (belle_sip_body_handler_t *)belle_sip_memory_body_handler_new_from_buffer(
 						ms_strdup(currentFileContentToTransfer->getBodyAsString().c_str()),
@@ -294,30 +309,16 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			uploadFile();
 			belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(httpRequest), BELLE_SIP_BODY_HANDLER(bh));
 		} else if (code == 200) {     // file has been uploaded correctly, get server reply and send it
+			FileTransferContent *fileTransferContent = nullptr;
+			for (Content *c : message->getPrivate()->getContents()) {
+				if (c->isFileTransfer()) {
+					fileTransferContent = static_cast<FileTransferContent *>(c);
+					break;
+				}
+			}
+
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			if (body && strlen(body) > 0) {
-				FileTransferContent *fileTransferContent = new FileTransferContent();
-				fileTransferContent->setContentType(ContentType::FileTransfer);
-
-				LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
-				bool_t is_file_encryption_enabled = FALSE;
-				if (imee && message->getChatRoom()) {
-					LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-					LinphoneImEncryptionEngineCbsIsEncryptionEnabledForFileTransferCb is_encryption_enabled_for_file_transfer_cb =
-						linphone_im_encryption_engine_cbs_get_is_encryption_enabled_for_file_transfer(imee_cbs);
-					if (is_encryption_enabled_for_file_transfer_cb) {
-						is_file_encryption_enabled = is_encryption_enabled_for_file_transfer_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()));
-					}
-				}
-				if (is_file_encryption_enabled && message->getChatRoom()) {
-					LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
-					LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key_cb =
-						linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(imee_cbs);
-					if (generate_file_transfer_key_cb) {
-						generate_file_transfer_key_cb(imee, L_GET_C_BACK_PTR(message->getChatRoom()), L_GET_C_BACK_PTR(message));
-					}
-				}
-
 				// if we have an encryption key for the file, we must insert it into the msg and restore the correct filename
 				const char *content_key = fileTransferContent->getFileKeyAsString();
 				size_t content_key_size = fileTransferContent->getFileKey().size();
@@ -381,7 +382,6 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				fileTransferContent->setFileContent(fileContent);
 
 				message->getPrivate()->removeContent(fileContent);
-				message->getPrivate()->addContent(fileTransferContent);
 
 				message->getPrivate()->setState(ChatMessage::State::FileTransferDone);
 				releaseHttpRequest();
@@ -389,17 +389,44 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				fileUploadEndBackgroundTask();
 			} else {
 				lWarning() << "Received empty response from server, file transfer failed";
+				FileTransferContent *fileTransferContent = nullptr;
+				for (Content *c : message->getPrivate()->getContents()) {
+					if (c->isFileTransfer()) {
+						fileTransferContent = static_cast<FileTransferContent *>(c);
+						message->getPrivate()->removeContent(fileTransferContent);
+						delete fileTransferContent;
+						break;
+					}
+				}
 				message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 				releaseHttpRequest();
 				fileUploadEndBackgroundTask();
 			}
 		} else if (code == 400) {
 			lWarning() << "Received HTTP code response " << code << " for file transfer, probably meaning file is too large";
+			FileTransferContent *fileTransferContent = nullptr;
+			for (Content *c : message->getPrivate()->getContents()) {
+				if (c->isFileTransfer()) {
+					fileTransferContent = static_cast<FileTransferContent *>(c);
+					message->getPrivate()->removeContent(fileTransferContent);
+					delete fileTransferContent;
+					break;
+				}
+			}
 			message->getPrivate()->setState(ChatMessage::State::FileTransferError);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
 		} else {
 			lWarning() << "Unhandled HTTP code response " << code << " for file transfer";
+			FileTransferContent *fileTransferContent = nullptr;
+			for (Content *c : message->getPrivate()->getContents()) {
+				if (c->isFileTransfer()) {
+					fileTransferContent = static_cast<FileTransferContent *>(c);
+					message->getPrivate()->removeContent(fileTransferContent);
+					delete fileTransferContent;
+					break;
+				}
+			}
 			message->getPrivate()->setState(ChatMessage::State::NotDelivered);
 			releaseHttpRequest();
 			fileUploadEndBackgroundTask();
@@ -539,7 +566,6 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 							fileTransferContent->setFileSize(size);
 							xmlFree(fileSizeString);
 						}
-
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-name")) {
 							xmlChar *filename = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
 							fileTransferContent->setFileName((char *)filename);
@@ -547,6 +573,20 @@ static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTrans
 						}
 						if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
 							fileUrl = xmlGetProp(cur, (const xmlChar *)"url");
+						}
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) {
+							// there is a key in the msg: file has been encrypted
+							// convert the key from base 64
+							xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
+							size_t keyLength;
+							bctbx_base64_decode(NULL, &keyLength, (unsigned char *)keyb64, strlen((const char *)keyb64));
+							uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
+							// decode the key into local key buffer
+							bctbx_base64_decode(keyBuffer, &keyLength, (unsigned char *)keyb64, strlen((const char *)keyb64));
+							fileTransferContent->setFileKey((const char *)keyBuffer, keyLength);
+							// duplicate key value into the linphone content private structure
+							xmlFree(keyb64);
+							free(keyBuffer);
 						}
 
 						cur = cur->next;
