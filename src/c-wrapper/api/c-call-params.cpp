@@ -511,11 +511,9 @@ void linphone_call_params_unref (LinphoneCallParams *cp) {
 // =============================================================================
 
 LinphoneCallParams *linphone_call_params_new (LinphoneCore *core) {
-	LinphoneCallParams *params = _linphone_CallParams_init();
-	auto mediaSessionParams = new LinphonePrivate::MediaSessionParams();
-	L_SET_CPP_PTR_FROM_C_OBJECT(params, mediaSessionParams);
+	LinphoneCallParams *params = L_INIT(CallParams);
+	L_SET_CPP_PTR_FROM_C_OBJECT(params, new LinphonePrivate::MediaSessionParams());
 	L_GET_CPP_PTR_FROM_C_OBJECT(params)->initDefault(L_GET_CPP_PTR_FROM_C_OBJECT(core));
-	delete mediaSessionParams;
 	return params;
 }
 

@@ -413,7 +413,7 @@ public:
 		typename CppType = typename CTypeMetaInfo<CType>::cppType,
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
-	static inline void setCppPtrFromC (CType *cObject, CppType* &&cppObject) {
+	static inline void setCppPtrFromC (CType *cObject, CppType *cppObject) {
 		CppType **cppObjectAddr = &reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 		if (*cppObjectAddr == cppObject)
 			return;
@@ -425,15 +425,6 @@ public:
 		#ifdef DEBUG
 			setName(reinterpret_cast<belle_sip_object_t *>(cObject), cppObject);
 		#endif
-	}
-
-	template<
-		typename CType,
-		typename CppType = typename CTypeMetaInfo<CType>::cppType,
-		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
-	>
-	static inline void setCppPtrFromC (CType *cObject, const CppType *cppObject) {
-		setCppPtrFromC(cObject, new CppType(*cppObject));
 	}
 
 	// ---------------------------------------------------------------------------
@@ -464,7 +455,7 @@ private:
 			return static_cast<RetType *>(value);
 
 		RetType *cObject = CppTypeMetaInfo<CppType>::init();
-		setCppPtrFromC(cObject, cppObject);
+		setCppPtrFromC(cObject, const_cast<CppType *>(cppObject));
 
 		return cObject;
 	}
@@ -731,7 +722,7 @@ LINPHONE_END_NAMESPACE
 	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
 		LinphonePrivate::Wrapper::uninitClonableCppObject(object); \
 	} \
-	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE * dest, const Linphone ## C_TYPE * src) { \
+	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE *dest, const Linphone ## C_TYPE *src) { \
 		L_ASSERT(src->cppPtr); \
 		dest->cppPtr = new L_CPP_TYPE_OF_C_TYPE(C_TYPE)(*src->cppPtr); \
 	} \
