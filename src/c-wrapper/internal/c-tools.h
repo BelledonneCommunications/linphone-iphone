@@ -559,8 +559,11 @@ public:
 	>
 	static inline bctbx_list_t *getResolvedCListFromCppList (const std::list<CppType> &cppList) {
 		bctbx_list_t *result = nullptr;
-		for (const auto &value : cppList)
-			result = bctbx_list_append(result, getCBackPtr(&value));
+		for (const auto &value : cppList) {
+			auto cValue = getCBackPtr(new CppType(value));
+			reinterpret_cast<WrappedClonableObject<CppType> *>(cValue)->owner = WrappedObjectOwner::External;
+			result = bctbx_list_append(result, cValue);
+		}
 		return result;
 	}
 
