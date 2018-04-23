@@ -55,7 +55,8 @@ LinphoneContent * linphone_content_ref(LinphoneContent *content) {
 }
 
 void linphone_content_unref(LinphoneContent *content) {
-	belle_sip_object_unref(content);
+	// FIXME: Avoid leaks.
+	// belle_sip_object_unref(content);
 }
 
 void *linphone_content_get_user_data(const LinphoneContent *content) {

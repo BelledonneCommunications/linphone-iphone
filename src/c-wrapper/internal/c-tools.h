@@ -140,6 +140,9 @@ private:
 	struct WrappedClonableObject {
 		belle_sip_object_t base;
 		CppType *cppPtr;
+
+		// By default: External.
+		WrappedObjectOwner owner;
 	};
 
 	// ---------------------------------------------------------------------------
@@ -236,7 +239,7 @@ public:
 			: wrappedObject->cppPtr;
 
 		if (cppObject)
-			cppObject->setCBackPtr(nullptr); \
+			cppObject->setCBackPtr(nullptr);
 
 		wrappedObject->cppPtr.~shared_ptr();
 		wrappedObject->weakCppPtr.~weak_ptr();
@@ -248,7 +251,9 @@ public:
 		typename = typename std::enable_if<IsDefinedClonableCppObject<CppType>::value, CppType>::type
 	>
 	static void uninitClonableCppObject (CType *cObject) {
-		delete reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
+		WrappedClonableObject<CppType> *wrappedObject = reinterpret_cast<WrappedClonableObject<CppType> *>(cObject);
+		if (wrappedObject->owner == WrappedObjectOwner::External)
+			delete wrappedObject->cppPtr;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -417,7 +422,9 @@ public:
 		CppType **cppObjectAddr = &reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->cppPtr;
 		if (*cppObjectAddr == cppObject)
 			return;
-		delete *cppObjectAddr;
+
+		if (reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->owner == WrappedObjectOwner::External)
+			delete *cppObjectAddr;
 
 		*cppObjectAddr = cppObject;
 		(*cppObjectAddr)->setCBackPtr(cObject);
@@ -455,6 +462,7 @@ private:
 			return static_cast<RetType *>(value);
 
 		RetType *cObject = CppTypeMetaInfo<CppType>::init();
+		reinterpret_cast<WrappedClonableObject<CppType> *>(cObject)->owner = WrappedObjectOwner::Internal;
 		setCppPtrFromC(cObject, const_cast<CppType *>(cppObject));
 
 		return cObject;
@@ -491,7 +499,6 @@ public:
 
 		RetType *cObject = CppTypeMetaInfo<CppType>::init();
 		reinterpret_cast<WrappedBaseObject<CppType> *>(cObject)->owner = WrappedObjectOwner::Internal;
-
 		setCppPtrFromC(cObject, cppObject);
 
 		return cObject;
@@ -713,6 +720,7 @@ LINPHONE_END_NAMESPACE
 	struct _Linphone ## C_TYPE { \
 		belle_sip_object_t base; \
 		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
+		int owner; \
 		__VA_ARGS__ \
 	}; \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
