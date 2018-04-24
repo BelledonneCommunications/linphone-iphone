@@ -47,6 +47,7 @@ L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(Content,
 		string type;
 		string subtype;
 		string encoding;
+		string buffer;
 	} mutable cache;
 )
 
@@ -116,7 +117,8 @@ void linphone_content_set_buffer (LinphoneContent *content, const uint8_t *buffe
 }
 
 const char *linphone_content_get_string_buffer (const LinphoneContent *content) {
-	return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str();
+	content->cache.buffer = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String();
+	return content->cache.buffer.c_str();
 }
 
 void linphone_content_set_string_buffer (LinphoneContent *content, const char *buffer) {
