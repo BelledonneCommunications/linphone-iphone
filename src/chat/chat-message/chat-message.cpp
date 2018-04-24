@@ -496,6 +496,11 @@ void ChatMessagePrivate::notifyReceiving () {
 		_linphone_chat_room_notify_chat_message_should_be_stored(chatRoom, L_GET_C_BACK_PTR(q->getSharedFromThis()));
 		if (toBeStored)
 			storeInDb();
+	} else {
+		// For compatibility, when CPIM is not used
+		positiveDeliveryNotificationRequired = false;
+		negativeDeliveryNotificationRequired = false;
+		displayNotificationRequired = false;
 	}
 	shared_ptr<ConferenceChatMessageEvent> event = make_shared<ConferenceChatMessageEvent>(
 		::time(nullptr), q->getSharedFromThis()
