@@ -155,7 +155,6 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	sal/sal.h
 	search/magic-search-p.h
 	search/magic-search.h
-	search/search-result-p.h
 	search/search-result.h
 	utils/background-task.h
 	utils/payload-type-handler.h

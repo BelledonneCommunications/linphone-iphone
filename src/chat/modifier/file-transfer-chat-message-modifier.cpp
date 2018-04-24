@@ -999,7 +999,7 @@ void FileTransferChatMessageModifier::cancelFileTransfer () {
 					? L_C_TO_STRING(linphone_core_get_file_transfer_server(message->getCore()->getCCore()))
 					: currentFileContentToTransfer->getFilePath().c_str()
 				);
-			
+
 		} else {
 			lInfo() << "Warning: http request still running for ORPHAN msg: this is a memory leak";
 		}

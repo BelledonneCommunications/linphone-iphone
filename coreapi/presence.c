@@ -357,6 +357,7 @@ LinphoneStatus linphone_presence_model_set_contact(LinphonePresenceModel *model,
 		service = linphone_presence_service_new(NULL, LinphonePresenceBasicStatusClosed, NULL);
 		if (service == NULL) return -1;
 		linphone_presence_model_add_service(model, service);
+		linphone_presence_service_unref(service);
 	}
 	return linphone_presence_service_set_contact(service, contact);
 }

@@ -577,6 +577,7 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		}
 		iterator = bctbx_list_next(iterator);
 	}
+	bctbx_list_free(phone_numbers);
 
 	addresses = linphone_friend_get_addresses(lf);
 	iterator = (bctbx_list_t *)addresses;
