@@ -293,9 +293,19 @@ public:
 		typename CppType,
 		typename = typename std::enable_if<std::is_base_of<BaseObject, CppType>::value, CppType>::type
 	>
-	static void signalCppPtrDestruction (CppType *cppObject) {
+	static void handleObjectDestruction (CppType *cppObject) {
 		void *value = cppObject->getCBackPtr();
 		if (value && static_cast<WrappedBaseObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
+			belle_sip_object_unref(value);
+	}
+
+	template<
+		typename CppType,
+		typename = typename std::enable_if<std::is_base_of<ClonableObject, CppType>::value, CppType>::type
+	>
+	static void handleClonableObjectDestruction (CppType *cppObject) {
+		void *value = cppObject->getCBackPtr();
+		if (value && static_cast<WrappedClonableObject<CppType> *>(value)->owner == WrappedObjectOwner::Internal)
 			belle_sip_object_unref(value);
 	}
 
@@ -770,10 +780,6 @@ LINPHONE_END_NAMESPACE
 
 // Call the init function of wrapped C object.
 #define L_INIT(C_TYPE) _linphone_ ## C_TYPE ## _init()
-
-// Signal to wrapper the destruction of cpp base object.
-#define L_SIGNAL_CPP_PTR_DESTRUCTION(CPP_OBJECT) \
-	LinphonePrivate::Wrapper::signalCppPtrDestruction(CPP_OBJECT);
 
 // Get/set the cpp-ptr of a wrapped C object.
 #define L_GET_CPP_PTR_FROM_C_OBJECT_1_ARGS(C_OBJECT) \

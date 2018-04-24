@@ -19,8 +19,6 @@
 
 #include "base-object-p.h"
 #include "base-object.h"
-
-// Necessary for: L_SIGNAL_CPP_PTR_DESTRUCTION.
 #include "c-wrapper/internal/c-tools.h"
 
 // =============================================================================
@@ -34,7 +32,7 @@ BaseObject::BaseObject (BaseObjectPrivate &p) : mPrivate(&p) {
 }
 
 BaseObject::~BaseObject () {
-	L_SIGNAL_CPP_PTR_DESTRUCTION(this);
+	Wrapper::handleObjectDestruction(this);
 	delete mPrivate;
 }
 
