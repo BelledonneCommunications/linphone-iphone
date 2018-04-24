@@ -21,167 +21,161 @@
 #include "linphone/wrapper_utils.h"
 
 #include "c-wrapper/c-wrapper.h"
-
-#include "content/content.h"
 #include "content/content-type.h"
-#include "content/header/header-param.h"
-#include "content/header/header.h"
-#include "content/content-manager.h"
 #include "content/file-content.h"
 #include "content/file-transfer-content.h"
+#include "content/header/header-param.h"
 
 // =============================================================================
 
 using namespace std;
 
-L_DECLARE_C_CLONABLE_OBJECT_IMPL(Content,
-	void *cryptoContext; /**< crypto context used to encrypt file for RCS file transfer */
-	mutable char *name;
-	mutable char *type;
-	mutable char *subtype;
-	mutable char *body;
+static void _linphone_content_constructor (LinphoneContent *content);
+static void _linphone_content_destructor (LinphoneContent *content);
+
+L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(Content,
+	_linphone_content_constructor,
+	_linphone_content_destructor,
+
+	void *cryptoContext; // Used to encrypt file for RCS file transfer.
+
 	mutable size_t size;
-	mutable char *encoding;
 	mutable char *key;
+
+	struct Cache {
+		string name;
+		string type;
+		string subtype;
+		string encoding;
+	} mutable cache;
 )
+
+static void _linphone_content_constructor (LinphoneContent *content) {
+	new(&content->cache) LinphoneContent::Cache();
+}
+
+static void _linphone_content_destructor (LinphoneContent *content) {
+	content->cache.~Cache();
+}
 
 // =============================================================================
 // Reference and user data handling functions.
 // =============================================================================
 
-LinphoneContent * linphone_content_ref(LinphoneContent *content) {
+LinphoneContent *linphone_content_ref (LinphoneContent *content) {
 	belle_sip_object_ref(content);
 	return content;
 }
 
-void linphone_content_unref(LinphoneContent *content) {
+void linphone_content_unref (LinphoneContent *content) {
 	belle_sip_object_unref(content);
 }
 
-void *linphone_content_get_user_data(const LinphoneContent *content) {
+void *linphone_content_get_user_data (const LinphoneContent *content) {
 	return L_GET_USER_DATA_FROM_C_OBJECT(content);
 }
 
-void linphone_content_set_user_data(LinphoneContent *content, void *ud) {
-	return L_SET_USER_DATA_FROM_C_OBJECT(content, ud);
+void linphone_content_set_user_data (LinphoneContent *content, void *user_data) {
+	return L_SET_USER_DATA_FROM_C_OBJECT(content, user_data);
 }
 
 // =============================================================================
 
-const char * linphone_content_get_type(const LinphoneContent *content) {
-	if (content->type) bctbx_free(content->type);
-	content->type = bctbx_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType()));
-	return content->type;
+const char *linphone_content_get_type (const LinphoneContent *content) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType().c_str();
 }
 
-void linphone_content_set_type(LinphoneContent *content, const char *type) {
-	LinphonePrivate::ContentType ct = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
-	ct.setType(L_C_TO_STRING(type));
-	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(ct);
+void linphone_content_set_type (LinphoneContent *content, const char *type) {
+	LinphonePrivate::ContentType contentType = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
+	contentType.setType(L_C_TO_STRING(type));
+	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(contentType);
 }
 
-const char * linphone_content_get_subtype(const LinphoneContent *content) {
-	if (content->subtype) bctbx_free(content->subtype);
-	content->subtype = bctbx_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType()));
-	return content->subtype;
+const char *linphone_content_get_subtype (const LinphoneContent *content) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType().c_str();
 }
 
-void linphone_content_set_subtype(LinphoneContent *content, const char *subtype) {
-	LinphonePrivate::ContentType ct = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
-	ct.setSubType(L_C_TO_STRING(subtype));
-	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(ct);
+void linphone_content_set_subtype (LinphoneContent *content, const char *subtype) {
+	LinphonePrivate::ContentType contentType = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
+	contentType.setSubType(L_C_TO_STRING(subtype));
+	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(contentType);
 }
 
-void linphone_content_add_content_type_parameter(LinphoneContent *content, const char *name, const char *value) {
-	LinphonePrivate::ContentType ct = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
-	ct.addParameter(L_C_TO_STRING(name), L_C_TO_STRING(value));
-	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(ct);
+void linphone_content_add_content_type_parameter (LinphoneContent *content, const char *name, const char *value) {
+	LinphonePrivate::ContentType contentType = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
+	contentType.addParameter(L_C_TO_STRING(name), L_C_TO_STRING(value));
+	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(contentType);
 }
 
-uint8_t * linphone_content_get_buffer(const LinphoneContent *content) {
+uint8_t *linphone_content_get_buffer (const LinphoneContent *content) {
 	return (uint8_t *)linphone_content_get_string_buffer(content);
 }
 
-void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer, size_t size) {
+void linphone_content_set_buffer (LinphoneContent *content, const uint8_t *buffer, size_t size) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setBody(buffer, size);
 }
 
-const char * linphone_content_get_string_buffer(const LinphoneContent *content) {
-	if (content->body) bctbx_free(content->body);
-	content->body = bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
-	return content->body;
+const char *linphone_content_get_string_buffer (const LinphoneContent *content) {
+	return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str();
 }
 
-void linphone_content_set_string_buffer(LinphoneContent *content, const char *buffer) {
+void linphone_content_set_string_buffer (LinphoneContent *content, const char *buffer) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setBodyFromUtf8(L_C_TO_STRING(buffer));
 }
 
-size_t linphone_content_get_size(const LinphoneContent *content) {
-    const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-    size_t size = 0;
-    if (c->isFile()) {
-        const LinphonePrivate::FileContent *fc = static_cast<const LinphonePrivate::FileContent *>(c);
-         size = fc->getFileSize();
-    } else if (c->isFileTransfer()) {
-        const LinphonePrivate::FileTransferContent *fc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-         size = fc->getFileSize();
-    }
-    if (size == 0) {
-        size = c->getSize();
-    }
-    if (size == 0) {
-        size = content->size;
-    }
-    return size;
+size_t linphone_content_get_size (const LinphoneContent *content) {
+	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
+	size_t size = 0;
+	if (c->isFile())
+		size = static_cast<const LinphonePrivate::FileContent *>(c)->getFileSize();
+	else if (c->isFileTransfer())
+		size = static_cast<const LinphonePrivate::FileTransferContent *>(c)->getFileSize();
+
+	if (size == 0) {
+		size = c->getSize();
+	}
+	if (size == 0) {
+		size = content->size;
+	}
+	return size;
 }
 
-void linphone_content_set_size(LinphoneContent *content, size_t size) {
+void linphone_content_set_size (LinphoneContent *content, size_t size) {
 	content->size = size;
 }
 
-const char * linphone_content_get_encoding(const LinphoneContent *content) {
-	return content->encoding;
+const char *linphone_content_get_encoding (const LinphoneContent *content) {
+	return content->cache.encoding.c_str();
 }
 
-void linphone_content_set_encoding(LinphoneContent *content, const char *encoding) {
-	if (content->encoding) bctbx_free(content->encoding);
-		content->encoding = bctbx_strdup(encoding);
+void linphone_content_set_encoding (LinphoneContent *content, const char *encoding) {
+	content->cache.encoding = L_C_TO_STRING(encoding);
 }
 
-const char * linphone_content_get_name(const LinphoneContent *content) {
+const char *linphone_content_get_name (const LinphoneContent *content) {
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-	if (c->isFile()) {
-		const LinphonePrivate::FileContent *fc = static_cast<const LinphonePrivate::FileContent *>(c);
-		if (content->name) bctbx_free(content->name);
-		content->name = bctbx_strdup(L_STRING_TO_C(fc->getFileName()));
-	} else if (c->isFileTransfer()) {
-		const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-		if (content->name) bctbx_free(content->name);
-		content->name = bctbx_strdup(L_STRING_TO_C(ftc->getFileName()));
-	}
-	return content->name;
+	if (c->isFile())
+		return static_cast<const LinphonePrivate::FileContent *>(c)->getFileName().c_str();
+	if (c->isFileTransfer())
+		return static_cast<const LinphonePrivate::FileTransferContent *>(c)->getFileName().c_str();
+	return content->cache.name.c_str();
 }
 
-void linphone_content_set_name(LinphoneContent *content, const char *name) {
-	if (content->name) bctbx_free(content->name);
-
+void linphone_content_set_name (LinphoneContent *content, const char *name) {
 	LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
-	if (c->isFile()) {
-		LinphonePrivate::FileContent *fc = static_cast<LinphonePrivate::FileContent *>(c);
-		fc->setFileName(L_C_TO_STRING(name));
-	} else if (c->isFileTransfer()) {
-		LinphonePrivate::FileTransferContent *ftc = static_cast<LinphonePrivate::FileTransferContent *>(c);
-		ftc->setFileName(L_C_TO_STRING(name));
-	}
-
-	content->name = bctbx_strdup(name);
+	if (c->isFile())
+		static_cast<LinphonePrivate::FileContent *>(c)->setFileName(L_C_TO_STRING(name));
+	else if (c->isFileTransfer())
+		static_cast<LinphonePrivate::FileTransferContent *>(c)->setFileName(L_C_TO_STRING(name));
+	else
+		content->cache.name = L_C_TO_STRING(name);
 }
 
-bool_t linphone_content_is_multipart(const LinphoneContent *content) {
+bool_t linphone_content_is_multipart (const LinphoneContent *content) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().isMultipart();
 }
 
-LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int idx) {
+LinphoneContent *linphone_content_get_part (const LinphoneContent *content, int idx) {
 	SalBodyHandler *part_body_handler;
 	SalBodyHandler *body_handler = sal_body_handler_from_content(content);
 	if (!sal_body_handler_is_multipart(body_handler)) {
@@ -194,7 +188,7 @@ LinphoneContent * linphone_content_get_part(const LinphoneContent *content, int 
 	return result;
 }
 
-LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *content, const char *header_name, const char *header_value) {
+LinphoneContent *linphone_content_find_part_by_header (const LinphoneContent *content, const char *header_name, const char *header_value) {
 	SalBodyHandler *part_body_handler;
 	SalBodyHandler *body_handler = sal_body_handler_from_content(content);
 	if (!sal_body_handler_is_multipart(body_handler)) {
@@ -207,14 +201,14 @@ LinphoneContent * linphone_content_find_part_by_header(const LinphoneContent *co
 	return result;
 }
 
-const char * linphone_content_get_custom_header(const LinphoneContent *content, const char *header_name) {
+const char *linphone_content_get_custom_header (const LinphoneContent *content, const char *header_name) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(content);
 	const char *header = sal_body_handler_get_header(body_handler, header_name);
 	sal_body_handler_unref(body_handler);
 	return header;
 }
 
-const char *linphone_content_get_key(const LinphoneContent *content) {
+const char *linphone_content_get_key (const LinphoneContent *content) {
 	if (content->key) bctbx_free(content->key);
 
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
@@ -226,7 +220,7 @@ const char *linphone_content_get_key(const LinphoneContent *content) {
 	return content->key;
 }
 
-size_t linphone_content_get_key_size(const LinphoneContent *content) {
+size_t linphone_content_get_key_size (const LinphoneContent *content) {
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFileTransfer()) {
 		const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
@@ -235,11 +229,11 @@ size_t linphone_content_get_key_size(const LinphoneContent *content) {
 	return 0;
 }
 
-void linphone_content_set_key(LinphoneContent *content, const char *key, const size_t keyLength) {
+void linphone_content_set_key (LinphoneContent *content, const char *key, const size_t key_length) {
 	LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFileTransfer()) {
 		LinphonePrivate::FileTransferContent *ftc = static_cast<LinphonePrivate::FileTransferContent *>(c);
-		ftc->setFileKey(key, keyLength);
+		ftc->setFileKey(key, key_length);
 	}
 }
 
@@ -247,7 +241,7 @@ void linphone_content_set_key(LinphoneContent *content, const char *key, const s
 // Private functions.
 // =============================================================================
 
-static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *body_handler) {
+static LinphoneContent *linphone_content_new_with_body_handler (SalBodyHandler *body_handler) {
 	LinphoneContent *content = L_INIT(Content);
 	content->cryptoContext = NULL;
 	LinphonePrivate::Content *c = new LinphonePrivate::Content();
@@ -284,31 +278,32 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
 	return content;
 }
 
-LinphoneContent * linphone_content_new(void) {
+LinphoneContent *linphone_content_new (void) {
 	return linphone_content_new_with_body_handler(NULL);
 }
 
-LinphoneContent * linphone_content_copy(const LinphoneContent *ref) {
-	return (LinphoneContent *)(belle_sip_object_clone(BELLE_SIP_OBJECT(ref)));
+LinphoneContent *linphone_content_copy (const LinphoneContent *ref) {
+	return (LinphoneContent *)belle_sip_object_clone(BELLE_SIP_OBJECT(ref));
 }
 
-LinphoneContent * linphone_core_create_content(LinphoneCore *lc) {
+LinphoneContent *linphone_core_create_content (LinphoneCore *lc) {
 	return linphone_content_new();
 }
 
-/* crypto context is managed(allocated/freed) by the encryption function, so provide the address of field in the private structure */
-void ** linphone_content_get_cryptoContext_address(LinphoneContent *content) {
-	return &(content->cryptoContext);
+// Crypto context is managed(allocated/freed) by the encryption function,
+// so provide the address of field in the private structure.
+void **linphone_content_get_cryptoContext_address (LinphoneContent *content) {
+	return &content->cryptoContext;
 }
 
-LinphoneContent * linphone_content_from_sal_body_handler(SalBodyHandler *body_handler) {
+LinphoneContent *linphone_content_from_sal_body_handler (SalBodyHandler *body_handler) {
 	if (body_handler) {
 		return linphone_content_new_with_body_handler(body_handler);
 	}
 	return NULL;
 }
 
-SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
+SalBodyHandler *sal_body_handler_from_content (const LinphoneContent *content) {
 	if (content == NULL) return NULL;
 
 	SalBodyHandler *body_handler;
@@ -333,10 +328,10 @@ SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
 	sal_body_handler_set_type(body_handler, contentType.getType().c_str());
 	sal_body_handler_set_subtype(body_handler, contentType.getSubType().c_str());
 	sal_body_handler_set_size(body_handler, linphone_content_get_size(content));
-	for (const auto &param : contentType.getParameters()) {
+	for (const auto &param : contentType.getParameters())
 		sal_body_handler_set_content_type_parameter(body_handler, param.getName().c_str(), param.getValue().c_str());
-	}
-	if (content->encoding) sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
+	if (!content->cache.encoding.empty())
+		sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
 
 	return body_handler;
 }

@@ -43,7 +43,9 @@ static void _linphone_chat_message_constructor (LinphoneChatMessage *msg);
 static void _linphone_chat_message_destructor (LinphoneChatMessage *msg);
 
 L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(ChatMessage,
-	_linphone_chat_message_constructor, _linphone_chat_message_destructor,
+	_linphone_chat_message_constructor,
+	_linphone_chat_message_destructor,
+
 	LinphoneChatMessageCbs *cbs;
 	LinphoneAddress *from; // cache for shared_ptr<Address>
 	LinphoneAddress *to; // cache for shared_ptr<Address>
