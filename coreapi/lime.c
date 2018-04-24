@@ -317,7 +317,7 @@ static int lime_deriveKey(limeKey_t *key) {
 		return LIME_UNABLE_TO_DERIVE_KEY;
 	}
 
- 	/* Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||0x00000100)*/
+	/* Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||0x00000100)*/
 	/* total data to be hashed is       55 bytes  :           4   +      10     +   1 +     32   +   4         +   4 */
 	inputData[0] = 0x00;
 	inputData[1] = 0x00;
@@ -811,7 +811,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 		peerUri = linphone_address_as_string_uri_only(linphone_chat_message_get_from_address(msg));
 		selfUri = linphone_address_as_string_uri_only(linphone_chat_message_get_to_address(msg));
 		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &decrypted_body, &decrypted_content_type,
-						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+									bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
 		ms_free(peerUri);
 		ms_free(selfUri);
 		if (retval != 0) {
@@ -848,9 +848,9 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			if (linphone_chat_message_get_content_type(msg)) {
 				if (strcmp(linphone_chat_message_get_content_type(msg), "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* It's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml
-					   TODO: As of january 2017, the content type is now included in the encrypted body, this
-					   application/cipher.vnd.gsma.rcs-ft-http+xml is kept for compatibility with previous versions,
-					   but may be dropped in the future to use xml/cipher instead. */
+						 TODO: As of january 2017, the content type is now included in the encrypted body, this
+						 application/cipher.vnd.gsma.rcs-ft-http+xml is kept for compatibility with previous versions,
+						 but may be dropped in the future to use xml/cipher instead. */
 					new_content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
 				} else if (strcmp(linphone_chat_message_get_content_type(msg), "application/im-iscomposing+xml") == 0) {
 					/* We don't encrypt composing messages */
@@ -897,22 +897,20 @@ int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEn
 	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
 	if (!content)
 		return -1;
-		
-	if (!linphone_content_get_key(content)) {
-		linphone_content_unref(content);
+
+	if (!linphone_content_get_key(content))
 		return -1;
-	}
 
-	if (!buffer || (size == 0)) {
-		int result = lime_decryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
-		linphone_content_unref(content);
-		return result;
-	}
+	if (!buffer || size == 0)
+		return lime_decryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
 
-	int result = lime_decryptFile(linphone_content_get_cryptoContext_address(content),
-		(unsigned char *)linphone_content_get_key(content), size, (char *)decrypted_buffer, (char *)buffer);
-	linphone_content_unref(content);
-	return result;
+	return lime_decryptFile(
+		linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content),
+		size,
+		(char *)decrypted_buffer,
+		(char *)buffer
+	);
 }
 
 int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer) {
@@ -921,16 +919,11 @@ int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngi
 	if (!content)
 		return -1;
 
-	if (!linphone_content_get_key(content)) {
-		linphone_content_unref(content);
+	if (!linphone_content_get_key(content))
 		return -1;
-	}
 
-	if (!buffer || (*size == 0)) {
-		int result = lime_encryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
-		linphone_content_unref(content);
-		return result;
-	}
+	if (!buffer || *size == 0)
+		return lime_encryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
 
 	size_t file_size = linphone_content_get_size(content);
 	if (file_size == 0) {
@@ -939,10 +932,13 @@ int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngi
 		*size -= (*size % 16);
 	}
 
-	int result = lime_encryptFile(linphone_content_get_cryptoContext_address(content),
-		(unsigned char *)linphone_content_get_key(content), *size, (char *)buffer, (char *)encrypted_buffer);
-	linphone_content_unref(content);
-	return result;
+	return lime_encryptFile(
+		linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content),
+		*size,
+		(char *)buffer,
+		(char *)encrypted_buffer
+	);
 }
 
 bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room) {
@@ -956,10 +952,8 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 		* file_transfer_information->key field of the msg */
 	sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
 	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
-	if (!content)
-		return;
-	linphone_content_set_key(content, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
-	linphone_content_unref(content);
+	if (content)
+		linphone_content_set_key(content, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
 }
 
 #else /* HAVE_LIME */

@@ -116,7 +116,6 @@ void FileTransferChatMessageModifier::fileTransferOnProgress (
 		// Legacy: call back given by application level.
 		linphone_core_notify_file_transfer_progress_indication(message->getCore()->getCCore(), msg, content, offset, total);
 	}
-	linphone_content_unref(content);
 }
 
 static int _chat_message_on_send_body (
@@ -173,7 +172,6 @@ int FileTransferChatMessageModifier::onSendBody (
 			// Legacy
 			linphone_core_notify_file_transfer_send(message->getCore()->getCCore(), msg, content, (char *)buffer, size);
 		}
-		linphone_content_unref(content);
 	}
 
 	LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
@@ -265,7 +263,7 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				// Actual filename stored in msg->file_transfer_information->name will be set in encrypted msg
 				// sended to the
 				first_part_header = "form-data; name=\"File\"; filename=\"filename.txt\"";
-				
+
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);
 				LinphoneImEncryptionEngineCbsGenerateFileTransferKeyCb generate_file_transfer_key_cb =
 					linphone_im_encryption_engine_cbs_get_generate_file_transfer_key(imee_cbs);
@@ -763,7 +761,6 @@ void FileTransferChatMessageModifier::onRecvBody (belle_sip_user_body_handler_t 
 				// Legacy: call back given by application level
 				linphone_core_notify_file_transfer_recv(message->getCore()->getCCore(), msg, content, (const char *)buffer, size);
 			}
-			linphone_content_unref(content);
 		}
 	} else {
 		lWarning() << "File transfer decrypt failed with code " << (int)retval;
@@ -804,7 +801,6 @@ void FileTransferChatMessageModifier::onRecvEnd (belle_sip_user_body_handler_t *
 				// Legacy: call back given by application level
 				linphone_core_notify_file_transfer_recv(message->getCore()->getCCore(), msg, content, nullptr, 0);
 			}
-			linphone_content_unref(content);
 		}
 	}
 

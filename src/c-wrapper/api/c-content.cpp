@@ -55,8 +55,7 @@ LinphoneContent * linphone_content_ref(LinphoneContent *content) {
 }
 
 void linphone_content_unref(LinphoneContent *content) {
-	// FIXME: Avoid leaks.
-	// belle_sip_object_unref(content);
+	belle_sip_object_unref(content);
 }
 
 void *linphone_content_get_user_data(const LinphoneContent *content) {
@@ -70,8 +69,8 @@ void linphone_content_set_user_data(LinphoneContent *content, void *ud) {
 // =============================================================================
 
 const char * linphone_content_get_type(const LinphoneContent *content) {
-	if (content->type) ms_free(content->type);
-	content->type = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType()));
+	if (content->type) bctbx_free(content->type);
+	content->type = bctbx_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getType()));
 	return content->type;
 }
 
@@ -82,8 +81,8 @@ void linphone_content_set_type(LinphoneContent *content, const char *type) {
 }
 
 const char * linphone_content_get_subtype(const LinphoneContent *content) {
-	if (content->subtype) ms_free(content->subtype);
-	content->subtype = ms_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType()));
+	if (content->subtype) bctbx_free(content->subtype);
+	content->subtype = bctbx_strdup(L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType().getSubType()));
 	return content->subtype;
 }
 
@@ -108,8 +107,8 @@ void linphone_content_set_buffer(LinphoneContent *content, const uint8_t *buffer
 }
 
 const char * linphone_content_get_string_buffer(const LinphoneContent *content) {
-	if (content->body) ms_free(content->body);
-	content->body = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
+	if (content->body) bctbx_free(content->body);
+	content->body = bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
 	return content->body;
 }
 
@@ -145,26 +144,26 @@ const char * linphone_content_get_encoding(const LinphoneContent *content) {
 }
 
 void linphone_content_set_encoding(LinphoneContent *content, const char *encoding) {
-	if (content->encoding) ms_free(content->encoding);
-		content->encoding = ms_strdup(encoding);
+	if (content->encoding) bctbx_free(content->encoding);
+		content->encoding = bctbx_strdup(encoding);
 }
 
 const char * linphone_content_get_name(const LinphoneContent *content) {
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFile()) {
 		const LinphonePrivate::FileContent *fc = static_cast<const LinphonePrivate::FileContent *>(c);
-		if (content->name) ms_free(content->name);
-		content->name = ms_strdup(L_STRING_TO_C(fc->getFileName()));
+		if (content->name) bctbx_free(content->name);
+		content->name = bctbx_strdup(L_STRING_TO_C(fc->getFileName()));
 	} else if (c->isFileTransfer()) {
 		const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-		if (content->name) ms_free(content->name);
-		content->name = ms_strdup(L_STRING_TO_C(ftc->getFileName()));
+		if (content->name) bctbx_free(content->name);
+		content->name = bctbx_strdup(L_STRING_TO_C(ftc->getFileName()));
 	}
 	return content->name;
 }
 
 void linphone_content_set_name(LinphoneContent *content, const char *name) {
-	if (content->name) ms_free(content->name);
+	if (content->name) bctbx_free(content->name);
 
 	LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFile()) {
@@ -175,7 +174,7 @@ void linphone_content_set_name(LinphoneContent *content, const char *name) {
 		ftc->setFileName(L_C_TO_STRING(name));
 	}
 
-	content->name = ms_strdup(name);
+	content->name = bctbx_strdup(name);
 }
 
 bool_t linphone_content_is_multipart(const LinphoneContent *content) {
@@ -216,12 +215,12 @@ const char * linphone_content_get_custom_header(const LinphoneContent *content, 
 }
 
 const char *linphone_content_get_key(const LinphoneContent *content) {
-	if (content->key) ms_free(content->key);
+	if (content->key) bctbx_free(content->key);
 
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFileTransfer()) {
 		const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-		content->key = ms_strdup(ftc->getFileKeyAsString());
+		content->key = bctbx_strdup(ftc->getFileKeyAsString());
 	}
 
 	return content->key;
@@ -317,7 +316,7 @@ SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
 
 	if (contentType.isMultipart()) {
 		size_t size = linphone_content_get_size(content);
-		char *buffer = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
+		char *buffer = bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
 		const char *boundary = L_STRING_TO_C(contentType.getParameter("boundary").getValue());
 		belle_sip_multipart_body_handler_t *bh = belle_sip_multipart_body_handler_new_from_buffer(buffer, size, boundary);
 		body_handler = (SalBodyHandler *)BELLE_SIP_BODY_HANDLER(bh);

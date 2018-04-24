@@ -66,10 +66,9 @@ void message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMess
 	}
 	counters->last_received_chat_message=linphone_chat_message_ref(msg);
 	LinphoneContent * content = linphone_chat_message_get_file_transfer_information(msg);
-	if (content) {
+	if (content)
 		counters->number_of_LinphoneMessageReceivedWithFile++;
-		linphone_content_unref(content);
-	} else if (linphone_chat_message_get_external_body_url(msg)) {
+	else if (linphone_chat_message_get_external_body_url(msg)) {
 		counters->number_of_LinphoneMessageExtBodyReceived++;
 		if (message_external_body_url) {
 			BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_external_body_url(msg),message_external_body_url);
@@ -834,12 +833,12 @@ void info_message_base(bool_t with_content) {
 	info=linphone_core_create_info_message(marie->lc);
 	linphone_info_message_add_header(info,"Weather","still bad");
 	if (with_content) {
-		LinphoneContent* ct=linphone_core_create_content(marie->lc);
-		linphone_content_set_type(ct,"application");
-		linphone_content_set_subtype(ct,"somexml");
-		linphone_content_set_buffer(ct,(const uint8_t *)info_content,strlen(info_content));
-		linphone_info_message_set_content(info,ct);
-		linphone_content_unref(ct);
+		LinphoneContent* content = linphone_core_create_content(marie->lc);
+		linphone_content_set_type(content, "application");
+		linphone_content_set_subtype(content, "somexml");
+		linphone_content_set_buffer(content, (const uint8_t *)info_content, strlen(info_content));
+		linphone_info_message_set_content(info, content);
+		linphone_content_unref(content);
 	}
 	linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
 	linphone_info_message_unref(info);
@@ -1442,7 +1441,6 @@ void lime_transfer_message_base(bool_t encrypt_file,bool_t download_file_from_st
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_key(content));
 		else
 			BC_ASSERT_PTR_NULL(linphone_content_get_key(content));
-		linphone_content_unref(content);
 
 		if (use_file_body_handler_in_download) {
 			linphone_chat_message_set_file_transfer_filepath(recv_msg, receive_filepath);
@@ -1647,7 +1645,7 @@ void crash_during_file_transfer(void) {
 	/* Create a new core and check that the message stored in the saved database is in the not delivered state */
 	linphone_core_manager_restart(pauline, TRUE);
 	linphone_core_set_file_transfer_server(pauline->lc, "https://www.linphone.org:444/lft.php");
-	
+
 	//BC_ASSERT_TRUE(wait_for(pauline->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 1));
 
 	chat_room = linphone_core_get_chat_room(pauline->lc, marie->identity);
@@ -1684,9 +1682,9 @@ void crash_during_file_transfer(void) {
 		}
 	}
 
-	
+
 	bctbx_list_free_with_data(msg_list, (bctbx_list_free_func)linphone_chat_message_unref);
-	
+
 
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
