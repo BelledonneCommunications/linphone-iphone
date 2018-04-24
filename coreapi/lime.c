@@ -925,7 +925,7 @@ int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngi
 	if (!buffer || *size == 0)
 		return lime_encryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
 
-	size_t file_size = linphone_content_get_size(content);
+	size_t file_size = linphone_content_get_file_size(content);
 	if (file_size == 0) {
 		ms_warning("File size has not been set, encryption will fail if not done in one step (if file is larger than 16K)");
 	} else if (offset + *size < file_size) {

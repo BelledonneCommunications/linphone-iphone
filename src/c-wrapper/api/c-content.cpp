@@ -125,17 +125,19 @@ void linphone_content_set_string_buffer (LinphoneContent *content, const char *b
 	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setBodyFromUtf8(L_C_TO_STRING(buffer));
 }
 
-size_t linphone_content_get_size (const LinphoneContent *content) {
+size_t linphone_content_get_file_size(const LinphoneContent *content) {
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	size_t size = 0;
 	if (c->isFile())
 		size = static_cast<const LinphonePrivate::FileContent *>(c)->getFileSize();
 	else if (c->isFileTransfer())
 		size = static_cast<const LinphonePrivate::FileTransferContent *>(c)->getFileSize();
+	return size;
+}
 
-	if (size == 0) {
-		size = c->getSize();
-	}
+size_t linphone_content_get_size (const LinphoneContent *content) {
+	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
+	size_t size = c->getSize();
 	if (size == 0) {
 		size = content->size;
 	}

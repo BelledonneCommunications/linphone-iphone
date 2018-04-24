@@ -137,6 +137,13 @@ LINPHONE_PUBLIC void linphone_content_set_string_buffer (LinphoneContent *conten
 LINPHONE_PUBLIC size_t linphone_content_get_size (const LinphoneContent *content);
 
 /**
+ * Get the file size if content is either a FileContent or a FileTransferContent.
+ * @param[in] content #LinphoneContent object.
+ * @return The represented file size.
+ */
+LINPHONE_PUBLIC size_t linphone_content_get_file_size(const LinphoneContent *content);
+
+/**
  * Set the content data size, excluding null character despite null character is always set for convenience.
  * @param[in] content #LinphoneContent object
  * @param[in] size The content data buffer size.
