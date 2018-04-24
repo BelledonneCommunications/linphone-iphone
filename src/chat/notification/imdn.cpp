@@ -206,6 +206,12 @@ void Imdn::send () {
 }
 
 void Imdn::startTimer () {
+	if (!chatRoom->canHandleCpim()) {
+		// Compatibility mode for basic chat rooms, do not aggregate notifications
+		send();
+		return;
+	}
+
 	unsigned int duration = 500;
 	if (!timer)
 		timer = chatRoom->getCore()->getCCore()->sal->create_timer(timerExpired, this, duration, "imdn timeout");
