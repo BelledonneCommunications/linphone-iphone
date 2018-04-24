@@ -897,9 +897,14 @@ ChatMessage::ChatMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMess
 
 ChatMessage::~ChatMessage () {
 	L_D();
-	
-	for (Content *content : d->contents)
+
+	for (Content *content : d->contents) {
+		if (content->isFileTransfer()) {
+			FileTransferContent *fileTransferContent = static_cast<FileTransferContent *>(content);
+			delete fileTransferContent->getFileContent();
+		}
 		delete content;
+	}
 
 	if (d->salOp) {
 		d->salOp->set_user_pointer(nullptr);
