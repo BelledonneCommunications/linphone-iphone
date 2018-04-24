@@ -601,9 +601,9 @@ LINPHONE_END_NAMESPACE
 
 #undef L_INTERNAL_WRAPPER_CONSTEXPR
 
-#define L_INTERNAL_C_OBJECT_NO_XTOR(C_OBJECT)
+#define L_INTERNAL_C_NO_XTOR(C_OBJECT)
 
-#define L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, CPP_TYPE, ...) \
+#define L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, ...) \
 	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
 	static_assert( \
 		LinphonePrivate::IsDefinedBaseCppObject< \
@@ -622,13 +622,13 @@ LINPHONE_END_NAMESPACE
 #define L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
 	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
 	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init () { \
-		Linphone ## C_TYPE * object = belle_sip_object_new(Linphone ## C_TYPE); \
+		Linphone ## C_TYPE *object = belle_sip_object_new(Linphone ## C_TYPE); \
 		new(&object->cppPtr) std::shared_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)>(); \
 		new(&object->weakCppPtr) std::weak_ptr<L_CPP_TYPE_OF_C_TYPE(C_TYPE)>(); \
 		CONSTRUCTOR(object); \
 		return object; \
 	} \
-	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE *object) { \
+	static void _linphone_ ## C_TYPE ## _uninit (Linphone ## C_TYPE *object) { \
 		DESTRUCTOR(object); \
 		LinphonePrivate::Wrapper::uninitBaseCppObject(object); \
 	} \
@@ -641,6 +641,45 @@ LINPHONE_END_NAMESPACE
 		NULL, \
 		LinphonePrivate::Wrapper::onBelleSipFirstRef, \
 		LinphonePrivate::Wrapper::onBelleSipLastRef, \
+		FALSE \
+	);
+
+#define L_INTERNAL_DECLARE_C_CLONABLE_OBJECT(C_TYPE, ...) \
+	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
+	static_assert( \
+		LinphonePrivate::IsDefinedClonableCppObject< \
+			LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::cppType \
+		>::value, \
+		"Type is not declared as clonable object." \
+	); \
+	struct _Linphone ## C_TYPE { \
+		belle_sip_object_t base; \
+		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
+		int owner; \
+		__VA_ARGS__ \
+	}; \
+
+#define L_INTERNAL_DECLARE_C_CLONABLE_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR) \
+	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
+	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init () { \
+		Linphone ## C_TYPE *object = belle_sip_object_new(Linphone ## C_TYPE); \
+		CONSTRUCTOR(object); \
+		return object; \
+	} \
+	static void _linphone_ ## C_TYPE ## _uninit (Linphone ## C_TYPE * object) { \
+		DESTRUCTOR(object); \
+		LinphonePrivate::Wrapper::uninitClonableCppObject(object); \
+	} \
+	static void _linphone_ ## C_TYPE ## _clone (Linphone ## C_TYPE *dest, const Linphone ## C_TYPE *src) { \
+		L_ASSERT(src->cppPtr); \
+		dest->cppPtr = new L_CPP_TYPE_OF_C_TYPE(C_TYPE)(*src->cppPtr); \
+	} \
+	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
+	BELLE_SIP_INSTANCIATE_VPTR( \
+		Linphone ## C_TYPE, belle_sip_object_t, \
+		_linphone_ ## C_TYPE ## _uninit, \
+		_linphone_ ## C_TYPE ## _clone, \
+		NULL, \
 		FALSE \
 	);
 
@@ -703,48 +742,23 @@ LINPHONE_END_NAMESPACE
 
 // Declare wrapped C object with constructor/destructor.
 #define L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
-	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, L_CPP_TYPE_OF_C_TYPE(C_TYPE), __VA_ARGS__) \
+	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, __VA_ARGS__) \
 	L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR)
 
 // Declare wrapped C object.
 #define L_DECLARE_C_OBJECT_IMPL(C_TYPE, ...) \
-	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, L_CPP_TYPE_OF_C_TYPE(C_TYPE), __VA_ARGS__) \
-	L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, L_INTERNAL_C_OBJECT_NO_XTOR, L_INTERNAL_C_OBJECT_NO_XTOR)
+	L_INTERNAL_DECLARE_C_OBJECT(C_TYPE, __VA_ARGS__) \
+	L_INTERNAL_DECLARE_C_OBJECT_FUNCTIONS(C_TYPE, L_INTERNAL_C_NO_XTOR, L_INTERNAL_C_NO_XTOR)
+
+// Declare clonable wrapped C object with constructor/destructor.
+#define L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(C_TYPE, CONSTRUCTOR, DESTRUCTOR, ...) \
+	L_INTERNAL_DECLARE_C_CLONABLE_OBJECT(C_TYPE, __VA_ARGS__) \
+	L_INTERNAL_DECLARE_C_CLONABLE_OBJECT_FUNCTIONS(C_TYPE, CONSTRUCTOR, DESTRUCTOR)
 
 // Declare clonable wrapped C object.
 #define L_DECLARE_C_CLONABLE_OBJECT_IMPL(C_TYPE, ...) \
-	static_assert(LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::defined, "Type is not defined."); \
-	static_assert( \
-		LinphonePrivate::IsDefinedClonableCppObject< \
-			LinphonePrivate::CTypeMetaInfo<Linphone ## C_TYPE>::cppType \
-		>::value, \
-		"Type is not declared as clonable object." \
-	); \
-	struct _Linphone ## C_TYPE { \
-		belle_sip_object_t base; \
-		L_CPP_TYPE_OF_C_TYPE(C_TYPE) *cppPtr; \
-		int owner; \
-		__VA_ARGS__ \
-	}; \
-	BELLE_SIP_DECLARE_VPTR_NO_EXPORT(Linphone ## C_TYPE); \
-	Linphone ## C_TYPE *_linphone_ ## C_TYPE ## _init() { \
-		return belle_sip_object_new(Linphone ## C_TYPE); \
-	} \
-	static void _linphone_ ## C_TYPE ## _uninit(Linphone ## C_TYPE * object) { \
-		LinphonePrivate::Wrapper::uninitClonableCppObject(object); \
-	} \
-	static void _linphone_ ## C_TYPE ## _clone(Linphone ## C_TYPE *dest, const Linphone ## C_TYPE *src) { \
-		L_ASSERT(src->cppPtr); \
-		dest->cppPtr = new L_CPP_TYPE_OF_C_TYPE(C_TYPE)(*src->cppPtr); \
-	} \
-	BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(Linphone ## C_TYPE); \
-	BELLE_SIP_INSTANCIATE_VPTR( \
-		Linphone ## C_TYPE, belle_sip_object_t, \
-		_linphone_ ## C_TYPE ## _uninit, \
-		_linphone_ ## C_TYPE ## _clone, \
-		NULL, \
-		FALSE \
-	);
+	L_INTERNAL_DECLARE_C_CLONABLE_OBJECT(C_TYPE, __VA_ARGS__) \
+	L_INTERNAL_DECLARE_C_CLONABLE_OBJECT_FUNCTIONS(C_TYPE, L_INTERNAL_C_NO_XTOR, L_INTERNAL_C_NO_XTOR)
 
 // -----------------------------------------------------------------------------
 // Helpers.
