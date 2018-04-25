@@ -158,7 +158,7 @@ LinphoneLoggingService *linphone_logging_service_ref(LinphoneLoggingService *ser
 }
 
 void linphone_logging_service_unref(LinphoneLoggingService *service) {
-	belle_sip_object_ref(service);
+	belle_sip_object_unref(service);
 }
 
 static void _linphone_logging_service_uninit(LinphoneLoggingService *log_service) {
