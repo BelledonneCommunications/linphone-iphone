@@ -41,7 +41,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 list<Content> ContentManager::multipartToContentList (const Content &content) {
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
-	SalBodyHandler *sbh = sal_body_handler_ref(sal_body_handler_from_content(cContent));
+	SalBodyHandler *sbh = sal_body_handler_from_content(cContent);
 
 	list<Content> contents;
 	for (const belle_sip_list_t *parts = sal_body_handler_get_parts(sbh); parts; parts = parts->next) {
