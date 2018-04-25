@@ -1,6 +1,7 @@
-Message = Headers CRLF Headers CRLF [Headers CRLF]
+Message = Message-headers CRLF Content-headers CRLF
 
-Headers = *Header
+Message-headers = *( From-header / To-header / DateTime-header / cc-header / Subject-header / NS-header / Require-header / Header )
+Content-headers = *Header
 Header = Header-name ":" Header-parameters SP Header-value CRLF
 
 Header-name = [ Name-prefix "." ] Name
@@ -16,25 +17,25 @@ Param-value = Token / Number / String
 
 Header-value = *HEADERCHAR
 
-From-header = %d70.114.111.109 ": " From-header-value
+From-header = %d70.114.111.109 ": " From-header-value CRLF
 From-header-value = [ Formal-name ] "<" URI ">"
 
-To-header = %d84.111 ": " To-header-value
+To-header = %d84.111 ": " To-header-value CRLF
 To-header-value = [ Formal-name ] "<" URI ">"
 
-DateTime-header = %d68.97.116.101.84.105.109.101 ": " DateTime-header-value
+DateTime-header = %d68.97.116.101.84.105.109.101 ": " DateTime-header-value CRLF
 DateTime-header-value = date-time
 
-cc-header = %d99.99 ": " cc-header-value
+cc-header = %d99.99 ": " cc-header-value CRLF
 cc-header-value = [ Formal-name ] "<" URI ">"
 
-Subject-header = %d83.117.98.106.101.99.116 ":" Subject-header-value
-Subject-header-value = [ ";" Lang-param ] SP *HEADERCHAR
+Subject-header = %d83.117.98.106.101.99.116 ":" Subject-header-value CRLF
+Subject-header-value = [ ";" Lang-param ] SP Header-value
 
-NS-header = %d78.83 ": " NS-header-value
+NS-header = %d78.83 ": " NS-header-value CRLF
 NS-header-value = [ Name-prefix SP ] "<" URI ">"
 
-Require-header = %d82.101.113.117.105.114.101 ": " Require-header-value
+Require-header = %d82.101.113.117.105.114.101 ": " Require-header-value CRLF
 Require-header-value = Header-name *( "," Header-name )
 
 Name = 1*NAMECHAR
@@ -134,7 +135,8 @@ time-minute = 2DIGIT
 time-second = 2DIGIT
 
 time-secfrac = "." 1*DIGIT
-time-numoffset = ( "+" / "-" ) time-hour ":" time-minute
+time-sign = "+" / "-"
+time-numoffset = time-sign time-hour ":" time-minute
 time-offset = "Z" / time-numoffset
 
 partial-time = time-hour ":" time-minute ":" time-second [ time-secfrac ]
