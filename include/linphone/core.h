@@ -803,7 +803,7 @@ LINPHONE_PUBLIC char * linphone_core_compress_log_collection(void);
 LINPHONE_PUBLIC void linphone_core_reset_log_collection(void);
 
 /**
- * @bref Define a log handler.
+ * @brief Define a log handler.
  * @param logfunc The function pointer of the log handler.
  * @deprecated Use #linphone_logging_service_cbs_set_log_message_written() instead. Deprecated since 2017-10-10.
  * @donotwrap
@@ -1274,7 +1274,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED LinphoneStatus linphone_core_decline_call(Li
 LINPHONE_PUBLIC LinphoneStatus linphone_core_terminate_all_calls(LinphoneCore *lc);
 
 /**
- * @biref Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
+ * @brief Pauses the call. If a music file has been setup using linphone_core_set_play_file(),
  * this file will be played to the remote user.
  *
  * The only way to resume a paused call is to call linphone_core_resume_call().
@@ -3507,7 +3507,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_core_set_preferred_video_size(
 LINPHONE_PUBLIC void linphone_core_set_preview_video_definition(LinphoneCore *lc, LinphoneVideoDefinition *vdef);
 
 /**
- * @biref Sets the video size for the captured (preview) video.
+ * @brief Sets the video size for the captured (preview) video.
  *
  * This method is for advanced usage where a video capture must be set independently of the size of the stream actually sent through the call.
  * This allows for example to have the preview window with HD resolution even if due to bandwidth constraint the sent video size is small.
