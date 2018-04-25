@@ -188,7 +188,7 @@ tm Utils::getTimeTAsTm (time_t time) {
 	return *gmtime_r(&time, &result);
 }
 
-long Utils::getTmAsTimeT (const tm &time) {
+time_t Utils::getTmAsTimeT (const tm &time) {
 	return timegm(&const_cast<tm &>(time));
 }
 
