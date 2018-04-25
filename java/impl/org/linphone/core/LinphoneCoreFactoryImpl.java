@@ -96,6 +96,12 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 		return true;
 	}
 
+	private void setSpeaker(LinphoneCore lc) {
+		boolean value = MediastreamerAndroidContext.getSpeakerphoneAlwaysOn(lc.getMSFactory());
+		lc.setSpeakerphoneAlwaysOn(value);
+		lc.enableSpeaker(value);
+	}
+
 	@Override
 	public LinphoneCore createLinphoneCore(LinphoneCoreListener listener,
 			String userConfig, String factoryConfig, Object userdata, Object context)
@@ -104,11 +110,11 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			fcontext = (Context)context;
 			boolean openh264DownloadEnabled = false;
 			if (context != null) openh264DownloadEnabled = loadingDownloadedOpenH264(fcontext);
-
+			MediastreamerAndroidContext.setContext(context);
 			File user = userConfig == null ? null : new File(userConfig);
 			File factory = factoryConfig == null ? null : new File(factoryConfig);
 			LinphoneCore lc = new LinphoneCoreImpl(listener, user, factory, userdata, context);
-			MediastreamerAndroidContext.setContext(context,lc.getMSFactory());
+			setSpeaker(lc);
 			lc.enableDownloadOpenH264(openh264DownloadEnabled);
 			return lc;
 		} catch (IOException e) {
@@ -122,9 +128,9 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 			fcontext = (Context)context;
 			boolean openh264DownloadEnabled = false;
 			if (context != null) openh264DownloadEnabled = loadingDownloadedOpenH264(fcontext);
-
+			MediastreamerAndroidContext.setContext(context);
 			LinphoneCore lc = new LinphoneCoreImpl(listener, context);
-			MediastreamerAndroidContext.setContext(context,lc.getMSFactory());
+			setSpeaker(lc);
 			lc.enableDownloadOpenH264(openh264DownloadEnabled);
 			return lc;
 		} catch (IOException e) {

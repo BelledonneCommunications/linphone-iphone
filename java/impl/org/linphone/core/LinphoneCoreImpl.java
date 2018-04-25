@@ -47,6 +47,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	private AudioManager mAudioManager = null;
 	private boolean openh264DownloadEnabled = false;
 	private boolean mSpeakerEnabled = false;
+	private boolean mSpeakerphoneAlwaysOn = false; //Speakerphone always on for some speacial devices
 	private native long newLinphoneCore(LinphoneCoreListener listener,String userConfig,String factoryConfig,Object  userdata, Object context);
 	private native void iterate(long nativePtr);
 	private native LinphoneProxyConfig getDefaultProxyConfig(long nativePtr);
@@ -446,6 +447,7 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	private native void forceSpeakerState(long nativePtr, boolean speakerOn);
 	public void enableSpeaker(boolean value) {
+		value = value || mSpeakerphoneAlwaysOn;
 		final LinphoneCall call = getCurrentCall();
 		mSpeakerEnabled = value;
 		applyAudioHacks();
@@ -458,6 +460,9 @@ class LinphoneCoreImpl implements LinphoneCore {
 	}
 	public boolean isSpeakerEnabled() {
 		return mSpeakerEnabled;
+	}
+	public void setSpeakerphoneAlwaysOn(boolean value) {
+		mSpeakerphoneAlwaysOn = value;
 	}
 	public synchronized void playDtmf(char number, int duration) {
 		playDtmf(nativePtr,number, duration);
