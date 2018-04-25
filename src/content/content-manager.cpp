@@ -71,12 +71,13 @@ Content ContentManager::contentListToMultipart (const list<Content *> &contents)
 	sal_body_handler_set_type(sbh, ContentType::Multipart.getType().c_str());
 	sal_body_handler_set_subtype(sbh, ContentType::Multipart.getSubType().c_str());
 	sal_body_handler_set_content_type_parameter(sbh, "boundary", MultipartBoundary);
+
 	LinphoneContent *cContent = linphone_content_from_sal_body_handler(sbh);
-	Content *content = L_GET_CPP_PTR_FROM_C_OBJECT(cContent);
-	Content returnContent = *content;
 	belle_sip_object_unref(mpbh);
 
-	return returnContent;
+	Content content = *L_GET_CPP_PTR_FROM_C_OBJECT(cContent);
+	linphone_content_unref(cContent);
+	return content;
 }
 
 LINPHONE_END_NAMESPACE
