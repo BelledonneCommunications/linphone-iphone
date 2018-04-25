@@ -40,7 +40,6 @@ L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(Content,
 	void *cryptoContext; // Used to encrypt file for RCS file transfer.
 
 	mutable size_t size;
-	mutable char *key;
 
 	struct Cache {
 		string name;
@@ -213,15 +212,12 @@ const char *linphone_content_get_custom_header (const LinphoneContent *content, 
 }
 
 const char *linphone_content_get_key (const LinphoneContent *content) {
-	if (content->key) bctbx_free(content->key);
-
 	const LinphonePrivate::Content *c = L_GET_CPP_PTR_FROM_C_OBJECT(content);
 	if (c->isFileTransfer()) {
 		const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
-		content->key = bctbx_strdup(ftc->getFileKeyAsString());
+		return ftc->getFileKey().data();
 	}
-
-	return content->key;
+	return nullptr;
 }
 
 size_t linphone_content_get_key_size (const LinphoneContent *content) {

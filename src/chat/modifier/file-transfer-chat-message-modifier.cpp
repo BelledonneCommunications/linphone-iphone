@@ -318,9 +318,9 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			const char *body = belle_sip_message_get_body((belle_sip_message_t *)event->response);
 			if (body && strlen(body) > 0) {
 				// if we have an encryption key for the file, we must insert it into the msg and restore the correct filename
-				const char *content_key = fileTransferContent->getFileKeyAsString();
-				size_t content_key_size = fileTransferContent->getFileKey().size();
-				if (content_key_size > 0) {
+				const unsigned char *contentKey = reinterpret_cast<const unsigned char *>(fileTransferContent->getFileKey().data());
+				size_t contentKeySize = fileTransferContent->getFileKeySize();
+				if (contentKeySize > 0) {
 					// parse the msg body
 					xmlDocPtr xmlMessageBody = xmlParseDoc((const xmlChar *)body);
 
@@ -337,11 +337,11 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 									xmlNodePtr fileInfoNodeChildren = cur->xmlChildrenNode;
 									// convert key to base64
 									size_t b64Size;
-									bctbx_base64_encode(nullptr, &b64Size, (unsigned char *)content_key, content_key_size);
+									bctbx_base64_encode(nullptr, &b64Size, contentKey, contentKeySize);
 									unsigned char *keyb64 = (unsigned char *)ms_malloc0(b64Size + 1);
 									int xmlStringLength;
 
-									bctbx_base64_encode(keyb64, &b64Size, (unsigned char *)content_key, content_key_size);
+									bctbx_base64_encode(keyb64, &b64Size, contentKey, contentKeySize);
 									keyb64[b64Size] = '\0'; // libxml need a null terminated string
 
 									// add the node containing the key to the file-info node

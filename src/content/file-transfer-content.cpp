@@ -164,11 +164,6 @@ const vector<char> &FileTransferContent::getFileKey () const {
 	return d->fileKey;
 }
 
-const char *FileTransferContent::getFileKeyAsString() const {
-	L_D();
-	return d->fileKey.data();
-}
-
 size_t FileTransferContent::getFileKeySize() const {
 	L_D();
 	return d->fileKey.size();
