@@ -315,6 +315,7 @@ SalBodyHandler *sal_body_handler_from_content (const LinphoneContent *content) {
 		const char *boundary = L_STRING_TO_C(contentType.getParameter("boundary").getValue());
 		belle_sip_multipart_body_handler_t *bh = belle_sip_multipart_body_handler_new_from_buffer(buffer, size, boundary);
 		body_handler = (SalBodyHandler *)BELLE_SIP_BODY_HANDLER(bh);
+		bctbx_free(buffer);
 	} else {
 		body_handler = sal_body_handler_new();
 		sal_body_handler_set_data(body_handler, belle_sip_strdup(linphone_content_get_string_buffer(content)));
