@@ -1597,10 +1597,9 @@ static SalStreamType payload_type_get_stream_type(const PayloadType *pt){
 
 /*this function merges the payload types from the codec default list with the list read from configuration file.
  * If a new codec becomes supported in Liblinphone or if the list from configuration file is empty or incomplete, all the supported codecs are added
- * automatically. This 'l' list is entirely destroyed and rewritten.*/
+ * automatically. This 'l' list is entirely rewritten.*/
 static bctbx_list_t *add_missing_supported_codecs(LinphoneCore *lc, const bctbx_list_t *default_list, bctbx_list_t *l){
 	const bctbx_list_t *elem;
-	bctbx_list_t *newlist;
 	PayloadType *last_seen = NULL;
 
 	for(elem=default_list; elem!=NULL; elem=elem->next){
@@ -1623,41 +1622,33 @@ static bctbx_list_t *add_missing_supported_codecs(LinphoneCore *lc, const bctbx_
 			last_seen = (PayloadType*)elem2->data;
 		}
 	}
-	newlist=bctbx_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
-	bctbx_list_free(l);
-	return newlist;
+	return l;
 }
 
 /*
  * This function adds missing codecs, if required by configuration.
- * This 'l' list is entirely destroyed and a new list is returned.
+ * This 'l' list is entirely rewritten if required.
  */
-static bctbx_list_t *handle_missing_codecs(LinphoneCore *lc, const bctbx_list_t *default_list, bctbx_list_t *l, MSFormatType ft){
+static bctbx_list_t *handle_missing_codecs (LinphoneCore *lc, const bctbx_list_t *default_list, bctbx_list_t *l, MSFormatType ft) {
 	const char *name = "unknown";
-	int add_missing;
-	bctbx_list_t *ret;
 
-	switch(ft){
+	switch (ft) {
 		case MSAudio:
 			name = "add_missing_audio_codecs";
-		break;
+			break;
 		case MSVideo:
 			name = "add_missing_video_codecs";
-		break;
+			break;
 		case MSText:
 			name = "add_missing_text_codecs";
-		break;
+			break;
 		case MSUnknownMedia:
 		break;
 	}
-	add_missing = lp_config_get_int(lc->config, "misc", name, 1);
-	if (add_missing){
-		ret = add_missing_supported_codecs(lc, default_list, l);
-	}else{
-		ret = bctbx_list_copy_with_data(l,(void *(*)(void*))payload_type_clone);
-		bctbx_list_free(l);
-	}
-	return ret;
+
+	if (lp_config_get_int(lc->config, "misc", name, 1))
+		return add_missing_supported_codecs(lc, default_list, l);
+	return l;
 }
 
 static bctbx_list_t *codec_append_if_new(bctbx_list_t *l, PayloadType *pt){
@@ -5971,9 +5962,9 @@ void _linphone_core_codec_config_write(LinphoneCore *lc){
 static void codecs_config_uninit(LinphoneCore *lc)
 {
 	_linphone_core_codec_config_write(lc);
-	bctbx_list_free_with_data(lc->codecs_conf.audio_codecs, (void (*)(void*))payload_type_destroy);
-	bctbx_list_free_with_data(lc->codecs_conf.video_codecs, (void (*)(void*))payload_type_destroy);
-	bctbx_list_free_with_data(lc->codecs_conf.text_codecs, (void (*)(void*))payload_type_destroy);
+	bctbx_list_free(lc->codecs_conf.audio_codecs);
+	bctbx_list_free(lc->codecs_conf.video_codecs);
+	bctbx_list_free(lc->codecs_conf.text_codecs);
 }
 
 void friends_config_uninit(LinphoneCore* lc)
