@@ -152,14 +152,9 @@ static void build_message () {
 
 	Cpim::ToHeader toHeader("im:eeyore@100akerwood.com", "Depressed Donkey");
 
-	tm dateTime = { 0 }, offset = { 0 };
-	dateTime.tm_year = 2000;
-	dateTime.tm_mon = 12;
-	dateTime.tm_mday = 13;
-	dateTime.tm_hour = 13;
-	dateTime.tm_min = 40;
-	offset.tm_hour = 8;
-	Cpim::DateTimeHeader dateTimeHeader(dateTime, offset, "-");
+	// 976686000 is 2000-12-13T13:40:00-08:00
+	Cpim::DateTimeHeader dateTimeHeader(976686000);
+	BC_ASSERT_EQUAL(dateTimeHeader.getTime(), 976686000, int, "%d");
 
 	Cpim::SubjectHeader subjectHeader("the weather will be fine today");
 
@@ -199,7 +194,7 @@ static void build_message () {
 	const string strMessage = message.asString();
 	const string expectedMessage = "From: \"MR SANDERS\"<im:piglet@100akerwood.com>\r\n"
 		"To: \"Depressed Donkey\"<im:eeyore@100akerwood.com>\r\n"
-		"DateTime: 2000-12-13T13:40:00-08:00\r\n"
+		"DateTime: 2000-12-13T05:40:00Z\r\n"
 		"Subject: the weather will be fine today\r\n"
 		"Subject:;lang=fr beau temps prevu pour aujourd'hui\r\n"
 		"NS: MyFeatures <mid:MessageFeatures@id.foo.com>\r\n"

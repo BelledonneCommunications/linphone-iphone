@@ -290,7 +290,7 @@ namespace Cpim {
 		}
 
 		void setMonth (const string &value) {
-			mTime.tm_mon = Utils::stoi(value);
+			mTime.tm_mon = Utils::stoi(value) - 1;
 		}
 
 		void setMonthDay (const string &value) {

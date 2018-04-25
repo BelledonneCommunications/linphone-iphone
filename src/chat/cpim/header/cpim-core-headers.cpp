@@ -202,7 +202,7 @@ string Cpim::DateTimeHeader::getValue () const {
 
 	stringstream ss;
 	ss << setfill('0') << setw(4) << d->dateTime.tm_year << "-"
-		<< setfill('0') << setw(2) << d->dateTime.tm_mon << "-"
+		<< setfill('0') << setw(2) << d->dateTime.tm_mon + 1 << "-"
 		<< setfill('0') << setw(2) << d->dateTime.tm_mday << "T"
 		<< setfill('0') << setw(2) << d->dateTime.tm_hour << ":"
 		<< setfill('0') << setw(2) << d->dateTime.tm_min << ":"
