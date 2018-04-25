@@ -1066,6 +1066,13 @@ public interface LinphoneCore {
 	 * @return true if speaker enabled, false otherwise
 	 */
 	boolean isSpeakerEnabled();
+
+	/**
+	 * Always Activates the speaker or not.
+	 * @param value
+	 */
+	void setSpeakerphoneAlwaysOn(boolean value);
+
 	/**
 	 * add a friend to the current buddy list, if subscription attribute is set, a SIP SUBSCRIBE message is sent.
 	 * @param lf LinphoenFriend to add
