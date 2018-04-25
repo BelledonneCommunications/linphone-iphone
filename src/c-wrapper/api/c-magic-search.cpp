@@ -69,7 +69,7 @@ const char *linphone_magic_search_get_delimiter (const LinphoneMagicSearch *magi
 	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->getDelimiter());
 }
 
-void linphone_magic_search_set_delimiter (LinphoneMagicSearch *magic_search, char *delimiter) {
+void linphone_magic_search_set_delimiter (LinphoneMagicSearch *magic_search, const char *delimiter) {
 	L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->setDelimiter(L_C_TO_STRING(delimiter));
 }
 
