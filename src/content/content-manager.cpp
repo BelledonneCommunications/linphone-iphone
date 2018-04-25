@@ -47,8 +47,8 @@ list<Content> ContentManager::multipartToContentList (const Content &content) {
 	for (const belle_sip_list_t *parts = sal_body_handler_get_parts(sbh); parts; parts = parts->next) {
 		SalBodyHandler *part = (SalBodyHandler *)parts->data;
 		LinphoneContent *cContent = linphone_content_from_sal_body_handler(part);
-		Content *cppContent = L_GET_CPP_PTR_FROM_C_OBJECT(cContent);
-		contents.push_back(*cppContent);
+		contents.push_back(*L_GET_CPP_PTR_FROM_C_OBJECT(cContent));
+		linphone_content_unref(cContent);
 	}
 
 	sal_body_handler_unref(sbh);
