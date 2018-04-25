@@ -228,6 +228,10 @@
 	// Initiate registration.
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
+	[self configureUINotification];
+}
+
+- (void)configureUINotification {
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)
 		return;
 
@@ -554,6 +558,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 
 - (void)processPush:(NSDictionary *)userInfo {
 	LOGI(@"Notification [%p] received with pay load : %@", userInfo, userInfo.description);
+	[self configureUINotification];
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
 	[self processRemoteNotification:userInfo];
