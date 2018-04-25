@@ -41,15 +41,15 @@ namespace Cpim {
 		GenericHeader (std::string name, std::string value, std::string parameters = "");
 
 		std::string getName () const override;
-		bool setName (const std::string &name);
+		void setName (const std::string &name);
 
 		std::string getValue () const override;
-		bool setValue (const std::string &value);
+		void setValue (const std::string &value);
 
-		typedef std::shared_ptr<const std::list<std::pair<std::string, std::string> > > ParameterList;
+		typedef std::shared_ptr<const std::list<std::pair<std::string, std::string>>> ParameterList;
 
 		ParameterList getParameters () const;
-		bool addParameter (const std::string &key, const std::string &value);
+		void addParameter (const std::string &key, const std::string &value);
 		void removeParameter (const std::string &key, const std::string &value);
 
 		std::string asString () const override;

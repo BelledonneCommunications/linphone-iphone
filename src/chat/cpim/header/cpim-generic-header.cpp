@@ -34,24 +34,23 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Cpim::GenericHeaderPrivate : public HeaderPrivate {
 public:
-	GenericHeaderPrivate () : parameters(make_shared<list<pair<string, string> > >()) {}
+	GenericHeaderPrivate () : parameters(make_shared<list<pair<string, string>>>()) {}
 
 	string name;
 	string value;
-	shared_ptr<list<pair<string, string> > > parameters;
+	shared_ptr<list<pair<string, string>>> parameters;
 };
 
 Cpim::GenericHeader::GenericHeader () : Header(*new GenericHeaderPrivate) {}
 
 Cpim::GenericHeader::GenericHeader (string name, string value, string parameters) : GenericHeader() {
-	L_D();
-	d->name = name;
-	d->value = value;
+	setName(name);
+	setValue(value);
 
 	for (const auto &parameter : Utils::split(parameters, ';')) {
 		size_t equalIndex = parameter.find('=');
 		if (equalIndex != string::npos)
-			d->parameters->push_back(make_pair(parameter.substr(0, equalIndex), parameter.substr(equalIndex + 1)));
+			addParameter(parameter.substr(0, equalIndex), parameter.substr(equalIndex + 1));
 	}
 }
 
@@ -60,18 +59,15 @@ string Cpim::GenericHeader::getName () const {
 	return d->name;
 }
 
-bool Cpim::GenericHeader::setName (const string &name) {
+void Cpim::GenericHeader::setName (const string &name) {
 	L_D();
 
 	static const set<string> reserved = {
 		"From", "To", "cc", "DateTime", "Subject", "NS", "Require"
 	};
 
-	if (reserved.find(name) != reserved.end())
-		return false;
-
-	d->name = name;
-	return true;
+	if (reserved.find(name) == reserved.end())
+		d->name = name;
 }
 
 string Cpim::GenericHeader::getValue () const {
@@ -79,14 +75,9 @@ string Cpim::GenericHeader::getValue () const {
 	return d->value;
 }
 
-bool Cpim::GenericHeader::setValue (const string &value) {
-	if (value.empty())
-		return false;
-
+void Cpim::GenericHeader::setValue (const string &value) {
 	L_D();
 	d->value = value;
-
-	return true;
 }
 
 Cpim::GenericHeader::ParameterList Cpim::GenericHeader::getParameters () const {
@@ -94,10 +85,9 @@ Cpim::GenericHeader::ParameterList Cpim::GenericHeader::getParameters () const {
 	return d->parameters;
 }
 
-bool Cpim::GenericHeader::addParameter (const string &key, const string &value) {
+void Cpim::GenericHeader::addParameter (const string &key, const string &value) {
 	L_D();
 	d->parameters->push_back(make_pair(key, value));
-	return true;
 }
 
 void Cpim::GenericHeader::removeParameter (const string &key, const string &value) {

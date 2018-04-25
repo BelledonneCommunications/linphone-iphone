@@ -37,11 +37,11 @@ namespace Cpim {
 		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
 
 		HeaderList getMessageHeaders () const;
-		bool addMessageHeader (const Header &messageHeader);
+		void addMessageHeader (const Header &messageHeader);
 		void removeMessageHeader (const Header &messageHeader);
 		
 		HeaderList getContentHeaders () const;
-		bool addContentHeader (const Header &contentHeader);
+		void addContentHeader (const Header &contentHeader);
 		void removeContentHeader (const Header &contentHeader);
 
 		std::string getContent () const;

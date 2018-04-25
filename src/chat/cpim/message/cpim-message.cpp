@@ -52,11 +52,9 @@ Cpim::Message::HeaderList Cpim::Message::getMessageHeaders () const {
 	return d->messageHeaders;
 }
 
-bool Cpim::Message::addMessageHeader (const Header &messageHeader) {
+void Cpim::Message::addMessageHeader (const Header &messageHeader) {
 	L_D();
-
 	d->messageHeaders->push_back(Parser::getInstance()->cloneHeader(messageHeader));
-	return true;
 }
 
 void Cpim::Message::removeMessageHeader (const Header &messageHeader) {
@@ -73,11 +71,9 @@ Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
 	return d->contentHeaders;
 }
 
-bool Cpim::Message::addContentHeader (const Header &contentHeader) {
+void Cpim::Message::addContentHeader (const Header &contentHeader) {
 	L_D();
-
 	d->contentHeaders->push_back(Parser::getInstance()->cloneHeader(contentHeader));
-	return true;
 }
 
 void Cpim::Message::removeContentHeader (const Header &contentHeader) {

@@ -53,14 +53,9 @@ string Cpim::ContactHeader::getUri () const {
 	return d->uri;
 }
 
-bool Cpim::ContactHeader::setUri (const string &uri) {
-	if (uri.empty())
-		return false;
-
+void Cpim::ContactHeader::setUri (const string &uri) {
 	L_D();
 	d->uri = uri;
-
-	return true;
 }
 
 string Cpim::ContactHeader::getFormalName () const {
@@ -68,10 +63,7 @@ string Cpim::ContactHeader::getFormalName () const {
 	return d->formalName;
 }
 
-bool Cpim::ContactHeader::setFormalName (const string &formalName) {
-	if (formalName.empty())
-		return false;
-
+void Cpim::ContactHeader::setFormalName (const string &formalName) {
 	L_D();
 	if (formalName.front() == '\"' && formalName.back() == '\"')
 		d->formalName = formalName.substr(1, formalName.size() - 2);
@@ -79,8 +71,6 @@ bool Cpim::ContactHeader::setFormalName (const string &formalName) {
 		d->formalName = formalName.substr(0, formalName.size() - 1);
 	else
 		d->formalName = formalName;
-
-	return true;
 }
 
 string Cpim::ContactHeader::getValue () const {
@@ -102,8 +92,7 @@ public:
 Cpim::MessageIdHeader::MessageIdHeader () : Header(*new MessageIdHeaderPrivate) {}
 
 Cpim::MessageIdHeader::MessageIdHeader (const string &token) : MessageIdHeader() {
-	L_D();
-	d->token = token;
+	setToken(token);
 }
 
 string Cpim::MessageIdHeader::getToken () const {
@@ -111,14 +100,9 @@ string Cpim::MessageIdHeader::getToken () const {
 	return d->token;
 }
 
-bool Cpim::MessageIdHeader::setToken (string token) {
-	if (token.empty())
-		return false;
-
+void Cpim::MessageIdHeader::setToken (string token) {
 	L_D();
 	d->token = token;
-
-	return true;
 }
 
 string Cpim::MessageIdHeader::getValue () const {
@@ -177,24 +161,20 @@ time_t Cpim::DateTimeHeader::getTime () const {
 	return Utils::getTmAsTimeT(result);
 }
 
-bool Cpim::DateTimeHeader::setTime (const time_t time) {
+void Cpim::DateTimeHeader::setTime (const time_t time) {
 	L_D();
 
 	d->signOffset = "Z";
 	d->dateTime = Utils::getTimeTAsTm(time);
 	d->dateTime.tm_year += 1900;
-
-	return true;
 }
 
-bool Cpim::DateTimeHeader::setTime (const tm &time, const tm &timeOffset, const string &signOffset) {
+void Cpim::DateTimeHeader::setTime (const tm &time, const tm &timeOffset, const string &signOffset) {
 	L_D();
 
 	d->dateTime = time;
 	d->dateTimeOffset = timeOffset;
 	d->signOffset = signOffset;
-
-	return true;
 }
 
 string Cpim::DateTimeHeader::getValue () const {
@@ -246,9 +226,8 @@ public:
 Cpim::NsHeader::NsHeader () : Header(*new NsHeaderPrivate) {}
 
 Cpim::NsHeader::NsHeader (const string &uri, const string &prefixName) : NsHeader() {
-	L_D();
-	d->uri = uri;
-	d->prefixName = prefixName;
+	setUri(uri);
+	setPrefixName(prefixName);
 }
 
 string Cpim::NsHeader::getUri () const {
@@ -256,14 +235,9 @@ string Cpim::NsHeader::getUri () const {
 	return d->uri;
 }
 
-bool Cpim::NsHeader::setUri (const string &uri) {
-	if (uri.empty())
-		return false;
-
+void Cpim::NsHeader::setUri (const string &uri) {
 	L_D();
 	d->uri = uri;
-
-	return true;
 }
 
 string Cpim::NsHeader::getPrefixName () const {
@@ -271,14 +245,9 @@ string Cpim::NsHeader::getPrefixName () const {
 	return d->prefixName;
 }
 
-bool Cpim::NsHeader::setPrefixName (const string &prefixName) {
-	if (prefixName.empty())
-		return false;
-
+void Cpim::NsHeader::setPrefixName (const string &prefixName) {
 	L_D();
 	d->prefixName = prefixName;
-
-	return true;
 }
 
 string Cpim::NsHeader::getValue () const {
@@ -305,9 +274,8 @@ public:
 Cpim::RequireHeader::RequireHeader () : Header(*new RequireHeaderPrivate) {}
 
 Cpim::RequireHeader::RequireHeader (const string &headerNames) : RequireHeader() {
-	L_D();
 	for (const string &header : Utils::split(headerNames, ",")) {
-		d->headerNames.push_back(header);
+		addHeaderName(header);
 	}
 }
 
@@ -321,14 +289,9 @@ list<string> Cpim::RequireHeader::getHeaderNames () const {
 	return d->headerNames;
 }
 
-bool Cpim::RequireHeader::addHeaderName (const string &headerName) {
-	if (headerName.empty())
-		return false;
-
+void Cpim::RequireHeader::addHeaderName (const string &headerName) {
 	L_D();
 	d->headerNames.push_back(headerName);
-
-	return true;
 }
 
 string Cpim::RequireHeader::getValue () const {
@@ -359,9 +322,8 @@ public:
 Cpim::SubjectHeader::SubjectHeader () : Header(*new SubjectHeaderPrivate) {}
 
 Cpim::SubjectHeader::SubjectHeader (const string &subject, const string &language) : SubjectHeader() {
-	L_D();
-	d->subject = subject;
-	d->language = language;
+	setSubject(subject);
+	setLanguage(language);
 }
 
 string Cpim::SubjectHeader::getSubject () const {
@@ -369,14 +331,9 @@ string Cpim::SubjectHeader::getSubject () const {
 	return d->subject;
 }
 
-bool Cpim::SubjectHeader::setSubject (const string &subject) {
-	if (subject.empty())
-		return false;
-
+void Cpim::SubjectHeader::setSubject (const string &subject) {
 	L_D();
 	d->subject = subject;
-
-	return true;
 }
 
 string Cpim::SubjectHeader::getLanguage () const {
@@ -384,14 +341,9 @@ string Cpim::SubjectHeader::getLanguage () const {
 	return d->language;
 }
 
-bool Cpim::SubjectHeader::setLanguage (const string &language) {
-	if (!language.empty())
-		return false;
-
+void Cpim::SubjectHeader::setLanguage (const string &language) {
 	L_D();
 	d->language = language;
-
-	return true;
 }
 
 string Cpim::SubjectHeader::getValue () const {

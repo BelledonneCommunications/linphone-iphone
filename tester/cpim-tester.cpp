@@ -67,10 +67,8 @@ static void set_generic_header_name () {
 	for (const auto &entry : entries) {
 		Cpim::GenericHeader genericHeader(entry.first, "");
 
-		genericHeader.setName(entry.first);
 		const string name = genericHeader.getName();
-
-		BC_ASSERT_STRING_EQUAL(name.c_str(), entry.first.c_str());
+		BC_ASSERT_STRING_EQUAL(name.c_str(), "");
 	}
 }
 
@@ -168,22 +166,22 @@ static void build_message () {
 
 	Cpim::GenericHeader wackyMessageHeader("MyFeatures.WackyMessageOption", "Use-silly-font");
 
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(fromHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(toHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(dateTimeHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectWithLanguageHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(nsHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(requireHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(vitalMessageHeader))) return;
-	if (!BC_ASSERT_TRUE(message.addMessageHeader(wackyMessageHeader))) return;
+	message.addMessageHeader(fromHeader);
+	message.addMessageHeader(toHeader);
+	message.addMessageHeader(dateTimeHeader);
+	message.addMessageHeader(subjectHeader);
+	message.addMessageHeader(subjectWithLanguageHeader);
+	message.addMessageHeader(nsHeader);
+	message.addMessageHeader(requireHeader);
+	message.addMessageHeader(vitalMessageHeader);
+	message.addMessageHeader(wackyMessageHeader);
 
 	// Set Content headers.
     Cpim::GenericHeader contentTypeHeader("Content-Type", "text/xml; charset=utf-8");
-	if (!BC_ASSERT_TRUE(message.addContentHeader(contentTypeHeader))) return;
+	message.addContentHeader(contentTypeHeader);
 
-    Cpim::GenericHeader contentIdHeader("Content-ID", "<1234567890@foo.com>");
-    if (!BC_ASSERT_TRUE(message.addContentHeader(contentIdHeader))) return;
+	Cpim::GenericHeader contentIdHeader("Content-ID", "<1234567890@foo.com>");
+	message.addContentHeader(contentIdHeader);
 
 	const string content = "<body>"
 		"Here is the text of my message."

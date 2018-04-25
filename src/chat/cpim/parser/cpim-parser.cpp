@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <set>
 #include <unordered_map>
 
 #include <belr/abnf.h>
@@ -65,7 +66,12 @@ namespace Cpim {
 		}
 
 		void setName (const string &name) {
-			mName = name;
+			static const set<string> reserved = {
+				"From", "To", "cc", "DateTime", "Subject", "NS", "Require"
+			};
+
+			if (reserved.find(name) == reserved.end())
+				mName = name;
 		}
 
 		string getParameters () const {
@@ -537,15 +543,19 @@ namespace Cpim {
 			// Add message headers.
 			for (const auto &headerNode : mMessageHeaders) {
 				const shared_ptr<const Header> header = headerNode->createHeader();
-				if (!header || !message->addMessageHeader(*header))
+				if (!header)
 					return nullptr;
+
+				message->addMessageHeader(*header);
 			}
 
 			// Add content headers.
 			for (const auto &headerNode : mContentHeaders) {
 				const shared_ptr<const Header> header = headerNode->createHeader();
-				if (!header || !message->addContentHeader(*header))
+				if (!header)
 					return nullptr;
+
+				message->addContentHeader(*header);
 			}
 
 			return message;

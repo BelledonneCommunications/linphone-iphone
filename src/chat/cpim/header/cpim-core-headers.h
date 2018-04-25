@@ -57,10 +57,10 @@ namespace Cpim {
 		ContactHeader (const std::string &uri, const std::string &formalName = "");
 
 		std::string getUri () const;
-		bool setUri (const std::string &uri);
+		void setUri (const std::string &uri);
 
 		std::string getFormalName () const;
-		bool setFormalName (const std::string &formalName);
+		void setFormalName (const std::string &formalName);
 
 		std::string getValue () const override;
 
@@ -94,7 +94,7 @@ namespace Cpim {
 		}
 
 		std::string getToken () const;
-		bool setToken (std::string token);
+		void setToken (std::string token);
 
 		std::string getValue () const override;
 
@@ -126,9 +126,9 @@ namespace Cpim {
 		}
 
 		time_t getTime () const;
-		bool setTime (const time_t time);
+		void setTime (const time_t time);
 
-		bool setTime  (const tm &time, const tm &timeOffset, const std::string &signOffset);
+		void setTime  (const tm &time, const tm &timeOffset, const std::string &signOffset);
 
 		std::string getValue () const override;
 
@@ -160,10 +160,10 @@ namespace Cpim {
 		}
 
 		std::string getPrefixName () const;
-		bool setPrefixName (const std::string &prefixName);
+		void setPrefixName (const std::string &prefixName);
 
 		std::string getUri () const;
-		bool setUri (const std::string &uri);
+		void setUri (const std::string &uri);
 
 		std::string getValue () const override;
 
@@ -192,7 +192,7 @@ namespace Cpim {
 		}
 
 		std::list<std::string> getHeaderNames () const;
-		bool addHeaderName (const std::string &headerName);
+		void addHeaderName (const std::string &headerName);
 
 		std::string getValue () const override;
 
@@ -220,10 +220,10 @@ namespace Cpim {
 		}
 
 		std::string getSubject () const;
-		bool setSubject (const std::string &subject);
+		void setSubject (const std::string &subject);
 
 		std::string getLanguage () const;
-		bool setLanguage (const std::string &language);
+		void setLanguage (const std::string &language);
 
 		std::string getValue () const override;
 
