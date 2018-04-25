@@ -38,37 +38,12 @@ class Cpim::MessagePrivate : public ObjectPrivate {
 public:
 	typedef list<shared_ptr<const Header> > PrivHeaderList;
 
-	shared_ptr<PrivHeaderList> cpimHeaders = make_shared<PrivHeaderList>(); // TODO: Remove this useless variable
 	shared_ptr<PrivHeaderList> messageHeaders = make_shared<PrivHeaderList>();
 	shared_ptr<PrivHeaderList> contentHeaders = make_shared<PrivHeaderList>();
 	string content;
 };
 
 Cpim::Message::Message () : Object(*new MessagePrivate) {}
-
-// -----------------------------------------------------------------------------
-
-Cpim::Message::HeaderList Cpim::Message::getCpimHeaders () const {
-	L_D();
-	return d->cpimHeaders;
-}
-
-bool Cpim::Message::addCpimHeader (const Header &cpimHeader) {
-	L_D();
-
-	if (!cpimHeader.isValid())
-		return false;
-
-	d->cpimHeaders->push_back(Parser::getInstance()->cloneHeader(cpimHeader));
-	return true;
-}
-
-void Cpim::Message::removeCpimHeader (const Header &cpimHeader) {
-	L_D();
-	d->cpimHeaders->remove_if([&cpimHeader](const shared_ptr<const Header> &header) {
-			return cpimHeader.getName() == header->getName() && cpimHeader.getValue() == header->getValue();
-		});
-}
 
 // -----------------------------------------------------------------------------
 
@@ -79,9 +54,6 @@ Cpim::Message::HeaderList Cpim::Message::getMessageHeaders () const {
 
 bool Cpim::Message::addMessageHeader (const Header &messageHeader) {
 	L_D();
-
-	if (!messageHeader.isValid())
-		return false;
 
 	d->messageHeaders->push_back(Parser::getInstance()->cloneHeader(messageHeader));
 	return true;
@@ -103,9 +75,6 @@ Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
 
 bool Cpim::Message::addContentHeader (const Header &contentHeader) {
 	L_D();
-
-	if (!contentHeader.isValid())
-		return false;
 
 	d->contentHeaders->push_back(Parser::getInstance()->cloneHeader(contentHeader));
 	return true;
@@ -133,29 +102,10 @@ bool Cpim::Message::setContent (const string &content) {
 
 // -----------------------------------------------------------------------------
 
-bool Cpim::Message::isValid () const {
-	L_D();
-
-	return find_if(d->cpimHeaders->cbegin(), d->cpimHeaders->cend(),
-		[](const shared_ptr<const Header> &header) {
-			return Utils::iequals(header->getName(), "content-type") && (ContentType(header->getValue()) == ContentType::Cpim);
-		}) != d->cpimHeaders->cend();
-}
-
-// -----------------------------------------------------------------------------
-
 string Cpim::Message::asString () const {
 	L_D();
 
 	string output;
-	// TODO: Remove cpimHeaders
-	if (d->cpimHeaders->size() > 0) {
-		for (const auto &cpimHeader : *d->cpimHeaders)
-			output += cpimHeader->asString();
-		output += "\r\n";
-	}
-	// TODO Remove cpimHeaders
-
 	if (d->messageHeaders->size() > 0) {
 		for (const auto &messageHeader : *d->messageHeaders)
 			output += messageHeader->asString();

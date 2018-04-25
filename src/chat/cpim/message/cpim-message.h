@@ -36,12 +36,6 @@ namespace Cpim {
 
 		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
 
-		// TODO: Remove these useless methods
-		HeaderList getCpimHeaders () const;
-		bool addCpimHeader (const Header &cpimHeader);
-		void removeCpimHeader (const Header &cpimHeader);
-		// TODO: Remove these useless methods
-
 		HeaderList getMessageHeaders () const;
 		bool addMessageHeader (const Header &messageHeader);
 		void removeMessageHeader (const Header &messageHeader);
@@ -52,8 +46,6 @@ namespace Cpim {
 
 		std::string getContent () const;
 		bool setContent (const std::string &content);
-
-		bool isValid () const; // TODO: Remove this useless method
 
 		std::string asString () const;
 

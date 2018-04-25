@@ -38,11 +38,9 @@ LINPHONE_BEGIN_NAMESPACE
 ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<ChatMessage> &message, int &errorCode) {
 	Cpim::Message cpimMessage;
 
-	Cpim::FromHeader cpimFromHeader;
-	cpimFromHeader.setValue(cpimAddressAsString(message->getFromAddress()));
+	Cpim::FromHeader cpimFromHeader(cpimAddressUri(message->getFromAddress()), cpimAddressDisplayName(message->getFromAddress()));
 	cpimMessage.addMessageHeader(cpimFromHeader);
-	Cpim::ToHeader cpimToHeader;
-	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
+	Cpim::ToHeader cpimToHeader(cpimAddressUri(message->getToAddress()), cpimAddressDisplayName(message->getToAddress()));
 	cpimMessage.addMessageHeader(cpimToHeader);
 
 	if (message->getPrivate()->getPositiveDeliveryNotificationRequired()
@@ -50,8 +48,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		|| message->getPrivate()->getDisplayNotificationRequired()
 	) {
 		const string imdnNamespace = "imdn";
-		Cpim::NsHeader cpimNsHeader;
-		cpimNsHeader.setValue(imdnNamespace + " <urn:ietf:params:imdn>");
+		Cpim::NsHeader cpimNsHeader(imdnNamespace, "<urn:ietf:params:imdn>");
 		cpimMessage.addMessageHeader(cpimNsHeader);
 
 		char token[13];
@@ -88,18 +85,12 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 
 	const string contentBody = content->getBodyAsString();
 	if (content->getContentDisposition().isValid()) {
-		Cpim::GenericHeader contentDispositionHeader;
-		contentDispositionHeader.setName("Content-Disposition");
-		contentDispositionHeader.setValue(content->getContentDisposition().asString());
+		Cpim::GenericHeader contentDispositionHeader("Content-Disposition", content->getContentDisposition().asString());
 		cpimMessage.addContentHeader(contentDispositionHeader);
 	}
-	Cpim::GenericHeader contentTypeHeader;
-	contentTypeHeader.setName("Content-Type");
-	contentTypeHeader.setValue(content->getContentType().asString());
+	Cpim::GenericHeader contentTypeHeader("Content-Type", content->getContentType().asString());
 	cpimMessage.addContentHeader(contentTypeHeader);
-	Cpim::GenericHeader contentLengthHeader;
-	contentLengthHeader.setName("Content-Length");
-	contentLengthHeader.setValue(to_string(contentBody.size()));
+	Cpim::GenericHeader contentLengthHeader("Content-Length", to_string(contentBody.size()));
 	cpimMessage.addContentHeader(contentLengthHeader);
 	cpimMessage.setContent(contentBody);
 
@@ -203,12 +194,12 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	return ChatMessageModifier::Result::Done;
 }
 
-string CpimChatMessageModifier::cpimAddressAsString (const Address &addr) const {
-	ostringstream os;
-	if (!addr.getDisplayName().empty())
-		os << addr.getDisplayName() << " ";
-	os << "<" << addr.asStringUriOnly() << ">";
-	return os.str();
+string CpimChatMessageModifier::cpimAddressDisplayName (const Address &addr) const {
+	return addr.getDisplayName();
+}
+
+string CpimChatMessageModifier::cpimAddressUri (const Address &addr) const {
+	return addr.asStringUriOnly();
 }
 
 LINPHONE_END_NAMESPACE
