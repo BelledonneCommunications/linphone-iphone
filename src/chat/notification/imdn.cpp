@@ -216,7 +216,9 @@ void Imdn::send () {
 }
 
 void Imdn::startTimer () {
-	if (!chatRoom->canHandleCpim()) {
+	auto config = linphone_core_get_config(chatRoom->getCore()->getCCore());
+	bool aggregateImdn = linphone_config_get_bool(config, "misc", "aggregate_imdn", TRUE);
+	if (!chatRoom->canHandleCpim() || !aggregateImdn) {
 		// Compatibility mode for basic chat rooms, do not aggregate notifications
 		send();
 		return;
