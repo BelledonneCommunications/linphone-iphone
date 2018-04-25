@@ -378,10 +378,8 @@ void ClientGroupChatRoom::addParticipants (
 		content.setBody(getResourceLists(addressesList));
 		content.setContentType(ContentType::ResourceLists);
 		content.setContentDisposition(ContentDisposition::RecipientList);
-		// TODO: Activate compression
-		//if (linphone_core_content_encoding_supported(getCore()->getCCore(), "deflate"))
-		//	content.setContentEncoding("deflate");
-		// TODO: Activate compression
+		if (linphone_core_content_encoding_supported(getCore()->getCCore(), "deflate"))
+			content.setContentEncoding("deflate");
 
 		auto session = d->createSession();
 		session->startInvite(nullptr, getSubject(), &content);
