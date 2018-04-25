@@ -62,6 +62,7 @@ public:
 	void onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message);
 
 	// CoreListener
+	void onGlobalStateChanged (LinphoneGlobalState state) override;
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 
 	static std::string createXml (const std::string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason);

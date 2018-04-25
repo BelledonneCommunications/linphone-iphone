@@ -86,13 +86,21 @@ void CorePrivate::uninit () {
 
 // -----------------------------------------------------------------------------
 
+void CorePrivate::notifyGlobalStateChanged (LinphoneGlobalState state) {
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onGlobalStateChanged(state);
+}
+
 void CorePrivate::notifyNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
-	for (const auto &listener : listeners)
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
 		listener->onNetworkReachable(sipNetworkReachable, mediaNetworkReachable);
 }
 
 void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const string &message) {
-	for (const auto &listener : listeners)
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
 		listener->onRegistrationStateChanged(cfg, state, message);
 }
 

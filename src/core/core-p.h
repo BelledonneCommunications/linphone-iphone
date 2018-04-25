@@ -39,6 +39,7 @@ public:
 	void unregisterListener (CoreListener *listener);
 	void uninit ();
 
+	void notifyGlobalStateChanged (LinphoneGlobalState state);
 	void notifyNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable);
 	void notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message);
 

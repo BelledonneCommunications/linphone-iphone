@@ -92,6 +92,16 @@ void Imdn::onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message) 
 
 // -----------------------------------------------------------------------------
 
+void Imdn::onGlobalStateChanged (LinphoneGlobalState state) {
+	if (state == LinphoneGlobalShutdown) {
+		auto ref = chatRoom->getSharedFromThis();
+		deliveredMessages.clear();
+		displayedMessages.clear();
+		nonDeliveredMessages.clear();
+		sentImdnMessages.clear();
+	}
+}
+
 void Imdn::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
 	if (sipNetworkReachable) {
 		// When the SIP network gets up, retry sending every IMDN message that has not
