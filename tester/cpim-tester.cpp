@@ -48,7 +48,8 @@ static void parse_minimal_message () {
 	const string str2 = message->asString();
 	BC_ASSERT_STRING_EQUAL(str2.c_str(), str.c_str());
 
-	BC_ASSERT_STRING_EQUAL(message->getContent().c_str(), "");
+	const string content = message->getContent();
+	BC_ASSERT_STRING_EQUAL(content.c_str(), "");
 }
 
 static void set_generic_header_name () {
@@ -389,21 +390,33 @@ static void build_message () {
 	BC_ASSERT_STRING_EQUAL(strMessage.c_str(), expectedMessage.c_str());
 }
 
-static int fake_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(msg), ContentType::Cpim.asString().c_str()); // Encryption is the first receiving step, so this message should be CPIM
+static int fake_im_encryption_engine_process_incoming_message_cb (
+	LinphoneImEncryptionEngine *engine,
+	LinphoneChatRoom *room,
+	LinphoneChatMessage *msg
+) {
+	// Encryption is the first receiving step, so this message should be CPIM.
+	const string expected = ContentType::Cpim.asString();
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(msg), expected.c_str());
 	return -1;
 }
 
-static int fake_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(msg), ContentType::Cpim.asString().c_str()); // Encryption is the last sending step, so this message should be CPIM
+static int fake_im_encryption_engine_process_outgoing_message_cb (
+	LinphoneImEncryptionEngine *engine,
+	LinphoneChatRoom *room,
+	LinphoneChatMessage *msg
+) {
+	// Encryption is the last sending step, so this message should be CPIM.
+	const string expected = ContentType::Cpim.asString();
+	BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(msg), expected.c_str());
 	return -1;
 }
 
-static void cpim_chat_message_modifier_base(bool_t use_multipart) {
+static void cpim_chat_message_modifier_base (bool useMultipart) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
-	// We use a fake encryption engine just to check the internal content type during the sending/receiving process
+	// We use a fake encryption engine just to check the internal content type during the sending/receiving process.
 	LinphoneImEncryptionEngine *marie_imee = linphone_im_encryption_engine_new();
 	LinphoneImEncryptionEngineCbs *marie_cbs = linphone_im_encryption_engine_get_callbacks(marie_imee);
 	LinphoneImEncryptionEngine *pauline_imee = linphone_im_encryption_engine_new();
@@ -413,12 +426,15 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	linphone_core_set_im_encryption_engine(marie->lc, marie_imee);
 	linphone_core_set_im_encryption_engine(pauline->lc, pauline_imee);
 
-	IdentityAddress paulineAddress(linphone_address_as_string_uri_only(pauline->identity));
+	char *paulineUri = linphone_address_as_string_uri_only(pauline->identity);
+	IdentityAddress paulineAddress(paulineUri);
+	bctbx_free(paulineUri);
+
 	shared_ptr<AbstractChatRoom> marieRoom = marie->lc->cppPtr->getOrCreateBasicChatRoom(paulineAddress);
 	marieRoom->allowCpim(true);
 
 	shared_ptr<ChatMessage> marieMessage = marieRoom->createChatMessage("Hello CPIM");
-	if (use_multipart) {
+	if (useMultipart) {
 		marieRoom->allowMultipart(true);
 		Content *content = new Content();
 		content->setContentType(ContentType::PlainText);
@@ -433,7 +449,8 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	if (pauline->stat.last_received_chat_message != NULL) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(pauline->stat.last_received_chat_message), "Hello CPIM");
-		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), ContentType::PlainText.asString().c_str());
+		const string expected = ContentType::PlainText.asString();
+		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), expected.c_str());
 	}
 
 	linphone_im_encryption_engine_unref(marie_imee);
@@ -443,11 +460,11 @@ static void cpim_chat_message_modifier_base(bool_t use_multipart) {
 	linphone_core_manager_destroy(pauline);
 }
 
-static void cpim_chat_message_modifier(void) {
+static void cpim_chat_message_modifier () {
 	cpim_chat_message_modifier_base(FALSE);
 }
 
-static void cpim_chat_message_modifier_with_multipart_body(void) {
+static void cpim_chat_message_modifier_with_multipart_body () {
 	cpim_chat_message_modifier_base(TRUE);
 }
 
@@ -462,7 +479,7 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("Parse Message with generic header parameters", parse_message_with_generic_header_parameters),
 	TEST_NO_TAG("Build Message", build_message),
 	TEST_NO_TAG("CPIM chat message modifier", cpim_chat_message_modifier),
-	TEST_NO_TAG("CPIM chat message modifier with multipart body", cpim_chat_message_modifier_with_multipart_body),
+	TEST_NO_TAG("CPIM chat message modifier with multipart body", cpim_chat_message_modifier_with_multipart_body)
 };
 
 test_suite_t cpim_test_suite = {
