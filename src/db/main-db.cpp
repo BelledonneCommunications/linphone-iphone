@@ -47,7 +47,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 namespace {
-	constexpr unsigned int ModuleVersionEvents = makeVersion(1, 0, 2);
+	constexpr unsigned int ModuleVersionEvents = makeVersion(1, 0, 3);
 	constexpr unsigned int ModuleVersionFriends = makeVersion(1, 0, 0);
 	constexpr unsigned int ModuleVersionLegacyFriendsImport = makeVersion(1, 0, 0);
 	constexpr unsigned int ModuleVersionLegacyHistoryImport = makeVersion(1, 0, 0);
@@ -977,6 +977,8 @@ void MainDbPrivate::updateModuleVersion (const string &name, unsigned int versio
 }
 
 void MainDbPrivate::updateSchema () {
+	L_Q();
+
 	soci::session *session = dbSession.getBackendSession();
 	unsigned int version = getModuleVersion("events");
 
@@ -986,6 +988,15 @@ void MainDbPrivate::updateSchema () {
 		*session << "DROP TRIGGER IF EXISTS chat_message_participant_deleter";
 		*session << "ALTER TABLE chat_message_participant ADD COLUMN state_change_time"
 			+ dbSession.timestampType() + " NOT NULL DEFAULT " + dbSession.currentTimestamp();
+	}
+	if (version < makeVersion(1, 0, 3)) {
+		// Remove client group one-to-one chat rooms for the moment as there are still some issues
+		// with them and we prefer to keep using basic chat rooms instead
+		const int &capabilities = ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)
+			| ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::OneToOne);
+		*session << "DELETE FROM chat_room WHERE (capabilities & :capabilities1) == :capabilities2",
+			soci::use(capabilities), soci::use(capabilities);
+		linphone_config_set_bool(linphone_core_get_config(q->getCore()->getCCore()), "misc", "prefer_basic_chat_room", TRUE);
 	}
 }
 
