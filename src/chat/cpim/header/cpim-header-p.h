@@ -30,8 +30,6 @@ LINPHONE_BEGIN_NAMESPACE
 namespace Cpim {
 	class HeaderPrivate : public ObjectPrivate {
 	private:
-		std::string value;
-
 		L_DECLARE_PUBLIC(Header);
 	};
 }

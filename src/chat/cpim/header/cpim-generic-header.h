@@ -38,10 +38,13 @@ namespace Cpim {
 	public:
 		GenericHeader ();
 
+		GenericHeader (std::string name, std::string value, std::string parameters = "");
+
 		std::string getName () const override;
 		bool setName (const std::string &name);
 
-		bool setValue (const std::string &value) override;
+		std::string getValue () const override;
+		bool setValue (const std::string &value);
 
 		typedef std::shared_ptr<const std::list<std::pair<std::string, std::string> > > ParameterList;
 
@@ -49,12 +52,7 @@ namespace Cpim {
 		bool addParameter (const std::string &key, const std::string &value);
 		void removeParameter (const std::string &key, const std::string &value);
 
-		bool isValid () const override;
-
 		std::string asString () const override;
-
-	protected:
-		void force (const std::string &name, const std::string &value, const std::string &parameters);
 
 	private:
 		L_DECLARE_PRIVATE(GenericHeader);

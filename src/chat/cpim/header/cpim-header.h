@@ -35,12 +35,9 @@ namespace Cpim {
 
 		virtual std::string getName () const = 0;
 
-		std::string getValue () const;
-		virtual bool setValue (const std::string &value);
+		virtual std::string getValue () const = 0;
 
-		virtual bool isValid () const = 0;
-
-		virtual std::string asString () const;
+		virtual std::string asString () const = 0;
 
 	protected:
 		explicit Header (HeaderPrivate &p);

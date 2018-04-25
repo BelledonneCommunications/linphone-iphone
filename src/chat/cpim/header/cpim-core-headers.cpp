@@ -17,6 +17,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <iomanip>
+#include <sstream>
+
+#include "linphone/utils/utils.h"
+
+#include "logger/logger.h"
+
 #include "chat/cpim/parser/cpim-parser.h"
 #include "cpim-header-p.h"
 
@@ -28,50 +35,348 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-Cpim::CoreHeader::CoreHeader () : Header(*new HeaderPrivate) {}
+class Cpim::ContactHeaderPrivate : public HeaderPrivate {
+public:
+	string uri;
+	string formalName;
+};
 
-Cpim::CoreHeader::CoreHeader (HeaderPrivate &p) : Header(p) {}
+Cpim::ContactHeader::ContactHeader () : Header(*new ContactHeaderPrivate) {}
 
-Cpim::CoreHeader::~CoreHeader () {}
+Cpim::ContactHeader::ContactHeader (const string &uri, const string &formalName) : ContactHeader() {
+	setUri(uri);
+	setFormalName(formalName);
+}
 
-bool Cpim::CoreHeader::isValid () const {
-	return !getValue().empty();
+string Cpim::ContactHeader::getUri () const {
+	L_D();
+	return d->uri;
+}
+
+bool Cpim::ContactHeader::setUri (const string &uri) {
+	if (uri.empty())
+		return false;
+
+	L_D();
+	d->uri = uri;
+
+	return true;
+}
+
+string Cpim::ContactHeader::getFormalName () const {
+	L_D();
+	return d->formalName;
+}
+
+bool Cpim::ContactHeader::setFormalName (const string &formalName) {
+	if (formalName.empty())
+		return false;
+
+	L_D();
+	if (formalName.front() == '\"' && formalName.back() == '\"')
+		d->formalName = formalName.substr(1, formalName.size() - 2);
+	else if (formalName.back() == ' ')
+		d->formalName = formalName.substr(0, formalName.size() - 1);
+	else
+		d->formalName = formalName;
+
+	return true;
+}
+
+string Cpim::ContactHeader::getValue () const {
+	L_D();
+	return "\"" + d->formalName + "\"" + "<" + d->uri + ">";
+}
+
+string Cpim::ContactHeader::asString () const {
+	return getName() + ": " + getValue() + "\r\n";
 }
 
 // -----------------------------------------------------------------------------
 
-#define MAKE_CORE_HEADER_IMPL(CLASS_PREFIX) \
-	bool Cpim::CLASS_PREFIX ## Header::setValue(const string &value) { \
-		return Parser::getInstance()->coreHeaderIsValid<CLASS_PREFIX ## Header>(value) && Header::setValue(value); \
-	}
+class Cpim::MessageIdHeaderPrivate : public HeaderPrivate {
+public:
+	string token;
+};
 
-MAKE_CORE_HEADER_IMPL(From);
-MAKE_CORE_HEADER_IMPL(To);
-MAKE_CORE_HEADER_IMPL(Cc);
-MAKE_CORE_HEADER_IMPL(DateTime);
+Cpim::MessageIdHeader::MessageIdHeader () : Header(*new MessageIdHeaderPrivate) {}
 
-MAKE_CORE_HEADER_IMPL(Ns);
-MAKE_CORE_HEADER_IMPL(Require);
+Cpim::MessageIdHeader::MessageIdHeader (const string &token) : MessageIdHeader() {
+	L_D();
+	d->token = token;
+}
 
-#undef MAKE_CORE_HEADER_IMPL
+string Cpim::MessageIdHeader::getToken () const {
+	L_D();
+	return d->token;
+}
+
+bool Cpim::MessageIdHeader::setToken (string token) {
+	if (token.empty())
+		return false;
+
+	L_D();
+	d->token = token;
+
+	return true;
+}
+
+string Cpim::MessageIdHeader::getValue () const {
+	return getToken();
+}
+
+string Cpim::MessageIdHeader::asString () const {
+	return getName() + ": " + getValue() + "\r\n";
+}
 
 // -----------------------------------------------------------------------------
 
-void Cpim::CoreHeader::force (const string &value) {
-	Header::setValue(value);
+class Cpim::DateTimeHeaderPrivate : public HeaderPrivate {
+public:
+	tm timeT;
+	tm timeTOffset;
+	string signOffset;
+};
+
+Cpim::DateTimeHeader::DateTimeHeader () : Header(*new DateTimeHeaderPrivate) {}
+
+Cpim::DateTimeHeader::DateTimeHeader (time_t time) : DateTimeHeader() {
+	setTime(time);
+}
+
+Cpim::DateTimeHeader::DateTimeHeader (const tm &time, const tm &timeOffset, const string &signOffset) : DateTimeHeader() {
+	setTime(time, timeOffset, signOffset);
+}
+
+time_t Cpim::DateTimeHeader::getTime () const {
+	L_D();
+
+	tm result = d->timeT;
+	result.tm_year -= 1900;
+	result.tm_isdst = 0;
+
+	if (d->signOffset == "+") {
+		result.tm_hour += d->timeTOffset.tm_hour;
+		result.tm_min += d->timeTOffset.tm_min;
+
+		while (result.tm_min > 59) {
+			result.tm_hour++;
+			result.tm_min -= 60;
+		}
+	}
+	else if (d->signOffset == "-") {
+		result.tm_hour -= d->timeTOffset.tm_hour;
+		result.tm_hour -= d->timeTOffset.tm_min;
+
+		while (result.tm_min < 0) {
+			result.tm_hour--;
+			result.tm_min += 60;
+		}
+	}
+
+	return Utils::getTmAsTimeT(result);
+}
+
+bool Cpim::DateTimeHeader::setTime (const time_t time) {
+	L_D();
+
+	d->signOffset = "Z";
+	d->timeT = Utils::getTimeTAsTm(time);
+	d->timeT.tm_year += 1900;
+
+	return true;
+}
+
+bool Cpim::DateTimeHeader::setTime (const tm &time, const tm &timeOffset, const string &signOffset) {
+	L_D();
+
+	d->timeT = time;
+	d->timeTOffset = timeOffset;
+	d->signOffset = signOffset;
+
+	return true;
+}
+
+string Cpim::DateTimeHeader::getValue () const {
+ 	L_D();
+
+	stringstream ss;
+	ss << setfill('0') << setw(4) << d->timeT.tm_year << "-"
+		<< setfill('0') << setw(2) << d->timeT.tm_mon << "-"
+		<< setfill('0') << setw(2) << d->timeT.tm_mday << "T"
+		<< setfill('0') << setw(2) << d->timeT.tm_hour << ":"
+		<< setfill('0') << setw(2) << d->timeT.tm_min << ":"
+		<< setfill('0') << setw(2) << d->timeT.tm_sec;
+
+	ss << d->signOffset;
+	if (d->signOffset != "Z")
+		ss << setfill('0') << setw(2) << d->timeTOffset.tm_hour << ":"
+			<< setfill('0') << setw(2) << d->timeTOffset.tm_min;
+
+ 	return ss.str();
+}
+
+string Cpim::DateTimeHeader::asString () const {
+	return getName() + ": " + getValue() + "\r\n";
+}
+
+struct tm Cpim::DateTimeHeader::getTimeStruct () const {
+	L_D();
+	return d->timeT;
+}
+
+struct tm Cpim::DateTimeHeader::getTimeOffset () const {
+	L_D();
+	return d->timeTOffset;
+}
+
+string Cpim::DateTimeHeader::getSignOffset () const {
+	L_D();
+	return d->signOffset;
+}
+
+// -----------------------------------------------------------------------------
+
+class Cpim::NsHeaderPrivate : public HeaderPrivate {
+public:
+	string uri;
+	string prefixName;
+};
+
+Cpim::NsHeader::NsHeader () : Header(*new NsHeaderPrivate) {}
+
+Cpim::NsHeader::NsHeader (const string &uri, const string &prefixName) : NsHeader() {
+	L_D();
+	d->uri = uri;
+	d->prefixName = prefixName;
+}
+
+string Cpim::NsHeader::getUri () const {
+	L_D();
+	return d->uri;
+}
+
+bool Cpim::NsHeader::setUri (const string &uri) {
+	if (uri.empty())
+		return false;
+
+	L_D();
+	d->uri = uri;
+
+	return true;
+}
+
+string Cpim::NsHeader::getPrefixName () const {
+	L_D();
+	return d->prefixName;
+}
+
+bool Cpim::NsHeader::setPrefixName (const string &prefixName) {
+	if (prefixName.empty())
+		return false;
+
+	L_D();
+	d->prefixName = prefixName;
+
+	return true;
+}
+
+string Cpim::NsHeader::getValue () const {
+	L_D();
+
+	string ns;
+	if (!d->prefixName.empty())
+		ns = d->prefixName + " ";
+
+	return ns + "<" + d->uri + ">";
+}
+
+string Cpim::NsHeader::asString () const {
+	return getName() + ": " + getValue() + "\r\n";
+}
+
+// -----------------------------------------------------------------------------
+
+class Cpim::RequireHeaderPrivate : public HeaderPrivate {
+public:
+	list<string> headerNames;
+};
+
+Cpim::RequireHeader::RequireHeader () : Header(*new RequireHeaderPrivate) {}
+
+Cpim::RequireHeader::RequireHeader (const string &headerNames) : RequireHeader() {
+	L_D();
+	for (const string &header : Utils::split(headerNames, ",")) {
+		d->headerNames.push_back(header);
+	}
+}
+
+Cpim::RequireHeader::RequireHeader (const list<string> &headerNames) : RequireHeader() {
+	L_D();
+	d->headerNames = headerNames;
+}
+
+list<string> Cpim::RequireHeader::getHeaderNames () const {
+	L_D();
+	return d->headerNames;
+}
+
+bool Cpim::RequireHeader::addHeaderName (const string &headerName) {
+	if (headerName.empty())
+		return false;
+
+	L_D();
+	d->headerNames.push_back(headerName);
+
+	return true;
+}
+
+string Cpim::RequireHeader::getValue () const {
+	L_D();
+
+	string requires;
+	for (const string &header : d->headerNames) {
+		if (header != d->headerNames.front())
+			requires += ",";
+		requires += header;
+	}
+
+	return requires;
+}
+
+string Cpim::RequireHeader::asString () const {
+	return getName() + ": " + getValue() + "\r\n";
 }
 
 // -----------------------------------------------------------------------------
 
 class Cpim::SubjectHeaderPrivate : public HeaderPrivate {
 public:
+	string subject;
 	string language;
 };
 
-Cpim::SubjectHeader::SubjectHeader () : CoreHeader(*new SubjectHeaderPrivate) {}
+Cpim::SubjectHeader::SubjectHeader () : Header(*new SubjectHeaderPrivate) {}
 
-bool Cpim::SubjectHeader::setValue (const string &value) {
-	return Parser::getInstance()->coreHeaderIsValid<SubjectHeader>(value) && Header::setValue(value);
+Cpim::SubjectHeader::SubjectHeader (const string &subject, const string &language) : SubjectHeader() {
+	L_D();
+	d->subject = subject;
+	d->language = language;
+}
+
+string Cpim::SubjectHeader::getSubject () const {
+	L_D();
+	return d->subject;
+}
+
+bool Cpim::SubjectHeader::setSubject (const string &subject) {
+	if (subject.empty())
+		return false;
+
+	L_D();
+	d->subject = subject;
+
+	return true;
 }
 
 string Cpim::SubjectHeader::getLanguage () const {
@@ -80,7 +385,7 @@ string Cpim::SubjectHeader::getLanguage () const {
 }
 
 bool Cpim::SubjectHeader::setLanguage (const string &language) {
-	if (!language.empty() && !Parser::getInstance()->subjectHeaderLanguageIsValid(language))
+	if (!language.empty())
 		return false;
 
 	L_D();
@@ -89,20 +394,18 @@ bool Cpim::SubjectHeader::setLanguage (const string &language) {
 	return true;
 }
 
-string Cpim::SubjectHeader::asString () const {
+string Cpim::SubjectHeader::getValue () const {
 	L_D();
 
 	string languageParam;
 	if (!d->language.empty())
 		languageParam = ";lang=" + d->language;
 
-	return getName() + ":" + languageParam + " " + getValue() + "\r\n";
+	return languageParam + " " + d->subject;
 }
 
-void Cpim::SubjectHeader::force (const string &value, const string &language) {
-	L_D();
-	CoreHeader::force(value);
-	d->language = language;
+string Cpim::SubjectHeader::asString () const {
+	return getName() + ":" + getValue() + "\r\n";
 }
 
 LINPHONE_END_NAMESPACE
