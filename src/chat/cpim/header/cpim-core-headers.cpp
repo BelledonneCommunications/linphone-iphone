@@ -133,8 +133,8 @@ string Cpim::MessageIdHeader::asString () const {
 
 class Cpim::DateTimeHeaderPrivate : public HeaderPrivate {
 public:
-	tm timeT;
-	tm timeTOffset;
+	tm dateTime;
+	tm dateTimeOffset;
 	string signOffset;
 };
 
@@ -151,13 +151,13 @@ Cpim::DateTimeHeader::DateTimeHeader (const tm &time, const tm &timeOffset, cons
 time_t Cpim::DateTimeHeader::getTime () const {
 	L_D();
 
-	tm result = d->timeT;
+	tm result = d->dateTime;
 	result.tm_year -= 1900;
 	result.tm_isdst = 0;
 
 	if (d->signOffset == "+") {
-		result.tm_hour += d->timeTOffset.tm_hour;
-		result.tm_min += d->timeTOffset.tm_min;
+		result.tm_hour += d->dateTimeOffset.tm_hour;
+		result.tm_min += d->dateTimeOffset.tm_min;
 
 		while (result.tm_min > 59) {
 			result.tm_hour++;
@@ -165,8 +165,8 @@ time_t Cpim::DateTimeHeader::getTime () const {
 		}
 	}
 	else if (d->signOffset == "-") {
-		result.tm_hour -= d->timeTOffset.tm_hour;
-		result.tm_hour -= d->timeTOffset.tm_min;
+		result.tm_hour -= d->dateTimeOffset.tm_hour;
+		result.tm_hour -= d->dateTimeOffset.tm_min;
 
 		while (result.tm_min < 0) {
 			result.tm_hour--;
@@ -181,8 +181,8 @@ bool Cpim::DateTimeHeader::setTime (const time_t time) {
 	L_D();
 
 	d->signOffset = "Z";
-	d->timeT = Utils::getTimeTAsTm(time);
-	d->timeT.tm_year += 1900;
+	d->dateTime = Utils::getTimeTAsTm(time);
+	d->dateTime.tm_year += 1900;
 
 	return true;
 }
@@ -190,8 +190,8 @@ bool Cpim::DateTimeHeader::setTime (const time_t time) {
 bool Cpim::DateTimeHeader::setTime (const tm &time, const tm &timeOffset, const string &signOffset) {
 	L_D();
 
-	d->timeT = time;
-	d->timeTOffset = timeOffset;
+	d->dateTime = time;
+	d->dateTimeOffset = timeOffset;
 	d->signOffset = signOffset;
 
 	return true;
@@ -201,17 +201,17 @@ string Cpim::DateTimeHeader::getValue () const {
  	L_D();
 
 	stringstream ss;
-	ss << setfill('0') << setw(4) << d->timeT.tm_year << "-"
-		<< setfill('0') << setw(2) << d->timeT.tm_mon << "-"
-		<< setfill('0') << setw(2) << d->timeT.tm_mday << "T"
-		<< setfill('0') << setw(2) << d->timeT.tm_hour << ":"
-		<< setfill('0') << setw(2) << d->timeT.tm_min << ":"
-		<< setfill('0') << setw(2) << d->timeT.tm_sec;
+	ss << setfill('0') << setw(4) << d->dateTime.tm_year << "-"
+		<< setfill('0') << setw(2) << d->dateTime.tm_mon << "-"
+		<< setfill('0') << setw(2) << d->dateTime.tm_mday << "T"
+		<< setfill('0') << setw(2) << d->dateTime.tm_hour << ":"
+		<< setfill('0') << setw(2) << d->dateTime.tm_min << ":"
+		<< setfill('0') << setw(2) << d->dateTime.tm_sec;
 
 	ss << d->signOffset;
 	if (d->signOffset != "Z")
-		ss << setfill('0') << setw(2) << d->timeTOffset.tm_hour << ":"
-			<< setfill('0') << setw(2) << d->timeTOffset.tm_min;
+		ss << setfill('0') << setw(2) << d->dateTimeOffset.tm_hour << ":"
+			<< setfill('0') << setw(2) << d->dateTimeOffset.tm_min;
 
  	return ss.str();
 }
@@ -222,12 +222,12 @@ string Cpim::DateTimeHeader::asString () const {
 
 struct tm Cpim::DateTimeHeader::getTimeStruct () const {
 	L_D();
-	return d->timeT;
+	return d->dateTime;
 }
 
 struct tm Cpim::DateTimeHeader::getTimeOffset () const {
 	L_D();
-	return d->timeTOffset;
+	return d->dateTimeOffset;
 }
 
 string Cpim::DateTimeHeader::getSignOffset () const {

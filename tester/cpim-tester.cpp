@@ -149,38 +149,33 @@ static void build_message () {
 
 	// Set message headers.
 	Cpim::FromHeader fromHeader("im:piglet@100akerwood.com", "MR SANDERS");
-	//if (!BC_ASSERT_TRUE(fromHeader.setValue("MR SANDERS <im:piglet@100akerwood.com>"))) return;
 
 	Cpim::ToHeader toHeader("im:eeyore@100akerwood.com", "Depressed Donkey");
-	//if (!BC_ASSERT_TRUE(toHeader.setValue("Depressed Donkey <im:eeyore@100akerwood.com>"))) return;
 
-	//Cpim::DateTimeHeader dateTimeHeader; //TODO value
-	//if (!BC_ASSERT_TRUE(dateTimeHeader.setValue("2000-12-13T13:40:00-08:00"))) return;
+	tm dateTime = { 0 }, offset = { 0 };
+	dateTime.tm_year = 2000;
+	dateTime.tm_mon = 12;
+	dateTime.tm_mday = 13;
+	dateTime.tm_hour = 13;
+	dateTime.tm_min = 40;
+	offset.tm_hour = 8;
+	Cpim::DateTimeHeader dateTimeHeader(dateTime, offset, "-");
 
 	Cpim::SubjectHeader subjectHeader("the weather will be fine today");
-	//if (!BC_ASSERT_TRUE(subjectHeader.setValue("the weather will be fine today"))) return;
 
 	Cpim::SubjectHeader subjectWithLanguageHeader("beau temps prevu pour aujourd'hui", "fr");
-	//if (!BC_ASSERT_TRUE(subjectWithLanguageHeader.setValue("beau temps prevu pour aujourd'hui"))) return;
-	//if (!BC_ASSERT_TRUE(subjectWithLanguageHeader.setLanguage("fr"))) return;
 
 	Cpim::NsHeader nsHeader("mid:MessageFeatures@id.foo.com", "MyFeatures");
-	//if (!BC_ASSERT_TRUE(nsHeader.setValue("MyFeatures <mid:MessageFeatures@id.foo.com>"))) return;
 
 	Cpim::RequireHeader requireHeader("MyFeatures.VitalMessageOption");
-	//if (!BC_ASSERT_TRUE(requireHeader.setValue("MyFeatures.VitalMessageOption"))) return;
 
 	Cpim::GenericHeader vitalMessageHeader("MyFeatures.VitalMessageOption", "Confirmation-requested");
-	//if (!BC_ASSERT_TRUE(vitalMessageHeader.setName("MyFeatures.VitalMessageOption"))) return;
-	//if (!BC_ASSERT_TRUE(vitalMessageHeader.setValue("Confirmation-requested"))) return;
 
 	Cpim::GenericHeader wackyMessageHeader("MyFeatures.WackyMessageOption", "Use-silly-font");
-	//if (!BC_ASSERT_TRUE(wackyMessageHeader.setName("MyFeatures.WackyMessageOption"))) return;
-	//if (!BC_ASSERT_TRUE(wackyMessageHeader.setValue("Use-silly-font"))) return;
 
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(fromHeader))) return;
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(toHeader))) return;
-	//if (!BC_ASSERT_TRUE(message.addMessageHeader(dateTimeHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(dateTimeHeader))) return;
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectHeader))) return;
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectWithLanguageHeader))) return;
 	if (!BC_ASSERT_TRUE(message.addMessageHeader(nsHeader))) return;
@@ -190,13 +185,9 @@ static void build_message () {
 
 	// Set Content headers.
     Cpim::GenericHeader contentTypeHeader("Content-Type", "text/xml; charset=utf-8");
-	//if (!BC_ASSERT_TRUE(contentTypeHeader.setName("Content-Type"))) return;
-	//if (!BC_ASSERT_TRUE( contentTypeHeader.setValue("text/xml; charset=utf-8"))) return;
 	if (!BC_ASSERT_TRUE(message.addContentHeader(contentTypeHeader))) return;
 
     Cpim::GenericHeader contentIdHeader("Content-ID", "<1234567890@foo.com>");
-	//if (!BC_ASSERT_TRUE(contentIdHeader.setName("Content-ID"))) return;
-	//if (!BC_ASSERT_TRUE( contentIdHeader.setValue("<1234567890@foo.com>"))) return;
     if (!BC_ASSERT_TRUE(message.addContentHeader(contentIdHeader))) return;
 
 	const string content = "<body>"
@@ -208,7 +199,7 @@ static void build_message () {
 	const string strMessage = message.asString();
 	const string expectedMessage = "From: \"MR SANDERS\"<im:piglet@100akerwood.com>\r\n"
 		"To: \"Depressed Donkey\"<im:eeyore@100akerwood.com>\r\n"
-		//"DateTime: 2000-12-13T13:40:00-08:00\r\n"
+		"DateTime: 2000-12-13T13:40:00-08:00\r\n"
 		"Subject: the weather will be fine today\r\n"
 		"Subject:;lang=fr beau temps prevu pour aujourd'hui\r\n"
 		"NS: MyFeatures <mid:MessageFeatures@id.foo.com>\r\n"
