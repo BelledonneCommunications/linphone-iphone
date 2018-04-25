@@ -994,7 +994,7 @@ void MainDbPrivate::updateSchema () {
 		// with them and we prefer to keep using basic chat rooms instead
 		const int &capabilities = ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)
 			| ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::OneToOne);
-		*session << "DELETE FROM chat_room WHERE (capabilities & :capabilities1) == :capabilities2",
+		*session << "DELETE FROM chat_room WHERE (capabilities & :capabilities1) = :capabilities2",
 			soci::use(capabilities), soci::use(capabilities);
 		linphone_config_set_bool(linphone_core_get_config(q->getCore()->getCCore()), "misc", "prefer_basic_chat_room", TRUE);
 	}
