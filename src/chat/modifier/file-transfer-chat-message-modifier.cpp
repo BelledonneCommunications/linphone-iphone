@@ -310,8 +310,13 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			FileTransferContent *fileTransferContent = nullptr;
 			for (Content *c : message->getPrivate()->getContents()) {
 				if (c->isFileTransfer()) {
-					fileTransferContent = static_cast<FileTransferContent *>(c);
-					break;
+					FileTransferContent *tmpContent = static_cast<FileTransferContent *>(c);
+					if (!tmpContent->getFileContent() && tmpContent->getSize() == 0) {
+						// If FileTransferContent doesn't have a FileContent yet and is empty 
+						// It's the one we seek, otherwise it may be a previous uploaded FileTransferContent
+						fileTransferContent = tmpContent;
+						break;
+					}
 				}
 			}
 
