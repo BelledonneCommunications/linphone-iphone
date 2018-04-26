@@ -132,6 +132,8 @@ set(RC_FILES
 	rcfiles/pauline_zrtp_aes256_rc
 	rcfiles/pauline_zrtp_b256_rc
 	rcfiles/pauline_zrtp_srtpsuite_aes256_rc
+	rcfiles/pauline_zrtp_ecdh255_rc
+	rcfiles/pauline_zrtp_ecdh448_rc
 	rcfiles/remote_zero_length_params_rc
 	rcfiles/stun_rc
 	rcfiles/zero_length_params_rc
