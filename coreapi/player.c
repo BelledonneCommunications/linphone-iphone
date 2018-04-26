@@ -100,10 +100,11 @@ void linphone_player_close(LinphonePlayer *obj){
 }
 
 void linphone_player_destroy(LinphonePlayer *obj) {
-	if(obj->destroy) obj->destroy(obj);
+	_linphone_player_destroy(obj);
 }
 
 void _linphone_player_destroy(LinphonePlayer *player) {
+	if(player->destroy) player->destroy(player);
 	linphone_player_cbs_unref(player->callbacks);
 }
 
