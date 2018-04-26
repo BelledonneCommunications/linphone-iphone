@@ -107,6 +107,8 @@ static void auth_info_requested(LinphoneCore *lc, const char *realm, const char 
 void reset_counters( stats* counters) {
 	if (counters->last_received_chat_message) linphone_chat_message_unref(counters->last_received_chat_message);
 	if (counters->last_received_info_message) linphone_info_message_unref(counters->last_received_info_message);
+	if (counters->dtmf_list_received) bctbx_free(counters->dtmf_list_received);
+
 	memset(counters,0,sizeof(stats));
 }
 
@@ -503,6 +505,8 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 
 	if (mgr->cbs)
 		linphone_core_cbs_unref(mgr->cbs);
+
+	reset_counters(&mgr->stat);
 
 	manager_count--;
 	linphone_core_set_log_level_mask(old_log_level);

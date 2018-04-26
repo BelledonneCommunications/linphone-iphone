@@ -22,9 +22,7 @@
 void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	stats* counters = get_stats(lc);
 	char** dst = &counters->dtmf_list_received;
-	*dst = *dst ?
-				ms_strcat_printf(*dst, "%c", dtmf)
-				: ms_strdup_printf("%c", dtmf);
+	*dst = *dst ? ms_strcat_printf(*dst, "%c", dtmf) : ms_strdup_printf("%c", dtmf);
 	counters->dtmf_count++;
 }
 
