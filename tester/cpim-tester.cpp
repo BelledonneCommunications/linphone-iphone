@@ -281,6 +281,9 @@ static void cpim_chat_message_modifier_base (bool useMultipart) {
 		BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_content_type(pauline->stat.last_received_chat_message), expected.c_str());
 	}
 
+	marieMessage.reset();
+	marieRoom.reset();
+
 	linphone_im_encryption_engine_unref(marie_imee);
 	linphone_im_encryption_engine_unref(pauline_imee);
 
