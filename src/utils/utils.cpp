@@ -188,11 +188,11 @@ string Utils::trim (const string &str) {
 // -----------------------------------------------------------------------------
 
 tm Utils::getTimeTAsTm (time_t time) {
-	#ifndef _WIN32
+	#ifdef _WIN32
+		return *gmtime(&time);
+	#else
 		tm result;
 		return *gmtime_r(&time, &result);
-	#else
-		return *gmtime(&time);
 	#endif
 }
 

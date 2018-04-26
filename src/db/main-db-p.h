@@ -44,6 +44,8 @@ private:
 	// Misc helpers.
 	// ---------------------------------------------------------------------------
 
+	static time_t getTmAsTimeT (const tm &t);
+
 	std::shared_ptr<AbstractChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
 
 	// ---------------------------------------------------------------------------
