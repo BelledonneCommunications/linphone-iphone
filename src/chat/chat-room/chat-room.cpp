@@ -153,6 +153,16 @@ void ChatRoomPrivate::sendDeliveryNotification (const shared_ptr<ChatMessage> &m
 		imdnHandler->notifyDelivery(message);
 }
 
+void ChatRoomPrivate::sendDeliveryNotifications () {
+	L_Q();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
+	if (linphone_im_notif_policy_get_send_imdn_delivered(policy)) {
+		auto messages = q->getCore()->getPrivate()->mainDb->findChatMessagesToBeNotifiedAsDelivered(q->getChatRoomId());
+		for (const auto message : messages)
+			imdnHandler->notifyDelivery(message);
+	}
+}
+
 bool ChatRoomPrivate::sendDisplayNotification (const shared_ptr<ChatMessage> &message) {
 	L_Q();
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());

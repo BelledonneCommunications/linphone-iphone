@@ -69,6 +69,7 @@ public:
 
 	void sendDeliveryErrorNotification (const std::shared_ptr<ChatMessage> &message, LinphoneReason reason);
 	void sendDeliveryNotification (const std::shared_ptr<ChatMessage> &message);
+	void sendDeliveryNotifications () override;
 	bool sendDisplayNotification (const std::shared_ptr<ChatMessage> &message);
 
 	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;

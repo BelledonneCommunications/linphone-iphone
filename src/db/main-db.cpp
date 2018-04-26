@@ -2148,6 +2148,43 @@ list<shared_ptr<ChatMessage>> MainDb::findChatMessages (
 	};
 }
 
+list<shared_ptr<ChatMessage>> MainDb::findChatMessagesToBeNotifiedAsDelivered (
+	const ChatRoomId &chatRoomId
+) const {
+	static const string query = Statements::get(Statements::SelectConferenceEvents) +
+		string(" AND direction = :direction AND state = :state AND delivery_notification_required <> 0");
+
+	DurationLogger durationLogger(
+		"Find chat messages to be notified as delivered: (peer=" + chatRoomId.getPeerAddress().asString() +
+		", local=" + chatRoomId.getLocalAddress().asString() + ")."
+	);
+
+	return L_DB_TRANSACTION {
+		L_D();
+
+		shared_ptr<AbstractChatRoom> chatRoom = d->findChatRoom(chatRoomId);
+		list<shared_ptr<ChatMessage>> chatMessages;
+		if (!chatRoom)
+			return chatMessages;
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+		const int &state = int(ChatMessage::State::Delivered);
+		const int &direction = int(ChatMessage::Direction::Incoming);
+		soci::rowset<soci::row> rows = (
+			d->dbSession.getBackendSession()->prepare << query, soci::use(dbChatRoomId), soci::use(direction), soci::use(state)
+		);
+		for (const auto &row : rows) {
+			shared_ptr<EventLog> event = d->selectGenericConferenceEvent(chatRoom, row);
+			if (event) {
+				L_ASSERT(event->getType() == EventLog::Type::ConferenceChatMessage);
+				chatMessages.push_back(static_pointer_cast<ConferenceChatMessageEvent>(event)->getChatMessage());
+			}
+		}
+
+		return chatMessages;
+	};
+}
+
 list<shared_ptr<EventLog>> MainDb::getHistory (const ChatRoomId &chatRoomId, int nLast, FilterMask mask) const {
 	return getHistoryRange(chatRoomId, 0, nLast, mask);
 }
