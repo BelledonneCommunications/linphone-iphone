@@ -800,15 +800,19 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 	return result;
 }
 
-LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
-	if(list) {
-		bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, ref_key);
-		if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
+LinphoneFriend *linphone_friend_list_find_friend_by_ref_key (const LinphoneFriendList *list, const char *ref_key) {
+	LinphoneFriend *result = NULL;
+	if (list) {
+		bctbx_iterator_t *it = bctbx_map_cchar_find_key(list->friends_map, ref_key);
+		bctbx_iterator_t *end = bctbx_map_cchar_end(list->friends_map);
+		if (!bctbx_iterator_cchar_equals(it, end)) {
 			bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
-			return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
+			result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 		}
+		bctbx_iterator_cchar_delete(end);
+		bctbx_iterator_cchar_delete(it);
 	}
-	return NULL;
+	return result;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_inc_subscribe (
