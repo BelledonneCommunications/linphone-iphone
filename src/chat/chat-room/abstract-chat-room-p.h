@@ -47,6 +47,8 @@ public:
 	virtual void addTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 	virtual void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) = 0;
 
+	virtual void sendDeliveryNotifications () = 0;
+
 	virtual void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
 	virtual void notifyUndecryptableChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) = 0;
 

@@ -35,6 +35,11 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	call/remote-conference-call.h
 	chat/chat-message/chat-message-p.h
 	chat/chat-message/chat-message.h
+	chat/chat-message/imdn-message.h
+	chat/chat-message/imdn-message-p.h
+	chat/chat-message/is-composing-message.h
+	chat/chat-message/notification-message.h
+	chat/chat-message/notification-message-p.h
 	chat/chat-room/abstract-chat-room-p.h
 	chat/chat-room/abstract-chat-room.h
 	chat/chat-room/basic-chat-room-p.h
@@ -160,6 +165,9 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
+	xml/imdn.h
+	xml/is-composing.h
+	xml/linphone-imdn.h
 	xml/resource-lists.h
 	xml/xml.h
 )
@@ -190,6 +198,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	call/local-conference-call.cpp
 	call/remote-conference-call.cpp
 	chat/chat-message/chat-message.cpp
+	chat/chat-message/imdn-message.cpp
+	chat/chat-message/is-composing-message.cpp
+	chat/chat-message/notification-message.cpp
 	chat/chat-room/abstract-chat-room.cpp
 	chat/chat-room/basic-chat-room.cpp
 	chat/chat-room/basic-to-client-group-chat-room.cpp
@@ -279,6 +290,9 @@ set(LINPHONE_CXX_OBJECTS_SOURCE_FILES
 	utils/utils.cpp
 	variant/variant.cpp
 	xml/conference-info.cpp
+	xml/imdn.cpp
+	xml/is-composing.cpp
+	xml/linphone-imdn.cpp
 	xml/resource-lists.cpp
 	xml/xml.cpp
 )

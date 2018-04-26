@@ -52,6 +52,7 @@ public:
 
 	std::string asString () const;
 
+	static const ContentDisposition Notification;
 	static const ContentDisposition RecipientList;
 	static const ContentDisposition RecipientListHistory;
 

@@ -179,8 +179,10 @@ void CorePrivate::insertChatRoomWithDb (const shared_ptr<AbstractChatRoom> &chat
 void CorePrivate::loadChatRooms () {
 	chatRooms.clear();
 	chatRoomsById.clear();
-	for (auto &chatRoom : mainDb->getChatRooms())
+	for (auto &chatRoom : mainDb->getChatRooms()) {
 		insertChatRoom(chatRoom);
+		chatRoom->getPrivate()->sendDeliveryNotifications();
+	}
 }
 
 void CorePrivate::replaceChatRoom (const shared_ptr<AbstractChatRoom> &replacedChatRoom, const shared_ptr<AbstractChatRoom> &newChatRoom) {

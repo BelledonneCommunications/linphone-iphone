@@ -50,6 +50,7 @@ class LINPHONE_PUBLIC ChatMessage : public Object, public CoreAccessor {
 	friend class CpimChatMessageModifier;
 	friend class FileTransferChatMessageModifier;
 	friend class Imdn;
+	friend class ImdnMessagePrivate;
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class RealTimeTextChatRoomPrivate;
@@ -61,13 +62,11 @@ public:
 	L_DECLARE_ENUM(State, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 	L_DECLARE_ENUM(Direction, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 
-	~ChatMessage ();
+	virtual ~ChatMessage ();
 
 	// ----- TODO: Remove me.
 	void cancelFileTransfer ();
 	int putCharacter (uint32_t character);
-	void sendDeliveryNotification (LinphoneReason reason);
-	void sendDisplayNotification ();
 	void setIsSecured (bool isSecured);
 	// ----- TODO: Remove me.
 
@@ -93,7 +92,7 @@ public:
 	bool isReadOnly () const;
 
 	bool getToBeStored () const;
-	void setToBeStored (bool value);
+	virtual void setToBeStored (bool value);
 
 	std::list<ParticipantImdnState> getParticipantsThatHaveDisplayed () const;
 	std::list<ParticipantImdnState> getParticipantsThatHaveReceived () const;
@@ -113,6 +112,9 @@ public:
 
 	bool downloadFile (FileTransferContent *content);
 	bool isFileTransferInProgress();
+
+protected:
+	explicit ChatMessage (ChatMessagePrivate &p);
 
 private:
 	ChatMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);

@@ -130,6 +130,10 @@ public:
 		const std::string &imdnMessageId
 	) const;
 
+	std::list<std::shared_ptr<ChatMessage>> findChatMessagesToBeNotifiedAsDelivered (
+		const ChatRoomId &chatRoomId
+	) const;
+
 	// ---------------------------------------------------------------------------
 	// Conference events.
 	// ---------------------------------------------------------------------------

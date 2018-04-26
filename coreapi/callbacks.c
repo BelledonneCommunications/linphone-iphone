@@ -604,6 +604,12 @@ static LinphoneChatMessageState chatStatusSal2Linphone(SalMessageDeliveryStatus 
 }
 
 static void message_delivery_update(SalOp *op, SalMessageDeliveryStatus status) {
+	auto lc = reinterpret_cast<LinphoneCore *>(op->get_sal()->get_user_pointer());
+	if (linphone_core_get_global_state(lc) != LinphoneGlobalOn) {
+		static_cast<SalReferOp *>(op)->reply(SalReasonDeclined);
+		return;
+	}
+
 	LinphonePrivate::ChatMessage *msg = reinterpret_cast<LinphonePrivate::ChatMessage *>(op->get_user_pointer());
 	if (!msg)
 		return; // Do not handle delivery status for isComposing messages.

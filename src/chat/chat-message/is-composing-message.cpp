@@ -1,5 +1,5 @@
 /*
- * core-listener.h
+ * is-composing-message.cpp
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,24 +17,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_CORE_LISTENER_H_
-#define _L_CORE_LISTENER_H_
-
-#include "linphone/types.h"
+#include "chat/chat-message/notification-message-p.h"
+#include "chat/chat-message/is-composing-message.h"
+#include "sip-tools/sip-headers.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class CoreListener {
-public:
-	virtual ~CoreListener () = default;
+// -----------------------------------------------------------------------------
 
-	virtual void onGlobalStateChanged (LinphoneGlobalState state) {}
-	virtual void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {}
-	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {}
-};
+IsComposingMessage::IsComposingMessage (
+	const shared_ptr<AbstractChatRoom> &chatRoom,
+	IsComposing &isComposingHandler,
+	bool isComposing
+) : NotificationMessage(*new NotificationMessagePrivate(chatRoom, ChatMessage::Direction::Outgoing)) {
+	L_D();
+	Content *content = new Content();
+	content->setContentType(ContentType::ImIsComposing);
+	content->setBody(isComposingHandler.createXml(isComposing));
+	addContent(content);
+	d->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
+	d->addSalCustomHeader("Expires", "0");
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _L_CORE_LISTENER_H_

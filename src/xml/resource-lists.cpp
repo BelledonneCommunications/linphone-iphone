@@ -36,9 +36,10 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -54,7 +55,7 @@ namespace LinphonePrivate
     namespace ResourceLists
     {
       // ListType
-      //
+      // 
 
       const ListType::DisplayNameOptional& ListType::
       getDisplayName () const
@@ -238,7 +239,7 @@ namespace LinphonePrivate
 
 
       // EntryType
-      //
+      // 
 
       const EntryType::DisplayNameOptional& EntryType::
       getDisplayName () const
@@ -350,7 +351,7 @@ namespace LinphonePrivate
 
 
       // EntryRefType
-      //
+      // 
 
       const EntryRefType::DisplayNameOptional& EntryRefType::
       getDisplayName () const
@@ -462,7 +463,7 @@ namespace LinphonePrivate
 
 
       // ExternalType
-      //
+      // 
 
       const ExternalType::DisplayNameOptional& ExternalType::
       getDisplayName () const
@@ -574,7 +575,7 @@ namespace LinphonePrivate
 
 
       // DisplayNameType
-      //
+      // 
 
       const DisplayNameType::LangOptional& DisplayNameType::
       getLang () const
@@ -608,15 +609,15 @@ namespace LinphonePrivate
 
 
       // List
-      //
+      // 
 
 
       // DisplayName
-      //
+      // 
 
 
       // ResourceLists
-      //
+      // 
 
       const ResourceLists::ListSequence& ResourceLists::
       getList () const
@@ -642,6 +643,15 @@ namespace LinphonePrivate
 #include <xsd/cxx/xml/dom/wildcard-source.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
+
+#include <xsd/cxx/tree/type-factory-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_factory_plate< 0, char >
+  type_factory_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -1558,6 +1568,15 @@ namespace LinphonePrivate
 
 #include <ostream>
 
+#include <xsd/cxx/tree/std-ostream-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::std_ostream_plate< 0, char >
+  std_ostream_plate_init;
+}
+
 namespace LinphonePrivate
 {
   namespace Xsd
@@ -1975,6 +1994,15 @@ namespace LinphonePrivate
 #include <ostream>
 #include <xsd/cxx/tree/error-handler.hxx>
 #include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+#include <xsd/cxx/tree/type-serializer-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_serializer_plate< 0, char >
+  type_serializer_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -2483,8 +2511,12 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
 //
 // End epilogue.
+

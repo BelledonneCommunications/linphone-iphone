@@ -1,5 +1,5 @@
 /*
- * message-op.h
+ * is-composing-message.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,31 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_SAL_MESSAGE_OP_H_
-#define _L_SAL_MESSAGE_OP_H_
+#ifndef _L_IS_COMPOSING_MESSAGE_H_
+#define _L_IS_COMPOSING_MESSAGE_H_
 
-#include "sal/op.h"
-#include "sal/message-op-interface.h"
+#include "chat/chat-message/notification-message.h"
+#include "chat/notification/is-composing.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalMessageOp: public SalOp, public SalMessageOpInterface {
+class LINPHONE_PUBLIC IsComposingMessage : public NotificationMessage {
 public:
-	SalMessageOp(Sal *sal): SalOp(sal) {}
+	friend class ChatRoomPrivate;
 
-	int sendMessage (const Content &content) override;
-	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
+	L_OVERRIDE_SHARED_FROM_THIS(IsComposingMessage);
+
+	virtual ~IsComposingMessage () = default;
 
 private:
-	virtual void fill_cbs() override;
-	void process_error();
+	IsComposingMessage (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		IsComposing &isComposingHandler,
+		bool isComposing
+	);
 
-	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	static void process_response_event_cb(void *op_base, const belle_sip_response_event_t *event);
-	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
-	static void process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
+	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DISABLE_COPY(IsComposingMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_SAL_MESSAGE_OP_H_
+#endif // ifndef _L_IS_COMPOSING_MESSAGE_H_

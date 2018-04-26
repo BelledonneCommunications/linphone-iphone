@@ -1,5 +1,5 @@
 /*
- * core-listener.h
+ * notification-message.cpp
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,24 +17,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_CORE_LISTENER_H_
-#define _L_CORE_LISTENER_H_
-
-#include "linphone/types.h"
+#include "chat/chat-message/notification-message-p.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-class CoreListener {
-public:
-	virtual ~CoreListener () = default;
+// -----------------------------------------------------------------------------
 
-	virtual void onGlobalStateChanged (LinphoneGlobalState state) {}
-	virtual void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {}
-	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {}
-};
+NotificationMessage::NotificationMessage (const shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction) :
+	NotificationMessage(*new NotificationMessagePrivate(chatRoom, direction)) {
+}
+
+NotificationMessage::NotificationMessage (NotificationMessagePrivate &p) : ChatMessage(p) {
+	L_D();
+	d->displayNotificationRequired = false;
+	d->negativeDeliveryNotificationRequired = false;
+	d->positiveDeliveryNotificationRequired = false;
+	d->toBeStored = false;
+	d->contentEncoding = "deflate";
+}
+
+void NotificationMessage::setToBeStored (bool value) {
+}
 
 LINPHONE_END_NAMESPACE
-
-#endif // ifndef _L_CORE_LISTENER_H_

@@ -24,6 +24,7 @@
 #include "chat/chat-room/chat-room-p.h"
 #include "chat/notification/is-composing.h"
 #include "logger/logger.h"
+#include "xml/is-composing.h"
 
 
 // =============================================================================
@@ -42,10 +43,6 @@ struct IsRemoteComposingData {
 
 // -----------------------------------------------------------------------------
 
-const string IsComposing::isComposingPrefix = "/xsi:isComposing";
-
-// -----------------------------------------------------------------------------
-
 IsComposing::IsComposing (LinphoneCore *core, IsComposingListener *listener)
 	: core(core), listener(listener) {}
 
@@ -55,66 +52,34 @@ IsComposing::~IsComposing () {
 
 // -----------------------------------------------------------------------------
 
-string IsComposing::marshal (bool isComposing) {
-	string content;
+string IsComposing::createXml (bool isComposing) {
+	Xsd::IsComposing::IsComposing node(isComposing ? "active" : "idle");
+	if (isComposing)
+		node.setRefresh(static_cast<unsigned long long>(lp_config_get_int(core->config, "sip", "composing_refresh_timeout", defaultRefreshTimeout)));
 
-	xmlBufferPtr buf = xmlBufferCreate();
-	if (!buf) {
-		lError() << "Error creating the XML buffer";
-		return content;
-	}
-	xmlTextWriterPtr writer = xmlNewTextWriterMemory(buf, 0);
-	if (!writer) {
-		lError() << "Error creating the XML writer";
-		return content;
-	}
-
-	int err = xmlTextWriterStartDocument(writer, "1.0", "UTF-8", nullptr);
-	if (err >= 0) {
-		err = xmlTextWriterStartElementNS(writer, nullptr, (const xmlChar *)"isComposing",
-			(const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xmlns", (const xmlChar *)"xsi", nullptr,
-			(const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteAttributeNS(writer, (const xmlChar *)"xsi", (const xmlChar *)"schemaLocation", nullptr,
-			(const xmlChar *)"urn:ietf:params:xml:ns:im-composing iscomposing.xsd");
-	}
-	if (err >= 0) {
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"state",
-			isComposing ? (const xmlChar *)"active" : (const xmlChar *)"idle");
-	}
-	if ((err >= 0) && isComposing) {
-		int refreshTimeout = lp_config_get_int(core->config, "sip", "composing_refresh_timeout", defaultRefreshTimeout);
-		err = xmlTextWriterWriteElement(writer, (const xmlChar *)"refresh", (const xmlChar *)Utils::toString(refreshTimeout).c_str());
-	}
-	if (err >= 0) {
-		/* Close the "isComposing" element. */
-		err = xmlTextWriterEndElement(writer);
-	}
-	if (err >= 0) {
-		err = xmlTextWriterEndDocument(writer);
-	}
-	if (err > 0) {
-		/* xmlTextWriterEndDocument returns the size of the content. */
-		content = (char *)buf->content;
-	}
-	xmlFreeTextWriter(writer);
-	xmlBufferFree(buf);
-	return content;
+	stringstream ss;
+	Xsd::XmlSchema::NamespaceInfomap map;
+	map[""].name = "urn:ietf:params:xml:ns:im-iscomposing";
+	Xsd::IsComposing::serializeIsComposing(ss, node, map);
+	return ss.str();
 }
 
 void IsComposing::parse (const Address &remoteAddr, const string &text) {
-	xmlparsing_context_t *xmlCtx = linphone_xmlparsing_context_new();
-	xmlSetGenericErrorFunc(xmlCtx, linphone_xmlparsing_genericxml_error);
-	xmlCtx->doc = xmlReadDoc((const unsigned char *)text.c_str(), 0, nullptr, 0);
-	if (xmlCtx->doc)
-		parse(xmlCtx, remoteAddr);
-	else
-		lWarning() << "Wrongly formatted presence XML: " << xmlCtx->errorBuffer;
-	linphone_xmlparsing_context_destroy(xmlCtx);
+	istringstream data(text);
+	unique_ptr<Xsd::IsComposing::IsComposing> node(Xsd::IsComposing::parseIsComposing(data, Xsd::XmlSchema::Flags::dont_validate));
+	if (!node)
+		return;
+
+	if (node->getState() == "active") {
+		unsigned long long refresh = 0;
+		if (node->getRefresh().present())
+			refresh = node->getRefresh().get();
+		startRemoteRefreshTimer(remoteAddr.asStringUriOnly(), refresh);
+		listener->onIsRemoteComposingStateChanged(remoteAddr, true);
+	} else if (node->getState() == "idle") {
+		stopRemoteRefreshTimer(remoteAddr.asStringUriOnly());
+		listener->onIsRemoteComposingStateChanged(remoteAddr, false);
+	}
 }
 
 void IsComposing::startIdleTimer () {
@@ -186,47 +151,6 @@ unsigned int IsComposing::getRemoteRefreshTimerDuration () {
 	return remoteRefreshTimerDuration < 0 ? 0 : static_cast<unsigned int>(remoteRefreshTimerDuration);
 }
 
-void IsComposing::parse (xmlparsing_context_t *xmlCtx, const Address &remoteAddr) {
-	char xpathStr[MAX_XPATH_LENGTH];
-	char *stateStr = nullptr;
-	char *refreshStr = nullptr;
-	int i;
-	bool state = false;
-
-	if (linphone_create_xml_xpath_context(xmlCtx) < 0)
-		return;
-
-	xmlXPathRegisterNs(xmlCtx->xpath_ctx, (const xmlChar *)"xsi", (const xmlChar *)"urn:ietf:params:xml:ns:im-iscomposing");
-	xmlXPathObjectPtr isComposingObject = linphone_get_xml_xpath_object_for_node_list(xmlCtx, isComposingPrefix.c_str());
-	if (isComposingObject) {
-		if (isComposingObject->nodesetval) {
-			for (i = 1; i <= isComposingObject->nodesetval->nodeNr; i++) {
-				snprintf(xpathStr, sizeof(xpathStr), "%s[%i]/xsi:state", isComposingPrefix.c_str(), i);
-				stateStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-				if (!stateStr)
-					continue;
-				snprintf(xpathStr, sizeof(xpathStr), "%s[%i]/xsi:refresh", isComposingPrefix.c_str(), i);
-				refreshStr = linphone_get_xml_text_content(xmlCtx, xpathStr);
-			}
-		}
-		xmlXPathFreeObject(isComposingObject);
-	}
-
-	if (stateStr) {
-		if (strcmp(stateStr, "active") == 0) {
-			state = true;
-			startRemoteRefreshTimer(remoteAddr.asStringUriOnly(), refreshStr);
-		} else {
-			stopRemoteRefreshTimer(remoteAddr.asStringUriOnly());
-		}
-
-		listener->onIsRemoteComposingStateChanged(remoteAddr, state);
-		linphone_free_xml_text_content(stateStr);
-	}
-	if (refreshStr)
-		linphone_free_xml_text_content(refreshStr);
-}
-
 int IsComposing::idleTimerExpired () {
 	stopRefreshTimer();
 	stopIdleTimer();
@@ -245,10 +169,10 @@ int IsComposing::remoteRefreshTimerExpired (const string &uri) {
 	return BELLE_SIP_STOP;
 }
 
-void IsComposing::startRemoteRefreshTimer (const string &uri, const char *refreshStr) {
+void IsComposing::startRemoteRefreshTimer (const string &uri, unsigned long long refresh) {
 	unsigned int duration = getRemoteRefreshTimerDuration();
-	if (refreshStr)
-		duration = static_cast<unsigned int>(Utils::stoi(refreshStr));
+	if (refresh != 0)
+		duration = static_cast<unsigned int>(refresh);
 	auto it = remoteRefreshTimers.find(uri);
 	if (it == remoteRefreshTimers.end()) {
 		IsRemoteComposingData *data = new IsRemoteComposingData(this, uri);

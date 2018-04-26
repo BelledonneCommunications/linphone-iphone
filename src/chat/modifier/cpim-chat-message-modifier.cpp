@@ -17,11 +17,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "linphone/utils/utils.h"
+
 #include "address/address.h"
 #include "chat/chat-message/chat-message-p.h"
 #include "chat/cpim/cpim.h"
-#include "content/content-type.h"
 #include "content/content.h"
+#include "content/content-disposition.h"
+#include "content/content-type.h"
 #include "logger/logger.h"
 
 #include "cpim-chat-message-modifier.h"
@@ -41,12 +44,36 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 	Cpim::ToHeader cpimToHeader;
 	cpimToHeader.setValue(cpimAddressAsString(message->getToAddress()));
 	cpimMessage.addMessageHeader(cpimToHeader);
-	char token[13];
-	belle_sip_random_token(token, sizeof(token));
-	Cpim::MessageIdHeader cpimMessageIdHeader;
-	cpimMessageIdHeader.setValue(token);
-	cpimMessage.addMessageHeader(cpimMessageIdHeader);
-	message->getPrivate()->setImdnMessageId(token);
+
+	if (message->getPrivate()->getPositiveDeliveryNotificationRequired()
+		|| message->getPrivate()->getNegativeDeliveryNotificationRequired()
+		|| message->getPrivate()->getDisplayNotificationRequired()
+	) {
+		const string imdnNamespace = "imdn";
+		Cpim::NsHeader cpimNsHeader;
+		cpimNsHeader.setValue(imdnNamespace + " <urn:ietf:params:imdn>");
+		cpimMessage.addMessageHeader(cpimNsHeader);
+
+		char token[13];
+		belle_sip_random_token(token, sizeof(token));
+		Cpim::GenericHeader cpimMessageIdHeader;
+		cpimMessageIdHeader.setName("Message-ID"); // TODO: Replace by imdnNamespace + ".Message-ID");
+		cpimMessageIdHeader.setValue(token);
+		cpimMessage.addMessageHeader(cpimMessageIdHeader);
+		message->getPrivate()->setImdnMessageId(token);
+
+		Cpim::GenericHeader dispositionNotificationHeader;
+		dispositionNotificationHeader.setName(imdnNamespace + ".Disposition-Notification");
+		vector<string> dispositionNotificationValues;
+		if (message->getPrivate()->getPositiveDeliveryNotificationRequired())
+			dispositionNotificationValues.emplace_back("positive-delivery");
+		if (message->getPrivate()->getNegativeDeliveryNotificationRequired())
+			dispositionNotificationValues.emplace_back("negative-delivery");
+		if (message->getPrivate()->getDisplayNotificationRequired())
+			dispositionNotificationValues.emplace_back("display");
+		dispositionNotificationHeader.setValue(Utils::join(dispositionNotificationValues, ", "));
+		cpimMessage.addMessageHeader(dispositionNotificationHeader);
+	}
 
 	const Content *content;
 	if (!message->getInternalContent().isEmpty()) {
@@ -59,12 +86,21 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		content = message->getContents().front();
 	}
 
+	const string contentBody = content->getBodyAsString();
+	if (content->getContentDisposition().isValid()) {
+		Cpim::GenericHeader contentDispositionHeader;
+		contentDispositionHeader.setName("Content-Disposition");
+		contentDispositionHeader.setValue(content->getContentDisposition().asString());
+		cpimMessage.addContentHeader(contentDispositionHeader);
+	}
 	Cpim::GenericHeader contentTypeHeader;
 	contentTypeHeader.setName("Content-Type");
 	contentTypeHeader.setValue(content->getContentType().asString());
 	cpimMessage.addContentHeader(contentTypeHeader);
-
-	const string contentBody = content->getBodyAsString();
+	Cpim::GenericHeader contentLengthHeader;
+	contentLengthHeader.setName("Content-Length");
+	contentLengthHeader.setValue(to_string(contentBody.size()));
+	cpimMessage.addContentHeader(contentLengthHeader);
 	cpimMessage.setContent(contentBody);
 
 	Content newContent;
@@ -100,10 +136,11 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	Cpim::Message::HeaderList l = cpimMessage->getContentHeaders();
 	if (l) {
 		for (const auto &header : *l.get()) {
-			if (header->getName() == "Content-Type") {
+			if (header->getName() == "Content-Disposition") {
+				newContent.setContentDisposition(ContentDisposition(header->getValue()));
+			} else if (header->getName() == "Content-Type") {
 				contentTypeFound = true;
 				newContent.setContentType(ContentType(header->getValue()));
-				break;
 			}
 		}
 	}
@@ -114,17 +151,47 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	}
 	newContent.setBody(cpimMessage->getContent());
 
+	message->getPrivate()->setPositiveDeliveryNotificationRequired(false);
+	message->getPrivate()->setNegativeDeliveryNotificationRequired(false);
+	message->getPrivate()->setDisplayNotificationRequired(false);
+
 	Address cpimFromAddress;
 	Address cpimToAddress;
 	l = cpimMessage->getMessageHeaders();
 	if (l) {
+		string imdnNamespace = "";
+		for (const auto &header : *l.get()) {
+			if (header->getName() == "NS") {
+				string val = header->getValue();
+				size_t startPos = 0;
+				startPos = val.find("<", startPos);
+				if (startPos == string::npos)
+					break;
+				size_t endPos = 0;
+				endPos = val.find(">", startPos);
+				if (endPos == string::npos)
+					break;
+				if (val.substr(startPos, endPos) == "<urn:ietf:params:imdn>")
+					imdnNamespace = Utils::trim(val.substr(0, startPos));
+			}
+		}
 		for (const auto &header : *l.get()) {
 			if (header->getName() == "From")
 				cpimFromAddress = Address(header->getValue());
 			else if (header->getName() == "To")
 				cpimToAddress = Address(header->getValue());
-			else if (header->getName() == "Message-ID")
+			else if ((header->getName() == "Message-ID") || (header->getName() == (imdnNamespace + ".Message-ID")))
 				message->getPrivate()->setImdnMessageId(header->getValue());
+			else if ((header->getName() == (imdnNamespace + ".Disposition-Notification"))) {
+				vector<string> values = Utils::split(header->getValue(), ", ");
+				for (const auto &value : values)
+					if (value == "positive-delivery")
+						message->getPrivate()->setPositiveDeliveryNotificationRequired(true);
+					else if (value == "negative-delivery")
+						message->getPrivate()->setNegativeDeliveryNotificationRequired(true);
+					else if (value == "display")
+						message->getPrivate()->setDisplayNotificationRequired(true);
+			}
 		}
 	}
 

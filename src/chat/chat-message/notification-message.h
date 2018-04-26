@@ -1,5 +1,5 @@
 /*
- * message-op.h
+ * notification-message.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,31 +17,37 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_SAL_MESSAGE_OP_H_
-#define _L_SAL_MESSAGE_OP_H_
+#ifndef _L_NOTIFICATION_MESSAGE_H_
+#define _L_NOTIFICATION_MESSAGE_H_
 
-#include "sal/op.h"
-#include "sal/message-op-interface.h"
+#include "chat/chat-message/chat-message.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalMessageOp: public SalOp, public SalMessageOpInterface {
-public:
-	SalMessageOp(Sal *sal): SalOp(sal) {}
+class NotificationMessagePrivate;
 
-	int sendMessage (const Content &content) override;
-	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
+class LINPHONE_PUBLIC NotificationMessage : public ChatMessage {
+public:
+	friend class ChatRoomPrivate;
+
+	L_OVERRIDE_SHARED_FROM_THIS(NotificationMessage);
+
+	virtual ~NotificationMessage () = default;
+
+	void setToBeStored (bool value) override;
+
+protected:
+	explicit NotificationMessage (NotificationMessagePrivate &p);
 
 private:
-	virtual void fill_cbs() override;
-	void process_error();
+	NotificationMessage (const std::shared_ptr<AbstractChatRoom> &chatRoom, ChatMessage::Direction direction);
 
-	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	static void process_response_event_cb(void *op_base, const belle_sip_response_event_t *event);
-	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
-	static void process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
+	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DISABLE_COPY(NotificationMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_SAL_MESSAGE_OP_H_
+#endif // ifndef _L_NOTIFICATION_MESSAGE_H_
