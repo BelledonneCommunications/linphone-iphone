@@ -35,7 +35,7 @@ public class LinphoneAccountCreatorImpl implements LinphoneAccountCreator {
 
 	private native void unref(long ptr);
 	protected void finalize() {
-		unref(nativePtr);
+		if (nativePtr!=0) unref(nativePtr);
 	}
 
 	private native void setListener(long ptr, LinphoneAccountCreatorListener listener);
