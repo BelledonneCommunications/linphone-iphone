@@ -116,6 +116,14 @@ static void parse_rfc_example () {
 
 	string content = message->getContent();
 	BC_ASSERT_STRING_EQUAL(content.c_str(), body.c_str());
+
+	Cpim::Message::HeaderList list = message->getMessageHeaders();
+	if (!BC_ASSERT_PTR_NOT_NULL(list)) return;
+	BC_ASSERT_EQUAL(list->size(), 7, int, "%d");
+
+	list = message->getMessageHeaders("MyFeatures");
+	if (!BC_ASSERT_PTR_NOT_NULL(list)) return;
+	BC_ASSERT_EQUAL(list->size(), 2, int, "%d");
 }
 
 static void parse_message_with_generic_header_parameters () {

@@ -34,15 +34,17 @@ namespace Cpim {
 	public:
 		Message ();
 
-		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
+		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header>>> HeaderList;
 
-		HeaderList getMessageHeaders () const;
-		void addMessageHeader (const Header &messageHeader);
-		void removeMessageHeader (const Header &messageHeader);
+		HeaderList getMessageHeaders (const std::string &ns = "") const;
+		void addMessageHeader (const Header &messageHeader, const std::string &ns = "");
+		void removeMessageHeader (const Header &messageHeader, const std::string &ns = "");
+		std::shared_ptr<const Cpim::Header> getMessageHeader (const std::string &name, const std::string &ns = "");
 		
 		HeaderList getContentHeaders () const;
 		void addContentHeader (const Header &contentHeader);
 		void removeContentHeader (const Header &contentHeader);
+		std::shared_ptr<const Cpim::Header> getContentHeader (const std::string &name);
 
 		std::string getContent () const;
 		bool setContent (const std::string &content);

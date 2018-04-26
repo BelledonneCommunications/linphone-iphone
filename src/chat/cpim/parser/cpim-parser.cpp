@@ -18,7 +18,6 @@
  */
 
 #include <set>
-#include <unordered_map>
 
 #include <belr/abnf.h>
 #include <belr/grammarbuilder.h>
@@ -542,11 +541,19 @@ namespace Cpim {
 
 			// Add message headers.
 			for (const auto &headerNode : mMessageHeaders) {
+				string ns = "";
+
+				string::size_type n = headerNode->getName().find(".");
+				if (n != string::npos) {
+					ns = headerNode->getName().substr(0, n);
+					headerNode->setName(headerNode->getName().substr(n + 1));
+				}
+
 				const shared_ptr<const Header> header = headerNode->createHeader();
 				if (!header)
 					return nullptr;
 
-				message->addMessageHeader(*header);
+				message->addMessageHeader(*header, ns);
 			}
 
 			// Add content headers.
