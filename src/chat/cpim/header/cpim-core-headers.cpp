@@ -75,41 +75,14 @@ void Cpim::ContactHeader::setFormalName (const string &formalName) {
 
 string Cpim::ContactHeader::getValue () const {
 	L_D();
-	return "\"" + d->formalName + "\"" + "<" + d->uri + ">";
+	string result;
+	if (!d->formalName.empty())
+		result += "\"" + d->formalName + "\"";
+	result += "<" + d->uri + ">";
+	return result;
 }
 
 string Cpim::ContactHeader::asString () const {
-	return getName() + ": " + getValue() + "\r\n";
-}
-
-// -----------------------------------------------------------------------------
-
-class Cpim::MessageIdHeaderPrivate : public HeaderPrivate {
-public:
-	string token;
-};
-
-Cpim::MessageIdHeader::MessageIdHeader () : Header(*new MessageIdHeaderPrivate) {}
-
-Cpim::MessageIdHeader::MessageIdHeader (const string &token) : MessageIdHeader() {
-	setToken(token);
-}
-
-string Cpim::MessageIdHeader::getToken () const {
-	L_D();
-	return d->token;
-}
-
-void Cpim::MessageIdHeader::setToken (string token) {
-	L_D();
-	d->token = token;
-}
-
-string Cpim::MessageIdHeader::getValue () const {
-	return getToken();
-}
-
-string Cpim::MessageIdHeader::asString () const {
 	return getName() + ": " + getValue() + "\r\n";
 }
 

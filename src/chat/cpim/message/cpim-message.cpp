@@ -77,7 +77,7 @@ void Cpim::Message::removeMessageHeader (const Header &messageHeader, const stri
 			});
 }
 
-shared_ptr<const Cpim::Header> Cpim::Message::getMessageHeader (const string &name, const string &ns) {
+shared_ptr<const Cpim::Header> Cpim::Message::getMessageHeader (const string &name, const string &ns) const {
 	L_D();
 
 	if (d->messageHeaders.find(ns) == d->messageHeaders.end())
@@ -111,7 +111,7 @@ void Cpim::Message::removeContentHeader (const Header &contentHeader) {
 		});
 }
 
-shared_ptr<const Cpim::Header> Cpim::Message::getContentHeader(const string &name) {
+shared_ptr<const Cpim::Header> Cpim::Message::getContentHeader(const string &name) const {
 	L_D();
 
 	for (const auto &contentHeader : *d->contentHeaders) {

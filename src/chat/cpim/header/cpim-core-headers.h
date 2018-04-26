@@ -78,34 +78,6 @@ namespace Cpim {
 	MAKE_CONTACT_HEADER(Cc, "cc");
 
 	// -------------------------------------------------------------------------
-	// Specific MessageId declaration.
-	// -------------------------------------------------------------------------
-
-	class MessageIdHeaderPrivate;
-
-	class LINPHONE_PUBLIC MessageIdHeader : public Header {
-	public:
-		MessageIdHeader ();
-
-		MessageIdHeader (const std::string &token);
-
-		inline std::string getName() const override {
-			return "Message-ID";
-		}
-
-		std::string getToken () const;
-		void setToken (std::string token);
-
-		std::string getValue () const override;
-
-		std::string asString () const override;
-
-	private:
-		L_DECLARE_PRIVATE(MessageIdHeader);
-		L_DISABLE_COPY(MessageIdHeader);
-	};
-
-	// -------------------------------------------------------------------------
 	// Specific DateTime declaration.
 	// -------------------------------------------------------------------------
 

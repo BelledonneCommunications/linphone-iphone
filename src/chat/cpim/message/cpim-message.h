@@ -39,12 +39,12 @@ namespace Cpim {
 		HeaderList getMessageHeaders (const std::string &ns = "") const;
 		void addMessageHeader (const Header &messageHeader, const std::string &ns = "");
 		void removeMessageHeader (const Header &messageHeader, const std::string &ns = "");
-		std::shared_ptr<const Cpim::Header> getMessageHeader (const std::string &name, const std::string &ns = "");
-		
+		std::shared_ptr<const Cpim::Header> getMessageHeader (const std::string &name, const std::string &ns = "") const;
+
 		HeaderList getContentHeaders () const;
 		void addContentHeader (const Header &contentHeader);
 		void removeContentHeader (const Header &contentHeader);
-		std::shared_ptr<const Cpim::Header> getContentHeader (const std::string &name);
+		std::shared_ptr<const Cpim::Header> getContentHeader (const std::string &name) const;
 
 		std::string getContent () const;
 		bool setContent (const std::string &content);
