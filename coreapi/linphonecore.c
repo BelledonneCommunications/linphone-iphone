@@ -850,7 +850,7 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 							cur = cur->xmlChildrenNode; /* now loop on the content of the file-info node */
 							while (cur != NULL) {
 								if (!xmlStrcmp(cur->name, (const xmlChar *)"data")) {
-									file_url = 	xmlGetProp(cur, (const xmlChar *)"url");
+									file_url = xmlGetProp(cur, (const xmlChar *)"url");
 								}
 								cur=cur->next;
 							}
@@ -864,7 +864,9 @@ static void process_response_from_post_file_log_collection(void *data, const bel
 			}
 			if (file_url != NULL) {
 				linphone_core_notify_log_collection_upload_state_changed(core, LinphoneCoreLogCollectionUploadStateDelivered, (const char *)file_url);
+				xmlFree(file_url);
 			}
+			xmlFreeDoc(xmlMessageBody);
 			clean_log_collection_upload_context(core);
 		} else {
 			ms_error("Unexpected HTTP response code %i during log collection upload to %s", code, linphone_core_get_log_collection_upload_server_url(core));
@@ -6495,7 +6497,7 @@ void linphone_core_set_zrtp_secrets_file(LinphoneCore *lc, const char* file){
 
 			/* clean up */
 			bctbx_free(bkpFile);
-			xmlFree(cacheXml);
+			xmlFreeDoc(cacheXml);
 		}
 		bctbx_free(tmpFile);
 	} else {
