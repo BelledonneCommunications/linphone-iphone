@@ -126,7 +126,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	const shared_ptr<const Cpim::Message> cpimMessage = Cpim::Message::createFromString(contentBody);
 	if (!cpimMessage || !cpimMessage->getMessageHeader("From") || !cpimMessage->getMessageHeader("To")) {
 		lError() << "[CPIM] Message is invalid: " << contentBody;
-		errorCode = 500;
+		errorCode = 488; // Not Acceptable
 		return ChatMessageModifier::Result::Error;
 	}
 
@@ -134,7 +134,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::decode (const shared_ptr<Ch
 	auto contentTypeHeader = cpimMessage->getContentHeader("Content-Type");
 	if (!contentTypeHeader) {
 		lError() << "[CPIM] No Content-type for the content of the message";
-		errorCode = 500;
+		errorCode = 488; // Not Acceptable
 		return ChatMessageModifier::Result::Error;
 	}
 	newContent.setContentType(ContentType(contentTypeHeader->getValue()));
