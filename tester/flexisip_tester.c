@@ -259,6 +259,46 @@ static void message_forking_with_unreachable_recipients_with_gruu(void) {
 	bctbx_list_free(lcs);
 }
 
+static void text_message_expires(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new4("marie_rc",TRUE,NULL,"message-expires=60",3);
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	/* Wait for 5 seconds for surely cut marie of network */
+	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
+
+	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc,marie->identity), "hello");
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	
+	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void text_call_expires(void) {
+	LinphoneCoreManager* marie = linphone_core_manager_new4("marie_rc",TRUE,NULL,"message-expires=60",3);
+	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
+	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
+	lcs=bctbx_list_append(lcs,marie->lc);
+	
+	linphone_core_set_network_reachable(marie->lc, FALSE);
+	/* Wait for 5 seconds for surely cut marie of network */
+	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
+	
+	linphone_core_invite_address(pauline->lc,marie->identity);
+	linphone_core_set_network_reachable(marie->lc, TRUE);
+	
+	/*pauline shouldn't hear ringback*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,5000));
+	/*all devices from Marie shouldn't  be ringing*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,5000));
+	
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+	bctbx_list_free(lcs);
+}
+
 static void call_forking(void){
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -1774,6 +1814,8 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Message forking with unreachable recipients", message_forking_with_unreachable_recipients),
 	TEST_NO_TAG("Message forking with all recipients unreachable", message_forking_with_all_recipients_unreachable),
 	TEST_NO_TAG("Message forking with unreachable recipients with gruu", message_forking_with_unreachable_recipients_with_gruu),
+	TEST_NO_TAG("Message expires", text_message_expires),
+	TEST_NO_TAG("Call expires", text_call_expires),
 	TEST_NO_TAG("Call forking", call_forking),
 	TEST_NO_TAG("Call forking cancelled", call_forking_cancelled),
 	TEST_NO_TAG("Call forking declined globaly", call_forking_declined_globaly),

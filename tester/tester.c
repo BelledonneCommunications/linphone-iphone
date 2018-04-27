@@ -432,6 +432,17 @@ LinphoneCoreManager* linphone_core_manager_create(const char* rc_file) {
 	return linphone_core_manager_create2(rc_file, NULL);
 }
 
+LinphoneCoreManager* linphone_core_manager_new4(const char* rc_file, int check_for_proxies, const char* phone_alias, const char* contact_params, int expires) {
+	/* This function is for testing purposes. */
+	LinphoneCoreManager *manager = ms_new0(LinphoneCoreManager, 1);
+	
+	linphone_core_manager_init(manager, rc_file, phone_alias);
+	linphone_proxy_config_set_contact_parameters(linphone_core_get_default_proxy_config(manager->lc), contact_params);
+	linphone_proxy_config_set_expires(linphone_core_get_default_proxy_config(manager->lc), expires);
+	linphone_core_manager_start(manager, check_for_proxies);
+	return manager;
+}
+
 LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, bool_t check_for_proxies, const char* phone_alias) {
 	LinphoneCoreManager *manager = linphone_core_manager_create2(rc_file, phone_alias);
 	linphone_core_manager_start(manager, check_for_proxies);
