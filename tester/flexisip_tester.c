@@ -265,13 +265,13 @@ static void text_message_expires(void) {
 
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	/* Wait for 5 seconds for surely cut marie of network */
-	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 5000);
 
 	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc,marie->identity), "hello");
 	linphone_core_set_network_reachable(marie->lc, TRUE);
-	
+
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -281,19 +281,19 @@ static void text_call_expires(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	bctbx_list_t* lcs=bctbx_list_append(NULL,pauline->lc);
 	lcs=bctbx_list_append(lcs,marie->lc);
-	
+
 	linphone_core_set_network_reachable(marie->lc, FALSE);
 	/* Wait for 5 seconds for surely cut marie of network */
-	wait_for_until(pauline->lc, marie->lc, NULL, NULL, 5000);
-	
+	wait_for_until(pauline->lc, marie->lc, NULL, 0, 5000);
+
 	linphone_core_invite_address(pauline->lc,marie->identity);
 	linphone_core_set_network_reachable(marie->lc, TRUE);
-	
+
 	/*pauline shouldn't hear ringback*/
 	BC_ASSERT_FALSE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallOutgoingRinging,1,5000));
 	/*all devices from Marie shouldn't  be ringing*/
 	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallIncomingReceived,1,5000));
-	
+
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 	bctbx_list_free(lcs);
@@ -532,9 +532,9 @@ static void call_forking_with_push_notification_single(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-		
+
 		liblinphone_tester_check_rtcp(pauline,marie);
-		
+
 		linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
@@ -581,14 +581,14 @@ static void call_forking_with_push_notification_multiple(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallConnected,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-		
+
 		/*call to marie should be cancelled*/
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
-		
+
 		liblinphone_tester_check_rtcp(pauline,marie2);
-		
+
 		linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
-		
+
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
 	}
@@ -1299,7 +1299,7 @@ static void tls_client_auth_try_register(const char *identity, bool_t with_good_
 	}else{
 		BC_ASSERT_TRUE(wait_for(lcm->lc, NULL, &lcm->stat.number_of_LinphoneRegistrationFailed, 1));
 		BC_ASSERT_EQUAL(lcm->stat.number_of_LinphoneRegistrationOk,0, int, "%d");
-		/*we should expect at least 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401, 
+		/*we should expect at least 2 "auth_requested": one for the TLS certificate, another one because the server rejects the REGISTER with 401,
 		 with eventually MD5 + SHA256 challenge*/
 		/*If the certificate isn't recognized at all, the connection will not happen and no SIP response will be received from server.*/
 		if (with_good_cert) BC_ASSERT_GREATER(lcm->stat.number_of_auth_info_requested,2, int, "%d");
@@ -1431,7 +1431,7 @@ static void on_refer_received(SalOp *op, const SalAddress *refer_to) {
 	Sal *sal = sal_op_get_sal(op);
 	LinphoneCoreManager *receiver = (LinphoneCoreManager*)sal_get_user_pointer(sal);
 	receiver->stat.number_of_LinphoneCallRefered++;
-	
+
 }
 
 void resend_refer_other_devices(void) {
