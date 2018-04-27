@@ -71,26 +71,6 @@ void ChatMessagePrivate::setIsReadOnly (bool readOnly) {
 	isReadOnly = readOnly;
 }
 
-list<ParticipantImdnState> ChatMessagePrivate::getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const {
-	L_Q();
-
-	list<ParticipantImdnState> result;
-	if (!(q->getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !dbKey.isValid())
-		return result;
-
-	unique_ptr<MainDb> &mainDb = q->getChatRoom()->getCore()->getPrivate()->mainDb;
-	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
-	list<MainDb::ParticipantState> dbResults = func(eventLog);
-	for (const auto &dbResult : dbResults) {
-		auto sender = q->getChatRoom()->findParticipant(q->getFromAddress());
-		auto participant = q->getChatRoom()->findParticipant(dbResult.address);
-		if (participant && (participant != sender))
-			result.emplace_back(participant, dbResult.state, dbResult.timestamp);
-	}
-
-	return result;
-}
-
 void ChatMessagePrivate::setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime) {
 	L_Q();
 
@@ -1018,25 +998,24 @@ void ChatMessage::setToBeStored (bool value) {
 
 // -----------------------------------------------------------------------------
 
-list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveDisplayed () const {
+list<ParticipantImdnState> ChatMessage::getParticipantsByImdnState (ChatMessage::State state) const {
 	L_D();
-	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
-	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveDisplayed, mainDb.get(), std::placeholders::_1);
-	return d->getParticipantsByImdnState(func);
-}
 
-list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveNotReceived () const {
-	L_D();
-	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
-	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveNotReceived, mainDb.get(), std::placeholders::_1);
-	return d->getParticipantsByImdnState(func);
-}
+	list<ParticipantImdnState> result;
+	if (!(getChatRoom()->getCapabilities() & AbstractChatRoom::Capabilities::Conference) || !d->dbKey.isValid())
+		return result;
 
-list<ParticipantImdnState> ChatMessage::getParticipantsThatHaveReceived () const {
-	L_D();
 	unique_ptr<MainDb> &mainDb = getChatRoom()->getCore()->getPrivate()->mainDb;
-	auto func = bind(&MainDb::getChatMessageParticipantsThatHaveReceived, mainDb.get(), std::placeholders::_1);
-	return d->getParticipantsByImdnState(func);
+	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(d->dbKey);
+	list<MainDb::ParticipantState> dbResults = mainDb->getChatMessageParticipantsByImdnState(eventLog, state);
+	for (const auto &dbResult : dbResults) {
+		auto sender = getChatRoom()->findParticipant(getFromAddress());
+		auto participant = getChatRoom()->findParticipant(dbResult.address);
+		if (participant && (participant != sender))
+			result.emplace_back(participant, dbResult.state, dbResult.timestamp);
+	}
+
+	return result;
 }
 
 // -----------------------------------------------------------------------------

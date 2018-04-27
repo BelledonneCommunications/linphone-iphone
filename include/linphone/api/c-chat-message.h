@@ -381,25 +381,13 @@ LINPHONE_PUBLIC const char *linphone_chat_message_get_text_content (const Linpho
 LINPHONE_PUBLIC bool_t linphone_chat_message_is_file_transfer_in_progress (LinphoneChatMessage *msg);
 
 /**
- * Gets the list of participants that displayed this message and the time at which they did.
+ * Gets the list of participants for which the imdn state has reached the specified state and the time at which they did.
  * @param[in] msg #LinphoneChatMessage object.
+ * @param[in] state The LinphoneChatMessageState the imdn have reached (only use LinphoneChatMessageStateDelivered,
+ * LinphoneChatMessageStateDeliveredToUser, LinphoneChatMessageStateDisplayed and LinphoneChatMessageStateNotDelivered)
  * @return \bctbx_list{LinphoneParticipantImdnState}
  */
-LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_displayed (const LinphoneChatMessage *msg);
-
-/**
- * Gets the list of participants that did not receive this message.
- * @param[in] msg #LinphoneChatMessage object.
- * @return \bctbx_list{LinphoneParticipantImdnState}
- */
-LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_not_received (const LinphoneChatMessage *msg);
-
-/**
- * Gets the list of participants that received this message and the time at which they did.
- * @param[in] msg #LinphoneChatMessage object.
- * @return \bctbx_list{LinphoneParticipantImdnState}
- */
-LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_that_have_received (const LinphoneChatMessage *msg);
+LINPHONE_PUBLIC bctbx_list_t *linphone_chat_message_get_participants_by_imdn_state (const LinphoneChatMessage *msg, LinphoneChatMessageState state);
 
 /**
  * @}

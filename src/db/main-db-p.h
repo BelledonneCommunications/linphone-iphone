@@ -150,6 +150,13 @@ private:
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
 
+	void setChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress,
+		ChatMessage::State state,
+		time_t stateChangeTime
+	);
+
 	// ---------------------------------------------------------------------------
 	// Cache API.
 	// ---------------------------------------------------------------------------

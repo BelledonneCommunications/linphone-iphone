@@ -60,7 +60,6 @@ public:
 
 	void setDirection (ChatMessage::Direction dir);
 
-	std::list<ParticipantImdnState> getParticipantsByImdnState (MainDb::ParticipantStateRetrievalFunc func) const;
 	void setParticipantState (const IdentityAddress &participantAddress, ChatMessage::State newState, time_t stateChangeTime);
 	virtual void setState (ChatMessage::State newState, bool force = false);
 

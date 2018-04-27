@@ -779,6 +779,13 @@ void MainDbPrivate::updateConferenceChatMessageEvent (const shared_ptr<EventLog>
 	deleteContents(eventId);
 	for (const auto &content : chatMessage->getContents())
 		insertContent(eventId, *content);
+
+	if ((chatMessage->getDirection() == ChatMessage::Direction::Outgoing)
+		&& ((chatMessage->getState() == ChatMessage::State::Delivered) || (chatMessage->getState() == ChatMessage::State::NotDelivered))
+	) {
+		for (const auto &participant : chatMessage->getChatRoom()->getParticipants())
+			setChatMessageParticipantState(eventLog, participant->getAddress(), chatMessage->getState(), std::time(nullptr));
+	}
 }
 
 long long MainDbPrivate::insertConferenceNotifiedEvent (const shared_ptr<EventLog> &eventLog, long long *chatRoomId) {
@@ -903,6 +910,26 @@ long long MainDbPrivate::insertConferenceSubjectEvent (const shared_ptr<EventLog
 
 	return eventId;
 }
+
+void MainDbPrivate::setChatMessageParticipantState (
+	const shared_ptr<EventLog> &eventLog,
+	const IdentityAddress &participantAddress,
+	ChatMessage::State state,
+	time_t stateChangeTime
+) {
+	const EventLogPrivate *dEventLog = eventLog->getPrivate();
+	MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+	const long long &eventId = dEventKey->storageId;
+	const long long &participantSipAddressId = selectSipAddressId(participantAddress.asString());
+	int stateInt = static_cast<int>(state);
+	const tm &stateChangeTm = Utils::getTimeTAsTm(stateChangeTime);
+
+	*dbSession.getBackendSession() << "UPDATE chat_message_participant SET state = :state,"
+		" state_change_time = :stateChangeTm"
+		" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
+		soci::use(stateInt), soci::use(stateChangeTm), soci::use(eventId), soci::use(participantSipAddressId);
+}
+
 
 // -----------------------------------------------------------------------------
 // Cache API.
@@ -1961,8 +1988,9 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 	};
 }
 
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplayed (
-	const shared_ptr<EventLog> &eventLog
+list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsByImdnState (
+	const shared_ptr<EventLog> &eventLog,
+	ChatMessage::State state
 ) const {
 	return L_DB_TRANSACTION {
 		L_D();
@@ -1970,7 +1998,7 @@ list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplay
 		const EventLogPrivate *dEventLog = eventLog->getPrivate();
 		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
 		const long long &eventId = dEventKey->storageId;
-		int stateInt = static_cast<int>(ChatMessage::State::Displayed);
+		int stateInt = static_cast<int>(state);
 
 		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
 					" FROM sip_address, chat_message_participant"
@@ -1982,60 +2010,7 @@ list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplay
 
 		list<MainDb::ParticipantState> result;
 		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::Displayed, MainDbPrivate::getTmAsTimeT(row.get<tm>(1)));
-		return result;
-	};
-}
-
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveNotReceived (
-	const shared_ptr<EventLog> &eventLog
-) const {
-	return L_DB_TRANSACTION {
-		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		int deliveredStateInt = static_cast<int>(ChatMessage::State::DeliveredToUser);
-		int displayedStateInt = static_cast<int>(ChatMessage::State::Displayed);
-
-		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
-					" FROM sip_address, chat_message_participant"
-					" WHERE event_id = :eventId AND state <> :deliveredState AND state <> :displayedState"
-					" AND sip_address.id = chat_message_participant.participant_sip_address_id";
-		soci::rowset<soci::row> rows = (d->dbSession.getBackendSession()->prepare << query,
-			soci::use(eventId), soci::use(deliveredStateInt), soci::use(displayedStateInt)
-		);
-
-		list<MainDb::ParticipantState> result;
-		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::Idle, 0);
-		return result;
-	};
-}
-
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveReceived (
-	const shared_ptr<EventLog> &eventLog
-) const {
-	return L_DB_TRANSACTION {
-		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		int stateInt = static_cast<int>(ChatMessage::State::DeliveredToUser);
-
-		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
-					" FROM sip_address, chat_message_participant"
-					" WHERE event_id = :eventId AND state = :state"
-					" AND sip_address.id = chat_message_participant.participant_sip_address_id";
-		soci::rowset<soci::row> rows = (d->dbSession.getBackendSession()->prepare << query,
-			soci::use(eventId), soci::use(stateInt)
-		);
-
-		list<MainDb::ParticipantState> result;
-		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::DeliveredToUser, MainDbPrivate::getTmAsTimeT(row.get<tm>(1)));
+			result.emplace_back(IdentityAddress(row.get<string>(0)), state, MainDbPrivate::getTmAsTimeT(row.get<tm>(1)));
 		return result;
 	};
 }
@@ -2092,19 +2067,7 @@ void MainDb::setChatMessageParticipantState (
 ) {
 	L_DB_TRANSACTION {
 		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		const long long &participantSipAddressId = d->selectSipAddressId(participantAddress.asString());
-		int stateInt = static_cast<int>(state);
-		const tm &stateChangeTm = Utils::getTimeTAsTm(stateChangeTime);
-
-		*d->dbSession.getBackendSession() << "UPDATE chat_message_participant SET state = :state,"
-			" state_change_time = :stateChangeTm"
-			" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
-			soci::use(stateInt), soci::use(stateChangeTm), soci::use(eventId), soci::use(participantSipAddressId);
-
+		d->setChatMessageParticipantState(eventLog, participantAddress, state, stateChangeTime);
 		tr.commit();
 	};
 }
