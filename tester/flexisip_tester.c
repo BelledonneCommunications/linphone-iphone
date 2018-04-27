@@ -1478,8 +1478,11 @@ void sequential_forking(void) {
 	/*the second should not*/
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
 
+	LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+
 	/*marie accepts the call on its second device*/
-	linphone_call_accept(linphone_core_get_current_call(marie->lc));
+	linphone_call_accept(call);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
@@ -1540,8 +1543,11 @@ void sequential_forking_with_timeout_for_highest_priority(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
+	LinphoneCall *call = linphone_core_get_current_call(marie3->lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+
 	/*marie accepts the call on her third device*/
-	linphone_call_accept(linphone_core_get_current_call(marie3->lc));
+	linphone_call_accept(call);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallConnected,1,1000));
@@ -1600,8 +1606,11 @@ void sequential_forking_with_no_response_for_highest_priority(void) {
 	/*then the second device should receive the call*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
 
+	LinphoneCall *call = linphone_core_get_current_call(marie2->lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+
 	/*marie accepts the call on her second device*/
-	linphone_call_accept(linphone_core_get_current_call(marie2->lc));
+	linphone_call_accept(call);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallConnected,1,1000));
@@ -1661,8 +1670,11 @@ void sequential_forking_with_insertion_of_higher_priority(void) {
 	/*this device should receive the call*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
+	LinphoneCall *call = linphone_core_get_current_call(marie3->lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+
 	/*marie accepts the call on her third device*/
-	linphone_call_accept(linphone_core_get_current_call(marie3->lc));
+	linphone_call_accept(call);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallConnected,1,1000));
@@ -1686,7 +1698,6 @@ void sequential_forking_with_insertion_of_higher_priority(void) {
 }
 
 void sequential_forking_with_fallback_route(void) {
-#if 0 //fixme Mickael
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* pauline2 = linphone_core_manager_create(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
 	LinphoneCoreManager* marie = linphone_core_manager_create("marie_rc");
@@ -1734,8 +1745,11 @@ void sequential_forking_with_fallback_route(void) {
 	/*the call should be routed to the first server with pauline account*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
+	LinphoneCall *call = linphone_core_get_current_call(pauline->lc);
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+
 	/*pauline accepts the call*/
-	linphone_call_accept(linphone_core_get_current_call(pauline->lc));
+	linphone_call_accept(call);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallConnected,1,1000));
@@ -1752,9 +1766,6 @@ void sequential_forking_with_fallback_route(void) {
 	linphone_core_manager_destroy(pauline2);
 	linphone_core_manager_destroy(marie);
 	bctbx_list_free(lcs);
-#else
-	ms_error("sequential_forking_with_fallback_route temporaly removed");
-#endif
 }
 
 test_t flexisip_tests[] = {
