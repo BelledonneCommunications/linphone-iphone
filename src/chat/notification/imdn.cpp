@@ -122,6 +122,7 @@ string Imdn::createXml (const string &id, time_t timestamp, Imdn::Type imdnType,
 	char *datetime = linphone_timestamp_to_rfc3339_string(timestamp);
 	Xsd::Imdn::Imdn imdn(id, datetime);
 	ms_free(datetime);
+	bool needLinphoneImdnNamespace = false;
 	if (imdnType == Imdn::Type::Delivery) {
 		Xsd::Imdn::Status status;
 		if (reason == LinphoneReasonNone) {
@@ -133,6 +134,7 @@ string Imdn::createXml (const string &id, time_t timestamp, Imdn::Type imdnType,
 			Xsd::LinphoneImdn::ImdnReason imdnReason(linphone_reason_to_string(reason));
 			imdnReason.setCode(linphone_reason_to_error_code(reason));
 			status.setReason(imdnReason);
+			needLinphoneImdnNamespace = true;
 		}
 		Xsd::Imdn::DeliveryNotification deliveryNotification(status);
 		imdn.setDeliveryNotification(deliveryNotification);
@@ -147,7 +149,8 @@ string Imdn::createXml (const string &id, time_t timestamp, Imdn::Type imdnType,
 	stringstream ss;
 	Xsd::XmlSchema::NamespaceInfomap map;
 	map[""].name = "urn:ietf:params:xml:ns:imdn";
-	map["imdn"].name = "http://www.linphone.org/xsds/imdn.xsd";
+	if (needLinphoneImdnNamespace)
+		map["imdn"].name = "http://www.linphone.org/xsds/imdn.xsd";
 	Xsd::Imdn::serializeImdn(ss, imdn, map);
 	return ss.str();
 }
