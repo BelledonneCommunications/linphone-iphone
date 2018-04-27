@@ -1462,8 +1462,10 @@ static void rtp_config_read(LinphoneCore *lc) {
 	linphone_core_set_avpf_mode(lc,static_cast<LinphoneAVPFMode>(lp_config_get_int(lc->config,"rtp","avpf",LinphoneAVPFDisabled)));
 	if ((tmp=lp_config_get_string(lc->config,"rtp","audio_multicast_addr",NULL)))
 		linphone_core_set_audio_multicast_addr(lc,tmp);
-	else
+	else {
+		if (lc->rtp_conf.audio_multicast_addr) bctbx_free(lc->rtp_conf.audio_multicast_addr);
 		lc->rtp_conf.audio_multicast_addr=ms_strdup("224.1.2.3");
+	}
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_enabled",-1)) >-1)
 		linphone_core_enable_audio_multicast(lc, !!tmp_int);
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","audio_multicast_ttl",-1))>0)
@@ -1472,8 +1474,10 @@ static void rtp_config_read(LinphoneCore *lc) {
 		lc->rtp_conf.audio_multicast_ttl=1;/*local network*/
 	if ((tmp=lp_config_get_string(lc->config,"rtp","video_multicast_addr",NULL)))
 		linphone_core_set_video_multicast_addr(lc,tmp);
-	else
+	else {
+		if (lc->rtp_conf.video_multicast_addr) bctbx_free(lc->rtp_conf.video_multicast_addr);
 		lc->rtp_conf.video_multicast_addr=ms_strdup("224.1.2.3");
+	}
 	if ((tmp_int=lp_config_get_int(lc->config,"rtp","video_multicast_ttl",-1))>-1)
 		linphone_core_set_video_multicast_ttl(lc,tmp_int);
 	else
@@ -1962,12 +1966,15 @@ void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const
 	linphone_core_notify_global_state_changed(lc,gstate,message);
 }
 
-static void misc_config_read(LinphoneCore *lc) {
-	LpConfig *config=lc->config;
+static void misc_config_read (LinphoneCore *lc) {
+	LpConfig *config = lc->config;
 
-	lc->max_call_logs=lp_config_get_int(config,"misc","history_max_size",LINPHONE_MAX_CALL_HISTORY_SIZE);
-	lc->max_calls=lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
-	lc->user_certificates_path=ms_strdup(lp_config_get_string(config,"misc","user_certificates_path","."));
+	lc->max_call_logs = lp_config_get_int(config,"misc","history_max_size",LINPHONE_MAX_CALL_HISTORY_SIZE);
+	lc->max_calls = lp_config_get_int(config,"misc","max_calls",NB_MAX_CALLS);
+
+	if (lc->user_certificates_path) bctbx_free(lc->user_certificates_path);
+		lc->user_certificates_path = bctbx_strdup(lp_config_get_string(config, "misc", "user_certificates_path", "."));
+
 	lc->send_call_stats_periodical_updates = !!lp_config_get_int(config, "misc", "send_call_stats_periodical_updates", 0);
 }
 
@@ -6570,12 +6577,11 @@ end:
 #endif /* SQLITE_STORAGE_ENABLED */
 }
 
-void linphone_core_set_user_certificates_path(LinphoneCore *lc, const char* path){
-	char* new_value;
-	new_value = path?ms_strdup(path):NULL;
-	if (lc->user_certificates_path) ms_free(lc->user_certificates_path);
-	lp_config_set_string(lc->config,"misc","user_certificates_path",lc->user_certificates_path=new_value);
-	return ;
+void linphone_core_set_user_certificates_path (LinphoneCore *lc, const char *path) {
+	char *new_value = path ? bctbx_strdup(path) : NULL;
+	if (lc->user_certificates_path) bctbx_free(lc->user_certificates_path);
+	lc->user_certificates_path = new_value;
+	lp_config_set_string(lc->config, "misc", "user_certificates_path", lc->user_certificates_path);
 }
 
 const char *linphone_core_get_user_certificates_path(LinphoneCore *lc){
