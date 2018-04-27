@@ -106,6 +106,7 @@
 	_chatButton.selected = [view equal:ChatsListView.compositeViewDescription] ||
 						   [view equal:ChatConversationCreateView.compositeViewDescription] ||
 						   [view equal:ChatConversationInfoView.compositeViewDescription] ||
+						   [view equal:ChatConversationImdnView.compositeViewDescription] ||
 						   [view equal:ChatConversationView.compositeViewDescription];
 	CGRect selectedNewFrame = _selectedButtonImage.frame;
 	if ([self viewIsCurrentlyPortrait]) {

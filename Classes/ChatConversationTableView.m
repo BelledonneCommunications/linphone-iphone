@@ -19,6 +19,7 @@
 
 #import "LinphoneManager.h"
 #import "ChatConversationTableView.h"
+#import "ChatConversationImdnView.h"
 #import "UIChatBubbleTextCell.h"
 #import "UIChatBubblePhotoCell.h"
 #import "UIChatNotifiedEventCell.h"
@@ -222,18 +223,47 @@
 	}
 }
 
+- (void) tableView:(UITableView *)tableView deleteRowAtIndex:(NSIndexPath *)indexPath {
+	[tableView beginUpdates];
+	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
+	linphone_event_log_delete_from_database(event);
+	[eventList removeObjectAtIndex:indexPath.row];
+
+	[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+					 withRowAnimation:UITableViewRowAnimationBottom];
+	[tableView endUpdates];
+}
+
+- (NSArray<UITableViewRowAction *> *)tableView:(UITableView *)tableView
+				  editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
+	UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive
+																			title:NSLocalizedString(@"Delete", nil)
+																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+																			  [self tableView:tableView deleteRowAtIndex:indexPath];
+																		  }];
+
+	UITableViewRowAction *imdnAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal
+																			title:NSLocalizedString(@"Info", nil)
+																		  handler:^(UITableViewRowAction *action, NSIndexPath *indexPath){
+																			  LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
+																			  ChatConversationImdnView *view = VIEW(ChatConversationImdnView);
+																			  view.msg = msg;
+																			  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+																		  }];
+
+	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage &&
+		!(linphone_chat_room_get_capabilities(_chatRoom) & LinphoneChatRoomCapabilitiesOneToOne))
+		return @[deleteAction, imdnAction];
+	else
+		return @[deleteAction];
+}
+
 - (void)tableView:(UITableView *)tableView
 	commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 	 forRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (editingStyle == UITableViewCellEditingStyleDelete) {
-		[tableView beginUpdates];
-		LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
-		linphone_event_log_delete_from_database(event);
-		[eventList removeObjectAtIndex:indexPath.row];
-
-		[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-						 withRowAnimation:UITableViewRowAnimationBottom];
-		[tableView endUpdates];
+		[self tableView:tableView deleteRowAtIndex:indexPath];
 	}
 }
 
