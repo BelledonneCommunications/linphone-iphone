@@ -667,9 +667,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 		  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 		  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 		  	if (room) {
-			  	ChatConversationView *view = VIEW(ChatConversationView);
-			  	view.chatRoom = room;
-			  	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+				[PhoneMainView.instance goToChatRoom:room];
 			  	return;
 		  	}
 		  	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];

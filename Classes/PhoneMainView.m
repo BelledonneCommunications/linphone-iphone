@@ -871,9 +871,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 		bctbx_list_free(addresses);
 		return;
 	}
-	ChatConversationView *view = VIEW(ChatConversationView);
-	view.chatRoom = room;
-	[self changeCurrentView:view.compositeViewDescription];
+
+	[self goToChatRoom:room];
 }
 
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
@@ -918,7 +917,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 	_waitView.hidden = YES;
 	_waitView = NULL;
 	ChatConversationView *view = VIEW(ChatConversationView);
+	if (view.chatRoom && view.chatRoomCbs)
+		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
+
+	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
+		[PhoneMainView.instance popCurrentView];
+
+	view.chatRoomCbs = NULL;
 	view.chatRoom = cr;
+	self.currentRoom = view.chatRoom;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
