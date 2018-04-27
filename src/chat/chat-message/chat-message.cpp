@@ -82,8 +82,9 @@ list<ParticipantImdnState> ChatMessagePrivate::getParticipantsByImdnState (MainD
 	shared_ptr<EventLog> eventLog = mainDb->getEventFromKey(dbKey);
 	list<MainDb::ParticipantState> dbResults = func(eventLog);
 	for (const auto &dbResult : dbResults) {
+		auto sender = q->getChatRoom()->findParticipant(q->getFromAddress());
 		auto participant = q->getChatRoom()->findParticipant(dbResult.address);
-		if (participant)
+		if (participant && (participant != sender))
 			result.emplace_back(participant, dbResult.state, dbResult.timestamp);
 	}
 
