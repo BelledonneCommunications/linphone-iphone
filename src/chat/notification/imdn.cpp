@@ -19,8 +19,7 @@
 
 #include <algorithm>
 
-#include "chat/chat-message/chat-message-p.h"
-#include "chat/chat-message/imdn-message.h"
+#include "chat/chat-message/imdn-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
@@ -205,7 +204,7 @@ void Imdn::send () {
 		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(deliveredMessages, displayedMessages);
 		sentImdnMessages.push_back(imdnMessage);
 		if (networkReachable)
-			imdnMessage->send();
+			imdnMessage->getPrivate()->send();
 		deliveredMessages.clear();
 		displayedMessages.clear();
 	}
@@ -213,7 +212,7 @@ void Imdn::send () {
 		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages);
 		sentImdnMessages.push_back(imdnMessage);
 		if (networkReachable)
-			imdnMessage->send();
+			imdnMessage->getPrivate()->send();
 		nonDeliveredMessages.clear();
 	}
 }

@@ -32,6 +32,7 @@ class ImdnMessagePrivate;
 class LINPHONE_PUBLIC ImdnMessage : public NotificationMessage {
 public:
 	friend class ChatRoomPrivate;
+	friend class Imdn;
 
 	L_OVERRIDE_SHARED_FROM_THIS(ImdnMessage);
 
