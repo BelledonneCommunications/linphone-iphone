@@ -107,8 +107,8 @@ void linphone_content_add_content_type_parameter (LinphoneContent *content, cons
 	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentType(contentType);
 }
 
-uint8_t *linphone_content_get_buffer (const LinphoneContent *content) {
-	return (uint8_t *)linphone_content_get_string_buffer(content);
+const uint8_t *linphone_content_get_buffer (const LinphoneContent *content) {
+	return reinterpret_cast<const uint8_t *>(linphone_content_get_string_buffer(content));
 }
 
 void linphone_content_set_buffer (LinphoneContent *content, const uint8_t *buffer, size_t size) {

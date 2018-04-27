@@ -861,7 +861,7 @@ void info_message_base(bool_t with_content) {
 			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
 			if (linphone_content_get_type(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_type(content),"application");
 			if (linphone_content_get_subtype(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_subtype(content),"somexml");
-			if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL((const char*)linphone_content_get_buffer(content),info_content);
+			if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content),info_content);
 			BC_ASSERT_EQUAL((int)linphone_content_get_size(content),(int)strlen(info_content), int, "%d");
 		}
 	}

@@ -105,7 +105,7 @@ LINPHONE_PUBLIC void linphone_content_add_content_type_parameter (
  * @param[in] content #LinphoneContent object.
  * @return The content data buffer.
  */
-LINPHONE_PUBLIC uint8_t *linphone_content_get_buffer (const LinphoneContent *content);
+LINPHONE_PUBLIC const uint8_t *linphone_content_get_buffer (const LinphoneContent *content);
 
 /**
  * Set the content data buffer, usually a string.

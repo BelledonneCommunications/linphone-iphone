@@ -16,7 +16,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include "linphone/core.h"
 #include "liblinphone_tester.h"
 #include "tester_utils.h"
@@ -26,7 +25,7 @@
 #define __strstr(x, y) ((x==NULL)?NULL:strstr(x,y))
 
 void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
-	char * body = (char *)linphone_content_get_buffer(content);
+	const char *body = linphone_content_get_string_buffer(content);
 	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
 	BC_ASSERT_TRUE(
 			__strstr(body, "VQIntervalReport\r\n")			== body ||
@@ -63,30 +62,32 @@ void on_report_send_mandatory(const LinphoneCall *call, SalStreamType stream_typ
 	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "DialogID:"));
 }
 
-char * on_report_send_verify_metrics(const reporting_content_metrics_t *metrics, char * body){
-	if (metrics->rtcp_xr_count){
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "SessionDesc:"));
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "JitterBuffer:"));
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "PacketLoss:"));
+const char *on_report_send_verify_metrics (const reporting_content_metrics_t *metrics, const char *body) {
+	if (metrics->rtcp_xr_count) {
+		BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "SessionDesc:"));
+		BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "JitterBuffer:"));
+		BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "PacketLoss:"));
 	}
-	if (metrics->rtcp_sr_count+metrics->rtcp_xr_count>0){
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "Delay:"));
+	if (metrics->rtcp_sr_count + metrics->rtcp_xr_count > 0) {
+		BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "Delay:"));
 	}
 	if (metrics->rtcp_xr_count){
-		BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "QualityEst:"));
+		BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "QualityEst:"));
 	}
 
 	return body;
 }
 
-void on_report_send_with_rtcp_xr_local(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
-	char * body = (char*)linphone_content_get_buffer(content);
-	char * remote_metrics_start = __strstr(body, "RemoteMetrics:");
-	reporting_session_report_t * report = linphone_quality_reporting_get_reports(linphone_call_log_get_quality_reporting(linphone_call_get_log(call)))[stream_type];
-	on_report_send_mandatory(call,stream_type,content);
-	BC_ASSERT_PTR_NOT_NULL(body=__strstr(body, "LocalMetrics:"));
-	BC_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics,body) < remote_metrics_start);
+void on_report_send_with_rtcp_xr_local (const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content) {
+	char *remote_metrics_start = __strstr(linphone_content_get_string_buffer(content), "RemoteMetrics:");
+	reporting_session_report_t *report = linphone_quality_reporting_get_reports(linphone_call_log_get_quality_reporting(linphone_call_get_log(call)))[stream_type];
+	on_report_send_mandatory(call, stream_type, content);
+
+	const char *body = linphone_content_get_string_buffer(content);
+	BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "LocalMetrics:"));
+	BC_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics, body) < remote_metrics_start);
 }
+
 void on_report_send_with_rtcp_xr_remote(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
 	char * body = (char*)linphone_content_get_buffer(content);
 	reporting_session_report_t * report = linphone_quality_reporting_get_reports(linphone_call_log_get_quality_reporting(linphone_call_get_log(call)))[stream_type];
@@ -207,7 +208,7 @@ static void quality_reporting_not_sent_if_low_bandwidth(void) {
 }
 
 void on_report_send_remove_fields(const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content){
-	char *body = (char*)linphone_content_get_buffer(content);
+	char *body = (char *)linphone_content_get_string_buffer(content);
 	/*corrupt start of the report*/
 	strncpy(body, "corrupted report is corrupted", strlen("corrupted report is corrupted"));
 }
@@ -339,7 +340,9 @@ static void quality_reporting_session_report_if_video_stopped(void) {
 
 void publish_report_with_route_state_changed(LinphoneCore *lc, LinphoneEvent *ev, LinphonePublishState state){
 	if (state == LinphonePublishProgress) {
-		BC_ASSERT_STRING_EQUAL(linphone_address_as_string(linphone_event_get_resource(ev)), linphone_proxy_config_get_quality_reporting_collector(linphone_core_get_default_proxy_config(lc)));
+		char *uri = linphone_address_as_string(linphone_event_get_resource(ev));
+		BC_ASSERT_STRING_EQUAL(uri, linphone_proxy_config_get_quality_reporting_collector(linphone_core_get_default_proxy_config(lc)));
+		bctbx_free(uri);
 	}
 }
 
@@ -378,7 +381,7 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 	LinphoneCall* call_pauline = NULL;
 	LinphoneCallParams* pauline_params;
 	LinphoneCallParams* marie_params;
- 	LinphoneChatRoom *pauline_chat_room;
+	LinphoneChatRoom *pauline_chat_room;
 
 	linphone_core_enable_video_capture(marie->lc, TRUE);
 	linphone_core_enable_video_display(marie->lc, FALSE);
@@ -408,10 +411,11 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 
 		pauline_chat_room = linphone_call_get_chat_room(call_pauline);
 		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+		LinphoneChatMessage *rtt_message;
 		if (pauline_chat_room) {
 			const char* message = "Lorem Ipsum Belledonnum Communicatum";
 			size_t i;
-			LinphoneChatMessage* rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+			rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
 			LinphoneChatRoom *marie_chat_room = linphone_call_get_chat_room(call_marie);
 
 			for (i = 0; i < strlen(message); i++) {
@@ -425,6 +429,9 @@ static void quality_reporting_interval_report_video_and_rtt(void) {
 		end_call(marie, pauline);
 		/*wait that all publish complete*/
 		BC_ASSERT_TRUE(wait_for_until(marie->lc,pauline->lc,&marie->stat.number_of_LinphonePublishOk,marie->stat.number_of_LinphonePublishProgress,60000));
+
+		if (rtt_message)
+			linphone_chat_message_unref(rtt_message);
 	}
 
 	linphone_call_params_unref(marie_params);
@@ -478,13 +485,15 @@ test_t quality_reporting_tests[] = {
 	TEST_NO_TAG("Call term session report sent if call ended normally", quality_reporting_at_call_termination),
 	TEST_NO_TAG("Interval report if interval is configured", quality_reporting_interval_report),
 	#ifdef VIDEO_ENABLED
-	TEST_NO_TAG("Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt),
-	TEST_NO_TAG("Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped),
-	#endif
+		TEST_NO_TAG("Interval report if interval is configured with video and realtime text", quality_reporting_interval_report_video_and_rtt),
+		TEST_NO_TAG("Session report sent if video stopped during call", quality_reporting_session_report_if_video_stopped),
+	#endif // ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Sent using custom route", quality_reporting_sent_using_custom_route),
 	TEST_NO_TAG("Video bandwidth estimation", video_bandwidth_estimation)
 };
 
-test_suite_t quality_reporting_test_suite = {"QualityReporting", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
-											 sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
-											 quality_reporting_tests};
+test_suite_t quality_reporting_test_suite = {
+	"QualityReporting", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+	sizeof(quality_reporting_tests) / sizeof(quality_reporting_tests[0]),
+	quality_reporting_tests
+};
