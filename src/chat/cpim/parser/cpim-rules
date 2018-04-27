@@ -1,7 +1,11 @@
-Message = Headers CRLF Headers CRLF [Headers CRLF]
+Message = Message-headers CRLF Content-headers CRLF
 
-Headers = *Header
-Header = Header-name ":" Header-parameters SP Header-value CRLF
+Message-headers = 1*( Message-header CRLF )
+Message-header = From-header / To-header / DateTime-header / cc-header / Subject-header / NS-header / Require-header / Header
+
+Content-headers = 1*( Header CRLF )
+
+Header = Header-name ":" Header-parameters SP Header-value
 
 Header-name = [ Name-prefix "." ] Name
 Name-prefix = Name
@@ -29,7 +33,7 @@ cc-header = %d99.99 ": " cc-header-value
 cc-header-value = [ Formal-name ] "<" URI ">"
 
 Subject-header = %d83.117.98.106.101.99.116 ":" Subject-header-value
-Subject-header-value = [ ";" Lang-param ] SP *HEADERCHAR
+Subject-header-value = [ ";" Lang-param ] SP Header-value
 
 NS-header = %d78.83 ": " NS-header-value
 NS-header-value = [ Name-prefix SP ] "<" URI ">"
@@ -134,7 +138,8 @@ time-minute = 2DIGIT
 time-second = 2DIGIT
 
 time-secfrac = "." 1*DIGIT
-time-numoffset = ( "+" / "-" ) time-hour ":" time-minute
+time-sign = "+" / "-"
+time-numoffset = time-sign time-hour ":" time-minute
 time-offset = "Z" / time-numoffset
 
 partial-time = time-hour ":" time-minute ":" time-second [ time-secfrac ]

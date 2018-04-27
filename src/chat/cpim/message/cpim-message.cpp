@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <map>
 
 #include "linphone/utils/utils.h"
 
@@ -36,10 +37,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Cpim::MessagePrivate : public ObjectPrivate {
 public:
-	typedef list<shared_ptr<const Header> > PrivHeaderList;
+	using PrivHeaderList = list<shared_ptr<const Header>>;
+	using PrivHeaderMap = map<string, shared_ptr<PrivHeaderList>>;
 
-	shared_ptr<PrivHeaderList> cpimHeaders = make_shared<PrivHeaderList>(); // TODO: Remove this useless variable
-	shared_ptr<PrivHeaderList> messageHeaders = make_shared<PrivHeaderList>();
+	PrivHeaderMap messageHeaders;
 	shared_ptr<PrivHeaderList> contentHeaders = make_shared<PrivHeaderList>();
 	string content;
 };
@@ -48,50 +49,47 @@ Cpim::Message::Message () : Object(*new MessagePrivate) {}
 
 // -----------------------------------------------------------------------------
 
-Cpim::Message::HeaderList Cpim::Message::getCpimHeaders () const {
+Cpim::Message::HeaderList Cpim::Message::getMessageHeaders (const string &ns) const {
 	L_D();
-	return d->cpimHeaders;
+
+	if (d->messageHeaders.find(ns) == d->messageHeaders.end())
+		return nullptr;
+
+	return d->messageHeaders.at(ns);
 }
 
-bool Cpim::Message::addCpimHeader (const Header &cpimHeader) {
+void Cpim::Message::addMessageHeader (const Header &messageHeader, const string &ns) {
 	L_D();
 
-	if (!cpimHeader.isValid())
-		return false;
+	if (d->messageHeaders.find(ns) == d->messageHeaders.end())
+		d->messageHeaders[ns] = make_shared<Cpim::MessagePrivate::PrivHeaderList>();
 
-	d->cpimHeaders->push_back(Parser::getInstance()->cloneHeader(cpimHeader));
-	return true;
+	auto list = d->messageHeaders.at(ns);
+	list->push_back(Parser::getInstance()->cloneHeader(messageHeader));
 }
 
-void Cpim::Message::removeCpimHeader (const Header &cpimHeader) {
+void Cpim::Message::removeMessageHeader (const Header &messageHeader, const string &ns) {
 	L_D();
-	d->cpimHeaders->remove_if([&cpimHeader](const shared_ptr<const Header> &header) {
-			return cpimHeader.getName() == header->getName() && cpimHeader.getValue() == header->getValue();
-		});
+
+	if (d->messageHeaders.find(ns) != d->messageHeaders.end())
+		d->messageHeaders.at(ns)->remove_if([&messageHeader](const shared_ptr<const Header> &header) {
+				return messageHeader.getName() == header->getName() && messageHeader.getValue() == header->getValue();
+			});
 }
 
-// -----------------------------------------------------------------------------
-
-Cpim::Message::HeaderList Cpim::Message::getMessageHeaders () const {
-	L_D();
-	return d->messageHeaders;
-}
-
-bool Cpim::Message::addMessageHeader (const Header &messageHeader) {
+shared_ptr<const Cpim::Header> Cpim::Message::getMessageHeader (const string &name, const string &ns) const {
 	L_D();
 
-	if (!messageHeader.isValid())
-		return false;
+	if (d->messageHeaders.find(ns) == d->messageHeaders.end())
+		return nullptr;
 
-	d->messageHeaders->push_back(Parser::getInstance()->cloneHeader(messageHeader));
-	return true;
-}
+	auto list = d->messageHeaders.at(ns);
+	for (const auto &messageHeader : *list) {
+		if (messageHeader->getName() == name)
+			return messageHeader;
+	}
 
-void Cpim::Message::removeMessageHeader (const Header &messageHeader) {
-	L_D();
-	d->messageHeaders->remove_if([&messageHeader](const shared_ptr<const Header> &header) {
-			return messageHeader.getName() == header->getName() && messageHeader.getValue() == header->getValue();
-		});
+	return nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -101,14 +99,9 @@ Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
 	return d->contentHeaders;
 }
 
-bool Cpim::Message::addContentHeader (const Header &contentHeader) {
+void Cpim::Message::addContentHeader (const Header &contentHeader) {
 	L_D();
-
-	if (!contentHeader.isValid())
-		return false;
-
 	d->contentHeaders->push_back(Parser::getInstance()->cloneHeader(contentHeader));
-	return true;
 }
 
 void Cpim::Message::removeContentHeader (const Header &contentHeader) {
@@ -116,6 +109,17 @@ void Cpim::Message::removeContentHeader (const Header &contentHeader) {
 	d->contentHeaders->remove_if([&contentHeader](const shared_ptr<const Header> &header) {
 			return contentHeader.getName() == header->getName() && contentHeader.getValue() == header->getValue();
 		});
+}
+
+shared_ptr<const Cpim::Header> Cpim::Message::getContentHeader(const string &name) const {
+	L_D();
+
+	for (const auto &contentHeader : *d->contentHeaders) {
+		if (contentHeader->getName() == name)
+			return contentHeader;
+	}
+
+	return nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -133,32 +137,19 @@ bool Cpim::Message::setContent (const string &content) {
 
 // -----------------------------------------------------------------------------
 
-bool Cpim::Message::isValid () const {
-	L_D();
-
-	return find_if(d->cpimHeaders->cbegin(), d->cpimHeaders->cend(),
-		[](const shared_ptr<const Header> &header) {
-			return Utils::iequals(header->getName(), "content-type") && (ContentType(header->getValue()) == ContentType::Cpim);
-		}) != d->cpimHeaders->cend();
-}
-
-// -----------------------------------------------------------------------------
-
 string Cpim::Message::asString () const {
 	L_D();
 
 	string output;
-	// TODO: Remove cpimHeaders
-	if (d->cpimHeaders->size() > 0) {
-		for (const auto &cpimHeader : *d->cpimHeaders)
-			output += cpimHeader->asString();
-		output += "\r\n";
-	}
-	// TODO Remove cpimHeaders
-
-	if (d->messageHeaders->size() > 0) {
-		for (const auto &messageHeader : *d->messageHeaders)
-			output += messageHeader->asString();
+	if (d->messageHeaders.size() > 0) {
+		for (const auto &entry : d->messageHeaders) {
+			auto list = entry.second;
+			for (const auto &messageHeader : *list) {
+				if (entry.first != "")
+					output += entry.first + ".";
+				output += messageHeader->asString();
+			}
+		}
 
 		output += "\r\n";
 	}
