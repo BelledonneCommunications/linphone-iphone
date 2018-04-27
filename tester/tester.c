@@ -489,10 +489,6 @@ void linphone_core_manager_uninit(LinphoneCoreManager *mgr) {
 	if (mgr->phone_alias) {
 		ms_free(mgr->phone_alias);
 	}
-	if (mgr->stat.last_received_chat_message) {
-		linphone_chat_message_unref(mgr->stat.last_received_chat_message);
-	}
-	if (mgr->stat.last_received_info_message) linphone_info_message_unref(mgr->stat.last_received_info_message);
 	if (mgr->identity) {
 		linphone_address_unref(mgr->identity);
 	}
