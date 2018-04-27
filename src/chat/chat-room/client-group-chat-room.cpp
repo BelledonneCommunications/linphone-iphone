@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <algorithm>
+
 #include "linphone/utils/utils.h"
 
 #include "address/address-p.h"
@@ -522,7 +524,8 @@ void ClientGroupChatRoom::onConferenceCreated (const IdentityAddress &addr) {
 
 void ClientGroupChatRoom::onConferenceKeywordsChanged (const vector<string> &keywords) {
 	L_D();
-	d->capabilities |= ClientGroupChatRoom::Capabilities::OneToOne;
+	if (find(keywords.cbegin(), keywords.cend(), "one-to-one") != keywords.cend())
+		d->capabilities |= ClientGroupChatRoom::Capabilities::OneToOne;
 }
 
 void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
