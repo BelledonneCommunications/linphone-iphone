@@ -221,6 +221,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	cell.displayName.text = [FastAddressBook displayNameForAddress:addr];
 	cell.avatar.image = [FastAddressBook imageForAddress:addr];
 	cell.dateLabel.text = [LinphoneUtils timeToString:time withFormat:LinphoneDateChatBubble];
+	cell.userInteractionEnabled = false;
 
 	return cell;
 }
