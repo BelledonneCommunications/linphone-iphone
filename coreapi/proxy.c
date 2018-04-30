@@ -457,20 +457,16 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	LinphoneAddress *contact_addr = NULL;
-	{
-		const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk
-			? cfg->op->get_contact_address()
-			: NULL;
-		if (sal_addr) {
-			char *buf = sal_address_as_string(sal_addr);
-			contact_addr = buf ? linphone_address_new(buf) : NULL;
-			ms_free(buf);
-		}
+	const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk ? cfg->op->get_contact_address() : NULL;
+	if (sal_addr) {
+		char *buf = sal_address_as_string(sal_addr);
+		contact_addr = buf ? linphone_address_new(buf) : NULL;
+		ms_free(buf);
 	}
 
 	/*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/
 	if (contact_addr) {
-		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp) {
+		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp && lp_config_get_int(cfg->lc->config, "sip", "unregister_previous_contact", 0)) {
 			if (cfg->pending_contact)
 				linphone_address_unref(cfg->pending_contact);
 			cfg->pending_contact=contact_addr;
