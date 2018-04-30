@@ -36,6 +36,8 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
+	#pragma GCC diagnostic ignored "-Wsign-conversion"
+	#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
 	#pragma GCC diagnostic push

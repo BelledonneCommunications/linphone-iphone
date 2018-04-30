@@ -20,6 +20,50 @@
 #
 ############################################################################
 
+set(LIBS
+	${BCTOOLBOX_CORE_LIBRARIES}
+	${BELLESIP_LIBRARIES}
+	${MEDIASTREAMER2_LIBRARIES}
+	${ORTP_LIBRARIES}
+	${XML2_LIBRARIES}
+	${BELR_LIBRARIES}
+	${LIBXSD_LIBRARIES}
+)
+if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	list(APPEND LIBS "Ws2_32")
+endif()
+if(ENABLE_LIME)
+	list(APPEND LIBS ${BZRTP_LIBRARIES})
+endif()
+if(ZLIB_FOUND)
+	list(APPEND LIBS ${ZLIB_LIBRARIES})
+endif()
+if(SOCI_FOUND)
+	list(APPEND LIBS ${SOCI_LIBRARIES})
+endif()
+if(SQLITE3_FOUND)
+	list(APPEND LIBS ${SQLITE3_LIBRARIES})
+endif()
+if(ICONV_FOUND)
+	list(APPEND LIBS ${ICONV_LIBRARIES})
+endif()
+if(ENABLE_TUNNEL)
+	list(APPEND LIBS ${TUNNEL_LIBRARIES})
+endif()
+if(MSVC AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	list(APPEND LIBS ${LIBGCC} ${LIBMINGWEX})
+endif()
+if(WIN32 AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+	list(APPEND LIBS shlwapi)
+endif()
+if(INTL_FOUND)
+	list(APPEND LIBS ${INTL_LIBRARIES})
+endif()
+if(BELCARD_FOUND)
+	list(APPEND LIBS ${BELCARD_LIBRARIES})
+endif()
+
+
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
 	address/address.h
@@ -330,21 +374,98 @@ set(LINPHONE_PRIVATE_HEADER_FILES ${LINPHONE_PRIVATE_HEADER_FILES} PARENT_SCOPE)
 bc_apply_compile_flags(LINPHONE_CXX_OBJECTS_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 bc_apply_compile_flags(LINPHONE_OBJC_SOURCE_FILES STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)
 
-if (ENABLE_STATIC)
-	add_library(
-		linphone-cxx-objects-static OBJECT
-		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
-	)
-	target_compile_definitions(linphone-cxx-objects-static PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
-	target_include_directories(linphone-cxx-objects-static SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
-endif ()
 
-if (ENABLE_SHARED)
-	add_library(
-		linphone-cxx-objects OBJECT
+if(ENABLE_STATIC)
+	add_library(linphone-static STATIC ${LINPHONE_HEADER_FILES}
 		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
+		$<TARGET_OBJECTS:linphone-coreapi-static>
 	)
-	target_compile_definitions(linphone-cxx-objects PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
-	target_include_directories(linphone-cxx-objects SYSTEM PRIVATE ${LINPHONE_CXX_OBJECTS_INCLUDE_DIRS} ${LINPHONE_INCLUDE_DIRS})
-	target_compile_options(linphone-cxx-objects PRIVATE "-fPIC")
-endif ()
+	set_target_properties(linphone-static PROPERTIES OUTPUT_NAME linphone)
+	target_include_directories(linphone-static PUBLIC ${LINPHONE_INCLUDE_DIRS})
+	target_link_libraries(linphone-static INTERFACE ${LIBS})
+	if(APPLE)
+		target_link_libraries(linphone-static INTERFACE "-framework Foundation" "-framework AVFoundation")
+	endif()
+	install(TARGETS linphone-static EXPORT ${EXPORT_TARGETS_NAME}Targets
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	)
+endif()
+if(ENABLE_SHARED)
+	add_library(linphone SHARED "../share/cpim_grammar" ${LINPHONE_HEADER_FILES}
+		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
+		$<TARGET_OBJECTS:linphone-coreapi>
+	)
+	if(IOS)
+		if(IOS)
+			set(MIN_OS ${LINPHONE_IOS_DEPLOYMENT_TARGET})
+		else()
+			set(MIN_OS ${CMAKE_OSX_DEPLOYMENT_TARGET})
+		endif()
+		set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/build/osx/")
+		set_target_properties(linphone PROPERTIES
+			FRAMEWORK TRUE
+			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
+			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
+			PUBLIC_HEADER "${LINPHONE_HEADER_FILES}"
+			RESOURCE "../share/cpim_grammar"
+		)
+	endif()
+	if(BELCARD_FOUND)
+		if(APPLE)
+			set_target_properties(linphone PROPERTIES LINK_FLAGS "-stdlib=libc++")
+		endif()
+	endif()
+
+	set_target_properties(linphone PROPERTIES LINKER_LANGUAGE CXX)
+	if(NOT ANDROID)
+		# Do not version shared library on Android
+		set_target_properties(linphone PROPERTIES SOVERSION ${LINPHONE_SO_VERSION})
+	endif()
+	target_include_directories(linphone PUBLIC ${LINPHONE_INCLUDE_DIRS})
+	target_link_libraries(linphone PRIVATE ${LIBS})
+	if(APPLE)
+		target_link_libraries(linphone PRIVATE "-framework Foundation" "-framework AVFoundation")
+	endif()
+	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+		set_target_properties(linphone PROPERTIES PREFIX "lib")
+	elseif(ANDROID)
+		target_link_libraries(linphone PUBLIC "log" ${SUPPORT_LIBRARIES} ${CPUFEATURES_LIBRARIES})
+		if(ENABLE_JAVA_WRAPPER)
+			add_dependencies(linphone linphonej)
+		endif()
+	endif()
+	if(MSVC)
+		if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+			install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_BUILD_TYPE}/linphone.pdb
+				DESTINATION ${CMAKE_INSTALL_BINDIR}
+				PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+			)
+		endif()
+	endif()
+	install(TARGETS linphone EXPORT ${EXPORT_TARGETS_NAME}Targets
+		RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+		FRAMEWORK DESTINATION Frameworks
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	)
+endif()
+if(ICONV_FOUND)
+	if(APPLE)
+		# Prevent conflict between the system iconv.h header and the one from macports.
+		if(ENABLE_STATIC)
+			target_compile_options(linphone-static PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+		endif()
+		if(ENABLE_SHARED)
+			target_compile_options(linphone PRIVATE "-include" "${ICONV_INCLUDE_DIRS}/iconv.h")
+		endif()
+	else()
+		if(ENABLE_STATIC)
+			target_include_directories(linphone-static PRIVATE ${ICONV_INCLUDE_DIRS})
+		endif()
+		if(ENABLE_SHARED)
+			target_include_directories(linphone PRIVATE ${ICONV_INCLUDE_DIRS})
+		endif()
+	endif()
+endif()
