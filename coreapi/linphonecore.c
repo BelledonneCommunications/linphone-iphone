@@ -6265,6 +6265,7 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 	if (is_sip_reachable){
 		getPlatformHelpers(lc)->setDnsServers();
+		if (lc->sip_conf.guess_hostname) update_primary_contact(lc);
 	}
 
 	ms_message("SIP network reachability state is now [%s]",is_sip_reachable?"UP":"DOWN");
