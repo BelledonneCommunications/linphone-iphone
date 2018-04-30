@@ -126,7 +126,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)onCreate {
 	bctbx_list_t *addresses = NULL;
-	for(NSString *addr in _contacts) {
+	for (NSString *addr in _contacts) {
 		LinphoneAddress *linphoneAddress = linphone_address_new(addr.UTF8String);
 		if (!linphoneAddress)
 			continue;

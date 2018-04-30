@@ -32,6 +32,7 @@
 #import "CallView.h"
 #import "ChatConversationCreateView.h"
 #import "ChatConversationInfoView.h"
+#import "ChatConversationImdnView.h"
 #import "ChatConversationView.h"
 #import "ChatsListView.h"
 #import "ContactDetailsView.h"

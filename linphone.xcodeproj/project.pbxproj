@@ -694,6 +694,10 @@
 		8CD99A342090A457008A7CDA /* linphone_user.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A2E2090A456008A7CDA /* linphone_user.png */; };
 		8CD99A372090A824008A7CDA /* splashscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A352090A823008A7CDA /* splashscreen@2x.png */; };
 		8CD99A382090A824008A7CDA /* splashscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A362090A824008A7CDA /* splashscreen.png */; };
+		8CD99A3A2090B9CB008A7CDA /* ChatConversationImdnView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A392090B9CB008A7CDA /* ChatConversationImdnView.xib */; };
+		8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */; };
+		8CD99A3F2090CD37008A7CDA /* UIChatConversationImdnTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8CD99A3E2090CD37008A7CDA /* UIChatConversationImdnTableViewCell.xib */; };
+		8CD99A422090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8CD99A412090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m */; };
 		8CDC61951F84D89B0087CF7F /* check_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC618C1F84D89B0087CF7F /* check_selected.png */; };
 		8CDC61971F84D9270087CF7F /* check_selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CDC61961F84D9270087CF7F /* check_selected@2x.png */; };
 		8CE24F4B1F8234A30077AC0A /* next_default.png in Resources */ = {isa = PBXBuildFile; fileRef = 8CE24F491F8234A20077AC0A /* next_default.png */; };
@@ -1720,6 +1724,12 @@
 		8CD99A2E2090A456008A7CDA /* linphone_user.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = linphone_user.png; path = "../../../nouveau logo/Icons/linphone_user/linphone_user.png"; sourceTree = "<group>"; };
 		8CD99A352090A823008A7CDA /* splashscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "splashscreen@2x.png"; sourceTree = "<group>"; };
 		8CD99A362090A824008A7CDA /* splashscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splashscreen.png; sourceTree = "<group>"; };
+		8CD99A392090B9CB008A7CDA /* ChatConversationImdnView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatConversationImdnView.xib; sourceTree = "<group>"; };
+		8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChatConversationImdnView.m; sourceTree = "<group>"; };
+		8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChatConversationImdnView.h; sourceTree = "<group>"; };
+		8CD99A3E2090CD37008A7CDA /* UIChatConversationImdnTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatConversationImdnTableViewCell.xib; sourceTree = "<group>"; };
+		8CD99A402090CE25008A7CDA /* UIChatConversationImdnTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatConversationImdnTableViewCell.h; sourceTree = "<group>"; };
+		8CD99A412090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIChatConversationImdnTableViewCell.m; sourceTree = "<group>"; };
 		8CDC618C1F84D89B0087CF7F /* check_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = check_selected.png; sourceTree = "<group>"; };
 		8CDC61961F84D9270087CF7F /* check_selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check_selected@2x.png"; sourceTree = "<group>"; };
 		8CE24F491F8234A20077AC0A /* next_default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_default.png; sourceTree = "<group>"; };
@@ -2054,6 +2064,9 @@
 				8CA70ACF1F9E0ABA00A3D2EB /* ChatConversationInfoView.h */,
 				8CA70AD01F9E0AE100A3D2EB /* ChatConversationInfoView.m */,
 				8CA70AC51F9DEDE000A3D2EB /* ChatConversationInfoView.xib */,
+				8CD99A3D2090BA24008A7CDA /* ChatConversationImdnView.h */,
+				8CD99A3B2090B9FA008A7CDA /* ChatConversationImdnView.m */,
+				8CD99A392090B9CB008A7CDA /* ChatConversationImdnView.xib */,
 				8C9C5E0B1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.h */,
 				8C9C5E0C1F83B2EF006987FA /* ChatConversationCreateCollectionViewController.m */,
 				6341807A1BBC103100F71761 /* ChatConversationCreateTableView.h */,
@@ -2200,6 +2213,9 @@
 				8CA70AE11F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.h */,
 				8CA70AE21F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.m */,
 				8CA70AE31F9E39E400A3D2EB /* UIChatConversationInfoTableViewCell.xib */,
+				8CD99A402090CE25008A7CDA /* UIChatConversationImdnTableViewCell.h */,
+				8CD99A412090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m */,
+				8CD99A3E2090CD37008A7CDA /* UIChatConversationImdnTableViewCell.xib */,
 				8C9C5E0E1F83BD97006987FA /* UIChatCreateCollectionViewCell.h */,
 				8C9C5E0F1F83BD97006987FA /* UIChatCreateCollectionViewCell.m */,
 				8C9C5E101F83BD97006987FA /* UIChatCreateCollectionViewCell.xib */,
@@ -3570,6 +3586,7 @@
 				63AADC011B6A0FF200AA16FD /* assistant_linphone_existing.rc in Resources */,
 				633FEE5A1D3CD5590014B822 /* edit_default.png in Resources */,
 				244523B01E8266CC0037A187 /* chat_error.png in Resources */,
+				8CD99A3A2090B9CB008A7CDA /* ChatConversationImdnView.xib in Resources */,
 				633FEDD11D3CD5590014B822 /* call_quality_indicator_2@2x.png in Resources */,
 				633FEDBC1D3CD5590014B822 /* call_audio_start_disabled.png in Resources */,
 				633FEE481D3CD5590014B822 /* delete_default.png in Resources */,
@@ -3595,6 +3612,7 @@
 				244523BE1E8D3A6C0037A187 /* chat_unsecure.png in Resources */,
 				633FEE031D3CD5590014B822 /* cancel_edit_default@2x.png in Resources */,
 				633FEDE01D3CD5590014B822 /* call_start_body_over~ipad.png in Resources */,
+				8CD99A3F2090CD37008A7CDA /* UIChatConversationImdnTableViewCell.xib in Resources */,
 				D34F6F9E1594D3FB0095705B /* InAppSettings.bundle in Resources */,
 				633FEE4D1D3CD5590014B822 /* delete_field_default@2x.png in Resources */,
 				639CEB091A1DF4FA004DE38F /* UIChatCell.xib in Resources */,
@@ -3980,9 +3998,11 @@
 			files = (
 				63B81A0F1B57DA33009604A6 /* TPKeyboardAvoidingTableView.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				8CD99A3C2090B9FA008A7CDA /* ChatConversationImdnView.m in Sources */,
 				1D3623260D0F684500981E51 /* LinphoneAppDelegate.m in Sources */,
 				22F2508E107141E100AC9B3F /* DialerView.m in Sources */,
 				633756451B67D2B200E21BAD /* SideMenuView.m in Sources */,
+				8CD99A422090CE6F008A7CDA /* UIChatConversationImdnTableViewCell.m in Sources */,
 				22E0A822111C44E100B04932 /* AboutView.m in Sources */,
 				633671611BCBAAD200BFCBDE /* ChatConversationCreateView.m in Sources */,
 				634610061B61330300548952 /* UILabel+Boldify.m in Sources */,
