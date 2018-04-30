@@ -268,8 +268,12 @@ void linphone_account_creator_cbs_set_update_account(LinphoneAccountCreatorCbs *
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	/*this will drop all pending requests if any*/
 	if (creator->xmlrpc_session) linphone_xml_rpc_session_release(creator->xmlrpc_session);
-	if (creator->service != NULL && linphone_account_creator_service_get_destructor_cb(creator->service) != NULL)
-		linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
+	if (creator->service != NULL ) {
+			if (linphone_account_creator_service_get_destructor_cb(creator->service) != NULL)
+				linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
+			linphone_account_creator_service_unref(creator->service);
+	}
+	
 	linphone_account_creator_cbs_unref(creator->cbs);
 	linphone_proxy_config_unref(creator->proxy_cfg);
 	linphone_account_creator_reset(creator);
@@ -289,6 +293,7 @@ LinphoneAccountCreator * _linphone_account_creator_new(LinphoneCore *core, const
 	const char* domain = lp_config_get_string(core->config, "assistant", "domain", NULL);
 	creator = belle_sip_object_new(LinphoneAccountCreator);
 	creator->service = linphone_core_get_account_creator_service(core);
+	linphone_account_creator_service_ref(creator->service);
 	creator->cbs = linphone_account_creator_cbs_new();
 	creator->core = core;
 	creator->transport = LinphoneTransportTcp;
