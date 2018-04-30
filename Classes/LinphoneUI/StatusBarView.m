@@ -137,7 +137,7 @@
 		(linphone_content_get_buffer(content) == NULL)) {
 		return;
 	}
-	uint8_t *bodyTmp = linphone_content_get_buffer(content);
+	const uint8_t *bodyTmp = linphone_content_get_buffer(content);
 	const char *body = (const char *)bodyTmp;
 	if ((body = strstr(body, "voice-message: ")) == NULL) {
 		LOGW(@"Received new NOTIFY from voice mail but could not find 'voice-message' in BODY. Ignoring it.");

@@ -162,24 +162,13 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 		return;
 
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
-	ChatConversationView *view = VIEW(ChatConversationView);
-	LinphoneChatRoom *oldRoom = view.chatRoom;
-	if (oldRoom) {
-		LinphoneChatRoomCbs *oldCbs = linphone_chat_room_get_current_callbacks(oldRoom);
-		if (oldCbs && view.chatRoomCbs && oldCbs == view.chatRoomCbs) {
-			linphone_chat_room_remove_callbacks(oldRoom, view.chatRoomCbs);
-			view.chatRoomCbs = NULL;
-		}
-	}
+	[PhoneMainView.instance goToChatRoom:chatRoom];
 
-	view.chatRoom = chatRoom;
 	// on iPad, force unread bubble to disappear by reloading the cell
 	if (IPAD) {
 		UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
 		[cell updateUnreadBadge];
-		[view configureForRoom:false];
 	}
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {

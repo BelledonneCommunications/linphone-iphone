@@ -38,12 +38,12 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 	size_t size = linphone_buffer_get_size(buffer);
 
 	if (!thiz.data) {
-		thiz.data = [[NSMutableData alloc] initWithCapacity:linphone_content_get_size(content)];
+		thiz.data = [[NSMutableData alloc] initWithCapacity:linphone_content_get_file_size(content)];
 	}
 
 	if (size == 0) {
 		LOGI(@"Transfer of %s (%d bytes): download finished", linphone_content_get_name(content), size);
-		assert([thiz.data length] == linphone_content_get_size(content));
+		assert([thiz.data length] == linphone_content_get_file_size(content));
 
 		// we're finished, save the image and update the message
 		UIImage *image = [UIImage imageWithData:thiz.data];
@@ -63,6 +63,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 
 			[errView addAction:defaultAction];
 			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+			[thiz stopAndDestroy];
 			return;
 		}
 
@@ -97,7 +98,6 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 																  forKey:@"localimage"
 															   inMessage:message];
 						   }
-						   thiz.message = NULL;
 						   [NSNotificationCenter.defaultCenter
 							   postNotificationName:kLinphoneFileTransferRecvUpdate
 											 object:thiz
@@ -114,14 +114,14 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 						 }];
 	} else {
 		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
-			 linphone_content_get_size(content), [thiz.data length], size);
+			 linphone_content_get_file_size(content), [thiz.data length], size);
 		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
 		[NSNotificationCenter.defaultCenter
 			postNotificationName:kLinphoneFileTransferRecvUpdate
 						  object:thiz
 						userInfo:@{
 							@"state" : @(linphone_chat_message_get_state(message)),
-							@"progress" : @([thiz.data length] * 1.f / linphone_content_get_size(content)),
+							@"progress" : @([thiz.data length] * 1.f / linphone_content_get_file_size(content)),
 						}];
 	}
 }

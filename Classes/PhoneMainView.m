@@ -871,14 +871,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 		bctbx_list_free(addresses);
 		return;
 	}
-	ChatConversationView *view = VIEW(ChatConversationView);
-	view.chatRoom = room;
-	[self changeCurrentView:view.compositeViewDescription];
+
+	[self goToChatRoom:room];
 }
 
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView {
 	if (!linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(LC))
-		|| ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" withDefault:FALSE] && bctbx_list_size(addresses) == 1)) {
+		|| ([[LinphoneManager instance] lpConfigBoolForKey:@"prefer_basic_chat_room" inSection:@"misc"] && bctbx_list_size(addresses) == 1)) {
 		// If there's no factory uri, create a basic chat room
 		if (bctbx_list_size(addresses) != 1) {
 			// Display Error: unsuported group chat
@@ -918,7 +917,15 @@ static RootViewManager *rootViewManagerInstance = nil;
 	_waitView.hidden = YES;
 	_waitView = NULL;
 	ChatConversationView *view = VIEW(ChatConversationView);
+	if (view.chatRoom && view.chatRoomCbs)
+		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
+
+	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
+		[PhoneMainView.instance popCurrentView];
+
+	view.chatRoomCbs = NULL;
 	view.chatRoom = cr;
+	self.currentRoom = view.chatRoom;
 	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 

@@ -111,6 +111,7 @@
 - (void)updateApplicationBadgeNumber;
 - (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView;
 - (void)createChatRoomWithSubject:(const char *)subject addresses:(bctbx_list_t *)addresses andWaitView:(UIView *)waitView;
+- (void)goToChatRoom:(LinphoneChatRoom *)cr;
 + (PhoneMainView*) instance;
 
 - (BOOL)isIphoneXDevice;
