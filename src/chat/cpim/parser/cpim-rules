@@ -1,4 +1,6 @@
-Message = Message-headers CRLF Content-headers CRLF
+Message = [Crappy-header CRLF] Message-headers CRLF Content-headers CRLF
+
+Crappy-header = "Content-Type: Message/CPIM" CRLF
 
 Message-headers = 1*( Message-header CRLF )
 Message-header = From-header / To-header / DateTime-header / cc-header / Subject-header / NS-header / Require-header / Header
