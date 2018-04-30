@@ -4227,6 +4227,11 @@ void MediaSession::sendVfuRequest () {
 #ifdef VIDEO_ENABLED
 	L_D();
 	MediaSessionParams *curParams = getCurrentParams();
+
+	if (d->videoStream && d->videoStream->ms.decoder) {
+		ms_filter_call_method_noarg(d->videoStream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
+	}
+
 	if ((curParams->avpfEnabled() || curParams->getPrivate()->implicitRtcpFbEnabled())
 		&& d->videoStream && media_stream_get_state(&d->videoStream->ms) == MSStreamStarted) { // || sal_media_description_has_implicit_avpf((const SalMediaDescription *)call->resultdesc)
 		lInfo() << "Request Full Intra Request on CallSession [" << this << "]";

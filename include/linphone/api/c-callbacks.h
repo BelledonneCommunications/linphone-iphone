@@ -102,6 +102,12 @@ typedef void (*LinphoneCallCbsTmmbrReceivedCb)(LinphoneCall *call, int stream_in
  */
 typedef void (*LinphoneCallCbsSnapshotTakenCb)(LinphoneCall *call, const char *filepath);
 
+ /**
+ * Callback to notify a next video frame has been decoded
+ * @param call LinphoneCall for which the next video frame has been decoded
+ */
+typedef void (*LinphoneCallCbsNextVideoFrameDecodedCb)(LinphoneCall *call);
+
 /**
  * @}
 **/

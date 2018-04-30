@@ -188,6 +188,10 @@ void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_pa
 	NOTIFY_IF_EXIST(SnapshotTaken, snapshot_taken, call, file_path)
 }
 
+void linphone_call_notify_next_video_frame_decoded(LinphoneCall *call) {
+	NOTIFY_IF_EXIST(NextVideoFrameDecoded, next_video_frame_decoded, call)
+}
+
 // =============================================================================
 // Public functions.
 // =============================================================================

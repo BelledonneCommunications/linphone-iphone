@@ -418,6 +418,7 @@ void CallPrivate::onFirstVideoFrameDecoded (const shared_ptr<CallSession> &sessi
 		nextVideoFrameDecoded._func = nullptr;
 		nextVideoFrameDecoded._user_data = nullptr;
 	}
+	linphone_call_notify_next_video_frame_decoded(L_GET_C_BACK_PTR(q));
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded (const shared_ptr<CallSession> &session) {
