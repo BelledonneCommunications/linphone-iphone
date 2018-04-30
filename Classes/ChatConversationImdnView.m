@@ -47,7 +47,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 						  [LinphoneUtils timeToString:linphone_chat_message_get_time(_msg) withFormat:LinphoneDateChatBubble],
 						  [FastAddressBook displayNameForAddress:addr]];
 	_msgAvatarImage.image = outgoing ? [LinphoneUtils selfAvatar] : [FastAddressBook imageForAddress:addr];
-	_msgText.text = [NSString stringWithUTF8String:linphone_chat_message_get_text(_msg)];
+	if (linphone_chat_message_has_text_content(_msg))
+		_msgText.text = [NSString stringWithUTF8String:linphone_chat_message_get_text(_msg)];
+	else
+		_msgText.text = [NSString stringWithUTF8String: linphone_content_get_name(linphone_chat_message_get_file_transfer_information(_msg))];
+	
 	_msgBackgroundColorImage.image = _msgBottomBar.image = [UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
 	_msgDateLabel.textColor = [UIColor colorWithPatternImage:_msgBackgroundColorImage.image];
 	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
