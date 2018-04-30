@@ -19,19 +19,14 @@
 @property(nonatomic) bctbx_list_t *displayedList;
 @property(nonatomic) bctbx_list_t *receivedList;
 @property(nonatomic) bctbx_list_t *notReceivedList;
-@property(nonatomic) CGFloat height;
 
-@property (weak, nonatomic) IBOutlet UIView *whiteView;
 @property (weak, nonatomic) IBOutlet UIView *msgView;
 @property (weak, nonatomic) IBOutlet UIImageView *msgBackgroundColorImage;
 @property (weak, nonatomic) IBOutlet UIRoundedImageView *msgAvatarImage;
 @property (weak, nonatomic) IBOutlet UIImageView *msgBottomBar;
 @property (weak, nonatomic) IBOutlet UILabel *msgDateLabel;
 @property (weak, nonatomic) IBOutlet UITextViewNoDefine *msgText;
-@property (weak, nonatomic) IBOutlet UIView *readHeader;
-@property (weak, nonatomic) IBOutlet UIView *deliveredHeader;
-@property (weak, nonatomic) IBOutlet UIView *undeliveredHeader;
-@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 - (IBAction)onBackClick:(id)sender;
 

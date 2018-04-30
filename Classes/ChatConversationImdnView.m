@@ -39,15 +39,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_msg = NULL;
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-	for (UIView *view in _scrollView.subviews) {
-		if (view == _readHeader || view == _deliveredHeader || view == _undeliveredHeader)
-			continue;
-
-		[view removeFromSuperview];
-	}
-}
-
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 	const LinphoneAddress *addr = linphone_chat_message_get_from_address(_msg);
@@ -66,25 +57,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 								  _msgView.frame.size.width,
 								  [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width].height)];
 
-	[_whiteView setFrame:CGRectMake(self.view.frame.origin.x,
-									self.view.frame.origin.y,
-									self.view.frame.size.width,
-									_msgView.frame.size.height + _msgView.frame.origin.y)];
-	
-	_scrollView.scrollEnabled = TRUE;
-	_scrollView.userInteractionEnabled = TRUE;
-	_scrollView.showsVerticalScrollIndicator = TRUE;
+	[_tableView setFrame:CGRectMake(_tableView.frame.origin.x,
+									_msgView.frame.origin.y + _msgView.frame.size.height,
+									_tableView.frame.size.width,
+									self.view.frame.size.height - (_msgView.frame.origin.y + _msgView.frame.size.height))];
 
-	_displayedList = linphone_chat_message_get_participants_that_have_displayed(_msg);
-	_receivedList = linphone_chat_message_get_participants_that_have_received(_msg);
-	_notReceivedList = linphone_chat_message_get_participants_that_have_not_received(_msg);
-
-	if (_displayedList) {
-	}
-	if (_receivedList) {
-	}
-	if (_notReceivedList) {
-	}
+	_displayedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDisplayed);
+	_receivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDeliveredToUser);
+	_notReceivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDelivered);
 }
 
 #pragma mark - TableView
@@ -101,7 +81,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return 23.0;
 }
 
-- (UITableViewHeaderFooterView *)headerViewForSection:(NSInteger)section {
+- (UITableViewHeaderFooterView *)tableView:(UITableView *)tableView headerViewForSection:(NSInteger)section {
 	NSString *kHeaderId = NSStringFromClass(ChatConversationImdnTableViewHeader.class);
 	ChatConversationImdnTableViewHeader *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:kHeaderId];
 	if (!header)
@@ -109,19 +89,29 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	if (section == 1) {
 		if (_displayedList) {
-			header.
+			header.label.text = NSLocalizedString(@"Read", nil);
+			header.icon.imageView.image = [UIImage imageNamed:@"chat_read"];
 		} else if (_receivedList) {
-
-		} else {
-
+			header.label.text = NSLocalizedString(@"Delivered", nil);
+			header.icon.imageView.image = [UIImage imageNamed:@"chat_delivered"];
+		} else if (_notReceivedList) {
+			header.label.text = NSLocalizedString(@"Undelivered", nil);
+			header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
 		}
 	} else if (section == 2) {
 		if (_receivedList) {
-
-		} else {
-
+			header.label.text = NSLocalizedString(@"Delivered", nil);
+			header.icon.imageView.image = [UIImage imageNamed:@"chat_delivered"];
+		} else if (_notReceivedList) {
+			header.label.text = NSLocalizedString(@"Undelivered", nil);
+			header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
 		}
+	} else if (section == 3) {
+		header.label.text = NSLocalizedString(@"Undelivered", nil);
+		header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
 	}
+
+	return header;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -130,15 +120,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 			return bctbx_list_size(_displayedList);
 		else if (_receivedList)
 			return bctbx_list_size(_receivedList);
-		else
+		else if (_notReceivedList)
 			return bctbx_list_size(_notReceivedList);
 	} else if (section == 2) {
 		if (_receivedList)
 			return bctbx_list_size(_receivedList);
-		else
+		else if (_notReceivedList)
 			return bctbx_list_size(_notReceivedList);
-	}
-	return bctbx_list_size(_notReceivedList);
+	} else if (section == 3)
+		return bctbx_list_size(_notReceivedList);
+
+	return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -148,15 +140,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 			list = _displayedList;
 		else if (_receivedList)
 			list = _receivedList;
-		else
+		else if (_notReceivedList)
 			list = _notReceivedList;
 	} else if (indexPath.section == 2) {
 		if (_receivedList)
 			list = _receivedList;
-		else
+		else if (_notReceivedList)
 			list = _notReceivedList;
-	} else
+	} else if (indexPath.section == 3)
 		list = _notReceivedList;
+
+	if (!list)
+		return nil;
 
 	NSString *kCellId = NSStringFromClass(UIChatConversationImdnTableViewCell.class);
 	UIChatConversationImdnTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];

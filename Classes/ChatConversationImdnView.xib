@@ -17,6 +17,7 @@
                 <outlet property="msgDateLabel" destination="jaE-4d-bbo" id="W3u-tE-pGo"/>
                 <outlet property="msgText" destination="V21-2s-obu" id="iTL-AZ-o7h"/>
                 <outlet property="msgView" destination="VK8-0e-Hsa" id="sWi-sR-kan"/>
+                <outlet property="tableView" destination="HjO-C8-Itr" id="cuC-QY-xbT"/>
                 <outlet property="view" destination="1g1-pp-Uhi" id="Km4-Mj-txf"/>
             </connections>
         </placeholder>
@@ -102,6 +103,16 @@
                             </subviews>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         </view>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="HjO-C8-Itr">
+                            <rect key="frame" x="8" y="171" width="359" height="496"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <color key="separatorColor" red="0.67030966280000004" green="0.71867996450000005" blue="0.75078284740000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <outlet property="dataSource" destination="-1" id="fYu-DD-p1k"/>
+                                <outlet property="delegate" destination="-1" id="VsB-GE-lPS"/>
+                            </connections>
+                        </tableView>
                     </subviews>
                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 </view>
