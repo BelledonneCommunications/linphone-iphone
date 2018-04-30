@@ -121,6 +121,7 @@ static void linphone_version_test(void){
 static void core_init_test(void) {
 	LinphoneCore* lc;
 	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
+	
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
 	if (BC_ASSERT_PTR_NOT_NULL(lc)) {
@@ -846,37 +847,31 @@ static void search_friend_with_name(void) {
 }
 
 static void search_friend_large_database(void) {
-	MSTimeSpec start, current;
-	LinphoneMagicSearch *magicSearch = NULL;
-	bctbx_list_t *resultList = NULL;
 	char *dbPath = bc_tester_res("db/friends.db");
-	char searchedFriend[] = {"6295103032641994169"};
-	char subBuff[30];
+	char *searchedFriend = "6295103032641994169";
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
-	unsigned int i;
-
 	linphone_core_set_friends_database_path(manager->lc, dbPath);
+	LinphoneMagicSearch *magicSearch = linphone_magic_search_new(manager->lc);
 
-	magicSearch = linphone_magic_search_new(manager->lc);
-
-	for (i = 1; i < sizeof(searchedFriend) ; i++) {
-		memcpy(subBuff, &searchedFriend, i);
+	for (size_t i = 1; i < strlen(searchedFriend) ; i++) {
+		MSTimeSpec start, current;
+		char subBuff[20];
+		memcpy(subBuff, searchedFriend, i);
 		subBuff[i] = '\0';
 		liblinphone_tester_clock_start(&start);
-		resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, subBuff, "");
+		bctbx_list_t *resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, subBuff, "");
 		if (BC_ASSERT_PTR_NOT_NULL(resultList)) {
 			ms_get_cur_time(&current);
-			ms_message("Searching time: %lld ms" ,((current.tv_sec - start.tv_sec)*1000LL) + ((current.tv_nsec - start.tv_nsec)/1000000LL));
-
-			if (BC_ASSERT_PTR_NOT_NULL(resultList)) ms_message("List size: %zu", bctbx_list_size(resultList));
-
+			ms_message("Searching time: %lld ms",
+				((current.tv_sec - start.tv_sec) * 1000LL) + ((current.tv_nsec - start.tv_nsec) / 1000000LL));
+			ms_message("List size: %zu", bctbx_list_size(resultList));
 			bctbx_list_free_with_data(resultList, (bctbx_list_free_func)linphone_magic_search_unref);
 		}
 	}
 
-	free(dbPath);
 	linphone_magic_search_unref(magicSearch);
 	linphone_core_manager_destroy(manager);
+	free(dbPath);
 }
 
 test_t setup_tests[] = {
