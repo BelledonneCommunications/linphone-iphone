@@ -106,6 +106,9 @@ public:
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 
+	// Call listener
+	void snapshotTakenCb(void *userdata, struct _MSFilter *f, unsigned int id, void *arg);
+
 private:
 	static OrtpJitterBufferAlgorithm jitterBufferNameToAlgo (const std::string &name);
 

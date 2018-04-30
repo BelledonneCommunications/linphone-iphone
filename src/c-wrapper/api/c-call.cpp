@@ -184,6 +184,9 @@ void linphone_call_notify_tmmbr_received (LinphoneCall *call, int stream_index, 
 	NOTIFY_IF_EXIST(TmmbrReceived, tmmbr_received, call, stream_index, tmmbr)
 }
 
+void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_path) {
+	NOTIFY_IF_EXIST(SnapshotTaken, snapshot_taken, call, file_path)
+}
 
 // =============================================================================
 // Public functions.

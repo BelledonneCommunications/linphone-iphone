@@ -4364,11 +4364,30 @@ void MediaSession::resetFirstVideoFrameDecoded () {
 		ms_filter_call_method_noarg(d->videoStream->ms.decoder, MS_VIDEO_DECODER_RESET_FIRST_IMAGE_NOTIFICATION);
 }
 
+void MediaSessionPrivate::snapshotTakenCb(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+#ifdef VIDEO_ENABLED
+	L_Q();
+	if (id == MS_JPEG_WRITER_SNAPSHOT_TAKEN) {
+		const char *filepath = (const char *) arg;
+		listener->onSnapshotTaken(q->getSharedFromThis(), filepath);
+	}
+#endif
+}
+
+#ifdef VIDEO_ENABLED
+static void snapshot_taken(void *userdata, struct _MSFilter *f, unsigned int id, void *arg) {
+	MediaSessionPrivate *d = (MediaSessionPrivate *)userdata;
+	d->snapshotTakenCb(userdata, f, id, arg);
+}
+#endif
+
 LinphoneStatus MediaSession::takePreviewSnapshot (const string& file) {
 #ifdef VIDEO_ENABLED
 	L_D();
 	if (d->videoStream && d->videoStream->local_jpegwriter) {
+		ms_filter_clear_notify_callback(d->videoStream->jpegwriter);
 		const char *filepath = file.empty() ? nullptr : file.c_str();
+		ms_filter_add_notify_callback(d->videoStream->local_jpegwriter, snapshot_taken, d, TRUE);
 		return ms_filter_call_method(d->videoStream->local_jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)filepath);
 	}
 	lWarning() << "Cannot take local snapshot: no currently running video stream on this call";
@@ -4380,7 +4399,9 @@ LinphoneStatus MediaSession::takeVideoSnapshot (const string& file) {
 #ifdef VIDEO_ENABLED
 	L_D();
 	if (d->videoStream && d->videoStream->jpegwriter) {
+		ms_filter_clear_notify_callback(d->videoStream->jpegwriter);
 		const char *filepath = file.empty() ? nullptr : file.c_str();
+		ms_filter_add_notify_callback(d->videoStream->jpegwriter, snapshot_taken, d, TRUE);
 		return ms_filter_call_method(d->videoStream->jpegwriter, MS_JPEG_WRITER_TAKE_SNAPSHOT, (void *)filepath);
 	}
 	lWarning() << "Cannot take snapshot: no currently running video stream on this call";

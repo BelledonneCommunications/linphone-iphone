@@ -291,6 +291,8 @@ typedef struct _stats {
 	int number_of_participants_removed;
 	int number_of_subject_changed;
 	int number_of_participant_devices_added;
+
+	int number_of_snapshot_taken;
 }stats;
 
 

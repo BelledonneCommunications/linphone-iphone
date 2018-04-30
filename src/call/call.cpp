@@ -496,6 +496,11 @@ void CallPrivate::onTmmbrReceived (const shared_ptr<CallSession> &session, int s
 	linphone_call_notify_tmmbr_received(L_GET_C_BACK_PTR(q), streamIndex, tmmbr);
 }
 
+void CallPrivate::onSnapshotTaken(const shared_ptr<CallSession> &session, const char *file_path) {
+	L_Q();
+	linphone_call_notify_snapshot_taken(L_GET_C_BACK_PTR(q), file_path);
+}
+
 // =============================================================================
 
 Call::Call (CallPrivate &p, shared_ptr<Core> core) : Object(p), CoreAccessor(core) {
