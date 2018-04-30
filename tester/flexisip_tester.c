@@ -77,7 +77,7 @@ static void message_forking(void) {
 	lcs=bctbx_list_append(lcs,marie2->lc);
 
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(chat_room, message);
+	linphone_chat_message_send(message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneMessageReceived,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
@@ -120,7 +120,7 @@ static void message_forking_with_unreachable_recipients(void) {
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(chat_room, message);
+	linphone_chat_message_send(message);
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneMessageReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageDelivered,1,1000));
 	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageInProgress,1, int, "%d");
@@ -174,7 +174,7 @@ static void message_forking_with_all_recipients_unreachable(void) {
 	linphone_core_set_network_reachable(marie3->lc,FALSE);
 
 	linphone_chat_message_cbs_set_msg_state_changed(cbs, liblinphone_tester_chat_message_msg_state_changed);
-	linphone_chat_room_send_chat_message(chat_room, message);
+	linphone_chat_message_send(message);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneMessageInProgress,1,5000));
 	/*flexisip will accept the message with 202 after 16 seconds*/
@@ -234,8 +234,8 @@ static void message_forking_with_unreachable_recipients_with_gruu(void) {
 	linphone_core_set_network_reachable(marie->lc,FALSE);
 	linphone_core_set_network_reachable(marie2->lc,FALSE);
 
-	linphone_chat_room_send_chat_message(chat_room_1, message_1);
-	linphone_chat_room_send_chat_message(chat_room_2, message_2);
+	linphone_chat_message_send(message_1);
+	linphone_chat_message_send(message_2);
 
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneMessageReceived, 0, int, "%d");
@@ -989,7 +989,7 @@ static void file_transfer_message_rcs_to_external_body_client(void) {
 		}
 		linphone_chat_message_cbs_set_msg_state_changed(cbs,liblinphone_tester_chat_message_msg_state_changed);
 		linphone_chat_message_cbs_set_file_transfer_send(cbs, tester_file_transfer_send);
-		linphone_chat_room_send_chat_message(chat_room,message);
+		linphone_chat_message_send(message);
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceivedWithFile,1));
 
 		if (marie->stat.last_received_chat_message ) {
@@ -1033,7 +1033,7 @@ static void dos_module_trigger(void) {
 		char msg[128];
 		sprintf(msg, "Flood message number %i", i);
 		chat_msg = linphone_chat_room_create_message(chat_room, msg);
-		linphone_chat_room_send_chat_message(chat_room, chat_msg);
+		linphone_chat_message_send(chat_msg);
 		wait_for_until(marie->lc, pauline->lc, &dummy, 1, 10);
 		i++;
 	} while (i < number_of_messge_to_send);
@@ -1045,7 +1045,7 @@ static void dos_module_trigger(void) {
 	reset_counters(&marie->stat);
 	reset_counters(&pauline->stat);
 	chat_msg = linphone_chat_room_create_message(chat_room, passmsg);
-	linphone_chat_room_send_chat_message(chat_room, chat_msg);
+	linphone_chat_message_send(chat_msg);
 	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived, 1));
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneMessageReceived, 1, int, "%d");
 	if (marie->stat.last_received_chat_message) {
@@ -1466,23 +1466,20 @@ static void register_without_regid(void) {
 }
 
 void test_removing_old_tport(void) {
-	bctbx_list_t* lcs;
-	LinphoneCoreManager* marie2;
 	LinphoneCoreManager* marie1 = linphone_core_manager_new("marie_rc");
-	lcs=bctbx_list_append(NULL,marie1->lc);
+	bctbx_list_t *lcs = bctbx_list_append(NULL, marie1->lc);
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneRegistrationOk,1,5000));
 
-	marie2 = ms_new0(LinphoneCoreManager, 1);
-	linphone_core_manager_init(marie2, "marie_rc", NULL);
-	sal_set_uuid(linphone_core_get_sal(marie2->lc), linphone_config_get_string(linphone_core_get_config(marie1->lc),"misc", "uuid", "0"));
+	LinphoneCoreManager *marie2 = linphone_core_manager_create("marie_rc");
+	const char *uuid = linphone_config_get_string(linphone_core_get_config(marie1->lc), "misc", "uuid", "0");
+	lp_config_set_string(linphone_core_get_config(marie2->lc), "misc", "uuid", uuid);
 	linphone_core_manager_start(marie2, TRUE);
-	lcs=bctbx_list_append(lcs, marie2->lc);
+	lcs = bctbx_list_append(lcs, marie2->lc);
 	linphone_core_refresh_registers(marie2->lc);
 
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneRegistrationOk,1,5000));
-
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie1->stat.number_of_LinphoneRegistrationProgress,2,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie2->stat.number_of_LinphoneRegistrationOk, 1, 5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie1->stat.number_of_LinphoneRegistrationProgress, 2, 5000));
 
 	linphone_core_manager_destroy(marie1);
 	linphone_core_manager_destroy(marie2);
