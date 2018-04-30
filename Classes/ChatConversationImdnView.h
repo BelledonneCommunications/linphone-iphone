@@ -19,6 +19,7 @@
 @property(nonatomic) bctbx_list_t *displayedList;
 @property(nonatomic) bctbx_list_t *receivedList;
 @property(nonatomic) bctbx_list_t *notReceivedList;
+@property(nonatomic) bctbx_list_t *errorList;
 
 @property (weak, nonatomic) IBOutlet UIView *msgView;
 @property (weak, nonatomic) IBOutlet UIImageView *msgBackgroundColorImage;

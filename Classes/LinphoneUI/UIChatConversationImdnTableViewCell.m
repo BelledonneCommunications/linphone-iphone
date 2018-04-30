@@ -21,8 +21,9 @@
 		NSArray *arrayOfViews =
 		[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 		if ([arrayOfViews count] >= 1) {
-			UIChatConversationImdnTableViewCell *sub = ((UIChatConversationImdnTableViewCell *)[arrayOfViews objectAtIndex:0]);
-			self = sub;
+			UIView *sub = ((UIView *)[arrayOfViews objectAtIndex:0]);
+			[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+			[self addSubview:sub];
 		}
 	}
 	return self;

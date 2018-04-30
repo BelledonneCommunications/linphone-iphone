@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ChatConversationImdnTableViewHeader.h"
 #import "ChatConversationImdnView.h"
 #import "PhoneMainView.h"
 #import "UIChatBubbleTextCell.h"
@@ -51,104 +50,161 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_msgText.text = [NSString stringWithUTF8String:linphone_chat_message_get_text(_msg)];
 	_msgBackgroundColorImage.image = _msgBottomBar.image = [UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
 	_msgDateLabel.textColor = [UIColor colorWithPatternImage:_msgBackgroundColorImage.image];
-
 	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
 								  _msgView.frame.origin.y,
 								  _msgView.frame.size.width,
 								  [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width].height)];
 
+	_tableView.delegate = self;
+	_tableView.dataSource = self;
 	[_tableView setFrame:CGRectMake(_tableView.frame.origin.x,
-									_msgView.frame.origin.y + _msgView.frame.size.height,
+									_msgView.frame.origin.y + _msgView.frame.size.height + 10,
 									_tableView.frame.size.width,
 									self.view.frame.size.height - (_msgView.frame.origin.y + _msgView.frame.size.height))];
 
 	_displayedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDisplayed);
 	_receivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDeliveredToUser);
 	_notReceivedList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateDelivered);
+	_errorList = linphone_chat_message_get_participants_by_imdn_state(_msg, LinphoneChatMessageStateNotDelivered);
+
+	[_tableView reloadData];
 }
 
 #pragma mark - TableView
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	NSInteger i = 0;
-	if (_displayedList) i++;
-	if (_receivedList) i++;
-	if (_notReceivedList) i++;
-	return i;
+	NSInteger numberOfSection = 0;
+	if (_displayedList) numberOfSection++;
+	if (_receivedList) numberOfSection++;
+	if (_notReceivedList) numberOfSection++;
+	if (_errorList) numberOfSection++;
+	return numberOfSection;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
 	return 23.0;
 }
 
-- (UITableViewHeaderFooterView *)tableView:(UITableView *)tableView headerViewForSection:(NSInteger)section {
-	NSString *kHeaderId = NSStringFromClass(ChatConversationImdnTableViewHeader.class);
-	ChatConversationImdnTableViewHeader *header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:kHeaderId];
-	if (!header)
-		header = [[ChatConversationImdnTableViewHeader alloc] initWithIdentifier:kHeaderId];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+	return 44.0;
+}
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
+	label.numberOfLines = 1;
+	UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 23)];
+	UIImage *image = NULL;
 
-	if (section == 1) {
+	if (section == 0) {
 		if (_displayedList) {
-			header.label.text = NSLocalizedString(@"Read", nil);
-			header.icon.imageView.image = [UIImage imageNamed:@"chat_read"];
+			label.text = NSLocalizedString(@"Read", nil);
+			label.textColor = [UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0];
+			image = [UIImage imageNamed:@"chat_read"];
 		} else if (_receivedList) {
-			header.label.text = NSLocalizedString(@"Delivered", nil);
-			header.icon.imageView.image = [UIImage imageNamed:@"chat_delivered"];
+			label.text = NSLocalizedString(@"Delivered", nil);
+			label.textColor = [UIColor grayColor];
+			image = [UIImage imageNamed:@"chat_delivered"];
 		} else if (_notReceivedList) {
-			header.label.text = NSLocalizedString(@"Undelivered", nil);
-			header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
+			label.text = NSLocalizedString(@"Sent", nil);
+			label.textColor = [UIColor grayColor];
+		} else if (_errorList) {
+			label.text = NSLocalizedString(@"Error", nil);
+			label.textColor = [UIColor redColor];
+			image = [UIImage imageNamed:@"chat_error"];
+		}
+	} else if (section == 1) {
+		if (_displayedList && _receivedList) {
+			label.text = NSLocalizedString(@"Delivered", nil);
+			label.textColor = [UIColor grayColor];
+			image = [UIImage imageNamed:@"chat_delivered"];
+		} else if (_notReceivedList) {
+			label.text = NSLocalizedString(@"Sent", nil);
+			label.textColor = [UIColor grayColor];
+		} else if (_errorList) {
+			label.text = NSLocalizedString(@"Error", nil);
+			label.textColor = [UIColor redColor];
+			image = [UIImage imageNamed:@"chat_error"];
 		}
 	} else if (section == 2) {
-		if (_receivedList) {
-			header.label.text = NSLocalizedString(@"Delivered", nil);
-			header.icon.imageView.image = [UIImage imageNamed:@"chat_delivered"];
-		} else if (_notReceivedList) {
-			header.label.text = NSLocalizedString(@"Undelivered", nil);
-			header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
+		if (_displayedList && _receivedList && _notReceivedList) {
+			label.text = NSLocalizedString(@"Sent", nil);
+			label.textColor = [UIColor grayColor];
+		} else if (_errorList) {
+			label.text = NSLocalizedString(@"Error", nil);
+			label.textColor = [UIColor redColor];
+			image = [UIImage imageNamed:@"chat_error"];
 		}
 	} else if (section == 3) {
-		header.label.text = NSLocalizedString(@"Undelivered", nil);
-		header.icon.imageView.image = [UIImage imageNamed:@"chat_error"];
+		label.text = NSLocalizedString(@"Error", nil);
+		label.textColor = [UIColor redColor];
+		image = [UIImage imageNamed:@"chat_error"];
 	}
 
-	return header;
+	[view addSubview:label];
+	[label sizeToFit];
+	[label setCenter:view.center];
+
+	if (image) {
+		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+		[view addSubview:imageView];
+		[imageView setFrame:CGRectMake(label.frame.origin.x + label.frame.size.width + 5, 2, 19, 19)];
+	}
+	[view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"color_G.png"]]];
+	return view;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	if (section == 1) {
+	if (section == 0) {
 		if (_displayedList)
 			return bctbx_list_size(_displayedList);
 		else if (_receivedList)
 			return bctbx_list_size(_receivedList);
 		else if (_notReceivedList)
 			return bctbx_list_size(_notReceivedList);
-	} else if (section == 2) {
-		if (_receivedList)
+		else if (_errorList)
+			return bctbx_list_size(_errorList);
+	} else if (section == 1) {
+		if (_displayedList &&_receivedList)
 			return bctbx_list_size(_receivedList);
 		else if (_notReceivedList)
 			return bctbx_list_size(_notReceivedList);
+		else if (_errorList)
+			return bctbx_list_size(_errorList);
+	} else if (section == 2) {
+		if (_displayedList && _receivedList && _notReceivedList)
+			return bctbx_list_size(_notReceivedList);
+		else if (_errorList)
+			return bctbx_list_size(_errorList);
 	} else if (section == 3)
-		return bctbx_list_size(_notReceivedList);
+		return bctbx_list_size(_errorList);
 
 	return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	bctbx_list_t *list = NULL;
-	if (indexPath.section == 1) {
+	if (indexPath.section == 0) {
 		if (_displayedList)
 			list = _displayedList;
 		else if (_receivedList)
 			list = _receivedList;
 		else if (_notReceivedList)
 			list = _notReceivedList;
-	} else if (indexPath.section == 2) {
-		if (_receivedList)
+		else if (_errorList)
+			list = _errorList;
+	} else if (indexPath.section == 1) {
+		if (_displayedList &&_receivedList)
 			list = _receivedList;
 		else if (_notReceivedList)
 			list = _notReceivedList;
+		else if (_errorList)
+			list = _errorList;
+	} else if (indexPath.section == 2) {
+		if (_displayedList && _receivedList && _notReceivedList)
+			list = _notReceivedList;
+		else if (_errorList)
+			list = _errorList;
 	} else if (indexPath.section == 3)
-		list = _notReceivedList;
+		list = _errorList;
 
 	if (!list)
 		return nil;
