@@ -706,31 +706,29 @@ shared_ptr<Participant> MediaSessionPrivate::getMe () const {
 
 void MediaSessionPrivate::setState (CallSession::State newState, const string &message) {
 	L_Q();
-	SalMediaDescription *rmd;
-	
-	lInfo()<<"MediaSessionPrivate::setState";
-	
-	/* Take a ref on the session otherwise it might get destroyed during the call to setState */
+
+	// Take a ref on the session otherwise it might get destroyed during the call to setState
 	shared_ptr<CallSession> sessionRef = q->getSharedFromThis();
 	if ((newState != state) && (newState != CallSession::State::StreamsRunning))
 		q->cancelDtmfs();
 	CallSessionPrivate::setState(newState, message);
 	if (listener)
 		listener->onCallSessionStateChangedForReporting(q->getSharedFromThis());
-	switch(newState){
+	SalMediaDescription *rmd = nullptr;
+	switch (newState) {
 		case CallSession::State::UpdatedByRemote:
-			/*Handle specifically the case of an incoming ICE-concluded reINVITE*/
-			lInfo()<<"Checking for ICE reINVITE";
+			// Handle specifically the case of an incoming ICE-concluded reINVITE
+			lInfo() << "Checking for ICE reINVITE";
 			rmd = op->get_remote_media_description();
-			if (iceAgent && rmd != nullptr && iceAgent->checkIceReinviteNeedsDeferedResponse(rmd)){
+			if (iceAgent && rmd && iceAgent->checkIceReinviteNeedsDeferedResponse(rmd)) {
 				deferUpdate = true;
 				deferUpdateInternal = true;
 				incomingIceReinvitePending = true;
-				lInfo()<<"CallSession [" << q << "]: ICE reinvite received, but one or more check-lists are not completed. Response will be sent later, when ICE has completed";
+				lInfo() << "CallSession [" << q << "]: ICE reinvite received, but one or more check-lists are not completed. Response will be sent later, when ICE has completed";
 			}
-		break;
+			break;
 		default:
-		break;
+			break;
 	}
 }
 
@@ -1177,7 +1175,7 @@ void MediaSessionPrivate::getLocalIp (const Address &remoteAddr) {
 		hints.ai_family = AF_UNSPEC;
 		hints.ai_socktype = SOCK_DGRAM;
 		hints.ai_flags = AI_NUMERICHOST;
-		err = getaddrinfo(remoteAddr.getDomain().c_str(), NULL, &hints, &res);
+		err = getaddrinfo(remoteAddr.getDomain().c_str(), nullptr, &hints, &res);
 		if (err == 0)
 			dest = remoteAddr.getDomain().c_str();
 		if (res) freeaddrinfo(res);
@@ -1251,9 +1249,9 @@ void MediaSessionPrivate::selectOutgoingIpVersion () {
 		bool haveIpv6 = false;
 		bool haveIpv4 = false;
 		/* Check connectivity for IPv4 and IPv6 */
-		if (linphone_core_get_local_ip_for(AF_INET6, NULL, ipv6) == 0)
+		if (linphone_core_get_local_ip_for(AF_INET6, nullptr, ipv6) == 0)
 			haveIpv6 = true;
-		if (linphone_core_get_local_ip_for(AF_INET, NULL, ipv4) == 0)
+		if (linphone_core_get_local_ip_for(AF_INET, nullptr, ipv4) == 0)
 			haveIpv4 = true;
 		if (haveIpv6) {
 			if (!haveIpv4)
@@ -2388,8 +2386,10 @@ void MediaSessionPrivate::initializeAudioStream () {
 			params.limeKeyTimeSpan = bctbx_time_string_to_sec(lp_config_get_string(linphone_core_get_config(q->getCore()->getCCore()), "sip", "lime_key_validity", "0"));
 			setZrtpCryptoTypesParameters(&params);
 			audio_stream_enable_zrtp(audioStream, &params);
-			if (peerUri != NULL) ms_free(peerUri);
-			if (selfUri != NULL) ms_free(selfUri);
+			if (peerUri)
+				ms_free(peerUri);
+			if (selfUri)
+				ms_free(selfUri);
 		}
 
 		media_stream_reclaim_sessions(&audioStream->ms, &sessions[mainAudioStreamIndex]);
