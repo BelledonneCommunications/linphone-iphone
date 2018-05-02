@@ -1142,22 +1142,16 @@ int ChatMessage::putCharacter (uint32_t character) {
 	if (character == newLine || character == crlf || character == lf) {
 		shared_ptr<Core> core = getCore();
 		if (lp_config_get_int(core->getCCore()->config, "misc", "store_rtt_messages", 1) == 1) {
-			// TODO: History.
-			lDebug() << "New line sent, forge a message with content " << d->rttMessage.c_str();
-			d->setTime(ms_time(0));
+			lInfo() << "New line sent, forge a message with content " << d->rttMessage;
 			d->state = State::Displayed;
-			// d->direction = Direction::Outgoing;
-			// setFromAddress(Address(
-			// 	linphone_address_as_string(linphone_address_new(linphone_core_get_identity(core->getCCore())))
-			// ));
-			// linphone_chat_message_store(L_GET_C_BACK_PTR(this));
+			d->setText(d->rttMessage);
+			d->storeInDb();
 			d->rttMessage = "";
 		}
 	} else {
 		char *value = LinphonePrivate::Utils::utf8ToChar(character);
-		d->rttMessage = d->rttMessage + string(value);
-		lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character <<
-			"), pending text is " << d->rttMessage.c_str();
+		d->rttMessage += string(value);
+		lDebug() << "Sent RTT character: " << value << "(" << (unsigned long)character << "), pending text is " << d->rttMessage;
 		delete[] value;
 	}
 

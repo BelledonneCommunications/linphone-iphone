@@ -41,10 +41,8 @@ bool CallPrivate::getAudioMuted () const {
 shared_ptr<RealTimeTextChatRoom> CallPrivate::getChatRoom () {
 	L_Q();
 	if (!chatRoom && (q->getState() != CallSession::State::End) && (q->getState() != CallSession::State::Released)) {
-		ChatRoomId chatRoomId(q->getRemoteAddress(), q->getLocalAddress());
-		RealTimeTextChatRoom *rttcr = new RealTimeTextChatRoom(q->getCore(), chatRoomId);
-		chatRoom.reset(rttcr);
-		rttcr->getPrivate()->setCall(q->getSharedFromThis());
+		chatRoom = static_pointer_cast<RealTimeTextChatRoom>(q->getCore()->getOrCreateBasicChatRoom(q->getRemoteAddress(), true));
+		chatRoom->getPrivate()->setCall(q->getSharedFromThis());
 	}
 	return chatRoom;
 }
