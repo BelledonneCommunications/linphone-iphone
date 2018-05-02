@@ -1131,12 +1131,12 @@ string MediaSessionPrivate::getBindIpForStream (int streamIndex) {
 			/* As multicast sender, we must decide a local interface to use to send multicast, and bind to it */
 			char multicastBindIp[LINPHONE_IPADDR_SIZE];
 			memset(multicastBindIp, 0, sizeof(multicastBindIp));
-			linphone_core_get_local_ip_for(pc->multicastIp.find_first_of(':') ? AF_INET6 : AF_INET, nullptr, multicastBindIp);
+			linphone_core_get_local_ip_for((pc->multicastIp.find_first_of(':') == string::npos) ? AF_INET : AF_INET6, nullptr, multicastBindIp);
 			bindIp = pc->multicastBindIp = multicastBindIp;
 		} else {
 			/* Otherwise we shall use an address family of the same family of the multicast address, because
 			 * dual stack socket and multicast don't work well on Mac OS (linux is OK, as usual). */
-			bindIp = pc->multicastIp.find_first_of(':') ? "::0" : "0.0.0.0";
+			bindIp = (pc->multicastIp.find_first_of(':') == string::npos) ? "0.0.0.0" : "::0";
 		}
 	}
 	return bindIp;
