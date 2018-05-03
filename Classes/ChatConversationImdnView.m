@@ -74,6 +74,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[_tableView reloadData];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+	BOOL outgoing = linphone_chat_message_is_outgoing(_msg);
+	_msgBackgroundColorImage.image = _msgBottomBar.image = [UIImage imageNamed:(outgoing ? @"color_A.png" : @"color_D.png")];
+	_msgDateLabel.textColor = [UIColor colorWithPatternImage:_msgBackgroundColorImage.image];
+	[_msgView setFrame:CGRectMake(_msgView.frame.origin.x,
+								  _msgView.frame.origin.y,
+								  _msgView.frame.size.width,
+								  [UIChatBubbleTextCell ViewHeightForMessage:_msg withWidth:self.view.frame.size.width].height)];
+	
+	[_tableView setFrame:CGRectMake(_tableView.frame.origin.x,
+									_msgView.frame.origin.y + _msgView.frame.size.height + 10,
+									_tableView.frame.size.width,
+									self.view.frame.size.height - (_msgView.frame.origin.y + _msgView.frame.size.height))];
+}
+
 #pragma mark - TableView
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
