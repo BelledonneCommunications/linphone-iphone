@@ -204,7 +204,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_chatView.hidden = NO;
 	[self update];
-	[ChatConversationView markAsRead:_chatRoom];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
