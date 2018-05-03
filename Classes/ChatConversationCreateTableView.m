@@ -24,6 +24,7 @@
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
 
+	_magicSearch = linphone_core_create_magic_search(LC);
 	int y = _contactsGroup.count > 0
 		? _collectionView.frame.origin.y + _collectionView.frame.size.height
 		: _searchBar.frame.origin.y + _searchBar.frame.size.height;
@@ -50,7 +51,6 @@
 	[_searchBar setText:@""];
 	[self searchBar:_searchBar textDidChange:_searchBar.text];
 	self.tableView.accessibilityIdentifier = @"Suggested addresses";
-	_magicSearch = linphone_core_create_magic_search(LC);
 }
 
 - (void) viewWillDisappear:(BOOL)animated {
@@ -70,7 +70,6 @@
 		return;
 
 	bctbx_list_t *results = linphone_magic_search_get_contact_list_from_filter(_magicSearch, filter.UTF8String, "");
-
 	while (results) {
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress* addr = linphone_search_result_get_address(result) ?: linphone_friend_get_address(linphone_search_result_get_friend(result));
