@@ -123,7 +123,7 @@ void *Daemon::iterateThread(void *arg) {
 
 EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state) {
 	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
-	LinphoneAddress *fromAddr = linphone_call_log_get_from_address(callLog);
+	const LinphoneAddress *fromAddr = linphone_call_log_get_from_address(callLog);
 	char *fromStr = linphone_address_as_string(fromAddr);
 
 	ostringstream ostr;

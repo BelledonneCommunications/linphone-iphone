@@ -97,10 +97,12 @@ static void on_report_send_with_rtcp_xr_remote (const LinphoneCall *call, SalStr
 	}
 }
 
+/*
 static void on_report_send_with_rtcp_xr_both (const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content) {
 	on_report_send_with_rtcp_xr_local(call, stream_type, content);
 	on_report_send_with_rtcp_xr_remote(call, stream_type, content);
 }
+*/
 
 static bool_t create_call_for_quality_reporting_tests (
 	LinphoneCoreManager *marie,
