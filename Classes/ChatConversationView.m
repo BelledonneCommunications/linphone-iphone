@@ -38,7 +38,6 @@
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
-		isAppearing = false;
 	}
 	return self;
 }
@@ -123,8 +122,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
-	[self configureForRoom:false];
-	isAppearing = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -141,15 +138,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
-	isAppearing = FALSE;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
-	if (!isAppearing)
-		return; //no need to do all that stuff if the view isn't yet appeared.
 
 	// force offset recomputing
 	[_messageField refreshHeight];
@@ -216,10 +210,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (_chatRoom != nil) {
 		[ChatConversationView markAsRead:_chatRoom];
-		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-			getCachedController:NSStringFromClass(TabBarView.class)];
-		[tab update:YES];
-		[PhoneMainView.instance updateApplicationBadgeNumber];
 	}
 }
 
