@@ -920,13 +920,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (view.chatRoom && view.chatRoomCbs)
 		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
 
-	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
-		[PhoneMainView.instance popCurrentView];
-
 	view.chatRoomCbs = NULL;
 	view.chatRoom = cr;
 	self.currentRoom = view.chatRoom;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
+		[view viewWillAppear:TRUE];
+	else
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
