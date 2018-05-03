@@ -60,6 +60,8 @@
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
 
++ (void)markAsRead:(LinphoneChatRoom *)chatRoom;
+
 - (void)configureForRoom:(BOOL)editing;
 - (IBAction)onBackClick:(id)event;
 - (IBAction)onEditClick:(id)event;
@@ -70,7 +72,6 @@
 - (IBAction)onCallClick:(id)sender;
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
-- (void)markAsRead;
 - (void)update;
 
 @end

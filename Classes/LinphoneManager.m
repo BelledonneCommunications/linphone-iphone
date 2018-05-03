@@ -2561,10 +2561,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room))
 		[LinphoneManager.instance alertLIME:room];
 
-	linphone_chat_room_mark_as_read(room);
-	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
-	[tab update:YES];
-	[PhoneMainView.instance updateApplicationBadgeNumber];
+	[ChatConversationView markAsRead:room];
 }
 
 - (void)call:(const LinphoneAddress *)iaddr {

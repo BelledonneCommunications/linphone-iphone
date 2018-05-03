@@ -68,6 +68,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return self.class.compositeViewDescription;
 }
 
+
++ (void)markAsRead:(LinphoneChatRoom *)chatRoom {
+	if (!chatRoom)
+		return;
+
+	linphone_chat_room_mark_as_read(chatRoom);
+	if (IPAD) {
+		ChatsListView *listView = VIEW(ChatsListView);
+		[listView.tableController markCellAsRead:chatRoom];
+	}
+	[PhoneMainView.instance updateApplicationBadgeNumber];
+}
+
 #pragma mark - ViewController Functions
 
 - (void)viewDidLoad {
@@ -197,13 +210,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_chatView.hidden = NO;
 	[self update];
-	linphone_chat_room_mark_as_read(_chatRoom);
-	[PhoneMainView.instance updateApplicationBadgeNumber];
+	[ChatConversationView markAsRead:_chatRoom];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (_chatRoom != nil) {
-		linphone_chat_room_mark_as_read(_chatRoom);
+		[ChatConversationView markAsRead:_chatRoom];
 		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
 			getCachedController:NSStringFromClass(TabBarView.class)];
 		[tab update:YES];
@@ -213,14 +225,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	[_backToCallButton update];
-}
-
-- (void)markAsRead {
-	linphone_chat_room_mark_as_read(_chatRoom);
-	if (IPAD) {
-		ChatsListView *listView = VIEW(ChatsListView);
-		[listView.tableController markCellAsRead:_chatRoom];
-	}
 }
 
 - (void)update {
@@ -759,9 +763,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 		return;
 
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		linphone_chat_room_mark_as_read(view.chatRoom);
-
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 	[view.tableController scrollToLastUnread:TRUE];
 }

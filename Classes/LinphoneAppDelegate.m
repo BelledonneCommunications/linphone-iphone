@@ -623,10 +623,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 	  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 	  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
 	  	if (room) {
-		  	linphone_chat_room_mark_as_read(room);
-		  	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
-		  	[tab update:YES];
-		  	[PhoneMainView.instance updateApplicationBadgeNumber];
+		  	[ChatConversationView markAsRead:room];
 	  	}
 	  	linphone_address_unref(peer);
 	  	linphone_address_unref(local);
@@ -783,14 +780,9 @@ didInvalidatePushTokenForType:(NSString *)type {
 				LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
 				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
-				if (room) {
-					if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-						linphone_chat_room_mark_as_read(room);
-					TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-													 getCachedController:NSStringFromClass(TabBarView.class)];
-					[tab update:YES];
-					[PhoneMainView.instance updateApplicationBadgeNumber];
-				}
+				if (room && [UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+					[ChatConversationView markAsRead:room];
+
 				linphone_address_unref(peer);
 				linphone_address_unref(local);
 			}

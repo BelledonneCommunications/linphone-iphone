@@ -551,6 +551,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	count += [LinphoneManager unreadMessageCount];
 	count += linphone_core_get_calls_nb(LC);
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+	TabBarView *view = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
+	[view update:TRUE];
 }
 
 + (CATransition *)getBackwardTransition {

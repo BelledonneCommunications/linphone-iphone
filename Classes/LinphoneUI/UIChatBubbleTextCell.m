@@ -171,7 +171,7 @@
 	} else {
 		[_messageText setAccessibilityLabel:@"Incoming message"];
 		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-			VIEW(ChatConversationView).markAsRead;
+			[ChatConversationView markAsRead:VIEW(ChatConversationView).chatRoom];
 		}
 	}
 
