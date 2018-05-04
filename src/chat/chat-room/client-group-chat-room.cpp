@@ -170,7 +170,7 @@ void ClientGroupChatRoomPrivate::onCallSessionStateChanged (
 		} else if (q->getState() == ChatRoom::State::TerminationPending)
 			qConference->getPrivate()->focus->getPrivate()->getSession()->terminate();
 	} else if (newState == CallSession::State::End) {
-		q->onConferenceTerminated(q->getConferenceAddress());
+		setState(ChatRoom::State::TerminationPending);
 	} else if (newState == CallSession::State::Released) {
 		if (q->getState() == ChatRoom::State::TerminationPending) {
 			if (session->getReason() == LinphoneReasonNone) {
@@ -547,6 +547,11 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 
 void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	L_D();
+
+	if (getState() != ChatRoom::State::Created) {
+		lWarning() << "First notify received in ClientGroupChatRoom that is not in the Created state, ignoring it!";
+		return;
+	}
 
 	bool performMigration = false;
 	shared_ptr<AbstractChatRoom> chatRoom;
