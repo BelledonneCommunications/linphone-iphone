@@ -467,6 +467,13 @@ LINPHONE_PUBLIC void linphone_factory_set_log_collection_path(LinphoneFactory *f
 LINPHONE_PUBLIC void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state);
 
 /**
+ * Creates an object #LinphoneTunnelConfig
+ * @param[in] factory the #LinphoneFactory
+ * @return a #LinphoneTunnelConfig
+ */
+LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_factory_create_tunnel_config(LinphoneFactory *factory);
+
+/**
  * @}
  */
 
