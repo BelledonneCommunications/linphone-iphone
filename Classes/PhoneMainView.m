@@ -926,7 +926,7 @@ static RootViewManager *rootViewManagerInstance = nil;
 	view.chatRoom = cr;
 	self.currentRoom = view.chatRoom;
 	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
-		[view viewWillAppear:TRUE];
+		[view configureForRoom:FALSE];
 	else
 		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
