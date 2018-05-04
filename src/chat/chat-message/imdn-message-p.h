@@ -28,6 +28,9 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ImdnMessagePrivate : public NotificationMessagePrivate {
+public:
+	ImdnMessage::Context getContext () {return context;}
+
 private:
 	ImdnMessagePrivate (const ImdnMessage::Context &context)
 		: NotificationMessagePrivate(context.chatRoom, ChatMessage::Direction::Outgoing), context(context) {}

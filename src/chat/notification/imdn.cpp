@@ -86,6 +86,16 @@ void Imdn::notifyDisplay (const shared_ptr<ChatMessage> &message) {
 void Imdn::onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message) {
 	// If an IMDN has been successfully delivered, remove it from the list so that
 	// it does not get sent again
+	ImdnMessage::Context context = message->getPrivate()->getContext();
+	for (const auto &deliveredMsg : context.deliveredMessages)
+		deliveredMessages.remove(deliveredMsg);
+
+	for (const auto &displayedMsg : context.displayedMessages)
+		displayedMessages.remove(displayedMsg);
+
+	for (const auto &nonDeliveredMsg : context.nonDeliveredMessages)
+		nonDeliveredMessages.remove(nonDeliveredMsg);
+
 	sentImdnMessages.remove(message);
 }
 
@@ -205,15 +215,12 @@ void Imdn::send () {
 		sentImdnMessages.push_back(imdnMessage);
 		if (networkReachable)
 			imdnMessage->getPrivate()->send();
-		deliveredMessages.clear();
-		displayedMessages.clear();
 	}
 	if (!nonDeliveredMessages.empty()) {
 		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages);
 		sentImdnMessages.push_back(imdnMessage);
 		if (networkReachable)
 			imdnMessage->getPrivate()->send();
-		nonDeliveredMessages.clear();
 	}
 }
 
