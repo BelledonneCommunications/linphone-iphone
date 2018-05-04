@@ -62,7 +62,9 @@ endif()
 if(BELCARD_FOUND)
 	list(APPEND LIBS ${BELCARD_LIBRARIES})
 endif()
-
+if(ENABLE_TUNNEL)
+	add_definitions(-DTUNNEL_ENABLED)
+endif()
 
 set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	address/address-p.h
