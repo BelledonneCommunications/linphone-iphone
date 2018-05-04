@@ -5314,11 +5314,13 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		linphone_call_pause(pauline_call);
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 1));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPaused, 1));
+		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 	} else if (callee_pause) {
 		marie_call = linphone_core_get_current_call(marie->lc);
 		linphone_call_pause(marie_call);
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 	}
 
 	/*marie looses the network and reconnects*/
