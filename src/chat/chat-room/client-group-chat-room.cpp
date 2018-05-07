@@ -110,13 +110,13 @@ void ClientGroupChatRoomPrivate::confirmJoining (SalCallOp *op) {
 	auto focus = qConference->getPrivate()->focus;
 	bool previousSession = (focus->getPrivate()->getSession() != nullptr);
 	auto session = focus->getPrivate()->createSession(*q, nullptr, false, this);
-	session->configure(LinphoneCallIncoming, nullptr, op, Address(op->get_from()), Address(op->get_to()));
+	session->configure(LinphoneCallIncoming, nullptr, op, Address(op->getFrom()), Address(op->getTo()));
 	session->startIncomingNotification(false);
 
 	if (!previousSession) {
 		setState(ClientGroupChatRoom::State::CreationPending);
 		// Handle participants addition
-		list<IdentityAddress> identAddresses = ClientGroupChatRoom::parseResourceLists(op->get_remote_body());
+		list<IdentityAddress> identAddresses = ClientGroupChatRoom::parseResourceLists(op->getRemoteBody());
 		for (const auto &addr : identAddresses) {
 			auto participant = q->findParticipant(addr);
 			if (!participant) {
@@ -351,7 +351,7 @@ void ClientGroupChatRoom::addParticipant (const IdentityAddress &addr, const Cal
 		linphone_address_unref(lAddr);
 		Address referToAddr = addr;
 		referToAddr.setParam("text");
-		referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+		referOp->sendRefer(referToAddr.getPrivate()->getInternalAddress());
 		referOp->unref();
 	}
 }
@@ -402,7 +402,7 @@ void ClientGroupChatRoom::removeParticipant (const shared_ptr<Participant> &part
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
 	referToAddr.setUriParam("method", "BYE");
-	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->sendRefer(referToAddr.getPrivate()->getInternalAddress());
 	referOp->unref();
 }
 
@@ -444,7 +444,7 @@ void ClientGroupChatRoom::setParticipantAdminStatus (const shared_ptr<Participan
 	Address referToAddr = participant->getAddress();
 	referToAddr.setParam("text");
 	referToAddr.setParam("admin", Utils::toString(isAdmin));
-	referOp->send_refer(referToAddr.getPrivate()->getInternalAddress());
+	referOp->sendRefer(referToAddr.getPrivate()->getInternalAddress());
 	referOp->unref();
 }
 

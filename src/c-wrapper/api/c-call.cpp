@@ -207,7 +207,7 @@ LinphoneCallState linphone_call_get_state (const LinphoneCall *call) {
 bool_t linphone_call_asked_to_autoanswer (LinphoneCall *call) {
 	//return TRUE if the unique(for the moment) incoming call asked to be autoanswered
 	if (call)
-		return linphone_call_get_op(call)->autoanswer_asked();
+		return linphone_call_get_op(call)->autoAnswerAsked();
 	return FALSE;
 }
 
@@ -575,8 +575,8 @@ void linphone_call_ogl_render (const LinphoneCall *call) {
 
 LinphoneStatus linphone_call_send_info_message (LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(linphone_info_message_get_content(info));
-	linphone_call_get_op(call)->set_sent_custom_header(linphone_info_message_get_headers(info));
-	return linphone_call_get_op(call)->send_info(nullptr, nullptr, body_handler);
+	linphone_call_get_op(call)->setSentCustomHeaders(linphone_info_message_get_headers(info));
+	return linphone_call_get_op(call)->sendInfo(nullptr, nullptr, body_handler);
 }
 
 LinphoneCallStats *linphone_call_get_stats (LinphoneCall *call, LinphoneStreamType type) {

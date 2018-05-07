@@ -24,19 +24,22 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalRegisterOp: public SalOp {
+class SalRegisterOp : public SalOp {
 public:
-	SalRegisterOp(Sal *sal): SalOp(sal) {}
+	SalRegisterOp(Sal *sal) : SalOp(sal) {}
 
-	int register_(const char *proxy, const char *from, int expires, const SalAddress* old_contact);
-	int register_refresh(int expires) {return this->refresher ? belle_sip_refresher_refresh(this->refresher,expires) : -1;}
-	int unregister() {return register_refresh(0);}
+	int sendRegister (const char *proxy, const char *from, int expires, const SalAddress *oldContact);
+	int refreshRegister (int expires) {
+		return mRefresher ? belle_sip_refresher_refresh(mRefresher, expires) : -1;
+	}
+	int unregister() { return refreshRegister(0); }
 
-	virtual void authenticate(const SalAuthInfo *info) override {register_refresh(-1);}
+	void authenticate (const SalAuthInfo *info) override { 
+        refreshRegister(-1); }
 
 private:
-	virtual void fill_cbs() override {};
-	static void register_refresher_listener(belle_sip_refresher_t* refresher, void* user_pointer, unsigned int status_code, const char* reason_phrase, int will_retry);
+	virtual void fillCallbacks () override {};
+	static void registerRefresherListener (belle_sip_refresher_t *refresher, void *userCtx, unsigned int statusCode, const char *reasonPhrase, int willRetry);
 };
 
 LINPHONE_END_NAMESPACE

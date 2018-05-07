@@ -476,7 +476,7 @@ const char * linphone_core_get_echo_canceller_filter_name(const LinphoneCore *lc
  * task_fun must return BELLE_SIP_STOP when job is finished.
 **/
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description){
-	belle_sip_source_t *s=lc->sal->create_timer(task_fun,data, 20, task_description);
+	belle_sip_source_t *s=lc->sal->createTimer(task_fun,data, 20, task_description);
 	belle_sip_object_unref(s);
 }
 

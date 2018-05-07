@@ -85,7 +85,7 @@ void IsComposing::parse (const Address &remoteAddr, const string &text) {
 void IsComposing::startIdleTimer () {
 	unsigned int duration = getIdleTimerDuration();
 	if (!idleTimer) {
-		idleTimer = core->sal->create_timer(idleTimerExpired, this,
+		idleTimer = core->sal->createTimer(idleTimerExpired, this,
 			duration * 1000, "composing idle timeout");
 	} else {
 		belle_sip_source_set_timeout(idleTimer, duration * 1000);
@@ -95,7 +95,7 @@ void IsComposing::startIdleTimer () {
 void IsComposing::startRefreshTimer () {
 	unsigned int duration = getRefreshTimerDuration();
 	if (!refreshTimer) {
-		refreshTimer = core->sal->create_timer(refreshTimerExpired, this,
+		refreshTimer = core->sal->createTimer(refreshTimerExpired, this,
 			duration * 1000, "composing refresh timeout");
 	} else {
 		belle_sip_source_set_timeout(refreshTimer, duration * 1000);
@@ -113,7 +113,7 @@ void IsComposing::stopTimers () {
 void IsComposing::stopIdleTimer () {
 	if (idleTimer) {
 		if (core && core->sal)
-			core->sal->cancel_timer(idleTimer);
+			core->sal->cancelTimer(idleTimer);
 		belle_sip_object_unref(idleTimer);
 		idleTimer = nullptr;
 	}
@@ -122,7 +122,7 @@ void IsComposing::stopIdleTimer () {
 void IsComposing::stopRefreshTimer () {
 	if (refreshTimer) {
 		if (core && core->sal)
-			core->sal->cancel_timer(refreshTimer);
+			core->sal->cancelTimer(refreshTimer);
 		belle_sip_object_unref(refreshTimer);
 		refreshTimer = nullptr;
 	}
@@ -176,7 +176,7 @@ void IsComposing::startRemoteRefreshTimer (const string &uri, unsigned long long
 	auto it = remoteRefreshTimers.find(uri);
 	if (it == remoteRefreshTimers.end()) {
 		IsRemoteComposingData *data = new IsRemoteComposingData(this, uri);
-		belle_sip_source_t *timer = core->sal->create_timer(remoteRefreshTimerExpired, data,
+		belle_sip_source_t *timer = core->sal->createTimer(remoteRefreshTimerExpired, data,
 			duration * 1000, "composing remote refresh timeout");
 		pair<string, belle_sip_source_t *> p(uri, timer);
 		remoteRefreshTimers.insert(p);
@@ -192,7 +192,7 @@ void IsComposing::stopAllRemoteRefreshTimers () {
 unordered_map<string, belle_sip_source_t *>::iterator IsComposing::stopRemoteRefreshTimer (const unordered_map<string, belle_sip_source_t *>::const_iterator it) {
 	belle_sip_source_t *timer = it->second;
 	if (core && core->sal) {
-		core->sal->cancel_timer(timer);
+		core->sal->cancelTimer(timer);
 		delete reinterpret_cast<IsRemoteComposingData *>(belle_sip_source_get_user_data(timer));
 	}
 	belle_sip_object_unref(timer);

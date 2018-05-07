@@ -235,7 +235,7 @@ void Imdn::startTimer () {
 
 	unsigned int duration = 500;
 	if (!timer)
-		timer = chatRoom->getCore()->getCCore()->sal->create_timer(timerExpired, this, duration, "imdn timeout");
+		timer = chatRoom->getCore()->getCCore()->sal->createTimer(timerExpired, this, duration, "imdn timeout");
 	else
 		belle_sip_source_set_timeout(timer, duration);
 	bgTask.start(chatRoom->getCore(), 1);
@@ -245,7 +245,7 @@ void Imdn::stopTimer () {
 	if (timer) {
 		auto core = chatRoom->getCore()->getCCore();
 		if (core && core->sal)
-			core->sal->cancel_timer(timer);
+			core->sal->cancelTimer(timer);
 		belle_sip_object_unref(timer);
 		timer = nullptr;
 	}

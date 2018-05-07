@@ -59,16 +59,16 @@ bool CorePrivate::canWeAddCall () const {
 
 bool CorePrivate::inviteReplacesABrokenCall (SalCallOp *op) {
 	CallSession *replacedSession = nullptr;
-	SalCallOp *replacedOp = op->get_replaces();
+	SalCallOp *replacedOp = op->getReplaces();
 	if (replacedOp)
-		replacedSession = reinterpret_cast<CallSession *>(replacedOp->get_user_pointer());
+		replacedSession = reinterpret_cast<CallSession *>(replacedOp->getUserPointer());
 	for (const auto &call : calls) {
 		shared_ptr<CallSession> session = call->getPrivate()->getActiveSession();
 		if (session
-			&& ((session->getPrivate()->isBroken() && op->compare_op(session->getPrivate()->getOp()))
+			&& ((session->getPrivate()->isBroken() && op->compareOp(session->getPrivate()->getOp()))
 				|| ((replacedSession == session.get())
-					&& (strcmp(op->get_from(), replacedOp->get_from()) == 0)
-					&& (strcmp(op->get_to(), replacedOp->get_to()) == 0)))
+					&& (strcmp(op->getFrom(), replacedOp->getFrom()) == 0)
+					&& (strcmp(op->getTo(), replacedOp->getTo()) == 0)))
 			) {
 			session->getPrivate()->replaceOp(op);
 			return true;

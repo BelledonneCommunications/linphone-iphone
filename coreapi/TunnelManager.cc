@@ -281,7 +281,7 @@ TunnelManager::~TunnelManager(){
 		mTunnelClient->stop();
 		delete mTunnelClient;
 	}
-	mCore->sal->set_tunnel(NULL);
+	mCore->sal->setTunnel(NULL);
 	linphone_core_remove_listener(mCore, mVTable);
 	linphone_core_v_table_destroy(mVTable);
 }

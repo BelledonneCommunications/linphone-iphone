@@ -32,7 +32,7 @@ public:
 	virtual ~SalMessageOpInterface() = default;
 
 	virtual int sendMessage (const Content &content) = 0;
-	virtual int reply(SalReason reason) = 0;
+	virtual int reply (SalReason reason) = 0;
 
 protected:
 	void prepareMessageRequest (belle_sip_request_t *req, const Content &content) {

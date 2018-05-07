@@ -1563,7 +1563,7 @@ void linphone_subscription_new(LinphoneCore *lc, SalSubscribeOp *op, const char 
 			linphone_friend_add_incoming_subscription(lf, op);
 			lf->inc_subscribe_pending=TRUE;
 			if (lp_config_get_int(lc->config,"sip","notify_pending_state",0)) {
-				op->notify_pending_state();
+				op->notifyPendingState();
 			}
 			op->accept();
 		} else {
@@ -1936,7 +1936,7 @@ void linphone_notify_recv(LinphoneCore *lc, SalOp *op, SalSubscribeStatus ss, Sa
 	if (linphone_core_get_default_friend_list(lc) != NULL)
 		lf=linphone_core_find_friend_by_out_subscribe(lc, op);
 	if (lf==NULL && lp_config_get_int(lc->config,"sip","allow_out_of_subscribe_presence",0)){
-		char *buf = sal_address_as_string_uri_only(op->get_from_address());
+		char *buf = sal_address_as_string_uri_only(op->getFromAddress());
 		LinphoneAddress *addr = linphone_address_new(buf);
 		lf = linphone_core_find_friend(lc, addr);
 		ms_free(buf);
@@ -2000,7 +2000,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 		linphone_friend_remove_incoming_subscription(lf, op);
 	}else{
 		/*case of an op that we already released because the friend was destroyed*/
-		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", op->get_from());
+		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", op->getFrom());
 	}
 }
 

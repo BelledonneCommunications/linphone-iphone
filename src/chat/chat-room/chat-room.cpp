@@ -235,7 +235,7 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	LinphoneCore *cCore = core->getCCore();
 
 	msg = createChatMessage(
-		IdentityAddress(op->get_from()) == q->getLocalAddress()
+		IdentityAddress(op->getFrom()) == q->getLocalAddress()
 			? ChatMessage::Direction::Outgoing
 			: ChatMessage::Direction::Incoming
 	);
@@ -252,9 +252,9 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(message->time);
-	msg->getPrivate()->setImdnMessageId(op->get_call_id());
+	msg->getPrivate()->setImdnMessageId(op->getCallId());
 
-	const SalCustomHeader *ch = op->get_recv_custom_header();
+	const SalCustomHeader *ch = op->getRecvCustomHeaders();
 	if (ch)
 		msg->getPrivate()->setSalCustomHeaders(sal_custom_header_clone(ch));
 

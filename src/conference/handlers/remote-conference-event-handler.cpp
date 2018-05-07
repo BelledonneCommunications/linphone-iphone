@@ -208,7 +208,7 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 	}
 
 	lev = linphone_event_ref(linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600));
-	lev->op->set_from(chatRoomId.getLocalAddress().asString().c_str());
+	lev->op->setFrom(chatRoomId.getLocalAddress().asString().c_str());
 	const string &lastNotifyStr = Utils::toString(lastNotify);
 	linphone_event_add_custom_header(lev, "Last-Notify-Version", lastNotifyStr.c_str());
 	linphone_address_unref(lAddr);

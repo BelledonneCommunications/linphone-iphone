@@ -1296,12 +1296,12 @@ static void sip_config_read(LinphoneCore *lc) {
 	int ipv6_default = TRUE;
 
 	if (lp_config_get_int(lc->config,"sip","use_session_timers",0)==1){
-		lc->sal->use_session_timers(200);
+		lc->sal->useSessionTimers(200);
 	}
 
-	lc->sal->use_no_initial_route(!!lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
-	lc->sal->use_rport(!!lp_config_get_int(lc->config,"sip","use_rport",1));
-	lc->sal->set_contact_linphone_specs(lp_config_get_string(lc->config, "sip", "linphone_specs", NULL));
+	lc->sal->useNoInitialRoute(!!lp_config_get_int(lc->config,"sip","use_no_initial_route",0));
+	lc->sal->useRport(!!lp_config_get_int(lc->config,"sip","use_rport",1));
+	lc->sal->setContactLinphoneSpecs(lp_config_get_string(lc->config, "sip", "linphone_specs", NULL));
 
 	if (!lp_config_get_int(lc->config,"sip","ipv6_migration_done",FALSE) && lp_config_has_entry(lc->config,"sip","use_ipv6")) {
 		lp_config_clean_entry(lc->config,"sip","use_ipv6");
@@ -1320,7 +1320,7 @@ static void sip_config_read(LinphoneCore *lc) {
 
 	certificates_config_read(lc);
 	/*setting the dscp must be done before starting the transports, otherwise it is not taken into effect*/
-	lc->sal->set_dscp(linphone_core_get_sip_dscp(lc));
+	lc->sal->setDscp(linphone_core_get_sip_dscp(lc));
 	/*start listening on ports*/
 	linphone_core_set_sip_transports(lc,&tr);
 
@@ -1386,7 +1386,7 @@ static void sip_config_read(LinphoneCore *lc) {
 	linphone_core_set_media_encryption(lc,linphone_core_get_media_encryption(lc));
 
 	/*enable the reconnection to the primary server when it is up again asap*/
-	lc->sal->enable_reconnect_to_primary_asap(!!lp_config_get_int(lc->config,"sip","reconnect_to_primary_asap",0));
+	lc->sal->enableReconnectToPrimaryAsap(!!lp_config_get_int(lc->config,"sip","reconnect_to_primary_asap",0));
 
 	/*for tuning or test*/
 	lc->sip_conf.sdp_200_ack = !!lp_config_get_int(lc->config,"sip","sdp_200_ack",0);
@@ -1399,12 +1399,12 @@ static void sip_config_read(LinphoneCore *lc) {
 	lc->sip_conf.keepalive_period = (unsigned int)lp_config_get_int(lc->config,"sip","keepalive_period",10000);
 	lc->sip_conf.tcp_tls_keepalive = !!lp_config_get_int(lc->config,"sip","tcp_tls_keepalive",0);
 	linphone_core_enable_keep_alive(lc, (lc->sip_conf.keepalive_period > 0));
-	lc->sal->use_one_matching_codec_policy(!!lp_config_get_int(lc->config,"sip","only_one_codec",0));
-	lc->sal->use_dates(!!lp_config_get_int(lc->config,"sip","put_date",0));
-	lc->sal->enable_sip_update_method(!!lp_config_get_int(lc->config,"sip","sip_update",1));
+	lc->sal->useOneMatchingCodecPolicy(!!lp_config_get_int(lc->config,"sip","only_one_codec",0));
+	lc->sal->useDates(!!lp_config_get_int(lc->config,"sip","put_date",0));
+	lc->sal->enableSipUpdateMethod(!!lp_config_get_int(lc->config,"sip","sip_update",1));
 	lc->sip_conf.vfu_with_info = !!lp_config_get_int(lc->config,"sip","vfu_with_info",1);
 	linphone_core_set_sip_transport_timeout(lc, lp_config_get_int(lc->config, "sip", "transport_timeout", 63000));
-	lc->sal->set_supported_tags(lp_config_get_string(lc->config,"sip","supported","replaces, outbound, gruu"));
+	lc->sal->setSupportedTags(lp_config_get_string(lc->config,"sip","supported","replaces, outbound, gruu"));
 	lc->sip_conf.save_auth_info = !!lp_config_get_int(lc->config, "sip", "save_auth_info", 1);
 	linphone_core_create_im_notif_policy(lc);
 }
@@ -1851,13 +1851,13 @@ void linphone_core_set_expected_bandwidth(LinphoneCore *lc, int bw){
 }
 
 void linphone_core_set_sip_transport_timeout(LinphoneCore *lc, int timeout_ms) {
-	lc->sal->set_transport_timeout(timeout_ms);
+	lc->sal->setTransportTimeout(timeout_ms);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config, "sip", "transport_timeout", timeout_ms);
 }
 
 int linphone_core_get_sip_transport_timeout(LinphoneCore *lc) {
-	return lc->sal->get_transport_timeout();
+	return lc->sal->getTransportTimeout();
 }
 
 bool_t linphone_core_get_dns_set_by_app(LinphoneCore *lc) {
@@ -1870,27 +1870,27 @@ void linphone_core_set_dns_servers_app(LinphoneCore *lc, const bctbx_list_t *ser
 }
 
 void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers){
-	lc->sal->set_dns_servers(servers);
+	lc->sal->setDnsServers(servers);
 }
 
 void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
-	lc->sal->enable_dns_srv(enable);
+	lc->sal->enableDnsSrv(enable);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config, "net", "dns_srv_enabled", enable ? 1 : 0);
 }
 
 bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc) {
-	return lc->sal->dns_srv_enabled();
+	return lc->sal->dnsSrvEnabled();
 }
 
 void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t enable) {
-	lc->sal->enable_dns_search(enable);
+	lc->sal->enableDnsSearch(enable);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config, "net", "dns_search_enabled", enable ? 1 : 0);
 }
 
 bool_t linphone_core_dns_search_enabled(const LinphoneCore *lc) {
-	return lc->sal->dns_search_enabled();
+	return lc->sal->dnsSearchEnabled();
 }
 
 int linphone_core_get_download_bandwidth(const LinphoneCore *lc){
@@ -2228,12 +2228,12 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
 
 	lc->sal=new Sal(NULL);
-	lc->sal->set_refresher_retry_after(lp_config_get_int(lc->config, "sip", "refresher_retry_after", 60000));
-	lc->sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
-	lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
+	lc->sal->setRefresherRetryAfter(lp_config_get_int(lc->config, "sip", "refresher_retry_after", 60000));
+	lc->sal->setHttpProxyHost(linphone_core_get_http_proxy_host(lc));
+	lc->sal->setHttpProxyPort(linphone_core_get_http_proxy_port(lc));
 
-	lc->sal->set_user_pointer(lc);
-	lc->sal->set_callbacks(&linphone_sal_callbacks);
+	lc->sal->setUserPointer(lc);
+	lc->sal->setCallbacks(&linphone_sal_callbacks);
 
 #ifdef __ANDROID__
 	if (system_context)
@@ -2244,7 +2244,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	// MS Factory MUST be created after Android has been set, otherwise no camera will be detected !
 	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
-	lc->sal->set_factory(lc->factory);
+	lc->sal->setFactory(lc->factory);
 
 	belr::GrammarLoader::get().addPath(getPlatformHelpers(lc)->getDataPath());
 
@@ -2283,7 +2283,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	/* Create the http provider in dual stack mode (ipv4 and ipv6.
 	 * If this creates problem, we may need to implement parallel ipv6/ ipv4 http requests in belle-sip.
 	 */
-	lc->http_provider = belle_sip_stack_create_http_provider(reinterpret_cast<belle_sip_stack_t *>(lc->sal->get_stack_impl()), "::0");
+	lc->http_provider = belle_sip_stack_create_http_provider(reinterpret_cast<belle_sip_stack_t *>(lc->sal->getStackImpl()), "::0");
 	lc->http_crypto_config = belle_tls_crypto_config_new();
 	belle_http_provider_set_tls_crypto_config(lc->http_provider,lc->http_crypto_config);
 
@@ -2321,13 +2321,13 @@ void linphone_core_start (LinphoneCore *lc) {
 	const char* uuid=lp_config_get_string(lc->config,"misc","uuid",NULL);
 	if (!uuid){
 		char tmp[64];
-		lc->sal->create_uuid(tmp,sizeof(tmp));
+		lc->sal->createUuid(tmp,sizeof(tmp));
 		lp_config_set_string(lc->config,"misc","uuid",tmp);
 	}else if (strcmp(uuid,"0")!=0) /*to allow to disable sip.instance*/
-		lc->sal->set_uuid(uuid);
+		lc->sal->setUuid(uuid);
 
-	if (lc->sal->get_root_ca()) {
-		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->get_root_ca());
+	if (lc->sal->getRootCa()) {
+		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, lc->sal->getRootCa());
 		belle_http_provider_set_tls_crypto_config(lc->http_provider, lc->http_crypto_config);
 	}
 
@@ -2857,12 +2857,12 @@ void linphone_core_set_user_agent(LinphoneCore *lc, const char *name, const char
 	char ua_string[256];
 	snprintf(ua_string, sizeof(ua_string) - 1, "%s/%s", name?name:"", ver?ver:"");
 	if (lc->sal) {
-		lc->sal->set_user_agent(ua_string);
-		lc->sal->append_stack_string_to_user_agent();
+		lc->sal->setUserAgent(ua_string);
+		lc->sal->appendStackStringToUserAgent();
 	}
 }
 const char *linphone_core_get_user_agent(LinphoneCore *lc){
-	return lc->sal->get_user_agent();
+	return lc->sal->getUserAgent();
 }
 
 const char *linphone_core_get_user_agent_name(void){
@@ -2905,32 +2905,32 @@ int _linphone_core_apply_transports(LinphoneCore *lc){
 	else
 		anyaddr="0.0.0.0";
 
-	sal->unlisten_ports();
+	sal->unlistenPorts();
 
 	listening_address = lp_config_get_string(lc->config,"sip","bind_address",anyaddr);
 	if (linphone_core_get_http_proxy_host(lc)) {
-		sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
-		sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
+		sal->setHttpProxyHost(linphone_core_get_http_proxy_host(lc));
+		sal->setHttpProxyPort(linphone_core_get_http_proxy_port(lc));
 	}
 	if (lc->tunnel && linphone_tunnel_sip_enabled(lc->tunnel) && linphone_tunnel_get_activated(lc->tunnel)){
-		sal->set_listen_port(anyaddr,tr->udp_port,SalTransportUDP,TRUE);
+		sal->setListenPort(anyaddr,tr->udp_port,SalTransportUDP,TRUE);
 	}else{
 		if (tr->udp_port!=0){
-			sal->set_listen_port(listening_address,tr->udp_port,SalTransportUDP,FALSE);
+			sal->setListenPort(listening_address,tr->udp_port,SalTransportUDP,FALSE);
 		}
 		if (tr->tcp_port!=0){
-			sal->set_listen_port (listening_address,tr->tcp_port,SalTransportTCP,FALSE);
+			sal->setListenPort (listening_address,tr->tcp_port,SalTransportTCP,FALSE);
 		}
 		if (linphone_core_sip_transport_supported(lc,LinphoneTransportTls)){
 			if (tr->tls_port!=0)
-				sal->set_listen_port (listening_address,tr->tls_port,SalTransportTLS,FALSE);
+				sal->setListenPort (listening_address,tr->tls_port,SalTransportTLS,FALSE);
 		}
 	}
 	return 0;
 }
 
 bool_t linphone_core_sip_transport_supported(const LinphoneCore *lc, LinphoneTransportType tp){
-	return !!lc->sal->transport_available((SalTransport)tp);
+	return !!lc->sal->isTransportAvailable((SalTransport)tp);
 }
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTransports);
@@ -3070,17 +3070,17 @@ LinphoneTransports *linphone_core_get_transports(LinphoneCore *lc){
 }
 
 void linphone_core_get_sip_transports_used(LinphoneCore *lc, LinphoneSipTransports *tr){
-	tr->udp_port=lc->sal->get_listening_port(SalTransportUDP);
-	tr->tcp_port=lc->sal->get_listening_port(SalTransportTCP);
-	tr->tls_port=lc->sal->get_listening_port(SalTransportTLS);
+	tr->udp_port=lc->sal->getListeningPort(SalTransportUDP);
+	tr->tcp_port=lc->sal->getListeningPort(SalTransportTCP);
+	tr->tls_port=lc->sal->getListeningPort(SalTransportTLS);
 }
 
 LinphoneTransports *linphone_core_get_transports_used(LinphoneCore *lc){
 	LinphoneTransports *transports = linphone_transports_new();
-	transports->udp_port = lc->sal->get_listening_port(SalTransportUDP);
-	transports->tcp_port = lc->sal->get_listening_port(SalTransportTCP);
-	transports->tls_port = lc->sal->get_listening_port(SalTransportTLS);
-	transports->dtls_port = lc->sal->get_listening_port(SalTransportDTLS);
+	transports->udp_port = lc->sal->getListeningPort(SalTransportUDP);
+	transports->tcp_port = lc->sal->getListeningPort(SalTransportTCP);
+	transports->tls_port = lc->sal->getListeningPort(SalTransportTLS);
+	transports->dtls_port = lc->sal->getListeningPort(SalTransportDTLS);
 	return transports;
 }
 
@@ -3112,7 +3112,7 @@ void linphone_core_enable_ipv6(LinphoneCore *lc, bool_t val){
 
 bool_t linphone_core_content_encoding_supported(const LinphoneCore *lc, const char *content_encoding) {
 	const char *handle_content_encoding = lp_config_get_string(lc->config, "sip", "handle_content_encoding", "deflate");
-	return (strcmp(handle_content_encoding, content_encoding) == 0) && lc->sal->content_encoding_available(content_encoding);
+	return (strcmp(handle_content_encoding, content_encoding) == 0) && lc->sal->isContentEncodingAvailable(content_encoding);
 }
 
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
@@ -3523,7 +3523,7 @@ static void linphone_transfer_routes_to_op(bctbx_list_t *routes, SalOp *op){
 	bctbx_list_t *it;
 	for(it=routes;it!=NULL;it=it->next){
 		SalAddress *addr=(SalAddress*)it->data;
-		op->add_route_address(addr);
+		op->addRouteAddress(addr);
 		sal_address_destroy(addr);
 	}
 	bctbx_list_free(routes);
@@ -3536,7 +3536,7 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 	if (proxy){
 		identity=linphone_proxy_config_get_identity(proxy);
 		if (linphone_proxy_config_get_privacy(proxy)!=LinphonePrivacyDefault) {
-			op->set_privacy(linphone_proxy_config_get_privacy(proxy));
+			op->setPrivacy(linphone_proxy_config_get_privacy(proxy));
 		}
 	}else identity=linphone_core_get_primary_contact(lc);
 	/*sending out of calls*/
@@ -3545,21 +3545,21 @@ void linphone_configure_op_with_proxy(LinphoneCore *lc, SalOp *op, const Linphon
 		linphone_transfer_routes_to_op(routes,op);
 	}
 
-	op->set_to_address(L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress());
-	op->set_from(identity);
-	op->set_sent_custom_header(headers);
-	op->set_realm(linphone_proxy_config_get_realm(proxy));
+	op->setToAddress(L_GET_PRIVATE_FROM_C_OBJECT(dest)->getInternalAddress());
+	op->setFrom(identity);
+	op->setSentCustomHeaders(headers);
+	op->setRealm(linphone_proxy_config_get_realm(proxy));
 
 	if (with_contact && proxy && proxy->op){
 		const LinphoneAddress *contact = linphone_proxy_config_get_contact(proxy);
 		SalAddress *salAddress = nullptr;
 		if (contact)
 			salAddress = sal_address_clone(const_cast<SalAddress *>(L_GET_PRIVATE_FROM_C_OBJECT(contact)->getInternalAddress()));
-		op->set_contact_address(salAddress);
+		op->setContactAddress(salAddress);
 		if (salAddress)
 			sal_address_unref(salAddress);
 	}
-	op->enable_cnx_ip_to_0000_if_sendonly(!!lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
+	op->enableCnxIpTo0000IfSendOnly(!!lp_config_get_default_int(lc->config,"sip","cnx_ip_to_0000_if_sendonly_enabled",0)); /*also set in linphone_call_new_incoming*/
 }
 void linphone_configure_op(LinphoneCore *lc, SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact) {
 	linphone_configure_op_with_proxy(lc, op, dest, headers,with_contact,linphone_core_lookup_known_proxy(lc,dest));
@@ -4304,7 +4304,7 @@ const char *linphone_core_get_ring(const LinphoneCore *lc){
 }
 
 void linphone_core_set_root_ca(LinphoneCore *lc, const char *path) {
-	lc->sal->set_root_ca(path);
+	lc->sal->setRootCa(path);
 	if (lc->http_crypto_config) {
 		belle_tls_crypto_config_set_root_ca(lc->http_crypto_config, path);
 	}
@@ -4312,8 +4312,8 @@ void linphone_core_set_root_ca(LinphoneCore *lc, const char *path) {
 }
 
 void linphone_core_set_root_ca_data(LinphoneCore *lc, const char *data) {
-	lc->sal->set_root_ca(NULL);
-	lc->sal->set_root_ca_data(data);
+	lc->sal->setRootCa(NULL);
+	lc->sal->setRootCaData(data);
 	if (lc->http_crypto_config) {
 		belle_tls_crypto_config_set_root_ca_data(lc->http_crypto_config, data);
 	}
@@ -4324,7 +4324,7 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 }
 
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
-	lc->sal->verify_server_certificates(yesno);
+	lc->sal->verifyServerCertificates(yesno);
 	if (lc->http_crypto_config){
 		belle_tls_crypto_config_set_verify_exceptions(lc->http_crypto_config, yesno ? 0 : BELLE_TLS_VERIFY_ANY_REASON);
 	}
@@ -4332,7 +4332,7 @@ void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 }
 
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
-	lc->sal->verify_server_cn(yesno);
+	lc->sal->verifyServerCn(yesno);
 	if (lc->http_crypto_config){
 		belle_tls_crypto_config_set_verify_exceptions(lc->http_crypto_config, yesno ? 0 : BELLE_TLS_VERIFY_CN_MISMATCH);
 	}
@@ -4340,7 +4340,7 @@ void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
 }
 
 void linphone_core_set_ssl_config(LinphoneCore *lc, void *ssl_config) {
-	lc->sal->set_ssl_config(ssl_config);
+	lc->sal->setSslConfig(ssl_config);
 	if (lc->http_crypto_config) {
 		belle_tls_crypto_config_set_ssl_config(lc->http_crypto_config, ssl_config);
 	}
@@ -4637,9 +4637,9 @@ void linphone_core_set_nat_policy(LinphoneCore *lc, LinphoneNatPolicy *policy) {
 		linphone_nat_policy_save_to_config(lc->nat_policy);
 	}
 
-	lc->sal->enable_nat_helper(!!lp_config_get_int(lc->config, "net", "enable_nat_helper", 1));
-	lc->sal->enable_auto_contacts(TRUE);
-	lc->sal->use_rport(!!lp_config_get_int(lc->config, "sip", "use_rport", 1));
+	lc->sal->enableNatHelper(!!lp_config_get_int(lc->config, "net", "enable_nat_helper", 1));
+	lc->sal->enableAutoContacts(TRUE);
+	lc->sal->useRport(!!lp_config_get_int(lc->config, "sip", "use_rport", 1));
 	if (lc->sip_conf.contact) update_primary_contact(lc);
 }
 
@@ -5844,8 +5844,8 @@ void sip_config_uninit(LinphoneCore *lc)
 		linphone_vcard_context_destroy(lc->vcard_context);
 	}
 
-	lc->sal->reset_transports();
-	lc->sal->unlisten_ports(); /*to make sure no new messages are received*/
+	lc->sal->resetTransports();
+	lc->sal->unlistenPorts(); /*to make sure no new messages are received*/
 	if (lc->http_provider) {
 		belle_sip_object_unref(lc->http_provider);
 		lc->http_provider=NULL;
@@ -6152,7 +6152,7 @@ static void set_sip_network_reachable(LinphoneCore* lc,bool_t is_sip_reachable, 
 
 	if (!lc->sip_network_reachable){
 		linphone_core_invalidate_friend_subscriptions(lc);
-		lc->sal->reset_transports();
+		lc->sal->resetTransports();
 	}
 }
 
@@ -6217,7 +6217,7 @@ bool_t linphone_core_is_network_reachable(LinphoneCore* lc) {
 }
 
 ortp_socket_t linphone_core_get_sip_socket(LinphoneCore *lc){
-	return lc->sal->get_socket();
+	return lc->sal->getSocket();
 }
 
 void linphone_core_destroy(LinphoneCore *lc){
@@ -6337,15 +6337,15 @@ const char *linphone_error_to_string(LinphoneReason err){
 
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	if (enable > 0) {
-		lc->sal->use_tcp_tls_keepalive(lc->sip_conf.tcp_tls_keepalive);
-		lc->sal->set_keepalive_period(lc->sip_conf.keepalive_period);
+		lc->sal->useTcpTlsKeepAlive(lc->sip_conf.tcp_tls_keepalive);
+		lc->sal->setKeepAlivePeriod(lc->sip_conf.keepalive_period);
 	} else {
-		lc->sal->set_keepalive_period(0);
+		lc->sal->setKeepAlivePeriod(0);
 	}
 }
 
 bool_t linphone_core_keep_alive_enabled(LinphoneCore* lc) {
-	return lc->sal->get_keepalive_period() > 0;
+	return lc->sal->getKeepAlivePeriod() > 0;
 }
 
 void linphone_core_start_dtmf_stream(LinphoneCore* lc) {
@@ -6707,7 +6707,7 @@ const char*  linphone_core_get_device_identifier(const LinphoneCore *lc) {
 }
 
 void linphone_core_set_sip_dscp(LinphoneCore *lc, int dscp){
-	lc->sal->set_dscp(dscp);
+	lc->sal->setDscp(dscp);
 	if (linphone_core_ready(lc)){
 		lp_config_set_int_hex(lc->config,"sip","dscp",dscp);
 		_linphone_core_apply_transports(lc);
@@ -6771,13 +6771,13 @@ const char * linphone_core_get_file_transfer_server(LinphoneCore *core) {
 }
 
 void linphone_core_add_supported_tag(LinphoneCore *lc, const char *tag){
-	lc->sal->add_supported_tag(tag);
-	lp_config_set_string(lc->config,"sip","supported",lc->sal->get_supported_tags());
+	lc->sal->addSupportedTag(tag);
+	lp_config_set_string(lc->config,"sip","supported",lc->sal->getSupportedTags());
 }
 
 void linphone_core_remove_supported_tag(LinphoneCore *lc, const char *tag){
-	lc->sal->remove_supported_tag(tag);
-	lp_config_set_string(lc->config,"sip","supported",lc->sal->get_supported_tags());
+	lc->sal->removeSupportedTag(tag);
+	lp_config_set_string(lc->config,"sip","supported",lc->sal->getSupportedTags());
 }
 
 void linphone_core_set_avpf_mode(LinphoneCore *lc, LinphoneAVPFMode mode){
@@ -6905,15 +6905,15 @@ void linphone_core_enable_realtime_text(LinphoneCore *lc, bool_t value) {
 void linphone_core_set_http_proxy_host(LinphoneCore *lc, const char *host) {
 	lp_config_set_string(lc->config,"sip","http_proxy_host",host);
 	if (lc->sal) {
-		lc->sal->set_http_proxy_host(host);
-		lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc)); /*to make sure default value is set*/
+		lc->sal->setHttpProxyHost(host);
+		lc->sal->setHttpProxyPort(linphone_core_get_http_proxy_port(lc)); /*to make sure default value is set*/
 	}
 }
 
 void linphone_core_set_http_proxy_port(LinphoneCore *lc, int port) {
 	lp_config_set_int(lc->config,"sip","http_proxy_port",port);
 	if (lc->sal)
-		lc->sal->set_http_proxy_port(port);
+		lc->sal->setHttpProxyPort(port);
 }
 
 const char *linphone_core_get_http_proxy_host(const LinphoneCore *lc) {
@@ -7159,23 +7159,23 @@ LinphoneImEncryptionEngine *linphone_core_get_im_encryption_engine(const Linphon
 }
 
 void linphone_core_initialize_supported_content_types(LinphoneCore *lc) {
-	lc->sal->add_content_type_support("text/plain");
-	lc->sal->add_content_type_support("message/external-body");
-	lc->sal->add_content_type_support("application/vnd.gsma.rcs-ft-http+xml");
-	lc->sal->add_content_type_support("application/im-iscomposing+xml");
-	lc->sal->add_content_type_support("message/imdn+xml");
+	lc->sal->addContentTypeSupport("text/plain");
+	lc->sal->addContentTypeSupport("message/external-body");
+	lc->sal->addContentTypeSupport("application/vnd.gsma.rcs-ft-http+xml");
+	lc->sal->addContentTypeSupport("application/im-iscomposing+xml");
+	lc->sal->addContentTypeSupport("message/imdn+xml");
 }
 
 bool_t linphone_core_is_content_type_supported(const LinphoneCore *lc, const char *content_type) {
-	return lc->sal->is_content_type_supported(content_type);
+	return lc->sal->isContentTypeSupported(content_type);
 }
 
 void linphone_core_add_content_type_support(LinphoneCore *lc, const char *content_type) {
-	lc->sal->add_content_type_support(content_type);
+	lc->sal->addContentTypeSupport(content_type);
 }
 
 void linphone_core_remove_content_type_support(LinphoneCore *lc, const char *content_type) {
-	lc->sal->remove_content_type_support(content_type);
+	lc->sal->removeContentTypeSupport(content_type);
 }
 
 #ifdef ENABLE_UPDATE_CHECK
@@ -7333,5 +7333,5 @@ const char *linphone_core_get_linphone_specs (const LinphoneCore *core) {
 
 void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs) {
 	lp_config_set_string(linphone_core_get_config(core), "sip", "linphone_specs", specs);
-	core->sal->set_contact_linphone_specs(specs);
+	core->sal->setContactLinphoneSpecs(specs);
 }

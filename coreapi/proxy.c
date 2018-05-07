@@ -436,7 +436,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val){
 }
 
 void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg){
-	if (cfg->op) cfg->op->stop_refreshing();
+	if (cfg->op) cfg->op->stopRefreshing();
 }
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
@@ -457,7 +457,7 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	LinphoneAddress *contact_addr = NULL;
-	const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk ? cfg->op->get_contact_address() : NULL;
+	const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk ? cfg->op->getContactAddress() : NULL;
 	if (sal_addr) {
 		char *buf = sal_address_as_string(sal_addr);
 		contact_addr = buf ? linphone_address_new(buf) : NULL;
@@ -538,10 +538,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 		guess_contact_for_register(cfg);
 		if (cfg->contact_address)
-			cfg->op->set_contact_address(L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
-		cfg->op->set_user_pointer(cfg);
+			cfg->op->setContactAddress(L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
+		cfg->op->setUserPointer(cfg);
 
-		if (cfg->op->register_(
+		if (cfg->op->sendRegister(
 			proxy_string,
 			cfg->reg_identity,
 			cfg->expires,
@@ -568,7 +568,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *cfg){
 	if (cfg->reg_sendregister && cfg->op && cfg->state!=LinphoneRegistrationProgress){
-		if (cfg->op->register_refresh(cfg->expires) == 0) {
+		if (cfg->op->refreshRegister(cfg->expires) == 0) {
 			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress, "Refresh registration");
 		}
 	}
@@ -850,7 +850,7 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unregister(cfg);
 			}
-			cfg->op->set_user_pointer(NULL); /*we don't want to receive status for this un register*/
+			cfg->op->setUserPointer(NULL); /*we don't want to receive status for this un register*/
 			cfg->op->unref(); /*but we keep refresher to handle authentication if needed*/
 			cfg->op=NULL;
 		}
@@ -1045,7 +1045,7 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name){
 	const SalCustomHeader *ch;
 	if (!cfg->op) return NULL;
-	ch = cfg->op->get_recv_custom_header();
+	ch = cfg->op->getRecvCustomHeaders();
 	return sal_custom_header_find(ch, header_name);
 }
 
@@ -1416,7 +1416,7 @@ const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProx
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
-	return cfg->op?(const LinphoneAddress*) cfg->op->get_service_route():NULL;
+	return cfg->op?(const LinphoneAddress*) cfg->op->getServiceRoute():NULL;
 }
 const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
 	const char* addr=NULL;
@@ -1496,7 +1496,7 @@ const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyCon
 	// Warning : Do not remove, the op can change its contact_address
 	if (!cfg->op)
 		return NULL;
-	const SalAddress *salAddr = cfg->op->get_contact_address();
+	const SalAddress *salAddr = cfg->op->getContactAddress();
 	if (!salAddr)
 		return NULL;
 	if (cfg->contact_address)
