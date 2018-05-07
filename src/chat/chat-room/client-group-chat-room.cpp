@@ -215,7 +215,7 @@ void ClientGroupChatRoomPrivate::onChatRoomCreated (const Address &remoteContact
 
 	IdentityAddress addr(remoteContact);
 	q->onConferenceCreated(addr);
-	if (remoteContact.hasParam("isfocus")) {
+	if (remoteContact.hasParam("isfocus") && !q->getCore()->getPrivate()->remoteListEventHandler->findHandler(q->getChatRoomId())) {
 		bgTask.start(q->getCore(), 32); // It will be stopped when receiving the first notify
 		qConference->getPrivate()->eventHandler->subscribe(q->getChatRoomId());
 	}
