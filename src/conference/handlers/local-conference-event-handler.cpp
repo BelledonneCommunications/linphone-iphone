@@ -410,6 +410,7 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool on
 	bctbx_free(addrStr);
 	if (!participant) {
 		lError() << "received SUBSCRIBE corresponds to no participant of the conference; " << d->conf->getConferenceAddress().asString() << ", no NOTIFY sent.";
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
 
@@ -418,16 +419,18 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool on
 	IdentityAddress contactAddr(contactAddrStr);
 	bctbx_free(contactAddrStr);
 	shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(contactAddr);
-	if (!device) {
+	if (!device || (device->getState() != ParticipantDevice::State::Present && device->getState() != ParticipantDevice::State::Joining)) {
 		lError() << "received SUBSCRIBE for conference: " << d->conf->getConferenceAddress().asString()
 			<< "device sending subscribe: " << contactAddr.asString() << " is not known, no NOTIFY sent.";
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
 
+	linphone_event_accept_subscription(lev);
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
 		unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
 		device->setConferenceSubscribeEvent(lev);
-		if (lastNotify == 0) {
+		if (lastNotify == 0 || (device->getState() == ParticipantDevice::State::Joining)) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
 			d->notifyFullState(d->createNotifyFullState(static_cast<int>(d->lastNotify), oneToOne), device);
 		} else if (lastNotify < d->lastNotify) {

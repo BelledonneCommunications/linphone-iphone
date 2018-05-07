@@ -62,8 +62,9 @@ Content ContentManager::contentListToMultipart (const list<Content *> &contents,
 
 	for (Content *content : contents) {
 		LinphoneContent *cContent = L_GET_C_BACK_PTR(content);
-		SalBodyHandler *sbh = sal_body_handler_from_content(cContent);
+		SalBodyHandler *sbh = sal_body_handler_ref(sal_body_handler_from_content(cContent, false));
 		belle_sip_multipart_body_handler_add_part(mpbh, BELLE_SIP_BODY_HANDLER(sbh));
+		sal_body_handler_unref(sbh);
 		linphone_content_unref(cContent);
 	}
 

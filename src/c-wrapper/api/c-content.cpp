@@ -211,7 +211,7 @@ const char *linphone_content_get_key(const LinphoneContent *content) {
         const LinphonePrivate::FileTransferContent *ftc = static_cast<const LinphonePrivate::FileTransferContent *>(c);
         content->key = ms_strdup(ftc->getFileKeyAsString());
     }
-    
+
     return content->key;
 }
 
@@ -259,7 +259,7 @@ static LinphoneContent * linphone_content_new_with_body_handler(SalBodyHandler *
             linphone_content_set_string_buffer(content, body);
             belle_sip_free(body);
         }
-        
+
         belle_sip_list_t *headers = (belle_sip_list_t *)sal_body_handler_get_headers(body_handler);
         while (headers) {
             belle_sip_header_t *cHeader = BELLE_SIP_HEADER(headers->data);
@@ -297,13 +297,13 @@ LinphoneContent * linphone_content_from_sal_body_handler(SalBodyHandler *body_ha
 	return NULL;
 }
 
-SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content) {
+SalBodyHandler * sal_body_handler_from_content(const LinphoneContent *content, bool parseMultipart) {
 	if (content == NULL) return NULL;
 
     SalBodyHandler *body_handler;
     LinphonePrivate::ContentType contentType = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
 
-    if (contentType.isMultipart()) {
+    if (contentType.isMultipart() && parseMultipart) {
         size_t size = linphone_content_get_size(content);
         char *buffer = ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
         const char *boundary = L_STRING_TO_C(contentType.getParameter("boundary").getValue());

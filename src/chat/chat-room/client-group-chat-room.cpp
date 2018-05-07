@@ -258,7 +258,8 @@ ClientGroupChatRoom::ClientGroupChatRoom (
 	AbstractChatRoom::CapabilitiesMask capabilities,
 	const string &subject,
 	list<shared_ptr<Participant>> &&participants,
-	unsigned int lastNotifyId
+	unsigned int lastNotifyId,
+	bool hasBeenLeft
 ) : ChatRoom(*new ClientGroupChatRoomPrivate, core, chatRoomId),
 RemoteConference(core, me->getAddress(), nullptr) {
 	L_D();
@@ -276,7 +277,8 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	dConference->eventHandler->setChatRoomId(chatRoomId);
 	dConference->eventHandler->setLastNotify(lastNotifyId);
-	getCore()->getPrivate()->remoteListEventHandler->addHandler(dConference->eventHandler.get());
+	if (!hasBeenLeft)
+		getCore()->getPrivate()->remoteListEventHandler->addHandler(dConference->eventHandler.get());
 }
 
 ClientGroupChatRoom::~ClientGroupChatRoom () {
@@ -498,8 +500,7 @@ void ClientGroupChatRoom::leave () {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	dConference->eventHandler->unsubscribe();
-
+	dConference->eventHandler->getPrivate()->lev = nullptr;
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
 	if (session)
 		session->terminate();
@@ -534,7 +535,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	dConference->eventHandler->unsubscribe();
+	dConference->eventHandler->getPrivate()->lev = nullptr;
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
 	d->addEvent(make_shared<ConferenceEvent>(

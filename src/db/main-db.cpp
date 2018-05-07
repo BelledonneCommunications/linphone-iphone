@@ -2399,7 +2399,8 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						capabilities,
 						subject,
 						move(participants),
-						lastNotifyId
+						lastNotifyId,
+						hasBeenLeft
 					);
 					AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 					dChatRoom->setState(ChatRoom::State::Instantiated);

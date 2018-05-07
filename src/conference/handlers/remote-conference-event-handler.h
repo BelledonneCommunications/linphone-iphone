@@ -31,6 +31,7 @@ class RemoteConference;
 class RemoteConferenceEventHandlerPrivate;
 
 class RemoteConferenceEventHandler : public Object {
+	friend class ClientGroupChatRoom;
 public:
 	RemoteConferenceEventHandler (RemoteConference *remoteConference);
 	~RemoteConferenceEventHandler ();

@@ -384,7 +384,7 @@ void linphone_configure_op(LinphoneCore *lc, LinphonePrivate::SalOp *op, const L
 void linphone_configure_op_with_proxy(LinphoneCore *lc, LinphonePrivate::SalOp *op, const LinphoneAddress *dest, SalCustomHeader *headers, bool_t with_contact, LinphoneProxyConfig *proxy);
 LinphoneContent * linphone_content_new(void);
 LinphoneContent * linphone_content_copy(const LinphoneContent *ref);
-SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content);
+SalBodyHandler *sal_body_handler_from_content(const LinphoneContent *content, bool parseMultipart = true);
 SalReason linphone_reason_to_sal(LinphoneReason reason);
 LinphoneReason linphone_reason_from_sal(SalReason reason);
 void linphone_error_info_to_sal(const LinphoneErrorInfo* ei, SalErrorInfo* sei);

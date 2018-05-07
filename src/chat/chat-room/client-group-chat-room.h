@@ -54,7 +54,8 @@ public:
 		AbstractChatRoom::CapabilitiesMask capabilities,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
-		unsigned int lastNotifyId
+		unsigned int lastNotifyId,
+		bool hasBeenLeft = false
 	);
 
 	~ClientGroupChatRoom ();

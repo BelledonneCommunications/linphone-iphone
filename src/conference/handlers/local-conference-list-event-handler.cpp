@@ -54,14 +54,17 @@ namespace {
 
 void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body) {
 	LinphoneSubscriptionState subscriptionState = linphone_event_get_subscription_state(lev);
-	if (subscriptionState != LinphoneSubscriptionIncomingReceived && subscriptionState != LinphoneSubscriptionTerminated)
-		return;
 
 	const string &xmlBody = string(linphone_content_get_string_buffer(body));
 	if (xmlBody.empty()) {
 		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
+
+	linphone_event_accept_subscription(lev);
+
+	if (subscriptionState != LinphoneSubscriptionIncomingReceived && subscriptionState != LinphoneSubscriptionTerminated)
+		return;
 
 	const LinphoneAddress *lAddr = linphone_event_get_from(lev);
 	char *addrStr = linphone_address_as_string(lAddr);
@@ -110,7 +113,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 				continue;
 			}
 			shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(deviceAddr);
-			if (!device) {
+			if (!device || (device->getState() != ParticipantDevice::State::Present && device->getState() != ParticipantDevice::State::Joining)) {
 				lError() << "Received subscribe for unknown device: " << deviceAddr << " for participant: "
 					<< participantAddr <<  " for chat room: " << chatRoomId;
 				continue;
@@ -134,6 +137,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			char token[17];
 			belle_sip_random_token(token, sizeof(token));
 			content->addHeader("Content-Id", token);
+			content->addHeader("Content-Length", Utils::toString(notifyBody.size()));
 			contents.push_back(content);
 
 			// Add entry into the Rlmi content of the notify body
@@ -146,11 +150,8 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 		}
 	}
 
-	if (noContent) {
-		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
+	if (noContent)
 		return;
-	}
-	linphone_event_accept_subscription(lev);
 
 	Xsd::Rlmi::List list("", 0, TRUE);
 	list.setResource(resources);

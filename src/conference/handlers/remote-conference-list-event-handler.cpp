@@ -76,7 +76,15 @@ void RemoteConferenceListEventHandler::subscribe () {
 	Xsd::ResourceLists::ResourceLists rl = Xsd::ResourceLists::ResourceLists();
 	Xsd::ResourceLists::ListType l = Xsd::ResourceLists::ListType();
 	for (const auto &handler : handlers) {
-		Address addr = handler->getChatRoomId().getPeerAddress();
+		const ChatRoomId &chatRoomId = handler->getChatRoomId();
+		shared_ptr<AbstractChatRoom> cr = getCore()->findChatRoom(chatRoomId);
+		if (!cr)
+			continue;
+
+		if (cr->hasBeenLeft())
+			continue;
+
+		Address addr = chatRoomId.getPeerAddress();
 		addr.setUriParam("Last-Notify", Utils::toString(handler->getLastNotify()));
 		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asStringUriOnly());
 		l.getEntry().push_back(entry);
