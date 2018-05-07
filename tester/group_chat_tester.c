@@ -1427,22 +1427,21 @@ static void group_chat_room_create_room_with_disconnected_friends_base (bool_t i
 	const LinphoneAddress *confAddr = linphone_chat_room_get_conference_address(marieCr);
 
 	if (initial_message) {
-		LinphoneChatMessage* msg = linphone_chat_room_create_message(marieCr, "Salut");
+		LinphoneChatMessage *msg = linphone_chat_room_create_message(marieCr, "Salut");
 		linphone_chat_message_send(msg);
 		linphone_chat_message_unref(msg);
 	}
 
 	wait_for_list(coresList, &dummy, 1, 4000);
 
-	// Reconnect pauline and laure
+	// Reconnect Pauline and check that the chat room is correctly created on Pauline's side and that the participants are added
 	linphone_core_set_network_reachable(pauline->lc, TRUE);
-	linphone_core_set_network_reachable(laure->lc, TRUE);
-
-	// Check that the chat room is correctly created on Pauline's side and that the participants are added
 	paulineCr = check_creation_chat_room_client_side(coresList, pauline, &initialPaulineStats, confAddr, initialSubject, 2, FALSE);
 	if (!BC_ASSERT_PTR_NOT_NULL(paulineCr))
 			goto end;
-	// Check that the chat room is correctly created on Laure's side and that the participants are added
+
+	// Reconnect Laure and check that the chat room is correctly created on Laure's side and that the participants are added
+	linphone_core_set_network_reachable(laure->lc, TRUE);
 	laureCr = check_creation_chat_room_client_side(coresList, laure, &initialLaureStats, confAddr, initialSubject, 2, FALSE);
 	if (!BC_ASSERT_PTR_NOT_NULL(laureCr))
 		goto end;
@@ -2385,6 +2384,7 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 	// Send a message and check that a basic chat room is created on Pauline's side
 	LinphoneChatMessage *msg = linphone_chat_room_create_message(marieCr, "Hey Pauline!");
 	linphone_chat_message_send(msg);
+	linphone_chat_message_unref(msg);
 	BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 1, 1000));
 	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_chat_message);
 	if (pauline->stat.last_received_chat_message)
@@ -2396,17 +2396,19 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 
 	// Enable chat room migration and restart core for Marie
 	_linphone_chat_room_enable_migration(marieCr, TRUE);
+	linphone_chat_room_unref(marieCr);
 	coresList = bctbx_list_remove(coresList, marie->lc);
 	linphone_core_manager_reinit(marie);
 	bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, marie);
-	init_core_for_conference(tmpCoresManagerList);
+	bctbx_list_t *tmpCoresList = init_core_for_conference(tmpCoresManagerList);
 	bctbx_list_free(tmpCoresManagerList);
-	coresList = bctbx_list_append(coresList, marie->lc);
+	coresList = bctbx_list_concat(coresList, tmpCoresList);
 	linphone_core_manager_start(marie, TRUE);
 
 	// Send a new message to initiate chat room migration
 	LinphoneAddress *paulineAddr = linphone_address_new(linphone_core_get_identity(pauline->lc));
 	marieCr = linphone_core_get_chat_room(marie->lc, paulineAddr);
+	linphone_address_unref(paulineAddr);
 	BC_ASSERT_PTR_NOT_NULL(marieCr);
 	if (marieCr) {
 		initialMarieStats = marie->stat;
@@ -2414,6 +2416,7 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 		BC_ASSERT_EQUAL(linphone_chat_room_get_capabilities(marieCr), LinphoneChatRoomCapabilitiesBasic | LinphoneChatRoomCapabilitiesProxy | LinphoneChatRoomCapabilitiesMigratable | LinphoneChatRoomCapabilitiesOneToOne, int, "%d");
 		msg = linphone_chat_room_create_message(marieCr, "Did you migrate?");
 		linphone_chat_message_send(msg);
+		linphone_chat_message_unref(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 1, 3000));
 		BC_ASSERT_FALSE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 3000));
 		BC_ASSERT_TRUE(linphone_chat_room_get_capabilities(marieCr) & LinphoneChatRoomCapabilitiesBasic);
@@ -2429,18 +2432,20 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 
 		msg = linphone_chat_room_create_message(marieCr, "Let's go drink a beer");
 		linphone_chat_message_send(msg);
+		linphone_chat_message_unref(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &pauline->stat.number_of_LinphoneMessageReceived, initialPaulineStats.number_of_LinphoneMessageReceived + 2, 1000));
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 3, int, "%d");
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 3, int, "%d");
 
 		msg = linphone_chat_room_create_message(paulineCr, "Let's go drink mineral water instead");
 		linphone_chat_message_send(msg);
+		linphone_chat_message_unref(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneMessageReceived, initialMarieStats.number_of_LinphoneMessageReceived + 1, 1000));
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(marieCr), 4, int, "%d");
 		BC_ASSERT_EQUAL(linphone_chat_room_get_history_size(paulineCr), 4, int, "%d");
 
 		// Activate groupchat on Pauline's side and wait for 5 seconds, the migration should now be done on next message sending
-		lp_config_set_int(linphone_core_get_config(marie->lc),"misc","basic_to_client_group_chat_room_migration_timer",5);
+		lp_config_set_int(linphone_core_get_config(marie->lc), "misc", "basic_to_client_group_chat_room_migration_timer", 5);
 		linphone_core_set_linphone_specs(pauline->lc, "groupchat");
 		linphone_core_set_network_reachable(pauline->lc, FALSE);
 		wait_for_list(coresList, &dummy, 1, 1000);
@@ -2448,6 +2453,7 @@ static void group_chat_room_migrate_from_basic_to_client_fail (void) {
 		wait_for_list(coresList, &dummy, 1, 5000);
 		msg = linphone_chat_room_create_message(marieCr, "And now, did you migrate?");
 		linphone_chat_message_send(msg);
+		linphone_chat_message_unref(msg);
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreationPending, initialMarieStats.number_of_LinphoneChatRoomStateCreationPending + 2, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomStateCreated, initialMarieStats.number_of_LinphoneChatRoomStateCreated + 1, 10000));
 		BC_ASSERT_TRUE(wait_for_list(coresList, &marie->stat.number_of_LinphoneChatRoomAllInformationReceived, initialMarieStats.number_of_LinphoneChatRoomAllInformationReceived + 1, 10000));
@@ -3496,7 +3502,7 @@ test_t group_chat_tests[] = {
 	TEST_NO_TAG("Send message with a participant removed", group_chat_room_send_message_with_participant_removed),
 	TEST_NO_TAG("Leave group chat room", group_chat_room_leave),
 	TEST_NO_TAG("Come back on a group chat room after a disconnection", group_chat_room_come_back_after_disconnection),
-	TEST_NO_TAG("Create chat room with disconnected friends", group_chat_room_create_room_with_disconnected_friends),
+	TEST_ONE_TAG("Create chat room with disconnected friends", group_chat_room_create_room_with_disconnected_friends, "LeaksMemory"),
 	TEST_ONE_TAG("Create chat room with disconnected friends and initial message", group_chat_room_create_room_with_disconnected_friends_and_initial_message, "LeaksMemory"),
 	TEST_NO_TAG("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed),
 	TEST_ONE_TAG("Reinvited after removed from group chat room while offline", group_chat_room_reinvited_after_removed_while_offline, "LeaksMemory"),
@@ -3518,9 +3524,9 @@ test_t group_chat_tests[] = {
 	TEST_NO_TAG("Unique one-to-one chatroom", group_chat_room_unique_one_to_one_chat_room),
 	TEST_NO_TAG("Unique one-to-one chatroom recreated from message", group_chat_room_unique_one_to_one_chat_room_recreated_from_message),
 	TEST_ONE_TAG("Unique one-to-one chatroom recreated from message with app restart", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_with_app_restart, "LeaksMemory"),
-	TEST_ONE_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device, "LeaksMemory"),
+	TEST_NO_TAG("Join one-to-one chat room with a new device", group_chat_room_join_one_to_one_chat_room_with_a_new_device),
 	TEST_NO_TAG("New unique one-to-one chatroom after both participants left", group_chat_room_new_unique_one_to_one_chat_room_after_both_participants_left),
-	TEST_NO_TAG("Unique one-to-one chatroom re-created from the party that deleted it, with inactive devices", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2),
+	TEST_ONE_TAG("Unique one-to-one chatroom re-created from the party that deleted it, with inactive devices", group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2, "LeaksMemory"),
 	TEST_NO_TAG("IMDN for group chat room", imdn_for_group_chat_room),
 	TEST_NO_TAG("Aggregated IMDN for group chat room", aggregated_imdn_for_group_chat_room),
 	TEST_NO_TAG("Aggregated IMDN for group chat room read while offline", aggregated_imdn_for_group_chat_room_read_while_offline),
