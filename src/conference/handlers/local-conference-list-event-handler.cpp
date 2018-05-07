@@ -95,7 +95,6 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			Address addr(entry.getUri());
 			string notifyIdStr = addr.getUriParamValue("Last-Notify");
 			addr.removeUriParam("Last-Notify");
-			int notifyId = notifyIdStr.empty() ? 0 : Utils::stoi(notifyIdStr);
 			ChatRoomId chatRoomId(addr, addr);
 			LocalConferenceEventHandler *handler = findHandler(chatRoomId);
 			if (!handler)
@@ -120,6 +119,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			}
 			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
 
+			int notifyId = (notifyIdStr.empty() || device->getState() == ParticipantDevice::State::Joining) ? 0 : Utils::stoi(notifyIdStr);
 			string notifyBody = handler->getNotifyForId(notifyId, (chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
 			if (notifyBody.empty())
 				continue;

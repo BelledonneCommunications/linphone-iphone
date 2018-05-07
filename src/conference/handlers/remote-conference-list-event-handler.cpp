@@ -64,8 +64,10 @@ RemoteConferenceListEventHandler::~RemoteConferenceListEventHandler () {
 // -----------------------------------------------------------------------------
 
 void RemoteConferenceListEventHandler::subscribe () {
-	if (lev)
-		return;
+	if (lev) {
+		linphone_event_unref(lev);
+		lev = nullptr;
+	}
 
 	if (handlers.size() == 0)
 		return;
