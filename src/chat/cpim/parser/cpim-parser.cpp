@@ -237,17 +237,17 @@ public:
 
 Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 	L_D();
-#if TARGET_OS_IPHONE	
-	CFBundleRef bundle = CFBundleGetBundleWithIdentifier( CFSTR("org.linphone.linphone") );
-	CFURLRef grammar_url = CFBundleCopyResourceURL(bundle, CFSTR(CPIM_GRAMMAR), NULL, NULL);
-	CFStringRef grammar_path = CFURLCopyFileSystemPath(grammar_url, kCFURLPOSIXPathStyle);
-	CFStringEncoding encoding_method = CFStringGetSystemEncoding();
-	const char *path = CFStringGetCStringPtr(grammar_path, encoding_method);
-	CFRelease(grammar_url);
-	CFRelease(grammar_path);
-#else
-	const char *path = CPIM_GRAMMAR;
-#endif
+	#if TARGET_OS_IPHONE
+		CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("org.linphone.linphone"));
+		CFURLRef grammarUrl = CFBundleCopyResourceURL(bundle, CFSTR(CPIM_GRAMMAR), nullptr, nullptr);
+		CFStringRef grammarPath = CFURLCopyFileSystemPath(grammarUrl, kCFURLPOSIXPathStyle);
+		CFStringEncoding encodingMethod = CFStringGetSystemEncoding();
+		const char *path = CFStringGetCStringPtr(grammarPath, encodingMethod);
+		CFRelease(grammarUrl);
+		CFRelease(grammarPath);
+	#else
+		const char *path = CPIM_GRAMMAR;
+	#endif
 	d->grammar = belr::GrammarLoader::get().load(path);
 	if (!d->grammar)
 		lFatal() << "Unable to load CPIM grammar.";

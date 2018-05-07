@@ -608,7 +608,9 @@ LinphoneReason ChatMessagePrivate::receive () {
 	if (errorCode <= 0) {
 		bool foundSupportContentType = false;
 		for (Content *c : contents) {
-			if (linphone_core_is_content_type_supported(core->getCCore(), c->getContentType().asString().c_str())) {
+			ContentType ct(c->getContentType());
+			ct.cleanParameters();
+			if (linphone_core_is_content_type_supported(core->getCCore(), ct.asString().c_str())) {
 				foundSupportContentType = true;
 				break;
 			} else
