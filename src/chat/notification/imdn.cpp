@@ -86,7 +86,7 @@ void Imdn::notifyDisplay (const shared_ptr<ChatMessage> &message) {
 void Imdn::onImdnMessageDelivered (const std::shared_ptr<ImdnMessage> &message) {
 	// If an IMDN has been successfully delivered, remove it from the list so that
 	// it does not get sent again
-	ImdnMessage::Context context = message->getPrivate()->getContext();
+	auto context = message->getPrivate()->getContext();
 	for (const auto &deliveredMsg : context.deliveredMessages)
 		deliveredMessages.remove(deliveredMsg);
 
@@ -113,15 +113,9 @@ void Imdn::onGlobalStateChanged (LinphoneGlobalState state) {
 
 void Imdn::onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
 	if (sipNetworkReachable) {
-		// When the SIP network gets up, retry sending every IMDN message that has not
-		// successfully been delivered
-		auto messages = sentImdnMessages;
+		// When the SIP network gets up, retry notification
 		sentImdnMessages.clear();
-		for (const auto &message : messages) {
-			auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(message);
-			sentImdnMessages.push_back(imdnMessage);
-			imdnMessage->send();
-		}
+		send();
 	}
 }
 
@@ -208,26 +202,37 @@ int Imdn::timerExpired (void *data, unsigned int revents) {
 
 // -----------------------------------------------------------------------------
 
+bool Imdn::aggregationEnabled () const {
+	auto config = linphone_core_get_config(chatRoom->getCore()->getCCore());
+	bool aggregateImdn = linphone_config_get_bool(config, "misc", "aggregate_imdn", TRUE);
+	return (chatRoom->canHandleCpim() && aggregateImdn);
+}
+
 void Imdn::send () {
 	bool networkReachable = linphone_core_is_network_reachable(chatRoom->getCore()->getCCore());
+	if (!networkReachable)
+		return;
+
 	if (!deliveredMessages.empty() || !displayedMessages.empty()) {
 		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(deliveredMessages, displayedMessages);
 		sentImdnMessages.push_back(imdnMessage);
-		if (networkReachable)
-			imdnMessage->getPrivate()->send();
+		imdnMessage->getPrivate()->send();
+		if (!aggregationEnabled()) {
+			deliveredMessages.clear();
+			displayedMessages.clear();
+		}
 	}
 	if (!nonDeliveredMessages.empty()) {
 		auto imdnMessage = chatRoom->getPrivate()->createImdnMessage(nonDeliveredMessages);
 		sentImdnMessages.push_back(imdnMessage);
-		if (networkReachable)
-			imdnMessage->getPrivate()->send();
+		imdnMessage->getPrivate()->send();
+		if (!aggregationEnabled())
+			nonDeliveredMessages.clear();
 	}
 }
 
 void Imdn::startTimer () {
-	auto config = linphone_core_get_config(chatRoom->getCore()->getCCore());
-	bool aggregateImdn = linphone_config_get_bool(config, "misc", "aggregate_imdn", TRUE);
-	if (!chatRoom->canHandleCpim() || !aggregateImdn) {
+	if (!aggregationEnabled()) {
 		// Compatibility mode for basic chat rooms, do not aggregate notifications
 		send();
 		return;

@@ -46,7 +46,9 @@ public:
 		MessageReason (const std::shared_ptr<ChatMessage> &message, LinphoneReason reason)
 			: message(message), reason(reason) {}
 
-		bool operator== (const MessageReason &other) const {return message == other.message && reason == other.reason;}
+		bool operator== (const MessageReason &other) const {
+			return (message == other.message) && (reason == other.reason);
+		}
 
 		const std::shared_ptr<ChatMessage> message;
 		LinphoneReason reason;
@@ -73,6 +75,7 @@ public:
 private:
 	static int timerExpired (void *data, unsigned int revents);
 
+	bool aggregationEnabled () const;
 	void send ();
 	void startTimer ();
 	void stopTimer ();
