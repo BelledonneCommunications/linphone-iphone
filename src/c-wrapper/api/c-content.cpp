@@ -303,13 +303,13 @@ LinphoneContent *linphone_content_from_sal_body_handler (SalBodyHandler *body_ha
 	return NULL;
 }
 
-SalBodyHandler *sal_body_handler_from_content (const LinphoneContent *content) {
+SalBodyHandler *sal_body_handler_from_content (const LinphoneContent *content, bool parseMultipart) {
 	if (content == NULL) return NULL;
 
 	SalBodyHandler *body_handler;
 	LinphonePrivate::ContentType contentType = L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentType();
 
-	if (contentType.isMultipart()) {
+	if (contentType.isMultipart() && parseMultipart) {
 		size_t size = linphone_content_get_size(content);
 		char *buffer = bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getBodyAsUtf8String().c_str());
 		const char *boundary = L_STRING_TO_C(contentType.getParameter("boundary").getValue());
