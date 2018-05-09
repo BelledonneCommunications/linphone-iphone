@@ -478,7 +478,7 @@ int Sal::addListenPort(SalAddress* addr, bool_t is_tunneled) {
 			ms_error("Tunneled mode is only available for UDP kind of transports.");
 			return -1;
 		}
-		lp = belle_sip_tunnel_listening_point_new(stack, tunnel_client);
+		lp = belle_sip_tunnel_listening_point_new(mStack, mTunnelClient);
 		if (!lp){
 			ms_error("Could not create tunnel listening point.");
 			return -1;
@@ -648,7 +648,7 @@ void Sal::setKeepAlivePeriod(unsigned int value) {
 
 int Sal::setTunnel(void *tunnelclient) {
 #ifdef TUNNEL_ENABLED
-	tunnel_client=tunnelclient;
+	mTunnelClient=tunnelclient;
 	return 0;
 #else
 	return -1;
