@@ -1269,11 +1269,15 @@ static void certificates_config_read(LinphoneCore *lc) {
 	char *root_ca_path = bctbx_strdup_printf("%s/rootca.pem", data_dir);
 	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
 	// If rootca is not existing anymore, we reset it to the default value
-	if (rootca == NULL || (bctbx_file_exist(rootca) != 0)) {
+	if (rootca == NULL || ((bctbx_file_exist(rootca) != 0) && (!bctbx_directory_exists(rootca)))) {
 #ifdef __linux
-		struct stat sb;
-		if (stat("/etc/ssl/certs", &sb) == 0 && S_ISDIR(sb.st_mode)) {
-			rootca = "/etc/ssl/certs";
+		#ifdef __ANDROID__
+		const char *possible_rootca = "/system/etc/security/cacerts";
+		#else
+		const char *possible_rootca = "/etc/ssl/certs";
+		#endif
+		if (bctbx_directory_exists(possible_rootca)) {
+			rootca = possible_rootca;
 		} else
 #endif
 		{
@@ -2287,7 +2291,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->http_crypto_config = belle_tls_crypto_config_new();
 	belle_http_provider_set_tls_crypto_config(lc->http_provider,lc->http_crypto_config);
 
-	certificates_config_read(lc);
+	//certificates_config_read(lc); // This will be done below in _linphone_core_read_config()
 
 	lc->ringtoneplayer = linphone_ringtoneplayer_new();
 
