@@ -81,7 +81,7 @@ void IceAgent::deleteSession () {
 }
 
 void IceAgent::gatheringFinished () {
-	const SalMediaDescription *rmd = mediaSession.getPrivate()->getOp()->get_remote_media_description();
+	const SalMediaDescription *rmd = mediaSession.getPrivate()->getOp()->getRemoteMediaDescription();
 	if (rmd)
 		clearUnusedIceCandidates(mediaSession.getPrivate()->getLocalDesc(), rmd);
 	if (!iceSession)
@@ -134,7 +134,7 @@ bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer
 	SalMediaDescription *remoteDesc = nullptr;
 	bool hasVideo = false;
 	if (incomingOffer) {
-		remoteDesc = mediaSession.getPrivate()->getOp()->get_remote_media_description();
+		remoteDesc = mediaSession.getPrivate()->getOp()->getRemoteMediaDescription();
 		hasVideo = linphone_core_video_enabled(mediaSession.getCore()->getCCore()) &&
 			linphone_core_media_description_contains_video_stream(remoteDesc);
 	} else
@@ -740,32 +740,25 @@ void IceAgent::updateIceStateInCallStatsForStream (LinphoneCallStats *stats, Ice
 	}
 }
 
-bool IceAgent::checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md){
-	int i,j;
-	IceCheckList *cl;
-	
-	if (!iceSession) return false;
+bool IceAgent::checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md) {
+	if (!iceSession || (ice_session_state(iceSession) != IS_Running))
+		return false;
 
-	if (ice_session_state(iceSession) != IS_Running ) return false;
-	
-	for (i = 0; i < md->nb_streams; i++) {
+	for (int i = 0; i < md->nb_streams; i++) {
 		SalStreamDescription *stream = &md->streams[i];
-		cl = ice_session_check_list(iceSession, i);
-
-		if (cl==NULL) continue;
-		if (stream->ice_mismatch == TRUE) {
-			return false;
-		}
-		if (stream->rtp_port == 0) {
+		IceCheckList *cl = ice_session_check_list(iceSession, i);
+		if (!cl)
 			continue;
-		}
-		
-		if (ice_check_list_state(cl) != ICL_Running) continue;
 
-		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
+		if (stream->ice_mismatch)
+			return false;
+		if ((stream->rtp_port == 0) || (ice_check_list_state(cl) != ICL_Running))
+			continue;
+
+		for (int j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
-			if (remote_candidate->addr[0] != '\0') return true;
-
+			if (remote_candidate->addr[0] != '\0')
+				return true;
 		}
 	}
 	return false;

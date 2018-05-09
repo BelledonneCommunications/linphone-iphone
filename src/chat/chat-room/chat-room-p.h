@@ -25,11 +25,15 @@
 #include "abstract-chat-room-p.h"
 #include "chat-room-id.h"
 #include "chat-room.h"
+#include "chat/notification/imdn.h"
 #include "chat/notification/is-composing.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
+
+class ImdnMessage;
+class IsComposingMessage;
 
 class ChatRoomPrivate : public AbstractChatRoomPrivate, public IsComposingListener {
 public:
@@ -54,7 +58,19 @@ public:
 	void removeTransientEvent (const std::shared_ptr<EventLog> &eventLog) override;
 
 	std::shared_ptr<ChatMessage> createChatMessage (ChatMessage::Direction direction);
+	std::shared_ptr<ImdnMessage> createImdnMessage (
+		const std::list<std::shared_ptr<ChatMessage>> &deliveredMessages,
+		const std::list<std::shared_ptr<ChatMessage>> &displayedMessages
+	);
+	std::shared_ptr<ImdnMessage> createImdnMessage (const std::list<Imdn::MessageReason> &nonDeliveredMessages);
+	std::shared_ptr<ImdnMessage> createImdnMessage (const std::shared_ptr<ImdnMessage> &message);
+	std::shared_ptr<IsComposingMessage> createIsComposingMessage ();
 	std::list<std::shared_ptr<ChatMessage>> findChatMessages (const std::string &messageId) const;
+
+	void sendDeliveryErrorNotification (const std::shared_ptr<ChatMessage> &message, LinphoneReason reason);
+	void sendDeliveryNotification (const std::shared_ptr<ChatMessage> &message);
+	void sendDeliveryNotifications () override;
+	bool sendDisplayNotification (const std::shared_ptr<ChatMessage> &message);
 
 	void notifyChatMessageReceived (const std::shared_ptr<ChatMessage> &chatMessage) override;
 	void notifyIsComposingReceived (const Address &remoteAddress, bool isComposing);
@@ -68,6 +84,8 @@ public:
 	void onIsComposingRefreshNeeded () override;
 	void onIsComposingStateChanged (bool isComposing) override;
 	void onIsRemoteComposingStateChanged (const Address &remoteAddress, bool isComposing) override;
+
+	Imdn *getImdnHandler () const { return imdnHandler.get(); }
 
 	LinphoneChatRoom *getCChatRoom () const;
 
@@ -84,6 +102,7 @@ private:
 	time_t creationTime = std::time(nullptr);
 	time_t lastUpdateTime = std::time(nullptr);
 
+	std::unique_ptr<Imdn> imdnHandler;
 	std::unique_ptr<IsComposing> isComposingHandler;
 
 	bool isComposing = false;

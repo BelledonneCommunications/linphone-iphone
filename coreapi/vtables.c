@@ -88,6 +88,7 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	lc->vtable_notify_recursion--;
 
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyGlobalStateChanged(gstate);
 	NOTIFY_IF_EXIST(global_state_changed,lc,gstate,message);
 	cleanup_dead_vtable_refs(lc);
 }

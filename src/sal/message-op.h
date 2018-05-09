@@ -25,21 +25,21 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalMessageOp: public SalOp, public SalMessageOpInterface {
+class SalMessageOp : public SalOp, public SalMessageOpInterface {
 public:
-	SalMessageOp(Sal *sal): SalOp(sal) {}
+	SalMessageOp (Sal *sal) : SalOp(sal) {}
 
-	int send_message(const char* content_type, const char *msg) override;
-	int reply(SalReason reason) override {return SalOp::reply_message(reason);}
+	int sendMessage (const Content &content) override;
+	int reply (SalReason reason) override { return SalOp::replyMessage(reason); }
 
 private:
-	virtual void fill_cbs() override;
-	void process_error();
+	virtual void fillCallbacks () override;
+	void processError ();
 
-	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	static void process_response_event_cb(void *op_base, const belle_sip_response_event_t *event);
-	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
-	static void process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
+	static void processIoErrorCb (void *userCtx, const belle_sip_io_error_event_t *event);
+	static void processResponseEventCb (void *userCtx, const belle_sip_response_event_t *event);
+	static void processTimeoutCb (void *userCtx, const belle_sip_timeout_event_t *event);
+	static void processRequestEventCb (void *userCtx, const belle_sip_request_event_t *event);
 };
 
 LINPHONE_END_NAMESPACE

@@ -79,6 +79,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 #include "commands/netsim.h"
 #include "commands/cn.h"
 #include "commands/version.h"
+#include "commands/play.h"
 
 #include "private.h"
 using namespace std;
@@ -121,13 +122,18 @@ void *Daemon::iterateThread(void *arg) {
 }
 
 EventResponse::EventResponse(Daemon *daemon, LinphoneCall *call, LinphoneCallState state) {
+	LinphoneCallLog *callLog = linphone_call_get_call_log(call);
+	const LinphoneAddress *fromAddr = linphone_call_log_get_from_address(callLog);
+	char *fromStr = linphone_address_as_string(fromAddr);
+
 	ostringstream ostr;
-	char *remote = linphone_call_get_remote_address_as_string(call);
-	ostr << "Event-type: call-state-changed\nEvent: " << linphone_call_state_to_string(state) << "\n";
-	ostr << "From: " << remote << "\n";
+	ostr << "Event-type: call-state-changed" << "\n";
+	ostr << "Event: " << linphone_call_state_to_string(state) << "\n";
+	ostr << "From: " << fromStr << "\n";
 	ostr << "Id: " << daemon->updateCallId(call) << "\n";
 	setBody(ostr.str().c_str());
-	ms_free(remote);
+
+	bctbx_free(fromStr);
 }
 
 DtmfResponse::DtmfResponse(Daemon *daemon, LinphoneCall *call, int dtmf) {
@@ -210,6 +216,15 @@ AudioStreamStatsResponse::AudioStreamStatsResponse(Daemon* daemon, AudioStream* 
 	}
 
 	printCallStatsHelper(ostr, stats, prefix);
+
+	setBody(ostr.str().c_str());
+}
+
+CallPlayingStatsResponse::CallPlayingStatsResponse(Daemon* daemon, int id) {
+	ostringstream ostr;
+ 
+	ostr << "Event-type: call-playing-complete\n";
+	ostr << "Id: " << id << "\n";
 
 	setBody(ostr.str().c_str());
 }
@@ -486,6 +501,10 @@ void Daemon::initCommands() {
 	mCommands.push_back(new ConfigSetCommand());
 	mCommands.push_back(new NetsimCommand());
 	mCommands.push_back(new CNCommand());
+	mCommands.push_back(new IncallPlayerStartCommand());
+	mCommands.push_back(new IncallPlayerStopCommand());
+	mCommands.push_back(new IncallPlayerPauseCommand());
+	mCommands.push_back(new IncallPlayerResumeCommand());
 	mCommands.sort(compareCommands);
 }
 
@@ -522,6 +541,10 @@ void Daemon::callStatsUpdated(LinphoneCall *call, const LinphoneCallStats *stats
 			mEventQueue.push(new CallStatsResponse(this, call, stats, true));
 		}
 	}
+}
+
+void Daemon::callPlayingComplete(int id) {
+	mEventQueue.push(new CallPlayingStatsResponse(this, id));
 }
 
 void Daemon::dtmfReceived(LinphoneCall *call, int dtmf) {

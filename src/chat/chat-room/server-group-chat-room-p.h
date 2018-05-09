@@ -69,7 +69,7 @@ public:
 private:
 	struct Message {
 		Message (const std::string &from, const ContentType &contentType, const std::string &text, const SalCustomHeader *salCustomHeaders)
-			: fromAddr(from) 
+			: fromAddr(from)
 		{
 			content.setContentType(contentType);
 			if (!text.empty())

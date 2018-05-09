@@ -96,6 +96,19 @@ typedef void (*LinphoneCallCbsAckProcessingCb)(LinphoneCall *call, LinphoneHeade
 typedef void (*LinphoneCallCbsTmmbrReceivedCb)(LinphoneCall *call, int stream_index, int tmmbr);
 
 /**
+ * Callback for notifying a snapshot taken.
+ * @param call LinphoneCall for which the snapshot was taken
+ * @param filepath the name of the saved file
+ */
+typedef void (*LinphoneCallCbsSnapshotTakenCb)(LinphoneCall *call, const char *filepath);
+
+ /**
+ * Callback to notify a next video frame has been decoded
+ * @param call LinphoneCall for which the next video frame has been decoded
+ */
+typedef void (*LinphoneCallCbsNextVideoFrameDecodedCb)(LinphoneCall *call);
+
+/**
  * @}
 **/
 

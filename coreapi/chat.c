@@ -127,10 +127,10 @@ int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op,
 	const char *peerAddress;
 	const char *localAddress;
 	if (linphone_core_conference_server_enabled(lc)) {
-		localAddress = peerAddress = op->get_to();
+		localAddress = peerAddress = op->getTo();
 	} else {
-		peerAddress = op->get_from();
-		localAddress = op->get_to();
+		peerAddress = op->getFrom();
+		localAddress = op->getTo();
 	}
 
 	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(

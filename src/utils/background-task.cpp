@@ -61,7 +61,7 @@ void BackgroundTask::start (const shared_ptr<Core> &core, int maxDurationSeconds
 	mId = newId;
 	if (maxDurationSeconds > 0) {
 		mSal = core->getCCore()->sal;
-		mTimeout = mSal->create_timer(sHandleSalTimeout, this, (unsigned int)maxDurationSeconds * 1000, mName.c_str());
+		mTimeout = mSal->createTimer(sHandleSalTimeout, this, (unsigned int)maxDurationSeconds * 1000, mName.c_str());
 	}
 }
 
@@ -72,7 +72,7 @@ void BackgroundTask::stop () {
 	lInfo() << "Ending background task [" << mId << "] with name: [" << mName << "]";
 	sal_end_background_task(mId);
 	if (mTimeout) {
-		mSal->cancel_timer(mTimeout);
+		mSal->cancelTimer(mTimeout);
 		belle_sip_object_unref(mTimeout);
 		mTimeout = nullptr;
 	}

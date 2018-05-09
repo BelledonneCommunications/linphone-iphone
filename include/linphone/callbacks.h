@@ -532,7 +532,7 @@ typedef void (*LinphoneCoreCbsEcCalibrationResultCb)(LinphoneCore *lc, LinphoneE
 typedef void (*LinphoneCoreCbsEcCalibrationAudioInitCb)(LinphoneCore *lc);
 
 /**
- * @biref Function prototype used by #linphone_core_cbs_set_ec_calibrator_audio_uninit().
+ * @brief Function prototype used by #linphone_core_cbs_set_ec_calibrator_audio_uninit().
  * @param lc The core.
  */
 typedef void (*LinphoneCoreCbsEcCalibrationAudioUninitCb)(LinphoneCore *lc);

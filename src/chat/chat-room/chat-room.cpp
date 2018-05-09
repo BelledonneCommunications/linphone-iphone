@@ -23,9 +23,11 @@
 
 #include "c-wrapper/c-wrapper.h"
 #include "chat/chat-message/chat-message-p.h"
+#include "chat/chat-message/imdn-message.h"
+#include "chat/chat-message/is-composing-message.h"
+#include "chat/chat-message/notification-message-p.h"
 #include "chat/chat-room/chat-room-p.h"
 #include "core/core-p.h"
-#include "sip-tools/sip-headers.h"
 #include "logger/logger.h"
 
 // =============================================================================
@@ -76,21 +78,8 @@ void ChatRoomPrivate::sendIsComposingNotification () {
 	if (!linphone_im_notif_policy_get_send_is_composing(policy))
 		return;
 
-	string payload = isComposingHandler->marshal(isComposing);
-	if (payload.empty())
-		return;
-
-	Content *content = new Content();
-	content->setContentType(ContentType::ImIsComposing);
-	content->setBody(payload);
-
-	shared_ptr<ChatMessage> chatMessage = createChatMessage(ChatMessage::Direction::Outgoing);
-	chatMessage->setToBeStored(false);
-	chatMessage->addContent(content);
-	chatMessage->getPrivate()->addSalCustomHeader(PriorityHeader::HeaderName, PriorityHeader::NonUrgent);
-	chatMessage->getPrivate()->addSalCustomHeader("Expires", "0");
-
-	chatMessage->getPrivate()->send();
+	auto isComposingMsg = createIsComposingMessage();
+	isComposingMsg->getPrivate()->send();
 }
 
 // -----------------------------------------------------------------------------
@@ -121,9 +110,67 @@ shared_ptr<ChatMessage> ChatRoomPrivate::createChatMessage (ChatMessage::Directi
 	return shared_ptr<ChatMessage>(new ChatMessage(q->getSharedFromThis(), direction));
 }
 
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (
+	const list<shared_ptr<ChatMessage>> &deliveredMessages,
+	const list<shared_ptr<ChatMessage>> &displayedMessages
+) {
+	L_Q();
+	return shared_ptr<ImdnMessage>(new ImdnMessage(q->getSharedFromThis(), deliveredMessages, displayedMessages));
+}
+
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (const list<Imdn::MessageReason> &nonDeliveredMessages) {
+	L_Q();
+	return shared_ptr<ImdnMessage>(new ImdnMessage(q->getSharedFromThis(), nonDeliveredMessages));
+}
+
+shared_ptr<ImdnMessage> ChatRoomPrivate::createImdnMessage (const shared_ptr<ImdnMessage> &message) {
+	return shared_ptr<ImdnMessage>(new ImdnMessage(message));
+}
+
+shared_ptr<IsComposingMessage> ChatRoomPrivate::createIsComposingMessage () {
+	L_Q();
+	return shared_ptr<IsComposingMessage>(new IsComposingMessage(q->getSharedFromThis(), *isComposingHandler.get(), isComposing));
+}
+
 list<shared_ptr<ChatMessage>> ChatRoomPrivate::findChatMessages (const string &messageId) const {
 	L_Q();
 	return q->getCore()->getPrivate()->mainDb->findChatMessages(q->getChatRoomId(), messageId);
+}
+
+// -----------------------------------------------------------------------------
+
+void ChatRoomPrivate::sendDeliveryErrorNotification (const shared_ptr<ChatMessage> &message, LinphoneReason reason) {
+	L_Q();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
+	if (linphone_im_notif_policy_get_send_imdn_delivered(policy))
+		imdnHandler->notifyDeliveryError(message, reason);
+}
+
+void ChatRoomPrivate::sendDeliveryNotification (const shared_ptr<ChatMessage> &message) {
+	L_Q();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
+	if (linphone_im_notif_policy_get_send_imdn_delivered(policy))
+		imdnHandler->notifyDelivery(message);
+}
+
+void ChatRoomPrivate::sendDeliveryNotifications () {
+	L_Q();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
+	if (linphone_im_notif_policy_get_send_imdn_delivered(policy)) {
+		auto messages = q->getCore()->getPrivate()->mainDb->findChatMessagesToBeNotifiedAsDelivered(q->getChatRoomId());
+		for (const auto message : messages)
+			imdnHandler->notifyDelivery(message);
+	}
+}
+
+bool ChatRoomPrivate::sendDisplayNotification (const shared_ptr<ChatMessage> &message) {
+	L_Q();
+	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
+	if (linphone_im_notif_policy_get_send_imdn_displayed(policy)) {
+		imdnHandler->notifyDisplay(message);
+		return true;
+	}
+	return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -188,7 +235,7 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	LinphoneCore *cCore = core->getCCore();
 
 	msg = createChatMessage(
-		IdentityAddress(op->get_from()) == q->getLocalAddress()
+		IdentityAddress(op->getFrom()) == q->getLocalAddress()
 			? ChatMessage::Direction::Outgoing
 			: ChatMessage::Direction::Incoming
 	);
@@ -205,35 +252,30 @@ LinphoneReason ChatRoomPrivate::onSipMessageReceived (SalOp *op, const SalMessag
 	msg->setInternalContent(content);
 
 	msg->getPrivate()->setTime(message->time);
-	msg->getPrivate()->setImdnMessageId(op->get_call_id());
+	msg->getPrivate()->setImdnMessageId(op->getCallId());
 
-	const SalCustomHeader *ch = op->get_recv_custom_header();
+	const SalCustomHeader *ch = op->getRecvCustomHeaders();
 	if (ch)
 		msg->getPrivate()->setSalCustomHeaders(sal_custom_header_clone(ch));
 
 	reason = msg->getPrivate()->receive();
 
 	if (reason == LinphoneReasonNotAcceptable || reason == LinphoneReasonUnknown) {
-		/* Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt */
-		reason = LinphoneReasonNone;
-		goto end;
+		// Return LinphoneReasonNone to avoid flexisip resending us a message we can't decrypt
+		return LinphoneReasonNone;
 	}
 
 	if (msg->getPrivate()->getContentType() == ContentType::ImIsComposing) {
 		onIsComposingReceived(msg->getFromAddress(), msg->getPrivate()->getText());
-		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
-			goto end;
-		}
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1)
+			return reason;
 	} else if (msg->getPrivate()->getContentType() == ContentType::Imdn) {
 		onImdnReceived(msg);
-		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1) {
-			goto end;
-		}
+		if (lp_config_get_int(linphone_core_get_config(cCore), "sip", "deliver_imdn", 0) != 1)
+			return reason;
 	}
 
 	onChatMessageReceived(msg);
-
-end:
 	return reason;
 }
 
@@ -286,7 +328,14 @@ ChatRoom::ChatRoom (ChatRoomPrivate &p, const shared_ptr<Core> &core, const Chat
 	L_D();
 
 	d->chatRoomId = chatRoomId;
+	d->imdnHandler.reset(new Imdn(this));
 	d->isComposingHandler.reset(new IsComposing(core->getCCore(), d));
+}
+
+ChatRoom::~ChatRoom () {
+	L_D();
+
+	d->imdnHandler.reset();
 }
 
 // -----------------------------------------------------------------------------
@@ -377,7 +426,11 @@ int ChatRoom::getChatMessageCount () const {
 }
 
 int ChatRoom::getUnreadChatMessageCount () const {
-	return getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
+	L_D();
+	int dbUnreadCount = getCore()->getPrivate()->mainDb->getUnreadChatMessageCount(getChatRoomId());
+	int notifiedCount = d->imdnHandler->getDisplayNotificationCount();
+	L_ASSERT(dbUnreadCount >= notifiedCount);
+	return dbUnreadCount - notifiedCount;
 }
 
 // -----------------------------------------------------------------------------
@@ -443,16 +496,21 @@ shared_ptr<ChatMessage> ChatRoom::findChatMessage (const string &messageId, Chat
 void ChatRoom::markAsRead () {
 	L_D();
 
+	bool globallyMarkAsReadInDb = true;
 	CorePrivate *dCore = getCore()->getPrivate();
 	for (auto &chatMessage : dCore->mainDb->getUnreadChatMessages(d->chatRoomId)) {
 		// Do not send display notification for file transfer until it has been downloaded (it won't have a file transfer content anymore)
 		if (!chatMessage->getPrivate()->hasFileTransferContent()) {
-			chatMessage->sendDisplayNotification();
-			chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, true); // True will ensure the setState won't update the database so it will be done below by the markChatMessagesAsRead
+			bool doNotStoreInDb = d->sendDisplayNotification(chatMessage);
+			// Force the state so it is stored directly in DB, but when the IMDN has successfully been delivered
+			chatMessage->getPrivate()->setState(ChatMessage::State::Displayed, doNotStoreInDb);
+			if (doNotStoreInDb)
+				globallyMarkAsReadInDb = false;
 		}
 	}
 
-	dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
+	if (globallyMarkAsReadInDb)
+		dCore->mainDb->markChatMessagesAsRead(d->chatRoomId);
 }
 
 LINPHONE_END_NAMESPACE

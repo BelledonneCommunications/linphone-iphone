@@ -107,7 +107,7 @@ void RemoteConferenceListEventHandler::subscribe () {
 
 	lev = linphone_event_ref(linphone_core_create_subscribe(lc, rlsAddr, "conference", 600));
 	char *from = linphone_address_as_string(linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(getCore()->getCCore())));
-	lev->op->set_from(from);
+	lev->op->setFrom(from);
 	bctbx_free(from);
 	linphone_address_unref(rlsAddr);
 	linphone_event_set_internal(lev, TRUE);

@@ -23,18 +23,18 @@
 // =============================================================================
 
 #define L_ENUM_VALUES_EVENT_LOG_TYPE(F) \
-	F(None) \
-	F(ConferenceCreated) \
-	F(ConferenceTerminated) \
-	F(ConferenceCallStart) \
-	F(ConferenceCallEnd) \
-	F(ConferenceChatMessage) \
-	F(ConferenceParticipantAdded) \
-	F(ConferenceParticipantRemoved) \
-	F(ConferenceParticipantSetAdmin) \
-	F(ConferenceParticipantUnsetAdmin) \
-	F(ConferenceParticipantDeviceAdded) \
-	F(ConferenceParticipantDeviceRemoved) \
-	F(ConferenceSubjectChanged)
+	F(None /**< No defined event */) \
+	F(ConferenceCreated /**< Conference (created) event */) \
+	F(ConferenceTerminated /**< Conference (terminated) event */) \
+	F(ConferenceCallStart /**< Conference call (start) event */) \
+	F(ConferenceCallEnd /**< Conference call (end) event */) \
+	F(ConferenceChatMessage /**< Conference chat message event */) \
+	F(ConferenceParticipantAdded /**< Conference participant (added) event */) \
+	F(ConferenceParticipantRemoved /**< Conference participant (removed) event */) \
+	F(ConferenceParticipantSetAdmin /**< Conference participant (set admin) event */) \
+	F(ConferenceParticipantUnsetAdmin /**< Conference participant (unset admin) event */) \
+	F(ConferenceParticipantDeviceAdded /**< Conference participant device (added) event */) \
+	F(ConferenceParticipantDeviceRemoved /**< Conference participant device (removed) event */) \
+	F(ConferenceSubjectChanged /**< Conference subject event */) \
 
 #endif // ifndef _L_EVENT_LOG_ENUMS_H_

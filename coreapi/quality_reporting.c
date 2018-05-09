@@ -380,7 +380,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		sal_address_has_uri_param(salAddress, "maddr") ||
 		linphone_address_get_port(request_uri) != 0) {
 		ms_message("Publishing report with custom route %s", collector_uri);
-		lev->op->set_route(collector_uri);
+		lev->op->setRoute(collector_uri);
 	}
 
 	if (linphone_event_send_publish(lev, content) != 0){
@@ -424,7 +424,7 @@ static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDesc
 static void update_ip(LinphoneCall * call, int stats_type) {
 	SalStreamType sal_stream_type = stats_type == LINPHONE_CALL_STATS_AUDIO ? SalAudio : stats_type == LINPHONE_CALL_STATS_VIDEO ? SalVideo : SalText;
 	const SalStreamDescription * local_desc = get_media_stream_for_desc(_linphone_call_get_local_desc(call), sal_stream_type);
-	const SalStreamDescription * remote_desc = get_media_stream_for_desc(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_remote_media_description(), sal_stream_type);
+	const SalStreamDescription * remote_desc = get_media_stream_for_desc(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getRemoteMediaDescription(), sal_stream_type);
 	LinphoneCallLog *log = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getLog();
 
 	if (local_desc != NULL) {
@@ -444,7 +444,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 		if (strlen(remote_desc->rtp_addr) > 0) {
 			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(remote_desc->rtp_addr));
 		} else {
-			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_remote_media_description()->addr));
+			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getRemoteMediaDescription()->addr));
 		}
 	}
 }
@@ -511,7 +511,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	if (!media_report_enabled(call, stats_type) || !L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp())
 		return;
 
-	dialog_id = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_dialog_id();
+	dialog_id = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getDialogId();
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(log->call_id));
 

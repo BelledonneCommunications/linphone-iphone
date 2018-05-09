@@ -139,8 +139,8 @@ void ServerGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<Call
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op)
-: ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
-LocalConference(core, IdentityAddress(op->get_to()), nullptr) {
+: ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->getTo()), IdentityAddress(op->getTo()))),
+LocalConference(core, IdentityAddress(op->getTo()), nullptr) {
 	L_D();
 	d->chatRoomListener = d;
 }

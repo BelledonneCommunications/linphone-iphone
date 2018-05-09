@@ -88,7 +88,6 @@ static int _local_player_get_current_position(LinphonePlayer *obj) {
 
 static void _local_player_destroy(LinphonePlayer *obj) {
 	ms_media_player_free((MSMediaPlayer *)obj->impl);
-	_linphone_player_destroy(obj);
 }
 
 static void _local_player_close(LinphonePlayer *obj) {

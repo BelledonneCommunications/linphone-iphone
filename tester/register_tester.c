@@ -89,7 +89,7 @@ static void register_with_refresh_base_3_for_algo(
 	reset_counters(counters);
 	linphone_core_set_transports(lc, transport);
 
-	proxy_cfg = linphone_proxy_config_new();
+	proxy_cfg = linphone_core_create_proxy_config(lc);
 
 	from = create_linphone_address_for_algo(domain, username);
 
@@ -475,7 +475,39 @@ static void authenticated_register_with_provided_credentials(void){
 	BC_ASSERT_PTR_NULL(lp_config_get_string(linphone_core_get_config(lcm->lc), "auth_info_0", "passwd", NULL));
 	BC_ASSERT_PTR_NOT_NULL(lp_config_get_string(linphone_core_get_config(lcm->lc), "auth_info_0", "ha1", NULL));
 
-	linphone_proxy_config_destroy(cfg);
+	linphone_proxy_config_unref(cfg);
+	linphone_core_manager_destroy(lcm);
+}
+
+static void authenticated_register_with_provided_credentials_and_username_with_space(void) {
+	LinphoneCoreManager *lcm = linphone_core_manager_new(NULL);
+	stats *counters = get_stats(lcm->lc);
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(lcm->lc);
+	const char *username = "test username";
+	LinphoneAddress *from = create_linphone_address_for_algo(auth_domain, username);
+
+	char *addr = linphone_address_as_string(from);
+	linphone_proxy_config_set_identity(cfg, addr);
+	ms_free(addr);
+
+	linphone_proxy_config_enable_register(cfg, TRUE);
+	linphone_proxy_config_set_expires(cfg, 1);
+	linphone_proxy_config_set_route(cfg, test_route);
+	linphone_proxy_config_set_server_addr(cfg, test_route);
+	linphone_address_unref(from);
+
+	LinphoneAuthInfo *ai = linphone_auth_info_new(username, NULL, test_password, NULL, NULL, test_route);
+	linphone_core_add_auth_info(lcm->lc, ai);
+	linphone_auth_info_unref(ai);
+	linphone_core_add_proxy_config(lcm->lc, cfg);
+
+	BC_ASSERT_TRUE(wait_for(lcm->lc, lcm->lc, &counters->number_of_LinphoneRegistrationOk, 1));
+	BC_ASSERT_EQUAL(counters->number_of_auth_info_requested, 0, int, "%d");
+
+	BC_ASSERT_PTR_NULL(lp_config_get_string(linphone_core_get_config(lcm->lc), "auth_info_0", "passwd", NULL));
+	BC_ASSERT_PTR_NOT_NULL(lp_config_get_string(linphone_core_get_config(lcm->lc), "auth_info_0", "ha1", NULL));
+
+	linphone_proxy_config_unref(cfg);
 	linphone_core_manager_destroy(lcm);
 }
 
@@ -1288,19 +1320,6 @@ static void multi_devices_register_with_gruu(void) {
 	linphone_core_manager_destroy(marie);
 }
 
-static void register_without_regid(void) {
-	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
-	linphone_core_manager_init(marie, "marie_rc", NULL);
-	linphone_core_manager_start(marie,TRUE);
-	LinphoneProxyConfig *cfg=linphone_core_get_default_proxy_config(marie->lc);
-	if(cfg) {
-		const LinphoneAddress *addr = linphone_proxy_config_get_contact(cfg);
-		BC_ASSERT_PTR_NOT_NULL(addr);
-		BC_ASSERT_PTR_NOT_NULL(strstr(linphone_address_as_string_uri_only(addr), "regid"));
-	}
-	linphone_core_manager_destroy(marie);
-}
-
 
 test_t register_tests[] = {
 	TEST_NO_TAG("Simple register", simple_register),
@@ -1325,6 +1344,7 @@ test_t register_tests[] = {
 	TEST_NO_TAG("Authenticated register with wrong late credentials", authenticated_register_with_wrong_late_credentials),
 	TEST_NO_TAG("Authenticated register with late credentials", authenticated_register_with_late_credentials),
 	TEST_NO_TAG("Authenticated register with provided credentials", authenticated_register_with_provided_credentials),
+	TEST_NO_TAG("Authenticated register with provided credentials, username with space", authenticated_register_with_provided_credentials_and_username_with_space),
 	TEST_NO_TAG("Register with refresh", simple_register_with_refresh),
 	TEST_NO_TAG("Authenticated register with refresh", simple_auth_register_with_refresh),
 	TEST_NO_TAG("Register with refresh and send error", register_with_refresh_with_send_error),
@@ -1350,8 +1370,7 @@ test_t register_tests[] = {
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback", tls_auth_info_client_cert_cb),
 	TEST_NO_TAG("AuthInfo TLS client certificate authentication in callback 2", tls_auth_info_client_cert_cb_2),
 	TEST_NO_TAG("Register get GRUU", register_get_gruu),
-	TEST_NO_TAG("Register get GRUU for multi device", multi_devices_register_with_gruu),
-	TEST_NO_TAG("Register contact do not have regid param", register_without_regid)
+	TEST_NO_TAG("Register get GRUU for multi device", multi_devices_register_with_gruu)
 };
 
 test_suite_t register_test_suite = {"Register", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,

@@ -27,6 +27,10 @@
 
 #include "linphone/utils/utils.h"
 
+#include "logger/logger.h"
+
+#include "private.h"
+
 // =============================================================================
 
 using namespace std;
@@ -184,12 +188,42 @@ string Utils::trim (const string &str) {
 // -----------------------------------------------------------------------------
 
 tm Utils::getTimeTAsTm (time_t time) {
-	tm result;
-	return *gmtime_r(&time, &result);
+	#ifdef _WIN32
+		return *gmtime(&time);
+	#else
+		tm result;
+		return *gmtime_r(&time, &result);
+	#endif
 }
 
-long Utils::getTmAsTimeT (const tm &time) {
-	return timegm(&const_cast<tm &>(time));
+time_t Utils::getTmAsTimeT (const tm &time) {
+	time_t result;
+
+	#if defined(LINPHONE_WINDOWS_UNIVERSAL) || defined(LINPHONE_MSC_VER_GREATER_19)
+		long adjust_timezone;
+	#else
+		time_t adjust_timezone;
+	#endif
+
+	#if TARGET_IPHONE_SIMULATOR
+		result = timegm(&const_cast<tm &>(time));
+		adjust_timezone = 0;
+	#else
+		result = mktime(&const_cast<tm &>(time));
+
+		#if defined(LINPHONE_WINDOWS_UNIVERSAL) || defined(LINPHONE_MSC_VER_GREATER_19)
+			_get_timezone(&adjust_timezone);
+		#else
+			adjust_timezone = timezone;
+		#endif
+	#endif
+
+	if (result == (time_t)-1) {
+		lError() << "mktime failed: " << strerror(errno);
+		return (time_t)-1;
+	}
+
+	return result - (time_t)adjust_timezone;
 }
 
 // -----------------------------------------------------------------------------

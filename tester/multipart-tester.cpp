@@ -86,7 +86,6 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 	if (first_file_transfer || second_file_transfer) {
 		LinphoneContent *content = linphone_chat_message_get_file_transfer_information(pauline->stat.last_received_chat_message);
 		BC_ASSERT_PTR_NOT_NULL(content);
-		linphone_content_unref(content);
 	}
 	if (!first_file_transfer || !second_file_transfer) {
 		const char *content = linphone_chat_message_get_text_content(pauline->stat.last_received_chat_message);
@@ -96,6 +95,8 @@ static void chat_message_multipart_modifier_base(bool first_file_transfer, bool 
 		else if (!second_file_transfer)
 			BC_ASSERT_STRING_EQUAL(content, "Hello part 2");
 	}
+
+	marieRoom.reset(); // Avoid bad weak ptr when the core is destroyed below this line.
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

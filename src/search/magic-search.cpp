@@ -191,6 +191,8 @@ list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const stri
 		if (addr) {
 			unsigned int weight = searchInAddress(addr, filter, withDomain);
 			if (weight > getMinWeight()) {
+				// FIXME: Ugly temporary workaround to solve weak. Remove me later.
+				linphone_address_ref(const_cast<LinphoneAddress *>(addr));
 				resultList->push_back(SearchResult(weight, addr, nullptr));
 			}
 		}
@@ -234,17 +236,21 @@ SearchResult MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const st
 	// PHONE NUMBER
 	bctbx_list_t *begin, *phoneNumbers = linphone_friend_get_phone_numbers(lFriend);
 	begin = phoneNumbers;
-	while (phoneNumbers != nullptr && phoneNumbers->data != nullptr) {
+	while (phoneNumbers && phoneNumbers->data) {
 		string number = static_cast<const char*>(phoneNumbers->data);
 		const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lFriend, number.c_str());
 		weight += getWeight(number, filter);
-		if (presence != nullptr) {
-			weight += getWeight(linphone_presence_model_get_contact(presence), filter) * 2;
+		if (presence) {
+			char *contact = linphone_presence_model_get_contact(presence);
+			weight += getWeight(contact, filter) * 2;
+			bctbx_free(contact);
 		}
 		phoneNumbers = phoneNumbers->next;
 	}
 	if (begin) bctbx_list_free(begin);
 
+	// FIXME: Ugly temporary workaround to solve weak. Remove me later.
+	if (lAddress) linphone_address_ref(const_cast<LinphoneAddress *>(lAddress));
 	return SearchResult(weight, lAddress, lFriend);
 }
 
@@ -298,22 +304,29 @@ unsigned int MagicSearch::getWeight(const string &stringWords, const string &fil
 	return (weight != string::npos) ? (unsigned int)(weight) : getMinWeight();
 }
 
-bool MagicSearch::checkDomain(const LinphoneFriend *lFriend, const LinphoneAddress *lAddress, const string &withDomain) const {
+bool MagicSearch::checkDomain (const LinphoneFriend *lFriend, const LinphoneAddress *lAddress, const string &withDomain) const {
 	bool onlySipUri = !withDomain.empty() && withDomain.compare("*") != 0;
-	const LinphonePresenceModel *presenceModel = (lFriend) ? linphone_friend_get_presence_model(lFriend) : nullptr;
-	const char *contactPresence = (presenceModel) ? linphone_presence_model_get_contact(presenceModel) : nullptr;
-	const LinphoneAddress *addrPresence = (contactPresence) ?
-		linphone_core_create_address(this->getCore()->getCCore(), contactPresence) : nullptr;
+	const LinphonePresenceModel *presenceModel = lFriend ? linphone_friend_get_presence_model(lFriend) : nullptr;
+	char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
 
-	return (
+	LinphoneAddress *addrPresence = nullptr;
+	if (contactPresence) {
+		addrPresence = linphone_core_create_address(this->getCore()->getCCore(), contactPresence);
+		bctbx_free(contactPresence);
+	}
+
+	bool soFarSoGood =
 		// If we don't want Sip URI only or Address or Presence model
-		(!onlySipUri || lAddress != nullptr || presenceModel != nullptr) &&
+		(!onlySipUri || lAddress || presenceModel) &&
 		// And If we don't want Sip URI only or Address match or Address presence match
 		(!onlySipUri ||
-			(lAddress != nullptr && withDomain.compare(linphone_address_get_domain(lAddress)) == 0) ||
-			(addrPresence != nullptr && withDomain.compare(linphone_address_get_domain(addrPresence)) == 0)
-		)
-	);
+			(lAddress && withDomain.compare(linphone_address_get_domain(lAddress)) == 0) ||
+			(addrPresence && withDomain.compare(linphone_address_get_domain(addrPresence)) == 0)
+		);
+
+	if (addrPresence) linphone_address_unref(addrPresence);
+
+	return soFarSoGood;
 }
 
 LINPHONE_END_NAMESPACE

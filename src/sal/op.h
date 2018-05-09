@@ -26,107 +26,118 @@
 
 #include "c-wrapper/internal/c-sal.h"
 #include "content/content.h"
+#include "logger/logger.h"
 #include "sal/sal.h"
 
 LINPHONE_BEGIN_NAMESPACE
 
 class SalOp {
 public:
-	SalOp(Sal *sal);
-	virtual ~SalOp();
+	SalOp (Sal *sal);
+	virtual ~SalOp ();
 
-	SalOp *ref();
-	void *unref();
+	SalOp *ref ();
+	void *unref ();
 
-	Sal *get_sal() const {return this->root;}
+	Sal *getSal () const { return mRoot; }
 
-	void set_user_pointer(void *up) {this->user_pointer=up;}
-	void *get_user_pointer() const {return this->user_pointer;}
+	void setUserPointer (void *value) { mUserPointer = value; }
+	void *getUserPointer () const { return mUserPointer; }
 
-	void set_subject (const char *subject);
-	const char *get_subject () const { return this->subject; }
+	void setSubject (const char *value);
+	const char *getSubject () const { return mSubject; }
 
-	void set_from(const char *from);
-	void set_from_address(const SalAddress *from);
-	const char *get_from() const {return this->from;}
-	const SalAddress *get_from_address() const {return this->from_address;}
+	void setFrom (const char *value);
+	void setFromAddress (const SalAddress *value);
+	const char *getFrom () const { return mFrom; }
+	const SalAddress *getFromAddress () const { return mFromAddress; }
 
-	void set_to(const char *to);
-	void set_to_address(const SalAddress *to);
-	const char *get_to() const {return this->to;}
-	const SalAddress *get_to_address() const {return this->to_address;}
+	void setTo (const char *value);
+	void setToAddress (const SalAddress *value);
+	const char *getTo () const { return mTo; }
+	const SalAddress *getToAddress () const { return mToAddress; }
 
-	void set_contact_address(const SalAddress* address);
-	const SalAddress *get_contact_address() const {return this->contact_address;}
+	void setContactAddress (const SalAddress* value);
+	const SalAddress *getContactAddress() const { return mContactAddress; }
 
-	void set_route(const char *route);
-	void set_route_address(const SalAddress* address);
-	const bctbx_list_t *get_route_addresses() const {return this->route_addresses;}
-	void add_route_address(const SalAddress* address);
+	void setRoute (const char *value);
+	void setRouteAddress (const SalAddress *value);
+	const bctbx_list_t *getRouteAddresses () const { return mRouteAddresses; }
+	void addRouteAddress (const SalAddress *address);
 
-	void set_diversion_address(const SalAddress *diversion);
-	const SalAddress *get_diversion_address() const {return this->diversion_address;}
+	void setDiversionAddress (const SalAddress *value);
+	const SalAddress *getDiversionAddress () const { return mDiversionAddress; }
 
-	void set_service_route(const SalAddress* service_route);
-	const SalAddress *get_service_route() const {return this->service_route;}
+	void setServiceRoute (const SalAddress *value);
+	const SalAddress *getServiceRoute () const { return mServiceRoute; }
 
-	void set_manual_refresher_mode(bool_t enabled) {this->manual_refresher=enabled;}
+	void setManualRefresherMode (bool_t value) { mManualRefresher = value; }
 
-	void set_entity_tag(const char* entity_tag);
-	const char *get_entity_tag() const {return this->entity_tag;}
+	void setEntityTag (const char *value);
+	const char *getEntityTag() const { return mEntityTag; }
 
-	void set_event(const char *eventname);
+	void setEvent (const char *eventName);
 
-	void set_privacy(SalPrivacyMask privacy) {this->privacy=privacy;}
-	SalPrivacyMask get_privacy() const {return this->privacy;}
+	void setPrivacy (SalPrivacyMask value) { mPrivacy = value; }
+	SalPrivacyMask getPrivacy() const { return mPrivacy; }
 
-	void set_realm(const char *realm);
+	void setRealm (const char *value);
 
-	void set_sent_custom_header(SalCustomHeader* ch);
+	void setSentCustomHeaders (SalCustomHeader *ch);
 
-	void enable_cnx_ip_to_0000_if_sendonly(bool_t yesno) {this->_cnx_ip_to_0000_if_sendonly_enabled = yesno;}
-	bool_t cnx_ip_to_0000_if_sendonly_enabled() const {return this->_cnx_ip_to_0000_if_sendonly_enabled;}
+	void enableCnxIpTo0000IfSendOnly (bool_t value) { mCnxIpTo0000IfSendOnlyEnabled = value; }
+	bool_t cnxIpTo0000IfSendOnlyEnabled () const { return mCnxIpTo0000IfSendOnlyEnabled; }
 
-	const char *get_proxy() const {return this->route;}
-	const char *get_network_origin() const {return this->origin;}
-	const char* get_call_id() const {return  this->call_id;}
-	char* get_dialog_id() const;
-	int get_address_family() const;
-	const SalCustomHeader *get_recv_custom_header() const {return this->recv_custom_headers;}
-	const char *get_remote_contact() const {return this->remote_contact;}
-	const SalAddress *get_remote_contact_address() const {return this->remote_contact_address;}
-	const char *get_remote_ua() const {return this->remote_ua;}
+	const char *getProxy () const { return mRoute; }
+	const char *getNetworkOrigin () const { return mOrigin; }
+	const char *getCallId () const { return  mCallId; }
+	char *getDialogId () const;
+	int getAddressFamily () const;
+	const SalCustomHeader *getRecvCustomHeaders () const { return mRecvCustomHeaders; }
+	const char *getRemoteContact () const { return mRemoteContact; }
+	const SalAddress *getRemoteContactAddress () const { return mRemoteContactAddress; }
+	const char *getRemoteUserAgent () const { return mRemoteUserAgent; }
 
-	const char *get_public_address(int *port) {return this->refresher ? belle_sip_refresher_get_public_address(this->refresher, port) : NULL;}
-	const char *get_local_address(int *port) {return this->refresher ? belle_sip_refresher_get_local_address(this->refresher, port) : NULL;}
+	const char *getPublicAddress (int *port) {
+		return mRefresher ? belle_sip_refresher_get_public_address(mRefresher, port) : nullptr;
+	}
+	const char *getLocalAddress (int *port) {
+		return mRefresher ? belle_sip_refresher_get_local_address(mRefresher, port) : nullptr;
+	}
 
-	const SalErrorInfo *get_error_info() const {return &this->error_info;}
-	const SalErrorInfo *get_reason_error_info() const {return &this->reason_error_info;}
+	const SalErrorInfo *getErrorInfo () const { return &mErrorInfo; }
+	const SalErrorInfo *getReasonErrorInfo () const { return &mReasonErrorInfo; }
 
-	bool_t is_forked_of(const SalOp *op2) const {return this->call_id && op2->call_id && strcmp(this->call_id, op2->call_id) == 0;}
-	bool_t is_idle() const ;
+	bool_t isForkedOf (const SalOp *op) const {
+		return mCallId && op->mCallId && strcmp(mCallId, op->mCallId) == 0;
+	}
+	bool_t isIdle () const;
 
-	void stop_refreshing() {if (this->refresher) belle_sip_refresher_stop(this->refresher);}
-	int refresh();
-	void kill_dialog();
-	void release();
+	void stopRefreshing () {
+		if (mRefresher)
+			belle_sip_refresher_stop(mRefresher);
+	}
+	int refresh ();
+	void killDialog ();
+	void release ();
 
-	virtual void authenticate(const SalAuthInfo *info) {process_authentication();}
-	void cancel_authentication() {ms_fatal("sal_op_cancel_authentication not implemented yet");}
-	SalAuthInfo *get_auth_requested() {return this->auth_info;}
+	virtual void authenticate (const SalAuthInfo *info) { 
+        processAuthentication(); }
+	void cancelAuthentication () { lFatal() << "SalOp::cancelAuthentication not implemented yet"; }
+	SalAuthInfo *getAuthRequested () { return mAuthInfo; }
 
-	int ping(const char *from, const char *to);
-	int send_info(const char *from, const char *to, const SalBodyHandler *body_handler);
+	int ping (const char *from, const char *to);
+	int sendInfo (const char *from, const char *to, const SalBodyHandler *bodyHandler);
 
 protected:
 	enum class State {
 		Early = 0,
 		Active,
-		Terminating, /*this state is used to wait until a proceeding state, so we can send the cancel*/
+		Terminating, // This state is used to wait until a proceeding state, so we can send the cancel
 		Terminated
 	};
 
-	static const char* to_string(const State value);
+	static const char *toString (const State value);
 
 	enum class Dir {
 		Incoming = 0,
@@ -141,118 +152,120 @@ protected:
 		Presence,
 		Publish,
 		Subscribe,
-		Refer /*for out of dialog refer only*/
+		Refer // For out of dialog refer only
 	};
 
-	static const char *to_string(const SalOp::Type type);
+	static const char *toString (const Type type);
 
-	typedef void (*ReleaseCb)(SalOp *op);
+	using ReleaseCb = void (*) (SalOp *op);
 
-	virtual void fill_cbs() {}
-	void release_impl();
-	void process_authentication();
-	int process_redirect();
+	virtual void fillCallbacks () {}
+	void releaseImpl ();
+	void processAuthentication ();
+	int processRedirect ();
 
-	belle_sip_request_t* build_request(const char* method);
-	int send_request(belle_sip_request_t* request);
-	int send_request_with_contact(belle_sip_request_t* request, bool_t add_contact);
-	int send_request_with_expires(belle_sip_request_t* request,int expires);
-	void resend_request(belle_sip_request_t* request);
-	int send_and_create_refresher(belle_sip_request_t* req, int expires,belle_sip_refresher_listener_t listener);
+	belle_sip_request_t *buildRequest (const char *method);
+	int sendRequest (belle_sip_request_t *request);
+	int sendRequestWithContact (belle_sip_request_t *request, bool_t addContact);
+	int sendRequestWithExpires (belle_sip_request_t *request, int expires);
+	void resendRequest (belle_sip_request_t *request);
+	int sendRequestAndCreateRefresher (belle_sip_request_t *request, int expires, belle_sip_refresher_listener_t listener);
 
-	void set_reason_error_info(belle_sip_message_t *msg);
-	void set_error_info_from_response(belle_sip_response_t *response);
+	void setReasonErrorInfo (belle_sip_message_t *message);
+	void setErrorInfoFromResponse (belle_sip_response_t *response);
 
-	void set_referred_by(belle_sip_header_referred_by_t* referred_by);
-	void set_replaces(belle_sip_header_replaces_t* replaces);
+	void setReferredBy (belle_sip_header_referred_by_t *referredByHeader);
+	void setReplaces (belle_sip_header_replaces_t *replacesHeader);
 
-	void set_remote_contact(const char* remote_contact);
-	void set_network_origin(const char *origin);
-	void set_network_origin_address(SalAddress *origin);
-	void set_privacy_from_message(belle_sip_message_t* msg);
-	void set_remote_ua(belle_sip_message_t* message);
+	void setRemoteContact (const char *value);
+	void setNetworkOrigin (const char *value);
+	void setNetworkOriginAddress (SalAddress *value);
+	void setPrivacyFromMessage (belle_sip_message_t *message);
+	void setRemoteUserAgent (belle_sip_message_t *message);
 
-	belle_sip_response_t *create_response_from_request(belle_sip_request_t *req, int code) {return this->root->create_response_from_request(req,code);}
-	belle_sip_header_contact_t *create_contact();
+	belle_sip_response_t *createResponseFromRequest (belle_sip_request_t *request, int code) {
+		return mRoot->createResponseFromRequest(request, code);
+	}
+	belle_sip_header_contact_t *createContact ();
 
-	void set_or_update_dialog(belle_sip_dialog_t* dialog);
-	belle_sip_dialog_t *link_op_with_dialog(belle_sip_dialog_t* dialog);
-	void unlink_op_with_dialog(belle_sip_dialog_t* dialog);
+	void setOrUpdateDialog (belle_sip_dialog_t *dialog);
+	belle_sip_dialog_t *linkOpWithDialog (belle_sip_dialog_t *dialog);
+	void unlinkOpFromDialog (belle_sip_dialog_t *dialog);
 
-	SalBodyHandler *get_body_handler(belle_sip_message_t *msg);
+	SalBodyHandler *getBodyHandler (belle_sip_message_t *message);
 
-	void assign_recv_headers(belle_sip_message_t *incoming);
+	void assignRecvHeaders (belle_sip_message_t *message);
 
-	bool_t is_secure() const;
-	void add_headers(belle_sip_header_t *h, belle_sip_message_t *msg);
-	void add_custom_headers(belle_sip_message_t *msg);
-	int unsubscribe();
+	bool_t isSecure () const;
+	void addHeaders (belle_sip_header_t *h, belle_sip_message_t *message);
+	void addCustomHeaders (belle_sip_message_t *message);
+	int unsubscribe ();
 
-	void process_incoming_message(const belle_sip_request_event_t *event);
-	int reply_message(SalReason reason);
-	void add_message_accept(belle_sip_message_t *msg);
-	static bool_t is_external_body(belle_sip_header_content_type_t* content_type);
+	void processIncomingMessage (const belle_sip_request_event_t *event);
+	int replyMessage (SalReason reason);
+	void addMessageAccept (belle_sip_message_t *message);
 
-	static void assign_address(SalAddress** address, const char *value);
-	static void assign_string(char **str, const char *arg);
-	static void add_initial_route_set(belle_sip_request_t *request, const MSList *list);
+	static bool_t isExternalBody (belle_sip_header_content_type_t* contentType);
+
+	static void assignAddress (SalAddress **address, const char *value);
+	static void assignString (char **str, const char *arg);
+	static void addInitialRouteSet (belle_sip_request_t *request, const MSList *list);
 
 	// SalOpBase
-	Sal *root = NULL;
-	char *route = NULL; /*or request-uri for REGISTER*/
-	MSList* route_addresses = NULL; /*list of SalAddress* */
-	SalAddress* contact_address = NULL;
-	char *subject = NULL;
-	char *from = NULL;
-	SalAddress* from_address = NULL;
-	char *to = NULL;
-	SalAddress* to_address = NULL;
-	char *origin = NULL;
-	SalAddress* origin_address = NULL;
-	SalAddress* diversion_address = NULL;
-	char *remote_ua = NULL;
-	SalAddress* remote_contact_address = NULL;
-	char *remote_contact = NULL;
-	void *user_pointer = NULL;
-	char* call_id = NULL;
-	char* realm = NULL;
-	SalAddress* service_route = NULL; /*as defined by rfc3608, might be a list*/
-	SalCustomHeader *sent_custom_headers = NULL;
-	SalCustomHeader *recv_custom_headers = NULL;
-	char* entity_tag = NULL; /*as defined by rfc3903 (I.E publih)*/
-	ReleaseCb release_cb = NULL;
+	Sal *mRoot = nullptr;
+	char *mRoute = nullptr; // Or request-uri for REGISTER
+	MSList *mRouteAddresses = nullptr; // List of SalAddress *
+	SalAddress *mContactAddress = nullptr;
+	char *mSubject = nullptr;
+	char *mFrom = nullptr;
+	SalAddress* mFromAddress = nullptr;
+	char *mTo = nullptr;
+	SalAddress *mToAddress = nullptr;
+	char *mOrigin = nullptr;
+	SalAddress *mOriginAddress = nullptr;
+	SalAddress *mDiversionAddress = nullptr;
+	char *mRemoteUserAgent = nullptr;
+	SalAddress *mRemoteContactAddress = nullptr;
+	char *mRemoteContact = nullptr;
+	void *mUserPointer = nullptr;
+	char *mCallId = nullptr;
+	char *mRealm = nullptr;
+	SalAddress *mServiceRoute = nullptr; // As defined by rfc3608, might be a list
+	SalCustomHeader *mSentCustomHeaders = nullptr;
+	SalCustomHeader *mRecvCustomHeaders = nullptr;
+	char *mEntityTag = nullptr; // As defined by rfc3903 (I.E publih)
+	ReleaseCb mReleaseCb = nullptr;
 
-	// BelleSip implementation
-	const belle_sip_listener_callbacks_t *callbacks = NULL;
-	SalErrorInfo error_info;
-	SalErrorInfo reason_error_info;
-	belle_sip_client_transaction_t *pending_auth_transaction = NULL;
-	belle_sip_server_transaction_t* pending_server_trans = NULL;
-	belle_sip_server_transaction_t* pending_update_server_trans = NULL;
-	belle_sip_client_transaction_t* pending_client_trans = NULL;
-	SalAuthInfo* auth_info = NULL;
-	belle_sip_dialog_t* dialog = NULL;
-	belle_sip_header_replaces_t *replaces = NULL;
-	belle_sip_header_referred_by_t *referred_by = NULL;
-	SalMediaDescription *result = NULL;
-	belle_sdp_session_description_t *sdp_answer = NULL;
-	State state = State::Early;
-	Dir dir = Dir::Incoming;
-	belle_sip_refresher_t* refresher = NULL;
-	int _ref = 0;
-	Type type = Type::Unknown;
-	SalPrivacyMask privacy = SalPrivacyNone;
-	belle_sip_header_event_t *event = NULL; /*used by SalOpSubscribe kinds*/
-	SalOpSDPHandling sdp_handling = SalOpSDPNormal;
-	int auth_requests = 0; /*number of auth requested for this op*/
-	bool_t _cnx_ip_to_0000_if_sendonly_enabled = FALSE;
-	bool_t auto_answer_asked = FALSE;
-	bool_t sdp_offering = FALSE;
-	bool_t call_released = FALSE;
-	bool_t manual_refresher = FALSE;
-	bool_t has_auth_pending = FALSE;
-	bool_t supports_session_timers = FALSE;
-	bool_t op_released = FALSE;
+	const belle_sip_listener_callbacks_t *mCallbacks = nullptr;
+	SalErrorInfo mErrorInfo;
+	SalErrorInfo mReasonErrorInfo;
+	belle_sip_client_transaction_t *mPendingAuthTransaction = nullptr;
+	belle_sip_server_transaction_t *mPendingServerTransaction = nullptr;
+	belle_sip_server_transaction_t *mPendingUpdateServerTransaction = nullptr;
+	belle_sip_client_transaction_t *mPendingClientTransaction = nullptr;
+	SalAuthInfo *mAuthInfo = nullptr;
+	belle_sip_dialog_t *mDialog = nullptr;
+	belle_sip_header_replaces_t *mReplaces = nullptr;
+	belle_sip_header_referred_by_t *mReferredBy = nullptr;
+	SalMediaDescription *mResult = nullptr;
+	belle_sdp_session_description_t *mSdpAnswer = nullptr;
+	State mState = State::Early;
+	Dir mDir = Dir::Incoming;
+	belle_sip_refresher_t *mRefresher = nullptr;
+	int mRef = 0;
+	Type mType = Type::Unknown;
+	SalPrivacyMask mPrivacy = SalPrivacyNone;
+	belle_sip_header_event_t *mEvent = nullptr; // Used by SalOpSubscribe kinds
+	SalOpSDPHandling mSdpHandling = SalOpSDPNormal;
+	int mAuthRequests = 0; // number of auth requested for this op
+	bool_t mCnxIpTo0000IfSendOnlyEnabled = FALSE;
+	bool_t mAutoAnswerAsked = FALSE;
+	bool_t mSdpOffering = FALSE;
+	bool_t mCallReleased = FALSE;
+	bool_t mManualRefresher = FALSE;
+	bool_t mHasAuthPending = FALSE;
+	bool_t mSupportsSessionTimers = FALSE;
+	bool_t mOpReleased = FALSE;
 
 	friend class Sal;
 };

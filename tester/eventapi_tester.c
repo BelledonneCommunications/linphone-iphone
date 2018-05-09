@@ -41,7 +41,7 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 	if (!BC_ASSERT_PTR_NOT_NULL(content)) return;
 	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence server support*/
 		/*hack to disable content checking for list notify */
-		BC_ASSERT_STRING_EQUAL((const char*)linphone_content_get_buffer(content),notify_content);
+		BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content), notify_content);
 	}
 	mgr=get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;

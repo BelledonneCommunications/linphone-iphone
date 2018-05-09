@@ -43,12 +43,6 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	bctbx_list_t *callbacks; /* A list of LinphoneCallCbs object */
 	LinphoneCallCbs *currentCbs; /* The current LinphoneCallCbs object used to call a callback */
 	char *authenticationTokenCache;
-	LinphoneCallParams *currentParamsCache;
-	LinphoneCallParams *paramsCache;
-	LinphoneCallParams *remoteParamsCache;
-	LinphoneAddress *diversionAddressCache;
-	LinphoneAddress *remoteAddressCache;
-	LinphoneAddress *toAddressCache;
 	mutable char *referToCache;
 	char *remoteContactCache;
 	char *remoteUserAgentCache;
@@ -59,28 +53,9 @@ L_DECLARE_C_OBJECT_IMPL_WITH_XTORS(Call,
 	LinphoneChatRoom *chat_room;
 )
 
-static void _linphone_call_constructor (LinphoneCall *call) {
-	call->currentParamsCache = linphone_call_params_new_for_wrapper();
-	call->paramsCache = linphone_call_params_new_for_wrapper();
-	call->remoteParamsCache = linphone_call_params_new_for_wrapper();
-	call->diversionAddressCache = linphone_address_new(nullptr);
-	call->remoteAddressCache = linphone_address_new(nullptr);
-	call->toAddressCache = linphone_address_new(nullptr);
-}
+static void _linphone_call_constructor (LinphoneCall *call) {}
 
 static void _linphone_call_destructor (LinphoneCall *call) {
-	if (call->currentParamsCache)
-		linphone_call_params_unref(call->currentParamsCache);
-	if (call->paramsCache)
-		linphone_call_params_unref(call->paramsCache);
-	if (call->remoteParamsCache)
-		linphone_call_params_unref(call->remoteParamsCache);
-	if (call->diversionAddressCache)
-		linphone_address_unref(call->diversionAddressCache);
-	if (call->remoteAddressCache)
-		linphone_address_unref(call->remoteAddressCache);
-	if (call->toAddressCache)
-		linphone_address_unref(call->toAddressCache);
 	if (call->referToCache)
 		bctbx_free(call->referToCache);
 	if (call->remoteContactCache)
@@ -91,7 +66,6 @@ static void _linphone_call_destructor (LinphoneCall *call) {
 		bctbx_free(call->toHeaderCache);
 	bctbx_list_free_with_data(call->callbacks, (bctbx_list_free_func)linphone_call_cbs_unref);
 }
-
 
 // =============================================================================
 // TODO: To remove!
@@ -210,6 +184,13 @@ void linphone_call_notify_tmmbr_received (LinphoneCall *call, int stream_index, 
 	NOTIFY_IF_EXIST(TmmbrReceived, tmmbr_received, call, stream_index, tmmbr)
 }
 
+void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_path) {
+	NOTIFY_IF_EXIST(SnapshotTaken, snapshot_taken, call, file_path)
+}
+
+void linphone_call_notify_next_video_frame_decoded(LinphoneCall *call) {
+	NOTIFY_IF_EXIST(NextVideoFrameDecoded, next_video_frame_decoded, call)
+}
 
 // =============================================================================
 // Public functions.
@@ -226,18 +207,16 @@ LinphoneCallState linphone_call_get_state (const LinphoneCall *call) {
 bool_t linphone_call_asked_to_autoanswer (LinphoneCall *call) {
 	//return TRUE if the unique(for the moment) incoming call asked to be autoanswered
 	if (call)
-		return linphone_call_get_op(call)->autoanswer_asked();
+		return linphone_call_get_op(call)->autoAnswerAsked();
 	return FALSE;
 }
 
 const LinphoneAddress *linphone_call_get_remote_address (const LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->remoteAddressCache, &L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteAddress());
-	return call->remoteAddressCache;
+	return L_GET_C_BACK_PTR(&L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteAddress());
 }
 
 const LinphoneAddress *linphone_call_get_to_address (const LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->toAddressCache, &L_GET_CPP_PTR_FROM_C_OBJECT(call)->getToAddress());
-	return call->toAddressCache;
+	return L_GET_C_BACK_PTR(&L_GET_CPP_PTR_FROM_C_OBJECT(call)->getToAddress());
 }
 
 const char *linphone_call_get_to_header (const LinphoneCall *call, const char *name) {
@@ -255,11 +234,8 @@ char *linphone_call_get_remote_address_as_string (const LinphoneCall *call) {
 }
 
 const LinphoneAddress *linphone_call_get_diversion_address (const LinphoneCall *call) {
-	LinphonePrivate::Address diversionAddress(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getDiversionAddress());
-	if (!diversionAddress.isValid())
-		return nullptr;
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->diversionAddressCache, &diversionAddress);
-	return call->diversionAddressCache;
+	const LinphonePrivate::Address &diversionAddress = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getDiversionAddress();
+	return diversionAddress.isValid() ? L_GET_C_BACK_PTR(&diversionAddress) : nullptr;
 }
 
 LinphoneCallDir linphone_call_get_dir (const LinphoneCall *call) {
@@ -309,17 +285,13 @@ int linphone_call_get_duration (const LinphoneCall *call) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(call)->getDuration();
 }
 
-const LinphoneCallParams *linphone_call_get_current_params(LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->currentParamsCache, L_GET_CPP_PTR_FROM_C_OBJECT(call)->getCurrentParams());
-	return call->currentParamsCache;
+const LinphoneCallParams *linphone_call_get_current_params (LinphoneCall *call) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getCurrentParams());
 }
 
 const LinphoneCallParams *linphone_call_get_remote_params(LinphoneCall *call) {
 	const LinphonePrivate::MediaSessionParams *remoteParams = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getRemoteParams();
-	if (!remoteParams)
-		return nullptr;
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->remoteParamsCache, remoteParams);
-	return call->remoteParamsCache;
+	return remoteParams ? L_GET_C_BACK_PTR(remoteParams) : nullptr;
 }
 
 void linphone_call_enable_camera (LinphoneCall *call, bool_t enable) {
@@ -603,8 +575,8 @@ void linphone_call_ogl_render (const LinphoneCall *call) {
 
 LinphoneStatus linphone_call_send_info_message (LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(linphone_info_message_get_content(info));
-	linphone_call_get_op(call)->set_sent_custom_header(linphone_info_message_get_headers(info));
-	return linphone_call_get_op(call)->send_info(nullptr, nullptr, body_handler);
+	linphone_call_get_op(call)->setSentCustomHeaders(linphone_info_message_get_headers(info));
+	return linphone_call_get_op(call)->sendInfo(nullptr, nullptr, body_handler);
 }
 
 LinphoneCallStats *linphone_call_get_stats (LinphoneCall *call, LinphoneStreamType type) {
@@ -645,8 +617,7 @@ void linphone_call_set_params (LinphoneCall *call, const LinphoneCallParams *par
 }
 
 const LinphoneCallParams *linphone_call_get_params (LinphoneCall *call) {
-	L_SET_CPP_PTR_FROM_C_OBJECT(call->paramsCache, L_GET_CPP_PTR_FROM_C_OBJECT(call)->getParams());
-	return call->paramsCache;
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getParams());
 }
 
 // =============================================================================

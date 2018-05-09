@@ -365,7 +365,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 	int ret;
 	char *buf;
 	char *friends_db = bc_tester_file("friends.db");
-	
+
 	unlink(friends_db);
 	ret = sqlite3_open(friends_db, &db);
 	bc_free(friends_db);
@@ -437,7 +437,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	bctoolboxTimeSpec t1;
 	bctoolboxTimeSpec t2;
 	char *friends_db = bc_tester_file("friends.db");
-	
+
 	unlink(friends_db);
 	ret = sqlite3_open(friends_db, &db);
 	bc_free(friends_db);
@@ -951,7 +951,9 @@ static void find_friend_by_ref_key_test(void) {
 		goto end;
 	}
 	addr = linphone_friend_get_address(lf2);
-	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(addr), "sip:toto@sip.linphone.org");
+	char *uri_addr = linphone_address_as_string_uri_only(addr);
+	BC_ASSERT_STRING_EQUAL(uri_addr, "sip:toto@sip.linphone.org");
+	bctbx_free(uri_addr);
 	BC_ASSERT_EQUAL(lf2, lf, void*, "%p");
 end:
 	linphone_friend_unref(lf);

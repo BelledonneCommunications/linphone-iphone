@@ -173,17 +173,24 @@ void linphone_transfer_state_changed(LinphoneCore *lc, LinphoneCall *transfered,
 }
 
 
-void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data) {
-	LinphoneCallLog *calllog = linphone_call_get_call_log(call);
-	char* to=linphone_address_as_string(linphone_call_log_get_to(calllog));
-	char* from=linphone_address_as_string(linphone_call_log_get_from(calllog));
+static void linphone_call_next_video_frame_decoded_cb(LinphoneCall *call) {
+	LinphoneCallLog *clog = linphone_call_get_call_log(call);
+	char* to=linphone_address_as_string(linphone_call_log_get_to(clog));
+	char* from=linphone_address_as_string(linphone_call_log_get_to(clog));
 	stats* counters;
-	LinphoneCore* lc=(LinphoneCore*)user_data;
+	LinphoneCore* lc = linphone_call_get_core(call);
 	ms_message("call from [%s] to [%s] receive iFrame",from,to);
 	ms_free(to);
 	ms_free(from);
 	counters = (stats*)get_stats(lc);
 	counters->number_of_IframeDecoded++;
+}
+
+void linphone_call_set_first_video_frame_decoded_cb(LinphoneCall *call) {
+	LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+	linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
+	linphone_call_add_callbacks(call, call_cbs);
+	linphone_call_cbs_unref(call_cbs);
 }
 
 #define reset_call_stats(var, value) \
@@ -2669,7 +2676,10 @@ static void zrtp_cipher_call(void) {
 	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_aes256_rc", "pauline_tcp_rc");
 }
 
-
+static void zrtp_key_agreement_call(void) {
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_ecdh255_rc", "pauline_zrtp_ecdh255_rc");
+	call_base_with_configfile(LinphoneMediaEncryptionZRTP,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE, "marie_zrtp_ecdh448_rc", "pauline_zrtp_ecdh448_rc");
+}
 
 static void dtls_srtp_call(void) {
 	call_base(LinphoneMediaEncryptionDTLS,FALSE,FALSE,LinphonePolicyNoFirewall,FALSE);
@@ -3652,9 +3662,12 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 			LinphoneCallStats *stats = linphone_call_get_video_stats(call);
 
 			if (video_dir != LinphoneMediaDirectionInactive){
+				LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
 				BC_ASSERT_TRUE(linphone_call_params_video_enabled(params));
 				BC_ASSERT_EQUAL(linphone_call_params_get_video_direction(params), video_dir, int, "%d");
-				linphone_call_set_next_video_frame_decoded_callback(call,linphone_call_iframe_decoded_cb,mgr->lc);
+				linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
+				linphone_call_add_callbacks(call, call_cbs);
+				linphone_call_cbs_unref(call_cbs);
 				linphone_call_send_vfu_request(call);
 			}
 			switch (video_dir) {
@@ -5301,11 +5314,13 @@ static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh
 		linphone_call_pause(pauline_call);
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPausedByRemote, 1));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPaused, 1));
+		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 	} else if (callee_pause) {
 		marie_call = linphone_core_get_current_call(marie->lc);
 		linphone_call_pause(marie_call);
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneCallPausedByRemote, 1));
 		BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneCallPaused, 1));
+		wait_for_until(marie->lc, pauline->lc, NULL, 0, 1000);
 	}
 
 	/*marie looses the network and reconnects*/
@@ -6441,6 +6456,7 @@ test_t call_tests[] = {
 	TEST_NO_TAG("ZRTP silent call", zrtp_silent_call),
 	TEST_NO_TAG("ZRTP SAS call", zrtp_sas_call),
 	TEST_NO_TAG("ZRTP Cipher call", zrtp_cipher_call),
+	TEST_NO_TAG("ZRTP Key Agreement call", zrtp_key_agreement_call),
 	TEST_NO_TAG("DTLS SRTP call", dtls_srtp_call),
 	TEST_NO_TAG("DTLS SRTP call with media relay", dtls_srtp_call_with_media_realy),
 	TEST_NO_TAG("SRTP call with declined srtp", call_with_declined_srtp),

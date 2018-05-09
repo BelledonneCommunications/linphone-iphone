@@ -1,5 +1,5 @@
 /*
- * search-result-p.h
+ * is-composing-message.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,26 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_SEARCH_RESULT_P_H_
-#define _L_SEARCH_RESULT_P_H_
+#ifndef _L_IS_COMPOSING_MESSAGE_H_
+#define _L_IS_COMPOSING_MESSAGE_H_
 
-#include "search-result.h"
-#include "object/clonable-object-p.h"
+#include "chat/chat-message/notification-message.h"
+#include "chat/notification/is-composing.h"
 
-#include "linphone/types.h"
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SearchResultPrivate : public ClonableObjectPrivate {
-private:
-	const LinphoneFriend *mFriend;
-	const LinphoneAddress *mAddress;
-	unsigned int mWeight;
+class LINPHONE_PUBLIC IsComposingMessage : public NotificationMessage {
+public:
+	friend class ChatRoomPrivate;
 
-	L_DECLARE_PUBLIC(SearchResult);
+	L_OVERRIDE_SHARED_FROM_THIS(IsComposingMessage);
+
+	virtual ~IsComposingMessage () = default;
+
+private:
+	IsComposingMessage (
+		const std::shared_ptr<AbstractChatRoom> &chatRoom,
+		IsComposing &isComposingHandler,
+		bool isComposing
+	);
+
+	L_DECLARE_PRIVATE(NotificationMessage);
+	L_DISABLE_COPY(IsComposingMessage);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif //_L_SEARCH_RESULT_P_H_
-
+#endif // ifndef _L_IS_COMPOSING_MESSAGE_H_

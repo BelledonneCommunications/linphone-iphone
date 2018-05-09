@@ -49,6 +49,8 @@ void linphone_call_notify_stats_updated(LinphoneCall *call, const LinphoneCallSt
 void linphone_call_notify_info_message_received(LinphoneCall *call, const LinphoneInfoMessage *msg);
 void linphone_call_notify_ack_processing(LinphoneCall *call, LinphoneHeaders *msg, bool_t is_received);
 void linphone_call_notify_tmmbr_received(LinphoneCall *call, int stream_index, int tmmbr);
+void linphone_call_notify_snapshot_taken(LinphoneCall *call, const char *file_path);
+void linphone_call_notify_next_video_frame_decoded(LinphoneCall *call);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
@@ -401,7 +403,7 @@ void linphone_event_set_state(LinphoneEvent *lev, LinphoneSubscriptionState stat
 void linphone_event_set_publish_state(LinphoneEvent *lev, LinphonePublishState state);
 void _linphone_event_notify_notify_response(const LinphoneEvent *lev);
 LinphoneSubscriptionState linphone_subscription_state_from_sal(SalSubscribeStatus ss);
-LinphoneContent *linphone_content_from_sal_body_handler(SalBodyHandler *ref);
+LinphoneContent *linphone_content_from_sal_body_handler(const SalBodyHandler *ref);
 void linphone_core_invalidate_friend_subscriptions(LinphoneCore *lc);
 void linphone_core_register_offer_answer_providers(LinphoneCore *lc);
 

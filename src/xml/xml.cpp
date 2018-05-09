@@ -36,9 +36,12 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#ifndef __ANDROID__
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
+	#pragma GCC diagnostic ignored "-Wsign-conversion"
+	#pragma GCC diagnostic ignored "-Wconversion"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -73,7 +76,7 @@ namespace namespace_
   }
 
   // Space
-  // 
+  //
 
   Space::
   Space (Value v)
@@ -110,7 +113,7 @@ namespace namespace_
   Space& Space::
   operator= (Value v)
   {
-    static_cast< ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (*this) = 
+    static_cast< ::LinphonePrivate::Xsd::XmlSchema::Ncname& > (*this) =
     ::LinphonePrivate::Xsd::XmlSchema::Ncname (_xsd_Space_literals_[v]);
 
     return *this;
@@ -118,7 +121,7 @@ namespace namespace_
 
 
   // Lang_member
-  // 
+  //
 
   Lang_member::
   Lang_member (Value v)
@@ -155,7 +158,7 @@ namespace namespace_
   Lang_member& Lang_member::
   operator= (Value v)
   {
-    static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+    static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
     ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_Lang_member_literals_[v]);
 
     return *this;
@@ -165,6 +168,15 @@ namespace namespace_
 #include <xsd/cxx/xml/dom/wildcard-source.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
+
+#include <xsd/cxx/tree/type-factory-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_factory_plate< 0, char >
+  type_factory_plate_init;
+}
 
 namespace namespace_
 {
@@ -344,6 +356,15 @@ namespace namespace_
 
 #include <ostream>
 
+#include <xsd/cxx/tree/std-ostream-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::std_ostream_plate< 0, char >
+  std_ostream_plate_init;
+}
+
 namespace namespace_
 {
   ::std::ostream&
@@ -388,6 +409,15 @@ namespace namespace_
 #include <ostream>
 #include <xsd/cxx/tree/error-handler.hxx>
 #include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+#include <xsd/cxx/tree/type-serializer-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_serializer_plate< 0, char >
+  type_serializer_plate_init;
+}
 
 namespace namespace_
 {
@@ -453,6 +483,9 @@ namespace namespace_
 
 // Begin epilogue.
 //
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif

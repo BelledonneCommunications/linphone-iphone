@@ -127,6 +127,7 @@ static void _log_handler_on_message_written_cb(void *info,const char *domain, Bc
 
 static void _log_handler_destroy_cb(bctbx_log_handler_t *handler) {
 	LinphoneLoggingService *service = (LinphoneLoggingService *)bctbx_log_handler_get_user_data(handler);
+	bctbx_free(service->log_handler);
 	service->log_handler = NULL;
 }
 
@@ -158,11 +159,12 @@ LinphoneLoggingService *linphone_logging_service_ref(LinphoneLoggingService *ser
 }
 
 void linphone_logging_service_unref(LinphoneLoggingService *service) {
-	belle_sip_object_ref(service);
+	belle_sip_object_unref(service);
 }
 
 static void _linphone_logging_service_uninit(LinphoneLoggingService *log_service) {
-	if (log_service->log_handler) bctbx_remove_log_handler(log_service->log_handler);
+	if (log_service->log_handler)
+		bctbx_remove_log_handler(log_service->log_handler);
 	linphone_logging_service_cbs_unref(log_service->cbs);
 }
 

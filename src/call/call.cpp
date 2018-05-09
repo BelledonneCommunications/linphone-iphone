@@ -41,10 +41,8 @@ bool CallPrivate::getAudioMuted () const {
 shared_ptr<RealTimeTextChatRoom> CallPrivate::getChatRoom () {
 	L_Q();
 	if (!chatRoom && (q->getState() != CallSession::State::End) && (q->getState() != CallSession::State::Released)) {
-		ChatRoomId chatRoomId(q->getRemoteAddress(), q->getLocalAddress());
-		RealTimeTextChatRoom *rttcr = new RealTimeTextChatRoom(q->getCore(), chatRoomId);
-		chatRoom.reset(rttcr);
-		rttcr->getPrivate()->setCall(q->getSharedFromThis());
+		chatRoom = static_pointer_cast<RealTimeTextChatRoom>(q->getCore()->getOrCreateBasicChatRoom(q->getRemoteAddress(), true));
+		chatRoom->getPrivate()->setCall(q->getSharedFromThis());
 	}
 	return chatRoom;
 }
@@ -124,7 +122,6 @@ shared_ptr<Call> CallPrivate::startReferredCall (const MediaSessionParams *param
 	L_GET_PRIVATE(getActiveSession())->setReferPending(false);
 	LinphoneCallParams *lcp = L_GET_C_BACK_PTR(&msp);
 	LinphoneCall *newCall = linphone_core_invite_with_params(q->getCore()->getCCore(), q->getReferTo().c_str(), lcp);
-	linphone_call_params_unref(lcp);
 	if (newCall) {
 		getActiveSession()->getPrivate()->setTransferTarget(L_GET_PRIVATE_FROM_C_OBJECT(newCall)->getActiveSession());
 		L_GET_PRIVATE_FROM_C_OBJECT(newCall)->getActiveSession()->getPrivate()->notifyReferState();
@@ -418,6 +415,7 @@ void CallPrivate::onFirstVideoFrameDecoded (const shared_ptr<CallSession> &sessi
 		nextVideoFrameDecoded._func = nullptr;
 		nextVideoFrameDecoded._user_data = nullptr;
 	}
+	linphone_call_notify_next_video_frame_decoded(L_GET_C_BACK_PTR(q));
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded (const shared_ptr<CallSession> &session) {
@@ -494,6 +492,11 @@ void CallPrivate::onRealTimeTextCharacterReceived (const shared_ptr<CallSession>
 void CallPrivate::onTmmbrReceived (const shared_ptr<CallSession> &session, int streamIndex, int tmmbr) {
 	L_Q();
 	linphone_call_notify_tmmbr_received(L_GET_C_BACK_PTR(q), streamIndex, tmmbr);
+}
+
+void CallPrivate::onSnapshotTaken(const shared_ptr<CallSession> &session, const char *file_path) {
+	L_Q();
+	linphone_call_notify_snapshot_taken(L_GET_C_BACK_PTR(q), file_path);
 }
 
 // =============================================================================

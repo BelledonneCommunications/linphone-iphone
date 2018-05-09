@@ -37,7 +37,7 @@ LinphoneAddress *linphone_address_new (const char *address) {
 
 	LinphoneAddress *object = L_INIT(Address);
 	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
-	delete cppPtr;
+
 	return object;
 }
 
@@ -131,11 +131,11 @@ void linphone_address_clean (LinphoneAddress *address) {
 }
 
 char *linphone_address_as_string (const LinphoneAddress *address) {
-	return ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(address)->asString().c_str());
+	return bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(address)->asString().c_str());
 }
 
 char *linphone_address_as_string_uri_only (const LinphoneAddress *address) {
-	return ms_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(address)->asStringUriOnly().c_str());
+	return bctbx_strdup(L_GET_CPP_PTR_FROM_C_OBJECT(address)->asStringUriOnly().c_str());
 }
 
 bool_t linphone_address_weak_equal (const LinphoneAddress *address1, const LinphoneAddress *address2) {

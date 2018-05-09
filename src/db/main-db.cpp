@@ -48,7 +48,7 @@ using namespace std;
 LINPHONE_BEGIN_NAMESPACE
 
 namespace {
-	constexpr unsigned int ModuleVersionEvents = makeVersion(1, 0, 2);
+	constexpr unsigned int ModuleVersionEvents = makeVersion(1, 0, 4);
 	constexpr unsigned int ModuleVersionFriends = makeVersion(1, 0, 0);
 	constexpr unsigned int ModuleVersionLegacyFriendsImport = makeVersion(1, 0, 0);
 	constexpr unsigned int ModuleVersionLegacyHistoryImport = makeVersion(1, 0, 0);
@@ -226,6 +226,12 @@ static string buildSqlEventFilter (
 // -----------------------------------------------------------------------------
 // Misc helpers.
 // -----------------------------------------------------------------------------
+
+time_t MainDbPrivate::getTmAsTimeT (const tm &t) {
+	tm t2 = t;
+	t2.tm_isdst = 0;
+	return Utils::getTmAsTimeT(t2);
+}
 
 shared_ptr<AbstractChatRoom> MainDbPrivate::findChatRoom (const ChatRoomId &chatRoomId) const {
 	L_Q();
@@ -615,8 +621,10 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 		dChatMessage->forceFromAddress(IdentityAddress(row.get<string>(3)));
 		dChatMessage->forceToAddress(IdentityAddress(row.get<string>(4)));
 
-		dChatMessage->setTime(Utils::getTmAsTimeT(row.get<tm>(5)));
+		dChatMessage->setTime(MainDbPrivate::getTmAsTimeT(row.get<tm>(5)));
 		dChatMessage->setImdnMessageId(row.get<string>(6));
+		dChatMessage->setPositiveDeliveryNotificationRequired(bool(row.get<int>(14)));
+		dChatMessage->setDisplayNotificationRequired(bool(row.get<int>(15)));
 
 		dChatMessage->markContentsAsNotLoaded();
 		dChatMessage->setIsReadOnly(true);
@@ -733,16 +741,21 @@ long long MainDbPrivate::insertConferenceChatMessageEvent (const shared_ptr<Even
 	const int &direction = int(chatMessage->getDirection());
 	const string &imdnMessageId = chatMessage->getImdnMessageId();
 	const int &isSecured = chatMessage->isSecured() ? 1 : 0;
+	const int &deliveryNotificationRequired = chatMessage->getPrivate()->getPositiveDeliveryNotificationRequired();
+	const int &displayNotificationRequired = chatMessage->getPrivate()->getDisplayNotificationRequired();
 
 	*dbSession.getBackendSession() << "INSERT INTO conference_chat_message_event ("
 		"  event_id, from_sip_address_id, to_sip_address_id,"
-		"  time, state, direction, imdn_message_id, is_secured"
+		"  time, state, direction, imdn_message_id, is_secured,"
+		"  delivery_notification_required, display_notification_required"
 		") VALUES ("
 		"  :eventId, :localSipaddressId, :remoteSipaddressId,"
-		"  :time, :state, :direction, :imdnMessageId, :isSecured"
+		"  :time, :state, :direction, :imdnMessageId, :isSecured,"
+		"  :deliveryNotificationRequired, :displayNotificationRequired"
 		")", soci::use(eventId), soci::use(fromSipAddressId), soci::use(toSipAddressId),
 		soci::use(messageTime), soci::use(state), soci::use(direction),
-		soci::use(imdnMessageId), soci::use(isSecured);
+		soci::use(imdnMessageId), soci::use(isSecured),
+		soci::use(deliveryNotificationRequired), soci::use(displayNotificationRequired);
 
 	for (const Content *content : chatMessage->getContents())
 		insertContent(eventId, *content);
@@ -771,6 +784,13 @@ void MainDbPrivate::updateConferenceChatMessageEvent (const shared_ptr<EventLog>
 	deleteContents(eventId);
 	for (const auto &content : chatMessage->getContents())
 		insertContent(eventId, *content);
+
+	if ((chatMessage->getDirection() == ChatMessage::Direction::Outgoing)
+		&& ((chatMessage->getState() == ChatMessage::State::Delivered) || (chatMessage->getState() == ChatMessage::State::NotDelivered))
+	) {
+		for (const auto &participant : chatMessage->getChatRoom()->getParticipants())
+			setChatMessageParticipantState(eventLog, participant->getAddress(), chatMessage->getState(), std::time(nullptr));
+	}
 }
 
 long long MainDbPrivate::insertConferenceNotifiedEvent (const shared_ptr<EventLog> &eventLog, long long *chatRoomId) {
@@ -896,6 +916,26 @@ long long MainDbPrivate::insertConferenceSubjectEvent (const shared_ptr<EventLog
 	return eventId;
 }
 
+void MainDbPrivate::setChatMessageParticipantState (
+	const shared_ptr<EventLog> &eventLog,
+	const IdentityAddress &participantAddress,
+	ChatMessage::State state,
+	time_t stateChangeTime
+) {
+	const EventLogPrivate *dEventLog = eventLog->getPrivate();
+	MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
+	const long long &eventId = dEventKey->storageId;
+	const long long &participantSipAddressId = selectSipAddressId(participantAddress.asString());
+	int stateInt = static_cast<int>(state);
+	const tm &stateChangeTm = Utils::getTimeTAsTm(stateChangeTime);
+
+	*dbSession.getBackendSession() << "UPDATE chat_message_participant SET state = :state,"
+		" state_change_time = :stateChangeTm"
+		" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
+		soci::use(stateInt), soci::use(stateChangeTm), soci::use(eventId), soci::use(participantSipAddressId);
+}
+
+
 // -----------------------------------------------------------------------------
 // Cache API.
 // -----------------------------------------------------------------------------
@@ -982,6 +1022,8 @@ void MainDbPrivate::updateModuleVersion (const string &name, unsigned int versio
 }
 
 void MainDbPrivate::updateSchema () {
+	L_Q();
+
 	soci::session *session = dbSession.getBackendSession();
 	unsigned int version = getModuleVersion("events");
 
@@ -991,6 +1033,36 @@ void MainDbPrivate::updateSchema () {
 		*session << "DROP TRIGGER IF EXISTS chat_message_participant_deleter";
 		*session << "ALTER TABLE chat_message_participant ADD COLUMN state_change_time"
 			+ dbSession.timestampType() + " NOT NULL DEFAULT " + dbSession.currentTimestamp();
+	}
+	if (version < makeVersion(1, 0, 3)) {
+		// Remove client group one-to-one chat rooms for the moment as there are still some issues
+		// with them and we prefer to keep using basic chat rooms instead
+		const int &capabilities = ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::Conference)
+			| ChatRoom::CapabilitiesMask(ChatRoom::Capabilities::OneToOne);
+		*session << "DELETE FROM chat_room WHERE (capabilities & :capabilities1) = :capabilities2",
+			soci::use(capabilities), soci::use(capabilities);
+		linphone_config_set_bool(linphone_core_get_config(q->getCore()->getCCore()), "misc", "prefer_basic_chat_room", TRUE);
+	}
+	if (version < makeVersion(1, 0, 4)) {
+		*session << "ALTER TABLE conference_chat_message_event ADD COLUMN delivery_notification_required BOOLEAN NOT NULL DEFAULT 0";
+		*session << "ALTER TABLE conference_chat_message_event ADD COLUMN display_notification_required BOOLEAN NOT NULL DEFAULT 0";
+
+		*session << "DROP VIEW IF EXISTS conference_event_view";
+
+		string query;
+		if (q->getBackend() == AbstractDb::Backend::Mysql)
+			query = "CREATE OR REPLACE VIEW conference_event_view AS";
+		else
+			query = "CREATE VIEW IF NOT EXISTS conference_event_view AS";
+		*session << query +
+			"  SELECT id, type, creation_time, chat_room_id, from_sip_address_id, to_sip_address_id, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address_id, participant_sip_address_id, subject, delivery_notification_required, display_notification_required"
+			"  FROM event"
+			"  LEFT JOIN conference_event ON conference_event.event_id = event.id"
+			"  LEFT JOIN conference_chat_message_event ON conference_chat_message_event.event_id = event.id"
+			"  LEFT JOIN conference_notified_event ON conference_notified_event.event_id = event.id"
+			"  LEFT JOIN conference_participant_device_event ON conference_participant_device_event.event_id = event.id"
+			"  LEFT JOIN conference_participant_event ON conference_participant_event.event_id = event.id"
+			"  LEFT JOIN conference_subject_event ON conference_subject_event.event_id = event.id";
 	}
 }
 
@@ -1220,19 +1292,23 @@ void MainDbPrivate::importLegacyHistory (DbSession &inDbSession) {
 				creationTime
 			);
 			const int &isSecured = message.get<int>(LegacyMessageColIsSecured, 0);
+			const int deliveryNotificationRequired = 0;
+			const int displayNotificationRequired = 0;
 
 			*session << "INSERT INTO conference_event (event_id, chat_room_id)"
 				" VALUES (:eventId, :chatRoomId)", soci::use(eventId), soci::use(chatRoomId);
 
 			*session << "INSERT INTO conference_chat_message_event ("
 				"  event_id, from_sip_address_id, to_sip_address_id,"
-				"  time, state, direction, imdn_message_id, is_secured"
+				"  time, state, direction, imdn_message_id, is_secured,"
+				"  delivery_notification_required, display_notification_required"
 				") VALUES ("
 				"  :eventId, :localSipAddressId, :remoteSipAddressId,"
-				"  :creationTime, :state, :direction, '', :isSecured"
+				"  :creationTime, :state, :direction, '', :isSecured,"
+				"  :deliveryNotificationRequired, :displayNotificationRequired"
 				")", soci::use(eventId), soci::use(localSipAddressId), soci::use(remoteSipAddressId),
-				soci::use(creationTime), soci::use(state), soci::use(direction),
-				soci::use(isSecured);
+				soci::use(creationTime), soci::use(state), soci::use(direction), soci::use(isSecured),
+				soci::use(deliveryNotificationRequired), soci::use(displayNotificationRequired);
 
 			if (content)
 				insertContent(eventId, *content);
@@ -1578,24 +1654,6 @@ void MainDb::init () {
 		"    ON DELETE CASCADE"
 		") " + charset;
 
-	{
-		string query;
-		if (getBackend() == Backend::Mysql)
-			query = "CREATE OR REPLACE VIEW conference_event_view AS";
-		else
-			query = "CREATE VIEW IF NOT EXISTS conference_event_view AS";
-
-		*session << query +
-			"  SELECT id, type, creation_time, chat_room_id, from_sip_address_id, to_sip_address_id, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address_id, participant_sip_address_id, subject"
-			"  FROM event"
-			"  LEFT JOIN conference_event ON conference_event.event_id = event.id"
-			"  LEFT JOIN conference_chat_message_event ON conference_chat_message_event.event_id = event.id"
-			"  LEFT JOIN conference_notified_event ON conference_notified_event.event_id = event.id"
-			"  LEFT JOIN conference_participant_device_event ON conference_participant_device_event.event_id = event.id"
-			"  LEFT JOIN conference_participant_event ON conference_participant_event.event_id = event.id"
-			"  LEFT JOIN conference_subject_event ON conference_subject_event.event_id = event.id";
-	}
-
 	*session <<
 		"CREATE TABLE IF NOT EXISTS db_module_version ("
 		"  name" + varcharPrimaryKeyStr(255) + ","
@@ -1773,7 +1831,7 @@ shared_ptr<EventLog> MainDb::getEventFromKey (const MainDbKey &dbKey) {
 		*d->dbSession.getBackendSession() << Statements::get(Statements::SelectConferenceEvent),
 			soci::into(row), soci::use(eventId);
 
-		ChatRoomId chatRoomId(IdentityAddress(row.get<string>(14)), IdentityAddress(row.get<string>(15)));
+		ChatRoomId chatRoomId(IdentityAddress(row.get<string>(16)), IdentityAddress(row.get<string>(17)));
 		shared_ptr<AbstractChatRoom> chatRoom = d->findChatRoom(chatRoomId);
 		if (!chatRoom)
 			return shared_ptr<EventLog>();
@@ -1935,8 +1993,9 @@ list<shared_ptr<ChatMessage>> MainDb::getUnreadChatMessages (const ChatRoomId &c
 	};
 }
 
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplayed (
-	const shared_ptr<EventLog> &eventLog
+list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsByImdnState (
+	const shared_ptr<EventLog> &eventLog,
+	ChatMessage::State state
 ) const {
 	return L_DB_TRANSACTION {
 		L_D();
@@ -1944,7 +2003,7 @@ list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplay
 		const EventLogPrivate *dEventLog = eventLog->getPrivate();
 		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
 		const long long &eventId = dEventKey->storageId;
-		int stateInt = static_cast<int>(ChatMessage::State::Displayed);
+		int stateInt = static_cast<int>(state);
 
 		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
 					" FROM sip_address, chat_message_participant"
@@ -1956,60 +2015,7 @@ list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveDisplay
 
 		list<MainDb::ParticipantState> result;
 		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::Displayed, Utils::getTmAsTimeT(row.get<tm>(1)));
-		return result;
-	};
-}
-
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveNotReceived (
-	const shared_ptr<EventLog> &eventLog
-) const {
-	return L_DB_TRANSACTION {
-		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		int deliveredStateInt = static_cast<int>(ChatMessage::State::DeliveredToUser);
-		int displayedStateInt = static_cast<int>(ChatMessage::State::Displayed);
-
-		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
-					" FROM sip_address, chat_message_participant"
-					" WHERE event_id = :eventId AND state <> :deliveredState AND state <> :displayedState"
-					" AND sip_address.id = chat_message_participant.participant_sip_address_id";
-		soci::rowset<soci::row> rows = (d->dbSession.getBackendSession()->prepare << query,
-			soci::use(eventId), soci::use(deliveredStateInt), soci::use(displayedStateInt)
-		);
-
-		list<MainDb::ParticipantState> result;
-		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::Idle, 0);
-		return result;
-	};
-}
-
-list<MainDb::ParticipantState> MainDb::getChatMessageParticipantsThatHaveReceived (
-	const shared_ptr<EventLog> &eventLog
-) const {
-	return L_DB_TRANSACTION {
-		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		int stateInt = static_cast<int>(ChatMessage::State::DeliveredToUser);
-
-		static const string query = "SELECT sip_address.value, chat_message_participant.state_change_time"
-					" FROM sip_address, chat_message_participant"
-					" WHERE event_id = :eventId AND state = :state"
-					" AND sip_address.id = chat_message_participant.participant_sip_address_id";
-		soci::rowset<soci::row> rows = (d->dbSession.getBackendSession()->prepare << query,
-			soci::use(eventId), soci::use(stateInt)
-		);
-
-		list<MainDb::ParticipantState> result;
-		for (const auto &row : rows)
-			result.emplace_back(IdentityAddress(row.get<string>(0)), ChatMessage::State::DeliveredToUser, Utils::getTmAsTimeT(row.get<tm>(1)));
+			result.emplace_back(IdentityAddress(row.get<string>(0)), state, MainDbPrivate::getTmAsTimeT(row.get<tm>(1)));
 		return result;
 	};
 }
@@ -2066,19 +2072,7 @@ void MainDb::setChatMessageParticipantState (
 ) {
 	L_DB_TRANSACTION {
 		L_D();
-
-		const EventLogPrivate *dEventLog = eventLog->getPrivate();
-		MainDbKeyPrivate *dEventKey = static_cast<MainDbKey &>(dEventLog->dbKey).getPrivate();
-		const long long &eventId = dEventKey->storageId;
-		const long long &participantSipAddressId = d->selectSipAddressId(participantAddress.asString());
-		int stateInt = static_cast<int>(state);
-		const tm &stateChangeTm = Utils::getTimeTAsTm(stateChangeTime);
-
-		*d->dbSession.getBackendSession() << "UPDATE chat_message_participant SET state = :state,"
-			" state_change_time = :stateChangeTm"
-			" WHERE event_id = :eventId AND participant_sip_address_id = :participantSipAddressId",
-			soci::use(stateInt), soci::use(stateChangeTm), soci::use(eventId), soci::use(participantSipAddressId);
-
+		d->setChatMessageParticipantState(eventLog, participantAddress, state, stateChangeTime);
 		tr.commit();
 	};
 }
@@ -2115,6 +2109,43 @@ list<shared_ptr<ChatMessage>> MainDb::findChatMessages (
 		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
 		soci::rowset<soci::row> rows = (
 			d->dbSession.getBackendSession()->prepare << query, soci::use(dbChatRoomId), soci::use(imdnMessageId)
+		);
+		for (const auto &row : rows) {
+			shared_ptr<EventLog> event = d->selectGenericConferenceEvent(chatRoom, row);
+			if (event) {
+				L_ASSERT(event->getType() == EventLog::Type::ConferenceChatMessage);
+				chatMessages.push_back(static_pointer_cast<ConferenceChatMessageEvent>(event)->getChatMessage());
+			}
+		}
+
+		return chatMessages;
+	};
+}
+
+list<shared_ptr<ChatMessage>> MainDb::findChatMessagesToBeNotifiedAsDelivered (
+	const ChatRoomId &chatRoomId
+) const {
+	static const string query = Statements::get(Statements::SelectConferenceEvents) +
+		string(" AND direction = :direction AND state = :state AND delivery_notification_required <> 0");
+
+	DurationLogger durationLogger(
+		"Find chat messages to be notified as delivered: (peer=" + chatRoomId.getPeerAddress().asString() +
+		", local=" + chatRoomId.getLocalAddress().asString() + ")."
+	);
+
+	return L_DB_TRANSACTION {
+		L_D();
+
+		shared_ptr<AbstractChatRoom> chatRoom = d->findChatRoom(chatRoomId);
+		list<shared_ptr<ChatMessage>> chatMessages;
+		if (!chatRoom)
+			return chatMessages;
+
+		const long long &dbChatRoomId = d->selectChatRoomId(chatRoomId);
+		const int &state = int(ChatMessage::State::Delivered);
+		const int &direction = int(ChatMessage::Direction::Incoming);
+		soci::rowset<soci::row> rows = (
+			d->dbSession.getBackendSession()->prepare << query, soci::use(dbChatRoomId), soci::use(direction), soci::use(state)
 		);
 		for (const auto &row : rows) {
 			shared_ptr<EventLog> event = d->selectGenericConferenceEvent(chatRoom, row);
@@ -2427,8 +2458,8 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 				continue; // Not fetched.
 
 			AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
-			dChatRoom->setCreationTime(Utils::getTmAsTimeT(creationTime));
-			dChatRoom->setLastUpdateTime(Utils::getTmAsTimeT(lastUpdateTime));
+			dChatRoom->setCreationTime(MainDbPrivate::getTmAsTimeT(creationTime));
+			dChatRoom->setLastUpdateTime(MainDbPrivate::getTmAsTimeT(lastUpdateTime));
 
 			lInfo() << "Found chat room in DB: (peer=" <<
 				chatRoomId.getPeerAddress().asString() << ", local=" << chatRoomId.getLocalAddress().asString() << ").";

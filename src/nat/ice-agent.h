@@ -70,7 +70,7 @@ public:
 	 * Checks if an incoming offer with ICE needs a delayed answer, because the ice session hasn't completed yet with
 	 * connecvity checks.
 	 */
-	bool checkIceReinviteNeedsDeferedResponse(SalMediaDescription *md);
+	bool checkIceReinviteNeedsDeferedResponse (SalMediaDescription *md);
 
 private:
 	void addLocalIceCandidates (int family, const char *addr, IceCheckList *audioCl, IceCheckList *videoCl, IceCheckList *textCl);

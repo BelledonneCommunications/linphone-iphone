@@ -49,11 +49,14 @@
 // Begin prologue.
 //
 #if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#ifndef __ANDROID__
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wfloat-equal"
+  #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #pragma GCC diagnostic ignored "-Wconversion"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -457,7 +460,7 @@ namespace LinphonePrivate
         List&
         operator= (const List& x);
 
-        virtual 
+        virtual
         ~List ();
 
         // Implementation.
@@ -578,7 +581,7 @@ namespace LinphonePrivate
         Resource&
         operator= (const Resource& x);
 
-        virtual 
+        virtual
         ~Resource ();
 
         // Implementation.
@@ -740,7 +743,7 @@ namespace LinphonePrivate
         Instance&
         operator= (const Instance& x);
 
-        virtual 
+        virtual
         ~Instance ();
 
         // Implementation.
@@ -810,7 +813,7 @@ namespace LinphonePrivate
         Name&
         operator= (const Name& x);
 
-        virtual 
+        virtual
         ~Name ();
 
         // Implementation.
@@ -1319,14 +1322,14 @@ namespace LinphonePrivate
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1334,7 +1337,7 @@ namespace LinphonePrivate
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1345,14 +1348,14 @@ namespace LinphonePrivate
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1360,7 +1363,7 @@ namespace LinphonePrivate
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1378,7 +1381,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeList (const ::LinphonePrivate::Xsd::Rlmi::List& x, 
+      serializeList (const ::LinphonePrivate::Xsd::Rlmi::List& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
@@ -1387,14 +1390,14 @@ namespace LinphonePrivate
 
       void
       serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1402,7 +1405,7 @@ namespace LinphonePrivate
 
       void
       serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          ::xercesc::DOMErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1413,14 +1416,14 @@ namespace LinphonePrivate
 
       void
       serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1428,7 +1431,7 @@ namespace LinphonePrivate
 
       void
       serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          ::xercesc::DOMErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1446,7 +1449,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeResource (const ::LinphonePrivate::Xsd::Rlmi::Resource& x, 
+      serializeResource (const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
@@ -1455,14 +1458,14 @@ namespace LinphonePrivate
 
       void
       serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1470,7 +1473,7 @@ namespace LinphonePrivate
 
       void
       serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          ::xercesc::DOMErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1481,14 +1484,14 @@ namespace LinphonePrivate
 
       void
       serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1496,7 +1499,7 @@ namespace LinphonePrivate
 
       void
       serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          ::xercesc::DOMErrorHandler& eh,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          const ::std::string& e = "UTF-8",
@@ -1514,7 +1517,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeInstance (const ::LinphonePrivate::Xsd::Rlmi::Instance& x, 
+      serializeInstance (const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
                          const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                          ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
@@ -1523,14 +1526,14 @@ namespace LinphonePrivate
 
       void
       serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1538,7 +1541,7 @@ namespace LinphonePrivate
 
       void
       serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1549,14 +1552,14 @@ namespace LinphonePrivate
 
       void
       serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1564,7 +1567,7 @@ namespace LinphonePrivate
 
       void
       serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1582,7 +1585,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeName (const ::LinphonePrivate::Xsd::Rlmi::Name& x, 
+      serializeName (const ::LinphonePrivate::Xsd::Rlmi::Name& x,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 

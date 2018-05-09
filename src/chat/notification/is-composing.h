@@ -38,7 +38,7 @@ public:
 	IsComposing (LinphoneCore *core, IsComposingListener *listener);
 	~IsComposing ();
 
-	std::string marshal (bool isComposing);
+	std::string createXml (bool isComposing);
 	void parse (const Address &remoteAddr, const std::string &content);
 	void startIdleTimer ();
 	void startRefreshTimer ();
@@ -51,11 +51,10 @@ private:
 	unsigned int getIdleTimerDuration ();
 	unsigned int getRefreshTimerDuration ();
 	unsigned int getRemoteRefreshTimerDuration ();
-	void parse (xmlparsing_context_t *xmlCtx, const Address &remoteAddr);
 	int idleTimerExpired ();
 	int refreshTimerExpired ();
 	int remoteRefreshTimerExpired (const std::string &uri);
-	void startRemoteRefreshTimer (const std::string &uri, const char *refreshStr);
+	void startRemoteRefreshTimer (const std::string &uri, unsigned long long refresh);
 	void stopAllRemoteRefreshTimers ();
 	std::unordered_map<std::string, belle_sip_source_t *>::iterator stopRemoteRefreshTimer (const std::unordered_map<std::string, belle_sip_source_t *>::const_iterator it);
 
@@ -67,7 +66,6 @@ private:
 	static const int defaultIdleTimeout = 15;
 	static const int defaultRefreshTimeout = 60;
 	static const int defaultRemoteRefreshTimeout = 120;
-	static const std::string isComposingPrefix;
 
 	LinphoneCore *core = nullptr;
 	IsComposingListener *listener = nullptr;

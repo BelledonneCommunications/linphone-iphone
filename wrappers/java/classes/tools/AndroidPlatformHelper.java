@@ -181,24 +181,32 @@ public class AndroidPlatformHelper {
 		if (resId == 0) {
 			Log.d("App doesn't seem to embed resource " + name + "in it's res/raw/ directory, use linphone's instead");
 			resId = mResources.getIdentifier(name, "raw", "org.linphone");
+			if (resId == 0) {
+				Log.e("App doesn't seem to embed resource " + name + "in it's res/raw/ directory, please add it");
+			}
 		}
 		return resId;
 	}
 
 	private void copyAssetsFromPackage() throws IOException {
-		copyIfNotExist(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("hold"), mPauseSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
-		copyIfNotExist(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
-		copyIfNotExist(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
-		copyIfNotExist(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
+		copyEvenIfExists(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
+		copyEvenIfExists(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
+		copyEvenIfExists(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
+		copyEvenIfExists(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("hold"), mPauseSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
+	}
+
+	public void copyEvenIfExists(int ressourceId, String target) throws IOException {
+		File lFileToCopy = new File(target);
+		copyFromPackage(ressourceId, lFileToCopy.getName());
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
 		File lFileToCopy = new File(target);
 		if (!lFileToCopy.exists()) {
-			copyFromPackage(ressourceId,lFileToCopy.getName());
+			copyFromPackage(ressourceId, lFileToCopy.getName());
 		}
 	}
 

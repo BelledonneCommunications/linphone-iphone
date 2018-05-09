@@ -188,8 +188,8 @@ LINPHONE_PUBLIC bool_t linphone_address_weak_equal (const LinphoneAddress *addre
 LINPHONE_PUBLIC bool_t linphone_address_equal (const LinphoneAddress *address1, const LinphoneAddress *address2);
 
 /**
-* Get the header encoded in the address.
-* @param address the address
+ * Get the header encoded in the address.
+ * @param header_name the header name
 **/
 LINPHONE_PUBLIC const char *linphone_address_get_header (const LinphoneAddress *address, const char *header_name);
 

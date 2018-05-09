@@ -416,7 +416,7 @@ LINPHONE_PUBLIC LinphoneBuffer *linphone_factory_create_buffer_from_string(Linph
 /**
  * Creates an object #LinphoneConfig
  * @param[in] factory the #LinphoneFactory
- * @param[in] the path of the config
+ * @param[in] path the path of the config
  * @return a #LinphoneConfig
  */
 LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config(LinphoneFactory *factory, const char *path);
@@ -424,8 +424,8 @@ LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config(LinphoneFactory *
 /**
  * Creates an object #LinphoneConfig
  * @param[in] factory the #LinphoneFactory
- * @param[in] the path of the config
- * @param[in] the path of the factory
+ * @param[in] path the path of the config
+ * @param[in] path the path of the factory
  * @return a #LinphoneConfig
  */
 LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config_with_factory(LinphoneFactory *factory, const char *path, const char *factory_path);
@@ -433,6 +433,7 @@ LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config_with_factory(Linp
 /**
  * Creates an object #LinphoneConfig
  * @param[in] factory the #LinphoneFactory
+ * @param[in] data the config data
  * @return a #LinphoneConfig
  */
 LINPHONE_PUBLIC LinphoneConfig *linphone_factory_create_config_from_string(LinphoneFactory *factory, const char *data);
@@ -454,16 +455,23 @@ LINPHONE_PUBLIC void linphone_factory_set_user_data(LinphoneFactory *factory, vo
 /**
  * Sets the log collection path
  * @param[in] factory the #LinphoneFactory
- * @param[in] the path of the logs
+ * @param[in] path the path of the logs
  */
 LINPHONE_PUBLIC void linphone_factory_set_log_collection_path(LinphoneFactory *factory, const char *path);
 
 /**
  * Enables or disables log collection
  * @param[in] factory the #LinphoneFactory
- * @param[in] the policy for log collection
+ * @param[in] state the policy for log collection
  */
 LINPHONE_PUBLIC void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state);
+
+/**
+ * Creates an object #LinphoneTunnelConfig
+ * @param[in] factory the #LinphoneFactory
+ * @return a #LinphoneTunnelConfig
+ */
+LINPHONE_PUBLIC LinphoneTunnelConfig *linphone_factory_create_tunnel_config(LinphoneFactory *factory);
 
 /**
  * @}

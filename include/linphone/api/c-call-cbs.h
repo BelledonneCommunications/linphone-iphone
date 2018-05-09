@@ -174,6 +174,34 @@ LINPHONE_PUBLIC LinphoneCallCbsTmmbrReceivedCb linphone_call_cbs_get_tmmbr_recei
 LINPHONE_PUBLIC void linphone_call_cbs_set_tmmbr_received(LinphoneCallCbs *cbs, LinphoneCallCbsTmmbrReceivedCb cb);
 
 /**
+ * Get the snapshot taken callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current snapshot taken callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsSnapshotTakenCb linphone_call_cbs_get_snapshot_taken(LinphoneCallCbs *cbs);
+
+/**
+ * Set the snapshot taken callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The snapshot taken callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_snapshot_taken(LinphoneCallCbs *cbs, LinphoneCallCbsSnapshotTakenCb cb);
+
+ /**
+ * Get the next video frame decoded callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @return The current next video frame decoded callback.
+ */
+LINPHONE_PUBLIC LinphoneCallCbsNextVideoFrameDecodedCb linphone_call_cbs_get_next_video_frame_decoded(LinphoneCallCbs *cbs);
+
+/**
+ * Set the next video frame decoded callback.
+ * @param[in] cbs LinphoneCallCbs object.
+ * @param[in] cb The next video frame decoded callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_call_cbs_set_next_video_frame_decoded(LinphoneCallCbs *cbs, LinphoneCallCbsNextVideoFrameDecodedCb cb);
+
+/**
  * @}
  */
 

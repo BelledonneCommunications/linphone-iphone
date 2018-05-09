@@ -119,7 +119,7 @@ void linphone_event_cbs_set_notify_response(LinphoneEventCbs *cbs, LinphoneEvent
 static void linphone_event_release(LinphoneEvent *lev){
 	if (lev->op) {
 		/*this will stop the refresher*/
-		lev->op->stop_refreshing();
+		lev->op->stopRefreshing();
 	}
 	linphone_event_unref(lev);
 }
@@ -133,7 +133,7 @@ static LinphoneEvent * linphone_event_new_base(LinphoneCore *lc, LinphoneSubscri
 	lev->name=ms_strdup(name);
 	if (strcmp(lev->name, "conference") == 0)
 		lev->internal = TRUE;
-	lev->op->set_user_pointer(lev);
+	lev->op->setUserPointer(lev);
 	return lev;
 }
 
@@ -221,7 +221,7 @@ LinphoneReason linphone_event_get_reason(const LinphoneEvent *lev){
 LinphoneEvent *linphone_core_create_subscribe(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionOutgoing, event, expires);
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
-	lev->op->set_manual_refresher_mode(!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
+	lev->op->setManualRefresherMode(!lp_config_get_int(lc->config,"sip","refresh_generic_subscribe",1));
 	return lev;
 }
 
@@ -229,7 +229,7 @@ LinphoneEvent *linphone_core_create_notify(LinphoneCore *lc, const LinphoneAddre
 	LinphoneEvent *lev=linphone_event_new(lc, LinphoneSubscriptionIncoming, event, -1);
 	linphone_configure_op(lc,lev->op,resource,NULL,TRUE);
 	lev->subscription_state = LinphoneSubscriptionIncomingReceived;
-	lev->op->set_event(event);
+	lev->op->setEvent(event);
 	lev->is_out_of_dialog_op = TRUE;
 	return lev;
 }
@@ -265,10 +265,10 @@ LinphoneStatus linphone_event_send_subscribe(LinphoneEvent *lev, const LinphoneC
 	}
 
 	if (lev->send_custom_headers){
-		lev->op->set_sent_custom_header(lev->send_custom_headers);
+		lev->op->setSentCustomHeaders(lev->send_custom_headers);
 		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
-	}else lev->op->set_sent_custom_header(NULL);
+	}else lev->op->setSentCustomHeaders(NULL);
 
 	body_handler = sal_body_handler_from_content(body);
     auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
@@ -324,7 +324,7 @@ LinphoneStatus linphone_event_notify(LinphoneEvent *lev, const LinphoneContent *
 		ms_error("linphone_event_notify(): cannot notify if not an incoming subscription.");
 		return -1;
 	}
-	body_handler = sal_body_handler_from_content(body);
+	body_handler = sal_body_handler_from_content(body, false);
     auto subscribeOp = dynamic_cast<SalSubscribeOp *>(lev->op);
 	return subscribeOp->notify(body_handler);
 }
@@ -347,7 +347,7 @@ static LinphoneEvent *_linphone_core_create_publish(LinphoneCore *core, Linphone
 	lev = linphone_event_new_with_op(lc, new SalPublishOp(lc->sal), LinphoneSubscriptionInvalidDir, event);
 	lev->expires = expires;
 	linphone_configure_op_with_proxy(lc,lev->op,resource,NULL, !!lp_config_get_int(lc->config,"sip","publish_msg_with_contact",0),cfg);
-	lev->op->set_manual_refresher_mode(!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
+	lev->op->setManualRefresherMode(!lp_config_get_int(lc->config,"sip","refresh_generic_publish",1));
 	return lev;
 }
 LinphoneEvent *linphone_core_create_publish(LinphoneCore *lc, const LinphoneAddress *resource, const char *event, int expires){
@@ -374,10 +374,10 @@ static int _linphone_event_send_publish(LinphoneEvent *lev, const LinphoneConten
 		return -1;
 	}
 	if (lev->send_custom_headers){
-		lev->op->set_sent_custom_header(lev->send_custom_headers);
+		lev->op->setSentCustomHeaders(lev->send_custom_headers);
 		sal_custom_header_free(lev->send_custom_headers);
 		lev->send_custom_headers=NULL;
-	}else lev->op->set_sent_custom_header(NULL);
+	}else lev->op->setSentCustomHeaders(NULL);
 	body_handler = sal_body_handler_from_content(body);
     auto publishOp = dynamic_cast<SalPublishOp *>(lev->op);
 	err=publishOp->publish(NULL,NULL,lev->name,lev->expires,body_handler);
@@ -413,7 +413,7 @@ LinphoneStatus linphone_event_refresh_publish(LinphoneEvent *lev) {
 	return lev->op->refresh();
 }
 void linphone_event_pause_publish(LinphoneEvent *lev) {
-	if (lev->op) lev->op->stop_refreshing();
+	if (lev->op) lev->op->stopRefreshing();
 }
 void linphone_event_unpublish(LinphoneEvent *lev) {
 	lev->terminating = TRUE; /* needed to get clear event*/
@@ -435,7 +435,7 @@ void linphone_event_add_custom_header(LinphoneEvent *ev, const char *name, const
 }
 
 const char* linphone_event_get_custom_header(LinphoneEvent* ev, const char* name){
-	const SalCustomHeader *ch=ev->op->get_recv_custom_header();
+	const SalCustomHeader *ch=ev->op->getRecvCustomHeaders();
 	return sal_custom_header_find(ch,name);
 }
 
@@ -453,7 +453,7 @@ void linphone_event_terminate(LinphoneEvent *lev){
 	lev->terminating=TRUE;
 	if (lev->dir==LinphoneSubscriptionIncoming){
         auto op = dynamic_cast<SalSubscribeOp *>(lev->op);
-		op->close_notify();
+		op->closeNotify();
 	}else if (lev->dir==LinphoneSubscriptionOutgoing){
         auto op = dynamic_cast<SalSubscribeOp *>(lev->op);
 		op->unsubscribe();
@@ -511,7 +511,7 @@ const char *linphone_event_get_name(const LinphoneEvent *lev){
 static const LinphoneAddress *_linphone_event_cache_to (const LinphoneEvent *lev) {
 	if (lev->to_address)
 		linphone_address_unref(lev->to_address);
-	char *buf = sal_address_as_string(lev->op->get_to_address());
+	char *buf = sal_address_as_string(lev->op->getToAddress());
 	((LinphoneEvent *)lev)->to_address = linphone_address_new(buf);
 	ms_free(buf);
 	return lev->to_address;
@@ -520,7 +520,7 @@ static const LinphoneAddress *_linphone_event_cache_to (const LinphoneEvent *lev
 static const LinphoneAddress *_linphone_event_cache_from (const LinphoneEvent *lev) {
 	if (lev->from_address)
 		linphone_address_unref(lev->from_address);
-	char *buf = sal_address_as_string(lev->op->get_from_address());
+	char *buf = sal_address_as_string(lev->op->getFromAddress());
 	((LinphoneEvent *)lev)->from_address = linphone_address_new(buf);
 	ms_free(buf);
 	return lev->from_address;
@@ -529,7 +529,7 @@ static const LinphoneAddress *_linphone_event_cache_from (const LinphoneEvent *l
 static const LinphoneAddress *_linphone_event_cache_remote_contact (const LinphoneEvent *lev) {
 	if (lev->remote_contact_address)
 		linphone_address_unref(lev->remote_contact_address);
-	char *buf = sal_address_as_string(lev->op->get_remote_contact_address());
+	char *buf = sal_address_as_string(lev->op->getRemoteContactAddress());
 	((LinphoneEvent *)lev)->remote_contact_address = linphone_address_new(buf);
 	ms_free(buf);
 	return lev->remote_contact_address;

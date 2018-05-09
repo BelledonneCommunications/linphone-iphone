@@ -102,14 +102,9 @@ public:
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
 
-	std::list<ParticipantState> getChatMessageParticipantsThatHaveDisplayed (
-		const std::shared_ptr<EventLog> &eventLog
-	) const;
-	std::list<ParticipantState> getChatMessageParticipantsThatHaveNotReceived (
-		const std::shared_ptr<EventLog> &eventLog
-	) const;
-	std::list<ParticipantState> getChatMessageParticipantsThatHaveReceived (
-		const std::shared_ptr<EventLog> &eventLog
+	std::list<ParticipantState> getChatMessageParticipantsByImdnState (
+		const std::shared_ptr<EventLog> &eventLog,
+		ChatMessage::State state
 	) const;
 	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
 	ChatMessage::State getChatMessageParticipantState (
@@ -128,6 +123,10 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> findChatMessages (
 		const ChatRoomId &chatRoomId,
 		const std::string &imdnMessageId
+	) const;
+
+	std::list<std::shared_ptr<ChatMessage>> findChatMessagesToBeNotifiedAsDelivered (
+		const ChatRoomId &chatRoomId
 	) const;
 
 	// ---------------------------------------------------------------------------

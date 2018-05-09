@@ -29,7 +29,9 @@ from apixml2python.linphone import LinphoneModule, HandWrittenClassMethod, HandW
 blacklisted_classes = [
 	'LinphoneIntRange',
 	'LinphoneTunnel',
-	'LinphoneTunnelConfig'
+	'LinphoneTunnelConfig',
+	'LinphoneLoggingService',
+	'LinphoneLoggingServiceCbs'
 ]
 blacklisted_events = [
 	'LinphoneChatMessageStateChangedCb',	# not respecting naming convention
@@ -73,6 +75,7 @@ blacklisted_functions = [
 	'linphone_proxy_config_set_privacy',	# missing LinphonePrivacyMask
 	'linphone_tunnel_get_http_proxy',	# to be handwritten because of double pointer indirection
 	'linphone_vcard_get_belcard', # specific to C++
+	''
 ]
 hand_written_functions = [
 	HandWrittenClassMethod('Buffer', 'new_from_data', 'linphone_buffer_new_from_data', "Create a new LinphoneBuffer object from existing data.\n\n:param data: The initial data to store in the LinphoneBuffer.\n:type data: ByteArray\n:returns: A new LinphoneBuffer object.\n:rtype: linphone.Buffer"),

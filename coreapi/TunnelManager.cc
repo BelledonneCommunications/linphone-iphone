@@ -33,7 +33,7 @@ void TunnelManager::addServer(const char *ip, int port,unsigned int udpMirrorPor
 		return;
 	}
 	addServer(ip,port);
-	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip,udpMirrorPort),delay));
+	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip, (int)udpMirrorPort), delay));
 }
 
 void TunnelManager::addServer(const char *ip, int port) {
@@ -58,7 +58,7 @@ void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, i
 		return;
 	}
 	addServerPair(ip1, port1, ip2, port2);
-	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip1, udpMirrorPort), delay));
+	mUdpMirrorClients.push_back(UdpMirrorClient(ServerAddr(ip1, (int)udpMirrorPort), delay));
 }
 
 void TunnelManager::addServerPair(const char *ip1, int port1, const char *ip2, int port2) {
@@ -159,7 +159,7 @@ void TunnelManager::startClient() {
 			mTunnelClient = TunnelClient::create(TRUE);
 		}
 
-		sal_set_tunnel(mCore->sal, mTunnelClient);
+		mCore->sal->setTunnel(mTunnelClient);
 		if (!mUseDualClient) {
 			static_cast<TunnelClient*>(mTunnelClient)->setCallback(tunnelCallback,this);
 		} else {
@@ -220,21 +220,21 @@ bool TunnelManager::isConnected() const {
 int TunnelManager::customSendto(struct _RtpTransport *t, mblk_t *msg , int flags, const struct sockaddr *to, socklen_t tolen){
 	int size;
 	DualSocket *ds = (DualSocket *)t->data;
-	msgpullup(msg,-1);
-	size=msgdsize(msg);
-	ds->sendSocket->sendto(msg->b_rptr,size,to,tolen);
+	msgpullup(msg, (size_t)-1);
+	size = (int)msgdsize(msg);
+	ds->sendSocket->sendto(msg->b_rptr, (size_t)size, to, tolen);
 	return size;
 }
 
 int TunnelManager::customRecvfrom(struct _RtpTransport *t, mblk_t *msg, int flags, struct sockaddr *from, socklen_t *fromlen){
 	DualSocket *ds = (DualSocket *)t->data;
 	memset(&msg->recv_addr,0,sizeof(msg->recv_addr));
-	int err=ds->recvSocket->recvfrom(msg->b_wptr,dblk_lim(msg->b_datap)-dblk_base(msg->b_datap),from,*fromlen);
+	long err=ds->recvSocket->recvfrom(msg->b_wptr, (size_t)(dblk_lim(msg->b_datap) - dblk_base(msg->b_datap)), from, *fromlen);
 	//to make ice happy
 	inet_aton(((TunnelManager*)(ds->recvSocket)->getUserPointer())->mLocalAddr,&msg->recv_addr.addr.ipi_addr);
 	msg->recv_addr.family = AF_INET;
 	msg->recv_addr.port = htons((unsigned short)(ds->recvSocket)->getPort());
-	if (err>0) return err;
+	if (err>0) return (int)err;
 	return 0;
 }
 
@@ -281,7 +281,7 @@ TunnelManager::~TunnelManager(){
 		mTunnelClient->stop();
 		delete mTunnelClient;
 	}
-	sal_set_tunnel(mCore->sal,NULL);
+	mCore->sal->setTunnel(NULL);
 	linphone_core_remove_listener(mCore, mVTable);
 	linphone_core_v_table_destroy(mVTable);
 }

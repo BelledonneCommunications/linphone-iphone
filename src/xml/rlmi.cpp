@@ -34,11 +34,14 @@
 // Begin prologue.
 //
 #if __clang__ || __GNUC__ >= 4
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wfloat-equal"
-#ifndef __ANDROID__
-	#pragma GCC diagnostic ignored "-Wsuggest-override"
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wfloat-equal"
+  #pragma GCC diagnostic ignored "-Wsign-conversion"
+  #pragma GCC diagnostic ignored "-Wconversion"
 #endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
 //
 // End prologue.
@@ -54,7 +57,7 @@ namespace LinphonePrivate
     namespace Rlmi
     {
       // List
-      // 
+      //
 
       const List::NameSequence& List::
       getName () const
@@ -220,7 +223,7 @@ namespace LinphonePrivate
 
 
       // Resource
-      // 
+      //
 
       const Resource::NameSequence& Resource::
       getName () const
@@ -320,7 +323,7 @@ namespace LinphonePrivate
 
 
       // Instance
-      // 
+      //
 
       const Instance::AnySequence& Instance::
       getAny () const
@@ -492,7 +495,7 @@ namespace LinphonePrivate
 
 
       // Name
-      // 
+      //
 
       const Name::LangOptional& Name::
       getLang () const
@@ -526,7 +529,7 @@ namespace LinphonePrivate
 
 
       // State
-      // 
+      //
 
       State::
       State (Value v)
@@ -563,7 +566,7 @@ namespace LinphonePrivate
       State& State::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_State_literals_[v]);
 
         return *this;

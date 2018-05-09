@@ -177,7 +177,7 @@ LINPHONE_PUBLIC float linphone_call_params_get_sent_framerate(const LinphoneCall
 LINPHONE_PUBLIC const LinphoneVideoDefinition * linphone_call_params_get_sent_video_definition(const LinphoneCallParams *cp);
 
 /**
- * @biref Gets the size of the video that is sent.
+ * @brief Gets the size of the video that is sent.
  * @param[in] cp #LinphoneCalParams object
  * @return The sent video size or MS_VIDEO_SIZE_UNKNOWN if not available.
  * @deprecated Use #linphone_call_params_get_sent_video_definition() instead. Deprecated since 2017-03-28.

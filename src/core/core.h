@@ -51,11 +51,13 @@ class LINPHONE_PUBLIC Core : public Object {
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
 	friend class ClientGroupToBasicChatRoomPrivate;
+	friend class Imdn;
 	friend class LocalConferenceEventHandlerPrivate;
 	friend class MainDb;
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 	friend class MediaSessionPrivate;
+	friend class RealTimeTextChatRoomPrivate;
 	friend class RemoteConferenceEventHandler;
 	friend class RemoteConferenceListEventHandler;
 	friend class ServerGroupChatRoom;
