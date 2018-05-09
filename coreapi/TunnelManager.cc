@@ -159,7 +159,7 @@ void TunnelManager::startClient() {
 			mTunnelClient = TunnelClient::create(TRUE);
 		}
 
-		mCore->sal->set_tunnel(mTunnelClient);
+		mCore->sal->setTunnel(mTunnelClient);
 		if (!mUseDualClient) {
 			static_cast<TunnelClient*>(mTunnelClient)->setCallback(tunnelCallback,this);
 		} else {
