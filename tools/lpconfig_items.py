@@ -44,8 +44,8 @@ def parse_lpconfig_line(line):
 
 for files in get_files_in_coreapi_directory():
 	parse_file(files)
-for section, items in items.iteritems():
-	print '[' + section + ']'
+for section, items in items.items():
+	print('[' + section + ']')
 	for item in items:
-		print item[1] + '=' + item[2]
-	print ''
+		print(item[1] + '=' + item[2])
+	print('')
