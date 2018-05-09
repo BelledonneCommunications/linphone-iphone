@@ -123,7 +123,6 @@ void RemoteConferenceListEventHandler::subscribe () {
 	linphone_event_set_user_data(lev, this);
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
 	linphone_event_send_subscribe(lev, cContent);
-	linphone_content_unref(cContent);
 }
 
 void RemoteConferenceListEventHandler::unsubscribe () {

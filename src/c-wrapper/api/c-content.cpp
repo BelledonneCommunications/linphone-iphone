@@ -241,7 +241,7 @@ void linphone_content_set_key (LinphoneContent *content, const char *key, const 
 // Private functions.
 // =============================================================================
 
-static LinphoneContent *linphone_content_new_with_body_handler (const SalBodyHandler *body_handler) {
+static LinphoneContent *linphone_content_new_with_body_handler (const SalBodyHandler *body_handler, bool parseMultipart) {
 	LinphoneContent *content = L_INIT(Content);
 	content->cryptoContext = NULL;
 	LinphonePrivate::Content *c = new LinphonePrivate::Content();
@@ -256,13 +256,13 @@ static LinphoneContent *linphone_content_new_with_body_handler (const SalBodyHan
 			linphone_content_add_content_type_parameter(content, paramName, paramValue);
 		}
 
-		if (!linphone_content_is_multipart(content)) {
-			linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
-		} else {
+		if (linphone_content_is_multipart(content) && parseMultipart) {
 			belle_sip_multipart_body_handler_t *mpbh = BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler);
 			char *body = belle_sip_object_to_string(mpbh);
 			linphone_content_set_string_buffer(content, body);
 			belle_sip_free(body);
+		} else {
+			linphone_content_set_string_buffer(content, (char *)sal_body_handler_get_data(body_handler));
 		}
 
 		belle_sip_list_t *headers = (belle_sip_list_t *)sal_body_handler_get_headers(body_handler);
@@ -279,7 +279,7 @@ static LinphoneContent *linphone_content_new_with_body_handler (const SalBodyHan
 }
 
 LinphoneContent *linphone_content_new (void) {
-	return linphone_content_new_with_body_handler(NULL);
+	return linphone_content_new_with_body_handler(NULL, true);
 }
 
 LinphoneContent *linphone_content_copy (const LinphoneContent *ref) {
@@ -296,9 +296,9 @@ void **linphone_content_get_cryptoContext_address (LinphoneContent *content) {
 	return &content->cryptoContext;
 }
 
-LinphoneContent *linphone_content_from_sal_body_handler (const SalBodyHandler *body_handler) {
+LinphoneContent *linphone_content_from_sal_body_handler (const SalBodyHandler *body_handler, bool parseMultipart) {
 	if (body_handler) {
-		return linphone_content_new_with_body_handler(body_handler);
+		return linphone_content_new_with_body_handler(body_handler, parseMultipart);
 	}
 	return NULL;
 }

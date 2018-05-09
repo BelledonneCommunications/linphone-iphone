@@ -388,7 +388,6 @@ void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &
 	// TODO: Activate compression
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
 	linphone_event_notify(ev, cContent);
-	linphone_content_unref(cContent);
 }
 
 // =============================================================================
