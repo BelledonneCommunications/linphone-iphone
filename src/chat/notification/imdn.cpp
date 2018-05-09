@@ -160,7 +160,7 @@ string Imdn::createXml (const string &id, time_t timestamp, Imdn::Type imdnType,
 	map[""].name = "urn:ietf:params:xml:ns:imdn";
 	if (needLinphoneImdnNamespace)
 		map["imdn"].name = "http://www.linphone.org/xsds/imdn.xsd";
-	Xsd::Imdn::serializeImdn(ss, imdn, map);
+	Xsd::Imdn::serializeImdn(ss, imdn, map, "UTF-8", Xsd::XmlSchema::Flags::dont_pretty_print);
 	return ss.str();
 }
 

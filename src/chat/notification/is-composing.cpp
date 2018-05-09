@@ -60,7 +60,7 @@ string IsComposing::createXml (bool isComposing) {
 	stringstream ss;
 	Xsd::XmlSchema::NamespaceInfomap map;
 	map[""].name = "urn:ietf:params:xml:ns:im-iscomposing";
-	Xsd::IsComposing::serializeIsComposing(ss, node, map);
+	Xsd::IsComposing::serializeIsComposing(ss, node, map, "UTF-8", Xsd::XmlSchema::Flags::dont_pretty_print);
 	return ss.str();
 }
 
