@@ -23,97 +23,97 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #if TARGET_OS_IPHONE
 
-#include "private.h"
+#include "linphone/utils/general.h"
+#include "linphone/utils/utils.h"
+
+#include "logger/logger.h"
 #include "platform-helpers.h"
 
+// TODO: Remove me
+#include "private.h"
 
+// =============================================================================
 
-namespace LinphonePrivate{
+using namespace std;
 
-class IosPlatformHelpers : public PlatformHelpers{
+LINPHONE_BEGIN_NAMESPACE
+
+class IosPlatformHelpers : public PlatformHelpers {
 public:
-	IosPlatformHelpers(LinphoneCore *lc, void *system_context);
-	virtual void setDnsServers();
-	virtual void acquireWifiLock();
-	virtual void releaseWifiLock();
-	virtual void acquireMcastLock();
-	virtual void releaseMcastLock();
-	virtual void acquireCpuLock();
-	virtual void releaseCpuLock();
-	~IosPlatformHelpers();
+	IosPlatformHelpers (LinphoneCore *lc, void *system_context);
+	~IosPlatformHelpers () = default;
+
+	void setDnsServers () override {}
+	void acquireWifiLock () override {}
+	void releaseWifiLock () override {}
+	void acquireMcastLock () override {}
+	void releaseMcastLock () override {}
+	void acquireCpuLock () override;
+	void releaseCpuLock () override;
+	string getDataPath () override {return Utils::getEmptyConstRefObject<string>();}
+	string getConfigPath () override {return Utils::getEmptyConstRefObject<string>();}
+
 private:
-	void bgTaskTimeout();
-	static void sBgTaskTimeout(void *data);
+	void bgTaskTimeout ();
+	static void sBgTaskTimeout (void *data);
+
 	long int mCpuLockTaskId;
 	int mCpuLockCount;
 };
 
+// =============================================================================
 
-IosPlatformHelpers::IosPlatformHelpers(LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
+IosPlatformHelpers::IosPlatformHelpers (LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
 	mCpuLockCount = 0;
 	mCpuLockTaskId = 0;
-	ms_message("IosPlatformHelpers is fully initialised");
+	lInfo() << "IosPlatformHelpers is fully initialised";
 }
 
-IosPlatformHelpers::~IosPlatformHelpers(){
-	
-}
+// -----------------------------------------------------------------------------
 
-
-void IosPlatformHelpers::setDnsServers(){
-}
-
-void IosPlatformHelpers::acquireWifiLock(){
-}
-
-void IosPlatformHelpers::releaseWifiLock(){
-}
-
-void IosPlatformHelpers::acquireMcastLock(){
-}
-
-void IosPlatformHelpers::releaseMcastLock(){
-}
-
-void IosPlatformHelpers::bgTaskTimeout(){
-	ms_error("IosPlatformHelpers: the system requests that the cpu lock is released now.");
-	if (mCpuLockTaskId != 0){
-		belle_sip_end_background_task(mCpuLockTaskId);
+void IosPlatformHelpers::bgTaskTimeout () {
+	lError() << "IosPlatformHelpers: the system requests that the cpu lock is released now.";
+	if (mCpuLockTaskId != 0) {
+		belle_sip_end_background_task(static_cast<unsigned long>(mCpuLockTaskId));
 		mCpuLockTaskId = 0;
 	}
 }
 
-void IosPlatformHelpers::sBgTaskTimeout(void *data){
-	IosPlatformHelpers *zis = (IosPlatformHelpers*)data;
+void IosPlatformHelpers::sBgTaskTimeout (void *data) {
+	IosPlatformHelpers *zis = static_cast<IosPlatformHelpers *>(data);
 	zis->bgTaskTimeout();
 }
 
-void IosPlatformHelpers::acquireCpuLock(){
-	if (mCpuLockCount == 0){
-		/* on iOS, cpu lock is implemented by a long running task (obcj-C) and it is abstracted by belle-sip,
-		so let's use belle-sip directly.*/
-		mCpuLockTaskId = belle_sip_begin_background_task("Liblinphone cpu lock", sBgTaskTimeout, this);
-	}
+// -----------------------------------------------------------------------------
+
+void IosPlatformHelpers::acquireCpuLock () {
+	// on iOS, cpu lock is implemented by a long running task and it is abstracted by belle-sip, so let's use belle-sip directly.
+	if (mCpuLockCount == 0)
+		mCpuLockTaskId = static_cast<long>(belle_sip_begin_background_task("Liblinphone cpu lock", sBgTaskTimeout, this));
+
 	mCpuLockCount++;
 }
 
-void IosPlatformHelpers::releaseCpuLock(){
+void IosPlatformHelpers::releaseCpuLock () {
 	mCpuLockCount--;
-	if (mCpuLockCount == 0){
-		if (mCpuLockTaskId != 0){
-			belle_sip_end_background_task(mCpuLockTaskId);
-			mCpuLockTaskId = 0;
-		}else{
-			ms_error("IosPlatformHelpers::releaseCpuLock(): too late, the lock has been released already by the system.");
-		}
+	if (mCpuLockCount != 0)
+		return;
+
+	if (mCpuLockTaskId == 0) {
+		lError() << "IosPlatformHelpers::releaseCpuLock(): too late, the lock has been released already by the system.";
+		return;
 	}
+
+	belle_sip_end_background_task(static_cast<unsigned long>(mCpuLockTaskId));
+	mCpuLockTaskId = 0;
 }
 
+// -----------------------------------------------------------------------------
 
-PlatformHelpers *createIosPlatformHelpers(LinphoneCore *lc, void *system_context){
+PlatformHelpers *createIosPlatformHelpers (LinphoneCore *lc, void *system_context) {
 	return new IosPlatformHelpers(lc, system_context);
 }
 
-}//end of namespace
+LINPHONE_END_NAMESPACE
 
 #endif
