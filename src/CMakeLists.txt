@@ -399,6 +399,7 @@ if(ENABLE_SHARED)
 		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
 		$<TARGET_OBJECTS:linphone-coreapi>
 	)
+	#TODO: replace by if(APPLE) when we want to make apple framework on linphone-desktop too
 	if(IOS)
 		if(IOS)
 			set(MIN_OS ${LINPHONE_IOS_DEPLOYMENT_TARGET})
