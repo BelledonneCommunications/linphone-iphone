@@ -69,7 +69,7 @@ Content ContentManager::contentListToMultipart (const list<Content *> &contents,
 			disposition = content->getContentDisposition();
 
 		LinphoneContent *cContent = L_GET_C_BACK_PTR(content);
-		SalBodyHandler *sbh = sal_body_handler_from_content(cContent);
+		SalBodyHandler *sbh = sal_body_handler_from_content(cContent, false);
 		belle_sip_multipart_body_handler_add_part(mpbh, BELLE_SIP_BODY_HANDLER(sbh));
 	}
 
@@ -78,7 +78,7 @@ Content ContentManager::contentListToMultipart (const list<Content *> &contents,
 	sal_body_handler_set_subtype(sbh, ContentType::Multipart.getSubType().c_str());
 	sal_body_handler_set_content_type_parameter(sbh, "boundary", boundary.c_str());
 
-	LinphoneContent *cContent = linphone_content_from_sal_body_handler(sbh, false);
+	LinphoneContent *cContent = linphone_content_from_sal_body_handler(sbh);
 	belle_sip_object_unref(mpbh);
 
 	Content content = *L_GET_CPP_PTR_FROM_C_OBJECT(cContent);
