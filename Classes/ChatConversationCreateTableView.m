@@ -73,6 +73,9 @@
 	while (results) {
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress* addr = linphone_search_result_get_address(result) ?: linphone_friend_get_address(linphone_search_result_get_friend(result));
+		if (!addr)
+			continue;
+		
 		char *uri = linphone_address_as_string_uri_only(addr);
 		NSString *address = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
