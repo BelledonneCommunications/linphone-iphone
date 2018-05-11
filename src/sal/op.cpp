@@ -278,7 +278,7 @@ void SalOp::release() {
 	unref();
 }
 
-int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_contact) {
+int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=mRoot->mProvider;
 	belle_sip_uri_t* outbound_proxy=NULL;
@@ -369,7 +369,7 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_conta
 }
 
 int SalOp::sendRequest(belle_sip_request_t* request) {
-	bool_t need_contact=FALSE;
+	bool need_contact=FALSE;
 	if (request==NULL) {
 		return -1; /*sanity check*/
 	}
@@ -383,7 +383,7 @@ int SalOp::sendRequest(belle_sip_request_t* request) {
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
 			||strcmp(belle_sip_request_get_method(request),"OPTIONS")==0
 			||strcmp(belle_sip_request_get_method(request),"REFER")==0) /* Despite contact seems not mandatory, call flow example show a Contact in REFER requests*/
-		need_contact=TRUE;
+		need_contact=true;
 
 	return sendRequestWithContact(request,need_contact);
 }
@@ -438,7 +438,7 @@ int SalOp::processRedirect(){
 void SalOp::processAuthentication() {
 	belle_sip_request_t* initial_request=belle_sip_transaction_get_request((belle_sip_transaction_t*)mPendingAuthTransaction);
 	belle_sip_request_t* new_request;
-	bool_t is_within_dialog=FALSE;
+	bool is_within_dialog=false;
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)mPendingAuthTransaction);
@@ -454,7 +454,7 @@ void SalOp::processAuthentication() {
 		new_request = belle_sip_dialog_create_request_from(mDialog,initial_request);
 		if (!new_request)
 			new_request = belle_sip_dialog_create_queued_request_from(mDialog,initial_request);
-		is_within_dialog=TRUE;
+		is_within_dialog=true;
 	} else {
 		new_request=initial_request;
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(new_request),BELLE_SIP_AUTHORIZATION);
@@ -466,11 +466,10 @@ void SalOp::processAuthentication() {
 	}
 
 	if (belle_sip_provider_add_authorization(mRoot->mProvider,new_request,response,from_uri,&auth_list,mRealm)) {
-		if (is_within_dialog) {
-			         sendRequest(new_request);
-		} else {
-			         resendRequest(new_request);
-		}
+		if (is_within_dialog)
+			sendRequest(new_request);
+		else
+			resendRequest(new_request);
 		mRoot->removePendingAuth(this);
 	}else {
 		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(response,belle_sip_header_from_t);
@@ -540,11 +539,10 @@ int SalOp::getAddressFamily() const {
 	}
 }
 
-bool_t SalOp::isIdle() const {
-	if (mDialog){
+bool SalOp::isIdle() const {
+	if (mDialog)
 		return !belle_sip_dialog_request_pending(mDialog);
-	}
-	return TRUE;
+	return true;
 }
 
 void SalOp::setEntityTag(const char* entity_tag) {
@@ -945,7 +943,7 @@ const char *SalOp::toString(const Type type) {
 	}
 }
 
-bool_t SalOp::isSecure() const {
+bool SalOp::isSecure() const {
 	const SalAddress* from = getFromAddress();
 	const SalAddress* to = getToAddress();
 	return from && to && strcasecmp("sips",sal_address_get_scheme(from))==0 && strcasecmp("sips",sal_address_get_scheme(to))==0;
@@ -1013,7 +1011,7 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
 	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
 	char* from;
-	bool_t external_body=FALSE;
+	bool external_body = false;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
@@ -1067,7 +1065,7 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 	}
 }
 
-bool_t SalOp::isExternalBody(belle_sip_header_content_type_t* content_type) {
+bool SalOp::isExternalBody(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
 }

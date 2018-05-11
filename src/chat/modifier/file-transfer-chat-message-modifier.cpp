@@ -241,7 +241,7 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 			string first_part_header;
 			belle_sip_body_handler_t *first_part_bh;
 
-			bool_t is_file_encryption_enabled = FALSE;
+			bool is_file_encryption_enabled = false;
 			LinphoneImEncryptionEngine *imee = linphone_core_get_im_encryption_engine(message->getCore()->getCCore());
 			if (imee && message->getChatRoom()) {
 				LinphoneImEncryptionEngineCbs *imee_cbs = linphone_im_encryption_engine_get_callbacks(imee);

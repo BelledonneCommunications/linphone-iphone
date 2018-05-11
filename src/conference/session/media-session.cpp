@@ -2865,7 +2865,7 @@ void MediaSessionPrivate::startTextStream () {
 			configureRtpSessionForRtcpFb(tstream);
 			configureRtpSessionForRtcpXr(SalText);
 			rtp_session_enable_rtcp_mux(textStream->ms.sessions.rtp_session, tstream->rtcp_mux);
-			bool_t isMulticast = ms_is_multicast(rtpAddr);
+			bool isMulticast = ms_is_multicast(rtpAddr);
 			if (isMulticast)
 				rtp_session_set_multicast_ttl(textStream->ms.sessions.rtp_session, tstream->ttl);
 			text_stream_start(textStream, textProfile, rtpAddr, tstream->rtp_port, rtcpAddr,

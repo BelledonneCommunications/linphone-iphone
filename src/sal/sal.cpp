@@ -469,7 +469,7 @@ void Sal::setTlsProperties(){
 	}
 }
 
-int Sal::addListenPort(SalAddress* addr, bool_t is_tunneled) {
+int Sal::addListenPort(SalAddress* addr, bool is_tunneled) {
 	int result;
 	belle_sip_listening_point_t* lp;
 	if (is_tunneled){
@@ -505,7 +505,7 @@ int Sal::addListenPort(SalAddress* addr, bool_t is_tunneled) {
 	return result;
 }
 
-int Sal::setListenPort(const char *addr, int port, SalTransport tr, bool_t is_tunneled) {
+int Sal::setListenPort(const char *addr, int port, SalTransport tr, bool is_tunneled) {
 	SalAddress* sal_addr = sal_address_new(NULL);
 	int result;
 	sal_address_set_domain(sal_addr,addr);
@@ -655,19 +655,18 @@ int Sal::setTunnel(void *tunnelclient) {
 #endif
 }
 
-bool_t Sal::isContentTypeSupported(const char *content_type) const {
+bool Sal::isContentTypeSupported(const char *content_type) const {
 	bctbx_list_t *item;
 	for (item = mSupportedContentTypes; item != NULL; item = bctbx_list_next(item)) {
 		const char *item_content_type = (const char *)bctbx_list_get_data(item);
-		if (strcmp(item_content_type, content_type) == 0) return TRUE;
+		if (strcmp(item_content_type, content_type) == 0) return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void Sal::addContentTypeSupport(const char *content_type) {
-	if ((content_type != NULL) && (isContentTypeSupported(content_type) == FALSE)) {
+	if (content_type && !isContentTypeSupported(content_type))
 		mSupportedContentTypes = bctbx_list_append(mSupportedContentTypes, ms_strdup(content_type));
-	}
 }
 
 void Sal::removeContentTypeSupport(const char *content_type) {
@@ -678,7 +677,7 @@ void Sal::removeContentTypeSupport(const char *content_type) {
 	}
 }
 
-void Sal::useRport(bool_t use_rports) {
+void Sal::useRport(bool use_rports) {
 	belle_sip_provider_enable_rport(mProvider,use_rports);
 	ms_message("Sal use rport [%s]", use_rports ? "enabled" : "disabled");
 }
@@ -713,12 +712,12 @@ void Sal::setRootCaData(const char* data) {
 	setTlsProperties();
 }
 
-void Sal::verifyServerCertificates(bool_t verify) {
+void Sal::verifyServerCertificates(bool verify) {
 	mTlsVerify=verify;
 	setTlsProperties();
 }
 
-void Sal::verifyServerCn(bool_t verify) {
+void Sal::verifyServerCn(bool verify) {
 	mTlsVerifyCn = verify;
 	setTlsProperties();
 }
@@ -746,21 +745,21 @@ int Sal::createUuid(char *uuid, size_t len) {
 }
 
 int Sal::generateUuid(char *uuid, size_t len) {
-	sal_uuid_t uuid_struct;
+	   SalUuid uuid_struct;
 	int i;
 	int written;
 
 	if (len==0) return -1;
 	/*create an UUID as described in RFC4122, 4.4 */
-	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(sal_uuid_t));
-	uuid_struct.clock_seq_hi_and_reserved&=(unsigned char)~(1<<6);
-	uuid_struct.clock_seq_hi_and_reserved|=(unsigned char)1<<7;
-	uuid_struct.time_hi_and_version&=(unsigned char)~(0xf<<12);
-	uuid_struct.time_hi_and_version|=(unsigned char)4<<12;
+	belle_sip_random_bytes((unsigned char*)&uuid_struct, sizeof(SalUuid));
+	uuid_struct.clockSeqHiAndReserved&=(unsigned char)~(1<<6);
+	uuid_struct.clockSeqHiAndReserved|=(unsigned char)1<<7;
+	uuid_struct.timeHiAndVersion&=(unsigned char)~(0xf<<12);
+	uuid_struct.timeHiAndVersion|=(unsigned char)4<<12;
 
-	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.time_low, uuid_struct.time_mid,
-			uuid_struct.time_hi_and_version, uuid_struct.clock_seq_hi_and_reserved,
-			uuid_struct.clock_seq_low);
+	written=snprintf(uuid,len,"%8.8x-%4.4x-%4.4x-%2.2x%2.2x-", uuid_struct.timeLow, uuid_struct.timeMid,
+			uuid_struct.timeHiAndVersion, uuid_struct.clockSeqHiAndReserved,
+			uuid_struct.clockSeqLow);
 	if ((written < 0) || ((size_t)written > (len +13))) {
 		ms_error("sal_create_uuid(): buffer is too short !");
 		return -1;
@@ -792,7 +791,7 @@ void Sal::setDefaultSdpHandling(SalOpSDPHandling sdp_handling_method)  {
 	mDefaultSdpHandling = sdp_handling_method;
 }
 
-void Sal::enableNatHelper(bool_t enable) {
+void Sal::enableNatHelper(bool enable) {
 	mNatHelperEnabled=enable;
 	belle_sip_provider_enable_nat_helper(mProvider,enable);
 	ms_message("Sal nat helper [%s]",enable?"enabled":"disabled");
@@ -967,8 +966,8 @@ void sal_set_recv_error(Sal *sal,int value) {
 	sal->setRecvError(value);
 }
 
-int sal_enable_pending_trans_checking(Sal *sal, bool_t value) {
-	return sal->enablePendingTransactionChecking(value);
+void sal_enable_pending_trans_checking(Sal *sal, bool value) {
+	sal->enablePendingTransactionChecking(value);
 }
 
 void sal_enable_unconditional_answer(Sal *sal,int value) {
@@ -999,7 +998,7 @@ void sal_set_transport_timeout(Sal* sal,int timeout) {
 	sal->setTransportTimeout(timeout);
 }
 
-void sal_enable_test_features(Sal*ctx, bool_t enabled) {
+void sal_enable_test_features(Sal*ctx, bool enabled) {
 	ctx->enableTestFeatures(enabled);
 }
 
@@ -1011,7 +1010,7 @@ const SalErrorInfo *sal_op_get_error_info(const SalOp *op) {
 	return op->getErrorInfo();
 }
 
-bool_t sal_call_dialog_request_pending(const SalOp *op) {
+bool sal_call_dialog_request_pending(const SalOp *op) {
 	auto callOp = dynamic_cast<const SalCallOp *>(op);
 	return callOp->dialogRequestPending();
 }

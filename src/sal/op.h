@@ -71,7 +71,7 @@ public:
 	void setServiceRoute (const SalAddress *value);
 	const SalAddress *getServiceRoute () const { return mServiceRoute; }
 
-	void setManualRefresherMode (bool_t value) { mManualRefresher = value; }
+	void setManualRefresherMode (bool value) { mManualRefresher = value; }
 
 	void setEntityTag (const char *value);
 	const char *getEntityTag() const { return mEntityTag; }
@@ -85,8 +85,8 @@ public:
 
 	void setSentCustomHeaders (SalCustomHeader *ch);
 
-	void enableCnxIpTo0000IfSendOnly (bool_t value) { mCnxIpTo0000IfSendOnlyEnabled = value; }
-	bool_t cnxIpTo0000IfSendOnlyEnabled () const { return mCnxIpTo0000IfSendOnlyEnabled; }
+	void enableCnxIpTo0000IfSendOnly (bool value) { mCnxIpTo0000IfSendOnlyEnabled = value; }
+	bool cnxIpTo0000IfSendOnlyEnabled () const { return mCnxIpTo0000IfSendOnlyEnabled; }
 
 	const char *getProxy () const { return mRoute; }
 	const char *getNetworkOrigin () const { return mOrigin; }
@@ -108,10 +108,10 @@ public:
 	const SalErrorInfo *getErrorInfo () const { return &mErrorInfo; }
 	const SalErrorInfo *getReasonErrorInfo () const { return &mReasonErrorInfo; }
 
-	bool_t isForkedOf (const SalOp *op) const {
+	bool isForkedOf (const SalOp *op) const {
 		return mCallId && op->mCallId && strcmp(mCallId, op->mCallId) == 0;
 	}
-	bool_t isIdle () const;
+	bool isIdle () const;
 
 	void stopRefreshing () {
 		if (mRefresher)
@@ -166,7 +166,7 @@ protected:
 
 	belle_sip_request_t *buildRequest (const char *method);
 	int sendRequest (belle_sip_request_t *request);
-	int sendRequestWithContact (belle_sip_request_t *request, bool_t addContact);
+	int sendRequestWithContact (belle_sip_request_t *request, bool addContact);
 	int sendRequestWithExpires (belle_sip_request_t *request, int expires);
 	void resendRequest (belle_sip_request_t *request);
 	int sendRequestAndCreateRefresher (belle_sip_request_t *request, int expires, belle_sip_refresher_listener_t listener);
@@ -196,7 +196,7 @@ protected:
 
 	void assignRecvHeaders (belle_sip_message_t *message);
 
-	bool_t isSecure () const;
+	bool isSecure () const;
 	void addHeaders (belle_sip_header_t *h, belle_sip_message_t *message);
 	void addCustomHeaders (belle_sip_message_t *message);
 	int unsubscribe ();
@@ -205,7 +205,7 @@ protected:
 	int replyMessage (SalReason reason);
 	void addMessageAccept (belle_sip_message_t *message);
 
-	static bool_t isExternalBody (belle_sip_header_content_type_t* contentType);
+	static bool isExternalBody (belle_sip_header_content_type_t* contentType);
 
 	static void assignAddress (SalAddress **address, const char *value);
 	static void assignString (char **str, const char *arg);
@@ -258,14 +258,14 @@ protected:
 	belle_sip_header_event_t *mEvent = nullptr; // Used by SalOpSubscribe kinds
 	SalOpSDPHandling mSdpHandling = SalOpSDPNormal;
 	int mAuthRequests = 0; // number of auth requested for this op
-	bool_t mCnxIpTo0000IfSendOnlyEnabled = FALSE;
-	bool_t mAutoAnswerAsked = FALSE;
-	bool_t mSdpOffering = FALSE;
-	bool_t mCallReleased = FALSE;
-	bool_t mManualRefresher = FALSE;
-	bool_t mHasAuthPending = FALSE;
-	bool_t mSupportsSessionTimers = FALSE;
-	bool_t mOpReleased = FALSE;
+	bool mCnxIpTo0000IfSendOnlyEnabled = false;
+	bool mAutoAnswerAsked = false;
+	bool mSdpOffering = false;
+	bool mCallReleased = false;
+	bool mManualRefresher = false;
+	bool mHasAuthPending = false;
+	bool mSupportsSessionTimers = false;
+	bool mOpReleased = false;
 
 	friend class Sal;
 };

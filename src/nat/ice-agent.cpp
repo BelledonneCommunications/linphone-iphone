@@ -546,7 +546,7 @@ void IceAgent::createIceCheckListsAndParseIceAttributes (const SalMediaDescripti
 			);
 		}
 		if (!iceRestarted) {
-			bool_t losingPairsAdded = false;
+			bool losingPairsAdded = false;
 			for (int j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
 				const SalIceRemoteCandidate *remoteCandidate = &stream->ice_remote_candidates[j];
 				const char *addr = nullptr;
