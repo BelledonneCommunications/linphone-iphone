@@ -237,7 +237,9 @@ SearchResult MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const st
 	unsigned int weight = getMinWeight();
 	const LinphoneAddress* lAddress = linphone_friend_get_address(lFriend);
 
-	if (!checkDomain(lFriend, lAddress, withDomain)) return SearchResult(weight, nullptr);
+	if (!checkDomain(lFriend, lAddress, withDomain)) {
+		if (!withDomain.empty()) return SearchResult(weight, nullptr);
+	}
 
 	// NAME
 	if (linphone_core_vcard_supported()) {
