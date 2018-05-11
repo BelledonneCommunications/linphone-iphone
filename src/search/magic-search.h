@@ -141,6 +141,13 @@ private:
 	void setSearchCache(std::list<SearchResult> *cache);
 
 	/**
+	 * Get all friends as SearchResult
+	 * @return all friends in a SearchResult list
+	 * @private
+	 **/
+	std::list<SearchResult> getAllFriends();
+
+	/**
 	 * Begin the search from friend list
 	 * @param[in] filter word we search
 	 * @param[in] withDomain domain which we want to search only
