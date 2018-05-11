@@ -58,6 +58,10 @@
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+#if __GNUC__ >=7
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#endif
 //
 // End prologue.
 
@@ -1296,6 +1300,9 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ >= 7
+	#pragma GCC diagnostic pop
+#endif
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
 	#pragma GCC diagnostic pop
 #endif
