@@ -868,12 +868,13 @@ static void long_term_presence_phone_alias(void) {
 }
 
 static const char* random_phone_number(void) {
-	static char phone[10];
+	static char phone[11];
 	int i;
 	phone[0] = '+';
 	for (i = 1; i < 10; i++) {
 		phone[i] = '0' + rand() % 10;
 	}
+	phone[10] = '\0';
 	return phone;
 }
 
