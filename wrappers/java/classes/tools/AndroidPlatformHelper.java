@@ -93,11 +93,7 @@ public class AndroidPlatformHelper {
 		mGrammarVcardFile = basePath + "/vcard_grammar";
 		mUserCertificatePath = basePath;
 
-		try {
-			copyAssetsFromPackage();
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy assets from package.");
-		}
+		copyAssetsFromPackage();
 	}
 
 	public void initCore(long ptrLc) {
@@ -185,14 +181,54 @@ public class AndroidPlatformHelper {
 		return resId;
 	}
 
-	private void copyAssetsFromPackage() throws IOException {
-		copyIfNotExist(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("hold"), mPauseSoundFile);
-		copyIfNotExist(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
-		copyIfNotExist(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
-		copyIfNotExist(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
-		copyIfNotExist(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
+	private void copyAssetsFromPackage() {
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"cpim_grammar\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"vcard_grammar\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"notes_of_the_optimistic\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
+		}catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"ringback\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("hold"), mPauseSoundFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"hold\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"incoming_chat\" from package.");
+		}
+
+		try {
+			copyIfNotExist(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
+		}
+		catch (Exception e) {
+			Log.e(e, "AndroidPlatformHelper: Cannot copy \"rootca\" from package.");
+		}
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
