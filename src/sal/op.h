@@ -44,25 +44,25 @@ public:
 	void setUserPointer (void *value) { mUserPointer = value; }
 	void *getUserPointer () const { return mUserPointer; }
 
-	void setSubject (const char *value);
-	const char *getSubject () const { return mSubject; }
+	void setSubject (const std::string &value) { mSubject = value; }
+	const std::string &getSubject () const { return mSubject; }
 
-	void setFrom (const char *value);
+	void setFrom (const std::string &value);
 	void setFromAddress (const SalAddress *value);
-	const char *getFrom () const { return mFrom; }
+	const std::string &getFrom () const { return mFrom; }
 	const SalAddress *getFromAddress () const { return mFromAddress; }
 
-	void setTo (const char *value);
+	void setTo (const std::string &value);
 	void setToAddress (const SalAddress *value);
-	const char *getTo () const { return mTo; }
+	const std::string &getTo () const { return mTo; }
 	const SalAddress *getToAddress () const { return mToAddress; }
 
 	void setContactAddress (const SalAddress* value);
 	const SalAddress *getContactAddress() const { return mContactAddress; }
 
-	void setRoute (const char *value);
+	void setRoute (const std::string &value);
 	void setRouteAddress (const SalAddress *value);
-	const bctbx_list_t *getRouteAddresses () const { return mRouteAddresses; }
+	const std::list<SalAddress *> &getRouteAddresses () const { return mRouteAddresses; }
 	void addRouteAddress (const SalAddress *address);
 
 	void setDiversionAddress (const SalAddress *value);
@@ -73,30 +73,30 @@ public:
 
 	void setManualRefresherMode (bool value) { mManualRefresher = value; }
 
-	void setEntityTag (const char *value);
-	const char *getEntityTag() const { return mEntityTag; }
+	void setEntityTag (const std::string &value) { mEntityTag = value; }
+	const std::string &getEntityTag() const { return mEntityTag; }
 
-	void setEvent (const char *eventName);
+	void setEvent (const std::string &eventName);
 
 	void setPrivacy (SalPrivacyMask value) { mPrivacy = value; }
 	SalPrivacyMask getPrivacy() const { return mPrivacy; }
 
-	void setRealm (const char *value);
+	void setRealm (const std::string &value) { mRealm = value; }
 
 	void setSentCustomHeaders (SalCustomHeader *ch);
 
 	void enableCnxIpTo0000IfSendOnly (bool value) { mCnxIpTo0000IfSendOnlyEnabled = value; }
 	bool cnxIpTo0000IfSendOnlyEnabled () const { return mCnxIpTo0000IfSendOnlyEnabled; }
 
-	const char *getProxy () const { return mRoute; }
-	const char *getNetworkOrigin () const { return mOrigin; }
-	const char *getCallId () const { return  mCallId; }
-	char *getDialogId () const;
+	const std::string &getProxy () const { return mRoute; }
+	const std::string &getNetworkOrigin () const { return mOrigin; }
+	const std::string &getCallId () const { return  mCallId; }
+	std::string getDialogId () const;
 	int getAddressFamily () const;
 	const SalCustomHeader *getRecvCustomHeaders () const { return mRecvCustomHeaders; }
-	const char *getRemoteContact () const { return mRemoteContact; }
+	const std::string &getRemoteContact () const { return mRemoteContact; }
 	const SalAddress *getRemoteContactAddress () const { return mRemoteContactAddress; }
-	const char *getRemoteUserAgent () const { return mRemoteUserAgent; }
+	const std::string &getRemoteUserAgent () const { return mRemoteUserAgent; }
 
 	const char *getPublicAddress (int *port) {
 		return mRefresher ? belle_sip_refresher_get_public_address(mRefresher, port) : nullptr;
@@ -109,7 +109,7 @@ public:
 	const SalErrorInfo *getReasonErrorInfo () const { return &mReasonErrorInfo; }
 
 	bool isForkedOf (const SalOp *op) const {
-		return mCallId && op->mCallId && strcmp(mCallId, op->mCallId) == 0;
+		return !mCallId.empty() && !op->mCallId.empty() && (mCallId == op->mCallId);
 	}
 	bool isIdle () const;
 
@@ -126,8 +126,8 @@ public:
 	void cancelAuthentication () { lFatal() << "SalOp::cancelAuthentication not implemented yet"; }
 	SalAuthInfo *getAuthRequested () { return mAuthInfo; }
 
-	int ping (const char *from, const char *to);
-	int sendInfo (const char *from, const char *to, const SalBodyHandler *bodyHandler);
+	int ping (const std::string &from, const std::string &to);
+	int sendInfo (const SalBodyHandler *bodyHandler);
 
 protected:
 	enum class State {
@@ -137,7 +137,7 @@ protected:
 		Terminated
 	};
 
-	static const char *toString (const State value);
+	static std::string toString (const State value);
 
 	enum class Dir {
 		Incoming = 0,
@@ -155,7 +155,7 @@ protected:
 		Refer // For out of dialog refer only
 	};
 
-	static const char *toString (const Type type);
+	static std::string toString (const Type type);
 
 	using ReleaseCb = void (*) (SalOp *op);
 
@@ -164,7 +164,7 @@ protected:
 	void processAuthentication ();
 	int processRedirect ();
 
-	belle_sip_request_t *buildRequest (const char *method);
+	belle_sip_request_t *buildRequest (const std::string &method);
 	int sendRequest (belle_sip_request_t *request);
 	int sendRequestWithContact (belle_sip_request_t *request, bool addContact);
 	int sendRequestWithExpires (belle_sip_request_t *request, int expires);
@@ -177,8 +177,8 @@ protected:
 	void setReferredBy (belle_sip_header_referred_by_t *referredByHeader);
 	void setReplaces (belle_sip_header_replaces_t *replacesHeader);
 
-	void setRemoteContact (const char *value);
-	void setNetworkOrigin (const char *value);
+	void setRemoteContact (const std::string &value);
+	void setNetworkOrigin (const std::string &value);
 	void setNetworkOriginAddress (SalAddress *value);
 	void setPrivacyFromMessage (belle_sip_message_t *message);
 	void setRemoteUserAgent (belle_sip_message_t *message);
@@ -207,33 +207,32 @@ protected:
 
 	static bool isExternalBody (belle_sip_header_content_type_t* contentType);
 
-	static void assignAddress (SalAddress **address, const char *value);
-	static void assignString (char **str, const char *arg);
-	static void addInitialRouteSet (belle_sip_request_t *request, const MSList *list);
+	static void assignAddress (SalAddress **address, const std::string &value);
+	static void addInitialRouteSet (belle_sip_request_t *request, const std::list<SalAddress *> &routeAddresses);
 
 	// SalOpBase
 	Sal *mRoot = nullptr;
-	char *mRoute = nullptr; // Or request-uri for REGISTER
-	MSList *mRouteAddresses = nullptr; // List of SalAddress *
+	std::string mRoute; // Or request-uri for REGISTER
+	std::list<SalAddress *> mRouteAddresses;
 	SalAddress *mContactAddress = nullptr;
-	char *mSubject = nullptr;
-	char *mFrom = nullptr;
+	std::string mSubject;
+	std::string mFrom;
 	SalAddress* mFromAddress = nullptr;
-	char *mTo = nullptr;
+	std::string mTo;
 	SalAddress *mToAddress = nullptr;
-	char *mOrigin = nullptr;
+	std::string mOrigin;
 	SalAddress *mOriginAddress = nullptr;
 	SalAddress *mDiversionAddress = nullptr;
-	char *mRemoteUserAgent = nullptr;
+	std::string mRemoteUserAgent;
 	SalAddress *mRemoteContactAddress = nullptr;
-	char *mRemoteContact = nullptr;
+	std::string mRemoteContact;
 	void *mUserPointer = nullptr;
-	char *mCallId = nullptr;
-	char *mRealm = nullptr;
+	std::string mCallId;
+	std::string mRealm;
 	SalAddress *mServiceRoute = nullptr; // As defined by rfc3608, might be a list
 	SalCustomHeader *mSentCustomHeaders = nullptr;
 	SalCustomHeader *mRecvCustomHeaders = nullptr;
-	char *mEntityTag = nullptr; // As defined by rfc3903 (I.E publih)
+	std::string mEntityTag; // As defined by rfc3903 (I.E publih)
 	ReleaseCb mReleaseCb = nullptr;
 
 	const belle_sip_listener_callbacks_t *mCallbacks = nullptr;

@@ -177,11 +177,11 @@ bool CallSessionPrivate::startPing () {
 		pingReplied = false;
 		pingOp = new SalOp(q->getCore()->getCCore()->sal);
 		if (direction == LinphoneCallIncoming) {
-			const char *from = pingOp->getFrom();
-			const char *to = pingOp->getTo();
+			string from = pingOp->getFrom();
+			string to = pingOp->getTo();
 			linphone_configure_op(q->getCore()->getCCore(), pingOp, log->from, nullptr, false);
 			pingOp->setRoute(op->getNetworkOrigin());
-			pingOp->ping(from, to);
+			pingOp->ping(from.c_str(), to.c_str());
 		} else if (direction == LinphoneCallOutgoing) {
 			char *from = linphone_address_as_string(log->from);
 			char *to = linphone_address_as_string(log->to);
@@ -786,12 +786,12 @@ void CallSessionPrivate::reinviteToRecoverFromConnectionLoss () {
 
 void CallSessionPrivate::repairByInviteWithReplaces () {
 	L_Q();
-	const char *callId = op->getCallId();
+	string callId = op->getCallId();
 	const char *fromTag = op->getLocalTag();
 	const char *toTag = op->getRemoteTag();
 	op->killDialog();
 	createOp();
-	op->setReplaces(callId, fromTag, toTag);
+	op->setReplaces(callId.c_str(), fromTag, toTag);
 	q->startInvite(nullptr);
 }
 
@@ -937,7 +937,7 @@ void CallSession::configure (LinphoneCallDir direction, LinphoneProxyConfig *cfg
 				linphone_core_get_config(getCore()->getCCore()), "sip", "cnx_ip_to_0000_if_sendonly_enabled", 0
 			)
 		);
-		d->log->call_id = ms_strdup(op->getCallId()); /* Must be known at that time */
+		d->log->call_id = ms_strdup(op->getCallId().c_str()); /* Must be known at that time */
 	}
 
 	if (direction == LinphoneCallOutgoing) {
@@ -1109,7 +1109,7 @@ int CallSession::startInvite (const Address *destination, const string &subject,
 			d->setState(CallSession::State::Error, "Call failed");
 		}
 	} else {
-		d->log->call_id = ms_strdup(d->op->getCallId()); /* Must be known at that time */
+		d->log->call_id = ms_strdup(d->op->getCallId().c_str()); /* Must be known at that time */
 		d->setState(CallSession::State::OutgoingProgress, "Outgoing call in progress");
 	}
 	return result;
@@ -1326,7 +1326,7 @@ string CallSession::getToHeader (const string &name) const {
 
 string CallSession::getRemoteUserAgent () const {
 	L_D();
-	if (d->op && d->op->getRemoteUserAgent())
+	if (d->op)
 		return d->op->getRemoteUserAgent();
 	return string();
 }

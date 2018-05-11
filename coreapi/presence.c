@@ -2000,7 +2000,7 @@ void linphone_subscription_closed(LinphoneCore *lc, SalOp *op){
 		linphone_friend_remove_incoming_subscription(lf, op);
 	}else{
 		/*case of an op that we already released because the friend was destroyed*/
-		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", op->getFrom());
+		ms_message("Receiving unsuscribe for unknown in-subscribtion from %s", op->getFrom().c_str());
 	}
 }
 

@@ -66,10 +66,8 @@ bool CorePrivate::inviteReplacesABrokenCall (SalCallOp *op) {
 		shared_ptr<CallSession> session = call->getPrivate()->getActiveSession();
 		if (session
 			&& ((session->getPrivate()->isBroken() && op->compareOp(session->getPrivate()->getOp()))
-				|| ((replacedSession == session.get())
-					&& (strcmp(op->getFrom(), replacedOp->getFrom()) == 0)
-					&& (strcmp(op->getTo(), replacedOp->getTo()) == 0)))
-			) {
+				|| (replacedSession == session.get() && op->getFrom() == replacedOp->getFrom() && op->getTo() == replacedOp->getTo())
+		)) {
 			session->getPrivate()->replaceOp(op);
 			return true;
 		}

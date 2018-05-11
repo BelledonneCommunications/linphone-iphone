@@ -20,6 +20,9 @@
 #ifndef _L_SAL_H_
 #define _L_SAL_H_
 
+#include <list>
+#include <vector>
+
 #include "linphone/utils/general.h"
 
 #include "c-wrapper/internal/c-sal.h"
@@ -134,27 +137,23 @@ public:
 	// ---------------------------------------------------------------------------
 	// SIP parameters
 	// ---------------------------------------------------------------------------
-	void setSupportedTags (const char *tags);
-	const char *getSupportedTags () const {
-		return mSupported ? belle_sip_header_get_unparsed_value(mSupported) : nullptr;
-	}
-	void addSupportedTag (const char *tag);
-	void removeSupportedTag (const char *tag);
+	void setSupportedTags (const std::string &tags);
+	const std::string &getSupportedTags () const;
+	void addSupportedTag (const std::string &tag);
+	void removeSupportedTag (const std::string &tag);
 
-	void setUserAgent (const char *userAgent);
-	const char *getUserAgent() const;
+	void setUserAgent (const std::string &value);
+	const std::string &getUserAgent () const;
 	void appendStackStringToUserAgent ();
 
-	bool isContentEncodingAvailable (const char *contentEncoding) {
-		return belle_sip_stack_content_encoding_available(mStack, contentEncoding);
-	}
-	bool isContentTypeSupported (const char *contentType) const;
-	void addContentTypeSupport (const char *contentType);
-	void removeContentTypeSupport (const char *contentType);
+	bool isContentEncodingAvailable (const std::string &contentEncoding) const;
+	bool isContentTypeSupported (const std::string &contentType) const;
+	void addContentTypeSupport (const std::string &contentType);
+	void removeContentTypeSupport (const std::string &contentType);
 
 	void setDefaultSdpHandling (SalOpSDPHandling sdpHandlingMethod);
 
-	void setUuid (const char *uuid);
+	void setUuid (const std::string &value) { mUuid = value; }
 	int createUuid (char *uuid, size_t len);
 	static int generateUuid (char *uuid, size_t len);
 
@@ -178,15 +177,15 @@ public:
 	void enableUnconditionalAnswer (int value) { belle_sip_provider_enable_unconditional_answer(mProvider, value); }
 	void enableReconnectToPrimaryAsap (bool value) { belle_sip_stack_enable_reconnect_to_primary_asap(mStack, value); }
 
-	bctbx_list_t *getPendingAuths () const { return bctbx_list_copy(mPendingAuths); }
+	const std::list<SalOp *> &getPendingAuths () const { return mPendingAuths; }
 
-	void setContactLinphoneSpecs (const char *specs);
+	void setContactLinphoneSpecs (const std::string &value) { mLinphoneSpecs = value; }
 
 
 	// ---------------------------------------------------------------------------
 	// Network parameters
 	// ---------------------------------------------------------------------------
-	int setListenPort (const char *addr, int port, SalTransport tr, bool isTunneled);
+	int setListenPort (const std::string &addr, int port, SalTransport tr, bool isTunneled);
 	int getListeningPort (SalTransport tr);
 	int isTransportAvailable (SalTransport t);
 
@@ -203,8 +202,8 @@ public:
 
 	int setTunnel (void *tunnelClient);
 
-	void setHttpProxyHost (const char *value) { belle_sip_stack_set_http_proxy_host(mStack, value); }
-	const char *getHttpProxyHost () const { return belle_sip_stack_get_http_proxy_host(mStack); }
+	void setHttpProxyHost (const std::string &value);
+	const std::string &getHttpProxyHost () const;
 
 	void setHttpProxyPort (int value) { belle_sip_stack_set_http_proxy_port(mStack, value); }
 	int getHttpProxyPort () const { return belle_sip_stack_get_http_proxy_port(mStack); }
@@ -219,9 +218,9 @@ public:
 	// TLS parameters
 	// ---------------------------------------------------------------------------
 	void setSslConfig (void *sslConfig);
-	void setRootCa (const char *value);
-	void setRootCaData (const char *data);
-	const char *getRootCa () const { return mRootCa; }
+	void setRootCa (const std::string &value);
+	void setRootCaData (const std::string &value);
+	const std::string &getRootCa () const { return mRootCa; }
 
 	void verifyServerCertificates (bool value);
 	void verifyServerCn (bool value);
@@ -241,21 +240,17 @@ public:
 	void enableDnsSrv (bool value) { belle_sip_stack_enable_dns_srv(mStack, (unsigned char)value); }
 	bool dnsSrvEnabled () const { return belle_sip_stack_dns_srv_enabled(mStack); }
 
-	void setDnsUserHostsFile (const char *value) { belle_sip_stack_set_dns_user_hosts_file(mStack, value); }
-	const char *getDnsUserHostsFile () const { return belle_sip_stack_get_dns_user_hosts_file(mStack); }
+	void setDnsUserHostsFile (const std::string &value);
+	const std::string &getDnsUserHostsFile () const;
 
-	belle_sip_resolver_context_t *resolveA (const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
-		return belle_sip_stack_resolve_a(mStack, name, port, family, cb, data);
-	}
-	belle_sip_resolver_context_t *resolve (const char *service, const char *transport, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
-		return belle_sip_stack_resolve(mStack, service, transport, name, port, family, cb, data);
-	}
+	belle_sip_resolver_context_t *resolveA (const std::string &name, int port, int family, belle_sip_resolver_callback_t cb, void *data);
+	belle_sip_resolver_context_t *resolve (const std::string &service, const std::string &transport, const std::string &name, int port, int family, belle_sip_resolver_callback_t cb, void *data); 
 
 
 	// ---------------------------------------------------------------------------
 	// Timers
 	// ---------------------------------------------------------------------------
-	belle_sip_source_t *createTimer (belle_sip_source_func_t func, void *data, unsigned int timeoutValueMs, const char *timerName);
+	belle_sip_source_t *createTimer (belle_sip_source_func_t func, void *data, unsigned int timeoutValueMs, const std::string &timerName);
 	void cancelTimer (belle_sip_source_t *timer);
 
 
@@ -292,21 +287,21 @@ private:
 
 	MSFactory *mFactory = nullptr;
 	Callbacks mCallbacks = { 0 };
-	MSList *mPendingAuths = nullptr; // List of SalOp
+	std::list<SalOp *> mPendingAuths;
 	belle_sip_stack_t *mStack = nullptr;
 	belle_sip_provider_t *mProvider = nullptr;
-	belle_sip_header_user_agent_t *mUserAgent = nullptr;
+	belle_sip_header_user_agent_t *mUserAgentHeader = nullptr;
 	belle_sip_listener_t *mListener = nullptr;
 	void *mTunnelClient = nullptr;
 	void *mUserPointer = nullptr; // User pointer
 	int mSessionExpires = 0;
 	unsigned int mKeepAlive = 0;
-	char *mRootCa = nullptr;
-	char *mRootCaData = nullptr;
-	char *mUuid = nullptr;
+	std::string mRootCa;
+	std::string mRootCaData;
+	std::string mUuid;
 	int mRefresherRetryAfter = 60000; // Retry after value for refresher
-	MSList *mSupportedTags = nullptr; // List of char *
-	belle_sip_header_t *mSupported = nullptr;
+	std::vector<std::string> mSupportedTags;
+	belle_sip_header_t *mSupportedHeader = nullptr;
 	bool mOneMatchingCodec = false;
 	bool mUseTcpTlsKeepAlive = false;
 	bool mNatHelperEnabled = false;
@@ -320,8 +315,14 @@ private:
 	SalOpSDPHandling mDefaultSdpHandling = SalOpSDPNormal;
 	bool mPendingTransactionChecking = true; // For testing purposes
 	void *mSslConfig = nullptr;
-	bctbx_list_t *mSupportedContentTypes = nullptr; // List of char *
-	char *mLinphoneSpecs = nullptr;
+	std::vector<std::string> mSupportedContentTypes;
+	std::string mLinphoneSpecs;
+
+	// Cache values
+	mutable std::string mDnsUserHostsFile;
+	mutable std::string mHttpProxyHost;
+	mutable std::string mSupported;
+	mutable std::string mUserAgent;
 
 	friend class SalOp;
 	friend class SalCallOp;

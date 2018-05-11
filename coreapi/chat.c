@@ -124,8 +124,8 @@ LinphoneChatRoom *linphone_core_find_one_to_one_chat_room (
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
-	const char *peerAddress;
-	const char *localAddress;
+	std::string peerAddress;
+	std::string localAddress;
 	if (linphone_core_conference_server_enabled(lc)) {
 		localAddress = peerAddress = op->getTo();
 	} else {

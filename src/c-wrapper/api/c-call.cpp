@@ -576,7 +576,7 @@ void linphone_call_ogl_render (const LinphoneCall *call) {
 LinphoneStatus linphone_call_send_info_message (LinphoneCall *call, const LinphoneInfoMessage *info) {
 	SalBodyHandler *body_handler = sal_body_handler_from_content(linphone_info_message_get_content(info));
 	linphone_call_get_op(call)->setSentCustomHeaders(linphone_info_message_get_headers(info));
-	return linphone_call_get_op(call)->sendInfo(nullptr, nullptr, body_handler);
+	return linphone_call_get_op(call)->sendInfo(body_handler);
 }
 
 LinphoneCallStats *linphone_call_get_stats (LinphoneCall *call, LinphoneStreamType type) {
