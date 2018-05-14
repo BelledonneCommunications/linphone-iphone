@@ -93,7 +93,7 @@ int SalCallOp::setLocalBody(const Content &&body) {
 	return 0;
 }
 
-belle_sip_header_allow_t *SalCallOp::createAllow(bool_t enable_update) {
+belle_sip_header_allow_t *SalCallOp::createAllow(bool enable_update) {
 	belle_sip_header_allow_t* header_allow;
 	char allow [256];
 	snprintf(allow,sizeof(allow),"INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, NOTIFY, MESSAGE, SUBSCRIBE, INFO%s",(enable_update?", UPDATE":""));
@@ -370,7 +370,7 @@ void SalCallOp::handleBodyFromResponse(belle_sip_response_t* response) {
 	}
 }
 
-void SalCallOp::setError(belle_sip_response_t* response, bool_t fatal){
+void SalCallOp::setError(belle_sip_response_t* response, bool fatal){
 	   setErrorInfoFromResponse(response);
 	if (fatal) mState = State::Terminating;
 	mRoot->mCallbacks.call_failure(this);
@@ -464,7 +464,7 @@ void SalCallOp::processResponseCb(void *op_base, const belle_sip_response_event_
 								belle_sip_object_unref(op->mSdpAnswer);
 								op->mSdpAnswer=NULL;
 							}
-							belle_sip_message_add_header(BELLE_SIP_MESSAGE(ack),BELLE_SIP_HEADER(op->mRoot->mUserAgent));
+							belle_sip_message_add_header(BELLE_SIP_MESSAGE(ack),BELLE_SIP_HEADER(op->mRoot->mUserAgentHeader));
 							op->mRoot->mCallbacks.call_accepted(op); /*INVITE*/
 							op->mRoot->mCallbacks.call_ack_being_sent(op, (SalCustomHeader*)ack);
 							belle_sip_dialog_send_ack(op->mDialog,ack);
@@ -495,7 +495,7 @@ void SalCallOp::processResponseCb(void *op_base, const belle_sip_response_event_
 				break;
 				case State::Terminated:
 				default:
-					ms_error("Call op [%p] receives unexpected answer [%i] while in state [%s].",op,code, toString(op->mState));
+					lError() << "Call op [" << op << "] receives unexpected answer [" << code << "] while in state [" << toString(op->mState) << "]";
 			}
 		}
 		break;
@@ -538,7 +538,7 @@ void SalCallOp::processTransactionTerminatedCb(void *user_ctx, const belle_sip_t
 	belle_sip_request_t* req;
 	belle_sip_response_t* resp;
 	int code = 0;
-	bool_t release_call=FALSE;
+	bool release_call = false;
 
 	if (client_transaction) {
 		req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
@@ -554,13 +554,13 @@ void SalCallOp::processTransactionTerminatedCb(void *user_ctx, const belle_sip_t
 			&& (!resp || (belle_sip_response_get_status_code(resp) != 401
 			&& belle_sip_response_get_status_code(resp) != 407))
 			&& op->mDialog==NULL) {
-		release_call=TRUE;
+		release_call=true;
 	}else if (op->mState == State::Early && code < 200){
 		/*call terminated early*/
 		sal_error_info_set(&op->mErrorInfo, SalReasonIOError, "SIP", 503, "I/O error", NULL);
 		op->mState = State::Terminating;
 		op->mRoot->mCallbacks.call_failure(op);
-		release_call=TRUE;
+		release_call=true;
 	}
 	if (server_transaction){
 		if (op->mPendingServerTransaction==server_transaction){
@@ -645,7 +645,7 @@ void SalCallOp::callTerminated(belle_sip_server_transaction_t* server_transactio
 	   setReasonErrorInfo(BELLE_SIP_MESSAGE(cancel_request ? cancel_request : server_req));
 	resp=createResponseFromRequest(server_req,status_code);
 	belle_sip_server_transaction_send_response(server_transaction,resp);
-	mRoot->mCallbacks.call_terminated(this,mDir==Dir::Incoming?getFrom():getTo());
+	mRoot->mCallbacks.call_terminated(this,mDir==Dir::Incoming?getFrom().c_str():getTo().c_str());
 }
 
 void SalCallOp::resetDescriptions() {
@@ -665,7 +665,7 @@ void SalCallOp::unsupportedMethod(belle_sip_server_transaction_t* server_transac
 	belle_sip_server_transaction_send_response(server_transaction,resp);
 }
 
-bool_t SalCallOp::isAPendingIncomingInviteTransaction(belle_sip_transaction_t *tr){
+bool SalCallOp::isAPendingIncomingInviteTransaction(belle_sip_transaction_t *tr){
 	return BELLE_SIP_OBJECT_IS_INSTANCE_OF(tr, belle_sip_ist_t) && belle_sip_transaction_state_is_transient(
 		belle_sip_transaction_get_state(tr));
 }
@@ -679,8 +679,8 @@ void SalCallOp::processRequestEventCb(void *op_base, const belle_sip_request_eve
 	belle_sip_response_t* resp;
 	belle_sip_header_t* call_info;
 	const char *method=belle_sip_request_get_method(req);
-	bool_t is_update=FALSE;
-	bool_t drop_op = FALSE;
+	bool is_update = false;
+	bool drop_op = false;
 
 	if (strcmp("ACK",method)!=0){  /*ACK doesn't create a server transaction*/
 		server_transaction = belle_sip_provider_create_server_transaction(op->mRoot->mProvider,belle_sip_request_event_get_request(event));
@@ -704,7 +704,7 @@ void SalCallOp::processRequestEventCb(void *op_base, const belle_sip_request_eve
 
 	if (!op->mDialog) {
 		op->setOrUpdateDialog(belle_sip_provider_create_dialog(op->mRoot->mProvider, BELLE_SIP_TRANSACTION(op->mPendingServerTransaction)));
-		ms_message("new incoming call from [%s] to [%s]",op->getFrom(),op->getTo());
+		ms_message("new incoming call from [%s] to [%s]",op->getFrom().c_str(),op->getTo().c_str());
 	}
 	dialog_state=belle_sip_dialog_get_state(op->mDialog);
 	switch(dialog_state) {
@@ -728,7 +728,7 @@ void SalCallOp::processRequestEventCb(void *op_base, const belle_sip_request_eve
 				sal_error_info_set(&op->mErrorInfo, reason, "SIP", 0, NULL, NULL);
 				op->mRoot->mCallbacks.call_rejected(op);
 				/*the INVITE was declined by process_sdp_for_invite(). As we are not inside an established dialog, we can drop the op immediately*/
-				drop_op = TRUE;
+				drop_op = true;
 			}
 			break;
 		}BCTBX_NO_BREAK; /* else same behavior as for EARLY state, thus NO BREAK*/
@@ -874,7 +874,7 @@ void SalCallOp::processDialogTerminatedCb(void *ctx, const belle_sip_dialog_term
 			case BELLE_SIP_DIALOG_CONFIRMED:
 				if (op->mState!=State::Terminated && op->mState!=State::Terminating) {
 					/*this is probably a normal termination from a BYE*/
-					op->mRoot->mCallbacks.call_terminated(op,op->mDir==Dir::Incoming?op->getFrom():op->getTo());
+					op->mRoot->mCallbacks.call_terminated(op,op->mDir==Dir::Incoming?op->getFrom().c_str():op->getTo().c_str());
 					op->mState=State::Terminating;
 				}
 			break;
@@ -931,16 +931,15 @@ int SalCallOp::call(const char *from, const char *to, const char *subject) {
 	return sendRequest(invite);
 }
 
-int SalCallOp::notifyRinging(bool_t early_media){
+int SalCallOp::notifyRinging(bool early_media){
 	int status_code =early_media?183:180;
 	belle_sip_request_t* req=belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(mPendingServerTransaction));
 	belle_sip_response_t* ringing_response = createResponseFromRequest(req,status_code);
 	belle_sip_header_t *require;
 	const char *tags=NULL;
 
-	if (early_media){
-		      handleOfferAnswerResponse(ringing_response);
-	}
+	if (early_media)
+		handleOfferAnswerResponse(ringing_response);
 	require=belle_sip_message_get_header((belle_sip_message_t*)req,"Require");
 	if (require) tags=belle_sip_header_get_unparsed_value(require);
 	/* if client requires 100rel, then add necessary stuff*/
@@ -1085,16 +1084,14 @@ int SalCallOp::declineWithErrorInfo(const SalErrorInfo *info, const SalAddress *
 	return 0;
 }
 
-int SalCallOp::update(const char *subject, bool_t no_user_consent) {
+int SalCallOp::update(const char *subject, bool no_user_consent) {
 	belle_sip_request_t *update;
 	belle_sip_dialog_state_t state;
 
 	if (mDialog == NULL) {
 		/* If the dialog does not exist, this is that we are trying to recover from a connection loss
 			during a very early state of outgoing call initiation (the dialog has not been created yet). */
-		const char *from = getFrom();
-		const char *to = getTo();
-		return call(from, to, subject);
+		return call(mFrom.c_str(), mTo.c_str(), subject);
 	}
 
 	state = belle_sip_dialog_get_state(mDialog);
@@ -1127,7 +1124,7 @@ int SalCallOp::update(const char *subject, bool_t no_user_consent) {
 
 int SalCallOp::cancelInvite(const SalErrorInfo *info) {
 	belle_sip_request_t* cancel;
-	ms_message("Cancelling INVITE request from [%s] to [%s] ",getFrom(), getTo());
+	ms_message("Cancelling INVITE request from [%s] to [%s] ",getFrom().c_str(), getTo().c_str());
 
 	if (mPendingClientTransaction == NULL) {
 		ms_warning("There is no transaction to cancel.");
@@ -1316,7 +1313,7 @@ int SalCallOp::terminate(const SalErrorInfo *info) {
 		p_sei = info;
 	}
 	if (mState==State::Terminating || mState==State::Terminated) {
-		ms_error("Cannot terminate op [%p] in state [%s]",this,toString(mState));
+		lError() << "Cannot terminate op [" << this << "] in state [" << toString(mState) << "]";
 		ret = -1;
 		goto end;
 	}
@@ -1394,10 +1391,10 @@ void SalCallOp::sendVfuRequest() {
 			error=sendRequest(info);
 		}
 		if (error)
-			ms_warning("Cannot send vfu request to [%s] ", getTo());
+			ms_warning("Cannot send vfu request to [%s] ", getTo().c_str());
 
 	} else {
-		ms_warning("Cannot send vfu request to [%s] because dialog [%p] in wrong state [%s]",getTo()
+		ms_warning("Cannot send vfu request to [%s] because dialog [%p] in wrong state [%s]",getTo().c_str()
 																							,mDialog
 																							,belle_sip_dialog_state_to_string(dialog_state));
 	}
@@ -1538,8 +1535,8 @@ int SalCallOp::sendMessage (const Content &content) {
 	return sendRequest(req);
 }
 
-bool_t SalCallOp::compareOp(const SalCallOp *op2) const {
-	return (strcmp(mCallId, op2->mCallId) == 0);
+bool SalCallOp::compareOp(const SalCallOp *op2) const {
+	return mCallId == op2->mCallId;
 }
 
 void SalCallOp::handleOfferAnswerResponse(belle_sip_response_t* response) {

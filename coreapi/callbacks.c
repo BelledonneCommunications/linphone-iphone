@@ -77,7 +77,7 @@ static void call_received(SalCallOp *h) {
 		if (pAssertedId) {
 			LinphoneAddress *pAssertedIdAddr = linphone_address_new(pAssertedId);
 			if (pAssertedIdAddr) {
-				ms_message("Using P-Asserted-Identity [%s] instead of from [%s] for op [%p]", pAssertedId, h->getFrom(), h);
+				ms_message("Using P-Asserted-Identity [%s] instead of from [%s] for op [%p]", pAssertedId, h->getFrom().c_str(), h);
 				fromAddr = pAssertedIdAddr;
 			} else
 				ms_warning("Unsupported P-Asserted-Identity header for op [%p] ", h);
@@ -86,8 +86,8 @@ static void call_received(SalCallOp *h) {
 	}
 
 	if (!fromAddr)
-		fromAddr = linphone_address_new(h->getFrom());
-	LinphoneAddress *toAddr = linphone_address_new(h->getTo());
+		fromAddr = linphone_address_new(h->getFrom().c_str());
+	LinphoneAddress *toAddr = linphone_address_new(h->getTo().c_str());
 
 	if (_linphone_core_is_conference_creation(lc, toAddr)) {
 		linphone_address_unref(toAddr);
@@ -136,7 +136,7 @@ static void call_received(SalCallOp *h) {
 			);
 			if (!chatRoom) {
 				chatRoom = L_GET_PRIVATE_FROM_C_OBJECT(lc)->createClientGroupChatRoom(
-					L_C_TO_STRING(h->getSubject()), h->getRemoteContact(), h->getRemoteBody(), false
+					h->getSubject(), h->getRemoteContact(), h->getRemoteBody(), false
 				);
 			}
 			L_GET_PRIVATE(static_pointer_cast<ClientGroupChatRoom>(chatRoom))->confirmJoining(h);
@@ -218,7 +218,7 @@ static void call_rejected(SalCallOp *h){
 	LinphoneCore *lc = reinterpret_cast<LinphoneCore *>(h->getSal()->getUserPointer());
 	LinphoneErrorInfo *ei = linphone_error_info_new();
 	linphone_error_info_from_sal_op(ei, h);
-	linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_new(h->getFrom()), linphone_address_new(h->getTo()), ei);
+	linphone_core_report_early_failed_call(lc, LinphoneCallIncoming, linphone_address_new(h->getFrom().c_str()), linphone_address_new(h->getTo().c_str()), ei);
 }
 
 static void call_ringing(SalOp *h) {

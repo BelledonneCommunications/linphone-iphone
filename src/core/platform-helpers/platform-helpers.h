@@ -72,6 +72,7 @@ public:
 };
 
 PlatformHelpers *createAndroidPlatformHelpers (LinphoneCore *lc, void *systemContext);
+PlatformHelpers *createIosPlatformHelpers (LinphoneCore *lc, void *systemContext);
 
 LINPHONE_END_NAMESPACE
 

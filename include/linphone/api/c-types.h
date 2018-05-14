@@ -79,7 +79,7 @@ typedef struct _LinphoneAddress LinphoneAddress;
 /**
  * The #LinphoneCall object represents a call issued or received by the #LinphoneCore
  * @ingroup call_control
-**/
+ */
 typedef struct _LinphoneCall LinphoneCall;
 
 /** Callback prototype */
@@ -147,41 +147,63 @@ typedef struct _LinphoneEventLog LinphoneEventLog;
 /**
  * The LinphoneContent object holds data that can be embedded in a signaling message.
  * @ingroup misc
-**/
+ */
 typedef struct _LinphoneContent LinphoneContent;
 
 /**
  * Represents a dial plan
  * @ingroup misc
-**/
+ */
 typedef struct _LinphoneDialPlan LinphoneDialPlan;
 
 /**
  * A #LinphoneMagicSearch is used to do specifics searchs
  * @ingroup misc
-**/
+ */
 typedef struct _LinphoneMagicSearch LinphoneMagicSearch;
 
 /**
  * @ingroup misc
-**/
+ */
 typedef struct _LinphoneParticipant LinphoneParticipant;
 
 /**
  * The LinphoneParticipantImdnState object represents the state of chat message for a participant of a conference chat room.
  * @ingroup misc
-**/
+ */
 typedef struct _LinphoneParticipantImdnState LinphoneParticipantImdnState;
 
 /**
  * The LinphoneSearchResult object represents a result of a search
  * @ingroup misc
- **/
+ */
 typedef struct _LinphoneSearchResult LinphoneSearchResult;
 
 // =============================================================================
 // C Enums.
 // =============================================================================
+
+// -----------------------------------------------------------------------------
+// How-to: Declare one enum
+//
+// 1. Declare a macro like this example in include/linphone/enums/chat-message-enums.h:
+//
+// #define L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION(F) \ //
+//   F(Incoming /**< Incoming message */) \ //
+//   F(Outgoing /**< Outgoing message */)
+//
+// 2. And in this file, call L_DECLARE_C_ENUM with the enum name and values as params:
+//
+// L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
+//
+// 3. Do not forget to replace each single quote (with &apos;) or other special char like
+// to an escaped sequence. Otherwise you get this error at compilation:
+//
+// [ 99%] Building CXX object wrappers/cpp/CMakeFiles/linphone++.dir/src/linphone++.cc.o
+// c++: error: WORK/desktop/Build/linphone/wrappers/cpp/src/linphone++.cc: No such file or directory
+// c++: fatal error: no input files
+// compilation terminated.
+// -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 // Call.
@@ -191,7 +213,7 @@ typedef struct _LinphoneSearchResult LinphoneSearchResult;
  * #LinphoneCallState enum represents the different state a call can reach into.
  * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
  * @ingroup call_control
-**/
+ */
 L_DECLARE_C_ENUM(CallState, L_ENUM_VALUES_CALL_SESSION_STATE);
 
 // -----------------------------------------------------------------------------
@@ -207,7 +229,7 @@ L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 /**
  * #LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
  * @ingroup chatroom
-*/
+ */
 L_DECLARE_C_ENUM(ChatMessageState, L_ENUM_VALUES_CHAT_MESSAGE_STATE);
 
 /**

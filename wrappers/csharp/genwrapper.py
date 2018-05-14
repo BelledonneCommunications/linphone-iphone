@@ -491,13 +491,7 @@ if __name__ == '__main__':
 	parser = AbsApi.CParser(project)
 	parser.functionBl = \
 		['linphone_vcard_get_belcard',\
-		'linphone_core_get_current_vtable',\
-		'linphone_call_set_native_video_window_id',\
-		'linphone_call_get_native_video_window_id',\
-		'linphone_core_get_native_preview_window_id',\
-		'linphone_core_set_native_preview_window_id',\
-		'linphone_core_set_native_video_window_id',\
-		'linphone_core_get_native_video_window_id']
+		'linphone_core_get_current_vtable']
 	parser.classBl += 'LinphoneCoreVTable'
 	parser.methodBl.remove('getCurrentCallbacks')
 	parser.parse_all()

@@ -40,11 +40,11 @@ public:
 	SalMediaDescription *getFinalMediaDescription ();
 
 	int call (const char *from, const char *to, const char *subject);
-	int notifyRinging (bool_t earlyMedia);
+	int notifyRinging (bool earlyMedia);
 	int accept ();
 	int decline (SalReason reason, const char *redirection = nullptr);
 	int declineWithErrorInfo (const SalErrorInfo *info, const SalAddress *redirectionAddr = nullptr);
-	int update (const char *subject, bool_t noUserConsent);
+	int update (const char *subject, bool noUserConsent);
 	int cancelInvite (const SalErrorInfo *info = nullptr);
 	int refer (const char *referTo);
 	int referWithReplaces (SalCallOp *otherCallOp);
@@ -52,12 +52,12 @@ public:
 	SalCallOp *getReplaces () const;
 	int sendDtmf (char dtmf);
 	int terminate (const SalErrorInfo *info = nullptr);
-	bool_t autoAnswerAsked () const { return mAutoAnswerAsked; }
+	bool autoAnswerAsked () const { return mAutoAnswerAsked; }
 	void sendVfuRequest ();
 	int isOfferer () const { return mSdpOffering; }
 	int notifyReferState (SalCallOp *newCallOp);
-	bool_t compareOp (const SalCallOp *otherCallOp) const;
-	bool_t dialogRequestPending () const { return (belle_sip_dialog_request_pending(mDialog) != 0); }
+	bool compareOp (const SalCallOp *otherCallOp) const;
+	bool dialogRequestPending () const { return (belle_sip_dialog_request_pending(mDialog) != 0); }
 	const char *getLocalTag () { return belle_sip_dialog_get_local_tag(mDialog); }
 	const char *getRemoteTag () { return belle_sip_dialog_get_remote_tag(mDialog); }
 	void setReplaces (const char *callId, const char *fromTag, const char *toTag);
@@ -71,7 +71,7 @@ private:
 	virtual void fillCallbacks () override;
 	void setReleased ();
 
-	void setError (belle_sip_response_t *response, bool_t fatal);
+	void setError (belle_sip_response_t *response, bool fatal);
 	void callTerminated (belle_sip_server_transaction_t *serverTransaction, int statusCode, belle_sip_request_t *cancelRequest);
 	void resetDescriptions ();
 
@@ -92,11 +92,11 @@ private:
 
 	static void setAddrTo0000 (char value[], size_t sz);
 	static int isMediaDescriptionAcceptable (SalMediaDescription *md);
-	static bool_t isAPendingIncomingInviteTransaction (belle_sip_transaction_t *tr);
+	static bool isAPendingIncomingInviteTransaction (belle_sip_transaction_t *tr);
 	static void setCallAsReleased (SalCallOp *op);
 	static void unsupportedMethod (belle_sip_server_transaction_t *serverTransaction, belle_sip_request_t *request);
 	static belle_sip_header_reason_t *makeReasonHeader (const SalErrorInfo *info);
-	static belle_sip_header_allow_t *createAllow (bool_t enableUpdate);
+	static belle_sip_header_allow_t *createAllow (bool enableUpdate);
 	static std::vector<char> marshalMediaDescription (belle_sdp_session_description_t *sessionDesc, belle_sip_error_code &error);
 
 	// belle_sip_message handlers

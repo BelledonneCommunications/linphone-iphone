@@ -683,9 +683,11 @@ class SandCastleTranslator(Translator):
 		if len(lines) > 0:
 			lines.insert(0, '<summary>')
 			lines.append('</summary>')
-	
-	def translate_reference(self, ref):
+
+	def translate_function_reference(self, ref):
 		refStr = Translator.translate_reference(self, ref, absName=True)
-		if isinstance(ref, FunctionReference):
-			refStr += '()'
+		return '<see cref="{0}()" />'.format(refStr)
+
+	def translate_class_reference(self, ref):
+		refStr = Translator.translate_reference(self, ref, absName=True)
 		return '<see cref="{0}" />'.format(refStr)

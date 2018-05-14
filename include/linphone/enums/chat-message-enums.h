@@ -23,17 +23,17 @@
 // =============================================================================
 
 #define L_ENUM_VALUES_CHAT_MESSAGE_STATE(F) \
-	F(Idle) \
-	F(InProgress) \
-	F(Delivered) \
-	F(NotDelivered) \
-	F(FileTransferError) \
-	F(FileTransferDone) \
-	F(DeliveredToUser) \
-	F(Displayed)
+	F(Idle /**< Initial state */) \
+	F(InProgress /**< Delivery in progress */) \
+	F(Delivered /**< Message successfully delivered and acknowledged by the server */) \
+	F(NotDelivered /**< Message was not delivered */) \
+	F(FileTransferError /**< Message was received and acknowledged but cannot get file from server */) \
+	F(FileTransferDone /**< File transfer has been completed successfully */) \
+	F(DeliveredToUser /**< Message successfully delivered an acknowledged by the remote user */) \
+	F(Displayed /**< Message successfully displayed to the remote user */)
 
 #define L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION(F) \
-	F(Incoming) \
-	F(Outgoing)
+	F(Incoming /**< Incoming message */) \
+	F(Outgoing /**< Outgoing message */)
 
 #endif // ifndef _L_CHAT_MESSAGE_ENUMS_H_

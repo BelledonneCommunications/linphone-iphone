@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "c-wrapper/internal/c-tools.h"
 #include "sal/presence-op.h"
 
 using namespace std;
@@ -42,7 +43,7 @@ void SalPresenceOp::presenceProcessIoErrorCb(void *user_ctx, const belle_sip_io_
 			ms_warning("presence_process_io_error() refresher is present, should not happen");
 			return;
 		}
-		ms_message("subscription to [%s] io error",op->getTo());
+		ms_message("subscription to [%s] io error",op->getTo().c_str());
 		if (!op->mOpReleased){
 			op->mRoot->mCallbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
 		}
@@ -90,7 +91,7 @@ void SalPresenceOp::presenceResponseEventCb(void *op_base, const belle_sip_respo
 
 	if (code>=300) {
 		if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
-			ms_message("subscription to [%s] rejected",op->getTo());
+			ms_message("subscription to [%s] rejected",op->getTo().c_str());
 			if (!op->mOpReleased){
 				op->mRoot->mCallbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
 			}
@@ -121,7 +122,7 @@ void SalPresenceOp::presenceResponseEventCb(void *op_base, const belle_sip_respo
 				if ((expires != NULL) && (belle_sip_header_expires_get_expires(expires) > 0)) {
 					op->mRefresher=belle_sip_client_transaction_create_refresher(client_transaction);
 					belle_sip_refresher_set_listener(op->mRefresher,presenceRefresherListenerCb,op);
-					belle_sip_refresher_set_realm(op->mRefresher,op->mRealm);
+					belle_sip_refresher_set_realm(op->mRefresher,L_STRING_TO_C(op->mRealm));
 				}
 			}
 			break;
@@ -143,7 +144,7 @@ void SalPresenceOp::presenceProcessTimeoutCb(void *user_ctx, const belle_sip_tim
 	request = belle_sip_transaction_get_request(BELLE_SIP_TRANSACTION(client_transaction));
 	
 	if (strcmp("SUBSCRIBE",belle_sip_request_get_method(request))==0){
-		ms_message("subscription to [%s] timeout",op->getTo());
+		ms_message("subscription to [%s] timeout",op->getTo().c_str());
 		if (!op->mOpReleased){
 			op->mRoot->mCallbacks.notify_presence(op,SalSubscribeTerminated, NULL,NULL); /*NULL = offline*/
 		}
@@ -192,7 +193,7 @@ void SalPresenceOp::handleNotify(belle_sip_request_t *req, belle_sip_dialog_t *d
 		}
 		if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
 			sub_state=SalSubscribeTerminated;
-			ms_message("Outgoing subscription terminated by remote [%s]",getTo());
+			ms_message("Outgoing subscription terminated by remote [%s]",getTo().c_str());
 		} else {
 			sub_state=getSubscriptionState(BELLE_SIP_MESSAGE(req));
 		}
@@ -249,7 +250,7 @@ void SalPresenceOp::presenceProcessRequestEventCb(void *op_base, const belle_sip
 				return;
 			}
 			op->setOrUpdateDialog(dialog);
-			ms_message("new incoming subscription from [%s] to [%s]",op->getFrom(),op->getTo());
+			ms_message("new incoming subscription from [%s] to [%s]",op->getFrom().c_str(),op->getTo().c_str());
 		}else if (strcmp(method,"NOTIFY")==0 && belle_sip_request_event_get_dialog(event)) {
 			/*special case of dialog created by notify matching subscribe*/
 			op->setOrUpdateDialog(belle_sip_request_event_get_dialog(event));
@@ -265,7 +266,7 @@ void SalPresenceOp::presenceProcessRequestEventCb(void *op_base, const belle_sip
 			if (strcmp("NOTIFY",method)==0) {
 				op->handleNotify(req, belle_sip_request_event_get_dialog(event));
 			} else if (strcmp("SUBSCRIBE",method)==0) {
-				op->mRoot->mCallbacks.subscribe_presence_received(op,op->getFrom());
+				op->mRoot->mCallbacks.subscribe_presence_received(op,op->getFrom().c_str());
 			}
 			break;
 		}
@@ -293,9 +294,9 @@ void SalPresenceOp::presenceProcessRequestEventCb(void *op_base, const belle_sip
 void SalPresenceOp::presenceProcessDialogTerminatedCb(void *ctx, const belle_sip_dialog_terminated_event_t *event) {
 	SalPresenceOp * op= (SalPresenceOp *)ctx;
 	if (op->mDialog && belle_sip_dialog_is_server(op->mDialog)) {
-			ms_message("Incoming subscribtion from [%s] terminated",op->getFrom());
+			ms_message("Incoming subscribtion from [%s] terminated",op->getFrom().c_str());
 			if (!op->mOpReleased){
-				op->mRoot->mCallbacks.subscribe_presence_closed(op, op->getFrom());
+				op->mRoot->mCallbacks.subscribe_presence_closed(op, op->getFrom().c_str());
 			}
 			op->setOrUpdateDialog(NULL);
 	}/* else client dialog is managed by refresher*/

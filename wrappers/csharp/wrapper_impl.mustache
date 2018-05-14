@@ -183,7 +183,11 @@ namespace Linphone
 				obj.nativePtr = ptr;
 				obj.handle = GCHandle.Alloc(obj, GCHandleType.WeakTrackResurrection);
 				objPtr = GCHandle.ToIntPtr(obj.handle);
+#if WINDOWS_UWP
 				belle_sip_object_data_set(ptr, "cs_obj", objPtr, IntPtr.Zero);
+#else
+				belle_sip_object_data_set(ptr, "cs_obj", objPtr, null);
+#endif
 
 				return obj;
 			}
@@ -377,13 +381,9 @@ namespace Linphone
 		}
 		{{/isLinphoneFactory}}
 		{{#isLinphoneCall}}
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern IntPtr linphone_call_get_native_video_window_id(IntPtr thiz);
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern void linphone_call_set_native_video_window_id(IntPtr thiz, IntPtr id);
 
 		/// Get the native window handle of the video window, casted as an unsigned long.
-		public string NativeVideoWindowId
+		public string NativeVideoWindowIdString
 		{
 			get
 			{
@@ -396,13 +396,9 @@ namespace Linphone
 		}
 		{{/isLinphoneCall}}
 		{{#isLinphoneCore}}
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern IntPtr linphone_core_get_native_video_window_id(IntPtr thiz);
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern void linphone_core_set_native_video_window_id(IntPtr thiz, IntPtr id);
 
 		/// Get the native window handle of the video window.
-		public string NativeVideoWindowId
+		public string NativeVideoWindowIdString
 		{
 			get
 			{
@@ -414,13 +410,8 @@ namespace Linphone
 			}
 		}
 
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern IntPtr linphone_core_get_native_preview_window_id(IntPtr thiz);
-		[DllImport(LinphoneWrapper.LIB_NAME)]
-		static extern void linphone_core_set_native_preview_window_id(IntPtr thiz, IntPtr id);
-
 		/// Get the native window handle of the video preview window.
-		public string NativePreviewWindowId
+		public string NativePreviewWindowIdString
 		{
 			get
 			{

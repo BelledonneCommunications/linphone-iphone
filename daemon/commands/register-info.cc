@@ -95,10 +95,10 @@ void RegisterInfoCommand::exec(Daemon *app, const string& args) {
 		int id;
 		try {
 			id = atoi(param.c_str());
-		} catch (invalid_argument) {
+		} catch (invalid_argument&) {
 			app->sendResponse(Response("Invalid ID.", Response::Error));
 			return;
-		} catch (out_of_range) {
+		} catch (out_of_range&) {
 			app->sendResponse(Response("Out of range ID.", Response::Error));
 			return;
 		}

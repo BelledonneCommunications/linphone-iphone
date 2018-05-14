@@ -19,6 +19,7 @@
 
 #include <cstring>
 
+#include "c-wrapper/internal/c-tools.h"
 #include "sal/op.h"
 #include "bellesip_sal/sal_impl.h"
 
@@ -35,7 +36,7 @@ SalOp::SalOp(Sal *sal) {
 }
 
 SalOp::~SalOp() {
-	ms_message("Destroying op [%p] of type [%s]",this,toString(mType));
+	lInfo() << "Destroying op [" << this << "] of type [" << toString(mType) << "]";
 	
 	if (mPendingAuthTransaction) belle_sip_object_unref(mPendingAuthTransaction);
 	mRoot->removePendingAuth(this);
@@ -77,62 +78,21 @@ SalOp::~SalOp() {
 		mOriginAddress=NULL;
 	}
 
-	if (mFrom) {
-		ms_free(mFrom);
-		mFrom=NULL;
-	}
-	if (mTo) {
-		ms_free(mTo);
-		mTo=NULL;
-	}
-	if (mSubject) {
-		ms_free(mSubject);
-		mSubject = NULL;
-	}
-	if (mRoute) {
-		ms_free(mRoute);
-		mRoute=NULL;
-	}
-	if (mRealm) {
-		ms_free(mRealm);
-		mRealm=NULL;
-	}
 	if (mContactAddress) {
 		sal_address_destroy(mContactAddress);
-	}
-	if (mOrigin){
-		ms_free(mOrigin);
-		mOrigin=NULL;
-	}
-	if (mRemoteUserAgent){
-		ms_free(mRemoteUserAgent);
-		mRemoteUserAgent=NULL;
-	}
-	if (mRemoteContact){
-		ms_free(mRemoteContact);
-		mRemoteContact=NULL;
 	}
 	if (mRemoteContactAddress){
 		sal_address_destroy(mRemoteContactAddress);
 	}
-	if (mCallId)
-		ms_free(mCallId);
 	if (mServiceRoute) {
 		sal_address_destroy(mServiceRoute);
 	}
-	if (mRouteAddresses){
-		bctbx_list_for_each(mRouteAddresses,(void (*)(void*)) sal_address_destroy);
-		mRouteAddresses=bctbx_list_free(mRouteAddresses);
-	}
+	for (auto &addr : mRouteAddresses)
+		sal_address_unref(addr);
 	if (mRecvCustomHeaders)
 		sal_custom_header_free(mRecvCustomHeaders);
 	if (mSentCustomHeaders)
 		sal_custom_header_free(mSentCustomHeaders);
-
-	if (mEntityTag != NULL){
-		ms_free(mEntityTag);
-		mEntityTag = NULL;
-	}
 }
 
 SalOp *SalOp::ref() {
@@ -155,37 +115,28 @@ void SalOp::setContactAddress(const SalAddress *address) {
 	mContactAddress=address?sal_address_clone(address):NULL;
 }
 
-void SalOp::assignAddress(SalAddress** address, const char *value) {
-	if (*address){
+void SalOp::assignAddress (SalAddress **address, const string &value) {
+	if (*address) {
 		sal_address_destroy(*address);
-		*address=NULL;
+		*address = nullptr;
 	}
-	if (value)
-		*address=sal_address_new(value);
+	if (!value.empty())
+		*address = sal_address_new(value.c_str());
 }
 
-void SalOp::assignString(char **str, const char *arg) {
-	if (*str){
-		ms_free(*str);
-		*str=NULL;
+void SalOp::setRoute (const string &value) {
+	for (auto &address : mRouteAddresses)
+		sal_address_unref(address);
+	mRouteAddresses.clear();
+	if (value.empty()) {
+		mRoute.clear();
+	} else {
+		auto address = sal_address_new(value.c_str());
+		mRouteAddresses.push_back(address);
+		char *routeStr = sal_address_as_string(address);
+		mRoute = routeStr;
+		ms_free(routeStr);
 	}
-	if (arg)
-		*str=ms_strdup(arg);
-}
-
-void SalOp::setRoute(const char *route) {
-	char* route_string=NULL;
-	if (mRouteAddresses) {
-		bctbx_list_for_each(mRouteAddresses,(void (*)(void *))sal_address_destroy);
-		mRouteAddresses=bctbx_list_free(mRouteAddresses);
-	}
-	if (route) {
-		mRouteAddresses=bctbx_list_append(NULL,NULL);
-		      assignAddress((SalAddress**)&(mRouteAddresses->data),route);
-		route_string=sal_address_as_string((SalAddress*)mRouteAddresses->data);
-	}
-	   assignString(&mRoute,route_string);
-	if(route_string) ms_free(route_string);
 }
 
 void SalOp::setRouteAddress(const SalAddress *address){
@@ -194,33 +145,22 @@ void SalOp::setRouteAddress(const SalAddress *address){
 	ms_free(address_string);
 }
 
-void SalOp::addRouteAddress(const SalAddress *address) {
-	if (mRouteAddresses) {
-		mRouteAddresses=bctbx_list_append(mRouteAddresses,(void*)sal_address_clone(address));
-	} else {
-		      setRouteAddress(address);
-	}
+void SalOp::addRouteAddress (const SalAddress *address) {
+	if (mRouteAddresses.empty())
+		setRouteAddress(address);
+	else
+		mRouteAddresses.push_back(sal_address_clone(address));
 }
 
-void SalOp::setRealm(const char *realm) {
-	if (mRealm != NULL){
-		ms_free(mRealm);
-	}
-	mRealm = ms_strdup(realm);
-}
-
-void SalOp::setSubject (const char *subject) {
-	assignString(&mSubject, subject);
-}
-
-void SalOp::setFrom (const char *value) {
-	char *valueStr = nullptr;
+void SalOp::setFrom (const string &value) {
 	assignAddress(&mFromAddress, value);
-	if (mFromAddress)
-		valueStr = sal_address_as_string(mFromAddress);
-	assignString(&mFrom, valueStr);
-	if (valueStr)
+	if (mFromAddress) {
+		char *valueStr = sal_address_as_string(mFromAddress);
+		mFrom = valueStr;
 		ms_free(valueStr);
+	} else {
+		mFrom.clear();
+	}
 }
 
 void SalOp::setFromAddress(const SalAddress *from) {
@@ -229,14 +169,15 @@ void SalOp::setFromAddress(const SalAddress *from) {
 	ms_free(address_string);
 }
 
-void SalOp::setTo (const char *value) {
-	char *valueStr = nullptr;
+void SalOp::setTo (const string &value) {
 	assignAddress(&mToAddress, value);
-	if (mToAddress)
-		valueStr = sal_address_as_string(mToAddress);
-	assignString(&mTo, valueStr);
-	if (valueStr)
+	if (mToAddress) {
+		char *valueStr = sal_address_as_string(mToAddress);
+		mTo = valueStr;
 		ms_free(valueStr);
+	} else {
+		mTo.clear();
+	}
 }
 
 void SalOp::setToAddress(const SalAddress *to) {
@@ -255,7 +196,7 @@ int SalOp::refresh() {
 		belle_sip_refresher_refresh(mRefresher,belle_sip_refresher_get_expires(mRefresher));
 		return 0;
 	}
-	ms_warning("sal_refresh on op [%p] of type [%s] no refresher",this,toString(mType));
+	lWarning() << "No refresher on op [" << this << "] of type [" << toString(mType) << "]";
 	return -1;
 }
 
@@ -278,10 +219,9 @@ void SalOp::release() {
 	unref();
 }
 
-int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_contact) {
+int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool add_contact) {
 	belle_sip_client_transaction_t* client_transaction;
 	belle_sip_provider_t* prov=mRoot->mProvider;
-	belle_sip_uri_t* outbound_proxy=NULL;
 	belle_sip_header_contact_t* contact;
 	int result =-1;
 	belle_sip_uri_t *next_hop_uri=NULL;
@@ -295,17 +235,15 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_conta
 
 	if (!mDialog || belle_sip_dialog_get_state(mDialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
-		const MSList *elem=getRouteAddresses();
+		auto routeAddresses = getRouteAddresses();
 		const char *transport;
 		const char *method=belle_sip_request_get_method(request);
 		belle_sip_listening_point_t *udplp=belle_sip_provider_get_listening_point(prov,"UDP");
 
-		if (elem) {
-			outbound_proxy=belle_sip_header_address_get_uri((belle_sip_header_address_t*)elem->data);
-			next_hop_uri=outbound_proxy;
-		}else{
-			next_hop_uri=(belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_request_get_uri(request));
-		}
+		if (routeAddresses.empty())
+			next_hop_uri = (belle_sip_uri_t*)belle_sip_object_clone((belle_sip_object_t*)belle_sip_request_get_uri(request));
+		else
+			next_hop_uri = belle_sip_header_address_get_uri((belle_sip_header_address_t*)routeAddresses.front());
 		transport=belle_sip_uri_get_transport_param(next_hop_uri);
 		if (transport==NULL){
 			/*compatibility mode: by default it should be udp as not explicitely set and if no udp listening point is available, then use
@@ -350,18 +288,19 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_conta
 	belle_sip_object_ref(mPendingClientTransaction);
 
 	if (belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request),belle_sip_header_user_agent_t)==NULL)
-		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(mRoot->mUserAgent));
+		belle_sip_message_add_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(mRoot->mUserAgentHeader));
 
 	if (!belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_AUTHORIZATION)
 		&& !belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_PROXY_AUTHORIZATION)) {
 		/*hmm just in case we already have authentication param in cache*/
-		belle_sip_provider_add_authorization(mRoot->mProvider,request,NULL,NULL,NULL,mRealm);
+		belle_sip_provider_add_authorization(mRoot->mProvider,request,NULL,NULL,NULL,L_STRING_TO_C(mRealm));
 	}
 	result = belle_sip_client_transaction_send_request_to(client_transaction,next_hop_uri/*might be null*/);
 
 	/*update call id if not set yet for this OP*/
-	if (result == 0 && !mCallId) {
-		mCallId=ms_strdup(belle_sip_header_call_id_get_call_id(BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request), belle_sip_header_call_id_t))));
+	if (result == 0 && mCallId.empty()) {
+		mCallId = belle_sip_header_call_id_get_call_id(
+			BELLE_SIP_HEADER_CALL_ID(belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(request), belle_sip_header_call_id_t)));
 	}
 
 	return result;
@@ -369,7 +308,7 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool_t add_conta
 }
 
 int SalOp::sendRequest(belle_sip_request_t* request) {
-	bool_t need_contact=FALSE;
+	bool need_contact=FALSE;
 	if (request==NULL) {
 		return -1; /*sanity check*/
 	}
@@ -383,7 +322,7 @@ int SalOp::sendRequest(belle_sip_request_t* request) {
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
 			||strcmp(belle_sip_request_get_method(request),"OPTIONS")==0
 			||strcmp(belle_sip_request_get_method(request),"REFER")==0) /* Despite contact seems not mandatory, call flow example show a Contact in REFER requests*/
-		need_contact=TRUE;
+		need_contact=true;
 
 	return sendRequestWithContact(request,need_contact);
 }
@@ -421,11 +360,7 @@ int SalOp::processRedirect(){
 	   setOrUpdateDialog(NULL);
 	belle_sip_message_remove_header_from_ptr((belle_sip_message_t*)request, (belle_sip_header_t*)callid);
 	belle_sip_message_add_header((belle_sip_message_t*)request, (belle_sip_header_t*)(callid = belle_sip_provider_create_call_id(getSal()->mProvider)));
-	if (mCallId){
-		/*reset the call-id of op, it will be set when new request will be sent*/
-		ms_free(mCallId);
-		mCallId = NULL;
-	}
+	mCallId.clear(); // Reset the call-id of op, it will be set when new request will be sent
 	belle_sip_request_set_uri(request, redirect_uri);
 	redirect_uri = BELLE_SIP_URI(belle_sip_object_clone(BELLE_SIP_OBJECT(redirect_uri)));
 	belle_sip_uri_set_port(redirect_uri, 0);
@@ -438,7 +373,7 @@ int SalOp::processRedirect(){
 void SalOp::processAuthentication() {
 	belle_sip_request_t* initial_request=belle_sip_transaction_get_request((belle_sip_transaction_t*)mPendingAuthTransaction);
 	belle_sip_request_t* new_request;
-	bool_t is_within_dialog=FALSE;
+	bool is_within_dialog=false;
 	belle_sip_list_t* auth_list=NULL;
 	belle_sip_auth_event_t* auth_event;
 	belle_sip_response_t *response=belle_sip_transaction_get_response((belle_sip_transaction_t*)mPendingAuthTransaction);
@@ -454,7 +389,7 @@ void SalOp::processAuthentication() {
 		new_request = belle_sip_dialog_create_request_from(mDialog,initial_request);
 		if (!new_request)
 			new_request = belle_sip_dialog_create_queued_request_from(mDialog,initial_request);
-		is_within_dialog=TRUE;
+		is_within_dialog=true;
 	} else {
 		new_request=initial_request;
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(new_request),BELLE_SIP_AUTHORIZATION);
@@ -465,12 +400,11 @@ void SalOp::processAuthentication() {
 		return;
 	}
 
-	if (belle_sip_provider_add_authorization(mRoot->mProvider,new_request,response,from_uri,&auth_list,mRealm)) {
-		if (is_within_dialog) {
-			         sendRequest(new_request);
-		} else {
-			         resendRequest(new_request);
-		}
+	if (belle_sip_provider_add_authorization(mRoot->mProvider,new_request,response,from_uri,&auth_list,L_STRING_TO_C(mRealm))) {
+		if (is_within_dialog)
+			sendRequest(new_request);
+		else
+			resendRequest(new_request);
 		mRoot->removePendingAuth(this);
 	}else {
 		belle_sip_header_from_t *from=belle_sip_message_get_header_by_type(response,belle_sip_header_from_t);
@@ -495,12 +429,12 @@ void SalOp::processAuthentication() {
 	}
 }
 
-char *SalOp::getDialogId() const {
-	if (mDialog != NULL) {
-		return ms_strdup_printf("%s;to-tag=%s;from-tag=%s", mCallId,
-			belle_sip_dialog_get_remote_tag(mDialog), belle_sip_dialog_get_local_tag(mDialog));
-	}
-	return NULL;
+string SalOp::getDialogId () const {
+	if (!mDialog)
+		return string();
+	stringstream ss;
+	ss << mCallId << ";to-tag=" << belle_sip_dialog_get_remote_tag(mDialog) << ";from-tag=" << belle_sip_dialog_get_local_tag(mDialog);
+	return ss.str();
 }
 
 int SalOp::getAddressFamily() const {
@@ -540,52 +474,44 @@ int SalOp::getAddressFamily() const {
 	}
 }
 
-bool_t SalOp::isIdle() const {
-	if (mDialog){
+bool SalOp::isIdle() const {
+	if (mDialog)
 		return !belle_sip_dialog_request_pending(mDialog);
-	}
-	return TRUE;
+	return true;
 }
 
-void SalOp::setEntityTag(const char* entity_tag) {
-	if (mEntityTag != NULL) ms_free(mEntityTag);
-	mEntityTag = entity_tag ? ms_strdup(entity_tag) : NULL;
-}
-
-void SalOp::setEvent(const char *eventname) {
-	belle_sip_header_event_t *header = NULL;
-	if (mEvent) belle_sip_object_unref(mEvent);
-	if (eventname){
-		header = belle_sip_header_event_create(eventname);
+void SalOp::setEvent (const string &eventName) {
+	belle_sip_header_event_t *header = nullptr;
+	if (mEvent)
+		belle_sip_object_unref(mEvent);
+	if (!eventName.empty()) {
+		header = belle_sip_header_event_create(eventName.c_str());
 		belle_sip_object_ref(header);
 	}
 	mEvent = header;
 }
 
-void SalOp::addInitialRouteSet(belle_sip_request_t *request, const MSList *list) {
-	const MSList *elem;
-	for (elem=list;elem!=NULL;elem=elem->next){
-		SalAddress *addr=(SalAddress*)elem->data;
-		belle_sip_header_route_t *route;
-		belle_sip_uri_t *uri;
-		/*Optimization: if the initial route set only contains one URI which is the same as the request URI, ommit it*/
-		if (elem==list && list->next==NULL){
-			belle_sip_uri_t *requri=belle_sip_request_get_uri(request);
-			/*skip the first route it is the same as the request uri*/
-			if (strcmp(sal_address_get_domain(addr),belle_sip_uri_get_host(requri))==0 ){
-				ms_message("Skipping top route of initial route-set because same as request-uri.");
+void SalOp::addInitialRouteSet (belle_sip_request_t *request, const list<SalAddress *> &routeAddresses) {
+	bool uniqueRoute = routeAddresses.size() == 1;
+	for (const auto &address : routeAddresses) {
+		// Optimization: if the initial route set only contains one URI which is the same as the request URI, ommit it
+		if (uniqueRoute) {
+			belle_sip_uri_t *requestUri = belle_sip_request_get_uri(request);
+			// Skip the first route it is the same as the request uri
+			if (strcmp(sal_address_get_domain(address), belle_sip_uri_get_host(requestUri)) == 0) {
+				ms_message("Skipping top route of initial route-set because same as request-uri");
 				continue;
 			}
 		}
 
-		route=belle_sip_header_route_create((belle_sip_header_address_t*)addr);
-		uri=belle_sip_header_address_get_uri((belle_sip_header_address_t*)route);
-		belle_sip_uri_set_lr_param(uri,1);
-		belle_sip_message_add_header((belle_sip_message_t*)request,(belle_sip_header_t*)route);
+		belle_sip_header_route_t *route = belle_sip_header_route_create((belle_sip_header_address_t *)address);
+		belle_sip_uri_t *uri = belle_sip_header_address_get_uri((belle_sip_header_address_t *)route);
+		belle_sip_uri_set_lr_param(uri, 1);
+		belle_sip_message_add_header((belle_sip_message_t *)request, (belle_sip_header_t *)route);
 	}
 }
 
-belle_sip_request_t* SalOp::buildRequest(const char* method) {
+belle_sip_request_t* SalOp::buildRequest (const string &method) {
 	belle_sip_header_from_t* from_header;
 	belle_sip_header_to_t* to_header;
 	belle_sip_provider_t* prov=mRoot->mProvider;
@@ -595,7 +521,6 @@ belle_sip_request_t* SalOp::buildRequest(const char* method) {
 	belle_sip_header_call_id_t *call_id_header;
 
 	const SalAddress* to_address;
-	const MSList *elem=getRouteAddresses();
 	char token[10];
 
 	/* check that the op has a correct to address */
@@ -611,7 +536,7 @@ belle_sip_request_t* SalOp::buildRequest(const char* method) {
 		return NULL;
 	}
 
-	if (strcmp("REGISTER",method)==0 || mPrivacy==SalPrivacyNone) {
+	if ((method == "REGISTER") || (mPrivacy == SalPrivacyNone)) {
 		from_header = belle_sip_header_from_create(BELLE_SIP_HEADER_ADDRESS(getFromAddress())
 						,belle_sip_random_token(token,sizeof(token)));
 	} else {
@@ -624,15 +549,14 @@ belle_sip_request_t* SalOp::buildRequest(const char* method) {
 
 	to_header = belle_sip_header_to_create(BELLE_SIP_HEADER_ADDRESS(to_address),NULL);
 	call_id_header = belle_sip_provider_create_call_id(prov);
-	if (getCallId()) {
-		belle_sip_header_call_id_set_call_id(call_id_header, getCallId());
-	}
+	if (!mCallId.empty())
+		belle_sip_header_call_id_set_call_id(call_id_header, mCallId.c_str());
 
 	req=belle_sip_request_create(
 					req_uri,
-					method,
+					method.c_str(),
 					call_id_header,
-					belle_sip_header_cseq_create(20,method),
+					belle_sip_header_cseq_create(20,method.c_str()),
 					from_header,
 					to_header,
 					belle_sip_header_via_new(),
@@ -643,11 +567,11 @@ belle_sip_request_t* SalOp::buildRequest(const char* method) {
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(p_preferred_identity));
 	}
 
-	if (elem && strcmp(method,"REGISTER")!=0 && !mRoot->mNoInitialRoute){
-		      addInitialRouteSet(req,elem);
-	}
+	auto routeAddresses = getRouteAddresses();
+	if (!routeAddresses.empty() && (method != "REGISTER") && !mRoot->mNoInitialRoute)
+		addInitialRouteSet(req, routeAddresses);
 
-	if (strcmp("REGISTER",method)!=0 && mPrivacy!=SalPrivacyNone ){
+	if ((method != "REGISTER") && (mPrivacy != SalPrivacyNone)) {
 		belle_sip_header_privacy_t* privacy_header=belle_sip_header_privacy_new();
 		if (mPrivacy&SalPrivacyCritical)
 			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyCritical));
@@ -663,7 +587,7 @@ belle_sip_request_t* SalOp::buildRequest(const char* method) {
 			belle_sip_header_privacy_add_privacy(privacy_header,sal_privacy_to_string(SalPrivacyUser));
 		belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(privacy_header));
 	}
-	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),mRoot->mSupported);
+	belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),mRoot->mSupportedHeader);
 	return req;
 }
 
@@ -679,14 +603,18 @@ void SalOp::setErrorInfoFromResponse(belle_sip_response_t *response) {
 	   setReasonErrorInfo(BELLE_SIP_MESSAGE(response));
 }
 
-const char* SalOp::toString(const State value) {
-	switch(value) {
-		case State::Early: return"SalOpStateEarly";
-		case State::Active: return "SalOpStateActive";
-		case State::Terminating: return "SalOpStateTerminating";
-		case State::Terminated: return "SalOpStateTerminated";
-	default:
-		return "Unknown";
+string SalOp::toString (const State value) {
+	switch (value) {
+		case State::Early:
+			return"SalOpStateEarly";
+		case State::Active:
+			return "SalOpStateActive";
+		case State::Terminating:
+			return "SalOpStateTerminating";
+		case State::Terminated:
+			return "SalOpStateTerminated";
+		default:
+			return "Unknown";
 	}
 }
 
@@ -745,7 +673,7 @@ int SalOp::sendRequestAndCreateRefresher(belle_sip_request_t* req, int expires,b
 			 notify the user as a normal transaction*/
 			belle_sip_refresher_set_listener(mRefresher,listener, this);
 			belle_sip_refresher_set_retry_after(mRefresher,mRoot->mRefresherRetryAfter);
-			belle_sip_refresher_set_realm(mRefresher,mRealm);
+			belle_sip_refresher_set_realm(mRefresher,L_STRING_TO_C(mRealm));
 			belle_sip_refresher_enable_manual_mode(mRefresher, mManualRefresher);
 			return 0;
 		} else {
@@ -779,18 +707,19 @@ belle_sip_header_contact_t *SalOp::createContact() {
 	/*don't touch contact in case of gruu*/
 	if (!belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(contact_header))),"gr")) {
 		belle_sip_header_contact_set_automatic(contact_header,mRoot->mAutoContacts);
-		if (mRoot->mUuid) {
-			if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance")==0){
-				char *instance_id=belle_sip_strdup_printf("\"<urn:uuid:%s>\"",mRoot->mUuid);
-				belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header),"+sip.instance",instance_id);
-				belle_sip_free(instance_id);
-			}
+		if (!mRoot->mUuid.empty()
+			&& !belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header), "+sip.instance")
+		) {
+			stringstream ss;
+			ss << "\"<urn:uuid:" << mRoot->mUuid << ">\"";
+			string instanceId = ss.str();
+			belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header), "+sip.instance", instanceId.c_str());
 		}
 	}
-	if (mRoot->mLinphoneSpecs && strlen(mRoot->mLinphoneSpecs) > 0) {
-		if (belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header),"+org.linphone.specs") == 0) {
-			belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header), "+org.linphone.specs", mRoot->mLinphoneSpecs);
-		}
+	if (!mRoot->mLinphoneSpecs.empty()
+		&& !belle_sip_parameters_has_parameter(BELLE_SIP_PARAMETERS(contact_header), "+org.linphone.specs")
+	) {
+		belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(contact_header), "+org.linphone.specs", mRoot->mLinphoneSpecs.c_str());
 	}
 	return contact_header;
 }
@@ -824,21 +753,20 @@ void SalOp::setOrUpdateDialog(belle_sip_dialog_t* dialog) {
 	unref();
 }
 
-int SalOp::ping(const char *from, const char *to) {
-	   setFrom(from);
-	   setTo(to);
+int SalOp::ping (const string &from, const string &to) {
+	setFrom(from);
+	setTo(to);
 	return sendRequest(buildRequest("OPTIONS"));
 }
 
-int SalOp::sendInfo(const char *from, const char *to, const SalBodyHandler *body_handler) {
-	if (mDialog && belle_sip_dialog_get_state(mDialog) == BELLE_SIP_DIALOG_CONFIRMED) {
-		belle_sip_request_t *req;
-		belle_sip_dialog_enable_pending_trans_checking(mDialog,mRoot->mPendingTransactionChecking);
-		req=belle_sip_dialog_create_queued_request(mDialog,"INFO");
-		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(req), BELLE_SIP_BODY_HANDLER(body_handler));
-		return sendRequest(req);
-	}else{
-		ms_error("Cannot send INFO message on op [%p] because dialog is not in confirmed state yet.", this);
+int SalOp::sendInfo (const SalBodyHandler *bodyHandler) {
+	if (mDialog && (belle_sip_dialog_get_state(mDialog) == BELLE_SIP_DIALOG_CONFIRMED)) {
+		belle_sip_dialog_enable_pending_trans_checking(mDialog, mRoot->mPendingTransactionChecking);
+		belle_sip_request_t *request = belle_sip_dialog_create_queued_request(mDialog, "INFO");
+		belle_sip_message_set_body_handler(BELLE_SIP_MESSAGE(request), BELLE_SIP_BODY_HANDLER(bodyHandler));
+		return sendRequest(request);
+	} else {
+		lError() << "Cannot send INFO message on op [" << this << "] because dialog is not in confirmed state yet";
 	}
 	return -1;
 }
@@ -867,26 +795,26 @@ void SalOp::assignRecvHeaders(belle_sip_message_t *incoming) {
 	}
 }
 
-void SalOp::setRemoteContact(const char* remote_contact) {
-	   assignAddress(&mRemoteContactAddress,remote_contact);
-	/*to preserve header params*/
-	   assignString(&mRemoteContact,remote_contact);
+void SalOp::setRemoteContact (const string &value) {
+	assignAddress(&mRemoteContactAddress, value);
+	mRemoteContact = value; // To preserve header params
 }
 
-void SalOp::setNetworkOrigin (const char *value) {
-	char *valueStr = nullptr;
+void SalOp::setNetworkOrigin (const string &value) {
 	assignAddress(&mOriginAddress, value);
-	if (mOriginAddress)
-		valueStr = sal_address_as_string(mOriginAddress);
-	assignString(&mOrigin, valueStr);
-	if (valueStr)
+	if (mOriginAddress) {
+		char *valueStr = sal_address_as_string(mOriginAddress);
+		mOrigin = valueStr;
 		ms_free(valueStr);
+	} else {
+		mOrigin.clear();
+	}
 }
 
-void SalOp::setNetworkOriginAddress(SalAddress *origin){
-	char* address_string=sal_address_as_string(origin); /*can probably be optimized*/
-	   setNetworkOrigin(address_string);
-	ms_free(address_string);
+void SalOp::setNetworkOriginAddress (SalAddress *value) {
+	char *valueStr = sal_address_as_string(value); // Can probably be optimized
+	setNetworkOrigin(valueStr);
+	ms_free(valueStr);
 }
 
 /*
@@ -924,28 +852,32 @@ void SalOp::setPrivacyFromMessage(belle_sip_message_t* msg) {
 	}
 }
 
-void SalOp::setRemoteUserAgent(belle_sip_message_t* message) {
-	belle_sip_header_user_agent_t* user_agent=belle_sip_message_get_header_by_type(message,belle_sip_header_user_agent_t);
-	char user_agent_string[256];
-	if (user_agent && belle_sip_header_user_agent_get_products_as_string(user_agent,user_agent_string,sizeof(user_agent_string))>0) {
-		if (mRemoteUserAgent!=NULL){
-			ms_free(mRemoteUserAgent);
-		}
-		mRemoteUserAgent=ms_strdup(user_agent_string);
+void SalOp::setRemoteUserAgent (belle_sip_message_t *message) {
+	belle_sip_header_user_agent_t *userAgentHeader = belle_sip_message_get_header_by_type(message, belle_sip_header_user_agent_t);
+	char userAgentStr[256];
+	if (userAgentHeader
+		&& belle_sip_header_user_agent_get_products_as_string(userAgentHeader, userAgentStr, sizeof(userAgentStr)) > 0
+	) {
+		mRemoteUserAgent = userAgentStr;
 	}
 }
 
-const char *SalOp::toString(const Type type) {
-	switch(type) {
-		case Type::Register: return "SalOpRegister";
-		case Type::Call: return "SalOpCall";
-		case Type::Message: return "SalOpMessage";
-		case Type::Presence: return "SalOpPresence";
-		default: return "SalOpUnknown";
+string SalOp::toString (const Type type) {
+	switch (type) {
+		case Type::Register:
+			return "SalOpRegister";
+		case Type::Call:
+			return "SalOpCall";
+		case Type::Message:
+			return "SalOpMessage";
+		case Type::Presence:
+			return "SalOpPresence";
+		default:
+			return "SalOpUnknown";
 	}
 }
 
-bool_t SalOp::isSecure() const {
+bool SalOp::isSecure() const {
 	const SalAddress* from = getFromAddress();
 	const SalAddress* to = getToAddress();
 	return from && to && strcasecmp("sips",sal_address_get_scheme(from))==0 && strcasecmp("sips",sal_address_get_scheme(to))==0;
@@ -1013,7 +945,7 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 	belle_sip_header_cseq_t* cseq = belle_sip_message_get_header_by_type(req,belle_sip_header_cseq_t);
 	belle_sip_header_date_t *date=belle_sip_message_get_header_by_type(req,belle_sip_header_date_t);
 	char* from;
-	bool_t external_body=FALSE;
+	bool external_body = false;
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
@@ -1067,7 +999,7 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 	}
 }
 
-bool_t SalOp::isExternalBody(belle_sip_header_content_type_t* content_type) {
+bool SalOp::isExternalBody(belle_sip_header_content_type_t* content_type) {
 	return strcmp("message",belle_sip_header_content_type_get_type(content_type))==0
 			&&	strcmp("external-body",belle_sip_header_content_type_get_subtype(content_type))==0;
 }
@@ -1083,21 +1015,13 @@ int SalOp::replyMessage(SalReason reason) {
 	return -1;
 }
 
-void SalOp::addMessageAccept(belle_sip_message_t *msg) {
-	bctbx_list_t *item;
-	const char *str;
-	char *old;
-	char *header = ms_strdup("xml/cipher, application/cipher.vnd.gsma.rcs-ft-http+xml");
-
-	for (item = mRoot->mSupportedContentTypes; item != NULL; item = bctbx_list_next(item)) {
-		str = (const char *)bctbx_list_get_data(item);
-		old = header;
-		header = ms_strdup_printf("%s, %s", old, str);
-		ms_free(old);
-	}
-
-	belle_sip_message_add_header(msg, belle_sip_header_create("Accept", header));
-	ms_free(header);
+void SalOp::addMessageAccept (belle_sip_message_t *message) {
+	stringstream ss;
+	ss << "xml/cipher, application/cipher.vnd.gsma.rcs-ft-http+xml";
+	for (const auto &supportedContentType : mRoot->mSupportedContentTypes)
+		ss << ", " << supportedContentType;
+	string headerValue = ss.str();
+	belle_sip_message_add_header(message, belle_sip_header_create("Accept", headerValue.c_str()));
 }
 
 void SalOp::setServiceRoute(const SalAddress* service_route) {

@@ -505,13 +505,12 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 	LinphoneCallLog *log = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getLog();
 	reporting_session_report_t * report = log->reporting.reports[stats_type];
-	char * dialog_id;
 
 	// call->op might be already released if hanging up in state LinphoneCallOutgoingInit
 	if (!media_report_enabled(call, stats_type) || !L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp())
 		return;
 
-	dialog_id = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getDialogId();
+	std::string dialogId = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getDialogId();
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(log->call_id));
 
@@ -521,13 +520,13 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	// RFC states: "LocalGroupID provides the identification for the purposes
 	// of aggregation for the local endpoint.".
 	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id ? dialog_id : ""
+		, dialogId.c_str()
 		, "local"
 		, report->local_metrics.user_agent ? report->local_metrics.user_agent : ""
 		)
 	);
 	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id ? dialog_id : ""
+		, dialogId.c_str()
 		, "remote"
 		, report->remote_metrics.user_agent ? report->remote_metrics.user_agent : ""
 		)
@@ -582,7 +581,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		}
 	}
 
-	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id ? dialog_id : "", report->info.local_addr.ssrc));
+	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialogId.c_str(), report->info.local_addr.ssrc));
 
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
@@ -597,8 +596,6 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->remote_metrics.session_description.sample_rate = remote_payload->clock_rate;
 		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
 	}
-
-	ms_free(dialog_id);
 }
 
 /* generate random float in interval ] 0.9 t ; 1.1 t [*/

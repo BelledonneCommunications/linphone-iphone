@@ -80,7 +80,7 @@ void SalSubscribeOp::handleNotify(belle_sip_request_t *req, const char *eventnam
 	
 	if (!subscription_state_header || strcasecmp(BELLE_SIP_SUBSCRIPTION_STATE_TERMINATED,belle_sip_header_subscription_state_get_state(subscription_state_header)) ==0) {
 		sub_state=SalSubscribeTerminated;
-		ms_message("Outgoing subscription terminated by remote [%s]",getTo());
+		ms_message("Outgoing subscription terminated by remote [%s]",getTo().c_str());
 	} else
 		sub_state=SalSubscribeActive;
 	ref();
@@ -133,7 +133,7 @@ void SalSubscribeOp::subscribeProcessRequestEventCb(void *op_base, const belle_s
 				return;
 			}
 			op->setOrUpdateDialog(dialog);
-			ms_message("new incoming subscription from [%s] to [%s]",op->getFrom(),op->getTo());
+			ms_message("new incoming subscription from [%s] to [%s]",op->getFrom().c_str(),op->getTo().c_str());
 		}else{ /*this is a NOTIFY*/
 			op->handleNotify(req, eventname, (SalBodyHandler *)body_handler);
 			return;
@@ -162,7 +162,7 @@ void SalSubscribeOp::subscribeProcessRequestEventCb(void *op_base, const belle_s
 				resp=op->createResponseFromRequest(req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 			} else if(expires) {
-				ms_message("Unsubscribe received from [%s]",op->getFrom());
+				ms_message("Unsubscribe received from [%s]",op->getFrom().c_str());
 				resp=op->createResponseFromRequest(req,200);
 				belle_sip_server_transaction_send_response(server_transaction,resp);
 				op->mRoot->mCallbacks.incoming_subscribe_closed(op);
@@ -366,16 +366,16 @@ void SalPublishOp::publishRefresherListenerCb (belle_sip_refresher_t* refresher,
 	SalPublishOp * op = (SalPublishOp *)user_pointer;
 	const belle_sip_client_transaction_t* last_publish_trans=belle_sip_refresher_get_transaction(op->mRefresher);
 	belle_sip_response_t *response=belle_sip_transaction_get_response(BELLE_SIP_TRANSACTION(last_publish_trans));
-	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase?reason_phrase:"none",op->getProxy());
+	ms_message("Publish refresher  [%i] reason [%s] for proxy [%s]",status_code,reason_phrase?reason_phrase:"none",op->getProxy().c_str());
 	if (status_code==0){
 		op->mRoot->mCallbacks.on_expire(op);
 	}else if (status_code>=200){
 		belle_sip_header_t *sip_etag;
-		const char *sip_etag_string = NULL;
+		string sipEtagStr;
 		if (response && (sip_etag = belle_sip_message_get_header(BELLE_SIP_MESSAGE(response), "SIP-ETag"))) {
-			sip_etag_string = belle_sip_header_get_unparsed_value(sip_etag);
+			sipEtagStr = belle_sip_header_get_unparsed_value(sip_etag);
 		}
-		op->setEntityTag(sip_etag_string);
+		op->setEntityTag(sipEtagStr);
 		sal_error_info_set(&op->mErrorInfo,SalReasonUnknown, "SIP", (int)status_code, reason_phrase, NULL);
 		op->assignRecvHeaders((belle_sip_message_t*)response);
 		op->mRoot->mCallbacks.on_publish_response(op);
@@ -395,11 +395,10 @@ int SalPublishOp::publish(const char *from, const char *to, const char *eventnam
 		if( req == NULL ){
 			return -1;
 		}
-		
-		if (getEntityTag()) {
-			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),belle_sip_header_create("SIP-If-Match", getEntityTag()));
-		}
-		
+
+		if (!mEntityTag.empty())
+			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req), belle_sip_header_create("SIP-If-Match", mEntityTag.c_str()));
+
 		if (getContactAddress()){
 			belle_sip_message_add_header(BELLE_SIP_MESSAGE(req),BELLE_SIP_HEADER(createContact()));
 		}

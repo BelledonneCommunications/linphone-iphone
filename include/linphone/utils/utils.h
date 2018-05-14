@@ -121,7 +121,7 @@ namespace Utils {
 
 	template<typename T>
 	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {
-		static const T object;
+		static const T object{};
 		return object;
 	}
 

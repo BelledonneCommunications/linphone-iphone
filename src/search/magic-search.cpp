@@ -20,6 +20,7 @@
 #include "magic-search-p.h"
 
 #include <bctoolbox/list.h>
+#include <algorithm>
 
 #include "c-wrapper/internal/c-tools.h"
 #include "linphone/utils/utils.h"
@@ -119,7 +120,7 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 	list<SearchResult> returnList;
 	LinphoneProxyConfig *proxy = nullptr;
 
-	if (filter.empty()) return list<SearchResult>();
+	if (filter.empty()) return getAllFriends();
 
 	if (getSearchCache() != nullptr) {
 		resultList = continueSearch(filter, withDomain);
@@ -168,6 +169,21 @@ void MagicSearch::setSearchCache(list<SearchResult> *cache) {
 	L_D();
 	if (d->mCacheResult != cache) resetSearchCache();
 	d->mCacheResult = cache;
+}
+
+list<SearchResult> MagicSearch::getAllFriends() {
+	list<SearchResult> returnList;
+	LinphoneFriendList *list = linphone_core_get_default_friend_list(this->getCore()->getCCore());
+
+	for (bctbx_list_t *f = list->friends ; f != nullptr ; f = bctbx_list_next(f)) {
+		const LinphoneFriend *lFriend = reinterpret_cast<LinphoneFriend*>(f->data);
+		const LinphoneAddress* lAddress = linphone_friend_get_address(lFriend);
+
+		if (lAddress) linphone_address_ref(const_cast<LinphoneAddress *>(lAddress));
+		returnList.push_back(SearchResult(1, lAddress, lFriend));
+	}
+
+	return returnList;
 }
 
 list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const string &withDomain) {
@@ -221,7 +237,9 @@ SearchResult MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const st
 	unsigned int weight = getMinWeight();
 	const LinphoneAddress* lAddress = linphone_friend_get_address(lFriend);
 
-	if (!checkDomain(lFriend, lAddress, withDomain)) return SearchResult(weight, nullptr);
+	if (!checkDomain(lFriend, lAddress, withDomain)) {
+		if (!withDomain.empty()) return SearchResult(weight, nullptr);
+	}
 
 	// NAME
 	if (linphone_core_vcard_supported()) {
@@ -270,12 +288,18 @@ unsigned int MagicSearch::searchInAddress(const LinphoneAddress *lAddress, const
 }
 
 unsigned int MagicSearch::getWeight(const string &stringWords, const string &filter) const {
+	locale loc;
+	string filterLC = filter;
+	string stringWordsLC = stringWords;
 	size_t weight = string::npos;
 
-	// Finding all occurrences of "filter" in "stringWords"
-	for (size_t w = stringWords.find(filter);
+	transform(stringWordsLC.begin(), stringWordsLC.end(), stringWordsLC.begin(), [](unsigned char c){ return tolower(c); });
+	transform(filterLC.begin(), filterLC.end(), filterLC.begin(), [](unsigned char c){ return tolower(c); });
+
+	// Finding all occurrences of "filterLC" in "stringWordsLC"
+	for (size_t w = stringWordsLC.find(filterLC);
 		 w != string::npos;
-		 w = stringWords.find(filter, w + filter.length())
+	w = stringWordsLC.find(filterLC, w + filterLC.length())
 	) {
 		// weight max if occurence find at beginning
 		if (w == 0) {
@@ -283,8 +307,8 @@ unsigned int MagicSearch::getWeight(const string &stringWords, const string &fil
 		} else {
 			bool isDelimiter = false;
 			if (getUseDelimiter()) {
-				// get the char before the matched filter
-				const char l = stringWords.at(w - 1);
+				// get the char before the matched filterLC
+				const char l = stringWordsLC.at(w - 1);
 				// Check if it's a delimiter
 				for (const char d : getDelimiter()) {
 					if (l == d) {
@@ -296,7 +320,7 @@ unsigned int MagicSearch::getWeight(const string &stringWords, const string &fil
 			unsigned int newWeight = getMaxWeight() - (unsigned int)((isDelimiter) ? 1 : w + 1);
 			weight = (weight != string::npos) ? weight + newWeight : newWeight;
 		}
-		// Only one search on the stringWords for the moment
+		// Only one search on the stringWordsLC for the moment
 		// due to weight calcul which dos not take into the case of multiple occurence
 		break;
 	}
