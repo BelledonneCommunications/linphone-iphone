@@ -27,7 +27,7 @@
 	F(InProgress /**< Delivery in progress */) \
 	F(Delivered /**< Message successfully delivered an acknowledged by the server */) \
 	F(NotDelivered /**< Message was not delivered */) \
-	F(FileTransferError /**< Message was received (and acknowledged) but cannot get file from server */) \
+	F(FileTransferError /**< Message was received and acknowledged but cannot get file from server */) \
 	F(FileTransferDone /**< File transfer has been completed successfully */) \
 	F(DeliveredToUser /**< Message successfully delivered an acknowledged by the remote user */) \
 	F(Displayed /**< Message successfully displayed to the remote user */)

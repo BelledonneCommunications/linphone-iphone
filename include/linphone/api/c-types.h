@@ -186,10 +186,10 @@ typedef struct _LinphoneSearchResult LinphoneSearchResult;
 // -----------------------------------------------------------------------------
 // How-to: Declare one enum
 //
-// 1. Declare an macro like this example in include/linphone/enums/chat-message-enums.h:
+// 1. Declare a macro like this example in include/linphone/enums/chat-message-enums.h:
 //
-// #define L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION(F) \
-//   F(Incoming /**< Incoming message */) \
+// #define L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION(F) \ //
+//   F(Incoming /**< Incoming message */) \ //
 //   F(Outgoing /**< Outgoing message */)
 //
 // 2. And in this file, call L_DECLARE_C_ENUM with the enum name and values as params:
