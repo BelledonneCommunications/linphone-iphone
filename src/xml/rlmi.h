@@ -49,14 +49,18 @@
 // Begin prologue.
 //
 #if __clang__ || __GNUC__ >= 4
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wfloat-equal"
-  #pragma GCC diagnostic ignored "-Wsign-conversion"
-  #pragma GCC diagnostic ignored "-Wconversion"
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wfloat-equal"
+	#pragma GCC diagnostic ignored "-Wsign-conversion"
+	#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wsuggest-override"
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+#if __GNUC__ >=7
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #endif
 //
 // End prologue.
@@ -243,6 +247,8 @@ namespace LinphonePrivate
       typedef ::xsd::cxx::tree::unexpected_enumerator< char > UnexpectedEnumerator;
       typedef ::xsd::cxx::tree::expected_text_content< char > ExpectedTextContent;
       typedef ::xsd::cxx::tree::no_prefix_mapping< char > NoPrefixMapping;
+      typedef ::xsd::cxx::tree::no_type_info< char > NoTypeInfo;
+      typedef ::xsd::cxx::tree::not_derived< char > NotDerived;
       typedef ::xsd::cxx::tree::serialization< char > Serialization;
 
       // Error handler callback interface.
@@ -460,7 +466,7 @@ namespace LinphonePrivate
         List&
         operator= (const List& x);
 
-        virtual
+        virtual 
         ~List ();
 
         // Implementation.
@@ -581,7 +587,7 @@ namespace LinphonePrivate
         Resource&
         operator= (const Resource& x);
 
-        virtual
+        virtual 
         ~Resource ();
 
         // Implementation.
@@ -743,7 +749,7 @@ namespace LinphonePrivate
         Instance&
         operator= (const Instance& x);
 
-        virtual
+        virtual 
         ~Instance ();
 
         // Implementation.
@@ -813,7 +819,7 @@ namespace LinphonePrivate
         Name&
         operator= (const Name& x);
 
-        virtual
+        virtual 
         ~Name ();
 
         // Implementation.
@@ -1020,285 +1026,6 @@ namespace LinphonePrivate
       parseList (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
                  ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
                  const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse a URI or a local file.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& uri,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& uri,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& uri,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse std::istream.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& id,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& id,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& id,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::InputSource.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& is,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::DOMDocument.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::xercesc::DOMDocument& d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse a URI or a local file.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& uri,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& uri,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& uri,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse std::istream.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& id,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& id,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& id,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::InputSource.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& is,
-                     ::xercesc::DOMErrorHandler& eh,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::DOMDocument.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::xercesc::DOMDocument& d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse a URI or a local file.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& uri,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& uri,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& uri,
-                 ::xercesc::DOMErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse std::istream.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::xercesc::DOMErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& id,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& id,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& id,
-                 ::xercesc::DOMErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::InputSource.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& is,
-                 ::xercesc::DOMErrorHandler& eh,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      // Parse xercesc::DOMDocument.
-      //
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::xercesc::DOMDocument& d,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p = ::LinphonePrivate::Xsd::XmlSchema::Properties ());
     }
   }
 }
@@ -1322,14 +1049,14 @@ namespace LinphonePrivate
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1337,7 +1064,7 @@ namespace LinphonePrivate
 
       void
       serializeList (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1348,14 +1075,14 @@ namespace LinphonePrivate
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1363,7 +1090,7 @@ namespace LinphonePrivate
 
       void
       serializeList (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::List& x,
+                     const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      ::xercesc::DOMErrorHandler& eh,
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      const ::std::string& e = "UTF-8",
@@ -1381,211 +1108,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeList (const ::LinphonePrivate::Xsd::Rlmi::List& x,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to std::ostream.
-      //
-
-      void
-      serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeResource (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         ::xercesc::DOMErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to xercesc::XMLFormatTarget.
-      //
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         ::xercesc::DOMErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to an existing xercesc::DOMDocument.
-      //
-
-      void
-      serializeResource (::xercesc::DOMDocument& d,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to a new xercesc::DOMDocument.
-      //
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeResource (const ::LinphonePrivate::Xsd::Rlmi::Resource& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to std::ostream.
-      //
-
-      void
-      serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeInstance (::std::ostream& os,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         ::xercesc::DOMErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to xercesc::XMLFormatTarget.
-      //
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& ft,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         ::xercesc::DOMErrorHandler& eh,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         const ::std::string& e = "UTF-8",
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to an existing xercesc::DOMDocument.
-      //
-
-      void
-      serializeInstance (::xercesc::DOMDocument& d,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to a new xercesc::DOMDocument.
-      //
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeInstance (const ::LinphonePrivate::Xsd::Rlmi::Instance& x,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to std::ostream.
-      //
-
-      void
-      serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeName (::std::ostream& os,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     ::xercesc::DOMErrorHandler& eh,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to xercesc::XMLFormatTarget.
-      //
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& ft,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     ::xercesc::DOMErrorHandler& eh,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
-                     const ::std::string& e = "UTF-8",
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to an existing xercesc::DOMDocument.
-      //
-
-      void
-      serializeName (::xercesc::DOMDocument& d,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& x,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
-
-      // Serialize to a new xercesc::DOMDocument.
-      //
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeName (const ::LinphonePrivate::Xsd::Rlmi::Name& x,
+      serializeList (const ::LinphonePrivate::Xsd::Rlmi::List& x, 
                      const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                      ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
@@ -1618,6 +1141,12 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ >= 7
+	#pragma GCC diagnostic pop
+#endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif

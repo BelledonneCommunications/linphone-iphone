@@ -61,7 +61,7 @@ namespace LinphonePrivate
     namespace ResourceLists
     {
       // ListType
-      //
+      // 
 
       const ListType::DisplayNameOptional& ListType::
       getDisplayName () const
@@ -245,7 +245,7 @@ namespace LinphonePrivate
 
 
       // EntryType
-      //
+      // 
 
       const EntryType::DisplayNameOptional& EntryType::
       getDisplayName () const
@@ -357,7 +357,7 @@ namespace LinphonePrivate
 
 
       // EntryRefType
-      //
+      // 
 
       const EntryRefType::DisplayNameOptional& EntryRefType::
       getDisplayName () const
@@ -469,7 +469,7 @@ namespace LinphonePrivate
 
 
       // ExternalType
-      //
+      // 
 
       const ExternalType::DisplayNameOptional& ExternalType::
       getDisplayName () const
@@ -581,7 +581,7 @@ namespace LinphonePrivate
 
 
       // DisplayNameType
-      //
+      // 
 
       const DisplayNameType::LangOptional& DisplayNameType::
       getLang () const
@@ -615,15 +615,15 @@ namespace LinphonePrivate
 
 
       // List
-      //
+      // 
 
 
       // DisplayName
-      //
+      // 
 
 
       // ResourceLists
-      //
+      // 
 
       const ResourceLists::ListSequence& ResourceLists::
       getList () const

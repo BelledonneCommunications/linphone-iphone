@@ -34,14 +34,18 @@
 // Begin prologue.
 //
 #if __clang__ || __GNUC__ >= 4
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wfloat-equal"
-  #pragma GCC diagnostic ignored "-Wsign-conversion"
-  #pragma GCC diagnostic ignored "-Wconversion"
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wfloat-equal"
+	#pragma GCC diagnostic ignored "-Wsign-conversion"
+	#pragma GCC diagnostic ignored "-Wconversion"
 #endif
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wsuggest-override"
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wsuggest-override"
+#endif
+#if __GNUC__ >=7
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #endif
 //
 // End prologue.
@@ -57,7 +61,7 @@ namespace LinphonePrivate
     namespace Rlmi
     {
       // List
-      //
+      // 
 
       const List::NameSequence& List::
       getName () const
@@ -223,7 +227,7 @@ namespace LinphonePrivate
 
 
       // Resource
-      //
+      // 
 
       const Resource::NameSequence& Resource::
       getName () const
@@ -323,7 +327,7 @@ namespace LinphonePrivate
 
 
       // Instance
-      //
+      // 
 
       const Instance::AnySequence& Instance::
       getAny () const
@@ -495,7 +499,7 @@ namespace LinphonePrivate
 
 
       // Name
-      //
+      // 
 
       const Name::LangOptional& Name::
       getLang () const
@@ -529,7 +533,7 @@ namespace LinphonePrivate
 
 
       // State
-      //
+      // 
 
       State::
       State (Value v)
@@ -566,7 +570,7 @@ namespace LinphonePrivate
       State& State::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_State_literals_[v]);
 
         return *this;
@@ -578,6 +582,15 @@ namespace LinphonePrivate
 #include <xsd/cxx/xml/dom/wildcard-source.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
+
+#include <xsd/cxx/tree/type-factory-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_factory_plate< 0, char >
+  type_factory_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -1251,6 +1264,15 @@ namespace LinphonePrivate
 
 #include <ostream>
 
+#include <xsd/cxx/tree/std-ostream-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::std_ostream_plate< 0, char >
+  std_ostream_plate_init;
+}
+
 namespace LinphonePrivate
 {
   namespace Xsd
@@ -1627,804 +1649,6 @@ namespace LinphonePrivate
           "list",
           "urn:ietf:params:xml:ns:rlmi");
       }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& u,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& u,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::std::string& u,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& sid,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& sid,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::std::istream& is,
-                     const ::std::string& sid,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseResource (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& i,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& i,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::xercesc::InputSource& i,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-          ::LinphonePrivate::Xsd::Rlmi::parseResource (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (const ::xercesc::DOMDocument& doc,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-        {
-          ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-            static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
-
-          return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > (
-            ::LinphonePrivate::Xsd::Rlmi::parseResource (
-              std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-        }
-
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "resource" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Resource, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "resource",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource >
-      parseResource (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties&)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > c (
-          ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) &&
-           !(f & ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom))
-          ? static_cast< ::xercesc::DOMDocument* > (d->cloneNode (true))
-          : 0);
-
-        ::xercesc::DOMDocument& doc (c.get () ? *c : *d);
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-          doc.setUserData (::LinphonePrivate::Xsd::XmlSchema::dom::treeNodeKey,
-                           (c.get () ? &c : &d),
-                           0);
-
-        if (n.name () == "resource" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Resource > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Resource, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "resource",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& u,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& u,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::std::string& u,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& sid,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& sid,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::std::istream& is,
-                     const ::std::string& sid,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseInstance (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& i,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& i,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::xercesc::InputSource& i,
-                     ::xercesc::DOMErrorHandler& h,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-          ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (const ::xercesc::DOMDocument& doc,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-        {
-          ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-            static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
-
-          return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > (
-            ::LinphonePrivate::Xsd::Rlmi::parseInstance (
-              std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-        }
-
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "instance" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Instance, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "instance",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance >
-      parseInstance (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                     const ::LinphonePrivate::Xsd::XmlSchema::Properties&)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > c (
-          ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) &&
-           !(f & ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom))
-          ? static_cast< ::xercesc::DOMDocument* > (d->cloneNode (true))
-          : 0);
-
-        ::xercesc::DOMDocument& doc (c.get () ? *c : *d);
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-          doc.setUserData (::LinphonePrivate::Xsd::XmlSchema::dom::treeNodeKey,
-                           (c.get () ? &c : &d),
-                           0);
-
-        if (n.name () == "instance" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Instance > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Instance, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "instance",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& u,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& u,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::std::string& u,
-                 ::xercesc::DOMErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            u, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 ::xercesc::DOMErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& sid,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& sid,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0,
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) == 0);
-
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::std::istream& is,
-                 const ::std::string& sid,
-                 ::xercesc::DOMErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::xml::sax::std_input_source isrc (is, sid);
-        return ::LinphonePrivate::Xsd::Rlmi::parseName (isrc, h, f, p);
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& i,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        h.throw_if_failed< ::xsd::cxx::tree::parsing< char > > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& i,
-                 ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::xercesc::InputSource& i,
-                 ::xercesc::DOMErrorHandler& h,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::parse< char > (
-            i, h, p, f));
-
-        if (!d.get ())
-          throw ::xsd::cxx::tree::parsing< char > ();
-
-        return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-          ::LinphonePrivate::Xsd::Rlmi::parseName (
-            std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (const ::xercesc::DOMDocument& doc,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties& p)
-      {
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-        {
-          ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-            static_cast< ::xercesc::DOMDocument* > (doc.cloneNode (true)));
-
-          return ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > (
-            ::LinphonePrivate::Xsd::Rlmi::parseName (
-              std::move (d), f | ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom, p));
-        }
-
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "name" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Name, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "name",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
-
-      ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name >
-      parseName (::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d,
-                 ::LinphonePrivate::Xsd::XmlSchema::Flags f,
-                 const ::LinphonePrivate::Xsd::XmlSchema::Properties&)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > c (
-          ((f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom) &&
-           !(f & ::LinphonePrivate::Xsd::XmlSchema::Flags::own_dom))
-          ? static_cast< ::xercesc::DOMDocument* > (d->cloneNode (true))
-          : 0);
-
-        ::xercesc::DOMDocument& doc (c.get () ? *c : *d);
-        const ::xercesc::DOMElement& e (*doc.getDocumentElement ());
-
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::keep_dom)
-          doc.setUserData (::LinphonePrivate::Xsd::XmlSchema::dom::treeNodeKey,
-                           (c.get () ? &c : &d),
-                           0);
-
-        if (n.name () == "name" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          ::std::unique_ptr< ::LinphonePrivate::Xsd::Rlmi::Name > r (
-            ::xsd::cxx::tree::traits< ::LinphonePrivate::Xsd::Rlmi::Name, char >::create (
-              e, f, 0));
-          return r;
-        }
-
-        throw ::xsd::cxx::tree::unexpected_element < char > (
-          n.name (),
-          n.namespace_ (),
-          "name",
-          "urn:ietf:params:xml:ns:rlmi");
-      }
     }
   }
 }
@@ -2432,6 +1656,15 @@ namespace LinphonePrivate
 #include <ostream>
 #include <xsd/cxx/tree/error-handler.hxx>
 #include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+#include <xsd/cxx/tree/type-serializer-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_serializer_plate< 0, char >
+  type_serializer_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -2584,450 +1817,6 @@ namespace LinphonePrivate
             m, f));
 
         ::LinphonePrivate::Xsd::Rlmi::serializeList (*d, s, f);
-        return d;
-      }
-
-      void
-      serializeResource (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeResource (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeResource (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         ::xercesc::DOMErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeResource (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         ::xercesc::DOMErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeResource (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeResource (::xercesc::DOMDocument& d,
-                         const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags)
-      {
-        ::xercesc::DOMElement& e (*d.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "resource" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          e << s;
-        }
-        else
-        {
-          throw ::xsd::cxx::tree::unexpected_element < char > (
-            n.name (),
-            n.namespace_ (),
-            "resource",
-            "urn:ietf:params:xml:ns:rlmi");
-        }
-      }
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeResource (const ::LinphonePrivate::Xsd::Rlmi::Resource& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::serialize< char > (
-            "resource",
-            "urn:ietf:params:xml:ns:rlmi",
-            m, f));
-
-        ::LinphonePrivate::Xsd::Rlmi::serializeResource (*d, s, f);
-        return d;
-      }
-
-      void
-      serializeInstance (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeInstance (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeInstance (::std::ostream& o,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         ::xercesc::DOMErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeInstance (::xercesc::XMLFormatTarget& t,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         ::xercesc::DOMErrorHandler& h,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         const ::std::string& e,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeInstance (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeInstance (::xercesc::DOMDocument& d,
-                         const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags)
-      {
-        ::xercesc::DOMElement& e (*d.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "instance" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          e << s;
-        }
-        else
-        {
-          throw ::xsd::cxx::tree::unexpected_element < char > (
-            n.name (),
-            n.namespace_ (),
-            "instance",
-            "urn:ietf:params:xml:ns:rlmi");
-        }
-      }
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeInstance (const ::LinphonePrivate::Xsd::Rlmi::Instance& s,
-                         const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                         ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::serialize< char > (
-            "instance",
-            "urn:ietf:params:xml:ns:rlmi",
-            m, f));
-
-        ::LinphonePrivate::Xsd::Rlmi::serializeInstance (*d, s, f);
-        return d;
-      }
-
-      void
-      serializeName (::std::ostream& o,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeName (::std::ostream& o,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::xsd::cxx::xml::auto_initializer i (
-          (f & ::LinphonePrivate::Xsd::XmlSchema::Flags::dont_initialize) == 0);
-
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeName (::std::ostream& o,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     ::xercesc::DOMErrorHandler& h,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-        ::xsd::cxx::xml::dom::ostream_format_target t (o);
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& t,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-
-        ::xsd::cxx::tree::error_handler< char > h;
-
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          h.throw_if_failed< ::xsd::cxx::tree::serialization< char > > ();
-        }
-      }
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& t,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& h,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeName (::xercesc::XMLFormatTarget& t,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     ::xercesc::DOMErrorHandler& h,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     const ::std::string& e,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::LinphonePrivate::Xsd::Rlmi::serializeName (s, m, f));
-        if (!::xsd::cxx::xml::dom::serialize (t, *d, e, h, f))
-        {
-          throw ::xsd::cxx::tree::serialization< char > ();
-        }
-      }
-
-      void
-      serializeName (::xercesc::DOMDocument& d,
-                     const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags)
-      {
-        ::xercesc::DOMElement& e (*d.getDocumentElement ());
-        const ::xsd::cxx::xml::qualified_name< char > n (
-          ::xsd::cxx::xml::dom::name< char > (e));
-
-        if (n.name () == "name" &&
-            n.namespace_ () == "urn:ietf:params:xml:ns:rlmi")
-        {
-          e << s;
-        }
-        else
-        {
-          throw ::xsd::cxx::tree::unexpected_element < char > (
-            n.name (),
-            n.namespace_ (),
-            "name",
-            "urn:ietf:params:xml:ns:rlmi");
-        }
-      }
-
-      ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeName (const ::LinphonePrivate::Xsd::Rlmi::Name& s,
-                     const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m,
-                     ::LinphonePrivate::Xsd::XmlSchema::Flags f)
-      {
-        ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument > d (
-          ::xsd::cxx::xml::dom::serialize< char > (
-            "name",
-            "urn:ietf:params:xml:ns:rlmi",
-            m, f));
-
-        ::LinphonePrivate::Xsd::Rlmi::serializeName (*d, s, f);
         return d;
       }
 
@@ -3318,6 +2107,12 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ >= 7
+	#pragma GCC diagnostic pop
+#endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif

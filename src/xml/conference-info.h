@@ -582,7 +582,7 @@ namespace LinphonePrivate
         ConferenceType&
         operator= (const ConferenceType& x);
 
-        virtual
+        virtual 
         ~ConferenceType ();
 
         // Implementation.
@@ -891,7 +891,7 @@ namespace LinphonePrivate
         ConferenceDescriptionType&
         operator= (const ConferenceDescriptionType& x);
 
-        virtual
+        virtual 
         ~ConferenceDescriptionType ();
 
         // Implementation.
@@ -1039,7 +1039,7 @@ namespace LinphonePrivate
         HostType&
         operator= (const HostType& x);
 
-        virtual
+        virtual 
         ~HostType ();
 
         // Implementation.
@@ -1173,7 +1173,7 @@ namespace LinphonePrivate
         ConferenceStateType&
         operator= (const ConferenceStateType& x);
 
-        virtual
+        virtual 
         ~ConferenceStateType ();
 
         // Implementation.
@@ -1255,7 +1255,7 @@ namespace LinphonePrivate
         ConferenceMediaType&
         operator= (const ConferenceMediaType& x);
 
-        virtual
+        virtual 
         ~ConferenceMediaType ();
 
         // Implementation.
@@ -1415,7 +1415,7 @@ namespace LinphonePrivate
         ConferenceMediumType&
         operator= (const ConferenceMediumType& x);
 
-        virtual
+        virtual 
         ~ConferenceMediumType ();
 
         // Implementation.
@@ -1521,7 +1521,7 @@ namespace LinphonePrivate
         UrisType&
         operator= (const UrisType& x);
 
-        virtual
+        virtual 
         ~UrisType ();
 
         // Implementation.
@@ -1683,7 +1683,7 @@ namespace LinphonePrivate
         UriType&
         operator= (const UriType& x);
 
-        virtual
+        virtual 
         ~UriType ();
 
         // Implementation.
@@ -1739,7 +1739,7 @@ namespace LinphonePrivate
         _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
-        virtual
+        virtual 
         ~KeywordsType ();
       };
 
@@ -1843,7 +1843,7 @@ namespace LinphonePrivate
         UsersType&
         operator= (const UsersType& x);
 
-        virtual
+        virtual 
         ~UsersType ();
 
         // Implementation.
@@ -2089,7 +2089,7 @@ namespace LinphonePrivate
         UserType&
         operator= (const UserType& x);
 
-        virtual
+        virtual 
         ~UserType ();
 
         // Implementation.
@@ -2177,7 +2177,7 @@ namespace LinphonePrivate
         UserRolesType&
         operator= (const UserRolesType& x);
 
-        virtual
+        virtual 
         ~UserRolesType ();
 
         // Implementation.
@@ -2229,7 +2229,7 @@ namespace LinphonePrivate
         _clone (::LinphonePrivate::Xsd::XmlSchema::Flags f = 0,
                 ::LinphonePrivate::Xsd::XmlSchema::Container* c = 0) const;
 
-        virtual
+        virtual 
         ~UserLanguagesType ();
       };
 
@@ -2522,7 +2522,7 @@ namespace LinphonePrivate
         EndpointType&
         operator= (const EndpointType& x);
 
-        virtual
+        virtual 
         ~EndpointType ();
 
         // Implementation.
@@ -2837,7 +2837,7 @@ namespace LinphonePrivate
         ExecutionType&
         operator= (const ExecutionType& x);
 
-        virtual
+        virtual 
         ~ExecutionType ();
 
         // Implementation.
@@ -2937,7 +2937,7 @@ namespace LinphonePrivate
         CallType&
         operator= (const CallType& x);
 
-        virtual
+        virtual 
         ~CallType ();
 
         // Implementation.
@@ -3098,7 +3098,7 @@ namespace LinphonePrivate
         SipDialogIdType&
         operator= (const SipDialogIdType& x);
 
-        virtual
+        virtual 
         ~SipDialogIdType ();
 
         // Implementation.
@@ -3304,7 +3304,7 @@ namespace LinphonePrivate
         MediaType&
         operator= (const MediaType& x);
 
-        virtual
+        virtual 
         ~MediaType ();
 
         // Implementation.
@@ -3470,7 +3470,7 @@ namespace LinphonePrivate
         SidebarsByValType&
         operator= (const SidebarsByValType& x);
 
-        virtual
+        virtual 
         ~SidebarsByValType ();
 
         // Implementation.
@@ -3717,14 +3717,14 @@ namespace LinphonePrivate
 
       void
       serializeConferenceInfo (::std::ostream& os,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
                                ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeConferenceInfo (::std::ostream& os,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
@@ -3732,7 +3732,7 @@ namespace LinphonePrivate
 
       void
       serializeConferenceInfo (::std::ostream& os,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                ::xercesc::DOMErrorHandler& eh,
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
@@ -3743,14 +3743,14 @@ namespace LinphonePrivate
 
       void
       serializeConferenceInfo (::xercesc::XMLFormatTarget& ft,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
                                ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
       void
       serializeConferenceInfo (::xercesc::XMLFormatTarget& ft,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                ::LinphonePrivate::Xsd::XmlSchema::ErrorHandler& eh,
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
@@ -3758,7 +3758,7 @@ namespace LinphonePrivate
 
       void
       serializeConferenceInfo (::xercesc::XMLFormatTarget& ft,
-                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+                               const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                ::xercesc::DOMErrorHandler& eh,
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                const ::std::string& e = "UTF-8",
@@ -3776,7 +3776,7 @@ namespace LinphonePrivate
       //
 
       ::LinphonePrivate::Xsd::XmlSchema::dom::unique_ptr< ::xercesc::DOMDocument >
-      serializeConferenceInfo (const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x,
+      serializeConferenceInfo (const ::LinphonePrivate::Xsd::ConferenceInfo::ConferenceType& x, 
                                const ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap& m = ::LinphonePrivate::Xsd::XmlSchema::NamespaceInfomap (),
                                ::LinphonePrivate::Xsd::XmlSchema::Flags f = 0);
 
