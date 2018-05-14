@@ -207,7 +207,9 @@ static void quality_reporting_not_sent_if_low_bandwidth (void) {
 static void on_report_send_remove_fields (const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content) {
 	char *body = bctbx_strdup(linphone_content_get_string_buffer(content));
 	/* Corrupt start of the report */
-	strncpy(body, "corrupted report is corrupted", strlen("corrupted report is corrupted"));
+	const char *corrupted_str = "corrupted report is corrupted";
+	size_t corrupted_len = strlen(corrupted_str);
+	strncpy(body, corrupted_str, corrupted_len);
 	linphone_content_set_string_buffer((LinphoneContent *)content, body);
 	bctbx_free(body);
 }

@@ -2150,7 +2150,7 @@ static int lpc_cmd_speak(LinphoneCore *lc, char *args){
 #ifndef _WIN32
 	char voice[64];
 	char *sentence;
-	char cl[128];
+	char cl[256];
 	char wavfile[128]="/tmp/linphonec-espeak-XXXXXX";
 	int status;
 	FILE *file;
