@@ -196,15 +196,13 @@ typedef struct _LinphoneSearchResult LinphoneSearchResult;
 //
 // L_DECLARE_C_ENUM(ChatMessageDirection, L_ENUM_VALUES_CHAT_MESSAGE_DIRECTION);
 //
-// 3. Do not forget to replace each single quote or other special char to an escaped sequence like '&apos;'.
-// Otherwise you get this error at compilation:
+// 3. Do not forget to replace each single quote (with &apos;) or other special char like
+// to an escaped sequence. Otherwise you get this error at compilation:
 //
 // [ 99%] Building CXX object wrappers/cpp/CMakeFiles/linphone++.dir/src/linphone++.cc.o
 // c++: error: WORK/desktop/Build/linphone/wrappers/cpp/src/linphone++.cc: No such file or directory
 // c++: fatal error: no input files
 // compilation terminated.
-// -----------------------------------------------------------------------------
-
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------

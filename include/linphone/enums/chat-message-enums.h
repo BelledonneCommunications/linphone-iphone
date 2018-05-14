@@ -25,7 +25,7 @@
 #define L_ENUM_VALUES_CHAT_MESSAGE_STATE(F) \
 	F(Idle /**< Initial state */) \
 	F(InProgress /**< Delivery in progress */) \
-	F(Delivered /**< Message successfully delivered an acknowledged by the server */) \
+	F(Delivered /**< Message successfully delivered and acknowledged by the server */) \
 	F(NotDelivered /**< Message was not delivered */) \
 	F(FileTransferError /**< Message was received and acknowledged but cannot get file from server */) \
 	F(FileTransferDone /**< File transfer has been completed successfully */) \
