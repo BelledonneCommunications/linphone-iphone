@@ -208,7 +208,7 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 		return;
 	}
 
-	lev = linphone_event_ref(linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600));
+	lev = linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600);
 	lev->op->setFrom(chatRoomId.getLocalAddress().asString().c_str());
 	const string &lastNotifyStr = Utils::toString(lastNotify);
 	linphone_event_add_custom_header(lev, "Last-Notify-Version", lastNotifyStr.c_str());
@@ -222,7 +222,6 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 void RemoteConferenceEventHandlerPrivate::unsubscribe () {
 	if (lev) {
 		linphone_event_terminate(lev);
-		linphone_event_unref(lev);
 		lev = nullptr;
 	}
 }
@@ -257,8 +256,7 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
 	}
 
-	if (d->lev)
-		unsubscribe();
+	unsubscribe();
 }
 
 // -----------------------------------------------------------------------------

@@ -57,8 +57,7 @@ RemoteConferenceListEventHandler::~RemoteConferenceListEventHandler () {
 		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
 	}
 
-	if (lev)
-		unsubscribe();
+	unsubscribe();
 }
 
 // -----------------------------------------------------------------------------
@@ -105,7 +104,7 @@ void RemoteConferenceListEventHandler::subscribe () {
 
 	LinphoneAddress *rlsAddr = linphone_address_new(linphone_proxy_config_get_conference_factory_uri(cfg));
 
-	lev = linphone_event_ref(linphone_core_create_subscribe(lc, rlsAddr, "conference", 600));
+	lev = linphone_core_create_subscribe(lc, rlsAddr, "conference", 600);
 	char *from = linphone_address_as_string(linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(getCore()->getCCore())));
 	lev->op->setFrom(from);
 	bctbx_free(from);
@@ -126,12 +125,10 @@ void RemoteConferenceListEventHandler::subscribe () {
 }
 
 void RemoteConferenceListEventHandler::unsubscribe () {
-	if (!lev)
-		return;
-
-	linphone_event_terminate(lev);
-	linphone_event_unref(lev);
-	lev = nullptr;
+	if (lev) {
+		linphone_event_terminate(lev);
+		lev = nullptr;
+	}
 }
 
 void RemoteConferenceListEventHandler::notifyReceived (const Content *notifyContent) {

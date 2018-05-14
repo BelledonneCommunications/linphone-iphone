@@ -523,7 +523,7 @@ void ClientGroupChatRoom::leave () {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	dConference->eventHandler->getPrivate()->lev = nullptr;
+	dConference->eventHandler->unsubscribe();
 	shared_ptr<CallSession> session = dConference->focus->getPrivate()->getSession();
 	if (session)
 		session->terminate();
@@ -559,7 +559,7 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	L_D();
 	L_D_T(RemoteConference, dConference);
 
-	dConference->eventHandler->getPrivate()->lev = nullptr;
+	dConference->eventHandler->unsubscribe();
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
 	d->addEvent(make_shared<ConferenceEvent>(
