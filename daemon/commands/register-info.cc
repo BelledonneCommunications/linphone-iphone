@@ -1,6 +1,6 @@
 /*
 register-info.cc
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -34,12 +34,12 @@ public:
 		ost << "Id: " << id << std::endl;
 		ost << "Identity: " << linphone_proxy_config_get_identity(cfg) << std::endl;
 		ost << "Proxy: " << linphone_proxy_config_get_server_addr(cfg) << std::endl;
-		
+
 		const char *route = linphone_proxy_config_get_route(cfg);
 		if (route != NULL) {
 			ost << "Route: " << route << std::endl;
 		}
-		
+
 		ost << "State: " << linphone_registration_state_to_string(linphone_proxy_config_get_state(cfg)) << std::endl;
 		setBody(ost.str());
 	}

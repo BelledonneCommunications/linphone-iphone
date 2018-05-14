@@ -222,6 +222,10 @@ void lsd_player_set_gain(LsdPlayer *p, float gain){
 	ms_filter_call_method(p->lsd->mixer,MS_AUDIO_MIXER_SET_INPUT_GAIN,&gainctl);
 }
 
+static void lsd_player_configure_notify_func (void *userdata, MSFilter *, unsigned int, void *) {
+	lsd_player_configure((LsdPlayer *)userdata);
+}
+
 LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *cardname, int rate, int nchannels){
 	int i;
 	MSConnectionPoint mp;
@@ -251,7 +255,7 @@ LinphoneSoundDaemon * linphone_sound_daemon_new(MSFactory* factory, const char *
 	mp.pin=0;
 
 	lsd_player_init(factory, &lsd->branches[0],mp,MS_ITC_SOURCE_ID,lsd);
-	ms_filter_add_notify_callback(lsd->branches[0].player,(MSFilterNotifyFunc)lsd_player_configure,&lsd->branches[0],FALSE);
+	ms_filter_add_notify_callback(lsd->branches[0].player,lsd_player_configure_notify_func,&lsd->branches[0],FALSE);
 	for(i=1;i<MAX_BRANCHES;++i){
 		mp.pin=i;
 		lsd_player_init(factory,&lsd->branches[i],mp,MS_FILE_PLAYER_ID,lsd);

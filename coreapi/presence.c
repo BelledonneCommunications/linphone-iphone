@@ -124,6 +124,10 @@ static void presence_note_uninit(LinphonePresenceNote *note) {
 	}
 }
 
+static void presence_note_unref(void *note) {
+	linphone_presence_note_unref((LinphonePresenceNote *)note);
+}
+
 static LinphonePresenceService * presence_service_new(const char *id, LinphonePresenceBasicStatus status) {
 	LinphonePresenceService *service = belle_sip_object_new(LinphonePresenceService);
 	if (id != NULL) {
@@ -141,9 +145,13 @@ static void presence_service_uninit(LinphonePresenceService *service) {
 	if (service->contact != NULL) {
 		ms_free(service->contact);
 	}
-	bctbx_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(service->notes, presence_note_unref);
 	bctbx_list_free(service->notes);
 };
+
+static void presence_service_unref(void *service) {
+	linphone_presence_service_unref((LinphonePresenceService *)service);
+}
 
 static void presence_service_set_timestamp(LinphonePresenceService *service, time_t timestamp) {
 	service->timestamp = timestamp;
@@ -157,6 +165,10 @@ static void presence_activity_uninit(LinphonePresenceActivity *activity) {
 	if (activity->description != NULL) {
 		ms_free(activity->description);
 	}
+}
+
+static void presence_activity_unref(void *activity) {
+	linphone_presence_activity_unref((LinphonePresenceActivity *)activity);
 }
 
 static time_t parse_timestamp(const char *timestamp) {
@@ -217,12 +229,16 @@ static void presence_person_uninit(LinphonePresencePerson *person) {
 	if (person->id != NULL) {
 		ms_free(person->id);
 	}
-	bctbx_list_for_each(person->activities, (MSIterateFunc)linphone_presence_activity_unref);
+	bctbx_list_for_each(person->activities, presence_activity_unref);
 	bctbx_list_free(person->activities);
-	bctbx_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->activities_notes, presence_note_unref);
 	bctbx_list_free(person->activities_notes);
-	bctbx_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->notes, presence_note_unref);
 	bctbx_list_free(person->notes);
+}
+
+static void presence_person_unref(void *person) {
+	linphone_presence_person_unref((LinphonePresencePerson *)person);
 }
 
 static void presence_person_add_activities_note(LinphonePresencePerson *person, LinphonePresenceNote *note) {
@@ -254,11 +270,11 @@ static void presence_model_find_open_basic_status(LinphonePresenceService *servi
 static void presence_model_uninit(LinphonePresenceModel *model) {
 	if (model->presentity)
 		linphone_address_unref(model->presentity);
-	bctbx_list_for_each(model->services, (MSIterateFunc)linphone_presence_service_unref);
+	bctbx_list_for_each(model->services, presence_service_unref);
 	bctbx_list_free(model->services);
-	bctbx_list_for_each(model->persons, (MSIterateFunc)linphone_presence_person_unref);
+	bctbx_list_for_each(model->persons, presence_person_unref);
 	bctbx_list_free(model->persons);
-	bctbx_list_for_each(model->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(model->notes, presence_note_unref);
 	bctbx_list_free(model->notes);
 }
 
@@ -443,10 +459,14 @@ LinphoneStatus linphone_presence_model_add_activity(LinphonePresenceModel *model
 	return 0;
 }
 
+static void presence_person_clear_activities(void *person) {
+	linphone_presence_person_clear_activities((LinphonePresencePerson *)person);
+}
+
 LinphoneStatus linphone_presence_model_clear_activities(LinphonePresenceModel *model) {
 	if (model == NULL) return -1;
 
-	bctbx_list_for_each(model->persons, (MSIterateFunc)linphone_presence_person_clear_activities);
+	bctbx_list_for_each(model->persons, presence_person_clear_activities);
 	return 0;
 }
 
@@ -577,16 +597,16 @@ LinphoneStatus linphone_presence_model_add_note(LinphonePresenceModel *model, co
 }
 
 static void clear_presence_person_notes(LinphonePresencePerson *person) {
-	bctbx_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->activities_notes, presence_note_unref);
 	bctbx_list_free(person->activities_notes);
 	person->activities_notes = NULL;
-	bctbx_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->notes, presence_note_unref);
 	bctbx_list_free(person->notes);
 	person->notes = NULL;
 }
 
 static void clear_presence_service_notes(LinphonePresenceService *service) {
-	bctbx_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(service->notes, presence_note_unref);
 	bctbx_list_free(service->notes);
 	service->notes = NULL;
 }
@@ -597,7 +617,7 @@ LinphoneStatus linphone_presence_model_clear_notes(LinphonePresenceModel *model)
 
 	bctbx_list_for_each(model->persons, (MSIterateFunc)clear_presence_person_notes);
 	bctbx_list_for_each(model->services, (MSIterateFunc)clear_presence_service_notes);
-	bctbx_list_for_each(model->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(model->notes, presence_note_unref);
 	bctbx_list_free(model->notes);
 	model->notes = NULL;
 
@@ -633,7 +653,7 @@ LinphoneStatus linphone_presence_model_add_service(LinphonePresenceModel *model,
 LinphoneStatus linphone_presence_model_clear_services(LinphonePresenceModel *model) {
 	if (model == NULL) return -1;
 
-	bctbx_list_for_each(model->services, (MSIterateFunc)linphone_presence_service_unref);
+	bctbx_list_for_each(model->services, presence_service_unref);
 	bctbx_list_free(model->services);
 	model->services = NULL;
 	return 0;
@@ -659,7 +679,7 @@ LinphoneStatus linphone_presence_model_add_person(LinphonePresenceModel *model, 
 LinphoneStatus linphone_presence_model_clear_persons(LinphonePresenceModel *model) {
 	if (model == NULL) return -1;
 
-	bctbx_list_for_each(model->persons, (MSIterateFunc)linphone_presence_person_unref);
+	bctbx_list_for_each(model->persons, presence_person_unref);
 	bctbx_list_free(model->persons);
 	model->persons = NULL;
 	return 0;
@@ -795,7 +815,7 @@ LinphoneStatus linphone_presence_service_add_note(LinphonePresenceService *servi
 LinphoneStatus linphone_presence_service_clear_notes(LinphonePresenceService *service) {
 	if (service == NULL) return -1;
 
-	bctbx_list_for_each(service->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(service->notes, presence_note_unref);
 	bctbx_list_free(service->notes);
 	service->notes = NULL;
 	return 0;
@@ -856,7 +876,7 @@ LinphoneStatus linphone_presence_person_add_activity(LinphonePresencePerson *per
 
 LinphoneStatus linphone_presence_person_clear_activities(LinphonePresencePerson *person) {
 	if (person == NULL) return -1;
-	bctbx_list_for_each(person->activities, (MSIterateFunc)linphone_presence_activity_unref);
+	bctbx_list_for_each(person->activities, presence_activity_unref);
 	bctbx_list_free(person->activities);
 	person->activities = NULL;
 	return 0;
@@ -881,7 +901,7 @@ LinphoneStatus linphone_presence_person_add_note(LinphonePresencePerson *person,
 
 LinphoneStatus linphone_presence_person_clear_notes(LinphonePresencePerson *person) {
 	if (person == NULL) return -1;
-	bctbx_list_for_each(person->notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->notes, presence_note_unref);
 	bctbx_list_free(person->notes);
 	person->notes = NULL;
 	return 0;
@@ -906,7 +926,7 @@ LinphoneStatus linphone_presence_person_add_activities_note(LinphonePresencePers
 
 LinphoneStatus linphone_presence_person_clear_activities_notes(LinphonePresencePerson *person) {
 	if (person == NULL) return -1;
-	bctbx_list_for_each(person->activities_notes, (MSIterateFunc)linphone_presence_note_unref);
+	bctbx_list_for_each(person->activities_notes, presence_note_unref);
 	bctbx_list_free(person->activities_notes);
 	person->activities_notes = NULL;
 	return 0;
@@ -1435,7 +1455,7 @@ static int process_pidf_xml_presence_persons(xmlparsing_context_t *xml_ctx, Linp
 
 	if (err < 0) {
 		/* Remove all the persons added since there was an error. */
-		bctbx_list_for_each(model->persons, (MSIterateFunc)linphone_presence_person_unref);
+		bctbx_list_for_each(model->persons, presence_person_unref);
 	}
 	return err;
 }
