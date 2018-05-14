@@ -1892,7 +1892,6 @@ static void group_chat_room_send_refer_to_all_devices (void) {
 	linphone_core_manager_destroy(laure);
 }
 
-#if 0
 static void group_chat_room_add_device (void) {
 	LinphoneCoreManager *marie1 = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline1 = linphone_core_manager_create("pauline_rc");
@@ -1996,7 +1995,6 @@ static void group_chat_room_add_device (void) {
 	linphone_core_manager_destroy(pauline2);
 	linphone_core_manager_destroy(laure);
 }
-#endif
 
 static void multiple_is_composing_notification(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
@@ -2830,7 +2828,7 @@ static void group_chat_room_unique_one_to_one_chat_room_recreated_from_message_2
 
 	linphone_core_set_network_reachable(marie2->lc, FALSE);
 	linphone_core_set_network_reachable(pauline2->lc, FALSE);
-	
+
 	// Marie creates a new group chat room
 	const char *initialSubject = "Pauline";
 	LinphoneChatRoom *marieCr = create_chat_room_client_side(coresList, marie, &initialMarieStats, participantsAddresses, initialSubject, -1);
@@ -3513,8 +3511,7 @@ test_t group_chat_tests[] = {
 	TEST_ONE_TAG("Reinvited after removed from group chat room with several devices", group_chat_room_reinvited_after_removed_with_several_devices, "LeaksMemory"),
 	TEST_NO_TAG("Notify after disconnection", group_chat_room_notify_after_disconnection),
 	TEST_NO_TAG("Send refer to all participants devices", group_chat_room_send_refer_to_all_devices),
-	// TODO: Use when we support adding a new device in created conf
-	//TEST_ONE_TAGS("Admin add device and doesn't lose admin status", group_chat_room_add_device, "LeaksMemory"),
+	TEST_NO_TAG("Admin add device and doesn't lose admin status", group_chat_room_add_device),
 	TEST_NO_TAG("Send multiple is composing", multiple_is_composing_notification),
 	TEST_ONE_TAG("Fallback to basic chat room", group_chat_room_fallback_to_basic_chat_room, "LeaksMemory"),
 	TEST_NO_TAG("Group chat room creation fails if invited participants don't support it", group_chat_room_creation_fails_if_invited_participants_dont_support_it),
