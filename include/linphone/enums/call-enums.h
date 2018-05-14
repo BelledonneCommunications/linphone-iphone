@@ -23,7 +23,7 @@
 // =============================================================================
 
 #define L_ENUM_VALUES_CALL_SESSION_STATE(F) \
-	F(Idle /**< Idle */) \
+	F(Idle /**< Initial state */) \
 	F(IncomingReceived /**< Incoming call received */) \
 	F(OutgoingInit /**< Outgoing call initialized */) \
 	F(OutgoingProgress /**< Outgoing call in progress */) \
@@ -38,7 +38,7 @@
 	F(Error /**< Error */) \
 	F(End /**< Call end */) \
 	F(PausedByRemote /**< Paused by remote */) \
-	F(UpdatedByRemote /**< The call&apos;s parameters are updated used for example when video is asked by remote */) \
+	F(UpdatedByRemote /**< The call&apos;s parameters are updated for example when video is asked by remote */) \
 	F(IncomingEarlyMedia /**< We are proposing early media to an incoming call */) \
 	F(Updating /**< We have initiated a call update */) \
 	F(Released /**< The call object is now released */) \
