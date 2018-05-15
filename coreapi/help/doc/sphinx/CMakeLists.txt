@@ -43,7 +43,6 @@ if (ENABLE_SPHINX_DOC)
 		index.rst
 		logo.png
 		samples/samples.rst
-		toc.rst
 	)
 	configure_file(conf.py.in ${doc_source_dir}/conf.py)
 	foreach(file ${static_documentation_files})
