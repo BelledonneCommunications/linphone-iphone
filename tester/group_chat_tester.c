@@ -3713,7 +3713,7 @@ test_t group_chat_tests[] = {
 	TEST_ONE_TAG("IMDN sent from DB state", imdn_sent_from_db_state, "LeaksMemory"),
 	TEST_NO_TAG("Find one to one chat room", find_one_to_one_chat_room),
 	TEST_NO_TAG("New device after group chat room creation", group_chat_room_new_device_after_creation),
-	TEST_NO_TAG("Chat room list subscription", group_chat_room_list_subscription)
+	TEST_ONE_TAG("Chat room list subscription", group_chat_room_list_subscription, "LeaksMemory")
 };
 
 test_suite_t group_chat_test_suite = {
