@@ -589,8 +589,8 @@ void Sal::addSupportedTag (const string &tag) {
 }
 
 void Sal::removeSupportedTag (const string &tag) {
-	auto it = find(mSupportedTags.cbegin(), mSupportedTags.cend(), tag);
-	if (it != mSupportedTags.cend()) {
+	auto it = find(mSupportedTags.begin(), mSupportedTags.end(), tag);
+	if (it != mSupportedTags.end()) {
 		mSupportedTags.erase(it);
 		makeSupportedHeader();
 	}
@@ -614,7 +614,7 @@ void Sal::setUserAgent (const string &value) {
 
 const string &Sal::getUserAgent () const {
 	char userAgent[256];
-	belle_sip_header_user_agent_get_products_as_string(mUserAgentHeader, userAgent, sizeof(userAgent) - 1);
+	belle_sip_header_user_agent_get_products_as_string(mUserAgentHeader, userAgent, (unsigned int)sizeof(userAgent) - 1);
 	mUserAgent = userAgent;
 	return mUserAgent;
 }
