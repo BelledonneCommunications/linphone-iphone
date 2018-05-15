@@ -52,6 +52,10 @@ namespace {
 
 // -----------------------------------------------------------------------------
 
+LocalConferenceListEventHandler::LocalConferenceListEventHandler (const std::shared_ptr<Core> &core) : CoreAccessor(core) {}
+
+// -----------------------------------------------------------------------------
+
 void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body) {
 	LinphoneSubscriptionState subscriptionState = linphone_event_get_subscription_state(lev);
 
@@ -162,6 +166,8 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 
 	contents.push_front(rlmiContent);
 	Content multipart = ContentManager::contentListToMultipart(contents, MultipartBoundaryListEventHandler);
+	if (linphone_core_content_encoding_supported(getCore()->getCCore(), "deflate"))
+		multipart.setContentEncoding("deflate");
 	LinphoneContent *cContent = L_GET_C_BACK_PTR(&multipart);
 	linphone_event_notify(lev, cContent);
 	contents.clear();

@@ -24,6 +24,7 @@
 #include <list>
 
 #include "chat/chat-room/chat-room-id.h"
+#include "core/core-accessor.h"
 #include "linphone/utils/general.h"
 
 // =============================================================================
@@ -32,8 +33,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class LocalConferenceEventHandler;
 
-class LocalConferenceListEventHandler {
+class LocalConferenceListEventHandler : public CoreAccessor {
 public:
+	LocalConferenceListEventHandler (const std::shared_ptr<Core> &core);
+
 	void subscribeReceived (LinphoneEvent *lev, const LinphoneContent *body);
 	void addHandler (LocalConferenceEventHandler *handler);
 	void removeHandler (LocalConferenceEventHandler *handler);

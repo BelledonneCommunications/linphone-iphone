@@ -45,7 +45,6 @@ L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(Content,
 		string name;
 		string type;
 		string subtype;
-		string encoding;
 		string buffer;
 	} mutable cache;
 )
@@ -148,11 +147,11 @@ void linphone_content_set_size (LinphoneContent *content, size_t size) {
 }
 
 const char *linphone_content_get_encoding (const LinphoneContent *content) {
-	return content->cache.encoding.c_str();
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(content)->getContentEncoding());
 }
 
 void linphone_content_set_encoding (LinphoneContent *content, const char *encoding) {
-	content->cache.encoding = L_C_TO_STRING(encoding);
+	L_GET_CPP_PTR_FROM_C_OBJECT(content)->setContentEncoding(L_C_TO_STRING(encoding));
 }
 
 const char *linphone_content_get_name (const LinphoneContent *content) {
@@ -332,7 +331,7 @@ SalBodyHandler *sal_body_handler_from_content (const LinphoneContent *content, b
 	for (const auto &param : contentType.getParameters())
 		sal_body_handler_set_content_type_parameter(body_handler, param.getName().c_str(), param.getValue().c_str());
 
-	if (!content->cache.encoding.empty())
+	if (linphone_content_get_encoding(content))
 		sal_body_handler_set_encoding(body_handler, linphone_content_get_encoding(content));
 
 	return body_handler;

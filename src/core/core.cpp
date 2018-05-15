@@ -47,7 +47,7 @@ void CorePrivate::init () {
 	L_Q();
 	mainDb.reset(new MainDb(q->getSharedFromThis()));
 	remoteListEventHandler = makeUnique<RemoteConferenceListEventHandler>(q->getSharedFromThis());
-	localListEventHandler = makeUnique<LocalConferenceListEventHandler>();
+	localListEventHandler = makeUnique<LocalConferenceListEventHandler>(q->getSharedFromThis());
 
 	AbstractDb::Backend backend;
 	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(L_GET_C_BACK_PTR(q)), "storage", "uri", nullptr));
