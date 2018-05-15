@@ -2134,14 +2134,15 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		}
 	} else if (strcmp(notified_event, "conference") == 0) {
 		const LinphoneAddress *resource = linphone_event_get_resource(lev);
-		if (strcmp(linphone_address_as_string_uri_only(resource), linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(lc))) == 0) {
-			linphone_content_ref((LinphoneContent *) body);
+		char *resourceAddrStr = linphone_address_as_string_uri_only(resource);
+		if (strcmp(resourceAddrStr, linphone_proxy_config_get_conference_factory_uri(linphone_core_get_default_proxy_config(lc))) == 0) {
+			bctbx_free(resourceAddrStr);
 			L_GET_PRIVATE_FROM_C_OBJECT(lc)->remoteListEventHandler->notifyReceived(L_GET_CPP_PTR_FROM_C_OBJECT(body));
 			return;
 		}
+		bctbx_free(resourceAddrStr);
 
 		const LinphoneAddress *from = linphone_event_get_from(lev);
-
 		shared_ptr<AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(LinphonePrivate::ChatRoomId(
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(resource)),
 			IdentityAddress(*L_GET_CPP_PTR_FROM_C_OBJECT(from))
@@ -2159,7 +2160,7 @@ static void linphone_core_internal_notify_received(LinphoneCore *lc, LinphoneEve
 		if (linphone_content_is_multipart(body)) {
 			// TODO : migrate to c++ 'Content'.
 			int i = 0;
-			LinphoneContent *part = NULL;
+			LinphoneContent *part = nullptr;
 			while ((part = linphone_content_get_part(body, i))) {
 				i++;
 				L_GET_PRIVATE(cgcr)->notifyReceived(linphone_content_get_string_buffer(part));
