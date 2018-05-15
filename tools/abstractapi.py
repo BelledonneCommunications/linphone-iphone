@@ -428,27 +428,32 @@ class Class(Namespace):
 		self.classMethods.sort()
 
 
-class Interface(DocumentableObject):
+class Interface(Namespace):
 	def __init__(self, name):
-		DocumentableObject.__init__(self, name)
-		self.methods = []
+		Namespace.__init__(self, name)
+		self.instanceMethods = []
+		self.classMethods = []
 		self._listenedClass = None
-	
-	def add_method(self, method):
-		self.methods.append(method)
+
+	def add_instance_methods(self, method):
+		self.instanceMethods.append(method)
 		method.parent = self
-	
+
+	def add_class_methods(self, method):
+		self.classMethods.append(method)
+		method.parent = self
+
 	@property
 	def listenedClass(self):
 		return self._listenedClass
-	
+
 	@listenedClass.setter
 	def listenedClass(self, method):
-		self.methods.append(method)
+		self.instanceMethods.append(method)
 		method.parent = self
-	
+
 	def sort(self):
-		self.methods.sort()
+		self.instanceMethods.sort()
 
 
 class CParser(object):
@@ -619,7 +624,7 @@ class CParser(object):
 			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_interface(self, interface):
-		for method in interface.methods:
+		for method in interface.instanceMethods:
 			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_method(self, method):
@@ -784,7 +789,7 @@ class CParser(object):
 				if property.name != 'user_data':
 					try:
 						method = self._parse_listener_property(property, listener, cclass.events)
-						listener.add_method(method)
+						listener.add_instance_methods(method)
 					except BlacklistedSymbolError as e:
 						logger.debug(e)
 			
@@ -819,6 +824,8 @@ class CParser(object):
 			argName.from_snake_case(arg.name)
 			argument = Argument(argName, self.parse_type(arg))
 			method.add_arguments(argument)
+		method.briefDescription = event.briefDoc
+		method.detailedDescription = event.detailedDoc
 		
 		return method
 	
@@ -1005,7 +1012,7 @@ class CLangTranslator(CLikeLangTranslator):
 			raise TypeError('invalid enumerator value type: {0}'.format(value))
 	
 	def translate_method_as_prototype(self, method, hideArguments=False, hideArgNames=False, hideReturnType=False, stripDeclarators=False, namespace=None):
-		_class = method.find_first_ancestor_by_type(Class)
+		_class = method.find_first_ancestor_by_type(Class,Interface)
 		params = []
 		if not hideArguments:
 			params.append('{const}{className} *obj'.format(

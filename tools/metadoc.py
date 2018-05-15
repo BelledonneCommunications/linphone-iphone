@@ -558,6 +558,7 @@ class SphinxTranslator(Translator):
 		if langCode == 'C':
 			self.domain = 'cpp'
 			self.classDeclarator = 'type'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'function'
 			self.enumDeclarator = 'enum'
 			self.enumeratorDeclarator = 'enumerator'
@@ -565,6 +566,7 @@ class SphinxTranslator(Translator):
 		elif langCode == 'Cpp':
 			self.domain = 'cpp'
 			self.classDeclarator = 'class'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'function'
 			self.enumDeclarator = 'enum'
 			self.enumeratorDeclarator = 'enumerator'
@@ -573,17 +575,20 @@ class SphinxTranslator(Translator):
 		elif langCode == 'CSharp':
 			self.domain = 'csharp'
 			self.classDeclarator = 'class'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'method'
 			self.enumDeclarator = 'enum'
 			self.enumeratorDeclarator = 'value'
 			self.namespaceDeclarator = 'namespace'
 			self.classReferencer = 'type'
+			self.interfaceReferencer = self.classReferencer
 			self.enumReferencer = 'type'
 			self.enumeratorReferencer = 'enum'
 			self.methodReferencer = 'meth'
 		elif langCode == 'Java':
 			self.domain = 'java'
 			self.classDeclarator = 'type'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'method'
 			self.enumDeclarator = 'type'
 			self.enumeratorDeclarator = 'field'

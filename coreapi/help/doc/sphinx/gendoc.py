@@ -315,7 +315,7 @@ class ClassPage(SphinxPage):
 		self.briefDoc = _class.briefDescription.translate(self.docTranslator)
 		self.detailedDoc = _class.detailedDescription.translate(self.docTranslator) if _class.detailedDescription is not None else None
 		self.enums = [EnumPart(enum, lang, langs) for enum in _class.enums]
-		self.properties = self._translate_properties(_class.properties)
+		self.properties = self._translate_properties(_class.properties) if isinstance(_class, abstractapi.Class) else []
 		self.methods = self._translate_methods(_class.instanceMethods)
 		self.classMethods = self._translate_methods(_class.classMethods)
 		self.selector = self._make_selector(_class)
@@ -361,7 +361,7 @@ class ClassPage(SphinxPage):
 		return translatedMethods
 	
 	def _translate_method(self, method):
-		namespace = method.find_first_ancestor_by_type(abstractapi.Class)
+		namespace = method.find_first_ancestor_by_type(abstractapi.Class,abstractapi.Interface)
 		methAttr = {
 			'prototype'    : method.translate_as_prototype(self.lang.langTranslator, namespace=namespace),
 			'briefDoc'     : method.briefDescription.translate(self.docTranslator),
@@ -449,7 +449,7 @@ class DocGenerator:
 				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
 				cleaner.add_directory(filepath)
-			for class_ in self.api.namespace.classes:
+			for class_ in (self.api.namespace.classes + self.api.namespace.interfaces):
 				page = ClassPage(class_, lang, self.languages)
 				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
