@@ -328,8 +328,12 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 	const long long &localSipAddressId = insertSipAddress(chatRoomId.getLocalAddress().asString());
 
 	long long id = selectChatRoomId(peerSipAddressId, localSipAddressId);
-	if (id >= 0)
+	if (id >= 0) {
+		// The chat room is already stored in DB, but still update the notify id that might have changed
+		*dbSession.getBackendSession() << "UPDATE chat_room SET last_notify_id = :lastNotifyId WHERE id = :chatRoomId",
+			soci::use(notifyId), soci::use(id);
 		return id;
+	}
 
 	lInfo() << "Insert new chat room in database: " << chatRoomId << ".";
 
@@ -715,6 +719,8 @@ long long MainDbPrivate::insertConferenceEvent (const shared_ptr<EventLog> &even
 
 		if (eventLog->getType() == EventLog::Type::ConferenceTerminated)
 			*session << "UPDATE chat_room SET flags = 1, last_notify_id = 0 WHERE id = :chatRoomId", soci::use(curChatRoomId);
+		else if (eventLog->getType() == EventLog::Type::ConferenceCreated)
+			*session << "UPDATE chat_room SET flags = 0 WHERE id = :chatRoomId", soci::use(curChatRoomId);
 	}
 
 	if (chatRoomId)

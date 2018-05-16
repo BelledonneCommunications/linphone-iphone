@@ -1484,7 +1484,7 @@ static void group_chat_room_create_room_with_disconnected_friends_and_initial_me
 	group_chat_room_create_room_with_disconnected_friends_base(TRUE);
 }
 
-static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_removed, bool_t offline_when_reinvited) {
+static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_removed, bool_t offline_when_reinvited, bool_t restart_after_reinvited) {
 	LinphoneCoreManager *marie = linphone_core_manager_create("marie_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_create("pauline_rc");
 	LinphoneCoreManager *laure = linphone_core_manager_create("laure_tcp_rc");
@@ -1579,6 +1579,43 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 		BC_ASSERT_PTR_EQUAL(newLaureCr, laureCr);
 	BC_ASSERT_EQUAL(linphone_chat_room_get_nb_participants(newLaureCr), 2, int, "%d");
 	BC_ASSERT_STRING_EQUAL(linphone_chat_room_get_subject(newLaureCr), initialSubject);
+	BC_ASSERT_FALSE(linphone_chat_room_has_been_left(newLaureCr));
+
+	unsigned int nbLaureConferenceCreatedEventsBeforeRestart = 0;
+	bctbx_list_t *laureHistory = linphone_chat_room_get_history_events(newLaureCr, 0);
+	for (bctbx_list_t *item = laureHistory; item; item = bctbx_list_next(item)) {
+		LinphoneEventLog *event = (LinphoneEventLog *)bctbx_list_get_data(item);
+		if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceCreated)
+			nbLaureConferenceCreatedEventsBeforeRestart++;
+	}
+	bctbx_list_free_with_data(laureHistory, (bctbx_list_free_func)linphone_event_log_unref);
+	BC_ASSERT_EQUAL(nbLaureConferenceCreatedEventsBeforeRestart, 2, unsigned int, "%u");
+
+	if (restart_after_reinvited) {
+		coresList = bctbx_list_remove(coresList, laure->lc);
+		linphone_core_manager_reinit(laure);
+		bctbx_list_t *tmpCoresManagerList = bctbx_list_append(NULL, laure);
+		bctbx_list_t *tmpCoresList = init_core_for_conference(tmpCoresManagerList);
+		bctbx_list_free(tmpCoresManagerList);
+		coresList = bctbx_list_concat(coresList, tmpCoresList);
+		linphone_core_manager_start(laure, TRUE);
+		laureIdentity = linphone_core_get_device_identity(laure->lc);
+		laureAddr = linphone_address_new(laureIdentity);
+		newLaureCr = linphone_core_find_chat_room(laure->lc, confAddr, laureAddr);
+		linphone_address_unref(laureAddr);
+		wait_for_list(coresList,0, 1, 2000);
+		BC_ASSERT_FALSE(linphone_chat_room_has_been_left(newLaureCr));
+
+		unsigned int nbLaureConferenceCreatedEventsAfterRestart = 0;
+		bctbx_list_t *laureHistory = linphone_chat_room_get_history_events(newLaureCr, 0);
+		for (bctbx_list_t *item = laureHistory; item; item = bctbx_list_next(item)) {
+			LinphoneEventLog *event = (LinphoneEventLog *)bctbx_list_get_data(item);
+			if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceCreated)
+				nbLaureConferenceCreatedEventsAfterRestart++;
+		}
+		bctbx_list_free_with_data(laureHistory, (bctbx_list_free_func)linphone_event_log_unref);
+		BC_ASSERT_EQUAL(nbLaureConferenceCreatedEventsAfterRestart, nbLaureConferenceCreatedEventsBeforeRestart, unsigned int, "%u");
+	}
 
 	// Clean db from chat room
 	linphone_core_manager_delete_chat_room(marie, marieCr, coresList);
@@ -1593,15 +1630,19 @@ static void group_chat_room_reinvited_after_removed_base (bool_t offline_when_re
 }
 
 static void group_chat_room_reinvited_after_removed (void) {
-	group_chat_room_reinvited_after_removed_base(FALSE, FALSE);
+	group_chat_room_reinvited_after_removed_base(FALSE, FALSE, FALSE);
+}
+
+static void group_chat_room_reinvited_after_removed_2 (void) {
+	group_chat_room_reinvited_after_removed_base(FALSE, FALSE, TRUE);
 }
 
 static void group_chat_room_reinvited_after_removed_while_offline (void) {
-	group_chat_room_reinvited_after_removed_base(TRUE, FALSE);
+	group_chat_room_reinvited_after_removed_base(TRUE, FALSE, FALSE);
 }
 
 static void group_chat_room_reinvited_after_removed_while_offline_2 (void) {
-	group_chat_room_reinvited_after_removed_base(TRUE, TRUE);
+	group_chat_room_reinvited_after_removed_base(TRUE, TRUE, FALSE);
 }
 
 static void group_chat_room_reinvited_after_removed_with_several_devices (void) {
@@ -3686,6 +3727,7 @@ test_t group_chat_tests[] = {
 	TEST_ONE_TAG("Create chat room with disconnected friends", group_chat_room_create_room_with_disconnected_friends, "LeaksMemory"),
 	TEST_ONE_TAG("Create chat room with disconnected friends and initial message", group_chat_room_create_room_with_disconnected_friends_and_initial_message, "LeaksMemory"),
 	TEST_NO_TAG("Reinvited after removed from group chat room", group_chat_room_reinvited_after_removed),
+	TEST_ONE_TAG("Reinvited after removed from group chat room 2", group_chat_room_reinvited_after_removed_2, "LeaksMemory"),
 	TEST_ONE_TAG("Reinvited after removed from group chat room while offline", group_chat_room_reinvited_after_removed_while_offline, "LeaksMemory"),
 	TEST_ONE_TAG("Reinvited after removed from group chat room while offline 2", group_chat_room_reinvited_after_removed_while_offline_2, "LeaksMemory"),
 	TEST_NO_TAG("Reinvited after removed from group chat room with several devices", group_chat_room_reinvited_after_removed_with_several_devices),

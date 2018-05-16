@@ -598,17 +598,13 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	LinphoneChatRoom *cr = d->getCChatRoom();
 	_linphone_chat_room_notify_all_information_received(cr);
 
-	d->bgTask.stop();
-
-	// TODO: Bug. Event is inserted many times.
-	// Avoid this in the future. Deal with signals/slots system.
-	#if 0
 	d->addEvent(make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceCreated,
 		time(nullptr),
 		d->chatRoomId
 	));
-	#endif
+
+	d->bgTask.stop();
 }
 
 void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
