@@ -2274,13 +2274,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
-		linphone_friend_list_enable_subscriptions(
-			lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+		linphone_friend_list_enable_subscriptions(lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 		lists = lists->next;
 	}
 }
 
 - (BOOL)enterBackgroundMode {
+	linphone_core_enter_background(LC);
+
 	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 
@@ -2321,24 +2322,24 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
-
 	if (!shouldEnterBgMode && floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if (pushNotifEnabled) {
 			LOGI(@"Keeping lc core to handle push");
-			/*destroy voip socket if any and reset connectivity mode*/
+			// Destroy voip socket if any and reset connectivity mode
 			connectivity = none;
 			linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 			return YES;
 		}
 		return NO;
-
-	} else
-		return YES;
+	}
+	return YES;
 }
 
 - (void)becomeActive {
+	linphone_core_enter_foreground(LC);
+
 	// enable presence
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max || self.connectivity == none) {
 		[self refreshRegisters];
