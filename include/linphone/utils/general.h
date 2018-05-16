@@ -189,15 +189,13 @@ namespace Private {
 #define L_INTERNAL_DECLARE_PRIVATE(CLASS) \
 	inline CLASS ## Private *getPrivate () { \
 		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
-		return reinterpret_cast<CLASS ## Private *>( \
-			LinphonePrivate::Private::BetterPrivateAncestor<CLASS>::mPrivate \
-		); \
+		using TypeAncestor = LinphonePrivate::Private::BetterPrivateAncestor<CLASS>; \
+		return reinterpret_cast<CLASS ## Private *>(TypeAncestor::mPrivate); \
 	} \
 	inline const CLASS ## Private *getPrivate () const { \
 		L_INTERNAL_CHECK_OBJECT_INHERITANCE(CLASS); \
-		return reinterpret_cast<const CLASS ## Private *>( \
-			LinphonePrivate::Private::BetterPrivateAncestor<CLASS>::mPrivate \
-		); \
+		using TypeAncestor = LinphonePrivate::Private::BetterPrivateAncestor<CLASS>; \
+		return reinterpret_cast<const CLASS ## Private *>(TypeAncestor::mPrivate); \
 	} \
 	friend class CLASS ## Private; \
 	friend class Wrapper;
