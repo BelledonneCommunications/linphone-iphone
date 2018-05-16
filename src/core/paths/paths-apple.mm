@@ -35,10 +35,10 @@ std::string SysPaths::getDataPath (PlatformHelpers *) {
 		NSError *error;
 		lInfo() << "Data path " << fullPath.UTF8String << " does not exist, creating it.";
 		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
-			withIntermediateDirectories:YES
-			attributes:nil
-			error:&error]) {
-				lError() << "Create data path directory error: " << error.description;
+									   withIntermediateDirectories:YES
+														attributes:nil
+															 error:&error]) {
+			lError() << "Create data path directory error: " << error.description;
 		}
 	}
 
@@ -53,10 +53,10 @@ std::string SysPaths::getConfigPath (PlatformHelpers *) {
 		NSError *error;
 		lInfo() << "Config path " << fullPath.UTF8String << " does not exist, creating it.";
 		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
-			withIntermediateDirectories:YES
-			attributes:nil
-			error:&error]) {
-				lError() << "Create config path directory error: " << error.description;
+									   withIntermediateDirectories:YES
+														attributes:nil
+															 error:&error]) {
+			lError() << "Create config path directory error: " << error.description;
 		}
 	}
 
