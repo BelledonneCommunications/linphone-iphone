@@ -83,9 +83,8 @@ namespace Utils {
 	LINPHONE_PUBLIC std::string toString (long double val);
 	LINPHONE_PUBLIC std::string toString (const void *val);
 
-	LINPHONE_PUBLIC
 	template<typename T, typename = typename std::enable_if<IsDefinedEnum<T>::value, T>::type>
-	inline std::string toString (const T &val) { return getEnumValueAsString(val); }
+	LINPHONE_PUBLIC inline std::string toString (const T &val) { return getEnumValueAsString(val); }
 
 	LINPHONE_PUBLIC int stoi (const std::string &str, size_t *idx = 0, int base = 10);
 	LINPHONE_PUBLIC long long stoll (const std::string &str, size_t *idx = 0, int base = 10);

@@ -30,7 +30,7 @@ class Core;
 class CoreAccessorPrivate;
 
 // Decorator to get a valid core instance.
-LINPHONE_PUBLIC class CoreAccessor {
+class LINPHONE_PUBLIC CoreAccessor {
 public:
 	CoreAccessor (const std::shared_ptr<Core> &core);
 	CoreAccessor (const std::shared_ptr<Core> &&core);
