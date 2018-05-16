@@ -6018,6 +6018,14 @@ void friends_config_uninit(LinphoneCore* lc)
 	ms_message("Destroying friends done.");
 }
 
+void linphone_core_enter_background(LinphoneCore *lc) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(lc)->enterBackground();
+}
+
+void linphone_core_enter_foreground(LinphoneCore *lc) {
+	L_GET_CPP_PTR_FROM_C_OBJECT(lc)->enterForeground();
+}
+
 LpConfig * linphone_core_get_config(const LinphoneCore *lc){
 	return lc->config;
 }

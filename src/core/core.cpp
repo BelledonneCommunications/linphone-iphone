@@ -113,6 +113,26 @@ void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, Linp
 		listener->onRegistrationStateChanged(cfg, state, message);
 }
 
+void CorePrivate::notifyEnteringBackground () {
+	if (isInBackground)
+		return;
+
+	isInBackground = true;
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onEnteringBackground();
+}
+
+void CorePrivate::notifyEnteringForeground () {
+	if (!isInBackground)
+		return;
+
+	isInBackground = false;
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onEnteringForeground();
+}
+
 // =============================================================================
 
 Core::Core () : Object(*new CorePrivate) {
@@ -130,6 +150,24 @@ shared_ptr<Core> Core::create (LinphoneCore *cCore) {
 	L_SET_CPP_PTR_FROM_C_OBJECT(cCore, core);
 	return core;
 }
+
+// ---------------------------------------------------------------------------
+// Application lifecycle.
+// ---------------------------------------------------------------------------
+
+void Core::enterBackground () {
+	L_D();
+	d->notifyEnteringBackground();
+}
+
+void Core::enterForeground () {
+	L_D();
+	d->notifyEnteringForeground();
+}
+
+// ---------------------------------------------------------------------------
+// C-Core.
+// ---------------------------------------------------------------------------
 
 LinphoneCore *Core::getCCore () const {
 	return L_GET_C_BACK_PTR(this);

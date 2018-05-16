@@ -245,4 +245,12 @@ void RemoteConferenceListEventHandler::onRegistrationStateChanged (LinphoneProxy
 		subscribe();
 }
 
+void RemoteConferenceListEventHandler::onEnteringBackground () {
+	unsubscribe();
+}
+
+void RemoteConferenceListEventHandler::onEnteringForeground () {
+	subscribe();
+}
+
 LINPHONE_END_NAMESPACE

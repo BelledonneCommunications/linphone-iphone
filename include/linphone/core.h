@@ -4027,6 +4027,18 @@ LINPHONE_PUBLIC void *linphone_core_get_user_data(const LinphoneCore *lc);
 LINPHONE_PUBLIC void linphone_core_set_user_data(LinphoneCore *lc, void *userdata);
 
 /**
+ * This method is called by the application to notify the linphone core library when it enters background mode.
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_core_enter_background(LinphoneCore *lc);
+
+/**
+ * This method is called by the application to notify the linphone core library when it enters foreground mode.
+ * @ingroup misc
+ */
+LINPHONE_PUBLIC void linphone_core_enter_foreground(LinphoneCore *lc);
+
+/**
  * Returns the LpConfig object used to manage the storage (config) file.
  * @param[in] lc #LinphoneCore object
  * The application can use the LpConfig object to insert its own private

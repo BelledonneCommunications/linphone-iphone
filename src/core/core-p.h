@@ -44,6 +44,8 @@ public:
 	void notifyGlobalStateChanged (LinphoneGlobalState state);
 	void notifyNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable);
 	void notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message);
+	void notifyEnteringBackground ();
+	void notifyEnteringForeground ();
 
 	int addCall (const std::shared_ptr<Call> &call);
 	bool canWeAddCall () const;
@@ -72,6 +74,8 @@ public:
 	std::unique_ptr<LocalConferenceListEventHandler> localListEventHandler;
 
 private:
+	bool isInBackground = false;
+
 	std::list<CoreListener *> listeners;
 
 	std::list<std::shared_ptr<Call>> calls;

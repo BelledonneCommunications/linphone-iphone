@@ -238,6 +238,14 @@ void RemoteConferenceEventHandlerPrivate::onRegistrationStateChanged (LinphonePr
 		subscribe();
 }
 
+void RemoteConferenceEventHandlerPrivate::onEnteringBackground () {
+	unsubscribe();
+}
+
+void RemoteConferenceEventHandlerPrivate::onEnteringForeground () {
+	subscribe();
+}
+
 // -----------------------------------------------------------------------------
 
 RemoteConferenceEventHandler::RemoteConferenceEventHandler (RemoteConference *remoteConference) :

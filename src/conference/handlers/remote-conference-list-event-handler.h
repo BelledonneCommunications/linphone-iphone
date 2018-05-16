@@ -61,6 +61,8 @@ private:
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) override;
+	void onEnteringBackground () override;
+	void onEnteringForeground () override;
 };
 
 LINPHONE_END_NAMESPACE
