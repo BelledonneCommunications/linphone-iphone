@@ -481,8 +481,12 @@ void _linphone_chat_room_notify_subject_changed(LinphoneChatRoom *cr, const Linp
 	NOTIFY_IF_EXIST(SubjectChanged, subject_changed, cr, event_log)
 }
 
-void _linphone_chat_room_notify_all_information_received(LinphoneChatRoom *cr) {
-	NOTIFY_IF_EXIST(AllInformationReceived, all_information_received, cr)
+void _linphone_chat_room_notify_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *eventLog) {
+	NOTIFY_IF_EXIST(ConferenceJoined, conference_joined, cr, eventLog)
+}
+
+void _linphone_chat_room_notify_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *eventLog) {
+	NOTIFY_IF_EXIST(ConferenceLeft, conference_left, cr, eventLog)
 }
 
 void _linphone_chat_room_notify_undecryptable_message_received(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {

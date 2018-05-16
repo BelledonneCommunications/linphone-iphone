@@ -230,18 +230,32 @@ LINPHONE_PUBLIC LinphoneChatRoomCbsParticipantDeviceRemovedCb linphone_chat_room
 LINPHONE_PUBLIC void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsParticipantDeviceRemovedCb cb);
 
 /**
- * Get the all information received callback.
+ * Get the conference joined callback.
  * @param[in] cbs LinphoneChatRoomCbs object.
- * @return The current all information received callback.
+ * @return The current conference joined callback.
  */
-LINPHONE_PUBLIC LinphoneChatRoomCbsAllInformationReceivedCb linphone_chat_room_cbs_get_all_information_received (const LinphoneChatRoomCbs *cbs);
+LINPHONE_PUBLIC LinphoneChatRoomCbsConferenceJoinedCb linphone_chat_room_cbs_get_conference_joined (const LinphoneChatRoomCbs *cbs);
 
 /**
- * Set the all information received callback.
+ * Set the conference joined callback.
  * @param[in] cbs LinphoneChatRoomCbs object.
- * @param[in] cb The all information received callback to be used.
+ * @param[in] cb The conference joined callback to be used.
  */
-LINPHONE_PUBLIC void linphone_chat_room_cbs_set_all_information_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsAllInformationReceivedCb cb);
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_conference_joined (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceJoinedCb cb);
+
+/**
+ * Get the conference left callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @return The current conference left callback.
+ */
+LINPHONE_PUBLIC LinphoneChatRoomCbsConferenceLeftCb linphone_chat_room_cbs_get_conference_left (const LinphoneChatRoomCbs *cbs);
+
+/**
+ * Set the conference left callback.
+ * @param[in] cbs LinphoneChatRoomCbs object.
+ * @param[in] cb The conference left callback to be used.
+ */
+LINPHONE_PUBLIC void linphone_chat_room_cbs_set_conference_left (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceLeftCb cb);
 
 /**
  * Get the conference address generation callback.

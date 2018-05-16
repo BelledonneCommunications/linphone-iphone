@@ -256,10 +256,16 @@ typedef void (*LinphoneChatRoomCbsParticipantDeviceAddedCb) (LinphoneChatRoom *c
 typedef void (*LinphoneChatRoomCbsParticipantDeviceRemovedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *event_log);
 
 /**
- * Callback used to notify a chat room has received all its information.
+ * Callback used to notify a chat room has been joined.
  * @param[in] cr #LinphoneChatRoom object
  */
-typedef void (*LinphoneChatRoomCbsAllInformationReceivedCb) (LinphoneChatRoom *cr);
+typedef void (*LinphoneChatRoomCbsConferenceJoinedCb) (LinphoneChatRoom *cr, const LinphoneEventLog *eventLog);
+
+/**
+ * Callback used to notify a chat room has been left.
+ * @param[in] cr #LinphoneChatRoom object
+ */
+typedef void (*LinphoneChatRoomCbsConferenceLeftCb) (LinphoneChatRoom *cr, const LinphoneEventLog *eventLog);
 
 /**
  * Callback used when a group chat room is created server-side to generate the address of the chat room.

@@ -186,7 +186,7 @@ typedef struct _stats {
 	int number_of_LinphoneIsComposingIdleReceived;
 	int progress_of_LinphoneFileTransfer;
 
-	int number_of_LinphoneChatRoomAllInformationReceived;
+	int number_of_LinphoneChatRoomConferenceJoined;
 	int number_of_LinphoneChatRoomStateInstantiated;
 	int number_of_LinphoneChatRoomStateCreationPending;
 	int number_of_LinphoneChatRoomStateCreated;

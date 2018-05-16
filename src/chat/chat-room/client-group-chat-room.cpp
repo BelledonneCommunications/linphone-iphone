@@ -562,11 +562,17 @@ void ClientGroupChatRoom::onConferenceTerminated (const IdentityAddress &addr) {
 	dConference->eventHandler->unsubscribe();
 	dConference->eventHandler->resetLastNotify();
 	d->setState(ChatRoom::State::Terminated);
-	d->addEvent(make_shared<ConferenceEvent>(
+
+	auto event = make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceTerminated,
 		time(nullptr),
 		d->chatRoomId
-	));
+	);
+	d->addEvent(event);
+
+	LinphoneChatRoom *cr = d->getCChatRoom();
+	_linphone_chat_room_notify_conference_left(cr, L_GET_C_BACK_PTR(event));
+
 	if (d->deletionOnTerminationEnabled) {
 		d->deletionOnTerminationEnabled = false;
 		d->chatRoomListener->onChatRoomDeleteRequested(getSharedFromThis());
@@ -595,14 +601,15 @@ void ClientGroupChatRoom::onFirstNotifyReceived (const IdentityAddress &addr) {
 	else
 		d->chatRoomListener->onChatRoomInsertInDatabaseRequested(getSharedFromThis());
 
-	LinphoneChatRoom *cr = d->getCChatRoom();
-	_linphone_chat_room_notify_all_information_received(cr);
-
-	d->addEvent(make_shared<ConferenceEvent>(
+	auto event = make_shared<ConferenceEvent>(
 		EventLog::Type::ConferenceCreated,
 		time(nullptr),
 		d->chatRoomId
-	));
+	);
+	d->addEvent(event);
+
+	LinphoneChatRoom *cr = d->getCChatRoom();
+	_linphone_chat_room_notify_conference_joined(cr, L_GET_C_BACK_PTR(event));
 
 	d->bgTask.stop();
 }

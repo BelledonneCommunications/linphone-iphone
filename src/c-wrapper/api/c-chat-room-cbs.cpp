@@ -35,7 +35,8 @@ struct _LinphoneChatRoomCbs {
 	LinphoneChatRoomCbsParticipantAdminStatusChangedCb participantAdminStatusChangedCb;
 	LinphoneChatRoomCbsStateChangedCb stateChangedCb;
 	LinphoneChatRoomCbsSubjectChangedCb subjectChangedCb;
-	LinphoneChatRoomCbsAllInformationReceivedCb allInformationReceivedCb;
+	LinphoneChatRoomCbsConferenceJoinedCb conferenceJoinedCb;
+	LinphoneChatRoomCbsConferenceLeftCb conferenceLeftCb;
 	LinphoneChatRoomCbsUndecryptableMessageReceivedCb undecryptableMessageReceivedCb;
 	LinphoneChatRoomCbsChatMessageReceivedCb chatMessageReceivedCb;
 	LinphoneChatRoomCbsChatMessageSentCb chatMessageSentCb;
@@ -177,12 +178,20 @@ void linphone_chat_room_cbs_set_participant_device_removed (LinphoneChatRoomCbs 
 	cbs->participantDeviceRemovedCb = cb;
 }
 
-LinphoneChatRoomCbsAllInformationReceivedCb linphone_chat_room_cbs_get_all_information_received (const LinphoneChatRoomCbs *cbs) {
-	return cbs->allInformationReceivedCb;
+LinphoneChatRoomCbsConferenceJoinedCb linphone_chat_room_cbs_get_conference_joined (const LinphoneChatRoomCbs *cbs) {
+	return cbs->conferenceJoinedCb;
 }
 
-void linphone_chat_room_cbs_set_all_information_received (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsAllInformationReceivedCb cb) {
-	cbs->allInformationReceivedCb = cb;
+void linphone_chat_room_cbs_set_conference_joined (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceJoinedCb cb) {
+	cbs->conferenceJoinedCb = cb;
+}
+
+LinphoneChatRoomCbsConferenceLeftCb linphone_chat_room_cbs_get_conference_left (const LinphoneChatRoomCbs *cbs) {
+	return cbs->conferenceLeftCb;
+}
+
+void linphone_chat_room_cbs_set_conference_left (LinphoneChatRoomCbs *cbs, LinphoneChatRoomCbsConferenceLeftCb cb) {
+	cbs->conferenceLeftCb = cb;
 }
 
 LinphoneChatRoomCbsConferenceAddressGenerationCb linphone_chat_room_cbs_get_conference_address_generation (const LinphoneChatRoomCbs *cbs) {
