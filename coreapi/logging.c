@@ -95,7 +95,7 @@ unsigned int _bctbx_log_mask_to_linphone_log_mask(unsigned int mask) {
 BctbxLogLevel _linphone_log_level_to_bctbx_log_level(LinphoneLogLevel level) {
 	try {
 		return _linphone_log_level_to_bctbx_log_level_map.at(level);
-	} catch (const std::out_of_range &e) {
+	} catch (const std::out_of_range &) {
 		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
 		return BCTBX_LOG_LOGLEV_END;
 	}

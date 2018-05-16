@@ -17,11 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <stream>
-
-#include "shlobj.h"
-
-#include "linphone/utils/utils.h"
+#include <algorithm>
+#include <comutil.h>
+#include <ShlObj_core.h>
 
 #include "core/platform-helpers/platform-helpers.h"
 
@@ -33,23 +31,28 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-	TCHAR szPath[MAX_PATH];
-	// Get path for each computer, non-user specific and non-roaming data.
-	if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, 0, szPath))) {
-		stringstream path;
-		path << boost::lexical_cast<std::string>(szPath) << "\\linphone\\";
-		string ret = path.str();
-		boost::replace_all(ret, "\\", "\\\\");
-		return ret;
+static string getPath (const GUID &id) {
+	string strPath;
+
+	LPWSTR path;
+	if (SHGetKnownFolderPath(id, KF_FLAG_DONT_VERIFY, 0, &path) == S_OK) {
+		strPath = _bstr_t(path);
+		replace(strPath.begin(), strPath.end(), '\\', '/');
+		CoTaskMemFree(path);
 	}
 
-	return Utils::getEmptyConstRefObject<std::string>();
+	return strPath;
 }
 
-string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	// Seems to be the same directory.
-	return getDataPath(platformHelper);
+
+string SysPaths::getDataPath (PlatformHelpers *) {
+	static string dataPath = getPath(FOLDERID_LocalAppData);
+	return dataPath;
+}
+
+string SysPaths::getConfigPath (PlatformHelpers *platformHelpers) {
+	// Yes, same path.
+	return getDataPath(platformHelpers);
 }
 
 LINPHONE_END_NAMESPACE
