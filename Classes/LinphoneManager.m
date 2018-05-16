@@ -2257,8 +2257,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if ([self lpConfigBoolForKey:@"publish_presence"]) {
 		// set present to "tv", because "available" does not work yet
 		if (enabled) {
-			linphone_core_set_presence_model(
-											 LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
+			linphone_core_set_presence_model(LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
 		}
 
 		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
@@ -2311,11 +2310,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		&& bctbx_list_find_custom(callList, (bctbx_compare_func)comp_call_state_paused, NULL)) {
 		[self startCallPausedLongRunningTask];
 	}
-	if (callList) {
-		/*if at least one call exist, enter normal bg mode */
+	if (callList) // If at least one call exist, enter normal bg mode
 		shouldEnterBgMode = TRUE;
-	}
-	/*stop the video preview*/
+
+	// Stop the video preview
 	if (theLinphoneCore) {
 		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
 		[self iterate];
