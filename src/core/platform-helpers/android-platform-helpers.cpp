@@ -104,7 +104,7 @@ AndroidPlatformHelpers::AndroidPlatformHelpers (LinphoneCore *lc, void *systemCo
 	mGetConfigPathId = getMethodId(env, klass, "getConfigPath", "()Ljava/lang/String;");
 
 	jmethodID initCoreId = getMethodId(env, klass, "initCore", "(J)V");
-	env->CallVoidMethod(mJavaHelper, initCoreId, (jlong)lc);
+	env->CallVoidMethod(mJavaHelper, initCoreId, lc);
 
 	jobject pm = env->CallObjectMethod(mJavaHelper, mGetPowerManagerId);
 	belle_sip_wake_lock_init(env, pm);

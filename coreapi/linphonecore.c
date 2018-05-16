@@ -2216,8 +2216,9 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 
 	// We need the Sal on the Android platform helper init
 	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
-	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
-	lc->sal=new Sal(NULL);
+    image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
+    lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
+	lc->sal=new Sal(lc->factory);
 	lc->sal->set_http_proxy_host(linphone_core_get_http_proxy_host(lc));
 	lc->sal->set_http_proxy_port(linphone_core_get_http_proxy_port(lc));
 

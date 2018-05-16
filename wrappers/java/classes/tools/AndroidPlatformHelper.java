@@ -238,9 +238,9 @@ public class AndroidPlatformHelper {
 		}
 	}
 
-	public void copyFromPackage(int ressourceId, String target) throws IOException {
-		InputStream lInputStream = mResources.openRawResource(ressourceId);
+	public void copyFromPackage(int ressourceId, String target) throws IOException{
 		FileOutputStream lOutputStream = mContext.openFileOutput (target, 0);
+		InputStream lInputStream = mResources.openRawResource(ressourceId);
 		int readByte;
 		byte[] buff = new byte[8048];
 		while (( readByte = lInputStream.read(buff)) != -1) {
