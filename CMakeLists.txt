@@ -262,6 +262,11 @@ if(ENABLE_DEBUG_LOGS)
 	add_definitions("-DDEBUG_LOGS")
 endif()
 
+# Enable stdint.h limit macros on C++ files. (Windows only.)
+if(MSVC)
+	add_definitions("-D__STDC_LIMIT_MACROS")
+endif()
+
 set(STRICT_OPTIONS_CPP )
 set(STRICT_OPTIONS_C )
 set(STRICT_OPTIONS_CXX )
