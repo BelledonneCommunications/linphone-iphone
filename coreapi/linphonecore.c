@@ -1888,7 +1888,7 @@ void linphone_core_set_dns_servers(LinphoneCore *lc, const bctbx_list_t *servers
 }
 
 void linphone_core_enable_dns_srv(LinphoneCore *lc, bool_t enable) {
-	lc->sal->enableDnsSrv(enable);
+	lc->sal->enableDnsSrv(!!enable);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config, "net", "dns_srv_enabled", enable ? 1 : 0);
 }
@@ -1898,7 +1898,7 @@ bool_t linphone_core_dns_srv_enabled(const LinphoneCore *lc) {
 }
 
 void linphone_core_enable_dns_search(LinphoneCore *lc, bool_t enable) {
-	lc->sal->enableDnsSearch(enable);
+	lc->sal->enableDnsSearch(!!enable);
 	if (linphone_core_ready(lc))
 		lp_config_set_int(lc->config, "net", "dns_search_enabled", enable ? 1 : 0);
 }
@@ -3261,7 +3261,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 	uint64_t curtime_ms = ms_get_cur_time_ms(); /*monotonic time*/
 	time_t current_real_time = ms_time(NULL);
 	int64_t diff_time;
-	bool_t one_second_elapsed=FALSE;
+	bool one_second_elapsed = false;
 
 	if (lc->network_reachable_to_be_notified) {
 		lc->network_reachable_to_be_notified=FALSE;
@@ -3274,7 +3274,7 @@ void linphone_core_iterate(LinphoneCore *lc){
 		lc->prevtime_ms = curtime_ms;
 	}
 	if ((diff_time=(int64_t)(curtime_ms-lc->prevtime_ms)) >= 1000){
-		one_second_elapsed=TRUE;
+		one_second_elapsed = true;
 		if (diff_time>3000){
 			/*since monotonic time doesn't increment while machine is sleeping, we don't want to catchup too much*/
 			lc->prevtime_ms = curtime_ms;
@@ -4352,7 +4352,7 @@ const char *linphone_core_get_root_ca(LinphoneCore *lc){
 }
 
 void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
-	lc->sal->verifyServerCertificates(yesno);
+	lc->sal->verifyServerCertificates(!!yesno);
 	if (lc->http_crypto_config){
 		belle_tls_crypto_config_set_verify_exceptions(lc->http_crypto_config, yesno ? 0 : BELLE_TLS_VERIFY_ANY_REASON);
 	}
@@ -4360,7 +4360,7 @@ void linphone_core_verify_server_certificates(LinphoneCore *lc, bool_t yesno){
 }
 
 void linphone_core_verify_server_cn(LinphoneCore *lc, bool_t yesno){
-	lc->sal->verifyServerCn(yesno);
+	lc->sal->verifyServerCn(!!yesno);
 	if (lc->http_crypto_config){
 		belle_tls_crypto_config_set_verify_exceptions(lc->http_crypto_config, yesno ? 0 : BELLE_TLS_VERIFY_CN_MISMATCH);
 	}
@@ -6365,7 +6365,7 @@ const char *linphone_error_to_string(LinphoneReason err){
 
 void linphone_core_enable_keep_alive(LinphoneCore* lc,bool_t enable) {
 	if (enable > 0) {
-		lc->sal->useTcpTlsKeepAlive(lc->sip_conf.tcp_tls_keepalive);
+		lc->sal->useTcpTlsKeepAlive(!!lc->sip_conf.tcp_tls_keepalive);
 		lc->sal->setKeepAlivePeriod(lc->sip_conf.keepalive_period);
 	} else {
 		lc->sal->setKeepAlivePeriod(0);

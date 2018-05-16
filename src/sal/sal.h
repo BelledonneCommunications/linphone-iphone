@@ -235,10 +235,10 @@ public:
 	void setDnsServers (const bctbx_list_t *servers);
 
 	void enableDnsSearch (bool value) { belle_sip_stack_enable_dns_search(mStack, (unsigned char)value); }
-	bool dnsSearchEnabled () const { return belle_sip_stack_dns_search_enabled(mStack); }
+	bool dnsSearchEnabled () const { return !!belle_sip_stack_dns_search_enabled(mStack); }
 
 	void enableDnsSrv (bool value) { belle_sip_stack_enable_dns_srv(mStack, (unsigned char)value); }
-	bool dnsSrvEnabled () const { return belle_sip_stack_dns_srv_enabled(mStack); }
+	bool dnsSrvEnabled () const { return !!belle_sip_stack_dns_srv_enabled(mStack); }
 
 	void setDnsUserHostsFile (const std::string &value);
 	const std::string &getDnsUserHostsFile () const;
