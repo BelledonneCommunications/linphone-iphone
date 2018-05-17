@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if (ENABLE_SPHINX_DOC)
+if (ENABLE_DOC)
 	set(doc_source_dir ${CMAKE_CURRENT_BINARY_DIR}/source)
 	set(doc_output_dir ${CMAKE_CURRENT_BINARY_DIR}/build)
 	set(reference_doc_source_dir ${doc_source_dir}/reference)
