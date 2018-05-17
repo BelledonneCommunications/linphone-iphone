@@ -21,6 +21,7 @@
 #include "tester_utils.h"
 
 #ifdef VIDEO_ENABLED
+
 static void call_paused_resumed_with_video_base_call_cb(LinphoneCore *lc, LinphoneCall *call, LinphoneCallState cstate, const char *message) {
 	if (cstate == LinphoneCallUpdatedByRemote) {
 		LinphoneCallParams *params = linphone_core_create_call_params(lc, call);
@@ -2228,10 +2229,7 @@ static void video_call_expected_fps_for_high_bandwidth(void) {
 #endif
 }
 
-#endif // VIDEO_ENABLED
-
 test_t call_video_tests[] = {
-#ifdef VIDEO_ENABLED
 	TEST_NO_TAG("Call paused resumed with video", call_paused_resumed_with_video),
 	TEST_NO_TAG("Call paused resumed with video no sdp ack", call_paused_resumed_with_no_sdp_ack),
 	TEST_NO_TAG("Call paused resumed with video no sdk ack using video policy for resume offers", call_paused_resumed_with_no_sdp_ack_using_video_policy),
@@ -2303,8 +2301,9 @@ test_t call_video_tests[] = {
 	TEST_NO_TAG("Video call expected FPS for low bandwidth", video_call_expected_fps_for_low_bandwidth),
 	TEST_NO_TAG("Video call expected FPS for regular bandwidth", video_call_expected_fps_for_regular_bandwidth),
 	TEST_NO_TAG("Video call expected FPS for high bandwidth", video_call_expected_fps_for_high_bandwidth)
-#endif
 };
 
 test_suite_t call_video_test_suite = {"Video Call", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 								sizeof(call_video_tests) / sizeof(call_video_tests[0]), call_video_tests};
+
+#endif // ifdef VIDEO_ENABLED

@@ -41,7 +41,11 @@ extern "C" {
 
 extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
-extern test_suite_t call_video_test_suite;
+
+#if VIDEO_ENABLED
+	extern test_suite_t call_video_test_suite;
+#endif
+
 extern test_suite_t clonable_object_test_suite;
 extern test_suite_t conference_event_test_suite;
 extern test_suite_t conference_test_suite;
@@ -73,12 +77,12 @@ extern test_suite_t upnp_test_suite;
 extern test_suite_t video_test_suite;
 
 #ifdef VCARD_ENABLED
-extern test_suite_t vcard_test_suite;
+	extern test_suite_t vcard_test_suite;
 #endif
 
 extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
-extern test_suite_t complex_sip_call_test_suite;
+	extern test_suite_t complex_sip_call_test_suite;
 #endif
 
 extern int manager_count;
