@@ -3724,7 +3724,7 @@ static LinphoneCall * get_unique_call(LinphoneCore *lc) {
 	return call;
 }
 
-static LinphoneStatus _linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
+LinphoneStatus linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
 	if (call == NULL) {
 		call = get_unique_call(lc);
 		if (call == NULL) {
@@ -3736,11 +3736,7 @@ static LinphoneStatus _linphone_core_accept_call_with_params(LinphoneCore *lc, L
 }
 
 LinphoneStatus linphone_core_accept_call(LinphoneCore *lc, LinphoneCall *call) {
-	return _linphone_core_accept_call_with_params(lc, call, NULL);
-}
-
-LinphoneStatus linphone_core_accept_call_with_params(LinphoneCore *lc, LinphoneCall *call, const LinphoneCallParams *params) {
-	return _linphone_core_accept_call_with_params(lc, call, params);
+	return linphone_core_accept_call_with_params(lc, call, NULL);
 }
 
 LinphoneStatus linphone_core_redirect_call(LinphoneCore *lc, LinphoneCall *call, const char *redirect_uri) {
