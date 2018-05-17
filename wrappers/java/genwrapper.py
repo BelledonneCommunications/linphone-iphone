@@ -465,7 +465,7 @@ class JavaTranslator(object):
 
         interfaceDict['doc'] = _class.briefDescription.translate(self.docTranslator)
 
-        for method in _class.methods:
+        for method in _class.instanceMethods:
             interfaceDict['methods'].append(self.translate_method(method))
             interfaceDict['jniMethods'].append(self.translate_jni_interface(_class.listenedClass, _class.name, method))
 
@@ -528,7 +528,7 @@ class JniInterface(object):
         self.cPrefix = javaClass.cPrefix
         self.callbacks = []
         listener = apiClass.listenerInterface
-        for method in listener.methods:
+        for method in listener.instanceMethods:
             self.callbacks.append({
                 'callbackName': '_{0}_cb'.format(method.name.to_snake_case(fullName=True)),
                 'callback': method.name.to_snake_case()[3:], # Remove the on_
