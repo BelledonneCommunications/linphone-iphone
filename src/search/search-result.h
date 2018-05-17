@@ -34,29 +34,34 @@ class SearchResultPrivate;
 class LINPHONE_PUBLIC SearchResult : public ClonableObject {
 public:
 	// TODO: Use C++ Address! Not LinphoneAddress.
-	SearchResult (const unsigned int weight, const LinphoneAddress *a, const LinphoneFriend *f = nullptr);
-	SearchResult (const SearchResult &other);
-	~SearchResult ();
+	SearchResult(const unsigned int weight, const LinphoneAddress *a, const std::string &pn, const LinphoneFriend *f = nullptr);
+	SearchResult(const SearchResult &other);
+	~SearchResult();
 
-	bool operator< (const SearchResult &other) const;
-	bool operator> (const SearchResult &other) const;
-	bool operator>= (const SearchResult &other) const;
-	bool operator= (const SearchResult &other) const;
+	bool operator<(const SearchResult &other) const;
+	bool operator>(const SearchResult &other) const;
+	bool operator>=(const SearchResult &other) const;
+	bool operator=(const SearchResult &other) const;
 
 	/**
 	 * @return LinphoneFriend associed
 	 **/
-	const LinphoneFriend *getFriend() const;
+	const LinphoneFriend *getFriend()const;
 
 	/**
 	 * @return LinphoneAddress associed
 	 **/
-	const LinphoneAddress *getAddress () const;
+	const LinphoneAddress *getAddress() const;
+
+	/**
+	 * @return Phone Number associed
+	 **/
+	const std::string &getPhoneNumber() const;
 
 	/**
 	 * @return the result weight
 	 **/
-	unsigned int getWeight () const;
+	unsigned int getWeight() const;
 
 private:
 	L_DECLARE_PRIVATE(SearchResult);

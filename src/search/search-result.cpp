@@ -30,59 +30,69 @@ class SearchResultPrivate : public ClonableObjectPrivate {
 private:
 	const LinphoneFriend *mFriend;
 	const LinphoneAddress *mAddress;
+	std::string mPhoneNumber;
 	unsigned int mWeight;
 
 	L_DECLARE_PUBLIC(SearchResult);
 };
 
-SearchResult::SearchResult (const unsigned int weight, const LinphoneAddress *a, const LinphoneFriend *f) : ClonableObject(*new SearchResultPrivate) {
+using namespace std;
+
+SearchResult::SearchResult(const unsigned int weight, const LinphoneAddress *a, const string &pn, const LinphoneFriend *f) : ClonableObject(*new SearchResultPrivate) {
 	L_D();
 	d->mWeight = weight;
 	d->mAddress = a;
 	d->mFriend = f;
+	d->mPhoneNumber = pn;
 }
 
-SearchResult::SearchResult (const SearchResult &sr) : ClonableObject(*new SearchResultPrivate) {
+SearchResult::SearchResult(const SearchResult &sr) : ClonableObject(*new SearchResultPrivate) {
 	L_D();
 	d->mWeight = sr.getWeight();
 	d->mAddress = sr.getAddress();
 	if (d->mAddress) linphone_address_ref(const_cast<LinphoneAddress *>(d->mAddress));
 	d->mFriend = sr.getFriend();
+	d->mPhoneNumber = sr.getPhoneNumber();
 }
 
-SearchResult::~SearchResult () {
+SearchResult::~SearchResult() {
 	L_D();
 	// FIXME: Ugly temporary workaround to solve weak. Remove me later.
 	if (d->mAddress) linphone_address_unref(const_cast<LinphoneAddress *>(d->mAddress));
 };
 
-bool SearchResult::operator< (const SearchResult &other) const {
+bool SearchResult::operator<(const SearchResult &other) const {
 	return getWeight() < other.getWeight();
 }
 
-bool SearchResult::operator> (const SearchResult &other) const {
+bool SearchResult::operator>(const SearchResult &other) const {
 	return getWeight() > other.getWeight();
 }
 
-bool SearchResult::operator>= (const SearchResult &other) const {
+bool SearchResult::operator>=(const SearchResult &other) const {
 	return getWeight() >= other.getWeight();
 }
 
-bool SearchResult::operator= (const SearchResult &other) const {
+bool SearchResult::operator=(const SearchResult &other) const {
 	return getWeight() == other.getWeight();
 }
 
-const LinphoneFriend *SearchResult::getFriend () const {
+const LinphoneFriend *SearchResult::getFriend() const {
 	L_D();
 	return d->mFriend;
 }
 
-const LinphoneAddress *SearchResult::getAddress () const {
+const LinphoneAddress *SearchResult::getAddress() const {
 	L_D();
 	return d->mAddress;
 }
 
-unsigned int SearchResult::getWeight () const {
+const string &SearchResult::getPhoneNumber() const {
+	L_D();
+	return d->mPhoneNumber;
+}
+
+unsigned int SearchResult::getWeight() const {
 	L_D();
 	return d->mWeight;
 }

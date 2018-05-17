@@ -52,6 +52,11 @@ LINPHONE_PUBLIC const LinphoneFriend* linphone_search_result_get_friend(const Li
 LINPHONE_PUBLIC const LinphoneAddress* linphone_search_result_get_address(const LinphoneSearchResult *searchResult);
 
 /**
+ * @return Phone Number associed
+ **/
+LINPHONE_PUBLIC const char* linphone_search_result_get_phone_number(const LinphoneSearchResult *searchResult);
+
+/**
  * @return the result weight
  **/
 LINPHONE_PUBLIC unsigned int linphone_search_result_get_weight(const LinphoneSearchResult *searchResult);

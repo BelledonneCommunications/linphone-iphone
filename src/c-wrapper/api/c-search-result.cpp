@@ -39,6 +39,10 @@ const LinphoneAddress* linphone_search_result_get_address(const LinphoneSearchRe
 	return L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getAddress();
 }
 
+const char* linphone_search_result_get_phone_number(const LinphoneSearchResult *searchResult) {
+	return L_STRING_TO_C(L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getPhoneNumber());
+}
+
 unsigned int linphone_search_result_get_weight(const LinphoneSearchResult *searchResult) {
 	return L_GET_CPP_PTR_FROM_C_OBJECT(searchResult)->getWeight();
 }
