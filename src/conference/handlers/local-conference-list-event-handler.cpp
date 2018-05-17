@@ -124,7 +124,7 @@ void LocalConferenceListEventHandler::subscribeReceived (LinphoneEvent *lev, con
 			device->setConferenceSubscribeEvent((subscriptionState == LinphoneSubscriptionIncomingReceived) ? lev : nullptr);
 
 			int notifyId = (notifyIdStr.empty() || device->getState() == ParticipantDevice::State::Joining) ? 0 : Utils::stoi(notifyIdStr);
-			string notifyBody = handler->getNotifyForId(notifyId, (chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
+			string notifyBody = handler->getNotifyForId(notifyId, !!(chatRoom->getCapabilities() & AbstractChatRoom::Capabilities::OneToOne));
 			if (notifyBody.empty())
 				continue;
 

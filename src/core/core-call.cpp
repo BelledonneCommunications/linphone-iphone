@@ -304,9 +304,8 @@ void Core::soundcardHintCheck () {
 	LinphoneConference *conf_ctx = getCCore()->conf_ctx;
 	if (conf_ctx && linphone_conference_get_size(conf_ctx) >= 1) return;
 	
-	bool useFiles = L_GET_C_BACK_PTR(getSharedFromThis())->use_files;
 	if ((!d->hasCalls() || noNeedForSound)
-		&& (!useFiles && (!useRtpIo || (useRtpIo && useRtpIoEnableLocalOutput)))) {
+		&& (!L_GET_C_BACK_PTR(getSharedFromThis())->use_files && (!useRtpIo || (useRtpIo && useRtpIoEnableLocalOutput)))) {
 		lInfo() << "Notifying soundcard that we don't need it anymore for calls";
 		d->notifySoundcardUsage(false);
 	}

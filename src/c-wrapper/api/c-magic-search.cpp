@@ -78,7 +78,7 @@ bool_t linphone_magic_search_get_use_delimiter (LinphoneMagicSearch *magic_searc
 }
 
 void linphone_magic_search_set_use_delimiter (LinphoneMagicSearch *magic_search, bool_t enable) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->setUseDelimiter(enable);
+	L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->setUseDelimiter(!!enable);
 }
 
 unsigned int linphone_magic_search_get_search_limit (const LinphoneMagicSearch *magic_search) {
@@ -94,7 +94,7 @@ bool_t linphone_magic_search_get_limited_search (const LinphoneMagicSearch *magi
 }
 
 void linphone_magic_search_set_limited_search (LinphoneMagicSearch *magic_search, bool_t limited) {
-	L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->setLimitedSearch(limited);
+	L_GET_CPP_PTR_FROM_C_OBJECT(magic_search)->setLimitedSearch(!!limited);
 }
 
 void linphone_magic_search_reset_search_cache (LinphoneMagicSearch *magic_search) {

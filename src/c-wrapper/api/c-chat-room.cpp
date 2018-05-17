@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <iterator>
 
 // TODO: Remove me later.
 #include "linphone/chat.h"

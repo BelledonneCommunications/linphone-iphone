@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <iterator>
 
 #include "address/identity-address.h"
 #include "chat/chat-room/basic-chat-room.h"
