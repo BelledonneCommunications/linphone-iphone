@@ -37,6 +37,13 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
+#ifdef _WIN32
+	// TODO: Avoid this error. Maybe with a custom enabled_shared_from_this.
+	// Disable C4251 triggered by std::enabled_shared_from_this.
+	#pragma warning(push)
+	#pragma warning(disable: 4251)
+#endif // ifdef _WIN32
+
 /*
  * Main Object of Linphone. Can be shared but is not Clonable.
  * Supports properties and shared from this.
@@ -61,6 +68,10 @@ private:
 	L_DECLARE_PRIVATE(Object);
 	L_DISABLE_COPY(Object);
 };
+
+#ifdef _WIN32
+	#pragma warning(pop)
+#endif // ifdef _WIN32
 
 LINPHONE_END_NAMESPACE
 
