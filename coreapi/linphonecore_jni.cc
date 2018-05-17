@@ -4689,10 +4689,10 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setFileTransferFi
 	ReleaseStringUTFChars(env, jpath, path);
 }
 
-extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
+extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
-	return (jint) linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
+	return linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNIEnv* env

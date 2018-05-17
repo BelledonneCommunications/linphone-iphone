@@ -257,7 +257,7 @@ LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_chat_message_start_file_downlo
  * Start the download of the file referenced in a #LinphoneChatMessage from remote server.
  * @param[in] msg #LinphoneChatMessage object.
  */
-LINPHONE_PUBLIC LinphoneStatus linphone_chat_message_download_file (LinphoneChatMessage *msg);
+LINPHONE_PUBLIC bool_t linphone_chat_message_download_file (LinphoneChatMessage *msg);
 
 /**
  * Cancel an ongoing file transfer attached to this message.(upload or download)

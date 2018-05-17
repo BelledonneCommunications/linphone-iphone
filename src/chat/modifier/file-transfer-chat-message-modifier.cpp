@@ -312,7 +312,7 @@ void FileTransferChatMessageModifier::processResponseFromPostFile (const belle_h
 				if (c->isFileTransfer()) {
 					FileTransferContent *tmpContent = static_cast<FileTransferContent *>(c);
 					if (!tmpContent->getFileContent() && tmpContent->getSize() == 0) {
-						// If FileTransferContent doesn't have a FileContent yet and is empty 
+						// If FileTransferContent doesn't have a FileContent yet and is empty
 						// It's the one we seek, otherwise it may be a previous uploaded FileTransferContent
 						fileTransferContent = tmpContent;
 						break;
@@ -546,7 +546,7 @@ void FileTransferChatMessageModifier::fileUploadEndBackgroundTask () {
 
 // ----------------------------------------------------------
 
-static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml(FileTransferContent *fileTransferContent) {
+static void fillFileTransferContentInformationsFromVndGsmaRcsFtHttpXml (FileTransferContent *fileTransferContent) {
 	xmlChar *fileUrl = nullptr;
 	xmlDocPtr xmlMessageBody;
 	xmlNodePtr cur;
@@ -947,24 +947,27 @@ void FileTransferChatMessageModifier::processResponseFromGetFile (const belle_ht
 	}
 }
 
-int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> &message, FileTransferContent *fileTransferContent) {
+bool FileTransferChatMessageModifier::downloadFile (
+	const shared_ptr<ChatMessage> &message,
+	FileTransferContent *fileTransferContent
+) {
 	chatMessage = message;
 
 	if (httpRequest) {
-		lError() << "linphone_chat_message_download_file(): there is already a download in progress";
-		return -1;
+		lError() << "There is already a download in progress.";
+		return false;
 	}
 
 	if (fileTransferContent->getContentType() != ContentType::FileTransfer) {
-		lError() << "linphone_chat_message_download_file(): content type is not FileTransfer";
-		return -1;
+		lError() << "Content type is not a FileTransfer.";
+		return false;
 	}
 
 	createFileTransferInformationsFromVndGsmaRcsFtHttpXml(fileTransferContent);
 	FileContent *fileContent = fileTransferContent->getFileContent();
 	currentFileContentToTransfer = fileContent;
 	if (!currentFileContentToTransfer)
-		return -1;
+		return false;
 
 	// THIS IS ONLY FOR BACKWARD C API COMPAT
 	if (currentFileContentToTransfer->getFilePath().empty() && !message->getPrivate()->getFileTransferFilepath().empty()) {
@@ -978,10 +981,10 @@ int FileTransferChatMessageModifier::downloadFile(const shared_ptr<ChatMessage> 
 	cbs.process_auth_requested = _chat_message_process_auth_requested_download;
 	int err = startHttpTransfer(fileTransferContent->getFileUrl(), "GET", &cbs); // File URL has been set by createFileTransferInformationsFromVndGsmaRcsFtHttpXml
 	if (err == -1)
-		return -1;
+		return false;
 	// start the download, status is In Progress
 	message->getPrivate()->setState(ChatMessage::State::InProgress);
-	return 0;
+	return true;
 }
 
 // ----------------------------------------------------------
@@ -1024,7 +1027,7 @@ void FileTransferChatMessageModifier::releaseHttpRequest () {
 	}
 }
 
-string FileTransferChatMessageModifier::createFakeFileTransferFromUrl(const string &url) {
+string FileTransferChatMessageModifier::createFakeFileTransferFromUrl (const string &url) {
 	string fileName = url.substr(url.find_last_of("/") + 1);
 	stringstream fakeXml;
 	fakeXml << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n";
