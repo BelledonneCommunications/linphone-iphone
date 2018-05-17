@@ -117,8 +117,9 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_expires(LinphoneProxyConfig *cfg,
 #define linphone_proxy_config_expires linphone_proxy_config_set_expires
 
 /**
- * Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
- * <br> In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
+ * @brief Indicates  either or not, REGISTRATION must be issued for this #LinphoneProxyConfig .
+ *
+ * In case this #LinphoneProxyConfig has been added to #LinphoneCore, follows the linphone_proxy_config_edit() rule.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @param val if true, registration will be engaged
  */
