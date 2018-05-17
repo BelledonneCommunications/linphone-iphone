@@ -68,12 +68,27 @@ class RstTools:
 	class Table:
 		def __init__(self):
 			self._rows = []
-			self._widths = []
-			self._heights = []
-		
+
 		@property
 		def rows(self):
 			return self._rows
+
+	class CSVTable(Table):
+		def addrow(self, row):
+			self._rows.append(', '.join([self._format_cell(cell) for cell in row]))
+
+		def __str__(self):
+			return '.. csv-table::\n\t\n\t' + '\n\t'.join(self._rows)
+
+		def _format_cell(self, cell):
+			return '"{0}"'.format(cell.replace('"', '""'))
+
+
+	class GridTable(Table):
+		def __init__(self):
+			RstTools.Table.__init__(self)
+			self._widths = []
+			self._heights = []
 		
 		def addrow(self, row):
 			if len(self._widths) == 0:
@@ -315,7 +330,7 @@ class ClassPage(SphinxPage):
 		self.briefDoc = _class.briefDescription.translate(self.docTranslator)
 		self.detailedDoc = _class.detailedDescription.translate(self.docTranslator) if _class.detailedDescription is not None else None
 		self.enums = [EnumPart(enum, lang, langs) for enum in _class.enums]
-		self.properties = self._translate_properties(_class.properties)
+		self.properties = self._translate_properties(_class.properties) if isinstance(_class, abstractapi.Class) else []
 		self.methods = self._translate_methods(_class.instanceMethods)
 		self.classMethods = self._translate_methods(_class.classMethods)
 		self.selector = self._make_selector(_class)
@@ -361,7 +376,7 @@ class ClassPage(SphinxPage):
 		return translatedMethods
 	
 	def _translate_method(self, method):
-		namespace = method.find_first_ancestor_by_type(abstractapi.Class)
+		namespace = method.find_first_ancestor_by_type(abstractapi.Class,abstractapi.Interface)
 		methAttr = {
 			'prototype'    : method.translate_as_prototype(self.lang.langTranslator, namespace=namespace),
 			'briefDoc'     : method.briefDescription.translate(self.docTranslator),
@@ -375,35 +390,35 @@ class ClassPage(SphinxPage):
 
 	@property
 	def enumsSummary(self):
-		table = RstTools.Table()
+		table = RstTools.CSVTable()
 		for enum in self.enums:
-			briefDoc = '\n'.join([line['line'] for line in enum.briefDesc['lines']])
+			briefDoc = ' '.join([line['line'] for line in enum.briefDesc['lines']])
 			table.addrow((enum.link, briefDoc))
 		return table
 	
 	@property
 	def propertiesSummary(self):
-		table = RstTools.Table()
+		table = RstTools.CSVTable()
 		for property_ in self.properties:
 			reference = ':ref:`{0}`'.format(property_['ref_label'])
 			briefDoc = property_['getter']['briefDoc'] if property_['getter'] is not None else property_['setter']['briefDoc']
-			briefDoc = '\n'.join([line['line'] for line in briefDoc['lines']])
+			briefDoc = ' '.join([line['line'] for line in briefDoc['lines']])
 			table.addrow([reference, briefDoc])
 		return table
 	
 	@property
 	def instanceMethodsSummary(self):
-		table = RstTools.Table()
+		table = RstTools.CSVTable()
 		for method in self.methods:
-			briefDoc = '\n'.join([line['line'] for line in method['briefDoc']['lines']])
+			briefDoc = ' '.join([line['line'] for line in method['briefDoc']['lines']])
 			table.addrow([method['link'], briefDoc])
 		return table
 	
 	@property
 	def classMethodsSummary(self):
-		table = RstTools.Table()
+		table = RstTools.CSVTable()
 		for method in self.classMethods:
-			briefDoc = '\n'.join([line['line'] for line in method['briefDoc']['lines']])
+			briefDoc = ' '.join([line['line'] for line in method['briefDoc']['lines']])
 			table.addrow([method['link'], briefDoc])
 		return table
 
@@ -413,7 +428,7 @@ class OldFilesCleaner:
 		self._filesToKeep = set()
 		self.root = rootDirectory
 
-	def add_directory(self, directory):
+	def protect_file(self, directory):
 		self._filesToKeep.add(directory)
 
 	def clean(self):
@@ -448,14 +463,14 @@ class DocGenerator:
 				page = EnumPage(enum, lang, self.languages)
 				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
-				cleaner.add_directory(filepath)
-			for class_ in self.api.namespace.classes:
+				cleaner.protect_file(filepath)
+			for class_ in (self.api.namespace.classes + self.api.namespace.interfaces):
 				page = ClassPage(class_, lang, self.languages)
 				filepath = page.write(directory)
 				indexPage.add_entry(page.filename)
-				cleaner.add_directory(filepath)
+				cleaner.protect_file(filepath)
 			filepath = indexPage.write(directory)
-			cleaner.add_directory(filepath)
+			cleaner.protect_file(filepath)
 			cleaner.clean()
 
 

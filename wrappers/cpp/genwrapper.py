@@ -104,7 +104,7 @@ class CppTranslator(object):
 			classDict['listenerClassName'] = _class.listenerInterface.name.translate(self.nameTranslator)
 			classDict['cListenerName'] = _class.listenerInterface.name.to_c()
 			classDict['cppListenerName'] = _class.listenerInterface.name.translate(self.nameTranslator)
-			for method in _class.listenerInterface.methods:
+			for method in _class.listenerInterface.instanceMethods:
 				classDict['wrapperCbs'].append(self._generate_wrapper_callback(_class, method))
 		
 		if ismonolistenable:
@@ -173,7 +173,7 @@ class CppTranslator(object):
 			'isListener'      : True,
 			'methods'         : []
 		}
-		for method in interface.methods:
+		for method in interface.instanceMethods:
 			methodDict = self.translate_method(method, genImpl=False)
 			intDict['methods'].append(methodDict)
 		
@@ -375,7 +375,7 @@ class ClassHeader(object):
 		if type(_class) is AbsApi.Class:
 			methods = _class.classMethods + _class.instanceMethods
 		else:
-			methods = _class.methods
+			methods = _class.instanceMethods
 		
 		for method in methods:
 			self._populate_needed_includes_from_type(method.returnType)

@@ -11,19 +11,22 @@ Building liblinphone
 
 ### Required dependencies
 
-* *BcToolbox[2]*: portability layer
-* *BelleSIP[3]*: SIP stack
-* *Mediastreamer2[4]*: multimedia engine
-* *Belcard[5]*: VCard support
-* libxml2
-* zlib
-* libsqlite3: user data storage (disablable)
-* gettext and libintl: internationalization support (disablable)
+* **BcToolbox[2]:** portability layer
+* **BelleSIP[3]:** SIP stack
+* **Mediastreamer2[4]:** multimedia engine
+* **Belcard[5]:** VCard support
+* **libxml2**
+* **zlib**
+* **libsqlite3:** user data storage (disablable)
+* **gettext** and **libintl**: internationalization support (disablable)
+* **python interpreter** and **pystache**, **six** python module (needed for C++ wrapper and API documentaiton)
+* **doxygen** and **dot** (needed for C++ wrapper and API documentation)
 
 
 ### Opitonal dependencies
 
-* *Bzrtp[6]*: zrtp stack used for Linphone Instant Messaging Encryption
+* **Bzrtp[6]**: zrtp stack used for Linphone Instant Messaging Encryption.
+* For API documentatino generation: **sphinx**, **javasphinx**, **sphinx_csharp** python modules are needed.
 
 
 ### Build instructions
@@ -36,17 +39,17 @@ Building liblinphone
 
 ### Supported build opitons
 
-* `CMAKE_INSTALL_PREFIX=<string>` : install prefix
-* `CMAKE_PREFIX_PATH=<string>`    : column-separated list of prefixes where to search for dependencies
-* `ENABLE_SHARED=NO`              : do not build the shared library
-* `ENABLE_STATIC=NO`              : do not build the static library
-* `ENABLE_STRICT=NO`              : build without strict compilation flags (-Wall -Werror)
-* `ENABLE_DOC=NO`                 : do not generate the reference documentation of liblinphone
-* `ENABLE_UNIT_TESTS=NO`          : do not build testing binaries
-* `ENABLE_VCARD=NO`               : disable VCard support
-* `ENABLE_SQLITE_STORAGE=NO`      : disable SQlite user data storage (message, history, contacts list)
-* `ENABLE_TOOLS=NO`               : do not build tool binaries
-* `ENABLE_LIME=YES`               : disable Linphone Instant Messaging Encryption
+* **`CMAKE_INSTALL_PREFIX=<string>`** : install prefix
+* **`CMAKE_PREFIX_PATH=<string>`**    : column-separated list of prefixes where to search for dependencies
+* **`ENABLE_SHARED=NO`**              : do not build the shared library
+* **`ENABLE_STATIC=NO`**              : do not build the static library
+* **`ENABLE_STRICT=NO`**              : build without strict compilation flags (-Wall -Werror)
+* **`ENABLE_DOC=YES`**                : Make the reference documentation of liblinphone to generated
+* **`ENABLE_UNIT_TESTS=NO`**          : do not build testing binaries
+* **`ENABLE_VCARD=NO`**               : disable VCard support
+* **`ENABLE_SQLITE_STORAGE=NO`**      : disable SQlite user data storage (message, history, contacts list)
+* **`ENABLE_TOOLS=NO`**               : do not build tool binaries
+* **`ENABLE_LIME=YES`**               : disable Linphone Instant Messaging Encryption
 
 ### Note for packagers
 
@@ -89,4 +92,4 @@ Here is a short description of the content of the source tree.
 - [3] belle-sip: git://git.linphone.org/belle-sip.git *or* <https://www.linphone.org/releases/sources/belle-sip>
 - [4] mediastreamer2: git://git.linphone.org/mediastreamer2.git *or* <https://www.linphone.org/releases/sources/mediastreamer>
 - [5] belcard: git://git.linphone.org/belcard.git *or* <https://www.linphone.org/releases/sources/belcard>
-- [5] bzrtp: git://git.linphone.org/bzrtp.git *or* <https://www.linphone.org/releases/sources/bzrtp>
+- [6] bzrtp: git://git.linphone.org/bzrtp.git *or* <https://www.linphone.org/releases/sources/bzrtp>

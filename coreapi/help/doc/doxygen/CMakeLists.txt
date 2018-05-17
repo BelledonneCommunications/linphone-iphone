@@ -31,11 +31,6 @@ if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER OR ENABLE_JAVA_WRA
 			endforeach ()
 			string(CONCAT DOXYGEN_INPUT ${DOXYGEN_INPUT} " \"${CMAKE_CURRENT_SOURCE_DIR}\"")
 			string(CONCAT DOXYGEN_INPUT ${DOXYGEN_INPUT} " \"${PROJECT_SOURCE_DIR}/coreapi/help/examples/C\"")
-			if(ENABLE_DOC)
-				set(GENERATE_HTML "YES")
-			else()
-				set(GENERATE_HTML "NO")
-			endif()
 			configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 			set(DOC_INPUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 				${CMAKE_CURRENT_SOURCE_DIR}/doxygen.dox
@@ -43,16 +38,12 @@ if (ENABLE_DOC OR ENABLE_CXX_WRAPPER OR ENABLE_CSHARP_WRAPPER OR ENABLE_JAVA_WRA
 			)
 			set(XML_DIR "${CMAKE_CURRENT_BINARY_DIR}/xml")
 			set(LINPHONE_DOXYGEN_XML_DIR ${XML_DIR} PARENT_SCOPE)
-			add_custom_command(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${XML_DIR}/index.xml"
-				COMMAND ${CMAKE_COMMAND} -E remove -f html/* xml/*
+			add_custom_command(OUTPUT "${XML_DIR}/index.xml"
+				COMMAND ${CMAKE_COMMAND} -E remove -f xml/*
 				COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 				DEPENDS ${DOC_INPUT_FILES}
 			)
-			add_custom_target(linphone-doc ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/html/index.html" "${XML_DIR}/index.xml")
-			if(ENABLE_DOC)
-				install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html" "${XML_DIR}"
-					DESTINATION "${CMAKE_INSTALL_DATADIR}/doc/linphone-${LINPHONE_VERSION}")
-			endif()
+			add_custom_target(linphone-doc ALL DEPENDS "${XML_DIR}/index.xml")
 		else()
 			if (ENABLE_CXX_WRAPPER)
 				message(FATAL_ERROR "The dot program is needed to generate the linphone documentation. You can get it from http://www.graphviz.org/.")

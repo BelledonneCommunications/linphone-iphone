@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-if (ENABLE_SPHINX_DOC)
+if (ENABLE_DOC)
 	set(doc_source_dir ${CMAKE_CURRENT_BINARY_DIR}/source)
 	set(doc_output_dir ${CMAKE_CURRENT_BINARY_DIR}/build)
 	set(reference_doc_source_dir ${doc_source_dir}/reference)
@@ -43,7 +43,6 @@ if (ENABLE_SPHINX_DOC)
 		index.rst
 		logo.png
 		samples/samples.rst
-		toc.rst
 	)
 	configure_file(conf.py.in ${doc_source_dir}/conf.py)
 	foreach(file ${static_documentation_files})
