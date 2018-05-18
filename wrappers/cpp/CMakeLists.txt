@@ -34,7 +34,6 @@ add_custom_command(OUTPUT include/linphone++/linphone.hh src/linphone++.cc
 	enums_header.mustache
 	main_header.mustache
 	linphone-doc
-	"${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml/index.xml"
 )
 
 add_library(linphone++ SHARED

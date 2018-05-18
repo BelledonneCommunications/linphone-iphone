@@ -28,7 +28,6 @@ add_custom_command(OUTPUT LinphoneWrapper.cs
 	genwrapper.py
 	wrapper_impl.mustache
 	linphone-doc
-	"${PROJECT_BINARY_DIR}/coreapi/help/doc/doxygen/xml/index.xml"
 )
 
 add_custom_target(linphonecs ALL DEPENDS LinphoneWrapper.cs)
