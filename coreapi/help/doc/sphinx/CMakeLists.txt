@@ -55,4 +55,5 @@ if (ENABLE_DOC)
 	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o '${reference_doc_source_dir}'
 		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html '${doc_source_dir}' '${doc_output_dir}'
 		DEPENDS linphone-doc)
+	install(DIRECTORY ${doc_output_dir}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/${LINPHONE_VERSION})
 endif()
