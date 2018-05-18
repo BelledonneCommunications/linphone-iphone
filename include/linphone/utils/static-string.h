@@ -111,13 +111,19 @@ namespace Private {
 		RawStaticString<N> raw;
 
 	private:
-		template<std::size_t... Index, typename Int = int, typename std::enable_if<Int(Value) >= 0, int>::type* = nullptr>
-		constexpr StaticIntStringHelper (const IndexSequence<Index...> &) :
-			raw{ char('0' + Value / pow10(N - Index - 2) % 10 )..., '\0' } {}
+		template<typename T>
+		static bool testInt (T n) {
+			// Do not use it directly in the two enable_if below. (MSVC 2015 bug.)
+			return n < 0;
+		}
 
-		template<std::size_t... Index, typename Int = int, typename std::enable_if<Int(Value) < 0, int>::type* = nullptr>
+		template<std::size_t... Index, typename Int = int, typename std::enable_if<!testInt<Int>(Value), int>::type* = nullptr>
 		constexpr StaticIntStringHelper (const IndexSequence<Index...> &) :
-			raw{ '-', char('0' + abs(Value) / pow10(N - Index - 3) % 10 )..., '\0' } {}
+			raw{ char('0' + Value / pow10(N - Index - 2) % 10)..., '\0' } {}
+
+		template<std::size_t... Index, typename Int = int, typename std::enable_if<testInt<Int>(Value), int>::type* = nullptr>
+		constexpr StaticIntStringHelper (const IndexSequence<Index...> &) :
+			raw{ '-', char('0' + abs(Value) / pow10(N - Index - 3) % 10)..., '\0' } {}
 	};
 };
 
