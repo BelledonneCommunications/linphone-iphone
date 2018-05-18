@@ -72,19 +72,16 @@
 	bctbx_list_t *results = linphone_magic_search_get_contact_list_from_filter(_magicSearch, filter.UTF8String, "");
 	while (results) {
 		LinphoneSearchResult *result = results->data;
-		const LinphoneFriend *friend = linphone_search_result_get_friend(result);
-		const LinphoneAddress* addr = linphone_search_result_get_address(result);
-		if (friend) {
-
-		} else if (addr) {
+		const LinphoneAddress *addr = linphone_search_result_get_address(result);
+		const char *phoneNumber = linphone_search_result_get_phone_number(result);
+		if (addr) {
 			char *uri = linphone_address_as_string_uri_only(addr);
 			NSString *address = [NSString stringWithUTF8String:uri];
 			ms_free(uri);
-
 			Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
 			NSString *name = [FastAddressBook displayNameForContact:contact];
 			Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
-			|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
+				|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
 			BOOL add = _allFilter || linphoneContact;
 
 			if (((filter.length == 0)
@@ -92,6 +89,8 @@
 				 || ([address.lowercaseString containsSubstring:filter.lowercaseString]))
 				&& add)
 				[_addresses addObject:address];
+		} else if (phoneNumber) {
+			
 		}
 		results = results->next;
 	}
@@ -224,6 +223,13 @@
 	}
 }
 
+- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(nonnull NSString *)text {
+	if (text.length < _searchBar.text.length && _magicSearch)
+		linphone_magic_search_reset_search_cache(_magicSearch);
+
+	return TRUE;
+}
+
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
 	[searchBar setShowsCancelButton:FALSE animated:TRUE];
 }
@@ -237,6 +243,9 @@
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+	if (_magicSearch)
+		linphone_magic_search_reset_search_cache(_magicSearch);
+	
 	[searchBar resignFirstResponder];
 }
 
