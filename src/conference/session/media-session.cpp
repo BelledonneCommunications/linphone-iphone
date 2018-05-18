@@ -2187,8 +2187,7 @@ RtpSession * MediaSessionPrivate::createVideoRtpIoSession () {
 	rtp_session_set_remote_addr_and_port(rtpSession, remoteIp, remotePort, -1);
 	rtp_session_enable_rtcp(rtpSession, false);
 	rtp_session_set_payload_type(rtpSession, ptnum);
-	bool symmetric = lp_config_get_int(config, "video", "rtp_symmetric", 0);
-	rtp_session_set_symmetric_rtp(rtpSession, symmetric);
+	rtp_session_set_symmetric_rtp(rtpSession, lp_config_get_int(config, "video", "rtp_symmetric", 0));
 	int jittcomp = lp_config_get_int(config, "video", "rtp_jittcomp", 0); /* 0 means no jitter buffer */
 	rtp_session_set_jitter_compensation(rtpSession, jittcomp);
 	rtp_session_enable_jitter_buffer(rtpSession, (jittcomp > 0));
@@ -2930,7 +2929,7 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 			video_stream_use_preview_video_window(videoStream, q->getCore()->getCCore()->use_preview_window);
 			const char *rtpAddr = (vstream->rtp_addr[0] != '\0') ? vstream->rtp_addr : resultDesc->addr;
 			const char *rtcpAddr = (vstream->rtcp_addr[0] != '\0') ? vstream->rtcp_addr : resultDesc->addr;
-			bool isMulticast = ms_is_multicast(rtpAddr);
+			bool isMulticast = !!ms_is_multicast(rtpAddr);
 			MediaStreamDir dir = MediaStreamSendRecv;
 			bool isActive = true;
 			if (isMulticast) {
@@ -2984,8 +2983,7 @@ void MediaSessionPrivate::startVideoStream (CallSession::State targetState) {
 				} else {
 					bool ok = true;
 					MSMediaStreamIO io = MS_MEDIA_STREAM_IO_INITIALIZER;
-					bool useRtpIo = lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "video", "rtp_io", false);
-					if (useRtpIo) {
+					if (lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "video", "rtp_io", false)) {
 						io.input.type = io.output.type = MSResourceRtp;
 						io.input.session = io.output.session = createVideoRtpIoSession();
 						if (!io.input.session) {
