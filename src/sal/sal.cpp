@@ -657,7 +657,7 @@ const string &Sal::getHttpProxyHost () const {
 }
 
 bool Sal::isContentEncodingAvailable (const string &contentEncoding) const {
-	return belle_sip_stack_content_encoding_available(mStack, L_STRING_TO_C(contentEncoding));
+	return !!belle_sip_stack_content_encoding_available(mStack, L_STRING_TO_C(contentEncoding));
 }
 
 bool Sal::isContentTypeSupported (const string &contentType) const {
