@@ -2257,8 +2257,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if ([self lpConfigBoolForKey:@"publish_presence"]) {
 		// set present to "tv", because "available" does not work yet
 		if (enabled) {
-			linphone_core_set_presence_model(
-											 LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
+			linphone_core_set_presence_model(LC, linphone_core_create_presence_model_with_activity(LC, LinphonePresenceActivityTV, NULL));
 		}
 
 		const MSList *proxies = linphone_core_get_proxy_config_list(LC);
@@ -2275,13 +2274,14 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
-		linphone_friend_list_enable_subscriptions(
-			lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
+		linphone_friend_list_enable_subscriptions(lists->data, enabled && [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"]);
 		lists = lists->next;
 	}
 }
 
 - (BOOL)enterBackgroundMode {
+	linphone_core_enter_background(LC);
+
 	LinphoneProxyConfig *proxyCfg = linphone_core_get_default_proxy_config(theLinphoneCore);
 	BOOL shouldEnterBgMode = FALSE;
 
@@ -2311,11 +2311,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		&& bctbx_list_find_custom(callList, (bctbx_compare_func)comp_call_state_paused, NULL)) {
 		[self startCallPausedLongRunningTask];
 	}
-	if (callList) {
-		/*if at least one call exist, enter normal bg mode */
+	if (callList) // If at least one call exist, enter normal bg mode
 		shouldEnterBgMode = TRUE;
-	}
-	/*stop the video preview*/
+
+	// Stop the video preview
 	if (theLinphoneCore) {
 		linphone_core_enable_video_preview(theLinphoneCore, FALSE);
 		[self iterate];
@@ -2323,24 +2322,24 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	linphone_core_stop_dtmf_stream(theLinphoneCore);
 
 	LOGI(@"Entering [%s] bg mode", shouldEnterBgMode ? "normal" : "lite");
-
 	if (!shouldEnterBgMode && floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
 		BOOL pushNotifEnabled = (refkey && strcmp(refkey, "push_notification") == 0);
 		if (pushNotifEnabled) {
 			LOGI(@"Keeping lc core to handle push");
-			/*destroy voip socket if any and reset connectivity mode*/
+			// Destroy voip socket if any and reset connectivity mode
 			connectivity = none;
 			linphone_core_set_network_reachable(theLinphoneCore, FALSE);
 			return YES;
 		}
 		return NO;
-
-	} else
-		return YES;
+	}
+	return YES;
 }
 
 - (void)becomeActive {
+	linphone_core_enter_foreground(LC);
+
 	// enable presence
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max || self.connectivity == none) {
 		[self refreshRegisters];
@@ -2561,10 +2560,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(room))
 		[LinphoneManager.instance alertLIME:room];
 
-	linphone_chat_room_mark_as_read(room);
-	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
-	[tab update:YES];
-	[PhoneMainView.instance updateApplicationBadgeNumber];
+	[ChatConversationView markAsRead:room];
 }
 
 - (void)call:(const LinphoneAddress *)iaddr {

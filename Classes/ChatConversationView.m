@@ -38,7 +38,6 @@
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
-		isAppearing = false;
 	}
 	return self;
 }
@@ -66,6 +65,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (UICompositeViewDescription *)compositeViewDescription {
 	return self.class.compositeViewDescription;
+}
+
+
++ (void)markAsRead:(LinphoneChatRoom *)chatRoom {
+	if (!chatRoom)
+		return;
+
+	linphone_chat_room_mark_as_read(chatRoom);
+	if (IPAD) {
+		ChatsListView *listView = VIEW(ChatsListView);
+		[listView.tableController markCellAsRead:chatRoom];
+	}
+	[PhoneMainView.instance updateApplicationBadgeNumber];
 }
 
 #pragma mark - ViewController Functions
@@ -110,8 +122,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
-	[self configureForRoom:false];
-	isAppearing = true;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -128,15 +138,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[NSNotificationCenter.defaultCenter removeObserver:self];
 	PhoneMainView.instance.currentRoom = NULL;
-	isAppearing = FALSE;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	composingVisible = !composingVisible;
 	[self setComposingVisible:!composingVisible withDelay:0];
-	if (!isAppearing)
-		return; //no need to do all that stuff if the view isn't yet appeared.
 
 	// force offset recomputing
 	[_messageField refreshHeight];
@@ -163,7 +170,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_chat_room_cbs_set_chat_message_received(_chatRoomCbs, on_chat_room_chat_message_received);
 		linphone_chat_room_cbs_set_chat_message_sent(_chatRoomCbs, on_chat_room_chat_message_sent);
 		linphone_chat_room_cbs_set_is_composing_received(_chatRoomCbs, on_chat_room_is_composing_received);
-		linphone_chat_room_cbs_set_all_information_received(_chatRoomCbs, on_chat_room_all_information_received);
+		linphone_chat_room_cbs_set_conference_joined(_chatRoomCbs, on_chat_room_conference_joined);
+		linphone_chat_room_cbs_set_conference_left(_chatRoomCbs, on_chat_room_conference_left);
 		linphone_chat_room_cbs_set_user_data(_chatRoomCbs, (__bridge void*)self);
 		linphone_chat_room_add_callbacks(_chatRoom, _chatRoomCbs);
 	}
@@ -197,30 +205,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	_chatView.hidden = NO;
 	[self update];
-	linphone_chat_room_mark_as_read(_chatRoom);
-	[PhoneMainView.instance updateApplicationBadgeNumber];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
 	if (_chatRoom != nil) {
-		linphone_chat_room_mark_as_read(_chatRoom);
-		TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-			getCachedController:NSStringFromClass(TabBarView.class)];
-		[tab update:YES];
-		[PhoneMainView.instance updateApplicationBadgeNumber];
+		[ChatConversationView markAsRead:_chatRoom];
 	}
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	[_backToCallButton update];
-}
-
-- (void)markAsRead {
-	linphone_chat_room_mark_as_read(_chatRoom);
-	if (IPAD) {
-		ChatsListView *listView = VIEW(ChatsListView);
-		[listView.tableController markCellAsRead:_chatRoom];
-	}
 }
 
 - (void)update {
@@ -759,9 +753,6 @@ void on_chat_room_chat_message_received(LinphoneChatRoom *cr, const LinphoneEven
 		return;
 
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
-		linphone_chat_room_mark_as_read(view.chatRoom);
-
 	[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 	[view.tableController scrollToLastUnread:TRUE];
 }
@@ -770,6 +761,9 @@ void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+
+	if (IPAD)
+		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];
 }
 
 void on_chat_room_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
@@ -778,9 +772,16 @@ void on_chat_room_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddr
 	[view setComposingVisible:composing withDelay:0.3];
 }
 
-void on_chat_room_all_information_received(LinphoneChatRoom *cr) {
+void on_chat_room_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view configureForRoom:false];
+	[view.tableController scrollToBottom:true];
+}
+
+void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
+	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
+	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
+	[view.tableController scrollToBottom:true];
 }
 
 @end

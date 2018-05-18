@@ -139,11 +139,8 @@
 		index = (int)count - 1;
 
 	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-		linphone_chat_room_mark_as_read(_chatRoom);
+		[ChatConversationView markAsRead:_chatRoom];
 	}
-	TabBarView *tab = (TabBarView *)[PhoneMainView.instance.mainViewController
-		getCachedController:NSStringFromClass(TabBarView.class)];
-	[tab update:YES];
 
 	// Scroll to unread
 	if (index < 0)

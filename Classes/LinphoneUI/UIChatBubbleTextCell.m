@@ -166,15 +166,7 @@
 		[_statusInProgressSpinner stopAnimating];
 	}
 
-	if (outgoing) {
-		[_messageText setAccessibilityLabel:@"Outgoing message"];
-	} else {
-		[_messageText setAccessibilityLabel:@"Incoming message"];
-		if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
-			VIEW(ChatConversationView).markAsRead;
-		}
-	}
-
+	[_messageText setAccessibilityLabel:outgoing ? @"Outgoing message" : @"Incoming message"];
 	if (outgoing &&
 		(state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed ||
 		 state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {

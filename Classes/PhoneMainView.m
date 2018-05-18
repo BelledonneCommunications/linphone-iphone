@@ -551,6 +551,8 @@ static RootViewManager *rootViewManagerInstance = nil;
 	count += [LinphoneManager unreadMessageCount];
 	count += linphone_core_get_calls_nb(LC);
 	[[UIApplication sharedApplication] setApplicationIconBadgeNumber:count];
+	TabBarView *view = (TabBarView *)[PhoneMainView.instance.mainViewController getCachedController:NSStringFromClass(TabBarView.class)];
+	[view update:TRUE];
 }
 
 + (CATransition *)getBackwardTransition {
@@ -920,13 +922,13 @@ static RootViewManager *rootViewManagerInstance = nil;
 	if (view.chatRoom && view.chatRoomCbs)
 		linphone_chat_room_remove_callbacks(view.chatRoom, view.chatRoomCbs);
 
-	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
-		[PhoneMainView.instance popCurrentView];
-
 	view.chatRoomCbs = NULL;
 	view.chatRoom = cr;
 	self.currentRoom = view.chatRoom;
-	[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
+	if (PhoneMainView.instance.currentView == view.compositeViewDescription)
+		[view configureForRoom:FALSE];
+	else
+		[PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 }
 
 void main_view_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {
