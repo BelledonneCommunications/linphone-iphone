@@ -1156,36 +1156,44 @@ void MediaSessionPrivate::getLocalIp (const Address &remoteAddr) {
 	 * from the socket that connects to this proxy */
 	if (destProxy && destProxy->op) {
 		ip = destProxy->op->getLocalAddress(nullptr);
-		if (ip) {
-			lInfo() << "Found media local-ip from signaling.";
-			mediaLocalIp = ip;
-			return;
+		if (ip){
+			if (strchr(ip, ':') != nullptr && af == AF_INET){
+				/*case where we've decided to use IPv4 in select_outgoing_ip_version(), but the signaling local ip address is IPv6*/	
+				/*we'll use the default media localip*/
+			}else{
+				lInfo() << "Found media local-ip from signaling.";
+				mediaLocalIp = ip;
+				return;
+			}
 		}
 	}
 
 	/* In last resort, attempt to find the local ip that routes to destination if given as an IP address,
-	   or the default route (dest == nullptr) */
-	const char *dest = nullptr;
+	   or the default route (dest is empty) */
+	string dest;
 	if (!destProxy) {
 		struct addrinfo hints;
 		struct addrinfo *res = nullptr;
+		string host(remoteAddr.getDomain());
 		int err;
-		/* FIXME the following doesn't work for IPv6 address because of brakets */
+		
+		if (host[0] == '[') host = host.substr(1,host.size()-2);
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_family = AF_UNSPEC;
 		hints.ai_socktype = SOCK_DGRAM;
 		hints.ai_flags = AI_NUMERICHOST;
-		err = getaddrinfo(remoteAddr.getDomain().c_str(), nullptr, &hints, &res);
-		if (err == 0)
-			dest = remoteAddr.getDomain().c_str();
+		err = getaddrinfo(host.c_str(), nullptr, &hints, &res);
+		if (err == 0){
+			/*the remote address host part is real ip address. Use it.*/
+			dest = host;
+		}
 		if (res) freeaddrinfo(res);
 	}
 
-	if (dest || mediaLocalIp.empty() || needMediaLocalIpRefresh) {
+	if (!dest.empty() || mediaLocalIp.empty() || needMediaLocalIpRefresh) {
 		needMediaLocalIpRefresh = false;
-		char ip[LINPHONE_IPADDR_SIZE];
-		linphone_core_get_local_ip(q->getCore()->getCCore(), af, dest, ip);
-		mediaLocalIp = ip;
+		mediaLocalIp.reserve(LINPHONE_IPADDR_SIZE);
+		linphone_core_get_local_ip(q->getCore()->getCCore(), af, dest.c_str(), &mediaLocalIp[0]);
 	}
 }
 
@@ -1227,44 +1235,45 @@ void MediaSessionPrivate::selectIncomingIpVersion () {
  * Choose IP version we are going to use for RTP streams IP address advertised in SDP.
  * The algorithm is as follows:
  * - if ipv6 is disabled at the core level, it is always AF_INET
- * - Otherwise, if the destination address for the call is an IPv6 address, use IPv6.
  * - Otherwise, if the call is done through a known proxy config, then use the information obtained during REGISTER
+ * - Otherwise if the destination address for the call is an IPv6 address, use IPv6.
  * to know if IPv6 is supported by the server.
 **/
 void MediaSessionPrivate::selectOutgoingIpVersion () {
 	L_Q();
-	if (!linphone_core_ipv6_enabled(q->getCore()->getCCore())) {
-		af = AF_INET;
-		return;
+	char ipv4[LINPHONE_IPADDR_SIZE];
+	char ipv6[LINPHONE_IPADDR_SIZE];
+	bool_t have_ipv6 = FALSE;
+	bool_t have_ipv4 = FALSE;
+	
+	af = AF_UNSPEC;
+	if (linphone_core_get_local_ip_for(AF_INET, nullptr, ipv4) == 0){
+		have_ipv4 = TRUE;
 	}
-
-	const LinphoneAddress *to = linphone_call_log_get_to_address(log);
-	if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_OBJECT(to)->getInternalAddress()))
-		af = AF_INET6;
-	else if (destProxy && destProxy->op)
-		af = destProxy->op->getAddressFamily();
-	else {
-		char ipv4[LINPHONE_IPADDR_SIZE];
-		char ipv6[LINPHONE_IPADDR_SIZE];
-		bool haveIpv6 = false;
-		bool haveIpv4 = false;
-		/* Check connectivity for IPv4 and IPv6 */
-		if (linphone_core_get_local_ip_for(AF_INET6, nullptr, ipv6) == 0)
-			haveIpv6 = true;
-		if (linphone_core_get_local_ip_for(AF_INET, nullptr, ipv4) == 0)
-			haveIpv4 = true;
-		if (haveIpv6) {
-			if (!haveIpv4)
-				af = AF_INET6;
-			else if (lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "rtp", "prefer_ipv6", 1)) /* This property tells whether ipv6 is prefered if two versions are available */
-				af = AF_INET6;
-			else
-				af = AF_INET;
-		} else
-			af = AF_INET;
-		/* Fill the media_localip default value since we have it here */
-		mediaLocalIp = (af == AF_INET6) ? ipv6 : ipv4;
-	}
+	if (linphone_core_ipv6_enabled(q->getCore()->getCCore())){
+		const LinphoneAddress *to = linphone_call_log_get_to_address(log);
+		
+		if (linphone_core_get_local_ip_for(AF_INET6, nullptr, ipv6) == 0){
+			have_ipv6 = TRUE;
+		}
+		if (destProxy && destProxy->op){
+			/*we can determine from the proxy connection whether IPv6 works - this is the most reliable*/
+			af = destProxy->op->getAddressFamily();
+		}else if (sal_address_is_ipv6(L_GET_PRIVATE_FROM_C_OBJECT(to)->getInternalAddress())){
+			af = AF_INET6;
+		}
+		
+		if (lp_config_get_int(linphone_core_get_config(q->getCore()->getCCore()), "rtp", "prefer_ipv6", 1) == 0 && have_ipv4){ 
+			/* This is the case where ipv4 is to be prefered if both are available.*/
+			af = AF_INET; /*we'll use IPv4*/
+			lInfo()<<"prefer_ipv6 is set to false, as both IP versions are available we are going to use IPv4";
+		}
+		if (af == AF_UNSPEC){
+			af = have_ipv6 ? AF_INET6 : AF_INET;
+		}
+	}else af=AF_INET;
+	/*fill the media_localip default value since we have it here*/
+	mediaLocalIp = (af == AF_INET6) ? ipv6 : ipv4;
 }
 
 // -----------------------------------------------------------------------------
