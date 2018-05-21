@@ -138,16 +138,14 @@ struct SqlEventFilterBuilder {};
 
 template<EventLog::Type Type, EventLog::Type... List>
 struct SqlEventFilterBuilder<Type, List...> {
-	static constexpr Private::StaticString<1 + getIntLength(int(Type)) + sums((1 + getIntLength(int(List)))...)> get () {
-		return StaticIntString<int(Type)>() + "," + SqlEventFilterBuilder<List...>::get();
-	}
+	static constexpr auto get () L_AUTO_RETURN(
+		StaticIntString<int(Type)>() + "," + SqlEventFilterBuilder<List...>::get()
+	);
 };
 
 template<EventLog::Type Type>
 struct SqlEventFilterBuilder<Type> {
-	static constexpr Private::StaticString<1 + getIntLength(int(Type))> get () {
-		return StaticIntString<int(Type)>();
-	}
+	static constexpr auto get () L_AUTO_RETURN(StaticIntString<int(Type)>());
 };
 
 // -----------------------------------------------------------------------------
