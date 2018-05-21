@@ -30,6 +30,7 @@
 		22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
 		22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AA8B0013D83F6300B30535 /* UICamSwitch.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
+		22C7693F20AD8DC20028D256 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C7693E20AD8DC10028D256 /* mediastreamer2.framework */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
 		22E0A822111C44E100B04932 /* AboutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* AboutView.m */; };
 		22F2508E107141E100AC9B3F /* DialerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* DialerView.m */; };
@@ -643,9 +644,7 @@
 		8C3EAA061EB8CEE700B732B6 /* bctoolbox.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA071EB8CEE700B732B6 /* linphone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; };
 		8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC81EB3859200A9AAEF /* linphone.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA091EB8CEE700B732B6 /* mediastreamer_base.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */; };
 		8C3EAA0A1EB8CEE700B732B6 /* mediastreamer_base.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCEC91EB3859200A9AAEF /* mediastreamer_base.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		8C3EAA0B1EB8CEE700B732B6 /* mediastreamer_voip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */; };
 		8C3EAA0C1EB8CEE700B732B6 /* mediastreamer_voip.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECA1EB3859200A9AAEF /* mediastreamer_voip.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA0D1EB8CEE700B732B6 /* mssilk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; };
 		8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C5BCECB1EB3859200A9AAEF /* mssilk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -963,6 +962,7 @@
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22C7555E1317E59C007BC101 /* UIBluetoothButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBluetoothButton.h; sourceTree = "<group>"; };
 		22C7555F1317E59C007BC101 /* UIBluetoothButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBluetoothButton.m; sourceTree = "<group>"; };
+		22C7693E20AD8DC10028D256 /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		22E0A81C111C44E100B04932 /* AboutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutView.m; sourceTree = "<group>"; };
 		22E0A81D111C44E100B04932 /* AboutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutView.h; sourceTree = "<group>"; };
@@ -1973,10 +1973,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C3EAA0B1EB8CEE700B732B6 /* mediastreamer_voip.framework in Frameworks */,
+				22C7693F20AD8DC20028D256 /* mediastreamer2.framework in Frameworks */,
 				8C3EA9FD1EB8CEE700B732B6 /* msx264.framework in Frameworks */,
 				63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */,
-				8C3EAA091EB8CEE700B732B6 /* mediastreamer_base.framework in Frameworks */,
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
 				F0A54B0C1AD56F4600C22733 /* libc++.dylib in Frameworks */,
 				8C3EAA0D1EB8CEE700B732B6 /* mssilk.framework in Frameworks */,
@@ -2295,6 +2294,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				22C7693E20AD8DC10028D256 /* mediastreamer2.framework */,
 				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
 				8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */,
 				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
