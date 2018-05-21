@@ -190,8 +190,8 @@ list<SearchResult> MagicSearch::getAllFriends() {
 		unsigned int cpt = 0;
 		string name1 = linphone_friend_get_name(lsr.getFriend());
 		string name2 = linphone_friend_get_name(rsr.getFriend());
-		unsigned int char1 = tolower(name1.at(cpt));
-		unsigned int char2 = tolower(name2.at(cpt));
+		int char1 = tolower(name1.at(cpt));
+		int char2 = tolower(name2.at(cpt));
 
 		while (name1.size() > cpt && name2.size() > cpt) {
 			if (char1 < char2) {
