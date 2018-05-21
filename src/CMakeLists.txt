@@ -417,7 +417,6 @@ if(ENABLE_SHARED)
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
 			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
-			PUBLIC_HEADER "${LINPHONE_HEADER_FILES}"
 			RESOURCE "../share/cpim_grammar"
 		)
 	endif()
