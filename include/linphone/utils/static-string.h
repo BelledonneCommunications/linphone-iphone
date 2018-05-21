@@ -112,7 +112,7 @@ namespace Private {
 
 	private:
 		template<typename T>
-		static bool testInt (T n) {
+		static constexpr bool testInt (T n) {
 			// Do not use it directly in the two enable_if below. (MSVC 2015 bug.)
 			return n < 0;
 		}
