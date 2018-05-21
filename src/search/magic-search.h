@@ -168,9 +168,10 @@ private:
 	 * @param[in] lFriend friend whose informations will be check
 	 * @param[in] filter word we search
 	 * @param[in] withDomain domain which we want to search only
+	 * @return list of result from friend
 	 * @private
 	 **/
-	SearchResult searchInFriend(const LinphoneFriend* lFriend, const std::string &filter, const std::string &withDomain);
+	std::list<SearchResult> searchInFriend(const LinphoneFriend* lFriend, const std::string &filter, const std::string &withDomain);
 
 	/**
 	 * Search informations in address given
@@ -198,6 +199,8 @@ private:
 	 * @private
 	 **/
 	bool checkDomain(const LinphoneFriend* lFriend, const LinphoneAddress *lAddress, const std::string &withDomain) const;
+
+	void addResultsToResultsList(std::list<SearchResult> &results, std::list<SearchResult> &srL);
 
 	L_DECLARE_PRIVATE(MagicSearch);
 };

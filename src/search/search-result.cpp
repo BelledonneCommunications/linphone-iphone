@@ -42,6 +42,7 @@ SearchResult::SearchResult(const unsigned int weight, const LinphoneAddress *a, 
 	L_D();
 	d->mWeight = weight;
 	d->mAddress = a;
+	if (d->mAddress) linphone_address_ref(const_cast<LinphoneAddress *>(d->mAddress));
 	d->mFriend = f;
 	d->mPhoneNumber = pn;
 }

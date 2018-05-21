@@ -417,7 +417,6 @@ if(ENABLE_SHARED)
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
 			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
-			PUBLIC_HEADER "${LINPHONE_HEADER_FILES}"
 			RESOURCE "../share/cpim_grammar"
 		)
 	endif()
@@ -441,9 +440,6 @@ if(ENABLE_SHARED)
 		set_target_properties(linphone PROPERTIES PREFIX "lib")
 	elseif(ANDROID)
 		target_link_libraries(linphone PUBLIC "log" ${SUPPORT_LIBRARIES} ${CPUFEATURES_LIBRARIES})
-		if(ENABLE_JAVA_WRAPPER)
-			add_dependencies(linphone linphonej)
-		endif()
 	endif()
 	if(MSVC)
 		if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")

@@ -196,10 +196,13 @@ void ChatRoomPrivate::notifyChatMessageReceived (const shared_ptr<ChatMessage> &
 void ChatRoomPrivate::notifyIsComposingReceived (const Address &remoteAddress, bool isComposing) {
 	L_Q();
 
-	if (isComposing)
-		remoteIsComposing.push_back(remoteAddress);
-	else
+	if (isComposing) {
+		auto it = find(remoteIsComposing.cbegin(), remoteIsComposing.cend(), remoteAddress);
+		if (it == remoteIsComposing.cend())
+			remoteIsComposing.push_back(remoteAddress);
+	} else {
 		remoteIsComposing.remove(remoteAddress);
+	}
 
 	LinphoneChatRoom *cr = getCChatRoom();
 	LinphoneAddress *lAddr = linphone_address_new(remoteAddress.asString().c_str());
