@@ -117,6 +117,9 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 
 - (void)changeView:(ContactsCategory)view {
 	CGRect frame = _selectedButtonImage.frame;
+	if (_tableController.magicSearch)
+		linphone_magic_search_reset_search_cache(_tableController.magicSearch);
+	
 	if (view == ContactsAll && !_allButton.selected) {
 		frame.origin.x = _allButton.frame.origin.x;
 		_allButton.selected = TRUE;
