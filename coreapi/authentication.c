@@ -452,8 +452,6 @@ LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *
 
 void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *ai;
-	bctbx_list_t *elem;
-	bctbx_list_t *l;
 	int restarted_op_count=0;
 	bool_t updating=FALSE;
 
@@ -472,10 +470,10 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	lc->auth_info=bctbx_list_append(lc->auth_info,linphone_auth_info_clone(info));
 
 	/* retry pending authentication operations */
-	for(l=elem=lc->sal->get_pending_auths();elem!=NULL;elem=elem->next){
-		LinphonePrivate::SalOp *op= static_cast<LinphonePrivate::SalOp*>(elem->data);
+	auto pendingAuths = lc->sal->getPendingAuths();
+	for (const auto &op : pendingAuths) {
 		LinphoneAuthInfo *ai;
-		const SalAuthInfo *req_sai=op->get_auth_requested();
+		const SalAuthInfo *req_sai=op->getAuthRequested();
 		ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain, FALSE);
 		if (ai){
 			SalAuthInfo sai;
@@ -495,7 +493,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			}
 			/*proxy case*/
 			for (proxy=(bctbx_list_t*)linphone_core_get_proxy_config_list(lc);proxy!=NULL;proxy=proxy->next) {
-				if (proxy->data == op->get_user_pointer()) {
+				if (proxy->data == op->getUserPointer()) {
 					linphone_proxy_config_set_state((LinphoneProxyConfig*)(proxy->data),LinphoneRegistrationProgress,"Authentication...");
 					break;
 				}
@@ -504,7 +502,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			restarted_op_count++;
 		}
 	}
-	if (l){
+	if (!pendingAuths.empty()) {
 		ms_message("linphone_core_add_auth_info(): restarted [%i] operation(s) after %s auth info for\n"
 			"\tusername: [%s]\n"
 			"\trealm [%s]\n"
@@ -515,7 +513,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			info->realm ? info->realm : "",
 			info->domain ? info->domain : "");
 	}
-	bctbx_list_free(l);
 	write_auth_infos(lc);
 }
 

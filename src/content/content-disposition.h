@@ -35,6 +35,7 @@ public:
 
 	ContentDisposition &operator= (const ContentDisposition &other);
 
+	bool weakEqual (const ContentDisposition &other) const;
 	bool operator== (const ContentDisposition &other) const;
 	bool operator!= (const ContentDisposition &other) const;
 
@@ -51,6 +52,7 @@ public:
 
 	std::string asString () const;
 
+	static const ContentDisposition Notification;
 	static const ContentDisposition RecipientList;
 	static const ContentDisposition RecipientListHistory;
 

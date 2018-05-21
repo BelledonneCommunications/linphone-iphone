@@ -39,7 +39,6 @@ liblinphone_la_SOURCES=\
 	chat_file_transfer.c \
 	conference.cc conference_private.h \
 	contactprovider.c contact_providers_priv.h \
-	content.c \
 	dial_plan.c \
 	dict.c \
 	ec-calibrator.c \

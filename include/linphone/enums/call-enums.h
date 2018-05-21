@@ -23,27 +23,27 @@
 // =============================================================================
 
 #define L_ENUM_VALUES_CALL_SESSION_STATE(F) \
-	F(Idle) \
-	F(IncomingReceived) \
-	F(OutgoingInit) \
-	F(OutgoingProgress) \
-	F(OutgoingRinging) \
-	F(OutgoingEarlyMedia) \
-	F(Connected) \
-	F(StreamsRunning) \
-	F(Pausing) \
-	F(Paused) \
-	F(Resuming) \
-	F(Referred) \
-	F(Error) \
-	F(End) \
-	F(PausedByRemote) \
-	F(UpdatedByRemote) \
-	F(IncomingEarlyMedia) \
-	F(Updating) \
-	F(Released) \
-	F(EarlyUpdatedByRemote) \
-	F(EarlyUpdating)
+	F(Idle /**< Initial state */) \
+	F(IncomingReceived /**< Incoming call received */) \
+	F(OutgoingInit /**< Outgoing call initialized */) \
+	F(OutgoingProgress /**< Outgoing call in progress */) \
+	F(OutgoingRinging /**< Outgoing call ringing */) \
+	F(OutgoingEarlyMedia /**< Outgoing call early media */) \
+	F(Connected /**< Connected */) \
+	F(StreamsRunning /**< Streams running */) \
+	F(Pausing /**< Pausing */) \
+	F(Paused /**< Paused */) \
+	F(Resuming /**< Resuming */) \
+	F(Referred /**< Referred */) \
+	F(Error /**< Error */) \
+	F(End /**< Call end */) \
+	F(PausedByRemote /**< Paused by remote */) \
+	F(UpdatedByRemote /**< The call&apos;s parameters are updated for example when video is asked by remote */) \
+	F(IncomingEarlyMedia /**< We are proposing early media to an incoming call */) \
+	F(Updating /**< We have initiated a call update */) \
+	F(Released /**< The call object is now released */) \
+	F(EarlyUpdatedByRemote /**< The call is updated by remote while not yet answered (SIP UPDATE in early dialog received) */) \
+	F(EarlyUpdating /**< We are updating the call while not yet answered (SIP UPDATE in early dialog sent) */)
 
 // =============================================================================
 // DEPRECATED

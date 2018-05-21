@@ -30,6 +30,7 @@ struct _LinphoneChatMessageCbs {
 	LinphoneChatMessageCbsFileTransferRecvCb file_transfer_recv;
 	LinphoneChatMessageCbsFileTransferSendCb file_transfer_send;
 	LinphoneChatMessageCbsFileTransferProgressIndicationCb file_transfer_progress_indication;
+	LinphoneChatMessageCbsParticipantImdnStateChangedCb participant_imdn_state_changed;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneChatMessageCbs);
@@ -66,40 +67,67 @@ void linphone_chat_message_cbs_set_user_data (LinphoneChatMessageCbs *cbs, void 
 	cbs->userData = ud;
 }
 
-LinphoneChatMessageCbsMsgStateChangedCb
-linphone_chat_message_cbs_get_msg_state_changed(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsMsgStateChangedCb linphone_chat_message_cbs_get_msg_state_changed (
+	const LinphoneChatMessageCbs *cbs
+) {
 	return cbs->msg_state_changed;
 }
 
-void linphone_chat_message_cbs_set_msg_state_changed(LinphoneChatMessageCbs *cbs,
-													 LinphoneChatMessageCbsMsgStateChangedCb cb) {
+void linphone_chat_message_cbs_set_msg_state_changed (
+	LinphoneChatMessageCbs *cbs,
+	LinphoneChatMessageCbsMsgStateChangedCb cb
+) {
 	cbs->msg_state_changed = cb;
 }
 
-LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferRecvCb linphone_chat_message_cbs_get_file_transfer_recv (
+	const LinphoneChatMessageCbs *cbs
+) {
 	return cbs->file_transfer_recv;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_recv(LinphoneChatMessageCbs *cbs,
-													  LinphoneChatMessageCbsFileTransferRecvCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_recv (
+	LinphoneChatMessageCbs *cbs,
+	LinphoneChatMessageCbsFileTransferRecvCb cb
+) {
 	cbs->file_transfer_recv = cb;
 }
 
-LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferSendCb linphone_chat_message_cbs_get_file_transfer_send (
+	const LinphoneChatMessageCbs *cbs
+) {
 	return cbs->file_transfer_send;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_send(LinphoneChatMessageCbs *cbs,
-													  LinphoneChatMessageCbsFileTransferSendCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_send (
+	LinphoneChatMessageCbs *cbs,
+	LinphoneChatMessageCbsFileTransferSendCb cb
+) {
 	cbs->file_transfer_send = cb;
 }
 
-LinphoneChatMessageCbsFileTransferProgressIndicationCb
-linphone_chat_message_cbs_get_file_transfer_progress_indication(const LinphoneChatMessageCbs *cbs) {
+LinphoneChatMessageCbsFileTransferProgressIndicationCb linphone_chat_message_cbs_get_file_transfer_progress_indication (
+	const LinphoneChatMessageCbs *cbs
+) {
 	return cbs->file_transfer_progress_indication;
 }
 
-void linphone_chat_message_cbs_set_file_transfer_progress_indication(
-	LinphoneChatMessageCbs *cbs, LinphoneChatMessageCbsFileTransferProgressIndicationCb cb) {
+void linphone_chat_message_cbs_set_file_transfer_progress_indication (
+	LinphoneChatMessageCbs *cbs,
+	LinphoneChatMessageCbsFileTransferProgressIndicationCb cb
+) {
 	cbs->file_transfer_progress_indication = cb;
+}
+
+LinphoneChatMessageCbsParticipantImdnStateChangedCb linphone_chat_message_cbs_get_participant_imdn_state_changed (
+	const LinphoneChatMessageCbs *cbs
+) {
+	return cbs->participant_imdn_state_changed;
+}
+
+void linphone_chat_message_cbs_set_participant_imdn_state_changed (
+	LinphoneChatMessageCbs *cbs,
+	LinphoneChatMessageCbsParticipantImdnStateChangedCb cb
+) {
+	cbs->participant_imdn_state_changed = cb;
 }

@@ -24,23 +24,23 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalReferOp: public SalOp{
+class SalReferOp : public SalOp {
 public:
-	SalReferOp(Sal *sal);
+	SalReferOp (Sal *sal);
 
-	int send_refer(const SalAddress *refer_to);
-	int reply(SalReason reason);
+	int sendRefer (const SalAddress *referTo);
+	int reply (SalReason reason);
 
 private:
-	virtual void fill_cbs() override;
-	void process_error();
+	virtual void fillCallbacks () override;
+	void processError ();
 
-	static void process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	static void process_response_event_cb(void *op_base, const belle_sip_response_event_t *event);
-	static void process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
-	static void process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
+	static void processIoErrorCb (void *userCtx, const belle_sip_io_error_event_t *event);
+	static void processResponseEventCb (void *userCtx, const belle_sip_response_event_t *event);
+	static void processTimeoutCb (void *userCtx, const belle_sip_timeout_event_t *event);
+	static void processRequestEventCb (void *userCtx, const belle_sip_request_event_t *event);
 };
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_SAL_MESSAGE_OP_H_
+#endif // ifndef _L_SAL_REFER_OP_H_

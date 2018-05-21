@@ -348,6 +348,29 @@ void sal_body_handler_set_subtype(SalBodyHandler *body_handler, const char *subt
 	belle_sip_header_content_type_set_subtype(content_type, subtype);
 }
 
+const belle_sip_list_t * sal_body_handler_get_content_type_parameters_names(const SalBodyHandler *body_handler) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		return belle_sip_parameters_get_parameter_names(BELLE_SIP_PARAMETERS(content_type));
+	}
+	return NULL;
+}
+
+const char * sal_body_handler_get_content_type_parameter(const SalBodyHandler *body_handler, const char *name) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		return belle_sip_parameters_get_parameter(BELLE_SIP_PARAMETERS(content_type), name);
+	}
+	return NULL;
+}
+
+void sal_body_handler_set_content_type_parameter(SalBodyHandler *body_handler, const char *paramName, const char *paramValue) {
+	belle_sip_header_content_type_t *content_type = BELLE_SIP_HEADER_CONTENT_TYPE(sal_body_handler_find_header(body_handler, "Content-Type"));
+	if (content_type != NULL) {
+		belle_sip_parameters_set_parameter(BELLE_SIP_PARAMETERS(content_type), paramName, paramValue);
+	}
+}
+
 const char * sal_body_handler_get_encoding(const SalBodyHandler *body_handler) {
 	belle_sip_header_t *content_encoding = sal_body_handler_find_header(body_handler, "Content-Encoding");
 	if (content_encoding != NULL) {
@@ -396,6 +419,11 @@ SalBodyHandler * sal_body_handler_get_part(const SalBodyHandler *body_handler, i
 	return (SalBodyHandler *)belle_sip_list_nth_data(l, idx);
 }
 
+const belle_sip_list_t * sal_body_handler_get_parts(const SalBodyHandler *body_handler) {
+	if (!sal_body_handler_is_multipart(body_handler)) return NULL;
+	return belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
+}
+
 SalBodyHandler * sal_body_handler_find_part_by_header(const SalBodyHandler *body_handler, const char *header_name, const char *header_value) {
 	const belle_sip_list_t *l = belle_sip_multipart_body_handler_get_parts(BELLE_SIP_MULTIPART_BODY_HANDLER(body_handler));
 	for (; l != NULL; l = l->next) {
@@ -417,4 +445,8 @@ const char * sal_body_handler_get_header(const SalBodyHandler *body_handler, con
 		return belle_sip_header_get_unparsed_value(header);
 	}
 	return NULL;
+}
+
+const belle_sip_list_t* sal_body_handler_get_headers(const SalBodyHandler *body_handler) {
+	return belle_sip_body_handler_get_headers(BELLE_SIP_BODY_HANDLER(body_handler));
 }

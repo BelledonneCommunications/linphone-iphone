@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "c-wrapper/internal/c-tools.h"
 #include "clonable-object-p.h"
 #include "clonable-object.h"
 
@@ -43,6 +44,7 @@ ClonableObject::ClonableObject (ClonableObjectPrivate &p) {
 	} while (false);
 
 ClonableObject::~ClonableObject () {
+	Wrapper::handleClonableObjectDestruction(this);
 	UNREF();
 }
 

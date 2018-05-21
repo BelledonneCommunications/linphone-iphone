@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <bctoolbox/crypto.h>
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
 
 #include "c-wrapper/c-wrapper.h"
@@ -576,6 +577,7 @@ LinphoneFriendListStatus linphone_friend_list_import_friend(LinphoneFriendList *
 		}
 		iterator = bctbx_list_next(iterator);
 	}
+	bctbx_list_free(phone_numbers);
 
 	addresses = linphone_friend_get_addresses(lf);
 	iterator = (bctbx_list_t *)addresses;
@@ -798,15 +800,19 @@ LinphoneFriend * linphone_friend_list_find_friend_by_uri(const LinphoneFriendLis
 	return result;
 }
 
-LinphoneFriend * linphone_friend_list_find_friend_by_ref_key(const LinphoneFriendList *list, const char *ref_key) {
-	if(list) {
-		bctbx_iterator_t* it = bctbx_map_cchar_find_key(list->friends_map, ref_key);
-		if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(list->friends_map))) {
+LinphoneFriend *linphone_friend_list_find_friend_by_ref_key (const LinphoneFriendList *list, const char *ref_key) {
+	LinphoneFriend *result = NULL;
+	if (list) {
+		bctbx_iterator_t *it = bctbx_map_cchar_find_key(list->friends_map, ref_key);
+		bctbx_iterator_t *end = bctbx_map_cchar_end(list->friends_map);
+		if (!bctbx_iterator_cchar_equals(it, end)) {
 			bctbx_pair_t *pair = bctbx_iterator_cchar_get_pair(it);
-			return (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
+			result = (LinphoneFriend *)bctbx_pair_cchar_get_second(pair);
 		}
+		bctbx_iterator_cchar_delete(end);
+		bctbx_iterator_cchar_delete(it);
 	}
-	return NULL;
+	return result;
 }
 
 LinphoneFriend * linphone_friend_list_find_friend_by_inc_subscribe (
@@ -828,7 +834,7 @@ LinphoneFriend * linphone_friend_list_find_friend_by_out_subscribe (
 	const bctbx_list_t *elem;
 	for (elem = list->friends; elem != NULL; elem = bctbx_list_next(elem)) {
 		LinphoneFriend *lf = (LinphoneFriend *)bctbx_list_get_data(elem);
-		if (lf->outsub && ((lf->outsub == op) || lf->outsub->is_forked_of(op))) return lf;
+		if (lf->outsub && ((lf->outsub == op) || lf->outsub->isForkedOf(op))) return lf;
 	}
 	return NULL;
 }
@@ -961,7 +967,7 @@ void linphone_friend_list_notify_presence_received(LinphoneFriendList *list, Lin
 		const char *subtype = linphone_content_get_subtype(body);
 
 		if ((strcmp(type, "multipart") != 0) || (strcmp(subtype, "related") != 0)) {
-			ms_warning("multipart presence notified but it is not 'multipart/related'");
+			ms_warning("multipart presence notified but it is not 'multipart/related', instead is '%s/%s'", type, subtype);
 			return;
 		}
 

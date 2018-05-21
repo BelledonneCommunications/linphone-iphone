@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="urn:ietf:params:xml:ns:im-iscomposing"
+	elementFormDefault="qualified"
+	attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="urn:ietf:params:xml:ns:im-iscomposing">
+	<xs:element name="isComposing">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="state" type="xs:string"/>
+				<xs:element name="lastactive" type="xs:dateTime" minOccurs="0"/>
+				<xs:element name="contenttype" type="xs:string" minOccurs="0"/>
+				<xs:element name="refresh" type="xs:positiveInteger" minOccurs="0"/>
+				<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,39 @@
+{{#namespace}}
+.. {{#write_declarator}}namespace{{/write_declarator}}:: {{{namespace}}}
+	{{#isJava}}
+	:noindex:
+	{{/isJava}}
+{{/namespace}}
+
+{{#enum}}
+{{#make_chapter}}{{{name}}} enum{{/make_chapter}}
+
+.. {{#write_declarator}}enum{{/write_declarator}}:: {{{declaration}}}
+	
+	{{#briefDesc}}
+	{{#lines}}
+	{{{line}}}
+	{{/lines}}
+	{{/briefDesc}}
+	
+	{{{selector}}}
+	
+	{{#enumerators}}
+	{{#isNotJava}}
+	.. {{#write_declarator}}enumerator{{/write_declarator}}:: {{{name}}}
+		
+	{{/isNotJava}}
+	{{#isJava}}
+	**{{{name}}}**
+	{{/isJava}}
+		{{#briefDesc}}
+		{{#lines}}
+		{{{line}}}
+		{{/lines}}
+		{{/briefDesc}}
+		
+		{{{selector}}}
+	
+	{{/enumerators}}
+
+{{/enum}}

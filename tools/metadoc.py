@@ -138,12 +138,25 @@ class Reference(ParagraphPart):
 		ParagraphPart.__init__(self)
 		self.cname = cname
 		self.relatedObject = None
-	
-	def translate(self, docTranslator, **kargs):
-		return docTranslator.translate_reference(self, **kargs)
+
+	@staticmethod
+	def make_ref_from_object(cname, obj):
+		if isinstance(obj, (abstractapi.Enum, abstractapi.Enumerator, abstractapi.Class, abstractapi.Interface)):
+			ref = ClassReference(cname)
+		elif isinstance(obj, abstractapi.Method):
+			ref = FunctionReference(cname)
+		else:
+			raise TypeError('cannot create documentation reference from {0}'.format(str(obj)))
+		ref.relatedObject = obj
+		return ref
 
 
 class ClassReference(Reference):
+	def translate(self, docTranslator, **kargs):
+		if self.relatedObject is None:
+			raise ReferenceTranslationError(self.cname)
+		return docTranslator.translate_class_reference(self, **kargs)
+
 	def resolve(self, api):
 		try:
 			self.relatedObject = api.classesIndex[self.cname]
@@ -152,6 +165,11 @@ class ClassReference(Reference):
 
 
 class FunctionReference(Reference):
+	def translate(self, docTranslator, **kargs):
+		if self.relatedObject is None:
+			raise ReferenceTranslationError(self.cname)
+		return docTranslator.translate_function_reference(self, **kargs)
+
 	def resolve(self, api):
 		try:
 			self.relatedObject = api.methodsIndex[self.cname]
@@ -385,6 +403,7 @@ class ReferenceTranslationError(TranslationError):
 
 class Translator:
 	def __init__(self, langCode):
+		self.langCode = langCode
 		self.textWidth = 80
 		self.nameTranslator = metaname.Translator.get(langCode)
 		self.langTranslator = abstractapi.Translator.get(langCode)
@@ -417,12 +436,13 @@ class Translator:
 		else:
 			if namespace is None:
 				description = ref.find_root()
-				namespaceObj = description.relatedObject.find_first_ancestor_by_type(abstractapi.Namespace, abstractapi.Class)
-				namespace = namespaceObj.name
-			if namespace.is_prefix_of(ref.relatedObject.name):
-				commonName = namespace
+				namespace = description.relatedObject.find_first_ancestor_by_type(abstractapi.Namespace, abstractapi.Class)
+			if namespace is abstractapi.GlobalNs:
+				commonName = None
+			elif namespace.name.is_prefix_of(ref.relatedObject.name):
+				commonName = namespace.name
 			else:
-				commonName = metaname.Name.find_common_parent(ref.relatedObject.name, namespace)
+				commonName = metaname.Name.find_common_parent(ref.relatedObject.name, namespace.name)
 		return ref.relatedObject.name.translate(self.nameTranslator, recursive=True, topAncestor=commonName)
 	
 	def translate_keyword(self, keyword):
@@ -495,13 +515,16 @@ class DoxygenTranslator(Translator):
 	def _tag_as_brief(self, lines):
 		if len(lines) > 0:
 			lines[0] = '@brief ' + lines[0]
-	
-	def translate_reference(self, ref):
-		refStr = Translator.translate_reference(self, ref)
+
+	def translate_class_reference(self, ref, **kargs):
 		if isinstance(ref.relatedObject, (abstractapi.Class, abstractapi.Enum)):
-			return '#' + refStr
-		elif isinstance(ref.relatedObject, abstractapi.Method):
-			return refStr + '()'
+			return '#' + Translator.translate_reference(self, ref)
+		else:
+			raise ReferenceTranslationError(ref.cname)
+
+	def translate_function_reference(self, ref, **kargs):
+		if isinstance(ref.relatedObject, abstractapi.Method):
+			return Translator.translate_reference(self, ref) + '()'
 		else:
 			raise ReferenceTranslationError(ref.cname)
 	
@@ -533,16 +556,17 @@ class SphinxTranslator(Translator):
 	def __init__(self, langCode):
 		Translator.__init__(self, langCode)
 		if langCode == 'C':
-			self.domain = 'c'
+			self.domain = 'cpp'
 			self.classDeclarator = 'type'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'function'
-			self.enumDeclarator = 'type'
-			self.enumeratorDeclarator = 'var'
-			self.enumeratorReferencer = 'data'
+			self.enumDeclarator = 'enum'
+			self.enumeratorDeclarator = 'enumerator'
 			self.methodReferencer = 'func'
 		elif langCode == 'Cpp':
 			self.domain = 'cpp'
 			self.classDeclarator = 'class'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'function'
 			self.enumDeclarator = 'enum'
 			self.enumeratorDeclarator = 'enumerator'
@@ -551,13 +575,24 @@ class SphinxTranslator(Translator):
 		elif langCode == 'CSharp':
 			self.domain = 'csharp'
 			self.classDeclarator = 'class'
+			self.interfaceDeclarator = self.classDeclarator
 			self.methodDeclarator = 'method'
 			self.enumDeclarator = 'enum'
 			self.enumeratorDeclarator = 'value'
 			self.namespaceDeclarator = 'namespace'
 			self.classReferencer = 'type'
+			self.interfaceReferencer = self.classReferencer
 			self.enumReferencer = 'type'
 			self.enumeratorReferencer = 'enum'
+			self.methodReferencer = 'meth'
+		elif langCode == 'Java':
+			self.domain = 'java'
+			self.classDeclarator = 'type'
+			self.interfaceDeclarator = self.classDeclarator
+			self.methodDeclarator = 'method'
+			self.enumDeclarator = 'type'
+			self.enumeratorDeclarator = 'field'
+			self.namespaceDeclarator = 'package'
 			self.methodReferencer = 'meth'
 		else:
 			raise ValueError('invalid language code: {0}'.format(langCode))
@@ -580,18 +615,30 @@ class SphinxTranslator(Translator):
 				return self.get_declarator(typeName)
 		except AttributeError:
 			raise ValueError("'{0}' referencer type not supported".format(typeName))
-	
-	def translate_reference(self, ref, label=None, namespace=None):
-		strRef = Translator.translate_reference(self, ref, absName=True)
-		kargs = {
-			'tag'   : self._sphinx_ref_tag(ref),
-			'ref'   : strRef,
-		}
-		kargs['label'] = label if label is not None else Translator.translate_reference(self, ref, namespace=namespace)
-		if isinstance(ref, FunctionReference):
-			kargs['label'] += '()'
-		
-		return ':{tag}:`{label} <{ref}>`'.format(**kargs)
+
+	def translate_class_reference(self, ref, label=None, namespace=None):
+		return ':{tag}:`{label} <{ref}>`'.format(
+			tag=self._sphinx_ref_tag(ref),
+			label=label if label is not None else Translator.translate_reference(self, ref, namespace=namespace),
+			ref=Translator.translate_reference(self, ref, absName=True)
+		)
+
+	def translate_function_reference(self, ref, label=None, useNamespace=True, namespace=None):
+		if self.domain == 'csharp':
+			refStr = ref.relatedObject.name.translate(self.nameTranslator, **abstractapi.Translator._namespace_to_name_translator_params(namespace))
+		else:
+			refStr = ref.relatedObject.translate_as_prototype(self.langTranslator,
+				hideArguments=self.domain != 'java',
+				hideArgNames=self.domain == 'java',
+				hideReturnType=True,
+				stripDeclarators=True,
+				namespace=namespace
+			)
+		return ':{tag}:`{label} <{ref}>`'.format(
+			tag=self._sphinx_ref_tag(ref),
+			label=label if label is not None else '{0}()'.format(Translator.translate_reference(self, ref, namespace=namespace)),
+			ref=refStr
+		)
 	
 	def translate_keyword(self, keyword):
 		translatedKeyword = Translator.translate_keyword(self, keyword)
@@ -641,9 +688,11 @@ class SandCastleTranslator(Translator):
 		if len(lines) > 0:
 			lines.insert(0, '<summary>')
 			lines.append('</summary>')
-	
-	def translate_reference(self, ref):
+
+	def translate_function_reference(self, ref):
 		refStr = Translator.translate_reference(self, ref, absName=True)
-		if isinstance(ref, FunctionReference):
-			refStr += '()'
+		return '<see cref="{0}()" />'.format(refStr)
+
+	def translate_class_reference(self, ref):
+		refStr = Translator.translate_reference(self, ref, absName=True)
 		return '<see cref="{0}" />'.format(refStr)

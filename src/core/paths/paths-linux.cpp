@@ -17,9 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "linphone/utils/utils.h"
-
-#include "core/platform-helpers/platform-helpers.h"
 #include "logger/logger.h"
 
 #include "paths-linux.h"
@@ -41,12 +38,12 @@ static string getBaseDirectory () {
 	return base;
 }
 
-string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
+string SysPaths::getDataPath (PlatformHelpers *) {
 	static string dataPath = getBaseDirectory() + "/.local/share/linphone/";
 	return dataPath;
 }
 
-string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
+string SysPaths::getConfigPath (PlatformHelpers *) {
 	static string configPath = getBaseDirectory() + "/.config/linphone/";
 	return configPath;
 }

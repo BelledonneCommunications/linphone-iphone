@@ -478,7 +478,7 @@ void linphone_friend_notify(LinphoneFriend *lf, LinphonePresenceModel *presence)
 	}
 	for(elem=lf->insubs; elem!=NULL; elem=bctbx_list_next(elem)){
 		auto op = reinterpret_cast<SalPresenceOp *>(bctbx_list_get_data(elem));
-		op->notify_presence((SalPresenceModel *)presence);
+		op->notifyPresence((SalPresenceModel *)presence);
 	}
 }
 
@@ -531,7 +531,7 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 }
 
 static void close_presence_notification(SalPresenceOp *op) {
-	op->notify_presence_close();
+	op->notifyPresenceClose();
 }
 
 static void release_sal_op(SalOp *op) {
@@ -773,7 +773,7 @@ void linphone_friend_update_subscribes(LinphoneFriend *fr, bool_t only_when_regi
 		linphone_friend_unsubscribe(fr);
 	}else if (!can_subscribe && fr->outsub){
 		fr->subscribe_active=FALSE;
-		fr->outsub->stop_refreshing();
+		fr->outsub->stopRefreshing();
 	}
 }
 
@@ -1779,11 +1779,13 @@ const char * linphone_friend_phone_number_to_sip_uri(LinphoneFriend *lf, const c
 	if(strcmp(normalized_number, phone_number) != 0) {
 		char *old_uri = ms_strdup_printf("sip:%s@%s;user=phone", phone_number, linphone_proxy_config_get_domain(proxy_config));
 		bctbx_iterator_t *it = bctbx_map_cchar_find_key(lf->friend_list->friends_map_uri, old_uri);
-		if (!bctbx_iterator_cchar_equals(it, bctbx_map_cchar_end(lf->friend_list->friends_map_uri))){
+		bctbx_iterator_t *end = bctbx_map_cchar_end(lf->friend_list->friends_map_uri);
+		if (!bctbx_iterator_cchar_equals(it, end)){
 			linphone_friend_unref((LinphoneFriend*)bctbx_pair_cchar_get_second(bctbx_iterator_cchar_get_pair(it)));
 			bctbx_map_cchar_erase(lf->friend_list->friends_map_uri, it);
 		}
 		bctbx_iterator_cchar_delete(it);
+		bctbx_iterator_cchar_delete(end);
 		ms_free(old_uri);
 	}
 

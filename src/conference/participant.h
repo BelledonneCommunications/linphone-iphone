@@ -25,7 +25,6 @@
 #include "address/identity-address.h"
 #include "object/object.h"
 #include "conference/params/call-session-params.h"
-#include "conference/participant-device.h"
 
 // =============================================================================
 
@@ -45,6 +44,7 @@ class Participant : public Object {
 	friend class LocalConferenceCallPrivate;
 	friend class LocalConferenceEventHandler;
 	friend class LocalConferenceEventHandlerPrivate;
+	friend class LocalConferenceListEventHandler;
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class MediaSessionPrivate;

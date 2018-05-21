@@ -37,11 +37,13 @@
 	F(ChatMessage, ChatMessage) \
 	F(AbstractChatRoom, ChatRoom) \
 	F(Core, Core) \
+	F(Content, Content) \
 	F(DialPlan, DialPlan) \
 	F(EventLog, EventLog) \
 	F(MagicSearch, MagicSearch) \
 	F(MediaSessionParams, CallParams) \
 	F(Participant, Participant) \
+	F(ParticipantImdnState, ParticipantImdnState) \
 	F(SearchResult, SearchResult)
 
 #define L_REGISTER_SUBTYPES(F) \
@@ -85,7 +87,6 @@ BELLE_SIP_TYPE_ID(LinphoneConferenceParams),
 BELLE_SIP_TYPE_ID(LinphoneConfig),
 BELLE_SIP_TYPE_ID(LinphoneContactProvider),
 BELLE_SIP_TYPE_ID(LinphoneContactSearch),
-BELLE_SIP_TYPE_ID(LinphoneContent),
 BELLE_SIP_TYPE_ID(LinphoneCoreCbs),
 BELLE_SIP_TYPE_ID(LinphoneErrorInfo),
 BELLE_SIP_TYPE_ID(LinphoneEvent),

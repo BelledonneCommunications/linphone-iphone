@@ -38,11 +38,14 @@ public:
 	string filePath;
 	FileContent *fileContent = nullptr;
 	size_t fileSize = 0;
+	std::vector<char> fileKey;
 };
 
 // -----------------------------------------------------------------------------
 
-FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {}
+FileTransferContent::FileTransferContent () : Content(*new FileTransferContentPrivate) {
+	setContentType(ContentType::FileTransfer);
+}
 
 FileTransferContent::FileTransferContent (const FileTransferContent &other) : Content(*new FileTransferContentPrivate) {
 	L_D();
@@ -51,6 +54,7 @@ FileTransferContent::FileTransferContent (const FileTransferContent &other) : Co
 	d->filePath = other.getFilePath();
 	d->fileContent = other.getFileContent();
 	d->fileSize = other.getFileSize();
+	d->fileKey = other.getFileKey();
 }
 
 FileTransferContent::FileTransferContent (FileTransferContent &&other) : Content(*new FileTransferContentPrivate) {
@@ -60,6 +64,7 @@ FileTransferContent::FileTransferContent (FileTransferContent &&other) : Content
 	d->filePath = move(other.getPrivate()->filePath);
 	d->fileContent = move(other.getPrivate()->fileContent);
 	d->fileSize = move(other.getPrivate()->fileSize);
+	d->fileKey = move(other.getPrivate()->fileKey);
 }
 
 FileTransferContent &FileTransferContent::operator= (const FileTransferContent &other) {
@@ -71,6 +76,7 @@ FileTransferContent &FileTransferContent::operator= (const FileTransferContent &
 		d->filePath = other.getFilePath();
 		d->fileContent = other.getFileContent();
 		d->fileSize = other.getFileSize();
+		d->fileKey = other.getFileKey();
 	}
 
 	return *this;
@@ -84,6 +90,8 @@ FileTransferContent &FileTransferContent::operator= (FileTransferContent &&other
 	d->filePath = move(other.getPrivate()->filePath);
 	d->fileContent = move(other.getPrivate()->fileContent);
 	d->fileSize = move(other.getPrivate()->fileSize);
+	d->fileKey = move(other.getPrivate()->fileKey);
+
 	return *this;
 }
 
@@ -146,17 +154,27 @@ size_t FileTransferContent::getFileSize () const {
 	return d->fileSize;
 }
 
-LinphoneContent *FileTransferContent::toLinphoneContent () const {
-	LinphoneContent *content = linphone_core_create_content(nullptr);
-	linphone_content_set_type(content, getContentType().getType().c_str());
-	linphone_content_set_subtype(content, getContentType().getSubType().c_str());
-	linphone_content_set_name(content, getFileName().c_str());
-	linphone_content_set_size(content, getFileSize());
-	return content;
+void FileTransferContent::setFileKey (const char *key, size_t size) {
+	L_D();
+	d->fileKey = vector<char>(key, key + size);
+}
+
+const vector<char> &FileTransferContent::getFileKey () const {
+	L_D();
+	return d->fileKey;
+}
+
+size_t FileTransferContent::getFileKeySize() const {
+	L_D();
+	return d->fileKey.size();
 }
 
 bool FileTransferContent::isFile () const {
 	return false;
+}
+
+bool FileTransferContent::isFileTransfer () const {
+	return true;
 }
 
 LINPHONE_END_NAMESPACE

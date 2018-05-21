@@ -24,6 +24,7 @@
 
 #include "conference/remote-conference.h"
 #include "content/content-manager.h"
+#include "content/content-type.h"
 #include "content/content.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
@@ -207,8 +208,8 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 		return;
 	}
 
-	lev = linphone_event_ref(linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600));
-	lev->op->set_from(chatRoomId.getLocalAddress().asString().c_str());
+	lev = linphone_core_create_subscribe(conf->getCore()->getCCore(), lAddr, "conference", 600);
+	lev->op->setFrom(chatRoomId.getLocalAddress().asString().c_str());
 	const string &lastNotifyStr = Utils::toString(lastNotify);
 	linphone_event_add_custom_header(lev, "Last-Notify-Version", lastNotifyStr.c_str());
 	linphone_address_unref(lAddr);
@@ -221,7 +222,6 @@ void RemoteConferenceEventHandlerPrivate::subscribe () {
 void RemoteConferenceEventHandlerPrivate::unsubscribe () {
 	if (lev) {
 		linphone_event_terminate(lev);
-		linphone_event_unref(lev);
 		lev = nullptr;
 	}
 }
@@ -236,6 +236,14 @@ void RemoteConferenceEventHandlerPrivate::onNetworkReachable (bool sipNetworkRea
 void RemoteConferenceEventHandlerPrivate::onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {
 	if (state == LinphoneRegistrationOk)
 		subscribe();
+}
+
+void RemoteConferenceEventHandlerPrivate::onEnteringBackground () {
+	unsubscribe();
+}
+
+void RemoteConferenceEventHandlerPrivate::onEnteringForeground () {
+	subscribe();
 }
 
 // -----------------------------------------------------------------------------
@@ -256,8 +264,7 @@ RemoteConferenceEventHandler::~RemoteConferenceEventHandler () {
 		// Unable to unregister listener here. Core is destroyed and the listener doesn't exist.
 	}
 
-	if (d->lev)
-		unsubscribe();
+	unsubscribe();
 }
 
 // -----------------------------------------------------------------------------
@@ -278,8 +285,7 @@ void RemoteConferenceEventHandler::unsubscribe () {
 void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 	L_D();
 
-	lInfo() << "NOTIFY received for conference: (remote=" << d->chatRoomId.getPeerAddress().asString() <<
-		", local=" << d->chatRoomId.getLocalAddress().asString() << ").";
+	lInfo() << "NOTIFY received for conference: " << d->chatRoomId;
 
 	d->simpleNotifyReceived(xmlBody);
 }
@@ -287,17 +293,24 @@ void RemoteConferenceEventHandler::notifyReceived (const string &xmlBody) {
 void RemoteConferenceEventHandler::multipartNotifyReceived (const string &xmlBody) {
 	L_D();
 
-	lInfo() << "multipart NOTIFY received for conference: (remote=" << d->chatRoomId.getPeerAddress().asString() <<
-		", local=" << d->chatRoomId.getLocalAddress().asString() << ").";
+	lInfo() << "multipart NOTIFY received for conference: " << d->chatRoomId;
 
 	Content multipart;
 	multipart.setBody(xmlBody);
+	ContentType contentType(ContentType::Multipart);
+	contentType.addParameter("boundary", MultipartBoundary);
+	multipart.setContentType(contentType);
 
 	for (const auto &content : ContentManager::multipartToContentList(multipart))
 		d->simpleNotifyReceived(content.getBodyAsString());
 }
 
 // -----------------------------------------------------------------------------
+
+void RemoteConferenceEventHandler::setChatRoomId (ChatRoomId chatRoomId) {
+	L_D();
+	d->chatRoomId = chatRoomId;
+}
 
 const ChatRoomId &RemoteConferenceEventHandler::getChatRoomId () const {
 	L_D();

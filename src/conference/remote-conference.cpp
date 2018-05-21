@@ -21,7 +21,6 @@
 #include "logger/logger.h"
 #include "participant-p.h"
 #include "remote-conference-p.h"
-#include "xml/resource-lists.h"
 
 // =============================================================================
 
@@ -59,7 +58,7 @@ void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSe
 		d->activeParticipant = participant;
 }
 
-void RemoteConference::removeParticipant (const shared_ptr<const Participant> &participant) {
+void RemoteConference::removeParticipant (const shared_ptr<Participant> &participant) {
 	L_D();
 	for (const auto &p : d->participants) {
 		if (participant->getAddress() == p->getAddress()) {
@@ -67,21 +66,6 @@ void RemoteConference::removeParticipant (const shared_ptr<const Participant> &p
 			return;
 		}
 	}
-}
-
-string RemoteConference::getResourceLists (const list<IdentityAddress> &addresses) const {
-	Xsd::ResourceLists::ResourceLists rl = Xsd::ResourceLists::ResourceLists();
-	Xsd::ResourceLists::ListType l = Xsd::ResourceLists::ListType();
-	for (const auto &addr : addresses) {
-		Xsd::ResourceLists::EntryType entry = Xsd::ResourceLists::EntryType(addr.asString());
-		l.getEntry().push_back(entry);
-	}
-	rl.getList().push_back(l);
-
-	Xsd::XmlSchema::NamespaceInfomap map;
-	stringstream xmlBody;
-	serializeResourceLists(xmlBody, rl, map);
-	return xmlBody.str();
 }
 
 // -----------------------------------------------------------------------------

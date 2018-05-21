@@ -476,7 +476,7 @@ const char * linphone_core_get_echo_canceller_filter_name(const LinphoneCore *lc
  * task_fun must return BELLE_SIP_STOP when job is finished.
 **/
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description){
-	belle_sip_source_t *s=lc->sal->create_timer(task_fun,data, 20, task_description);
+	belle_sip_source_t *s=lc->sal->createTimer(task_fun,data, 20, task_description);
 	belle_sip_object_unref(s);
 }
 
@@ -919,8 +919,11 @@ void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 		}
 		linphone_address_unref(conference_factory_addr);
 	}
-	const char *username = linphone_address_get_username(call_log->to);
-	if (username && (strstr(username, "chatroom-") == username))
+	const char *usernameFrom = linphone_address_get_username(call_log->from);
+	const char *usernameTo = linphone_address_get_username(call_log->to);
+	if ((usernameFrom && (strstr(usernameFrom, "chatroom-") == usernameFrom))
+		|| (usernameTo && (strstr(usernameTo, "chatroom-") == usernameTo))
+	)
 		return;
 	// End of workaround
 

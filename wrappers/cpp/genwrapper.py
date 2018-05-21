@@ -104,7 +104,7 @@ class CppTranslator(object):
 			classDict['listenerClassName'] = _class.listenerInterface.name.translate(self.nameTranslator)
 			classDict['cListenerName'] = _class.listenerInterface.name.to_c()
 			classDict['cppListenerName'] = _class.listenerInterface.name.translate(self.nameTranslator)
-			for method in _class.listenerInterface.methods:
+			for method in _class.listenerInterface.instanceMethods:
 				classDict['wrapperCbs'].append(self._generate_wrapper_callback(_class, method))
 		
 		if ismonolistenable:
@@ -173,7 +173,7 @@ class CppTranslator(object):
 			'isListener'      : True,
 			'methods'         : []
 		}
-		for method in interface.methods:
+		for method in interface.instanceMethods:
 			methodDict = self.translate_method(method, genImpl=False)
 			intDict['methods'].append(methodDict)
 		
@@ -361,52 +361,41 @@ class ClassHeader(object):
 		self.filename = '{0}.hh'.format(_class.name.to_snake_case())
 		self.priorDeclarations = []
 		self.private_type = _class.name.to_camel_case(fullName=True)
-		
 		self.includes = {'internal': [], 'external': []}
-		includes = self.needed_includes(_class)
-		
-		for include in includes['external']:
-			self.includes['external'].append({'name': include})
-
-		for include in includes['internal']:
-			self.includes['internal'].append({'name': include})
+		self._populate_needed_includes(_class)
 	
-	def needed_includes(self, _class):
-		includes = {'internal': [], 'external': []}
-		
+	def _populate_needed_includes(self, _class):
 		if type(_class) is AbsApi.Class:
 			for _property in _class.properties:
 				if _property.setter is not None:
-					self._needed_includes_from_method(_property.setter, includes)
+					self._populate_needed_includes_from_method(_property.setter)
 				if _property.getter is not None:
-					self._needed_includes_from_method(_property.getter, includes)
+					self._populate_needed_includes_from_method(_property.getter)
 		
 		if type(_class) is AbsApi.Class:
 			methods = _class.classMethods + _class.instanceMethods
 		else:
-			methods = _class.methods
+			methods = _class.instanceMethods
 		
 		for method in methods:
-			self._needed_includes_from_type(method.returnType, includes)
+			self._populate_needed_includes_from_type(method.returnType)
 			for arg in method.args:
-				self._needed_includes_from_type(arg.type, includes)
+				self._populate_needed_includes_from_type(arg.type)
 		
 		if isinstance(_class, AbsApi.Class) and _class.listenerInterface is not None:
 			decl = 'class ' + _class.listenerInterface.name.translate(metaname.Translator.get('Cpp'))
 			self._add_prior_declaration(decl)
 		
 		currentClassInclude = _class.name.to_snake_case()
-		if currentClassInclude in includes['internal']:
-			includes['internal'].remove(currentClassInclude)
-			
-		return includes
+		if currentClassInclude in self.includes['internal']:
+			self.includes['internal'].remove(currentClassInclude)
 	
-	def _needed_includes_from_method(self, method, includes):
-		self._needed_includes_from_type(method.returnType, includes)
+	def _populate_needed_includes_from_method(self, method):
+		self._populate_needed_includes_from_type(method.returnType)
 		for arg in method.args:
-			self._needed_includes_from_type(arg.type, includes)
+			self._populate_needed_includes_from_type(arg.type)
 	
-	def _needed_includes_from_type(self, type_, includes):
+	def _populate_needed_includes_from_type(self, type_):
 		translator = metaname.Translator.get('Cpp')
 		if isinstance(type_, AbsApi.ClassType):
 			class_ = type_.desc
@@ -415,7 +404,7 @@ class ClassHeader(object):
 				self._add_prior_declaration(decl)
 			else:
 				rootClass = class_.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
-				self._add_include(includes, 'internal', rootClass.name.to_snake_case())
+				self._add_include('internal', rootClass.name.to_snake_case())
 		elif isinstance(type_, AbsApi.EnumType):
 			enum = type_.desc
 			if enum.parent == self.rootNs:
@@ -423,19 +412,19 @@ class ClassHeader(object):
 			else:
 				rootClass = enum.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
 				headerFile = rootClass.name.to_snake_case()
-			self._add_include(includes, 'internal', headerFile)
+			self._add_include('internal', headerFile)
 		elif isinstance(type_, AbsApi.BaseType):
 			if type_.name == 'integer' and isinstance(type_.size, int):
-				self._add_include(includes, 'external', 'cstdint')
+				self._add_include('external', 'cstdint')
 			elif type_.name == 'string':
-				self._add_include(includes, 'external', 'string')
+				self._add_include('external', 'string')
 		elif isinstance(type_, AbsApi.ListType):
-			self._add_include(includes, 'external', 'list')
-			self._needed_includes_from_type(type_.containedTypeDesc, includes)
+			self._add_include('external', 'list')
+			self._populate_needed_includes_from_type(type_.containedTypeDesc)
 	
-	def _add_include(self, includes, location, name):
-		if not name in includes[location]:
-			includes[location].append(name)
+	def _add_include(self, location, name):
+		if next((x for x in self.includes[location] if x['name']==name), None) is None:
+			self.includes[location].append({'name': name})
 
 	def _add_prior_declaration(self, decl):
 		if next((x for x in self.priorDeclarations if x['declaration']==decl), None) is None:

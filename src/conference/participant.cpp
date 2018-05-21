@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "object/object-p.h"
+#include "participant-device.h"
 #include "participant-p.h"
 
 #include "participant.h"

@@ -31,6 +31,7 @@ class RemoteConference;
 class RemoteConferenceEventHandlerPrivate;
 
 class RemoteConferenceEventHandler : public Object {
+	friend class ClientGroupChatRoom;
 public:
 	RemoteConferenceEventHandler (RemoteConference *remoteConference);
 	~RemoteConferenceEventHandler ();
@@ -40,6 +41,7 @@ public:
 	void multipartNotifyReceived (const std::string &xmlBody);
 	void unsubscribe ();
 
+	void setChatRoomId (ChatRoomId chatRoomId);
 	const ChatRoomId &getChatRoomId () const;
 
 	unsigned int getLastNotify () const;

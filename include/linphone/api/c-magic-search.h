@@ -22,9 +22,11 @@
 
 #include "linphone/api/c-types.h"
 
+// =============================================================================
+
 #ifdef __cplusplus
-extern "C" {
-#endif
+	extern "C" {
+#endif // ifdef __cplusplus
 
 /**
  * @addtogroup misc
@@ -34,88 +36,88 @@ extern "C" {
 /**
  * Constructs a LinphoneMagicSearch object
  **/
-LINPHONE_PUBLIC LinphoneMagicSearch *linphone_magic_search_new(LinphoneCore *lc);
+LINPHONE_PUBLIC LinphoneMagicSearch *linphone_magic_search_new (LinphoneCore *lc);
 
 /**
  * Increment reference count of LinphoneMagicSearch object.
  **/
-LINPHONE_PUBLIC LinphoneMagicSearch *linphone_magic_search_ref(LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC LinphoneMagicSearch *linphone_magic_search_ref (LinphoneMagicSearch *magic_search);
 
 /**
  * Decrement reference count of LinphoneMagicSearch object. When dropped to zero, memory is freed.
  **/
-LINPHONE_PUBLIC void linphone_magic_search_unref(LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC void linphone_magic_search_unref (LinphoneMagicSearch *magic_search);
 
 /**
  * Set the minimum value used to calculate the weight in search
  * @param[in] weight minimum weight
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_min_weight(LinphoneMagicSearch *magicSearch, const unsigned int weight);
+LINPHONE_PUBLIC void linphone_magic_search_set_min_weight (LinphoneMagicSearch *magic_search, unsigned int weight);
 
 /**
  * @return the minimum value used to calculate the weight in search
  **/
-LINPHONE_PUBLIC unsigned int linphone_magic_search_get_min_weight(const LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC unsigned int linphone_magic_search_get_min_weight (const LinphoneMagicSearch *magic_search);
 
 /**
  * Set the maximum value used to calculate the weight in search
  * @param[in] weight maximum weight
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_max_weight(LinphoneMagicSearch *magicSearch, const unsigned int weight);
+LINPHONE_PUBLIC void linphone_magic_search_set_max_weight (LinphoneMagicSearch *magic_search, unsigned int weight);
 
 /**
  * @return the maximum value used to calculate the weight in search
  **/
-LINPHONE_PUBLIC unsigned int linphone_magic_search_get_max_weight(const LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC unsigned int linphone_magic_search_get_max_weight (const LinphoneMagicSearch *magic_search);
 
 /**
  * @return the delimiter used to find matched filter word
  **/
-LINPHONE_PUBLIC const char *linphone_magic_search_get_delimiter(const LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC const char *linphone_magic_search_get_delimiter (const LinphoneMagicSearch *magic_search);
 
 /**
  * Set the delimiter used to find matched filter word
  * @param[in] delimiter delimiter (example "-_.,")
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_delimiter(LinphoneMagicSearch *magicSearch, const char *delimiter);
+LINPHONE_PUBLIC void linphone_magic_search_set_delimiter (LinphoneMagicSearch *magic_search, const char *delimiter);
 
 /**
  * @return if the delimiter search is used
  **/
-LINPHONE_PUBLIC bool_t linphone_magic_search_get_use_delimiter(LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC bool_t linphone_magic_search_get_use_delimiter (LinphoneMagicSearch *magic_search);
 
 /**
  * Enable or disable the delimiter in search
  * @param[in] enable
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_use_delimiter(LinphoneMagicSearch *magicSearch, bool_t enable);
+LINPHONE_PUBLIC void linphone_magic_search_set_use_delimiter (LinphoneMagicSearch *magic_search, bool_t enable);
 
 /**
  * @return the number of the maximum SearchResult which will be return
  **/
-LINPHONE_PUBLIC unsigned int linphone_magic_search_get_search_limit(const LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC unsigned int linphone_magic_search_get_search_limit (const LinphoneMagicSearch *magic_search);
 
 /**
  * Set the number of the maximum SearchResult which will be return
  * @param[in] limit
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_search_limit(LinphoneMagicSearch *magicSearch, const unsigned int limit);
+LINPHONE_PUBLIC void linphone_magic_search_set_search_limit (LinphoneMagicSearch *magic_search, unsigned int limit);
 
 /**
  * @return if the search is limited
  **/
-LINPHONE_PUBLIC bool_t linphone_magic_search_get_limited_search(const LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC bool_t linphone_magic_search_get_limited_search (const LinphoneMagicSearch *magic_search);
 
 /**
  * Enable or disable the limited search
  * @param[in] limited
  **/
-LINPHONE_PUBLIC void linphone_magic_search_set_limited_search(LinphoneMagicSearch *magicSearch, const bool_t limited);
+LINPHONE_PUBLIC void linphone_magic_search_set_limited_search (LinphoneMagicSearch *magic_search, bool_t limited);
 
 /**
  * Reset the cache to begin a new search
  **/
-LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache(LinphoneMagicSearch *magicSearch);
+LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache (LinphoneMagicSearch *magic_search);
 
 /**
  * Create a sorted list of SearchResult from SipUri, Contact name,
@@ -124,13 +126,17 @@ LINPHONE_PUBLIC void linphone_magic_search_reset_search_cache(LinphoneMagicSearc
  * During the first search, a cache is created and used for the next search
  * Use linphone_magic_search_reset_search_cache() to begin a new search
  * @param[in] filter word we search
- * @param[in] withDomain domain which we want to search only
+ * @param[in] domain domain which we want to search only
  * - "" for searching in all contact
  * - "*" for searching in contact with sip SipUri
  * - "yourdomain" for searching in contact from "yourdomain" domain
  * @return sorted list of \bctbx_list{LinphoneSearchResult}
  **/
-LINPHONE_PUBLIC bctbx_list_t* linphone_magic_search_get_contact_list_from_filter(LinphoneMagicSearch *magicSearch, const char *filter, const char *withDomain);
+LINPHONE_PUBLIC bctbx_list_t* linphone_magic_search_get_contact_list_from_filter (
+	LinphoneMagicSearch *magic_search,
+	const char *filter,
+	const char *domain
+);
 
 /**
  * @}

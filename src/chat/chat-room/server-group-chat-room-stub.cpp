@@ -84,6 +84,8 @@ void ServerGroupChatRoomPrivate::addParticipantDevice (const IdentityAddress &pa
 
 void ServerGroupChatRoomPrivate::addCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &participantCompatible) {}
 
+void ServerGroupChatRoomPrivate::checkCompatibleParticipants (const IdentityAddress &deviceAddr, const list<IdentityAddress> &addressesToCheck) {}
+
 // -----------------------------------------------------------------------------
 
 LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const SalMessage *) {
@@ -91,6 +93,8 @@ LinphoneReason ServerGroupChatRoomPrivate::onSipMessageReceived (SalOp *, const 
 }
 
 // -----------------------------------------------------------------------------
+
+void ServerGroupChatRoomPrivate::byeDevice (const shared_ptr<ParticipantDevice> &device) {}
 
 void ServerGroupChatRoomPrivate::designateAdmin () {}
 
@@ -112,7 +116,7 @@ void ServerGroupChatRoomPrivate::removeNonPresentParticipants (const list <Ident
 
 // -----------------------------------------------------------------------------
 
-void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const shared_ptr<const CallSession> &session) {}
+void ServerGroupChatRoomPrivate::onParticipantDeviceLeft (const shared_ptr<ParticipantDevice> &device) {}
 
 // -----------------------------------------------------------------------------
 
@@ -135,8 +139,8 @@ void ServerGroupChatRoomPrivate::onCallSessionSetReleased (const shared_ptr<Call
 // =============================================================================
 
 ServerGroupChatRoom::ServerGroupChatRoom (const shared_ptr<Core> &core, SalCallOp *op)
-: ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->get_to()), IdentityAddress(op->get_to()))),
-LocalConference(core, IdentityAddress(op->get_to()), nullptr) {
+: ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(IdentityAddress(op->getTo()), IdentityAddress(op->getTo()))),
+LocalConference(core, IdentityAddress(op->getTo()), nullptr) {
 	L_D();
 	d->chatRoomListener = d;
 }
@@ -151,16 +155,18 @@ ServerGroupChatRoom::ServerGroupChatRoom (
 ) : ChatRoom(*new ServerGroupChatRoomPrivate, core, ChatRoomId(peerAddress, peerAddress)),
 	LocalConference(core, peerAddress, nullptr) {}
 
+ServerGroupChatRoom::~ServerGroupChatRoom () {};
+
 ServerGroupChatRoom::CapabilitiesMask ServerGroupChatRoom::getCapabilities () const {
 	return 0;
 }
 
 void ServerGroupChatRoom::allowCpim (bool value) {
-	
+
 }
 
 void ServerGroupChatRoom::allowMultipart (bool value) {
-	
+
 }
 
 bool ServerGroupChatRoom::canHandleCpim () const {
@@ -187,7 +193,7 @@ void ServerGroupChatRoom::addParticipant (const IdentityAddress &, const CallSes
 
 void ServerGroupChatRoom::addParticipants (const list<IdentityAddress> &, const CallSessionParams *, bool) {}
 
-void ServerGroupChatRoom::removeParticipant (const shared_ptr<const Participant> &) {}
+void ServerGroupChatRoom::removeParticipant (const shared_ptr<Participant> &participant) {}
 
 void ServerGroupChatRoom::removeParticipants (const list<shared_ptr<Participant>> &) {}
 

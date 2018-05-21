@@ -24,49 +24,49 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class SalEventOp: public SalOp {
+class SalEventOp : public SalOp {
 public:
-	SalEventOp(Sal *sal): SalOp(sal) {}
+	SalEventOp (Sal *sal) : SalOp(sal) {}
 };
 
 class SalSubscribeOp: public SalEventOp {
 public:
-	SalSubscribeOp(Sal *sal): SalEventOp(sal) {}
+	SalSubscribeOp (Sal *sal): SalEventOp(sal) {}
 
-	int subscribe(const char *from, const char *to, const char *eventname, int expires, const SalBodyHandler *body_handler);
-	int unsubscribe() {return SalOp::unsubscribe();}
-	int accept();
-	int decline(SalReason reason);
-	int notify_pending_state();
-	int notify(const SalBodyHandler *body_handler);
-	int close_notify();
+	int subscribe (const char *from, const char *to, const char *eventName, int expires, const SalBodyHandler *bodyHandler);
+	int unsubscribe () { return SalOp::unsubscribe(); }
+	int accept ();
+	int decline (SalReason reason);
+	int notifyPendingState ();
+	int notify (const SalBodyHandler *bodyHandler);
+	int closeNotify ();
 
 private:
-	virtual void fill_cbs() override;
-	void handle_notify(belle_sip_request_t *req, const char *eventname, SalBodyHandler* body_handler);
+	virtual void fillCallbacks () override;
+	void handleNotify (belle_sip_request_t *request, const char *eventName, SalBodyHandler *bodyHandler);
 
-	static void subscribe_process_io_error_cb(void *user_ctx, const belle_sip_io_error_event_t *event);
-	static void subscribe_response_event_cb(void *op_base, const belle_sip_response_event_t *event);
-	static void subscribe_process_timeout_cb(void *user_ctx, const belle_sip_timeout_event_t *event);
-	static void subscribe_process_transaction_terminated_cb(void *user_ctx, const belle_sip_transaction_terminated_event_t *event) {}
-	static void subscribe_process_request_event_cb(void *op_base, const belle_sip_request_event_t *event);
-	static void subscribe_process_dialog_terminated_cb(void *ctx, const belle_sip_dialog_terminated_event_t *event);
-	static void _release_cb(SalOp *op_base);
-	static void subscribe_refresher_listener_cb (belle_sip_refresher_t* refresher,void* user_pointer,unsigned int status_code,const char* reason_phrase, int will_retry);
+	static void subscribeProcessIoErrorCb (void *userCtx, const belle_sip_io_error_event_t *event);
+	static void subscribeResponseEventCb (void *userCtx, const belle_sip_response_event_t *event);
+	static void subscribeProcessTimeoutCb (void *userCtx, const belle_sip_timeout_event_t *event);
+	static void subscribeProcessTransactionTerminatedCb (void *userCtx, const belle_sip_transaction_terminated_event_t *event) {}
+	static void subscribeProcessRequestEventCb (void *userCtx, const belle_sip_request_event_t *event);
+	static void subscribeProcessDialogTerminatedCb (void *userCtx, const belle_sip_dialog_terminated_event_t *event);
+	static void releaseCb (SalOp *op);
+	static void subscribeRefresherListenerCb (belle_sip_refresher_t *refresher, void *userCtx, unsigned int statusCode, const char *reasonPhrase, int willRetry);
 };
 
-class SalPublishOp: public SalEventOp {
+class SalPublishOp : public SalEventOp {
 public:
-	SalPublishOp(Sal *sal): SalEventOp(sal) {}
+	SalPublishOp (Sal *sal) : SalEventOp(sal) {}
 
-	int publish(const char *from, const char *to, const char *eventname, int expires, const SalBodyHandler *body_handler);
-	int unpublish();
+	int publish (const char *from, const char *to, const char *eventName, int expires, const SalBodyHandler *bodyHandler);
+	int unpublish ();
 
 private:
-	virtual void fill_cbs() override;
+	virtual void fillCallbacks () override;
 
-	static void publish_response_event_cb(void *userctx, const belle_sip_response_event_t *event);
-	static void publish_refresher_listener_cb (belle_sip_refresher_t* refresher,void* user_pointer,unsigned int status_code,const char* reason_phrase, int will_retry);
+	static void publishResponseEventCb (void *userCtx, const belle_sip_response_event_t *event);
+	static void publishRefresherListenerCb (belle_sip_refresher_t *refresher, void *userCtx, unsigned int statusCode, const char *reasonPhrase, int willRetry);
 };
 
 LINPHONE_END_NAMESPACE

@@ -19,8 +19,6 @@
 
 #include <jni.h>
 
-#include "linphone/utils/utils.h"
-
 #include "core/platform-helpers/platform-helpers.h"
 
 #include "paths-android.h"
@@ -31,16 +29,16 @@ using namespace std;
 
 LINPHONE_BEGIN_NAMESPACE
 
-string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
-	if (!platformHelper)
-		return Utils::getEmptyConstRefObject<string>();
-	return platformHelper->getDataPath();
+string SysPaths::getDataPath (PlatformHelpers *platformHelpers) {
+	if (!platformHelpers)
+		return "";
+	return platformHelpers->getDataPath();
 }
 
-string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
-	if (!platformHelper)
-		return Utils::getEmptyConstRefObject<string>();
-	return platformHelper->getConfigPath();
+string SysPaths::getConfigPath (PlatformHelpers *platformHelpers) {
+	if (!platformHelpers)
+		return "";
+	return platformHelpers->getConfigPath();
 }
 
 LINPHONE_END_NAMESPACE

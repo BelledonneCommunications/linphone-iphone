@@ -35,8 +35,11 @@ public:
 	void notifyReceived (const std::string &body);
 	void multipartNotifyReceived (const std::string &body);
 
+	void confirmJoining (SalCallOp *op);
 	void setCallSessionListener (CallSessionListener *listener);
 	void setChatRoomListener (ChatRoomListener *listener) { chatRoomListener = listener; }
+
+	unsigned int getLastNotifyId () const;
 
 	// ChatRoomListener
 	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;
@@ -47,12 +50,16 @@ public:
 	void onCallSessionSetReleased (const std::shared_ptr<CallSession> &session) override;
 	void onCallSessionStateChanged (const std::shared_ptr<CallSession> &session, CallSession::State state, const std::string &message) override;
 
+	void onChatRoomCreated (const Address &remoteContact);
+
 private:
+	void acceptSession (const std::shared_ptr<CallSession> &session);
+
 	CallSessionListener *callSessionListener = this;
 	ChatRoomListener *chatRoomListener = this;
 	ClientGroupChatRoom::CapabilitiesMask capabilities = ClientGroupChatRoom::Capabilities::Conference;
 	bool deletionOnTerminationEnabled = false;
-	BackgroundTask bgTask;
+	BackgroundTask bgTask { "Subscribe/notify of full state conference" };
 	L_DECLARE_PUBLIC(ClientGroupChatRoom);
 };
 

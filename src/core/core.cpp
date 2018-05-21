@@ -20,8 +20,12 @@
 #include <mediastreamer2/mscommon.h>
 #include <xercesc/util/PlatformUtils.hpp>
 
+//#include "linphone/utils/general.h"
+
 #include "address/address-p.h"
 #include "call/call.h"
+#include "conference/handlers/local-conference-list-event-handler.h"
+#include "conference/handlers/remote-conference-list-event-handler.h"
 #include "core/core-listener.h"
 #include "core/core-p.h"
 #include "logger/logger.h"
@@ -42,6 +46,8 @@ LINPHONE_BEGIN_NAMESPACE
 void CorePrivate::init () {
 	L_Q();
 	mainDb.reset(new MainDb(q->getSharedFromThis()));
+	remoteListEventHandler = makeUnique<RemoteConferenceListEventHandler>(q->getSharedFromThis());
+	localListEventHandler = makeUnique<LocalConferenceListEventHandler>(q->getSharedFromThis());
 
 	AbstractDb::Backend backend;
 	string uri = L_C_TO_STRING(lp_config_get_string(linphone_core_get_config(L_GET_C_BACK_PTR(q)), "storage", "uri", nullptr));
@@ -81,19 +87,50 @@ void CorePrivate::uninit () {
 	chatRoomsById.clear();
 	noCreatedClientGroupChatRooms.clear();
 
+	remoteListEventHandler = nullptr;
+	localListEventHandler = nullptr;
+
 	AddressPrivate::clearSipAddressesCache();
 }
 
 // -----------------------------------------------------------------------------
 
+void CorePrivate::notifyGlobalStateChanged (LinphoneGlobalState state) {
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onGlobalStateChanged(state);
+}
+
 void CorePrivate::notifyNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {
-	for (const auto &listener : listeners)
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
 		listener->onNetworkReachable(sipNetworkReachable, mediaNetworkReachable);
 }
 
 void CorePrivate::notifyRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const string &message) {
-	for (const auto &listener : listeners)
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
 		listener->onRegistrationStateChanged(cfg, state, message);
+}
+
+void CorePrivate::notifyEnteringBackground () {
+	if (isInBackground)
+		return;
+
+	isInBackground = true;
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onEnteringBackground();
+}
+
+void CorePrivate::notifyEnteringForeground () {
+	if (!isInBackground)
+		return;
+
+	isInBackground = false;
+	auto listenersCopy = listeners; // Allow removable of a listener in its own call
+	for (const auto &listener : listenersCopy)
+		listener->onEnteringForeground();
 }
 
 // =============================================================================
@@ -113,6 +150,24 @@ shared_ptr<Core> Core::create (LinphoneCore *cCore) {
 	L_SET_CPP_PTR_FROM_C_OBJECT(cCore, core);
 	return core;
 }
+
+// ---------------------------------------------------------------------------
+// Application lifecycle.
+// ---------------------------------------------------------------------------
+
+void Core::enterBackground () {
+	L_D();
+	d->notifyEnteringBackground();
+}
+
+void Core::enterForeground () {
+	L_D();
+	d->notifyEnteringForeground();
+}
+
+// ---------------------------------------------------------------------------
+// C-Core.
+// ---------------------------------------------------------------------------
 
 LinphoneCore *Core::getCCore () const {
 	return L_GET_C_BACK_PTR(this);

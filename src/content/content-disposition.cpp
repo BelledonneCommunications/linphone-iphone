@@ -38,6 +38,7 @@ public:
 
 // -----------------------------------------------------------------------------
 
+const ContentDisposition ContentDisposition::Notification("notification");
 const ContentDisposition ContentDisposition::RecipientList("recipient-list");
 const ContentDisposition ContentDisposition::RecipientListHistory("recipient-list-history; handling=optional");
 
@@ -63,10 +64,13 @@ ContentDisposition &ContentDisposition::operator= (const ContentDisposition &oth
 	return *this;
 }
 
-bool ContentDisposition::operator== (const ContentDisposition &other) const {
+bool ContentDisposition::weakEqual (const ContentDisposition &other) const {
 	L_D();
-	return d->disposition == other.getPrivate()->disposition
-		&& getParameter() == other.getParameter();
+	return d->disposition == other.getPrivate()->disposition;
+}
+
+bool ContentDisposition::operator== (const ContentDisposition &other) const {
+	return weakEqual(other) && (getParameter() == other.getParameter());
 }
 
 bool ContentDisposition::operator!= (const ContentDisposition &other) const {

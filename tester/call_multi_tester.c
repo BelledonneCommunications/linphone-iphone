@@ -1151,10 +1151,12 @@ void do_not_stop_ringing_when_declining_one_of_two_incoming_calls(void) {
 	pauline_called_by_marie=linphone_core_get_current_call(marie->lc);
 	linphone_call_decline(pauline_called_by_laure, LinphoneReasonDeclined);
 	BC_ASSERT_TRUE(wait_for(laure->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,1));
+	BC_ASSERT_TRUE(wait_for(laure->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
 
 	BC_ASSERT_TRUE(linphone_ringtoneplayer_is_started(linphone_core_get_ringtoneplayer(pauline->lc)));
 	linphone_call_terminate(pauline_called_by_marie);
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallEnd,2));
+	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_LinphoneCallReleased,2));
 
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);

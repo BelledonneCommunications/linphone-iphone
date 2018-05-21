@@ -21,7 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "config.h"
 #endif
 
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
+
 #include "private.h"
 #include "c-wrapper/internal/c-sal.h"
 #include "sal/sal.h"
@@ -378,7 +380,7 @@ static int send_report(LinphoneCall* call, reporting_session_report_t * report, 
 		sal_address_has_uri_param(salAddress, "maddr") ||
 		linphone_address_get_port(request_uri) != 0) {
 		ms_message("Publishing report with custom route %s", collector_uri);
-		lev->op->set_route(collector_uri);
+		lev->op->setRoute(collector_uri);
 	}
 
 	if (linphone_event_send_publish(lev, content) != 0){
@@ -422,7 +424,7 @@ static const SalStreamDescription * get_media_stream_for_desc(const SalMediaDesc
 static void update_ip(LinphoneCall * call, int stats_type) {
 	SalStreamType sal_stream_type = stats_type == LINPHONE_CALL_STATS_AUDIO ? SalAudio : stats_type == LINPHONE_CALL_STATS_VIDEO ? SalVideo : SalText;
 	const SalStreamDescription * local_desc = get_media_stream_for_desc(_linphone_call_get_local_desc(call), sal_stream_type);
-	const SalStreamDescription * remote_desc = get_media_stream_for_desc(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_remote_media_description(), sal_stream_type);
+	const SalStreamDescription * remote_desc = get_media_stream_for_desc(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getRemoteMediaDescription(), sal_stream_type);
 	LinphoneCallLog *log = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getLog();
 
 	if (local_desc != NULL) {
@@ -442,7 +444,7 @@ static void update_ip(LinphoneCall * call, int stats_type) {
 		if (strlen(remote_desc->rtp_addr) > 0) {
 			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(remote_desc->rtp_addr));
 		} else {
-			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_remote_media_description()->addr));
+			STR_REASSIGN(log->reporting.reports[stats_type]->info.remote_addr.ip, ms_strdup(L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getRemoteMediaDescription()->addr));
 		}
 	}
 }
@@ -503,13 +505,12 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	const LinphoneCallParams * current_params = linphone_call_get_current_params(call);
 	LinphoneCallLog *log = L_GET_CPP_PTR_FROM_C_OBJECT(call)->getLog();
 	reporting_session_report_t * report = log->reporting.reports[stats_type];
-	char * dialog_id;
 
 	// call->op might be already released if hanging up in state LinphoneCallOutgoingInit
 	if (!media_report_enabled(call, stats_type) || !L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp())
 		return;
 
-	dialog_id = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->get_dialog_id();
+	std::string dialogId = L_GET_PRIVATE_FROM_C_OBJECT(call)->getOp()->getDialogId();
 
 	STR_REASSIGN(report->info.call_id, ms_strdup(log->call_id));
 
@@ -519,13 +520,13 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 	// RFC states: "LocalGroupID provides the identification for the purposes
 	// of aggregation for the local endpoint.".
 	STR_REASSIGN(report->info.local_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id ? dialog_id : ""
+		, dialogId.c_str()
 		, "local"
 		, report->local_metrics.user_agent ? report->local_metrics.user_agent : ""
 		)
 	);
 	STR_REASSIGN(report->info.remote_addr.group, ms_strdup_printf("%s-%s-%s"
-		, dialog_id ? dialog_id : ""
+		, dialogId.c_str()
 		, "remote"
 		, report->remote_metrics.user_agent ? report->remote_metrics.user_agent : ""
 		)
@@ -580,7 +581,7 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		}
 	}
 
-	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialog_id ? dialog_id : "", report->info.local_addr.ssrc));
+	STR_REASSIGN(report->dialog_id, ms_strdup_printf("%s;%u", dialogId.c_str(), report->info.local_addr.ssrc));
 
 	if (local_payload != NULL) {
 		report->local_metrics.session_description.payload_type = local_payload->type;
@@ -595,8 +596,6 @@ void linphone_reporting_update_media_info(LinphoneCall * call, int stats_type) {
 		report->remote_metrics.session_description.sample_rate = remote_payload->clock_rate;
 		STR_REASSIGN(report->remote_metrics.session_description.fmtp, ms_strdup(remote_payload->recv_fmtp));
 	}
-
-	ms_free(dialog_id);
 }
 
 /* generate random float in interval ] 0.9 t ; 1.1 t [*/

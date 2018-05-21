@@ -55,33 +55,33 @@ namespace Statements {
 	// ---------------------------------------------------------------------------
 
 	constexpr const char *select[SelectCount] = {
-		[SelectSipAddressId] = R"(
+		/* SelectSipAddressId */ R"(
 			SELECT id
 			FROM sip_address
 			WHERE value = :1
 		)",
 
-		[SelectChatRoomId] = R"(
+		/* SelectChatRoomId */ R"(
 			SELECT id
 			FROM chat_room
 			WHERE peer_sip_address_id = :1 AND local_sip_address_id = :2
 		)",
 
-		[SelectChatRoomParticipantId] = R"(
+		/* SelectChatRoomParticipantId */ R"(
 			SELECT id
 			FROM chat_room_participant
 			WHERE chat_room_id = :1 AND participant_sip_address_id = :2
 		)",
 
-		[SelectOneToOneChatRoomId] = R"(
+		/* SelectOneToOneChatRoomId */ R"(
 			SELECT chat_room_id
 			FROM one_to_one_chat_room
 			WHERE participant_a_sip_address_id IN (:1, :2)
 			AND participant_b_sip_address_id IN (:3, :4)
 		)",
 
-		[SelectConferenceEvent] = R"(
-			SELECT conference_event_view.id AS event_id, type, conference_event_view.creation_time, from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address.value, participant_sip_address.value, conference_event_view.subject, peer_sip_address.value, local_sip_address.value
+		/* SelectConferenceEvent */ R"(
+			SELECT conference_event_view.id AS event_id, type, conference_event_view.creation_time, from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address.value, participant_sip_address.value, conference_event_view.subject, delivery_notification_required, display_notification_required, peer_sip_address.value, local_sip_address.value
 			FROM conference_event_view
 			JOIN chat_room ON chat_room.id = chat_room_id
 			JOIN sip_address AS peer_sip_address ON peer_sip_address.id = peer_sip_address_id
@@ -93,8 +93,8 @@ namespace Statements {
 			WHERE event_id = :1
 		)",
 
-		[SelectConferenceEvents] = R"(
-			SELECT conference_event_view.id AS event_id, type, creation_time, from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address.value, participant_sip_address.value, subject
+		/* SelectConferenceEvents */ R"(
+			SELECT conference_event_view.id AS event_id, type, creation_time, from_sip_address.value, to_sip_address.value, time, imdn_message_id, state, direction, is_secured, notify_id, device_sip_address.value, participant_sip_address.value, subject, delivery_notification_required, display_notification_required
 			FROM conference_event_view
 			LEFT JOIN sip_address AS from_sip_address ON from_sip_address.id = from_sip_address_id
 			LEFT JOIN sip_address AS to_sip_address ON to_sip_address.id = to_sip_address_id
@@ -109,7 +109,7 @@ namespace Statements {
 	// ---------------------------------------------------------------------------
 
 	constexpr AbstractStatement insert[InsertCount] = {
-		[InsertOneToOneChatRoom] = R"(
+		/* InsertOneToOneChatRoom */ R"(
 			INSERT INTO one_to_one_chat_room (
 				chat_room_id, participant_a_sip_address_id, participant_b_sip_address_id
 			) VALUES (:1, :2, :3)

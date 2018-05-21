@@ -34,26 +34,20 @@ namespace Cpim {
 	public:
 		Message ();
 
-		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header> > > HeaderList;
+		typedef std::shared_ptr<std::list<std::shared_ptr<const Cpim::Header>>> HeaderList;
 
-		// TODO: Remove these useless methods
-		HeaderList getCpimHeaders () const;
-		bool addCpimHeader (const Header &cpimHeader);
-		void removeCpimHeader (const Header &cpimHeader);
-		// TODO: Remove these useless methods
+		HeaderList getMessageHeaders (const std::string &ns = "") const;
+		void addMessageHeader (const Header &messageHeader, const std::string &ns = "");
+		void removeMessageHeader (const Header &messageHeader, const std::string &ns = "");
+		std::shared_ptr<const Cpim::Header> getMessageHeader (const std::string &name, const std::string &ns = "") const;
 
-		HeaderList getMessageHeaders () const;
-		bool addMessageHeader (const Header &messageHeader);
-		void removeMessageHeader (const Header &messageHeader);
-		
 		HeaderList getContentHeaders () const;
-		bool addContentHeader (const Header &contentHeader);
+		void addContentHeader (const Header &contentHeader);
 		void removeContentHeader (const Header &contentHeader);
+		std::shared_ptr<const Cpim::Header> getContentHeader (const std::string &name) const;
 
 		std::string getContent () const;
 		bool setContent (const std::string &content);
-
-		bool isValid () const; // TODO: Remove this useless method
 
 		std::string asString () const;
 

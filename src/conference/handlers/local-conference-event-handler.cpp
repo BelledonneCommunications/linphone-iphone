@@ -19,9 +19,12 @@
 
 #include <ctime>
 
+#include "linphone/api/c-content.h"
 #include "linphone/utils/utils.h"
 
+#include "c-wrapper/c-wrapper.h"
 #include "conference/local-conference.h"
+#include "conference/participant-device.h"
 #include "conference/participant-p.h"
 #include "content/content-manager.h"
 #include "content/content-type.h"
@@ -108,8 +111,8 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 
 	list<Content> contents;
 	for (const auto &eventLog : events) {
-		Content content;
-		content.setContentType(ContentType("application","conference-info"));
+		Content *content = new Content();
+		content->setContentType(ContentType::ConferenceInfo);
 		string body;
 		shared_ptr<ConferenceNotifiedEvent> notifiedEvent = static_pointer_cast<ConferenceNotifiedEvent>(eventLog);
 		int eventNotifyId = static_cast<int>(notifiedEvent->getNotifyId());
@@ -179,13 +182,19 @@ string LocalConferenceEventHandlerPrivate::createNotifyMultipart (int notifyId) 
 				L_ASSERT(false);
 				continue;
 		}
-		content.setBody(body);
-		contents.push_back(content);
+		contents.emplace_back(Content());
+		contents.back().setContentType(ContentType::ConferenceInfo);
+		contents.back().setBody(body);
 	}
 
 	if (contents.empty())
-		return "";
-	return ContentManager::contentListToMultipart(contents).getBodyAsString();
+		return Utils::getEmptyConstRefObject<string>();
+
+	list<Content *> contentPtrs;
+	for (auto &content : contents)
+		contentPtrs.push_back(&content);
+	string multipart = ContentManager::contentListToMultipart(contentPtrs).getBodyAsString();
+	return multipart;
 }
 
 string LocalConferenceEventHandlerPrivate::createNotifyParticipantAdded (const Address &addr, int notifyId) {
@@ -362,22 +371,23 @@ void LocalConferenceEventHandlerPrivate::notifyParticipantDevice (const string &
 	LinphoneEventCbs *cbs = linphone_event_get_callbacks(ev);
 	linphone_event_cbs_set_user_data(cbs, this);
 	linphone_event_cbs_set_notify_response(cbs, notifyResponseCb);
-	LinphoneContent *content = linphone_core_create_content(ev->lc);
-	linphone_content_set_buffer(content, (const uint8_t *)notify.c_str(), strlen(notify.c_str()));
-	linphone_content_set_type(
-		content,
-		multipart ? "multipart" : "application"
-	);
-	linphone_content_set_subtype(
-		content,
-		multipart ? "mixed;boundary=---------------------------14737809831466499882746641449" : "conference-info"
-	);
+
+	Content content;
+	content.setBody(notify);
+	ContentType contentType;
+	if (multipart) {
+		contentType = ContentType(ContentType::Multipart);
+		contentType.addParameter("boundary", MultipartBoundary);
+	} else
+		contentType = ContentType(ContentType::ConferenceInfo);
+
+	content.setContentType(contentType);
 	// TODO: Activate compression
 	//if (linphone_core_content_encoding_supported(conf->getCore()->getCCore(), "deflate"))
 	//	linphone_content_set_encoding(content, "deflate");
 	// TODO: Activate compression
-	linphone_event_notify(ev, content);
-	linphone_content_unref(content);
+	LinphoneContent *cContent = L_GET_C_BACK_PTR(&content);
+	linphone_event_notify(ev, cContent);
 }
 
 // =============================================================================
@@ -399,6 +409,7 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool on
 	bctbx_free(addrStr);
 	if (!participant) {
 		lError() << "received SUBSCRIBE corresponds to no participant of the conference; " << d->conf->getConferenceAddress().asString() << ", no NOTIFY sent.";
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
 
@@ -407,16 +418,18 @@ void LocalConferenceEventHandler::subscribeReceived (LinphoneEvent *lev, bool on
 	IdentityAddress contactAddr(contactAddrStr);
 	bctbx_free(contactAddrStr);
 	shared_ptr<ParticipantDevice> device = participant->getPrivate()->findDevice(contactAddr);
-	if (!device) {
+	if (!device || (device->getState() != ParticipantDevice::State::Present && device->getState() != ParticipantDevice::State::Joining)) {
 		lError() << "received SUBSCRIBE for conference: " << d->conf->getConferenceAddress().asString()
 			<< "device sending subscribe: " << contactAddr.asString() << " is not known, no NOTIFY sent.";
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		return;
 	}
 
+	linphone_event_accept_subscription(lev);
 	if (linphone_event_get_subscription_state(lev) == LinphoneSubscriptionActive) {
 		unsigned int lastNotify = static_cast<unsigned int>(Utils::stoi(linphone_event_get_custom_header(lev, "Last-Notify-Version")));
 		device->setConferenceSubscribeEvent(lev);
-		if (lastNotify == 0) {
+		if (lastNotify == 0 || (device->getState() == ParticipantDevice::State::Joining)) {
 			lInfo() << "Sending initial notify of conference:" << d->conf->getConferenceAddress().asString() << " to: " << device->getAddress().asString();
 			d->notifyFullState(d->createNotifyFullState(static_cast<int>(d->lastNotify), oneToOne), device);
 		} else if (lastNotify < d->lastNotify) {
@@ -522,6 +535,21 @@ void LocalConferenceEventHandler::setLastNotify (unsigned int lastNotify) {
 void LocalConferenceEventHandler::setChatRoomId (const ChatRoomId &chatRoomId) {
 	L_D();
 	d->chatRoomId = chatRoomId;
+}
+
+ChatRoomId LocalConferenceEventHandler::getChatRoomId () const {
+	L_D();
+	return d->chatRoomId;
+}
+
+string LocalConferenceEventHandler::getNotifyForId (int notifyId, bool oneToOne) {
+	L_D();
+	if (notifyId == 0)
+		return d->createNotifyFullState(static_cast<int>(d->lastNotify), oneToOne);
+	else if (notifyId < static_cast<int>(d->lastNotify))
+		return d->createNotifyMultipart(notifyId);
+
+	return Utils::getEmptyConstRefObject<string>();
 }
 
 LINPHONE_END_NAMESPACE

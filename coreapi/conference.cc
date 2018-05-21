@@ -685,9 +685,12 @@ void LocalConference::onCallTerminating (LinphoneCall *call) {
 	ms_message("conference_check_uninit(): size=%i", getSize());
 	if ((remote_count == 1) && !m_terminating)
 		convertConferenceToCall();
+
 	if (remote_count == 0) {
-		if (m_localParticipantStream)
+		if (m_localParticipantStream){
 			removeLocalEndpoint();
+			linphone_core_soundcard_hint_check(m_core);
+		}
 		if (m_recordEndpoint) {
 			ms_audio_conference_remove_member(m_conf, m_recordEndpoint);
 			ms_audio_endpoint_destroy(m_recordEndpoint);

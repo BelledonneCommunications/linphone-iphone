@@ -4689,10 +4689,10 @@ extern "C" void Java_org_linphone_core_LinphoneChatMessageImpl_setFileTransferFi
 	ReleaseStringUTFChars(env, jpath, path);
 }
 
-extern "C" jint Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
+extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_downloadFile(JNIEnv*  env
 																		 ,jobject  thiz
 																		 ,jlong ptr) {
-	return (jint) linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
+	return linphone_chat_message_download_file((LinphoneChatMessage*)ptr);
 }
 
 extern "C" jboolean Java_org_linphone_core_LinphoneChatMessageImpl_isSecured(JNIEnv* env
@@ -4768,6 +4768,7 @@ static void file_transfer_progress_indication(LinphoneChatMessage *msg, const Li
 	if (jmessage) {
 		env->DeleteLocalRef(jmessage);
 	}
+	env->DeleteLocalRef(listener);
 }
 
 static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* content, const LinphoneBuffer *buffer) {
@@ -4797,6 +4798,7 @@ static void file_transfer_recv(LinphoneChatMessage *msg, const LinphoneContent* 
 	if (jmessage) {
 		env->DeleteLocalRef(jmessage);
 	}
+	env->DeleteLocalRef(listener);
 }
 
 static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const LinphoneContent* content, size_t offset, size_t size) {
@@ -4827,6 +4829,7 @@ static LinphoneBuffer* file_transfer_send(LinphoneChatMessage *msg,  const Linph
 
 	buffer = create_c_linphone_buffer_from_java_linphone_buffer(env, jbuffer);
 	env->DeleteLocalRef(jbuffer);
+	env->DeleteLocalRef(listener);
 	return buffer;
 }
 
@@ -4909,7 +4912,7 @@ extern "C" void Java_org_linphone_core_LinphoneChatRoomImpl_sendChatMessage(JNIE
 																		,jlong chatroom_ptr
 																		,jobject message
 																		,jlong messagePtr) {
-	
+
 	linphone_chat_room_send_chat_message_2((LinphoneChatRoom*)chatroom_ptr, (LinphoneChatMessage*)messagePtr);
 }
 
@@ -7693,7 +7696,7 @@ extern "C" void  Java_org_linphone_core_LinphoneCoreImpl_setDnsServers(JNIEnv *e
 			}
 		}
 	}
-	linphone_core_set_dns_servers((LinphoneCore*)lc, l);
+	linphone_core_set_dns_servers_app((LinphoneCore*)lc, l);
 	bctbx_list_free_with_data(l, ms_free);
 }
 
@@ -7755,19 +7758,45 @@ static void _next_video_frame_decoded_callback(LinphoneCall *call, void *user_da
 		return;
 	}
 
-	jobject listener = (jobject) user_data;
+	jobject listener = (jobject) env->NewLocalRef((jobject)user_data);
+	if (listener == NULL){
+		ms_error("_next_video_frame_decoded_callback: listener has gone.");
+		return;
+	}
 	jclass clazz = (jclass) env->GetObjectClass(listener);
 	jmethodID method = env->GetMethodID(clazz, "onNextVideoFrameDecoded","(Lorg/linphone/core/LinphoneCall;)V");
 	env->DeleteLocalRef(clazz);
 
 	jobject jcall = getCall(env, call);
 	env->CallVoidMethod(listener, method, jcall);
+	env->DeleteLocalRef(listener);
 }
 
-extern "C" void  Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
-	jobject listener = env->NewGlobalRef(jlistener);
+static void _on_tmmbr_received(LinphoneCall *call, int index, int bitrate){
+	LinphoneCallCbs *cbs = linphone_call_get_current_callbacks(call);
+	JNIEnv *env = ms_get_jni_env();
+	jobject listener = (jobject) env->NewLocalRef((jobject)linphone_call_cbs_get_user_data(cbs));
+	if (listener == NULL){
+		ms_error("_on_tmmbr_received: listener has gone.");
+		return;
+	}
+	jclass clazz = (jclass) env->GetObjectClass(listener);
+	jmethodID method = env->GetMethodID(clazz, "tmmbrReceived","(Lorg/linphone/core/LinphoneCall;II)V");
+	env->DeleteLocalRef(clazz);
+
+	jobject jcall = getCall(env, call);
+	env->CallVoidMethod(listener, method, jcall,(jint)index, (jint)bitrate);
+	env->DeleteLocalRef(listener);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_core_LinphoneCallImpl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
 	LinphoneCall *call = (LinphoneCall *)ptr;
-	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, listener);
+	LinphoneCallCbs *cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+	linphone_call_cbs_set_user_data(cbs, env->NewWeakGlobalRef(jlistener));
+	linphone_call_cbs_set_tmmbr_received(cbs, _on_tmmbr_received);
+	linphone_call_add_callbacks(call, cbs);
+
+	linphone_call_set_next_video_frame_decoded_callback(call, _next_video_frame_decoded_callback, env->NewWeakGlobalRef(jlistener));
 }
 
 extern "C" void Java_org_linphone_core_LinphoneCallImpl_setVideoWindowId(JNIEnv* env

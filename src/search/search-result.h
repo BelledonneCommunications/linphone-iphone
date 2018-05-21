@@ -20,10 +20,12 @@
 #ifndef _L_SEARCH_RESULT_H_
 #define _L_SEARCH_RESULT_H_
 
-#include "object/clonable-object.h"
 #include "linphone/utils/general.h"
 #include "linphone/types.h"
-#include "private.h"
+
+#include "object/clonable-object.h"
+
+// =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
@@ -31,25 +33,30 @@ class SearchResultPrivate;
 
 class LINPHONE_PUBLIC SearchResult : public ClonableObject {
 public:
-	SearchResult() = delete;
-	SearchResult(const unsigned int weight, const LinphoneAddress *a, const LinphoneFriend *f = nullptr);
-	SearchResult(const SearchResult &sr);
+	// TODO: Use C++ Address! Not LinphoneAddress.
+	SearchResult(const unsigned int weight, const LinphoneAddress *a, const std::string &pn, const LinphoneFriend *f = nullptr);
+	SearchResult(const SearchResult &other);
 	~SearchResult();
 
-	bool operator<(const SearchResult& rsr) const;
-	bool operator>(const SearchResult& rsr) const;
-	bool operator>=(const SearchResult& rsr) const;
-	bool operator=(const SearchResult& rsr) const;
+	bool operator<(const SearchResult &other) const;
+	bool operator>(const SearchResult &other) const;
+	bool operator>=(const SearchResult &other) const;
+	bool operator=(const SearchResult &other) const;
 
 	/**
 	 * @return LinphoneFriend associed
 	 **/
-	const LinphoneFriend* getFriend() const;
+	const LinphoneFriend *getFriend()const;
 
 	/**
 	 * @return LinphoneAddress associed
 	 **/
-	const LinphoneAddress* getAddress() const;
+	const LinphoneAddress *getAddress() const;
+
+	/**
+	 * @return Phone Number associed
+	 **/
+	const std::string &getPhoneNumber() const;
 
 	/**
 	 * @return the result weight

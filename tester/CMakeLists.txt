@@ -77,6 +77,7 @@ set(CERTIFICATE_CLIENT_FILES
 set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES} ${CERTIFICATE_CLIENT_FILES})
 
 set(DB_FILES
+	db/friends.db
 	db/linphone.db
 	db/messages.db
 )
@@ -115,6 +116,8 @@ set(RC_FILES
 	rcfiles/marie_zrtp_aes256_rc
 	rcfiles/marie_zrtp_b256_rc
 	rcfiles/marie_zrtp_srtpsuite_aes256_rc
+	rcfiles/marie_zrtp_ecdh255_rc
+	rcfiles/marie_zrtp_ecdh448_rc
 	rcfiles/michelle_rc_udp
 	rcfiles/multi_account_rc
 	rcfiles/pauline_alt_rc
@@ -132,6 +135,8 @@ set(RC_FILES
 	rcfiles/pauline_zrtp_aes256_rc
 	rcfiles/pauline_zrtp_b256_rc
 	rcfiles/pauline_zrtp_srtpsuite_aes256_rc
+	rcfiles/pauline_zrtp_ecdh255_rc
+	rcfiles/pauline_zrtp_ecdh448_rc
 	rcfiles/remote_zero_length_params_rc
 	rcfiles/stun_rc
 	rcfiles/zero_length_params_rc
@@ -201,7 +206,7 @@ set(SOURCE_FILES_C
 set(SOURCE_FILES_CXX
 	clonable-object-tester.cpp
 	conference-event-tester.cpp
-	content-manager-tester.cpp
+	contents-tester.cpp
 	cpim-tester.cpp
 	main-db-tester.cpp
 	multipart-tester.cpp

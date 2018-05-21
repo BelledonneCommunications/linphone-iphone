@@ -38,7 +38,7 @@
 #define L_ENABLE_ATTR_ACCESS(CLASS, ATTR_TYPE, ATTR_NAME) \
 	template<typename AttrSpy, ATTR_TYPE CLASS::*Attr> \
 	struct L_INTERNAL_STRUCT_L_ATTR_GET(CLASS, ATTR_NAME) { \
-		friend constexpr ATTR_TYPE (CLASS::*get(AttrSpy *)) { \
+		friend constexpr ATTR_TYPE CLASS::*get(AttrSpy *) { \
 			return Attr; \
 		} \
 	}; \
@@ -46,7 +46,7 @@
 	struct L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME); \
 	template<> \
 	struct L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<CLASS> { \
-		friend constexpr ATTR_TYPE (CLASS::*get(L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<CLASS> *)); \
+		friend constexpr ATTR_TYPE CLASS::*get(L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<CLASS> *); \
 	}; \
 	template struct L_INTERNAL_STRUCT_L_ATTR_GET(CLASS, ATTR_NAME)< \
 		L_INTERNAL_STRUCT_ATTR_SPY(ATTR_NAME)<CLASS>, \

@@ -460,6 +460,8 @@ class Project:
 		definition = node.find('./definition').text
 		if definition.startswith('typedef '):
 			definition = definition[8 :]
+		briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
+		detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
 		if name.endswith('Cb'):
 			pos = definition.find("(*")
 			if pos == -1:
@@ -515,9 +517,9 @@ class Project:
 			if deprecatedNode is not None:
 				f.deprecated = True
 			f.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-			f.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
-			f.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
+			f.briefDoc = briefDoc
 			f.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
+			f.detailedDoc = detailedDoc
 			return f
 		else:
 			pos = definition.rfind(" " + name)
@@ -528,9 +530,9 @@ class Project:
 			if deprecatedNode is not None:
 				td.deprecated = True
 			td.briefDescription = ''.join(node.find('./briefdescription').itertext()).strip()
-			td.briefDoc = self.docparser.parse_description(node.find('./briefdescription'))
-			td.detailedDoc = self.docparser.parse_description(node.find('./detaileddescription'))
+			td.briefDoc = briefDoc
 			td.detailedDescription = self.__cleanDescription(node.find('./detaileddescription'))
+			td.detailedDoc = detailedDoc
 			return td
 		return None
 

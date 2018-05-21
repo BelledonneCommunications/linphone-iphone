@@ -30,9 +30,12 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Content;
 
+namespace {
+	constexpr const char MultipartBoundary[] = "---------------------------14737809831466499882746641449";
+}
 namespace ContentManager {
 	std::list<Content> multipartToContentList (const Content &content);
-	Content contentListToMultipart (const std::list<Content> &contents);
+	Content contentListToMultipart (const std::list<Content *> &contents, const std::string &boundary = MultipartBoundary);
 }
 
 LINPHONE_END_NAMESPACE

@@ -34,6 +34,8 @@ struct _LinphoneCallCbs {
 	LinphoneCallCbsTransferStateChangedCb transferStateChangedCb;
 	LinphoneCallCbsAckProcessingCb ackProcessing;
 	LinphoneCallCbsTmmbrReceivedCb tmmbrReceivedCb;
+	LinphoneCallCbsSnapshotTakenCb snapshotTakenCb;
+	LinphoneCallCbsNextVideoFrameDecodedCb nextVideoFrameDecodedCb;
 };
 
 BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneCallCbs);
@@ -132,4 +134,20 @@ LinphoneCallCbsTmmbrReceivedCb linphone_call_cbs_get_tmmbr_received (LinphoneCal
 
 void linphone_call_cbs_set_tmmbr_received (LinphoneCallCbs *cbs, LinphoneCallCbsTmmbrReceivedCb cb) {
 	cbs->tmmbrReceivedCb = cb;
+}
+
+LinphoneCallCbsSnapshotTakenCb linphone_call_cbs_get_snapshot_taken(LinphoneCallCbs *cbs) {
+	return cbs->snapshotTakenCb;
+}
+
+void linphone_call_cbs_set_snapshot_taken(LinphoneCallCbs *cbs, LinphoneCallCbsSnapshotTakenCb cb) {
+	cbs->snapshotTakenCb = cb;
+}
+
+LinphoneCallCbsNextVideoFrameDecodedCb linphone_call_cbs_get_next_video_frame_decoded(LinphoneCallCbs *cbs) {
+	return cbs->nextVideoFrameDecodedCb;
+}
+
+void linphone_call_cbs_set_next_video_frame_decoded(LinphoneCallCbs *cbs, LinphoneCallCbsNextVideoFrameDecodedCb cb) {
+	cbs->nextVideoFrameDecodedCb = cb;
 }

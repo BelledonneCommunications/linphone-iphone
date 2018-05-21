@@ -45,6 +45,8 @@ public:
 		unsigned int lastNotifyId
 	);
 
+	~ServerGroupChatRoom ();
+
 	std::shared_ptr<Core> getCore () const;
 
 	void allowCpim (bool value) override;
@@ -68,7 +70,7 @@ public:
 		bool hasMedia
 	) override;
 
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipant (const std::shared_ptr<Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 	std::shared_ptr<Participant> findParticipant (const IdentityAddress &participantAddress) const override;

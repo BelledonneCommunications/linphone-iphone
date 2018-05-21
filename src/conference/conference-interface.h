@@ -55,7 +55,7 @@ public:
 	virtual const std::string &getSubject () const = 0;
 	virtual void join () = 0;
 	virtual void leave () = 0;
-	virtual void removeParticipant (const std::shared_ptr<const Participant> &participant) = 0;
+	virtual void removeParticipant (const std::shared_ptr<Participant> &participant) = 0;
 	virtual void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) = 0;
 	virtual void setParticipantAdminStatus (const std::shared_ptr<Participant> &participant, bool isAdmin) = 0;
 	virtual void setSubject (const std::string &subject) = 0;

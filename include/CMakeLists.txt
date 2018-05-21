@@ -33,7 +33,6 @@ set(ROOT_HEADER_FILES
 	chat.h
 	conference.h
 	contactprovider.h
-	content.h
 	core_utils.h
 	core.h
 	defs.h
@@ -85,10 +84,12 @@ set(C_API_HEADER_FILES
 	c-chat-message.h
 	c-chat-room-cbs.h
 	c-chat-room.h
+	c-content.h
 	c-dial-plan.h
 	c-event-log.h
 	c-magic-search.h
 	c-participant.h
+	c-participant-imdn-state.h
 	c-search-result.h
 	c-types.h
 )

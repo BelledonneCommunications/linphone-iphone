@@ -17,54 +17,50 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#import "linphone/utils/utils.h"
-
-#import "core/platform-helpers/platform-helpers.h"
-#import "logger/logger.h"
-#import "paths-apple.h"
-
 #import <Foundation/Foundation.h>
+
+#import "logger/logger.h"
+
+#import "paths-apple.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-std::string SysPaths::getDataPath (PlatformHelpers *platformHelper) {
+std::string SysPaths::getDataPath (PlatformHelpers *) {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 	NSString *writablePath = [paths objectAtIndex:0];
 	NSString *fullPath = [writablePath stringByAppendingString:@"/linphone/"];
-	if(![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		lInfo() << "Data path " << fullPath.UTF8String << " does not exist, creating it.";
 		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
-	                                 withIntermediateDirectories:YES
-	                                                  attributes:nil
-	                                                       error:&error]) {
+									   withIntermediateDirectories:YES
+														attributes:nil
+															 error:&error]) {
 			lError() << "Create data path directory error: " << error.description;
 		}
 	}
 
-	const char *ret = fullPath.UTF8String;
-	return ret;
+	return fullPath.UTF8String;
 }
 
-std::string SysPaths::getConfigPath (PlatformHelpers *platformHelper) {
+std::string SysPaths::getConfigPath (PlatformHelpers *) {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
 	NSString *configPath = [paths objectAtIndex:0];
 	NSString *fullPath = [configPath stringByAppendingString:@"/Preferences/linphone/"];
-	if(![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
+	if (![[NSFileManager defaultManager] fileExistsAtPath:fullPath]) {
 		NSError *error;
 		lInfo() << "Config path " << fullPath.UTF8String << " does not exist, creating it.";
 		if (![[NSFileManager defaultManager] createDirectoryAtPath:fullPath
-	                                 withIntermediateDirectories:YES
-	                                                  attributes:nil
-	                                                       error:&error]) {
+									   withIntermediateDirectories:YES
+														attributes:nil
+															 error:&error]) {
 			lError() << "Create config path directory error: " << error.description;
 		}
 	}
 
-	const char *ret = fullPath.UTF8String;
-	return ret;
+	return fullPath.UTF8String;
 }
 
 LINPHONE_END_NAMESPACE

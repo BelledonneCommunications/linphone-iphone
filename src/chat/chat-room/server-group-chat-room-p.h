@@ -69,7 +69,7 @@ public:
 private:
 	struct Message {
 		Message (const std::string &from, const ContentType &contentType, const std::string &text, const SalCustomHeader *salCustomHeaders)
-			: fromAddr(from) 
+			: fromAddr(from)
 		{
 			content.setContentType(contentType);
 			if (!text.empty())
@@ -91,6 +91,7 @@ private:
 
 	static void copyMessageHeaders (const std::shared_ptr<Message> &fromMessage, const std::shared_ptr<ChatMessage> &toMessage);
 
+	void byeDevice (const std::shared_ptr<ParticipantDevice> &device);
 	void designateAdmin ();
 	void dispatchMessage (const std::shared_ptr<Message> &message, const std::string &uri);
 	void finalizeCreation ();
@@ -100,7 +101,7 @@ private:
 	void queueMessage (const std::shared_ptr<Message> &msg, const IdentityAddress &deviceAddress);
 	void removeNonPresentParticipants (const std::list <IdentityAddress> &compatibleParticipants);
 
-	void onParticipantDeviceLeft (const std::shared_ptr<const CallSession> &session);
+	void onParticipantDeviceLeft (const std::shared_ptr<ParticipantDevice> &device);
 
 	// ChatRoomListener
 	void onChatRoomInsertRequested (const std::shared_ptr<AbstractChatRoom> &chatRoom) override;

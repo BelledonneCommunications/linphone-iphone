@@ -44,18 +44,22 @@ class LINPHONE_PUBLIC Core : public Object {
 	friend class BasicToClientGroupChatRoomPrivate;
 	friend class CallPrivate;
 	friend class CallSession;
+	friend class ChatMessage;
 	friend class ChatMessagePrivate;
 	friend class ChatRoom;
 	friend class ChatRoomPrivate;
 	friend class ClientGroupChatRoom;
 	friend class ClientGroupChatRoomPrivate;
 	friend class ClientGroupToBasicChatRoomPrivate;
+	friend class Imdn;
 	friend class LocalConferenceEventHandlerPrivate;
 	friend class MainDb;
 	friend class MainDbChatMessageKey;
 	friend class MainDbEventKey;
 	friend class MediaSessionPrivate;
+	friend class RealTimeTextChatRoomPrivate;
 	friend class RemoteConferenceEventHandler;
+	friend class RemoteConferenceListEventHandler;
 	friend class ServerGroupChatRoom;
 	friend class ServerGroupChatRoomPrivate;
 
@@ -66,6 +70,13 @@ public:
 
 	// Return a new Core instance. Entry point of Linphone.
 	static std::shared_ptr<Core> create (LinphoneCore *cCore);
+
+	// ---------------------------------------------------------------------------
+	// Application lifecycle.
+	// ---------------------------------------------------------------------------
+
+	void enterBackground ();
+	void enterForeground ();
 
 	// ---------------------------------------------------------------------------
 	// C-Core.
@@ -101,7 +112,7 @@ public:
 		const IdentityAddress &participantAddress
 	) const;
 
-	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject);
+	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (const std::string &subject, bool fallback = true);
 	std::shared_ptr<AbstractChatRoom> createClientGroupChatRoom (
 		const std::string &subject,
 		const IdentityAddress &localAddress

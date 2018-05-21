@@ -44,6 +44,8 @@ private:
 	// Misc helpers.
 	// ---------------------------------------------------------------------------
 
+	static time_t getTmAsTimeT (const tm &t);
+
 	std::shared_ptr<AbstractChatRoom> findChatRoom (const ChatRoomId &chatRoomId) const;
 
 	// ---------------------------------------------------------------------------
@@ -58,10 +60,10 @@ private:
 		long long localSipAddressId,
 		const tm &creationTime
 	);
-	long long insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+	long long insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom, unsigned int notifyId = 0);
 	long long insertChatRoomParticipant (long long chatRoomId, long long participantSipAddressId, bool isAdmin);
 	void insertChatRoomParticipantDevice (long long participantId, long long participantDeviceSipAddressId);
-	void insertChatMessageParticipant (long long chatMessageId, long long sipAddressId, int state);
+	void insertChatMessageParticipant (long long chatMessageId, long long sipAddressId, int state, time_t stateChangeTime);
 
 	long long selectSipAddressId (const std::string &sipAddress) const;
 	long long selectChatRoomId (long long peerSipAddressId, long long localSipAddressId) const;
@@ -147,6 +149,13 @@ private:
 	long long insertConferenceParticipantEvent (const std::shared_ptr<EventLog> &eventLog, long long *chatRoomId = nullptr);
 	long long insertConferenceParticipantDeviceEvent (const std::shared_ptr<EventLog> &eventLog);
 	long long insertConferenceSubjectEvent (const std::shared_ptr<EventLog> &eventLog);
+
+	void setChatMessageParticipantState (
+		const std::shared_ptr<EventLog> &eventLog,
+		const IdentityAddress &participantAddress,
+		ChatMessage::State state,
+		time_t stateChangeTime
+	);
 
 	// ---------------------------------------------------------------------------
 	// Cache API.

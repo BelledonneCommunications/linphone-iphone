@@ -35,23 +35,17 @@ class Core;
 class BackgroundTask {
 public:
 	BackgroundTask () {}
-	BackgroundTask (const std::string &name) {}
-	virtual ~BackgroundTask () {
-		stop();
-	}
+	BackgroundTask (const std::string &name) : mName(name) {}
+	virtual ~BackgroundTask () { stop(); }
 
-	void setName (const std::string &name) {
-		mName = name;
-	}
+	void setName (const std::string &name) { mName = name; }
 
-	const std::string &getName () const {
-		return mName;
-	}
+	const std::string &getName () const { return mName; }
 
 	/**
 	 * Start a long running task for at most max_duration_seconds, after which it is automatically terminated
 	 */
-	void start (const std::shared_ptr<Core> &core, int maxDurationSeconds = 15 * 60);  // 15 min by default, like on iOS
+	void start (const std::shared_ptr<Core> &core, int maxDurationSeconds = 15 * 60); // 15 min by default, like on iOS
 	void stop ();
 
 protected:

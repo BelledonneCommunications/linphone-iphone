@@ -35,7 +35,7 @@ namespace Paths {
 		Config
 	};
 
-	LINPHONE_PUBLIC std::string getPath (Type type, PlatformHelpers *platformHelper);
+	LINPHONE_PUBLIC std::string getPath (Type type, PlatformHelpers *platformHelpers);
 }
 
 LINPHONE_END_NAMESPACE

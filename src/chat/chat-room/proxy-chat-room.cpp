@@ -173,7 +173,7 @@ shared_ptr<ChatMessage> ProxyChatRoom::createChatMessage (const string &text) {
 	return d->chatRoom->createChatMessage(text);
 }
 
-shared_ptr<ChatMessage> ProxyChatRoom::createFileTransferMessage (const LinphoneContent *initialContent) {
+shared_ptr<ChatMessage> ProxyChatRoom::createFileTransferMessage (Content *initialContent) {
 	L_D();
 	return d->chatRoom->createFileTransferMessage(initialContent);
 }
@@ -248,7 +248,7 @@ void ProxyChatRoom::addParticipants (
 	return d->chatRoom->addParticipants(addresses, params, hasMedia);
 }
 
-void ProxyChatRoom::removeParticipant (const shared_ptr<const Participant> &participant) {
+void ProxyChatRoom::removeParticipant (const shared_ptr<Participant> &participant) {
 	L_D();
 	d->chatRoom->removeParticipant(participant);
 }

@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <iterator>
 
 // TODO: Remove me later.
 #include "linphone/chat.h"
@@ -355,8 +356,8 @@ const bctbx_list_t *linphone_chat_room_get_composing_addresses (LinphoneChatRoom
 	return cr->composingAddresses;
 }
 
-LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, const LinphoneContent *initial_content) {
-	shared_ptr<LinphonePrivate::ChatMessage> cppPtr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(initial_content);
+LinphoneChatMessage *linphone_chat_room_create_file_transfer_message(LinphoneChatRoom *cr, LinphoneContent *initial_content) {
+	shared_ptr<LinphonePrivate::ChatMessage> cppPtr = L_GET_CPP_PTR_FROM_C_OBJECT(cr)->createFileTransferMessage(L_GET_CPP_PTR_FROM_C_OBJECT(initial_content));
 	LinphoneChatMessage *object = L_INIT(ChatMessage);
 	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
 	return object;
@@ -442,6 +443,7 @@ const bctbx_list_t *linphone_chat_room_get_callbacks_list(const LinphoneChatRoom
 		if (cb) \
 			cb(__VA_ARGS__); \
 	} \
+	linphone_chat_room_set_current_callbacks(cr, nullptr); \
 	bctbx_list_free(callbacksCopy);
 
 void _linphone_chat_room_notify_is_composing_received(LinphoneChatRoom *cr, const LinphoneAddress *remoteAddr, bool_t isComposing) {
@@ -478,6 +480,14 @@ void _linphone_chat_room_notify_state_changed(LinphoneChatRoom *cr, LinphoneChat
 
 void _linphone_chat_room_notify_subject_changed(LinphoneChatRoom *cr, const LinphoneEventLog *event_log) {
 	NOTIFY_IF_EXIST(SubjectChanged, subject_changed, cr, event_log)
+}
+
+void _linphone_chat_room_notify_conference_joined(LinphoneChatRoom *cr, const LinphoneEventLog *eventLog) {
+	NOTIFY_IF_EXIST(ConferenceJoined, conference_joined, cr, eventLog)
+}
+
+void _linphone_chat_room_notify_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *eventLog) {
+	NOTIFY_IF_EXIST(ConferenceLeft, conference_left, cr, eventLog)
 }
 
 void _linphone_chat_room_notify_undecryptable_message_received(LinphoneChatRoom *cr, LinphoneChatMessage *msg) {

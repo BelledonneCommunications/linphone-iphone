@@ -41,11 +41,15 @@ extern "C" {
 
 extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
-extern test_suite_t call_video_test_suite;
+
+#if VIDEO_ENABLED
+	extern test_suite_t call_video_test_suite;
+#endif
+
 extern test_suite_t clonable_object_test_suite;
 extern test_suite_t conference_event_test_suite;
 extern test_suite_t conference_test_suite;
-extern test_suite_t content_manager_test_suite;
+extern test_suite_t contents_test_suite;
 extern test_suite_t cpim_test_suite;
 extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
@@ -73,12 +77,12 @@ extern test_suite_t upnp_test_suite;
 extern test_suite_t video_test_suite;
 
 #ifdef VCARD_ENABLED
-extern test_suite_t vcard_test_suite;
+	extern test_suite_t vcard_test_suite;
 #endif
 
 extern test_suite_t audio_bypass_suite;
 #if HAVE_SIPP
-extern test_suite_t complex_sip_call_test_suite;
+	extern test_suite_t complex_sip_call_test_suite;
 #endif
 
 extern int manager_count;
@@ -183,6 +187,7 @@ typedef struct _stats {
 	int number_of_LinphoneIsComposingIdleReceived;
 	int progress_of_LinphoneFileTransfer;
 
+	int number_of_LinphoneChatRoomConferenceJoined;
 	int number_of_LinphoneChatRoomStateInstantiated;
 	int number_of_LinphoneChatRoomStateCreationPending;
 	int number_of_LinphoneChatRoomStateCreated;
@@ -291,6 +296,8 @@ typedef struct _stats {
 	int number_of_participants_removed;
 	int number_of_subject_changed;
 	int number_of_participant_devices_added;
+
+	int number_of_snapshot_taken;
 }stats;
 
 
@@ -328,6 +335,7 @@ void linphone_core_manager_configure (LinphoneCoreManager *mgr);
 void linphone_core_manager_start(LinphoneCoreManager *mgr, bool_t check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_create2(const char* rc_file, const char* phone_alias);
 LinphoneCoreManager* linphone_core_manager_create(const char* rc_file);
+LinphoneCoreManager* linphone_core_manager_new4(const char* rc_file, int check_for_proxies, const char* phone_aliasconst, const char* contact_params, int expires);
 LinphoneCoreManager* linphone_core_manager_new3(const char* rc_file, bool_t check_for_proxies, const char* phone_alias);
 LinphoneCoreManager* linphone_core_manager_new2(const char* rc_file, bool_t check_for_proxies);
 LinphoneCoreManager* linphone_core_manager_new(const char* rc_file);
@@ -403,7 +411,7 @@ void account_manager_destroy(void);
 LinphoneAddress *account_manager_get_identity_with_modified_identity(const LinphoneAddress *modified_identity);
 LinphoneCore *configure_lc_from(LinphoneCoreCbs *cbs, const char *path, const char *file, void *user_data);
 
-void linphone_call_iframe_decoded_cb(LinphoneCall *call,void * user_data);
+void linphone_call_set_first_video_frame_decoded_cb(LinphoneCall *call);
 void call_paused_resumed_base(bool_t multicast,bool_t with_losses);
 void simple_call_base(bool_t enable_multicast_recv_side);
 void call_base_with_configfile(LinphoneMediaEncryption mode, bool_t enable_video,bool_t enable_relay,LinphoneFirewallPolicy policy,bool_t enable_tunnel, const char *marie_rc, const char *pauline_rc);

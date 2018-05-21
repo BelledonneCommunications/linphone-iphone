@@ -88,6 +88,7 @@ static void cleanup_dead_vtable_refs(LinphoneCore *lc){
 	lc->vtable_notify_recursion--;
 
 void linphone_core_notify_global_state_changed(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message) {
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyGlobalStateChanged(gstate);
 	NOTIFY_IF_EXIST(global_state_changed,lc,gstate,message);
 	cleanup_dead_vtable_refs(lc);
 }
@@ -243,13 +244,18 @@ void linphone_core_notify_configuring_status(LinphoneCore *lc, LinphoneConfiguri
 }
 
 void linphone_core_notify_network_reachable(LinphoneCore *lc, bool_t reachable) {
-	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyNetworkReachable(!!lc->sip_network_reachable, lc->media_network_reachable);
+	L_GET_PRIVATE_FROM_C_OBJECT(lc)->notifyNetworkReachable(!!lc->sip_network_reachable, !!lc->media_network_reachable);
 	NOTIFY_IF_EXIST(network_reachable, lc,reachable);
 	cleanup_dead_vtable_refs(lc);
 }
 
 void linphone_core_notify_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *notified_event, const LinphoneContent *body) {
 	NOTIFY_IF_EXIST_INTERNAL(notify_received, linphone_event_is_internal(lev), lc, lev, notified_event, body);
+	cleanup_dead_vtable_refs(lc);
+}
+
+void linphone_core_notify_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const char *subscribe_event, const LinphoneContent *body) {
+	NOTIFY_IF_EXIST_INTERNAL(subscribe_received, linphone_event_is_internal(lev), lc, lev, subscribe_event, body);
 	cleanup_dead_vtable_refs(lc);
 }
 

@@ -72,7 +72,7 @@ LinphoneLogLevel _bctbx_log_level_to_linphone_log_level(BctbxLogLevel level) {
 	if (response != tmap.cend()) {
 		return response->first;
 	} else {
-		ms_fatal("%s(): invalid argurement [%d]", __FUNCTION__, level);
+		ms_warning("%s(): invalid argurement [%d]", __FUNCTION__, level);
 		return LinphoneLogLevelDebug;
 	}
 }
@@ -95,7 +95,7 @@ unsigned int _bctbx_log_mask_to_linphone_log_mask(unsigned int mask) {
 BctbxLogLevel _linphone_log_level_to_bctbx_log_level(LinphoneLogLevel level) {
 	try {
 		return _linphone_log_level_to_bctbx_log_level_map.at(level);
-	} catch (const std::out_of_range &e) {
+	} catch (const std::out_of_range &) {
 		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
 		return BCTBX_LOG_LOGLEV_END;
 	}
@@ -127,6 +127,7 @@ static void _log_handler_on_message_written_cb(void *info,const char *domain, Bc
 
 static void _log_handler_destroy_cb(bctbx_log_handler_t *handler) {
 	LinphoneLoggingService *service = (LinphoneLoggingService *)bctbx_log_handler_get_user_data(handler);
+	bctbx_free(service->log_handler);
 	service->log_handler = NULL;
 }
 
@@ -158,11 +159,12 @@ LinphoneLoggingService *linphone_logging_service_ref(LinphoneLoggingService *ser
 }
 
 void linphone_logging_service_unref(LinphoneLoggingService *service) {
-	belle_sip_object_ref(service);
+	belle_sip_object_unref(service);
 }
 
 static void _linphone_logging_service_uninit(LinphoneLoggingService *log_service) {
-	if (log_service->log_handler) bctbx_remove_log_handler(log_service->log_handler);
+	if (log_service->log_handler)
+		bctbx_remove_log_handler(log_service->log_handler);
 	linphone_logging_service_cbs_unref(log_service->cbs);
 }
 
@@ -179,10 +181,11 @@ LinphoneLoggingServiceCbs *linphone_logging_service_get_callbacks(const Linphone
 
 static const char *_linphone_logging_service_log_domains[] = {
 	"bctbx",
+	"belle-sip",
 	"ortp",
 	"mediastreamer",
 	"bzrtp",
-	"linphone",
+	BCTBX_LOG_DOMAIN,  /* which is "liblinphone", set from CMakeList.txt*/
 	NULL
 };
 
@@ -201,7 +204,7 @@ void linphone_logging_service_set_log_level_mask(LinphoneLoggingService *log_ser
 }
 
 unsigned int linphone_logging_service_get_log_level_mask(const LinphoneLoggingService *log_service) {
-	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(ORTP_LOG_DOMAIN));
+	return _bctbx_log_mask_to_linphone_log_mask(bctbx_get_log_level_mask(BCTBX_LOG_DOMAIN));
 }
 
 void linphone_logging_service_set_log_file(const LinphoneLoggingService *service, const char *dir, const char *filename, size_t max_size) {
@@ -237,6 +240,11 @@ void linphone_logging_service_cbs_unref(LinphoneLoggingServiceCbs *cbs) {
 }
 
 void linphone_logging_service_cbs_set_log_message_written(LinphoneLoggingServiceCbs *cbs, LinphoneLoggingServiceCbsLogMessageWrittenCb cb) {
+	/* We need to set the legacy log handler to NULL here
+	because LinphoneCore have a default log handler that dump
+	all messages into the standard output. */
+	/*this function is moved here to make sure default log handler is only removed when user defined logging cbs is set*/
+	_linphone_core_set_log_handler(NULL);
 	cbs->message_event_cb = cb;
 }
 

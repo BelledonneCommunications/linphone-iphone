@@ -43,7 +43,8 @@ public:
 		const std::shared_ptr<Core> &core,
 		const std::string &factoryUri,
 		const IdentityAddress &me,
-		const std::string &subject
+		const std::string &subject,
+		const Content &content
 	);
 
 	ClientGroupChatRoom (
@@ -53,7 +54,8 @@ public:
 		AbstractChatRoom::CapabilitiesMask capabilities,
 		const std::string &subject,
 		std::list<std::shared_ptr<Participant>> &&participants,
-		unsigned int lastNotifyId
+		unsigned int lastNotifyId,
+		bool hasBeenLeft = false
 	);
 
 	~ClientGroupChatRoom ();
@@ -77,7 +79,7 @@ public:
 	void addParticipant (const IdentityAddress &addr, const CallSessionParams *params, bool hasMedia) override;
 	void addParticipants (const std::list<IdentityAddress> &addresses, const CallSessionParams *params, bool hasMedia) override;
 
-	void removeParticipant (const std::shared_ptr<const Participant> &participant) override;
+	void removeParticipant (const std::shared_ptr<Participant> &participant) override;
 	void removeParticipants (const std::list<std::shared_ptr<Participant>> &participants) override;
 
 	std::shared_ptr<Participant> findParticipant (const IdentityAddress &addr) const override;

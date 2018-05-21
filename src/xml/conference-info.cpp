@@ -36,9 +36,16 @@
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wfloat-equal"
+	#pragma GCC diagnostic ignored "-Wsign-conversion"
+	#pragma GCC diagnostic ignored "-Wconversion"
+#endif
 #if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wsuggest-override"
 #endif
+#if __GNUC__ >=7
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #endif
 //
 // End prologue.
@@ -54,7 +61,7 @@ namespace LinphonePrivate
     namespace ConferenceInfo
     {
       // ConferenceType
-      //
+      // 
 
       const ConferenceType::ConferenceDescriptionOptional& ConferenceType::
       getConferenceDescription () const
@@ -376,7 +383,7 @@ namespace LinphonePrivate
 
 
       // StateType
-      //
+      // 
 
       StateType::
       StateType (Value v)
@@ -413,7 +420,7 @@ namespace LinphonePrivate
       StateType& StateType::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_StateType_literals_[v]);
 
         return *this;
@@ -421,7 +428,7 @@ namespace LinphonePrivate
 
 
       // ConferenceDescriptionType
-      //
+      // 
 
       const ConferenceDescriptionType::DisplayTextOptional& ConferenceDescriptionType::
       getDisplayText () const
@@ -707,7 +714,7 @@ namespace LinphonePrivate
 
 
       // HostType
-      //
+      // 
 
       const HostType::DisplayTextOptional& HostType::
       getDisplayText () const
@@ -849,7 +856,7 @@ namespace LinphonePrivate
 
 
       // ConferenceStateType
-      //
+      // 
 
       const ConferenceStateType::UserCountOptional& ConferenceStateType::
       getUserCount () const
@@ -973,7 +980,7 @@ namespace LinphonePrivate
 
 
       // ConferenceMediaType
-      //
+      // 
 
       const ConferenceMediaType::EntrySequence& ConferenceMediaType::
       getEntry () const
@@ -1025,7 +1032,7 @@ namespace LinphonePrivate
 
 
       // ConferenceMediumType
-      //
+      // 
 
       const ConferenceMediumType::DisplayTextOptional& ConferenceMediumType::
       getDisplayText () const
@@ -1197,7 +1204,7 @@ namespace LinphonePrivate
 
 
       // UrisType
-      //
+      // 
 
       const UrisType::EntrySequence& UrisType::
       getEntry () const
@@ -1285,7 +1292,7 @@ namespace LinphonePrivate
 
 
       // UriType
-      //
+      // 
 
       const UriType::UriType1& UriType::
       getUri () const
@@ -1481,7 +1488,7 @@ namespace LinphonePrivate
       }
 
       // UsersType
-      //
+      // 
 
       const UsersType::UserSequence& UsersType::
       getUser () const
@@ -1587,7 +1594,7 @@ namespace LinphonePrivate
 
 
       // UserType
-      //
+      // 
 
       const UserType::DisplayTextOptional& UserType::
       getDisplayText () const
@@ -1873,7 +1880,7 @@ namespace LinphonePrivate
 
 
       // UserRolesType
-      //
+      // 
 
       const UserRolesType::EntrySequence& UserRolesType::
       getEntry () const
@@ -1949,7 +1956,7 @@ namespace LinphonePrivate
       }
 
       // EndpointType
-      //
+      // 
 
       const EndpointType::DisplayTextOptional& EndpointType::
       getDisplayText () const
@@ -2325,7 +2332,7 @@ namespace LinphonePrivate
 
 
       // EndpointStatusType
-      //
+      // 
 
       EndpointStatusType::
       EndpointStatusType (Value v)
@@ -2362,7 +2369,7 @@ namespace LinphonePrivate
       EndpointStatusType& EndpointStatusType::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_EndpointStatusType_literals_[v]);
 
         return *this;
@@ -2370,7 +2377,7 @@ namespace LinphonePrivate
 
 
       // JoiningType
-      //
+      // 
 
       JoiningType::
       JoiningType (Value v)
@@ -2407,7 +2414,7 @@ namespace LinphonePrivate
       JoiningType& JoiningType::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_JoiningType_literals_[v]);
 
         return *this;
@@ -2415,7 +2422,7 @@ namespace LinphonePrivate
 
 
       // DisconnectionType
-      //
+      // 
 
       DisconnectionType::
       DisconnectionType (Value v)
@@ -2452,7 +2459,7 @@ namespace LinphonePrivate
       DisconnectionType& DisconnectionType::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_DisconnectionType_literals_[v]);
 
         return *this;
@@ -2460,7 +2467,7 @@ namespace LinphonePrivate
 
 
       // ExecutionType
-      //
+      // 
 
       const ExecutionType::WhenOptional& ExecutionType::
       getWhen () const
@@ -2584,7 +2591,7 @@ namespace LinphonePrivate
 
 
       // CallType
-      //
+      // 
 
       const CallType::SipOptional& CallType::
       getSip () const
@@ -2666,7 +2673,7 @@ namespace LinphonePrivate
 
 
       // SipDialogIdType
-      //
+      // 
 
       const SipDialogIdType::DisplayTextOptional& SipDialogIdType::
       getDisplayText () const
@@ -2838,7 +2845,7 @@ namespace LinphonePrivate
 
 
       // MediaType
-      //
+      // 
 
       const MediaType::DisplayTextOptional& MediaType::
       getDisplayText () const
@@ -3070,7 +3077,7 @@ namespace LinphonePrivate
 
 
       // MediaStatusType
-      //
+      // 
 
       MediaStatusType::
       MediaStatusType (Value v)
@@ -3107,7 +3114,7 @@ namespace LinphonePrivate
       MediaStatusType& MediaStatusType::
       operator= (Value v)
       {
-        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) =
+        static_cast< ::LinphonePrivate::Xsd::XmlSchema::String& > (*this) = 
         ::LinphonePrivate::Xsd::XmlSchema::String (_xsd_MediaStatusType_literals_[v]);
 
         return *this;
@@ -3115,7 +3122,7 @@ namespace LinphonePrivate
 
 
       // SidebarsByValType
-      //
+      // 
 
       const SidebarsByValType::EntrySequence& SidebarsByValType::
       getEntry () const
@@ -3207,6 +3214,15 @@ namespace LinphonePrivate
 #include <xsd/cxx/xml/dom/wildcard-source.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
+
+#include <xsd/cxx/tree/type-factory-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_factory_plate< 0, char >
+  type_factory_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -6779,6 +6795,15 @@ namespace LinphonePrivate
 
 #include <ostream>
 
+#include <xsd/cxx/tree/std-ostream-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::std_ostream_plate< 0, char >
+  std_ostream_plate_init;
+}
+
 namespace LinphonePrivate
 {
   namespace Xsd
@@ -7562,6 +7587,15 @@ namespace LinphonePrivate
 #include <ostream>
 #include <xsd/cxx/tree/error-handler.hxx>
 #include <xsd/cxx/xml/dom/serialization-source.hxx>
+
+#include <xsd/cxx/tree/type-serializer-map.hxx>
+
+namespace _xsd
+{
+  static
+  const ::xsd::cxx::tree::type_serializer_plate< 0, char >
+  type_serializer_plate_init;
+}
 
 namespace LinphonePrivate
 {
@@ -9304,8 +9338,15 @@ namespace LinphonePrivate
 
 // Begin epilogue.
 //
+#if __GNUC__ >= 7
+	#pragma GCC diagnostic pop
+#endif
+#if __GNUC__ > 5 || (__GNUC__ == 5 && __GNUC_MINOR__ >= 1)
+	#pragma GCC diagnostic pop
+#endif
 #if __clang__ || __GNUC__ >= 4
 	#pragma GCC diagnostic pop
 #endif
 //
 // End epilogue.
+

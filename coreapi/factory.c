@@ -439,3 +439,7 @@ void linphone_factory_set_log_collection_path(LinphoneFactory *factory, const ch
 void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state) {
 	linphone_core_enable_log_collection(state);
 }
+
+LinphoneTunnelConfig *linphone_factory_create_tunnel_config(LinphoneFactory *factory) {
+	return linphone_tunnel_config_new();
+}

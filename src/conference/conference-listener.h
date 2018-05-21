@@ -28,7 +28,7 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ConferenceListener {
+class LINPHONE_PUBLIC ConferenceListener {
 public:
 	virtual ~ConferenceListener () = default;
 

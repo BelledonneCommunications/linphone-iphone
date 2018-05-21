@@ -34,38 +34,50 @@ LINPHONE_BEGIN_NAMESPACE
 
 class Cpim::GenericHeaderPrivate : public HeaderPrivate {
 public:
-	GenericHeaderPrivate () : parameters(make_shared<list<pair<string, string> > >()) {}
+	GenericHeaderPrivate () : parameters(make_shared<list<pair<string, string>>>()) {}
 
 	string name;
-	shared_ptr<list<pair<string, string> > > parameters;
+	string value;
+	shared_ptr<list<pair<string, string>>> parameters;
 };
 
 Cpim::GenericHeader::GenericHeader () : Header(*new GenericHeaderPrivate) {}
+
+Cpim::GenericHeader::GenericHeader (string name, string value, string parameters) : GenericHeader() {
+	setName(name);
+	setValue(value);
+
+	for (const auto &parameter : Utils::split(parameters, ';')) {
+		size_t equalIndex = parameter.find('=');
+		if (equalIndex != string::npos)
+			addParameter(parameter.substr(0, equalIndex), parameter.substr(equalIndex + 1));
+	}
+}
 
 string Cpim::GenericHeader::getName () const {
 	L_D();
 	return d->name;
 }
 
-bool Cpim::GenericHeader::setName (const string &name) {
+void Cpim::GenericHeader::setName (const string &name) {
 	L_D();
 
 	static const set<string> reserved = {
 		"From", "To", "cc", "DateTime", "Subject", "NS", "Require"
 	};
 
-	if (
-		reserved.find(name) != reserved.end() ||
-		!Parser::getInstance()->headerNameIsValid(name)
-	)
-		return false;
-
-	d->name = name;
-	return true;
+	if (reserved.find(name) == reserved.end())
+		d->name = name;
 }
 
-bool Cpim::GenericHeader::setValue (const string &value) {
-	return Parser::getInstance()->headerValueIsValid(value) && Header::setValue(value);
+string Cpim::GenericHeader::getValue () const {
+	L_D();
+	return d->value;
+}
+
+void Cpim::GenericHeader::setValue (const string &value) {
+	L_D();
+	d->value = value;
 }
 
 Cpim::GenericHeader::ParameterList Cpim::GenericHeader::getParameters () const {
@@ -73,24 +85,14 @@ Cpim::GenericHeader::ParameterList Cpim::GenericHeader::getParameters () const {
 	return d->parameters;
 }
 
-bool Cpim::GenericHeader::addParameter (const string &key, const string &value) {
+void Cpim::GenericHeader::addParameter (const string &key, const string &value) {
 	L_D();
-
-	if (!Parser::getInstance()->headerParameterIsValid(key + "=" + value))
-		return false;
-
 	d->parameters->push_back(make_pair(key, value));
-	return true;
 }
 
 void Cpim::GenericHeader::removeParameter (const string &key, const string &value) {
 	L_D();
 	d->parameters->remove(make_pair(key, value));
-}
-
-bool Cpim::GenericHeader::isValid () const {
-	L_D();
-	return !d->name.empty() && !getValue().empty();
 }
 
 string Cpim::GenericHeader::asString () const {
@@ -101,23 +103,6 @@ string Cpim::GenericHeader::asString () const {
 		parameters += ";" + parameter.first + "=" + parameter.second;
 
 	return d->name + ":" + parameters + " " + getValue() + "\r\n";
-}
-
-// -----------------------------------------------------------------------------
-
-void Cpim::GenericHeader::force (const string &name, const string &value, const string &parameters) {
-	L_D();
-
-	// Set name/value.
-	d->name = name;
-	Header::setValue(value);
-
-	// Parse and build parameters list.
-	for (const auto &parameter : Utils::split(parameters, ';')) {
-		size_t equalIndex = parameter.find('=');
-		if (equalIndex != string::npos)
-			d->parameters->push_back(make_pair(parameter.substr(0, equalIndex), parameter.substr(equalIndex + 1)));
-	}
 }
 
 LINPHONE_END_NAMESPACE

@@ -56,7 +56,7 @@ LINPHONE_PUBLIC	LINPHONE_DEPRECATED LinphoneFriend *linphone_friend_new_with_add
 
 /**
  * Destroy a LinphoneFriend.
- * @param lf LinphoneFriend object
+ * @param lf #LinphoneFriend object
  * @deprecated Use linphone_friend_unref() instead.
  * @donotwrap
  */
@@ -77,7 +77,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_friend_set_address(LinphoneFriend *fr, c
 
 /**
  * Get address of this friend.
- * @note the LinphoneAddress object returned is hold by the LinphoneFriend, however calling several time this function may return different objects.
+ * @note the #LinphoneAddress object returned is hold by the LinphoneFriend, however calling several time this function may return different objects.
  * @param lf #LinphoneFriend object
  * @return #LinphoneAddress
  */
@@ -215,7 +215,7 @@ LINPHONE_PUBLIC const LinphonePresenceModel * linphone_friend_get_presence_model
 
 /**
  * Get the consolidated presence of a friend.
- * @param[in] lf LinphoneFriend object
+ * @param[in] lf #LinphoneFriend object
  * @return The consolidated presence of the friend
  */
 LINPHONE_PUBLIC LinphoneConsolidatedPresence linphone_friend_get_consolidated_presence(const LinphoneFriend *lf);
@@ -285,39 +285,39 @@ LINPHONE_PUBLIC bool_t linphone_friend_in_list(const LinphoneFriend *lf);
 
 /**
  * Acquire a reference to the linphone friend.
- * @param[in] lf LinphoneFriend object
- * @return The same LinphoneFriend object
+ * @param[in] lf #LinphoneFriend object
+ * @return The same #LinphoneFriend object
 **/
 LINPHONE_PUBLIC LinphoneFriend * linphone_friend_ref(LinphoneFriend *lf);
 
 /**
  * Release a reference to the linphone friend.
- * @param[in] lf LinphoneFriend object
+ * @param[in] lf #LinphoneFriend object
 **/
 LINPHONE_PUBLIC void linphone_friend_unref(LinphoneFriend *lf);
 
 /**
- * Returns the LinphoneCore object managing this friend, if any.
- * @param[in] fr LinphoneFriend object
+ * Returns the #LinphoneCore object managing this friend, if any.
+ * @param[in] fr #LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneCore *linphone_friend_get_core(const LinphoneFriend *fr);
 
 /**
  * Returns the vCard object associated to this friend, if any
- * @param[in] fr LinphoneFriend object
+ * @param[in] fr #LinphoneFriend object
  */
 LINPHONE_PUBLIC LinphoneVcard* linphone_friend_get_vcard(const LinphoneFriend *fr);
 
 /**
  * Binds a vCard object to a friend
- * @param[in] fr LinphoneFriend object
+ * @param[in] fr #LinphoneFriend object
  * @param[in] vcard The vCard object to bind
  */
 LINPHONE_PUBLIC void linphone_friend_set_vcard(LinphoneFriend *fr, LinphoneVcard *vcard);
 
 /**
  * Creates a vCard object associated to this friend if there isn't one yet and if the full name is available, either by the parameter or the one in the friend's SIP URI
- * @param[in] fr LinphoneFriend object
+ * @param[in] fr #LinphoneFriend object
  * @param[in] name The full name of the friend or NULL to use the one from the friend's SIP URI
  * @return true if the vCard has been created, false if it wasn't possible (for exemple if name and the friend's SIP URI are null or if the friend's SIP URI doesn't have a display name), or if there is already one vcard
  */

@@ -21,22 +21,26 @@
 #define _L_CONTENT_TYPE_H_
 
 #include "object/clonable-object.h"
+#include "header/header.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
 class ContentTypePrivate;
+class HeaderParam;
 
-class LINPHONE_PUBLIC ContentType : public ClonableObject {
+class LINPHONE_PUBLIC ContentType : public Header {
 public:
 	explicit ContentType (const std::string &contentType = "");
 	ContentType (const std::string &type, const std::string &subType);
-	ContentType (const std::string &type, const std::string &subType, const std::string &parameter);
+	ContentType (const std::string &type, const std::string &subType, const HeaderParam &parameter);
+	ContentType (const std::string &type, const std::string &subType, const std::list<HeaderParam> &parameters);
 	ContentType (const ContentType &other);
 
 	ContentType &operator= (const ContentType &other);
 
+	bool weakEqual (const ContentType &other) const;
 	bool operator== (const ContentType &other) const;
 	bool operator!= (const ContentType &other) const;
 
@@ -55,10 +59,7 @@ public:
 	const std::string &getSubType () const;
 	bool setSubType (const std::string &subType);
 
-	const std::string &getParameter () const;
-	void setParameter (const std::string &parameter);
-
-	std::string asString () const;
+	bool isMultipart() const;
 
 	static bool isFile (const ContentType &contentType);
 
@@ -71,6 +72,7 @@ public:
 	static const ContentType Multipart;
 	static const ContentType PlainText;
 	static const ContentType ResourceLists;
+	static const ContentType Rlmi;
 	static const ContentType Sdp;
 
 private:

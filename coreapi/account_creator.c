@@ -21,14 +21,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 
+
 #include "c-wrapper/c-wrapper.h"
 #include "dial-plan/dial-plan.h"
 
-#if !_WIN32
-	#include "regex.h"
-#endif
 
-#include <bctoolbox/crypto.h>
+#include "bctoolbox/crypto.h"
+#include "bctoolbox/regex.h"
 
 // TODO: From coreapi. Remove me later.
 #include "private.h"
@@ -110,25 +109,6 @@ static char* _get_identity(const LinphoneAccountCreator *creator) {
 		linphone_proxy_config_destroy(proxy);
 	}
 	return identity;
-}
-
-static bool_t is_matching_regex(const char *entry, const char* regex) {
-#if _WIN32
-	return TRUE;
-#else
-	regex_t regex_pattern;
-	char err_msg[256];
-	int res;
-	res = regcomp(&regex_pattern, regex, REG_EXTENDED | REG_NOSUB);
-	if(res != 0) {
-		regerror(res, &regex_pattern, err_msg, sizeof(err_msg));
-		ms_error("Could not compile regex '%s: %s", regex, err_msg);
-		return FALSE;
-	}
-	res = regexec(&regex_pattern, entry, 0, NULL, 0);
-	regfree(&regex_pattern);
-	return (res != REG_NOMATCH);
-#endif
 }
 
 LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const LinphoneAccountCreator *creator) {
@@ -288,8 +268,12 @@ void linphone_account_creator_cbs_set_update_account(LinphoneAccountCreatorCbs *
 static void _linphone_account_creator_destroy(LinphoneAccountCreator *creator) {
 	/*this will drop all pending requests if any*/
 	if (creator->xmlrpc_session) linphone_xml_rpc_session_release(creator->xmlrpc_session);
-	if (creator->service != NULL && linphone_account_creator_service_get_destructor_cb(creator->service) != NULL)
-		linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
+	if (creator->service != NULL ) {
+			if (linphone_account_creator_service_get_destructor_cb(creator->service) != NULL)
+				linphone_account_creator_service_get_destructor_cb(creator->service)(creator);
+			linphone_account_creator_service_unref(creator->service);
+	}
+	
 	linphone_account_creator_cbs_unref(creator->cbs);
 	linphone_proxy_config_unref(creator->proxy_cfg);
 	linphone_account_creator_reset(creator);
@@ -309,6 +293,7 @@ LinphoneAccountCreator * _linphone_account_creator_new(LinphoneCore *core, const
 	const char* domain = lp_config_get_string(core->config, "assistant", "domain", NULL);
 	creator = belle_sip_object_new(LinphoneAccountCreator);
 	creator->service = linphone_core_get_account_creator_service(core);
+	linphone_account_creator_service_ref(creator->service);
 	creator->cbs = linphone_account_creator_cbs_new();
 	creator->core = core;
 	creator->transport = LinphoneTransportTcp;
@@ -383,7 +368,7 @@ LinphoneAccountCreatorUsernameStatus linphone_account_creator_set_username(Linph
 		return LinphoneAccountCreatorUsernameStatusTooLong;
 	} else if (use_phone_number && !linphone_proxy_config_is_phone_number(NULL, username)) {
 		return LinphoneAccountCreatorUsernameStatusInvalid;
-	} else if (regex && !is_matching_regex(username, regex)) {
+	} else if (regex && !bctbx_is_matching_regex(username, regex)) {
 		return LinphoneAccountCreatorUsernameStatusInvalidCharacters;
 	} else if (validate_uri(username, NULL, NULL) != 0) {
 		return LinphoneAccountCreatorUsernameStatusInvalid;
@@ -506,10 +491,10 @@ const char * linphone_account_creator_get_display_name(const LinphoneAccountCrea
 }
 
 LinphoneAccountCreatorEmailStatus linphone_account_creator_set_email(LinphoneAccountCreator *creator, const char *email) {
-	if (!email || !is_matching_regex(email, "^.+@.+\\..*$")) {
+	if (!email || !bctbx_is_matching_regex(email, "^.+@.+\\..*$")) {
 		return LinphoneAccountCreatorEmailStatusMalformed;
 	}
-	if (!is_matching_regex(email, "^.+@.+\\.[A-Za-z]{2}[A-Za-z]*$")) {
+	if (!bctbx_is_matching_regex(email, "^.+@.+\\.[A-Za-z]{2}[A-Za-z]*$")) {
 		return LinphoneAccountCreatorEmailStatusInvalidCharacters;
 	}
 	set_string(&creator->email, email, TRUE);

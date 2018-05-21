@@ -20,42 +20,40 @@
 #
 ############################################################################
 
-if (ENABLE_SPHINX_DOC)
-	set(GENERATED_LANGUAGES c cpp csharp)
-	set(DOCUMENTATION_DIRS )
-	set(GENERATED_SPHINX_SOURCES )
-	foreach(LANGUAGE_ ${GENERATED_LANGUAGES})
-		set(DOCUMENTATION_DIR ${CMAKE_CURRENT_BINARY_DIR}/source/${LANGUAGE_})
-		list(APPEND DOCUMENTATION_DIRS ${DOCUMENTATION_DIR})
-		list(APPEND GENERATED_SPHINX_SOURCES ${DOCUMENTATION_DIR}/index.rst)
-	endforeach(LANGUAGE_)
-	
-	set(PYTHON_SCRIPTS gendoc.py
-		${linphone_SOURCE_DIR}/tools/abstractapi.py
-		${linphone_SOURCE_DIR}/tools/genapixml.py
-		${linphone_SOURCE_DIR}/tools/metadoc.py
-		${linphone_SOURCE_DIR}/tools/metaname.py
+if (ENABLE_DOC)
+	set(doc_source_dir ${CMAKE_CURRENT_BINARY_DIR}/source)
+	set(doc_output_dir ${CMAKE_CURRENT_BINARY_DIR}/build)
+	set(reference_doc_source_dir ${doc_source_dir}/reference)
+	set(static_documentation_files
+		guides/authentication.rst
+		guides/buddy_list.rst
+		guides/call_control.rst
+		guides/call_logs.rst
+		guides/call_misc.rst
+		guides/chatroom.rst
+		guides/conferencing.rst
+		guides/event_api.rst
+		guides/initializing.rst
+		guides/ios_portability.rst
+		guides/linphone_address.rst
+		guides/media_parameters.rst
+		guides/misc.rst
+		guides/network_parameters.rst
+		guides/proxies.rst
+		index.rst
+		logo.png
+		samples/samples.rst
 	)
-	set(MUSTACHE_TEMPLATES class_page.mustache
-		enums_page.mustache
-		index_page.mustache
-	)
-	configure_file(conf.py.in source/conf.py)
-	configure_file(source/index.rst source/index.rst COPYONLY)
-	add_custom_command(OUTPUT ${GENERATED_SPHINX_SOURCES}
-		COMMAND ${CMAKE_COMMAND} -E remove -f ${DOCUMENTATION_DIRS}
-		COMMAND ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o 'source'
-		DEPENDS ${PYTHON_SCRIPTS}
-		${MUSTACHE_TEMPLATES}
-		${LINPHONE_DOXYGEN_XML_DIR}/index.xml
-		linphone-doc
-	)
-	add_custom_command(OUTPUT build/html/index.html
-		COMMAND ${CMAKE_COMMAND} -E remove_directory build
-		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html 'source' 'build'
-		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/source/conf.py
-		${CMAKE_CURRENT_BINARY_DIR}/source/index.rst
-		${GENERATED_SPHINX_SOURCES}
-	)
-	add_custom_target(sphinx-doc ALL DEPENDS build/html/index.html)
+	configure_file(conf.py.in ${doc_source_dir}/conf.py)
+	foreach(file ${static_documentation_files})
+		configure_file(${file} ${doc_source_dir}/${file} COPYONLY)
+	endforeach(file)
+	foreach(source ${LINPHONE_C_EXAMPLES_SOURCE})
+		configure_file(${source} ${doc_source_dir}/samples/ COPYONLY)
+	endforeach(source)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${doc_source_dir}/_static ${reference_doc_source_dir})
+	add_custom_target(sphinx-doc ALL ${PYTHON_EXECUTABLE} '${CMAKE_CURRENT_SOURCE_DIR}/gendoc.py' '${LINPHONE_DOXYGEN_XML_DIR}' -o '${reference_doc_source_dir}'
+		COMMAND ${PYTHON_EXECUTABLE} -msphinx -M html '${doc_source_dir}' '${doc_output_dir}'
+		DEPENDS linphone-doc)
+	install(DIRECTORY ${doc_output_dir}/html/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/${LINPHONE_VERSION})
 endif()

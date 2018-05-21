@@ -20,13 +20,11 @@
 // TODO: Remove me later.
 #include "private.h"
 
-#include "address/address.h"
 #include "chat/chat-message/chat-message.h"
-#include "chat/chat-room/chat-room.h"
 #include "content/content-type.h"
+#include "content/header/header.h"
+#include "content/content-manager.h"
 #include "content/file-transfer-content.h"
-#include "logger/logger.h"
-#include "core/core.h"
 
 #include "multipart-chat-message-modifier.h"
 
@@ -43,90 +41,30 @@ ChatMessageModifier::Result MultipartChatMessageModifier::encode (
 	if (message->getContents().size() <= 1)
 		return ChatMessageModifier::Result::Skipped;
 
-	LinphoneCore *lc = message->getChatRoom()->getCore()->getCCore();
-	char tmp[64];
-	lc->sal->create_uuid(tmp, sizeof(tmp));
-	string boundary = tmp;
-	stringstream multipartMessage;
-
-	multipartMessage << "--" << boundary;
-	for (Content *content : message->getContents()) {
-		multipartMessage << "\r\n";
-		multipartMessage << "Content-Type: " << content->getContentType().asString() << "\r\n\r\n";
-		multipartMessage << content->getBodyAsString() << "\r\n\r\n";
-		multipartMessage << "--" << boundary;
-	}
-	multipartMessage << "--";
-
-	Content newContent;
-	ContentType newContentType(ContentType::Multipart);
-	newContentType.setParameter("boundary=" + boundary);
-	newContent.setContentType(newContentType);
-	newContent.setBody(multipartMessage.str());
-	message->setInternalContent(newContent);
+	Content content = ContentManager::contentListToMultipart(message->getContents());
+	message->setInternalContent(content);
 
 	return ChatMessageModifier::Result::Done;
 }
 
 ChatMessageModifier::Result MultipartChatMessageModifier::decode (const shared_ptr<ChatMessage> &message, int &errorCode) {
-	if (message->getInternalContent().getContentType().getType() == "multipart") {
-		string boundary = message->getInternalContent().getContentType().getParameter();
-		if (boundary.empty()) {
-			lError() << "Boundary parameter of content-type not found: " << message->getInternalContent().getContentType().asString();
-			return ChatMessageModifier::Result::Error;
-		}
-
-		size_t pos = boundary.find("=");
-		if (pos == string::npos) {
-			lError() << "Parameter seems invalid: " << boundary;
-			return ChatMessageModifier::Result::Error;
-		}
-		boundary = "--" + boundary.substr(pos + 1);
-		lInfo() << "Multipart boundary is " << boundary;
-
-		const vector<char> body = message->getInternalContent().getBody();
-		string contentsString(body.begin(), body.end());
-
-		pos = contentsString.find(boundary);
-		if (pos == string::npos) {
-			lError() << "Boundary not found in body !";
-			return ChatMessageModifier::Result::Error;
-		}
-
-		size_t start = pos + boundary.length() + 2; // 2 is the size of \r\n
-		size_t end;
-		do {
-			end = contentsString.find(boundary, start);
-			if (end != string::npos) {
-				string contentString = contentsString.substr(start, end - start);
-
-				size_t contentTypePos = contentString.find(": ") + 2; // 2 is the size of :
-				size_t endOfLinePos = contentString.find("\r\n");
-				if (contentTypePos >= endOfLinePos) {
-					lError() << "Content should start by a 'Content-Type: ' line !";
-					continue;
+	if (message->getInternalContent().getContentType().isMultipart()) {
+		for (Content &c : ContentManager::multipartToContentList(message->getInternalContent())) {
+			Content *content;
+			if (c.getContentType() == ContentType::FileTransfer) {
+				content = new FileTransferContent();
+				content->setContentType(c.getContentType());
+				content->setContentDisposition(c.getContentDisposition());
+				content->setContentEncoding(c.getContentEncoding());
+				for (const Header &header : c.getHeaders()) {
+					content->addHeader(header);
 				}
-				string contentTypeString = contentString.substr(contentTypePos, endOfLinePos - contentTypePos);
-				ContentType contentType(contentTypeString);
-
-				endOfLinePos += 4; // 4 is two time the size of \r\n
-				string contentBody = contentString.substr(endOfLinePos, contentString.length() - (endOfLinePos + 4)); // 4 is two time the size of \r\n
-
-				Content *content;
-				if (contentType == ContentType::FileTransfer) {
-					content = new FileTransferContent();
-				} else {
-					content = new Content();
-				}
-				content->setContentType(contentType);
-				content->setBody(contentBody);
-				message->addContent(*content);
-
-				lInfo() << "Parsed and added content with type " << contentType.asString();
+				content->setBodyFromUtf8(c.getBodyAsUtf8String());
+			} else {
+				content = new Content(c);
 			}
-			start = end + boundary.length() + 2; // 2 is the size of \r\n
-		} while (end != string::npos);
-
+			message->addContent(content);
+		}
 		return ChatMessageModifier::Result::Done;
 	}
 	return ChatMessageModifier::Result::Skipped;

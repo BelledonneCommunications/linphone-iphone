@@ -69,7 +69,7 @@ const bctbx_list_t *linphone_core_get_chat_rooms (LinphoneCore *lc) {
 static LinphoneChatRoom *linphone_chat_room_new (LinphoneCore *core, const LinphoneAddress *addr) {
 	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(core)->getOrCreateBasicChatRoom(
 		*L_GET_CPP_PTR_FROM_C_OBJECT(addr),
-		linphone_core_realtime_text_enabled(core)
+		!!linphone_core_realtime_text_enabled(core)
 	));
 }
 
@@ -84,8 +84,8 @@ LinphoneChatRoom *linphone_core_get_chat_room (LinphoneCore *lc, const LinphoneA
 	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->getOrCreateBasicChatRoom(*L_GET_CPP_PTR_FROM_C_OBJECT(addr)));
 }
 
-LinphoneChatRoom *linphone_core_create_client_group_chat_room (LinphoneCore *lc, const char *subject) {
-	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->createClientGroupChatRoom(L_C_TO_STRING(subject)));
+LinphoneChatRoom *linphone_core_create_client_group_chat_room (LinphoneCore *lc, const char *subject, bool_t fallback) {
+	return L_GET_C_BACK_PTR(L_GET_CPP_PTR_FROM_C_OBJECT(lc)->createClientGroupChatRoom(L_C_TO_STRING(subject), !!fallback));
 }
 
 LinphoneChatRoom *_linphone_core_create_server_group_chat_room (LinphoneCore *lc, LinphonePrivate::SalCallOp *op) {
@@ -124,13 +124,13 @@ LinphoneChatRoom *linphone_core_find_one_to_one_chat_room (
 
 int linphone_core_message_received(LinphoneCore *lc, LinphonePrivate::SalOp *op, const SalMessage *sal_msg) {
 	LinphoneReason reason = LinphoneReasonNotAcceptable;
-	const char *peerAddress;
-	const char *localAddress;
+	std::string peerAddress;
+	std::string localAddress;
 	if (linphone_core_conference_server_enabled(lc)) {
-		localAddress = peerAddress = op->get_to();
+		localAddress = peerAddress = op->getTo();
 	} else {
-		peerAddress = op->get_from();
-		localAddress = op->get_to();
+		peerAddress = op->getFrom();
+		localAddress = op->getTo();
 	}
 
 	shared_ptr<LinphonePrivate::AbstractChatRoom> chatRoom = L_GET_CPP_PTR_FROM_C_OBJECT(lc)->findChatRoom(

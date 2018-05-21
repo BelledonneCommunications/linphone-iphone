@@ -486,7 +486,7 @@ static void sdp_parse_payload_types(belle_sdp_media_description_t *media_desc, S
 static void sdp_parse_media_crypto_parameters(belle_sdp_media_description_t *media_desc, SalStreamDescription *stream) {
 	belle_sip_list_t *attribute_it;
 	belle_sdp_attribute_t *attribute;
-	char tmp[256], tmp2[256], parameters[256]={0};
+	char tmp[257], tmp2[257], parameters[257]={0};
 	int valid_count = 0;
 	int nb;
 

@@ -20,6 +20,7 @@
 #ifndef _L_MAIN_DB_H_
 #define _L_MAIN_DB_H_
 
+#include <functional>
 #include <list>
 
 #include "linphone/utils/enum-mask.h"
@@ -59,6 +60,15 @@ public:
 
 	typedef EnumMask<Filter> FilterMask;
 
+	struct ParticipantState {
+		ParticipantState (const IdentityAddress &address, ChatMessage::State state, time_t timestamp)
+			: address(address), state(state), timestamp(timestamp) {}
+
+		IdentityAddress address;
+		ChatMessage::State state = ChatMessage::State::Idle;
+		time_t timestamp = 0;
+	};
+
 	MainDb (const std::shared_ptr<Core> &core);
 
 	// ---------------------------------------------------------------------------
@@ -85,13 +95,18 @@ public:
 	// Conference chat message events.
 	// ---------------------------------------------------------------------------
 
+	using ParticipantStateRetrievalFunc = std::function<std::list<ParticipantState>(const std::shared_ptr<EventLog> &eventLog)>;
+
 	int getChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	int getUnreadChatMessageCount (const ChatRoomId &chatRoomId = ChatRoomId()) const;
 	void markChatMessagesAsRead (const ChatRoomId &chatRoomId) const;
 	std::list<std::shared_ptr<ChatMessage>> getUnreadChatMessages (const ChatRoomId &chatRoomId) const;
 
+	std::list<ParticipantState> getChatMessageParticipantsByImdnState (
+		const std::shared_ptr<EventLog> &eventLog,
+		ChatMessage::State state
+	) const;
 	std::list<ChatMessage::State> getChatMessageParticipantStates (const std::shared_ptr<EventLog> &eventLog) const;
-	std::list<IdentityAddress> getChatMessageParticipantsInState (const std::shared_ptr<EventLog> &eventLog, const ChatMessage::State state) const;
 	ChatMessage::State getChatMessageParticipantState (
 		const std::shared_ptr<EventLog> &eventLog,
 		const IdentityAddress &participantAddress
@@ -99,7 +114,8 @@ public:
 	void setChatMessageParticipantState (
 		const std::shared_ptr<EventLog> &eventLog,
 		const IdentityAddress &participantAddress,
-		ChatMessage::State state
+		ChatMessage::State state,
+		time_t stateChangeTime
 	);
 
 	std::shared_ptr<ChatMessage> getLastChatMessage (const ChatRoomId &chatRoomId) const;
@@ -107,6 +123,10 @@ public:
 	std::list<std::shared_ptr<ChatMessage>> findChatMessages (
 		const ChatRoomId &chatRoomId,
 		const std::string &imdnMessageId
+	) const;
+
+	std::list<std::shared_ptr<ChatMessage>> findChatMessagesToBeNotifiedAsDelivered (
+		const ChatRoomId &chatRoomId
 	) const;
 
 	// ---------------------------------------------------------------------------
@@ -140,7 +160,7 @@ public:
 	// ---------------------------------------------------------------------------
 
 	std::list<std::shared_ptr<AbstractChatRoom>> getChatRooms () const;
-	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom);
+	void insertChatRoom (const std::shared_ptr<AbstractChatRoom> &chatRoom, unsigned int notifyId = 0);
 	void deleteChatRoom (const ChatRoomId &chatRoomId);
 	void enableChatRoomMigration (const ChatRoomId &chatRoomId, bool enable);
 

@@ -30,8 +30,11 @@ class CoreListener {
 public:
 	virtual ~CoreListener () = default;
 
+	virtual void onGlobalStateChanged (LinphoneGlobalState state) {}
 	virtual void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) {}
 	virtual void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState state, const std::string &message) {}
+	virtual void onEnteringBackground () {}
+	virtual void onEnteringForeground () {}
 };
 
 LINPHONE_END_NAMESPACE

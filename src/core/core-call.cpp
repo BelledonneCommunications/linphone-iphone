@@ -27,6 +27,7 @@
 
 // TODO: Remove me later.
 #include "c-wrapper/c-wrapper.h"
+#include "conference_private.h"
 
 #include <mediastreamer2/msvolume.h>
 
@@ -58,17 +59,15 @@ bool CorePrivate::canWeAddCall () const {
 
 bool CorePrivate::inviteReplacesABrokenCall (SalCallOp *op) {
 	CallSession *replacedSession = nullptr;
-	SalCallOp *replacedOp = op->get_replaces();
+	SalCallOp *replacedOp = op->getReplaces();
 	if (replacedOp)
-		replacedSession = reinterpret_cast<CallSession *>(replacedOp->get_user_pointer());
+		replacedSession = reinterpret_cast<CallSession *>(replacedOp->getUserPointer());
 	for (const auto &call : calls) {
 		shared_ptr<CallSession> session = call->getPrivate()->getActiveSession();
 		if (session
-			&& ((session->getPrivate()->isBroken() && op->compare_op(session->getPrivate()->getOp()))
-				|| ((replacedSession == session.get())
-					&& (strcmp(op->get_from(), replacedOp->get_from()) == 0)
-					&& (strcmp(op->get_to(), replacedOp->get_to()) == 0)))
-			) {
+			&& ((session->getPrivate()->isBroken() && op->compareOp(session->getPrivate()->getOp()))
+				|| (replacedSession == session.get() && op->getFrom() == replacedOp->getFrom() && op->getTo() == replacedOp->getTo())
+		)) {
 			session->getPrivate()->replaceOp(op);
 			return true;
 		}
@@ -301,9 +300,12 @@ void Core::soundcardHintCheck () {
 	LinphoneConfig *config = linphone_core_get_config(L_GET_C_BACK_PTR(this));
 	bool useRtpIo = !!lp_config_get_int(config, "sound", "rtp_io", FALSE);
 	bool useRtpIoEnableLocalOutput = !!lp_config_get_int(config, "sound", "rtp_io_enable_local_output", FALSE);
-	bool useFiles = L_GET_C_BACK_PTR(getSharedFromThis())->use_files;
+	
+	LinphoneConference *conf_ctx = getCCore()->conf_ctx;
+	if (conf_ctx && linphone_conference_get_size(conf_ctx) >= 1) return;
+	
 	if ((!d->hasCalls() || noNeedForSound)
-		&& (!useFiles && (!useRtpIo || (useRtpIo && useRtpIoEnableLocalOutput)))) {
+		&& (!L_GET_C_BACK_PTR(getSharedFromThis())->use_files && (!useRtpIo || (useRtpIo && useRtpIoEnableLocalOutput)))) {
 		lInfo() << "Notifying soundcard that we don't need it anymore for calls";
 		d->notifySoundcardUsage(false);
 	}

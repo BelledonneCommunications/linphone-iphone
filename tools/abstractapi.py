@@ -428,27 +428,32 @@ class Class(Namespace):
 		self.classMethods.sort()
 
 
-class Interface(DocumentableObject):
+class Interface(Namespace):
 	def __init__(self, name):
-		DocumentableObject.__init__(self, name)
-		self.methods = []
+		Namespace.__init__(self, name)
+		self.instanceMethods = []
+		self.classMethods = []
 		self._listenedClass = None
-	
-	def add_method(self, method):
-		self.methods.append(method)
+
+	def add_instance_methods(self, method):
+		self.instanceMethods.append(method)
 		method.parent = self
-	
+
+	def add_class_methods(self, method):
+		self.classMethods.append(method)
+		method.parent = self
+
 	@property
 	def listenedClass(self):
 		return self._listenedClass
-	
+
 	@listenedClass.setter
 	def listenedClass(self, method):
-		self.methods.append(method)
+		self.instanceMethods.append(method)
 		method.parent = self
-	
+
 	def sort(self):
-		self.methods.sort()
+		self.instanceMethods.sort()
 
 
 class CParser(object):
@@ -619,7 +624,7 @@ class CParser(object):
 			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_interface(self, interface):
-		for method in interface.methods:
+		for method in interface.instanceMethods:
 			self._fix_all_types_in_method(method)
 	
 	def _fix_all_types_in_method(self, method):
@@ -784,7 +789,7 @@ class CParser(object):
 				if property.name != 'user_data':
 					try:
 						method = self._parse_listener_property(property, listener, cclass.events)
-						listener.add_method(method)
+						listener.add_instance_methods(method)
 					except BlacklistedSymbolError as e:
 						logger.debug(e)
 			
@@ -819,6 +824,8 @@ class CParser(object):
 			argName.from_snake_case(arg.name)
 			argument = Argument(argName, self.parse_type(arg))
 			method.add_arguments(argument)
+		method.briefDescription = event.briefDoc
+		method.detailedDescription = event.detailedDoc
 		
 		return method
 	
@@ -949,15 +956,12 @@ class Translator:
 		except KeyError:
 			raise ValueError("Invalid language code: '{0}'".format(langCode))
 
-	def _get_object_name(self, obj):
-		return obj.desc.name if isinstance(obj, (EnumType, ClassType)) else obj.name
-
-	def _compute_namespace_name(self, namespace, obj):
-		if namespace is not None:
-			return namespace.name if namespace is not GlobalNs else None
-		else:
-			namespace = obj.find_first_ancestor_by_type(Enum, Class, Namespace, Interface)
-			return metaname.Name.find_common_parent(self._get_object_name(obj), namespace.name)
+	@staticmethod
+	def _namespace_to_name_translator_params(namespace):
+		return {
+			'recursive': True,
+			'topAncestor': namespace.name if namespace is not None else None
+		}
 
 
 class CLikeLangTranslator(Translator):
@@ -971,8 +975,11 @@ class CLikeLangTranslator(Translator):
 		else:
 			raise TypeError('invalid enumerator value type: {0}'.format(value))
 	
-	def translate_argument(self, argument, **kargs):
-		return '{0} {1}'.format(argument.type.translate(self, **kargs), argument.name.translate(self.nameTranslator))
+	def translate_argument(self, argument, hideArgName=False, namespace=None):
+		ret = argument.type.translate(self, namespace=namespace)
+		if not hideArgName:
+			ret += (' ' + argument.name.translate(self.nameTranslator))
+		return ret
 
 
 class CLangTranslator(CLikeLangTranslator):
@@ -982,19 +989,19 @@ class CLangTranslator(CLikeLangTranslator):
 		self.falseConstantToken = 'FALSE'
 		self.trueConstantToken = 'TRUE'
 	
-	def translate_base_type(self, _type):
+	def translate_base_type(self, _type, **kargs):
 		return _type.cDecl
 	
-	def translate_enum_type(self, _type):
+	def translate_enum_type(self, _type, **kargs):
 		return _type.cDecl
 	
-	def translate_class_type(self, _type):
+	def translate_class_type(self, _type, **kargs):
 		return _type.cDecl
 	
-	def translate_list_type(self, _type):
+	def translate_list_type(self, _type, **kargs):
 		return _type.cDecl
 	
-	def translate_enumerator_value(self, value):
+	def translate_enumerator_value(self, value, **kargs):
 		if value is None:
 			return None
 		elif isinstance(value, int):
@@ -1004,19 +1011,20 @@ class CLangTranslator(CLikeLangTranslator):
 		else:
 			raise TypeError('invalid enumerator value type: {0}'.format(value))
 	
-	def translate_method_as_prototype(self, method, **params):
-		_class = method.find_first_ancestor_by_type(Class)
-		params = '{const}{className} *obj'.format(
-			className=_class.name.to_c(),
-			const='const ' if method.isconst else ''
-		)
-		for arg in method.args:
-			params += (', ' + arg.translate(self))
-		
-		return '{returnType} {name}({params})'.format(
-			returnType=method.returnType.translate(self),
+	def translate_method_as_prototype(self, method, hideArguments=False, hideArgNames=False, hideReturnType=False, stripDeclarators=False, namespace=None):
+		_class = method.find_first_ancestor_by_type(Class,Interface)
+		params = []
+		if not hideArguments:
+			params.append('{const}{className} *obj'.format(
+				className=_class.name.to_c(),
+				const='const ' if method.isconst and not stripDeclarators else ''
+			))
+			for arg in method.args:
+				params.append(arg.translate(self, hideArgName=hideArgNames))
+		return '{returnType}{name}({params})'.format(
+			returnType=(method.returnType.translate(self) + ' ') if not hideReturnType else '',
 			name=method.name.translate(self.nameTranslator),
-			params=params
+			params=', '.join(params)
 		)
 
 
@@ -1028,7 +1036,7 @@ class CppLangTranslator(CLikeLangTranslator):
 		self.trueConstantToken = 'true'
 		self.ambigousTypes = []
 	
-	def translate_base_type(self, _type, showStdNs=True, namespace=None):
+	def translate_base_type(self, _type, namespace=None):
 		if _type.name == 'void':
 			if _type.isref:
 				return 'void *'
@@ -1058,14 +1066,11 @@ class CppLangTranslator(CLikeLangTranslator):
 		elif _type.name == 'status':
 			res = 'linphone::Status'
 		elif _type.name == 'string':
-			res = CppLangTranslator.prepend_std('string', showStdNs)
+			res = 'std::string'
 			if type(_type.parent) is Argument:
 				res += ' &'
 		elif _type.name == 'string_array':
-			res = '{0}<{1}>'.format(
-				CppLangTranslator.prepend_std('list', showStdNs),
-				CppLangTranslator.prepend_std('string', showStdNs)
-			)
+			res = 'std::list<std::string>'
 			if type(_type.parent) is Argument:
 				res += ' &'
 		else:
@@ -1085,81 +1090,50 @@ class CppLangTranslator(CLikeLangTranslator):
 			res += ' *'
 		return res
 	
-	def translate_enum_type(self, type_, showStdNs=True, namespace=None):
+	def translate_enum_type(self, type_, namespace=None):
 		if type_.desc is None:
 			raise TranslationError('{0} has not been fixed'.format(type_.name))
-		nsName = self._compute_namespace_name(namespace, type_)
-		return type_.desc.name.translate(self.nameTranslator, recursive=True, topAncestor=nsName)
+		return type_.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 
-	def translate_class_type(self, type_, showStdNs=True, namespace=None):
+	def translate_class_type(self, type_, namespace=None):
 		if type_.desc is None:
 			raise TranslationError('{0} has not been fixed'.format(type_.name))
-		nsName = self._compute_namespace_name(namespace, type_)
-		res = type_.desc.name.translate(self.nameTranslator, recursive=True, topAncestor=nsName)
+		res = type_.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 		
 		if type_.desc.refcountable:
 			if type_.isconst:
 				res = 'const ' + res
 			if type(type_.parent) is Argument:
-				return 'const {0}<{1}> &'.format(
-					CppLangTranslator.prepend_std('shared_ptr', showStdNs),
-					res
-				)
+				return 'const std::shared_ptr<{0}> &'.format(res)
 			else:
-				return '{0}<{1}>'.format(
-					CppLangTranslator.prepend_std('shared_ptr', showStdNs),
-					res
-				)
+				return 'std::shared_ptr<{0}>'.format(res)
 		else:
 			if type(type_.parent) is Argument:
 				return 'const {0} &'.format(res)
 			else:
 				return '{0}'.format(res)
 	
-	def translate_list_type(self, _type, showStdNs=True, namespace=None):
+	def translate_list_type(self, _type, namespace=None):
 		if _type.containedTypeDesc is None:
 			raise TranslationError('{0} has not been fixed'.format(_type.containedTypeName))
 		elif isinstance(_type.containedTypeDesc, BaseType):
 			res = _type.containedTypeDesc.translate(self)
 		else:
-			res = _type.containedTypeDesc.translate(self, showStdNs=showStdNs, namespace=namespace)
+			res = _type.containedTypeDesc.translate(self, namespace=namespace)
 			
 		if type(_type.parent) is Argument:
-			return 'const {0}<{1} > &'.format(
-				CppLangTranslator.prepend_std('list', showStdNs),
-				res
-			)
+			return 'const std::list<{0}> &'.format(res)
 		else:
-			return '{0}<{1} >'.format(
-				CppLangTranslator.prepend_std('list', showStdNs),
-				res
-			)
+			return 'std::list<{0}>'.format(res)
 	
-	def translate_method_as_prototype(self, method, showStdNs=True, namespace=None):
-		nsName = self._compute_namespace_name(namespace, method)
-		
-		argsString = ''
-		argStrings = []
-		for arg in method.args:
-			argStrings.append(arg.translate(self, showStdNs=showStdNs, namespace=namespace))
-		argsString = ', '.join(argStrings)
-		
-		return '{_return} {name}({args}){const}'.format(
-			_return=method.returnType.translate(self, ),
-			name=method.name.translate(self.nameTranslator, recursive=True, topAncestor=nsName),
-			args=argsString,
-			const=' const' if method.isconst else ''
+	def translate_method_as_prototype(self, method, hideArguments=False, hideArgNames=False, hideReturnType=False, stripDeclarators=False, namespace=None):
+		argsAsString = ', '.join([arg.translate(self, hideArgName=hideArgNames, namespace=namespace) for arg in method.args]) if not hideArguments else ''
+		return '{return_}{name}({args}){const}'.format(
+			return_=(method.returnType.translate(self, namespace=namespace) + ' ') if not hideReturnType else '',
+			name=method.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace)),
+			args=argsAsString,
+			const=' const' if method.isconst and not stripDeclarators else ''
 		)
-	
-	@staticmethod
-	def prepend_std(string, prepend):
-		return 'std::' + string if prepend else string
-
-	def _compute_namespace_name(self, namespace, obj):
-		nsName = Translator._compute_namespace_name(self, namespace, obj)
-		if self._get_object_name(obj).to_c() in self.ambigousTypes:
-			nsName = None
-		return nsName
 
 
 class JavaLangTranslator(CLikeLangTranslator):
@@ -1226,14 +1200,12 @@ class JavaLangTranslator(CLikeLangTranslator):
 		elif jni:
 			return 'jint'
 		else:
-			nsName = self._compute_namespace_name(namespace, _type)
-			return _type.desc.name.translate(self.nameTranslator, recursive=True, topAncestor=nsName)
+			return _type.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 
 	def translate_class_type(self, _type, native=False, jni=False, isReturn=False, namespace=None):
 		if jni:
 			return 'jobject'
-		nsName = self._compute_namespace_name(namespace, _type)
-		return _type.desc.name.translate(self.nameTranslator, recursive=True, topAncestor=nsName)
+		return _type.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 
 	def translate_list_type(self, _type, native=False, jni=False, isReturn=False, namespace=None):
 		if jni:
@@ -1247,11 +1219,11 @@ class JavaLangTranslator(CLikeLangTranslator):
 				ptrtype = _type.containedTypeDesc.translate(self, native=native)
 		ptrtype = ''
 		if type(_type.containedTypeDesc) is ClassType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		elif type(_type.containedTypeDesc) is BaseType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		elif type(_type.containedTypeDesc) is EnumType:
-			ptrtype = _type.containedTypeDesc.translate(self, native=native)
+			ptrtype = _type.containedTypeDesc.translate(self, native=native, namespace=namespace)
 		else:
 			if _type.containedTypeDesc:
 				raise Error('translation of bctbx_list_t of ' + _type.containedTypeDesc.name)
@@ -1259,8 +1231,19 @@ class JavaLangTranslator(CLikeLangTranslator):
 				raise Error('translation of bctbx_list_t of unknow type !')
 		return ptrtype + '[]'
 
-	def translate_argument(self, arg, native=False, jni=False):
-		return '{0} {1}'.format(arg.type.translate(self, native=native, jni=jni), arg.name.translate(self.nameTranslator))
+	def translate_argument(self, arg, native=False, jni=False, hideArgName=False, namespace=None):
+		res = arg.type.translate(self, native=native, jni=jni, namespace=namespace)
+		if not hideArgName:
+			res += (' ' + arg.name.translate(self.nameTranslator))
+		return res
+
+	def translate_method_as_prototype(self, method, hideArguments=False, hideArgNames=False, hideReturnType=False, stripDeclarators=False, namespace=None):
+		return '{public}{returnType}{methodName}({arguments})'.format(
+			public='public ' if not stripDeclarators else '',
+			returnType=(method.returnType.translate(self, isReturn=True, namespace=namespace) + ' ') if not hideReturnType else '',
+			methodName=method.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace)),
+			arguments=', '.join([arg.translate(self, hideArgName=hideArgNames, namespace=namespace) for arg in method.args]) if not hideArguments else ''
+		)
 
 
 class CSharpLangTranslator(CLikeLangTranslator):
@@ -1270,7 +1253,7 @@ class CSharpLangTranslator(CLikeLangTranslator):
 		self.falseConstantToken = 'false'
 		self.trueConstantToken = 'true'
 	
-	def translate_base_type(self, _type, dllImport=True):
+	def translate_base_type(self, _type, dllImport=True, namespace=None):
 		if _type.name == 'void':
 				if _type.isref:
 					return 'IntPtr'
@@ -1319,16 +1302,16 @@ class CSharpLangTranslator(CLikeLangTranslator):
 		
 		return res
 	
-	def translate_enum_type(self, _type, dllImport=True):
+	def translate_enum_type(self, _type, dllImport=True, namespace=None):
 		if dllImport and type(_type.parent) is Argument:
 			return 'int'
 		else:
-			return _type.desc.name.translate(self.nameTranslator)
+			return _type.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 	
-	def translate_class_type(self, _type, dllImport=True):
-		return "IntPtr" if dllImport else _type.desc.name.translate(self.nameTranslator)
+	def translate_class_type(self, _type, dllImport=True, namespace=None):
+		return "IntPtr" if dllImport else _type.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 	
-	def translate_list_type(self, _type, dllImport=True):
+	def translate_list_type(self, _type, dllImport=True, namespace=None):
 		if dllImport:
 			return 'IntPtr'
 		else:
@@ -1338,7 +1321,7 @@ class CSharpLangTranslator(CLikeLangTranslator):
 				else:
 					raise TranslationError('translation of bctbx_list_t of basic C types is not supported')
 			elif type(_type.containedTypeDesc) is ClassType:
-				ptrType = _type.containedTypeDesc.desc.name.translate(self.nameTranslator)
+				ptrType = _type.containedTypeDesc.desc.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace))
 				return 'IEnumerable<' + ptrType + '>'
 			else:
 				if _type.containedTypeDesc:
@@ -1346,22 +1329,17 @@ class CSharpLangTranslator(CLikeLangTranslator):
 				else:
 					raise TranslationError('translation of bctbx_list_t of unknow type !')
 	
-	def translate_argument(self, arg, dllImport=True):
+	def translate_argument(self, arg, dllImport=True, namespace=None):
 		return '{0} {1}'.format(
-			arg.type.translate(self, dllImport=dllImport),
+			arg.type.translate(self, dllImport=dllImport, namespace=None),
 			arg.name.translate(self.nameTranslator)
 		)
 	
-	def translate_method_as_prototype(self, method):
-		kargs = {
-			'static'     : 'static ' if method.type == Method.Type.Class else '',
-			'override'   : 'override ' if method.name.translate(self.nameTranslator) == 'ToString' else '',
-			'returnType' : method.returnType.translate(self, dllImport=False),
-			'name'       : method.name.translate(self.nameTranslator),
-			'args'       : ''
-		}
-		for arg in method.args:
-			if kargs['args'] != '':
-				kargs['args'] += ', '
-			kargs['args'] += arg.translate(self, dllImport=False)
-		return '{static}{override}{returnType} {name}({args})'.format(**kargs)
+	def translate_method_as_prototype(self, method, hideArguments=False, hideArgNames=False, hideReturnType=False, stripDeclarators=False, namespace=None):
+		return '{static}{override}{returnType}{name}({args})'.format(
+			static     = 'static ' if method.type == Method.Type.Class and not stripDeclarators else '',
+			override   = 'override ' if method.name.translate(self.nameTranslator) == 'ToString' and not stripDeclarators else '',
+			returnType = (method.returnType.translate(self, dllImport=False, namespace=namespace) + ' ') if not hideReturnType else '',
+			name       = method.name.translate(self.nameTranslator, **Translator._namespace_to_name_translator_params(namespace)),
+			args       = ', '.join([arg.translate(self, dllImport=False, namespace=namespace) for arg in method.args]) if not hideArguments else ''
+		)

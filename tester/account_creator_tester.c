@@ -62,8 +62,9 @@ static void local_username_too_short(void) {
 		LinphoneAccountCreatorUsernameStatus,
 		"%i");
 
-	linphone_account_creator_unref(creator);
+	
 	linphone_core_manager_destroy(marie);
+	linphone_account_creator_unref(creator);
 }
 
 static void local_username_too_long(void) {

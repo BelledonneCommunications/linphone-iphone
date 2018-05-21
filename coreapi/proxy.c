@@ -25,6 +25,7 @@ Copyright (C) 2000  Simon MORLAT (simon.morlat@linphone.org)
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
 #include "linphone/sipsetup.h"
+
 #include "mediastreamer2/mediastream.h"
 
 #include "enum.h"
@@ -142,6 +143,7 @@ static void linphone_proxy_config_init(LinphoneCore* lc, LinphoneProxyConfig *cf
 	cfg->avpf_rr_interval = lc ? !!lp_config_get_default_int(lc->config, "proxy", "avpf_rr_interval", 5) : 5;
 	cfg->publish_expires= lc ? lp_config_get_default_int(lc->config, "proxy", "publish_expires", -1) : -1;
 	cfg->publish = lc ? !!lp_config_get_default_int(lc->config, "proxy", "publish", FALSE) : FALSE;
+	cfg->push_notification_allowed = lc ? !!lp_config_get_default_int(lc->config, "proxy", "push_notification_allowed", TRUE) : TRUE;
 	cfg->refkey = refkey ? ms_strdup(refkey) : NULL;
 	if (nat_policy_ref) {
 		LinphoneNatPolicy *policy = linphone_config_create_nat_policy_from_section(lc->config,nat_policy_ref);
@@ -434,7 +436,7 @@ void linphone_proxy_config_enable_publish(LinphoneProxyConfig *cfg, bool_t val){
 }
 
 void linphone_proxy_config_pause_register(LinphoneProxyConfig *cfg){
-	if (cfg->op) cfg->op->stop_refreshing();
+	if (cfg->op) cfg->op->stopRefreshing();
 }
 
 void linphone_proxy_config_edit(LinphoneProxyConfig *cfg){
@@ -455,20 +457,16 @@ void linphone_proxy_config_apply(LinphoneProxyConfig *cfg,LinphoneCore *lc){
 
 void linphone_proxy_config_stop_refreshing(LinphoneProxyConfig * cfg){
 	LinphoneAddress *contact_addr = NULL;
-	{
-		const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk
-			? cfg->op->get_contact_address()
-			: NULL;
-		if (sal_addr) {
-			char *buf = sal_address_as_string(sal_addr);
-			contact_addr = buf ? linphone_address_new(buf) : NULL;
-			ms_free(buf);
-		}
+	const SalAddress *sal_addr = cfg->op && cfg->state == LinphoneRegistrationOk ? cfg->op->getContactAddress() : NULL;
+	if (sal_addr) {
+		char *buf = sal_address_as_string(sal_addr);
+		contact_addr = buf ? linphone_address_new(buf) : NULL;
+		ms_free(buf);
 	}
 
 	/*with udp, there is a risk of port reuse, so I prefer to not do anything for now*/
 	if (contact_addr) {
-		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp) {
+		if (linphone_address_get_transport(contact_addr) != LinphoneTransportUdp && lp_config_get_int(cfg->lc->config, "sip", "unregister_previous_contact", 0)) {
 			if (cfg->pending_contact)
 				linphone_address_unref(cfg->pending_contact);
 			cfg->pending_contact=contact_addr;
@@ -540,10 +538,10 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 		guess_contact_for_register(cfg);
 		if (cfg->contact_address)
-			cfg->op->set_contact_address(L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
-		cfg->op->set_user_pointer(cfg);
+			cfg->op->setContactAddress(L_GET_PRIVATE_FROM_C_OBJECT(cfg->contact_address)->getInternalAddress());
+		cfg->op->setUserPointer(cfg);
 
-		if (cfg->op->register_(
+		if (cfg->op->sendRegister(
 			proxy_string,
 			cfg->reg_identity,
 			cfg->expires,
@@ -570,7 +568,7 @@ static void linphone_proxy_config_register(LinphoneProxyConfig *cfg){
 
 void linphone_proxy_config_refresh_register(LinphoneProxyConfig *cfg){
 	if (cfg->reg_sendregister && cfg->op && cfg->state!=LinphoneRegistrationProgress){
-		if (cfg->op->register_refresh(cfg->expires) == 0) {
+		if (cfg->op->refreshRegister(cfg->expires) == 0) {
 			linphone_proxy_config_set_state(cfg,LinphoneRegistrationProgress, "Refresh registration");
 		}
 	}
@@ -852,7 +850,7 @@ LinphoneStatus linphone_proxy_config_done(LinphoneProxyConfig *cfg)
 			if (res == LinphoneProxyConfigAddressDifferent) {
 				_linphone_proxy_config_unregister(cfg);
 			}
-			cfg->op->set_user_pointer(NULL); /*we don't want to receive status for this un register*/
+			cfg->op->setUserPointer(NULL); /*we don't want to receive status for this un register*/
 			cfg->op->unref(); /*but we keep refresher to handle authentication if needed*/
 			cfg->op=NULL;
 		}
@@ -1047,7 +1045,7 @@ struct _LinphoneCore * linphone_proxy_config_get_core(const LinphoneProxyConfig 
 const char *linphone_proxy_config_get_custom_header(LinphoneProxyConfig *cfg, const char *header_name){
 	const SalCustomHeader *ch;
 	if (!cfg->op) return NULL;
-	ch = cfg->op->get_recv_custom_header();
+	ch = cfg->op->getRecvCustomHeaders();
 	return sal_custom_header_find(ch, header_name);
 }
 
@@ -1189,6 +1187,7 @@ void linphone_proxy_config_write_to_config_file(LpConfig *config, LinphoneProxyC
 	lp_config_set_int(config,key,"dial_escape_plus",cfg->dial_escape_plus);
 	lp_config_set_string(config,key,"dial_prefix",cfg->dial_prefix);
 	lp_config_set_int(config,key,"privacy",(int)cfg->privacy);
+	lp_config_set_int(config,key,"push_notification_allowed",(int)cfg->push_notification_allowed);
 	if (cfg->refkey) lp_config_set_string(config,key,"refkey",cfg->refkey);
 	lp_config_set_int(config, key, "publish_expires", cfg->publish_expires);
 
@@ -1249,6 +1248,7 @@ LinphoneProxyConfig *linphone_proxy_config_new_from_config_file(LinphoneCore* lc
 	CONFIGURE_INT_VALUE(cfg,config,key,expires,"reg_expires", int)
 	CONFIGURE_BOOL_VALUE(cfg,config,key,register,"reg_sendregister")
 	CONFIGURE_BOOL_VALUE(cfg,config,key,publish,"publish")
+	linphone_proxy_config_set_push_notification_allowed(cfg, !!lp_config_get_int(config,key,"push_notification_allowed",linphone_proxy_config_is_push_notification_allowed(cfg)));
 	linphone_proxy_config_set_avpf_mode(cfg,static_cast<LinphoneAVPFMode>(lp_config_get_int(config,key,"avpf",linphone_proxy_config_get_avpf_mode(cfg))));
 	CONFIGURE_INT_VALUE(cfg,config,key,avpf_rr_interval,"avpf_rr_interval",uint8_t)
 	CONFIGURE_INT_VALUE(cfg,config,key,dial_escape_plus,"dial_escape_plus",bool_t)
@@ -1416,7 +1416,7 @@ const LinphoneErrorInfo *linphone_proxy_config_get_error_info(const LinphoneProx
 }
 
 const LinphoneAddress* linphone_proxy_config_get_service_route(const LinphoneProxyConfig* cfg) {
-	return cfg->op?(const LinphoneAddress*) cfg->op->get_service_route():NULL;
+	return cfg->op?(const LinphoneAddress*) cfg->op->getServiceRoute():NULL;
 }
 const char* linphone_proxy_config_get_transport(const LinphoneProxyConfig *cfg) {
 	const char* addr=NULL;
@@ -1496,7 +1496,7 @@ const LinphoneAddress *linphone_proxy_config_get_contact (const LinphoneProxyCon
 	// Warning : Do not remove, the op can change its contact_address
 	if (!cfg->op)
 		return NULL;
-	const SalAddress *salAddr = cfg->op->get_contact_address();
+	const SalAddress *salAddr = cfg->op->getContactAddress();
 	if (!salAddr)
 		return NULL;
 	if (cfg->contact_address)
@@ -1538,7 +1538,7 @@ LinphoneNatPolicy * linphone_proxy_config_get_nat_policy(const LinphoneProxyConf
 
 void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *cfg, LinphoneNatPolicy *policy) {
 	if (policy != NULL) {
-		policy = linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
+		linphone_nat_policy_ref(policy); /* Prevent object destruction if the same policy is used */
 		policy->lc = cfg->lc;
 	}
 	if (cfg->nat_policy != NULL) linphone_nat_policy_unref(cfg->nat_policy);
@@ -1577,4 +1577,12 @@ void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, 
 
 const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg) {
 	return cfg->conference_factory_uri;
+}
+
+bool_t linphone_proxy_config_is_push_notification_allowed(const LinphoneProxyConfig *cfg) {
+	return cfg->push_notification_allowed;
+}
+
+void linphone_proxy_config_set_push_notification_allowed(LinphoneProxyConfig *cfg, bool_t is_allowed) {
+	cfg->push_notification_allowed = is_allowed;
 }

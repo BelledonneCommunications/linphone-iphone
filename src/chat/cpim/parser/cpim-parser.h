@@ -38,49 +38,12 @@ namespace Cpim {
 
 		std::shared_ptr<Header> cloneHeader (const Header &header);
 
-		bool headerNameIsValid (const std::string &headerName) const;
-		bool headerValueIsValid (const std::string &headerValue) const;
-		bool headerParameterIsValid (const std::string &headerParameter) const;
-
-		template<typename>
-		bool coreHeaderIsValid (const std::string &headerValue) const {
-			return false;
-		}
-
-		bool subjectHeaderLanguageIsValid (const std::string &language) const;
-
 	private:
 		Parser ();
 
 		L_DECLARE_PRIVATE(Parser);
 		L_DISABLE_COPY(Parser);
 	};
-
-	// ---------------------------------------------------------------------------
-
-	template<>
-	bool Parser::coreHeaderIsValid<FromHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<ToHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<CcHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<DateTimeHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<MessageIdHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<SubjectHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<NsHeader>(const std::string &headerValue) const;
-
-	template<>
-	bool Parser::coreHeaderIsValid<RequireHeader>(const std::string &headerValue) const;
 }
 
 LINPHONE_END_NAMESPACE
