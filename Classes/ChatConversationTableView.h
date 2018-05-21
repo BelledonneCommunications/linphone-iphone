@@ -20,8 +20,8 @@
 #import <UIKit/UIKit.h>
 #include "linphone/linphonecore.h"
 
-#import "linphone/c-event-log.h"
-#import "linphone/c-chat-room.h"
+#import "linphone/api/c-event-log.h"
+#import "linphone/api/c-chat-room.h"
 
 #import "UICheckBoxTableView.h"
 
