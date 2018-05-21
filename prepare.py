@@ -353,6 +353,9 @@ zipsdk: sdk
 \t-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.pbxuser \\
 \t-x liblinphone-tutorials/hello-world/hello-world.xcodeproj/*.mode1v3
 
+podspec: zipsdk
+\tsed "s/FRAMEWORK_VERSION/$(LINPHONE_IPHONE_VERSION)/g" Tools/liblinphone.podspec > liblinphone.podspec
+
 pull-transifex:
 \ttx pull -af
 
