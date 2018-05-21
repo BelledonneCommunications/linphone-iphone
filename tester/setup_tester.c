@@ -69,7 +69,8 @@ static void _check_friend_result_list(LinphoneCore *lc, const bctbx_list_t *resu
 	const LinphoneSearchResult *sr = bctbx_list_nth_data(resultList, index);
 	const LinphoneFriend *lf = linphone_search_result_get_friend(sr);
 	if (lf) {
-		const LinphoneAddress *la = linphone_friend_get_address(lf);
+		const LinphoneAddress *la = (linphone_search_result_get_address(sr)) ?
+			linphone_search_result_get_address(sr) : linphone_friend_get_address(lf);
 		if (la) {
 			char* fa = linphone_address_as_string(la);
 			BC_ASSERT_STRING_EQUAL(fa , uri);
@@ -480,6 +481,91 @@ static void custom_tones_setup(void){
 		BC_ASSERT_STRING_EQUAL(tone, "callonhold2.wav");
 	}
 	linphone_core_manager_destroy(mgr);
+}
+
+static void search_friend_in_alphabetical_order(void) {
+	LinphoneMagicSearch *magicSearch = NULL;
+	bctbx_list_t *resultList = NULL;
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+
+	const char *name1SipUri = {"sip:toto@sip.example.org"};
+	const char *name2SipUri = {"sip:stephanie@sip.example.org"};
+	const char *name3SipUri = {"sip:alber@sip.example.org"};
+	const char *name4SipUri = {"sip:gauthier@sip.example.org"};
+
+	LinphoneFriend *friend1 = linphone_core_create_friend(manager->lc);
+	LinphoneFriend *friend2 = linphone_core_create_friend(manager->lc);
+	LinphoneFriend *friend3 = linphone_core_create_friend(manager->lc);
+	LinphoneFriend *friend4 = linphone_core_create_friend(manager->lc);
+
+	LinphoneVcard *vcard1 = linphone_factory_create_vcard(linphone_factory_get());
+	LinphoneVcard *vcard2 = linphone_factory_create_vcard(linphone_factory_get());
+	LinphoneVcard *vcard3 = linphone_factory_create_vcard(linphone_factory_get());
+	LinphoneVcard *vcard4 = linphone_factory_create_vcard(linphone_factory_get());
+
+	const char *name1 = {"STEPHANIE delarue"};
+	const char *name2 = {"alias delarue"};
+	const char *name3 = {"Alber josh"};
+	const char *name4 = {"gauthier wei"};
+
+	linphone_vcard_set_full_name(vcard1, name1); // STEPHANIE delarue
+	linphone_vcard_set_url(vcard1, name1SipUri); //sip:toto@sip.example.org
+	linphone_vcard_add_sip_address(vcard1, name1SipUri);
+	linphone_friend_set_vcard(friend1, vcard1);
+	linphone_core_add_friend(manager->lc, friend1);
+
+	linphone_vcard_set_full_name(vcard2, name2); // alias delarue
+	linphone_vcard_set_url(vcard2, name2SipUri); //sip:stephanie@sip.example.org
+	linphone_vcard_add_sip_address(vcard2, name2SipUri);
+	linphone_friend_set_vcard(friend2, vcard2);
+	linphone_core_add_friend(manager->lc, friend2);
+
+	linphone_vcard_set_full_name(vcard3, name3); // Alber josh
+	linphone_vcard_set_url(vcard3, name3SipUri); //sip:alber@sip.example.org
+	linphone_vcard_add_sip_address(vcard3, name3SipUri);
+	linphone_friend_set_vcard(friend3, vcard3);
+	linphone_core_add_friend(manager->lc, friend3);
+
+	linphone_vcard_set_full_name(vcard4, name4); // gauthier wei
+	linphone_vcard_set_url(vcard4, name4SipUri); //sip:gauthier@sip.example.org
+	linphone_vcard_add_sip_address(vcard4, name4SipUri);
+	linphone_friend_set_vcard(friend4, vcard4);
+	linphone_core_add_friend(manager->lc, friend4);
+
+	magicSearch = linphone_magic_search_new(manager->lc);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "", "");
+
+	if (BC_ASSERT_PTR_NOT_NULL(resultList)) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 4, int, "%d");
+		_check_friend_result_list(manager->lc, resultList, 0, name3SipUri, NULL);//"sip:stephanie@sip.example.org"
+		_check_friend_result_list(manager->lc, resultList, 1, name2SipUri, NULL);//"sip:alber@sip.example.org"
+		_check_friend_result_list(manager->lc, resultList, 2, name4SipUri, NULL);//"sip:gauthier@sip.example.org"
+		_check_friend_result_list(manager->lc, resultList, 3, name1SipUri, NULL);//"sip:toto@sip.example.org"
+		bctbx_list_free_with_data(resultList, (bctbx_list_free_func)linphone_magic_search_unref);
+	}
+
+	linphone_magic_search_reset_search_cache(magicSearch);
+
+	linphone_friend_list_remove_friend(lfl, friend1);
+	linphone_friend_list_remove_friend(lfl, friend2);
+	linphone_friend_list_remove_friend(lfl, friend3);
+	linphone_friend_list_remove_friend(lfl, friend4);
+
+	if (friend1) linphone_friend_unref(friend1);
+	if (friend2) linphone_friend_unref(friend2);
+	if (friend3) linphone_friend_unref(friend3);
+	if (friend4) linphone_friend_unref(friend4);
+
+	if (vcard1) linphone_vcard_unref(vcard1);
+	if (vcard2) linphone_vcard_unref(vcard2);
+	if (vcard3) linphone_vcard_unref(vcard3);
+	if (vcard4) linphone_vcard_unref(vcard4);
+
+	linphone_magic_search_unref(magicSearch);
+	linphone_core_manager_destroy(manager);
+
 }
 
 static void search_friend_without_filter(void) {
@@ -968,6 +1054,57 @@ static void search_friend_with_name_with_uppercase(void) {
 	linphone_core_manager_destroy(manager);
 }
 
+static void search_friend_with_multiple_sip_address(void) {
+	LinphoneMagicSearch *magicSearch = NULL;
+	bctbx_list_t *resultList = NULL;
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
+	const char *stephanieSipUri1 = {"sip:toto@sip.example.org"};
+	const char *stephanieSipUri2 = {"sip:stephanie@sip.example.org"};
+	LinphoneFriend *stephanieFriend = linphone_core_create_friend(manager->lc);
+	LinphoneVcard *stephanieVcard = linphone_factory_create_vcard(linphone_factory_get());
+	const char *stephanieName = {"stephanie delarue"};
+
+	_create_friends_from_tab(manager->lc, lfl, sFriends, sSizeFriend);
+
+	linphone_vcard_set_full_name(stephanieVcard, stephanieName); // stephanie delarue
+	linphone_vcard_set_url(stephanieVcard, stephanieSipUri1); //sip:toto@sip.example.org
+	linphone_vcard_add_sip_address(stephanieVcard, stephanieSipUri1);
+	linphone_vcard_add_sip_address(stephanieVcard, stephanieSipUri2);
+	linphone_friend_set_vcard(stephanieFriend, stephanieVcard);
+	linphone_core_add_friend(manager->lc, stephanieFriend);
+
+	magicSearch = linphone_magic_search_new(manager->lc);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "stephanie", "");
+
+	if (BC_ASSERT_PTR_NOT_NULL(resultList)) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 2, int, "%d");
+		_check_friend_result_list(manager->lc, resultList, 0, stephanieSipUri2, NULL);//"sip:stephanie@sip.example.org"
+		_check_friend_result_list(manager->lc, resultList, 1, stephanieSipUri1, NULL);//"sip:toto@sip.example.org"
+		bctbx_list_free_with_data(resultList, (bctbx_list_free_func)linphone_magic_search_unref);
+	}
+
+	linphone_magic_search_reset_search_cache(magicSearch);
+
+	resultList = linphone_magic_search_get_contact_list_from_filter(magicSearch, "delarue", "");
+
+	if (BC_ASSERT_PTR_NOT_NULL(resultList)) {
+		BC_ASSERT_EQUAL(bctbx_list_size(resultList), 2, int, "%d");
+		_check_friend_result_list(manager->lc, resultList, 0, stephanieSipUri2, NULL);//"sip:stephanie@sip.example.org"
+		_check_friend_result_list(manager->lc, resultList, 1, stephanieSipUri1, NULL);//"sip:toto@sip.example.org"
+		bctbx_list_free_with_data(resultList, (bctbx_list_free_func)linphone_magic_search_unref);
+	}
+
+	_remove_friends_from_list(lfl, sFriends, sSizeFriend);
+	linphone_friend_list_remove_friend(lfl, stephanieFriend);
+	if (stephanieFriend) linphone_friend_unref(stephanieFriend);
+	if (stephanieVcard) linphone_vcard_unref(stephanieVcard);
+
+	linphone_magic_search_unref(magicSearch);
+	linphone_core_manager_destroy(manager);
+}
+
 static void search_friend_large_database(void) {
 	char *dbPath = bc_tester_res("db/friends.db");
 	char *searchedFriend = "6295103032641994169";
@@ -1013,6 +1150,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Codec usability", codec_usability_test),
 	TEST_NO_TAG("Codec setup", codec_setup),
 	TEST_NO_TAG("Custom tones setup", custom_tones_setup),
+	TEST_ONE_TAG("Return friend list in alphabetical order", search_friend_in_alphabetical_order, "MagicSearch"),
 	TEST_ONE_TAG("Search friend without filter", search_friend_without_filter, "MagicSearch"),
 	TEST_ONE_TAG("Search friend from all domains", search_friend_all_domains, "MagicSearch"),
 	TEST_ONE_TAG("Search friend from one domain", search_friend_one_domain, "MagicSearch"),
@@ -1024,6 +1162,7 @@ test_t setup_tests[] = {
 	TEST_ONE_TAG("Search friend last item is the filter", search_friend_last_item_is_filter, "MagicSearch"),
 	TEST_ONE_TAG("Search friend with name", search_friend_with_name, "MagicSearch"),
 	TEST_ONE_TAG("Search friend with uppercase name", search_friend_with_name_with_uppercase, "MagicSearch"),
+	TEST_ONE_TAG("Search friend with multiple sip address", search_friend_with_multiple_sip_address, "MagicSearch"),
 	TEST_ONE_TAG("Search friend in large friends database", search_friend_large_database, "MagicSearch")
 };
 
