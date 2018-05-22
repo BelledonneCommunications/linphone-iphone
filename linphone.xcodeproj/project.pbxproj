@@ -30,7 +30,6 @@
 		22968A5F12F875C600588287 /* UISpeakerButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22968A5E12F875C600588287 /* UISpeakerButton.m */; };
 		22AA8B0113D83F6300B30535 /* UICamSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AA8B0013D83F6300B30535 /* UICamSwitch.m */; };
 		22C755601317E59C007BC101 /* UIBluetoothButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C7555F1317E59C007BC101 /* UIBluetoothButton.m */; };
-		22C7693F20AD8DC20028D256 /* mediastreamer2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C7693E20AD8DC10028D256 /* mediastreamer2.framework */; };
 		22D1B68112A3E0BE001AE361 /* libresolv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D1B68012A3E0BE001AE361 /* libresolv.dylib */; };
 		22E0A822111C44E100B04932 /* AboutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E0A81C111C44E100B04932 /* AboutView.m */; };
 		22F2508E107141E100AC9B3F /* DialerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2508C107141E100AC9B3F /* DialerView.m */; };
@@ -976,7 +975,6 @@
 		22B5F03410CE6B2F00777D97 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		22C7555E1317E59C007BC101 /* UIBluetoothButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIBluetoothButton.h; sourceTree = "<group>"; };
 		22C7555F1317E59C007BC101 /* UIBluetoothButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIBluetoothButton.m; sourceTree = "<group>"; };
-		22C7693E20AD8DC10028D256 /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		22D1B68012A3E0BE001AE361 /* libresolv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.dylib; path = usr/lib/libresolv.dylib; sourceTree = SDKROOT; };
 		22E0A81C111C44E100B04932 /* AboutView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutView.m; sourceTree = "<group>"; };
 		22E0A81D111C44E100B04932 /* AboutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutView.h; sourceTree = "<group>"; };
@@ -1698,6 +1696,7 @@
 		8C5D1B991D9BC48100DC6539 /* UIShopTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIShopTableCell.h; sourceTree = "<group>"; };
 		8C5D1B9A1D9BC48100DC6539 /* UIShopTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIShopTableCell.m; sourceTree = "<group>"; };
 		8C5D1B9B1D9BC48100DC6539 /* UIShopTableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = UIShopTableCell.xib; sourceTree = "<group>"; };
+		8C601FD220B462B0004FF95C /* mediastreamer2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = mediastreamer2.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/mediastreamer2.framework"; sourceTree = "<group>"; };
 		8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		8C92ABE71FA773190006FB5D /* UIChatNotifiedEventCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = UIChatNotifiedEventCell.xib; sourceTree = "<group>"; };
 		8C92ABF11FA773C20006FB5D /* UIChatNotifiedEventCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIChatNotifiedEventCell.h; sourceTree = "<group>"; };
@@ -1720,7 +1719,6 @@
 		8CB2B8F71F86229C0015CEE2 /* next_disabled.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = next_disabled.png; sourceTree = "<group>"; };
 		8CB2B8F81F86229D0015CEE2 /* next_disabled@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "next_disabled@2x.png"; sourceTree = "<group>"; };
 		8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsoci_core.a; path = "liblinphone-sdk/apple-darwin/lib/libsoci_core.a"; sourceTree = "<group>"; };
-		8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite3.a; path = "liblinphone-sdk/apple-darwin/lib/libsqlite3.a"; sourceTree = "<group>"; };
 		8CD99A1B20908C27008A7CDA /* callkit_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "callkit_logo@2x.png"; sourceTree = "<group>"; };
 		8CD99A352090A823008A7CDA /* splashscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "splashscreen@2x.png"; sourceTree = "<group>"; };
 		8CD99A362090A824008A7CDA /* splashscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = splashscreen.png; sourceTree = "<group>"; };
@@ -1987,7 +1985,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22C7693F20AD8DC20028D256 /* mediastreamer2.framework in Frameworks */,
 				8C3EA9FD1EB8CEE700B732B6 /* msx264.framework in Frameworks */,
 				63CE58451C85EC1000304800 /* VideoToolbox.framework in Frameworks */,
 				15F728741B16FF9A00A1C901 /* libxml2.dylib in Frameworks */,
@@ -2308,9 +2305,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				22C7693E20AD8DC10028D256 /* mediastreamer2.framework */,
+				8C601FD220B462B0004FF95C /* mediastreamer2.framework */,
 				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
-				8CD0B3C81FA2357B008FEB16 /* libsqlite3.a */,
 				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
 				249660941FD6A359001D55AA /* Photos.framework */,
 				24E1C7B91F9A235500D3F981 /* Contacts.framework */,
@@ -4665,7 +4661,6 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
@@ -4764,7 +4759,6 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
@@ -4863,7 +4857,6 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
@@ -4962,7 +4955,6 @@
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/NinePatch/",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
@@ -5070,16 +5062,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -5119,16 +5106,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
@@ -5168,16 +5150,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
@@ -5217,16 +5194,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
 				INFOPLIST_FILE = "TestsLiblinphone/LinphoneTesterTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib/mediastreamer/plugins",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/liblinphoneTester.app/liblinphoneTester";
@@ -5276,7 +5248,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5327,7 +5298,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5378,7 +5348,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5429,7 +5398,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
-					"liblinphone-sdk/apple-darwin/include",
 					Classes/Utils/NinePatch/,
 					Classes/Utils/XMLRPC/,
 				);
@@ -5479,15 +5447,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -5530,15 +5494,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -5581,15 +5541,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -5632,15 +5588,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/liblinphone-sdk/apple-darwin/include",
 					"$(SRCROOT)/Classes/Utils/XMLRPC/",
 				);
 				INFOPLIST_FILE = TestsUI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",

@@ -70,7 +70,6 @@ Linphone for iPhone depends on liblinphone SDK. This SDK is generated from makef
 
 After the SDK has been built, add all the `.framework` files located in `liblinphone-sdk/apple-darwin/Frameworks` to your XCode project Embedded Frameworks and linked binaries.
 Make sure that your project FRAMEWORK_SEARCH_PATHS contains "$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks"
-Make sure that your project HEADER_SEARCH_PATHS contains "$(SRCROOT)/liblinphone-sdk/apple-darwin/include"
 Make sure that your project LD_RUNPATH_SEARCH_PATHS contains "$(inherited) @executable_path/Frameworks";
 Add a Run Script step to your build steps, put it after your step to embed frameworks, set it to use our `deploy.sh` script located in the `Tools` folder of linphone-iphone root directory.
 
