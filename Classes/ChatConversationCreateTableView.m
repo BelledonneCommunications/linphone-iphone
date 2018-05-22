@@ -15,6 +15,7 @@
 @interface ChatConversationCreateTableView ()
 
 @property(nonatomic, strong) NSMutableArray *addresses;
+@property(nonatomic, strong) NSMutableArray *phoneOrAddr;
 @end
 
 @implementation ChatConversationCreateTableView
@@ -38,6 +39,7 @@
 					 completion:nil];
 
 	_addresses = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
+	_phoneOrAddr = [[NSMutableArray alloc] initWithCapacity:LinphoneManager.instance.fastAddressBook.addressBookMap.allKeys.count];
 	if(_notFirstTime) {
 		for(NSString *addr in _contactsGroup) {
 			[_collectionView registerClass:UIChatCreateCollectionViewCell.class forCellWithReuseIdentifier:addr];
@@ -63,6 +65,7 @@
 
 - (void)reloadDataWithFilter:(NSString *)filter {
 	[_addresses removeAllObjects];
+	[_phoneOrAddr removeAllObjects];
 
 	if (!_magicSearch)
 		return;
@@ -71,8 +74,9 @@
 	while (results) {
 		LinphoneSearchResult *result = results->data;
 		const LinphoneAddress *addr = linphone_search_result_get_address(result);
+		const char *phoneNumber = NULL;
 		if (!addr) {
-			const char *phoneNumber = linphone_search_result_get_phone_number(result);
+			phoneNumber = linphone_search_result_get_phone_number(result);
 			if (!phoneNumber)
 				continue;
 			
@@ -93,7 +97,8 @@
 			 || ([name.lowercaseString containsSubstring:filter.lowercaseString])
 			 || ([address.lowercaseString containsSubstring:filter.lowercaseString]))
 			&& add)*/
-			[_addresses addObject:address];
+		[_addresses addObject:address];
+		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
 
 		results = results->next;
 	}
@@ -118,6 +123,7 @@
 		cell = [[UIChatCreateCell alloc] initWithIdentifier:kCellId];
 
 	NSString *key = [_addresses objectAtIndex:indexPath.row];
+	NSString *phoneOrAddr = [_phoneOrAddr objectAtIndex:indexPath.row];
 	Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:key];
 	Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
 		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
@@ -127,7 +133,7 @@
 	
 	cell.linphoneImage.hidden = !linphoneContact;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
-	cell.addressLabel.text = [NSString stringWithUTF8String:linphone_address_as_string(addr)];
+	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
 	cell.selectedImage.hidden = ![_contactsGroup containsObject:cell.addressLabel.text];
 	return cell;
 }
