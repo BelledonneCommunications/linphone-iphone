@@ -98,7 +98,7 @@ ChatMessageModifier::Result CpimChatMessageModifier::encode (const shared_ptr<Ch
 		Cpim::GenericHeader("Content-Type", content->getContentType().asString())
 	);
 	cpimMessage.addContentHeader(
-		Cpim::GenericHeader("Content-Length", to_string(contentBody.size()))
+		Cpim::GenericHeader("Content-Length", Utils::toString(contentBody.size()))
 	);
 	cpimMessage.setContent(contentBody);
 
