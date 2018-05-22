@@ -212,6 +212,8 @@ private:
 
 	void addResultsToResultsList(std::list<SearchResult> &results, std::list<SearchResult> &srL);
 
+	std::list<SearchResult> *uniqueItemsList(std::list<SearchResult> &list);
+
 	L_DECLARE_PRIVATE(MagicSearch);
 };
 

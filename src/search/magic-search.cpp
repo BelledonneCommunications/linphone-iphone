@@ -224,8 +224,21 @@ list<SearchResult> MagicSearch::getFriends(const string &withDomain) {
 
 	returnList.sort([](const SearchResult& lsr, const SearchResult& rsr){
 		unsigned int cpt = 0;
-		string name1 = linphone_friend_get_name(lsr.getFriend());
-		string name2 = linphone_friend_get_name(rsr.getFriend());
+		string name1 = "";
+		string name2 = "";
+		if (lsr.getFriend()) {
+			name1 = linphone_friend_get_name(lsr.getFriend());
+		} else if (lsr.getAddress()){
+			name1 = linphone_address_get_display_name(lsr.getAddress()) ?
+				linphone_address_get_display_name(lsr.getAddress()) : linphone_address_get_username(lsr.getAddress());
+		}
+
+		if (rsr.getFriend()) {
+			name2 = linphone_friend_get_name(rsr.getFriend());
+		} else if (rsr.getAddress()){
+			name2 = linphone_address_get_display_name(rsr.getAddress()) ?
+			linphone_address_get_display_name(rsr.getAddress()) : linphone_address_get_username(rsr.getAddress());
+		}
 
 		while (name1.size() > cpt && name2.size() > cpt) {
 			int char1 = tolower(name1.at(cpt));
@@ -240,7 +253,7 @@ list<SearchResult> MagicSearch::getFriends(const string &withDomain) {
 		return name1.size() < name2.size();
 	});
 
-	return returnList;
+	return *uniqueItemsList(returnList);
 }
 
 list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const string &withDomain) {
@@ -257,7 +270,7 @@ list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const stri
 	clResults = getAddressFromCallLog(filter, withDomain);
 	addResultsToResultsList(clResults, *resultList);
 
-	return resultList;
+	return uniqueItemsList(*resultList);
 }
 
 list<SearchResult> *MagicSearch::continueSearch(const string &filter, const string &withDomain) {
@@ -278,7 +291,7 @@ list<SearchResult> *MagicSearch::continueSearch(const string &filter, const stri
 		}
 	}
 
-	return resultList;
+	return uniqueItemsList(*resultList);
 }
 
 list<SearchResult> MagicSearch::searchInFriend(const LinphoneFriend *lFriend, const string &filter, const string &withDomain) {
@@ -423,10 +436,47 @@ bool MagicSearch::checkDomain(const LinphoneFriend *lFriend, const LinphoneAddre
 
 void MagicSearch::addResultsToResultsList(std::list<SearchResult> &results, std::list<SearchResult> &srL) {
 	if (results.size() > 0) {
-		for (auto r : results) {
-			srL.push_back(r);
-		}
+		srL.merge(results);
 	}
+}
+
+list<SearchResult> *MagicSearch::uniqueItemsList(list<SearchResult> &list) {
+	auto lc = this->getCore()->getCCore();
+	list.unique([lc](const SearchResult& lsr, const SearchResult& rsr){
+		string left = "";
+		string right = "";
+		if (!lsr.getAddress() && lsr.getFriend()) {
+			const LinphonePresenceModel *presenceModel = linphone_friend_get_presence_model(lsr.getFriend());
+			char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
+
+			LinphoneAddress *addrPresence = nullptr;
+			if (contactPresence) {
+				addrPresence = linphone_core_create_address(lc, contactPresence);
+				if (addrPresence) {
+					left = linphone_address_as_string_uri_only(addrPresence);
+					linphone_address_unref(addrPresence);
+				}
+				bctbx_free(contactPresence);
+			}
+		}
+
+		if (!rsr.getAddress() && rsr.getFriend()) {
+			const LinphonePresenceModel *presenceModel = linphone_friend_get_presence_model(rsr.getFriend());
+			char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
+
+			LinphoneAddress *addrPresence = nullptr;
+			if (contactPresence) {
+				addrPresence = linphone_core_create_address(lc, contactPresence);
+				if (addrPresence) {
+					right = linphone_address_as_string_uri_only(addrPresence);
+					linphone_address_unref(addrPresence);
+				}
+				bctbx_free(contactPresence);
+			}
+		}
+		return (!left.empty() || !right.empty()) && left == right;
+	});
+	return &list;
 }
 
 LINPHONE_END_NAMESPACE
