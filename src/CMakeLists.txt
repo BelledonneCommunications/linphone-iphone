@@ -436,8 +436,12 @@ if(ENABLE_SHARED)
 	if(APPLE)
 		target_link_libraries(linphone PRIVATE "-framework Foundation" "-framework AVFoundation")
 	endif()
-	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-		set_target_properties(linphone PROPERTIES PREFIX "lib")
+	if(WIN32)
+		# Export Xerces symbols.
+		list(APPEND LINPHONE_CXX_OBJECTS_DEFINITIONS "-DDLL_EXPORT")
+		if(CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+			set_target_properties(linphone PROPERTIES PREFIX "lib")
+		endif()
 	elseif(ANDROID)
 		target_link_libraries(linphone PUBLIC "log" ${SUPPORT_LIBRARIES} ${CPUFEATURES_LIBRARIES})
 	endif()
@@ -457,6 +461,8 @@ if(ENABLE_SHARED)
 		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 	)
 endif()
+target_compile_definitions(linphone PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
+
 if(ICONV_FOUND)
 	if(APPLE)
 		# Prevent conflict between the system iconv.h header and the one from macports.
