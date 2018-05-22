@@ -87,16 +87,6 @@
 		char *uri = linphone_address_as_string_uri_only(addr);
 		NSString *address = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
-		/*Contact *contact = [LinphoneManager.instance.fastAddressBook.addressBookMap objectForKey:address];
-		NSString *name = [FastAddressBook displayNameForContact:contact];
-		Boolean linphoneContact = [FastAddressBook contactHasValidSipDomain:contact]
-		|| (contact.friend && linphone_presence_model_get_basic_status(linphone_friend_get_presence_model(contact.friend)) == LinphonePresenceBasicStatusOpen);
-		BOOL add = _allFilter || linphoneContact;
-
-		if (((filter.length == 0)
-			 || ([name.lowercaseString containsSubstring:filter.lowercaseString])
-			 || ([address.lowercaseString containsSubstring:filter.lowercaseString]))
-			&& add)*/
 		[_addresses addObject:address];
 		[_phoneOrAddr addObject:phoneNumber ? [NSString stringWithUTF8String:phoneNumber] : address];
 
