@@ -153,27 +153,35 @@ struct SqlEventFilterBuilder<Type> {
 // -----------------------------------------------------------------------------
 
 namespace {
-	constexpr auto ConferenceCallFilter = SqlEventFilterBuilder<
-		EventLog::Type::ConferenceCallStart,
-		EventLog::Type::ConferenceCallEnd
-	>::get();
+	#ifdef _WIN32
+		// TODO: Find a workaround to deal with StaticString concatenation!!!
+		constexpr char ConferenceCallFilter[] = "3,4";
+		constexpr char ConferenceChatMessageFilter[] = "5";
+		constexpr char ConferenceInfoNoDeviceFilter[] = "1,2,6,7,8,9,12";
+		constexpr char ConferenceInfoFilter[] = "1,2,6,7,8,9,10,11,12";
+	#else
+		constexpr auto ConferenceCallFilter = SqlEventFilterBuilder<
+			EventLog::Type::ConferenceCallStart,
+			EventLog::Type::ConferenceCallEnd
+		>::get();
 
-	constexpr auto ConferenceChatMessageFilter = SqlEventFilterBuilder<EventLog::Type::ConferenceChatMessage>::get();
+		constexpr auto ConferenceChatMessageFilter = SqlEventFilterBuilder<EventLog::Type::ConferenceChatMessage>::get();
 
-	constexpr auto ConferenceInfoNoDeviceFilter = SqlEventFilterBuilder<
-		EventLog::Type::ConferenceCreated,
-		EventLog::Type::ConferenceTerminated,
-		EventLog::Type::ConferenceParticipantAdded,
-		EventLog::Type::ConferenceParticipantRemoved,
-		EventLog::Type::ConferenceParticipantSetAdmin,
-		EventLog::Type::ConferenceParticipantUnsetAdmin,
-		EventLog::Type::ConferenceSubjectChanged
-	>::get();
+		constexpr auto ConferenceInfoNoDeviceFilter = SqlEventFilterBuilder<
+			EventLog::Type::ConferenceCreated,
+			EventLog::Type::ConferenceTerminated,
+			EventLog::Type::ConferenceParticipantAdded,
+			EventLog::Type::ConferenceParticipantRemoved,
+			EventLog::Type::ConferenceParticipantSetAdmin,
+			EventLog::Type::ConferenceParticipantUnsetAdmin,
+			EventLog::Type::ConferenceSubjectChanged
+		>::get();
 
-	constexpr auto ConferenceInfoFilter = ConferenceInfoNoDeviceFilter + "," + SqlEventFilterBuilder<
-		EventLog::Type::ConferenceParticipantDeviceAdded,
-		EventLog::Type::ConferenceParticipantDeviceRemoved
-	>::get();
+		constexpr auto ConferenceInfoFilter = ConferenceInfoNoDeviceFilter + "," + SqlEventFilterBuilder<
+			EventLog::Type::ConferenceParticipantDeviceAdded,
+			EventLog::Type::ConferenceParticipantDeviceRemoved
+		>::get();
+	#endif // ifdef _WIN32
 
 	constexpr EnumToSql<MainDb::Filter> EventFilterToSql[] = {
 		{ MainDb::ConferenceCallFilter, ConferenceCallFilter },
