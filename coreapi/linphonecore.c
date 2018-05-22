@@ -1278,25 +1278,19 @@ static void certificates_config_read(LinphoneCore *lc) {
 	const char *data_dir = linphone_factory_get_data_resources_dir(factory);
 	char *root_ca_path = bctbx_strdup_printf("%s/rootca.pem", data_dir);
 	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
-	// If rootca is not existing anymore, we reset it to the default value
-	if (rootca == NULL || ((bctbx_file_exist(rootca) != 0) && (!bctbx_directory_exists(rootca)))) {
-#ifdef __linux
-		#ifdef __ANDROID__
-		const char *possible_rootca = "/system/etc/security/cacerts";
-		#else
-		const char *possible_rootca = "/etc/ssl/certs";
-		#endif
-		if (bctbx_directory_exists(possible_rootca)) {
-			rootca = possible_rootca;
-		} else
-#endif
-		{
-			if (bctbx_file_exist(root_ca_path) == 0) {
-				rootca = root_ca_path;
-			}
-		}
+
+	// If rootca is not existing anymore, we try data_resources_dir/rootca.pem else default from belle-sip
+	if (rootca == NULL  || ((bctbx_file_exist(rootca) != 0 && !bctbx_directory_exists(rootca)))) {
+		//Check root_ca_path
+		if ((bctbx_file_exist(root_ca_path) == 0) || bctbx_directory_exists(root_ca_path))
+			rootca = root_ca_path;
+		else
+			rootca = NULL;
 	}
-	linphone_core_set_root_ca(lc,rootca);
+	
+	if (rootca)
+		linphone_core_set_root_ca(lc,rootca);
+		/*else use default value from belle-sip*/
 	linphone_core_verify_server_certificates(lc, !!lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc, !!lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);

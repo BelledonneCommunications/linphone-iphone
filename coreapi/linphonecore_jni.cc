@@ -6204,7 +6204,7 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jbyteArray jdata = NULL;
 	jint jsize = 0;
 	const char *tmp;
-	void *data;
+	const uint8_t *data;
 
 	contentClass = (jclass)env->FindClass("org/linphone/core/LinphoneContentImpl");
 	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;I)V");

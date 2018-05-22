@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.linphone.core.tools;
 
-import org.linphone.core.Core;
-import org.linphone.core.Factory;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
@@ -84,13 +82,14 @@ public class AndroidPlatformHelper {
 		mWifiLock.setReferenceCounted(true);
 
 		String basePath = mContext.getFilesDir().getAbsolutePath();
-		mLinphoneRootCaFile = basePath + "/rootca.pem";
-		mRingSoundFile = basePath + "/ringtone.mkv";
-		mRingbackSoundFile = basePath + "/ringback.wav";
-		mPauseSoundFile = basePath + "/hold.mkv";
-		mErrorToneFile = basePath + "/error.wav";
-		mGrammarCpimFile = basePath + "/cpim_grammar";
-		mGrammarVcardFile = basePath + "/vcard_grammar";
+		//make sur to follow same path as unix version of the sdk
+		mLinphoneRootCaFile = basePath + "/share/linphone/rootca.pem";
+		mRingSoundFile = basePath + "/share/sounds/linphone/rings/notes_of_the_optimistic.mkv";
+		mRingbackSoundFile = basePath + "/share/sounds/linphone/ringback.wav";
+		mPauseSoundFile = basePath + "/share/sounds/linphone/rings/its_a_game.mkv";
+		mErrorToneFile = basePath + "/share/sounds/linphone/incoming_chat.wav";
+		mGrammarCpimFile = basePath + "/share/belr/grammars/cpim_grammar";
+		mGrammarVcardFile = basePath + "/share/belr/grammars/vcard_grammar";
 		mUserCertificatePath = basePath;
 
 		try {
@@ -100,14 +99,6 @@ public class AndroidPlatformHelper {
 		}
 	}
 
-	public void initCore(long ptrLc) {
-		Core lc = Factory.instance().getCore(ptrLc);
-		if (lc == null) return;
-		lc.setRingback(mRingbackSoundFile);
-		lc.setRootCa(mLinphoneRootCaFile);
-		lc.setPlayFile(mPauseSoundFile);
-		lc.setUserCertificatesPath(mUserCertificatePath);
-	}
 
 	public Object getPowerManager() {
 		return mPowerManager;
@@ -200,19 +191,22 @@ public class AndroidPlatformHelper {
 
 	public void copyEvenIfExists(int ressourceId, String target) throws IOException {
 		File lFileToCopy = new File(target);
-		copyFromPackage(ressourceId, lFileToCopy.getName());
+		copyFromPackage(ressourceId, lFileToCopy);
 	}
 
 	public void copyIfNotExist(int ressourceId, String target) throws IOException {
 		File lFileToCopy = new File(target);
 		if (!lFileToCopy.exists()) {
-			copyFromPackage(ressourceId, lFileToCopy.getName());
+			copyFromPackage(ressourceId, lFileToCopy);
 		}
 	}
 
-	public void copyFromPackage(int ressourceId, String target) throws IOException {
+	public void copyFromPackage(int ressourceId, File target) throws IOException {
+		if (!target.getParentFile().exists())
+			target.getParentFile().mkdirs();
+
 		InputStream lInputStream = mResources.openRawResource(ressourceId);
-		FileOutputStream lOutputStream = mContext.openFileOutput (target, 0);
+		FileOutputStream lOutputStream = new FileOutputStream(target);
 		int readByte;
 		byte[] buff = new byte[8048];
 		while (( readByte = lInputStream.read(buff)) != -1) {
