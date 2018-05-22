@@ -204,13 +204,11 @@ int Imdn::timerExpired (void *data, unsigned int revents) {
 
 bool Imdn::aggregationEnabled () const {
 	auto config = linphone_core_get_config(chatRoom->getCore()->getCCore());
-	bool aggregateImdn = linphone_config_get_bool(config, "misc", "aggregate_imdn", TRUE);
-	return (chatRoom->canHandleCpim() && aggregateImdn);
+	return (chatRoom->canHandleCpim() && linphone_config_get_bool(config, "misc", "aggregate_imdn", TRUE));
 }
 
 void Imdn::send () {
-	bool networkReachable = linphone_core_is_network_reachable(chatRoom->getCore()->getCCore());
-	if (!networkReachable)
+	if (!linphone_core_is_network_reachable(chatRoom->getCore()->getCCore()))
 		return;
 
 	if (!deliveredMessages.empty() || !displayedMessages.empty()) {

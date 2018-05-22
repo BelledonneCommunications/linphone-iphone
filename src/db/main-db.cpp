@@ -619,7 +619,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 			chatRoom,
 			ChatMessage::Direction(row.get<int>(8))
 		));
-		chatMessage->setIsSecured(bool(row.get<int>(9)));
+		chatMessage->setIsSecured(!!row.get<int>(9));
 
 		ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
 		ChatMessage::State messageState = ChatMessage::State(row.get<int>(7));
@@ -633,8 +633,8 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 
 		dChatMessage->setTime(MainDbPrivate::getTmAsTimeT(row.get<tm>(5)));
 		dChatMessage->setImdnMessageId(row.get<string>(6));
-		dChatMessage->setPositiveDeliveryNotificationRequired(bool(row.get<int>(14)));
-		dChatMessage->setDisplayNotificationRequired(bool(row.get<int>(15)));
+		dChatMessage->setPositiveDeliveryNotificationRequired(!!row.get<int>(14));
+		dChatMessage->setDisplayNotificationRequired(!!row.get<int>(15));
 
 		dChatMessage->markContentsAsNotLoaded();
 		dChatMessage->setIsReadOnly(true);
@@ -1084,7 +1084,7 @@ void MainDbPrivate::updateSchema () {
 
 static inline bool checkLegacyTableExists (soci::session &session, const string &name) {
 	session << "SELECT name FROM sqlite_master WHERE type='table' AND name = :name", soci::use(name);
-	return session.got_data() > 0;
+	return session.got_data();
 }
 
 static inline bool checkLegacyFriendsTableExists (soci::session &session) {

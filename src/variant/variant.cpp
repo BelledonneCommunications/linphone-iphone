@@ -370,13 +370,13 @@ static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
 		case Variant::Char:
 		case Variant::Double:
 		case Variant::Float:
-			return static_cast<bool>(getAssumedNumber(p));
+			return!!getAssumedNumber(p);
 
 		case Variant::UnsignedInt:
 		case Variant::UnsignedShort:
 		case Variant::UnsignedLong:
 		case Variant::UnsignedLongLong:
-			return static_cast<bool>(getAssumedUnsignedNumber(p));
+			return !!getAssumedUnsignedNumber(p);
 
 		case Variant::Bool:
 			return p.value.b;
@@ -385,7 +385,7 @@ static inline bool getValueAsBool (const VariantPrivate &p, bool *soFarSoGood) {
 			return Utils::stob(*p.value.str);
 
 		case Variant::Generic:
-			return static_cast<bool>(p.value.g);
+			return !!p.value.g;
 
 		default:
 			*soFarSoGood = false;
