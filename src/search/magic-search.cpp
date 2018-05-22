@@ -213,7 +213,7 @@ list<SearchResult> MagicSearch::getFriends(const string &withDomain) {
 		if (!withDomain.empty()) {
 			if (!lAddress)
 				continue;
-			if (withDomain.compare("*") != 0 && withDomain.compare(linphone_address_get_domain(lAddress)) != 0)
+			if (withDomain != "*" && withDomain != linphone_address_get_domain(lAddress))
 				continue;
 		}
 		returnList.push_back(SearchResult(1, lAddress, lPhoneNumber, lFriend));
@@ -397,7 +397,7 @@ unsigned int MagicSearch::getWeight(const string &stringWords, const string &fil
 }
 
 bool MagicSearch::checkDomain(const LinphoneFriend *lFriend, const LinphoneAddress *lAddress, const string &withDomain) const {
-	bool onlySipUri = !withDomain.empty() && withDomain.compare("*") != 0;
+	bool onlyOneDomain = !withDomain.empty() && withDomain != "*";
 	const LinphonePresenceModel *presenceModel = lFriend ? linphone_friend_get_presence_model(lFriend) : nullptr;
 	char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
 
@@ -408,12 +408,12 @@ bool MagicSearch::checkDomain(const LinphoneFriend *lFriend, const LinphoneAddre
 	}
 
 	bool soFarSoGood =
-		!onlySipUri || (
+		!onlyOneDomain || (
 		// If we don't want Sip URI only or Address or Presence model
 		(lAddress || presenceModel) &&
 		// And If we don't want Sip URI only or Address match or Address presence match
-		((lAddress && withDomain.compare(linphone_address_get_domain(lAddress)) == 0) ||
-			(addrPresence && withDomain.compare(linphone_address_get_domain(addrPresence)) == 0))
+		((lAddress && withDomain == linphone_address_get_domain(lAddress)) ||
+			(addrPresence && withDomain == linphone_address_get_domain(addrPresence)))
 		);
 
 	if (addrPresence) linphone_address_unref(addrPresence);
