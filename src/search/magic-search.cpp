@@ -121,7 +121,7 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 	list<SearchResult> returnList;
 	LinphoneProxyConfig *proxy = nullptr;
 
-	if (filter.empty()) return getAllFriends();
+	if (filter.empty()) return getFriends(withDomain);
 
 	if (getSearchCache() != nullptr) {
 		resultList = continueSearch(filter, withDomain);
@@ -150,8 +150,10 @@ list<SearchResult> MagicSearch::getContactListFromFilter(const string &filter, c
 		if (domain) {
 			string filterAddress = "sip:" + filter + "@" + domain;
 			LinphoneAddress *lastResult = linphone_core_create_address(this->getCore()->getCCore(), filterAddress.c_str());
-			if (lastResult) returnList.push_back(SearchResult(0, lastResult, "", nullptr));
-			linphone_address_unref(lastResult);
+			if (lastResult) {
+				returnList.push_back(SearchResult(0, lastResult, "", nullptr));
+				linphone_address_unref(lastResult);
+			}
 		}
 	}
 
@@ -173,8 +175,33 @@ void MagicSearch::setSearchCache(list<SearchResult> *cache) {
 	d->mCacheResult = cache;
 }
 
-list<SearchResult> MagicSearch::getAllFriends() {
+list<SearchResult> MagicSearch::getAddressFromCallLog(const string &filter, const string &withDomain) {
+	list<SearchResult> resultList;
+	const bctbx_list_t *callLog = linphone_core_get_call_logs(this->getCore()->getCCore());
+
+	// For all call log or when we reach the search limit
+	for (const bctbx_list_t *f = callLog ; f != nullptr ; f = bctbx_list_next(f)) {
+		LinphoneCallLog *log = reinterpret_cast<LinphoneCallLog*>(f->data);
+		const LinphoneAddress *addr = (linphone_call_log_get_dir(log) == LinphoneCallDir::LinphoneCallIncoming) ?
+		linphone_call_log_get_from_address(log) : linphone_call_log_get_to_address(log);
+		if (addr) {
+			if (filter.empty()) {
+				resultList.push_back(SearchResult(0, addr, "", nullptr));
+			} else {
+				unsigned int weight = searchInAddress(addr, filter, withDomain);
+				if (weight > getMinWeight()) {
+					resultList.push_back(SearchResult(weight, addr, "", nullptr));
+				}
+			}
+		}
+	}
+
+	return resultList;
+}
+
+list<SearchResult> MagicSearch::getFriends(const string &withDomain) {
 	list<SearchResult> returnList;
+	list<SearchResult> clResults;
 	LinphoneFriendList *list = linphone_core_get_default_friend_list(this->getCore()->getCCore());
 
 	for (bctbx_list_t *f = list->friends ; f != nullptr ; f = bctbx_list_next(f)) {
@@ -183,17 +210,26 @@ list<SearchResult> MagicSearch::getAllFriends() {
 		bctbx_list_t *lPhoneNumbers = linphone_friend_get_phone_numbers(lFriend);
 		string lPhoneNumber = (lPhoneNumbers != nullptr) ? static_cast<const char*>(lPhoneNumbers->data) : "";
 
+		if (!withDomain.empty()) {
+			if (!lAddress)
+				continue;
+			if (withDomain.compare("*") != 0 && withDomain.compare(linphone_address_get_domain(lAddress)) != 0)
+				continue;
+		}
 		returnList.push_back(SearchResult(1, lAddress, lPhoneNumber, lFriend));
 	}
+
+	clResults = getAddressFromCallLog("", withDomain);
+	addResultsToResultsList(clResults, returnList);
 
 	returnList.sort([](const SearchResult& lsr, const SearchResult& rsr){
 		unsigned int cpt = 0;
 		string name1 = linphone_friend_get_name(lsr.getFriend());
 		string name2 = linphone_friend_get_name(rsr.getFriend());
-		int char1 = tolower(name1.at(cpt));
-		int char2 = tolower(name2.at(cpt));
 
 		while (name1.size() > cpt && name2.size() > cpt) {
+			int char1 = tolower(name1.at(cpt));
+			int char2 = tolower(name2.at(cpt));
 			if (char1 < char2) {
 				return true;
 			} else if (char1 > char2) {
@@ -208,28 +244,18 @@ list<SearchResult> MagicSearch::getAllFriends() {
 }
 
 list<SearchResult> *MagicSearch::beginNewSearch(const string &filter, const string &withDomain) {
+	list<SearchResult> clResults;
 	list<SearchResult> *resultList = new list<SearchResult>();
 	LinphoneFriendList *fList = linphone_core_get_default_friend_list(this->getCore()->getCCore());
-	const bctbx_list_t *callLog = linphone_core_get_call_logs(this->getCore()->getCCore());
 
 	// For all friends or when we reach the search limit
 	for (bctbx_list_t *f = fList->friends ; f != nullptr ; f = bctbx_list_next(f)) {
-		list<SearchResult> results = searchInFriend(reinterpret_cast<LinphoneFriend*>(f->data), filter, withDomain);
-		addResultsToResultsList(results, *resultList);
+		list<SearchResult> fResults = searchInFriend(reinterpret_cast<LinphoneFriend*>(f->data), filter, withDomain);
+		addResultsToResultsList(fResults, *resultList);
 	}
 
-	// For all call log or when we reach the search limit
-	for (const bctbx_list_t *f = callLog ; f != nullptr ; f = bctbx_list_next(f)) {
-		LinphoneCallLog *log = reinterpret_cast<LinphoneCallLog*>(f->data);
-		const LinphoneAddress *addr = (linphone_call_log_get_dir(log) == LinphoneCallDir::LinphoneCallIncoming) ?
-			linphone_call_log_get_from_address(log) : linphone_call_log_get_to_address(log);
-		if (addr) {
-			unsigned int weight = searchInAddress(addr, filter, withDomain);
-			if (weight > getMinWeight()) {
-				resultList->push_back(SearchResult(weight, addr, "", nullptr));
-			}
-		}
-	}
+	clResults = getAddressFromCallLog(filter, withDomain);
+	addResultsToResultsList(clResults, *resultList);
 
 	return resultList;
 }
@@ -382,12 +408,12 @@ bool MagicSearch::checkDomain(const LinphoneFriend *lFriend, const LinphoneAddre
 	}
 
 	bool soFarSoGood =
+		!onlySipUri || (
 		// If we don't want Sip URI only or Address or Presence model
-		(!onlySipUri || lAddress || presenceModel) &&
+		(lAddress || presenceModel) &&
 		// And If we don't want Sip URI only or Address match or Address presence match
-		(!onlySipUri ||
-			(lAddress && withDomain.compare(linphone_address_get_domain(lAddress)) == 0) ||
-			(addrPresence && withDomain.compare(linphone_address_get_domain(addrPresence)) == 0)
+		((lAddress && withDomain.compare(linphone_address_get_domain(lAddress)) == 0) ||
+			(addrPresence && withDomain.compare(linphone_address_get_domain(addrPresence)) == 0))
 		);
 
 	if (addrPresence) linphone_address_unref(addrPresence);

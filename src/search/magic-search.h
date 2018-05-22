@@ -141,11 +141,21 @@ private:
 	void setSearchCache(std::list<SearchResult> *cache);
 
 	/**
+	 * Get all address from call log
+	 * @param[in] filter word we search
+	 * @param[in] withDomain domain which we want to search only
+	 * @return all address from call log which match in a SearchResult list
+	 * @private
+	 **/
+	std::list<SearchResult> getAddressFromCallLog(const std::string &filter, const std::string &withDomain);
+
+	/**
 	 * Get all friends as SearchResult
+	 * @param[in] withDomain domain which we want to search only
 	 * @return all friends in a SearchResult list
 	 * @private
 	 **/
-	std::list<SearchResult> getAllFriends();
+	std::list<SearchResult> getFriends(const std::string &withDomain);
 
 	/**
 	 * Begin the search from friend list
