@@ -28,8 +28,11 @@
 #if _WIN32
 #define unlink _unlink
 #endif
-
+#ifdef __ANDROID__
 extern jobject system_context;
+#else
+void *system_context=0;
+#endif
 static int liblinphone_tester_keep_accounts_flag = 0;
 static bool_t liblinphone_tester_keep_record_files = FALSE;
 static bool_t liblinphone_tester_leak_detector_disabled = FALSE;
