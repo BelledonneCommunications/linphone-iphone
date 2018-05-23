@@ -160,7 +160,7 @@ static void build_message () {
 
 	// 976686000 is 2000-12-13T13:40:00-08:00
 	Cpim::DateTimeHeader dateTimeHeader(976686000);
-	BC_ASSERT_EQUAL(dateTimeHeader.getTime(), 976686000, int, "%d");
+	BC_ASSERT_EQUAL((int)dateTimeHeader.getTime(), 976686000, int, "%d");
 
 	Cpim::SubjectHeader subjectHeader("the weather will be fine today");
 
