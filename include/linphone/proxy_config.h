@@ -276,7 +276,7 @@ LINPHONE_PUBLIC const char *linphone_proxy_config_get_route(const LinphoneProxyC
  * Gets the list of the routes set for this proxy config.
  * @param[in] cfg #LinphoneProxyConfig object.
  * @return \bctbx_list{const char *} the list of routes.
- */ 
+ */
 LINPHONE_PUBLIC const bctbx_list_t* linphone_proxy_config_get_routes(const LinphoneProxyConfig *cfg);
 
 /**
@@ -609,14 +609,14 @@ LINPHONE_PUBLIC void linphone_proxy_config_set_nat_policy(LinphoneProxyConfig *c
  * @param[in] cfg A #LinphoneProxyConfig object
  * @param[in] uri The uri of the conference factory
  */
-void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, const char *uri);
+LINPHONE_PUBLIC void linphone_proxy_config_set_conference_factory_uri(LinphoneProxyConfig *cfg, const char *uri);
 
 /**
  * Get the conference factory uri.
  * @param[in] cfg A #LinphoneProxyConfig object
  * @return The uri of the conference factory
  */
-const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg);
+LINPHONE_PUBLIC const char * linphone_proxy_config_get_conference_factory_uri(const LinphoneProxyConfig *cfg);
 
 /**
  * Indicates whether to add to the contact parameters the push notification information.
