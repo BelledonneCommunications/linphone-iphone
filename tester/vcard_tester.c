@@ -265,7 +265,7 @@ static void friends_sqlite_storage(void) {
 	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	linphone_core_cbs_set_friend_list_created(cbs, friend_list_created_cb);
 	linphone_core_cbs_set_friend_list_removed(cbs, friend_list_removed_cb);
-	lc = linphone_factory_create_core(linphone_factory_get(), cbs, NULL, NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(), cbs, NULL, NULL, NULL, system_context);
 	linphone_core_cbs_unref(cbs);
 	friends = linphone_friend_list_get_friends(linphone_core_get_default_friend_list(lc));
 	lfl = linphone_core_create_friend_list(lc);

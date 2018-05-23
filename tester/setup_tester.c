@@ -121,7 +121,7 @@ static void linphone_version_test(void){
 
 static void core_init_test(void) {
 	LinphoneCore* lc;
-	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(),NULL,NULL,NULL, NULL, system_context);
 	
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
@@ -138,7 +138,7 @@ static void linphone_address_test(void) {
 static void core_sip_transport_test(void) {
 	LinphoneCore* lc;
 	LCSipTransports tr;
-	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(),NULL,NULL,NULL, NULL, system_context);
 	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	linphone_core_get_sip_transports(lc,&tr);
 	BC_ASSERT_EQUAL(tr.udp_port,5060, int, "%d"); /*default config*/
@@ -167,7 +167,7 @@ static void linphone_interpret_url_test(void) {
 	LinphoneAddress* address;
 	LinphoneProxyConfig *proxy_config;
 	char *tmp;
-	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(),NULL,NULL,NULL, NULL, system_context);
 	if (!BC_ASSERT_PTR_NOT_NULL( lc )) return;
 
 	proxy_config =linphone_core_create_proxy_config(lc);
@@ -360,7 +360,7 @@ void linphone_proxy_config_is_server_config_changed_test(void) {
 
 static void chat_room_test(void) {
 	LinphoneCore* lc;
-	lc = linphone_factory_create_core(linphone_factory_get(),NULL,NULL,NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(),NULL,NULL,NULL, NULL, system_context);
 	if (!BC_ASSERT_PTR_NOT_NULL(lc)) return;
 	BC_ASSERT_PTR_NOT_NULL(linphone_core_get_chat_room_from_uri(lc,"sip:toto@titi.com"));
 	linphone_core_unref(lc);
