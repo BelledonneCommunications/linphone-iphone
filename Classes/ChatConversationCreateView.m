@@ -165,7 +165,14 @@ typedef enum { ContactsAll, ContactsLinphone, ContactsMAX } ContactsCategory;
 	UIChatCreateCollectionViewCell *cell = (UIChatCreateCollectionViewCell *)[_collectionView dequeueReusableCellWithReuseIdentifier:uri forIndexPath:indexPath];
 	cell.controller = self;
 	cell.uri = uri;
-	LinphoneAddress *addr = linphone_address_new(uri.UTF8String);
+	LinphoneAddress *addr = NULL;
+	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+	if (cfg && linphone_proxy_config_is_phone_number(cfg, uri.UTF8String)) {
+		char *phone = linphone_proxy_config_normalize_phone_number(cfg, uri.UTF8String);
+		addr = linphone_proxy_config_normalize_sip_uri(cfg, phone);
+		ms_free(phone);
+	} else
+		addr = linphone_address_new(uri.UTF8String);
 	cell = [cell initWithName:[FastAddressBook displayNameForAddress:addr]];
 	linphone_address_unref(addr);
 	return cell;
