@@ -202,6 +202,10 @@ public class AndroidPlatformHelper {
 	}
 
 	public void copyFromPackage(int ressourceId, File target) throws IOException {
+		if (ressourceId == 0) {
+			Log.i("Resource identifier null for target ["+target.getName()+"]");
+			return;
+		} 
 		if (!target.getParentFile().exists())
 			target.getParentFile().mkdirs();
 
