@@ -25,6 +25,7 @@
 #
 SET(_SOCI_ALL_PLUGINS    mysql sqlite3)
 SET(_SOCI_REQUIRED_VARS  SOCI_INCLUDE_DIRS SOCI_LIBRARIES)
+SET(_SOCI_VERSION "_4_0")
 
 #
 ### FIRST STEP: Find the soci headers.
@@ -37,7 +38,7 @@ MARK_AS_ADVANCED(SOCI_INCLUDE_DIRS)
 ### SECOND STEP: Find the soci core library. Respect LIB_SUFFIX
 #
 FIND_LIBRARY(SOCI_LIBRARIES
-    NAMES soci_core
+    NAMES soci_core soci_core${_SOCI_VERSION}
     PATH_SUFFIXES lib lib64)
 MARK_AS_ADVANCED(SOCI_LIBRARIES)
 
@@ -54,7 +55,7 @@ IF(SOCI_INCLUDE_DIRS AND SOCI_LIBRARIES)
 
         FIND_LIBRARY(
             SOCI_${plugin}_PLUGIN
-            NAMES soci_${plugin}
+            NAMES soci_${plugin} soci_${plugin}${_SOCI_VERSION}
             PATH_SUFFIXES lib lib64)
         MARK_AS_ADVANCED(SOCI_${plugin}_PLUGIN)
 
@@ -88,4 +89,3 @@ ENDIF()
 #
 include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(Soci DEFAULT_MSG ${_SOCI_REQUIRED_VARS})
-
