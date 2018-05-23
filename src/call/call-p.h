@@ -67,7 +67,7 @@ public:
 	void stopMediaStreams ();
 
 private:
-	void resetFirstVideoFrameDecoded ();
+	void requestNotifyNextVideoFrameDecoded ();
 	void startRemoteRing ();
 	void terminateBecauseOfLostMedia ();
 

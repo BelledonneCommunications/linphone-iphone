@@ -148,12 +148,6 @@ void CallPrivate::stopMediaStreams () {
 
 // -----------------------------------------------------------------------------
 
-void CallPrivate::resetFirstVideoFrameDecoded () {
-#ifdef VIDEO_ENABLED
-	if (nextVideoFrameDecoded._func)
-		static_pointer_cast<MediaSession>(getActiveSession())->resetFirstVideoFrameDecoded();
-#endif // ifdef VIDEO_ENABLED
-}
 
 void CallPrivate::startRemoteRing () {
 	L_Q();
@@ -419,7 +413,16 @@ void CallPrivate::onFirstVideoFrameDecoded (const shared_ptr<CallSession> &sessi
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded (const shared_ptr<CallSession> &session) {
-	resetFirstVideoFrameDecoded();
+	/*we are called here by the MediaSession when the stream start to know whether there is the deprecated nextVideoFrameDecoded callback set, 
+	 * so that we can request the notification of the next frame decoded.*/
+#ifdef VIDEO_ENABLED
+	if (nextVideoFrameDecoded._func)
+		requestNotifyNextVideoFrameDecoded();
+#endif // ifdef VIDEO_ENABLED
+}
+
+void CallPrivate::requestNotifyNextVideoFrameDecoded(){
+	static_pointer_cast<MediaSession>(getActiveSession())->requestNotifyNextVideoFrameDecoded();
 }
 
 void CallPrivate::onPlayErrorTone (const shared_ptr<CallSession> &session, LinphoneReason reason) {
@@ -924,7 +927,12 @@ void Call::setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_d
 	L_D();
 	d->nextVideoFrameDecoded._func = cb;
 	d->nextVideoFrameDecoded._user_data = user_data;
-	d->resetFirstVideoFrameDecoded();
+	d->requestNotifyNextVideoFrameDecoded();
+}
+
+void Call::requestNotifyNextVideoFrameDecoded (){
+	L_D();
+	d->requestNotifyNextVideoFrameDecoded();
 }
 
 void Call::setParams (const MediaSessionParams *msp) {

@@ -276,7 +276,7 @@ bool_t request_video(LinphoneCoreManager* caller,LinphoneCoreManager* callee, bo
 		}
 
 		if (video_added) {
-			linphone_call_set_first_video_frame_decoded_cb(call_obj);
+			liblinphone_tester_set_next_video_frame_decoded_cb(call_obj);
 			/*send vfu*/
 			linphone_call_send_vfu_request(call_obj);
 			BC_ASSERT_TRUE(wait_for(caller->lc,callee->lc,&callee->stat.number_of_IframeDecoded,initial_callee_stat.number_of_IframeDecoded+1));
@@ -600,7 +600,7 @@ void video_call_base_2(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 			BC_ASSERT_TRUE(linphone_call_log_video_enabled(linphone_call_get_call_log(caller_call)));
 
 			/*check video path*/
-			linphone_call_set_first_video_frame_decoded_cb(callee_call);
+			liblinphone_tester_set_next_video_frame_decoded_cb(callee_call);
 			linphone_call_send_vfu_request(callee_call);
 			BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
 		} else {
@@ -623,8 +623,8 @@ static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 
 	/*check video path is established in both directions.
 	 Indeed, FIR are ignored until the first RTP packet is received, because SSRC is not known.*/
-	linphone_call_set_first_video_frame_decoded_cb(callee_call);
-	linphone_call_set_first_video_frame_decoded_cb(caller_call);
+	liblinphone_tester_set_next_video_frame_decoded_cb(callee_call);
+	liblinphone_tester_set_next_video_frame_decoded_cb(caller_call);
 
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
@@ -640,7 +640,7 @@ static void check_fir(LinphoneCoreManager* caller,LinphoneCoreManager* callee ){
 	ms_message("check_fir: [%p] received  %d FIR  ",&caller_call ,caller_vstream->ms_video_stat.counter_rcvd_fir);
 	ms_message("check_fir: [%p] stat number of iframe decoded  %d ",&callee_call, callee->stat.number_of_IframeDecoded);
 
-	linphone_call_set_first_video_frame_decoded_cb(caller_call);
+	liblinphone_tester_set_next_video_frame_decoded_cb(caller_call);
 	linphone_call_send_vfu_request(caller_call);
 	BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
 
@@ -669,6 +669,12 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 		linphone_core_set_video_policy(callee->lc,&callee_policy);
 		linphone_core_set_video_policy(caller->lc,&caller_policy);
 	}
+	
+	linphone_core_set_preferred_video_size_by_name(caller->lc, "QVGA");
+	linphone_core_set_preferred_video_size_by_name(callee->lc, "QVGA");
+	
+	linphone_core_set_video_device(caller->lc, "Mire: Mire (synthetic moving picture)");
+	linphone_core_set_video_device(callee->lc, "Mire: Mire (synthetic moving picture)");
 
 	linphone_core_enable_video_display(callee->lc, callee_video_enabled);
 	linphone_core_enable_video_capture(callee->lc, callee_video_enabled);
@@ -879,8 +885,8 @@ static void video_call_established_by_reinvite_with_implicit_avpf(void) {
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(callee_call)));
 		BC_ASSERT_TRUE(linphone_call_params_video_enabled(linphone_call_get_current_params(caller_call)));
 
-		linphone_call_set_first_video_frame_decoded_cb(caller_call);
-		linphone_call_set_first_video_frame_decoded_cb(callee_call);
+		liblinphone_tester_set_next_video_frame_decoded_cb(caller_call);
+		liblinphone_tester_set_next_video_frame_decoded_cb(callee_call);
 
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&callee->stat.number_of_IframeDecoded,1));
 		BC_ASSERT_TRUE( wait_for(callee->lc,caller->lc,&caller->stat.number_of_IframeDecoded,1));
@@ -1329,7 +1335,7 @@ static void accept_call_in_send_only_base(LinphoneCoreManager* pauline, Linphone
 	/*The send-only client shall set rtp symmetric in absence of media relay for this test.*/
 	lp_config_set_int(linphone_core_get_config(marie->lc),"rtp","symmetric",1);
 
-	linphone_call_set_first_video_frame_decoded_cb(linphone_core_invite_address(pauline->lc,marie->identity));
+	liblinphone_tester_set_next_video_frame_decoded_cb(linphone_core_invite_address(pauline->lc,marie->identity));
 
 	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallIncomingReceived,1,DEFAULT_WAIT_FOR));
 
@@ -1419,8 +1425,6 @@ static void video_early_media_call(void) {
 	LinphoneCoreManager *marie = linphone_core_manager_new("marie_early_rc");
 	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
 	LinphoneCall *pauline_to_marie;
-
-	linphone_core_set_video_device(pauline->lc, "Mire: Mire (synthetic moving picture)");
 
 	video_call_base_3(pauline, marie, TRUE, LinphoneMediaEncryptionNone, TRUE, TRUE);
 

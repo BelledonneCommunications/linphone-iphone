@@ -186,11 +186,15 @@ static void linphone_call_next_video_frame_decoded_cb(LinphoneCall *call) {
 	counters->number_of_IframeDecoded++;
 }
 
-void linphone_call_set_first_video_frame_decoded_cb(LinphoneCall *call) {
-	LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
-	linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
-	linphone_call_add_callbacks(call, call_cbs);
-	linphone_call_cbs_unref(call_cbs);
+void liblinphone_tester_set_next_video_frame_decoded_cb(LinphoneCall *call) {
+	if (belle_sip_object_data_get(BELLE_SIP_OBJECT(call), "next_video_frame_decoded_set") == NULL){
+		LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+		linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
+		linphone_call_add_callbacks(call, call_cbs);
+		linphone_call_cbs_unref(call_cbs);
+		belle_sip_object_data_set(BELLE_SIP_OBJECT(call), "next_video_frame_decoded_set", (void*)1, NULL);
+	}
+	linphone_call_request_notify_next_video_frame_decoded(call);
 }
 
 #define reset_call_stats(var, value) \

@@ -63,7 +63,7 @@ public:
 	void terminateBecauseOfLostMedia ();
 	LinphoneStatus update (const MediaSessionParams *msp, const std::string &subject = "");
 
-	void resetFirstVideoFrameDecoded ();
+	void requestNotifyNextVideoFrameDecoded ();
 	LinphoneStatus takePreviewSnapshot (const std::string& file);
 	LinphoneStatus takeVideoSnapshot (const std::string& file);
 	void zoomVideo (float zoomFactor, float *cx, float *cy);
