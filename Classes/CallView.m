@@ -135,7 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
+	_waitView.hidden = FALSE;
 	LinphoneManager.instance.nextCallIsTransfer = NO;
 
 	[self updateUnreadMessage:FALSE];
@@ -711,7 +711,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 }
 
 - (IBAction)onChatClick:(id)sender {
-	[PhoneMainView.instance changeCurrentView:ChatsListView.compositeViewDescription];
+	const LinphoneCall *currentCall = linphone_core_get_current_call(LC);
+	const LinphoneAddress *addr = currentCall ? linphone_call_get_remote_address(currentCall) : NULL;
+	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
 }
 
 - (IBAction)onRoutesBluetoothClick:(id)sender {

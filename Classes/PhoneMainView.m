@@ -865,6 +865,11 @@ static RootViewManager *rootViewManagerInstance = nil;
 #pragma mark - Chat room Functions
 
 - (void)getOrCreateOneToOneChatRoom:(const LinphoneAddress *)remoteAddress waitView:(UIView *)waitView {
+	if (!remoteAddress) {
+		[self changeCurrentView:ChatsListView.compositeViewDescription];
+		return;
+	}
+
 	const LinphoneAddress *local = linphone_proxy_config_get_contact(linphone_core_get_default_proxy_config(LC));
 	LinphoneChatRoom *room = linphone_core_find_one_to_one_chat_room(LC, local, remoteAddress);
 	if (!room) {

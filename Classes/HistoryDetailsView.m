@@ -192,9 +192,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (IBAction)onChatClick:(id)event {
 	const LinphoneAddress *addr = linphone_call_log_get_remote_address(callLog);
-	if (addr == NULL)
-		return;
-
 	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
 }
 

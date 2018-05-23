@@ -135,9 +135,6 @@
 
 - (IBAction)onChatClick:(id)event {
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:_addressLabel.text];
-	if (addr == NULL)
-		return;
-
 	[PhoneMainView.instance getOrCreateOneToOneChatRoom:addr waitView:_waitView];
 	linphone_address_destroy(addr);
 }
