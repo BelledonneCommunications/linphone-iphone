@@ -329,6 +329,7 @@ list<SearchResult> MagicSearch::searchInFriend(const LinphoneFriend *lFriend, co
 	bctbx_list_t *begin, *phoneNumbers = linphone_friend_get_phone_numbers(lFriend);
 	begin = phoneNumbers;
 	while (phoneNumbers && phoneNumbers->data) {
+		bool domainOk = (withDomain.empty());
 		string number = static_cast<const char*>(phoneNumbers->data);
 		const LinphonePresenceModel *presence = linphone_friend_get_presence_model_for_uri_or_tel(lFriend, number.c_str());
 		phoneNumber = number;
@@ -340,11 +341,26 @@ list<SearchResult> MagicSearch::searchInFriend(const LinphoneFriend *lFriend, co
 		unsigned int weightNumber = getWeight(phoneNumber.c_str(), filter);
 		if (presence) {
 			char *contact = linphone_presence_model_get_contact(presence);
-			weightNumber += getWeight(contact, filter) * 2;
-			bctbx_free(contact);
+			if (contact) {
+				if (!domainOk) {
+					LinphoneAddress *tmpAdd = linphone_core_create_address(this->getCore()->getCCore(), contact);
+					if (tmpAdd) {
+						string tmpDomain = linphone_address_get_domain(tmpAdd);
+						domainOk = (tmpDomain == withDomain) || withDomain == "*";
+						linphone_address_unref(tmpAdd);
+					}
+				}
+				weightNumber += getWeight(contact, filter) * 2;
+				bctbx_free(contact);
+			}
 		}
-		if (weightNumber > getMinWeight()) {
-			friendResult.push_back(SearchResult(weight + weightNumber, linphone_friend_get_address(lFriend), phoneNumber, lFriend));
+		if ((weightNumber + weight) > getMinWeight()) {
+			if (!domainOk && linphone_friend_get_address(lFriend)) {
+				string tmpDomain = linphone_address_get_domain(linphone_friend_get_address(lFriend));
+				domainOk = (tmpDomain == withDomain) || withDomain == "*";
+			}
+			if (domainOk)
+				friendResult.push_back(SearchResult(weight + weightNumber, linphone_friend_get_address(lFriend), phoneNumber, lFriend));
 		}
 		phoneNumbers = phoneNumbers->next;
 	}
