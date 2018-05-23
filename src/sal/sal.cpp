@@ -226,12 +226,12 @@ void Sal::processRequestEventCb (void *ud, const belle_sip_request_event_t *even
 
 	/*It is worth noting that proxies can (and will) remove this header field*/
 	op->setPrivacyFromMessage((belle_sip_message_t*)req);
-	
+
 	if (strcmp("ACK",method) != 0){
 		/*The ACK custom header is processed specifically later on*/
 		op->assignRecvHeaders((belle_sip_message_t*)req);
 	}
-	
+
 	if (op->mCallbacks && op->mCallbacks->process_request_event) {
 		op->mCallbacks->process_request_event(op,event);
 	} else {
