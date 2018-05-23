@@ -273,10 +273,8 @@ static void message_status(LinphoneChatMessage *msg, LinphoneChatMessageState st
 		[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateDisplayed) {
 		[_imdmIcon setImage:[UIImage imageNamed:@"chat_read"]];
-		[_imdmLabel setText:NSLocalizedString(@"Displayed", nil)];
-		[_imdmLabel
-			setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
-
+		[_imdmLabel setText:NSLocalizedString(@"Read", nil)];
+		[_imdmLabel setTextColor:([UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0])];
 		[_imdmIcon setHidden:FALSE];
 		[_imdmLabel setHidden:FALSE];
 	} else if (state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError) {
