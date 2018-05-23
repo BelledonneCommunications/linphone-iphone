@@ -315,14 +315,15 @@ static void text_message_within_call_dialog(void) {
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	lp_config_set_int(linphone_core_get_config(pauline->lc),"sip","chat_use_call_dialogs",1);
 
-	BC_ASSERT_TRUE(call(marie,pauline));
-	linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc, marie->identity),"Bla bla bla bla");
+	if (BC_ASSERT_TRUE(call(marie,pauline))){
+		linphone_chat_room_send_message(linphone_core_get_chat_room(pauline->lc, marie->identity),"Bla bla bla bla");
 
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
-	// when using call dialogs, we will never receive delivered status
-	BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,0,int,"%d");
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneMessageReceived,1));
+		// when using call dialogs, we will never receive delivered status
+		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneMessageDelivered,0,int,"%d");
 
-	end_call(marie, pauline);
+		end_call(marie, pauline);
+	}
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -825,44 +826,45 @@ void info_message_base(bool_t with_content) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new( "pauline_tcp_rc");
 
-	BC_ASSERT_TRUE(call(pauline,marie));
+	if (BC_ASSERT_TRUE(call(pauline,marie))){
 
-	info=linphone_core_create_info_message(marie->lc);
-	linphone_info_message_add_header(info,"Weather","still bad");
-	if (with_content) {
-		LinphoneContent* content = linphone_core_create_content(marie->lc);
-		linphone_content_set_type(content, "application");
-		linphone_content_set_subtype(content, "somexml");
-		linphone_content_set_buffer(content, (const uint8_t *)info_content, strlen(info_content));
-		linphone_info_message_set_content(info, content);
-		linphone_content_unref(content);
-	}
-	linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
-	linphone_info_message_unref(info);
-
-	BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
-
-	BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_info_message);
-	hvalue=linphone_info_message_get_header(pauline->stat.last_received_info_message, "Weather");
-	content=linphone_info_message_get_content(pauline->stat.last_received_info_message);
-
-	BC_ASSERT_PTR_NOT_NULL(hvalue);
-	if (hvalue)
-		BC_ASSERT_STRING_EQUAL(hvalue, "still bad");
-
-	if (with_content){
-		BC_ASSERT_PTR_NOT_NULL(content);
-		if (content) {
-			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_buffer(content));
-			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_type(content));
-			BC_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
-			if (linphone_content_get_type(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_type(content),"application");
-			if (linphone_content_get_subtype(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_subtype(content),"somexml");
-			if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content),info_content);
-			BC_ASSERT_EQUAL((int)linphone_content_get_size(content),(int)strlen(info_content), int, "%d");
+		info=linphone_core_create_info_message(marie->lc);
+		linphone_info_message_add_header(info,"Weather","still bad");
+		if (with_content) {
+			LinphoneContent* content = linphone_core_create_content(marie->lc);
+			linphone_content_set_type(content, "application");
+			linphone_content_set_subtype(content, "somexml");
+			linphone_content_set_buffer(content, (const uint8_t *)info_content, strlen(info_content));
+			linphone_info_message_set_content(info, content);
+			linphone_content_unref(content);
 		}
+		linphone_call_send_info_message(linphone_core_get_current_call(marie->lc),info);
+		linphone_info_message_unref(info);
+
+		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_inforeceived,1));
+
+		BC_ASSERT_PTR_NOT_NULL(pauline->stat.last_received_info_message);
+		hvalue=linphone_info_message_get_header(pauline->stat.last_received_info_message, "Weather");
+		content=linphone_info_message_get_content(pauline->stat.last_received_info_message);
+
+		BC_ASSERT_PTR_NOT_NULL(hvalue);
+		if (hvalue)
+			BC_ASSERT_STRING_EQUAL(hvalue, "still bad");
+
+		if (with_content){
+			BC_ASSERT_PTR_NOT_NULL(content);
+			if (content) {
+				BC_ASSERT_PTR_NOT_NULL(linphone_content_get_buffer(content));
+				BC_ASSERT_PTR_NOT_NULL(linphone_content_get_type(content));
+				BC_ASSERT_PTR_NOT_NULL(linphone_content_get_subtype(content));
+				if (linphone_content_get_type(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_type(content),"application");
+				if (linphone_content_get_subtype(content)) BC_ASSERT_STRING_EQUAL(linphone_content_get_subtype(content),"somexml");
+				if (linphone_content_get_buffer(content))BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content),info_content);
+				BC_ASSERT_EQUAL((int)linphone_content_get_size(content),(int)strlen(info_content), int, "%d");
+			}
+		}
+		end_call(marie, pauline);
 	}
-	end_call(marie, pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
 }
@@ -1905,96 +1907,97 @@ static void real_time_text_conversation(void) {
 	LinphoneCall *pauline_call, *marie_call;
 	linphone_call_params_enable_realtime_text(marie_params,TRUE);
 
-	BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params));
-	pauline_call=linphone_core_get_current_call(pauline->lc);
-	marie_call=linphone_core_get_current_call(marie->lc);
-	BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
+	if (BC_ASSERT_TRUE(call_with_caller_params(marie, pauline, marie_params))){
+		pauline_call=linphone_core_get_current_call(pauline->lc);
+		marie_call=linphone_core_get_current_call(marie->lc);
+		BC_ASSERT_TRUE(linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(pauline_call)));
 
-	pauline_chat_room = linphone_call_get_chat_room(pauline_call);
-	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
-	marie_chat_room = linphone_call_get_chat_room(marie_call);
-	BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
-	if (pauline_chat_room && marie_chat_room) {
-		const char* message1_1 = "Lorem";
-		const char* message1_2 = "Ipsum";
-		const char* message2_1 = "Be lle Com";
-		const char* message2_2 = "eB ell moC";
-		size_t i;
-		LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
-		LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
+		pauline_chat_room = linphone_call_get_chat_room(pauline_call);
+		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+		marie_chat_room = linphone_call_get_chat_room(marie_call);
+		BC_ASSERT_PTR_NOT_NULL(pauline_chat_room);
+		if (pauline_chat_room && marie_chat_room) {
+			const char* message1_1 = "Lorem";
+			const char* message1_2 = "Ipsum";
+			const char* message2_1 = "Be lle Com";
+			const char* message2_2 = "eB ell moC";
+			size_t i;
+			LinphoneChatMessage* pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+			LinphoneChatMessage* marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
 
-		for (i = 0; i < strlen(message1_1); i++) {
-			linphone_chat_message_put_char(pauline_rtt_message, message1_1[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message1_1[i], char, "%c");
+			for (i = 0; i < strlen(message1_1); i++) {
+				linphone_chat_message_put_char(pauline_rtt_message, message1_1[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message1_1[i], char, "%c");
 
-			linphone_chat_message_put_char(marie_rtt_message, message1_2[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message1_2[i], char, "%c");
-		}
-
-		/*Commit the message, triggers a NEW LINE in T.140 */
-		linphone_chat_message_send(pauline_rtt_message);
-		linphone_chat_message_send(marie_rtt_message);
-
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-		{
-			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
-			BC_ASSERT_PTR_NOT_NULL(msg);
-			if (msg) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_1);
+				linphone_chat_message_put_char(marie_rtt_message, message1_2[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message1_2[i], char, "%c");
 			}
-		}
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
-		{
-			LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
-			BC_ASSERT_PTR_NOT_NULL(msg);
-			if (msg) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_2);
+
+			/*Commit the message, triggers a NEW LINE in T.140 */
+			linphone_chat_message_send(pauline_rtt_message);
+			linphone_chat_message_send(marie_rtt_message);
+
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			{
+				LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
+				BC_ASSERT_PTR_NOT_NULL(msg);
+				if (msg) {
+					BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_1);
+				}
 			}
-		}
-
-		linphone_chat_message_unref(pauline_rtt_message);
-		linphone_chat_message_unref(marie_rtt_message);
-		reset_counters(&pauline->stat);
-		reset_counters(&marie->stat);
-		pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
-		marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
-
-		for (i = 0; i < strlen(message2_1); i++) {
-			linphone_chat_message_put_char(pauline_rtt_message, message2_1[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message2_1[i], char, "%c");
-
-			linphone_chat_message_put_char(marie_rtt_message, message2_2[i]);
-			BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
-			BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message2_2[i], char, "%c");
-		}
-
-		/*Commit the message, triggers a NEW LINE in T.140 */
-		linphone_chat_message_send(pauline_rtt_message);
-		linphone_chat_message_send(marie_rtt_message);
-
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
-		{
-			LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
-			BC_ASSERT_PTR_NOT_NULL(msg);
-			if (msg) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_1);
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
+			{
+				LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
+				BC_ASSERT_PTR_NOT_NULL(msg);
+				if (msg) {
+					BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message1_2);
+				}
 			}
-		}
-		BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
-		{
-			LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
-			BC_ASSERT_PTR_NOT_NULL(msg);
-			if (msg) {
-				BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_2);
+
+			linphone_chat_message_unref(pauline_rtt_message);
+			linphone_chat_message_unref(marie_rtt_message);
+			reset_counters(&pauline->stat);
+			reset_counters(&marie->stat);
+			pauline_rtt_message = linphone_chat_room_create_message(pauline_chat_room,NULL);
+			marie_rtt_message = linphone_chat_room_create_message(marie_chat_room,NULL);
+
+			for (i = 0; i < strlen(message2_1); i++) {
+				linphone_chat_message_put_char(pauline_rtt_message, message2_1[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(marie_chat_room), message2_1[i], char, "%c");
+
+				linphone_chat_message_put_char(marie_rtt_message, message2_2[i]);
+				BC_ASSERT_TRUE(wait_for_until(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneIsComposingActiveReceived, (int)i+1, 1000));
+				BC_ASSERT_EQUAL(linphone_chat_room_get_char(pauline_chat_room), message2_2[i], char, "%c");
 			}
+
+			/*Commit the message, triggers a NEW LINE in T.140 */
+			linphone_chat_message_send(pauline_rtt_message);
+			linphone_chat_message_send(marie_rtt_message);
+
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &marie->stat.number_of_LinphoneMessageReceived, 1));
+			{
+				LinphoneChatMessage * msg = marie->stat.last_received_chat_message;
+				BC_ASSERT_PTR_NOT_NULL(msg);
+				if (msg) {
+					BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_1);
+				}
+			}
+			BC_ASSERT_TRUE(wait_for(pauline->lc, marie->lc, &pauline->stat.number_of_LinphoneMessageReceived, 1));
+			{
+				LinphoneChatMessage * msg = pauline->stat.last_received_chat_message;
+				BC_ASSERT_PTR_NOT_NULL(msg);
+				if (msg) {
+					BC_ASSERT_STRING_EQUAL(linphone_chat_message_get_text(msg), message2_2);
+				}
+			}
+			linphone_chat_message_unref(pauline_rtt_message);
+			linphone_chat_message_unref(marie_rtt_message);
 		}
-		linphone_chat_message_unref(pauline_rtt_message);
-		linphone_chat_message_unref(marie_rtt_message);
+		end_call(marie, pauline);
 	}
-	end_call(marie, pauline);
 	linphone_call_params_unref(marie_params);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(pauline);
