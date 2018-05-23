@@ -260,6 +260,7 @@ if(ANDROID OR IOS)
 		set_target_properties(linphonetester PROPERTIES
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER com.belledonne-communications.linphonetester
+			PUBLIC_HEADER "${HEADER_FILES}"
 		)
 	endif()
 	install(TARGETS linphonetester
