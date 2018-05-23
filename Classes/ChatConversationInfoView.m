@@ -285,7 +285,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		cell.adminLabel.enabled	= FALSE;
 		cell.adminImage.image = [UIImage imageNamed:@"check_unselected.png"];
 	}
-	cell.adminButton.hidden = _create || (!_imAdmin && !cell.adminLabel.enabled);
+	cell.adminButton.hidden = _create || (!_imAdmin && !cell.adminLabel.enabled) || ![_oldContacts containsObject:cell.uri];
 	cell.adminButton.userInteractionEnabled = _imAdmin;
 	cell.removeButton.hidden = !_create && !_imAdmin;
 	linphone_address_unref(addr);
