@@ -8,7 +8,7 @@
 
 #import "DetailTableView.h"
 #import "MasterView.h"
-#include "linphone/liblinphone_tester.h"
+#include "linphonetester/liblinphone_tester.h"
 #import "Log.h"
 
 static NSString *const kAllTestsName = @"Run All tests";

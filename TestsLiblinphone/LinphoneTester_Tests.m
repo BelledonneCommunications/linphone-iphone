@@ -8,7 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #include "linphone/linphonecore.h"
-#include "linphone/liblinphone_tester.h"
+#include "linphonetester/liblinphone_tester.h"
 #import "NSObject+DTRuntime.h"
 #import "Utils.h"
 #import "Log.h"

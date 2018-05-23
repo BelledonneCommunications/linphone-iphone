@@ -11,7 +11,7 @@
 
 #import "Log.h"
 #include "TargetConditionals.h"
-#include "linphone/liblinphone_tester.h"
+#include "linphonetester/liblinphone_tester.h"
 #include "mediastreamer2/msutils.h"
 
 @interface MasterView () {
