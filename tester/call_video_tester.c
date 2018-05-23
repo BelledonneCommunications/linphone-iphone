@@ -2171,13 +2171,23 @@ static void video_call_expected_fps_for_specified_bandwidth(int bandwidth, int f
 
 		if (BC_ASSERT_TRUE(call(marie, pauline))){
 			LinphoneCall *call = linphone_core_get_current_call(marie->lc);
-
-			/*wait for the first TMMBR*/
-			BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, 1, 10000));
-
 			VideoStream *vstream = (VideoStream *)linphone_call_get_stream(call, LinphoneStreamTypeVideo);
+			int count;
+			/*wait some time until the target fps is reached. Indeed the bandwidth measurement may take several iterations to converge
+			 to a value big enough to allow mediastreamer2 to switch to the high fps profile*/
+			
+			for (count = 0 ; count < 3; count++){
+				/*wait for at least the first TMMBR to arrive*/
+				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, 1, 10000));
+				
+				if ((int)vstream->configured_fps == fps){
+					break;
+				}else{
+					/*target fps not reached yet, wait more time*/
+					wait_for_until(marie->lc, pauline->lc, NULL, 0, 2000);
+				}
+			}
 			BC_ASSERT_EQUAL((int)vstream->configured_fps, fps, int, "%d");
-
 			end_call(marie, pauline);
 		}
 	} else {
