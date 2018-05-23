@@ -474,6 +474,8 @@ list<SearchResult> *MagicSearch::uniqueItemsList(list<SearchResult> &list) {
 				}
 				bctbx_free(contactPresence);
 			}
+		} else {
+			left = linphone_address_as_string_uri_only(lsr.getAddress());
 		}
 
 		if (!rsr.getAddress() && rsr.getFriend()) {
@@ -489,7 +491,10 @@ list<SearchResult> *MagicSearch::uniqueItemsList(list<SearchResult> &list) {
 				}
 				bctbx_free(contactPresence);
 			}
+		} else {
+			right = linphone_address_as_string_uri_only(rsr.getAddress());
 		}
+
 		return (!left.empty() || !right.empty()) && left == right;
 	});
 	return &list;
