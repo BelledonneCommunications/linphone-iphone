@@ -437,8 +437,8 @@ if(ENABLE_SHARED)
 		target_link_libraries(linphone PRIVATE "-framework Foundation" "-framework AVFoundation")
 	endif()
 	if(WIN32)
-		# Export Xerces symbols.
-		list(APPEND LINPHONE_CXX_OBJECTS_DEFINITIONS "-DDLL_EXPORT")
+		# Export Xerces and Soci symbols.
+		list(APPEND LINPHONE_CXX_OBJECTS_DEFINITIONS "-DDLL_EXPORT" "-DSOCI_DLL")
 		if(CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 			set_target_properties(linphone PROPERTIES PREFIX "lib")
 		endif()
