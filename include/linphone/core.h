@@ -4989,7 +4989,7 @@ LINPHONE_PUBLIC void linphone_core_add_content_type_support(LinphoneCore *lc, co
  * @return The linphone specs telling what functionalities the linphone client supports
  * @ingroup initializing
  */
-const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
+LINPHONE_PUBLIC const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
 
 /**
  * Set the linphone specs value telling what functionalities the linphone client supports.
@@ -4997,7 +4997,7 @@ const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
  * @param[in] specs The linphone specs to set
  * @ingroup initializing
  */
-void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
+LINPHONE_PUBLIC void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
 
 /**
  * Remove support for the specified content type.
