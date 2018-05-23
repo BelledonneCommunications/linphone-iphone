@@ -492,9 +492,10 @@ void ConferenceEventTester::onFirstNotifyReceived (const IdentityAddress &addr) 
 void ConferenceEventTester::onParticipantAdded (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
 	const IdentityAddress addr = event->getParticipantAddress();
-	participants.insert(pair<string, bool>(addr.asString(), FALSE));
-	participantDevices.insert(pair<string, int>(addr.asString(), 0));
+	participants.insert({ addr.asString(), false });
+	participantDevices.insert({ addr.asString(), 0 });
 }
+
 void ConferenceEventTester::onParticipantRemoved (const shared_ptr<ConferenceParticipantEvent> &event, bool isFullState) {
 	(void)isFullState; // unused
 	const IdentityAddress addr = event->getParticipantAddress();
