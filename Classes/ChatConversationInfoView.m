@@ -53,11 +53,16 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
-									initWithTarget:self
-									action:@selector(dismissKeyboards)];
+	UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
+																		  action:@selector(dismissKeyboards)];
 	tap.delegate = self;
 	[self.view addGestureRecognizer:tap];
+
+	UITapGestureRecognizer *particpantsBarTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+																						action:@selector(onAddClick:)];
+	particpantsBarTap.delegate = self;
+	[_participantsBar addGestureRecognizer:particpantsBarTap];
+
 	_nameLabel.delegate = self;
 	_tableView.dataSource = self;
 	_tableView.delegate	= self;

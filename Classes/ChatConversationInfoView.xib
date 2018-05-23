@@ -14,6 +14,7 @@
                 <outlet property="addButton" destination="XSI-9T-NtW" id="BlB-bn-XWt"/>
                 <outlet property="nameLabel" destination="69I-Un-ASz" id="qmU-o2-TmF"/>
                 <outlet property="nextButton" destination="0v1-qv-lPd" id="nPu-w2-iy3"/>
+                <outlet property="participantsBar" destination="n8e-tx-jlu" id="kNr-kM-7MJ"/>
                 <outlet property="quitButton" destination="Hnm-7C-dBQ" id="Kp1-Aw-FQq"/>
                 <outlet property="tableView" destination="pMq-Gv-0uu" id="ELS-RQ-olX"/>
                 <outlet property="view" destination="zgv-a8-72k" id="1Cq-i3-h2W"/>
