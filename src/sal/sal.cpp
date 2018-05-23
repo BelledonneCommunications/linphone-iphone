@@ -911,61 +911,65 @@ LINPHONE_END_NAMESPACE
 
 using namespace LinphonePrivate;
 
+// NOTE: This is ugly but it's not possible to export simply this set of functions in tester_utils...
+// Because tester_utils and private files are ill-thought.
+// A workaround is to use LINPHONE_PUBLIC here.
+
 extern "C" {
 
-Sal *linphone_core_get_sal(const LinphoneCore *lc) {
+LINPHONE_PUBLIC Sal *linphone_core_get_sal(const LinphoneCore *lc) {
 	return lc->sal;
 }
 
-SalOp *linphone_proxy_config_get_sal_op(const LinphoneProxyConfig *cfg) {
+LINPHONE_PUBLIC SalOp *linphone_proxy_config_get_sal_op(const LinphoneProxyConfig *cfg) {
 	return cfg->op;
 }
 
-SalOp *linphone_call_get_op_as_sal_op(const LinphoneCall *call) {
+LINPHONE_PUBLIC SalOp *linphone_call_get_op_as_sal_op(const LinphoneCall *call) {
 	return linphone_call_get_op(call);
 }
 
-Sal *sal_init(MSFactory *factory) {
+LINPHONE_PUBLIC Sal *sal_init(MSFactory *factory) {
 	return new Sal(factory);
 }
 
-void sal_uninit(Sal* sal) {
+LINPHONE_PUBLIC void sal_uninit(Sal* sal) {
 	delete sal;
 }
 
-int sal_create_uuid(Sal *ctx, char *uuid, size_t len) {
+LINPHONE_PUBLIC int sal_create_uuid(Sal *ctx, char *uuid, size_t len) {
 	return ctx->createUuid(uuid, len);
 }
 
-void sal_set_uuid(Sal *ctx, const char *uuid) {
+LINPHONE_PUBLIC void sal_set_uuid(Sal *ctx, const char *uuid) {
 	ctx->setUuid(L_C_TO_STRING(uuid));
 }
 
-void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) {
+LINPHONE_PUBLIC void sal_default_set_sdp_handling(Sal* h, SalOpSDPHandling handling_method) {
 	h->setDefaultSdpHandling(handling_method);
 }
 
-void sal_set_send_error(Sal *sal,int value) {
+LINPHONE_PUBLIC void sal_set_send_error(Sal *sal,int value) {
 	sal->setSendError(value);
 }
 
-void sal_set_recv_error(Sal *sal,int value) {
+LINPHONE_PUBLIC void sal_set_recv_error(Sal *sal,int value) {
 	sal->setRecvError(value);
 }
 
-void sal_enable_pending_trans_checking(Sal *sal, bool value) {
+LINPHONE_PUBLIC void sal_enable_pending_trans_checking(Sal *sal, bool value) {
 	sal->enablePendingTransactionChecking(value);
 }
 
-void sal_enable_unconditional_answer(Sal *sal,int value) {
+LINPHONE_PUBLIC void sal_enable_unconditional_answer(Sal *sal,int value) {
 	sal->enableUnconditionalAnswer(value);
 }
 
-void sal_set_dns_timeout(Sal* sal,int timeout) {
+LINPHONE_PUBLIC void sal_set_dns_timeout(Sal* sal,int timeout) {
 	sal->setDnsTimeout(timeout);
 }
 
-void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file) {
+LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_file) {
 	sal->setDnsUserHostsFile(hosts_file);
 }
 
@@ -973,46 +977,46 @@ void *sal_get_stack_impl(Sal *sal) {
 	return sal->getStackImpl();
 }
 
-void sal_set_refresher_retry_after(Sal *sal,int value) {
+LINPHONE_PUBLIC void sal_set_refresher_retry_after(Sal *sal,int value) {
 	sal->setRefresherRetryAfter(value);
 }
 
-int sal_get_refresher_retry_after(const Sal *sal) {
+LINPHONE_PUBLIC int sal_get_refresher_retry_after(const Sal *sal) {
 	return sal->getRefresherRetryAfter();
 }
 
-void sal_set_transport_timeout(Sal* sal,int timeout) {
+LINPHONE_PUBLIC void sal_set_transport_timeout(Sal* sal,int timeout) {
 	sal->setTransportTimeout(timeout);
 }
 
-void sal_enable_test_features(Sal*ctx, bool enabled) {
+LINPHONE_PUBLIC void sal_enable_test_features(Sal*ctx, bool enabled) {
 	ctx->enableTestFeatures(enabled);
 }
 
-int sal_transport_available(Sal *ctx, SalTransport t) {
+LINPHONE_PUBLIC int sal_transport_available(Sal *ctx, SalTransport t) {
 	return ctx->isTransportAvailable(t);
 }
 
-const SalErrorInfo *sal_op_get_error_info(const SalOp *op) {
+LINPHONE_PUBLIC const SalErrorInfo *sal_op_get_error_info(const SalOp *op) {
 	return op->getErrorInfo();
 }
 
-bool sal_call_dialog_request_pending(const SalOp *op) {
+LINPHONE_PUBLIC bool sal_call_dialog_request_pending(const SalOp *op) {
 	auto callOp = dynamic_cast<const SalCallOp *>(op);
 	return callOp->dialogRequestPending();
 }
 
-void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) {
+LINPHONE_PUBLIC void sal_call_set_sdp_handling(SalOp *h, SalOpSDPHandling handling) {
 	auto callOp = dynamic_cast<SalCallOp *>(h);
 	callOp->setSdpHandling(handling);
 }
 
-SalMediaDescription * sal_call_get_final_media_description(SalOp *h) {
+LINPHONE_PUBLIC SalMediaDescription * sal_call_get_final_media_description(SalOp *h) {
 	auto callOp = dynamic_cast<SalCallOp *>(h);
 	return callOp->getFinalMediaDescription();
 }
 
-belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
+LINPHONE_PUBLIC belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char *name, int port, int family, belle_sip_resolver_callback_t cb, void *data) {
 	return sal->resolveA(name, port, family, cb, data);
 }
 
@@ -1024,34 +1028,34 @@ SalOp *sal_create_refer_op(Sal *sal) {
 	return new SalReferOp(sal);
 }
 
-void sal_release_op(SalOp *op) {
+LINPHONE_PUBLIC void sal_release_op(SalOp *op) {
 	op->release();
 }
 
-void sal_op_set_from(SalOp *sal_refer_op, const char* from) {
+LINPHONE_PUBLIC void sal_op_set_from(SalOp *sal_refer_op, const char* from) {
 	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
 	referOp->setFrom(from);
 }
 
-void sal_op_set_to(SalOp *sal_refer_op, const char* to) {
+LINPHONE_PUBLIC void sal_op_set_to(SalOp *sal_refer_op, const char* to) {
 	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
 	referOp->setTo(to);
 }
 
-void sal_op_send_refer(SalOp *sal_refer_op, SalAddress* refer_to) {
+LINPHONE_PUBLIC void sal_op_send_refer(SalOp *sal_refer_op, SalAddress* refer_to) {
 	auto referOp = dynamic_cast<SalReferOp *>(sal_refer_op);
 	referOp->sendRefer(refer_to);
 }
 
-void sal_set_user_pointer(Sal *sal, void *user_pointer) {
+LINPHONE_PUBLIC void sal_set_user_pointer(Sal *sal, void *user_pointer) {
 	sal->setUserPointer(user_pointer);
 }
 
-void *sal_get_user_pointer(Sal *sal) {
+LINPHONE_PUBLIC void *sal_get_user_pointer(Sal *sal) {
 	return sal->getUserPointer();
 }
 
-void sal_set_call_refer_callback(Sal *sal, void (*OnReferCb)(SalOp *op, const SalAddress *referto)) {
+LINPHONE_PUBLIC void sal_set_call_refer_callback(Sal *sal, void (*OnReferCb)(SalOp *op, const SalAddress *referto)) {
 	struct Sal::Callbacks cbs = {NULL};
 	cbs.refer_received = OnReferCb;
 	sal->setCallbacks(&cbs);
