@@ -44,7 +44,7 @@ static string getPath (const GUID &id) {
 		CoTaskMemFree(path);
 	}
 
-	return strPath;
+	return strPath.append("/linphone/");
 }
 
 
