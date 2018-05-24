@@ -144,10 +144,11 @@ private:
 	 * Get all address from call log
 	 * @param[in] filter word we search
 	 * @param[in] withDomain domain which we want to search only
+	 * @param[in] currentList current list where we will check if address already exist
 	 * @return all address from call log which match in a SearchResult list
 	 * @private
 	 **/
-	std::list<SearchResult> getAddressFromCallLog(const std::string &filter, const std::string &withDomain);
+	std::list<SearchResult> getAddressFromCallLog(const std::string &filter, const std::string &withDomain, const std::list<SearchResult> &currentList);
 
 	/**
 	 * Get all friends as SearchResult
