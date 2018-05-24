@@ -1,0 +1,9 @@
+
+/* Class = "UILabel"; text = "John Doe"; ObjectID = "f3q-pd-EF5"; */
+"f3q-pd-EF5.text" = "John Doe";
+
+/* Class = "UILabel"; accessibilityLabel = "Contact name"; ObjectID = "hEV-7I-B0v"; */
+"hEV-7I-B0v.accessibilityLabel" = "Contact name";
+
+/* Class = "UILabel"; text = "Today - 18h42"; ObjectID = "hEV-7I-B0v"; */
+"hEV-7I-B0v.text" = "Today - 18h42";

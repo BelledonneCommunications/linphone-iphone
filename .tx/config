@@ -231,4 +231,28 @@ source_file = Classes/Base.lproj/CountryListView.strings
 source_lang = en
 file_filter = Settings/InAppSettings.bundle/<lang>.lproj/Chat.strings
 source_file = Settings/InAppSettings.bundle/en.lproj/Chat.strings
-type = STRINGS
+
+[linphone-ios.uichatconversationinfotableviewcellstrings]
+source_lang = en
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatConversationInfoTableViewCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatConversationInfoTableViewCell.strings
+
+[linphone-ios.uichatconversationimdntableviewcellstrings]
+source_lang = en
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatConversationImdnTableViewCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatConversationImdnTableViewCell.strings
+
+[linphone-ios.uichatcreatecollectionviewcellstrings]
+source_lang = en
+file_filter = Classes/LinphoneUI/<lang>.lproj/UIChatCreateCollectionViewCell.strings
+source_file = Classes/LinphoneUI/Base.lproj/UIChatCreateCollectionViewCell.strings
+
+[linphone-ios.chatconversationinfoviewstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/ChatConversationInfoView.strings
+source_file = Classes/Base.lproj/ChatConversationInfoView.strings
+
+[linphone-ios.chatconversationimdnviewstrings]
+source_lang = en
+file_filter = Classes/<lang>.lproj/ChatConversationImdnView.strings
+source_file = Classes/Base.lproj/ChatConversationImdnView.strings

@@ -1,0 +1,33 @@
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "0v1-qv-lPd"; */
+"0v1-qv-lPd.accessibilityLabel" = "Back";
+
+/* Class = "UITextField"; accessibilityLabel = "ChatRoomName"; ObjectID = "69I-Un-ASz"; */
+"69I-Un-ASz.accessibilityLabel" = "ChatRoomName";
+
+/* Class = "UITextField"; placeholder = "Name the group"; ObjectID = "69I-Un-ASz"; */
+"69I-Un-ASz.placeholder" = "Name the group";
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "HVD-Ql-SJG"; */
+"HVD-Ql-SJG.accessibilityLabel" = "Back";
+
+/* Class = "UIButton"; accessibilityLabel = "Use SIP account"; ObjectID = "Hnm-7C-dBQ"; */
+"Hnm-7C-dBQ.accessibilityLabel" = "Use SIP account";
+
+/* Class = "UIButton"; normalTitle = "LEAVE THE GROUP"; ObjectID = "Hnm-7C-dBQ"; */
+"Hnm-7C-dBQ.normalTitle" = "LEAVE THE GROUP";
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "XSI-9T-NtW"; */
+"XSI-9T-NtW.accessibilityLabel" = "Back";
+
+/* Class = "UILabel"; accessibilityLabel = "Contact name"; ObjectID = "tJn-Nv-Duq"; */
+"tJn-Nv-Duq.accessibilityLabel" = "Contact name";
+
+/* Class = "UILabel"; text = "Info"; ObjectID = "tJn-Nv-Duq"; */
+"tJn-Nv-Duq.text" = "Info";
+
+/* Class = "UILabel"; accessibilityLabel = "Contact name"; ObjectID = "vof-h9-AN3"; */
+"vof-h9-AN3.accessibilityLabel" = "Contact name";
+
+/* Class = "UILabel"; text = "Participants"; ObjectID = "vof-h9-AN3"; */
+"vof-h9-AN3.text" = "Participants";

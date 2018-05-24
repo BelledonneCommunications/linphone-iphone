@@ -1,0 +1,9 @@
+
+/* Class = "UILabel"; text = "Admin"; ObjectID = "DYS-vK-7Ol"; */
+"DYS-vK-7Ol.text" = "Admin";
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "JPd-hQ-On6"; */
+"JPd-hQ-On6.accessibilityLabel" = "Back";
+
+/* Class = "UILabel"; text = "John Doe"; ObjectID = "rrT-f7-NQO"; */
+"rrT-f7-NQO.text" = "John Doe";

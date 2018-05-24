@@ -1,0 +1,21 @@
+
+/* Class = "UIButton"; accessibilityLabel = "Back"; ObjectID = "JYS-Be-ffH"; */
+"JYS-Be-ffH.accessibilityLabel" = "Back";
+
+/* Class = "UIImageView"; accessibilityLabel = "Contact avatar"; ObjectID = "LGG-kB-TaR"; */
+"LGG-kB-TaR.accessibilityLabel" = "Contact avatar";
+
+/* Class = "UITextView"; text = "Lore ipsum..."; ObjectID = "V21-2s-obu"; */
+"V21-2s-obu.text" = "Lore ipsum...";
+
+/* Class = "UILabel"; accessibilityLabel = "Contact name"; ObjectID = "bc0-Ql-lPE"; */
+"bc0-Ql-lPE.accessibilityLabel" = "Contact name";
+
+/* Class = "UILabel"; text = "Delivery status"; ObjectID = "bc0-Ql-lPE"; */
+"bc0-Ql-lPE.text" = "Delivery status";
+
+/* Class = "UILabel"; accessibilityLabel = "Contact name"; ObjectID = "jaE-4d-bbo"; */
+"jaE-4d-bbo.accessibilityLabel" = "Contact name";
+
+/* Class = "UILabel"; text = "11:35 John Doe"; ObjectID = "jaE-4d-bbo"; */
+"jaE-4d-bbo.text" = "11:35 John Doe";
