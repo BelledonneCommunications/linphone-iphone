@@ -520,8 +520,12 @@ void linphone_friend_invalidate_subscription(LinphoneFriend *lf){
 	lf->initial_subscribes_sent=FALSE;
 }
 
+static void sal_notify_presence_close_cb (void *op) {
+	sal_notify_presence_close(static_cast<SalOp *>(op));
+}
+
 static void linphone_friend_close_incoming_subscriptions(LinphoneFriend *lf) {
-	bctbx_list_for_each(lf->insubs, (MSIterateFunc) sal_notify_presence_close);
+	bctbx_list_for_each(lf->insubs, sal_notify_presence_close_cb);
 	lf->insubs = bctbx_list_free_with_data(lf->insubs, (MSIterateFunc)sal_op_release);
 }
 

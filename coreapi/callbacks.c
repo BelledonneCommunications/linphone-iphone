@@ -516,8 +516,10 @@ static void call_ringing(SalOp *h){
 	}
 }
 
-static void start_pending_refer(LinphoneCall *call){
-	linphone_core_start_refered_call(call->core, call,NULL);
+static unsigned char start_pending_refer (void *call) {
+	LinphoneCall *to_refer = static_cast<LinphoneCall *>(call);
+	linphone_core_start_refered_call(to_refer->core, to_refer, NULL);
+	return 0;
 }
 
 static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *op){
@@ -605,7 +607,7 @@ static void process_call_accepted(LinphoneCore *lc, LinphoneCall *call, SalOp *o
 				next_state = LinphoneCallPaused;
 				next_state_str = "Call paused";
 				if (call->refer_pending)
-					linphone_task_list_add(&tl, (LinphoneCoreIterateHook)start_pending_refer, call);
+					linphone_task_list_add(&tl, start_pending_refer, call);
 			break;
 			default:
 				ms_error("call_accepted(): don't know what to do in state [%s]", linphone_call_state_to_string(call->state));
@@ -692,13 +694,13 @@ static void call_paused_by_remote(LinphoneCore *lc, LinphoneCall *call){
 static void call_updated_by_remote(LinphoneCore *lc, LinphoneCall *call){
 	linphone_core_notify_display_status(lc,_("Call is updated by remote."));
 	linphone_call_set_state(call, LinphoneCallUpdatedByRemote,"Call updated by remote");
-	
+
 	if (call->ice_session && check_ice_reinvite_needs_defered_response(call)){
 			call->defer_update = TRUE;
 			ms_message("LinphoneCall [%p]: Ice reinvite received, but one or more check list are not completed. Response will be sent later, once ICE has completed.", call);
 			call->incoming_ice_reinvite_pending = TRUE;
 	}
-	
+
 	if (call->defer_update == FALSE){
 		if (call->state == LinphoneCallUpdatedByRemote){
 			linphone_call_accept_update(call, NULL);
@@ -905,19 +907,20 @@ static void call_terminated(SalOp *op, const char *from){
 	linphone_call_set_state(call, LinphoneCallEnd,"Call ended");
 }
 
-static int resume_call_after_failed_transfer(LinphoneCall *call){
-	if (call->was_automatically_paused && call->state==LinphoneCallPausing)
+static int resume_call_after_failed_transfer (void *call, unsigned int) {
+	LinphoneCall *to_resume = static_cast<LinphoneCall *>(call);
+	if (to_resume->was_automatically_paused && to_resume->state==LinphoneCallPausing)
 		return BELLE_SIP_CONTINUE; /*was still in pausing state*/
 
-	if (call->was_automatically_paused && call->state==LinphoneCallPaused){
-		if (sal_op_is_idle(call->op)){
-			linphone_call_resume(call);
+	if (to_resume->was_automatically_paused && to_resume->state==LinphoneCallPaused){
+		if (sal_op_is_idle(to_resume->op)){
+			linphone_call_resume(to_resume);
 		}else {
 			ms_message("resume_call_after_failed_transfer(), salop was busy");
 			return BELLE_SIP_CONTINUE;
 		}
 	}
-	linphone_call_unref(call);
+	linphone_call_unref(to_resume);
 	return BELLE_SIP_STOP;
 }
 
@@ -1080,7 +1083,7 @@ static void call_failure(SalOp *op){
 		/*notify referer of the failure*/
 		linphone_core_notify_refer_state(lc,referer,call);
 		/*schedule automatic resume of the call. This must be done only after the notifications are completed due to dialog serialization of requests.*/
-		linphone_core_queue_task(lc,(belle_sip_source_func_t)resume_call_after_failed_transfer,linphone_call_ref(referer),"Automatic call resuming after failed transfer");
+		linphone_core_queue_task(lc, resume_call_after_failed_transfer,linphone_call_ref(referer),"Automatic call resuming after failed transfer");
 	}
 }
 
