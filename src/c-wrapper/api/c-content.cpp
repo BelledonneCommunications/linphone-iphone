@@ -32,10 +32,12 @@ using namespace std;
 
 static void _linphone_content_constructor (LinphoneContent *content);
 static void _linphone_content_destructor (LinphoneContent *content);
+static void _linphone_content_c_clone (LinphoneContent *dest, const LinphoneContent *src);
 
 L_DECLARE_C_CLONABLE_OBJECT_IMPL_WITH_XTORS(Content,
 	_linphone_content_constructor,
 	_linphone_content_destructor,
+	_linphone_content_c_clone,
 
 	void *cryptoContext; // Used to encrypt file for RCS file transfer.
 
@@ -55,6 +57,12 @@ static void _linphone_content_constructor (LinphoneContent *content) {
 
 static void _linphone_content_destructor (LinphoneContent *content) {
 	content->cache.~Cache();
+}
+
+static void _linphone_content_c_clone (LinphoneContent *dest, const LinphoneContent *src) {
+	new(&dest->cache) LinphoneContent::Cache();
+	dest->size = src->size;
+	dest->cache = src->cache;
 }
 
 // =============================================================================
