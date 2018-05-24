@@ -3676,6 +3676,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 				linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
 				linphone_call_add_callbacks(call, call_cbs);
 				linphone_call_cbs_unref(call_cbs);
+				linphone_call_request_notify_next_video_frame_decoded(call);
 				linphone_call_send_vfu_request(call);
 			}
 			switch (video_dir) {
