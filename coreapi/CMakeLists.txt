@@ -97,6 +97,7 @@ set(LINPHONE_SOURCE_FILES_CXX
 	conference.cc
 	tester_utils.cpp
 )
+
 if(ENABLE_JAVA_WRAPPER)
 	list(APPEND LINPHONE_SOURCE_FILES_CXX ${LINPHONE_JNI_SOURCES})
 	set_source_files_properties(${LINPHONE_JNI_SOURCES} PROPERTIES GENERATED TRUE)
@@ -140,8 +141,8 @@ bc_git_version(liblinphone ${PROJECT_VERSION})
 
 add_definitions(
 	-DUSE_BELLESIP
-	-DLIBLINPHONE_EXPORTS
 	-DBCTBX_LOG_DOMAIN="liblinphone"
+	-DLINPHONE_EXPORTS
 )
 
 set_source_files_properties(${LINPHONE_SOURCE_FILES_C} PROPERTIES LANGUAGE CXX)

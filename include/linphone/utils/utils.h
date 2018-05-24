@@ -35,32 +35,32 @@ LINPHONE_BEGIN_NAMESPACE
 
 namespace Utils {
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (std::shared_ptr<T> &object) {
+	constexpr T *getPtr (std::shared_ptr<T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (const std::shared_ptr<T> &object) {
+	constexpr T *getPtr (const std::shared_ptr<T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (std::unique_ptr<T> &object) {
+	constexpr T *getPtr (std::unique_ptr<T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (const std::unique_ptr<T> &object) {
+	constexpr T *getPtr (const std::unique_ptr<T> &object) {
 		return object.get();
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (T *object) {
+	constexpr T *getPtr (T *object) {
 		return object;
 	}
 
 	template<typename T>
-	LINPHONE_PUBLIC constexpr T *getPtr (T &object) {
+	constexpr T *getPtr (T &object) {
 		return &object;
 	}
 
@@ -108,7 +108,7 @@ namespace Utils {
 	}
 
 	template<typename S, typename T>
-	LINPHONE_PUBLIC std::string join (const std::vector<T>& elems, const S& delim) {
+	inline std::string join (const std::vector<T>& elems, const S& delim) {
 		std::stringstream ss;
 		auto e = elems.begin();
 		ss << *e++;
@@ -119,7 +119,7 @@ namespace Utils {
 	LINPHONE_PUBLIC std::string trim (const std::string &str);
 
 	template<typename T>
-	LINPHONE_PUBLIC const T &getEmptyConstRefObject () {
+	inline const T &getEmptyConstRefObject () {
 		static const T object{};
 		return object;
 	}
