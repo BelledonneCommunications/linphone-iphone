@@ -32,7 +32,7 @@ LINPHONE_BEGIN_NAMESPACE
 class Participant;
 class ParticipantDevice;
 
-class LocalConferenceEventHandlerPrivate : public ObjectPrivate {
+class LINPHONE_INTERNAL_PUBLIC LocalConferenceEventHandlerPrivate : public ObjectPrivate {
 public:
 	void notifyFullState (const std::string &notify, const std::shared_ptr<ParticipantDevice> &device);
 	void notifyAllExcept (const std::string &notify, const std::shared_ptr<Participant> &exceptParticipant);

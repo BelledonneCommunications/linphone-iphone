@@ -210,6 +210,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	search/magic-search.h
 	search/search-result.h
 	utils/background-task.h
+	utils/general-internal.h
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h

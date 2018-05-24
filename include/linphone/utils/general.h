@@ -53,9 +53,9 @@ LINPHONE_BEGIN_NAMESPACE
 			#define LINPHONE_PUBLIC
 		#else
 			#ifdef LINPHONE_EXPORTS
-				#define LINPHONE_PUBLIC	__declspec(dllexport)
+				#define LINPHONE_PUBLIC __declspec(dllexport)
 			#else
-				#define LINPHONE_PUBLIC	__declspec(dllimport)
+				#define LINPHONE_PUBLIC __declspec(dllimport)
 			#endif
 		#endif
 	#else

@@ -23,8 +23,8 @@
 #include <list>
 
 #include "address/identity-address.h"
-#include "object/object.h"
 #include "conference/params/call-session-params.h"
+#include "object/object.h"
 
 // =============================================================================
 
@@ -34,6 +34,7 @@ class ClientGroupChatRoom;
 class ParticipantPrivate;
 
 class Participant : public Object {
+	// TODO: Remove... It's ugly.
 	friend class Call;
 	friend class CallPrivate;
 	friend class ClientGroupChatRoom;
@@ -67,7 +68,10 @@ private:
 	L_DISABLE_COPY(Participant);
 };
 
-std::ostream & operator<< (std::ostream &strm, const std::shared_ptr<Participant> &participant);
+inline std::ostream &operator<< (std::ostream &os, const Participant &participant) {
+	return os << participant.getAddress().asString();
+	return os;
+}
 
 LINPHONE_END_NAMESPACE
 

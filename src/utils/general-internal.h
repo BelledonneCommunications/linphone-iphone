@@ -1,5 +1,5 @@
 /*
- * object-p.h
+ * general-internal.h
  * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
  * This program is free software; you can redistribute it and/or
@@ -17,39 +17,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#ifndef _L_OBJECT_P_H_
-#define _L_OBJECT_P_H_
+#ifndef _L_GENERAL_INTERNAL_H_
+#define _L_GENERAL_INTERNAL_H_
 
-#include "base-object-p.h"
-#include "object.h"
+#include "linphone/utils/general.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-#ifdef _WIN32
-	// TODO: Avoid this error.
-	// Disable C4251 triggered by std::recursive_mutex.
-	#pragma warning(push)
-	#pragma warning(disable: 4251)
-#endif // ifdef _WIN32
+// -----------------------------------------------------------------------------
+// Export.
+// -----------------------------------------------------------------------------
 
-class LINPHONE_INTERNAL_PUBLIC ObjectPrivate : public BaseObjectPrivate {
-protected:
-	inline const Object::Lock &getLock () const {
-		return lock;
-	}
-
-private:
-	Object::Lock lock;
-
-	L_DECLARE_PUBLIC(Object);
-};
-
-#ifdef _WIN32
-	#pragma warning(pop)
-#endif // ifdef _WIN32
+#ifndef LINPHONE_INTERNAL_PUBLIC
+	#if defined(_MSC_VER)
+		#ifdef LINPHONE_STATIC
+			#define LINPHONE_INTERNAL_PUBLIC
+		#else
+			#ifdef LINPHONE_EXPORTS
+				#define LINPHONE_INTERNAL_PUBLIC __declspec(dllexport)
+			#else
+				#define LINPHONE_INTERNAL_PUBLIC __declspec(dllimport)
+			#endif
+		#endif
+	#else
+		#define LINPHONE_INTERNAL_PUBLIC
+	#endif
+#endif
 
 LINPHONE_END_NAMESPACE
 
-#endif // ifndef _L_OBJECT_P_H_
+#endif // ifndef _L_GENERAL_INTERNAL_H_

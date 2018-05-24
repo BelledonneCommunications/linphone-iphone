@@ -60,7 +60,8 @@ public:
 	const HeaderParam &getParameter (const std::string &paramName) const;
 
 	std::string asString () const;
-	friend std::ostream &operator<<(std::ostream&, const Header&);
+
+	LINPHONE_PUBLIC friend std::ostream &operator<< (std::ostream &os, const Header &header);
 
 protected:
 	explicit Header (HeaderPrivate &p);

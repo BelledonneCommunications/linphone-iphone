@@ -94,10 +94,10 @@ extern "C" {
 const char* sal_transport_to_string(SalTransport transport);
 SalTransport sal_transport_parse(const char*);
 /* Address manipulation API*/
-SalAddress * sal_address_new(const char *uri);
+LINPHONE_PUBLIC SalAddress * sal_address_new(const char *uri);
 SalAddress * sal_address_clone(const SalAddress *addr);
 SalAddress * sal_address_ref(SalAddress *addr);
-void sal_address_unref(SalAddress *addr);
+LINPHONE_PUBLIC void sal_address_unref(SalAddress *addr);
 const char *sal_address_get_scheme(const SalAddress *addr);
 const char *sal_address_get_display_name(const SalAddress* addr);
 const char *sal_address_get_display_name_unquoted(const SalAddress *addr);
@@ -119,7 +119,7 @@ void sal_address_clean(SalAddress *addr);
 char *sal_address_as_string(const SalAddress *u);
 char *sal_address_as_string_uri_only(const SalAddress *u);
 void sal_address_destroy(SalAddress *u);
-void sal_address_set_param(SalAddress *u,const char* name,const char* value);
+LINPHONE_PUBLIC void sal_address_set_param(SalAddress *u,const char* name,const char* value);
 void sal_address_set_transport(SalAddress* addr,SalTransport transport);
 void sal_address_set_transport_name(SalAddress* addr,const char* transport);
 void sal_address_set_method_param(SalAddress *addr, const char *method);

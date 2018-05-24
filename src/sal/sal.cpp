@@ -973,7 +973,7 @@ LINPHONE_PUBLIC void sal_set_dns_user_hosts_file(Sal *sal, const char *hosts_fil
 	sal->setDnsUserHostsFile(hosts_file);
 }
 
-void *sal_get_stack_impl(Sal *sal) {
+LINPHONE_PUBLIC void *sal_get_stack_impl(Sal *sal) {
 	return sal->getStackImpl();
 }
 
@@ -1020,11 +1020,11 @@ LINPHONE_PUBLIC belle_sip_resolver_context_t *sal_resolve_a(Sal *sal, const char
 	return sal->resolveA(name, port, family, cb, data);
 }
 
-Sal *sal_op_get_sal(SalOp *op) {
+LINPHONE_PUBLIC Sal *sal_op_get_sal(SalOp *op) {
 	return op->getSal();
 }
 
-SalOp *sal_create_refer_op(Sal *sal) {
+LINPHONE_PUBLIC SalOp *sal_create_refer_op(Sal *sal) {
 	return new SalReferOp(sal);
 }
 

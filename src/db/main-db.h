@@ -42,7 +42,7 @@ class MainDbKey;
 class MainDbPrivate;
 class ParticipantDevice;
 
-class MainDb : public AbstractDb, public CoreAccessor {
+class LINPHONE_INTERNAL_PUBLIC MainDb : public AbstractDb, public CoreAccessor {
 	template<typename Function>
 	friend class DbTransaction;
 
