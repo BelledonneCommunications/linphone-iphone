@@ -104,8 +104,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 		}
 	}
 	NSString *msg = group
-		? [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete and leave the selected conversations?", nil)]
-		: [NSString stringWithFormat:NSLocalizedString(@"Do you really want to delete the selected conversations?", nil)];
+		? [NSString stringWithFormat:NSLocalizedString(@"Do you want to leave and delete the selected conversations?", nil)]
+		: [NSString stringWithFormat:NSLocalizedString(@"Do you want to delete the selected conversations?", nil)];
 	[UIConfirmationDialog ShowWithMessage:msg
 		cancelMessage:nil
 		confirmMessage:nil

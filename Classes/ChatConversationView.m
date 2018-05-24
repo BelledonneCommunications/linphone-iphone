@@ -333,7 +333,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		NSString *composingAddresses = @"";
 		if (bctbx_list_size(addresses) == 1) {
 			composingAddresses = [FastAddressBook displayNameForAddress:(LinphoneAddress *)addresses->data];
-			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is composing...", nil), composingAddresses];
+			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ is writing...", nil), composingAddresses];
 		} else {
 			while (addresses) {
 				if (![composingAddresses isEqualToString:@""])
@@ -341,7 +341,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 				composingAddresses = [composingAddresses stringByAppendingString:[FastAddressBook displayNameForAddress:(LinphoneAddress *)addresses->data]];
 				addresses = addresses->next;
 			}
-			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ are composing...", nil), composingAddresses];
+			_composeLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%@ are writing...", nil), composingAddresses];
 		}
 	} else {
 		// pull down the composing frame and widen the tableview

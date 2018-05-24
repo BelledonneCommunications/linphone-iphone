@@ -62,41 +62,41 @@ static const CGFloat NOTIFIED_CELL_HEIGHT = 44;
 	switch (linphone_event_log_get_type(event)) {
 		case LinphoneEventLogTypeConferenceSubjectChanged: {
 			NSString *subject = [NSString stringWithUTF8String:linphone_event_log_get_subject(event) ?: LINPHONE_DUMMY_SUBJECT];
-			NSString *formatedString = [NSString stringWithFormat:@"Chat room subject has changed to : %@", subject];
+			NSString *formatedString = [NSString stringWithFormat:@"New subject : %@", subject];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantAdded: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ has been added to the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ has joined", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantRemoved: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ has been removed of the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ has left", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantSetAdmin: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ is now an admin of the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ is now an admin", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceParticipantUnsetAdmin: {
 			NSString *participant = [FastAddressBook displayNameForAddress:linphone_event_log_get_participant_address(event)];
-			NSString *formatedString = [NSString stringWithFormat:@"%@ is no longer an admin of the chat room", participant];
+			NSString *formatedString = [NSString stringWithFormat:@"%@ is no longer an admin", participant];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceTerminated: {
-			NSString *formatedString = [NSString stringWithFormat:@"Chat room has been left"];
+			NSString *formatedString = [NSString stringWithFormat:@"You have left the group"];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}
 		case LinphoneEventLogTypeConferenceCreated: {
-			NSString *formatedString = [NSString stringWithFormat:@"Chat room has been entered"];
+			NSString *formatedString = [NSString stringWithFormat:@"You have joined the group"];
 			eventString = NSLocalizedString(formatedString, nil);
 			break;
 		}

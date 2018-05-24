@@ -224,7 +224,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	  }
 	};
 
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select picture source", nil)];
+	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
 	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
 		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
 							block:^() {
