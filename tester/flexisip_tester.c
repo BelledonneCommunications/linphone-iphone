@@ -1493,6 +1493,11 @@ void test_removing_old_tport(void) {
 	linphone_core_manager_destroy(marie2);
 	bctbx_list_free(lcs);
 }
+#if 0
+/* SM: I comment this test out. It doesn't unregister participants properly, which confuses subsequent tests.
+ * The storage of REFER request by flexisip in late forking is no longer required in group chat "release" version.
+ * It is not essential to keep testing this feature.
+ */
 
 static const char* get_laure_rc(void) {
 	if (liblinphone_tester_ipv6_available()) {
@@ -1508,6 +1513,7 @@ static void on_refer_received(SalOp *op, const SalAddress *refer_to) {
 	receiver->stat.number_of_LinphoneCallRefered++;
 
 }
+
 
 void resend_refer_other_devices(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new( "marie_rc");
@@ -1563,6 +1569,8 @@ void resend_refer_other_devices(void) {
 	linphone_core_manager_destroy(pauline2);
 	bctbx_list_free(lcs);
 }
+
+#endif
 
 void sequential_forking(void) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
@@ -1923,7 +1931,7 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("TLS authentication - client rejected due to unrecognized certificate chain", tls_client_auth_bad_certificate),
 	TEST_NO_TAG("Transcoder", transcoder_tester),
 	TEST_NO_TAG("Removing old tport on flexisip for the same client", test_removing_old_tport),
-	TEST_NO_TAG("Resend of REFER with other devices", resend_refer_other_devices),
+	/*TEST_NO_TAG("Resend of REFER with other devices", resend_refer_other_devices),*/
 	TEST_NO_TAG("Sequential forking", sequential_forking),
 	TEST_NO_TAG("Sequential forking with timeout for highest priority", sequential_forking_with_timeout_for_highest_priority),
 	TEST_NO_TAG("Sequential forking with no response from highest priority", sequential_forking_with_no_response_for_highest_priority),
