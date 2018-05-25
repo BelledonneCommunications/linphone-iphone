@@ -80,17 +80,15 @@
 }
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
-	if (amessage == _message) {
+	if (!amessage || amessage == _message) {
 		return;
 	}
 
 	_message = amessage;
-	if (amessage) {
-		linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
-		LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
-		linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
-		linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
-	}
+	linphone_chat_message_set_user_data(_message, (void *)CFBridgingRetain(self));
+	LinphoneChatMessageCbs *cbs = linphone_chat_message_get_callbacks(_message);
+	linphone_chat_message_cbs_set_msg_state_changed(cbs, message_status);
+	linphone_chat_message_cbs_set_user_data(cbs, (void *)_event);
 }
 
 + (NSString *)TextMessageForChat:(LinphoneChatMessage *)message {
