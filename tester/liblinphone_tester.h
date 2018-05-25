@@ -41,7 +41,9 @@ extern "C" {
 
 extern test_suite_t account_creator_test_suite;
 extern test_suite_t call_test_suite;
-extern test_suite_t call_video_test_suite;
+#ifdef VIDEO_ENABLED
+	extern test_suite_t call_video_test_suite;
+#endif // ifdef VIDEO_ENABLED
 extern test_suite_t cpim_test_suite;
 extern test_suite_t dtmf_test_suite;
 extern test_suite_t event_test_suite;
