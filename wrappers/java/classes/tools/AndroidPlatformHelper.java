@@ -180,6 +180,11 @@ public class AndroidPlatformHelper {
 	}
 
 	private void copyAssetsFromPackage() throws IOException {
+		Log.i("Starting copy from assets to application files directory");
+		copyAssetsFromPackage(mContext, "org.linphone.core",".");
+		Log.i("Copy from assets done");
+		Log.i("Starting copy from legacy  resources to application files directory");
+		/*legacy code for 3.X*/
 		copyEvenIfExists(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
 		copyEvenIfExists(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
 		copyEvenIfExists(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
@@ -187,6 +192,7 @@ public class AndroidPlatformHelper {
 		copyEvenIfExists(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
 		copyEvenIfExists(getResourceIdentifierFromName("hold"), mPauseSoundFile);
 		copyEvenIfExists(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
+		Log.i("Copy from legacy resources done");
 	}
 
 	public void copyEvenIfExists(int ressourceId, String target) throws IOException {
@@ -219,6 +225,34 @@ public class AndroidPlatformHelper {
 		lOutputStream.flush();
 		lOutputStream.close();
 		lInputStream.close();
+	}
+
+	public static void copyAssetsFromPackage(Context ctx,String fromPath, String toPath) throws IOException {
+		new File(ctx.getFilesDir().getPath()+"/"+toPath).mkdir();
+
+		for (String f :ctx.getAssets().list(fromPath)) {
+			String current_name = fromPath+"/"+f;
+			String current_dest = toPath+"/"+f;
+			InputStream lInputStream;
+			try {
+				lInputStream = ctx.getAssets().open(current_name);
+			} catch (IOException e) {
+				//probably a dir
+				copyAssetsFromPackage(ctx,current_name,current_dest);
+				continue;
+			}
+			FileOutputStream lOutputStream =  new FileOutputStream(new File(ctx.getFilesDir().getPath()+"/"+current_dest));//ctx.openFileOutput (fromPath+"/"+f, 0);
+
+
+			int readByte;
+			byte[] buff = new byte[8048];
+			while (( readByte = lInputStream.read(buff)) != -1) {
+				lOutputStream.write(buff,0, readByte);
+			}
+			lOutputStream.flush();
+			lOutputStream.close();
+			lInputStream.close();
+		}
 	}
 };
 
