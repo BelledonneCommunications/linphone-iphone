@@ -50,7 +50,7 @@ extern test_suite_t call_test_suite;
 
 #if VIDEO_ENABLED
 	extern test_suite_t call_video_test_suite;
-#endif
+#endif // if VIDEO_ENABLED
 
 extern test_suite_t clonable_object_test_suite;
 extern test_suite_t conference_event_test_suite;

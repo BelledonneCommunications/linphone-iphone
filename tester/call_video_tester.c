@@ -669,10 +669,10 @@ void video_call_base_3(LinphoneCoreManager* caller,LinphoneCoreManager* callee, 
 		linphone_core_set_video_policy(callee->lc,&callee_policy);
 		linphone_core_set_video_policy(caller->lc,&caller_policy);
 	}
-	
+
 	linphone_core_set_preferred_video_size_by_name(caller->lc, "QVGA");
 	linphone_core_set_preferred_video_size_by_name(callee->lc, "QVGA");
-	
+
 	linphone_core_set_video_device(caller->lc, "Mire: Mire (synthetic moving picture)");
 	linphone_core_set_video_device(callee->lc, "Mire: Mire (synthetic moving picture)");
 
@@ -2175,11 +2175,11 @@ static void video_call_expected_fps_for_specified_bandwidth(int bandwidth, int f
 			int count;
 			/*wait some time until the target fps is reached. Indeed the bandwidth measurement may take several iterations to converge
 			 to a value big enough to allow mediastreamer2 to switch to the high fps profile*/
-			
+
 			for (count = 0 ; count < 3; count++){
 				/*wait for at least the first TMMBR to arrive*/
 				BC_ASSERT_TRUE(wait_for_until(marie->lc, pauline->lc, &marie->stat.last_tmmbr_value_received, 1, 10000));
-				
+
 				if ((int)vstream->configured_fps == fps){
 					break;
 				}else{
