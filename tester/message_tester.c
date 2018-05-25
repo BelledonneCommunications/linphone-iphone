@@ -1503,7 +1503,7 @@ static void lime_cache_migration(void) {
 		if ((xmlCacheFD = fopen(xmlCache_filepath, "w") ) == NULL) {
 			BC_ASSERT_PTR_NOT_NULL(xmlCacheFD);
 			ms_error("Unable to create temporary XML ZID cache file to test cache migration");
-			return;
+			goto end;
 		}
 		fprintf(xmlCacheFD, "%s", xmlCacheMigration);
 		fclose(xmlCacheFD);
@@ -1516,10 +1516,12 @@ static void lime_cache_migration(void) {
 		linphone_proxy_config_set_identity_address(cfg, new_identity);
 
 		linphone_proxy_config_done(cfg);
+		
+		BC_ASSERT_TRUE(wait_for_until(marie->lc, NULL, &marie->stat.number_of_LinphoneRegistrationOk, 2, 5000));
 
 		if (!linphone_core_lime_available(marie->lc)) {
 			ms_warning("Lime not available, skiping");
-			return;
+			goto end;
 		}
 
 		/* make sure lime is enabled */
@@ -1543,8 +1545,11 @@ static void lime_cache_migration(void) {
 		/* TODO */
 
 		/* free memory */
+		
+	end:
 		linphone_core_manager_destroy(marie);
 		remove(xmlCache_filepath);
+		bc_free(xmlCache_filepath);
 	}
 }
 
