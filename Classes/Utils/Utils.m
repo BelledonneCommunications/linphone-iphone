@@ -494,11 +494,10 @@
 	// since user wants to escape plus, we assume it expects to have phone
 	// numbers by default
 	if (addr && cfg) {
-		if (linphone_proxy_config_get_dial_escape_plus(cfg) && linphone_proxy_config_is_phone_number(cfg, normvalue))
-			linphone_address_set_username(addr, normvalue);
-		else if (linphone_proxy_config_is_phone_number(cfg, value.UTF8String))
-			linphone_address_set_username(addr, value.UTF8String);
-	}
+		const char *username = linphone_proxy_config_get_dial_escape_plus(cfg) ? normvalue : value.UTF8String;
+		if (linphone_proxy_config_is_phone_number(cfg, username))
+			linphone_address_set_username(addr, username);
+	 }
 	return addr;
 }
 
