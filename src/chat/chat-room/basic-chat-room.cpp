@@ -40,6 +40,7 @@ BasicChatRoom::BasicChatRoom (
 	const ChatRoomId &chatRoomId
 ) : ChatRoom(p, core, chatRoomId) {
 	L_D();
+	d->me = make_shared<Participant>(getLocalAddress());
 	d->participants.push_back(make_shared<Participant>(getPeerAddress()));
 }
 
@@ -102,8 +103,8 @@ shared_ptr<Participant> BasicChatRoom::findParticipant (const IdentityAddress &)
 }
 
 shared_ptr<Participant> BasicChatRoom::getMe () const {
-	lError() << "getMe() is not allowed on a BasicChatRoom";
-	return nullptr;
+	L_D();
+	return d->me;
 }
 
 int BasicChatRoom::getParticipantCount () const {

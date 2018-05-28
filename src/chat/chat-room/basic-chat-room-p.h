@@ -30,6 +30,7 @@ LINPHONE_BEGIN_NAMESPACE
 class BasicChatRoomPrivate : public ChatRoomPrivate {
 private:
 	std::string subject;
+	std::shared_ptr<Participant> me;
 	std::list<std::shared_ptr<Participant>> participants;
 	bool cpimAllowed = false;
 	bool multipartAllowed = false;

@@ -362,8 +362,6 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 		soci::use(lastUpdateTime), soci::use(capabilities), soci::use(subject), soci::use(flags), soci::use(notifyId);
 
 	id = dbSession.getLastInsertId();
-	if (!chatRoom->canHandleParticipants())
-		return id;
 
 	// Do not add 'me' when creating a server-group-chat-room.
 	if (chatRoomId.getLocalAddress() != chatRoomId.getPeerAddress()) {
