@@ -496,52 +496,37 @@ void MagicSearch::addResultsToResultsList(std::list<SearchResult> &results, std:
 	}
 }
 
+static string getAddressFromSearchResult(const SearchResult &sr, const shared_ptr<Core> lc) {
+	string sAddress = "";
+	if (!sr.getAddress() && sr.getFriend()) {
+		const LinphonePresenceModel *presenceModel = linphone_friend_get_presence_model(sr.getFriend());
+		char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
+
+		LinphoneAddress *addrPresence = nullptr;
+		if (contactPresence) {
+			addrPresence = linphone_core_create_address(lc->getCCore(), contactPresence);
+			if (addrPresence) {
+				char *tmp = linphone_address_as_string_uri_only(addrPresence);
+				sAddress = tmp;
+				if (tmp) bctbx_free(tmp);
+				linphone_address_unref(addrPresence);
+			}
+			bctbx_free(contactPresence);
+		}
+	} else {
+		char *tmp = linphone_address_as_string_uri_only(sr.getAddress());
+		sAddress = tmp;
+		if (tmp) bctbx_free(tmp);
+	}
+
+	return sAddress;
+}
+
 list<SearchResult> *MagicSearch::uniqueItemsList(list<SearchResult> &list) {
-	auto lc = this->getCore()->getCCore();
+	auto lc = this->getCore();
 	list.unique([lc](const SearchResult& lsr, const SearchResult& rsr){
-		string left = "";
-		string right = "";
-		if (!lsr.getAddress() && lsr.getFriend()) {
-			const LinphonePresenceModel *presenceModel = linphone_friend_get_presence_model(lsr.getFriend());
-			char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
-
-			LinphoneAddress *addrPresence = nullptr;
-			if (contactPresence) {
-				addrPresence = linphone_core_create_address(lc, contactPresence);
-				if (addrPresence) {
-					char *tmp = linphone_address_as_string_uri_only(addrPresence);
-					left = tmp;
-					if (tmp) bctbx_free(tmp);
-					linphone_address_unref(addrPresence);
-				}
-				bctbx_free(contactPresence);
-			}
-		} else {
-			char *tmp = linphone_address_as_string_uri_only(lsr.getAddress());
-			left = tmp;
-			if (tmp) bctbx_free(tmp);
-		}
-
-		if (!rsr.getAddress() && rsr.getFriend()) {
-			const LinphonePresenceModel *presenceModel = linphone_friend_get_presence_model(rsr.getFriend());
-			char *contactPresence = presenceModel ? linphone_presence_model_get_contact(presenceModel) : nullptr;
-
-			LinphoneAddress *addrPresence = nullptr;
-			if (contactPresence) {
-				addrPresence = linphone_core_create_address(lc, contactPresence);
-				if (addrPresence) {
-					char *tmp = linphone_address_as_string_uri_only(addrPresence);
-					right = tmp;
-					if (tmp) bctbx_free(tmp);
-					linphone_address_unref(addrPresence);
-				}
-				bctbx_free(contactPresence);
-			}
-		} else {
-			char *tmp = linphone_address_as_string_uri_only(rsr.getAddress());
-			right = tmp;
-			if (tmp) bctbx_free(tmp);
-		}
+		string left = getAddressFromSearchResult(lsr, lc);
+		string right = getAddressFromSearchResult(rsr, lc);
 
 		return (!left.empty() || !right.empty()) && left == right;
 	});
