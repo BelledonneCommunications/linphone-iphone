@@ -37,7 +37,7 @@ SalOp::SalOp(Sal *sal) {
 
 SalOp::~SalOp() {
 	lInfo() << "Destroying op [" << this << "] of type [" << toString(mType) << "]";
-	
+
 	if (mPendingAuthTransaction) belle_sip_object_unref(mPendingAuthTransaction);
 	mRoot->removePendingAuth(this);
 	if (mAuthInfo) {
@@ -57,7 +57,7 @@ SalOp::~SalOp() {
 	if (mPendingServerTransaction) belle_sip_object_unref(mPendingServerTransaction);
 	if (mPendingUpdateServerTransaction) belle_sip_object_unref(mPendingUpdateServerTransaction);
 	if (mEvent) belle_sip_object_unref(mEvent);
-	
+
 	sal_error_info_reset(&mErrorInfo);
 	if (mFromAddress){
 		sal_address_destroy(mFromAddress);
@@ -96,17 +96,16 @@ SalOp::~SalOp() {
 }
 
 SalOp *SalOp::ref() {
-	   mRef++;
+	mRef++;
 	return this;
 }
 
 void *SalOp::unref() {
-	   mRef--;
-	if (mRef==0) {
+	mRef--;
+	if (mRef == 0)
 		delete this;
-	} else if (mRef<0) {
+	else if (mRef < 0)
 		ms_fatal("SalOp [%p]: too many unrefs.",this);
-	}
 	return NULL;
 }
 
@@ -141,7 +140,7 @@ void SalOp::setRoute (const string &value) {
 
 void SalOp::setRouteAddress(const SalAddress *address){
 	char* address_string=sal_address_as_string(address); /*can probably be optimized*/
-	   setRoute(address_string);
+	setRoute(address_string);
 	ms_free(address_string);
 }
 
@@ -165,7 +164,7 @@ void SalOp::setFrom (const string &value) {
 
 void SalOp::setFromAddress(const SalAddress *from) {
 	char* address_string=sal_address_as_string(from); /*can probably be optimized*/
-	   setFrom(address_string);
+	setFrom(address_string);
 	ms_free(address_string);
 }
 
@@ -182,7 +181,7 @@ void SalOp::setTo (const string &value) {
 
 void SalOp::setToAddress(const SalAddress *to) {
 	char* address_string=sal_address_as_string(to); /*can probably be optimized*/
-	   setTo(address_string);
+	setTo(address_string);
 	ms_free(address_string);
 }
 
@@ -209,7 +208,7 @@ void SalOp::release() {
 	/*if in terminating state, keep this state because it means we are waiting for a response to be able to terminate the operation.*/
 	if (mState!=State::Terminating)
 		mState=State::Terminated;
-	   setUserPointer(NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
+	setUserPointer(NULL);/*mandatory because releasing op doesn't not mean freeing op. Make sure back pointer will not be used later*/
 	if (mReleaseCb)
 		mReleaseCb(this);
 	if (mRefresher) {
@@ -231,7 +230,7 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool add_contact
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_HEADER(contact));
 	} /*keep existing*/
 
-	   addCustomHeaders((belle_sip_message_t*)request);
+	addCustomHeaders((belle_sip_message_t*)request);
 
 	if (!mDialog || belle_sip_dialog_get_state(mDialog) == BELLE_SIP_DIALOG_NULL) {
 		/*don't put route header if  dialog is in confirmed state*/
@@ -271,7 +270,7 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool add_contact
 		}
 		/*because in case of tunnel, transport can be changed*/
 		transport=belle_sip_uri_get_transport_param(next_hop_uri);
-		
+
 		if ((strcmp(method,"REGISTER")==0 || strcmp(method,"SUBSCRIBE")==0) && transport &&
 			(strcasecmp(transport,"TCP")==0 || strcasecmp(transport,"TLS")==0)){
 			/*RFC 5923: add 'alias' parameter to tell the server that we want it to keep the connection for future requests*/
@@ -283,7 +282,7 @@ int SalOp::sendRequestWithContact(belle_sip_request_t* request, bool add_contact
 	client_transaction = belle_sip_provider_create_client_transaction(prov,request);
 	belle_sip_transaction_set_application_data(BELLE_SIP_TRANSACTION(client_transaction),ref());
 	if (mPendingClientTransaction) belle_sip_object_unref(mPendingClientTransaction);
-	
+
 	mPendingClientTransaction=client_transaction; /*update pending inv for being able to cancel*/
 	belle_sip_object_ref(mPendingClientTransaction);
 
@@ -312,11 +311,9 @@ int SalOp::sendRequest(belle_sip_request_t* request) {
 	if (request==NULL) {
 		return -1; /*sanity check*/
 	}
-	/*
-	  Header field          where   proxy ACK BYE CAN INV OPT REG
-	  ___________________________________________________________
-	  Contact                 R            o   -   -   m   o   o
-	 */
+	// Header field          where   proxy ACK BYE CAN INV OPT REG
+	// ___________________________________________________________
+	// Contact                 R            o   -   -   m   o   o
 	if (strcmp(belle_sip_request_get_method(request),"INVITE")==0
 			||strcmp(belle_sip_request_get_method(request),"REGISTER")==0
 			||strcmp(belle_sip_request_get_method(request),"SUBSCRIBE")==0
@@ -330,7 +327,7 @@ int SalOp::sendRequest(belle_sip_request_t* request) {
 void SalOp::resendRequest(belle_sip_request_t* request) {
 	belle_sip_header_cseq_t* cseq=(belle_sip_header_cseq_t*)belle_sip_message_get_header(BELLE_SIP_MESSAGE(request),BELLE_SIP_CSEQ);
 	belle_sip_header_cseq_set_seq_number(cseq,belle_sip_header_cseq_get_seq_number(cseq)+1);
-	   sendRequest(request);
+	sendRequest(request);
 }
 
 int SalOp::processRedirect(){
@@ -340,24 +337,24 @@ int SalOp::processRedirect(){
 	belle_sip_uri_t *redirect_uri;
 	belle_sip_header_call_id_t *callid = belle_sip_message_get_header_by_type((belle_sip_message_t*)request, belle_sip_header_call_id_t);
 	belle_sip_header_to_t *to = belle_sip_message_get_header_by_type((belle_sip_message_t*)request, belle_sip_header_to_t);
-	
+
 	if (!redirect_contact){
 		ms_warning("Redirect not handled, there is no redirect contact header in response");
 		return -1;
 	}
-	
+
 	redirect_uri = belle_sip_header_address_get_uri((belle_sip_header_address_t*) redirect_contact);
-	
+
 	if (!redirect_uri){
 		ms_warning("Redirect not handled, there is no usable uri in contact.");
 		return -1;
 	}
-	
+
 	if (mDialog && belle_sip_dialog_get_state(mDialog)==BELLE_SIP_DIALOG_CONFIRMED){
 		ms_warning("Redirect not handled within established dialogs. Does it make sense ?");
 		return -1;
 	}
-	   setOrUpdateDialog(NULL);
+	setOrUpdateDialog(NULL);
 	belle_sip_message_remove_header_from_ptr((belle_sip_message_t*)request, (belle_sip_header_t*)callid);
 	belle_sip_message_add_header((belle_sip_message_t*)request, (belle_sip_header_t*)(callid = belle_sip_provider_create_call_id(getSal()->mProvider)));
 	mCallId.clear(); // Reset the call-id of op, it will be set when new request will be sent
@@ -366,7 +363,7 @@ int SalOp::processRedirect(){
 	belle_sip_uri_set_port(redirect_uri, 0);
 	belle_sip_parameters_remove_parameter(BELLE_SIP_PARAMETERS(redirect_uri), "transport");
 	belle_sip_header_address_set_uri((belle_sip_header_address_t*)to, redirect_uri);
-	   sendRequest(request);
+	sendRequest(request);
 	return 0;
 }
 
@@ -396,7 +393,7 @@ void SalOp::processAuthentication() {
 		belle_sip_message_remove_header(BELLE_SIP_MESSAGE(new_request),BELLE_SIP_PROXY_AUTHORIZATION);
 	}
 	if (new_request==NULL) {
-		ms_error("sal_process_authentication() op=[%p] cannot obtain new request from dialog.",this);
+		bctbx_error("sal_process_authentication() op=[%p] cannot obtain new request from dialog.",this);
 		return;
 	}
 
@@ -440,7 +437,7 @@ string SalOp::getDialogId () const {
 int SalOp::getAddressFamily() const {
 	belle_sip_transaction_t *tr=NULL;
 	belle_sip_header_address_t *contact;
-	
+
 
 	if (mRefresher)
 		tr=(belle_sip_transaction_t *)belle_sip_refresher_get_transaction(mRefresher);
@@ -449,35 +446,34 @@ int SalOp::getAddressFamily() const {
 		tr=(belle_sip_transaction_t *)mPendingClientTransaction;
 	if (tr==NULL)
 		tr=(belle_sip_transaction_t *)mPendingServerTransaction;
-	
+
 	if (tr==NULL){
-		ms_error("Unable to determine IP version from signaling operation.");
+		bctbx_error("Unable to determine IP version from signaling operation.");
 		return AF_UNSPEC;
 	}
-	
-	
+
 	if (mRefresher) {
 		belle_sip_message_t *msg = belle_sip_transaction_get_response(tr) ? (belle_sip_message_t*) belle_sip_transaction_get_response(tr) : (belle_sip_message_t*) belle_sip_transaction_get_request(tr);
 		belle_sip_header_via_t *via = msg ? belle_sip_message_get_header_by_type(msg,belle_sip_header_via_t):NULL;
-		const char *host;
-		if (!via){
-			ms_error("Unable to determine IP version from signaling operation, no via header found.");
+		if (!via) {
+			bctbx_error("Unable to determine IP version from signaling operation, no via header found.");
 			return AF_UNSPEC;
 		}
-		host = belle_sip_header_via_get_host(via);
+		const char *host = belle_sip_header_via_get_host(via);
 		if (!host){
-			ms_error("Unable to determine IP version from signaling operation, no via header is not yet completed.");
+			bctbx_error("Unable to determine IP version from signaling operation, no via header is not yet completed.");
 			return AF_UNSPEC;
 		}
-		return (strchr(host,':') != NULL) ? AF_INET6 : AF_INET;
-	} else {
-		belle_sip_request_t *req = belle_sip_transaction_get_request(tr);
-		contact=(belle_sip_header_address_t*)belle_sip_message_get_header_by_type(req,belle_sip_header_contact_t);
-		if (!contact){
-			ms_error("Unable to determine IP version from signaling operation, no contact header found.");
-		}
-		return sal_address_is_ipv6((SalAddress*)contact) ? AF_INET6 : AF_INET;
+		return strchr(host,':') ? AF_INET6 : AF_INET;
 	}
+
+	belle_sip_request_t *req = belle_sip_transaction_get_request(tr);
+	contact = reinterpret_cast<belle_sip_header_address_t *>(
+		belle_sip_message_get_header_by_type(req, belle_sip_header_contact_t)
+	);
+	if (!contact)
+		bctbx_error("Unable to determine IP version from signaling operation, no contact header found.");
+	return sal_address_is_ipv6(reinterpret_cast<SalAddress *>(contact)) ? AF_INET6 : AF_INET;
 }
 
 bool SalOp::isIdle() const {
@@ -532,13 +528,13 @@ belle_sip_request_t* SalOp::buildRequest (const string &method) {
 	/* check that the op has a correct to address */
 	to_address = getToAddress();
 	if( to_address == NULL ){
-		ms_error("No To: address, cannot build request");
+		bctbx_error("No To: address, cannot build request");
 		return NULL;
 	}
 
 	to_uri = belle_sip_header_address_get_uri(BELLE_SIP_HEADER_ADDRESS(to_address));
 	if( to_uri == NULL ){
-		ms_error("To: address is invalid, cannot build request");
+		bctbx_error("To: address is invalid, cannot build request");
 		return NULL;
 	}
 
@@ -606,7 +602,7 @@ void SalOp::setErrorInfoFromResponse(belle_sip_response_t *response) {
 
 	warnings=warning ? belle_sip_header_get_unparsed_value(warning) : NULL;
 	sal_error_info_set(ei,SalReasonUnknown,"SIP", code,reason_phrase,warnings);
-	   setReasonErrorInfo(BELLE_SIP_MESSAGE(response));
+	setReasonErrorInfo(BELLE_SIP_MESSAGE(response));
 }
 
 string SalOp::toString (const State value) {
@@ -639,7 +635,7 @@ void SalOp::setReferredBy(belle_sip_header_referred_by_t* referred_by) {
 	if (mReferredBy){
 		belle_sip_object_unref(mReferredBy);
 	}
-	
+
 	mReferredBy=referred_by;
 	belle_sip_object_ref(mReferredBy);
 }
@@ -648,7 +644,7 @@ void SalOp::setReplaces(belle_sip_header_replaces_t* replaces) {
 	if (mReplaces){
 		belle_sip_object_unref(mReplaces);
 	}
-	
+
 	mReplaces=replaces;
 	belle_sip_object_ref(mReplaces);
 }
@@ -747,9 +743,9 @@ void SalOp::setOrUpdateDialog(belle_sip_dialog_t* dialog) {
 	ref();
 	if (mDialog!=dialog){
 		if (mDialog){
-			/*FIXME: shouldn't we delete unconfirmed dialogs ?*/
-			         unlinkOpFromDialog(mDialog);
-			mDialog=NULL;
+			// FIXME: Shouldn't we delete unconfirmed dialogs?
+			unlinkOpFromDialog(mDialog);
+			mDialog = nullptr;
 		}
 		if (dialog) {
 			mDialog=linkOpWithDialog(dialog);
@@ -827,33 +823,33 @@ void SalOp::setNetworkOriginAddress (SalAddress *value) {
 rfc3323
 4.2 Expressing Privacy Preferences
 When a Privacy header is constructed, it MUST consist of either the
-   value 'none', or one or more of the values 'user', 'header' and
-   'session' (each of which MUST appear at most once) which MAY in turn
-   be followed by the 'critical' indicator.
- */
+value 'none', or one or more of the values 'user', 'header' and
+'session' (each of which MUST appear at most once) which MAY in turn
+be followed by the 'critical' indicator.
+*/
 void SalOp::setPrivacyFromMessage(belle_sip_message_t* msg) {
 	belle_sip_header_privacy_t* privacy = belle_sip_message_get_header_by_type(msg,belle_sip_header_privacy_t);
 	if (!privacy) {
-		      setPrivacy(SalPrivacyNone);
+		setPrivacy(SalPrivacyNone);
 	} else {
 		belle_sip_list_t* privacy_list=belle_sip_header_privacy_get_privacy(privacy);
-		      setPrivacy(0);
+		setPrivacy(0);
 		for (;privacy_list!=NULL;privacy_list=privacy_list->next) {
 			char* privacy_value=(char*)privacy_list->data;
 			if(strcmp(sal_privacy_to_string(SalPrivacyCritical),privacy_value) == 0)
-				            setPrivacy(getPrivacy()|SalPrivacyCritical);
+				setPrivacy(getPrivacy()|SalPrivacyCritical);
 			if(strcmp(sal_privacy_to_string(SalPrivacyHeader),privacy_value) == 0)
-							         setPrivacy(getPrivacy()|SalPrivacyHeader);
+				setPrivacy(getPrivacy()|SalPrivacyHeader);
 			if(strcmp(sal_privacy_to_string(SalPrivacyId),privacy_value) == 0)
-							         setPrivacy(getPrivacy()|SalPrivacyId);
+				setPrivacy(getPrivacy()|SalPrivacyId);
 			if(strcmp(sal_privacy_to_string(SalPrivacyNone),privacy_value) == 0) {
-				            setPrivacy(SalPrivacyNone);
+				setPrivacy(SalPrivacyNone);
 				break;
 			}
 			if(strcmp(sal_privacy_to_string(SalPrivacySession),privacy_value) == 0)
-							         setPrivacy(getPrivacy()|SalPrivacySession);
+				setPrivacy(getPrivacy()|SalPrivacySession);
 			if(strcmp(sal_privacy_to_string(SalPrivacyUser),privacy_value) == 0)
-										      setPrivacy(getPrivacy()|SalPrivacyUser);
+				setPrivacy(getPrivacy()|SalPrivacyUser);
 		}
 	}
 }
@@ -906,7 +902,7 @@ void SalOp::addHeaders(belle_sip_header_t *h, belle_sip_message_t *msg){
 	if (BELLE_SIP_OBJECT_IS_INSTANCE_OF(h,belle_sip_header_contact_t)){
 		belle_sip_header_contact_t* newct;
 		/*special case for contact, we want to keep everything from the custom contact but set automatic mode and add our own parameters as well*/
-		      setContactAddress((SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
+		setContactAddress((SalAddress*)BELLE_SIP_HEADER_ADDRESS(h));
 		newct = createContact();
 		belle_sip_message_set_header(BELLE_SIP_MESSAGE(msg),BELLE_SIP_HEADER(newct));
 		return;
@@ -922,7 +918,7 @@ void SalOp::addCustomHeaders(belle_sip_message_t *msg){
 		belle_sip_list_t *l=belle_sip_message_get_all_headers(ch);
 		belle_sip_list_t *elem;
 		for(elem=l;elem!=NULL;elem=elem->next){
-			         addHeaders((belle_sip_header_t*)elem->data,msg);
+			addHeaders((belle_sip_header_t*)elem->data,msg);
 		}
 		belle_sip_list_free(l);
 	}
@@ -955,13 +951,13 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 
 	from_header=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_from_t);
 	content_type=belle_sip_message_get_header_by_type(BELLE_SIP_MESSAGE(req),belle_sip_header_content_type_t);
-	
+
 	if (content_type) {
 		SalMessage salmsg;
 		char message_id[256]={0};
 
 		if (mPendingServerTransaction) belle_sip_object_unref(mPendingServerTransaction);
-		
+
 		mPendingServerTransaction=server_transaction;
 		belle_sip_object_ref(mPendingServerTransaction);
 
@@ -997,9 +993,9 @@ void SalOp::processIncomingMessage(const belle_sip_request_event_t *event) {
 		if (salmsg.url) ms_free((char*)salmsg.url);
 		ms_free((char *)salmsg.content_type);
 	} else {
-		ms_error("Unsupported MESSAGE (no Content-Type)");
+		bctbx_error("Unsupported MESSAGE (no Content-Type)");
 		resp = belle_sip_response_create_from_request(req, errcode);
-		      addMessageAccept((belle_sip_message_t*)resp);
+		addMessageAccept((belle_sip_message_t*)resp);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 		release();
 	}
@@ -1017,7 +1013,9 @@ int SalOp::replyMessage(SalReason reason) {
 			belle_sip_transaction_get_request((belle_sip_transaction_t*)mPendingServerTransaction),code);
 		belle_sip_server_transaction_send_response(mPendingServerTransaction,resp);
 		return 0;
-	}else ms_error("sal_message_reply(): no server transaction");
+	}
+
+	bctbx_error("sal_message_reply(): no server transaction");
 	return -1;
 }
 
