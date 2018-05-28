@@ -35,7 +35,7 @@ static int get_codec_position(const MSList *l, const char *mime_type, int rate){
 
 /*check basic things about codecs at startup: order and enablement*/
 static void start_with_no_config(void){
-	LinphoneCore *lc=linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore *lc=linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	const MSList *codecs=linphone_core_get_audio_codecs(lc);
 	int opus_codec_pos;
 	int speex_codec_pos=get_codec_position(codecs, "speex", 8000);

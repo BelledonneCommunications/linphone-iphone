@@ -358,7 +358,7 @@ end:
 }
 
 static void friends_sqlite_store_lot_of_friends(void) {
-	LinphoneCore* lc = linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore* lc = linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
@@ -428,7 +428,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 }
 
 static void friends_sqlite_find_friend_in_lot_of_friends(void) {
-	LinphoneCore* lc = linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore* lc = linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
