@@ -135,7 +135,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-	_waitView.hidden = FALSE;
+	_waitView.hidden = TRUE;
 	LinphoneManager.instance.nextCallIsTransfer = NO;
 
 	[self updateUnreadMessage:FALSE];
