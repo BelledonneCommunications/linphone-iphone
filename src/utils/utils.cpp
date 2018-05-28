@@ -243,8 +243,8 @@ string Utils::utf8ToLocale (const string &str) {
 	return localeStr;
 }
 
-string Utils::convertString (const string &str, const string &from, const string &to) {
-	char *cStr = bctbx_convert_from_to(str.c_str(), from.c_str(), to.c_str());
+string Utils::convertAnyToUtf8 (const string &str, const string &encoding) {
+	char *cStr = bctbx_convert_any_to_utf8(str.c_str(), encoding.c_str());
 	string convertedStr = cStringToCppString(cStr);
 	bctbx_free(cStr);
 	return convertedStr;
