@@ -655,6 +655,14 @@
 		8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C3EAA1C1EB8D9DB00B732B6 /* linphonetester.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; };
 		8C3EAA1D1EB8DBD000B732B6 /* linphonetester.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C435F9420BBF863004CCA25 /* belcard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; };
+		8C435F9620BBF867004CCA25 /* belcard.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C435F9720BBF874004CCA25 /* belcard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; };
+		8C435F9820BBF874004CCA25 /* belcard.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C435F8B20BBF862004CCA25 /* belcard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C435FB320BC3685004CCA25 /* belr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; };
+		8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8C435FB520BC368D004CCA25 /* belr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; };
+		8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C435FA520BC34DA004CCA25 /* belr.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8C56289E20236AA7007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C56289F20236C25007A8ECC /* db in Resources */ = {isa = PBXBuildFile; fileRef = 8C56289120236AA6007A8ECC /* db */; };
 		8C5BCED01EB3859200A9AAEF /* bctoolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */; };
@@ -889,12 +897,14 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8C435FB620BC368D004CCA25 /* belr.framework in Embed Frameworks */,
 				8C5BCED31EB3859200A9AAEF /* linphone.framework in Embed Frameworks */,
 				8C5BCED51EB3859300A9AAEF /* mediastreamer_base.framework in Embed Frameworks */,
 				8C5BCED71EB3859300A9AAEF /* mediastreamer_voip.framework in Embed Frameworks */,
 				8C5BCEDB1EB3859300A9AAEF /* mswebrtc.framework in Embed Frameworks */,
 				8C3EA9F11EB8A78C00B732B6 /* msx264.framework in Embed Frameworks */,
 				8C3EA9E61EB892D600B732B6 /* mscodec2.framework in Embed Frameworks */,
+				8C435F9620BBF867004CCA25 /* belcard.framework in Embed Frameworks */,
 				8C5BCED91EB3859300A9AAEF /* mssilk.framework in Embed Frameworks */,
 				8C3EA9E41EB892D600B732B6 /* msamr.framework in Embed Frameworks */,
 				8C5BCED11EB3859200A9AAEF /* bctoolbox.framework in Embed Frameworks */,
@@ -921,9 +931,11 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8C435F9820BBF874004CCA25 /* belcard.framework in CopyFiles */,
 				8C3EAA0C1EB8CEE700B732B6 /* mediastreamer_voip.framework in CopyFiles */,
 				8C3EAA0E1EB8CEE700B732B6 /* mssilk.framework in CopyFiles */,
 				8C3EAA081EB8CEE700B732B6 /* linphone.framework in CopyFiles */,
+				8C435FB420BC3685004CCA25 /* belr.framework in CopyFiles */,
 				8C3EAA1B1EB8D9C300B732B6 /* linphonetester.framework in CopyFiles */,
 				8C3EA9FE1EB8CEE700B732B6 /* msx264.framework in CopyFiles */,
 				8C3EA9FC1EB8CEE600B732B6 /* bctoolbox-tester.framework in CopyFiles */,
@@ -1642,6 +1654,8 @@
 		8C3EA9E21EB892D600B732B6 /* msopenh264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msopenh264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msopenh264.framework"; sourceTree = "<group>"; };
 		8C3EA9EF1EB8A78C00B732B6 /* msx264.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = msx264.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/msx264.framework"; sourceTree = "<group>"; };
 		8C3EAA191EB8D9C300B732B6 /* linphonetester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = linphonetester.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/linphonetester.framework"; sourceTree = "<group>"; };
+		8C435F8B20BBF862004CCA25 /* belcard.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = belcard.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/belcard.framework"; sourceTree = "<group>"; };
+		8C435FA520BC34DA004CCA25 /* belr.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = belr.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/belr.framework"; sourceTree = "<group>"; };
 		8C56289120236AA6007A8ECC /* db */ = {isa = PBXFileReference; lastKnownFileType = folder; name = db; path = submodules/linphone/tester/db; sourceTree = SOURCE_ROOT; };
 		8C5BCEC61EB3859200A9AAEF /* bctoolbox-tester.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "bctoolbox-tester.framework"; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox-tester.framework"; sourceTree = "<group>"; };
 		8C5BCEC71EB3859200A9AAEF /* bctoolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = bctoolbox.framework; path = "liblinphone-sdk/apple-darwin/Frameworks/bctoolbox.framework"; sourceTree = "<group>"; };
@@ -1950,6 +1964,7 @@
 				152F22361B15E889008C0621 /* libxml2.dylib in Frameworks */,
 				570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */,
 				22405EEE1600B4E400B92522 /* AssetsLibrary.framework in Frameworks */,
+				8C435FB520BC368D004CCA25 /* belr.framework in Frameworks */,
 				2274402F106F335E006EC466 /* AudioToolbox.framework in Frameworks */,
 				224567C2107B968500F10948 /* AVFoundation.framework in Frameworks */,
 				228697C411AC29B800E9E0CA /* CFNetwork.framework in Frameworks */,
@@ -1966,6 +1981,7 @@
 				70E542F313E147E3002BA2C0 /* OpenGLES.framework in Frameworks */,
 				70E542F513E147EB002BA2C0 /* QuartzCore.framework in Frameworks */,
 				2264B6D211200342002C2C53 /* SystemConfiguration.framework in Frameworks */,
+				8C435F9420BBF863004CCA25 /* belcard.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				F0B026F31AA710AF00FF49F7 /* libiconv.dylib in Frameworks */,
 				F05BAA621A5D594E00411815 /* libz.dylib in Frameworks */,
@@ -2004,12 +2020,14 @@
 				8C3EAA111EB8CEE700B732B6 /* ortp.framework in Frameworks */,
 				F08D468D1AA86849001E8CB5 /* libiconv.dylib in Frameworks */,
 				F05BAA631A5D75BC00411815 /* libz.dylib in Frameworks */,
+				8C435F9720BBF874004CCA25 /* belcard.framework in Frameworks */,
 				8C3EA9FB1EB8CEE600B732B6 /* bctoolbox-tester.framework in Frameworks */,
 				F0BB8C4D193631DF00974404 /* AVFoundation.framework in Frameworks */,
 				8C3EAA051EB8CEE700B732B6 /* bctoolbox.framework in Frameworks */,
 				F0BB8C4C193631D200974404 /* CoreMedia.framework in Frameworks */,
 				8C3EAA0F1EB8CEE700B732B6 /* mswebrtc.framework in Frameworks */,
 				F0BB8C35193624C800974404 /* libresolv.9.dylib in Frameworks */,
+				8C435FB320BC3685004CCA25 /* belr.framework in Frameworks */,
 				F0BB8C331936247C00974404 /* libsqlite3.dylib in Frameworks */,
 				F0BB8C301936246600974404 /* AudioToolbox.framework in Frameworks */,
 				F0BB8BD71936208100974404 /* CoreGraphics.framework in Frameworks */,
@@ -2312,6 +2330,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8C435FA520BC34DA004CCA25 /* belr.framework */,
+				8C435F8B20BBF862004CCA25 /* belcard.framework */,
 				8C601FD220B462B0004FF95C /* mediastreamer2.framework */,
 				8C1A1F7C1FA331D40064BE00 /* libsoci_sqlite3.a */,
 				8CD0B3BE1FA22CBA008FEB16 /* libsoci_core.a */,
