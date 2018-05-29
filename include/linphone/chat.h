@@ -59,6 +59,13 @@ LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message(LinphoneC
  * @return a new #LinphoneChatMessage
  */
 LINPHONE_PUBLIC LinphoneChatMessage* linphone_chat_room_create_message_2(LinphoneChatRoom *cr, const char* message, const char* external_body_url, LinphoneChatMessageState state, time_t time, bool_t is_read, bool_t is_incoming);
+/**
+ * Create a message attached to a dedicated chat room without converting the message to UTF-8;
+ * @param cr the chat room.
+ * @param message text message, NULL if absent.
+ * @return a new #LinphoneChatMessage
+ */
+LINPHONE_PUBLIC LinphoneChatMessage *linphone_chat_room_create_message_without_conversion(LinphoneChatRoom *cr, const char *message);
 
 /**
  * Acquire a reference to the chat room.

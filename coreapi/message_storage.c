@@ -183,7 +183,7 @@ static int create_chat_message(void *data, int argc, char **argv, char **colName
 		new_message = get_transient_message(cr, storage_id);
 	}
 	if (new_message == NULL) {
-		new_message = linphone_chat_room_create_message(cr, argv[4]);
+		new_message = linphone_chat_room_create_message_without_conversion(cr, argv[4]);
 
 		if(atoi(argv[3])==LinphoneChatMessageIncoming){
 			new_message->dir=LinphoneChatMessageIncoming;
@@ -584,7 +584,7 @@ bctbx_list_t* linphone_chat_room_find_messages(LinphoneChatRoom *cr, const char 
 	char *buf;
 	char *peer;
 	bctbx_list_t* messages;
-	
+
 	if (lc->db == NULL) return NULL;
 	peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
 	cr->messages_hist = NULL;
@@ -611,7 +611,7 @@ LinphoneChatMessage * linphone_chat_room_find_message_with_dir(LinphoneChatRoom 
 	}
 	if (messages)
 		bctbx_list_free_with_data(messages, (bctbx_list_free_func)linphone_chat_message_unref);
-	
+
 	return ret;
 
 }

@@ -385,7 +385,7 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 	int retval = -1;
 	LinphoneCore *lc = cr->lc;
 	LinphoneImEncryptionEngine *imee = lc->im_encryption_engine;
-	
+
 	/*stubed rtt text*/
 	if (cr->call && linphone_call_params_realtime_text_enabled(linphone_call_get_current_params(cr->call))) {
 		uint32_t new_line = 0x2028;
@@ -634,7 +634,7 @@ static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(Linph
 							file_url = xmlGetProp(cur, (const xmlChar *)"url");
 						}
 
-						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) { 
+						if (!xmlStrcmp(cur->name, (const xmlChar *)"file-key")) {
 							/* there is a key in the msg: file has been encrypted */
 							/* convert the key from base 64 */
 							xmlChar *keyb64 = xmlNodeListGetString(xmlMessageBody, cur->xmlChildrenNode, 1);
@@ -642,7 +642,7 @@ static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(Linph
 							uint8_t *keyBuffer = (uint8_t *)malloc(keyLength);
 							/* decode the key into local key buffer */
 							b64::b64_decode((char *)keyb64, strlen((char *)keyb64), keyBuffer, keyLength);
-							linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength); 
+							linphone_content_set_key(msg->file_transfer_information, (char *)keyBuffer, keyLength);
 							/* duplicate key value into the linphone content private structure */
 							xmlFree(keyb64);
 							free(keyBuffer);
@@ -662,25 +662,6 @@ static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(Linph
 
 	linphone_chat_message_set_external_body_url(msg, (const char *)file_url);
 	xmlFree(file_url);
-}
-
-static LinphoneChatMessage *_linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
-	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->state = LinphoneChatMessageStateIdle;
-	msg->callbacks = linphone_chat_message_cbs_new();
-	msg->chat_room = (LinphoneChatRoom *)cr;
-	msg->message = message ? ms_strdup(message) : NULL;
-	msg->locale_message = NULL;
-	msg->content_type = ms_strdup("text/plain");
-	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
-	msg->http_request = NULL;
-	msg->time = ms_time(0);
-	msg->is_secured = FALSE;
-	return msg;
-}
-
-static LinphoneChatMessage *_linphone_chat_room_create_message_without_conversion(LinphoneChatRoom *cr, const char *message) {
-	return _linphone_chat_room_create_message(cr, message);
 }
 
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
@@ -704,7 +685,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		goto end;
 	}
 
-	msg = _linphone_chat_room_create_message_without_conversion(cr, sal_msg->text);
+	msg = linphone_chat_room_create_message_without_conversion(cr, sal_msg->text);
 	linphone_chat_message_set_content_type(msg, sal_msg->content_type);
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
@@ -979,6 +960,25 @@ LinphoneCore *linphone_chat_room_get_core(LinphoneChatRoom *cr) {
 
 const LinphoneAddress *linphone_chat_room_get_peer_address(LinphoneChatRoom *cr) {
 	return cr->peer_url;
+}
+
+static LinphoneChatMessage *_linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
+	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->state = LinphoneChatMessageStateIdle;
+	msg->callbacks = linphone_chat_message_cbs_new();
+	msg->chat_room = (LinphoneChatRoom *)cr;
+	msg->message = message ? ms_strdup(message) : NULL;
+	msg->locale_message = NULL;
+	msg->content_type = ms_strdup("text/plain");
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
+	msg->http_request = NULL;
+	msg->time = ms_time(0);
+	msg->is_secured = FALSE;
+	return msg;
+}
+
+LinphoneChatMessage *linphone_chat_room_create_message_without_conversion(LinphoneChatRoom *cr, const char *message) {
+	return _linphone_chat_room_create_message(cr, message);
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
@@ -1302,7 +1302,7 @@ static void linphone_chat_message_send_imdn(LinphoneChatMessage *cm, enum ImdnTy
 		if (retval <= 0) {
 			sal_message_send(op, identity, cr->peer, msg->content_type, msg->message, NULL);
 		}
-		
+
 		linphone_chat_message_unref(msg);
 		linphone_address_unref(from_addr);
 		linphone_address_unref(to_addr);
@@ -1654,7 +1654,7 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 		msg->message = NULL;
 		msg->locale_message = NULL;
 	}
-	
+
 	return 0;
 }
 
