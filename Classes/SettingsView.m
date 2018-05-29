@@ -506,11 +506,6 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 		removeFromHiddenKeys = [video_preset isEqualToString:@"custom"];
 		[keys addObject:@"video_preferred_fps_preference"];
 		[keys addObject:@"download_bandwidth_preference"];
-	} else if ([notif.object isEqualToString:@"show_msg_in_notif"]) {
-		// we have to register again to the iOS notification, because we change the actions associated with IM_MSG
-		UIApplication *app = [UIApplication sharedApplication];
-		LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)app.delegate;
-		[delegate registerForNotifications];
 	}
 
 	for (NSString *key in keys) {

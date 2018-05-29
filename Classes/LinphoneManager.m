@@ -1083,9 +1083,6 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 #pragma mark - Text Received Functions
 
 - (void)onMessageReceived:(LinphoneCore *)lc room:(LinphoneChatRoom *)room message:(LinphoneChatMessage *)msg {
-	UIApplication *app = [UIApplication sharedApplication];
-	LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)app.delegate;
-	[delegate registerForNotifications];
 #pragma deploymate push "ignored-api-availability"
 	if (_silentPushCompletion) {
 		// we were woken up by a silent push. Call the completion handler with NEWDATA

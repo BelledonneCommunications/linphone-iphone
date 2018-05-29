@@ -412,10 +412,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 		linphone_core_set_default_proxy_config(LC, new_config);
 		// reload address book to prepend proxy config domain to contacts' phone number
 		// todo: STOP doing that!
-                [[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
-        } else {
-          [self displayAssistantConfigurationError];
-        }
+		[[LinphoneManager.instance fastAddressBook] fetchContactsInBackGroundThread];
+	} else
+		[self displayAssistantConfigurationError];
 }
 
 - (void)displayAssistantConfigurationError {

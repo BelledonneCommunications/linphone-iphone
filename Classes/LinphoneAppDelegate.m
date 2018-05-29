@@ -141,81 +141,6 @@
 }
 
 #pragma deploymate push "ignored-api-availability"
-- (UIUserNotificationCategory *)getMessageNotificationCategory {
-	NSArray *actions;
-
-	if ([[UIDevice.currentDevice systemVersion] floatValue] < 9 ||
-		[LinphoneManager.instance lpConfigBoolForKey:@"show_msg_in_notif"] == NO) {
-
-		UIMutableUserNotificationAction *reply = [[UIMutableUserNotificationAction alloc] init];
-		reply.identifier = @"reply";
-		reply.title = NSLocalizedString(@"Reply", nil);
-		reply.activationMode = UIUserNotificationActivationModeForeground;
-		reply.destructive = NO;
-		reply.authenticationRequired = YES;
-
-		UIMutableUserNotificationAction *mark_read = [[UIMutableUserNotificationAction alloc] init];
-		mark_read.identifier = @"mark_read";
-		mark_read.title = NSLocalizedString(@"Mark Read", nil);
-		mark_read.activationMode = UIUserNotificationActivationModeBackground;
-		mark_read.destructive = NO;
-		mark_read.authenticationRequired = NO;
-
-		actions = @[ mark_read, reply ];
-	} else {
-		// iOS 9 allows for inline reply. We don't propose mark_read in this case
-		UIMutableUserNotificationAction *reply_inline = [[UIMutableUserNotificationAction alloc] init];
-
-		reply_inline.identifier = @"reply_inline";
-		reply_inline.title = NSLocalizedString(@"Reply", nil);
-		reply_inline.activationMode = UIUserNotificationActivationModeBackground;
-		reply_inline.destructive = NO;
-		reply_inline.authenticationRequired = NO;
-		reply_inline.behavior = UIUserNotificationActionBehaviorTextInput;
-
-		actions = @[ reply_inline ];
-	}
-
-	UIMutableUserNotificationCategory *localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
-	localRingNotifAction.identifier = @"incoming_msg";
-	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextDefault];
-	[localRingNotifAction setActions:actions forContext:UIUserNotificationActionContextMinimal];
-
-	return localRingNotifAction;
-}
-
-- (UIUserNotificationCategory *)getCallNotificationCategory {
-	UIMutableUserNotificationAction *answer = [[UIMutableUserNotificationAction alloc] init];
-	answer.identifier = @"answer";
-	answer.title = NSLocalizedString(@"Answer", nil);
-	answer.activationMode = UIUserNotificationActivationModeForeground;
-	answer.destructive = NO;
-	answer.authenticationRequired = YES;
-
-	UIMutableUserNotificationAction *decline = [[UIMutableUserNotificationAction alloc] init];
-	decline.identifier = @"decline";
-	decline.title = NSLocalizedString(@"Decline", nil);
-	decline.activationMode = UIUserNotificationActivationModeBackground;
-	decline.destructive = YES;
-	decline.authenticationRequired = NO;
-
-	NSArray *localRingActions = @[ decline, answer ];
-
-	UIMutableUserNotificationCategory *localRingNotifAction = [[UIMutableUserNotificationCategory alloc] init];
-	localRingNotifAction.identifier = @"incoming_call";
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextDefault];
-	[localRingNotifAction setActions:localRingActions forContext:UIUserNotificationActionContextMinimal];
-
-	return localRingNotifAction;
-}
-
-- (UIUserNotificationCategory *)getAccountExpiryNotificationCategory {
-
-	UIMutableUserNotificationCategory *expiryNotification = [[UIMutableUserNotificationCategory alloc] init];
-	expiryNotification.identifier = @"expiry_notification";
-	return expiryNotification;
-}
-
 
 - (void)registerForNotifications {
 	if (_alreadyRegisteredForNotification)
@@ -226,6 +151,7 @@
 	self.voipRegistry.delegate = self;
 
 	// Initiate registration.
+	LOGI(@"[PushKit] Registering for push notifications");
 	self.voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
 
 	[self configureUINotification];
@@ -313,7 +239,7 @@
 	LinphoneManager *instance = [LinphoneManager instance];
 	BOOL background_mode = [instance lpConfigBoolForKey:@"backgroundmode_preference"];
 	BOOL start_at_boot = [instance lpConfigBoolForKey:@"start_at_boot_preference"];
-	[self registerForNotifications];//register for notifications must be done ASAP to give a chance for first SIP register to be done we right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
+	[self registerForNotifications]; // Register for notifications must be done ASAP to give a chance for first SIP register to be done with right token. Specially true in case of remote provisionning or re-install with new type of signing certificate, like debug to release.
 	if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 		self.del = [[ProviderDelegate alloc] init];
 		[LinphoneManager.instance setProviderDelegate:self.del];
@@ -431,7 +357,7 @@
 - (void)processRemoteNotification:(NSDictionary *)userInfo {
 	if (linphone_core_get_calls(LC)) {
 		// if there are calls, obviously our TCP socket shall be working
-		LOGD(@"Notification [%p] has np need to be processed because there already is an active call.", userInfo);
+		LOGD(@"Notification [%p] has no need to be processed because there already is an active call.", userInfo);
 		return;
 	}
 
@@ -451,12 +377,10 @@
 	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 
-	[self registerForNotifications];
-
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 	if (!linphone_core_is_network_reachable(LC)) {
-		LOGI(@"Notification [%p] : network is down, restarting it.", userInfo);
+		LOGI(@"Notification [%p]: network is down, restarting it.", userInfo);
 		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
 		[LinphoneManager.instance setupNetworkReachabilityCallback];
 	}
@@ -543,8 +467,7 @@
 #pragma mark - PushKit Functions
 
 - (void)pushRegistry:(PKPushRegistry *)registry didUpdatePushCredentials:(PKPushCredentials *)credentials forType:(PKPushType)type {
-	LOGI(@"PushKit credentials updated");
-	LOGI(@"voip token: %@", (credentials.token));
+	LOGI(@"[PushKit] credentials updated with voip token: %@", credentials.token);
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[LinphoneManager.instance setPushNotificationToken:credentials.token];
 	});
@@ -552,12 +475,12 @@
 
 - (void)pushRegistry:(PKPushRegistry *)registry
 didInvalidatePushTokenForType:(NSString *)type {
-    LOGI(@"PushKit Token invalidated");
+    LOGI(@"[PushKit] Token invalidated");
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
 
 - (void)processPush:(NSDictionary *)userInfo {
-	LOGI(@"Notification [%p] received with pay load : %@", userInfo, userInfo.description);
+	LOGI(@"[PushKit] Notification [%p] received with pay load : %@", userInfo, userInfo.description);
 	[self configureUINotification];
 	[LinphoneManager.instance setupNetworkReachabilityCallback];
 	//to avoid IOS to suspend the app before being able to launch long running task
