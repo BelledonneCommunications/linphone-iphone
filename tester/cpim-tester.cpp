@@ -23,7 +23,7 @@
 #include "content/content-type.h"
 #include "content/content.h"
 #include "core/core.h"
-
+#include "belr/grammarbuilder.h"
 // TODO: Remove me later.
 #include "private.h"
 
@@ -151,6 +151,7 @@ static void parse_message_with_generic_header_parameters () {
 }
 
 static void build_message () {
+
 	Cpim::Message message;
 
 	// Set message headers.
@@ -310,7 +311,12 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("CPIM chat message modifier with multipart body", cpim_chat_message_modifier_with_multipart_body)
 };
 
+static int suite_begin(void) {
+	//Supposed to be done by platform helper, but in this case, we don't have it"
+	belr::GrammarLoader::get().load(bc_tester_res("share/belr/grammars/cpim_grammars"));
+	return 0;
+}
 test_suite_t cpim_test_suite = {
-	"Cpim", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+	"Cpim", suite_begin, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 	sizeof(cpim_tests) / sizeof(cpim_tests[0]), cpim_tests
 };

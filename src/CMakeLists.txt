@@ -402,7 +402,7 @@ if(ENABLE_STATIC)
 	)
 endif()
 if(ENABLE_SHARED)
-	set(LINPHONE_RESOURCES "${CMAKE_SOURCE_DIR}/share/cpim_grammar")
+	set(LINPHONE_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../share/cpim_grammar") #keep it relative to current dir to allow CMakeList inclusion
 	add_library(linphone SHARED ${LINPHONE_RESOURCES} ${LINPHONE_HEADER_FILES}
 		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
 		$<TARGET_OBJECTS:linphone-coreapi>
