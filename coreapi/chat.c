@@ -373,9 +373,11 @@ static void store_or_update_chat_message(LinphoneChatMessage *msg) {
 
 void _linphone_chat_message_convert_to_utf8(LinphoneChatMessage *msg) {
 	if (msg && msg->message) {
-		char* tmp = msg->message;
-		msg->message = bctbx_locale_to_utf8(tmp);
-		ms_free(tmp);
+		if (msg->locale_message)
+			ms_free(msg->locale_message);
+
+		msg->locale_message = msg->message;
+		msg->message = bctbx_locale_to_utf8(msg->locale_message);
 	}
 }
 
@@ -415,7 +417,6 @@ void _linphone_chat_room_send_message(LinphoneChatRoom *cr, LinphoneChatMessage 
 		char *clear_text_content_type = NULL;
 
 		if (msg->message) {
-			_linphone_chat_message_convert_to_utf8(msg);
 			clear_text_message = ms_strdup(msg->message);
 		}
 		if (msg->content_type) {
@@ -663,6 +664,25 @@ static void create_file_transfer_information_from_vnd_gsma_rcs_ft_http_xml(Linph
 	xmlFree(file_url);
 }
 
+static LinphoneChatMessage *_linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
+	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
+	msg->state = LinphoneChatMessageStateIdle;
+	msg->callbacks = linphone_chat_message_cbs_new();
+	msg->chat_room = (LinphoneChatRoom *)cr;
+	msg->message = message ? ms_strdup(message) : NULL;
+	msg->locale_message = NULL;
+	msg->content_type = ms_strdup("text/plain");
+	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
+	msg->http_request = NULL;
+	msg->time = ms_time(0);
+	msg->is_secured = FALSE;
+	return msg;
+}
+
+static LinphoneChatMessage *_linphone_chat_room_create_message_without_conversion(LinphoneChatRoom *cr, const char *message) {
+	return _linphone_chat_room_create_message(cr, message);
+}
+
 LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const SalMessage *sal_msg) {
 	LinphoneChatRoom *cr = NULL;
 	LinphoneAddress *addr;
@@ -684,7 +704,7 @@ LinphoneReason linphone_core_message_received(LinphoneCore *lc, SalOp *op, const
 		goto end;
 	}
 
-	msg = linphone_chat_room_create_message(cr, sal_msg->text);
+	msg = _linphone_chat_room_create_message_without_conversion(cr, sal_msg->text);
 	linphone_chat_message_set_content_type(msg, sal_msg->content_type);
 	linphone_chat_message_set_from(msg, cr->peer_url);
 
@@ -962,17 +982,8 @@ const LinphoneAddress *linphone_chat_room_get_peer_address(LinphoneChatRoom *cr)
 }
 
 LinphoneChatMessage *linphone_chat_room_create_message(LinphoneChatRoom *cr, const char *message) {
-	LinphoneChatMessage *msg = belle_sip_object_new(LinphoneChatMessage);
-	msg->state = LinphoneChatMessageStateIdle;
-	msg->callbacks = linphone_chat_message_cbs_new();
-	msg->chat_room = (LinphoneChatRoom *)cr;
-	msg->message = message ? ms_strdup(message) : NULL;
-	msg->locale_message = NULL;
-	msg->content_type = ms_strdup("text/plain");
-	msg->file_transfer_information = NULL; /* this property is used only when transfering file */
-	msg->http_request = NULL;
-	msg->time = ms_time(0);
-	msg->is_secured = FALSE;
+	LinphoneChatMessage *msg = _linphone_chat_room_create_message(cr, message);
+	_linphone_chat_message_convert_to_utf8(msg);
 	return msg;
 }
 
@@ -1623,7 +1634,6 @@ LinphoneChatMessageState linphone_chat_message_get_state(const LinphoneChatMessa
 }
 
 const char *linphone_chat_message_get_text(LinphoneChatMessage *msg) {
-	// Convert into system locale is message is in UTF8
 	if (msg->message && !msg->locale_message) {
 		msg->locale_message = bctbx_utf8_to_locale(msg->message);
 	}
@@ -1635,12 +1645,15 @@ int linphone_chat_message_set_text(LinphoneChatMessage *msg, const char* text) {
 		ms_free(msg->message);
 	if (msg->locale_message) {
 		ms_free(msg->locale_message);
+	}
+
+	if (text) {
+		msg->message = bctbx_locale_to_utf8(text);
+		msg->locale_message = ms_strdup(text);
+	} else {
+		msg->message = NULL;
 		msg->locale_message = NULL;
 	}
-	if (text)
-		msg->message = ms_strdup(text);
-	else
-		msg->message = NULL;
 	
 	return 0;
 }
