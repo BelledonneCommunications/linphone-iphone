@@ -91,7 +91,7 @@ static inline vector<char> blobToVector (soci::blob &in) {
 	if (!len)
 		return vector<char>();
 	vector<char> out(len);
-	in.read_from_start(&out[0], len);
+	in.read(0, &out[0], len);
 	return out;
 }
 
