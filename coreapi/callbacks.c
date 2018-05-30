@@ -451,6 +451,7 @@ static void start_remote_ring(LinphoneCore *lc, LinphoneCall *call) {
 		if (call->audiostream)
 			audio_stream_unprepare_sound(call->audiostream);
 		if( lc->sound_conf.remote_ring ){
+			ms_snd_card_set_stream_type(ringcard, MS_SND_CARD_STREAM_VOICE);
 			lc->ringstream=ring_start(lc->factory, lc->sound_conf.remote_ring,2000,ringcard);
 		}
 	}
