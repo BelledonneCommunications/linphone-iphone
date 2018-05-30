@@ -2268,7 +2268,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
 	lc->sal->setFactory(lc->factory);
 
-	belr::GrammarLoader::get().addPath(std::string(linphone_factory_get_top_resources_dir(lfactory)).append("/belr/grammars").c_str());
+	belr::GrammarLoader::get().addPath(std::string(linphone_factory_get_top_resources_dir(lfactory)).append("/belr/grammars"));
 
 	linphone_task_list_init(&lc->hooks);
 

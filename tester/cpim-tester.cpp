@@ -313,7 +313,7 @@ test_t cpim_tests[] = {
 
 static int suite_begin(void) {
 	//Supposed to be done by platform helper, but in this case, we don't have it"
-	belr::GrammarLoader::get().load(bc_tester_res("share/belr/grammars/cpim_grammars"));
+	belr::GrammarLoader::get().addPath(std::string(bc_tester_get_resource_dir_prefix()));
 	return 0;
 }
 test_suite_t cpim_test_suite = {
