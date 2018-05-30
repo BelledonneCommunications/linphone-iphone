@@ -58,14 +58,20 @@ Cpim::Message::HeaderList Cpim::Message::getMessageHeaders (const string &ns) co
 	return d->messageHeaders.at(ns);
 }
 
-void Cpim::Message::addMessageHeader (const Header &messageHeader, const string &ns) {
+bool Cpim::Message::addMessageHeader (const Header &messageHeader, const string &ns) {
 	L_D();
+
+	auto header = Parser::getInstance()->cloneHeader(messageHeader);
+	if (header == nullptr)
+		return false;
 
 	if (d->messageHeaders.find(ns) == d->messageHeaders.end())
 		d->messageHeaders[ns] = make_shared<Cpim::MessagePrivate::PrivHeaderList>();
 
 	auto list = d->messageHeaders.at(ns);
-	list->push_back(Parser::getInstance()->cloneHeader(messageHeader));
+	list->push_back(header);
+
+	return true;
 }
 
 void Cpim::Message::removeMessageHeader (const Header &messageHeader, const string &ns) {
@@ -99,9 +105,16 @@ Cpim::Message::HeaderList Cpim::Message::getContentHeaders () const {
 	return d->contentHeaders;
 }
 
-void Cpim::Message::addContentHeader (const Header &contentHeader) {
+bool Cpim::Message::addContentHeader (const Header &contentHeader) {
 	L_D();
-	d->contentHeaders->push_back(Parser::getInstance()->cloneHeader(contentHeader));
+
+	auto header = Parser::getInstance()->cloneHeader(contentHeader);
+	if (header == nullptr)
+		return false;
+
+	d->contentHeaders->push_back(header);
+
+	return true;
 }
 
 void Cpim::Message::removeContentHeader (const Header &contentHeader) {
