@@ -77,8 +77,10 @@
 		const char *phoneNumber = NULL;
 		if (!addr) {
 			phoneNumber = linphone_search_result_get_phone_number(result);
-			if (!phoneNumber)
+			if (!phoneNumber) {
+				results = results->next;
 				continue;
+			}
 			
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
