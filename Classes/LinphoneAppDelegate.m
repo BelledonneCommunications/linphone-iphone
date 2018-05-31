@@ -830,7 +830,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 		[[UIDevice currentDevice] setValue:value forKey:@"orientation"];
 		return UIInterfaceOrientationMaskPortrait;
 	}
-	else return UIInterfaceOrientationMaskAll;
+	else return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 @end

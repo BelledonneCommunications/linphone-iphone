@@ -256,6 +256,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 								duration:(NSTimeInterval)duration {
+	if (toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown)
+		return;
+
 	[super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[mainViewController willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[self orientationUpdate:toInterfaceOrientation];
@@ -263,6 +266,9 @@ static RootViewManager *rootViewManagerInstance = nil;
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 										 duration:(NSTimeInterval)duration {
+	if (toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown)
+		return;
+
 	[super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 	[mainViewController willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
 }
