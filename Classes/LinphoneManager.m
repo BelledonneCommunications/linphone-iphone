@@ -1932,7 +1932,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		LOGI(@"linphonecore is already created");
 		return;
 	}
-	[Log enableLogs:[self lpConfigIntForKey:@"debugenable_preference"]];
+	
 	connectivity = none;
 
 	// Set audio assets
