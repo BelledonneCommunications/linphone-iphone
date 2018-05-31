@@ -335,7 +335,7 @@ namespace Cpim {
 		if (mTime.tm_mon < 1 || mTime.tm_mon > 12)
 			return false;
 
-		if (mTime.tm_mday < 1 || (mTime.tm_mon == 2 && isLeapYear ? mTime.tm_mday > 29 : mTime.tm_mday > daysInMonth[mTime.tm_mon - 1]))
+		if (mTime.tm_mday < 1 || (mTime.tm_mon == 2 && isLeapYear ? mTime.tm_mday > 29 : mTime.tm_mday > daysInMonth[mTime.tm_mon]))
 			return false;
 
 		// Check time.
