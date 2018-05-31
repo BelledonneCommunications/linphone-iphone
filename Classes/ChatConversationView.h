@@ -31,8 +31,8 @@
 #include "linphone/linphonecore.h"
 
 @interface ChatConversationView
-	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate,
-								   ChatConversationDelegate, UISearchBarDelegate> {
+	: TPMultiLayoutViewController <HPGrowingTextViewDelegate, UICompositeViewDelegate, ImagePickerDelegate, ChatConversationDelegate,
+                        UIDocumentInteractionControllerDelegate, UISearchBarDelegate> {
 	OrderedDictionary *imageQualities;
 	BOOL scrollOnGrowingEnabled;
 	BOOL composingVisible;
@@ -58,7 +58,7 @@
 @property(weak, nonatomic) IBOutlet UIBackToCallButton *backToCallButton;
 @property (weak, nonatomic) IBOutlet UIIconButton *infoButton;
 @property (weak, nonatomic) IBOutlet UILabel *particpantsLabel;
-
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 + (void)markAsRead:(LinphoneChatRoom *)chatRoom;
 
 - (void)configureForRoom:(BOOL)editing;
@@ -72,5 +72,6 @@
 - (IBAction)onDeleteClick:(id)sender;
 - (IBAction)onEditionChangeClick:(id)sender;
 - (void)update;
+- (void)openResults:(NSString *) filePath;
 
 @end

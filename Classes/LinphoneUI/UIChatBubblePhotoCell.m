@@ -23,6 +23,9 @@
 
 #import <AssetsLibrary/ALAsset.h>
 #import <AssetsLibrary/ALAssetRepresentation.h>
+#import <AVFoundation/AVFoundation.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <AVKit/AVKit.h>
 
 @implementation UIChatBubblePhotoCell {
 	FileTransferDelegate *_ftd;
@@ -67,6 +70,7 @@
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
+    _openRecognizer.enabled = NO;
 	_messageImageView.image = nil;
     _finalImage.image = nil;
     _finalImage.hidden = TRUE;
@@ -112,22 +116,59 @@
 	});
 }
 
+- (void) loadVideoAsset: (AVAsset *) asset {
+    // Calculate a time for the snapshot - I'm using the half way mark.
+    CMTime duration = [asset duration];
+    CMTime snapshot = CMTimeMake(duration.value / 2, duration.timescale);
+    
+    // Create a generator and copy image at the time.
+    // I'm not capturing the actual time or an error.
+    AVAssetImageGenerator *generator =
+    [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
+    CGImageRef imageRef = [generator copyCGImageAtTime:snapshot
+                                            actualTime:nil
+                                                 error:nil];
+    
+    // Make a UIImage and release the CGImage.
+    UIImage *image = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_messageImageView setImage:image];
+        [_messageImageView stopLoading];
+        _messageImageView.hidden = NO;
+    });
+}
+
+- (void) loadFileAsset {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        CGRect newFrame = _totalView.frame;
+        newFrame.origin.x = newFrame.origin.y = 0;
+        _fileName.frame = newFrame;
+        _fileName.hidden = NO;
+    });
+}
+
 - (void)update {
 	if (self.message == nil) {
 		LOGW(@"Cannot update message room cell: NULL message");
 		return;
 	}
 	[super update];
+
+    LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
+    NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
+    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
 	BOOL fullScreenImage = NO;
-	assert(is_external || localImage);
+	assert(is_external || localImage || localVideo || localFile);
+ 
 	if (localImage) {
 		// image is being saved on device - just wait for it
 		if ([localImage isEqualToString:@"saving..."]) {
-			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+			_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden  = YES;
 			fullScreenImage = YES;
 		} else {
 			// we did not load the image yet, so start doing so
@@ -172,17 +213,72 @@
 				_cancelButton.hidden = NO;
 				_fileTransferProgress.hidden = NO;
 				_downloadButton.hidden = YES;
+                _playButton.hidden = YES;
+                _fileName.hidden = YES;
 			} else {
-                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+				_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden =  YES;
 				fullScreenImage = YES;
 			}
 		}
 		// we must download the image: either it has already started (show cancel button) or not yet (show download
 		// button)
-	} else {
+    } else if(localVideo) {
+        if ([localVideo isEqualToString:@"saving..."]) {
+            _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden =  YES;
+            fullScreenImage = YES;
+        } else {
+            if (_messageImageView.image == nil) {
+     
+                [_messageImageView startLoading];
+                NSURL *url = [NSURL fileURLWithPath:localVideo];
+                AVAsset *asset = [AVAsset assetWithURL:url];
+                if (asset)
+                    [self loadVideoAsset:asset];
+                //TODO fail
+                else return;
+            }
+            // we did not load the video yet, so start doing so
+            // we are uploading the video
+            if (_ftd.message != nil && state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateDisplayed) {
+                _cancelButton.hidden = NO;
+                _fileTransferProgress.hidden = NO;
+                _downloadButton.hidden = YES;
+                _playButton.hidden = YES;
+                _fileName.hidden = YES;
+            } else {
+               
+                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =  _fileName.hidden =  YES;
+                _playButton.hidden = NO;
+                fullScreenImage = YES;
+            }
+        }
+        
+    } else if(localFile){
+        if ([localFile isEqualToString:@"saving..."]) {
+            _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden =  YES;
+            fullScreenImage = YES;
+        } else {
+            if (_ftd.message != nil && state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateDisplayed) {
+                _cancelButton.hidden = NO;
+                _fileTransferProgress.hidden = NO;
+                _downloadButton.hidden = YES;
+                _playButton.hidden = YES;
+                _fileName.hidden = YES;
+            } else {
+                NSString *text = [[NSURL fileURLWithPath:localFile] lastPathComponent];
+                _fileName.text = text;
+                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden =
+                _playButton.hidden = YES;
+                fullScreenImage = YES;
+                [self loadFileAsset];
+                _openRecognizer.enabled = YES;
+            }
+        }
+    }else{
+        _playButton.hidden =  _fileName.hidden = YES;
 		_messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
-		_downloadButton.hidden = !_cancelButton.hidden;
-		_fileTransferProgress.hidden = NO;
+        _downloadButton.hidden = !_cancelButton.hidden;
+        _fileTransferProgress.hidden = NO;
 	}
 
 	// resize image so that it take the full bubble space available
@@ -194,6 +290,7 @@
 	_messageImageView.frame = newFrame;
 }
 
+
 - (IBAction)onDownloadClick:(id)event {
 	[_ftd cancel];
 	_ftd = [[FileTransferDelegate alloc] init];
@@ -201,7 +298,36 @@
 	[_ftd download:self.message];
 	_cancelButton.hidden = NO;
 	_downloadButton.hidden = YES;
+    _playButton.hidden = YES;
+    _fileName.hidden = YES;
 }
+
+- (IBAction)onPlayClick:(id)sender {
+    NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
+
+    NSURL * fileURL= [[NSURL alloc] initFileURLWithPath:localVideo];
+    
+    // create a player view controller
+    AVPlayer *player = [AVPlayer playerWithURL:fileURL];
+    AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+    [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+    controller.player = player;
+    [player play];
+    
+    _cancelButton.hidden = YES;
+    _downloadButton.hidden = YES;
+    _playButton.hidden = NO;
+    _fileTransferProgress.hidden = YES;
+}
+
+- (IBAction)onOpenClick:(id)event {
+    
+    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    
+    ChatConversationView *view = VIEW(ChatConversationView);
+    [view openResults:localFile];
+}
+
 
 - (IBAction)onCancelClick:(id)sender {
 	FileTransferDelegate *tmp = _ftd;
@@ -357,3 +483,5 @@
 
 
 @end
+
+

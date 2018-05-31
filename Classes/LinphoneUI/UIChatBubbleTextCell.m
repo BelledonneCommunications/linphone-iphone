@@ -232,19 +232,28 @@
 	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
+        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
 		NSURL *imageUrl = [NSURL URLWithString:localImage];
 		[self onDelete];
-		[LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-			resultBlock:^(ALAsset *asset) {
-			  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-							 ^(void) {
-								UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-								[_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
-							 });
-			}
-			failureBlock:^(NSError *error) {
-			  LOGE(@"Can't read image");
-			}];
+        if(localImage){
+            [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
+                                                   resultBlock:^(ALAsset *asset) {
+                                                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+                                                                      ^(void) {
+                                                                          UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
+                                                                          [_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
+                                                                      });
+                                                   }
+                                                  failureBlock:^(NSError *error) {
+                                                      LOGE(@"Can't read image");
+                                                  }];
+        } else if(localVideo) {
+            [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:localVideo] withUrl:[NSURL URLWithString:localVideo]];
+        } else {
+             [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:localFile] withUrl:[NSURL URLWithString:localFile]];
+        }
+		
 	} else {
 		[self onDelete];
 		double delayInSeconds = 0.4;

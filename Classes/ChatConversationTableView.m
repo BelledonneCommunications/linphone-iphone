@@ -174,8 +174,8 @@
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
-		if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat))
-			kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
+        if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat))
+            kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
 		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
         

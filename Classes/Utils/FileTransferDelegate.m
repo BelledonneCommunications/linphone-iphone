@@ -44,62 +44,63 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 	if (size == 0) {
 		LOGI(@"Transfer of %s (%d bytes): download finished", linphone_content_get_name(content), size);
 		assert([thiz.data length] == linphone_content_get_file_size(content));
+        NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
+        if([fileType isEqualToString:@"image"]) {
+            // we're finished, save the image and update the message
+            UIImage *image = [UIImage imageWithData:thiz.data];
+            if (!image) {
+                UIAlertController *errView = [UIAlertController
+                                              alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
+                                              message:NSLocalizedString(@"Error while downloading the file.\n"
+                                                                        @"The file is probably encrypted.\n"
+                                                                        @"Please retry to download this file after activating LIME.",
+                                                                        nil)
+                                              preferredStyle:UIAlertControllerStyleAlert];
 
-		// we're finished, save the image and update the message
-		UIImage *image = [UIImage imageWithData:thiz.data];
-		if (!image) {
-			UIAlertController *errView = [UIAlertController
-				alertControllerWithTitle:NSLocalizedString(@"File download error", nil)
-								 message:NSLocalizedString(@"Error while downloading the file.\n"
-														   @"The file is probably encrypted.\n"
-														   @"Please retry to download this file after activating LIME.",
-														   nil)
-						  preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction *action){
+                                                                      }];
 
-			UIAlertAction *defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																	style:UIAlertActionStyleDefault
-																  handler:^(UIAlertAction *action){
-																  }];
+                [errView addAction:defaultAction];
+                [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+                [thiz stopAndDestroy];
+                return;
+            }
 
-			[errView addAction:defaultAction];
-			[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-			[thiz stopAndDestroy];
-			return;
-		}
+            CFBridgingRetain(thiz);
+            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
 
-		CFBridgingRetain(thiz);
-		[[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
+            // until image is properly saved, keep a reminder on it so that the
+            // chat bubble is aware of the fact that image is being saved to device
+            [LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
 
-		// until image is properly saved, keep a reminder on it so that the
-		// chat bubble is aware of the fact that image is being saved to device
-		[LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
-
-		[LinphoneManager.instance.photoLibrary
-			writeImageToSavedPhotosAlbum:image.CGImage
-							 orientation:(ALAssetOrientation)[image imageOrientation]
-						 completionBlock:^(NSURL *assetURL, NSError *error) {
-						   if (error) {
-							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							   [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
-							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+            [LinphoneManager.instance.photoLibrary
+                    writeImageToSavedPhotosAlbum:image.CGImage
+                            orientation:(ALAssetOrientation)[image imageOrientation]
+                                completionBlock:^(NSURL *assetURL, NSError *error) {
+                                    if (error) {
+                                        LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+                                        [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
+                                        UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
 																								message:NSLocalizedString(@"Cannot write image to photo library",
 																														  nil)
 																						 preferredStyle:UIAlertControllerStyleAlert];
 							   
-							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
 																					   style:UIAlertActionStyleDefault
 																					 handler:^(UIAlertAction * action) {}];
 							   
-							   [errView addAction:defaultAction];
-							   [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-						   } else {
-							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-							   [LinphoneManager setValueInMessageAppData:[assetURL absoluteString]
+                                        [errView addAction:defaultAction];
+                                        [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+                                    } else {
+                                        LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
+                                        [LinphoneManager setValueInMessageAppData:[assetURL absoluteString]
 																  forKey:@"localimage"
 															   inMessage:message];
-						   }
-						   [NSNotificationCenter.defaultCenter
-							   postNotificationName:kLinphoneFileTransferRecvUpdate
+                                    }
+                                    [NSNotificationCenter.defaultCenter
+                                     postNotificationName:kLinphoneFileTransferRecvUpdate
 											 object:thiz
 										   userInfo:@{
 											   @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to
@@ -109,10 +110,41 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 											   @"progress" : @(1.f),
 										   }];
 
-						   [thiz stopAndDestroy];
-						   CFRelease((__bridge CFTypeRef)thiz);
-						 }];
-	} else {
+                                    [thiz stopAndDestroy];
+                                    CFRelease((__bridge CFTypeRef)thiz);
+                                }];
+        }  else{
+            [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
+            
+            NSString *key = @"localvideo";
+            NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
+        
+            if([fileType isEqualToString:@"file"]){
+                key = @"localfile";
+            }
+            [LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
+           
+            //write file to path
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *filePath = [LinphoneManager documentFile:name];
+                [[NSFileManager defaultManager] createFileAtPath:filePath
+                                                    contents:thiz.data
+                                                  attributes:nil];
+        
+                [LinphoneManager setValueInMessageAppData:filePath forKey:key inMessage:message];
+                     
+                [NSNotificationCenter.defaultCenter
+                 postNotificationName:kLinphoneFileTransferRecvUpdate
+                 object:thiz
+                 userInfo:@{
+                            @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to trigger
+                            @"progress" : @(1.f),    // FileTransferDone here
+                            }];
+            
+                [thiz stopAndDestroy];
+            });
+        }
+    } else {
 		LOGD(@"Transfer of %s (%d bytes): already %ld sent, adding %ld", linphone_content_get_name(content),
 			 linphone_content_get_file_size(content), [thiz.data length], size);
 		[thiz.data appendBytes:linphone_buffer_get_string_content(buffer) length:size];
@@ -124,6 +156,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 							@"progress" : @([thiz.data length] * 1.f / linphone_content_get_file_size(content)),
 						}];
 	}
+    
 }
 
 static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *message, const LinphoneContent *content,
@@ -197,6 +230,44 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 		[LinphoneManager.instance alertLIME:chatRoom];
 	}
 }
+
+- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url {
+    [LinphoneManager.instance.fileTransferDelegates addObject:self];
+    
+    LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
+    _data = [NSMutableData dataWithData:data];
+  
+    NSString *filePath = [LinphoneManager documentFile:[url lastPathComponent]];
+    [[NSFileManager defaultManager] createFileAtPath:filePath
+                                            contents:_data
+                                          attributes:nil];
+    
+    NSString *key = @"localvideo";
+    if(![[url pathExtension]isEqualToString:@"MOV"]) {
+        linphone_content_set_type(content, "file");
+        key = @"localfile";
+    }
+
+    linphone_content_set_name(content, [[url lastPathComponent] UTF8String]);
+    linphone_content_set_size(content, _data.length);
+    
+    _message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
+    linphone_content_unref(content);
+    
+    linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
+                                                     linphone_iphone_file_transfer_send);
+
+    [LinphoneManager setValueInMessageAppData:filePath forKey:key inMessage:_message];
+    
+    LOGI(@"%p Uploading content from message %p", self, _message);
+    linphone_chat_room_send_chat_message(chatRoom, _message);
+    
+    if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
+        [LinphoneManager.instance alertLIME:chatRoom];
+    }
+}
+
+
 
 - (BOOL)download:(LinphoneChatMessage *)message {
 	[[LinphoneManager.instance fileTransferDelegates] addObject:self];
