@@ -755,18 +755,13 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 	} else if ([key isEqual:@"flush_images_button"]) {
 		const MSList *rooms = linphone_core_get_chat_rooms(LC);
 		while (rooms) {
-			const MSList *events = linphone_chat_room_get_history_events(rooms->data, 0);
+			const MSList *events = linphone_chat_room_get_history_message_events(rooms->data, 0);
 			while (events) {
 				LinphoneEventLog *event = events->data;
-				if (linphone_event_log_get_type(event) != LinphoneEventLogTypeConferenceChatMessage) {
-					events = events->next;
-					continue;
-				}
-
 				LinphoneChatMessage *msg = linphone_event_log_get_chat_message(event);
 				if (!linphone_chat_message_is_outgoing(msg)) {
-					[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:events->data];
-					[LinphoneManager setValueInMessageAppData:nil forKey:@"uploadQuality" inMessage:events->data];
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:msg];
+					[LinphoneManager setValueInMessageAppData:nil forKey:@"uploadQuality" inMessage:msg];
 				}
 				events = events->next;
 			}
