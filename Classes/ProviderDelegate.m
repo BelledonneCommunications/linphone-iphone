@@ -79,7 +79,8 @@
 	update.supportsHolding = TRUE;
 	update.supportsGrouping = TRUE;
 	update.supportsUngrouping = TRUE;
-	update.hasVideo = video;
+	update.hasVideo = _pendingCallVideo = video;
+
 	linphone_call_ref(call);
 	// Report incoming call to system
 	LOGD(@"CallKit: report new incoming call");
@@ -88,7 +89,7 @@
 										  update:update
 									  completion:^(NSError *error) {
 										  if (error) {
-											  LOGE(@"CallKit: cannot complete incoming call from [%@] caused by [%@]",handle,[error localizedDescription]);
+											  LOGE(@"CallKit: cannot complete incoming call from [%@] caused by [%@]", handle, [error localizedDescription]);
 											  if ([error code] == CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb ||
 												  [error code] == CXErrorCodeIncomingCallErrorFilteredByBlockList)
 												  linphone_call_decline(call,LinphoneReasonBusy); /*to give a chance for other devices to answer*/
@@ -96,7 +97,7 @@
 												  linphone_call_decline(call,LinphoneReasonUnknown);
 										  }
 										  linphone_call_unref(call);
-										  }];
+									  }];
 }
 
 - (void)setPendingCall:(LinphoneCall *)pendingCall {
@@ -114,21 +115,16 @@
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
 	LOGD(@"CallKit : Answering Call");
-	self.callKitCalls++;
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];
 	NSUUID *uuid = action.callUUID;
-
 	NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
-	if (call != NULL) {
-		BOOL video = ([UIApplication sharedApplication].applicationState == UIApplicationStateActive &&
-					  linphone_core_get_video_policy(LC)->automatically_accept &&
-					  linphone_call_params_video_enabled(linphone_call_get_remote_params((LinphoneCall *)call)));
-		self.pendingCall = call;
-		self.pendingCallVideo = video;
+	if (!call)
 		return;
-	};
+
+	self.callKitCalls++;
+	_pendingCall = call;
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
