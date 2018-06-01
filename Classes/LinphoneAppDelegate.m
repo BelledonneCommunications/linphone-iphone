@@ -371,25 +371,32 @@
 	}
 
 	NSString *loc_key = [aps objectForKey:@"loc-key"] ?: [[aps objectForKey:@"alert"] objectForKey:@"loc-key"];
-	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
 	if (!loc_key) {
 		LOGE(@"Notification [%p] has no loc_key, it's impossible to process it.", userInfo);
 		return;
 	}
 
+	NSString *uuid = [NSString stringWithFormat:@"<urn:uuid:%@>", [LinphoneManager.instance lpConfigStringForKey:@"uuid" inSection:@"misc" withDefault:NULL]];
+	NSString *sipInstance = [aps objectForKey:@"uuid"];
+	if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
+		LOGE(@"Notification [%p] was intended for another device, ignoring it.", userInfo);
+		return;
+	}
+
+	NSString *callId = [aps objectForKey:@"call-id"] ?: @"";
 	if ([self addLongTaskIDforCallID:callId] && [UIApplication sharedApplication].applicationState != UIApplicationStateActive)
 		[LinphoneManager.instance startPushLongRunningTask:loc_key callId:callId];
 
 	// if we receive a push notification, it is probably because our TCP background socket was no more working.
 	// As a result, break it and refresh registers in order to make sure to receive incoming INVITE or MESSAGE
 	if (!linphone_core_is_network_reachable(LC)) {
-		LOGI(@"Notification [%p]: network is down, restarting it.", userInfo);
-		LinphoneManager.instance.connectivity = none; //Force connectivity to be discovered again
+		LOGI(@"Notification [%p] network is down, restarting it.", userInfo);
+		LinphoneManager.instance.connectivity = none; // Force connectivity to be discovered again
 		[LinphoneManager.instance setupNetworkReachabilityCallback];
 	}
 
 	if ([callId isEqualToString:@""]) {
-		//Present apn pusher notifications for info
+		// Present apn pusher notifications for info
 		LOGD(@"Notification [%p] came from flexisip-pusher.", userInfo);
 		if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
 			UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
