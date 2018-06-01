@@ -59,7 +59,7 @@ public:
 private:
 	void bgTaskTimeout ();
 	static void sBgTaskTimeout (void *data);
-	static const char *directoryForResource (CFStringRef framework, CFStringRef resource);
+	static std::string directoryForResource (CFStringRef framework, CFStringRef resource);
 
 	long int mCpuLockTaskId;
 	int mCpuLockCount;
@@ -71,14 +71,14 @@ IosPlatformHelpers::IosPlatformHelpers (LinphoneCore *lc, void *system_context) 
 	mCpuLockCount = 0;
 	mCpuLockTaskId = 0;
 
-	const char *cpimPath = directoryForResource(CFSTR("org.linphone.linphone"), CFSTR("cpim_grammar"));
-	const char *vcardPath = directoryForResource(CFSTR("org.linphone.belcard"), CFSTR("vcard_grammar"));
-	if (cpimPath)
+	std::string cpimPath = directoryForResource(CFSTR("org.linphone.linphone"), CFSTR("cpim_grammar"));
+	std::string vcardPath = directoryForResource(CFSTR("org.linphone.belcard"), CFSTR("vcard_grammar"));
+	if (!cpimPath.empty())
 		belr::GrammarLoader::get().addPath(cpimPath);
 	else
 		lError() << "IosPlatformHelpers did not find cpim grammar resource directory...";
 
-	if (vcardPath)
+	if (!vcardPath.empty())
 		belr::GrammarLoader::get().addPath(vcardPath);
 	else
 		lError() << "IosPlatformHelpers did not find vcard grammar resource directory...";
@@ -125,13 +125,13 @@ void IosPlatformHelpers::releaseCpuLock () {
 	mCpuLockTaskId = 0;
 }
 
-const char *IosPlatformHelpers::directoryForResource (CFStringRef framework, CFStringRef resource) {
+std::string IosPlatformHelpers::directoryForResource (CFStringRef framework, CFStringRef resource) {
 	CFBundleRef bundle = CFBundleGetBundleWithIdentifier(framework);
 	CFURLRef grammarUrl = CFBundleCopyResourceURL(bundle, resource, nullptr, nullptr);
 	CFURLRef grammarUrlDirectory = CFURLCreateCopyDeletingLastPathComponent(nullptr, grammarUrl);
 	CFStringRef grammarPath = CFURLCopyFileSystemPath(grammarUrlDirectory, kCFURLPOSIXPathStyle);
 	CFStringEncoding encodingMethod = CFStringGetSystemEncoding();
-	const char *path = CFStringGetCStringPtr(grammarPath, encodingMethod);
+	std::string path(CFStringGetCStringPtr(grammarPath, encodingMethod));
 	CFRelease(grammarUrl);
 	CFRelease(grammarPath);
 	CFRelease(grammarUrlDirectory);
