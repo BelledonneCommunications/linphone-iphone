@@ -69,13 +69,14 @@ public:
 	void onGlobalStateChanged (LinphoneGlobalState state) override;
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 
+	bool aggregationEnabled () const;
+
 	static std::string createXml (const std::string &id, time_t time, Imdn::Type imdnType, LinphoneReason reason);
 	static void parse (const std::shared_ptr<ChatMessage> &chatMessage);
 
 private:
 	static int timerExpired (void *data, unsigned int revents);
 
-	bool aggregationEnabled () const;
 	void send ();
 	void startTimer ();
 	void stopTimer ();
