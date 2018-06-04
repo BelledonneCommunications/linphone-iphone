@@ -163,12 +163,6 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 
 	LinphoneChatRoom *chatRoom = (LinphoneChatRoom *)bctbx_list_nth_data(_data, (int)[indexPath row]);
 	[PhoneMainView.instance goToChatRoom:chatRoom];
-
-	// on iPad, force unread bubble to disappear by reloading the cell
-	if (IPAD) {
-		UIChatCell *cell = (UIChatCell *)[tableView cellForRowAtIndexPath:indexPath];
-		[cell updateUnreadBadge];
-	}
 }
 
 void deletion_chat_room_state_changed(LinphoneChatRoom *cr, LinphoneChatRoomState newState) {

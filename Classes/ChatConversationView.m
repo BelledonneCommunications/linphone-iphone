@@ -208,9 +208,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (_chatRoom != nil) {
+	if (_chatRoom)
 		[ChatConversationView markAsRead:_chatRoom];
-	}
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {

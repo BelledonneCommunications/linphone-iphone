@@ -555,9 +555,9 @@ didInvalidatePushTokenForType:(NSString *)type {
 	  	LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
 	  	LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 	  	LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
-	  	if (room) {
+	  	if (room)
 		  	[ChatConversationView markAsRead:room];
-	  	}
+
 	  	linphone_address_unref(peer);
 	  	linphone_address_unref(local);
 	} else if ([response.actionIdentifier isEqual:@"Cancel"]) {
@@ -713,7 +713,7 @@ didInvalidatePushTokenForType:(NSString *)type {
 				LinphoneAddress *peer = linphone_address_new(peer_address.UTF8String);
 				LinphoneAddress *local = linphone_address_new(local_address.UTF8String);
 				LinphoneChatRoom *room = linphone_core_find_chat_room(LC, peer, local);
-				if (room && [UIApplication sharedApplication].applicationState == UIApplicationStateActive)
+				if (room)
 					[ChatConversationView markAsRead:room];
 
 				linphone_address_unref(peer);

@@ -138,9 +138,8 @@
 	if (index == -1 && count > 0)
 		index = (int)count - 1;
 
-	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive) {
+	if ([UIApplication sharedApplication].applicationState == UIApplicationStateActive)
 		[ChatConversationView markAsRead:_chatRoom];
-	}
 
 	// Scroll to unread
 	if (index < 0)
