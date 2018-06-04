@@ -86,6 +86,12 @@
 			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
 			addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
 		}
+
+		if (!addr) {
+			results = results->next;
+			continue;
+		}
+
 		char *uri = linphone_address_as_string_uri_only(addr);
 		NSString *address = [NSString stringWithUTF8String:uri];
 		ms_free(uri);
