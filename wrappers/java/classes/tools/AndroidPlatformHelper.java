@@ -86,7 +86,7 @@ public class AndroidPlatformHelper {
 		mLinphoneRootCaFile = basePath + "/share/linphone/rootca.pem";
 		mRingSoundFile = basePath + "/share/sounds/linphone/rings/notes_of_the_optimistic.mkv";
 		mRingbackSoundFile = basePath + "/share/sounds/linphone/ringback.wav";
-		mPauseSoundFile = basePath + "/share/sounds/linphone/rings/its_a_game.mkv";
+		mPauseSoundFile = basePath + "/share/sounds/linphone/rings/dont_wait_too_long.mkv";
 		mErrorToneFile = basePath + "/share/sounds/linphone/incoming_chat.wav";
 		mGrammarCpimFile = basePath + "/share/belr/grammars/cpim_grammar";
 		mGrammarVcardFile = basePath + "/share/belr/grammars/vcard_grammar";
@@ -211,7 +211,7 @@ public class AndroidPlatformHelper {
 		if (ressourceId == 0) {
 			Log.i("Resource identifier null for target ["+target.getName()+"]");
 			return;
-		} 
+		}
 		if (!target.getParentFile().exists())
 			target.getParentFile().mkdirs();
 
