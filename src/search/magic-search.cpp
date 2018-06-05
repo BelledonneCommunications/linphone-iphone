@@ -375,8 +375,10 @@ list<SearchResult> MagicSearch::searchInFriend(const LinphoneFriend *lFriend, co
 		phoneNumber = number;
 		if (proxy) {
 			char * buff = linphone_proxy_config_normalize_phone_number(proxy, phoneNumber.c_str());
-			phoneNumber = buff;
-			bctbx_free(buff);
+			if (buff) {
+				phoneNumber = buff;
+				bctbx_free(buff);
+			}
 		}
 		unsigned int weightNumber = getWeight(phoneNumber.c_str(), filter);
 		if (presence) {
