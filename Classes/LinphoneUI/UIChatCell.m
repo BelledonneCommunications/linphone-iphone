@@ -92,6 +92,7 @@
 			text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
 
 		_chatContentLabel.text = text;
+		linphone_chat_message_unref(last_msg);
 	} else
 		_chatContentLabel.text = nil;
 
