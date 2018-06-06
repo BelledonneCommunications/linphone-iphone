@@ -1,3 +1,5 @@
+[![pipeline status](https://gitlab.linphone.org/BC/public/linphone/badges/master/pipeline.svg)](https://gitlab.linphone.org/BC/public/linphone/commits/master)
+
 liblinphone
 ========
 
