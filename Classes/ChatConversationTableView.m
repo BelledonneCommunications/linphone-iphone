@@ -40,9 +40,17 @@
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+	[self clearEventList];
+}
+
 #pragma mark -
 
 - (void)clearEventList {
+	for (NSValue *value in eventList) {
+		LinphoneEventLog *event = (LinphoneEventLog *)[value pointerValue];
+		linphone_event_log_unref(event);
+	}
 	[eventList removeAllObjects];
 }
 
@@ -51,16 +59,18 @@
 		return;
 	[self clearEventList];
 	LinphoneChatRoomCapabilitiesMask capabilities = linphone_chat_room_get_capabilities(_chatRoom);
-	bctbx_list_t *chatRoomEvents = (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
+	bctbx_list_t *chatRoomEvents  = (capabilities & LinphoneChatRoomCapabilitiesOneToOne)
 		? linphone_chat_room_get_history_message_events(_chatRoom, 0)
 		: linphone_chat_room_get_history_events(_chatRoom, 0);
+	bctbx_list_t *chatRoomEventsHead = chatRoomEvents;
 
 	eventList = [[NSMutableArray alloc] initWithCapacity:bctbx_list_size(chatRoomEvents)];
 	while (chatRoomEvents) {
 		LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
-		[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+		[eventList addObject:[NSValue valueWithPointer:event]];
 		chatRoomEvents = chatRoomEvents->next;
 	}
+	bctbx_list_free(chatRoomEventsHead);
 
 	for (FileTransferDelegate *ftd in [LinphoneManager.instance fileTransferDelegates]) {
 		const LinphoneAddress *ftd_peer =
@@ -80,7 +90,7 @@
 }
 
 - (void)addEventEntry:(LinphoneEventLog *)event {
-	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+	[eventList addObject:[NSValue valueWithPointer:event]];
 	int pos = (int)eventList.count - 1;
 
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
