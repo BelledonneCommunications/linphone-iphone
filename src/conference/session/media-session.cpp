@@ -3729,7 +3729,7 @@ void MediaSessionPrivate::accept (const MediaSessionParams *msp, bool wasRinging
 	L_Q();
 	if (msp) {
 		setParams(new MediaSessionParams(*msp));
-		iceAgent->prepare(localDesc, true);
+		iceAgent->prepare(localDesc, true, false /*we don't allow gathering now, it must have been done before*/);
 		makeLocalMediaDescription();
 		op->setLocalMediaDescription(localDesc);
 	}
