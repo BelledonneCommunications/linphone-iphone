@@ -34,4 +34,24 @@
     completionHandler(NCUpdateResultNewData);
 }
 
+- (void)launchAppWithURL:(NSURL *) url {
+    [self.extensionContext openURL:url
+                 completionHandler:nil];
+}
+
+- (IBAction)firstButtonTapped {
+    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+}
+
+- (IBAction)secondButtonTapped {
+    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+}
+
+- (IBAction)thirdButtonTapped {
+    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+}
+
+- (IBAction)fourthButtonTapped {
+    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+}
 @end

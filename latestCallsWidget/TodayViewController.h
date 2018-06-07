@@ -8,5 +8,10 @@
 #import <UIKit/UIKit.h>
 
 @interface TodayViewController : UIViewController
+@property (strong, nonatomic) IBOutletCollection(UIStackView) NSArray *stackViews;
 
+- (IBAction)firstButtonTapped;
+- (IBAction)secondButtonTapped;
+- (IBAction)thirdButtonTapped;
+- (IBAction)fourthButtonTapped;
 @end
