@@ -5841,9 +5841,14 @@ static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, L
 
 			liblinphone_tester_check_rtcp(marie,pauline);
 
-			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
+			LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
 						, LinphoneMediaEncryptionZRTP, int, "%i");
-			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
+
+			call = linphone_core_get_current_call(pauline->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
 						, LinphoneMediaEncryptionZRTP, int, "%i");
 			end_call(pauline, marie);
 		}
@@ -5861,9 +5866,14 @@ static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, Li
 
 			liblinphone_tester_check_rtcp(marie,pauline);
 
-			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
+			LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
 						, LinphoneMediaEncryptionZRTP, int, "%i");
-			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
+
+			call = linphone_core_get_current_call(pauline->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
 						, LinphoneMediaEncryptionZRTP, int, "%i");
 			end_call(pauline, marie);
 		}
