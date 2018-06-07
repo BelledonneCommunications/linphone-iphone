@@ -459,11 +459,17 @@ int SalOp::getAddressFamily() const {
 	if (mRefresher) {
 		belle_sip_response_t *resp = belle_sip_transaction_get_response(tr);
 		belle_sip_header_via_t *via = resp ?belle_sip_message_get_header_by_type(resp,belle_sip_header_via_t):NULL;
+		const char *host;
 		if (!via){
 			ms_error("Unable to determine IP version from signaling operation, no via header found.");
 			return AF_UNSPEC;
 		}
-		return (strchr(belle_sip_header_via_get_host(via),':') != NULL) ? AF_INET6 : AF_INET;
+		host = belle_sip_header_via_get_host(via);
+		if (!host){
+			ms_error("Unable to determine IP version from signaling operation, no via header is not yet completed.");
+			return AF_UNSPEC;
+		}
+		return (strchr(host,':') != NULL) ? AF_INET6 : AF_INET;
 	} else {
 		belle_sip_request_t *req = belle_sip_transaction_get_request(tr);
 		contact=(belle_sip_header_address_t*)belle_sip_message_get_header_by_type(req,belle_sip_header_contact_t);
