@@ -10,6 +10,15 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [4.0] - 2018-06-11
+
+### Added
+- Supports of group chat
+- New address search algorithm
+
+### Fixed
+- Minor bugs fixes
+
 ## [3.16.5] - 2017-11-28
 
 ### Added

@@ -1586,7 +1586,6 @@
 		63AADBE41B6A0FF200AA16FD /* assistant_linphone_create.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_create.rc; sourceTree = "<group>"; };
 		63AADBE51B6A0FF200AA16FD /* assistant_linphone_existing.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_linphone_existing.rc; sourceTree = "<group>"; };
 		63AADBE61B6A0FF200AA16FD /* assistant_remote.rc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = assistant_remote.rc; sourceTree = "<group>"; };
-		63AADBE71B6A0FF200AA16FD /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
 		63B21A791C623DA80074DFF8 /* test_failed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_failed.png; sourceTree = "<group>"; };
 		63B21A7A1C623DA80074DFF8 /* test_inprogress.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_inprogress.png; sourceTree = "<group>"; };
 		63B21A7B1C623DA80074DFF8 /* test_passed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = test_passed.png; sourceTree = "<group>"; };
@@ -4468,7 +4467,6 @@
 				63AADBCB1B6A0FF200AA16FD /* ja */,
 				63AADBDD1B6A0FF200AA16FD /* nl */,
 				63AADBE11B6A0FF200AA16FD /* ru */,
-				63AADBE71B6A0FF200AA16FD /* zh_TW */,
 				8C435FC320BD41C6004CCA25 /* fr */,
 			);
 			name = Localizable.strings;
