@@ -155,7 +155,6 @@
                             </stackView>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="acy-Dv-HTU" secondAttribute="trailing" id="QZC-bm-59B"/>
                             <constraint firstItem="acy-Dv-HTU" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="Thu-fq-hKU"/>
                             <constraint firstItem="acy-Dv-HTU" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" id="Wku-rc-Ij6"/>
                             <constraint firstItem="acy-Dv-HTU" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leadingMargin" id="fWT-EJ-zhi"/>
