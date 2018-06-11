@@ -184,6 +184,10 @@
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
             cell.indexInTable = indexPath;
         }
+        //if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)) {
+        //    UIChatBubblePhotoCell *photoCell = (UIChatBubblePhotoCell *) cell;
+        //    [photoCell unloadImages];
+        //}
 		[cell setEvent:event];
 		if (chat)
 			[cell update];

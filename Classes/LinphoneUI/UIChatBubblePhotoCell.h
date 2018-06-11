@@ -44,7 +44,5 @@
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onResendClick:(id)event;
 
-- (CGSize)ViewSize;
-- (void)unloadImages;
 
 @end

@@ -86,7 +86,7 @@
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
                         <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="gzv-K4-5OL" userLabel="finalImage">
-                            <rect key="frame" x="7" y="55" width="350" height="213"/>
+                            <rect key="frame" x="7" y="55" width="350" height="211"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="ICw-5U-vcc"/>

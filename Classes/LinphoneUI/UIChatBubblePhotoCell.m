@@ -27,7 +27,9 @@
 @implementation UIChatBubblePhotoCell {
 	FileTransferDelegate *_ftd;
     bool isAssetLoaded;
-    CGSize imageSize;
+    CGSize imageSize, bubbleSize;
+    int actualAvailableWidth;
+    CGImageRef displayedImage;
 }
 
 #pragma mark - Lifecycle Functions
@@ -50,10 +52,11 @@
 		//[self setFrame:CGRectMake(0, 0, 5, 100)];
         //self.autoresizesSubviews = TRUE;
 		[self addSubview:sub];
+        isAssetLoaded = FALSE;
+        actualAvailableWidth = self.frame.size.width;
+        [self setBubbleSize];
+        LOGD(@"ZBOUB");
 	}
-    isAssetLoaded = FALSE;
-    
-    LOGD(@"ZBOUB");
 	return self;
 }
 
@@ -64,11 +67,14 @@
 
 	super.event = event;
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
+    [VIEW(ChatConversationView).tableController.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
 }
 
 - (void)setChatMessage:(LinphoneChatMessage *)amessage {
 	_imageGestureRecognizer.enabled = NO;
 	_messageImageView.image = nil;
+    //_finalImage.image = nil;
+    //_finalImage. = TRUE;
 	_fileTransferProgress.progress = 0;
 	[self disconnectFromFileDelegate];
 
@@ -94,13 +100,14 @@
 
 - (void) loadAsset:(ALAsset*) asset {
     if (isAssetLoaded) return;
-    ALAssetRepresentation *representation = [asset defaultRepresentation];
-    CGImageRef resolutionRef = [representation fullResolutionImage];
-    imageSize = [self getMediaMessageSizefromOriginalSize:[representation dimensions]];
-    resolutionRef = [self cropImageFromRepresentation:representation withNewSize:imageSize];
-	UIImage *image = [[UIImage alloc] initWithCGImage:resolutionRef];
+    LOGD(@"BITEENBOIS");
     isAssetLoaded = TRUE;
 	dispatch_async(dispatch_get_main_queue(), ^{
+        ALAssetRepresentation *representation = [asset defaultRepresentation];
+        imageSize = [self getMediaMessageSizefromOriginalSize:[representation dimensions]];
+        displayedImage = [self cropImageFromRepresentation:representation withNewSize:imageSize];
+        UIImage *image = [[UIImage alloc] initWithCGImage:displayedImage];
+        [self setBubbleSize];
 		[_finalImage setImage:image];
 		[_messageImageView setFullImageUrl:asset];
 		[_messageImageView stopLoading];
@@ -108,8 +115,10 @@
 		_imageGestureRecognizer.enabled = YES;
         _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
         _finalImage.hidden = NO;
-        [VIEW(ChatConversationView).tableController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[super indexInTable],nil] withRowAnimation:FALSE];
-        LOGD(@"BITEENBOIS");
+        ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
+        [tableView.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
+        [tableView.tableView beginUpdates];
+        [tableView.tableView endUpdates];
 	});
 }
 
@@ -322,6 +331,7 @@ static const CGFloat CELL_MIN_HEIGHT = 60.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
 static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
+static const CGFloat CELL_MESSAGE_Y_MARGIN = 0; // 44;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -331,7 +341,7 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
     CGRect bubbleFrame = super.bubbleView.frame;
     int origin_x;
     
-    bubbleFrame.size = [self ViewSize];
+    bubbleFrame.size = bubbleSize;
     
     if (tableView.isEditing) {
         origin_x = 0;
@@ -346,12 +356,15 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 
 - (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize{
     CGSize mediaSize = CGSizeMake(0, 0);
-    int actualAvailableWidth = self.frame.size.width;
     //CGRect screenRect = [[UIScreen mainScreen] bounds];
     if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
         actualAvailableWidth = actualAvailableWidth *2/3;
     }
-    mediaSize.height = MIN(actualAvailableWidth, originalSize.height);
+    int height = originalSize.height;
+    if (originalSize.width > actualAvailableWidth) {
+        height = originalSize.height * actualAvailableWidth / originalSize.width;
+    }
+    mediaSize.height = MIN(height, actualAvailableWidth);
     mediaSize.width = MIN(actualAvailableWidth, originalSize.width);
     return mediaSize;
 }
@@ -371,27 +384,15 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
     return newImage;
 }
 
-- (CGSize)ViewSize {
-    CGSize bubbleSize;
-    ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
+- (void) setBubbleSize {
     if (!isAssetLoaded) {
         NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
         bubbleSize = (localImage != nil) ? CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT) : CGSizeMake(50, 50);
-        bubbleSize.height += self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height;
-        [tableView.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
-        return bubbleSize;
+        bubbleSize.height += self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height + CELL_MESSAGE_Y_MARGIN;
     }
-    bubbleSize = CGSizeMake(imageSize.width, imageSize.height + self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height); //We add the height of the avatar so the image is not distorted
+    bubbleSize = CGSizeMake(imageSize.width, imageSize.height + self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height + CELL_MESSAGE_Y_MARGIN); //We add the height of the avatar so the image is not distorted
     bubbleSize.width = MAX(bubbleSize.width, CELL_MIN_WIDTH);
     bubbleSize.height = MAX(bubbleSize.height, CELL_MIN_HEIGHT);
-    [tableView.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
-    return bubbleSize;
-}
-
-- (void)unloadImages {
-    _finalImage.image = nil;
-    _finalImage.hidden = TRUE;
-    isAssetLoaded = FALSE;
 }
 
 
