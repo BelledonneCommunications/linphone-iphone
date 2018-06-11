@@ -40,6 +40,8 @@
 @property(weak, nonatomic) IBOutlet UIImageView *imdmIcon;
 @property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 
+@property(nonatomic) NSIndexPath *indexInTable;
+
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
 
 - (void)setEvent:(LinphoneEventLog *)event;

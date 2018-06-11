@@ -26,6 +26,8 @@
 
 @implementation UIChatBubblePhotoCell {
 	FileTransferDelegate *_ftd;
+    bool isAssetLoaded;
+    CGSize imageSize;
 }
 
 #pragma mark - Lifecycle Functions
@@ -44,9 +46,14 @@
 				break;
 			}
 		}
-		[self setFrame:CGRectMake(0, 0, sub.frame.size.width, sub.frame.size.height)];
+        // Useless
+		//[self setFrame:CGRectMake(0, 0, 5, 100)];
+        //self.autoresizesSubviews = TRUE;
 		[self addSubview:sub];
 	}
+    isAssetLoaded = FALSE;
+    
+    LOGD(@"ZBOUB");
 	return self;
 }
 
@@ -86,13 +93,23 @@
 }
 
 - (void) loadAsset:(ALAsset*) asset {
-	UIImage *image = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
+    if (isAssetLoaded) return;
+    ALAssetRepresentation *representation = [asset defaultRepresentation];
+    CGImageRef resolutionRef = [representation fullResolutionImage];
+    imageSize = [self getMediaMessageSizefromOriginalSize:[representation dimensions]];
+    resolutionRef = [self cropImageFromRepresentation:representation withNewSize:imageSize];
+	UIImage *image = [[UIImage alloc] initWithCGImage:resolutionRef];
+    isAssetLoaded = TRUE;
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[_messageImageView setImage:image];
+		[_finalImage setImage:image];
 		[_messageImageView setFullImageUrl:asset];
 		[_messageImageView stopLoading];
-		_messageImageView.hidden = NO;
+		_messageImageView.hidden = YES;
 		_imageGestureRecognizer.enabled = YES;
+        _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+        _finalImage.hidden = NO;
+        [VIEW(ChatConversationView).tableController.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[super indexInTable],nil] withRowAnimation:FALSE];
+        LOGD(@"BITEENBOIS");
 	});
 }
 
@@ -127,8 +144,9 @@
 										 if (achat != self.message) // Avoid glitch and scrolling
 											 return;
 
-										 if (asset)
+                                         if (asset) {
 											 [self loadAsset:asset];
+                                         }
 										 else {
 											 [LinphoneManager.instance.photoLibrary
 											  enumerateGroupsWithTypes:ALAssetsGroupAll
@@ -157,7 +175,7 @@
 				_fileTransferProgress.hidden = NO;
 				_downloadButton.hidden = YES;
 			} else {
-				_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
+                _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
 				fullScreenImage = YES;
 			}
 		}
@@ -174,8 +192,9 @@
 	newFrame.origin.x = newFrame.origin.y = 0;
 	if (!fullScreenImage) {
 		newFrame.size.height -= _imageSubView.frame.size.height;
-	}
-	_messageImageView.frame = newFrame;
+    }
+    //newFrame.size.height *= 10;
+	//_messageImageView.frame = newFrame;
 }
 
 - (IBAction)onDownloadClick:(id)event {
@@ -275,5 +294,105 @@
 		[view.tableController updateEventEntry:self.event];
 	}
 }
+
++ (CGImageRef)resizeCGImage:(CGImageRef)image toWidth:(int)width andHeight:(int)height {
+    // create context, keeping original image properties
+    CGColorSpaceRef colorspace = CGImageGetColorSpace(image);
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height,
+                                                 CGImageGetBitsPerComponent(image),
+                                                 CGImageGetBytesPerRow(image),
+                                                 colorspace,
+                                                 CGImageGetAlphaInfo(image));
+    CGColorSpaceRelease(colorspace);
+    
+    if(context == NULL)
+        return nil;
+    
+    // draw image to context (resizing it)
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
+    // extract resulting image from context
+    CGImageRef imgRef = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
+    
+    return imgRef;
+}
+
+
+static const CGFloat CELL_MIN_HEIGHT = 60.0f;
+static const CGFloat CELL_MIN_WIDTH = 190.0f;
+static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
+static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (!isAssetLoaded) return;
+    UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
+    BOOL is_outgoing = linphone_chat_message_is_outgoing(super.message);
+    CGRect bubbleFrame = super.bubbleView.frame;
+    int origin_x;
+    
+    bubbleFrame.size = [self ViewSize];
+    
+    if (tableView.isEditing) {
+        origin_x = 0;
+    } else {
+        origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
+    }
+    
+    bubbleFrame.origin.x = origin_x;
+    
+    super.bubbleView.frame = bubbleFrame;
+}
+
+- (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize{
+    CGSize mediaSize = CGSizeMake(0, 0);
+    int actualAvailableWidth = self.frame.size.width;
+    //CGRect screenRect = [[UIScreen mainScreen] bounds];
+    if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
+        actualAvailableWidth = actualAvailableWidth *2/3;
+    }
+    mediaSize.height = MIN(actualAvailableWidth, originalSize.height);
+    mediaSize.width = MIN(actualAvailableWidth, originalSize.width);
+    return mediaSize;
+}
+
+- (CGImageRef)cropImageFromRepresentation:(ALAssetRepresentation*)rep withNewSize:(CGSize)size {
+    CGImageRef newImage = [rep fullResolutionImage];
+    CGSize originalSize = [rep dimensions];
+    // We resize in width and crop in height
+    if (originalSize.width > size.width) {
+        int height = originalSize.height * size.width / originalSize.width;
+        newImage = [self.class resizeCGImage:newImage toWidth:size.width andHeight:height];
+        originalSize.height = height;
+    }
+    CGRect cropRect = CGRectMake(0, 0, size.width, size.height);
+    if (size.height < originalSize.height) cropRect.origin.y = (originalSize.height - size.height)/2;
+    newImage = CGImageCreateWithImageInRect(newImage, cropRect);
+    return newImage;
+}
+
+- (CGSize)ViewSize {
+    CGSize bubbleSize;
+    ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
+    if (!isAssetLoaded) {
+        NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
+        bubbleSize = (localImage != nil) ? CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT) : CGSizeMake(50, 50);
+        bubbleSize.height += self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height;
+        [tableView.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
+        return bubbleSize;
+    }
+    bubbleSize = CGSizeMake(imageSize.width, imageSize.height + self.avatarImage.frame.size.height + self.imdmLabel.frame.size.height); //We add the height of the avatar so the image is not distorted
+    bubbleSize.width = MAX(bubbleSize.width, CELL_MIN_WIDTH);
+    bubbleSize.height = MAX(bubbleSize.height, CELL_MIN_HEIGHT);
+    [tableView.photoSizesDict setObject:@(bubbleSize.height) forKey:self.indexInTable];
+    return bubbleSize;
+}
+
+- (void)unloadImages {
+    _finalImage.image = nil;
+    _finalImage.hidden = TRUE;
+    isAssetLoaded = FALSE;
+}
+
 
 @end
