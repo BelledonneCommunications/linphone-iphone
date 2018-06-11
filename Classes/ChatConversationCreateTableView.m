@@ -16,13 +16,13 @@
 
 @property(nonatomic, strong) NSMutableArray *addresses;
 @property(nonatomic, strong) NSMutableArray *phoneOrAddr;
+
 @end
 
 @implementation ChatConversationCreateTableView
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-
 	_magicSearch = linphone_core_create_magic_search(LC);
 	int y = _contactsGroup.count > 0
 		? _collectionView.frame.origin.y + _collectionView.frame.size.height
@@ -81,7 +81,7 @@
 				results = results->next;
 				continue;
 			}
-			
+
 			LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
 			const char *normalizedPhoneNumber = linphone_proxy_config_normalize_phone_number(cfg, phoneNumber);
 			addr = linphone_proxy_config_normalize_sip_uri(cfg, normalizedPhoneNumber);
@@ -100,7 +100,6 @@
 
 		results = results->next;
 	}
-
 	[self.tableView reloadData];
 }
 
@@ -128,7 +127,7 @@
 	LinphoneAddress *addr = [LinphoneUtils normalizeSipOrPhoneAddress:key];
 	if (!addr)
 		return cell;
-	
+
 	cell.linphoneImage.hidden = !linphoneContact;
 	cell.displayNameLabel.text = [FastAddressBook displayNameForAddress:addr];
 	cell.addressLabel.text = linphoneContact ? [NSString stringWithUTF8String:linphone_address_as_string(addr)] : phoneOrAddr;
@@ -225,7 +224,7 @@
 	if ([searchText isEqualToString:@""]) {
 		if (_magicSearch)
 			linphone_magic_search_reset_search_cache(_magicSearch);
-		
+
 		[_searchBar resignFirstResponder];
 	}
 }
@@ -252,7 +251,7 @@
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
 	if (_magicSearch)
 		linphone_magic_search_reset_search_cache(_magicSearch);
-	
+
 	[searchBar resignFirstResponder];
 }
 

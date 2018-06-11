@@ -152,7 +152,7 @@
 		BOOL success = FALSE;
 		if(granted){
 			LOGD(@"CNContactStore authorization granted");
-			
+
 			NSError *contactError;
 			CNContactStore* store = [[CNContactStore alloc] init];
 			[store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
@@ -164,18 +164,18 @@
 									 CNInstantMessageAddressUsernameKey, CNContactImageDataKey, CNContactOrganizationNameKey
 									 ];
 			CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
-			
+
 			success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact *__nonnull contact, BOOL *__nonnull stop) {
 				if (contactError) {
 				  NSLog(@"error fetching contacts %@",
 						contactError);
 				} else {
-					
+
 					dispatch_async(dispatch_get_main_queue(), ^{
 						Contact *newContact = [[Contact alloc] initWithCNContact:contact];
 						[self registerAddrsFor:newContact];
 					});
-					
+
 				}
 			}];
 		}
@@ -243,7 +243,7 @@
 + (BOOL)contactHasValidSipDomain:(Contact *)contact {
 	if (!contact)
 		return NO;
-	
+
 	// Check if one of the contact' sip URI matches the expected SIP filter
 	NSString *domain = LinphoneManager.instance.contactFilter;
 
@@ -446,7 +446,7 @@
 			linphone_friend_done(contact.friend);
 		}
 	}
-	
+
 	BOOL enabled = [LinphoneManager.instance lpConfigBoolForKey:@"use_rls_presence"];
 	const MSList *lists = linphone_core_get_friends_lists(LC);
 	while (lists) {
