@@ -336,16 +336,21 @@
 		[errView addAction:yesAction];
 
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-	} else {
-		if ([[url scheme] isEqualToString:@"sip"]) {
-			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
-			// trailing "/"
-			NSString *sipUri = [[url resourceSpecifier]
-				stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
-			[VIEW(DialerView) setAddress:sipUri];
-		}
-	}
-	return YES;
+    } else {
+        if ([[url scheme] isEqualToString:@"sip"]) {
+            // remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
+            // trailing "/"
+            if ([[url host] isEqualToString:@"call_log"] &&
+                [[url path] isEqualToString:@"/show"]) {
+                [VIEW(HistoryDetailsView) setCallLogId:[url query]];
+                [PhoneMainView.instance popToView:HistoryDetailsView.compositeViewDescription];
+            } else {
+                NSString *sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+                [VIEW(DialerView) setAddress:sipUri];
+            }
+        }
+    }
+    return YES;
 }
 
 - (void)fixRing {

@@ -39,19 +39,23 @@
                  completionHandler:nil];
 }
 
+- (void)launchOnHistoryDetailsWithId:(NSString *)logId {
+    [self launchAppWithURL:[NSURL URLWithString:[@"sip://call_log/show?" stringByAppendingString:logId]]];
+}
+
 - (IBAction)firstButtonTapped {
-    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+    [self launchOnHistoryDetailsWithId:@""];
 }
 
 - (IBAction)secondButtonTapped {
-    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+    [self launchOnHistoryDetailsWithId:@""];
 }
 
 - (IBAction)thirdButtonTapped {
-    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+    [self launchOnHistoryDetailsWithId:@""];
 }
 
 - (IBAction)fourthButtonTapped {
-    [self launchAppWithURL:[NSURL URLWithString:@"sip://"]];
+    [self launchOnHistoryDetailsWithId:@""];
 }
 @end
