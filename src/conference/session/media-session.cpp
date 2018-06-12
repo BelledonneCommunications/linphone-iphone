@@ -1122,7 +1122,7 @@ void MediaSessionPrivate::discoverMtu (const Address &remoteAddr) {
 
 string MediaSessionPrivate::getBindIpForStream (int streamIndex) {
 	L_Q();
-	string bindIp = lp_config_get_string(linphone_core_get_config(q->getCore()->getCCore()), "rtp", "bind_address", (af == AF_INET6) ? "::0" : "0.0.0.0");
+	string bindIp = lp_config_get_string(linphone_core_get_config(q->getCore()->getCCore()), "rtp", "bind_address", "");
 	PortConfig *pc = &mediaPorts[streamIndex];
 	if (!pc->multicastIp.empty()){
 		if (direction == LinphoneCallOutgoing) {
@@ -2367,7 +2367,7 @@ void MediaSessionPrivate::initializeAudioStream () {
 		if (remoteDesc)
 			streamDesc = sal_media_description_find_best_stream(remoteDesc, SalAudio);
 
-		audioStream = audio_stream_new2(q->getCore()->getCCore()->factory, getBindIpForStream(mainAudioStreamIndex).c_str(),
+		audioStream = audio_stream_new2(q->getCore()->getCCore()->factory, L_STRING_TO_C(getBindIpForStream(mainAudioStreamIndex)),
 			(multicastRole ==  SalMulticastReceiver) ? streamDesc->rtp_port : mediaPorts[mainAudioStreamIndex].rtpPort,
 			(multicastRole ==  SalMulticastReceiver) ? 0 /* Disabled for now */ : mediaPorts[mainAudioStreamIndex].rtcpPort);
 		if (multicastRole == SalMulticastReceiver)
@@ -2473,7 +2473,7 @@ void MediaSessionPrivate::initializeTextStream () {
 		if (remoteDesc)
 			streamDesc = sal_media_description_find_best_stream(remoteDesc, SalText);
 
-		textStream = text_stream_new2(q->getCore()->getCCore()->factory, getBindIpForStream(mainTextStreamIndex).c_str(),
+		textStream = text_stream_new2(q->getCore()->getCCore()->factory, L_STRING_TO_C(getBindIpForStream(mainTextStreamIndex)),
 			(multicastRole ==  SalMulticastReceiver) ? streamDesc->rtp_port : mediaPorts[mainTextStreamIndex].rtpPort,
 			(multicastRole ==  SalMulticastReceiver) ? 0 /* Disabled for now */ : mediaPorts[mainTextStreamIndex].rtcpPort);
 		if (multicastRole == SalMulticastReceiver)
@@ -2517,7 +2517,7 @@ void MediaSessionPrivate::initializeVideoStream () {
 		if (remoteDesc)
 			streamDesc = sal_media_description_find_best_stream(remoteDesc, SalVideo);
 
-		videoStream = video_stream_new2(q->getCore()->getCCore()->factory, getBindIpForStream(mainVideoStreamIndex).c_str(),
+		videoStream = video_stream_new2(q->getCore()->getCCore()->factory, L_STRING_TO_C(getBindIpForStream(mainVideoStreamIndex)),
 			(multicastRole ==  SalMulticastReceiver) ? streamDesc->rtp_port : mediaPorts[mainVideoStreamIndex].rtpPort,
 			(multicastRole ==  SalMulticastReceiver) ?  0 /* Disabled for now */ : mediaPorts[mainVideoStreamIndex].rtcpPort);
 		if (multicastRole == SalMulticastReceiver)
