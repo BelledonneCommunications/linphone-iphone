@@ -306,8 +306,6 @@ static const CGFloat CELL_MIN_HEIGHT = 60.0f;
 static const CGFloat CELL_MIN_WIDTH = 190.0f;
 static const CGFloat CELL_MESSAGE_X_MARGIN = 78 + 10.0f;
 static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
-static const CGFloat CELL_IMAGE_HEIGHT = 100.0f;
-static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
 	NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
@@ -328,7 +326,23 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 								   font:messageFont];
 	} else {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
-		size = (localImage != nil) ? CGSizeMake(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT) : CGSizeMake(50, 50);
+        NSURL *imageUrl = [NSURL URLWithString:localImage];
+        __block CGSize originalImageSize = CGSizeMake(0, 0);
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+            [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
+                                                   resultBlock:^(ALAsset *asset) {
+                                                       originalImageSize = [[asset defaultRepresentation] dimensions];
+                                                       dispatch_semaphore_signal(sema);
+                                                       }
+                                                  failureBlock:^(NSError *error) {
+                                                      LOGE(@"Can't read image");
+                                                      dispatch_semaphore_signal(sema);
+                                              }];
+        });
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+
+        size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
 	}
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
 	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
@@ -373,6 +387,22 @@ static const CGFloat CELL_IMAGE_WIDTH = 100.0f;
 		bubbleFrame.origin.x = origin_x;
 		_bubbleView.frame = bubbleFrame;
 	}
+}
+
+
++ (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
+    CGSize mediaSize = CGSizeMake(0, 0);
+    int availableWidth = width - CELL_MESSAGE_X_MARGIN;
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+        availableWidth = availableWidth /3;
+    }
+    int height = originalSize.height;
+    if (originalSize.width > availableWidth) {
+        height = originalSize.height * availableWidth / originalSize.width;
+    }
+    mediaSize.height = MIN(height, availableWidth);
+    mediaSize.width = MIN(availableWidth, originalSize.width);
+    return mediaSize;
 }
 
 @end

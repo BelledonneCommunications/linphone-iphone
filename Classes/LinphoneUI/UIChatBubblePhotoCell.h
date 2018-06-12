@@ -33,6 +33,7 @@
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
 @property(weak, nonatomic) IBOutlet UIView *totalView;
+@property (weak, nonatomic) IBOutlet UIImageView *finalImage;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 
 - (void)setEvent:(LinphoneEventLog *)event;
@@ -42,5 +43,6 @@
 - (IBAction)onImageClick:(id)event;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onResendClick:(id)event;
+
 
 @end

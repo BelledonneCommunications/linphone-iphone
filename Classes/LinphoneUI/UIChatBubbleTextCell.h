@@ -41,6 +41,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *imdmLabel;
 
 + (CGSize)ViewSizeForMessage:(LinphoneChatMessage *)chat withWidth:(int)width;
++ (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width;
 
 - (void)setEvent:(LinphoneEventLog *)event;
 - (void)setChatMessage:(LinphoneChatMessage *)message;

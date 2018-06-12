@@ -33,6 +33,7 @@
 	[self clearEventList];
 }
 
+
 #pragma mark - ViewController Functions
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -177,11 +178,11 @@
 			kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
 		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
-
+        
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
-		if (!cell)
+        if (!cell) {
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-
+        }
 		[cell setEvent:event];
 		if (chat)
 			[cell update];
@@ -213,10 +214,10 @@
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+        
 		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
-	} else {
-		return [UIChatNotifiedEventCell height];
 	}
+    return [UIChatNotifiedEventCell height];
 }
 
 - (void) tableView:(UITableView *)tableView deleteRowAtIndex:(NSIndexPath *)indexPath {

@@ -82,6 +82,7 @@
 }
 
 - (void)stopLoading {
+    
 	[waitIndicatorView stopAnimating];
 }
 
