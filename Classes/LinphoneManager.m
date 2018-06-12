@@ -1041,18 +1041,18 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 																											 @"provide password again, or check your "
 																											 @"account configuration in the settings.", nil), username, realm]
 												 preferredStyle:UIAlertControllerStyleAlert];
-
+		
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-
+		
 		[alertView addTextFieldWithConfigurationHandler:^(UITextField *textField) {
 			textField.placeholder = NSLocalizedString(@"Password", nil);
 			textField.clearButtonMode = UITextFieldViewModeWhileEditing;
 			textField.borderStyle = UITextBorderStyleRoundedRect;
 			textField.secureTextEntry = YES;
 		}];
-
+		
 		UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Confirm password", nil)
 																 style:UIAlertActionStyleDefault
 															   handler:^(UIAlertAction * action) {
@@ -1063,13 +1063,13 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 																   linphone_core_add_auth_info(LC, info);
 																   [LinphoneManager.instance refreshRegisters];
 															   }];
-
+		
 		UIAlertAction* settingsAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Go to settings", nil)
 																 style:UIAlertActionStyleDefault
 															   handler:^(UIAlertAction * action) {
 																   [PhoneMainView.instance changeCurrentView:SettingsView.compositeViewDescription];
 															   }];
-
+		
 		[alertView addAction:defaultAction];
 		[alertView addAction:continueAction];
 		[alertView addAction:settingsAction];
@@ -1145,7 +1145,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		if (PhoneMainView.instance.currentView == ChatConversationView.compositeViewDescription && room == PhoneMainView.instance.currentRoom)
 			return;
 	}
-
+	
 	// Create a new notification
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
 		NSArray *actions;
@@ -1572,7 +1572,7 @@ static void networkReachabilityNotification(CFNotificationCenterRef center, void
 	if ([newSSID compare:mgr.SSID] == NSOrderedSame)
 		return;
 
-
+	
 	if (newSSID != Nil && newSSID.length > 0 && mgr.SSID != Nil && newSSID.length > 0) {
 		if (SCNetworkReachabilityGetFlags([mgr getProxyReachability], &flags)) {
 			LOGI(@"Wifi SSID changed, resesting transports.");
@@ -1798,7 +1798,7 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 		linphone_core_enable_video_display(theLinphoneCore, FALSE);
 		linphone_core_enable_video_capture(theLinphoneCore, FALSE);
 	}
-
+	
 	[self enableProxyPublish:([UIApplication sharedApplication].applicationState == UIApplicationStateActive)];
 
 	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
@@ -1847,11 +1847,11 @@ static BOOL libStarted = FALSE;
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"No microphone", nil)
 																		 message:NSLocalizedString(@"You need to plug a microphone to your device to use the application.", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-
+		
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-
+		
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 	}
@@ -1877,11 +1877,11 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 																			 message:[NSString stringWithFormat:NSLocalizedString(@"Link your Linphone.org account %s to your phone number.", nil),
 																					  linphone_address_get_username(linphone_proxy_config_get_identity_address(cfg))]
 																	  preferredStyle:UIAlertControllerStyleAlert];
-
+			
 			UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Maybe later", nil)
 																	style:UIAlertActionStyleDefault
 																  handler:^(UIAlertAction * action) {}];
-
+			
 			UIAlertAction* continueAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Let's go", nil)
 																	 style:UIAlertActionStyleDefault
 																   handler:^(UIAlertAction * action) {
@@ -1929,7 +1929,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 		LOGI(@"linphonecore is already created");
 		return;
 	}
-
+	
 	connectivity = none;
 
 	// Set audio assets
@@ -1965,7 +1965,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_call_encryption_changed(cbs, linphone_iphone_call_encryption_changed);
 	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
-
+	
 	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
 	// Let the core handle cbs
 	linphone_core_cbs_unref(cbs);
@@ -1980,7 +1980,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	libmsopenh264_init(f);
 	libmswebrtc_init(f);
 	libmscodec2_init(f);
-
+	
 	linphone_core_reload_ms_plugins(theLinphoneCore, NULL);
 	[self migrationAllPost];
 
@@ -2153,14 +2153,12 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		 [LinphoneUtils intervalToString:[[UIApplication sharedApplication] backgroundTimeRemaining]]);
 }
 
-
 - (void)startPushLongRunningTask:(NSString *)loc_key callId:(NSString *)callId {
 	if (!callId)
 		return;
 
 	if ([callId isEqualToString:@""])
 		return;
-
 
 	if ([loc_key isEqualToString:@"IM_MSG"]) {
 		[[UIApplication sharedApplication] endBackgroundTask:pushBgTaskMsg];
@@ -2248,7 +2246,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	if (linphone_core_get_global_state(LC) != LinphoneGlobalOn || !linphone_core_get_default_friend_list(LC)) {
 		LOGW(@"Not changing presence configuration because linphone core not ready yet");
 		return;
-	}
+	}	
 
 	if ([self lpConfigBoolForKey:@"publish_presence"]) {
 		// set present to "tv", because "available" does not work yet
@@ -2283,7 +2281,7 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 	// disable presence
 	[self enableProxyPublish:NO];
-
+	
 	// handle proxy config if any
 	if (proxyCfg) {
 		const char *refkey = proxyCfg ? linphone_proxy_config_get_ref_key(proxyCfg) : NULL;
@@ -2565,11 +2563,11 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Network Error", nil)
 																		 message:NSLocalizedString(@"There is no network connection available, enable WIFI or WWAN prior to place a call", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-
+		
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-
+		
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return;
@@ -2598,11 +2596,11 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 																		 message:NSLocalizedString(@"Either configure a SIP proxy server from settings prior to place a "
 																								   @"call or use a valid SIP address (I.E sip:john@example.net)", nil)
 																  preferredStyle:UIAlertControllerStyleAlert];
-
+		
 		UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
 																style:UIAlertActionStyleDefault
 															  handler:^(UIAlertAction * action) {}];
-
+		
 		[errView addAction:defaultAction];
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
 		return;
