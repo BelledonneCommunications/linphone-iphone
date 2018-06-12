@@ -60,31 +60,6 @@
                             <color key="textColor" red="0.98766469955444336" green="0.27512490749359131" blue="0.029739789664745331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
-                            <rect key="frame" x="0.0" y="290" width="365" height="1"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        </imageView>
-                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="Eab-ND-ix3" userLabel="statusInprogressSpinner">
-                            <rect key="frame" x="345" y="0.0" width="20" height="20"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                        </activityIndicatorView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_unsecure.png" id="IST-5o-DCu" userLabel="LIMEKO">
-                            <rect key="frame" x="351" y="6" width="8" height="12"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
-                        </imageView>
-                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Delivered" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="44j-me-Iqi" userLabel="imdmLabel">
-                            <rect key="frame" x="283" y="274" width="64" height="20"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="valid_default.png" id="LPj-VT-0fH" userLabel="imdmIcon">
-                            <rect key="frame" x="349" y="276" width="13" height="13"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
-                        </imageView>
                         <view contentMode="scaleToFill" misplaced="YES" id="8I3-n2-0kS" userLabel="view">
                             <rect key="frame" x="39" y="55" width="298" height="190"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -139,12 +114,37 @@
                                     <rect key="frame" x="0.0" y="0.0" width="349" height="213"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <gestureRecognizers/>
-                                    <connections>
-                                        <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="3P2-uH-W2N"/>
-                                    </connections>
                                 </imageView>
                             </subviews>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
+                            </connections>
                         </view>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
+                            <rect key="frame" x="0.0" y="290" width="365" height="1"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        </imageView>
+                        <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" id="Eab-ND-ix3" userLabel="statusInprogressSpinner">
+                            <rect key="frame" x="345" y="0.0" width="20" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        </activityIndicatorView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="chat_unsecure.png" id="IST-5o-DCu" userLabel="LIMEKO">
+                            <rect key="frame" x="351" y="6" width="8" height="12"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
+                        </imageView>
+                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Delivered" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="44j-me-Iqi" userLabel="imdmLabel">
+                            <rect key="frame" x="283" y="274" width="64" height="20"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                            <color key="textColor" red="1" green="0.36862745099999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="valid_default.png" id="LPj-VT-0fH" userLabel="imdmIcon">
+                            <rect key="frame" x="349" y="276" width="13" height="13"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                            <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
+                        </imageView>
                     </subviews>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
