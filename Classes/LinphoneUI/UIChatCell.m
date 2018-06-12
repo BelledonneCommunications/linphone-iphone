@@ -85,46 +85,60 @@
 
 	LinphoneChatMessage *last_msg = linphone_chat_room_get_last_message_in_history(chatRoom);
 	if (last_msg) {
-        BOOL outgoing = linphone_chat_message_is_outgoing(last_msg);
-        NSString *text = [UIChatBubbleTextCell TextMessageForChat:last_msg];
-        if (outgoing) {
+        BOOL imdnInSnap = FALSE;
+        if (imdnInSnap) {
+            BOOL outgoing = linphone_chat_message_is_outgoing(last_msg);
+            NSString *text = [UIChatBubbleTextCell TextMessageForChat:last_msg];
+            if (outgoing) {
+                // shorten long messages
+                if ([text length] > 50)
+                    text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
+                _chatContentLabel.attributedText = nil;
+                _chatContentLabel.text = text;
+            }
+            else {
+                NSString *name = [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)];
+                if ([name length] > 25) {
+                    name = [[name substringToIndex:25] stringByAppendingString:@"[...]"];
+                }
+                CGFloat fontSize = _chatContentLabel.font.pointSize;
+                UIFont *boldFont = [UIFont boldSystemFontOfSize:fontSize];
+                NSMutableAttributedString *boldText = [[NSMutableAttributedString alloc] initWithString:name attributes:@{ NSFontAttributeName : boldFont }];
+                text = [@" : " stringByAppendingString:text];
+                NSString *fullText = [name stringByAppendingString:text];
+                if ([fullText length] > 50) {
+                    text = [[text substringToIndex: (50 - [name length])] stringByAppendingString:@"[...]"];
+                }
+                [boldText appendAttributedString:[[NSAttributedString alloc] initWithString:text]];
+                _chatContentLabel.text = nil;
+                _chatContentLabel.attributedText = boldText;
+            }
+
+            
+            LinphoneChatMessageState state = linphone_chat_message_get_state(last_msg);
+            if (outgoing && (state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {
+                [self displayImdmStatus:state];
+                CGRect newFrame = _chatContentLabel.frame;
+                newFrame.origin.x = 80;
+                _chatContentLabel.frame = newFrame;
+            } else {
+                // We displace the message 20 pixels to the left
+                [_imdmIcon setHidden:TRUE];
+                CGRect newFrame = _chatContentLabel.frame;
+                newFrame.origin.x = 60;
+                _chatContentLabel.frame = newFrame;
+            }
+        } else {
+            NSString *text = [[FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)]
+                              stringByAppendingFormat:@" : %@", [UIChatBubbleTextCell TextMessageForChat:last_msg]];
             // shorten long messages
             if ([text length] > 50)
                 text = [[text substringToIndex:50] stringByAppendingString:@"[...]"];
-            _chatContentLabel.attributedText = nil;
-            _chatContentLabel.text = text;
-        }
-        else {
-            NSString *name = [FastAddressBook displayNameForAddress:linphone_chat_message_get_from_address(last_msg)];
-            if ([name length] > 25) {
-                name = [[name substringToIndex:25] stringByAppendingString:@"[...]"];
-            }
-            CGFloat fontSize = _chatContentLabel.font.pointSize;
-            UIFont *boldFont = [UIFont boldSystemFontOfSize:fontSize];
-            NSMutableAttributedString *boldText = [[NSMutableAttributedString alloc] initWithString:name attributes:@{ NSFontAttributeName : boldFont }];
-            text = [@" : " stringByAppendingString:text];
-            NSString *fullText = [name stringByAppendingString:text];
-            if ([fullText length] > 50) {
-                text = [[text substringToIndex: (50 - [name length])] stringByAppendingString:@"[...]"];
-            }
-            [boldText appendAttributedString:[[NSAttributedString alloc] initWithString:text]];
-            _chatContentLabel.text = nil;
-            _chatContentLabel.attributedText = boldText;
-        }
-
-        
-        LinphoneChatMessageState state = linphone_chat_message_get_state(last_msg);
-        if (outgoing && (state == LinphoneChatMessageStateDeliveredToUser || state == LinphoneChatMessageStateDisplayed || state == LinphoneChatMessageStateNotDelivered || state == LinphoneChatMessageStateFileTransferError)) {
-            [self displayImdmStatus:state];
-            CGRect newFrame = _chatContentLabel.frame;
-            newFrame.origin.x = 80;
-            _chatContentLabel.frame = newFrame;
-        } else {
-            // We displace the message 20 pixels to the left
             [_imdmIcon setHidden:TRUE];
             CGRect newFrame = _chatContentLabel.frame;
             newFrame.origin.x = 60;
             _chatContentLabel.frame = newFrame;
+            _chatContentLabel.text = text;
         }
         
 		linphone_chat_message_unref(last_msg);
