@@ -213,12 +213,15 @@
 }
 
 - (void)onResendClick:(id)event {
+    LinphoneChatMessageState state = linphone_chat_message_get_state(self.message);
 	if (_downloadButton.hidden == NO) {
 		// if download button is displayed, click on it
 		[self onDownloadClick:event];
 	} else if (_cancelButton.hidden == NO) {
 		[self onCancelClick:event];
-	} else {
+    } else if (state != LinphoneChatMessageStateNotDelivered && state != LinphoneChatMessageStateFileTransferError) { //This is cheating, onImageClick is never trigerred from the view because the resend event is never disabled for some reason.
+        [self onImageClick:event];
+    } else {
 		[super onResend];
 	}
 }
