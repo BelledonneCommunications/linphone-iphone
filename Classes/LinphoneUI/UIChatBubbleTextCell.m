@@ -393,7 +393,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
     int availableWidth = width - CELL_MESSAGE_X_MARGIN;
-    if (UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         availableWidth = availableWidth /3;
     }
     int height = originalSize.height;
