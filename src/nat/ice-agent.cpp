@@ -608,7 +608,6 @@ int IceAgent::gatherIceCandidates () {
 	if (mediaSession.getPrivate()->getAf() == AF_INET6) {
 		if (linphone_core_get_local_ip_for(AF_INET6, nullptr, localAddr) < 0) {
 			lError() << "Fail to get local IPv6";
-			return -1;
 		} else
 			addLocalIceCandidates(AF_INET6, localAddr, audioCl, videoCl, textCl);
 	}
