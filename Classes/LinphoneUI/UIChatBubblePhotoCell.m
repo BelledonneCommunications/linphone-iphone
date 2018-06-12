@@ -128,9 +128,7 @@
 		return;
 	}
 	[super update];
-    ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
-    [tableView.tableView beginUpdates];
-    [tableView.tableView endUpdates];
+
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
