@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.linphone.org/BC/public/linphone-iphone/badges/master/pipeline.svg)](https://gitlab.linphone.org/BC/public/linphone-iphone/commits/master)
+[![Build Status](https://travis-ci.org/BelledonneCommunications/linphone-iphone.svg?branch=master)](https://travis-ci.org/BelledonneCommunications/linphone-iphone)
 
 Linphone is a free VoIP and video softphone based on the SIP protocol.
 
