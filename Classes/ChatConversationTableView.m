@@ -38,7 +38,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
 	[super viewWillAppear:animated];
-    self.photoSizesDict = [NSMutableDictionary dictionary];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
 }
 
@@ -179,15 +178,11 @@
 			kCellId = NSStringFromClass(UIChatBubblePhotoCell.class);
 		else
 			kCellId = NSStringFromClass(UIChatBubbleTextCell.class);
+        
 		UIChatBubbleTextCell *cell = [tableView dequeueReusableCellWithIdentifier:kCellId];
         if (!cell) {
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
-            cell.indexInTable = indexPath;
         }
-        //if (linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)) {
-        //    UIChatBubblePhotoCell *photoCell = (UIChatBubblePhotoCell *) cell;
-        //    [photoCell unloadImages];
-        //}
 		[cell setEvent:event];
 		if (chat)
 			[cell update];
@@ -220,14 +215,9 @@
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
 		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
         
-        if ((linphone_chat_message_get_file_transfer_information(chat) || linphone_chat_message_get_external_body_url(chat)) && [_photoSizesDict objectForKey:indexPath]) {
-            return [_photoSizesDict objectForKey:indexPath].doubleValue;
-        }
-        
 		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
-	} else {
-		return [UIChatNotifiedEventCell height];
 	}
+    return [UIChatNotifiedEventCell height];
 }
 
 - (void) tableView:(UITableView *)tableView deleteRowAtIndex:(NSIndexPath *)indexPath {

@@ -85,13 +85,6 @@
                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                             <accessibility key="accessibilityConfiguration" label="Delivery failed"/>
                         </imageView>
-                        <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="gzv-K4-5OL" userLabel="finalImage">
-                            <rect key="frame" x="7" y="55" width="350" height="211"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <connections>
-                                <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="ICw-5U-vcc"/>
-                            </connections>
-                        </imageView>
                         <view contentMode="scaleToFill" misplaced="YES" id="8I3-n2-0kS" userLabel="view">
                             <rect key="frame" x="39" y="55" width="298" height="190"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
@@ -100,9 +93,6 @@
                                     <rect key="frame" x="0.0" y="0.0" width="298" height="122"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <gestureRecognizers/>
-                                    <connections>
-                                        <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="7kE-0j-s1g"/>
-                                    </connections>
                                 </imageView>
                                 <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
                                     <rect key="frame" x="0.0" y="128" width="297" height="62"/>
@@ -141,6 +131,20 @@
                                 </view>
                             </subviews>
                         </view>
+                        <view contentMode="scaleToFill" misplaced="YES" id="VYJ-RC-Jmg">
+                            <rect key="frame" x="8" y="55" width="349" height="213"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" id="gzv-K4-5OL" userLabel="finalImage">
+                                    <rect key="frame" x="0.0" y="0.0" width="349" height="213"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="3P2-uH-W2N"/>
+                                    </connections>
+                                </imageView>
+                            </subviews>
+                        </view>
                     </subviews>
                     <connections>
                         <outletCollection property="gestureRecognizers" destination="5ZI-Ip-lGl" appends="YES" id="1iY-46-rRR"/>
@@ -152,14 +156,14 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="-73.5" y="246.5"/>
         </view>
-        <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
-            <connections>
-                <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
-            </connections>
-        </tapGestureRecognizer>
         <tapGestureRecognizer id="5ZI-Ip-lGl" userLabel="resendClick">
             <connections>
                 <action selector="onResendClick:" destination="-1" id="XOF-AF-Hes"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
+            <connections>
+                <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
             </connections>
         </tapGestureRecognizer>
     </objects>

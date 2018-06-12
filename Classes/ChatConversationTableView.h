@@ -40,7 +40,6 @@
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic, strong) id<ChatConversationDelegate> chatRoomDelegate;
-@property(nonatomic) NSMutableDictionary<NSIndexPath *, NSNumber *> *photoSizesDict;
 
 - (void)addEventEntry:(LinphoneEventLog *)event;
 - (void)scrollToBottom:(BOOL)animated;
