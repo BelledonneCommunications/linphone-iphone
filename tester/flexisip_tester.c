@@ -1923,6 +1923,114 @@ end:
 	bctbx_list_free(lcs);
 }
 
+static void deal_with_jwe_auth_module(const char *jwe, bool_t invalid_jwe, bool_t invalid_oid) {
+	if (!transport_supported(LinphoneTransportTls))
+		return;
+
+	// 1. Register Gandalf.
+	LinphoneCoreCbs *cbs = linphone_factory_create_core_cbs(linphone_factory_get());
+	LinphoneCoreManager *gandalf = linphone_core_manager_new(NULL);
+
+	// Do not use Authentication module.
+	linphone_core_set_user_agent(gandalf->lc, "JweAuth Linphone", NULL);
+
+	linphone_core_cbs_set_authentication_requested(cbs, tls_authentication_provide_altname_cert);
+	linphone_core_add_callbacks(gandalf->lc, cbs);
+	linphone_core_cbs_unref(cbs);
+
+	LinphoneProxyConfig *cfg = linphone_core_create_proxy_config(gandalf->lc);
+
+	linphone_proxy_config_set_server_addr(cfg, "sip:sip2.linphone.org:5063;transport=tls");
+	linphone_proxy_config_set_route(cfg, "sip:sip2.linphone.org:5063;transport=tls");
+	linphone_proxy_config_enable_register(cfg, TRUE);
+	linphone_proxy_config_set_identity(cfg, "sip:gandalf@sip.example.org");
+	linphone_core_add_proxy_config(gandalf->lc, cfg);
+
+	BC_ASSERT_TRUE(wait_for(gandalf->lc, NULL, &gandalf->stat.number_of_LinphoneRegistrationOk, 1));
+	BC_ASSERT_EQUAL(gandalf->stat.number_of_LinphoneRegistrationFailed,0, int, "%d");
+	BC_ASSERT_EQUAL(gandalf->stat.number_of_auth_info_requested,1, int, "%d");
+
+	// 2. Invite Pauline.
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_rc");
+
+	bctbx_list_t *lcs = bctbx_list_append(NULL, gandalf->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+
+	LinphoneCallParams *gandalf_params = linphone_core_create_call_params(gandalf->lc, NULL);
+	linphone_call_params_add_custom_header(
+		gandalf_params,
+		"X-token-oid",
+		invalid_oid ? "sip:invalid@sip.example.org" : "sip:gandalf@sip.example.org"
+	);
+	linphone_call_params_add_custom_header(gandalf_params, "X-token-aud", "plic-ploc");
+	linphone_call_params_add_custom_header(gandalf_params, "X-token-req_act", "DRAAAAA LES PYRAMIDES");
+	linphone_call_params_add_custom_header(gandalf_params, "X-token-jwe", jwe);
+
+	linphone_core_invite_address_with_params(gandalf->lc, pauline->identity, gandalf_params);
+	linphone_call_params_unref(gandalf_params);
+
+	int n_expected_calls = invalid_jwe || invalid_oid ? 0 : 1;
+	BC_ASSERT_TRUE(wait_for_list(lcs, &gandalf->stat.number_of_LinphoneCallOutgoingRinging, n_expected_calls, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived, n_expected_calls, 3000));
+
+	LinphoneCall *pauline_call = linphone_core_get_current_call(pauline->lc);
+	if (!n_expected_calls)
+		BC_ASSERT_PTR_NULL(pauline_call);
+	else {
+		if (pauline_call)
+			linphone_call_accept(pauline_call);
+		BC_ASSERT_TRUE(wait_for_list(lcs, &gandalf->stat.number_of_LinphoneCallConnected, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &gandalf->stat.number_of_LinphoneCallStreamsRunning, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallConnected, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallStreamsRunning, 1, 1000));
+	}
+
+	LinphoneCall *gandalf_call = linphone_core_get_current_call(gandalf->lc);
+	if (n_expected_calls) {
+		if (gandalf_call)
+			linphone_call_terminate(gandalf_call);
+		BC_ASSERT_TRUE(wait_for_list(lcs, &gandalf->stat.number_of_LinphoneCallEnd, 1, 1000));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallEnd, 1, 1000));
+	}
+
+	linphone_core_manager_destroy(gandalf);
+	linphone_core_manager_destroy(pauline);
+
+	linphone_proxy_config_unref(cfg);
+
+	bctbx_list_free(lcs);
+}
+
+void use_jwe_auth_module(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.YIkpmyFKUJaSIBXh8ABjAeymbMN21VAGr7qXFmek0l8Oh3bEGBuf5YggQWP1G55V00WI8KESxm3LJnqzf-L3FDm3S8D-dLeR7GiJgJtJqED6KKf9U86aLo6UZPmh8xIdfVqLFDUeDQQwy3zwZw-MwY_xtDn_RR2u_W5bmWL-t1-A-xTIw6TEwdjqe8X_D0CuhcPx-virV3RBUHwjSO43vsdHMqLExDXIk95CuQOcUJufZJMu0q5KmpuvDSVesf6ZcmKBEVnkIlSbgAl_Hsv51RXPUT3rFsNy0LSEIByyF-zO6u_L6jpqlt8DxKc6aefa9-4KvyaxU1K7AApYZKh2TQ.fjXkk_TeGhfakvKQ.GP8RivXqe5g4OQhvzlvJ-l2jxuRziLWFNohmFIkZoXwL2mvnEqq71GWYr6_X0V7Z3I7nkMKDwhOfBpKbjnDKK-x1BEUmOmTwaJqeX_lJlZeZkXl597jtBXN3fH5vdccRvoxVFHT0DfZcEA.Km01D704Zl-J28hQJ05dEA";
+	deal_with_jwe_auth_module(jwe, FALSE, FALSE);
+}
+
+void use_jwe_auth_module_with_invalid_oid(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.YIkpmyFKUJaSIBXh8ABjAeymbMN21VAGr7qXFmek0l8Oh3bEGBuf5YggQWP1G55V00WI8KESxm3LJnqzf-L3FDm3S8D-dLeR7GiJgJtJqED6KKf9U86aLo6UZPmh8xIdfVqLFDUeDQQwy3zwZw-MwY_xtDn_RR2u_W5bmWL-t1-A-xTIw6TEwdjqe8X_D0CuhcPx-virV3RBUHwjSO43vsdHMqLExDXIk95CuQOcUJufZJMu0q5KmpuvDSVesf6ZcmKBEVnkIlSbgAl_Hsv51RXPUT3rFsNy0LSEIByyF-zO6u_L6jpqlt8DxKc6aefa9-4KvyaxU1K7AApYZKh2TQ.fjXkk_TeGhfakvKQ.GP8RivXqe5g4OQhvzlvJ-l2jxuRziLWFNohmFIkZoXwL2mvnEqq71GWYr6_X0V7Z3I7nkMKDwhOfBpKbjnDKK-x1BEUmOmTwaJqeX_lJlZeZkXl597jtBXN3fH5vdccRvoxVFHT0DfZcEA.Km01D704Zl-J28hQJ05dEA";
+	deal_with_jwe_auth_module(jwe, FALSE, TRUE);
+}
+
+void use_jwe_auth_module_with_expired_exp(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.PChRlYeTptnYoQDSxYRtqLCBgC3LTpsqWGKDXp-cHC_hF5vurvQfrj__KQb6mR65qBm68PmHp1KwykTAld3bUVA3ykcsGqKI7WBnpu3DLNaQ9kaluP2BvFsyhUBWDU6IqU_O8CIykTwiaSn3HSBH2MiL-lPeNfDY6ndcGXlEAOGosgXAlkFerkNsu8bm4Qkch1JIrxV6I0MhfLrNGIfPPazfYU8byVXScd0YkKlwOuaJZpUXew5nAsgb0L39vMuKomLi5ibH84X01akODOnucX6fU2f_e2MuUH4X3zgqmG9AZ8RV_Iy7irsk_VG4sS8VRftk7YqMVO8kByTkOkLwLA.DO2Navrjk-1vep94.V6n_kZt7gbYGDHnaa9q3DHK7ujkFv2Jd-9jK8xUpkH7PcG3WKTPwiLy40sFvGFr7iWnojK-tODYzakfM5t3uXWdq4iYDXv2tP_JDJt-muiE99C_07cBtL2ymrIzMp-6efzNl3YL_K-rQ9g.p3YUmwPAGO0H9e64MavQlg";
+	deal_with_jwe_auth_module(jwe, TRUE, FALSE);
+}
+
+void use_jwe_auth_module_with_no_exp(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.Hn2oL4835Tkzqb4U3_0aDqgg-pxImCi2EbuTtWwa5uQ5cVz6p6gZ7s7PTPgkfJgtQTYzaRqsywI0cLIWkofAFWUGcL43U-w7_vm3gBpO7BpUKq81kscz6-31ni7M3prxyxw7eoqhdu8Hf9QjirHMaWAw7gYpEjcAshAA559T4a8svan0wq_WGoeXYYS0cEv8UEX6Lpz41tNkvchy9Ydm4kWYXloqnnl0ARR1bMOlxhpOD--Sm2fcTopO_E24tmDjdvgGddwGhHX4qOXs3dXWKM8SPj-PLvZSy7BJ3-Jfz5T1ErEzXlUxutgnV-9K1QZGCbVT6hiF39bcPfAj-y9Emw.xJR4Ot1XCoptlHau.dcYkLAvBJ2N0PnAJ5lr3f3b4CDVJNpi6PrprVB25k4EycdlW-IiiiC97SAyBeygvK5BAybyyjotU33_MC_1163Gk1SsRGn6yjujWgYeoLBRUL6yQcIiPZus.CCaNmMMMsIX4o-dIt7HquQ";
+	deal_with_jwe_auth_module(jwe, TRUE, FALSE);
+}
+
+void use_jwe_auth_module_with_invalid_attr(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.Lj-1x8-c1BJWSvwYQtMWDV2fhGRNZ0B6auR1QgVRw2e4kxEToSSjZJAXKudAvNII0FUtPU6hf0uvuDuc9VQHRDCV3DSg0iLxVfcLJcnC0hygHnjBuVJiglqfKVfXnaLwadkRVS7Q3A52sC_YZnk0aTZKpefu1Zc_kr_llKH_pIEZDd2FL1M3XZXNiiemM1Lwq5sbRPYqxOHhVySOIUcAzUkPJpzgaIMGVwn4cwvDL58inp9tyUDak6BV6sFoSovpJ4w4HDIRLUj8BXcBZiyXlzj06YUiZVkO2JPRZR_KBPdZtKAE5KoWGe074e5q-L_f6_i3Y0psN9hI8FZfzy0nvw.FAtaQpIlLCx19mPq.TJS8q2aCeLT-oLSy24eRa2FN07AIjlymwruBvYROFeU-_UgomwIcPQhVvfE0h_QyJNVcY1iwBnCBe8KDbVHUrfHhQcCHJmOHXZ7ouzINBPk0qqr-ubCroHuV3J-prIa10qwvEzjmFBAPEw4.6cOmc0txLOCpIXa3WOkRSA";
+	deal_with_jwe_auth_module(jwe, TRUE, FALSE);
+}
+
+void use_jwe_auth_with_malformed_token(void) {
+	static const char jwe[] = "eyJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUlNBLU9BRVAtMjU2Iiwia2lkIjoiOFp0TTNUQjJYN2YxRTBoSDk3dzlCelNvai1fck1qXzVpQnlPVG9ZcWltOCJ9.YIkpmyFKUJaSIBXh8ABjAeymbMN21VAGr7qXFmek0l8Oh3bEGBuf5YggQWP1G55V00WI8KESxm3LJnqzf-L3FDm3S8D-dLeR7GiJgJtJqED6KKf9U86aLo6UZPmh8xIdfVqLFDUeDQQwy3zwZw-MwY_xtDn_RR2u_W5bmWL-t1-A-xTIw6TEwdjqe8X_D0CuhcPx-virV3RBUHwjSO43vsdHMqLExDXIk95CuQOcUJufZJMu0q5KmpuvDSVesf6ZcmKBEVnkIlSbgAl_Hsv51RXPUT3rFsNy0LSEIByyF-zO6u_L6jpqlt8DxKc6aefa9-4KvyaxU1K7AApYZKh2TQ.fjXkk_TeGhfakvKQ.GP8RivXqe5g4OQhvzlvJ-l2jxuRziLWFNohmFIkZoXwL2mvnEqq71GWYr6_X0V7Z3I7nkMKDwhOfBpKbjnDKK-x1BEUmOmTwaJqeX_lJlZeZkXl597jtBXN3fH5vdccRvoxVFHT0DfZcEA.Km01D704Zl-J18hQJ05dEA";
+	deal_with_jwe_auth_module(jwe, TRUE, FALSE);
+}
+
 test_t flexisip_tests[] = {
 	TEST_ONE_TAG("Subscribe forking", subscribe_forking, "LeaksMemory"),
 	TEST_NO_TAG("Message forking", message_forking),
@@ -1970,9 +2078,17 @@ test_t flexisip_tests[] = {
 	TEST_NO_TAG("Sequential forking with no response from highest priority", sequential_forking_with_no_response_for_highest_priority),
 	TEST_NO_TAG("Sequential forking with insertion of higher priority", sequential_forking_with_insertion_of_higher_priority),
 	TEST_NO_TAG("Sequential forking with fallback route", sequential_forking_with_fallback_route),
-	TEST_NO_TAG("Registered contact does not have regid param", register_without_regid)
+	TEST_NO_TAG("Registered contact does not have regid param", register_without_regid),
+	TEST_NO_TAG("Use JweAuth module", use_jwe_auth_module),
+	TEST_NO_TAG("Use JweAuth module with invalid oid", use_jwe_auth_module_with_invalid_oid),
+	TEST_NO_TAG("Use JweAuth module with expired exp", use_jwe_auth_module_with_expired_exp),
+	TEST_NO_TAG("Use JweAuth module with no exp", use_jwe_auth_module_with_no_exp),
+	TEST_NO_TAG("Use JweAuth module with invalid attr", use_jwe_auth_module_with_invalid_attr),
+	TEST_NO_TAG("Use JweAuth module with malformed token", use_jwe_auth_with_malformed_token)
 };
 
-
-test_suite_t flexisip_test_suite = {"Flexisip", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
-									sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests};
+test_suite_t flexisip_test_suite = {
+	"Flexisip", NULL, NULL,
+	liblinphone_tester_before_each, liblinphone_tester_after_each,
+	sizeof(flexisip_tests) / sizeof(flexisip_tests[0]), flexisip_tests
+};
