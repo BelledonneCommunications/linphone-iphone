@@ -210,19 +210,19 @@ static void message_forking_with_unreachable_recipients_with_gruu(void) {
 	LinphoneCoreManager *marie = ms_new0(LinphoneCoreManager, 1);
 	LinphoneCoreManager *pauline = ms_new0(LinphoneCoreManager, 1);
 	LinphoneCoreManager *marie2 = ms_new0(LinphoneCoreManager, 1);
-	
+
 	linphone_core_manager_init(marie, "marie_rc", NULL);
 	linphone_core_manager_init(pauline, transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc", NULL);
 	linphone_core_manager_init(marie2, "marie_rc", NULL);
-	
+
 	linphone_core_add_supported_tag(marie->lc,"gruu");
 	linphone_core_add_supported_tag(pauline->lc,"gruu");
 	linphone_core_add_supported_tag(marie2->lc,"gruu");
-	
+
 	linphone_core_manager_start(marie,TRUE);
 	linphone_core_manager_start(pauline,TRUE);
 	linphone_core_manager_start(marie2,TRUE);
-	
+
 	bctbx_list_t* lcs=bctbx_list_append(NULL,marie->lc);
 
 	LinphoneProxyConfig *marie_proxy_config = linphone_core_get_default_proxy_config(marie->lc);
@@ -562,7 +562,7 @@ static void call_forking_with_push_notification_double_contact(void){
 	LinphoneCoreManager* pauline = linphone_core_manager_new2( transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc",FALSE);
 	int dummy=0;
 
-	
+
 	lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "unregister_previous_contact", 1);
 	lp_config_set_int(linphone_core_get_config(pauline->lc), "sip", "unregister_previous_contact", 1);
 	linphone_core_set_user_agent(marie->lc,"Natted Linphone",NULL);
@@ -598,9 +598,9 @@ static void call_forking_with_push_notification_double_contact(void){
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallStreamsRunning,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallConnected,1,1000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallStreamsRunning,1,1000));
-		
+
 		liblinphone_tester_check_rtcp(pauline,marie);
-		
+
 		linphone_call_terminate(linphone_core_get_current_call(pauline->lc));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,5000));
 		BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,5000));
@@ -1602,7 +1602,7 @@ void sequential_forking(void) {
 	BC_ASSERT_EQUAL(marie2->stat.number_of_LinphoneCallIncomingReceived, 0, int, "%d");
 
 	LinphoneCall *call = linphone_core_get_current_call(marie->lc);
-	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) goto end;
 
 	/*marie accepts the call on its second device*/
 	linphone_call_accept(call);
@@ -1618,6 +1618,7 @@ void sequential_forking(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneCallEnd,1,1000));
 
+end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -1667,7 +1668,7 @@ void sequential_forking_with_timeout_for_highest_priority(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
 	LinphoneCall *call = linphone_core_get_current_call(marie3->lc);
-	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) goto end;
 
 	/*marie accepts the call on her third device*/
 	linphone_call_accept(call);
@@ -1686,6 +1687,7 @@ void sequential_forking_with_timeout_for_highest_priority(void) {
 	/*first device should have received nothing*/
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd, 0, int, "%d");
 
+end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -1730,7 +1732,7 @@ void sequential_forking_with_no_response_for_highest_priority(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
 
 	LinphoneCall *call = linphone_core_get_current_call(marie2->lc);
-	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) goto end;
 
 	/*marie accepts the call on her second device*/
 	linphone_call_accept(call);
@@ -1746,6 +1748,7 @@ void sequential_forking_with_no_response_for_highest_priority(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallEnd,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie2->stat.number_of_LinphoneCallEnd,1,1000));
 
+end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -1794,7 +1797,7 @@ void sequential_forking_with_insertion_of_higher_priority(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie3->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
 	LinphoneCall *call = linphone_core_get_current_call(marie3->lc);
-	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) goto end;
 
 	/*marie accepts the call on her third device*/
 	linphone_call_accept(call);
@@ -1813,6 +1816,7 @@ void sequential_forking_with_insertion_of_higher_priority(void) {
 	/*first device should have received nothing*/
 	BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd, 0, int, "%d");
 
+end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(marie);
 	linphone_core_manager_destroy(marie2);
@@ -1869,7 +1873,7 @@ void sequential_forking_with_fallback_route(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneCallIncomingReceived,1,3000));
 
 	LinphoneCall *call = linphone_core_get_current_call(pauline->lc);
-	if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+	if (!BC_ASSERT_PTR_NOT_NULL(call)) goto end;
 
 	/*pauline accepts the call*/
 	linphone_call_accept(call);
@@ -1885,6 +1889,7 @@ void sequential_forking_with_fallback_route(void) {
 	/*first device should have received nothing*/
 	BC_ASSERT_EQUAL(pauline2->stat.number_of_LinphoneCallEnd, 0, int, "%d");
 
+end:
 	linphone_core_manager_destroy(pauline);
 	linphone_core_manager_destroy(pauline2);
 	linphone_core_manager_destroy(marie);
