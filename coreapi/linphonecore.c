@@ -7329,6 +7329,8 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 			if (strcmp(tag, "win32") == 0) platform = "windows";
 			else if (strcmp(tag, "apple") == 0) platform = "macosx";
 			else if (strcmp(tag, "linux") == 0) platform = "linux";
+			else if (strcmp(tag, "ios") == 0) platform = "ios";
+			else if (strcmp(tag, "android") == 0) platform = "android";
 			else if (strcmp(tag, "desktop") == 0) is_desktop = TRUE;
 		}
 		if ((is_desktop == FALSE) || (platform == NULL)) {
