@@ -457,8 +457,8 @@ int SalOp::getAddressFamily() const {
 	
 	
 	if (mRefresher) {
-		belle_sip_response_t *resp = belle_sip_transaction_get_response(tr);
-		belle_sip_header_via_t *via = resp ?belle_sip_message_get_header_by_type(resp,belle_sip_header_via_t):NULL;
+		belle_sip_message_t *msg = belle_sip_transaction_get_response(tr) ? (belle_sip_message_t*) belle_sip_transaction_get_response(tr) : (belle_sip_message_t*) belle_sip_transaction_get_request(tr);
+		belle_sip_header_via_t *via = msg ? belle_sip_message_get_header_by_type(msg,belle_sip_header_via_t):NULL;
 		const char *host;
 		if (!via){
 			ms_error("Unable to determine IP version from signaling operation, no via header found.");
