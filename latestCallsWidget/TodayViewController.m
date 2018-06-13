@@ -163,7 +163,7 @@
 }
 
 - (void)launchOnHistoryDetailsWithId:(NSString *)logId {
-    [self launchAppWithURL:[NSURL URLWithString:[@"sip://call_log/show?" stringByAppendingString:logId]]];
+    [self launchAppWithURL:[NSURL URLWithString:[@"linphone-widget://call_log/show?" stringByAppendingString:logId]]];
 }
 
 - (IBAction)firstButtonTapped {
