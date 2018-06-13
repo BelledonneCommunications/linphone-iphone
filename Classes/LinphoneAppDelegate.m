@@ -218,6 +218,17 @@
 										   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
 								 intentIdentifiers:[[NSMutableArray alloc] init]
 										   options:UNNotificationCategoryOptionCustomDismissAction];
+    
+    // App version verification
+    
+    UNNotificationAction *act_go_to_URL = [UNNotificationAction actionWithIdentifier:@"Download"
+                                                                             title:NSLocalizedString(@"Download", nil)
+                                                                           options:UNNotificationActionOptionNone];
+    UNNotificationCategory *version_verif =
+    [UNNotificationCategory categoryWithIdentifier:@"version_verif"
+                                           actions:[NSArray arrayWithObjects:act_go_to_URL, nil]
+                                 intentIdentifiers:[[NSMutableArray alloc] init]
+                                           options:UNNotificationCategoryOptionCustomDismissAction];
 
 	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
@@ -226,7 +237,8 @@
 																			if (error)
 																				LOGD(error.description);
 																		}];
-	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
+    
+	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, version_verif, nil];
 	[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 }
 
@@ -662,7 +674,11 @@ didInvalidatePushTokenForType:(NSString *)type {
 							  }];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
 			return;
-		} else { // Missed call
+        } else if ([response.notification.request.content.categoryIdentifier isEqual:@"version_verif"]) {
+            NSString *url = [response.notification.request.content.userInfo objectForKey:@"url"];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+            return;
+        } else { // Missed call
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}
 	}

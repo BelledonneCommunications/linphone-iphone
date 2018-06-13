@@ -1394,6 +1394,55 @@ void linphone_iphone_chatroom_state_changed(LinphoneCore *lc, LinphoneChatRoom *
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:nil];
 }
 
+void linphone_iphone_version_update_check_result_received (LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url) {
+    LOGD(@"MONCUL");
+    if (result == LinphoneVersionUpdateCheckUpToDate || result == LinphoneVersionUpdateCheckError) {
+        return;
+    }
+    NSString *title = NSLocalizedString(@"Outdated Version", nil);
+    NSString *body = NSLocalizedString(@"A new version of your app is available, use the button below to download it.", nil);
+    
+    UIAlertController *versVerifView = [UIAlertController alertControllerWithTitle:title
+                                                                     message:body
+                                                              preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              NSString *ObjCurl = [NSString stringWithUTF8String:url];
+                                                              [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ObjCurl]];
+                                                          }];
+    
+    [versVerifView addAction:defaultAction];
+    [PhoneMainView.instance presentViewController:versVerifView animated:YES completion:nil];
+    /*
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
+        floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+        content.title = title;
+        content.body = body;
+        content.categoryIdentifier = @"version_verif";
+        UNNotificationRequest *req =
+        [UNNotificationRequest requestWithIdentifier:@"version_verif" content:content trigger:NULL];
+        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
+                                                               withCompletionHandler:^(NSError *_Nullable error) {
+                                                                   // Enable or disable features based on authorization.
+                                                                   if (error) {
+                                                                       LOGD(@"Error while adding notification request :");
+                                                                       LOGD(error.description);
+                                                                   }
+                                                               }];
+    } else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                        message:body
+                                                       delegate:nil
+                                              cancelButtonTitle:nil
+                                              otherButtonTitles:nil];
+        [alert show];
+    }
+     */
+}
+
 #pragma mark - Message composition start
 - (void)alertLIME:(LinphoneChatRoom *)room {
 	NSString *title = NSLocalizedString(@"LIME warning", nil);
@@ -1964,6 +2013,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_notify_received(cbs, linphone_iphone_notify_received);
 	linphone_core_cbs_set_call_encryption_changed(cbs, linphone_iphone_call_encryption_changed);
 	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
+    linphone_core_cbs_set_version_update_check_result_received(cbs, linphone_iphone_version_update_check_result_received);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 
 	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
@@ -3027,5 +3077,30 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 // DO NOT INVOKE THIS METHOD
 - (void)exportSymbolsForUITests {
 	linphone_address_set_header(NULL, NULL, NULL);
+}
+
+- (void)checkNewVersion {
+    if (theLinphoneCore == nil)
+        return;
+    //NSString *curVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    //const char *curVersionCString = [curVersion cStringUsingEncoding:NSUTF8StringEncoding];
+    //linphone_core_check_for_update(theLinphoneCore, curVersionCString);
+    
+    NSString *title = NSLocalizedString(@"Outdated Version", nil);
+    NSString *body = NSLocalizedString(@"A new version of your app is available, use the button below to download it.", nil);
+    
+    UIAlertController *versVerifView = [UIAlertController alertControllerWithTitle:title
+                                                                           message:body
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {
+                                                              NSString *ObjCurl = @"https://www.google.com/";
+                                                              [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ObjCurl]];
+                                                          }];
+    
+    [versVerifView addAction:defaultAction];
+    [PhoneMainView.instance presentViewController:versVerifView animated:YES completion:nil];
 }
 @end

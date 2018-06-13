@@ -205,6 +205,8 @@ typedef struct _LinphoneManagerSounds {
 - (void) setContactsUpdated:(BOOL) updated;
 - (BOOL) getContactsUpdated;
 
+- (void)checkNewVersion;
+
 @property ProviderDelegate *providerDelegate;
 
 @property (readonly) BOOL isTesting;

@@ -50,7 +50,6 @@
 		}
 		[self setFrame:CGRectMake(0, 0, 5, 100)];
 		[self addSubview:sub];
-        //LOGD(@"ZBOUB");
         chatTableView = VIEW(ChatConversationView).tableController;
         actualAvailableWidth = chatTableView.tableView.frame.size.width;
 	}
@@ -110,7 +109,6 @@
 		_imageGestureRecognizer.enabled = YES;
         //_cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = YES;
         _finalImage.hidden = NO;
-        LOGD(@"ZBOUB");
 	});
 }
 
