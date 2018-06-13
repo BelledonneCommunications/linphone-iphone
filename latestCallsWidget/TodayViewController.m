@@ -69,9 +69,11 @@
                           contactError);
                 } else {
                         if (contact.imageDataAvailable) {
-                            NSArray *addresses = contact.instantMessageAddresses;
-                            [self.imgs setObject:contact.imageData forKey:contact.givenName];
-                            printf("Ajout de l'image de %s\n", contact.givenName.UTF8String);
+                            [self.imgs setObject:contact.imageData
+                                          forKey:[contact.givenName stringByAppendingFormat:
+                                                  ([contact.familyName isEqualToString:@""])?@"":@" %@", contact.familyName]];
+                            printf("Ajout de l'image de %s\n", [contact.givenName stringByAppendingFormat:
+                                                                ([contact.familyName isEqualToString:@""])?@"":@" %@", contact.familyName].UTF8String);
                         }
                 }
             }];
