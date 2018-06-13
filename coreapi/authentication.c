@@ -61,7 +61,7 @@ LinphoneAuthInfo *linphone_auth_info_new_for_algorithm(const char *username, con
 	if (!algorithm)
 		obj->algorithm = ms_strdup("MD5");
 
-	if(algorithm && strcmp(algorithm, "MD5") && strcmp(algorithm, "SHA-256")){
+	if(algorithm && strcasecmp(algorithm, "MD5") && strcasecmp(algorithm, "SHA-256")){
 		ms_error("Given algorithm %s is not correct.", algorithm);
 		return NULL;
 	}
@@ -258,12 +258,12 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	}
 	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username || obj->userid) && store_ha1_passwd) {
 		/* Default algorithm is MD5 if it's NULL */
-		if((obj->algorithm==NULL)||(!(strcmp(obj->algorithm, "MD5")))){
+		if((obj->algorithm==NULL)||(!(strcasecmp(obj->algorithm, "MD5")))){
 			obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
 			sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
 		}
 		/* If algorithm is SHA-256, calcul ha1 by sha256*/
-		if((obj->algorithm)&&(!(strcmp(obj->algorithm, "SHA-256")))){
+		if((obj->algorithm)&&(!(strcasecmp(obj->algorithm, "SHA-256")))){
 			obj->ha1 = reinterpret_cast<char *>(ms_malloc(65));
 			sal_auth_compute_ha1_for_algorithm(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1,65, obj->algorithm);
 		}
