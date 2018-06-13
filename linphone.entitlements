@@ -7,6 +7,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.belledonne-communications.linphone.widget</string>
+		<string>group.belledonne-communications.linphone</string>
 	</array>
 </dict>
 </plist>

@@ -9,6 +9,13 @@
 
 @interface TodayViewController : UIViewController
 @property (strong, nonatomic) IBOutletCollection(UIStackView) NSArray *stackViews;
+@property (strong, nonatomic) NSMutableArray *contactsToDisplay;
+@property (strong, nonatomic) NSMutableDictionary *logs;
+@property (strong, nonatomic) NSMutableDictionary *imgs;
+@property (strong, nonatomic) NSMutableArray *sortedDates;
+@property (strong, nonatomic) NSMutableArray *logIds;
+@property (strong, nonatomic) NSNumber *nbImgs;
+@property (strong) dispatch_semaphore_t sem;
 
 - (IBAction)firstButtonTapped;
 - (IBAction)secondButtonTapped;
