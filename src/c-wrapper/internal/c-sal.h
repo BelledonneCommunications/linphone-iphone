@@ -33,6 +33,7 @@
 #include "mediastreamer2/mediastream.h"
 #include "ortp/rtpsession.h"
 #include "belle-sip/belle-sip.h"
+#include "bctoolbox/crypto.h"
 
 #ifndef LINPHONE_PUBLIC
 #if defined(_MSC_VER)

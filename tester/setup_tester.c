@@ -122,7 +122,7 @@ static void linphone_version_test(void){
 static void core_init_test(void) {
 	LinphoneCore* lc;
 	lc = linphone_factory_create_core_2(linphone_factory_get(),NULL,NULL,NULL, NULL, system_context);
-	
+
 	/* until we have good certificates on our test server... */
 	linphone_core_verify_server_certificates(lc,FALSE);
 	if (BC_ASSERT_PTR_NOT_NULL(lc)) {
@@ -131,8 +131,18 @@ static void core_init_test(void) {
 }
 
 static void linphone_address_test(void) {
+	LinphoneAddress *address;
+
 	linphone_address_unref(create_linphone_address(NULL));
 	BC_ASSERT_PTR_NULL(linphone_address_new("sip:@sip.linphone.org"));
+
+	address = linphone_address_new("sip:90.110.127.31");
+	if (!BC_ASSERT_PTR_NOT_NULL(address)) return;
+	linphone_address_unref(address);
+
+	address = linphone_address_new("sip:[::ffff:90.110.127.31]");
+	if (!BC_ASSERT_PTR_NOT_NULL(address)) return;
+	linphone_address_unref(address);
 }
 
 static void core_sip_transport_test(void) {
