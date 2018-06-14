@@ -3055,6 +3055,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 - (void)checkNewVersion {
+    if (!CHECK_VERSION_UPDATE)
+        return;
     if (theLinphoneCore == nil)
         return;
     NSString *curVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
