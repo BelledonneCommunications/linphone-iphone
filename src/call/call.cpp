@@ -345,9 +345,9 @@ void CallPrivate::onIncomingCallSessionTimeoutCheck (const shared_ptr<CallSessio
 		lInfo() << "Incoming call ringing for " << elapsed << " seconds";
 	if (elapsed > q->getCore()->getCCore()->sip_conf.inc_timeout) {
 		lInfo() << "Incoming call timeout (" << q->getCore()->getCCore()->sip_conf.inc_timeout << ")";
-		LinphoneReason declineReason = (q->getCore()->getCurrentCall() != q->getSharedFromThis())
-			? LinphoneReasonBusy : LinphoneReasonDeclined;
-		getActiveSession()->declineNotAnswered(declineReason);
+		auto config = linphone_core_get_config(q->getCore()->getCCore());
+		int statusCode = linphone_config_get_int(config, "sip", "inc_timeout_status_code", 486);
+		getActiveSession()->declineNotAnswered(linphone_error_code_to_reason(statusCode));
 	}
 }
 
