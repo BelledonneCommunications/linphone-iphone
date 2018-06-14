@@ -344,7 +344,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 
         size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
         //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
-        size.height += CELL_MESSAGE_Y_MARGIN;
+        size.height += CELL_MESSAGE_X_MARGIN;
 	}
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
 	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
