@@ -1326,7 +1326,7 @@ static void certificates_config_read(LinphoneCore *lc) {
 	linphone_core_verify_server_certificates(lc, !!lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc, !!lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);
-	
+
 	lc->sal->setTlsPostcheckCallback(_linphone_core_tls_postcheck_callback, lc);
 }
 
@@ -7347,6 +7347,7 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 	int err;
 	bool_t is_desktop = FALSE;
 	const char *platform = NULL;
+	const char *mobilePlatform = NULL;
 	const char *version_check_url_root = lp_config_get_string(lc->config, "misc", "version_check_url_root", NULL);
 
 	if (version_check_url_root != NULL) {
@@ -7362,11 +7363,14 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 			if (strcmp(tag, "win32") == 0) platform = "windows";
 			else if (strcmp(tag, "apple") == 0) platform = "macosx";
 			else if (strcmp(tag, "linux") == 0) platform = "linux";
-			else if (strcmp(tag, "ios") == 0) platform = "ios";
-			else if (strcmp(tag, "android") == 0) platform = "android";
+	    else if (strcmp(tag, "ios") == 0) mobilePlatform = "ios";
+	    else if (strcmp(tag, "android") == 0) mobilePlatform = "android";
 			else if (strcmp(tag, "desktop") == 0) is_desktop = TRUE;
 		}
-		if ((is_desktop == FALSE) || (platform == NULL)) {
+		  if (!is_desktop) {
+		    platform = mobilePlatform;
+		  }
+		  if (platform == NULL) {
 			ms_warning("Update checking is not supported on this platform");
 			return;
 		}
