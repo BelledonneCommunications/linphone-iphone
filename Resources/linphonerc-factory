@@ -45,6 +45,7 @@ tcp_tls_keepalive=30000
 history_max_size=-1
 enable_basic_to_client_group_chat_room_migration=0
 aggregate_imdn=1
+version_check_url_root=https://linphone.org/releases
 
 [sound]
 dtmf_player_amp=0.007

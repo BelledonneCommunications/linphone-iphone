@@ -193,7 +193,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)coreUpdateEvent:(NSNotification *)notif {
 	@try {
-        [[LinphoneManager instance] checkNewVersion];
 		if (IPAD) {
 			if (linphone_core_video_display_enabled(LC) && linphone_core_video_preview_enabled(LC)) {
 				linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_videoPreview));

@@ -1395,7 +1395,6 @@ void linphone_iphone_chatroom_state_changed(LinphoneCore *lc, LinphoneChatRoom *
 }
 
 void linphone_iphone_version_update_check_result_received (LinphoneCore *lc, LinphoneVersionUpdateCheckResult result, const char *version, const char *url) {
-    LOGD(@"MONCUL");
     if (result == LinphoneVersionUpdateCheckUpToDate || result == LinphoneVersionUpdateCheckError) {
         return;
     }
@@ -1406,41 +1405,15 @@ void linphone_iphone_version_update_check_result_received (LinphoneCore *lc, Lin
                                                                      message:body
                                                               preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+    NSString *ObjCurl = [NSString stringWithUTF8String:url];
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Download", nil)
                                                             style:UIAlertActionStyleDefault
                                                           handler:^(UIAlertAction * action) {
-                                                              NSString *ObjCurl = [NSString stringWithUTF8String:url];
                                                               [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ObjCurl]];
                                                           }];
     
     [versVerifView addAction:defaultAction];
     [PhoneMainView.instance presentViewController:versVerifView animated:YES completion:nil];
-    /*
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive &&
-        floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
-        UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-        content.title = title;
-        content.body = body;
-        content.categoryIdentifier = @"version_verif";
-        UNNotificationRequest *req =
-        [UNNotificationRequest requestWithIdentifier:@"version_verif" content:content trigger:NULL];
-        [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:req
-                                                               withCompletionHandler:^(NSError *_Nullable error) {
-                                                                   // Enable or disable features based on authorization.
-                                                                   if (error) {
-                                                                       LOGD(@"Error while adding notification request :");
-                                                                       LOGD(error.description);
-                                                                   }
-                                                               }];
-    } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
-                                                        message:body
-                                                       delegate:nil
-                                              cancelButtonTitle:nil
-                                              otherButtonTitles:nil];
-        [alert show];
-    }
-     */
 }
 
 #pragma mark - Message composition start
@@ -2385,6 +2358,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 
 - (void)becomeActive {
 	linphone_core_enter_foreground(LC);
+    
+    [self checkNewVersion];
 
 	// enable presence
 	if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max || self.connectivity == none) {
@@ -3082,25 +3057,8 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 - (void)checkNewVersion {
     if (theLinphoneCore == nil)
         return;
-    //NSString *curVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    //const char *curVersionCString = [curVersion cStringUsingEncoding:NSUTF8StringEncoding];
-    //linphone_core_check_for_update(theLinphoneCore, curVersionCString);
-    
-    NSString *title = NSLocalizedString(@"Outdated Version", nil);
-    NSString *body = NSLocalizedString(@"A new version of your app is available, use the button below to download it.", nil);
-    
-    UIAlertController *versVerifView = [UIAlertController alertControllerWithTitle:title
-                                                                           message:body
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
-                                                            style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction * action) {
-                                                              NSString *ObjCurl = @"https://www.google.com/";
-                                                              [[UIApplication sharedApplication] openURL:[NSURL URLWithString:ObjCurl]];
-                                                          }];
-    
-    [versVerifView addAction:defaultAction];
-    [PhoneMainView.instance presentViewController:versVerifView animated:YES completion:nil];
+    NSString *curVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    const char *curVersionCString = [curVersion cStringUsingEncoding:NSUTF8StringEncoding];
+    linphone_core_check_for_update(theLinphoneCore, curVersionCString);
 }
 @end
