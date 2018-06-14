@@ -45,7 +45,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
 		LOGI(@"Transfer of %s (%d bytes): download finished", linphone_content_get_name(content), size);
 		assert([thiz.data length] == linphone_content_get_file_size(content));
         NSString *fileType = [NSString stringWithUTF8String:linphone_content_get_type(content)];
-        if([fileType isEqualToString:@"image"]) {
+        if ([fileType isEqualToString:@"image"]) {
             // we're finished, save the image and update the message
             UIImage *image = [UIImage imageWithData:thiz.data];
             if (!image) {
@@ -113,15 +113,12 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
                                     [thiz stopAndDestroy];
                                     CFRelease((__bridge CFTypeRef)thiz);
                                 }];
-        }  else{
+        }  else {
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             
-            NSString *key = @"localvideo";
+            NSString *key = [fileType isEqualToString:@"file"] ? @"localfile" : @"localvideo";
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
         
-            if([fileType isEqualToString:@"file"]){
-                key = @"localfile";
-            }
             [LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
            
             //write file to path
@@ -131,7 +128,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
                                                     contents:thiz.data
                                                   attributes:nil];
         
-                [LinphoneManager setValueInMessageAppData:filePath forKey:key inMessage:message];
+                [LinphoneManager setValueInMessageAppData:name forKey:key inMessage:message];
                      
                 [NSNotificationCenter.defaultCenter
                  postNotificationName:kLinphoneFileTransferRecvUpdate
@@ -199,56 +196,14 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
 	return NULL;
 }
 
-- (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
-	[LinphoneManager.instance.fileTransferDelegates addObject:self];
-
-	LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
-	_data = [NSMutableData dataWithData:UIImageJPEGRepresentation(image, quality)];
-	linphone_content_set_type(content, "image");
-	linphone_content_set_subtype(content, "jpeg");
-	linphone_content_set_name(
-		content, [[NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]]
-					 UTF8String]);
-	linphone_content_set_size(content, _data.length);
-
-	_message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
-	linphone_content_unref(content);
-
-	linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
-													 linphone_iphone_file_transfer_send);
-
-	if (url) {
-		// internal url is saved in the appdata for display and later save
-		[LinphoneManager setValueInMessageAppData:[url absoluteString] forKey:@"localimage" inMessage:_message];
-		[LinphoneManager setValueInMessageAppData:[NSNumber numberWithFloat:quality] forKey:@"uploadQuality" inMessage:_message];
-	}
-
-	LOGI(@"%p Uploading content from message %p", self, _message);
-	linphone_chat_room_send_chat_message(chatRoom, _message);
-
-	if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
-		[LinphoneManager.instance alertLIME:chatRoom];
-	}
-}
-
-- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url {
+- (void)uploadData:(NSData *)data  forChatRoom:(LinphoneChatRoom *)chatRoom type:(NSString *)type subtype:(NSString *)subtype name:(NSString *)name key:(NSString *)key keyData:(NSString *)keyData qualityData:(NSNumber *)qualityData {
     [LinphoneManager.instance.fileTransferDelegates addObject:self];
     
     LinphoneContent *content = linphone_core_create_content(linphone_chat_room_get_core(chatRoom));
     _data = [NSMutableData dataWithData:data];
-  
-    NSString *filePath = [LinphoneManager documentFile:[url lastPathComponent]];
-    [[NSFileManager defaultManager] createFileAtPath:filePath
-                                            contents:_data
-                                          attributes:nil];
-    
-    NSString *key = @"localvideo";
-    if(![[url pathExtension]isEqualToString:@"MOV"]) {
-        linphone_content_set_type(content, "file");
-        key = @"localfile";
-    }
-
-    linphone_content_set_name(content, [[url lastPathComponent] UTF8String]);
+    linphone_content_set_type(content, [type UTF8String]);
+    linphone_content_set_subtype(content, [subtype UTF8String]);
+    linphone_content_set_name(content, [name UTF8String]);
     linphone_content_set_size(content, _data.length);
     
     _message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
@@ -257,7 +212,9 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
                                                      linphone_iphone_file_transfer_send);
 
-    [LinphoneManager setValueInMessageAppData:filePath forKey:key inMessage:_message];
+    // internal url is saved in the appdata for display and later save
+    [LinphoneManager setValueInMessageAppData:keyData forKey:key inMessage:_message];
+    [LinphoneManager setValueInMessageAppData:qualityData forKey:@"uploadQuality" inMessage:_message];
     
     LOGI(@"%p Uploading content from message %p", self, _message);
     linphone_chat_room_send_chat_message(chatRoom, _message);
@@ -265,6 +222,28 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     if (linphone_core_lime_enabled(LC) == LinphoneLimeMandatory && !linphone_chat_room_lime_available(chatRoom)) {
         [LinphoneManager.instance alertLIME:chatRoom];
     }
+}
+
+- (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
+    NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
+    if (url)
+        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:[url absoluteString] qualityData:[NSNumber numberWithFloat:quality]];
+    else
+        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:nil qualityData:nil];
+}
+
+- (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url {
+    NSString *name = [url lastPathComponent];
+    //save file to Documents
+    NSString *filePath = [LinphoneManager documentFile:name];
+    [[NSFileManager defaultManager] createFileAtPath:filePath
+                                            contents:[NSMutableData dataWithData:data]
+                                          attributes:nil];
+        
+    if ([[url pathExtension]isEqualToString:@"MOV"])
+        [self uploadData:data forChatRoom:chatRoom type:nil subtype:nil name:name key:@"localvideo" keyData:name qualityData:nil];
+    else
+        [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
 }
 
 

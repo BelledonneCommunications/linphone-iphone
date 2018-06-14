@@ -234,6 +234,7 @@
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
+        NSString *fileName = localVideo ? localVideo : localFile;
 		NSURL *imageUrl = [NSURL URLWithString:localImage];
 		[self onDelete];
         if(localImage){
@@ -248,12 +249,10 @@
                                                   failureBlock:^(NSError *error) {
                                                       LOGE(@"Can't read image");
                                                   }];
-        } else if(localVideo) {
-            [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:localVideo] withUrl:[NSURL URLWithString:localVideo]];
-        } else {
-             [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:localFile] withUrl:[NSURL URLWithString:localFile]];
+        } else if(fileName) {
+            NSString *filePath = [LinphoneManager documentFile:fileName];
+            [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:filePath] withUrl:[NSURL URLWithString:filePath]];
         }
-		
 	} else {
 		[self onDelete];
 		double delayInSeconds = 0.4;
@@ -319,6 +318,7 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 + (CGSize)ViewHeightForMessage:(LinphoneChatMessage *)chat withWidth:(int)width {
 	NSString *messageText = [UIChatBubbleTextCell TextMessageForChat:chat];
 	static UIFont *messageFont = nil;
+    
 	if (!messageFont) {
 		UIChatBubbleTextCell *cell =
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
@@ -335,14 +335,24 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 								   font:messageFont];
 	} else {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
-        NSURL *imageUrl = [NSURL URLWithString:localImage];
-        __block CGSize originalImageSize = CGSizeMake(0, 0);
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-            [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-                                                   resultBlock:^(ALAsset *asset) {
-                                                       originalImageSize = [[asset defaultRepresentation] dimensions];
-                                                       dispatch_semaphore_signal(sema);
+        NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
+        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
+        
+        if(localFile) {
+            CGSize fileSize = CGSizeMake(200, 50);
+            size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+        } else if (localVideo) {
+            CGSize videoSize = CGSizeMake(320, 240);
+            size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
+        } else {
+            NSURL *imageUrl = [NSURL URLWithString:localImage];
+            __block CGSize originalImageSize = CGSizeMake(0, 0);
+            dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+                [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
+                                                       resultBlock:^(ALAsset *asset) {
+                                                           originalImageSize = [[asset defaultRepresentation] dimensions];
+                                                           dispatch_semaphore_signal(sema);
                                                        }
                                                   failureBlock:^(NSError *error) {
                                                       LOGE(@"Can't read image");
@@ -353,8 +363,10 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 
         size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
         //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
+        }
         size.height += CELL_MESSAGE_X_MARGIN;
 	}
+    
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
 	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
 	return size;

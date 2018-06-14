@@ -32,7 +32,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.url"]) {
                 [self loadItem:provider typeIdentifier:@"public.url" defaults:defaults key:@"web"];
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.movie"]) {
-                [self loadItem:provider typeIdentifier:@"public.movie" defaults:defaults key:@"file"];
+                [self loadItem:provider typeIdentifier:@"public.movie" defaults:defaults key:@"mov"];
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.plain-text"]) {
                 [self loadItem:provider typeIdentifier:@"public.plain-text" defaults:defaults key:@"text"];
             } else  if ([provider hasItemConformingToTypeIdentifier:@"com.adobe.pdf"]) {

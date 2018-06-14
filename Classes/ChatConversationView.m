@@ -220,7 +220,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     
     NSDictionary *dict = [defaults valueForKey:@"img"];
     NSDictionary *dictWeb = [defaults valueForKey:@"web"];
-    NSDictionary *dictFile = [defaults valueForKey:@"file"];
+    NSDictionary *dictFile = [defaults valueForKey:@"mov"];
     NSDictionary *dictText = [defaults valueForKey:@"text"];
     if (dict) {
         //share photo
@@ -247,7 +247,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         NSData *data  = dictFile[@"nsData"];
         [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]]];
         [self sendContentText:dictFile[@"name"]];
-        [defaults removeObjectForKey:@"file"];
+        [defaults removeObjectForKey:@"mov"];
     }else if(dictText) {
         //share text
         [self sendContentText:dictText[@"name"]];
@@ -370,7 +370,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
        
-            [sheet addButtonWithTitle:@"send to him"
+            [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
                                      [self startFileUpload:data withUrl:url];
                                 }];
@@ -856,7 +856,6 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 
 - (void)openResults:(NSString *) filePath
 {
-    //TODO: if file exist
     // Open the controller.
     _documentInteractionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
     _documentInteractionController.delegate = self;
