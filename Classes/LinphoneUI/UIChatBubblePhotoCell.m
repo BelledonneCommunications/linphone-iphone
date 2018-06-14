@@ -340,15 +340,18 @@
 - (CGImageRef)cropImageFromRepresentation:(ALAssetRepresentation*)rep {
     CGImageRef newImage = [rep fullResolutionImage];
     CGSize originalSize = [rep dimensions];
+    float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height
     if (originalSize.width > imageSize.width) {
-        int height = originalSize.height * imageSize.width / originalSize.width;
+        int height = imageSize.width / originalAspectRatio;
         newImage = [self.class resizeCGImage:newImage toWidth:imageSize.width andHeight:height];
         originalSize.height = height;
     }
     CGRect cropRect = CGRectMake(0, 0, imageSize.width, imageSize.height);
     if (imageSize.height < originalSize.height) cropRect.origin.y = (originalSize.height - imageSize.height)/2;
     newImage = CGImageCreateWithImageInRect(newImage, cropRect);
+    LOGD([NSString stringWithFormat:@"Image size : width = %g, height = %g", imageSize.width, imageSize.height]);
+    LOGD([NSString stringWithFormat:@"Bubble size : width = %g, height = %g", super.bubbleView.frame.size.width, super.bubbleView.frame.size.height]);
     return newImage;
 }
 

@@ -343,6 +343,8 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
         dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
         size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+        //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
+        size.height += CELL_MESSAGE_Y_MARGIN;
 	}
 	size.width = MAX(size.width + CELL_MESSAGE_X_MARGIN, CELL_MIN_WIDTH);
 	size.height = MAX(size.height + CELL_MESSAGE_Y_MARGIN, CELL_MIN_HEIGHT);
@@ -396,11 +398,13 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         availableWidth = availableWidth /3;
     }
-    int height = originalSize.height;
+    int newHeight = originalSize.height;
+    float originalAspectRatio = originalSize.width / originalSize.height;
+    // We resize in width and crop in height
     if (originalSize.width > availableWidth) {
-        height = originalSize.height * availableWidth / originalSize.width;
+        newHeight = availableWidth / originalAspectRatio;
     }
-    mediaSize.height = MIN(height, availableWidth);
+    mediaSize.height = MIN(newHeight, availableWidth);
     mediaSize.width = MIN(availableWidth, originalSize.width);
     return mediaSize;
 }
