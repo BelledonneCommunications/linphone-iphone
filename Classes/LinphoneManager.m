@@ -718,6 +718,7 @@ static void linphone_iphone_display_status(struct _LinphoneCore *lc, const char 
 
 	// Disable speaker when no more call
 	if ((state == LinphoneCallEnd || state == LinphoneCallError)) {
+        [HistoryListTableView saveDataToUserDefaults];
 		[[UIDevice currentDevice] setProximityMonitoringEnabled:FALSE];
 		speaker_already_enabled = FALSE;
 		if (linphone_core_get_calls_nb(theLinphoneCore) == 0) {
@@ -1801,7 +1802,10 @@ void networkReachabilityCallBack(SCNetworkReachabilityRef target, SCNetworkReach
 	
 	[self enableProxyPublish:([UIApplication sharedApplication].applicationState == UIApplicationStateActive)];
 
-	LOGI(@"Linphone [%s]  started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
+    //update UserDefaults for widgets
+    [HistoryListTableView saveDataToUserDefaults];
+    
+	LOGI(@"Linphone [%s] started on [%s]", linphone_core_get_version(), [[UIDevice currentDevice].model UTF8String]);
 
 	// Post event
 	NSDictionary *dict = [NSDictionary dictionaryWithObject:[NSValue valueWithPointer:theLinphoneCore] forKey:@"core"];

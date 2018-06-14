@@ -127,7 +127,6 @@
 
 	const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
 	self.sections = [NSMutableDictionary dictionary];
-    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
 	while (logs != NULL) {
 		LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
 		if (!missedFilter || linphone_call_log_get_status(log) == LinphoneCallMissed) {
@@ -160,32 +159,39 @@
 
 	[super loadData];
     
-    NSMutableDictionary *dictShare = [NSMutableDictionary dictionary];
-    for (id day in self.sections.allKeys) {
-        for (id log in self.sections[day]) {
-            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-//            [dict setObject:[NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date([log pointerValue])]
-//                     forKey:@"date"];
-            [dict setObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id([log pointerValue])]
-                     forKey:@"id"];
-            [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string(linphone_call_log_get_remote_address([log pointerValue]))]
-                     forKey:@"address"];
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-            
-            NSString *stringFromDate = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date([log pointerValue])]];
-            [dictShare setObject:dict
-                          forKey:stringFromDate];
-        }
-    }
-    [mySharedDefaults setObject:dictShare forKey:@"logs"];
-    
 	if (IPAD) {
 		if (![self selectFirstRow]) {
 			HistoryDetailsView *view = VIEW(HistoryDetailsView);
 			[view setCallLogId:nil];
 		}
 	}
+}
+
++ (void) saveDataToUserDefaults {
+    const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
+    NSMutableDictionary *dictShare = [NSMutableDictionary dictionary];
+    while (logs != NULL) {
+        LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        if (!linphone_call_log_get_call_id(log)) {
+            logs = bctbx_list_next(logs);
+            continue;
+        }
+        [dict setObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]
+                 forKey:@"id"];
+        [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string(linphone_call_log_get_remote_address(log))]
+                 forKey:@"address"];
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        
+        NSString *stringFromDate = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(log)]];
+        [dictShare setObject:dict
+                      forKey:stringFromDate];
+        
+        logs = bctbx_list_next(logs);
+    }
+    [mySharedDefaults setObject:dictShare forKey:@"logs"];
 }
 
 - (void)computeSections {

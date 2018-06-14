@@ -18,13 +18,7 @@
 
 @implementation TodayViewController
 
-- (instancetype) init {
-    printf("BONJOUR\n");
-    return [super init];
-}
-
 - (void)loadData {
-    _contactsToDisplay = [NSMutableArray array];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
@@ -57,9 +51,8 @@
             CNContactStore* store = [[CNContactStore alloc] init];
             [store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
             NSArray *keysToFetch = @[
-                                     CNContactEmailAddressesKey, CNContactPhoneNumbersKey, CNContactImageDataAvailableKey,
-                                     CNContactFamilyNameKey, CNContactGivenNameKey, CNContactNicknameKey,
-                                     CNContactInstantMessageAddressesKey, CNContactIdentifierKey, CNContactImageDataKey
+                                     CNContactImageDataAvailableKey, CNContactInstantMessageAddressesKey,
+                                     CNContactIdentifierKey, CNContactImageDataKey
                                      ];
             CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
             
@@ -69,11 +62,16 @@
                           contactError);
                 } else {
                         if (contact.imageDataAvailable) {
-                            [self.imgs setObject:contact.imageData
-                                          forKey:[contact.givenName stringByAppendingFormat:
-                                                  ([contact.familyName isEqualToString:@""])?@"":@" %@", contact.familyName]];
-                            printf("Ajout de l'image de %s\n", [contact.givenName stringByAppendingFormat:
-                                                                ([contact.familyName isEqualToString:@""])?@"":@" %@", contact.familyName].UTF8String);
+                            NSArray *addresses = contact.instantMessageAddresses;
+                            NSString *address = @"";
+                            for (CNLabeledValue *v in addresses) {
+                                CNInstantMessageAddress *addressValue = v.value;
+                                if ([addressValue.service isEqualToString:@"SIP"]) {
+                                    address = addressValue.username;
+                                    [self.imgs setObject:contact.imageData
+                                                  forKey:address];
+                                }
+                            }
                         }
                 }
             }];
@@ -88,29 +86,26 @@
     _logIds = [NSMutableArray array];
     int i = 0, j = 0;
     dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
-    _nbImgs = [NSNumber numberWithInteger:_imgs.count];
     while (i < _stackViews.count && j < _sortedDates.count) {
         NSDate *date = _sortedDates[j++];
         NSString *address = [[_logs objectForKey:date] objectForKey:@"address"];
         LinphoneAddress *adr = linphone_address_new([address UTF8String]);
         NSString *logId = [[_logs objectForKey:date] objectForKey:@"id"];
-        if ([_contactsToDisplay containsObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(adr)]])
+        address = [[NSString stringWithUTF8String:linphone_address_as_string_uri_only(adr)] substringFromIndex:4];
+        if ([_contactsToDisplay containsObject:address])
             continue;
-        [_contactsToDisplay addObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(adr)]];
+        [_contactsToDisplay addObject:address];
         [_logIds addObject:logId];
         NSString *displayName = [NSString stringWithUTF8String:linphone_address_get_display_name(adr)];
         UIStackView *stack = _stackViews[i];
-        UIButton *button = stack.subviews[1];
+        UIButton *button = stack.subviews[0];
         // making rounded image
         UIImageView *imageView = button.imageView;
         imageView.layer.cornerRadius = imageView.frame.size.height / 2;
         imageView.clipsToBounds = YES;
-        UILabel *name = stack.subviews[2];
-        if ([self.imgs.allKeys containsObject:displayName]) {
-            [button setImage:[UIImage imageWithData:[_imgs objectForKey:displayName]] forState:UIControlStateNormal];
-            printf("Affichage de l'image de %s\n", displayName.UTF8String);
-        }
-        printf("Fin de l'affichage pour %s\n", displayName.UTF8String);
+        UILabel *name = stack.subviews[1];
+        if ([self.imgs.allKeys containsObject:address])
+            [button setImage:[UIImage imageWithData:[_imgs objectForKey:address]] forState:UIControlStateNormal];
         [stack setAlpha:1];
         button.enabled = YES;
         [name setText:displayName];
@@ -128,9 +123,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    NSLog(@"------ LA VUE A CHARGE ------");
     _sem = dispatch_semaphore_create(0);
-    _nbImgs = [NSNumber numberWithInt:0];
     [self fetchContactsInBackGroundThread];
     [self loadData];
     [self draw];
@@ -147,15 +140,9 @@
     // If an error is encountered, use NCUpdateResultFailed
     // If there's no update required, use NCUpdateResultNoData
     // If there's an update, use NCUpdateResultNewData
-    NSLog(@"valeurs dans dict contacts : %i", (int)_imgs.count);
-    NSLog(@"valeurs de nbImgs : %i", (int)_nbImgs.integerValue);
-    /*if (_nbImgs.integerValue != _imgs.count) {
-        [self draw];
-        completionHandler(NCUpdateResultNoData);
-    } else {
-        [self draw];
-        completionHandler(NCUpdateResultNoData);
-    }*/
+    [self fetchContactsInBackGroundThread];
+    [self loadData];
+    [self draw];
     completionHandler(NCUpdateResultNewData);
 }
 
