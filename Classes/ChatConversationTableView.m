@@ -210,12 +210,32 @@
 	[_chatRoomDelegate tableViewIsScrolling];
 }
 
+static const CGFloat MESSAGE_SPACING_PERCENTAGE = 5.f;
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
 	LinphoneEventLog *event = [[eventList objectAtIndex:indexPath.row] pointerValue];
 	if (linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage) {
-		LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
+        LinphoneChatMessage *chat = linphone_event_log_get_chat_message(event);
         
-		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height;
+        //If the message is followed by another one that is not from the same address, we add a little space under it
+        CGFloat height = 0;
+        LinphoneEventLog *nextEvent = nil;
+        NSInteger indexOfNextEvent = indexPath.row + 1;
+        while (!nextEvent && indexOfNextEvent < [eventList count]) {
+            LinphoneEventLog *tmp = [[eventList objectAtIndex:indexOfNextEvent] pointerValue];
+            if (linphone_event_log_get_type(tmp) == LinphoneEventLogTypeConferenceChatMessage) {
+                nextEvent = tmp;
+            }
+            ++indexOfNextEvent;
+        }
+        if (nextEvent) {
+            LinphoneChatMessage *nextChat = linphone_event_log_get_chat_message(nextEvent);
+            if (!linphone_address_equal(linphone_chat_message_get_from_address(nextChat), linphone_chat_message_get_from_address(chat))) {
+                LOGD(@"BITE");
+                height += tableView.frame.size.height * MESSAGE_SPACING_PERCENTAGE / 100;
+            }
+        }
+		return [UIChatBubbleTextCell ViewHeightForMessage:chat withWidth:self.view.frame.size.width].height + height;
 	}
     return [UIChatNotifiedEventCell height];
 }
