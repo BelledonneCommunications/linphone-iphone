@@ -109,6 +109,8 @@ AndroidPlatformHelpers::AndroidPlatformHelpers (LinphoneCore *lc, void *systemCo
 	jobject pm = env->CallObjectMethod(mJavaHelper, mGetPowerManagerId);
 	belle_sip_wake_lock_init(env, pm);
 
+	linphone_factory_set_top_resources_dir(linphone_factory_get() , getDataPath().append("share").c_str());
+
 	lInfo() << "AndroidPlatformHelpers is fully initialised.";
 }
 

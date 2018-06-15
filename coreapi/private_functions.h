@@ -54,17 +54,28 @@ void linphone_call_notify_next_video_frame_decoded(LinphoneCall *call);
 
 LinphoneCall * linphone_call_new_outgoing(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, const LinphoneCallParams *params, LinphoneProxyConfig *cfg);
 LinphoneCall * linphone_call_new_incoming(struct _LinphoneCore *lc, const LinphoneAddress *from, const LinphoneAddress *to, LinphonePrivate::SalCallOp *op);
-LinphoneCallLog * linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
+LINPHONE_PUBLIC LinphoneCallLog *linphone_call_log_new(LinphoneCallDir dir, LinphoneAddress *from, LinphoneAddress * to);
 LinphonePlayer *linphone_call_build_player(LinphoneCall*call);
 
 LinphonePrivate::SalCallOp *linphone_call_get_op(const LinphoneCall *call);
-LinphoneProxyConfig * linphone_call_get_dest_proxy(const LinphoneCall *call);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC LinphoneProxyConfig *linphone_call_get_dest_proxy(const LinphoneCall *call);
+
 LINPHONE_PUBLIC MediaStream * linphone_call_get_stream(LinphoneCall *call, LinphoneStreamType type);
-LinphoneCallLog * linphone_call_get_log(const LinphoneCall *call);
-IceSession * linphone_call_get_ice_session(const LinphoneCall *call);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC LinphoneCallLog * linphone_call_get_log(const LinphoneCall *call);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC IceSession *linphone_call_get_ice_session(const LinphoneCall *call);
+
 bool_t linphone_call_get_audio_muted(const LinphoneCall *call);
 void linphone_call_set_audio_muted(LinphoneCall *call, bool_t value);
-bool_t linphone_call_get_all_muted(const LinphoneCall *call);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC bool_t linphone_call_get_all_muted(const LinphoneCall *call);
+
 void _linphone_call_set_conf_ref (LinphoneCall *call, LinphoneConference *ref);
 MSAudioEndpoint *_linphone_call_get_endpoint (const LinphoneCall *call);
 void _linphone_call_set_endpoint (LinphoneCall *call, MSAudioEndpoint *endpoint);
@@ -95,7 +106,10 @@ SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_attributes(const Lin
 SalCustomSdpAttribute * linphone_call_params_get_custom_sdp_media_attributes(const LinphoneCallParams *params, LinphoneStreamType type);
 LinphoneCall * linphone_call_params_get_referer(const LinphoneCallParams *params);
 void linphone_call_params_set_referer(LinphoneCallParams *params, LinphoneCall *referer);
-bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC bool_t linphone_call_params_get_update_call_when_ice_completed(const LinphoneCallParams *params);
+
 void linphone_call_params_set_update_call_when_ice_completed(LinphoneCallParams *params, bool_t value);
 void linphone_call_params_set_sent_vsize(LinphoneCallParams *params, MSVideoSize vsize);
 void linphone_call_params_set_recv_vsize(LinphoneCallParams *params, MSVideoSize vsize);
@@ -107,7 +121,9 @@ void linphone_call_params_set_used_audio_codec(LinphoneCallParams *params, OrtpP
 void linphone_call_params_set_used_video_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
 void linphone_call_params_set_used_text_codec(LinphoneCallParams *params, OrtpPayloadType *codec);
 bool_t linphone_call_params_get_no_user_consent(const LinphoneCallParams *params);
-void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC void linphone_call_params_set_no_user_consent(LinphoneCallParams *params, bool_t value);
 
 void linphone_auth_info_write_config(LinphoneConfig *config, LinphoneAuthInfo *obj, int pos);
 LinphoneAuthInfo * linphone_auth_info_new_from_config_file(LpConfig *config, int pos);
@@ -222,7 +238,10 @@ void _linphone_call_stats_set_type (LinphoneCallStats *stats, LinphoneStreamType
 void _linphone_call_stats_set_received_rtcp (LinphoneCallStats *stats, mblk_t *m);
 mblk_t *_linphone_call_stats_get_sent_rtcp (const LinphoneCallStats *stats);
 void _linphone_call_stats_set_sent_rtcp (LinphoneCallStats *stats, mblk_t *m);
-int _linphone_call_stats_get_updated (const LinphoneCallStats *stats);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC int _linphone_call_stats_get_updated (const LinphoneCallStats *stats);
+
 void _linphone_call_stats_set_updated (LinphoneCallStats *stats, int updated);
 void _linphone_call_stats_set_rtp_stats (LinphoneCallStats *stats, const rtp_stats_t *rtpStats);
 void _linphone_call_stats_set_download_bandwidth (LinphoneCallStats *stats, float bandwidth);
@@ -230,7 +249,10 @@ void _linphone_call_stats_set_upload_bandwidth (LinphoneCallStats *stats, float 
 void _linphone_call_stats_set_rtcp_download_bandwidth (LinphoneCallStats *stats, float bandwidth);
 void _linphone_call_stats_set_rtcp_upload_bandwidth (LinphoneCallStats *stats, float bandwidth);
 void _linphone_call_stats_set_ip_family_of_remote (LinphoneCallStats *stats, LinphoneAddressFamily family);
-bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stats);
+
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC bool_t _linphone_call_stats_rtcp_received_via_mux (const LinphoneCallStats *stats);
+
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md);
 
 void linphone_core_send_initial_subscribes(LinphoneCore *lc);
@@ -325,7 +347,8 @@ LinphoneTunnel *linphone_core_tunnel_new(LinphoneCore *lc);
 void linphone_tunnel_configure(LinphoneTunnel *tunnel);
 void linphone_tunnel_enable_logs_with_handler(LinphoneTunnel *tunnel, bool_t enabled, OrtpLogFunc logHandler);
 
-int linphone_core_get_calls_nb(const LinphoneCore *lc);
+// FIXME: Remove this declaration, use LINPHONE_PUBLIC as ugly workaround, already defined in tester_utils.h
+LINPHONE_PUBLIC int linphone_core_get_calls_nb(const LinphoneCore *lc);
 
 void linphone_core_set_state(LinphoneCore *lc, LinphoneGlobalState gstate, const char *message);
 void linphone_call_update_biggest_desc(LinphoneCall *call, SalMediaDescription *md);

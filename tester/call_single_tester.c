@@ -186,11 +186,15 @@ static void linphone_call_next_video_frame_decoded_cb(LinphoneCall *call) {
 	counters->number_of_IframeDecoded++;
 }
 
-void linphone_call_set_first_video_frame_decoded_cb(LinphoneCall *call) {
-	LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
-	linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
-	linphone_call_add_callbacks(call, call_cbs);
-	linphone_call_cbs_unref(call_cbs);
+void liblinphone_tester_set_next_video_frame_decoded_cb(LinphoneCall *call) {
+	if (belle_sip_object_data_get(BELLE_SIP_OBJECT(call), "next_video_frame_decoded_set") == NULL){
+		LinphoneCallCbs *call_cbs = linphone_factory_create_call_cbs(linphone_factory_get());
+		linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
+		linphone_call_add_callbacks(call, call_cbs);
+		linphone_call_cbs_unref(call_cbs);
+		belle_sip_object_data_set(BELLE_SIP_OBJECT(call), "next_video_frame_decoded_set", (void*)1, NULL);
+	}
+	linphone_call_request_notify_next_video_frame_decoded(call);
 }
 
 #define reset_call_stats(var, value) \
@@ -1492,7 +1496,11 @@ static void call_declined_base(bool_t use_timeout) {
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1, int, "%d");
 		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined, int, "%d");
-		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallDeclined, int, "%d");
+		if (use_timeout){
+			BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallMissed, int, "%d");
+		}else{
+			BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallDeclined, int, "%d");
+		}
 		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(out_call)),LinphoneCallDeclined, int, "%d");
 		linphone_call_unref(in_call);
@@ -3180,7 +3188,7 @@ static void early_media_call_with_ringing_base(bool_t network_change){
 				
 				end_call(pauline, marie);
 				ended_time=ms_get_cur_time_ms();
-				BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
+				BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1500, long, "%ld");
 			}
 		bctbx_list_free(lcs);
 	}
@@ -3668,6 +3676,7 @@ void check_media_direction(LinphoneCoreManager* mgr, LinphoneCall *call, bctbx_l
 				linphone_call_cbs_set_next_video_frame_decoded(call_cbs, linphone_call_next_video_frame_decoded_cb);
 				linphone_call_add_callbacks(call, call_cbs);
 				linphone_call_cbs_unref(call_cbs);
+				linphone_call_request_notify_next_video_frame_decoded(call);
 				linphone_call_send_vfu_request(call);
 			}
 			switch (video_dir) {
@@ -4145,7 +4154,7 @@ void early_media_without_sdp_in_200_base( bool_t use_video, bool_t use_ice ){
 
 		end_call(pauline, marie);
 		ended_time=ms_get_cur_time_ms();
-		BC_ASSERT_LOWER(labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1000, long, "%ld");
+		BC_ASSERT_LOWER(labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1500, long, "%ld");
 	}
 	bctbx_list_free(lcs);
 	linphone_core_manager_destroy(marie);
@@ -5826,18 +5835,23 @@ static void call_with_ice_and_rtcp_mux_without_reinvite(void){
 
 static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
 	if (ms_zrtp_available()) {
-		bool_t call_ok;
 
 		linphone_core_set_media_encryption(pauline->lc, LinphoneMediaEncryptionZRTP);
-		BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+		if (BC_ASSERT_TRUE(call(pauline,marie))){
 
-		liblinphone_tester_check_rtcp(marie,pauline);
+			liblinphone_tester_check_rtcp(marie,pauline);
 
-		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
-					, LinphoneMediaEncryptionZRTP, int, "%i");
-		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
-					, LinphoneMediaEncryptionZRTP, int, "%i");
-		end_call(pauline, marie);
+			LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
+						, LinphoneMediaEncryptionZRTP, int, "%i");
+
+			call = linphone_core_get_current_call(pauline->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
+						, LinphoneMediaEncryptionZRTP, int, "%i");
+			end_call(pauline, marie);
+		}
 	} else {
 		ms_warning("Test skipped, ZRTP not available");
 	}
@@ -5846,18 +5860,23 @@ static void call_with_zrtp_configured_calling_base(LinphoneCoreManager *marie, L
 
 static void call_with_zrtp_configured_callee_base(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
 	if (ms_zrtp_available()) {
-		bool_t call_ok;
 
 		linphone_core_set_media_encryption(marie->lc, LinphoneMediaEncryptionZRTP);
-		BC_ASSERT_TRUE((call_ok=call(pauline,marie)));
+		if (BC_ASSERT_TRUE(call(pauline,marie))){
 
-		liblinphone_tester_check_rtcp(marie,pauline);
+			liblinphone_tester_check_rtcp(marie,pauline);
 
-		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(marie->lc)))
-					, LinphoneMediaEncryptionZRTP, int, "%i");
-		BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(linphone_core_get_current_call(pauline->lc)))
-					, LinphoneMediaEncryptionZRTP, int, "%i");
-		end_call(pauline, marie);
+			LinphoneCall *call = linphone_core_get_current_call(marie->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
+						, LinphoneMediaEncryptionZRTP, int, "%i");
+
+			call = linphone_core_get_current_call(pauline->lc);
+			if (!BC_ASSERT_PTR_NOT_NULL(call)) return;
+			BC_ASSERT_EQUAL(linphone_call_params_get_media_encryption(linphone_call_get_current_params(call))
+						, LinphoneMediaEncryptionZRTP, int, "%i");
+			end_call(pauline, marie);
+		}
 	} else {
 		ms_warning("Test skipped, ZRTP not available");
 	}

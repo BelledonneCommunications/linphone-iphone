@@ -1521,8 +1521,8 @@ void SalCallOp::processNotify(const belle_sip_request_event_t *event, belle_sip_
 			mRoot->mCallbacks.notify_refer(this,status);
 		}
 	}else{
-		ms_error("Notify without sipfrag, trashing");
-		resp = createResponseFromRequest(req,501);
+		ms_error("Notify without sipfrag or not for 'refer' event package, rejecting");
+		resp = createResponseFromRequest(req, 489);
 		belle_sip_server_transaction_send_response(server_transaction,resp);
 	}
 }

@@ -21,6 +21,9 @@
 #include <comutil.h>
 #include <ShlObj_core.h>
 
+#pragma comment(lib, "comsuppw.lib")
+#pragma comment(lib, "kernel32.lib")
+
 #include "core/platform-helpers/platform-helpers.h"
 
 #include "paths-windows.h"
@@ -41,7 +44,7 @@ static string getPath (const GUID &id) {
 		CoTaskMemFree(path);
 	}
 
-	return strPath;
+	return strPath.append("/linphone/");
 }
 
 

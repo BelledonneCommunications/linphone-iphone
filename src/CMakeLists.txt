@@ -210,6 +210,7 @@ set(LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES
 	search/magic-search.h
 	search/search-result.h
 	utils/background-task.h
+	utils/general-internal.h
 	utils/payload-type-handler.h
 	variant/variant.h
 	xml/conference-info.h
@@ -371,7 +372,7 @@ set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS
 	${SOCI_INCLUDE_DIRS}
 	${SOCI_MYSQL_INCLUDES}
 )
-set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLIBLINPHONE_EXPORTS")
+set(LINPHONE_CXX_OBJECTS_DEFINITIONS "-DLINPHONE_EXPORTS")
 set(LINPHONE_CXX_OBJECTS_INCLUDE_DIRS ${BELR_INCLUDE_DIRS})
 
 set(LINPHONE_PRIVATE_HEADER_FILES)
@@ -401,7 +402,8 @@ if(ENABLE_STATIC)
 	)
 endif()
 if(ENABLE_SHARED)
-	add_library(linphone SHARED "../share/cpim_grammar" ${LINPHONE_HEADER_FILES}
+	set(LINPHONE_RESOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../share/cpim_grammar") #keep it relative to current dir to allow CMakeList inclusion
+	add_library(linphone SHARED ${LINPHONE_RESOURCES} ${LINPHONE_HEADER_FILES}
 		${LINPHONE_CXX_OBJECTS_PRIVATE_HEADER_FILES} ${LINPHONE_CXX_OBJECTS_SOURCE_FILES} ${LINPHONE_OBJC_SOURCE_FILES}
 		$<TARGET_OBJECTS:linphone-coreapi>
 	)
@@ -417,7 +419,7 @@ if(ENABLE_SHARED)
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER org.linphone.linphone
 			MACOSX_FRAMEWORK_INFO_PLIST Info.plist.in
-			RESOURCE "../share/cpim_grammar"
+			RESOURCE ${LINPHONE_RESOURCES}
 		)
 	endif()
 	if(BELCARD_FOUND)
@@ -436,8 +438,12 @@ if(ENABLE_SHARED)
 	if(APPLE)
 		target_link_libraries(linphone PRIVATE "-framework Foundation" "-framework AVFoundation")
 	endif()
-	if(WIN32 AND CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-		set_target_properties(linphone PROPERTIES PREFIX "lib")
+	if(WIN32)
+		# Export Xerces and Soci symbols.
+		list(APPEND LINPHONE_CXX_OBJECTS_DEFINITIONS "-DDLL_EXPORT" "-DSOCI_DLL")
+		if(CMAKE_SYSTEM_NAME STREQUAL "WindowsPhone" AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+			set_target_properties(linphone PROPERTIES PREFIX "lib")
+		endif()
 	elseif(ANDROID)
 		target_link_libraries(linphone PUBLIC "log" ${SUPPORT_LIBRARIES} ${CPUFEATURES_LIBRARIES})
 	endif()
@@ -457,6 +463,8 @@ if(ENABLE_SHARED)
 		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 	)
 endif()
+target_compile_definitions(linphone PRIVATE ${LINPHONE_CXX_OBJECTS_DEFINITIONS})
+
 if(ICONV_FOUND)
 	if(APPLE)
 		# Prevent conflict between the system iconv.h header and the one from macports.

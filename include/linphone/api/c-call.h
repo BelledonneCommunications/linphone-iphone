@@ -258,7 +258,13 @@ LINPHONE_PUBLIC void linphone_call_set_authentication_token_verified (LinphoneCa
 **/
 LINPHONE_PUBLIC void linphone_call_send_vfu_request (LinphoneCall *call);
 
-LINPHONE_PUBLIC void linphone_call_set_next_video_frame_decoded_callback (LinphoneCall *call, LinphoneCallCbFunc cb, void *ud);
+/**
+ * Request the callback passed to linphone_call_cbs_set_next_video_frame_decoded() to be called the next time the video decoder properly decodes a video frame.
+ * @param call the #LinphoneCall
+**/
+LINPHONE_PUBLIC void linphone_call_request_notify_next_video_frame_decoded(LinphoneCall *call);
+
+LINPHONE_PUBLIC LINPHONE_DEPRECATED void linphone_call_set_next_video_frame_decoded_callback (LinphoneCall *call, LinphoneCallCbFunc cb, void *ud);
 
 /**
  * Returns the current transfer state, if a transfer has been initiated from this call.

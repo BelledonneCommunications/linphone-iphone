@@ -4372,14 +4372,14 @@ LINPHONE_PUBLIC LinphoneConference *linphone_core_get_conference(LinphoneCore *l
  * @param[in] lc A #LinphoneCore object
  * @param[in] enable A boolean value telling whether to enable or disable the conference server feature
  */
-void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable);
+LINPHONE_PUBLIC void linphone_core_enable_conference_server (LinphoneCore *lc, bool_t enable);
 
 /**
  * Tells whether the conference server feature is enabled.
  * @param[in] lc A #LinphoneCore object
  * @return A boolean value telling whether the conference server feature is enabled or not
  */
-bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc);
+LINPHONE_PUBLIC bool_t linphone_core_conference_server_enabled (const LinphoneCore *lc);
 
 /**
  * @}
@@ -5031,7 +5031,7 @@ LINPHONE_PUBLIC void linphone_core_add_content_type_support(LinphoneCore *lc, co
  * @return The linphone specs telling what functionalities the linphone client supports
  * @ingroup initializing
  */
-const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
+LINPHONE_PUBLIC const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
 
 /**
  * Set the linphone specs value telling what functionalities the linphone client supports.
@@ -5039,7 +5039,7 @@ const char *linphone_core_get_linphone_specs (const LinphoneCore *core);
  * @param[in] specs The linphone specs to set
  * @ingroup initializing
  */
-void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
+LINPHONE_PUBLIC void linphone_core_set_linphone_specs (LinphoneCore *core, const char *specs);
 
 /**
  * Remove support for the specified content type.

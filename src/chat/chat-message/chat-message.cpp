@@ -457,7 +457,7 @@ static void forceUtf8Content (Content &content) {
 	charset = charset.substr(begin, end - begin);
 
 	if (Utils::stringToLower(charset) != "utf-8") {
-		string utf8Body = Utils::convertString(content.getBodyAsUtf8String(), charset, "UTF-8");
+		string utf8Body = Utils::convertAnyToUtf8(content.getBodyAsUtf8String(), charset);
 		if (!utf8Body.empty()) {
 			// TODO: use move operator if possible in the future!
 			content.setBodyFromUtf8(utf8Body);

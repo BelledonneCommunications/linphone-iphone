@@ -236,9 +236,7 @@ LinphoneChatMessage *linphone_chat_room_get_last_message_in_history(LinphoneChat
 	if (!cppPtr)
 		return nullptr;
 
-	LinphoneChatMessage *object = L_INIT(ChatMessage);
-	L_SET_CPP_PTR_FROM_C_OBJECT(object, cppPtr);
-	return object;
+	return linphone_chat_message_ref(L_GET_C_BACK_PTR(cppPtr));
 }
 
 LinphoneChatMessage *linphone_chat_room_find_message (LinphoneChatRoom *cr, const char *message_id) {

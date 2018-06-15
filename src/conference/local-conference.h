@@ -28,7 +28,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class LocalConferencePrivate;
 
-class LocalConference : public Conference {
+class LINPHONE_PUBLIC LocalConference : public Conference {
 	friend class ServerGroupChatRoomPrivate;
 
 public:

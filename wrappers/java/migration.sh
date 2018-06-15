@@ -49,8 +49,8 @@ s/TransportType.LinphoneTransportUdp/TransportType.Udp/g; \
 s/TransportType.LinphoneTransportTcp/TransportType.Tcp/g; \
 s/TransportType.LinphoneTransportTls/TransportType.Tls/g; \
 s/TransportType.LinphoneTransportDtls/TransportType.Dtls/g; \
-s/AddressFamily.INET_6.getInt()/AddressFamily.Inet6.toInt()/g; \
-s/AddressFamily.INET.getInt()/AddressFamily.Inet.toInt()/g; \
+s/AddressFamily.INET_6.getInt()/AddressFamily.Inet6/g; \
+s/AddressFamily.INET.getInt()/AddressFamily.Inet/g; \
 s/LpConfig/Config/g; \
 s/LinphoneCoreException/CoreException/g; \
 s/LinphoneCoreFactory/Factory/g; \
@@ -148,6 +148,9 @@ s/getFriendLists()/getFriendsLists()/g; \
 s/getFriendList(/getFriendsLists(/g; \
 s/getIdentity(/getIdentityAddress(/g; \
 s/isTunnelAvailable()/tunnelAvailable()/g; \
+s/tunnelSetMode(/getTunnel().setMode(/g; \
+s/tunnelAddServer(/getTunnel().addServer(/g; \
+s/tunnelCleanServers(/getTunnel().cleanServers(/g; \
 s/setZrtpSecretsCache(/setZrtpSecretsFile(/g; \
 s/setRootCA(/setRootCa(/g; \
 s/isInComingInvitePending()/isIncomingInvitePending()/g; \
@@ -167,7 +170,7 @@ s/isIncall()/inCall()/g; \
 s/setVideoEnabled(/enableVideo(/g; \
 s/setAudioBandwidth(/setAudioBandwidthLimit(/g; \
 s/isAuthenticationTokenVerified()/getAuthenticationTokenVerified()/g; \
-s/isMicMuted()/!micEnabled()/g; \
+s/\(\s*\)\([a-zA-Z()\.]*\)isMicMuted()/\1!\2micEnabled()/g; \
 s/isLowBandwidthEnabled()/lowBandwidthEnabled()/g; \
 s/muteMic(/enableMic(!/g; \
 s/getRate()/getClockRate()/g; \
@@ -229,16 +232,17 @@ s/getIncomingTimeout/getIncTimeout/g; \
 s/setIncomingTimeout/setIncTimeout/g; \
 s/migrateCallLogs()/migrateLogsFromRcToDb()/g; \
 s/setRLSUri/setRlsUri/g; \
-s/hasCrappyOpenGL(/hasCrappyOpenGl(/g; \
+s/hasCrappyOpenGL(/hasCrappyOpengl(/g; \
 s/needsEchoCalibration(/isEchoCancellerCalibrationRequired(/g; \
 s/getCountryCode()/getCountryCallingCode()/g; \
 s/isEchoCancellationEnabled()/echoCancellationEnabled()/g; \
 s/startEchoCalibration(/startEchoCancellerCalibration(/g; \
 s/.isRegistered()/.getState() == RegistrationState.Ok/g; \
-s/isInConference()/(getConference() != null)/g; \
+s/\(\s*\)\([a-zA-Z()\.]*\)isInConference()/\1\2getConference() != null/g; \
 s/getAudioStats()/getStats(StreamType.Audio)/g; \
 s/getVideoStats()/getStats(StreamType.Video)/g; \
 s/getVcardToString()/getVcard().asVcard4String()/g; \
+s/getVideoAutoAcceptPolicy(/getVideoActivationPolicy().getAutomaticallyAccept(/g; \
 s/getVideoAutoInitiatePolicy()/getVideoActivationPolicy().getAutomaticallyInitiate()/g; \
 s/setFamilyName(/getVcard().setFamilyName(/g; \
 s/setGivenName(/getVcard().setGivenName(/g; \
@@ -247,9 +251,9 @@ s/getFamilyName()/getVcard().getFamilyName()/g; \
 s/getGivenName()/getVcard().getGivenName()/g; \
 s/\.getOrganization()/\.getVcard().getOrganization()/g; \
 s/enableAvpf(/setAvpfMode(AVPFMode.Enabled)/g; \
-s/transports.udp = /transports.setUdpPort(/g; \
-s/transports.tcp = /transports.setTcpPort(/g; \
-s/transports.tls = /transports.setTlsPort(/g; \
+s/transports.udp\s*=\s*\([a-zA-Z0-9_]*\)/transports.setUdpPort(\1)/g; \
+s/transports.tcp\s*=\s*\([a-zA-Z0-9_]*\)/transports.setTcpPort(\1)/g; \
+s/transports.tls\s*=\s*\([a-zA-Z0-9_]*\)/transports.setTlsPort(\1)/g; \
 s/transports.udp/transports.getUdpPort()/g; \
 s/transports.tcp/transports.getTcpPort()/g; \
 s/transports.tls/transports.getTlsPort()/g; \
@@ -271,7 +275,10 @@ s/linkPhoneNumberWithAccount()/linkAccount()/g; \
 s/zoomVideo(/zoom(/g; \
 s/mLc.setCpuCount(/\/\/mLc.setCpuCount(/g; \
 s/new XmlRpcRequestImpl(/xmlRpcSession.createRequest(/g; \
-s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g;" {} \;
+s/new XmlRpcSessionImpl(LinphoneManager.getLcIfManagerNotDestroyedOrNull(), /LinphoneManager.getLcIfManagerNotDestroyedOrNull().createXmlRpcSession(/g; \
+s/FriendImpl/Friend/g; \
+s/PresenceActivityType/PresenceActivity.Type/g; \
+s/org\.linphone\.core\.VideoSize/org.linphone.core.VideoDefinition/g;" {} \;
 
 # 2nd pass
 find ./src/android/org/linphone/ -type f -exec sed -i -e "s/Address\.TransportType/TransportType/g; \
@@ -286,47 +293,80 @@ s/Core\.LimeState/LimeState/g; \
 s/Core\.LogCollectionState/LogCollectionState/g; \
 s/Core\.MediaEncryption/MediaEncryption/g; \
 s/Core\.RegistrationState/RegistrationState/g; \
+s/Core\.TunnelMode/Tunnel.Mode/g; \
 s/Core\.VersionUpdateCheckResult/VersionUpdateCheckResult/g; \
 s/Event\.PublishState/PublishState/g; \
 s/Friend\.SubscribePolicy/SubscribePolicy/g; \
 s/XmlRpcRequest\.ArgType/XmlRpcArgType/g; \
-s/XmlRpcRequest\.Status/XmlRpcStatus/g;" {} \;
+s/XmlRpcRequest\.Status/XmlRpcStatus/g; \
+s/org\.linphone\.core\.PresenceActivity\.Type/org.linphone.core.PresenceActivity/g;" {} \;
 
-# TODO
-#Tunnel, TunnelConfig
-#AccountCreator.updatePassword => What to do ?
 
-# Manual changes required
+# Manual changes required:
+#
 # Some callbacks no longer exist, their name will be "removed", remove them
-# Above sed commands will create erros in syntax you need to manually fix:
-# # !micEnabled()
-# # (getConference() != null)
-# # (AVPFMode.Enabled)
-# # (port;
+#
+# This script may create build errors in your application, especially if you defined methods that have the same name as methods
+# of the linphone SDK. For example, with the Linphone application we get errors for the enableAVPF(int n, boolean enabled) method of
+# LinphonePreferences that is wrongly replaced into setAVPFMode(AVPFMode.Enabled)int n, boolean enabled).
+#
+# You may need to import some classes, eg. AccountCreatorListener, AVPFMode, Call, ChatMessageListener, ConfiguringState, LimeState,
+# MediaEncryption, RegistrationState, StreamType, VideoDefinition, XmlRpcArgType...
+#
+# If you are using the LinphoneContact class, some getVcard() method may have been wrongly introduced by this script that you will need
+# to delete.
+#
 # Some methods that used to take or return String or LinphoneAddress now take the other
-# createAddress, addAddress, addFriend, acceptCall, acceptCallWithParams no longer throws a CoreException
+#
+# createAddress, addAddress, addFriend, acceptCall, acceptCallWithParams no longer throw a CoreException
+#
 # AccountCreator's Status.Ok must be renamed in Status.RequestOk
+#
 # VideoDevices were int, now are String
+#
 # XmlRpcSessionImpl => XmlRpcSession
+#
 # getFriendsLists() returned Friend[], now is a FriendList[]
+#
 # No need anymore to cast to a Impl class to be able to use setUserData or getUserData
+#
 # findFriend now takes an Address instead of a String
+#
 # createOpenH264DownloadHelper() now takes a Context
+#
 # Factory.createCore(this, mConfigFile, mLinphoneFactoryConfigFile, null, c) => createCore(this, mConfigFile, mLinphoneFactoryConfigFile)
+#
 # startEchoTester and stopEchoTester now return void
+#
 # createProxyConfig no longer takes any parameter
+#
 # setPrimaryContact only takes one String argument
-# AdaptiveRateAlgorithm was an enum, now is nothing
+#
+# AdaptiveRateAlgorithm was an enum, now is replaced by a String in the methods that were using it
+#
 # createAddress(userName,domain,null); no longer exists
+#
 # Buffer.setContent now takes the size as second parameter
+#
 # ChatMessageListener onFileTransferSend now returns the Buffer instead of having it as part of his arguments
+#
 # Core.startEchoCancellerCalibration no longer takes a parameter
+#
 # XmlRpcSession.createRequest takes first the return arg type and then the name of the method, until now it was the other way around
-# ProxyConfig.normalizePhoneNumber returns null if it fails instead of the value given as parameter in the previous version !
+#
+# ProxyConfig.normalizePhoneNumber returns null if it fails instead of the value given as parameter in the previous version!
+#
+# ChatMessage.getStorageId() no longer exists
+#
+# ChatRoom.getHistory() no needs an integer parameter corresponding to the number of messages to get (use 0 to get the full history)
+#
+# Factory.createContent() no longer takes arguments. Use the Content methods to fill the content.
+#
+# AccountCreator.updatePassword() no longer exist. Use setPassword() and updateAccount() instead.
 
 # # Factory
 #Factory.createAccountCreator() => Core.createAccountCreator()
-#Factory.createPresenceModel() => Core.createPresenceModel()
+#Factory.createPresenceModel() => Core.createPresenceModel() & PresenceModel.setActivity()
 #Factory.instance().enableLogCollection(isDebugEnabled); now takes a LogCollectionState
 
 # # Core
@@ -336,6 +376,7 @@ s/XmlRpcRequest\.Status/XmlRpcStatus/g;" {} \;
 #Core.getFriendsLists() => now returns a FriendList[] instead of a Friend[]
 #Core.enableSpeaker / isSpeakerEnabled() => mAudioManager.setSpeakerphoneOn(speakerOn);
 #Core.enableVideo(true, true) => Core.enableVideoCapture(bool) & Core.enableVideoDisplay(bool)
+#Core.setVideoPolicy(initiate, accept) => Core.getVideoActivationPolicy().setAutomaticallyInitiate(initiate) & Core.getVideoActivationPolicy().setAutomaticallyAccept(accept)
 
 # # Other
 #CallParams.getJitterBufferSize() => CallStatsImpl.getJitterBufferSizeMs()

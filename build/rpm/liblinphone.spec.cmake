@@ -31,6 +31,9 @@ Requires:	%{pkg_prefix}ortp
 Requires:	%{pkg_prefix}mediastreamer
 Requires:	%{pkg_prefix}belle-sip
 Requires:	%{pkg_prefix}belr
+%if @ENABLE_VCARD@
+Requires:	%{pkg_prefix}belcard
+%endif
 %if @ENABLE_SOCI_STORAGE@
 Requires:	%{pkg_prefix}soci
 %endif
@@ -83,7 +86,7 @@ rm -rf $RPM_BUILD_ROOT
 %files 
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README.md TODO
-%if @ENABLE_DAEMON@ || @ENABLE_CONSOLE_UI@
+%if @ENABLE_DAEMON@ || @ENABLE_CONSOLE_UI@ || @ENABLE_TOOLS@
 %{_bindir}/*
 %endif
 %{_libdir}/*.so.*

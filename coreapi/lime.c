@@ -60,7 +60,7 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 	/* Note: retrieved potentially expired keys, just to be able to send a different status to caller(no keys found is not expired key found) */
 	/* if we do not have self uri in associatedKeys, just retrieve any available key matching peer URI */
 	if (associatedKeys->selfURI == NULL) {
-		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.peeruri=? AND z.pvs=?;");
+		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu INNER JOIN zrtp as z ON z.zuid=zu.zuid INNER JOIN lime as l ON z.zuid=l.zuid WHERE zu.peeruri=? AND z.pvs=?;");
 		ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
 		sqlite3_free(stmt);
 		if (ret != SQLITE_OK) {
@@ -69,7 +69,7 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		sqlite3_bind_text(sqlStmt, 1, associatedKeys->peerURI,-1, SQLITE_TRANSIENT);
 		sqlite3_bind_blob(sqlStmt, 2, pvsOne, 1, SQLITE_TRANSIENT);
 	} else { /* we have a self URI, so include it in the query */
-		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND z.pvs=?;");
+		stmt = sqlite3_mprintf("SELECT zu.zuid, zu.zid as peerZID, l.sndkey, l.sndSId, l.sndIndex, l.valid FROM ziduri as zu INNER JOIN zrtp as z ON z.zuid=zu.zuid INNER JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND z.pvs=?;");
 		ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
 		sqlite3_free(stmt);
 		if (ret != SQLITE_OK) {
@@ -186,17 +186,17 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 
 
 	if (db == NULL) { /* there is no cache return error */
+		ms_error("[LIME] Get Cached Rcv Key by Zid : no cache found");
 		return LIME_INVALID_CACHE;
 	}
 
 	/* query the DB: join ziduri, lime and zrtp tables : */
 	/* retrieve zuid(for easier key update in cache), rcvKey, rcvSId, rcvIndex where self/peer uris and peer zid are matching constraint(unique row) and pvs is raised */
-	/* Note: retrieved potentially expired keys, just to be able to send a different status to caller(no keys found is not expired key found) */
-	/* if we do not have self uri in associatedKeys, just retrieve any available key matching peer URI */
-	stmt = sqlite3_mprintf("SELECT zu.zuid, l.rcvkey, l.rcvSId, l.rcvIndex FROM ziduri as zu LEFT JOIN zrtp as z ON z.zuid=zu.zuid LEFT JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND zu.zid=? AND z.pvs=? LIMIT 1;");
+	stmt = sqlite3_mprintf("SELECT zu.zuid, l.rcvkey, l.rcvSId, l.rcvIndex FROM ziduri as zu INNER JOIN zrtp as z ON z.zuid=zu.zuid INNER JOIN lime as l ON z.zuid=l.zuid WHERE zu.selfuri=? AND zu.peeruri=? AND zu.zid=? AND z.pvs=? LIMIT 1;");
 	ret = sqlite3_prepare_v2(db, stmt, -1, &sqlStmt, NULL);
 	sqlite3_free(stmt);
 	if (ret != SQLITE_OK) {
+		ms_error("[LIME] Get Cached Rcv Key by Zid can't prepare statement to retrieve key");
 		return LIME_INVALID_CACHE;
 	}
 	sqlite3_bind_text(sqlStmt, 1, selfURI,-1, SQLITE_TRANSIENT);
@@ -214,20 +214,22 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 		if (length==32) { /* rcvKey */
 			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), (size_t)length);
 		} else { /* something wrong */
+			ms_error("[LIME] Get Cached Rcv Key by Zid fetched a rcvKey with wrong length");
 			sqlite3_finalize(sqlStmt);
-			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+			return LIME_INVALID_CACHE;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 2);
 		if (length==32) { /* rcvSId */
 			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), (size_t)length);
 		} else { /* something wrong */
+			ms_error("[LIME] Get Cached Rcv Key by Zid fetched a rcvSid with wrong length");
 			sqlite3_finalize(sqlStmt);
-			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+			return LIME_INVALID_CACHE;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 3);
-		if (length==4) { /* rcvKey */
+		if (length==4) { /* rcvIndex */
 			uint8_t *sessionId = (uint8_t *)sqlite3_column_blob(sqlStmt, 3);
 			associatedKey->sessionIndex = ((uint32_t)(sessionId[0]))<<24 |
 							((uint32_t)(sessionId[1]))<<16 |
@@ -235,7 +237,8 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 							((uint32_t)(sessionId[3]));
 		} else { /* something wrong */
 			sqlite3_finalize(sqlStmt);
-			return LIME_NO_VALID_KEY_FOUND_FOR_PEER;
+			ms_error("[LIME] Get Cached Rcv Key by Zid fetched a rcvIndex with wrong length");
+			return LIME_INVALID_CACHE;
 		}
 
 		sqlite3_finalize(sqlStmt);
@@ -244,6 +247,7 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 
 	/* something is wrong with the cache? */
 	if (ret!=SQLITE_DONE) {
+		ms_error("[LIME] Get Cached Rcv Key by Zid : request gone bad");
 		return LIME_INVALID_CACHE;
 	}
 
@@ -635,14 +639,15 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	if (peerZidHex != NULL) {
 		/* Convert it from hexa string to bytes string and set the result in the associatedKey structure */
 		bctbx_str_to_uint8(associatedKey.peerZID, (const uint8_t *)peerZidHex, (uint16_t)strlen(peerZidHex));
-		linphone_free_xml_text_content(peerZidHex);
 
 		/* Get the matching key from cache */
 		retval = lime_getCachedRcvKeyByZid(cachedb, &associatedKey, selfURI, peerURI);
 		if (retval != 0) {
-		ms_error("[LIME] Couldn't get cache rcv key by ZID");
+			ms_error("[LIME] Couldn't get cache rcv key by ZID. Returns %04x. PeerZid %s peerURI %s selfURI %s", retval, peerZidHex, peerURI, selfURI);
+			linphone_free_xml_text_content(peerZidHex);
 			goto error;
 		}
+		linphone_free_xml_text_content(peerZidHex);
 
 		/* Retrieve the portion of message which is encrypted with our key(seek for a pzid matching our) */
 		msg_object = linphone_get_xml_xpath_object_for_node_list(xml_ctx, "/doc/msg");
@@ -770,8 +775,9 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 				if (zrtp_cache_db != NULL) {
 					bool_t res;
 					limeURIKeys_t associatedKeys;
-					char *peer = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(cr));
-
+					char *peer = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(cr))
+												  				, linphone_address_get_username(linphone_chat_room_get_peer_address(cr))
+												  				, linphone_address_get_domain(linphone_chat_room_get_peer_address(cr)));
 					/* retrieve keys associated to the peer URI */
 					associatedKeys.peerURI = bctbx_strdup(peer);
 					associatedKeys.selfURI = NULL; /* TODO : there is no sender associated to chatroom so check for any local URI available, shall we add sender to chatroom? */
@@ -813,10 +819,15 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			errcode = 500;
 			return errcode;
 		}
-		peerUri = linphone_address_as_string_uri_only(linphone_chat_message_get_from_address(msg));
-		selfUri = linphone_address_as_string_uri_only(linphone_chat_message_get_to_address(msg));
+		peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
+								   				, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
+								   				, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
+		selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_to_address(msg))
+								   				, linphone_address_get_username(linphone_chat_message_get_to_address(msg))
+								   				, linphone_address_get_domain(linphone_chat_message_get_to_address(msg)));
+
 		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &decrypted_body, &decrypted_content_type,
-									bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
+						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
 		ms_free(peerUri);
 		ms_free(selfUri);
 		if (retval != 0) {
@@ -876,8 +887,12 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			} else {
 				int retval;
 				uint8_t *crypted_body = NULL;
-				char *selfUri = linphone_address_as_string_uri_only(linphone_chat_message_get_from_address(msg));
-				char *peerUri = linphone_address_as_string_uri_only(linphone_chat_room_get_peer_address(room));
+				char *peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(room))
+															, linphone_address_get_username(linphone_chat_room_get_peer_address(room))
+										   					, linphone_address_get_domain(linphone_chat_room_get_peer_address(room)));
+				char *selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
+										   					, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
+										   					, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
 
 				retval = lime_createMultipartMessage(zrtp_cache_db, linphone_chat_message_get_content_type(msg), (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &crypted_body);
 				if (retval != 0) { /* fail to encrypt */

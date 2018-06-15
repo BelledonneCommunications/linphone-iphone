@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.linphone.core.tools;
 
-import org.linphone.core.Core;
-import org.linphone.core.Factory;
 import org.linphone.mediastream.Log;
 import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.Version;
@@ -84,26 +82,19 @@ public class AndroidPlatformHelper {
 		mWifiLock.setReferenceCounted(true);
 
 		String basePath = mContext.getFilesDir().getAbsolutePath();
-		mLinphoneRootCaFile = basePath + "/rootca.pem";
-		mRingSoundFile = basePath + "/ringtone.mkv";
-		mRingbackSoundFile = basePath + "/ringback.wav";
-		mPauseSoundFile = basePath + "/hold.mkv";
-		mErrorToneFile = basePath + "/error.wav";
-		mGrammarCpimFile = basePath + "/cpim_grammar";
-		mGrammarVcardFile = basePath + "/vcard_grammar";
+		//make sur to follow same path as unix version of the sdk
+		mLinphoneRootCaFile = basePath + "/share/linphone/rootca.pem";
+		mRingSoundFile = basePath + "/share/sounds/linphone/rings/notes_of_the_optimistic.mkv";
+		mRingbackSoundFile = basePath + "/share/sounds/linphone/ringback.wav";
+		mPauseSoundFile = basePath + "/share/sounds/linphone/rings/dont_wait_too_long.mkv";
+		mErrorToneFile = basePath + "/share/sounds/linphone/incoming_chat.wav";
+		mGrammarCpimFile = basePath + "/share/belr/grammars/cpim_grammar";
+		mGrammarVcardFile = basePath + "/share/belr/grammars/vcard_grammar";
 		mUserCertificatePath = basePath;
 
 		copyAssetsFromPackage();
 	}
 
-	public void initCore(long ptrLc) {
-		Core lc = Factory.instance().getCore(ptrLc);
-		if (lc == null) return;
-		lc.setRingback(mRingbackSoundFile);
-		lc.setRootCa(mLinphoneRootCaFile);
-		lc.setPlayFile(mPauseSoundFile);
-		lc.setUserCertificatesPath(mUserCertificatePath);
-	}
 
 	public Object getPowerManager() {
 		return mPowerManager;
@@ -184,58 +175,44 @@ public class AndroidPlatformHelper {
 		return resId;
 	}
 
-	private void copyAssetsFromPackage() {
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"cpim_grammar\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"vcard_grammar\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"notes_of_the_optimistic\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"ringback\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("hold"), mPauseSoundFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"hold\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"incoming_chat\" from package.");
-		}
-
-		try {
-			copyEvenIfExists(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
-		} catch (Exception e) {
-			Log.e(e, "AndroidPlatformHelper: Cannot copy \"rootca\" from package.");
-		}
+	private void copyAssetsFromPackage() throws IOException {
+		Log.i("Starting copy from assets to application files directory");
+		copyAssetsFromPackage(mContext, "org.linphone.core",".");
+		Log.i("Copy from assets done");
+		Log.i("Starting copy from legacy  resources to application files directory");
+		/*legacy code for 3.X*/
+		copyEvenIfExists(getResourceIdentifierFromName("cpim_grammar"), mGrammarCpimFile);
+		copyEvenIfExists(getResourceIdentifierFromName("vcard_grammar"), mGrammarVcardFile);
+		copyEvenIfExists(getResourceIdentifierFromName("rootca"), mLinphoneRootCaFile);
+		copyEvenIfExists(getResourceIdentifierFromName("notes_of_the_optimistic"), mRingSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("ringback"), mRingbackSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("hold"), mPauseSoundFile);
+		copyEvenIfExists(getResourceIdentifierFromName("incoming_chat"), mErrorToneFile);
+		Log.i("Copy from legacy resources done");
 	}
 
 	public void copyEvenIfExists(int ressourceId, String target) throws IOException {
 		File lFileToCopy = new File(target);
-		copyFromPackage(ressourceId, lFileToCopy.getName());
+		copyFromPackage(ressourceId, lFileToCopy);
 	}
 
-	public void copyFromPackage(int ressourceId, String target) throws IOException{
-		FileOutputStream lOutputStream = mContext.openFileOutput (target, 0);
+	public void copyIfNotExist(int ressourceId, String target) throws IOException {
+		File lFileToCopy = new File(target);
+		if (!lFileToCopy.exists()) {
+			copyFromPackage(ressourceId, lFileToCopy);
+		}
+	}
+
+	public void copyFromPackage(int ressourceId, File target) throws IOException {
+		if (ressourceId == 0) {
+			Log.i("Resource identifier null for target ["+target.getName()+"]");
+			return;
+		}
+		if (!target.getParentFile().exists())
+			target.getParentFile().mkdirs();
+
 		InputStream lInputStream = mResources.openRawResource(ressourceId);
+		FileOutputStream lOutputStream = new FileOutputStream(target);
 		int readByte;
 		byte[] buff = new byte[8048];
 		while (( readByte = lInputStream.read(buff)) != -1) {
@@ -244,6 +221,34 @@ public class AndroidPlatformHelper {
 		lOutputStream.flush();
 		lOutputStream.close();
 		lInputStream.close();
+	}
+
+	public static void copyAssetsFromPackage(Context ctx,String fromPath, String toPath) throws IOException {
+		new File(ctx.getFilesDir().getPath()+"/"+toPath).mkdir();
+
+		for (String f :ctx.getAssets().list(fromPath)) {
+			String current_name = fromPath+"/"+f;
+			String current_dest = toPath+"/"+f;
+			InputStream lInputStream;
+			try {
+				lInputStream = ctx.getAssets().open(current_name);
+			} catch (IOException e) {
+				//probably a dir
+				copyAssetsFromPackage(ctx,current_name,current_dest);
+				continue;
+			}
+			FileOutputStream lOutputStream =  new FileOutputStream(new File(ctx.getFilesDir().getPath()+"/"+current_dest));//ctx.openFileOutput (fromPath+"/"+f, 0);
+
+
+			int readByte;
+			byte[] buff = new byte[8048];
+			while (( readByte = lInputStream.read(buff)) != -1) {
+				lOutputStream.write(buff,0, readByte);
+			}
+			lOutputStream.flush();
+			lOutputStream.close();
+			lInputStream.close();
+		}
 	}
 };
 

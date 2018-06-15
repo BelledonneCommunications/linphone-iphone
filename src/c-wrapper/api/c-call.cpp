@@ -364,6 +364,10 @@ void linphone_call_set_next_video_frame_decoded_callback (LinphoneCall *call, Li
 	L_GET_CPP_PTR_FROM_C_OBJECT(call)->setNextVideoFrameDecodedCallback(cb, ud);
 }
 
+void linphone_call_request_notify_next_video_frame_decoded(LinphoneCall *call){
+	L_GET_CPP_PTR_FROM_C_OBJECT(call)->requestNotifyNextVideoFrameDecoded();
+}
+
 LinphoneCallState linphone_call_get_transfer_state (LinphoneCall *call) {
 	return static_cast<LinphoneCallState>(L_GET_CPP_PTR_FROM_C_OBJECT(call)->getTransferState());
 }

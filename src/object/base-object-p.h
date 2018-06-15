@@ -23,12 +23,13 @@
 #include "linphone/utils/general.h"
 
 #include "object-head-p.h"
+#include "utils/general-internal.h"
 
 // =============================================================================
 
 LINPHONE_BEGIN_NAMESPACE
 
-class BaseObjectPrivate {
+class LINPHONE_INTERNAL_PUBLIC BaseObjectPrivate {
 	L_OBJECT_PRIVATE;
 
 public:

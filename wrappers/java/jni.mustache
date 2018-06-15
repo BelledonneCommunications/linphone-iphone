@@ -283,9 +283,8 @@ static inline void handle_possible_java_exception(JNIEnv *env, jobject listener)
 
 {{#callbacks}}
 static {{return}} {{callbackName}}({{params}}) {
-	JNIEnv *env = 0;
-	jint jvmResult = jvm->AttachCurrentThread(&env,NULL);
-	if (jvmResult != 0) {
+	JNIEnv *env = ms_get_jni_env();
+	if (!env) {
 		ms_error("cannot attach VM");
 		return{{returnIfFail}};
 	}

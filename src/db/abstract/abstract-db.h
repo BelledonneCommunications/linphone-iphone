@@ -21,6 +21,7 @@
 #define _L_ABSTRACT_DB_H_
 
 #include "object/object.h"
+#include "utils/general-internal.h"
 
 // =============================================================================
 
@@ -28,7 +29,7 @@ LINPHONE_BEGIN_NAMESPACE
 
 class AbstractDbPrivate;
 
-class AbstractDb : public Object {
+class LINPHONE_INTERNAL_PUBLIC AbstractDb : public Object {
 public:
 	enum Backend {
 		Mysql,

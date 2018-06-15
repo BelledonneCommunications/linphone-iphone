@@ -168,7 +168,7 @@ bool ChatRoomPrivate::sendDisplayNotification (const shared_ptr<ChatMessage> &me
 	LinphoneImNotifPolicy *policy = linphone_core_get_im_notif_policy(q->getCore()->getCCore());
 	if (linphone_im_notif_policy_get_send_imdn_displayed(policy)) {
 		imdnHandler->notifyDisplay(message);
-		return true;
+		return imdnHandler->aggregationEnabled();
 	}
 	return false;
 }

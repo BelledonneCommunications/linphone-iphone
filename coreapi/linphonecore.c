@@ -19,9 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/api/c-content.h"
+#include "linphone/core_utils.h"
 #include "linphone/core.h"
-#include "linphone/lpconfig.h"
 #include "linphone/logging.h"
+#include "linphone/lpconfig.h"
 #include "linphone/sipsetup.h"
 
 #include "private.h"
@@ -41,8 +42,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <ortp/telephonyevents.h>
 #include <mediastreamer2/zrtp.h>
 #include <mediastreamer2/dtls_srtp.h>
-#include <bctoolbox/defs.h>
-#include <belr/grammarbuilder.h>
+#include "bctoolbox/defs.h"
+#include "bctoolbox/regex.h"
+#include "belr/grammarbuilder.h"
 
 #include "mediastreamer2/dtmfgen.h"
 #include "mediastreamer2/mediastream.h"
@@ -53,6 +55,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msogl.h"
 #include "mediastreamer2/msvolume.h"
 #include "mediastreamer2/msqrcodereader.h"
+
 #include "bctoolbox/charconv.h"
 
 #include "chat/chat-room/client-group-chat-room-p.h"
@@ -68,6 +71,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // For migration purpose.
 #include "address/address-p.h"
 #include "c-wrapper/c-wrapper.h"
+
 
 #ifdef INET6
 #ifndef _WIN32
@@ -1282,33 +1286,57 @@ static void sound_config_read(LinphoneCore *lc)
 	_linphone_core_set_tone(lc,LinphoneReasonBusy,LinphoneToneBusy,NULL);
 }
 
+static int _linphone_core_tls_postcheck_callback(void *data, const bctbx_x509_certificate_t *peer_cert){
+	LinphoneCore *lc = (LinphoneCore *) data;
+	const char *tls_certificate_subject_regexp = lp_config_get_string(lc->config,"sip","tls_certificate_subject_regexp", NULL);
+	int ret = 0;
+	if (tls_certificate_subject_regexp){
+		ret = -1;
+		/*the purpose of this handling is to a peer certificate for which there is no single subject matching the regexp given
+		 * in the "tls_certificate_subject_regexp" property.
+		 */
+		bctbx_list_t *subjects = bctbx_x509_certificate_get_subjects(peer_cert);
+		bctbx_list_t *elem;
+		for(elem = subjects; elem != NULL; elem = elem->next){
+			const char *subject = (const char *)elem->data;
+			ms_message("_linphone_core_tls_postcheck_callback: subject=%s", subject);
+			if (bctbx_is_matching_regex(subject, tls_certificate_subject_regexp)){
+				ret = 0;
+				ms_message("_linphone_core_tls_postcheck_callback(): successful by matching '%s'", subject);
+				break;
+			}
+		}
+		bctbx_list_free_with_data(subjects, bctbx_free);
+	}
+	if (ret == -1){
+		ms_message("_linphone_core_tls_postcheck_callback(): postcheck failed, nothing matched.");
+	}
+	return ret;
+}
+
 static void certificates_config_read(LinphoneCore *lc) {
 	LinphoneFactory *factory = linphone_factory_get();
 	const char *data_dir = linphone_factory_get_data_resources_dir(factory);
 	char *root_ca_path = bctbx_strdup_printf("%s/rootca.pem", data_dir);
 	const char *rootca = lp_config_get_string(lc->config,"sip","root_ca", NULL);
-	// If rootca is not existing anymore, we reset it to the default value
-	if (rootca == NULL || ((bctbx_file_exist(rootca) != 0) && (!bctbx_directory_exists(rootca)))) {
-#ifdef __linux
-		#ifdef __ANDROID__
-		const char *possible_rootca = "/system/etc/security/cacerts";
-		#else
-		const char *possible_rootca = "/etc/ssl/certs";
-		#endif
-		if (bctbx_directory_exists(possible_rootca)) {
-			rootca = possible_rootca;
-		} else
-#endif
-		{
-			if (bctbx_file_exist(root_ca_path) == 0) {
-				rootca = root_ca_path;
-			}
-		}
+
+	// If rootca is not existing anymore, we try data_resources_dir/rootca.pem else default from belle-sip
+	if (rootca == NULL  || ((bctbx_file_exist(rootca) != 0 && !bctbx_directory_exists(rootca)))) {
+		//Check root_ca_path
+		if ((bctbx_file_exist(root_ca_path) == 0) || bctbx_directory_exists(root_ca_path))
+			rootca = root_ca_path;
+		else
+			rootca = NULL;
 	}
-	linphone_core_set_root_ca(lc,rootca);
+
+	if (rootca)
+		linphone_core_set_root_ca(lc,rootca);
+		/*else use default value from belle-sip*/
 	linphone_core_verify_server_certificates(lc, !!lp_config_get_int(lc->config,"sip","verify_server_certs",TRUE));
 	linphone_core_verify_server_cn(lc, !!lp_config_get_int(lc->config,"sip","verify_server_cn",TRUE));
 	bctbx_free(root_ca_path);
+
+	lc->sal->setTlsPostcheckCallback(_linphone_core_tls_postcheck_callback, lc);
 }
 
 static void sip_config_read(LinphoneCore *lc) {
@@ -2282,7 +2310,7 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
 	lc->sal->setFactory(lc->factory);
 
-	belr::GrammarLoader::get().addPath(getPlatformHelpers(lc)->getDataPath());
+	belr::GrammarLoader::get().addPath(std::string(linphone_factory_get_top_resources_dir(lfactory)).append("/belr/grammars"));
 
 	linphone_task_list_init(&lc->hooks);
 
@@ -7381,6 +7409,7 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 	int err;
 	bool_t is_desktop = FALSE;
 	const char *platform = NULL;
+	const char *mobilePlatform = NULL;
 	const char *version_check_url_root = lp_config_get_string(lc->config, "misc", "version_check_url_root", NULL);
 
 	if (version_check_url_root != NULL) {
@@ -7396,9 +7425,14 @@ void linphone_core_check_for_update(LinphoneCore *lc, const char *current_versio
 			if (strcmp(tag, "win32") == 0) platform = "windows";
 			else if (strcmp(tag, "apple") == 0) platform = "macosx";
 			else if (strcmp(tag, "linux") == 0) platform = "linux";
+	    else if (strcmp(tag, "ios") == 0) mobilePlatform = "ios";
+	    else if (strcmp(tag, "android") == 0) mobilePlatform = "android";
 			else if (strcmp(tag, "desktop") == 0) is_desktop = TRUE;
 		}
-		if ((is_desktop == FALSE) || (platform == NULL)) {
+		  if (!is_desktop) {
+		    platform = mobilePlatform;
+		  }
+		  if (platform == NULL) {
 			ms_warning("Update checking is not supported on this platform");
 			return;
 		}

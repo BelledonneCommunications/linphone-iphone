@@ -1530,6 +1530,9 @@ public:
 				jcontent,
 				jbytes,
 				size);
+		if (jbytes) {
+		    env->DeleteLocalRef(jbytes);
+		}
 		if (jcontent) {
 			env->DeleteLocalRef(jcontent);
 		}
@@ -6204,7 +6207,7 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	jbyteArray jdata = NULL;
 	jint jsize = 0;
 	const char *tmp;
-	void *data;
+	const uint8_t *data;
 
 	contentClass = (jclass)env->FindClass("org/linphone/core/LinphoneContentImpl");
 	ctor = env->GetMethodID(contentClass,"<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLjava/lang/String;I)V");
@@ -6226,6 +6229,9 @@ static jobject create_java_linphone_content(JNIEnv *env, const LinphoneContent *
 	env->DeleteLocalRef(contentClass);
 	env->DeleteLocalRef(jtype);
 	env->DeleteLocalRef(jsubtype);
+	if (jdata) {
+	    env->DeleteLocalRef(jdata);
+	}
 	if (jencoding) {
 		env->DeleteLocalRef(jencoding);
 	}
@@ -6252,6 +6258,7 @@ static jobject create_java_linphone_buffer(JNIEnv *env, const LinphoneBuffer *bu
 	}
 
 	jobject jobj = env->NewObject(bufferClass, ctor, jdata, jsize);
+	if (jdata) env->DeleteLocalRef(jdata);
 	env->DeleteLocalRef(bufferClass);
 	return jobj;
 }

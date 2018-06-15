@@ -3361,7 +3361,7 @@ static void imdn_sent_from_db_state (void) {
 		BC_ASSERT_EQUAL((int)bctbx_list_size(participantsThatReceivedChloeMessage), 2, int, "%d");
 		for (bctbx_list_t *item = participantsThatReceivedChloeMessage; item; item = bctbx_list_next(item)) {
 			LinphoneParticipantImdnState *state = (LinphoneParticipantImdnState *)bctbx_list_get_data(item);
-			BC_ASSERT_GREATER(linphone_participant_imdn_state_get_state_change_time(state), initialTime, int, "%d");
+			BC_ASSERT_GREATER((int)linphone_participant_imdn_state_get_state_change_time(state), (int)initialTime, int, "%d");
 			BC_ASSERT_EQUAL(linphone_participant_imdn_state_get_state(state), LinphoneChatMessageStateDeliveredToUser, int, "%d");
 			BC_ASSERT_PTR_NOT_NULL(linphone_participant_imdn_state_get_participant(state));
 		}

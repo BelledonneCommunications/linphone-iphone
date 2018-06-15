@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include "linphone/api/c-api.h"
 #include "linphone/core.h"
 #include "linphone/event.h"
 #include "linphone/proxy_config.h"

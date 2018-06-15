@@ -29,10 +29,6 @@
 #include "object/object-p.h"
 
 #include "cpim-parser.h"
-#ifdef __APPLE__
-#include <TargetConditionals.h>
-#include <CoreFoundation/CoreFoundation.h>
-#endif
 
 #define CPIM_GRAMMAR "cpim_grammar"
 
@@ -339,7 +335,7 @@ namespace Cpim {
 		if (mTime.tm_mon < 1 || mTime.tm_mon > 12)
 			return false;
 
-		if (mTime.tm_mday < 1 || (mTime.tm_mon == 2 && isLeapYear ? mTime.tm_mday > 29 : mTime.tm_mday > daysInMonth[mTime.tm_mon - 1]))
+		if (mTime.tm_mday < 1 || (mTime.tm_mon == 2 && isLeapYear ? mTime.tm_mday > 29 : mTime.tm_mday > daysInMonth[mTime.tm_mon]))
 			return false;
 
 		// Check time.
@@ -583,18 +579,7 @@ public:
 
 Cpim::Parser::Parser () : Singleton(*new ParserPrivate) {
 	L_D();
-	#if TARGET_OS_IPHONE
-		CFBundleRef bundle = CFBundleGetBundleWithIdentifier(CFSTR("org.linphone.linphone"));
-		CFURLRef grammarUrl = CFBundleCopyResourceURL(bundle, CFSTR(CPIM_GRAMMAR), nullptr, nullptr);
-		CFStringRef grammarPath = CFURLCopyFileSystemPath(grammarUrl, kCFURLPOSIXPathStyle);
-		CFStringEncoding encodingMethod = CFStringGetSystemEncoding();
-		const char *path = CFStringGetCStringPtr(grammarPath, encodingMethod);
-		CFRelease(grammarUrl);
-		CFRelease(grammarPath);
-	#else
-		const char *path = CPIM_GRAMMAR;
-	#endif
-	d->grammar = belr::GrammarLoader::get().load(path);
+	d->grammar = belr::GrammarLoader::get().load(CPIM_GRAMMAR);
 	if (!d->grammar)
 		lFatal() << "Unable to load CPIM grammar.";
 }

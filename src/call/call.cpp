@@ -148,12 +148,6 @@ void CallPrivate::stopMediaStreams () {
 
 // -----------------------------------------------------------------------------
 
-void CallPrivate::resetFirstVideoFrameDecoded () {
-#ifdef VIDEO_ENABLED
-	if (nextVideoFrameDecoded._func)
-		static_pointer_cast<MediaSession>(getActiveSession())->resetFirstVideoFrameDecoded();
-#endif // ifdef VIDEO_ENABLED
-}
 
 void CallPrivate::startRemoteRing () {
 	L_Q();
@@ -170,6 +164,7 @@ void CallPrivate::startRemoteRing () {
 	if (as)
 		audio_stream_unprepare_sound(as);
 	if (lc->sound_conf.remote_ring) {
+		ms_snd_card_set_stream_type(ringCard, MS_SND_CARD_STREAM_VOICE);
 		lc->ringstream = ring_start(lc->factory, lc->sound_conf.remote_ring, 2000, ringCard);
 	}
 }
@@ -350,9 +345,9 @@ void CallPrivate::onIncomingCallSessionTimeoutCheck (const shared_ptr<CallSessio
 		lInfo() << "Incoming call ringing for " << elapsed << " seconds";
 	if (elapsed > q->getCore()->getCCore()->sip_conf.inc_timeout) {
 		lInfo() << "Incoming call timeout (" << q->getCore()->getCCore()->sip_conf.inc_timeout << ")";
-		LinphoneReason declineReason = (q->getCore()->getCurrentCall() != q->getSharedFromThis())
-			? LinphoneReasonBusy : LinphoneReasonDeclined;
-		getActiveSession()->declineNotAnswered(declineReason);
+		auto config = linphone_core_get_config(q->getCore()->getCCore());
+		int statusCode = linphone_config_get_int(config, "sip", "inc_timeout_status_code", 486);
+		getActiveSession()->declineNotAnswered(linphone_error_code_to_reason(statusCode));
 	}
 }
 
@@ -419,7 +414,16 @@ void CallPrivate::onFirstVideoFrameDecoded (const shared_ptr<CallSession> &sessi
 }
 
 void CallPrivate::onResetFirstVideoFrameDecoded (const shared_ptr<CallSession> &session) {
-	resetFirstVideoFrameDecoded();
+	/*we are called here by the MediaSession when the stream start to know whether there is the deprecated nextVideoFrameDecoded callback set, 
+	 * so that we can request the notification of the next frame decoded.*/
+#ifdef VIDEO_ENABLED
+	if (nextVideoFrameDecoded._func)
+		requestNotifyNextVideoFrameDecoded();
+#endif // ifdef VIDEO_ENABLED
+}
+
+void CallPrivate::requestNotifyNextVideoFrameDecoded(){
+	static_pointer_cast<MediaSession>(getActiveSession())->requestNotifyNextVideoFrameDecoded();
 }
 
 void CallPrivate::onPlayErrorTone (const shared_ptr<CallSession> &session, LinphoneReason reason) {
@@ -924,7 +928,12 @@ void Call::setNextVideoFrameDecodedCallback (LinphoneCallCbFunc cb, void *user_d
 	L_D();
 	d->nextVideoFrameDecoded._func = cb;
 	d->nextVideoFrameDecoded._user_data = user_data;
-	d->resetFirstVideoFrameDecoded();
+	d->requestNotifyNextVideoFrameDecoded();
+}
+
+void Call::requestNotifyNextVideoFrameDecoded (){
+	L_D();
+	d->requestNotifyNextVideoFrameDecoded();
 }
 
 void Call::setParams (const MediaSessionParams *msp) {

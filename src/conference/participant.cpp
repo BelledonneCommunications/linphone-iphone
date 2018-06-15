@@ -111,10 +111,4 @@ bool Participant::isAdmin () const {
 	return d->isAdmin;
 }
 
-// =============================================================================
-
-ostream & operator<< (ostream &strm, const shared_ptr<Participant> &participant) {
-	return strm << "'" << participant->getAddress().asString() << "'";
-}
-
 LINPHONE_END_NAMESPACE

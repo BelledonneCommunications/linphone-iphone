@@ -23,7 +23,7 @@
 #include "content/content-type.h"
 #include "content/content.h"
 #include "core/core.h"
-
+#include "belr/grammarbuilder.h"
 // TODO: Remove me later.
 #include "private.h"
 
@@ -151,6 +151,7 @@ static void parse_message_with_generic_header_parameters () {
 }
 
 static void build_message () {
+
 	Cpim::Message message;
 
 	// Set message headers.
@@ -160,7 +161,7 @@ static void build_message () {
 
 	// 976686000 is 2000-12-13T13:40:00-08:00
 	Cpim::DateTimeHeader dateTimeHeader(976686000);
-	BC_ASSERT_EQUAL(dateTimeHeader.getTime(), 976686000, int, "%d");
+	BC_ASSERT_EQUAL((int)dateTimeHeader.getTime(), 976686000, int, "%d");
 
 	Cpim::SubjectHeader subjectHeader("the weather will be fine today");
 
@@ -174,22 +175,29 @@ static void build_message () {
 
 	Cpim::GenericHeader wackyMessageHeader("MyFeatures.WackyMessageOption", "Use-silly-font");
 
-	message.addMessageHeader(fromHeader);
-	message.addMessageHeader(toHeader);
-	message.addMessageHeader(dateTimeHeader);
-	message.addMessageHeader(subjectHeader);
-	message.addMessageHeader(subjectWithLanguageHeader);
-	message.addMessageHeader(nsHeader);
-	message.addMessageHeader(requireHeader);
-	message.addMessageHeader(vitalMessageHeader);
-	message.addMessageHeader(wackyMessageHeader);
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(fromHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(toHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(dateTimeHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(subjectWithLanguageHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(nsHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(requireHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(vitalMessageHeader))) return;
+	if (!BC_ASSERT_TRUE(message.addMessageHeader(wackyMessageHeader))) return;
 
 	// Set Content headers.
     Cpim::GenericHeader contentTypeHeader("Content-Type", "text/xml; charset=utf-8");
-	message.addContentHeader(contentTypeHeader);
+	if (!BC_ASSERT_TRUE(message.addContentHeader(contentTypeHeader))) return;
 
 	Cpim::GenericHeader contentIdHeader("Content-ID", "<1234567890@foo.com>");
-	message.addContentHeader(contentIdHeader);
+	if (!BC_ASSERT_TRUE(message.addContentHeader(contentIdHeader))) return;
+
+	// Add a wrong message header and a wrong content header
+	Cpim::FromHeader wrongFromHeader("", "");
+	if (!BC_ASSERT_FALSE(message.addMessageHeader(wrongFromHeader))) return;
+
+	Cpim::GenericHeader wrongContentHeader("", "");
+	if (!BC_ASSERT_FALSE(message.addContentHeader(wrongContentHeader))) return;
 
 	const string content = "<body>"
 		"Here is the text of my message."
@@ -310,7 +318,12 @@ test_t cpim_tests[] = {
 	TEST_NO_TAG("CPIM chat message modifier with multipart body", cpim_chat_message_modifier_with_multipart_body)
 };
 
+static int suite_begin(void) {
+	//Supposed to be done by platform helper, but in this case, we don't have it"
+	belr::GrammarLoader::get().addPath(std::string(bc_tester_get_resource_dir_prefix()).append("/share/belr/grammars"));
+	return 0;
+}
 test_suite_t cpim_test_suite = {
-	"Cpim", NULL, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
+	"Cpim", suite_begin, NULL, liblinphone_tester_before_each, liblinphone_tester_after_each,
 	sizeof(cpim_tests) / sizeof(cpim_tests[0]), cpim_tests
 };

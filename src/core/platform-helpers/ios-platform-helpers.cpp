@@ -20,8 +20,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 #endif
-
 #if TARGET_OS_IPHONE
+
+#include <CoreFoundation/CoreFoundation.h>
+
+#include <belr/grammarbuilder.h>
 
 #include "linphone/utils/general.h"
 #include "linphone/utils/utils.h"
@@ -56,6 +59,7 @@ public:
 private:
 	void bgTaskTimeout ();
 	static void sBgTaskTimeout (void *data);
+	static std::string directoryForResource (CFStringRef framework, CFStringRef resource);
 
 	long int mCpuLockTaskId;
 	int mCpuLockCount;
@@ -66,7 +70,20 @@ private:
 IosPlatformHelpers::IosPlatformHelpers (LinphoneCore *lc, void *system_context) : PlatformHelpers(lc) {
 	mCpuLockCount = 0;
 	mCpuLockTaskId = 0;
-	lInfo() << "IosPlatformHelpers is fully initialised";
+
+	std::string cpimPath = directoryForResource(CFSTR("org.linphone.linphone"), CFSTR("cpim_grammar"));
+	std::string vcardPath = directoryForResource(CFSTR("org.linphone.belcard"), CFSTR("vcard_grammar"));
+	if (!cpimPath.empty())
+		belr::GrammarLoader::get().addPath(cpimPath);
+	else
+		lError() << "IosPlatformHelpers did not find cpim grammar resource directory...";
+
+	if (!vcardPath.empty())
+		belr::GrammarLoader::get().addPath(vcardPath);
+	else
+		lError() << "IosPlatformHelpers did not find vcard grammar resource directory...";
+
+	lInfo() << "IosPlatformHelpers is fully initialised.";
 }
 
 // -----------------------------------------------------------------------------
@@ -106,6 +123,19 @@ void IosPlatformHelpers::releaseCpuLock () {
 
 	belle_sip_end_background_task(static_cast<unsigned long>(mCpuLockTaskId));
 	mCpuLockTaskId = 0;
+}
+
+std::string IosPlatformHelpers::directoryForResource (CFStringRef framework, CFStringRef resource) {
+	CFBundleRef bundle = CFBundleGetBundleWithIdentifier(framework);
+	CFURLRef grammarUrl = CFBundleCopyResourceURL(bundle, resource, nullptr, nullptr);
+	CFURLRef grammarUrlDirectory = CFURLCreateCopyDeletingLastPathComponent(nullptr, grammarUrl);
+	CFStringRef grammarPath = CFURLCopyFileSystemPath(grammarUrlDirectory, kCFURLPOSIXPathStyle);
+	CFStringEncoding encodingMethod = CFStringGetSystemEncoding();
+	std::string path(CFStringGetCStringPtr(grammarPath, encodingMethod));
+	CFRelease(grammarUrl);
+	CFRelease(grammarPath);
+	CFRelease(grammarUrlDirectory);
+	return path;
 }
 
 // -----------------------------------------------------------------------------

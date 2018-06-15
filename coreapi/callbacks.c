@@ -515,11 +515,11 @@ static bool_t fill_auth_info(LinphoneCore *lc, SalAuthInfo* sai) {
 			 * exit. The default algorithm is MD5 if it's NULL.
 			 */
 			if (sai->algorithm && ai->algorithm) {
-				if (strcmp(ai->algorithm, sai->algorithm))
+				if (strcasecmp(ai->algorithm, sai->algorithm))
 					return TRUE;
 			} else if (
-				(ai->algorithm && strcmp(ai->algorithm, "MD5")) ||
-				(sai->algorithm && strcmp(sai->algorithm, "MD5"))
+				(ai->algorithm && strcasecmp(ai->algorithm, "MD5")) ||
+				(sai->algorithm && strcasecmp(sai->algorithm, "MD5"))
 			)
 				return TRUE;
 

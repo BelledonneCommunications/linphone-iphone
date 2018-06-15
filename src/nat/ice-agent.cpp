@@ -127,7 +127,7 @@ bool IceAgent::isControlling () const {
 	return ice_session_role(iceSession) == IR_Controlling;
 }
 
-bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer) {
+bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer, bool allowGathering) {
 	if (!iceSession)
 		return false;
 
@@ -147,10 +147,11 @@ bool IceAgent::prepare (const SalMediaDescription *localDesc, bool incomingOffer
 		prepareIceForStream(mediaSession.getPrivate()->getMediaStream(LinphoneStreamTypeText), true);
 
 	// Start ICE gathering.
-	if (incomingOffer)
+	if (incomingOffer){
 		// This may delete the ice session.
 		updateFromRemoteMediaDescription(localDesc, remoteDesc, true);
-	if (iceSession && !ice_session_candidates_gathered(iceSession)) {
+	}
+	if (iceSession && allowGathering && !ice_session_candidates_gathered(iceSession)) {
 		mediaSession.getPrivate()->prepareStreamsForIceGathering(hasVideo);
 		int err = gatherIceCandidates();
 		if (err == 0) {
@@ -607,7 +608,6 @@ int IceAgent::gatherIceCandidates () {
 	if (mediaSession.getPrivate()->getAf() == AF_INET6) {
 		if (linphone_core_get_local_ip_for(AF_INET6, nullptr, localAddr) < 0) {
 			lError() << "Fail to get local IPv6";
-			return -1;
 		} else
 			addLocalIceCandidates(AF_INET6, localAddr, audioCl, videoCl, textCl);
 	}

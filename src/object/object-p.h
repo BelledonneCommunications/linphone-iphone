@@ -27,7 +27,14 @@
 
 LINPHONE_BEGIN_NAMESPACE
 
-class ObjectPrivate : public BaseObjectPrivate {
+#ifdef _WIN32
+	// TODO: Avoid this error.
+	// Disable C4251 triggered by std::recursive_mutex.
+	#pragma warning(push)
+	#pragma warning(disable: 4251)
+#endif // ifdef _WIN32
+
+class LINPHONE_INTERNAL_PUBLIC ObjectPrivate : public BaseObjectPrivate {
 protected:
 	inline const Object::Lock &getLock () const {
 		return lock;
@@ -38,6 +45,10 @@ private:
 
 	L_DECLARE_PUBLIC(Object);
 };
+
+#ifdef _WIN32
+	#pragma warning(pop)
+#endif // ifdef _WIN32
 
 LINPHONE_END_NAMESPACE
 

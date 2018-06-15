@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES} ${XSD_LIBRARIES})
+set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES} ${XSD_LIBRARIES} ${BELR_LIBRARIES})
 if(INTL_FOUND)
 	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
 endif()
@@ -71,6 +71,8 @@ set(CERTIFICATE_CLIENT_FILES
 	certificates/client/key.pem
 	certificates/client/cert2.pem
 	certificates/client/key2.pem
+	certificates/client/cert3.pem
+        certificates/client/key3.pem
 	certificates/client/cert2-signed-by-other-ca.pem
 )
 
@@ -262,6 +264,7 @@ if(ANDROID OR IOS)
 		set_target_properties(linphonetester PROPERTIES
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER com.belledonne-communications.linphonetester
+			PUBLIC_HEADER "${HEADER_FILES}"
 		)
 	endif()
 	install(TARGETS linphonetester
@@ -316,6 +319,7 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	endif()
 	set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(liblinphone_tester PROPERTIES C_STANDARD 99)
 	target_include_directories(liblinphone_tester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(liblinphone_tester ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
 

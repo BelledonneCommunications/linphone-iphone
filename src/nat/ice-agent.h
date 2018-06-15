@@ -57,7 +57,7 @@ public:
 	}
 
 	bool isControlling () const;
-	bool prepare (const SalMediaDescription *localDesc, bool incomingOffer);
+	bool prepare (const SalMediaDescription *localDesc, bool incomingOffer, bool allowGathering = true);
 	void prepareIceForStream (MediaStream *ms, bool createChecklist);
 	void resetSession (IceRole role);
 	void restartSession (IceRole role);

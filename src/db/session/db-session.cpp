@@ -225,10 +225,10 @@ bool DbSession::checkTableExists (const string &table) const {
 	switch (d->backend) {
 		case DbSessionPrivate::Backend::Mysql:
 			*session << "SHOW TABLES LIKE :table", soci::use(table);
-			return session->got_data() > 0;
+			return session->got_data();
 		case DbSessionPrivate::Backend::Sqlite3:
 			*session << "SELECT name FROM sqlite_master WHERE type='table' AND name=:table", soci::use(table);
-			return session->got_data() > 0;
+			return session->got_data();
 		case DbSessionPrivate::Backend::None:
 			return false;
 	}

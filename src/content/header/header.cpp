@@ -45,7 +45,7 @@ Header::Header (const string &name, const string &value) : ClonableObject(*new H
 		setValue(value);
 		return;
 	}
-	
+
 	string parsedValue = value.substr(0, posParam);
 	string params = value.substr(posParam + 1);
 	string token;
@@ -167,7 +167,7 @@ string Header::asString () const {
 	stringstream asString;
 	if (!getName().empty()) {
 		asString << getName() << ":";
-	} 
+	}
 	asString << getValue();
 	for (const auto &param : getParameters()) {
 		asString << param.asString();
@@ -175,9 +175,9 @@ string Header::asString () const {
 	return asString.str();
 }
 
-ostream &operator<<(ostream& stream, const Header& header) {
-	stream << header.asString();
-	return stream;
+ostream &operator<< (ostream &os, const Header& header) {
+	os << header.asString();
+	return os;
 }
 
 LINPHONE_END_NAMESPACE

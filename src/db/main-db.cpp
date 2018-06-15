@@ -138,16 +138,14 @@ struct SqlEventFilterBuilder {};
 
 template<EventLog::Type Type, EventLog::Type... List>
 struct SqlEventFilterBuilder<Type, List...> {
-	static constexpr Private::StaticString<1 + getIntLength(int(Type)) + sums((1 + getIntLength(int(List)))...)> get () {
-		return StaticIntString<int(Type)>() + "," + SqlEventFilterBuilder<List...>::get();
-	}
+	static constexpr auto get () L_AUTO_RETURN(
+		StaticIntString<int(Type)>() + "," + SqlEventFilterBuilder<List...>::get()
+	);
 };
 
 template<EventLog::Type Type>
 struct SqlEventFilterBuilder<Type> {
-	static constexpr Private::StaticString<1 + getIntLength(int(Type))> get () {
-		return StaticIntString<int(Type)>();
-	}
+	static constexpr auto get () L_AUTO_RETURN(StaticIntString<int(Type)>());
 };
 
 // -----------------------------------------------------------------------------
@@ -155,27 +153,35 @@ struct SqlEventFilterBuilder<Type> {
 // -----------------------------------------------------------------------------
 
 namespace {
-	constexpr auto ConferenceCallFilter = SqlEventFilterBuilder<
-		EventLog::Type::ConferenceCallStart,
-		EventLog::Type::ConferenceCallEnd
-	>::get();
+	#ifdef _WIN32
+		// TODO: Find a workaround to deal with StaticString concatenation!!!
+		constexpr char ConferenceCallFilter[] = "3,4";
+		constexpr char ConferenceChatMessageFilter[] = "5";
+		constexpr char ConferenceInfoNoDeviceFilter[] = "1,2,6,7,8,9,12";
+		constexpr char ConferenceInfoFilter[] = "1,2,6,7,8,9,10,11,12";
+	#else
+		constexpr auto ConferenceCallFilter = SqlEventFilterBuilder<
+			EventLog::Type::ConferenceCallStart,
+			EventLog::Type::ConferenceCallEnd
+		>::get();
 
-	constexpr auto ConferenceChatMessageFilter = SqlEventFilterBuilder<EventLog::Type::ConferenceChatMessage>::get();
+		constexpr auto ConferenceChatMessageFilter = SqlEventFilterBuilder<EventLog::Type::ConferenceChatMessage>::get();
 
-	constexpr auto ConferenceInfoNoDeviceFilter = SqlEventFilterBuilder<
-		EventLog::Type::ConferenceCreated,
-		EventLog::Type::ConferenceTerminated,
-		EventLog::Type::ConferenceParticipantAdded,
-		EventLog::Type::ConferenceParticipantRemoved,
-		EventLog::Type::ConferenceParticipantSetAdmin,
-		EventLog::Type::ConferenceParticipantUnsetAdmin,
-		EventLog::Type::ConferenceSubjectChanged
-	>::get();
+		constexpr auto ConferenceInfoNoDeviceFilter = SqlEventFilterBuilder<
+			EventLog::Type::ConferenceCreated,
+			EventLog::Type::ConferenceTerminated,
+			EventLog::Type::ConferenceParticipantAdded,
+			EventLog::Type::ConferenceParticipantRemoved,
+			EventLog::Type::ConferenceParticipantSetAdmin,
+			EventLog::Type::ConferenceParticipantUnsetAdmin,
+			EventLog::Type::ConferenceSubjectChanged
+		>::get();
 
-	constexpr auto ConferenceInfoFilter = ConferenceInfoNoDeviceFilter + "," + SqlEventFilterBuilder<
-		EventLog::Type::ConferenceParticipantDeviceAdded,
-		EventLog::Type::ConferenceParticipantDeviceRemoved
-	>::get();
+		constexpr auto ConferenceInfoFilter = ConferenceInfoNoDeviceFilter + "," + SqlEventFilterBuilder<
+			EventLog::Type::ConferenceParticipantDeviceAdded,
+			EventLog::Type::ConferenceParticipantDeviceRemoved
+		>::get();
+	#endif // ifdef _WIN32
 
 	constexpr EnumToSql<MainDb::Filter> EventFilterToSql[] = {
 		{ MainDb::ConferenceCallFilter, ConferenceCallFilter },
@@ -356,8 +362,6 @@ long long MainDbPrivate::insertChatRoom (const shared_ptr<AbstractChatRoom> &cha
 		soci::use(lastUpdateTime), soci::use(capabilities), soci::use(subject), soci::use(flags), soci::use(notifyId);
 
 	id = dbSession.getLastInsertId();
-	if (!chatRoom->canHandleParticipants())
-		return id;
 
 	// Do not add 'me' when creating a server-group-chat-room.
 	if (chatRoomId.getLocalAddress() != chatRoomId.getPeerAddress()) {
@@ -613,7 +617,7 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 			chatRoom,
 			ChatMessage::Direction(row.get<int>(8))
 		));
-		chatMessage->setIsSecured(bool(row.get<int>(9)));
+		chatMessage->setIsSecured(!!row.get<int>(9));
 
 		ChatMessagePrivate *dChatMessage = chatMessage->getPrivate();
 		ChatMessage::State messageState = ChatMessage::State(row.get<int>(7));
@@ -627,8 +631,8 @@ shared_ptr<EventLog> MainDbPrivate::selectConferenceChatMessageEvent (
 
 		dChatMessage->setTime(MainDbPrivate::getTmAsTimeT(row.get<tm>(5)));
 		dChatMessage->setImdnMessageId(row.get<string>(6));
-		dChatMessage->setPositiveDeliveryNotificationRequired(bool(row.get<int>(14)));
-		dChatMessage->setDisplayNotificationRequired(bool(row.get<int>(15)));
+		dChatMessage->setPositiveDeliveryNotificationRequired(!!row.get<int>(14));
+		dChatMessage->setDisplayNotificationRequired(!!row.get<int>(15));
 
 		dChatMessage->markContentsAsNotLoaded();
 		dChatMessage->setIsReadOnly(true);
@@ -1078,7 +1082,7 @@ void MainDbPrivate::updateSchema () {
 
 static inline bool checkLegacyTableExists (soci::session &session, const string &name) {
 	session << "SELECT name FROM sqlite_master WHERE type='table' AND name = :name", soci::use(name);
-	return session.got_data() > 0;
+	return session.got_data();
 }
 
 static inline bool checkLegacyFriendsTableExists (soci::session &session) {
