@@ -2286,9 +2286,6 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	lc->ringstream_autorelease=TRUE;
 
 	// We need the Sal on the Android platform helper init
-	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
-	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
-
 	lc->sal=new Sal(NULL);
 	lc->sal->setRefresherRetryAfter(lp_config_get_int(lc->config, "sip", "refresher_retry_after", 60000));
 	lc->sal->setHttpProxyHost(L_C_TO_STRING(linphone_core_get_http_proxy_host(lc)));
@@ -2306,6 +2303,8 @@ static void linphone_core_init(LinphoneCore * lc, LinphoneCoreCbs *cbs, LpConfig
 	if (lc->platform_helper == NULL)
 		lc->platform_helper = new LinphonePrivate::StubbedPlatformHelpers(lc);
 
+	msplugins_dir = linphone_factory_get_msplugins_dir(lfactory);
+	image_resources_dir = linphone_factory_get_image_resources_dir(lfactory);
 	// MS Factory MUST be created after Android has been set, otherwise no camera will be detected !
 	lc->factory = ms_factory_new_with_voip_and_directories(msplugins_dir, image_resources_dir);
 	lc->sal->setFactory(lc->factory);

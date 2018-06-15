@@ -25,6 +25,10 @@
 #include "linphone/api/c-magic-search.h"
 #include "tester_utils.h"
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
 #define S_SIZE_FRIEND 12
 static const unsigned int sSizeFriend = S_SIZE_FRIEND;
 static const char *sFriends[S_SIZE_FRIEND] = {
@@ -1368,6 +1372,38 @@ static void search_friend_large_database(void) {
 	free(dbPath);
 }
 
+
+/*the webrtc AEC implementation is brought to mediastreamer2 by a plugin.
+ * We finally check here that if the plugin is correctly loaded and the right choice of echo canceller implementation is made*/
+static void echo_canceller_check(void){
+	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
+	MSFactory *factory = linphone_core_get_ms_factory(manager->lc);
+	const char *expected_filter = "MSSpeexEC";
+	AudioStream *as = audio_stream_new2(factory, NULL, 43000, 43001);
+	const char *ec_filter = NULL;
+	
+	BC_ASSERT_PTR_NOT_NULL(as);
+	if (as){
+		MSFilter *ecf = as->ec;
+		BC_ASSERT_PTR_NOT_NULL(ecf);
+		if (ecf){
+			ec_filter = ecf->desc->name;
+		}
+	}
+	BC_ASSERT_PTR_NOT_NULL(ec_filter);
+
+#if defined(__linux) || (defined(__APPLE__) && !TARGET_OS_IPHONE) || defined(_WIN32)
+	expected_filter = "MSWebRTCAEC";
+#elif defined(__ANDROID__)
+	expected_filter = "MSWebRTCAECM";
+#endif
+	if (ec_filter){
+		BC_ASSERT_STRING_EQUAL(ec_filter, expected_filter);
+	}
+	audio_stream_stop(as);
+	linphone_core_manager_destroy(manager);
+}
+
 test_t setup_tests[] = {
 	TEST_NO_TAG("Version check", linphone_version_test),
 	TEST_NO_TAG("Linphone Address", linphone_address_test),
@@ -1385,6 +1421,7 @@ test_t setup_tests[] = {
 	TEST_NO_TAG("Codec usability", codec_usability_test),
 	TEST_NO_TAG("Codec setup", codec_setup),
 	TEST_NO_TAG("Custom tones setup", custom_tones_setup),
+	TEST_NO_TAG("Appropriate software echo canceller check", echo_canceller_check),
 	TEST_ONE_TAG("Return friend list in alphabetical order", search_friend_in_alphabetical_order, "MagicSearch"),
 	TEST_ONE_TAG("Search friend without filter and domain", search_friend_without_filter, "MagicSearch"),
 	TEST_ONE_TAG("Search friend with domain and without filter", search_friend_with_domain_without_filter, "MagicSearch"),

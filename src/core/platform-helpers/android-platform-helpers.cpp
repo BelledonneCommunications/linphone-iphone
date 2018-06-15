@@ -49,6 +49,7 @@ public:
 private:
 	int callVoidMethod (jmethodID id);
 	static jmethodID getMethodId (JNIEnv *env, jclass klass, const char *method, const char *signature);
+	string getNativeLibraryDir();
 	jobject mJavaHelper;
 	jmethodID mWifiLockAcquireId;
 	jmethodID mWifiLockReleaseId;
@@ -60,6 +61,7 @@ private:
 	jmethodID mGetPowerManagerId;
 	jmethodID mGetDataPathId;
 	jmethodID mGetConfigPathId;
+	jmethodID mGetNativeLibraryDirId;
 };
 
 static const char *GetStringUTFChars (JNIEnv *env, jstring string) {
@@ -102,6 +104,7 @@ AndroidPlatformHelpers::AndroidPlatformHelpers (LinphoneCore *lc, void *systemCo
 	mGetPowerManagerId = getMethodId(env, klass, "getPowerManager", "()Ljava/lang/Object;");
 	mGetDataPathId = getMethodId(env, klass, "getDataPath", "()Ljava/lang/String;");
 	mGetConfigPathId = getMethodId(env, klass, "getConfigPath", "()Ljava/lang/String;");
+	mGetNativeLibraryDirId = getMethodId(env, klass, "getNativeLibraryDir", "()Ljava/lang/String;");
 
 	jmethodID initCoreId = getMethodId(env, klass, "initCore", "(J)V");
 	env->CallVoidMethod(mJavaHelper, initCoreId, lc);
@@ -110,7 +113,7 @@ AndroidPlatformHelpers::AndroidPlatformHelpers (LinphoneCore *lc, void *systemCo
 	belle_sip_wake_lock_init(env, pm);
 
 	linphone_factory_set_top_resources_dir(linphone_factory_get() , getDataPath().append("share").c_str());
-
+	linphone_factory_set_msplugins_dir(linphone_factory_get(), getNativeLibraryDir().c_str());
 	lInfo() << "AndroidPlatformHelpers is fully initialised.";
 }
 
@@ -189,6 +192,18 @@ string AndroidPlatformHelpers::getDataPath () {
 	string dataPath = data_path;
 	ReleaseStringUTFChars(env, jdata_path, data_path);
 	return dataPath + "/";
+}
+
+string AndroidPlatformHelpers::getNativeLibraryDir () {
+	JNIEnv *env = ms_get_jni_env();
+	string libPath;
+	jstring jlib_path = (jstring)env->CallObjectMethod(mJavaHelper, mGetNativeLibraryDirId);
+	if (jlib_path){
+		const char *lib_path = GetStringUTFChars(env, jlib_path);
+		libPath = lib_path;
+		ReleaseStringUTFChars(env, jlib_path, lib_path);
+	}
+	return libPath;
 }
 
 string AndroidPlatformHelpers::getConfigPath () {

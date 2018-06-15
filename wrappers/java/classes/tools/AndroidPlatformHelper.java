@@ -29,6 +29,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.MulticastLock;
 import android.net.wifi.WifiManager.WifiLock;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -131,6 +132,11 @@ public class AndroidPlatformHelper {
 
 	public String getCachePath() {
 		return mContext.getCacheDir().getAbsolutePath();
+	}
+	
+	public String getNativeLibraryDir(){
+		ApplicationInfo info = mContext.getApplicationInfo();
+		return info.nativeLibraryDir;
 	}
 
 	public void acquireWifiLock() {
