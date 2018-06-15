@@ -229,11 +229,11 @@ static UICompositeViewDescription *compositeDescription = nil;
         [self chooseImageQuality:image url:nil];
         [self sendContentText:dict[@"name"]];
         [defaults removeObjectForKey:@"img"];
-    } else if(dictWeb) {
+    } else if (dictWeb) {
         //share url, if local file, then upload file
         NSString *url  = dictWeb[@"url"];
         NSURL *fileUrl = [NSURL fileURLWithPath:url];
-        if([[fileUrl scheme]isEqualToString:@"file"]) {
+        if ([url hasPrefix:@"file"]) {
             //local file
             NSData *data = dictWeb[@"nsData"];
             [self confirmShare:data url:fileUrl];
@@ -242,13 +242,13 @@ static UICompositeViewDescription *compositeDescription = nil;
         }
         [self sendContentText:dictWeb[@"name"]];
         [defaults removeObjectForKey:@"web"];
-    }else if(dictFile) {
+    }else if (dictFile) {
         //share file
         NSData *data  = dictFile[@"nsData"];
         [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]]];
         [self sendContentText:dictFile[@"name"]];
         [defaults removeObjectForKey:@"mov"];
-    }else if(dictText) {
+    }else if (dictText) {
         //share text
         [self sendContentText:dictText[@"name"]];
         [defaults removeObjectForKey:@"text"];
