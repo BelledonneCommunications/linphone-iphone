@@ -24,68 +24,62 @@
     
     NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
     NSMutableArray *dates = [NSMutableArray array];
+    [_imgs removeAllObjects];
+    _imgs = nil;
+    _imgs = [NSMutableDictionary dictionaryWithDictionary:[mySharedDefaults objectForKey:@"imageData"]];
     NSDictionary *logsTmp = [mySharedDefaults objectForKey:@"logs"];
-    _logs = [NSMutableDictionary dictionary];
+    [_logs removeAllObjects];
     for (NSString *dateStr in logsTmp.allKeys) {
         NSDictionary *log = [logsTmp objectForKey:dateStr];
         NSDate *date = [formatter dateFromString:dateStr];
         [dates addObject:date];
         [_logs setObject:log forKey:date];
     }
+    [_sortedDates removeAllObjects];
+    _sortedDates = nil;
     _sortedDates = [[NSMutableArray alloc]
                     initWithArray:[dates sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
         return [d2 compare:d1]; // reverse order
     }]];
 }
 
-- (void) fetchContactsInBackGroundThread{
-    _imgs = [NSMutableDictionary dictionary];
-    CNContactStore *store = [[CNContactStore alloc] init];
-    CNEntityType entityType = CNEntityTypeContacts;
-    [store requestAccessForEntityType:entityType completionHandler:^(BOOL granted, NSError *_Nullable error) {
-        BOOL success = FALSE;
-        if(granted){
-            //LOGD(@"CNContactStore authorization granted");
-            
-            NSError *contactError;
-            CNContactStore* store = [[CNContactStore alloc] init];
-            [store containersMatchingPredicate:[CNContainer predicateForContainersWithIdentifiers:@[ store.defaultContainerIdentifier]] error:&contactError];
-            NSArray *keysToFetch = @[
-                                     CNContactImageDataAvailableKey, CNContactInstantMessageAddressesKey,
-                                     CNContactIdentifierKey, CNContactImageDataKey
-                                     ];
-            CNContactFetchRequest *request = [[CNContactFetchRequest alloc] initWithKeysToFetch:keysToFetch];
-            
-            success = [store enumerateContactsWithFetchRequest:request error:&contactError usingBlock:^(CNContact *__nonnull contact, BOOL *__nonnull stop) {
-                if (contactError) {
-                    NSLog(@"error fetching contacts %@",
-                          contactError);
-                } else {
-                        if (contact.imageDataAvailable) {
-                            NSArray *addresses = contact.instantMessageAddresses;
-                            NSString *address = @"";
-                            for (CNLabeledValue *v in addresses) {
-                                CNInstantMessageAddress *addressValue = v.value;
-                                if ([addressValue.service isEqualToString:@"SIP"]) {
-                                    address = addressValue.username;
-                                    [self.imgs setObject:contact.imageData
-                                                  forKey:address];
-                                }
-                            }
-                        }
-                }
-            }];
-            dispatch_semaphore_signal(self.sem);
+- (UIImage *)resizeImage:(UIImage *)image
+{
+    float actualHeight = image.size.height;
+    float actualWidth = image.size.width;
+    float maxHeight = 200.0;
+    float maxWidth = 200.0;
+    float imgRatio = actualWidth/actualHeight;
+    float maxRatio = maxWidth/maxHeight;
+    float compressionQuality = 1;
+    if (actualHeight > maxHeight || actualWidth > maxWidth)
+    {
+        if(imgRatio < maxRatio) {
+            imgRatio = maxHeight / actualHeight;
+            actualWidth = imgRatio * actualWidth;
+            actualHeight = maxHeight;
+        } else if(imgRatio > maxRatio) {
+            imgRatio = maxWidth / actualWidth;
+            actualHeight = imgRatio * actualHeight;
+            actualWidth = maxWidth;
+        } else {
+            actualHeight = maxHeight;
+            actualWidth = maxWidth;
         }
-        
-    }];
+    }
+    CGRect rect = CGRectMake(0.0, 0.0, actualWidth, actualHeight);
+    UIGraphicsBeginImageContext(rect.size);
+    [image drawInRect:rect];
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
+    UIGraphicsEndImageContext();
+    return [UIImage imageWithData:imageData];
 }
 
 - (void)draw {
-    _contactsToDisplay = [NSMutableArray array];
-    _logIds = [NSMutableArray array];
+    [_contactsToDisplay removeAllObjects];
+    [_logIds removeAllObjects];
     int i = 0, j = 0;
-    dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
     while (i < _stackViews.count && j < _sortedDates.count) {
         NSDate *date = _sortedDates[j++];
         NSString *address = [[_logs objectForKey:date] objectForKey:@"address"];
@@ -96,16 +90,18 @@
             continue;
         [_contactsToDisplay addObject:address];
         [_logIds addObject:logId];
-        NSString *displayName = [NSString stringWithUTF8String:linphone_address_get_display_name(adr)];
+        NSString *displayName = [NSString stringWithUTF8String:(linphone_address_get_display_name(adr))?:linphone_address_get_username(adr)];
         UIStackView *stack = _stackViews[i];
         UIButton *button = stack.subviews[0];
-        // making rounded image
-        UIImageView *imageView = button.imageView;
-        imageView.layer.cornerRadius = imageView.frame.size.height / 2;
-        imageView.clipsToBounds = YES;
         UILabel *name = stack.subviews[1];
-        if ([self.imgs.allKeys containsObject:address])
-            [button setImage:[UIImage imageWithData:[_imgs objectForKey:address]] forState:UIControlStateNormal];
+        if ([self.imgs.allKeys containsObject:address]) {
+            NSData *imgData = [_imgs objectForKey:address];
+//            UIImage *image = [UIImage imageWithData:imgData];
+//            image = [self resizeImage:image];
+//            NSData *data = UIImageJPEGRepresentation(image, 0);
+            [button setImage:[UIImage imageWithData:imgData] forState:UIControlStateNormal];
+            NSLog(@"Size of Image(bytes):%d", (int)[imgData length]);
+        }
         [stack setAlpha:1];
         button.enabled = YES;
         [name setText:displayName];
@@ -123,15 +119,28 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-    _sem = dispatch_semaphore_create(0);
-    [self fetchContactsInBackGroundThread];
-    [self loadData];
-    [self draw];
+    for (UIStackView *stack in _stackViews) {
+        UIButton *button = stack.subviews[0];
+        // making rounded image
+        UIImageView *imageView = button.imageView;
+        imageView.layer.cornerRadius = imageView.frame.size.height / 2;
+        imageView.clipsToBounds = YES;
+    }
+    _logIds = [NSMutableArray array];
+    _logs = [NSMutableDictionary dictionary];
+    _sortedDates = [NSMutableArray array];
+    _contactsToDisplay = [NSMutableArray array];
+    _imgs = [NSMutableDictionary dictionary];
+    _updateNeeded = YES;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    [_imgs removeAllObjects];
+    [_logs removeAllObjects];
+    [_sortedDates removeAllObjects];
+    [_contactsToDisplay removeAllObjects];
 }
 
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
@@ -140,7 +149,6 @@
     // If an error is encountered, use NCUpdateResultFailed
     // If there's no update required, use NCUpdateResultNoData
     // If there's an update, use NCUpdateResultNewData
-    [self fetchContactsInBackGroundThread];
     [self loadData];
     [self draw];
     completionHandler(NCUpdateResultNewData);

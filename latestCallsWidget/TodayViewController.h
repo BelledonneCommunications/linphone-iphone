@@ -14,7 +14,7 @@
 @property (strong, nonatomic) NSMutableDictionary *imgs;
 @property (strong, nonatomic) NSMutableArray *sortedDates;
 @property (strong, nonatomic) NSMutableArray *logIds;
-@property (strong) dispatch_semaphore_t sem;
+@property (nonatomic) BOOL updateNeeded;
 
 - (IBAction)firstButtonTapped;
 - (IBAction)secondButtonTapped;

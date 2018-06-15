@@ -22,7 +22,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="acy-Dv-HTU">
                                 <rect key="frame" x="16" y="-25" width="288" height="87.5"/>
                                 <subviews>
-                                    <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ndj-Mq-Hl7">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="ndj-Mq-Hl7">
                                         <rect key="frame" x="0.0" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wm5-Qb-p3S">
@@ -47,7 +47,7 @@
                                             <constraint firstItem="ZCh-k6-wlC" firstAttribute="centerX" secondItem="ndj-Mq-Hl7" secondAttribute="centerX" id="7gN-E9-QSN"/>
                                         </constraints>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="aDd-1O-GG5">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="aDd-1O-GG5">
                                         <rect key="frame" x="76" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YV6-7A-P4J">
@@ -73,7 +73,7 @@
                                             <constraint firstItem="vzp-zG-86G" firstAttribute="centerX" secondItem="aDd-1O-GG5" secondAttribute="centerX" id="Reb-Z7-yZx"/>
                                         </constraints>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Jda-ED-Hck">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Jda-ED-Hck">
                                         <rect key="frame" x="152" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="R1m-4P-62J">
@@ -98,7 +98,7 @@
                                             <constraint firstItem="1km-2d-H8g" firstAttribute="centerX" secondItem="Jda-ED-Hck" secondAttribute="centerX" id="Jaw-30-wJW"/>
                                         </constraints>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleAspectFit" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Vem-dd-m97">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Vem-dd-m97">
                                         <rect key="frame" x="228" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EgK-EE-9vt">

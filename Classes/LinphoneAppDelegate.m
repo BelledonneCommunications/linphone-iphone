@@ -138,6 +138,7 @@
           }
         }
         [LinphoneManager.instance.iapManager check];
+    [HistoryListTableView saveDataToUserDefaults];
 }
 
 #pragma deploymate push "ignored-api-availability"
