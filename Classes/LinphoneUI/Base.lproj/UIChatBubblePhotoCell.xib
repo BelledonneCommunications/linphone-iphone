@@ -19,6 +19,7 @@
                 <outlet property="cancelButton" destination="6dl-Nz-rdv" id="ygz-nv-omC"/>
                 <outlet property="contactDateLabel" destination="JyR-RQ-uwF" id="Tc4-9t-i5V"/>
                 <outlet property="downloadButton" destination="N75-gL-R6t" id="EgN-Ab-Ded"/>
+                <outlet property="fileName" destination="Dho-UV-6Ev" id="Iro-II-w8a"/>
                 <outlet property="fileTransferProgress" destination="USm-wC-GvG" id="POt-YD-NCG"/>
                 <outlet property="finalImage" destination="gzv-K4-5OL" id="YIw-kM-Ld6"/>
                 <outlet property="imageGestureRecognizer" destination="aDF-hC-ddO" id="2jh-Rr-eKk"/>
@@ -26,6 +27,8 @@
                 <outlet property="imdmIcon" destination="LPj-VT-0fH" id="yYh-pv-EJs"/>
                 <outlet property="imdmLabel" destination="44j-me-Iqi" id="m5R-Dm-V8g"/>
                 <outlet property="messageImageView" destination="yMW-cT-bpU" id="MNr-F2-abQ"/>
+                <outlet property="openRecognizer" destination="NYA-II-xYn" id="pVM-vD-4Rg"/>
+                <outlet property="playButton" destination="cvc-tl-Pcf" id="eKJ-2T-LUl"/>
                 <outlet property="resendRecognizer" destination="5ZI-Ip-lGl" id="G2r-On-6mV"/>
                 <outlet property="statusInProgressSpinner" destination="Eab-ND-ix3" id="UuC-eY-MSf"/>
                 <outlet property="totalView" destination="8I3-n2-0kS" id="aa8-j9-saW"/>
@@ -69,6 +72,14 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                     <gestureRecognizers/>
                                 </imageView>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Label" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Dho-UV-6Ev" userLabel="fileName">
+                                    <rect key="frame" x="0.0" y="0.0" width="200" height="50"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                                 <view contentMode="scaleToFill" id="GmN-7v-uuO" userLabel="imageSubView">
                                     <rect key="frame" x="0.0" y="128" width="297" height="62"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES"/>
@@ -115,9 +126,23 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <gestureRecognizers/>
                                 </imageView>
+                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="cvc-tl-Pcf" userLabel="playButton" customClass="UIRoundBorderedButton">
+                                    <rect key="frame" x="125" y="93" width="50" height="25"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <accessibility key="accessibilityConfiguration" label="Cancel"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                    <state key="normal" title="PLAY" backgroundImage="color_I.png">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </state>
+                                    <state key="highlighted" backgroundImage="color_M.png"/>
+                                    <connections>
+                                        <action selector="onPlayClick:" destination="-1" eventType="touchUpInside" id="B4y-PJ-4tO"/>
+                                    </connections>
+                                </button>
                             </subviews>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="aDF-hC-ddO" appends="YES" id="lKJ-ra-dwR"/>
+                                <outletCollection property="gestureRecognizers" destination="NYA-II-xYn" appends="YES" id="fK6-ld-zOX"/>
                             </connections>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" id="6dA-3U-OPW" userLabel="bottomBarColor">
@@ -164,6 +189,11 @@
         <tapGestureRecognizer id="aDF-hC-ddO" userLabel="imageClick">
             <connections>
                 <action selector="onImageClick:" destination="-1" id="feN-LT-89b"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="NYA-II-xYn" userLabel="openClick">
+            <connections>
+                <action selector="onOpenClick:" destination="-1" id="XaJ-Or-uQQ"/>
             </connections>
         </tapGestureRecognizer>
     </objects>

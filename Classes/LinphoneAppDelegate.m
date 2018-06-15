@@ -348,7 +348,9 @@
 		[errView addAction:yesAction];
 
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-	} else {
+    } else if([[url scheme] isEqualToString:@"message-linphone"]) {
+        [PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
+    }else {
 		if ([[url scheme] isEqualToString:@"sip"]) {
 			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
 			// trailing "/"

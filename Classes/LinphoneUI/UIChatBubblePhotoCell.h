@@ -29,9 +29,12 @@
 
 @property(nonatomic, strong) IBOutlet UILoadingImageView *messageImageView;
 @property(nonatomic, strong) IBOutlet UIButton *downloadButton;
+@property (weak, nonatomic) IBOutlet UILabel *fileName;
+@property(nonatomic, strong) IBOutlet UIButton *playButton;
 @property(weak, nonatomic) IBOutlet UIProgressView *fileTransferProgress;
 @property(weak, nonatomic) IBOutlet UIButton *cancelButton;
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *openRecognizer;
 @property(weak, nonatomic) IBOutlet UIView *totalView;
 @property (weak, nonatomic) IBOutlet UIImageView *finalImage;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
@@ -43,6 +46,10 @@
 - (IBAction)onImageClick:(id)event;
 - (IBAction)onCancelClick:(id)sender;
 - (IBAction)onResendClick:(id)event;
+- (IBAction)onPlayClick:(id)sender;
+- (IBAction)onOpenClick:(id)event;
 
 
 @end
+
+
