@@ -36,7 +36,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.plain-text"]) {
                 [self loadItem:provider typeIdentifier:@"public.plain-text" defaults:defaults key:@"text"];
             } else  if ([provider hasItemConformingToTypeIdentifier:@"com.adobe.pdf"]) {
-                [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults key:@"file"];
+                [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults key:@"web"];
             } else{
                 NSLog(@"Unkown itemprovider = %@", provider);
                 typeIdentifier = nil;
