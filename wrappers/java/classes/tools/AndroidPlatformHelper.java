@@ -83,7 +83,7 @@ public class AndroidPlatformHelper {
 		mWifiLock.setReferenceCounted(true);
 
 		String basePath = mContext.getFilesDir().getAbsolutePath();
-		//make sur to follow same path as unix version of the sdk
+		//make sure to follow same path as unix version of the sdk
 		mLinphoneRootCaFile = basePath + "/share/linphone/rootca.pem";
 		mRingSoundFile = basePath + "/share/sounds/linphone/rings/notes_of_the_optimistic.mkv";
 		mRingbackSoundFile = basePath + "/share/sounds/linphone/ringback.wav";
@@ -93,7 +93,11 @@ public class AndroidPlatformHelper {
 		mGrammarVcardFile = basePath + "/share/belr/grammars/vcard_grammar";
 		mUserCertificatePath = basePath;
 
-		copyAssetsFromPackage();
+		try{
+			copyAssetsFromPackage();
+		}catch (IOException e) {
+			Log.e("AndroidPlatformHelper(): failed to install some resources.");
+		}
 	}
 
 
