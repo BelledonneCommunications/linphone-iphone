@@ -56,8 +56,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
             NSData *nsData = [NSData dataWithContentsOfURL:(NSURL*)item];
             if (nsData) {
                 NSDictionary *dict = @{@"nsData" : nsData,
-                                       @"url" : [(NSURL*)item absoluteString],
-                                       @"name" : self.contentText};
+                                       @"url" : [(NSURL*)item absoluteString]};
                 [defaults setObject:dict forKey:key];
             } else {
                 NSLog(@"NSExtensionItem Error, provider = %@", provider);
