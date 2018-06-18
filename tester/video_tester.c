@@ -89,7 +89,13 @@ typedef struct struct_image_rect {
 static void _decode_qrcode(const char* image_path, image_rect *rect) {
 	qrcode_callback_data qrcode_data;
 	char *qrcode_image;
-	LinphoneCoreManager* lcm = linphone_core_manager_create("empty_rc");
+	LinphoneCoreManager* lcm = NULL;
+	MSFactory* factory = NULL;
+	factory = ms_factory_new_with_voip();
+	if (!BC_ASSERT_PTR_NOT_NULL(ms_factory_lookup_filter_by_name(factory, "MSQRCodeReader")))
+		goto end;
+
+	lcm =linphone_core_manager_create("empty_rc");
 	LinphoneCoreCbs* cbs = NULL;
 	qrcode_data.qrcode_found = FALSE;
 	qrcode_data.text = NULL;
@@ -122,6 +128,8 @@ static void _decode_qrcode(const char* image_path, image_rect *rect) {
 
 	linphone_core_enable_video_preview(lcm->lc, FALSE);
 	linphone_core_manager_destroy(lcm);
+end:
+	ms_factory_destroy(factory);
 }
 
 static void decode_qrcode_from_image(void) {
