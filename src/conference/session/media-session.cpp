@@ -4151,14 +4151,7 @@ bool MediaSession::initiateOutgoing () {
 
 void MediaSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 	L_D();
-	int elapsed = (int)(currentRealTime - d->log->start_date_time);
 	d->executeBackgroundTasks(oneSecondElapsed);
-	if ((d->state == CallSession::State::OutgoingInit) && (elapsed >= getCore()->getCCore()->sip_conf.delayed_timeout)) {
-		if (d->iceAgent->hasSession()) {
-			lWarning() << "ICE candidates gathering from [" << linphone_nat_policy_get_stun_server(d->natPolicy) << "] has not finished yet, proceed with the call without ICE anyway";
-			d->iceAgent->deleteSession();
-		}
-	}
 	CallSession::iterate(currentRealTime, oneSecondElapsed);
 }
 

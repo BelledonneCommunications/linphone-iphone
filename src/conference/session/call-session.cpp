@@ -1018,7 +1018,7 @@ bool CallSession::initiateOutgoing () {
 void CallSession::iterate (time_t currentRealTime, bool oneSecondElapsed) {
 	L_D();
 	int elapsed = (int)(currentRealTime - d->log->start_date_time);
-	if ((d->state == CallSession::State::OutgoingInit) && (elapsed >= getCore()->getCCore()->sip_conf.delayed_timeout)) {
+	if ((d->state == CallSession::State::OutgoingInit) && (elapsed > getCore()->getCCore()->sip_conf.delayed_timeout)) {
 		/* Start the call even if the OPTIONS reply did not arrive */
 		startInvite(nullptr, "");
 	}
