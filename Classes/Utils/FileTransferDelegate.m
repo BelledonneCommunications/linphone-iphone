@@ -240,7 +240,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
                                             contents:[NSMutableData dataWithData:data]
                                           attributes:nil];
         
-    if ([[url pathExtension]isEqualToString:@"MOV"])
+    if ([[url pathExtension] isEqualToString:@"MOV"])
         [self uploadData:data forChatRoom:chatRoom type:nil subtype:nil name:name key:@"localvideo" keyData:name qualityData:nil];
     else
         [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
