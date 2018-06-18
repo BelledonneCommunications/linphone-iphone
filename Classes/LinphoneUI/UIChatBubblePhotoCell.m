@@ -116,7 +116,7 @@
     imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[representation dimensions] withWidth:chatTableView.tableView.frame.size.width];
     CGImageRef tmpImg = [self cropImageFromRepresentation:representation];
     UIImage *image = [[UIImage alloc] initWithCGImage:tmpImg];
-	[self loadImageAsset:nil thumb:thumb image:image];
+	[self loadImageAsset:asset thumb:thumb image:image];
 }
 
 - (void) loadVideoAsset: (AVAsset *) asset {
