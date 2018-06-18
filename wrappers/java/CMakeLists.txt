@@ -44,4 +44,5 @@ add_custom_target(linphonej ALL DEPENDS "${jni_sources}")
 set(LINPHONE_JNI_SOURCES "${jni_sources}" PARENT_SCOPE)
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/java" DESTINATION "${CMAKE_INSTALL_DATADIR}/linphonej/")
-install(DIRECTORY classes/ DESTINATION "${CMAKE_INSTALL_DATADIR}/linphonej/java/org/linphone/core/")
+
+#install(DIRECTORY classes/ DESTINATION "${CMAKE_INSTALL_DATADIR}/linphonej/java/org/linphone/core/")
