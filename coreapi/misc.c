@@ -201,12 +201,16 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc){
 	return edge_ptime;
 }
 
-void linphone_core_resolve_stun_server(LinphoneCore *lc){
-	if (lc->nat_policy != NULL) {
-		linphone_nat_policy_resolve_stun_server(lc->nat_policy);
-	} else {
-		ms_error("linphone_core_resolve_stun_server(): called without nat_policy, this should not happen.");
+void linphone_core_resolve_stun_server(LinphoneCore *lc) {
+	auto proxies = linphone_core_get_proxy_config_list(lc);
+	for (auto item = proxies; item; item = bctbx_list_next(item)) {
+		auto proxy = reinterpret_cast<LinphoneProxyConfig *>(bctbx_list_get_data(item));
+		auto policy = linphone_proxy_config_get_nat_policy(proxy);
+		if (policy)
+			linphone_nat_policy_resolve_stun_server(policy);
 	}
+	if (lc->nat_policy)
+		linphone_nat_policy_resolve_stun_server(lc->nat_policy);
 }
 
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
