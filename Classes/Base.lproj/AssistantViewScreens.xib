@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -338,7 +337,7 @@
                     <rect key="frame" x="0.0" y="426" width="375" height="237"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EMAIL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7B-Ag-ltX" userLabel="emailLabel">
-                            <rect key="frame" x="38" y="0.0" width="299" height="14"/>
+                            <rect key="frame" x="38" y="0.0" width="291" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="1pi-x8-d7G"/>
                             </constraints>
@@ -347,7 +346,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="103" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="IXr-i2-LEh" userLabel="emailField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="22" width="299" height="30"/>
+                            <rect key="frame" x="38" y="22" width="291" height="30"/>
                             <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Email"/>
                             <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -359,7 +358,7 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid email" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="1r3-gy-l29" userLabel="emailErrorLabel">
-                            <rect key="frame" x="38" y="52" width="299" height="10"/>
+                            <rect key="frame" x="38" y="52" width="291" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="DxN-0P-gw6"/>
                             </constraints>
@@ -368,7 +367,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p25-jF-I9X" userLabel="passwordLabel">
-                            <rect key="frame" x="38" y="76" width="299" height="14"/>
+                            <rect key="frame" x="38" y="76" width="291" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="yWO-rf-S2R"/>
                             </constraints>
@@ -377,7 +376,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="101" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="t14-fe-grq" userLabel="passwordField" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="101" width="299" height="30"/>
+                            <rect key="frame" x="38" y="101" width="291" height="30"/>
                             <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Password "/>
                             <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -389,7 +388,7 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid password" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="J5q-GY-AW4" userLabel="passwordErrorLabel">
-                            <rect key="frame" x="38" y="131" width="299" height="10"/>
+                            <rect key="frame" x="38" y="131" width="291" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="EZT-D6-c3H"/>
                             </constraints>
@@ -398,7 +397,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PASSWORD CONFIRMATION" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpk-Vv-LB0" userLabel="password2Label">
-                            <rect key="frame" x="38" y="153" width="299" height="14"/>
+                            <rect key="frame" x="38" y="153" width="291" height="14"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="14" id="aRv-BL-3ug"/>
                             </constraints>
@@ -407,7 +406,7 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <textField opaque="NO" clipsSubviews="YES" tag="102" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="kHS-3H-oHM" userLabel="password2Field" customClass="UIAssistantTextField">
-                            <rect key="frame" x="38" y="175" width="299" height="30"/>
+                            <rect key="frame" x="38" y="175" width="291" height="30"/>
                             <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <accessibility key="accessibilityConfiguration" label="Password confirmation"/>
                             <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -418,7 +417,7 @@
                             </connections>
                         </textField>
                         <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Passwords do not match" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="DgP-rE-2dp" userLabel="password2ErrorLabel">
-                            <rect key="frame" x="38" y="205" width="299" height="10"/>
+                            <rect key="frame" x="38" y="205" width="291" height="10"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="10" id="gT0-em-DfO"/>
                             </constraints>
@@ -1273,11 +1272,11 @@ Once it is done, come back here and click on the button.</string>
             <point key="canvasLocation" x="1490" y="264"/>
         </view>
         <view contentMode="scaleToFill" id="Zuh-Sd-pcd" userLabel="remoteProvisioningView">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="241"/>
+            <rect key="frame" x="0.0" y="0.0" width="375" height="347"/>
             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="FETCH REMOTE CONFIGURATION" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="dpv-8C-qt6" userLabel="titleLabel">
-                    <rect key="frame" x="36" y="0.0" width="303" height="59"/>
+                    <rect key="frame" x="36" y="0.0" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                     <color key="textColor" red="0.20521381497383118" green="0.20520767569541931" blue="0.20521116256713867" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1285,7 +1284,7 @@ Once it is done, come back here and click on the button.</string>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Please provide your provisioning URL." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="hEy-Xe-afq" userLabel="subtitleLabel">
-                    <rect key="frame" x="36" y="66" width="303" height="29"/>
+                    <rect key="frame" x="36" y="36" width="303" height="29"/>
                     <accessibility key="accessibilityConfiguration" label="Account setup assistant"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="29" id="vbU-BF-C6f"/>
@@ -1296,7 +1295,7 @@ Once it is done, come back here and click on the button.</string>
                     <size key="shadowOffset" width="-1" height="-1"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0tr-gN-2Ce" userLabel="urlLabel">
-                    <rect key="frame" x="38" y="131" width="299" height="14"/>
+                    <rect key="frame" x="38" y="101" width="299" height="14"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="14" id="1xT-bm-Ag5"/>
                     </constraints>
@@ -1305,7 +1304,7 @@ Once it is done, come back here and click on the button.</string>
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" tag="105" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ffg-Of-xyh" userLabel="urlField" customClass="UIAssistantTextField">
-                    <rect key="frame" x="38" y="153" width="299" height="30"/>
+                    <rect key="frame" x="38" y="123" width="299" height="30"/>
                     <color key="backgroundColor" red="0.85415387153625488" green="0.85412830114364624" blue="0.85414278507232666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <accessibility key="accessibilityConfiguration" label="URL"/>
                     <constraints>
@@ -1320,7 +1319,7 @@ Once it is done, come back here and click on the button.</string>
                     </connections>
                 </textField>
                 <label opaque="NO" userInteractionEnabled="NO" tag="410" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invalid URL" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="uEq-Gk-9iy" userLabel="urlErrorLabel">
-                    <rect key="frame" x="38" y="183" width="299" height="10"/>
+                    <rect key="frame" x="38" y="153" width="299" height="10"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="10" id="VcL-Iz-4n4"/>
                     </constraints>
@@ -1329,7 +1328,7 @@ Once it is done, come back here and click on the button.</string>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eM0-bn-v3C" userLabel="downloadButton" customClass="UIRoundBorderedButton">
-                    <rect key="frame" x="38" y="201" width="299" height="40"/>
+                    <rect key="frame" x="38" y="171" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch and apply">
                         <bool key="isElement" value="YES"/>
                     </accessibility>
@@ -1346,6 +1345,26 @@ Once it is done, come back here and click on the button.</string>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
                         <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="6yF-1w-Hpa"/>
+                    </connections>
+                </button>
+                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T9-bt-FHD" userLabel="qrcodeButton" customClass="UIRoundBorderedButton">
+                    <rect key="frame" x="38" y="219" width="299" height="40"/>
+                    <accessibility key="accessibilityConfiguration" label="Fetch and apply">
+                        <bool key="isElement" value="YES"/>
+                    </accessibility>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="Wcc-Sn-c0r"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <state key="normal" title="QR CODE">
+                        <color key="titleColor" red="0.20521381499999999" green="0.20520767570000001" blue="0.2052111626" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="disabled">
+                        <color key="titleColor" red="0.71885228160000003" green="0.71883076430000004" blue="0.71884298319999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <state key="highlighted" backgroundImage="color_F.png"/>
+                    <connections>
+                        <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="5CK-Mb-McE"/>
                     </connections>
                 </button>
             </subviews>
@@ -1366,14 +1385,16 @@ Once it is done, come back here and click on the button.</string>
                 <constraint firstItem="0tr-gN-2Ce" firstAttribute="trailing" secondItem="Ffg-Of-xyh" secondAttribute="trailing" id="d5L-lU-eEr"/>
                 <constraint firstItem="hEy-Xe-afq" firstAttribute="centerX" secondItem="0tr-gN-2Ce" secondAttribute="centerX" id="dQg-gY-T2t"/>
                 <constraint firstItem="Ffg-Of-xyh" firstAttribute="top" secondItem="0tr-gN-2Ce" secondAttribute="bottom" constant="8" symbolic="YES" id="deZ-RJ-Tac"/>
+                <constraint firstItem="2T9-bt-FHD" firstAttribute="top" secondItem="eM0-bn-v3C" secondAttribute="bottom" constant="8" id="hPc-df-UEy"/>
                 <constraint firstItem="hEy-Xe-afq" firstAttribute="top" secondItem="dpv-8C-qt6" secondAttribute="bottom" constant="7" id="j4R-8z-ku5"/>
                 <constraint firstItem="dpv-8C-qt6" firstAttribute="leading" secondItem="hEy-Xe-afq" secondAttribute="leading" id="jKd-Ac-gLa"/>
-                <constraint firstAttribute="bottom" secondItem="eM0-bn-v3C" secondAttribute="bottom" id="kCn-do-O9N"/>
                 <constraint firstItem="uEq-Gk-9iy" firstAttribute="trailing" secondItem="eM0-bn-v3C" secondAttribute="trailing" id="kFa-lR-RH4"/>
+                <constraint firstItem="2T9-bt-FHD" firstAttribute="leading" secondItem="eM0-bn-v3C" secondAttribute="leading" id="kP2-1p-Fpw"/>
+                <constraint firstItem="2T9-bt-FHD" firstAttribute="trailing" secondItem="eM0-bn-v3C" secondAttribute="trailing" id="vXZ-nV-P1E"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1917.5" y="96.5"/>
+            <point key="canvasLocation" x="1917.5" y="149.5"/>
         </view>
         <view contentMode="scaleToFill" id="xVK-hL-6pe" userLabel="remoteProvisioningLoginView">
             <rect key="frame" x="0.0" y="0.0" width="375" height="379"/>
@@ -1524,7 +1545,7 @@ Once it is done, come back here and click on the button.</string>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="1917.5" y="457.5"/>
+            <point key="canvasLocation" x="2422" y="410"/>
         </view>
         <tapGestureRecognizer id="VEO-W5-GDl" userLabel="onLinkTap">
             <connections>
