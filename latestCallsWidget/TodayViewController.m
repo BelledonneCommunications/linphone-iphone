@@ -131,7 +131,6 @@
     _sortedDates = [NSMutableArray array];
     _contactsToDisplay = [NSMutableArray array];
     _imgs = [NSMutableDictionary dictionary];
-    _updateNeeded = YES;
 }
 
 - (void)didReceiveMemoryWarning {

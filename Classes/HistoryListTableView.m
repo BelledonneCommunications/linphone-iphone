@@ -167,39 +167,6 @@
 	}
 }
 
-+ (UIImage *)resizeImage:(UIImage *)image
-{
-    float actualHeight = image.size.height;
-    float actualWidth = image.size.width;
-    float maxHeight = 200.0;
-    float maxWidth = 200.0;
-    float imgRatio = actualWidth/actualHeight;
-    float maxRatio = maxWidth/maxHeight;
-    float compressionQuality = 1;
-    if (actualHeight > maxHeight || actualWidth > maxWidth)
-    {
-        if(imgRatio < maxRatio) {
-            imgRatio = maxHeight / actualHeight;
-            actualWidth = imgRatio * actualWidth;
-            actualHeight = maxHeight;
-        } else if(imgRatio > maxRatio) {
-            imgRatio = maxWidth / actualWidth;
-            actualHeight = imgRatio * actualHeight;
-            actualWidth = maxWidth;
-        } else {
-            actualHeight = maxHeight;
-            actualWidth = maxWidth;
-        }
-    }
-    CGRect rect = CGRectMake(0.0, 0.0, actualWidth, actualHeight);
-    UIGraphicsBeginImageContext(rect.size);
-    [image drawInRect:rect];
-    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
-    NSData *imageData = UIImageJPEGRepresentation(img, compressionQuality);
-    UIGraphicsEndImageContext();
-    return [UIImage imageWithData:imageData];
-}
-
 + (void) saveDataToUserDefaults {
     const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
     NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
@@ -215,7 +182,7 @@
         //FastAddressBook *fab = [LinphoneManager instance].fastAddressBook;
         Contact * contact = [FastAddressBook getContactWithAddress:linphone_call_log_get_remote_address(log)];
         if (contact && contact.avatar) {
-            UIImage *image = [self resizeImage:contact.avatar];
+            UIImage *image = [UIImage resizeImage:contact.avatar withMaxWidth:200 andMaxHeight:200];
             NSData *imageData = UIImageJPEGRepresentation(image, 0);
             [images setObject:imageData
                         forKey:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(linphone_call_log_get_remote_address(log))] substringFromIndex:4]];
