@@ -3823,6 +3823,14 @@ void MediaSessionPrivate::reinviteToRecoverFromConnectionLoss () {
 	q->update(getParams());
 }
 
+void MediaSessionPrivate::repairByInviteWithReplaces () {
+	if ((state == CallSession::State::IncomingEarlyMedia) || (state == CallSession::State::OutgoingEarlyMedia)) {
+		stopStreams();
+		initializeStreams();
+	}
+	CallSessionPrivate::repairByInviteWithReplaces();
+}
+
 // -----------------------------------------------------------------------------
 
 #ifdef VIDEO_ENABLED

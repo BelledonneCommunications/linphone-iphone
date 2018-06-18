@@ -88,6 +88,9 @@ protected:
 	void setBroken ();
 	void setContactOp ();
 
+	virtual void reinviteToRecoverFromConnectionLoss ();
+	virtual void repairByInviteWithReplaces ();
+
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) override;
@@ -98,8 +101,6 @@ private:
 
 	LinphoneAddress * getFixedContact () const;
 
-	virtual void reinviteToRecoverFromConnectionLoss ();
-	void repairByInviteWithReplaces ();
 	void repairIfBroken ();
 
 protected:

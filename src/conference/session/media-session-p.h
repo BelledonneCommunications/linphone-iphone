@@ -249,6 +249,7 @@ private:
 
 	void refreshSockets ();
 	void reinviteToRecoverFromConnectionLoss () override;
+	void repairByInviteWithReplaces () override;
 
 #ifdef VIDEO_ENABLED
 	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);

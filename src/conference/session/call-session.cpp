@@ -786,6 +786,7 @@ void CallSessionPrivate::reinviteToRecoverFromConnectionLoss () {
 
 void CallSessionPrivate::repairByInviteWithReplaces () {
 	L_Q();
+	lInfo() << "CallSession [" << q << "] is going to have a new INVITE replacing the previous one in order to recover from lost connectivity";
 	string callId = op->getCallId();
 	const char *fromTag = op->getLocalTag();
 	const char *toTag = op->getRemoteTag();
