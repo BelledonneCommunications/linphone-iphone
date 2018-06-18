@@ -768,7 +768,7 @@ LINPHONE_PUBLIC void linphone_core_enable_log_collection(LinphoneLogCollectionSt
 LINPHONE_PUBLIC const char * linphone_core_get_log_collection_path(void);
 
 /**
- * Set the path where the log files will be written for log collection.
+ * Set the path of a directory where the log files will be written for log collection.
  * @param[in] path The path where the log files will be written.
  */
 LINPHONE_PUBLIC void linphone_core_set_log_collection_path(const char *path);
