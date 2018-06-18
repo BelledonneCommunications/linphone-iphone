@@ -209,12 +209,6 @@ static UICompositeViewDescription *compositeDescription = nil;
     [self shareFile];
 }
 
-- (void)sendContentText:(NSString *)text {
-    if(![text isEqualToString:@""]) {
-        [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
-    }
-}
-
 - (void)shareFile {
     NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
     
@@ -227,30 +221,27 @@ static UICompositeViewDescription *compositeDescription = nil;
         NSData *data = dict[@"nsData"];
         UIImage *image = [[UIImage alloc] initWithData:data];
         [self chooseImageQuality:image url:nil];
-        [self sendContentText:dict[@"name"]];
         [defaults removeObjectForKey:@"img"];
-    } else if(dictWeb) {
+    } else if (dictWeb) {
         //share url, if local file, then upload file
         NSString *url  = dictWeb[@"url"];
         NSURL *fileUrl = [NSURL fileURLWithPath:url];
-        if([[fileUrl scheme]isEqualToString:@"file"]) {
+        if ([url hasPrefix:@"file"]) {
             //local file
             NSData *data = dictWeb[@"nsData"];
-            [self confirmShare:data url:fileUrl];
+            [self confirmShare:data url:fileUrl text:nil];
         } else {
-            [self sendMessage:url withExterlBodyUrl:nil withInternalURL:nil];
+            [self confirmShare:nil url:nil text:url];
         }
-        [self sendContentText:dictWeb[@"name"]];
         [defaults removeObjectForKey:@"web"];
-    }else if(dictFile) {
+    }else if (dictFile) {
         //share file
         NSData *data  = dictFile[@"nsData"];
-        [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]]];
-        [self sendContentText:dictFile[@"name"]];
+        [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]] text:nil];
         [defaults removeObjectForKey:@"mov"];
-    }else if(dictText) {
+    }else if (dictText) {
         //share text
-        [self sendContentText:dictText[@"name"]];
+        [self confirmShare:nil url:nil text:dictText[@"name"]];
         [defaults removeObjectForKey:@"text"];
     }
 }
@@ -366,13 +357,17 @@ static UICompositeViewDescription *compositeDescription = nil;
 	});
 }
 
-- (void)confirmShare:(NSData *)data url:(NSURL *)url {
+- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text {
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
        
             [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
-                                     [self startFileUpload:data withUrl:url];
+                                    if(data && url)
+                                        [self startFileUpload:data withUrl:url];
+                                    else
+                                        [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
+                                     
                                 }];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
