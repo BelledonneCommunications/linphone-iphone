@@ -92,8 +92,10 @@ static void _decode_qrcode(const char* image_path, image_rect *rect) {
 	LinphoneCoreManager* lcm = NULL;
 	MSFactory* factory = NULL;
 	factory = ms_factory_new_with_voip();
-	if (!BC_ASSERT_PTR_NOT_NULL(ms_factory_lookup_filter_by_name(factory, "MSQRCodeReader")))
+	if (!ms_factory_lookup_filter_by_name(factory, "MSQRCodeReader")) {
+		ms_error("QRCode support is not built-in");
 		goto end;
+	}
 
 	lcm =linphone_core_manager_create("empty_rc");
 	LinphoneCoreCbs* cbs = NULL;
