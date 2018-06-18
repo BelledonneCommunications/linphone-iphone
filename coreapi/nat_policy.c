@@ -236,7 +236,7 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 
 	if (linphone_nat_policy_stun_server_activated(policy) && (policy->lc->sal != NULL) && !policy->stun_resolver_context) {
 		char host[NI_MAXHOST];
-		int port = 3478;
+		int port = 0;
 		linphone_parse_host_port(policy->stun_server, host, sizeof(host), &port);
 		if (linphone_nat_policy_turn_enabled(policy)) service = "turn";
 		else if (linphone_nat_policy_stun_enabled(policy)) service = "stun";
@@ -244,7 +244,12 @@ void linphone_nat_policy_resolve_stun_server(LinphoneNatPolicy *policy) {
 			int family = AF_INET;
 			if (linphone_core_ipv6_enabled(policy->lc) == TRUE) family = AF_INET6;
 			ms_message("Starting stun server resolution [%s]", host);
-			policy->stun_resolver_context = policy->lc->sal->resolve(service, "udp", host, port, family, stun_server_resolved, policy);
+			if (port == 0) {
+				port = 3478;
+				policy->stun_resolver_context = policy->lc->sal->resolve(service, "udp", host, port, family, stun_server_resolved, policy);
+			} else {
+				policy->stun_resolver_context = policy->lc->sal->resolveA(host, port, family, stun_server_resolved, policy);
+			}
 			if (policy->stun_resolver_context) belle_sip_object_ref(policy->stun_resolver_context);
 		}
 	}
