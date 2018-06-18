@@ -179,7 +179,7 @@ public class AndroidPlatformHelper {
 			Log.d("App doesn't seem to embed resource " + name + "in it's res/raw/ directory, use linphone's instead");
 			resId = mResources.getIdentifier(name, "raw", "org.linphone");
 			if (resId == 0) {
-				Log.e("App doesn't seem to embed resource " + name + "in it's res/raw/ directory, please add it");
+				Log.i("App doesn't seem to embed resource " + name + "in it's res/raw/ directory. Make sure this file is either brought as an asset or a resource");
 			}
 		}
 		return resId;
