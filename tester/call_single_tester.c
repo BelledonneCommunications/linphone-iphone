@@ -5310,16 +5310,16 @@ static void recovered_call_on_network_switch_in_early_media_base (bool_t callerL
 		if (callerLosesNetwork) {
 			/* Disconnect Marie's network and then reconnect it */
 			linphone_core_set_network_reachable(marie->lc, FALSE);
-			wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableFalse, 1);
+			BC_ASSERT_EQUAL(marie->stat.number_of_NetworkReachableFalse, 1, int, "%d");
 			linphone_core_set_network_reachable(marie->lc, TRUE);
-			wait_for(marie->lc, pauline->lc, &marie->stat.number_of_NetworkReachableTrue, 2);
+			BC_ASSERT_EQUAL(marie->stat.number_of_NetworkReachableTrue, 2, int, "%d");
 			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
 		} else {
 			/* Disconnect Pauline's network and then reconnect it */
 			linphone_core_set_network_reachable(pauline->lc, FALSE);
-			wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableFalse, 1);
+			BC_ASSERT_EQUAL(pauline->stat.number_of_NetworkReachableFalse, 1, int, "%d");
 			linphone_core_set_network_reachable(pauline->lc, TRUE);
-			wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_NetworkReachableTrue, 2);
+			BC_ASSERT_EQUAL(pauline->stat.number_of_NetworkReachableTrue, 2, int, "%d");
 			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 2));
 		}
 
