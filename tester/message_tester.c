@@ -2567,7 +2567,6 @@ test_t message_tests[] = {
 #endif
 	TEST_NO_TAG("IM Encryption Engine b64", im_encryption_engine_b64),
 	TEST_NO_TAG("IM Encryption Engine b64 async", im_encryption_engine_b64_async),
-// Crash currently
 	TEST_NO_TAG("Text message within call dialog", text_message_within_call_dialog),
 	TEST_NO_TAG("Info message", info_message),
 	TEST_NO_TAG("Info message with body", info_message_with_body),
