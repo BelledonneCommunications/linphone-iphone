@@ -31,6 +31,9 @@
                                                     <constraint firstAttribute="height" constant="60" id="gNd-AG-oLn"/>
                                                 </constraints>
                                                 <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="firstButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="n6M-cY-cWU"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpJ-Wl-BT1">
                                                 <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
@@ -54,6 +57,9 @@
                                                     <constraint firstAttribute="width" constant="60" id="iil-bF-24j"/>
                                                 </constraints>
                                                 <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="secondButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="e09-4G-NJf"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fEo-fa-uyD">
                                                 <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
@@ -76,6 +82,9 @@
                                                     <constraint firstAttribute="height" constant="60" id="rtD-OM-bmH"/>
                                                 </constraints>
                                                 <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="thirdButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="OtO-nr-X1J"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM6-aO-Pes">
                                                 <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
@@ -98,6 +107,9 @@
                                                     <constraint firstAttribute="height" constant="60" id="SYf-Yl-EDf"/>
                                                 </constraints>
                                                 <state key="normal" image="avatar.png"/>
+                                                <connections>
+                                                    <action selector="fourthButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="a2u-BT-Fkp"/>
+                                                </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bpY-VL-FDz">
                                                 <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
@@ -123,6 +135,12 @@
                     <extendedEdge key="edgesForExtendedLayout"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="37"/>
+                    <connections>
+                        <outletCollection property="stackViews" destination="P4U-hP-N9F" id="3f1-th-6ZO"/>
+                        <outletCollection property="stackViews" destination="79U-UR-Bp2" id="ix2-7S-Rim"/>
+                        <outletCollection property="stackViews" destination="Xgm-go-u3S" id="VYM-Ld-joW"/>
+                        <outletCollection property="stackViews" destination="nHe-ID-vxE" id="iGd-Ix-Pj6"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -139,6 +139,7 @@
         }
         [LinphoneManager.instance.iapManager check];
     [HistoryListTableView saveDataToUserDefaults];
+    [ChatsListTableView saveDataToUserDefaults];
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -343,10 +344,15 @@
         NSString *sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
         [VIEW(DialerView) setAddress:sipUri];
     } else if ([scheme isEqualToString:@"linphone-widget"]) {
+        printf("cparla\n");
         if ([[url host] isEqualToString:@"call_log"] &&
             [[url path] isEqualToString:@"/show"]) {
             [VIEW(HistoryDetailsView) setCallLogId:[url query]];
             [PhoneMainView.instance changeCurrentView:HistoryDetailsView.compositeViewDescription];
+        } else if ([[url host] isEqualToString:@"chatroom"] &&
+                   [[url path] isEqualToString:@"/show"]) {
+            LinphoneChatRoom *cr = linphone_core_get_chat_room_from_uri(LC, url.query.UTF8String);
+            [PhoneMainView.instance goToChatRoom:cr];
         }
     }
     return YES;

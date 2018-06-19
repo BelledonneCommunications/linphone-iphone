@@ -123,6 +123,40 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
 	}
 }
 
++ (void) saveDataToUserDefaults {
+    NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.belledonne-communications.linphone.widget"];
+    MSList *sorted = nil;
+    const MSList *unsorted = linphone_core_get_chat_rooms(LC);
+    const MSList *iter = unsorted;
+    
+    while (iter) {
+        // store last message in user data
+        LinphoneChatRoom *chat_room = iter->data;
+        sorted = bctbx_list_insert_sorted(sorted, chat_room, (bctbx_compare_func)sorted_history_comparison);
+        iter = iter->next;
+    }
+    
+    NSMutableArray *addresses = [NSMutableArray array];
+    
+    while (sorted) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        LinphoneChatRoom *cr = sorted->data;
+        const LinphoneAddress *address = linphone_chat_room_get_peer_address(cr);
+        NSString *display;
+        [dict setObject:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)] substringFromIndex:4] forKey:@"address"];
+        if (linphone_chat_room_get_nb_participants(cr) > 1)
+            display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
+        else
+            display = [NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)];
+        [dict setObject:display forKey:@"display"];
+        [dict setObject:[NSNumber numberWithInt:linphone_chat_room_get_nb_participants(cr)] forKey:@"nbParticipants"];
+        [addresses addObject:dict];
+        sorted = sorted->next;
+    }
+    
+    [defaults setObject:addresses forKey:@"chatrooms"];
+}
+
 - (void)markCellAsRead:(LinphoneChatRoom *)chatRoom {
 	int idx = bctbx_list_index(_data, VIEW(ChatConversationView).chatRoom);
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:idx inSection:0];
