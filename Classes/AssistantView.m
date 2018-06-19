@@ -28,6 +28,7 @@
 #import "PhoneMainView.h"
 #import "UIAssistantTextField.h"
 #import "UITextField+DoneButton.h"
+#import "LinphoneAppDelegate.h"
 
 typedef enum _ViewElement {
 	ViewElement_Username = 100,
@@ -134,6 +135,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 	[_contentView setContentSize:frame.size];
 	[_contentView contentSizeToFit];
+    
+    _qrCodeView.frame = [[UIScreen mainScreen] bounds];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -474,6 +477,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 			view = _linphoneLoginView;
 		}
 	}
+    
+    if (currentView == _qrCodeView) {
+        linphone_core_enable_video_preview(LC, FALSE);
+        linphone_core_enable_qrcode_video_preview(LC, FALSE);
+        LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)UIApplication.sharedApplication.delegate;
+        delegate.onlyPortrait = FALSE;
+    }
 
 	// Animation
 	if (animation && ANIMATED) {
@@ -1396,6 +1406,49 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
     });
 }
 
+- (IBAction)onLaunchQRCodeView:(id)sender {
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(qrCodeFound:)
+                                               name:kLinphoneQRCodeFound
+                                             object:nil];
+    LinphoneAppDelegate *delegate = (LinphoneAppDelegate *)UIApplication.sharedApplication.delegate;
+    delegate.onlyPortrait = TRUE;
+    NSNumber *value = [NSNumber numberWithInt:UIDeviceOrientationPortrait];
+    [[UIDevice currentDevice] setValue:value forKey:@"orientation"];
+    //[UIViewController attemptRotationToDeviceOrientation];
+    AVCaptureDevice *backCamera = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
+    if (![[NSString stringWithUTF8String:linphone_core_get_video_device(LC)] containsString:[backCamera uniqueID]]) {
+        
+        bctbx_list_t *deviceList = linphone_core_get_video_devices_list(LC);
+        NSMutableArray *devices = [NSMutableArray array];
+        
+        while (deviceList) {
+            char *data = deviceList->data;
+            [devices addObject:[NSString stringWithUTF8String:data]];
+            deviceList = deviceList->next;
+        }
+        bctbx_list_free(deviceList);
+        
+        for (NSString *device in devices) {
+            if ([device containsString:backCamera.uniqueID]) {
+                linphone_core_set_video_device(LC, device.UTF8String);
+            }
+        }
+    }
+    
+    
+    linphone_core_set_native_preview_window_id(LC, (__bridge void *)(_qrCodeView));
+    linphone_core_enable_video_preview(LC, TRUE);
+    linphone_core_enable_qrcode_video_preview(LC, TRUE);
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(qrCodeFound:)
+                                               name:kLinphoneQRCodeFound
+                                             object:nil];
+    
+    [self changeView:_qrCodeView back:FALSE animation:TRUE];
+}
+
 - (void)refreshYourUsername {
 	UIAssistantTextField *username = [self findTextField:ViewElement_Username];
 	UIAssistantTextField *phone = [self findTextField:ViewElement_Phone];
@@ -1509,7 +1562,7 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 - (IBAction)onBackClick:(id)sender {
 	if ([historyViews count] > 0) {
-		if (currentView == _createAccountActivateSMSView || currentView == _createAccountActivateEmailView) {
+		if (currentView == _createAccountActivateSMSView || currentView == _createAccountActivateEmailView || currentView == _qrCodeView) {
 			UIView *view = [historyViews lastObject];
 			[historyViews removeLastObject];
 			[self changeView:view back:TRUE animation:TRUE];
@@ -1532,13 +1585,32 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 
 #pragma mark - select country delegate
 
-- (void)didSelectCountry:(NSDictionary *)country{
+- (void)didSelectCountry:(NSDictionary *)country {
 	UIRoundBorderedButton *phoneButton = [self findButton:ViewElement_PhoneButton];
 	[phoneButton setTitle:[country objectForKey:@"name"] forState:UIControlStateNormal];
 	UIAssistantTextField* countryCodeField = [self findTextField:ViewElement_PhoneCC];
 	countryCodeField.text = countryCodeField.lastText = [country objectForKey:@"code"];
 	phone_number_length = [[country objectForKey:@"phone_length"] integerValue];
 	[self shouldEnableNextButton];
+}
+
+-(void)qrCodeFound:(NSNotification *)notif {
+    if ([notif.userInfo count] == 0){
+        return;
+    }
+    [NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneQRCodeFound object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.urlLabel.text = [notif.userInfo objectForKey:@"qrcode"];
+    });
+    if ([historyViews count] > 0) {
+        if (currentView == _qrCodeView) {
+            UIView *view = [historyViews lastObject];
+            [historyViews removeLastObject];
+            [self changeView:view back:TRUE animation:TRUE];
+        } else {
+            [self changeView:_welcomeView back:TRUE animation:TRUE];
+        }
+    }
 }
 
 @end

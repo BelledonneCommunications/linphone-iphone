@@ -56,6 +56,7 @@ extern NSString *const kLinphoneNotifyPresenceReceivedForUriOrTel;
 extern NSString *const kLinphoneCallEncryptionChanged;
 extern NSString *const kLinphoneFileTransferSendUpdate;
 extern NSString *const kLinphoneFileTransferRecvUpdate;
+extern NSString *const kLinphoneQRCodeFound;
 
 typedef enum _NetworkType {
     network_none = 0,

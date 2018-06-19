@@ -76,6 +76,7 @@ NSString *const kLinphoneNotifyPresenceReceivedForUriOrTel = @"LinphoneNotifyPre
 NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged";
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
+NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
@@ -1416,6 +1417,12 @@ void linphone_iphone_version_update_check_result_received (LinphoneCore *lc, Lin
     [PhoneMainView.instance presentViewController:versVerifView animated:YES completion:nil];
 }
 
+void linphone_iphone_qr_code_found(LinphoneCore *lc, const char *result) {
+    NSDictionary *eventDic = [NSDictionary dictionaryWithObject:[NSString stringWithCString:result encoding:[NSString defaultCStringEncoding]] forKey:@"qrcode"];
+    LOGD(@"QRCODE FOUND");
+    [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneQRCodeFound object:nil userInfo:eventDic];
+}
+
 #pragma mark - Message composition start
 - (void)alertLIME:(LinphoneChatRoom *)room {
 	NSString *title = NSLocalizedString(@"LIME warning", nil);
@@ -1988,6 +1995,7 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
     linphone_core_cbs_set_version_update_check_result_received(cbs, linphone_iphone_version_update_check_result_received);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
+    linphone_core_cbs_set_qrcode_found(cbs, linphone_iphone_qr_code_found);
 
 	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
 	// Let the core handle cbs

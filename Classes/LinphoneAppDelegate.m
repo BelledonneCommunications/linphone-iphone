@@ -44,6 +44,7 @@
 		startedInBackground = FALSE;
 	}
 	_alreadyRegisteredForNotification = false;
+    _onlyPortrait = FALSE;
 	return self;
 	[[UIApplication sharedApplication] setDelegate:self];
 }
@@ -218,17 +219,6 @@
 										   actions:[NSArray arrayWithObjects:act_confirm, act_deny, nil]
 								 intentIdentifiers:[[NSMutableArray alloc] init]
 										   options:UNNotificationCategoryOptionCustomDismissAction];
-    
-    // App version verification
-    
-    UNNotificationAction *act_go_to_URL = [UNNotificationAction actionWithIdentifier:@"Download"
-                                                                             title:NSLocalizedString(@"Download", nil)
-                                                                           options:UNNotificationActionOptionNone];
-    UNNotificationCategory *version_verif =
-    [UNNotificationCategory categoryWithIdentifier:@"version_verif"
-                                           actions:[NSArray arrayWithObjects:act_go_to_URL, nil]
-                                 intentIdentifiers:[[NSMutableArray alloc] init]
-                                           options:UNNotificationCategoryOptionCustomDismissAction];
 
 	[UNUserNotificationCenter currentNotificationCenter].delegate = self;
 	[[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge)
@@ -238,7 +228,7 @@
 																				LOGD(error.description);
 																		}];
     
-	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, version_verif, nil];
+	NSSet *categories = [NSSet setWithObjects:cat_call, cat_msg, video_call, cat_zrtp, nil];
 	[[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
 }
 
@@ -674,10 +664,6 @@ didInvalidatePushTokenForType:(NSString *)type {
 							  }];
 		} else if ([response.notification.request.content.categoryIdentifier isEqual:@"lime"]) {
 			return;
-        } else if ([response.notification.request.content.categoryIdentifier isEqual:@"version_verif"]) {
-            NSString *url = [response.notification.request.content.userInfo objectForKey:@"url"];
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
-            return;
         } else { // Missed call
 			[PhoneMainView.instance changeCurrentView:HistoryListView.compositeViewDescription];
 		}
@@ -849,14 +835,13 @@ didInvalidatePushTokenForType:(NSString *)type {
 #pragma mark - Prevent ImagePickerView from rotating
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
-	if ([[(PhoneMainView*)self.window.rootViewController currentView] equal:ImagePickerView.compositeViewDescription])
+	if ([[(PhoneMainView*)self.window.rootViewController currentView] equal:ImagePickerView.compositeViewDescription] || _onlyPortrait)
 	{
 		//Prevent rotation of camera
 		NSNumber *value = [NSNumber numberWithInt:UIInterfaceOrientationPortrait];
 		[[UIDevice currentDevice] setValue:value forKey:@"orientation"];
 		return UIInterfaceOrientationMaskPortrait;
-	}
-	else return UIInterfaceOrientationMaskAllButUpsideDown;
+	} else return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 @end

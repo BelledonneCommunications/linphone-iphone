@@ -30,9 +30,11 @@
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="phoneLabel" destination="ZSJ-Lv-n60" id="5Qi-xR-wyK"/>
                 <outlet property="phoneTitle" destination="rAy-0V-sqv" id="MZq-EF-6HF"/>
+                <outlet property="qrCodeView" destination="Z2R-SD-yFJ" id="dcs-rK-HgK"/>
                 <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
                 <outlet property="remoteProvisioningView" destination="Zuh-Sd-pcd" id="3pa-2M-5Xq"/>
                 <outlet property="subtileLabel_useLinphoneAccount" destination="4n3-ZD-KVi" id="8d9-0f-2Vi"/>
+                <outlet property="urlLabel" destination="Ffg-Of-xyh" id="IhC-hf-1OG"/>
                 <outlet property="welcomeView" destination="33" id="46a-AR-5mN"/>
             </connections>
         </placeholder>
@@ -1347,7 +1349,7 @@ Once it is done, come back here and click on the button.</string>
                         <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="6yF-1w-Hpa"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T9-bt-FHD" userLabel="qrcodeButton" customClass="UIRoundBorderedButton">
+                <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T9-bt-FHD" userLabel="qrcodeButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="219" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch and apply">
                         <bool key="isElement" value="YES"/>
@@ -1364,7 +1366,7 @@ Once it is done, come back here and click on the button.</string>
                     </state>
                     <state key="highlighted" backgroundImage="color_F.png"/>
                     <connections>
-                        <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="5CK-Mb-McE"/>
+                        <action selector="onLaunchQRCodeView:" destination="-1" eventType="touchUpInside" id="i1k-Su-mAZ"/>
                     </connections>
                 </button>
             </subviews>
@@ -1552,6 +1554,12 @@ Once it is done, come back here and click on the button.</string>
                 <action selector="onLinkTap:" destination="-1" id="xXJ-65-gxy"/>
             </connections>
         </tapGestureRecognizer>
+        <view contentMode="scaleToFill" id="Z2R-SD-yFJ" userLabel="qrCodeView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <point key="canvasLocation" x="1918" y="554"/>
+        </view>
     </objects>
     <resources>
         <image name="color_F.png" width="2" height="2"/>

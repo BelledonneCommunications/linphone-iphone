@@ -21,6 +21,7 @@
 #import "UICompositeView.h"
 #import "TPKeyboardAvoidingScrollView.h"
 #import "PhoneMainView.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface AssistantView : UIViewController <UITextFieldDelegate, UICompositeViewDelegate> {
 
@@ -51,6 +52,7 @@
 @property(nonatomic, strong) IBOutlet UIView *remoteProvisioningLoginView;
 @property(strong, nonatomic) IBOutlet UIView *remoteProvisioningView;
 @property (strong, nonatomic) IBOutlet UIView *createAccountActivateSMSView;
+@property (strong, nonatomic) IBOutlet UIView *qrCodeView;
 
 @property(nonatomic, strong) IBOutlet UIImageView *welcomeLogoImage;
 @property(nonatomic, strong) IBOutlet UIButton *gotoCreateAccountButton;
@@ -64,6 +66,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *activationSMSText;
 
 @property (weak, nonatomic) IBOutlet UILabel *accountLabel;
+@property (weak, nonatomic) IBOutlet UITextField *urlLabel;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *createAccountNextButtonPositionConstraint;
 
 + (NSString *)StringForXMLRPCError:(const char *)err;
@@ -92,6 +95,7 @@
 - (IBAction)onLoginClick:(id)sender;
 - (IBAction)onRemoteProvisioningLoginClick:(id)sender;
 - (IBAction)onRemoteProvisioningDownloadClick:(id)sender;
+- (IBAction)onLaunchQRCodeView:(id)sender;
 - (IBAction)onCreateAccountCheckActivatedClick:(id)sender;
 - (IBAction)onLinkAccountClick:(id)sender;
 
