@@ -775,9 +775,13 @@ bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 				if (zrtp_cache_db != NULL) {
 					bool_t res;
 					limeURIKeys_t associatedKeys;
-					char *peer = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(cr))
-												  				, linphone_address_get_username(linphone_chat_room_get_peer_address(cr))
-												  				, linphone_address_get_domain(linphone_chat_room_get_peer_address(cr)));
+					const LinphoneAddress *peerAddr = linphone_chat_room_get_peer_address(cr);
+					char *peer = ms_strdup_printf(
+						"%s:%s@%s",
+						linphone_address_get_scheme(peerAddr),
+						linphone_address_get_username(peerAddr),
+						linphone_address_get_domain(peerAddr)
+					);
 					/* retrieve keys associated to the peer URI */
 					associatedKeys.peerURI = bctbx_strdup(peer);
 					associatedKeys.selfURI = NULL; /* TODO : there is no sender associated to chatroom so check for any local URI available, shall we add sender to chatroom? */
@@ -819,12 +823,21 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			errcode = 500;
 			return errcode;
 		}
-		peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
-								   				, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
-								   				, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
-		selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_to_address(msg))
-								   				, linphone_address_get_username(linphone_chat_message_get_to_address(msg))
-								   				, linphone_address_get_domain(linphone_chat_message_get_to_address(msg)));
+		const LinphoneAddress *fromAddr = linphone_chat_message_get_from_address(msg);
+		peerUri = ms_strdup_printf(
+			"%s:%s@%s",
+			linphone_address_get_scheme(fromAddr),
+			linphone_address_get_username(fromAddr),
+			linphone_address_get_domain(fromAddr)
+		);
+
+		const LinphoneAddress *toAddr = linphone_chat_message_get_to_address(msg);
+		selfUri = ms_strdup_printf(
+			"%s:%s@%s",
+			linphone_address_get_scheme(toAddr),
+			linphone_address_get_username(toAddr),
+			linphone_address_get_domain(toAddr)
+		);
 
 		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &decrypted_body, &decrypted_content_type,
 						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
@@ -887,12 +900,20 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			} else {
 				int retval;
 				uint8_t *crypted_body = NULL;
-				char *peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(room))
-															, linphone_address_get_username(linphone_chat_room_get_peer_address(room))
-										   					, linphone_address_get_domain(linphone_chat_room_get_peer_address(room)));
-				char *selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_message_get_from_address(msg))
-										   					, linphone_address_get_username(linphone_chat_message_get_from_address(msg))
-										   					, linphone_address_get_domain(linphone_chat_message_get_from_address(msg)));
+				const LinphoneAddress *peerAddr = linphone_chat_room_get_peer_address(room);
+				char *peerUri = ms_strdup_printf(
+					"%s:%s@%s",
+					linphone_address_get_scheme(peerAddr),
+					linphone_address_get_username(peerAddr),
+					linphone_address_get_domain(peerAddr)
+				);
+				const LinphoneAddress *fromAddr = linphone_chat_message_get_from_address(msg);
+				char *selfUri = ms_strdup_printf(
+					"%s:%s@%s",
+					linphone_address_get_scheme(fromAddr),
+					linphone_address_get_username(fromAddr),
+					linphone_address_get_domain(fromAddr)
+				);
 
 				retval = lime_createMultipartMessage(zrtp_cache_db, linphone_chat_message_get_content_type(msg), (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &crypted_body);
 				if (retval != 0) { /* fail to encrypt */
