@@ -39,6 +39,7 @@
 @property PKPushRegistry* voipRegistry;
 @property ProviderDelegate *del;
 @property BOOL alreadyRegisteredForNotification;
+@property BOOL onlyPortrait;
 
 @end
 
