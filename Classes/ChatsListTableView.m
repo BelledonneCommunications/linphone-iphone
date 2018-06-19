@@ -144,12 +144,12 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         const LinphoneAddress *address = linphone_chat_room_get_peer_address(cr);
         NSString *display;
         [dict setObject:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)] substringFromIndex:4] forKey:@"address"];
-        if (linphone_chat_room_get_nb_participants(cr) > 1)
+        if (linphone_chat_room_get_conference_address(cr))
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
         else
             display = [NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)];
         [dict setObject:display forKey:@"display"];
-        [dict setObject:[NSNumber numberWithInt:linphone_chat_room_get_nb_participants(cr)] forKey:@"nbParticipants"];
+        [dict setObject:[NSNumber numberWithBool:linphone_chat_room_get_conference_address(cr)] forKey:@"nbParticipants"];
         [addresses addObject:dict];
         sorted = sorted->next;
     }

@@ -760,6 +760,7 @@ void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+    [ChatsListTableView saveDataToUserDefaults];
 
 	if (IPAD)
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];

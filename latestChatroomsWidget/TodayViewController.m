@@ -27,7 +27,7 @@
     for (NSDictionary *dict in _chatrooms) {
         [_addresses addObject:[dict objectForKey:@"address"]];
         [_displayNames addObject:[dict objectForKey:@"display"]];
-        [_isConf addObject:[NSNumber numberWithBool:(((NSNumber *)[dict objectForKey:@"nbParticipants"]).intValue > 1)]];
+        [_isConf addObject:(NSNumber *)[dict objectForKey:@"nbParticipants"]];
     }
 }
 
@@ -37,11 +37,9 @@
         UIStackView *stack = _stackViews[i];
         UIButton *button = stack.subviews[0];
         UILabel *name = stack.subviews[1];
-        printf("%s\n", ((NSString *)_addresses[i]).UTF8String);
         if ([self.imgs.allKeys containsObject:_addresses[i]]) {
             NSData *imgData = [_imgs objectForKey:_addresses[i]];
             [button setImage:[UIImage imageWithData:imgData] forState:UIControlStateNormal];
-            NSLog(@"Size of Image(bytes):%d", (int)[imgData length]);
         } else if (((NSNumber *)_isConf[i]).boolValue) {
             [button setImage:[UIImage imageNamed:@"chat_group_avatar.png"] forState:UIControlStateNormal];
         }
@@ -81,6 +79,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     [_imgs removeAllObjects];
+    [_chatrooms removeAllObjects];
 }
 
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {
@@ -100,23 +99,23 @@
                  completionHandler:nil];
 }
 
-- (void)launchOnChatConversationViewWithId:(NSString *)chatId {
-    [self launchAppWithURL:[NSURL URLWithString:[@"linphone-widget://chatroom/show?" stringByAppendingString:chatId]]];
+- (void)launchOnChatConversationViewWithAddress:(NSString *)chatAddress {
+    [self launchAppWithURL:[NSURL URLWithString:[@"linphone-widget://chatroom/show?" stringByAppendingString:chatAddress]]];
 }
 
 - (IBAction)firstButtonTapped {
-    [self launchOnChatConversationViewWithId:_addresses[0]];
+    [self launchOnChatConversationViewWithAddress:_addresses[0]];
 }
 
 - (IBAction)secondButtonTapped {
-    [self launchOnChatConversationViewWithId:_addresses[1]];
+    [self launchOnChatConversationViewWithAddress:_addresses[1]];
 }
 
 - (IBAction)thirdButtonTapped {
-    [self launchOnChatConversationViewWithId:_addresses[2]];
+    [self launchOnChatConversationViewWithAddress:_addresses[2]];
 }
 
 - (IBAction)fourthButtonTapped {
-    [self launchOnChatConversationViewWithId:_addresses[3]];
+    [self launchOnChatConversationViewWithAddress:_addresses[3]];
 }
 @end
