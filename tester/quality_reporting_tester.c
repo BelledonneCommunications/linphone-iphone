@@ -75,6 +75,7 @@ static const char *on_report_send_verify_metrics (const reporting_content_metric
 	return body;
 }
 
+#if VIDEO_ENABLED
 static void on_report_send_with_rtcp_xr_local (const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content) {
 	char *remote_metrics_start = __strstr(linphone_content_get_string_buffer(content), "RemoteMetrics:");
 	reporting_session_report_t *report = linphone_quality_reporting_get_reports(linphone_call_log_get_quality_reporting(linphone_call_get_log(call)))[stream_type];
@@ -84,6 +85,7 @@ static void on_report_send_with_rtcp_xr_local (const LinphoneCall *call, SalStre
 	BC_ASSERT_PTR_NOT_NULL(body = __strstr(body, "LocalMetrics:"));
 	BC_ASSERT_TRUE(!remote_metrics_start || on_report_send_verify_metrics(&report->local_metrics, body) < remote_metrics_start);
 }
+#endif
 
 static void on_report_send_with_rtcp_xr_remote (const LinphoneCall *call, SalStreamType stream_type, const LinphoneContent *content) {
 	char *body = (char *)linphone_content_get_buffer(content);
