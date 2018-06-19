@@ -322,8 +322,7 @@ void MediaSessionPrivate::remoteRinging () {
 
 void MediaSessionPrivate::replaceOp (SalCallOp *newOp) {
 	CallSessionPrivate::replaceOp(newOp);
-	stopStreams();
-	initializeStreams();
+	updateStreams(newOp->getFinalMediaDescription(), state);
 }
 
 int MediaSessionPrivate::resumeAfterFailedTransfer () {
@@ -1182,7 +1181,7 @@ void MediaSessionPrivate::getLocalIp (const Address &remoteAddr) {
 		struct addrinfo *res = nullptr;
 		string host(remoteAddr.getDomain());
 		int err;
-		
+
 		if (host[0] == '[')
 			host = host.substr(1, host.size() - 2);
 		memset(&hints, 0, sizeof(hints));
