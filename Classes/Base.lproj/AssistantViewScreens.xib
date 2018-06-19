@@ -21,6 +21,7 @@
                 <outlet property="createAccountActivateEmailView" destination="Zd9-Ms-s7X" id="6Qs-np-oqS"/>
                 <outlet property="createAccountActivateSMSView" destination="101" id="SAS-8i-4Ao"/>
                 <outlet property="createAccountView" destination="44" id="70"/>
+                <outlet property="downloadButton" destination="eM0-bn-v3C" id="hsP-3U-clZ"/>
                 <outlet property="gotoCreateAccountButton" destination="36" id="bZf-lI-yJp"/>
                 <outlet property="gotoLinphoneLoginButton" destination="38" id="K1E-r5-WiL"/>
                 <outlet property="gotoLoginButton" destination="39" id="uSY-cr-j4w"/>
@@ -30,6 +31,7 @@
                 <outlet property="loginView" destination="56" id="bJH-N8-uPi"/>
                 <outlet property="phoneLabel" destination="ZSJ-Lv-n60" id="5Qi-xR-wyK"/>
                 <outlet property="phoneTitle" destination="rAy-0V-sqv" id="MZq-EF-6HF"/>
+                <outlet property="qrCodeButton" destination="2T9-bt-FHD" id="5M5-Fj-q4E"/>
                 <outlet property="qrCodeView" destination="Z2R-SD-yFJ" id="dcs-rK-HgK"/>
                 <outlet property="remoteProvisioningLoginView" destination="xVK-hL-6pe" id="pKL-9M-Vsa"/>
                 <outlet property="remoteProvisioningView" destination="Zuh-Sd-pcd" id="3pa-2M-5Xq"/>
@@ -1329,7 +1331,7 @@ Once it is done, come back here and click on the button.</string>
                     <color key="textColor" red="0.98594832420349121" green="0.0" blue="0.026950567960739136" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eM0-bn-v3C" userLabel="downloadButton" customClass="UIRoundBorderedButton">
+                <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eM0-bn-v3C" userLabel="downloadButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="171" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch and apply">
                         <bool key="isElement" value="YES"/>
@@ -1349,7 +1351,7 @@ Once it is done, come back here and click on the button.</string>
                         <action selector="onRemoteProvisioningDownloadClick:" destination="-1" eventType="touchUpInside" id="6yF-1w-Hpa"/>
                     </connections>
                 </button>
-                <button opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T9-bt-FHD" userLabel="qrcodeButton" customClass="UIRoundBorderedButton">
+                <button hidden="YES" opaque="NO" tag="130" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2T9-bt-FHD" userLabel="qrcodeButton" customClass="UIRoundBorderedButton">
                     <rect key="frame" x="38" y="219" width="299" height="40"/>
                     <accessibility key="accessibilityConfiguration" label="Fetch and apply">
                         <bool key="isElement" value="YES"/>

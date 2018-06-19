@@ -118,6 +118,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	}
 	mustRestoreView = NO;
 	_outgoingView = DialerView.compositeViewDescription;
+    _qrCodeButton.hidden = !ENABLE_QRCODE;
 	[self resetLiblinphone:FALSE];
 }
 
@@ -1256,9 +1257,9 @@ void assistant_is_account_linked(LinphoneAccountCreator *creator, LinphoneAccoun
 - (IBAction)onGotoRemoteProvisioningClick:(id)sender {
     ONCLICKBUTTON(sender, 100, {
         nextView = _remoteProvisioningView;
-        [self loadAssistantConfig:@"assistant_remote.rc"];
         [self findTextField:ViewElement_URL].text =
         [LinphoneManager.instance lpConfigStringForKey:@"config-uri" inSection:@"misc"];
+        [self loadAssistantConfig:@"assistant_remote.rc"];
     });
 }
 
