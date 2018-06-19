@@ -230,7 +230,9 @@ endif()
 
 # TODO: Remove me later!
 list(REMOVE_ITEM STRICT_OPTIONS_CPP "-Wconversion" "-Werror=conversion" "-Wcast-align" "-Werror=cast-align")
-
+if (ANDROID AND CMAKE_C_COMPILER_ID STREQUAL "GNU") #restrict to Android as it seems to break reguler linux
+	list (APPEND STRICT_OPTIONS_C "-std=c99")
+endif()
 bc_apply_compile_flags(SOURCE_FILES_C STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 bc_apply_compile_flags(SOURCE_FILES_CXX STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 bc_apply_compile_flags(SOURCE_FILES_OBJC STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)

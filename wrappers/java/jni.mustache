@@ -69,12 +69,6 @@ static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
 	return nativePtr;
 }
 
-static void SetObjectNativePtr(JNIEnv *env, jobject object, jlong ptr) {
-	jclass objClass = env->GetObjectClass(object);
-	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
-	env->SetLongField(object, nativePtrId, ptr);
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void linphone_android_log_handler(int prio, char *str) {
