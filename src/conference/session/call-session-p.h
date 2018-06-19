@@ -60,7 +60,7 @@ public:
 	void pingReply ();
 	void referred (const Address &referToAddr);
 	virtual void remoteRinging ();
-	void replaceOp (SalCallOp *newOp);
+	virtual void replaceOp (SalCallOp *newOp);
 	virtual void terminated ();
 	void updated (bool isUpdate);
 	void updatedByRemote ();
@@ -88,6 +88,9 @@ protected:
 	void setBroken ();
 	void setContactOp ();
 
+	virtual void reinviteToRecoverFromConnectionLoss ();
+	virtual void repairByInviteWithReplaces ();
+
 	// CoreListener
 	void onNetworkReachable (bool sipNetworkReachable, bool mediaNetworkReachable) override;
 	void onRegistrationStateChanged (LinphoneProxyConfig *cfg, LinphoneRegistrationState cstate, const std::string &message) override;
@@ -98,8 +101,6 @@ private:
 
 	LinphoneAddress * getFixedContact () const;
 
-	virtual void reinviteToRecoverFromConnectionLoss ();
-	void repairByInviteWithReplaces ();
 	void repairIfBroken ();
 
 protected:

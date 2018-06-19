@@ -46,6 +46,7 @@ public:
 	void pauseForTransfer ();
 	void pausedByRemote ();
 	void remoteRinging () override;
+	void replaceOp (SalCallOp *newOp) override;
 	int resumeAfterFailedTransfer ();
 	void resumed ();
 	void startPendingRefer ();
@@ -249,6 +250,7 @@ private:
 
 	void refreshSockets ();
 	void reinviteToRecoverFromConnectionLoss () override;
+	void repairByInviteWithReplaces () override;
 
 #ifdef VIDEO_ENABLED
 	void videoStreamEventCb (const MSFilter *f, const unsigned int eventId, const void *args);

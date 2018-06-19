@@ -3184,6 +3184,16 @@ bool_t linphone_core_content_encoding_supported(const LinphoneCore *lc, const ch
 	return (strcmp(handle_content_encoding, content_encoding) == 0) && lc->sal->isContentEncodingAvailable(content_encoding);
 }
 
+static void notify_network_reachable_change (LinphoneCore *lc) {
+	if (!lc->network_reachable_to_be_notified)
+		return;
+
+	lc->network_reachable_to_be_notified = FALSE;
+	linphone_core_notify_network_reachable(lc, lc->sip_network_reachable);
+	if (lc->sip_network_reachable)
+		linphone_core_resolve_stun_server(lc);
+}
+
 static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 	bool_t new_status=lc->network_last_status;
 	char newip[LINPHONE_IPADDR_SIZE];
@@ -3212,6 +3222,8 @@ static void monitor_network_state(LinphoneCore *lc, time_t curtime){
 		}
 		lc->network_last_check=curtime;
 	}
+
+	notify_network_reachable_change(lc);
 }
 
 static void proxy_update(LinphoneCore *lc){
@@ -3304,13 +3316,6 @@ void linphone_core_iterate(LinphoneCore *lc){
 	int64_t diff_time;
 	bool one_second_elapsed = false;
 
-	if (lc->network_reachable_to_be_notified) {
-		lc->network_reachable_to_be_notified=FALSE;
-		linphone_core_notify_network_reachable(lc,lc->sip_network_reachable);
-		if (lc->sip_network_reachable) {
-			linphone_core_resolve_stun_server(lc);
-		}
-	}
 	if (lc->prevtime_ms == 0){
 		lc->prevtime_ms = curtime_ms;
 	}
@@ -6327,19 +6332,22 @@ static void disable_internal_network_reachability_detection(LinphoneCore *lc){
 	}
 }
 
-void linphone_core_set_network_reachable(LinphoneCore* lc,bool_t isReachable) {
+void linphone_core_set_network_reachable(LinphoneCore *lc, bool_t isReachable) {
 	disable_internal_network_reachability_detection(lc);
 	set_network_reachable(lc, isReachable, ms_time(NULL));
+	notify_network_reachable_change(lc);
 }
 
 void linphone_core_set_media_network_reachable(LinphoneCore *lc, bool_t is_reachable){
 	disable_internal_network_reachability_detection(lc);
 	set_media_network_reachable(lc, is_reachable);
+	notify_network_reachable_change(lc);
 }
 
 void linphone_core_set_sip_network_reachable(LinphoneCore *lc, bool_t is_reachable){
 	disable_internal_network_reachability_detection(lc);
 	set_sip_network_reachable(lc, is_reachable, ms_time(NULL));
+	notify_network_reachable_change(lc);
 }
 
 bool_t linphone_core_is_network_reachable(LinphoneCore* lc) {

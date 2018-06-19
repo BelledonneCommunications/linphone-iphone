@@ -320,6 +320,11 @@ void MediaSessionPrivate::remoteRinging () {
 	}
 }
 
+void MediaSessionPrivate::replaceOp (SalCallOp *newOp) {
+	CallSessionPrivate::replaceOp(newOp);
+	updateStreams(newOp->getFinalMediaDescription(), state);
+}
+
 int MediaSessionPrivate::resumeAfterFailedTransfer () {
 	L_Q();
 	if (automaticallyPaused && (state == CallSession::State::Pausing))
@@ -1176,7 +1181,7 @@ void MediaSessionPrivate::getLocalIp (const Address &remoteAddr) {
 		struct addrinfo *res = nullptr;
 		string host(remoteAddr.getDomain());
 		int err;
-		
+
 		if (host[0] == '[')
 			host = host.substr(1, host.size() - 2);
 		memset(&hints, 0, sizeof(hints));
@@ -3821,6 +3826,14 @@ void MediaSessionPrivate::reinviteToRecoverFromConnectionLoss () {
 	if (iceAgent->hasSession())
 		iceAgent->resetSession(IR_Controlling);
 	q->update(getParams());
+}
+
+void MediaSessionPrivate::repairByInviteWithReplaces () {
+	if ((state == CallSession::State::IncomingEarlyMedia) || (state == CallSession::State::OutgoingEarlyMedia)) {
+		stopStreams();
+		initializeStreams();
+	}
+	CallSessionPrivate::repairByInviteWithReplaces();
 }
 
 // -----------------------------------------------------------------------------

@@ -5280,6 +5280,84 @@ end:
 	linphone_core_manager_destroy(pauline);
 }
 
+static void recovered_call_on_network_switch_in_early_media_base (bool_t callerLosesNetwork) {
+	LinphoneCoreManager *marie = linphone_core_manager_new("marie_rc");
+	LinphoneCoreManager *pauline = linphone_core_manager_new("pauline_tcp_rc");
+	bctbx_list_t *lcs = NULL;
+	LinphoneCall *marie_call;
+	LinphoneCallLog *marie_call_log;
+	uint64_t connected_time = 0;
+	uint64_t ended_time = 0;
+
+	lcs = bctbx_list_append(lcs, marie->lc);
+	lcs = bctbx_list_append(lcs, pauline->lc);
+
+	/* Marie calls Pauline, and after the call has rung, transitions to an early-media session */
+	marie_call = linphone_core_invite_address(marie->lc, pauline->identity);
+	marie_call_log = linphone_call_get_call_log(marie_call);
+	BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingReceived, 1, 3000));
+	BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingRinging, 1, 1000));
+
+	if (linphone_core_inc_invite_pending(pauline->lc)) {
+		/* Send a 183 to initiate the early media */
+		linphone_call_accept_early_media(linphone_core_get_current_call(pauline->lc));
+		BC_ASSERT_TRUE(wait_for_list(lcs, &pauline->stat.number_of_LinphoneCallIncomingEarlyMedia, 1, 2000) );
+		BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallOutgoingEarlyMedia, 1, 2000) );
+		BC_ASSERT_TRUE(linphone_call_get_all_muted(marie_call));
+
+		liblinphone_tester_check_rtcp(marie, pauline);
+
+		if (callerLosesNetwork) {
+			/* Disconnect Marie's network and then reconnect it */
+			linphone_core_set_network_reachable(marie->lc, FALSE);
+			BC_ASSERT_EQUAL(marie->stat.number_of_NetworkReachableFalse, 1, int, "%d");
+			linphone_core_set_network_reachable(marie->lc, TRUE);
+			BC_ASSERT_EQUAL(marie->stat.number_of_NetworkReachableTrue, 2, int, "%d");
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &marie->stat.number_of_LinphoneRegistrationOk, 2));
+		} else {
+			/* Disconnect Pauline's network and then reconnect it */
+			linphone_core_set_network_reachable(pauline->lc, FALSE);
+			BC_ASSERT_EQUAL(pauline->stat.number_of_NetworkReachableFalse, 1, int, "%d");
+			linphone_core_set_network_reachable(pauline->lc, TRUE);
+			BC_ASSERT_EQUAL(pauline->stat.number_of_NetworkReachableTrue, 2, int, "%d");
+			BC_ASSERT_TRUE(wait_for(marie->lc, pauline->lc, &pauline->stat.number_of_LinphoneRegistrationOk, 2));
+		}
+
+		wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+		liblinphone_tester_check_rtcp(marie, pauline);
+
+		if (linphone_core_get_current_call(pauline->lc)
+			&& (linphone_call_get_state(linphone_core_get_current_call(pauline->lc)) ==  LinphoneCallIncomingEarlyMedia)
+		) {
+			linphone_call_accept(linphone_core_get_current_call(pauline->lc));
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1, 1000));
+			connected_time = ms_get_cur_time_ms();
+			BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1, 1000));
+			BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
+			BC_ASSERT_FALSE(linphone_call_get_all_muted(marie_call));
+
+			liblinphone_tester_check_rtcp(marie, pauline);
+			wait_for_list(lcs, 0, 1, 2000); /* Just to have a call duration != 0 */
+
+			end_call(pauline, marie);
+			ended_time = ms_get_cur_time_ms();
+			BC_ASSERT_LOWER(labs((long)((linphone_call_log_get_duration(marie_call_log) * 1000) - (int64_t)(ended_time - connected_time))), 1500, long, "%ld");
+		}
+	}
+
+	bctbx_list_free(lcs);
+	linphone_core_manager_destroy(marie);
+	linphone_core_manager_destroy(pauline);
+}
+
+static void recovered_call_on_network_switch_in_early_media_1 (void) {
+	recovered_call_on_network_switch_in_early_media_base(TRUE);
+}
+
+static void recovered_call_on_network_switch_in_early_media_2 (void) {
+	recovered_call_on_network_switch_in_early_media_base(FALSE);
+}
+
 static void _call_with_network_switch(bool_t use_ice, bool_t with_socket_refresh, bool_t enable_rtt, bool_t caller_pause, bool_t callee_pause) {
 	LinphoneCoreManager* marie = linphone_core_manager_new("marie_rc");
 	LinphoneCoreManager* pauline = linphone_core_manager_new(transport_supported(LinphoneTransportTls) ? "pauline_rc" : "pauline_tcp_rc");
@@ -6553,6 +6631,8 @@ test_t call_tests[] = {
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 2", recovered_call_on_network_switch_during_reinvite_2, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 3", recovered_call_on_network_switch_during_reinvite_3, "CallRecovery"),
 	TEST_ONE_TAG("Recovered call on network switch during re-invite 4", recovered_call_on_network_switch_during_reinvite_4, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early media 1", recovered_call_on_network_switch_in_early_media_1, "CallRecovery"),
+	TEST_ONE_TAG("Recovered call on network switch in early media 2", recovered_call_on_network_switch_in_early_media_2, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch in paused state", call_with_network_switch_in_paused_state, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch in paused by remote state", call_with_network_switch_in_paused_by_remote_state, "CallRecovery"),
 	TEST_ONE_TAG("Call with network switch and ICE", call_with_network_switch_and_ice, "ICE"),
