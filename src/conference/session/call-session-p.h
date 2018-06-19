@@ -60,7 +60,7 @@ public:
 	void pingReply ();
 	void referred (const Address &referToAddr);
 	virtual void remoteRinging ();
-	void replaceOp (SalCallOp *newOp);
+	virtual void replaceOp (SalCallOp *newOp);
 	virtual void terminated ();
 	void updated (bool isUpdate);
 	void updatedByRemote ();

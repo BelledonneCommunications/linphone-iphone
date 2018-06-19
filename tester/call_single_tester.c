@@ -5324,6 +5324,7 @@ static void recovered_call_on_network_switch_in_early_media_base (bool_t callerL
 		}
 
 		wait_for_until(marie->lc, pauline->lc, NULL, 1, 2000);
+		liblinphone_tester_check_rtcp(marie, pauline);
 
 		if (linphone_core_get_current_call(pauline->lc)
 			&& (linphone_call_get_state(linphone_core_get_current_call(pauline->lc)) ==  LinphoneCallIncomingEarlyMedia)

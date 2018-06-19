@@ -320,6 +320,12 @@ void MediaSessionPrivate::remoteRinging () {
 	}
 }
 
+void MediaSessionPrivate::replaceOp (SalCallOp *newOp) {
+	CallSessionPrivate::replaceOp(newOp);
+	stopStreams();
+	initializeStreams();
+}
+
 int MediaSessionPrivate::resumeAfterFailedTransfer () {
 	L_Q();
 	if (automaticallyPaused && (state == CallSession::State::Pausing))

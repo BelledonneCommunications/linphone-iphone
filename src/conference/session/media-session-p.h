@@ -46,6 +46,7 @@ public:
 	void pauseForTransfer ();
 	void pausedByRemote ();
 	void remoteRinging () override;
+	void replaceOp (SalCallOp *newOp) override;
 	int resumeAfterFailedTransfer ();
 	void resumed ();
 	void startPendingRefer ();
