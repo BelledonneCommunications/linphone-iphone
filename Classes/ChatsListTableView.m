@@ -141,16 +141,19 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
     while (sorted) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         LinphoneChatRoom *cr = sorted->data;
-        const LinphoneAddress *address = linphone_chat_room_get_peer_address(cr);
+        const LinphoneAddress *peer_address = linphone_chat_room_get_peer_address(cr);
+        const LinphoneAddress *local_address = linphone_chat_room_get_local_address(cr);
         NSString *display;
-        [dict setObject:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)] substringFromIndex:4]
-                 forKey:@"address"];
+        [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(peer_address)]
+                 forKey:@"peer"];
+        [dict setObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(local_address)]
+                 forKey:@"local"];
         if (linphone_chat_room_get_conference_address(cr))
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
         else {
-            display = [NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)];
-            if ([FastAddressBook imageForAddress:address])
-                [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:address]
+            display = [NSString stringWithUTF8String:linphone_address_get_display_name(peer_address)?:linphone_address_get_username(peer_address)];
+            if ([FastAddressBook imageForAddress:peer_address])
+                [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:peer_address]
                                                                   withMaxWidth:200
                                                                   andMaxHeight:200],
                                                           1)

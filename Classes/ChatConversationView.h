@@ -40,6 +40,7 @@
 
 @property(nonatomic) LinphoneChatRoom *chatRoom;
 @property(nonatomic) LinphoneChatRoomCbs *chatRoomCbs;
+@property(nonatomic) Boolean markAsRead;
 
 @property(weak, nonatomic) IBOutlet UIIconButton *backButton;
 @property(nonatomic, strong) IBOutlet ChatConversationTableView *tableController;

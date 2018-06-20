@@ -25,7 +25,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dGY-Wo-tng">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60.5"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="60" id="a43-Du-y1b"/>
                                                     <constraint firstAttribute="height" constant="60" id="gNd-AG-oLn"/>
@@ -35,8 +35,8 @@
                                                     <action selector="firstButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="n6M-cY-cWU"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpJ-Wl-BT1">
-                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fpJ-Wl-BT1">
+                                                <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
@@ -50,7 +50,7 @@
                                         <rect key="frame" x="76" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aiZ-1q-Ssd">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="0Me-vh-jt4"/>
                                                     <constraint firstAttribute="height" constant="60" id="9hj-Pa-s8F"/>
@@ -61,8 +61,8 @@
                                                     <action selector="secondButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="e09-4G-NJf"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fEo-fa-uyD">
-                                                <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fEo-fa-uyD">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
@@ -76,7 +76,7 @@
                                         <rect key="frame" x="152" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VgA-lq-CQL">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="60" id="TEZ-z7-Yce"/>
                                                     <constraint firstAttribute="height" constant="60" id="rtD-OM-bmH"/>
@@ -86,8 +86,8 @@
                                                     <action selector="thirdButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="OtO-nr-X1J"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM6-aO-Pes">
-                                                <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zM6-aO-Pes">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>
@@ -101,7 +101,7 @@
                                         <rect key="frame" x="228" y="0.0" width="60" height="87.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7je-G1-IfQ">
-                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60.5"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="60" id="Pm8-lw-PB4"/>
                                                     <constraint firstAttribute="height" constant="60" id="SYf-Yl-EDf"/>
@@ -111,8 +111,8 @@
                                                     <action selector="fourthButtonTapped" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="a2u-BT-Fkp"/>
                                                 </connections>
                                             </button>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bpY-VL-FDz">
-                                                <rect key="frame" x="0.0" y="70.5" width="60" height="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text=" " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bpY-VL-FDz">
+                                                <rect key="frame" x="0.0" y="70" width="60" height="17.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                 <nil key="highlightedColor"/>

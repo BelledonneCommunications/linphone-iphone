@@ -84,7 +84,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
+    _markAsRead = TRUE;
 	// if we use fragments, remove back button
 	if (IPAD) {
 		_backButton.hidden = YES;
@@ -208,8 +208,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (_chatRoom)
+	if (_chatRoom && _markAsRead)
 		[ChatConversationView markAsRead:_chatRoom];
+
+    _markAsRead = TRUE;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {

@@ -18,11 +18,13 @@
     NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
     [_imgs removeAllObjects];
     [_addresses removeAllObjects];
+    [_localAddress removeAllObjects];
     [_displayNames removeAllObjects];
     [_isConf removeAllObjects];
     NSMutableArray *chatrooms = [NSMutableArray arrayWithArray:[mySharedDefaults objectForKey:@"chatrooms"]];
     for (NSDictionary *dict in chatrooms) {
-        [_addresses addObject:[dict objectForKey:@"address"]];
+        [_addresses addObject:[dict objectForKey:@"peer"]];
+        [_localAddress addObject:[dict objectForKey:@"local"]];
         [_displayNames addObject:[dict objectForKey:@"display"]];
         [_isConf addObject:(NSNumber *)[dict objectForKey:@"nbParticipants"]];
         [_imgs addObject:[dict objectForKey:@"img"]?:[NSNull null]];
@@ -66,6 +68,7 @@
     }
     
     _addresses = [NSMutableArray array];
+    _localAddress = [NSMutableArray array];
     _displayNames = [NSMutableArray array];
     _imgs = [NSMutableArray array];
     _isConf = [NSMutableArray array];
@@ -94,23 +97,23 @@
                  completionHandler:nil];
 }
 
-- (void)launchOnChatConversationViewWithAddress:(NSString *)chatAddress {
-    [self launchAppWithURL:[NSURL URLWithString:[@"linphone-widget://chatroom/show?" stringByAppendingString:chatAddress]]];
+- (void)launchOnChatConversationViewWithPeerAddress:(NSString *)peerAddress andLocalAddress:(NSString *)localAddress {
+    [self launchAppWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"linphone-widget://chatroom/show?peer=%@&local=%@", peerAddress, localAddress]]];
 }
 
 - (IBAction)firstButtonTapped {
-    [self launchOnChatConversationViewWithAddress:_addresses[0]];
+    [self launchOnChatConversationViewWithPeerAddress:_addresses[0] andLocalAddress:_localAddress[0]];
 }
 
 - (IBAction)secondButtonTapped {
-    [self launchOnChatConversationViewWithAddress:_addresses[1]];
+    [self launchOnChatConversationViewWithPeerAddress:_addresses[1] andLocalAddress:_localAddress[1]];
 }
 
 - (IBAction)thirdButtonTapped {
-    [self launchOnChatConversationViewWithAddress:_addresses[2]];
+    [self launchOnChatConversationViewWithPeerAddress:_addresses[2] andLocalAddress:_localAddress[2]];
 }
 
 - (IBAction)fourthButtonTapped {
-    [self launchOnChatConversationViewWithAddress:_addresses[3]];
+    [self launchOnChatConversationViewWithPeerAddress:_addresses[3] andLocalAddress:_localAddress[3]];
 }
 @end
