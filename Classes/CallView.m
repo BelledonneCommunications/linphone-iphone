@@ -138,8 +138,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_waitView.hidden = TRUE;
 	LinphoneManager.instance.nextCallIsTransfer = NO;
 
-	[self updateUnreadMessage:FALSE];
-
 	// Update on show
 	[self hideRoutes:TRUE animated:FALSE];
 	[self hideOptions:TRUE animated:FALSE];
@@ -233,6 +231,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
 	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
 }
