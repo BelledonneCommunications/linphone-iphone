@@ -359,12 +359,12 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
                                                       LOGE(@"Can't read image");
                                                       dispatch_semaphore_signal(sema);
                                               }];
-        });
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+            });
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
 
-        size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
-        //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
-        size.height += CELL_MESSAGE_X_MARGIN;
+            size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
+            //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
+            size.height += CELL_MESSAGE_X_MARGIN;
         }
 	}
     
