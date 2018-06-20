@@ -233,7 +233,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-	[self updateUnreadMessage:NO];
 	[self previewTouchLift];
 	[self hideStatusBar:!videoHidden && (_nameLabel.alpha <= 0.f)];
 }
