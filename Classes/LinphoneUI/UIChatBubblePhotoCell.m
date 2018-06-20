@@ -191,29 +191,29 @@
                     [_messageImageView startLoading];
                     __block LinphoneChatMessage *achat = self.message;
                     [LinphoneManager.instance.photoLibrary assetForURL:imageUrl resultBlock:^(ALAsset *asset) {                                                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),                                                                                                                                                                ^(void) {
-                                                                                                                                                                                              if (achat != self.message) // Avoid glitch and scrolling
-                                                                                                                                                                                                  return;
-                                                                                                                                                                                              
-                                                                                                                                                                                              if (asset) {
-                                                                                                                                                                                                  [self loadAsset:asset];
-                                                                                                                                                                                              }
-                                                                                                                                                                                              else {
-                                                                                                                                                                                                  [LinphoneManager.instance.photoLibrary
-                                                                                                                                                                                                   enumerateGroupsWithTypes:ALAssetsGroupAll
-                                                                                                                                                                                                   usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                                                                                                                                                                                                       [group enumerateAssetsWithOptions:NSEnumerationReverse
-                                                                                                                                                                                                                              usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                                                                                                                                                                                                                                  if([result.defaultRepresentation.url isEqual:imageUrl]) {
-                                                                                                                                                                                                                                      [self loadAsset:result];
-                                                                                                                                                                                                                                      *stop = YES;
-                                                                                                                                                                                                                                  }
-                                                                                                                                                                                                                              }];
-                                                                                                                                                                                                   }
-                                                                                                                                                                                                   failureBlock:^(NSError *error) {
-                                                                                                                                                                                                       LOGE(@"Error: Cannot load asset from photo stream - %@", [error localizedDescription]);
-                                                                                                                                                                                                   }];
-                                                                                                                                                                                              }
-                                                                                                                                                                                          });
+                              if (achat != self.message) // Avoid glitch and scrolling
+                                  return;
+                        
+                              if (asset) {
+                                  [self loadAsset:asset];
+                              }
+                              else {
+                                  [LinphoneManager.instance.photoLibrary
+                                   enumerateGroupsWithTypes:ALAssetsGroupAll
+                                   usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                                       [group enumerateAssetsWithOptions:NSEnumerationReverse
+                                                              usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                                                                  if([result.defaultRepresentation.url isEqual:imageUrl]) {
+                                                                      [self loadAsset:result];
+                                                                      *stop = YES;
+                                                                  }
+                                                              }];
+                                   }
+                                   failureBlock:^(NSError *error) {
+                                       LOGE(@"Error: Cannot load asset from photo stream - %@", [error localizedDescription]);
+                                   }];
+                              }
+                          });
                     } failureBlock:^(NSError *error) {
                         LOGE(@"Can't read image");
                     }];
