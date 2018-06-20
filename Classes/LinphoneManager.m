@@ -1243,6 +1243,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 			 }];
 	}
     [ChatsListTableView saveDataToUserDefaults];
+    [HistoryListTableView saveDataToUserDefaults];
 }
 
 static void linphone_iphone_message_received(LinphoneCore *lc, LinphoneChatRoom *room, LinphoneChatMessage *message) {

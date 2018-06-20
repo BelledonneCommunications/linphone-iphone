@@ -7,7 +7,6 @@
 
 #import "TodayViewController.h"
 #import <NotificationCenter/NotificationCenter.h>
-#import "linphone/linphonecore.h"
 
 @interface TodayViewController () <NCWidgetProviding>
 
@@ -17,17 +16,16 @@
 
 - (void)loadData {    
     NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
-    [_chatrooms removeAllObjects];
     [_imgs removeAllObjects];
     [_addresses removeAllObjects];
     [_displayNames removeAllObjects];
     [_isConf removeAllObjects];
-    _imgs = [NSMutableDictionary dictionaryWithDictionary:[mySharedDefaults objectForKey:@"imageData"]];
-    _chatrooms = [NSMutableArray arrayWithArray:[mySharedDefaults objectForKey:@"chatrooms"]];
-    for (NSDictionary *dict in _chatrooms) {
+    NSMutableArray *chatrooms = [NSMutableArray arrayWithArray:[mySharedDefaults objectForKey:@"chatrooms"]];
+    for (NSDictionary *dict in chatrooms) {
         [_addresses addObject:[dict objectForKey:@"address"]];
         [_displayNames addObject:[dict objectForKey:@"display"]];
         [_isConf addObject:(NSNumber *)[dict objectForKey:@"nbParticipants"]];
+        [_imgs addObject:[dict objectForKey:@"img"]?:[NSNull null]];
     }
 }
 
@@ -37,9 +35,8 @@
         UIStackView *stack = _stackViews[i];
         UIButton *button = stack.subviews[0];
         UILabel *name = stack.subviews[1];
-        if ([self.imgs.allKeys containsObject:_addresses[i]]) {
-            NSData *imgData = [_imgs objectForKey:_addresses[i]];
-            [button setImage:[UIImage imageWithData:imgData] forState:UIControlStateNormal];
+        if (_imgs[i] != [NSNull null]) {
+            [button setImage:[UIImage imageWithData:_imgs[i]] forState:UIControlStateNormal];
         } else if (((NSNumber *)_isConf[i]).boolValue) {
             [button setImage:[UIImage imageNamed:@"chat_group_avatar.png"] forState:UIControlStateNormal];
         }
@@ -68,10 +65,9 @@
         imageView.clipsToBounds = YES;
     }
     
-    _chatrooms = [NSMutableArray array];
     _addresses = [NSMutableArray array];
     _displayNames = [NSMutableArray array];
-    _imgs = [NSMutableDictionary dictionary];
+    _imgs = [NSMutableArray array];
     _isConf = [NSMutableArray array];
 }
 
@@ -79,7 +75,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     [_imgs removeAllObjects];
-    [_chatrooms removeAllObjects];
 }
 
 - (void)widgetPerformUpdateWithCompletionHandler:(void (^)(NCUpdateResult))completionHandler {

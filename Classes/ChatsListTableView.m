@@ -143,14 +143,26 @@ static int sorted_history_comparison(LinphoneChatRoom *to_insert, LinphoneChatRo
         LinphoneChatRoom *cr = sorted->data;
         const LinphoneAddress *address = linphone_chat_room_get_peer_address(cr);
         NSString *display;
-        [dict setObject:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)] substringFromIndex:4] forKey:@"address"];
+        [dict setObject:[[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)] substringFromIndex:4]
+                 forKey:@"address"];
         if (linphone_chat_room_get_conference_address(cr))
             display = [NSString stringWithUTF8String:linphone_chat_room_get_subject(cr)];
-        else
+        else {
             display = [NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)];
-        [dict setObject:display forKey:@"display"];
-        [dict setObject:[NSNumber numberWithBool:linphone_chat_room_get_conference_address(cr)] forKey:@"nbParticipants"];
+            if ([FastAddressBook imageForAddress:address])
+                [dict setObject:UIImageJPEGRepresentation([UIImage resizeImage:[FastAddressBook imageForAddress:address]
+                                                                  withMaxWidth:200
+                                                                  andMaxHeight:200],
+                                                          1)
+                         forKey:@"img"];
+        }
+        [dict setObject:display
+                 forKey:@"display"];
+        [dict setObject:[NSNumber numberWithBool:linphone_chat_room_get_conference_address(cr)]
+                 forKey:@"nbParticipants"];
         [addresses addObject:dict];
+        if (addresses.count >= 4) //send no more data than needed
+            break;
         sorted = sorted->next;
     }
     

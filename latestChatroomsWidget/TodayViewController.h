@@ -9,11 +9,10 @@
 
 @interface TodayViewController : UIViewController
 @property (strong, nonatomic) IBOutletCollection(UIStackView) NSArray *stackViews;
-@property (strong, nonatomic) NSMutableArray *chatrooms;
 @property (strong, nonatomic) NSMutableArray *addresses;
 @property (strong, nonatomic) NSMutableArray *displayNames;
-@property (strong, nonatomic) NSMutableDictionary *imgs;
 @property (strong, nonatomic) NSMutableArray *isConf;
+@property (strong, nonatomic) NSMutableArray *imgs;
 
 - (IBAction)firstButtonTapped;
 - (IBAction)secondButtonTapped;
