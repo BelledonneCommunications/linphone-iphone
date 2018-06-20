@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <Photos/PHAssetChangeRequest.h>
+
 #import "ChatConversationView.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -309,29 +311,29 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)saveAndSend:(UIImage *)image url:(NSURL *)url withQuality:(float)quality{
 	// photo from Camera, must be saved first
 	if (url == nil) {
-		[LinphoneManager.instance.photoLibrary
-			writeImageToSavedPhotosAlbum:image.CGImage
-							 orientation:(ALAssetOrientation)[image imageOrientation]
-						 completionBlock:^(NSURL *assetURL, NSError *error) {
-						   if (error) {
-							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							   
-							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-																								message:NSLocalizedString(@"Cannot write image to photo library",
-																														  nil)
-																						 preferredStyle:UIAlertControllerStyleAlert];
-							   
-							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																					   style:UIAlertActionStyleDefault
-																					 handler:^(UIAlertAction * action) {}];
-							   
-							   [errView addAction:defaultAction];
-							   [self presentViewController:errView animated:YES completion:nil];
-						   } else {
-							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-							   [self startImageUpload:image url:assetURL withQuality:quality];
-						   }
-						 }];
+        __block NSURL *assetURL = nil;
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (success) {
+                LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
+                [self startImageUpload:image url:assetURL withQuality:quality];
+            } else {
+                LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+                
+                UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+                                                                                 message:NSLocalizedString(@"Cannot write image to photo library",
+                                                                                                           nil)
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+                
+                UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                        style:UIAlertActionStyleDefault
+                                                                      handler:^(UIAlertAction * action) {}];
+                
+                [errView addAction:defaultAction];
+                [self presentViewController:errView animated:YES completion:nil];
+            }
+        }];
 	} else {
 		[self startImageUpload:image url:url withQuality:quality];
 	}
