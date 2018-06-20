@@ -43,8 +43,16 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 		/*hack to disable content checking for list notify */
 		BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content), notify_content);
 	}
-	mgr=get_manager(lc);
+	mgr = get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
+}
+
+void linphone_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content) {
+	LinphoneCoreManager *mgr = get_manager(lc);
+	if (!mgr->decline_subscribe)
+		linphone_event_accept_subscription(lev);
+	else
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 }
 
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
@@ -67,10 +75,6 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		case LinphoneSubscriptionIncomingReceived:
 			counters->number_of_LinphoneSubscriptionIncomingReceived++;
 			mgr->lev=lev;
-			if (!mgr->decline_subscribe)
-				linphone_event_accept_subscription(lev);
-			else
-				linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		break;
 		case LinphoneSubscriptionOutgoingProgress:
 			counters->number_of_LinphoneSubscriptionOutgoingProgress++;
