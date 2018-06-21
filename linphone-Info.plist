@@ -104,7 +104,7 @@
 	<array>
 		<dict>
 			<key>UIApplicationShortcutItemIconType</key>
-			<string>UIApplicationShortcutIconTypeMessage</string>
+			<string>UIApplicationShortcutIconTypeCompose</string>
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>New Message</string>
 			<key>UIApplicationShortcutItemType</key>
