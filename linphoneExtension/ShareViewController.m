@@ -26,7 +26,6 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
         for (NSItemProvider *provider in item.attachments) {
             NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName:groupName];
         
-            NSString *typeIdentifier;
             if ([provider hasItemConformingToTypeIdentifier:@"public.jpeg"]) {
                 [self loadItem:provider typeIdentifier:@"public.jpeg" defaults:defaults key:@"img"];
             } else if ([provider hasItemConformingToTypeIdentifier:@"public.url"]) {
@@ -37,9 +36,13 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
                 [self loadItem:provider typeIdentifier:@"public.plain-text" defaults:defaults key:@"text"];
             } else  if ([provider hasItemConformingToTypeIdentifier:@"com.adobe.pdf"]) {
                 [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults key:@"web"];
-            } else{
+            }
+            /*else  if ([provider hasItemConformingToTypeIdentifier:@"public.png"]) {
+                [self loadItem:provider typeIdentifier:@"public.png" defaults:defaults key:@"img"];
+            }*/
+            else{
                 NSLog(@"Unkown itemprovider = %@", provider);
-                typeIdentifier = nil;
+                [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
             }
         }
     }
@@ -61,9 +64,20 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
             } else {
                 NSLog(@"NSExtensionItem Error, provider = %@", provider);
                 [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
-                return;
             }
-        } else {
+        }
+        else if ([(NSObject*)item isKindOfClass:[UIImage class]]) {
+            NSData *imgData = UIImagePNGRepresentation((UIImage*)item);
+            if (imgData) {
+                NSDictionary *dict = @{@"nsData" : imgData,
+                                      };
+                [defaults setObject:dict forKey:key];
+            } else {
+                NSLog(@"NSExtensionItem Error, provider = %@", provider);
+                [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+            }
+        }
+        else {
             NSDictionary *dict = @{@"name" : self.contentText};
             [defaults setObject:dict forKey:key];
         }
