@@ -20,7 +20,6 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <AVFoundation/AVCaptureDevice.h>
 #import <AVFoundation/AVFoundation.h>
-#import <Photos/Photos.h>
 #import "ImagePickerView.h"
 #import "PhoneMainView.h"
 
@@ -166,9 +165,21 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (image == nil) {
 		image = [info objectForKey:UIImagePickerControllerOriginalImage];
 	}
-	if (image != nil && imagePickerDelegate != nil) {
-		[imagePickerDelegate imagePickerDelegateImage:image info:info];
-	}
+    if (image != nil) {
+        if (![info objectForKey:UIImagePickerControllerReferenceURL]) {
+        //Saving image. Supports picture only, no video
+        //Maybe add a completion target to send the saved image to, like self, and we would call it manually if the image was not taken.
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(savedImage:didFinishSavingWithError:contextInfo:), (__bridge void *)info);
+        } else {
+            [self savedImage:image didFinishSavingWithError:nil contextInfo:(__bridge void *)info];
+        }
+    }
+}
+
+- (void)savedImage:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    if (imagePickerDelegate != nil) {
+        [imagePickerDelegate imagePickerDelegateImage:image info:(__bridge NSDictionary *)contextInfo];
+    }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
