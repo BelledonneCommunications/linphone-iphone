@@ -66,6 +66,18 @@
 		61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 61AE365020C00B370089D9D3 /* MainInterface.storyboard */; };
 		61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		61F1997520C6B1D5006B069A /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 61F1996E20C6B1D5006B069A /* AVKit.framework */; };
+		5E10ED4820D00630002BF6FE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
+		5E10ED4920D006C9002BF6FE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
+		5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
+		5E31290520D7A37E00CF3AAE /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31290420D7A37E00CF3AAE /* TodayViewController.m */; };
+		5E31290820D7A37E00CF3AAE /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */; };
+		5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5E31291320D7AAA100CF3AAE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
+		5E31291A20D7AAAD00CF3AAE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
+		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
+		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
+		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
+		5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		630589E71B4E810900EFAE36 /* ChatTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589DF1B4E810900EFAE36 /* ChatTester.m */; };
 		630589E81B4E810900EFAE36 /* ContactsTester.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E11B4E810900EFAE36 /* ContactsTester.m */; };
 		630589EA1B4E810900EFAE36 /* LinphoneTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 630589E41B4E810900EFAE36 /* LinphoneTestCase.m */; };
@@ -822,6 +834,20 @@
 			remoteGlobalIDString = 61AE364A20C00B370089D9D3;
 			remoteInfo = linphoneExtension;
 		};
+		5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5E3128FF20D7A37E00CF3AAE;
+			remoteInfo = latestChatroomsWidget;
+		};
+		5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5EEE8F9920C80C23006E4176;
+			remoteInfo = latestCallsWidget;
+		};
 		630589FC1B4E816A00EFAE36 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 630589F21B4E816900EFAE36 /* KIF.xcodeproj */;
@@ -888,13 +914,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		61AE366220C00B370089D9D3 /* Embed App Extensions */ = {
+		5EF0C35020C806A5005081B0 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				61AE365620C00B370089D9D3 /* linphoneExtension.appex in Embed App Extensions */,
+				5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */,
+				5EEE8FA620C80C23006E4176 /* latestCallsWidget.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1043,6 +1071,19 @@
 		61AE365320C00B370089D9D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		61AE366320C00C810089D9D3 /* linphoneExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = linphoneExtension.entitlements; sourceTree = "<group>"; };
 		61F1996E20C6B1D5006B069A /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		5E30780420D8F00D00256DAE /* latestChatroomsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestChatroomsWidget.entitlements; sourceTree = "<group>"; };
+		5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = latestChatroomsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E31290320D7A37E00CF3AAE /* TodayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TodayViewController.h; sourceTree = "<group>"; };
+		5E31290420D7A37E00CF3AAE /* TodayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TodayViewController.m; sourceTree = "<group>"; };
+		5E31290720D7A37E00CF3AAE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		5E31290920D7A37E00CF3AAE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = latestCallsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EEE8F9D20C80C23006E4176 /* TodayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TodayViewController.h; sourceTree = "<group>"; };
+		5EEE8F9E20C80C23006E4176 /* TodayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TodayViewController.m; sourceTree = "<group>"; };
+		5EEE8FA120C80C23006E4176 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		5EEE8FA320C80C23006E4176 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestCallsWidget.entitlements; sourceTree = "<group>"; };
+		5EF0C33820C806A5005081B0 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		630589DE1B4E810900EFAE36 /* ChatTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatTester.h; sourceTree = "<group>"; };
 		630589DF1B4E810900EFAE36 /* ChatTester.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatTester.m; sourceTree = "<group>"; };
 		630589E01B4E810900EFAE36 /* ContactsTester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsTester.h; sourceTree = "<group>"; };
@@ -2016,6 +2057,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5E3128FD20D7A37E00CF3AAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EEE8F9720C80C23006E4176 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F08F118119C09C6A007D70C2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2214,6 +2271,8 @@
 				F08F118419C09C6A007D70C2 /* liblinphoneTesterTests.xctest */,
 				F0F952001A6AEB1000254160 /* linphoneTests.xctest */,
 				61AE364B20C00B370089D9D3 /* linphoneExtension.appex */,
+				5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */,
+				5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2329,6 +2388,8 @@
 				8C23BCB71D82AAC3005F19BB /* linphone.entitlements */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				61AE364C20C00B370089D9D3 /* linphoneExtension */,
+				5EEE8F9C20C80C23006E4176 /* latestCallsWidget */,
+				5E31290220D7A37E00CF3AAE /* latestChatroomsWidget */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				F0938158188E629800A55DFA /* iTunesArtwork */,
 				63058A0C1B4E821E00EFAE36 /* LiblinphoneTester */,
@@ -2419,6 +2480,7 @@
 				F0181B6B18BF7B1200A9A357 /* SenTestingKit.framework */,
 				2264B6D111200342002C2C53 /* SystemConfiguration.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				5EF0C33820C806A5005081B0 /* NotificationCenter.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -2433,6 +2495,30 @@
 				61AE365320C00B370089D9D3 /* Info.plist */,
 			);
 			path = linphoneExtension;
+			sourceTree = "<group>";
+		};
+		5E31290220D7A37E00CF3AAE /* latestChatroomsWidget */ = {
+			isa = PBXGroup;
+			children = (
+				5E30780420D8F00D00256DAE /* latestChatroomsWidget.entitlements */,
+				5E31290320D7A37E00CF3AAE /* TodayViewController.h */,
+				5E31290420D7A37E00CF3AAE /* TodayViewController.m */,
+				5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */,
+				5E31290920D7A37E00CF3AAE /* Info.plist */,
+			);
+			path = latestChatroomsWidget;
+			sourceTree = "<group>";
+		};
+		5EEE8F9C20C80C23006E4176 /* latestCallsWidget */ = {
+			isa = PBXGroup;
+			children = (
+				5EEE8FB320C81334006E4176 /* latestCallsWidget.entitlements */,
+				5EEE8F9D20C80C23006E4176 /* TodayViewController.h */,
+				5EEE8F9E20C80C23006E4176 /* TodayViewController.m */,
+				5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */,
+				5EEE8FA320C80C23006E4176 /* Info.plist */,
+			);
+			path = latestCallsWidget;
 			sourceTree = "<group>";
 		};
 		630589DD1B4E810900EFAE36 /* TestsLinphone */ = {
@@ -2762,8 +2848,8 @@
 				633FECA61D3CD5570014B822 /* edit_list_disabled.png */,
 				633FECA71D3CD5570014B822 /* edit_list_disabled@2x.png */,
 				633FECA81D3CD5570014B822 /* footer_chat_default.png */,
-				633FECA91D3CD5570014B822 /* footer_chat_default@2x.png */,
 				633FECAA1D3CD5570014B822 /* footer_chat_disabled.png */,
+				633FECA91D3CD5570014B822 /* footer_chat_default@2x.png */,
 				633FECAB1D3CD5570014B822 /* footer_chat_disabled@2x.png */,
 				633FECAC1D3CD5570014B822 /* footer_contacts_default.png */,
 				633FECAD1D3CD5570014B822 /* footer_contacts_default@2x.png */,
@@ -3220,12 +3306,14 @@
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				8CDC89061EAF89A8006B5652 /* Embed Frameworks */,
 				8CB438A61EE6A65D0006F944 /* ShellScript */,
-				61AE366220C00B370089D9D3 /* Embed App Extensions */,
+				5EF0C35020C806A5005081B0 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				61AE365520C00B370089D9D3 /* PBXTargetDependency */,
+				5EEE8FA520C80C23006E4176 /* PBXTargetDependency */,
+				5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */,
 			);
 			name = linphone;
 			productName = linphone;
@@ -3239,14 +3327,48 @@
 				61AE364720C00B370089D9D3 /* Sources */,
 				61AE364820C00B370089D9D3 /* Frameworks */,
 				61AE364920C00B370089D9D3 /* Resources */,
+				);
+				buildRules = (
+				);
+				dependencies = (
+				);
+				name = linphoneExtension;
+				productName = linphoneExtension;
+				productReference = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */;
+				productType = "com.apple.product-type.app-extension";
+			};
+		5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E31290D20D7A37E00CF3AAE /* Build configuration list for PBXNativeTarget "latestChatroomsWidget" */;
+			buildPhases = (
+				5E3128FC20D7A37E00CF3AAE /* Sources */,
+				5E3128FD20D7A37E00CF3AAE /* Frameworks */,
+				5E3128FE20D7A37E00CF3AAE /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = linphoneExtension;
-			productName = linphoneExtension;
-			productReference = 61AE364B20C00B370089D9D3 /* linphoneExtension.appex */;
+			name = latestChatroomsWidget;
+			productName = latestChatroomsWidget;
+			productReference = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		5EEE8F9920C80C23006E4176 /* latestCallsWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5EEE8FA720C80C24006E4176 /* Build configuration list for PBXNativeTarget "latestCallsWidget" */;
+			buildPhases = (
+				5EEE8F9620C80C23006E4176 /* Sources */,
+				5EEE8F9720C80C23006E4176 /* Frameworks */,
+				5EEE8F9820C80C23006E4176 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = latestCallsWidget;
+			productName = latestCallsWidget;
+			productReference = 5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		F08F118319C09C6A007D70C2 /* liblinphoneTesterTests */ = {
@@ -3340,6 +3462,26 @@
 							};
 						};
 					};
+					5E3128FF20D7A37E00CF3AAE = {
+						CreatedOnToolsVersion = 9.4;
+						DevelopmentTeam = Z2V957B3D6;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
+					5EEE8F9920C80C23006E4176 = {
+						CreatedOnToolsVersion = 9.4;
+						DevelopmentTeam = Z2V957B3D6;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
+					};
 					F08F118319C09C6A007D70C2 = {
 						DevelopmentTeam = Z2V957B3D6;
 						TestTargetID = F0BB8BD41936208100974404;
@@ -3392,6 +3534,8 @@
 				F0BB8BD41936208100974404 /* liblinphoneTester */,
 				F08F118319C09C6A007D70C2 /* liblinphoneTesterTests */,
 				61AE364A20C00B370089D9D3 /* linphoneExtension */,
+				5EEE8F9920C80C23006E4176 /* latestCallsWidget */,
+				5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -3985,6 +4129,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				61AE365220C00B370089D9D3 /* MainInterface.storyboard in Resources */,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+		5E3128FE20D7A37E00CF3AAE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E31291A20D7AAAD00CF3AAE /* chat_group_avatar.png in Resources */,
+				5E31291320D7AAA100CF3AAE /* avatar.png in Resources */,
+				5E31290820D7A37E00CF3AAE /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EEE8F9820C80C23006E4176 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E10ED4920D006C9002BF6FE /* chat_group_avatar.png in Resources */,
+				5E10ED4820D00630002BF6FE /* avatar.png in Resources */,
+				5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4215,6 +4379,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				61AE364F20C00B370089D9D3 /* ShareViewController.m in Sources */,
+				);
+				runOnlyForDeploymentPostprocessing = 0;
+			};
+		5E3128FC20D7A37E00CF3AAE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E31290520D7A37E00CF3AAE /* TodayViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5EEE8F9620C80C23006E4176 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4261,6 +4441,16 @@
 			target = 61AE364A20C00B370089D9D3 /* linphoneExtension */;
 			targetProxy = 61AE365420C00B370089D9D3 /* PBXContainerItemProxy */;
 		};
+		5E31290B20D7A37E00CF3AAE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5E3128FF20D7A37E00CF3AAE /* latestChatroomsWidget */;
+			targetProxy = 5E31290A20D7A37E00CF3AAE /* PBXContainerItemProxy */;
+		};
+		5EEE8FA520C80C23006E4176 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5EEE8F9920C80C23006E4176 /* latestCallsWidget */;
+			targetProxy = 5EEE8FA420C80C23006E4176 /* PBXContainerItemProxy */;
+		};
 		63058A4E1B4E832500EFAE36 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = KIF;
@@ -4293,6 +4483,22 @@
 			isa = PBXVariantGroup;
 			children = (
 				61AE365120C00B370089D9D3 /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5E31290720D7A37E00CF3AAE /* Base */,
+			);
+			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5EEE8FA120C80C23006E4176 /* Base */,
 			);
 			name = MainInterface.storyboard;
 			sourceTree = "<group>";
@@ -5157,6 +5363,165 @@
 			name = Distribution;
 		};
 		61AE365720C00B370089D9D3 /* Debug */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ANALYZER_NONNULL = YES;
+			CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+			CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+			CLANG_CXX_LIBRARY = "libc++";
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+			CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+			CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+			CODE_SIGN_IDENTITY = "iPhone Developer";
+			"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+			CODE_SIGN_STYLE = Automatic;
+			COPY_PHASE_STRIP = NO;
+			DEBUG_INFORMATION_FORMAT = dwarf;
+			DEVELOPMENT_TEAM = Z2V957B3D6;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GCC_DYNAMIC_NO_PIC = NO;
+			GCC_OPTIMIZATION_LEVEL = 0;
+			GCC_PREPROCESSOR_DEFINITIONS = (
+				"DEBUG=1",
+				"$(inherited)",
+			);
+			GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+			GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+			GCC_WARN_UNUSED_FUNCTION = YES;
+			INFOPLIST_FILE = linphoneExtension/Info.plist;
+			IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+			MTL_ENABLE_DEBUG_INFO = YES;
+			PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+			PRODUCT_NAME = "$(TARGET_NAME)";
+			PROVISIONING_PROFILE = "";
+			SKIP_INSTALL = YES;
+			TARGETED_DEVICE_FAMILY = 1;
+		};
+		name = Debug;
+	};
+	61AE365820C00B370089D9D3 /* Release */ = {
+	isa = XCBuildConfiguration;
+	buildSettings = {
+		ALWAYS_SEARCH_USER_PATHS = NO;
+		CLANG_ANALYZER_NONNULL = YES;
+		CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+		CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+		CLANG_CXX_LIBRARY = "libc++";
+		CLANG_ENABLE_MODULES = YES;
+		CLANG_ENABLE_OBJC_ARC = YES;
+		CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+		CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+		CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+		CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+		CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+		CODE_SIGN_IDENTITY = "iPhone Developer";
+		"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+		CODE_SIGN_STYLE = Automatic;
+		COPY_PHASE_STRIP = NO;
+		DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+		DEVELOPMENT_TEAM = Z2V957B3D6;
+		ENABLE_NS_ASSERTIONS = NO;
+		GCC_C_LANGUAGE_STANDARD = gnu11;
+		GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+		GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+		GCC_WARN_UNUSED_FUNCTION = YES;
+		INFOPLIST_FILE = linphoneExtension/Info.plist;
+		IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+		LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+		MTL_ENABLE_DEBUG_INFO = NO;
+		PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+		PRODUCT_NAME = "$(TARGET_NAME)";
+		SKIP_INSTALL = YES;
+		TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		61AE365920C00B370089D9D3 /* Distribution */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ANALYZER_NONNULL = YES;
+			CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+			CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+			CLANG_CXX_LIBRARY = "libc++";
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+			CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+			CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+			CODE_SIGN_IDENTITY = "iPhone Developer";
+			"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+			CODE_SIGN_STYLE = Automatic;
+			COPY_PHASE_STRIP = NO;
+			DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+			DEVELOPMENT_TEAM = Z2V957B3D6;
+			ENABLE_NS_ASSERTIONS = NO;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+			GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+			GCC_WARN_UNUSED_FUNCTION = YES;
+			INFOPLIST_FILE = linphoneExtension/Info.plist;
+			IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+			MTL_ENABLE_DEBUG_INFO = NO;
+			PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+			PRODUCT_NAME = "$(TARGET_NAME)";
+			PROVISIONING_PROFILE = "";
+			SKIP_INSTALL = YES;
+			TARGETED_DEVICE_FAMILY = 1;
+			VALIDATE_PRODUCT = YES;
+		};
+		name = Distribution;
+	};
+		61AE365A20C00B370089D9D3 /* DistributionAdhoc */ = {
+		isa = XCBuildConfiguration;
+		buildSettings = {
+			ALWAYS_SEARCH_USER_PATHS = NO;
+			CLANG_ANALYZER_NONNULL = YES;
+			CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+			CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+			CLANG_CXX_LIBRARY = "libc++";
+			CLANG_ENABLE_MODULES = YES;
+			CLANG_ENABLE_OBJC_ARC = YES;
+			CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+			CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+			CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+			CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+			CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+			CODE_SIGN_IDENTITY = "iPhone Developer";
+			"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+			CODE_SIGN_STYLE = Automatic;
+			COPY_PHASE_STRIP = NO;
+			DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+			DEVELOPMENT_TEAM = Z2V957B3D6;
+			ENABLE_NS_ASSERTIONS = NO;
+			GCC_C_LANGUAGE_STANDARD = gnu11;
+			GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+			GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+			GCC_WARN_UNUSED_FUNCTION = YES;
+			INFOPLIST_FILE = linphoneExtension/Info.plist;
+			IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+			LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+			MTL_ENABLE_DEBUG_INFO = NO;
+			PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+			PRODUCT_NAME = "$(TARGET_NAME)";
+			PROVISIONING_PROFILE = "";
+			SKIP_INSTALL = YES;
+			TARGETED_DEVICE_FAMILY = 1;
+			VALIDATE_PRODUCT = YES;
+		};
+		name = DistributionAdhoc;
+	};
+		5E31290E20D7A37E00CF3AAE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -5166,17 +5531,24 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = latestChatroomsWidget/latestChatroomsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = Z2V957B3D6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -5187,19 +5559,20 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		61AE365820C00B370089D9D3 /* Release */ = {
+		5E31290F20D7A37E00CF3AAE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -5209,11 +5582,14 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = latestChatroomsWidget/latestChatroomsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5221,23 +5597,29 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		61AE365920C00B370089D9D3 /* Distribution */ = {
+		5E31291020D7A37E00CF3AAE /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -5247,11 +5629,14 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = latestChatroomsWidget/latestChatroomsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5259,24 +5644,29 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Distribution;
 		};
-		61AE365A20C00B370089D9D3 /* DistributionAdhoc */ = {
+		5E31291120D7A37E00CF3AAE /* DistributionAdhoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -5286,11 +5676,14 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = linphoneExtension/linphoneExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = latestChatroomsWidget/latestChatroomsWidget.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -5298,19 +5691,216 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = Z2V957B3D6;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = linphoneExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				INFOPLIST_FILE = latestChatroomsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.linphoneExtension;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestChatrooms;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = DistributionAdhoc;
+		};
+		5EEE8FA820C80C24006E4176 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = latestCallsWidget/latestCallsWidget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = latestCallsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5EEE8FA920C80C24006E4176 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = latestCallsWidget/latestCallsWidget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = latestCallsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		5EEE8FAA20C80C24006E4176 /* Distribution */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = latestCallsWidget/latestCallsWidget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = latestCallsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribution;
+		};
+		5EEE8FAB20C80C24006E4176 /* DistributionAdhoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = latestCallsWidget/latestCallsWidget.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Z2V957B3D6;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/liblinphone-sdk/apple-darwin/Frameworks",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = latestCallsWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = org.linphone.phone.widget.latestCalls;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = DistributionAdhoc;
@@ -5964,6 +6554,28 @@
 				61AE365820C00B370089D9D3 /* Release */,
 				61AE365920C00B370089D9D3 /* Distribution */,
 				61AE365A20C00B370089D9D3 /* DistributionAdhoc */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5E31290D20D7A37E00CF3AAE /* Build configuration list for PBXNativeTarget "latestChatroomsWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E31290E20D7A37E00CF3AAE /* Debug */,
+				5E31290F20D7A37E00CF3AAE /* Release */,
+				5E31291020D7A37E00CF3AAE /* Distribution */,
+				5E31291120D7A37E00CF3AAE /* DistributionAdhoc */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5EEE8FA720C80C24006E4176 /* Build configuration list for PBXNativeTarget "latestCallsWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5EEE8FA820C80C24006E4176 /* Debug */,
+				5EEE8FA920C80C24006E4176 /* Release */,
+				5EEE8FAA20C80C24006E4176 /* Distribution */,
+				5EEE8FAB20C80C24006E4176 /* DistributionAdhoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

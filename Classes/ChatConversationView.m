@@ -85,7 +85,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
+    _markAsRead = TRUE;
 	// if we use fragments, remove back button
 	if (IPAD) {
 		_backButton.hidden = YES;
@@ -247,8 +247,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notif {
-	if (_chatRoom)
+	if (_chatRoom && _markAsRead)
 		[ChatConversationView markAsRead:_chatRoom];
+
+    _markAsRead = TRUE;
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
@@ -826,6 +828,7 @@ void on_chat_room_chat_message_sent(LinphoneChatRoom *cr, const LinphoneEventLog
 	ChatConversationView *view = (__bridge ChatConversationView *)linphone_chat_room_cbs_get_user_data(linphone_chat_room_get_current_callbacks(cr));
 	[view.tableController addEventEntry:(LinphoneEventLog *)event_log];
 	[view.tableController scrollToBottom:true];
+    [ChatsListTableView saveDataToUserDefaults];
 
 	if (IPAD)
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageReceived object:view];

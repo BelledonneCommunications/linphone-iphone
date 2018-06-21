@@ -63,6 +63,18 @@
 				<string>message-linphone</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLIconFile</key>
+			<string>linphone_icon_72@2x</string>
+			<key>CFBundleURLName</key>
+			<string>org.linphone.phone</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>linphone-widget</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>0</string>

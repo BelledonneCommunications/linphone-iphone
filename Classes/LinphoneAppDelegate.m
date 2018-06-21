@@ -139,6 +139,8 @@
           }
         }
         [LinphoneManager.instance.iapManager check];
+    [HistoryListTableView saveDataToUserDefaults];
+    [ChatsListTableView saveDataToUserDefaults];
 }
 
 #pragma deploymate push "ignored-api-availability"
@@ -340,16 +342,39 @@
 		[PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
     } else if([[url scheme] isEqualToString:@"message-linphone"]) {
         [PhoneMainView.instance popToView:ChatsListView.compositeViewDescription];
-    }else {
-		if ([[url scheme] isEqualToString:@"sip"]) {
-			// remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
-			// trailing "/"
-			NSString *sipUri = [[url resourceSpecifier]
-				stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
-			[VIEW(DialerView) setAddress:sipUri];
-		}
-	}
-	return YES;
+    } else if ([scheme isEqualToString:@"sip"]) {
+        // remove "sip://" from the URI, and do it correctly by taking resourceSpecifier and removing leading and
+        // trailing "/"
+        NSString *sipUri = [[url resourceSpecifier] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+        [VIEW(DialerView) setAddress:sipUri];
+    } else if ([scheme isEqualToString:@"linphone-widget"]) {
+        if ([[url host] isEqualToString:@"call_log"] &&
+            [[url path] isEqualToString:@"/show"]) {
+            [VIEW(HistoryDetailsView) setCallLogId:[url query]];
+            [PhoneMainView.instance changeCurrentView:HistoryDetailsView.compositeViewDescription];
+        } else if ([[url host] isEqualToString:@"chatroom"] && [[url path] isEqualToString:@"/show"]) {
+            NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:url
+                                                        resolvingAgainstBaseURL:NO];
+            NSArray *queryItems = urlComponents.queryItems;
+            NSString *peerAddress = [self valueForKey:@"peer" fromQueryItems:queryItems];
+            NSString *localAddress = [self valueForKey:@"local" fromQueryItems:queryItems];
+            LinphoneAddress *peer = linphone_address_new(peerAddress.UTF8String);
+            LinphoneAddress *local = linphone_address_new(localAddress.UTF8String);
+            LinphoneChatRoom *cr = linphone_core_find_chat_room(LC, peer, local);
+            linphone_address_unref(peer);
+            linphone_address_unref(local);
+            // TODO : Find a better fix
+            VIEW(ChatConversationView).markAsRead = FALSE;
+            [PhoneMainView.instance goToChatRoom:cr];
+        }
+    }
+    return YES;
+}
+
+- (NSString *)valueForKey:(NSString *)key fromQueryItems:(NSArray *)queryItems {
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"name=%@", key];
+    NSURLQueryItem *queryItem = [[queryItems filteredArrayUsingPredicate:predicate] firstObject];
+    return queryItem.value;
 }
 
 - (void)fixRing {

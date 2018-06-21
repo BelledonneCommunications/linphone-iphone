@@ -158,13 +158,71 @@
 	[self computeSections];
 
 	[super loadData];
-
+    
 	if (IPAD) {
 		if (![self selectFirstRow]) {
 			HistoryDetailsView *view = VIEW(HistoryDetailsView);
 			[view setCallLogId:nil];
 		}
 	}
+}
+
++ (void) saveDataToUserDefaults {
+    const bctbx_list_t *logs = linphone_core_get_call_logs(LC);
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.belledonne-communications.linphone.widget"];
+    NSMutableArray *logsShare = [NSMutableArray array];
+    NSMutableDictionary *tmpStoreDict = [NSMutableDictionary dictionary];
+    NSMutableArray *addedContacts = [NSMutableArray array];
+    while (logs) {
+        LinphoneCallLog *log = (LinphoneCallLog *)logs->data;
+        const LinphoneAddress *address = linphone_call_log_get_remote_address(log);
+        
+        // if contact is already to be display, skip
+        if ([addedContacts containsObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)]]) {
+            logs = bctbx_list_next(logs);
+            continue;
+        }
+        // if null log id, skip
+        if (!linphone_call_log_get_call_id(log)) {
+            logs = bctbx_list_next(logs);
+            continue;
+        }
+        
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        
+        [dict setObject:[NSString stringWithUTF8String:linphone_call_log_get_call_id(log)]
+                 forKey:@"id"];
+        [dict setObject:[NSString stringWithUTF8String:linphone_address_get_display_name(address)?:linphone_address_get_username(address)]
+                 forKey:@"display"];
+        UIImage *avatar = [FastAddressBook imageForAddress:address];
+        if (avatar) {
+            UIImage *image = [UIImage resizeImage:avatar
+                                     withMaxWidth:200
+                                     andMaxHeight:200];
+            NSData *imageData = UIImageJPEGRepresentation(image, 1);
+            [dict setObject:imageData
+                     forKey:@"img"];
+        }
+        [tmpStoreDict setObject:dict
+                         forKey:[NSDate dateWithTimeIntervalSince1970:linphone_call_log_get_start_date(log)]];
+        [addedContacts addObject:[NSString stringWithUTF8String:linphone_address_as_string_uri_only(address)]];
+        
+        logs = bctbx_list_next(logs);
+    }
+    
+    NSArray *sortedDates = [[NSMutableArray alloc]
+                   initWithArray:[tmpStoreDict.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSDate *d1, NSDate *d2) {
+        return [d2 compare:d1];
+    }]];
+    
+    // sort logs array on date
+    for (NSDate *date in sortedDates) {
+        [logsShare addObject:[tmpStoreDict objectForKey:date]];
+        if (logsShare.count >= 4) //send no more data than needed
+            break;
+    }
+    
+    [mySharedDefaults setObject:logsShare forKey:@"logs"];
 }
 
 - (void)computeSections {
