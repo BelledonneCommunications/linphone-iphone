@@ -1494,15 +1494,11 @@ static void call_declined_base(bool_t use_timeout) {
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&marie->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_TRUE(wait_for(pauline->lc,marie->lc,&pauline->stat.number_of_LinphoneCallReleased,1));
 		BC_ASSERT_EQUAL(marie->stat.number_of_LinphoneCallEnd,1, int, "%d");
-		BC_ASSERT_EQUAL(pauline->stat.number_of_LinphoneCallEnd,1, int, "%d");
+		BC_ASSERT_EQUAL(use_timeout ? pauline->stat.number_of_LinphoneCallError : pauline->stat.number_of_LinphoneCallEnd,1, int, "%d");
 		BC_ASSERT_EQUAL(linphone_call_get_reason(in_call),LinphoneReasonDeclined, int, "%d");
-		if (use_timeout){
-			BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallMissed, int, "%d");
-		}else{
-			BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)),LinphoneCallDeclined, int, "%d");
-		}
-		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call),LinphoneReasonDeclined, int, "%d");
-		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(out_call)),LinphoneCallDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(in_call)), use_timeout ? LinphoneCallMissed : LinphoneCallDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_get_reason(out_call), use_timeout ? LinphoneReasonBusy : LinphoneReasonDeclined, int, "%d");
+		BC_ASSERT_EQUAL(linphone_call_log_get_status(linphone_call_get_call_log(out_call)), use_timeout ? LinphoneCallAborted : LinphoneCallDeclined, int, "%d");
 		linphone_call_unref(in_call);
 	}
 	linphone_call_unref(out_call);
@@ -3174,18 +3170,18 @@ static void early_media_call_with_ringing_base(bool_t network_change){
 		if (linphone_core_get_current_call(pauline->lc)
 			&& linphone_call_get_state(linphone_core_get_current_call(pauline->lc)) ==  LinphoneCallIncomingEarlyMedia) {
 				linphone_call_accept(linphone_core_get_current_call(pauline->lc));
-				
+
 				BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallConnected, 1,1000));
 				connected_time=ms_get_cur_time_ms();
 				BC_ASSERT_TRUE(wait_for_list(lcs, &marie->stat.number_of_LinphoneCallStreamsRunning, 1,1000));
-				
+
 				BC_ASSERT_PTR_EQUAL(marie_call, linphone_core_get_current_call(marie->lc));
 				BC_ASSERT_FALSE(linphone_call_get_all_muted(marie_call));
-				
+
 				liblinphone_tester_check_rtcp(marie, pauline);
 				/*just to have a call duration !=0*/
 				wait_for_list(lcs,&dummy,1,2000);
-				
+
 				end_call(pauline, marie);
 				ended_time=ms_get_cur_time_ms();
 				BC_ASSERT_LOWER( labs((long)((linphone_call_log_get_duration(marie_call_log)*1000) - (int64_t)(ended_time - connected_time))), 1500, long, "%ld");
