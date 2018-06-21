@@ -139,6 +139,10 @@
           }
         }
         [LinphoneManager.instance.iapManager check];
+    if (_shortcutItem) {
+        [self handleShortcut:_shortcutItem];
+        _shortcutItem = nil;
+    }
     [HistoryListTableView saveDataToUserDefaults];
     [ChatsListTableView saveDataToUserDefaults];
 }
@@ -286,6 +290,12 @@
     //output what state the app is in. This will be used to see when the app is started in the background
     LOGI(@"app launched with state : %li", (long)application.applicationState);
     LOGI(@"FINISH LAUNCHING WITH OPTION : %@", launchOptions.description);
+    
+    UIApplicationShortcutItem *shortcutItem = [launchOptions objectForKey:@"UIApplicationLaunchOptionsShortcutItemKey"];
+    if (shortcutItem) {
+        _shortcutItem = shortcutItem;
+        return NO;
+    }
 
 	return YES;
 }
@@ -313,6 +323,19 @@
 	}
 
 	[LinphoneManager.instance destroyLinphoneCore];
+}
+
+- (BOOL)handleShortcut:(UIApplicationShortcutItem *)shortcutItem {
+    BOOL success = NO;
+    if ([shortcutItem.type isEqualToString:@"linphone.phone.action.newMessage"]) {
+        [PhoneMainView.instance changeCurrentView:ChatConversationCreateView.compositeViewDescription];
+        success = YES;
+    }
+    return success;
+}
+
+- (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler {
+    completionHandler([self handleShortcut:shortcutItem]);
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
