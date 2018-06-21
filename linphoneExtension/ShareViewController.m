@@ -36,9 +36,11 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
                 [self loadItem:provider typeIdentifier:@"public.plain-text" defaults:defaults key:@"text"];
             } else  if ([provider hasItemConformingToTypeIdentifier:@"com.adobe.pdf"]) {
                 [self loadItem:provider typeIdentifier:@"com.adobe.pdf" defaults:defaults key:@"web"];
-            } else  if ([provider hasItemConformingToTypeIdentifier:@"public.png"]) {
+            }
+            /*else  if ([provider hasItemConformingToTypeIdentifier:@"public.png"]) {
                 [self loadItem:provider typeIdentifier:@"public.png" defaults:defaults key:@"img"];
-            }else{
+            }*/
+            else{
                 NSLog(@"Unkown itemprovider = %@", provider);
                 [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
             }
