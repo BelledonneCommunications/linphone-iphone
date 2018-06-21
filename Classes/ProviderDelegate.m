@@ -111,7 +111,7 @@
 	}
 }
 
-#pragma mark - CXProdiverDelegate Protocol
+#pragma mark - CXProviderDelegate Protocol
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
 	LOGD(@"CallKit : Answering Call");
