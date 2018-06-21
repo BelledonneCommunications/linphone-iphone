@@ -40,6 +40,7 @@
 @property ProviderDelegate *del;
 @property BOOL alreadyRegisteredForNotification;
 @property BOOL onlyPortrait;
+@property UIApplicationShortcutItem *shortcutItem;
 
 @end
 
