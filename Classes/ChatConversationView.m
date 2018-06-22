@@ -309,7 +309,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)saveAndSend:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality{
-	// photo from Camera, must be saved first
 	[self startImageUpload:image assetId:phAssetId withQuality:quality];
 }
 
