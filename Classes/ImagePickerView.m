@@ -161,27 +161,38 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	[self dismiss];
-	UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
-	if (image == nil) {
-		image = [info objectForKey:UIImagePickerControllerOriginalImage];
-	}
-    if (image != nil) {
-        if (![info objectForKey:UIImagePickerControllerReferenceURL]) {
-        //Saving image. Supports picture only, no video
-        //Maybe add a completion target to send the saved image to, like self, and we would call it manually if the image was not taken.
-        UIImageWriteToSavedPhotosAlbum(image, self, @selector(savedImage:didFinishSavingWithError:contextInfo:), (__bridge void *)info);
-        } else {
-            [self savedImage:image didFinishSavingWithError:nil contextInfo:(__bridge void *)info];
+    PHAsset *phasset = [info objectForKey:UIImagePickerControllerPHAsset];
+    UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage] ? [info objectForKey:UIImagePickerControllerEditedImage] : [info objectForKey:UIImagePickerControllerOriginalImage];
+    if (!phasset) {
+        __block PHObjectPlaceholder *placeHolder;
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
+            placeHolder = [request placeholderForCreatedAsset];
+        } completionHandler:^(BOOL success, NSError *error) {
+            if (success) {
+                LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
+                [self passImageToDelegate:image PHAssetId:[placeHolder localIdentifier]];
+            } else {
+                LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+            }
         }
+         ];
+        return;
     }
+    [self passImageToDelegate:image PHAssetId:[phasset localIdentifier]];
 }
 
-- (void)savedImage:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+- (void) passImageToDelegate:(UIImage *)image PHAssetId:(NSString *)assetId {
+    if (imagePickerDelegate != nil) {
+    [imagePickerDelegate imagePickerDelegateImage:image info:(NSString *)assetId];
+}
+}
+/*
     if (imagePickerDelegate != nil) {
         [imagePickerDelegate imagePickerDelegateImage:image info:(__bridge NSDictionary *)contextInfo];
     }
 }
-
+*/
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
 	[self dismiss];
 }
@@ -234,35 +245,62 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  [PhoneMainView.instance changeCurrentView:view.compositeViewDescription];
 	  }
 	};
-
-	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-		[sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
-							block:^() {
-								if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] ==  AVAuthorizationStatusAuthorized ){
-									if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
-										block(UIImagePickerControllerSourceTypeCamera);
-									}else{
-										[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-									}
-								}else {
-									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-								}
-							}];
-	}
-	if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-		[sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
-							block:^() {
-								if([PHPhotoLibrary authorizationStatus] !=  PHAuthorizationStatusDenied ){
-									 block(UIImagePickerControllerSourceTypePhotoLibrary);
-								}else{
-									[[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
-								}
-							}];
-	}
-	[sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
-
-	[sheet showInView:PhoneMainView.instance.view];
+    
+    [PHPhotoLibrary authorizationStatus];
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    
+    if (status == PHAuthorizationStatusNotDetermined)  {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            if(status !=  PHAuthorizationStatusAuthorized) {
+                [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+                return;
+            }
+            DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
+            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+                [sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
+                                    block:^() {
+                                        if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusAuthorized ) {
+                                            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+                                            return;
+                                        }
+                                        block(UIImagePickerControllerSourceTypeCamera);
+                                    }];
+            }
+            if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+                [sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
+                                    block:^() {
+                                        block(UIImagePickerControllerSourceTypePhotoLibrary);
+                                    }];
+            }
+            [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+            
+            [sheet showInView:PhoneMainView.instance.view];
+        }];
+    } else if (status == PHAuthorizationStatusAuthorized) {
+        DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Select the source", nil)];
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+            [sheet addButtonWithTitle:NSLocalizedString(@"Camera", nil)
+                                block:^() {
+                                    if([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] !=  AVAuthorizationStatusAuthorized ) {
+                                        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Camera's permission", nil) message:NSLocalizedString(@"Camera not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+                                        return;
+                                    }
+                                    block(UIImagePickerControllerSourceTypeCamera);
+                                }];
+        }
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
+            [sheet addButtonWithTitle:NSLocalizedString(@"Photo library", nil)
+                                block:^() {
+                                    block(UIImagePickerControllerSourceTypePhotoLibrary);
+                                }];
+        }
+        [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
+        
+        [sheet showInView:PhoneMainView.instance.view];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Photo's permission", nil) message:NSLocalizedString(@"Photo not authorized", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Continue", nil] show];
+        return;
+    }
 }
 
 @end

@@ -235,20 +235,26 @@
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
         NSString *fileName = localVideo ? localVideo : localFile;
-		NSURL *imageUrl = [NSURL URLWithString:localImage];
 		[self onDelete];
         if(localImage){
-            [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-                                                   resultBlock:^(ALAsset *asset) {
-                                                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
-                                                                      ^(void) {
-                                                                          UIImage *image = [[UIImage alloc] initWithCGImage:[[asset defaultRepresentation] fullResolutionImage]];
-                                                                          [_chatRoomDelegate startImageUpload:image url:imageUrl withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
-                                                                      });
-                                                   }
-                                                  failureBlock:^(NSError *error) {
-                                                      LOGE(@"Can't read image");
-                                                  }];
+            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            if (![assets firstObject]) {
+                return;
+            }
+            PHAsset *asset = [assets firstObject];
+            PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+            options.synchronous = TRUE;
+            [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
+                                                    resultHandler:^(UIImage *image, NSDictionary * info) {
+                                                        if (image) {
+                                                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL),
+                                                                           ^(void) {
+                                                                               [_chatRoomDelegate startImageUpload:image assetId:localImage withQuality:(uploadQuality ? [uploadQuality floatValue] : 0.9)];
+                                                                           });
+                                                        } else {
+                                                            LOGE(@"Can't read image");
+                                                        }
+            }];
         } else if(fileName) {
             NSString *filePath = [LinphoneManager documentFile:fileName];
             [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:filePath] withUrl:[NSURL URLWithString:filePath]];
@@ -346,22 +352,16 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
             size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
             size.height += CELL_MESSAGE_X_MARGIN;
         } else {
-            NSURL *imageUrl = [NSURL URLWithString:localImage];
-            __block CGSize originalImageSize = CGSizeMake(0, 0);
-            dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-                [LinphoneManager.instance.photoLibrary assetForURL:imageUrl
-                                                       resultBlock:^(ALAsset *asset) {
-                                                           originalImageSize = [[asset defaultRepresentation] dimensions];
-                                                           dispatch_semaphore_signal(sema);
-                                                       }
-                                                  failureBlock:^(NSError *error) {
-                                                      LOGE(@"Can't read image");
-                                                      dispatch_semaphore_signal(sema);
-                                              }];
-            });
-            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
+            LOGE(@"LA BITE EN BOIS");
+            if (!localImage) {
+                return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
+            }
+            PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
+            if (![assets firstObject]) {
+                return CGSizeMake(CELL_MIN_WIDTH, CELL_MIN_HEIGHT);
+            }
+            PHAsset *asset = [assets firstObject];
+            CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
             size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
             //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
             size.height += CELL_MESSAGE_X_MARGIN;

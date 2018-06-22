@@ -287,6 +287,7 @@ struct codec_name_pref_table codec_pref_table[] = {{"speex", 8000, "speex_8k_pre
 		}
 
 		[self migrateFromUserPrefs];
+        [self loadAvatar];
 	}
 	return self;
 }
@@ -3076,4 +3077,33 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
     const char *curVersionCString = [curVersion cStringUsingEncoding:NSUTF8StringEncoding];
     linphone_core_check_for_update(theLinphoneCore, curVersionCString);
 }
+
+- (void)loadAvatar {
+    NSString *assetId = [self lpConfigStringForKey:@"avatar"];
+    __block UIImage *ret = nil;
+    if (assetId) {
+        PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:assetId] options:nil];
+        if (![assets firstObject]) {
+            LOGE(@"Can't fetch avatar image.");
+        }
+        PHAsset *asset = [assets firstObject];
+        // load avatar synchronously so that we can return UIIMage* directly - since we are
+        // only using thumbnail, it must be pretty fast to fetch even without cache.
+        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+        options.synchronous = TRUE;
+        [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
+                                                resultHandler:^(UIImage *image, NSDictionary * info) {
+                                                    if (image)
+                                                        ret = [UIImage UIImageThumbnail:image thumbSize:150];
+                                                    else
+                                                        LOGE(@"Can't read avatar");
+                                                }];
+    }
+    
+    if (!ret) {
+        ret = [UIImage imageNamed:@"avatar.png"];
+    }
+    _avatar = ret;
+}
+
 @end
