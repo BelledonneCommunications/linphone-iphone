@@ -58,6 +58,10 @@
 	return self;
 }
 
+- (void)onDelete {
+    [super onDelete];
+}
+
 #pragma mark -
 - (void)setEvent:(LinphoneEventLog *)event {
 	if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
@@ -190,7 +194,7 @@
         if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
             _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden  = YES;
             fullScreenImage = YES;
-        } else {
+        } else if(!assetIsLoaded) {
             assetIsLoaded = TRUE;
             LOGD(@"POUET");
             if (localImage) {
@@ -235,6 +239,8 @@
                 fullScreenImage = YES;
                 _playButton.hidden = localVideo ? NO : YES;
                 _fileName.hidden = localFile ? NO : YES;
+                // Should fix cell not resizing after doanloading image.
+                [self layoutSubviews];
             }
         }
     }
@@ -392,7 +398,6 @@
 
 - (void)layoutSubviews {
     //[super layoutSubviews];
-    UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
     BOOL is_outgoing = linphone_chat_message_is_outgoing(super.message);
     CGRect bubbleFrame = super.bubbleView.frame;
     int origin_x;
@@ -401,7 +406,7 @@
     
     bubbleFrame.size = bubbleSize;
     
-    if (tableView.isEditing) {
+    if (chatTableView.tableView.isEditing) {
         origin_x = 0;
     } else {
         origin_x = (is_outgoing ? self.frame.size.width - bubbleFrame.size.width : 0);
