@@ -75,44 +75,44 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
             // chat bubble is aware of the fact that image is being saved to device
             [LinphoneManager setValueInMessageAppData:@"saving..." forKey:@"localimage" inMessage:message];
 
-            [LinphoneManager.instance.photoLibrary
-                    writeImageToSavedPhotosAlbum:image.CGImage
-                            orientation:(ALAssetOrientation)[image imageOrientation]
-                                completionBlock:^(NSURL *assetURL, NSError *error) {
-                                    if (error) {
-                                        LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-                                        [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
-                                        UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-																								message:NSLocalizedString(@"Cannot write image to photo library",
-																														  nil)
-																						 preferredStyle:UIAlertControllerStyleAlert];
-							   
-                                        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																					   style:UIAlertActionStyleDefault
-																					 handler:^(UIAlertAction * action) {}];
-							   
-                                        [errView addAction:defaultAction];
-                                        [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-                                    } else {
-                                        LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-                                        [LinphoneManager setValueInMessageAppData:[assetURL absoluteString]
-																  forKey:@"localimage"
-															   inMessage:message];
-                                    }
-                                    [NSNotificationCenter.defaultCenter
-                                     postNotificationName:kLinphoneFileTransferRecvUpdate
-											 object:thiz
-										   userInfo:@{
-											   @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to
-																								// trigger
-																								// FileTransferDone here
-											   @"image" : image,
-											   @"progress" : @(1.f),
-										   }];
-
-                                    [thiz stopAndDestroy];
-                                    CFRelease((__bridge CFTypeRef)thiz);
-                                }];
+            __block PHObjectPlaceholder *placeHolder;
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
+                placeHolder = [request placeholderForCreatedAsset];
+            } completionHandler:^(BOOL success, NSError *error) {
+                if (success) {
+                    LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
+                    [LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
+                                                       forKey:@"localimage"
+                                                    inMessage:message];
+                } else {
+                    LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+                    [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
+                    UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+                                                                                     message:NSLocalizedString(@"Cannot write image to photo library",
+                                                                                                               nil)
+                                                                              preferredStyle:UIAlertControllerStyleAlert];
+                    
+                    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                            style:UIAlertActionStyleDefault
+                                                                          handler:^(UIAlertAction * action) {}];
+                    
+                    [errView addAction:defaultAction];
+                    [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+                }
+                [NSNotificationCenter.defaultCenter
+                 postNotificationName:kLinphoneFileTransferRecvUpdate
+                 object:thiz
+                 userInfo:@{
+                            @"state" : @(LinphoneChatMessageStateDelivered),
+                            // we dont want to trigger FileTransferDone here
+                            @"image" : image,
+                            @"progress" : @(1.f),
+                            }];
+                
+                [thiz stopAndDestroy];
+                CFRelease((__bridge CFTypeRef)thiz);
+            }];
         }  else {
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             
@@ -224,10 +224,10 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     }
 }
 
-- (void)upload:(UIImage *)image withURL:(NSURL *)url forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
+- (void)upload:(UIImage *)image withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom withQuality:(float)quality {
     NSString *name = [NSString stringWithFormat:@"%li-%f.jpg", (long)image.hash, [NSDate timeIntervalSinceReferenceDate]];
-    if (url)
-        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:[url absoluteString] qualityData:[NSNumber numberWithFloat:quality]];
+    if (phAssetId)
+        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:phAssetId qualityData:[NSNumber numberWithFloat:quality]];
     else
         [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:nil qualityData:nil];
 }

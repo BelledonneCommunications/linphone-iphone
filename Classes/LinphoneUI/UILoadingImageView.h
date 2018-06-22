@@ -28,7 +28,7 @@
 - (BOOL)isLoading;
 - (void)stopLoading;
 
-@property(nonatomic, strong) ALAsset *fullImageUrl;
+@property(nonatomic, strong) PHAsset *asset;
 @property (nonatomic, readonly) IBOutlet UIActivityIndicatorView *waitIndicatorView;
 
 @end
