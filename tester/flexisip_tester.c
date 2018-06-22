@@ -1212,15 +1212,17 @@ static void test_list_subscribe (void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 	/*dummy wait to avoid derred notify*/
 	wait_for_list(lcs,&dummy,1,2000);
+	int initial_number_of_notify = marie->stat.number_of_NotifyReceived;
+	
 	setPublish(linphone_core_get_default_proxy_config(pauline->lc), TRUE);
 
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,initial_number_of_notify + 1,5000));
 
 	setPublish(linphone_core_get_default_proxy_config(laure->lc), TRUE);
-	/*make sure notify is not sent "imadiatly but defered*/
-	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,1000));
+	/*make sure notify is not sent "immediatly but defered*/
+	BC_ASSERT_FALSE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,initial_number_of_notify + 2,1000));
 
-	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,3,5000));
+	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,initial_number_of_notify + 2,5000));
 
 	linphone_event_terminate(lev);
 
