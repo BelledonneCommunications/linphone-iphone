@@ -77,6 +77,7 @@ NSString *const kLinphoneCallEncryptionChanged = @"LinphoneCallEncryptionChanged
 NSString *const kLinphoneFileTransferSendUpdate = @"LinphoneFileTransferSendUpdate";
 NSString *const kLinphoneFileTransferRecvUpdate = @"LinphoneFileTransferRecvUpdate";
 NSString *const kLinphoneQRCodeFound = @"LinphoneQRCodeFound";
+NSString *const kLinphoneMessageValueUpdated = @"LinphoneMessageValueUpdated";
 
 const int kLinphoneAudioVbrCodecDefaultBitrate = 36; /*you can override this from linphonerc or linphonerc-factory*/
 
@@ -2887,20 +2888,22 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (void)setValueInMessageAppData:(id)value forKey:(NSString *)key inMessage:(LinphoneChatMessage *)msg {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableDictionary *appDataDict = [NSMutableDictionary dictionary];
+        const char *appData = linphone_chat_message_get_appdata(msg);
+        if (appData) {
+            appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)]
+                                                          options:NSJSONReadingMutableContainers
+                                                            error:nil];
+        }
 
-	NSMutableDictionary *appDataDict = [NSMutableDictionary dictionary];
-	const char *appData = linphone_chat_message_get_appdata(msg);
-	if (appData) {
-		appDataDict = [NSJSONSerialization JSONObjectWithData:[NSData dataWithBytes:appData length:strlen(appData)]
-													  options:NSJSONReadingMutableContainers
-														error:nil];
-	}
+        [appDataDict setValue:value forKey:key];
 
-	[appDataDict setValue:value forKey:key];
-
-	NSData *data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
-	NSString *appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String]);
+        NSData *data = [NSJSONSerialization dataWithJSONObject:appDataDict options:0 error:nil];
+        NSString *appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String]);
+        [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageValueUpdated object:nil];
+    });
 }
 
 #pragma mark - LPConfig Functions

@@ -68,6 +68,10 @@
 		return;
 
 	super.event = event;
+    
+    //LOGD([NSString stringWithFormat:@"photo cell adress: %p", self]);
+    //LOGD([NSString stringWithFormat:@"event adress: %p", event]);
+    //LOGD([NSString stringWithFormat:@"message adress: %p", linphone_event_log_get_chat_message(event)]);
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -109,6 +113,7 @@
         _messageImageView.hidden = YES;
         _imageGestureRecognizer.enabled = YES;
         _finalImage.hidden = NO;
+        [self layoutSubviews];
     });
 }
 
@@ -363,7 +368,8 @@
 }
 
 - (void)disconnectFromFileDelegate {
-	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneFileTransferSendUpdate object:_ftd];
+    [NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneFileTransferRecvUpdate object:_ftd];
 	_ftd = nil;
 }
 

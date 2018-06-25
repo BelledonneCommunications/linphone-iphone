@@ -106,7 +106,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
                  userInfo:@{
                             @"state" : @(LinphoneChatMessageStateDelivered),
                             // we dont want to trigger FileTransferDone here
-                            @"image" : image,
+                            //@"image" : image,
                             @"progress" : @(1.f),
                             }];
                 

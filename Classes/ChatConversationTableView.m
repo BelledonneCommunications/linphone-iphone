@@ -40,6 +40,15 @@
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
     _imagesInChatroom = [NSMutableDictionary dictionary];
+    
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(updateData)
+                                               name:kLinphoneMessageValueUpdated
+                                             object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageValueUpdated object:nil];
 }
 
 #pragma mark -
@@ -66,6 +75,8 @@
 	while (chatRoomEvents) {
 		LinphoneEventLog *event = (LinphoneEventLog *)chatRoomEvents->data;
 		[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
+        
+        LOGD([NSString stringWithFormat:@"adding event at adress: %p", [[eventList lastObject] pointerValue]]);
 		chatRoomEvents = chatRoomEvents->next;
 	}
     bctbx_list_free_with_data(head, (bctbx_list_free_func)linphone_event_log_unref);
@@ -88,6 +99,7 @@
 }
 
 - (void)addEventEntry:(LinphoneEventLog *)event {
+    LOGD([NSString stringWithFormat:@"adding event at adress: %p", event]);
 	[eventList addObject:[NSValue valueWithPointer:linphone_event_log_ref(event)]];
 	int pos = (int)eventList.count - 1;
 	NSIndexPath *indexPath = [NSIndexPath indexPathForRow:pos inSection:0];
@@ -97,6 +109,7 @@
 }
 
 - (void)updateEventEntry:(LinphoneEventLog *)event {
+    LOGD([NSString stringWithFormat:@"updating event at adress: %p", event]);
 	NSInteger index = [eventList indexOfObject:[NSValue valueWithPointer:event]];
 	if (index < 0) {
 		LOGW(@"event entry doesn't exist");
@@ -104,7 +117,11 @@
 	}
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]
 						  withRowAnimation:FALSE]; // just reload
-	return;
+    [self.tableView reloadData];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
+                          atScrollPosition:UITableViewScrollPositionBottom
+                                  animated:YES];
+    return;
 }
 
 - (void)scrollToBottom:(BOOL)animated {
@@ -189,6 +206,7 @@
         if (!cell) {
 			cell = [[NSClassFromString(kCellId) alloc] initWithIdentifier:kCellId];
         }
+        LOGD([NSString stringWithFormat:@"event adress: %p", event]);
 		[cell setEvent:event];
 		if (chat)
 			[cell update];
