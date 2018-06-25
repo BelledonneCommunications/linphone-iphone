@@ -1966,7 +1966,9 @@ void popup_link_account_cb(LinphoneAccountCreator *creator, LinphoneAccountCreat
 	linphone_core_cbs_set_chat_room_state_changed(cbs, linphone_iphone_chatroom_state_changed);
 	linphone_core_cbs_set_user_data(cbs, (__bridge void *)(self));
 	
-	theLinphoneCore = linphone_factory_create_core_with_config(factory, cbs, _configDb);
+	theLinphoneCore = linphone_factory_create_core_with_config_3(factory, _configDb, NULL);
+	linphone_core_add_callbacks(theLinphoneCore, cbs);
+	linphone_core_start(theLinphoneCore);
 	// Let the core handle cbs
 	linphone_core_cbs_unref(cbs);
 
