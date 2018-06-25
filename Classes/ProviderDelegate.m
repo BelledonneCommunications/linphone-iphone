@@ -81,7 +81,6 @@
 	update.supportsUngrouping = TRUE;
 	update.hasVideo = _pendingCallVideo = video;
 
-	linphone_call_ref(call);
 	// Report incoming call to system
 	LOGD(@"CallKit: report new incoming call");
 	
@@ -96,17 +95,13 @@
 											  else
 												  linphone_call_decline(call,LinphoneReasonUnknown);
 										  }
-										  linphone_call_unref(call);
 									  }];
 }
 
 - (void)setPendingCall:(LinphoneCall *)pendingCall {
 	if (pendingCall) {
 		_pendingCall = pendingCall;
-		if (_pendingCall)
-			linphone_call_ref(_pendingCall);
 	} else if (_pendingCall) {
-		linphone_call_unref(_pendingCall);
 		_pendingCall = NULL;
 	}
 }

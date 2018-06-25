@@ -118,13 +118,10 @@
               [data->timer invalidate];
               data->timer = nil;
             }
-            if ((floor(NSFoundationVersionNumber) <=
-                 NSFoundationVersionNumber_iOS_9_x_Max)) {
-              if ([LinphoneManager.instance
-                      lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
+            if ((floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max)) {
+              if ([LinphoneManager.instance lpConfigBoolForKey:@"autoanswer_notif_preference"]) {
                 linphone_call_accept(call);
-                [PhoneMainView.instance
-                    changeCurrentView:CallView.compositeViewDescription];
+                [PhoneMainView.instance changeCurrentView:CallView.compositeViewDescription];
               } else {
                 [PhoneMainView.instance displayIncomingCall:call];
               }
