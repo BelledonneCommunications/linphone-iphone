@@ -338,8 +338,11 @@ build: $(addsuffix -build, $(archs))
 \t$(MAKE) sdk
 
 ipa: build
-\txcodebuild -configuration Release \\
-\t&& xcrun -sdk iphoneos PackageApplication -v build/Release-iphoneos/linphone.app -o $$PWD/linphone-iphone.ipa
+\txcodebuild -configuration Release && \\
+\txcodebuild -sdk iphoneos -project linphone.xcodeproj -scheme linphone -configuration Release build \\
+\t-archivePath linphone-iphone-'$(LINPHONE_IPHONE_VERSION)'.xcarchive archive && \\
+\txcodebuild -exportArchive -archivePath linphone-iphone-'$(LINPHONE_IPHONE_VERSION)'.xcarchive \\
+\t-exportPath linphone-iphone-'$(LINPHONE_IPHONE_VERSION)'.ipa -exportOptionsPlist Tools/exportOptions.plist
 
 zipsdk: sdk
 \trm -rf liblinphone-sdk/apple-darwin/Tools &&\\
