@@ -1230,8 +1230,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		}
 		content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 		content.categoryIdentifier = @"msg_cat";
+        // save data to user info for rich notification content
         NSMutableArray *msgs = [NSMutableArray array];
-        bctbx_list_t *history = linphone_chat_room_get_history(room, 3);
+        bctbx_list_t *history = linphone_chat_room_get_history(room, 4);
         while (history) {
             NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
             LinphoneChatMessage *msg = history->data;
@@ -1250,9 +1251,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
             [msgData setObject:fromImageData forKey:@"fromImageData"];
             if (isFileTransfer) {
                 // TODO
+                [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
             } else {
-                const char *textMsg = linphone_chat_message_get_text_content(msg);
-                [msgData setObject:[NSString stringWithUTF8String:textMsg] forKey:@"msg"];
+                [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
             }
             [msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];
             [msgs addObject:msgData];

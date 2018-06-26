@@ -13,18 +13,66 @@
         <scene sceneID="ciY-6l-Mki">
             <objects>
                 <tableViewController id="X9Y-jO-gVr" customClass="NotificationViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="xjB-Tn-AYr">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="xjB-Tn-AYr">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationCell" id="4dO-Sq-LtB">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationCell" id="4dO-Sq-LtB" customClass="NotificationTableViewCell">
                                 <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4dO-Sq-LtB" id="Q3t-C0-U1O">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OXj-8D-5BS">
+                                            <rect key="frame" x="60" y="10" width="305" height="23.5"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WZa-ow-o0L">
+                                                    <rect key="frame" x="0.0" y="0.0" width="305" height="17"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="17" id="tvJ-aj-CIf"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Lorem ipsum " textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="3tK-2u-Ixe">
+                                                    <rect key="frame" x="0.0" y="17" width="305" height="6.5"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                </textView>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="WZa-ow-o0L" firstAttribute="leading" secondItem="OXj-8D-5BS" secondAttribute="leading" id="7wZ-7m-XoH"/>
+                                                <constraint firstItem="3tK-2u-Ixe" firstAttribute="leading" secondItem="OXj-8D-5BS" secondAttribute="leading" id="A4k-hw-bfV"/>
+                                                <constraint firstItem="3tK-2u-Ixe" firstAttribute="top" secondItem="WZa-ow-o0L" secondAttribute="bottom" id="XWZ-K9-hVC"/>
+                                                <constraint firstItem="WZa-ow-o0L" firstAttribute="top" secondItem="OXj-8D-5BS" secondAttribute="top" id="dSr-F5-pKr"/>
+                                            </constraints>
+                                        </stackView>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SKQ-W1-Lmw">
+                                            <rect key="frame" x="10" y="10" width="40" height="40"/>
+                                            <constraints>
+                                                <constraint firstAttribute="height" constant="40" id="d6N-Hv-RS0"/>
+                                                <constraint firstAttribute="width" constant="40" id="kWJ-Qu-esd"/>
+                                            </constraints>
+                                        </imageView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="OXj-8D-5BS" firstAttribute="top" secondItem="Q3t-C0-U1O" secondAttribute="top" constant="10" id="9no-0X-SIc"/>
+                                        <constraint firstItem="SKQ-W1-Lmw" firstAttribute="top" secondItem="Q3t-C0-U1O" secondAttribute="top" constant="10" id="EqG-ZA-H0w"/>
+                                        <constraint firstAttribute="trailing" secondItem="OXj-8D-5BS" secondAttribute="trailing" constant="10" id="Oq5-ST-lUC"/>
+                                        <constraint firstItem="SKQ-W1-Lmw" firstAttribute="leading" secondItem="Q3t-C0-U1O" secondAttribute="leading" constant="10" id="ZPR-9n-0E4"/>
+                                        <constraint firstItem="OXj-8D-5BS" firstAttribute="leading" secondItem="Q3t-C0-U1O" secondAttribute="leading" constant="60" id="e0Q-na-hor"/>
+                                        <constraint firstAttribute="bottom" secondItem="OXj-8D-5BS" secondAttribute="bottom" constant="10" id="mVA-WG-D1q"/>
+                                    </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="contactImage" destination="SKQ-W1-Lmw" id="nsD-4b-g0W"/>
+                                    <outlet property="msgText" destination="3tK-2u-Ixe" id="aVq-ra-Sd7"/>
+                                    <outlet property="nameDate" destination="WZa-ow-o0L" id="WdA-QI-xv1"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <sections/>

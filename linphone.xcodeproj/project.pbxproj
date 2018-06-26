@@ -64,6 +64,7 @@
 		570742671D5A63DB004B9C84 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 570742661D5A63DB004B9C84 /* StoreKit.framework */; };
 		5E10ED4820D00630002BF6FE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
 		5E10ED4920D006C9002BF6FE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
+		5E223A9920E244B400D06A36 /* NotificationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E223A9820E244B400D06A36 /* NotificationTableViewCell.m */; };
 		5E31290120D7A37E00CF3AAE /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5E31290520D7A37E00CF3AAE /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E31290420D7A37E00CF3AAE /* TodayViewController.m */; };
 		5E31290820D7A37E00CF3AAE /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E31290620D7A37E00CF3AAE /* MainInterface.storyboard */; };
@@ -1077,6 +1078,8 @@
 		570742601D5A09B8004B9C84 /* ShopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopView.h; sourceTree = "<group>"; };
 		570742631D5A1860004B9C84 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ShopView.strings; sourceTree = "<group>"; };
 		570742661D5A63DB004B9C84 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		5E223A9720E244B400D06A36 /* NotificationTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationTableViewCell.h; sourceTree = "<group>"; };
+		5E223A9820E244B400D06A36 /* NotificationTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationTableViewCell.m; sourceTree = "<group>"; };
 		5E30780420D8F00D00256DAE /* latestChatroomsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = latestChatroomsWidget.entitlements; sourceTree = "<group>"; };
 		5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = latestChatroomsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E31290320D7A37E00CF3AAE /* TodayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TodayViewController.h; sourceTree = "<group>"; };
@@ -2535,6 +2538,8 @@
 				5E58962920DCE5700030868C /* NotificationViewController.m */,
 				5E58962B20DCE5700030868C /* MainInterface.storyboard */,
 				5E58962E20DCE5710030868C /* Info.plist */,
+				5E223A9720E244B400D06A36 /* NotificationTableViewCell.h */,
+				5E223A9820E244B400D06A36 /* NotificationTableViewCell.m */,
 			);
 			path = richNotifications;
 			sourceTree = "<group>";
@@ -4460,6 +4465,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E223A9920E244B400D06A36 /* NotificationTableViewCell.m in Sources */,
 				5E58962A20DCE5700030868C /* NotificationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

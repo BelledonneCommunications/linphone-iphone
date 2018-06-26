@@ -6,6 +6,7 @@
 //
 
 #import "NotificationViewController.h"
+#import "NotificationTableViewCell.h"
 #import <UserNotifications/UserNotifications.h>
 #import <UserNotificationsUI/UserNotificationsUI.h>
 
@@ -25,7 +26,6 @@
 
 - (void)didReceiveNotification:(UNNotification *)notification {
     msgs = [[[[notification request] content] userInfo] objectForKey:@"msgs"];
-    printf("Taille tab : %d\n", (unsigned int)msgs.count);
     [self.tableView reloadData];
 }
 
@@ -48,8 +48,17 @@
            display.UTF8String,
            msgText.UTF8String);
     printf("Taille de l'image de profil : %d\n", (unsigned int)imageData.length);
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
+    NotificationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
+    cell.contactImage.image = [UIImage imageWithData:imageData];
+    cell.nameDate.text = display;
+    cell.msgText.text = msgText;
     return cell;
+}
+
+#pragma mark - UITableViewDelegate Functions
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 100;
 }
 
 @end
