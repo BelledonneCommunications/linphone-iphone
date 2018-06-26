@@ -20,7 +20,7 @@
 #
 ############################################################################
 
-set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES})
+set(OTHER_LIBS_FOR_TESTER ${BCTOOLBOX_LIBRARIES} ${ORTP_LIBRARIES} ${MEDIASTREAMER2_LIBRARIES} ${BELLESIP_LIBRARIES} ${XML2_LIBRARIES} ${XSD_LIBRARIES} ${BELR_LIBRARIES})
 if(INTL_FOUND)
 	list(APPEND OTHER_LIBS_FOR_TESTER ${INTL_LIBRARIES})
 endif()
@@ -78,10 +78,17 @@ set(CERTIFICATE_CLIENT_FILES
 
 set(CERTIFICATE_FILES ${CERTIFICATE_ALT_FILES} ${CERTIFICATE_CN_FILES} ${CERTIFICATE_CLIENT_FILES})
 
+set(DB_FILES
+	db/friends.db
+	db/linphone.db
+	db/messages.db
+)
+
 set(RC_FILES
 	rcfiles/account_creator_rc
 	rcfiles/assistant_create.rc
 	rcfiles/carddav_rc
+	rcfiles/chloe_rc
 	rcfiles/conference_focus_rc
 	rcfiles/empty_rc
 	rcfiles/friends_rc
@@ -134,12 +141,13 @@ set(RC_FILES
 	rcfiles/pauline_zrtp_ecdh448_rc
 	rcfiles/remote_zero_length_params_rc
 	rcfiles/stun_rc
-	rcfiles/upnp_rc
 	rcfiles/zero_length_params_rc
 )
 
 set(IMAGE_FILES
 	images/linphone.svg
+	images/linphonesiteqr.jpg
+	images/linphonesiteqr_captured.jpg
 	images/nowebcamCIF.jpg
 	images/nowebcamVGA.jpg
 )
@@ -152,11 +160,11 @@ set(VCARD_FILES
 set(OTHER_FILES
 	tester_hosts
 	local_tester_hosts
-	messages.db
 )
 
 set(IOS_RESOURCES_FILES
 	${OTHER_FILES}
+	${DB_FILES}
 	certificates
 	images
 	rcfiles
@@ -177,8 +185,8 @@ set(SOURCE_FILES_C
 	dtmf_tester.c
 	eventapi_tester.c
 	flexisip_tester.c
+	group_chat_tester.c
 	liblinphone_tester.c
-	liblinphone_tester.h
 	log_collection_tester.c
 	message_tester.c
 	offeranswer_tester.c
@@ -193,13 +201,24 @@ set(SOURCE_FILES_C
 	stun_tester.c
 	tester.c
 	tunnel_tester.c
-	upnp_tester.c
 	vcard_tester.c
 	video_tester.c
 )
 
 set(SOURCE_FILES_CXX
-	cpim_tester.cpp
+	clonable-object-tester.cpp
+	conference-event-tester.cpp
+	contents-tester.cpp
+	cpim-tester.cpp
+	main-db-tester.cpp
+	multipart-tester.cpp
+	property-container-tester.cpp
+)
+
+set(HEADER_FILES
+	liblinphone_tester.h
+	tools/private-access.h
+	tools/tester.h
 )
 
 set(SOURCE_FILES_OBJC )
@@ -209,9 +228,16 @@ if(APPLE)
 	endif()
 endif()
 
+# TODO: Remove me later!
+list(REMOVE_ITEM STRICT_OPTIONS_CPP "-Wconversion" "-Werror=conversion" "-Wcast-align" "-Werror=cast-align")
+if (ANDROID AND CMAKE_C_COMPILER_ID STREQUAL "GNU") #restrict to Android as it seems to break reguler linux
+	list (APPEND STRICT_OPTIONS_C "-std=c99")
+endif()
 bc_apply_compile_flags(SOURCE_FILES_C STRICT_OPTIONS_CPP STRICT_OPTIONS_C)
 bc_apply_compile_flags(SOURCE_FILES_CXX STRICT_OPTIONS_CPP STRICT_OPTIONS_CXX)
 bc_apply_compile_flags(SOURCE_FILES_OBJC STRICT_OPTIONS_CPP STRICT_OPTIONS_OBJC)
+
+add_definitions("-DLINPHONE_TESTER")
 
 if(MSVC)
 	get_source_file_property(MESSAGE_TESTER_C_COMPILE_FLAGS message_tester.c COMPILE_FLAGS)
@@ -233,13 +259,14 @@ endif()
 
 # on mobile platforms, we compile the tester as a library so that we can link with it directly from native applications
 if(ANDROID OR IOS)
-	add_library(linphonetester SHARED ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
+	add_library(linphonetester SHARED ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
 	target_include_directories(linphonetester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphonetester ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
 	if(IOS)
 		set_target_properties(linphonetester PROPERTIES
 			FRAMEWORK TRUE
 			MACOSX_FRAMEWORK_IDENTIFIER com.belledonne-communications.linphonetester
+			PUBLIC_HEADER "${HEADER_FILES}"
 		)
 	endif()
 	install(TARGETS linphonetester
@@ -254,7 +281,7 @@ if(ANDROID OR IOS)
 		PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
 	)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
-	add_library(linphone_tester_static STATIC ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
+	add_library(linphone_tester_static STATIC ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX})
 	target_include_directories(linphone_tester_static PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(linphone_tester_static ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
 
@@ -288,23 +315,15 @@ endif()
 if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	if(IOS)
 		set_source_files_properties(${IOS_RESOURCES_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-		add_executable(liblinphone_tester MACOSX_BUNDLE ${IOS_RESOURCES_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
+		add_executable(liblinphone_tester MACOSX_BUNDLE ${IOS_RESOURCES_FILES} ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
 	else()
-		add_executable(liblinphone_tester ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
+		add_executable(liblinphone_tester ${HEADER_FILES} ${SOURCE_FILES_C} ${SOURCE_FILES_CXX} ${SOURCE_FILES_OBJC})
 	endif()
 	set_target_properties(liblinphone_tester PROPERTIES LINK_FLAGS "${LINPHONE_LDFLAGS}")
 	set_target_properties(liblinphone_tester PROPERTIES LINKER_LANGUAGE CXX)
+	set_target_properties(liblinphone_tester PROPERTIES C_STANDARD 99)
 	target_include_directories(liblinphone_tester PUBLIC ${BCTOOLBOX_TESTER_INCLUDE_DIRS})
 	target_link_libraries(liblinphone_tester ${LINPHONE_LIBS_FOR_TOOLS} ${OTHER_LIBS_FOR_TESTER})
-	if (GTK2_FOUND)
-		target_compile_definitions(liblinphone_tester PRIVATE HAVE_GTK)
-		target_include_directories(liblinphone_tester PUBLIC ${GTK2_INCLUDE_DIRS})
-		target_link_libraries(liblinphone_tester ${GTK2_LIBRARIES})
-		if(GTKMACINTEGRATION_FOUND)
-			target_include_directories(liblinphone_tester PUBLIC ${GTKMACINTEGRATION_INCLUDE_DIRS})
-			target_link_libraries(liblinphone_tester ${GTKMACINTEGRATION_LIBRARIES})
-		endif()
-	endif()
 
 	if(NOT IOS)
 		install(TARGETS liblinphone_tester
@@ -313,14 +332,15 @@ if (NOT ANDROID AND NOT CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 			ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 		)
-		install(FILES ${OTHER_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester")
-		install(FILES ${SOUND_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sounds")
-		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
 		install(FILES ${CERTIFICATE_ALT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/altname")
-		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
 		install(FILES ${CERTIFICATE_CLIENT_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/client")
-		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
+		install(FILES ${CERTIFICATE_CN_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/certificates/cn")
+		install(FILES ${DB_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/db")
 		install(FILES ${IMAGE_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/images")
+		install(FILES ${OTHER_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester")
+		install(FILES ${RC_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/rcfiles")
+		install(FILES ${SIPP_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sipp")
+		install(FILES ${SOUND_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/sounds")
 		install(FILES ${VCARD_FILES} DESTINATION "${CMAKE_INSTALL_DATADIR}/liblinphone_tester/vcards")
 	endif()
 endif()

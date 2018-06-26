@@ -19,6 +19,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "linphone/account_creator_service.h"
 #include "linphone/core.h"
+
+#include "c-wrapper/c-wrapper.h"
+
+// TODO: From coreapi. Remove me later.
 #include "private.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorService);

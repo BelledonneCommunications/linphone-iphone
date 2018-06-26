@@ -118,7 +118,7 @@ LINPHONE_PUBLIC LinphoneStatus linphone_conference_remove_participant(LinphoneCo
 LINPHONE_PUBLIC bctbx_list_t *linphone_conference_get_participants(const LinphoneConference *obj);
 
 /**
- * Invite participants to the conference, by supplying a list of LinphoneAddress
+ * Invite participants to the conference, by supplying a list of #LinphoneAddress
  * @param obj The conference.
  * @param addresses \bctbx_list{LinphoneAddress}
  * @param params #LinphoneCallParams to use for inviting the participants.

@@ -30,8 +30,12 @@ Requires:	%{pkg_prefix}bctoolbox
 Requires:	%{pkg_prefix}ortp
 Requires:	%{pkg_prefix}mediastreamer
 Requires:	%{pkg_prefix}belle-sip
+Requires:	%{pkg_prefix}belr
 %if @ENABLE_VCARD@
 Requires:	%{pkg_prefix}belcard
+%endif
+%if @ENABLE_SOCI_STORAGE@
+Requires:	%{pkg_prefix}soci
 %endif
 
 %description
@@ -116,6 +120,7 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %{_datadir}/Linphone/cmake/*.cmake
 %{_datadir}/LinphoneCxx/cmake/*.cmake
+%{_datadir}/belr/grammars/cpim_grammar
 
 
 %changelog

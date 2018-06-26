@@ -1,6 +1,6 @@
 /*
 call-pause.h
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -26,7 +26,8 @@ class CallPauseCommand : public DaemonCommand
 {
 public:
 	CallPauseCommand();
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec(Daemon *app, const std::string& args) override;
 };
 
 #endif // LINPHONE_DAEMON_COMMAND_CALL_PAUSE_H

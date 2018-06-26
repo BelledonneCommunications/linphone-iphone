@@ -18,8 +18,8 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static LinphoneCoreManager* presence_linphone_core_manager_new_with_rc_name(char* username, char * rc_name) {
 	LinphoneCoreManager* mgr= linphone_core_manager_new2( rc_name, FALSE);
@@ -187,11 +187,11 @@ static void subscribe_failure_handle_by_app(void) {
 	BC_ASSERT_TRUE(subscribe_to_callee_presence(marie,pauline));
 	wait_for(marie->lc,pauline->lc,&pauline->stat.number_of_NewSubscriptionRequest,1); /*just to wait for unsubscription even if not notified*/
 
-	sal_set_recv_error(marie->lc->sal, 0); /*simulate an error*/
+	sal_set_recv_error(linphone_core_get_sal(marie->lc), 0); /*simulate an error*/
 
 	BC_ASSERT_TRUE(wait_for(marie->lc,pauline->lc,&marie->stat.number_of_LinphoneRegistrationProgress,2));
 	BC_ASSERT_EQUAL(linphone_proxy_config_get_error(config),LinphoneReasonIOError, int, "%d");
-	sal_set_recv_error(marie->lc->sal, 1);
+	sal_set_recv_error(linphone_core_get_sal(marie->lc), 1);
 
 	lf = linphone_core_get_friend_by_address(marie->lc,lf_identity);
 	ms_free(lf_identity);
@@ -449,7 +449,7 @@ static void subscribe_presence_expired(void){
 	lcs = bctbx_list_append(lcs, marie->lc);
 	lcs = bctbx_list_append(lcs, pauline1->lc);
 
-	lp_config_set_int(marie->lc->config, "sip", "subscribe_expires", 10);
+	lp_config_set_int(linphone_core_get_config(marie->lc), "sip", "subscribe_expires", 10);
 
 	lf = linphone_core_create_friend(marie->lc);
 	linphone_friend_set_address(lf, pauline1->identity);
@@ -463,13 +463,13 @@ static void subscribe_presence_expired(void){
 	lf = linphone_core_find_friend(pauline1->lc, marie->identity);
 	BC_ASSERT_PTR_NOT_NULL(lf);
 	if (lf) {
-		BC_ASSERT_PTR_NOT_NULL(lf->insubs);
+		BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_insubs(lf));
 
 		/*marie comes offline suddenly*/
 		linphone_core_set_network_reachable(marie->lc, FALSE);
 		/*after a certain time, pauline shall see the incoming SUBSCRIBE expired*/
 		wait_for_list(lcs,NULL, 0, 11000);
-		BC_ASSERT_PTR_NULL(lf->insubs);
+		BC_ASSERT_PTR_NULL(linphone_friend_get_insubs(lf));
 
 		/*just make network reachable so that marie can unregister properly*/
 		linphone_core_set_network_reachable(marie->lc, TRUE);
@@ -514,7 +514,7 @@ test_t presence_tests[] = {
 	/*TEST_ONE_TAG("Call with presence", call_with_presence, "LeaksMemory"),*/
 	TEST_NO_TAG("Unsubscribe while subscribing", unsubscribe_while_subscribing),
 	TEST_NO_TAG("Presence information", presence_information),
-	TEST_NO_TAG("App managed presence failure", subscribe_failure_handle_by_app),
+	TEST_ONE_TAG("App managed presence failure", subscribe_failure_handle_by_app,"presence"),
 	TEST_NO_TAG("Presence SUBSCRIBE forked", subscribe_presence_forked),
 	TEST_NO_TAG("Presence SUBSCRIBE expired", subscribe_presence_expired),
 };

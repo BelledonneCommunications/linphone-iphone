@@ -29,10 +29,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 {{/includes}}
 #include "object.hh"
 
-{{#_class}}{{#isfactory}}
-#include "config.hh"
-{{/isfactory}}{{/_class}}
-
 {{#_class}}{{#isVcard}}
 namespace belcard {
 class BelCard;
@@ -50,7 +46,7 @@ struct {{{privCClassName}}};
 namespace linphone {
 
 	{{#priorDeclarations}}
-	class {{{name}}};
+	{{{declaration}}};
 	{{/priorDeclarations}}
 
 	{{#_class}}
@@ -71,8 +67,32 @@ namespace linphone {
 		{{#friendClasses}}
 		friend class {{name}};
 		{{/friendClasses}}
-
+	
 		public:
+			{{#enums}}
+			{{#doc}}
+			/**
+			{{#lines}}
+			* {{{line}}}
+			{{/lines}}
+			*
+			*/
+			{{/doc}}
+			enum class {{name}} {
+				{{#enumerators}}
+				{{#doc}}
+				/**
+				{{#lines}}
+				* {{{line}}}
+				{{/lines}}
+				*/
+				{{/doc}}
+				{{name}}{{#value}} = {{{value}}}{{/value}}{{#notLast}},{{/notLast}}
+				{{/enumerators}}
+			};
+
+			{{/enums}}
+
 			{{#isNotListener}}
 			{{#isrefcountable}}
 			{{{className}}}(void *ptr, bool takeRef=true);
@@ -86,7 +106,7 @@ namespace linphone {
 			{{/isnotrefcountable}}
 			LINPHONECXX_PUBLIC {{{privCClassName}}} *cPtr() {return ({{{privCClassName}}} *)mPrivPtr;}
 			{{/isNotListener}}
-
+			
 			{{#ismonolistenable}}
 			LINPHONECXX_PUBLIC void setListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismonolistenable}}
@@ -96,21 +116,13 @@ namespace linphone {
 			LINPHONECXX_PUBLIC void addListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			LINPHONECXX_PUBLIC void removeListener(const std::shared_ptr<{{{listenerClassName}}}> &listener);
 			{{/ismultilistenable}}
-
-			{{#isListener}}
-			LINPHONECXX_PUBLIC virtual ~{{{className}}}() = default;
-			{{/isListener}}
-
+	
 		public:
-			{{#isfactory}}
-			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCore(const std::shared_ptr<CoreListener> &listener, const std::string & configPath, const std::string & factoryConfigPath) const;
-			LINPHONECXX_PUBLIC std::shared_ptr<Core> createCoreWithConfig(const std::shared_ptr<CoreListener> &listener, const std::shared_ptr<Config> & config) const;
-			{{/isfactory}}
 			{{#isVcard}}
 			LINPHONECXX_PUBLIC std::shared_ptr<belcard::BelCard> &getVcard();
 			{{/isVcard}}
-
-
+			
+		
 			{{#methods}}
 			/**
 			{{#briefDoc}}
@@ -126,7 +138,7 @@ namespace linphone {
 			{{/detailedDoc}}
 			 */
 			LINPHONECXX_PUBLIC {{#deprecated}}LINPHONECXX_DEPRECATED {{/deprecated}}{{#isListener}}virtual {{/isListener}}{{{declPrototype}}}{{{suffix}}};
-
+			
 			{{/methods}}
 			{{#staticMethods}};
 			/**
@@ -143,20 +155,20 @@ namespace linphone {
 			{{/detailedDoc}}
 			 */
 			LINPHONECXX_PUBLIC {{#deprecated}}LINPHONECXX_DEPRECATED {{/deprecated}}static {{{declPrototype}}};
-
+			
 			{{/staticMethods}}
 
 		{{#ismultilistenable}}
 		private:
 			static void *createCallbacks(void *userData);
 		{{/ismultilistenable}}
-
-
+		
+		
 		{{#ismultilistenable}}
 		private:
 			void *mCallbacks;
 		{{/ismultilistenable}}
-
+		
 		{{#isnotrefcountable}}
 		private:
 			void *mPrivPtr;

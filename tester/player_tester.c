@@ -17,6 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include <mediastreamer2/mediastream.h>
 
 static bool_t wait_for_eof(bool_t *eof, int *time,int time_refresh, int timeout) {

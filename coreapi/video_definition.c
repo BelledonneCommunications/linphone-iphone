@@ -1,6 +1,6 @@
 /*
 linphone
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,8 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/factory.h"
 #include "linphone/video_definition.h"
 
-#include "private.h"
+#include "c-wrapper/c-wrapper.h"
 
+// TODO: From coreapi. Remove me later.
+#include "private.h"
 
 static void linphone_video_definition_destroy(LinphoneVideoDefinition *vdef) {
 	if (vdef->name) bctbx_free(vdef->name);

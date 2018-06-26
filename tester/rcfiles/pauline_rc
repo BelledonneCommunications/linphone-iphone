@@ -4,7 +4,6 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-
 composing_idle_timeout=1
 
 [auth_info_0]
@@ -12,7 +11,6 @@ username=pauline
 userid=pauline
 passwd=secret
 realm=sip.example.org
-
 
 [proxy_0]
 realm=sip.example.org

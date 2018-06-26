@@ -1,6 +1,7 @@
 ﻿#include <string>
 
 #include "liblinphone_tester_windows.h"
+#include "tester_utils.h"
 
 using namespace BelledonneCommunications::Linphone::Tester;
 using namespace Platform;

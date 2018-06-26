@@ -35,7 +35,7 @@ static void guess_display_name(LinphoneAddress *from){
 	bool_t surname=0;
 	for(it=linphone_address_get_username(from);*it!='\0';++it){
 		if (begin){
-			*wptr=toupper(*it);
+			*wptr = (char)toupper(*it);
 			begin=FALSE;
 		}else if (*it=='.'){
 			if (surname) break;

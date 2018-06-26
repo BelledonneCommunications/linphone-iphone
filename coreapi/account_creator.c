@@ -1,6 +1,6 @@
 /*
 linphone
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,10 +20,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "linphone/account_creator.h"
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
+
+
+#include "c-wrapper/c-wrapper.h"
+#include "dial-plan/dial-plan.h"
+
 
 #include "bctoolbox/crypto.h"
 #include "bctoolbox/regex.h"
+
+// TODO: From coreapi. Remove me later.
+#include "private.h"
+
+// =============================================================================
+
+using namespace LinphonePrivate;
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneAccountCreatorCbs);
 
@@ -43,7 +54,7 @@ static const char* ha1_for_passwd(const char* username, const char* realm, const
 
 static unsigned int validate_uri(const char* username, const char* domain, const char* display_name) {
 	LinphoneAddress* addr;
-	int status = 0;
+	unsigned int status = 0;
 	LinphoneProxyConfig* proxy = linphone_proxy_config_new();
 	linphone_proxy_config_set_identity(proxy, "sip:?@domain.com");
 
@@ -79,7 +90,18 @@ static char* _get_identity(const LinphoneAccountCreator *creator) {
 		LinphoneAddress* addr;
 
 		addr = linphone_proxy_config_normalize_sip_uri(proxy, creator->username ? creator->username : creator->phone_number);
-		if (addr == NULL) goto end;
+		if (addr == NULL) {
+			if (creator->username && creator->domain) {
+				char *url = ms_strdup_printf("sip:%s@%s", creator->username, creator->domain);
+				addr = linphone_address_new(url);
+				ms_free(url);
+				if (addr == NULL) {
+					goto end;
+				}
+			} else {
+				goto end;
+			}
+		}
 
 		identity = linphone_address_as_string(addr);
 		linphone_address_unref(addr);
@@ -103,10 +125,13 @@ LinphoneProxyConfig * linphone_account_creator_create_proxy_config(const Linphon
 	if (creator->phone_country_code) {
 		linphone_proxy_config_set_dial_prefix(cfg, creator->phone_country_code);
 	} else if (creator->phone_number) {
-		int dial_prefix_number = linphone_dial_plan_lookup_ccc_from_e164(creator->phone_number);
+		int dial_prefix_number = DialPlan::lookupCccFromE164(creator->phone_number);
 		char buff[4];
 		snprintf(buff, sizeof(buff), "%d", dial_prefix_number);
 		linphone_proxy_config_set_dial_prefix(cfg, buff);
+	}
+	if (linphone_proxy_config_get_server_addr(cfg) == NULL && creator->domain != NULL) {
+		linphone_proxy_config_set_server_addr(cfg, creator->domain);
 	}
 
 	linphone_proxy_config_enable_register(cfg, TRUE);
@@ -332,7 +357,7 @@ void linphone_account_creator_set_user_data(LinphoneAccountCreator *creator, voi
 LinphoneAccountCreatorUsernameStatus linphone_account_creator_set_username(LinphoneAccountCreator *creator, const char *username) {
 	int min_length = lp_config_get_int(creator->core->config, "assistant", "username_min_length", -1);
 	int max_length = lp_config_get_int(creator->core->config, "assistant", "username_max_length", -1);
-	bool_t use_phone_number = lp_config_get_int(creator->core->config, "assistant", "use_phone_number", 0);
+	bool_t use_phone_number = !!lp_config_get_int(creator->core->config, "assistant", "use_phone_number", 0);
 	const char* regex = lp_config_get_string(creator->core->config, "assistant", "username_regex", 0);
 	if (!username) {
 		creator->username = NULL;
@@ -379,15 +404,15 @@ LinphoneAccountCreatorPhoneNumberStatusMask linphone_account_creator_set_phone_n
 
 		// if phone is valid, we lastly want to check that length is OK
 		{
-			const LinphoneDialPlan* plan = linphone_dial_plan_by_ccc(creator->phone_country_code);
+			const DialPlan &plan = DialPlan::findByCcc(creator->phone_country_code);
 			int size = (int)strlen(phone_number);
-			if (linphone_dial_plan_is_generic(plan)) {
+			if (plan.isGeneric()) {
 				return_status = LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode;
 			}
-			if (size < plan->nnl - 1) {
+			if (size < plan.getNationalNumberLength() - 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooShort;
 				goto end;
-			} else if (size > plan->nnl + 1) {
+			} else if (size > plan.getNationalNumberLength() + 1) {
 				return_status += LinphoneAccountCreatorPhoneNumberStatusTooLong;
 				goto end;
 			} else if (return_status & LinphoneAccountCreatorPhoneNumberStatusInvalidCountryCode) {
@@ -1107,9 +1132,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_password_linphone(L
 		return LinphoneAccountCreatorStatusMissingArguments;
 	}
 
-	const char * username = creator->username ? creator->username : creator->phone_number;
-	const char * ha1 = ms_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) );
-	const char * new_ha1 = ms_strdup(ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), new_pwd));
+	const char *username = creator->username ? creator->username : creator->phone_number;
+	char *ha1 = bctbx_strdup(creator->ha1 ? creator->ha1 : ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), creator->password) );
+	char *new_ha1 = bctbx_strdup(ha1_for_passwd(username, linphone_proxy_config_get_domain(creator->proxy_cfg), new_pwd));
 
 	ms_debug("Account creator: update_password (username=%s, domain=%s)",
 		creator->username,
@@ -1124,6 +1149,9 @@ LinphoneAccountCreatorStatus linphone_account_creator_update_password_linphone(L
 	linphone_xml_rpc_request_cbs_set_response(linphone_xml_rpc_request_get_callbacks(request), _password_updated_cb_custom);
 	linphone_xml_rpc_session_send_request(creator->xmlrpc_session, request);
 	linphone_xml_rpc_request_unref(request);
+
+	bctbx_free(ha1);
+	bctbx_free(new_ha1);
 
 	return LinphoneAccountCreatorStatusRequestOk;
 }

@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 static char *create_enum_domain(const char *number){
 	long len=(long)strlen(number);
-	char *domain=reinterpret_cast<char *>(ms_malloc((len*2)+10));
+	char *domain=reinterpret_cast<char *>(ms_malloc((size_t)(len*2)+10));
 	long i,j;
 
 	for (i=0,j=len-1;j>=0;j--){

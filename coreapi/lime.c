@@ -17,6 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include "linphone/api/c-content.h"
+
 #include "lime.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -93,21 +95,21 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		/* retrieve values : peerZid, sndKey, sndSId, sndIndex, valid from columns 1,2,3,4,5 */
 		length = sqlite3_column_bytes(sqlStmt, 1);
 		if (length==12) { /* peerZID */
-			memcpy(currentPeerKey->peerZID, sqlite3_column_blob(sqlStmt, 1), length);
+			memcpy(currentPeerKey->peerZID, sqlite3_column_blob(sqlStmt, 1), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 2);
 		if (length==32) { /* sndKey */
-			memcpy(currentPeerKey->key, sqlite3_column_blob(sqlStmt, 2), length);
+			memcpy(currentPeerKey->key, sqlite3_column_blob(sqlStmt, 2), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
 
 		length = sqlite3_column_bytes(sqlStmt, 3);
 		if (length==32) { /* sndSId */
-			memcpy(currentPeerKey->sessionId, sqlite3_column_blob(sqlStmt, 3), length);
+			memcpy(currentPeerKey->sessionId, sqlite3_column_blob(sqlStmt, 3), (size_t)length);
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
@@ -126,14 +128,14 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		length = sqlite3_column_bytes(sqlStmt, 5);
 		if (length==8) { /* sndIndex : 8 bytes of a int64_t, stored as a blob in big endian */
 			uint8_t *validity = (uint8_t *)sqlite3_column_blob(sqlStmt, 5);
-			validityTimeSpec.tv_sec = ((uint64_t)(validity[0]))<<56 |
+			validityTimeSpec.tv_sec = (int64_t)(((uint64_t)(validity[0]))<<56 |
 							((uint64_t)(validity[1]))<<48 |
 							((uint64_t)(validity[2]))<<40 |
 							((uint64_t)(validity[3]))<<32 |
 							((uint64_t)(validity[4]))<<24 |
 							((uint64_t)(validity[5]))<<16 |
 							((uint64_t)(validity[6]))<<8 |
-							((uint64_t)(validity[7]));
+							((uint64_t)(validity[7])));
 		} else { /* something wrong with that one, skip it */
 			continue;
 		}
@@ -144,7 +146,7 @@ int lime_getCachedSndKeysByURI(void *cachedb, limeURIKeys_t *associatedKeys) {
 		/* check validity */
 		bctbx_get_utc_cur_time(&currentTimeSpec);
 		if (validityTimeSpec.tv_sec == 0 || bctbx_timespec_compare(&currentTimeSpec, &validityTimeSpec)<0) {
-			associatedKeys->associatedZIDNumber +=1;
+			associatedKeys->associatedZIDNumber++;
 			/* extend array of pointer to limeKey_t structures to add the one we found */
 			associatedKeys->peerKeys = (limeKey_t **)bctbx_realloc(associatedKeys->peerKeys, (associatedKeys->associatedZIDNumber)*sizeof(limeKey_t *));
 
@@ -210,7 +212,7 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 		/* retrieve values : rcvKey, rcvSId, rcvIndex from columns 1,2,3 */
 		length = sqlite3_column_bytes(sqlStmt, 1);
 		if (length==32) { /* rcvKey */
-			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), length);
+			memcpy(associatedKey->key, sqlite3_column_blob(sqlStmt, 1), (size_t)length);
 		} else { /* something wrong */
 			ms_error("[LIME] Get Cached Rcv Key by Zid fetched a rcvKey with wrong length");
 			sqlite3_finalize(sqlStmt);
@@ -219,7 +221,7 @@ int lime_getCachedRcvKeyByZid(void *cachedb, limeKey_t *associatedKey, const cha
 
 		length = sqlite3_column_bytes(sqlStmt, 2);
 		if (length==32) { /* rcvSId */
-			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), length);
+			memcpy(associatedKey->sessionId, sqlite3_column_blob(sqlStmt, 2), (size_t)length);
 		} else { /* something wrong */
 			ms_error("[LIME] Get Cached Rcv Key by Zid fetched a rcvSid with wrong length");
 			sqlite3_finalize(sqlStmt);
@@ -261,14 +263,14 @@ int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uin
 	uint8_t *colValues[4];
 	uint8_t sessionIndex[4]; /* buffer to hold the uint32_t buffer index in big endian */
 	size_t colLength[] = {32, 32, 4, 8}; /* data length: keys and session ID : 32 bytes, Index: 4 bytes(uint32_t), validity : 8 bytes(UTC time as int64_t) */
-	int colNums;
+	uint8_t colNums;
 
 	if (cachedb == NULL  || associatedKey == NULL) { /* there is no cache return error */
 		return LIME_INVALID_CACHE;
 	}
 
 	/* wrap values to be written */
-	sessionIndex[0] = (associatedKey->sessionIndex>>24)&0xFF;
+	sessionIndex[0] = (uint8_t)((associatedKey->sessionIndex>>24)&0xFF);
 	sessionIndex[1] = (associatedKey->sessionIndex>>16)&0xFF;
 	sessionIndex[2] = (associatedKey->sessionIndex>>8)&0xFF;
 	sessionIndex[3] = (associatedKey->sessionIndex)&0xFF;
@@ -279,16 +281,16 @@ int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uin
 	/* shall we update valid column? Enforce only when receiver, if timeSpan is 0, just ignore */
 	if (validityTimeSpan > 0 && role == LIME_RECEIVER) {
 		bctbx_get_utc_cur_time(&currentTime);
-		bctbx_timespec_add(&currentTime, validityTimeSpan);
+		bctbx_timespec_add(&currentTime, (int64_t)validityTimeSpan);
 		/* store the int64_t in big endian in the cache(cache is not typed, all data seen as blob) */
-		colValues[3][0] = (currentTime.tv_sec>>56)&0xFF;
-		colValues[3][1] = (currentTime.tv_sec>>48)&0xFF;
-		colValues[3][2] = (currentTime.tv_sec>>40)&0xFF;
-		colValues[3][3] = (currentTime.tv_sec>>32)&0xFF;
-		colValues[3][4] = (currentTime.tv_sec>>24)&0xFF;
-		colValues[3][5] = (currentTime.tv_sec>>16)&0xFF;
-		colValues[3][6] = (currentTime.tv_sec>>8)&0xFF;
-		colValues[3][7] = (currentTime.tv_sec)&0xFF;
+		colValues[3][0] = (uint8_t)((currentTime.tv_sec>>56)&0xFF);
+		colValues[3][1] = (uint8_t)((currentTime.tv_sec>>48)&0xFF);
+		colValues[3][2] = (uint8_t)((currentTime.tv_sec>>40)&0xFF);
+		colValues[3][3] = (uint8_t)((currentTime.tv_sec>>32)&0xFF);
+		colValues[3][4] = (uint8_t)((currentTime.tv_sec>>24)&0xFF);
+		colValues[3][5] = (uint8_t)((currentTime.tv_sec>>16)&0xFF);
+		colValues[3][6] = (uint8_t)((currentTime.tv_sec>>8)&0xFF);
+		colValues[3][7] = (uint8_t)((currentTime.tv_sec)&0xFF);
 
 		colNums = 4;
 	} else {
@@ -296,7 +298,11 @@ int lime_setCachedKey(void *cachedb, limeKey_t *associatedKey, uint8_t role, uin
 	}
 
 	/* update cache */
-	return bzrtp_cache_write(cachedb, associatedKey->zuid, "lime", role==LIME_SENDER?colNamesSender:colNamesReceiver, colValues, colLength, colNums);
+	return bzrtp_cache_write(
+		cachedb, associatedKey->zuid, "lime",
+		role == LIME_SENDER ? colNamesSender : colNamesReceiver,
+		colValues, colLength, colNums
+	);
 }
 
 /**
@@ -315,7 +321,7 @@ static int lime_deriveKey(limeKey_t *key) {
 		return LIME_UNABLE_TO_DERIVE_KEY;
 	}
 
- 	/* Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||0x00000100)*/
+	/* Derivation is made derived Key = HMAC_SHA256(Key, 0x0000001||"MessageKey"||0x00||SessionId||SessionIndex||0x00000100)*/
 	/* total data to be hashed is       55 bytes  :           4   +      10     +   1 +     32   +   4         +   4 */
 	inputData[0] = 0x00;
 	inputData[1] = 0x00;
@@ -396,6 +402,8 @@ int lime_encryptMessage(limeKey_t *key, const uint8_t *plainMessage, uint32_t me
 int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
 	bctbx_aes_gcm_context_t *gcmContext;
 
+	if (key == NULL) return -1;
+
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
 		gcmContext = bctbx_aes_gcm_context_new(key, 24, NULL, 0, key+24, 8, BCTBX_GCM_ENCRYPT);
@@ -416,6 +424,8 @@ int lime_encryptFile(void **cryptoContext, unsigned char *key, size_t length, ch
 
 int lime_decryptFile(void **cryptoContext, unsigned char *key, size_t length, char *plain, char *cipher) {
 	bctbx_aes_gcm_context_t *gcmContext;
+
+	if (key == NULL) return -1;
 
 	if (*cryptoContext == NULL) { /* first call to the function, allocate a crypto context and initialise it */
 		/* key contains 192bits of key || 64 bits of Initialisation Vector, no additional data */
@@ -569,8 +579,8 @@ int lime_createMultipartMessage(void *cachedb, const char *contentType, uint8_t 
 	/* dump the whole message doc into the output */
 	xmlDocDumpFormatMemoryEnc(xmlOutputMessage, &local_output, &xmlStringLength, "UTF-8", 0);
 
-	*output = (uint8_t *)ms_malloc(xmlStringLength + 1);
-	memcpy(*output, local_output, xmlStringLength);
+	*output = (uint8_t *)ms_malloc((size_t)xmlStringLength + 1);
+	memcpy(*output, local_output, (size_t)xmlStringLength);
 	(*output)[xmlStringLength] = '\0';
 
 	xmlFree(local_output);
@@ -603,7 +613,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 
 	/* retrieve selfZID from cache, and convert it to an Hexa buffer to easily match it against hex string containg in xml message as pzid */
 	if (bzrtp_getSelfZID(cachedb, selfURI, selfZid, NULL) != 0) {
-		ms_error("[LIME] Couldn't get self ZID"); 
+		ms_error("[LIME] Couldn't get self ZID");
 		return LIME_UNABLE_TO_DECRYPT_MESSAGE;
 	}
 	bctbx_int8_to_str(selfZidHex, selfZid, 12);
@@ -613,13 +623,13 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	xmlSetGenericErrorFunc(xml_ctx, linphone_xmlparsing_genericxml_error);
 	xml_ctx->doc = xmlReadDoc((const unsigned char*)message, 0, NULL, 0);
 	if (xml_ctx->doc == NULL) {
-		ms_error("[LIME] XML doc is null"); 
+		ms_error("[LIME] XML doc is null");
 		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
 		goto error;
 	}
 
 	if (linphone_create_xml_xpath_context(xml_ctx) < 0) {
-		ms_error("[LIME] Couldn't create xml xpath context"); 
+		ms_error("[LIME] Couldn't create xml xpath context");
 		retval = LIME_INVALID_ENCRYPTED_MESSAGE;
 		goto error;
 	}
@@ -644,7 +654,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		if ((msg_object != NULL) && (msg_object->nodesetval != NULL)) {
 			for (i = 1; i <= msg_object->nodesetval->nodeNr; i++) {
 				char *currentZidHex;
-		
+
 				char *encryptedMessageb64;
 				char *encryptedContentTypeb64;
 				snprintf(xpath_str, sizeof(xpath_str), "/doc/msg[%i]/pzid", i);
@@ -682,7 +692,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 
 	/* do we have retrieved correctly all the needed data */
 	if (encryptedMessage == NULL) {
-		ms_error("[LIME] Encrypted message is null, something went wrong..."); 
+		ms_error("[LIME] Encrypted message is null, something went wrong...");
 		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
 		goto error;
 	}
@@ -692,7 +702,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		/* something wen't wrong with the cache, this shall never happen */
 		uint8_t associatedKeyIndexHex[9];
 		bctbx_uint32_to_str(associatedKeyIndexHex, associatedKey.sessionIndex);
-		ms_error("[LIME] Session index [%s] < associated key's session index [%s], should not happen !", sessionIndexHex, associatedKeyIndexHex); 
+		ms_error("[LIME] Session index [%s] < associated key's session index [%s], should not happen !", sessionIndexHex, associatedKeyIndexHex);
 		ms_free(encryptedMessage);
 		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
 		goto error;
@@ -700,7 +710,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 
 	if ((usedSessionIndex - associatedKey.sessionIndex > MAX_DERIVATION_NUMBER) ) {
 		/* we missed to many messages, ask for a cache reset via a ZRTP call */
-		ms_error("[LIME] Too many messages missed (%i), cache should be reset by ZRTP call", usedSessionIndex - associatedKey.sessionIndex); 
+		ms_error("[LIME] Too many messages missed (%i), cache should be reset by ZRTP call", usedSessionIndex - associatedKey.sessionIndex);
 		ms_free(encryptedMessage);
 		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
 		goto error;
@@ -709,7 +719,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	if (associatedKey.sessionIndex != usedSessionIndex) {
 		uint8_t associatedKeyIndexHex[9];
 		bctbx_uint32_to_str(associatedKeyIndexHex, associatedKey.sessionIndex);
-		ms_warning("LIME] unexpected session index [%s] received from [%s] (expected [%s]), [%i] messages will be discarded", 
+		ms_warning("LIME] unexpected session index [%s] received from [%s] (expected [%s]), [%i] messages will be discarded",
 			sessionIndexHex, peerURI, associatedKeyIndexHex, usedSessionIndex-associatedKey.sessionIndex);
 	}
 
@@ -724,7 +734,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 	if (retval != 0) {
 		ms_free(*output);
 		*output = NULL;
-		ms_error("[LIME] Couldn't decrypt message"); 
+		ms_error("[LIME] Couldn't decrypt message");
 		retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
 		goto error;
 	}
@@ -737,7 +747,7 @@ int lime_decryptMultipartMessage(void *cachedb, uint8_t *message, const char *se
 		if (retval != 0) {
 			ms_free(*content_type);
 			*content_type = NULL;
-			ms_error("[LIME] Couldn't decrypt content type"); 
+			ms_error("[LIME] Couldn't decrypt content type");
 			retval = LIME_UNABLE_TO_DECRYPT_MESSAGE;
 			goto error;
 		}
@@ -757,17 +767,21 @@ error:
 
 bool_t linphone_chat_room_lime_available(LinphoneChatRoom *cr) {
 	if (cr) {
-		switch (linphone_core_lime_enabled(cr->lc)) {
+		switch (linphone_core_lime_enabled(linphone_chat_room_get_core(cr))) {
 			case LinphoneLimeDisabled: return FALSE;
 			case LinphoneLimeMandatory:
 			case LinphoneLimePreferred: {
-				void *zrtp_cache_db = linphone_core_get_zrtp_cache_db(cr->lc);
+				void *zrtp_cache_db = linphone_core_get_zrtp_cache_db(linphone_chat_room_get_core(cr));
 				if (zrtp_cache_db != NULL) {
 					bool_t res;
 					limeURIKeys_t associatedKeys;
-					char *peer = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(cr))
-												  				, linphone_address_get_username(linphone_chat_room_get_peer_address(cr))
-												  				, linphone_address_get_domain(linphone_chat_room_get_peer_address(cr)));
+					const LinphoneAddress *peerAddr = linphone_chat_room_get_peer_address(cr);
+					char *peer = ms_strdup_printf(
+						"%s:%s@%s",
+						linphone_address_get_scheme(peerAddr),
+						linphone_address_get_username(peerAddr),
+						linphone_address_get_domain(peerAddr)
+					);
 					/* retrieve keys associated to the peer URI */
 					associatedKeys.peerURI = bctbx_strdup(peer);
 					associatedKeys.selfURI = NULL; /* TODO : there is no sender associated to chatroom so check for any local URI available, shall we add sender to chatroom? */
@@ -790,7 +804,9 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	/* check if we have a xml/cipher message to be decrypted */
-	if (msg->content_type && (strcmp("xml/cipher", msg->content_type) == 0 || strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0)) {
+	if (linphone_chat_message_get_content_type(msg) &&
+		(strcmp("xml/cipher", linphone_chat_message_get_content_type(msg)) == 0 ||
+		strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", linphone_chat_message_get_content_type(msg)) == 0)) {
 		errcode = 0;
 		int retval;
 		void *zrtp_cache_db = NULL; /* use a void * instead of sqlite3 * to avoid problems and ifdef when SQLITE is not available(the get function shall return NULL in that case) */
@@ -799,7 +815,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 		char *peerUri = NULL;
 		char *selfUri = NULL;
 
-		ms_debug("Content type is known (%s), try to decrypt it", msg->content_type);
+		ms_debug("Content type is known (%s), try to decrypt it", linphone_chat_message_get_content_type(msg));
 
 		zrtp_cache_db = linphone_core_get_zrtp_cache_db(lc);
 		if (zrtp_cache_db == NULL) {
@@ -807,14 +823,23 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			errcode = 500;
 			return errcode;
 		}
-		peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(msg->from)
-								   				, linphone_address_get_username(msg->from)
-								   				, linphone_address_get_domain(msg->from));
-		selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(msg->to)
-								   				, linphone_address_get_username(msg->to)
-								   				, linphone_address_get_domain(msg->to));
+		const LinphoneAddress *fromAddr = linphone_chat_message_get_from_address(msg);
+		peerUri = ms_strdup_printf(
+			"%s:%s@%s",
+			linphone_address_get_scheme(fromAddr),
+			linphone_address_get_username(fromAddr),
+			linphone_address_get_domain(fromAddr)
+		);
 
-		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)msg->message, selfUri, peerUri, &decrypted_body, &decrypted_content_type, 
+		const LinphoneAddress *toAddr = linphone_chat_message_get_to_address(msg);
+		selfUri = ms_strdup_printf(
+			"%s:%s@%s",
+			linphone_address_get_scheme(toAddr),
+			linphone_address_get_username(toAddr),
+			linphone_address_get_domain(toAddr)
+		);
+
+		retval = lime_decryptMultipartMessage(zrtp_cache_db, (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &decrypted_body, &decrypted_content_type,
 						      bctbx_time_string_to_sec(lp_config_get_string(lc->config, "sip", "lime_key_validity", "0")));
 		ms_free(peerUri);
 		ms_free(selfUri);
@@ -825,17 +850,15 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			return errcode;
 		} else {
 			/* swap encrypted message with plain text message */
-			if (msg->message) {
-				ms_free(msg->message);
-			}
-			msg->message = (char *)decrypted_body;
+			linphone_chat_message_set_text(msg, (char *)decrypted_body);
+			ms_free(decrypted_body);
 			if (decrypted_content_type != NULL) {
 				ms_debug("Decrypted content type is ", decrypted_content_type);
 				linphone_chat_message_set_content_type(msg, decrypted_content_type);
 				ms_free(decrypted_content_type);
 			} else {
 				ms_debug("Decrypted content type is unknown, use plain/text or application/vnd.gsma.rcs-ft-http+xml");
-				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", msg->content_type) == 0) {
+				if (strcmp("application/cipher.vnd.gsma.rcs-ft-http+xml", linphone_chat_message_get_content_type(msg)) == 0) {
 					linphone_chat_message_set_content_type(msg, "application/vnd.gsma.rcs-ft-http+xml");
 				} else {
 					linphone_chat_message_set_content_type(msg, "text/plain");
@@ -843,7 +866,7 @@ int lime_im_encryption_engine_process_incoming_message_cb(LinphoneImEncryptionEn
 			}
 		}
 	} else {
-		ms_message("Content type is unknown (%s), don't try to decrypt it", msg->content_type);
+		ms_message("Content type is unknown (%s), don't try to decrypt it", linphone_chat_message_get_content_type(msg));
 	}
 	return errcode;
 }
@@ -852,17 +875,17 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 	LinphoneCore *lc = linphone_im_encryption_engine_get_core(engine);
 	int errcode = -1;
 	const char *new_content_type = "xml/cipher";
-	if(linphone_core_lime_enabled(room->lc)) {
+	if(linphone_core_lime_enabled(linphone_chat_room_get_core(room))) {
 		if (linphone_chat_room_lime_available(room)) {
 			void *zrtp_cache_db = NULL; /* use a void * instead of sqlite3 * to avoid problems and ifdef when SQLITE is not available(the get function shall return NULL in that case) */
-			if (msg->content_type) {
-				if (strcmp(msg->content_type, "application/vnd.gsma.rcs-ft-http+xml") == 0) {
+			if (linphone_chat_message_get_content_type(msg)) {
+				if (strcmp(linphone_chat_message_get_content_type(msg), "application/vnd.gsma.rcs-ft-http+xml") == 0) {
 					/* It's a file transfer, content type shall be set to application/cipher.vnd.gsma.rcs-ft-http+xml
-					   TODO: As of january 2017, the content type is now included in the encrypted body, this
-					   application/cipher.vnd.gsma.rcs-ft-http+xml is kept for compatibility with previous versions,
-					   but may be dropped in the future to use xml/cipher instead. */
+						 TODO: As of january 2017, the content type is now included in the encrypted body, this
+						 application/cipher.vnd.gsma.rcs-ft-http+xml is kept for compatibility with previous versions,
+						 but may be dropped in the future to use xml/cipher instead. */
 					new_content_type = "application/cipher.vnd.gsma.rcs-ft-http+xml";
-				} else if (strcmp(msg->content_type, "application/im-iscomposing+xml") == 0) {
+				} else if (strcmp(linphone_chat_message_get_content_type(msg), "application/im-iscomposing+xml") == 0) {
 					/* We don't encrypt composing messages */
 					return errcode;
 				}
@@ -877,23 +900,29 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 			} else {
 				int retval;
 				uint8_t *crypted_body = NULL;
-				char *peerUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(linphone_chat_room_get_peer_address(room))
-															, linphone_address_get_username(linphone_chat_room_get_peer_address(room))
-										   					, linphone_address_get_domain(linphone_chat_room_get_peer_address(room)));
-				char *selfUri = ms_strdup_printf("%s:%s@%s"	, linphone_address_get_scheme(msg->from)
-										   					, linphone_address_get_username(msg->from)
-										   					, linphone_address_get_domain(msg->from));
+				const LinphoneAddress *peerAddr = linphone_chat_room_get_peer_address(room);
+				char *peerUri = ms_strdup_printf(
+					"%s:%s@%s",
+					linphone_address_get_scheme(peerAddr),
+					linphone_address_get_username(peerAddr),
+					linphone_address_get_domain(peerAddr)
+				);
+				const LinphoneAddress *fromAddr = linphone_chat_message_get_from_address(msg);
+				char *selfUri = ms_strdup_printf(
+					"%s:%s@%s",
+					linphone_address_get_scheme(fromAddr),
+					linphone_address_get_username(fromAddr),
+					linphone_address_get_domain(fromAddr)
+				);
 
-				retval = lime_createMultipartMessage(zrtp_cache_db, msg->content_type, (uint8_t *)msg->message, selfUri, peerUri, &crypted_body);
+				retval = lime_createMultipartMessage(zrtp_cache_db, linphone_chat_message_get_content_type(msg), (uint8_t *)linphone_chat_message_get_text(msg), selfUri, peerUri, &crypted_body);
 				if (retval != 0) { /* fail to encrypt */
-					ms_warning("Unable to encrypt message for %s : %s", room->peer, lime_error_code_to_string(retval));
+					ms_warning("Unable to encrypt message for %s : %s", peerUri, lime_error_code_to_string(retval));
 					if (crypted_body) ms_free(crypted_body);
 					errcode = 488;
 				} else { /* encryption ok, swap plain text message body by encrypted one */
-					if (msg->message) {
-						ms_free(msg->message);
-					}
-					msg->message = (char *)crypted_body;
+					linphone_chat_message_set_text(msg, (char *)crypted_body);
+					ms_free(crypted_body);
 					linphone_chat_message_set_content_type(msg, new_content_type);
 				}
 				ms_free(peerUri);
@@ -910,34 +939,51 @@ int lime_im_encryption_engine_process_outgoing_message_cb(LinphoneImEncryptionEn
 }
 
 int lime_im_encryption_engine_process_downloading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t size, uint8_t *decrypted_buffer) {
-	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
-	
-	if (buffer == NULL || size == 0) {
-		return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
-	}
-	
-	return lime_decryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
-						 (unsigned char *)linphone_content_get_key(msg->file_transfer_information), size, (char *)decrypted_buffer,
-						 (char *)buffer);
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+	if (!content)
+		return -1;
+
+	if (!linphone_content_get_key(content))
+		return -1;
+
+	if (!buffer || size == 0)
+		return lime_decryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
+
+	return lime_decryptFile(
+		linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content),
+		size,
+		(char *)decrypted_buffer,
+		(char *)buffer
+	);
 }
 
 int lime_im_encryption_engine_process_uploading_file_cb(LinphoneImEncryptionEngine *engine, LinphoneChatMessage *msg, size_t offset, const uint8_t *buffer, size_t *size, uint8_t *encrypted_buffer) {
-	size_t file_size = linphone_content_get_size(msg->file_transfer_information);
-	if (linphone_content_get_key(msg->file_transfer_information) == NULL) return -1;
-	
-	if (buffer == NULL || *size == 0) {
-		return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information), NULL, 0, NULL, NULL);
-	}
-	
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+
+	if (!content)
+		return -1;
+
+	if (!linphone_content_get_key(content))
+		return -1;
+
+	if (!buffer || *size == 0)
+		return lime_encryptFile(linphone_content_get_cryptoContext_address(content), NULL, 0, NULL, NULL);
+
+	size_t file_size = linphone_content_get_file_size(content);
 	if (file_size == 0) {
 		ms_warning("File size has not been set, encryption will fail if not done in one step (if file is larger than 16K)");
 	} else if (offset + *size < file_size) {
 		*size -= (*size % 16);
 	}
-	
-	return lime_encryptFile(linphone_content_get_cryptoContext_address(msg->file_transfer_information),
-					(unsigned char *)linphone_content_get_key(msg->file_transfer_information), *size,
-					(char *)buffer, (char *)encrypted_buffer);
+
+	return lime_encryptFile(
+		linphone_content_get_cryptoContext_address(content),
+		(unsigned char *)linphone_content_get_key(content),
+		*size,
+		(char *)buffer,
+		(char *)encrypted_buffer
+	);
 }
 
 bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room) {
@@ -950,7 +996,9 @@ void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptio
 	/* generate a random 192 bits key + 64 bits of initial vector and store it into the
 		* file_transfer_information->key field of the msg */
 	sal_get_random_bytes((unsigned char *)keyBuffer, FILE_TRANSFER_KEY_SIZE);
-	linphone_content_set_key(msg->file_transfer_information, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
+	LinphoneContent *content = linphone_chat_message_get_file_transfer_information(msg);
+	if (content)
+		linphone_content_set_key(content, keyBuffer, FILE_TRANSFER_KEY_SIZE); /* key is duplicated in the content private structure */
 }
 
 #else /* HAVE_LIME */
@@ -996,7 +1044,7 @@ bool_t lime_im_encryption_engine_is_file_encryption_enabled_cb(LinphoneImEncrypt
 	return FALSE;
 }
 void lime_im_encryption_engine_generate_file_transfer_key_cb(LinphoneImEncryptionEngine *engine, LinphoneChatRoom *room, LinphoneChatMessage *msg) {
-	
+
 }
 #endif /* HAVE_LIME */
 

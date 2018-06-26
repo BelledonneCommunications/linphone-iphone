@@ -26,54 +26,51 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <fcntl.h>
 
 #ifdef _WIN32
-#	include <io.h>
-#	ifndef R_OK
-#		define R_OK 0x2
-#	endif
-#	ifndef W_OK
-#		define W_OK 0x6
-#	endif
-#   ifndef F_OK
-#       define F_OK 0x0
-#   endif
+	#include <io.h>
+	#ifndef R_OK
+		#define R_OK 0x2
+	#endif
+	#ifndef W_OK
+		#define W_OK 0x6
+	#endif
+	#ifndef F_OK
+		#define F_OK 0x0
+	#endif
 
-#	ifndef S_IRUSR
-#	define S_IRUSR S_IREAD
-#	endif
+	#ifndef S_IRUSR
+		#define S_IRUSR S_IREAD
+	#endif
 
-#	ifndef S_IWUSR
-#	define S_IWUSR S_IWRITE
-#	endif
+	#ifndef S_IWUSR
+		#define S_IWUSR S_IWRITE
+	#endif
 
-#	define open _open
-#	define read _read
-#	define write _write
-#	define close _close
-#	define access _access
-#	define lseek _lseek
-#else /*_WIN32*/
-
-#	ifndef O_BINARY
-#	define O_BINARY 0
-#	endif
-
-#endif /*!_WIN32*/
+	#define open _open
+	#define read _read
+	#define write _write
+	#define close _close
+	#define access _access
+	#define lseek _lseek
+#else
+	#ifndef O_BINARY
+		#define O_BINARY 0
+	#endif
+#endif
 
 #ifdef swap16
 #else
 /* all integer in wav header must be read in least endian order */
-static MS2_INLINE uint16_t swap16(uint16_t a)
-{
-	return ((a & 0xFF) << 8) | ((a & 0xFF00) >> 8);
+static MS2_INLINE uint16_t swap16(uint16_t a) {
+	return (uint16_t)(((a & 0xFF) << 8) | ((a & 0xFF00) >> 8));
 }
 #endif
 
 #ifdef swap32
 #else
-static MS2_INLINE uint32_t swap32(uint32_t a)
-{
-	return ((a & 0xFF) << 24) | ((a & 0xFF00) << 8) |
-		((a & 0xFF0000) >> 8) | ((a & 0xFF000000) >> 24);
+static MS2_INLINE uint32_t swap32(uint32_t a) {
+	return (uint32_t)(
+		((a & 0xFF) << 24) | ((a & 0xFF00) << 8) | ((a & 0xFF0000) >> 8) | ((a & 0xFF000000) >> 24)
+	);
 }
 #endif
 
@@ -82,9 +79,9 @@ static MS2_INLINE uint32_t swap32(uint32_t a)
 #define le_uint16(a) (swap16((a)))
 #define le_int16(a) ( (int16_t) swap16((uint16_t)((a))) )
 #else
-#define le_uint32(a) (a)
-#define le_uint16(a) (a)
-#define le_int16(a) (a)
+#define le_uint32(a) ((uint32_t)(a))
+#define le_uint16(a) ((uint16_t)(a))
+#define le_int16(a) ((int16_t)(a))
 #endif
 
 typedef struct _riff_t {

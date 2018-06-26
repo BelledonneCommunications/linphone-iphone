@@ -77,7 +77,6 @@ RCFILES = \
 					rcfiles/pauline_zrtp_srtpsuite_aes256_rc\
 					rcfiles/remote_zero_length_params_rc\
 					rcfiles/stun_rc\
-					rcfiles/upnp_rc\
 					rcfiles/zero_length_params_rc
 
 
@@ -149,7 +148,6 @@ liblinphonetester_la_SOURCES = \
 				stun_tester.c \
 				tester.c \
 				tunnel_tester.c \
-				upnp_tester.c \
 				vcard_tester.c \
 				video_tester.c
 
@@ -168,13 +166,6 @@ AM_CPPFLAGS = -I$(top_srcdir)/include -I$(top_srcdir)/coreapi
 AM_CFLAGS    = -DBC_CONFIG_FILE=\"config.h\" $(STRICT_OPTIONS) $(STRICT_OPTIONS_CC) \
 		$(ORTP_CFLAGS) $(MEDIASTREAMER_CFLAGS) $(BCTOOLBOXTESTER_CFLAGS) \
 		$(BELLESIP_CFLAGS) $(LIBXML2_CFLAGS) $(SQLITE3_CFLAGS) $(BELCARD_CFLAGS)
-
-if BUILD_GTK_UI
-
-liblinphonetester_la_LIBADD += $(LIBGTK_LIBS) $(LIBGTKMAC_LIBS)
-AM_CFLAGS += $(LIBGTK_CFLAGS) $(LIBGTKMAC_CFLAGS) -DHAVE_GTK
-
-endif
 
 #AM_LDFLAGS=-Wl,-rpath -Wl,$(libdir)
 

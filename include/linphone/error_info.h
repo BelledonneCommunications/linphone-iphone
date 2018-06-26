@@ -32,9 +32,9 @@ extern "C" {
  */
 
 /**
- * Create an empty LinphoneErrorInfo object.
- * The LinphoneErrorInfo object carries these fields:
- * - a LinphoneReason enum member giving overall signification of the error reported.
+ * Create an empty #LinphoneErrorInfo object.
+ * The #LinphoneErrorInfo object carries these fields:
+ * - a #LinphoneReason enum member giving overall signification of the error reported.
  * - the "protocol" name in which the protocol reason code has meaning, for example SIP or Q.850
  * - the "protocol code", an integer referencing the kind of error reported
  * - the "phrase", a text phrase describing the error
@@ -63,10 +63,10 @@ LINPHONE_PUBLIC void linphone_error_info_unref(LinphoneErrorInfo *ei);
 LINPHONE_PUBLIC LinphoneReason linphone_error_info_get_reason(const LinphoneErrorInfo *ei);
 
 /**
- * Get pointer to chained LinphoneErrorInfo set in sub_ei.
+ * Get pointer to chained #LinphoneErrorInfo set in sub_ei.
  * It corresponds to a Reason header in a received SIP response.
  * @param  ei ErrorInfo object
- * @return    LinphoneErrorInfo pointer defined in the ei object.
+ * @return    #LinphoneErrorInfo pointer defined in the ei object.
  */
 LINPHONE_PUBLIC LinphoneErrorInfo* linphone_error_info_get_sub_error_info(const LinphoneErrorInfo *ei);
 
@@ -102,10 +102,10 @@ LINPHONE_PUBLIC const char * linphone_error_info_get_warnings(const LinphoneErro
 LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInfo *ei);
 
 /**
- * Assign information to a LinphoneErrorInfo object.
+ * Assign information to a #LinphoneErrorInfo object.
  * @param[in] ei 			ErrorInfo object
  * @param[in] protocol      protocol name
- * @param[in] reason        reason  from LinphoneReason enum
+ * @param[in] reason        reason  from #LinphoneReason enum
  * @param[in] code          protocol code
  * @param[in] status_string description of the reason
  * @param[in] warning       warning message
@@ -113,44 +113,44 @@ LINPHONE_PUBLIC int linphone_error_info_get_protocol_code(const LinphoneErrorInf
 LINPHONE_PUBLIC void linphone_error_info_set(LinphoneErrorInfo *ei, const char *protocol, LinphoneReason reason, int code, const char *status_string, const char *warning);
 	
 /**
- * Set the sub_ei in LinphoneErrorInfo to another LinphoneErrorInfo. 
- * Used when a reason header is to be added in a SIP response. The first level LinphoneErrorInfo defines the SIP response code and phrase,
- * the second (sub) LinphoneErroInfo defining the content of the Reason header.
- * @param[in] ei 		  LinphoneErrorInfo object to which the other LinphoneErrorInfo will be appended as ei->sub_ei.        
- * @param[in] appended_ei LinphoneErrorInfo to append 
+ * Set the sub_ei in #LinphoneErrorInfo to another LinphoneErrorInfo. 
+ * Used when a reason header is to be added in a SIP response. The first level #LinphoneErrorInfo defines the SIP response code and phrase,
+ * the second (sub) #LinphoneErroInfo defining the content of the Reason header.
+ * @param[in] ei 		  #LinphoneErrorInfo object to which the other #LinphoneErrorInfo will be appended as ei->sub_ei.        
+ * @param[in] appended_ei #LinphoneErrorInfo to append 
  */
 LINPHONE_PUBLIC void linphone_error_info_set_sub_error_info(LinphoneErrorInfo *ei, LinphoneErrorInfo *appended_ei);
 
 /**
- * Assign reason LinphoneReason to a LinphoneErrorInfo object.
+ * Assign reason #LinphoneReason to a #LinphoneErrorInfo object.
  * @param[in] ei     ErrorInfo object
- * @param[in] reason reason  from LinphoneReason enum
+ * @param[in] reason reason  from #LinphoneReason enum
  */
 LINPHONE_PUBLIC void linphone_error_info_set_reason(LinphoneErrorInfo *ei, LinphoneReason reason);
 
 /**
- * Assign protocol name to a LinphoneErrorInfo object.
+ * Assign protocol name to a #LinphoneErrorInfo object.
  * @param[in] ei     ErrorInfo object
  * @param[in] proto the protocol name
  */
 LINPHONE_PUBLIC void linphone_error_info_set_protocol(LinphoneErrorInfo *ei, const char *proto);
 
 /**
- * Assign protocol code to a LinphoneErrorInfo object.
+ * Assign protocol code to a #LinphoneErrorInfo object.
  * @param[in] ei     ErrorInfo object
  * @param[in] code the protocol code
  */
 LINPHONE_PUBLIC void linphone_error_info_set_protocol_code(LinphoneErrorInfo *ei, int code);
 
 /**
- * Assign phrase to a LinphoneErrorInfo object.
+ * Assign phrase to a #LinphoneErrorInfo object.
  * @param[in] ei     ErrorInfo object
  * @param[in] phrase the phrase explaining the error
  */
 LINPHONE_PUBLIC void linphone_error_info_set_phrase(LinphoneErrorInfo *ei, const char *phrase);
 
 /**
- * Assign warnings to a LinphoneErrorInfo object.
+ * Assign warnings to a #LinphoneErrorInfo object.
  * @param[in] ei     ErrorInfo object
  * @param[in] phrase the warnings
  */

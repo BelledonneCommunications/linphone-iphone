@@ -20,8 +20,8 @@
 #include <sys/stat.h>
 #include "linphone/core.h"
 #include "linphone/lpconfig.h"
-#include "private.h"
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static int get_codec_position(const MSList *l, const char *mime_type, int rate){
 	const MSList *elem;
@@ -35,7 +35,7 @@ static int get_codec_position(const MSList *l, const char *mime_type, int rate){
 
 /*check basic things about codecs at startup: order and enablement*/
 static void start_with_no_config(void){
-	LinphoneCore *lc=linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore *lc=linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	const MSList *codecs=linphone_core_get_audio_codecs(lc);
 	int opus_codec_pos;
 	int speex_codec_pos=get_codec_position(codecs, "speex", 8000);
@@ -461,7 +461,8 @@ static void check_avpf_features(LinphoneCore *lc, unsigned char expected_feature
 	LinphoneCall *lcall = linphone_core_get_current_call(lc);
 	BC_ASSERT_PTR_NOT_NULL(lcall);
 	if (lcall != NULL) {
-		SalStreamDescription *desc = sal_media_description_find_stream(lcall->resultdesc, SalProtoRtpAvpf, SalVideo);
+		SalMediaDescription *resultDesc = _linphone_call_get_result_desc(lcall);
+		SalStreamDescription *desc = sal_media_description_find_stream(resultDesc, SalProtoRtpAvpf, SalVideo);
 		BC_ASSERT_PTR_NOT_NULL(desc);
 		if (desc != NULL) {
 			BC_ASSERT_PTR_NOT_NULL(desc->payloads);
@@ -481,7 +482,7 @@ static void compatible_avpf_features(void) {
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	
+
 	pt = configure_core_for_avpf_and_video(pauline->lc);
 
 	BC_ASSERT_TRUE((call_ok=call(marie, pauline)));
@@ -506,7 +507,7 @@ static void incompatible_avpf_features(void) {
 	bool_t call_ok;
 
 	if (configure_core_for_avpf_and_video(marie->lc) == NULL) goto end;
-	
+
 	pt = configure_core_for_avpf_and_video(pauline->lc);
 	pt->avpf.features = PAYLOAD_TYPE_AVPF_NONE;
 

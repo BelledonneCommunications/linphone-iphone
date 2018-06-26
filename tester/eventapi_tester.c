@@ -19,10 +19,10 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 #include <linphone/event.h>
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 static const char *subscribe_content="<somexml>blabla</somexml>";
 static const char *notify_content="<somexml2>blabla</somexml2>";
@@ -41,10 +41,18 @@ void linphone_notify_received(LinphoneCore *lc, LinphoneEvent *lev, const char *
 	if (!BC_ASSERT_PTR_NOT_NULL(content)) return;
 	if (!linphone_content_is_multipart(content) && (!ua ||  !strstr(ua, "flexisip"))) { /*disable check for full presence server support*/
 		/*hack to disable content checking for list notify */
-		BC_ASSERT_STRING_EQUAL(notify_content,(const char*)linphone_content_get_buffer(content));
+		BC_ASSERT_STRING_EQUAL(linphone_content_get_string_buffer(content), notify_content);
 	}
-	mgr=get_manager(lc);
+	mgr = get_manager(lc);
 	mgr->stat.number_of_NotifyReceived++;
+}
+
+void linphone_subscribe_received(LinphoneCore *lc, LinphoneEvent *lev, const char *eventname, const LinphoneContent *content) {
+	LinphoneCoreManager *mgr = get_manager(lc);
+	if (!mgr->decline_subscribe)
+		linphone_event_accept_subscription(lev);
+	else
+		linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 }
 
 void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, LinphoneSubscriptionState state) {
@@ -56,7 +64,7 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 	content = linphone_core_create_content(lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml2");
-	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
+	linphone_content_set_buffer(content,(const uint8_t *)notify_content,strlen(notify_content));
 
 	ms_message("Subscription state [%s] from [%s]",linphone_subscription_state_to_string(state),from);
 	ms_free(from);
@@ -67,10 +75,6 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 		case LinphoneSubscriptionIncomingReceived:
 			counters->number_of_LinphoneSubscriptionIncomingReceived++;
 			mgr->lev=lev;
-			if (!mgr->decline_subscribe)
-				linphone_event_accept_subscription(lev);
-			else
-				linphone_event_deny_subscription(lev, LinphoneReasonDeclined);
 		break;
 		case LinphoneSubscriptionOutgoingProgress:
 			counters->number_of_LinphoneSubscriptionOutgoingProgress++;
@@ -82,7 +86,11 @@ void linphone_subscription_state_change(LinphoneCore *lc, LinphoneEvent *lev, Li
 			counters->number_of_LinphoneSubscriptionActive++;
 			if (linphone_event_get_subscription_dir(lev)==LinphoneSubscriptionIncoming){
 				mgr->lev=lev;
-				linphone_event_notify(lev,content);
+				if(strcmp(linphone_event_get_name(lev), "conference") == 0) {
+					// TODO : Get LocalConfEventHandler and call handler->subscribeReceived(lev)
+				} else {
+					linphone_event_notify(lev,content);
+				}
 			}
 		break;
 		case LinphoneSubscriptionTerminated:
@@ -135,7 +143,7 @@ static void subscribe_test_declined(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	pauline->decline_subscribe=TRUE;
 
@@ -177,13 +185,13 @@ static void subscribe_test_with_args(bool_t terminated_by_subscriber, RefreshTes
 	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	if (refresh_type==ManualRefresh){
-		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+		lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_subscribe",0);
 	}
 
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_subscribe(marie->lc,pauline->identity,"dodo",expires,content);
 	linphone_event_ref(lev);
@@ -235,13 +243,13 @@ static void subscribe_test_with_args2(bool_t terminated_by_subscriber, RefreshTe
 	lcs=bctbx_list_append(lcs,pauline->lc);
 
 	if (refresh_type==ManualRefresh){
-		lp_config_set_int(marie->lc->config,"sip","refresh_generic_subscribe",0);
+		lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_subscribe",0);
 	}
 
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -329,7 +337,7 @@ static void subscribe_loosing_dialog(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -339,7 +347,7 @@ static void subscribe_loosing_dialog(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
@@ -354,7 +362,7 @@ static void subscribe_loosing_dialog(void) {
 	linphone_core_manager_destroy(pauline);
 	pauline = linphone_core_manager_new( "pauline_tcp_rc");
 	lcs = bctbx_list_append(lcs, pauline->lc);
-	
+
 	/* Marie will retry the subscription.
 	 * She will first receive a 503 Service unavailable from flexisip thanks the ICMP error returned by the no longer existing Pauline.
 	 * Then she will forge a new SUBSCRIBE in order to restart a new dialog, and this one will reach the new Pauline.*/
@@ -364,10 +372,10 @@ static void subscribe_loosing_dialog(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_PTR_NOT_NULL(pauline->lev);
 	if (pauline->lev) BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 	linphone_event_terminate(lev);
-	
+
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
@@ -392,7 +400,7 @@ static void subscribe_with_io_error(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -402,7 +410,7 @@ static void subscribe_with_io_error(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
@@ -410,19 +418,19 @@ static void subscribe_with_io_error(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,1,5000));
 
 	/* now marie gets network errors when refreshing*/
-	sal_set_send_error(marie->lc->sal, -1);
-	
+	sal_set_send_error(linphone_core_get_sal(marie->lc), -1);
+
 	/*marie will retry the subscription*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,2,8000));
-	sal_set_send_error(marie->lc->sal, 0);
-	
+	sal_set_send_error(linphone_core_get_sal(marie->lc), 0);
+
 	/*and get it accepted again*/
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,2,10000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,2,5000));
 	BC_ASSERT_EQUAL(linphone_event_get_subscription_state(pauline->lev), LinphoneSubscriptionActive, int, "%d");
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_NotifyReceived,2,5000));
 	linphone_event_terminate(lev);
-	
+
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionTerminated,1,5000));
@@ -446,7 +454,7 @@ static void subscribe_not_timely_responded(void) {
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
 	lev=linphone_core_create_subscribe(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"My-Header","pouet");
@@ -456,7 +464,7 @@ static void subscribe_not_timely_responded(void) {
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionOutgoingProgress,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionIncomingReceived,1,3000));
 
-	
+
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionActive,1,5000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_LinphoneSubscriptionActive,1,5000));
 
@@ -467,7 +475,7 @@ static void subscribe_not_timely_responded(void) {
 	lcs = bctbx_list_remove(lcs, pauline->lc);
 	/*marie's dialog will expire while the SUBSCRIBE refresh is in progress*/
 	wait_for_list(lcs, NULL, 0, 8000);
-	
+
 	lcs = bctbx_list_append(lcs, pauline->lc);
 	wait_for_list(lcs, NULL, 0, 3000);
 	linphone_event_terminate(lev);
@@ -492,15 +500,15 @@ static void publish_test_with_args(bool_t refresh, int expires){
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,subscribe_content,strlen(subscribe_content));
+	linphone_content_set_buffer(content,(const uint8_t *)subscribe_content,strlen(subscribe_content));
 
-	lp_config_set_int(marie->lc->config,"sip","refresh_generic_publish",refresh);
+	lp_config_set_int(linphone_core_get_config(marie->lc),"sip","refresh_generic_publish",refresh);
 
 	lev=linphone_core_create_publish(marie->lc,pauline->identity,"dodo",expires);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
 	linphone_event_ref(lev);
 	linphone_event_send_publish(lev,content);
-	
+
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishProgress,1,1000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphonePublishOk,1,3000));
@@ -548,13 +556,13 @@ static void out_of_dialog_notify(void){
 	content = linphone_core_create_content(marie->lc);
 	linphone_content_set_type(content,"application");
 	linphone_content_set_subtype(content,"somexml");
-	linphone_content_set_buffer(content,notify_content,strlen(notify_content));
+	linphone_content_set_buffer(content,(const uint8_t *)notify_content,strlen(notify_content));
 
 	lev = linphone_core_create_notify(marie->lc,pauline->identity,"dodo");
 	linphone_event_ref(lev);
 	linphone_event_add_custom_header(lev,"CustomHeader","someValue");
 	linphone_event_notify(lev,content);
-	
+
 
 	BC_ASSERT_TRUE(wait_for_list(lcs,&pauline->stat.number_of_NotifyReceived,1,3000));
 	BC_ASSERT_TRUE(wait_for_list(lcs,&marie->stat.number_of_LinphoneSubscriptionTerminated,1,3000));

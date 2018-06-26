@@ -1,6 +1,6 @@
 /*
 call-transfer.cc
-Copyright (C) 2016 Belledonne Communications, Grenoble, France 
+Copyright (C) 2016 Belledonne Communications, Grenoble, France
 
 This library is free software; you can redistribute it and/or modify it
 under the terms of the GNU Lesser General Public License as published by
@@ -85,7 +85,7 @@ void CallTransferCommand::exec(Daemon* app, const string& args)
 			return;
 		}
 		if (linphone_call_transfer_to_another(call_to_transfer, call_to_transfer_to) == 0) {
-			std::ostringstream ostr;
+			ostringstream ostr;
 			ostr << "Call ID: " << call_to_transfer_id << "\n";
 			ostr << "Transfer to: " << call_to_transfer_to_id << "\n";
 			app->sendResponse(Response(ostr.str(), Response::Ok));
@@ -93,7 +93,7 @@ void CallTransferCommand::exec(Daemon* app, const string& args)
 		}
 	} else {
 		if (linphone_call_transfer(call_to_transfer, sip_uri_to_transfer_to.c_str()) == 0) {
-			std::ostringstream ostr;
+			ostringstream ostr;
 			ostr << "Call ID: " << call_to_transfer_id << "\n";
 			ostr << "Transfer to: " << sip_uri_to_transfer_to << "\n";
 			app->sendResponse(Response(ostr.str(), Response::Ok));

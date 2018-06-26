@@ -25,7 +25,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 class IncallPlayerStartCommand: public DaemonCommand {
 public:
 	IncallPlayerStartCommand();
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec (Daemon *app, const std::string& args) override;
+
 private:
 	static void onEof(LinphonePlayer *player);
 };
@@ -33,18 +35,21 @@ private:
 class IncallPlayerStopCommand: public DaemonCommand {
 public:
 	IncallPlayerStopCommand();
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec (Daemon *app, const std::string& args) override;
 };
 
 class IncallPlayerPauseCommand: public DaemonCommand {
 public:
 	IncallPlayerPauseCommand();
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec (Daemon *app, const std::string& args) override;
 };
 
 class IncallPlayerResumeCommand: public DaemonCommand {
 public:
 	IncallPlayerResumeCommand();
-	virtual void exec(Daemon *app, const std::string& args);
+
+	void exec (Daemon *app, const std::string& args) override;
 };
 #endif // LINPHONE_DAEMON_COMMAND_PLAY_H_

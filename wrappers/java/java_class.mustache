@@ -1,0 +1,232 @@
+/*
+{{className}}.java
+Copyright (C) 2010  Belledonne Communications, Grenoble, France
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+package {{packageName}};
+
+{{#imports}}
+import {{import}}
+{{/imports}}
+{{#isLinphoneFactory}}
+import android.content.Context;
+import android.os.Build;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.linphone.mediastream.Log;
+import org.linphone.mediastream.Version;
+import org.linphone.core.tools.OpenH264DownloadHelper;
+{{/isLinphoneFactory}}
+
+{{#doc}}
+/**
+    {{#lines}}
+  * {{line}}
+    {{/lines}}
+  */
+{{/doc}}
+public {{#isLinphoneFactory}}abstract class{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}interface{{/isNotLinphoneFactory}} {{className}} {
+{{#enums}}
+    enum {{{className}}} {
+    {{#values}}
+        {{#doc}}
+        /**
+            {{#lines}}
+        * {{line}}
+            {{/lines}}
+        */
+        {{/doc}}
+        {{name}}({{value}}){{commarorsemicolon}}
+
+    {{/values}}
+        protected final int mValue;
+
+        private {{{className}}} (int value) {
+            mValue = value;
+        }
+
+        static public {{{className}}} fromInt(int value) throws RuntimeException {
+            switch(value) {
+            {{#values}}
+            case {{value}}: return {{name}};
+            {{/values}}
+            default:
+                throw new RuntimeException("Unhandled enum value " + value + " for {{{className}}}");
+            }
+        }
+
+        public int toInt() {
+            return mValue;
+        }
+    };
+
+{{/enums}}
+{{#isLinphoneFactory}}
+    static Factory _Factory;
+
+    public static final synchronized Factory instance() {
+		try {
+			if (_Factory == null) {
+				_Factory = new FactoryImpl(0); // This value is not relevant, correct factory pointer will be used in JNI layer
+			}
+		} catch (Exception e) {
+			System.err.println("Cannot instanciate factory");
+		}
+		return _Factory;
+	}
+
+    abstract public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context);
+
+    /**
+      * Gets the LoggingService singleton
+      */
+    abstract public LoggingService getLoggingService();
+
+    abstract public void setDebugMode(boolean enable, String tag);
+
+    abstract public Core getCore(long ptr);
+
+{{/isLinphoneFactory}}
+{{#isLinphoneCore}}
+    /**
+      * Gets the mediastreamer's factory
+      */
+    public org.linphone.mediastream.Factory getMediastreamerFactory();
+{{/isLinphoneCore}}
+{{#methods}}
+    {{#doc}}
+    /**
+    {{#lines}}
+      * {{line}}
+    {{/lines}}
+      */
+    {{/doc}}
+    {{#deprecated}}@Deprecated
+    {{/deprecated}}{{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public {{return}} {{name}}({{params}});
+
+{{/methods}}
+    /**
+      * Sets the object to store in this object user's data
+      */
+    {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public void setUserData(Object data);
+
+    /**
+      * Gets the object stored in this object user's data
+      */
+    {{#isLinphoneFactory}}abstract {{/isLinphoneFactory}}public Object getUserData();
+}
+
+class {{classImplName}} {{#isLinphoneFactory}}extends{{/isLinphoneFactory}}{{#isNotLinphoneFactory}}implements{{/isNotLinphoneFactory}} {{className}} {
+
+    protected long nativePtr = 0;
+    protected Object userData = null;{{#hasCoreAccessor}}
+    protected Core core = null;{{/hasCoreAccessor}}
+
+    protected {{classImplName}}(long ptr) {
+        nativePtr = ptr;{{#hasCoreAccessor}}
+        core = getCore();{{/hasCoreAccessor}}
+    }
+
+{{#isLinphoneFactory}}
+	private static boolean loadOptionalLibrary(String s) {
+		try {
+			System.loadLibrary(s);
+			return true;
+		} catch (Throwable e) {
+			android.util.Log.w("FactoryImpl", "Unable to load optional library " + s + ": " + e.getMessage());
+		}
+		return false;
+	}
+
+	static {
+		System.loadLibrary("c++_shared");
+		loadOptionalLibrary("ffmpeg-linphone");
+		System.loadLibrary("bctoolbox");
+		System.loadLibrary("ortp");
+		System.loadLibrary("mediastreamer_base");
+		System.loadLibrary("mediastreamer_voip");
+		System.loadLibrary("linphone");
+		Version.dumpCapabilities();
+	}
+
+    public OpenH264DownloadHelper createOpenH264DownloadHelper(Context context) {
+		if (context == null) {
+			new CoreException("Cannot create OpenH264DownloadHelper");
+			return null;
+		}
+		return new OpenH264DownloadHelper(context);
+	}
+
+	private native Core getCore(long nativePtr, long ptr);
+	@Override
+	public Core getCore(long ptr) {
+	    return getCore(nativePtr, ptr);
+	}
+
+    @Override
+	public LoggingService getLoggingService() {
+		LoggingService l = new LoggingServiceImpl(0);
+		return l.get();
+	}
+
+    @Override
+    public native void setDebugMode(boolean enable, String tag);
+{{/isLinphoneFactory}}
+
+{{#methods}}
+    private native {{return_native}} {{name}}({{native_params}});
+    @Override
+    synchronized public {{return}} {{name}}({{params}}) {{#exception}}throws CoreException{{/exception}} {
+        {{#hasCoreAccessor}}{{#isNotGetCore}}synchronized(core) { {{/isNotGetCore}}{{/hasCoreAccessor}}
+        {{#exception}}int exceptionResult = {{/exception}}{{return_keyword}}{{#enumCast}}{{return}}.fromInt({{/enumCast}}{{#classCast}}({{return}}){{/classCast}}{{name}}({{native_params_impl}}){{#enumCast}}){{/enumCast}};{{#exception}}
+        if (exceptionResult != 0) throw new CoreException("{{name}} returned value " + exceptionResult);{{/exception}}{{#hasCoreAccessor}}{{#isNotGetCore}}
+        }{{/isNotGetCore}}{{/hasCoreAccessor}}
+    }
+
+{{/methods}}
+{{#isLinphoneCore}}
+    private native org.linphone.mediastream.Factory getMediastreamerFactory(long nativePtr);
+    public org.linphone.mediastream.Factory getMediastreamerFactory() {
+        return getMediastreamerFactory(nativePtr);
+    }
+
+{{/isLinphoneCore}}
+{{#isNotLinphoneFactory}}
+    private native void unref(long ptr);
+    protected void finalize() throws Throwable {
+		if (nativePtr != 0) {
+			unref(nativePtr);
+			nativePtr = 0;
+		}
+		super.finalize();
+	}
+{{/isNotLinphoneFactory}}
+
+    @Override
+    public void setUserData(Object data) {
+        userData = data;
+    }
+
+    @Override
+    public Object getUserData() {
+        return userData;
+    }
+}

@@ -1,0 +1,559 @@
+/*
+linphone_jni.cc
+Copyright (C) 2017 Belledonne Communications SARL
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+#include <jni.h>
+#include <cpu-features.h>
+
+#include "belle-sip/object.h"
+#include "mediastreamer2/mediastream.h"
+#include "mediastreamer2/mscommon.h"
+#include "mediastreamer2/msmediaplayer.h"
+#include "mediastreamer2/msutils.h"
+#include "mediastreamer2/devices.h"
+#include "mediastreamer2/msjava.h"
+#include "linphone/core_utils.h"
+#include "linphone/core.h"
+#include "linphone/tunnel.h"
+#include "linphone/account_creator.h"
+#include "linphone/wrapper_utils.h"
+#include "linphone/lpconfig.h"
+
+#ifdef __ANDROID__
+#include <android/log.h>
+#endif /* __ANDROID__ */
+
+static JavaVM *jvm = NULL;
+static const char* LogDomain = "Linphone";
+static jmethodID loghandler_id;
+static jobject handler_obj=NULL;
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *ajvm, void *reserved) {
+#ifdef __ANDROID__
+	ms_set_jvm(ajvm);
+#endif /* __ANDROID__ */
+	jvm = ajvm;
+	return JNI_VERSION_1_2;
+}
+
+#define belle_sip_java_user_data_key "java_object"
+
+static const char* GetStringUTFChars(JNIEnv* env, jstring string) {
+	const char *cstring = string ? env->GetStringUTFChars(string, NULL) : NULL;
+	return cstring;
+}
+
+static void ReleaseStringUTFChars(JNIEnv* env, jstring string, const char *cstring) {
+	if (string) env->ReleaseStringUTFChars(string, cstring);
+}
+
+static jlong GetObjectNativePtr(JNIEnv *env, jobject object) {
+	jclass objClass = env->GetObjectClass(object);
+	jfieldID nativePtrId = env->GetFieldID(objClass, "nativePtr", "J");
+	jlong nativePtr = env->GetLongField(object, nativePtrId);
+	return nativePtr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void linphone_android_log_handler(int prio, char *str) {
+	char *current;
+	char *next;
+
+	if (strlen(str) < 512) {
+		__android_log_write(prio, LogDomain, str);
+	} else {
+		current = str;
+		while ((next = strchr(current, '\n')) != NULL) {
+
+			*next = '\0';
+			if (next != str && next[-1] == '\r')
+				next[-1] = '\0';
+			__android_log_write(prio, LogDomain, current);
+			current = next + 1;
+		}
+		__android_log_write(prio, LogDomain, current);
+	}
+}
+
+static void linphone_android_ortp_log_handler(const char *domain, OrtpLogLevel lev, const char *fmt, va_list args) {
+	char* str = bctbx_strdup_vprintf(fmt, args);
+    const char *levname = "undef";
+
+    if (str == NULL) return;
+
+    int prio;
+    switch(lev) {
+    	case ORTP_DEBUG:	prio = ANDROID_LOG_DEBUG;	levname="debug"; break;
+    	case ORTP_MESSAGE:	prio = ANDROID_LOG_INFO;	levname="message"; break;
+    	case ORTP_WARNING:	prio = ANDROID_LOG_WARN;	levname="warning"; break;
+    	case ORTP_ERROR:	prio = ANDROID_LOG_ERROR;	levname="error"; break;
+    	case ORTP_FATAL:	prio = ANDROID_LOG_FATAL;	levname="fatal"; break;
+    	default:			prio = ANDROID_LOG_DEFAULT;	break;
+    }
+
+    if (handler_obj) {
+    	JNIEnv *env = ms_get_jni_env();
+    	jstring jdomain = env->NewStringUTF(LogDomain);
+    	jstring jlevname = env->NewStringUTF(levname);
+    	jstring jstr = env->NewStringUTF(str);
+    	env->CallVoidMethod(handler_obj, loghandler_id, jdomain, (jint)lev, jlevname, jstr, NULL);
+    	if (jdomain) env->DeleteLocalRef(jdomain);
+    	if (jlevname) env->DeleteLocalRef(jlevname);
+    	if (jstr) env->DeleteLocalRef(jstr);
+    } else {
+    	linphone_android_log_handler(prio, str);
+    }
+    bctbx_free(str);
+}
+
+extern "C" void Java_org_linphone_core_FactoryImpl_setDebugMode(JNIEnv* env, jobject thiz, jboolean isDebug, jstring jdebugTag) {
+	if (isDebug) {
+		LogDomain = GetStringUTFChars(env, jdebugTag);
+		linphone_core_enable_logs_with_cb(linphone_android_ortp_log_handler);
+	} else {
+		linphone_core_disable_logs();
+	}
+}
+
+static jstring get_jstring_from_char(JNIEnv *env, const char* cString) {
+    int len;
+    jmethodID constructorString;
+    jbyteArray bytesArray = NULL;
+    jstring javaString = NULL;
+    jclass classString = env->FindClass("java/lang/String");
+    if (classString == 0) {
+        ms_error("Cannot find java.lang.String class.\n");
+        goto error;
+    }
+
+    constructorString = env->GetMethodID(classString, "<init>", "([BLjava/lang/String;)V");
+    if (constructorString == 0) {
+        ms_error("Cannot find String <init> method.\n");
+        goto error;
+    }
+
+    len = (int)strlen(cString);
+    bytesArray = env->NewByteArray(len);
+
+    if (bytesArray) {
+        env->SetByteArrayRegion(bytesArray, 0, len, (jbyte *)cString);
+        jstring UTF8 = env->NewStringUTF("UTF8");
+        javaString = (jstring)env->NewObject(classString, constructorString, bytesArray, UTF8);
+        env->DeleteLocalRef(bytesArray);
+        env->DeleteLocalRef(UTF8);
+    }
+
+    error:
+    if (classString) env->DeleteLocalRef(classString);
+
+    return javaString;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class LinphoneJavaBindings {
+public:
+	LinphoneJavaBindings(JNIEnv *env) {
+		ms_factory_class = (jclass)env->NewGlobalRef(env->FindClass("org/linphone/mediastream/Factory"));
+		ms_factory_class_constructor = env->GetMethodID(ms_factory_class, "<init>", "(J)V");
+
+		{{#objects}}
+		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{classImplName}}"));
+		{{cPrefix}}_class_constructor = env->GetMethodID({{cPrefix}}_class, "<init>", "(J)V");
+		{{/objects}}
+
+		{{#enums}}
+		{{cPrefix}}_class = (jclass)env->NewGlobalRef(env->FindClass("{{jniPath}}{{jniName}}"));
+		{{cPrefix}}_class_constructor_from_int = env->GetStaticMethodID({{cPrefix}}_class, "fromInt", "(I)L{{jniPath}}{{jniName}};");
+		{{/enums}}
+	}
+
+	~LinphoneJavaBindings() {
+		JNIEnv *env = 0;
+		jvm->AttachCurrentThread(&env,NULL);
+
+		env->DeleteGlobalRef(ms_factory_class);
+
+		{{#objects}}
+		env->DeleteGlobalRef({{cPrefix}}_class);
+		{{/objects}}
+
+		{{#enums}}
+		env->DeleteGlobalRef({{cPrefix}}_class);
+		{{/enums}}
+	}
+
+	jclass ms_factory_class;
+	jmethodID ms_factory_class_constructor;
+
+	{{#objects}}
+	jclass {{cPrefix}}_class;
+	jmethodID {{cPrefix}}_class_constructor;
+	{{/objects}}
+
+	{{#enums}}
+	jclass {{cPrefix}}_class;
+	jmethodID {{cPrefix}}_class_constructor_from_int;
+	{{/enums}}
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+{{#objects}}
+jobject get{{className}}(JNIEnv *env, {{classCName}} *cptr) {
+	jobject jobj = 0;
+
+	if (cptr != NULL) {
+		void *up = belle_sip_object_data_get((belle_sip_object_t *)cptr, belle_sip_java_user_data_key);
+		LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+		if (!ljb) {
+			ljb = new LinphoneJavaBindings(env);
+			linphone_factory_set_user_data(linphone_factory_get(), ljb);
+		}
+
+		jclass {{cPrefix}}_class = ljb->{{cPrefix}}_class;
+		jmethodID {{cPrefix}}_constructor = ljb->{{cPrefix}}_class_constructor;
+
+		if (up == NULL) {
+			jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
+			belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
+			{{#refCountable}}{{cPrefix}}_ref(cptr);{{/refCountable}}
+		} else {
+			jobj = env->NewLocalRef((jobject)up);
+			if (jobj == NULL) {
+				// Delete weak ref ?
+				env->DeleteWeakGlobalRef((jobject)up);
+				// takes implicit local ref
+				jobj = env->NewObject({{cPrefix}}_class, {{cPrefix}}_constructor, (jlong)cptr);
+				belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, (void*)env->NewWeakGlobalRef(jobj), NULL);
+				{{#refCountable}}{{cPrefix}}_ref(cptr);{{/refCountable}}
+			}
+		}
+	}
+	return jobj;
+}
+
+void Java_{{jniPrefix}}{{classImplName}}_unref(JNIEnv* env, jobject thiz, jlong ptr) {
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	jobject wref = (jobject)belle_sip_object_data_get((belle_sip_object_t *)cptr, belle_sip_java_user_data_key);
+	belle_sip_object_data_set((belle_sip_object_t *)cptr, belle_sip_java_user_data_key, NULL, NULL);
+	if (wref) {
+		env->DeleteWeakGlobalRef(wref);
+	}
+	{{#refCountable}}{{cPrefix}}_unref(cptr);{{/refCountable}}
+}
+
+{{/objects}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static inline void handle_possible_java_exception(JNIEnv *env, jobject listener)
+{
+	if (env->ExceptionCheck()) {
+		env->ExceptionDescribe();
+		env->ExceptionClear();
+		ms_error("Listener %p raised an exception",listener);
+	}
+}
+
+{{#callbacks}}
+static {{return}} {{callbackName}}({{params}}) {
+	JNIEnv *env = ms_get_jni_env();
+	if (!env) {
+		ms_error("cannot attach VM");
+		return{{returnIfFail}};
+	}
+
+	{{#isSingleListener}}
+	{{classCName}} *cbs = {{cPrefix}}_get_callbacks({{firstParam}});
+	{{/isSingleListener}}
+	{{#isMultiListener}}
+	{{classCName}} *cbs = {{cPrefix}}_get_current_callbacks({{firstParam}});
+	{{/isMultiListener}}
+	jobject jlistener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+
+	if (jlistener == NULL) {
+		ms_warning("{{callbackName}}() notification without listener");
+		return{{returnIfFail}};
+	}
+
+	jclass jlistenerClass = (jclass) env->GetObjectClass(jlistener);
+	jmethodID jcallback = env->GetMethodID(jlistenerClass, "{{jname}}", "{{jparams}}");
+	env->DeleteLocalRef(jlistenerClass);
+
+	{{#jobjects}}
+	jobject j_{{objectName}} = get{{className}}(env, (Linphone{{className}} *){{objectName}});
+	{{/jobjects}}
+	{{#jenums}}
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	jobject j_{{enumName}} = env->CallStaticObjectMethod(ljb->{{cEnumPrefix}}_class, ljb->{{cEnumPrefix}}_class_constructor_from_int, (jint){{enumName}});
+	{{/jenums}}
+	{{#jstrings}}
+	jstring j_{{stringName}} = {{stringName}} ? get_jstring_from_char(env, {{stringName}}) : NULL;
+	{{/jstrings}}
+
+	{{#hasReturn}}{{jniUpcallType}} jni_upcall_result = {{/hasReturn}}env->{{jniUpcallMethod}}(jlistener, jcallback, {{params_impl}});
+	{{#hasReturn}}
+	{{#isJniUpcallObject}}
+	{{return}} c_upcall_result = NULL;
+	if (jni_upcall_result) c_upcall_result = ({{return}})GetObjectNativePtr(env, jni_upcall_result);
+	{{/isJniUpcallObject}}
+	{{#isJniUpcallBasicType}}
+	{{return}} c_upcall_result = ({{return}}) jni_upcall_result;
+	{{/isJniUpcallBasicType}}
+	{{/hasReturn}}
+
+	{{#jobjects}}
+	if (j_{{objectName}}) {
+		env->DeleteLocalRef(j_{{objectName}});
+	}
+	{{/jobjects}}
+	{{#jenums}}
+	if (j_{{enumName}}) {
+		env->DeleteLocalRef(j_{{enumName}});
+	}
+	{{/jenums}}
+	{{#jstrings}}
+	if (j_{{stringName}}) {
+		env->DeleteLocalRef(j_{{stringName}});
+	}
+	{{/jstrings}}
+
+	handle_possible_java_exception(env, jlistener);
+	{{#hasReturn}}
+	return c_upcall_result;
+	{{/hasReturn}}
+}
+
+{{/callbacks}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{{#interfaces}}
+{{#isSingleListener}}
+void Java_{{jniPackage}}{{className}}Impl_setListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	{{classCName}}Cbs *cbs = {{cPrefix}}_get_callbacks(cptr);
+	if (jlistener == NULL) {
+		jobject listener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+		{{cPrefix}}_cbs_set_user_data(cbs, NULL);
+		if (listener != NULL) {
+			env->DeleteGlobalRef(listener);
+		}
+	} else {
+		jobject listener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+		if (listener == NULL) {
+			listener = env->NewGlobalRef(jlistener);
+		} else {
+			if (env->IsSameObject(listener, jlistener)) {
+				return;
+			} else {
+				env->DeleteGlobalRef(listener);
+				listener = env->NewGlobalRef(jlistener);
+			}
+		}
+		{{cPrefix}}_cbs_set_user_data(cbs, listener);
+		{{#callbacksList}}
+		{{cPrefix}}_cbs_set_{{callback}}(cbs, {{callbackName}});
+		{{/callbacksList}}
+	}
+}
+{{/isSingleListener}}
+
+{{#isMultiListener}}
+void Java_{{jniPackage}}{{className}}Impl_addListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	if (jlistener == NULL) return;
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	jobject listener = env->NewGlobalRef(jlistener);
+	{{classCName}}Cbs *cbs = linphone_factory_create_{{factoryName}}_cbs(NULL);
+	{{cPrefix}}_cbs_set_user_data(cbs, listener);
+	{{#callbacksList}}
+	{{cPrefix}}_cbs_set_{{callback}}(cbs, {{callbackName}});
+	{{/callbacksList}}
+	{{cPrefix}}_add_callbacks(cptr, cbs);
+	{{cPrefix}}_cbs_unref(cbs);
+}
+
+void Java_{{jniPackage}}{{className}}Impl_removeListener(JNIEnv* env, jobject thiz, jlong ptr, jobject jlistener) {
+	{{classCName}} *cptr = ({{classCName}}*)ptr;
+	const bctbx_list_t *cbs_list = {{cPrefix}}_get_callbacks_list(cptr);
+	bctbx_list_t *it;
+	for (it = (bctbx_list_t *)cbs_list; it != NULL; it = it->next) {
+		{{classCName}}Cbs *cbs = ({{classCName}}Cbs *)it->data;
+		jobject listener = (jobject) {{cPrefix}}_cbs_get_user_data(cbs);
+		if (env->IsSameObject(listener, jlistener)) {
+			{{cPrefix}}_cbs_set_user_data(cbs, NULL);
+			{{cPrefix}}_remove_callbacks(cptr, cbs);
+			env->DeleteGlobalRef(listener);
+			break;
+		}
+	}
+}
+{{/isMultiListener}}
+{{/interfaces}}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+jobject Java_{{jni_package}}CoreImpl_getMediastreamerFactory(JNIEnv *env, jobject thiz, jlong ptr) {
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	MSFactory *factory = linphone_core_get_ms_factory((LinphoneCore*)ptr);
+	return env->NewObject(ljb->ms_factory_class, ljb->ms_factory_class_constructor, (jlong)factory);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+{{#methods}}
+{{#notEmpty}}
+{{return}} {{name}}({{params}}) {
+	{{#notStatic}}{{classCName}} *cptr = ({{classCName}}*)ptr;
+	{{#isLinphoneFactory}}cptr = linphone_factory_get();{{/isLinphoneFactory}}
+	if (cptr == 0) {
+		return {{#hasReturn}}0{{/hasReturn}}{{#hasStringReturn}}0{{/hasStringReturn}}{{#hasListReturn}}0{{/hasListReturn}}{{#hasByteArrayReturn}}0{{/hasByteArrayReturn}};
+	}
+	{{/notStatic}}{{#strings}}
+	const char* c_{{string}} = GetStringUTFChars(env, {{string}});
+	{{/strings}}{{#bytes}}
+	{{bytesargtype}} c_{{bytesargname}} = ({{bytesargtype}})env->GetByteArrayElements({{bytesargname}}, NULL);
+	{{/bytes}}{{#objects}}
+	{{objectClassCName}}* c_{{object}} = NULL;
+	if ({{object}}) c_{{object}} = ({{objectClassCName}}*)GetObjectNativePtr(env, {{object}});
+	{{/objects}}{{#lists}}
+	bctbx_list_t *bctbx_list_{{list}} = NULL;
+	int {{list}}_count = env->GetArrayLength({{list}});
+	for (int i=0; i < {{list}}_count; i++) {
+		{{#isStringList}}
+		jstring obj = (jstring) env->GetObjectArrayElement({{list}}, i);
+		const char *str = GetStringUTFChars(env, obj);
+		if (str) {
+			bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, ms_strdup(str));
+			ReleaseStringUTFChars(env, obj, str);
+		}
+		{{/isStringList}}
+		{{#isObjList}}
+		jobject obj = env->GetObjectArrayElement({{list}}, i);
+		bctbx_list_{{list}} = bctbx_list_append(bctbx_list_{{list}}, ({{objectClassCName}} *)GetObjectNativePtr(env, obj));
+		{{/isObjList}}
+	}
+	{{/lists}}{{#hasListReturn}}
+	const bctbx_list_t *list = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
+	size_t count = bctbx_list_size(list);
+	{{#isRealObjectArray}}
+	LinphoneJavaBindings *ljb = (LinphoneJavaBindings *)linphone_factory_get_user_data(linphone_factory_get());
+	jobjectArray jni_list_result = env->NewObjectArray((int)count, ljb->{{objectCPrefix}}_class, NULL);{{/isRealObjectArray}}
+	{{#isStringObjectArray}}jobjectArray jni_list_result = env->NewObjectArray((int)count, env->FindClass("java/lang/String"), env->NewStringUTF(""));{{/isStringObjectArray}}
+	for (size_t i = 0; i < count; i++) {
+		{{#isRealObjectArray}}
+		{{objectClassCName}}* c_object = ({{objectClassCName}}*)list->data;
+		jobject object = get{{objectClassName}}(env, c_object);
+		{{/isRealObjectArray}}
+		{{#isStringObjectArray}}const char *cstring = (const char *)list->data;
+		jstring object = cstring ? get_jstring_from_char(env, cstring) : 0;{{/isStringObjectArray}}
+		if (object != 0) {
+			env->SetObjectArrayElement(jni_list_result, (int)i, object);
+			{{#isRealObjectArray}}env->DeleteLocalRef(object);{{/isRealObjectArray}}
+		}
+		list = bctbx_list_next(list);
+	}
+	{{/hasListReturn}}{{#hasByteArrayReturn}}
+	{{c_type_return}} jni_result = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}});
+	if (!jni_result) return NULL;
+	size_t jni_result_length = strlen((const char *)jni_result);
+	jbyteArray array = env->NewByteArray((int)jni_result_length);
+	env->SetByteArrayRegion(array, 0, (int)jni_result_length, (const jbyte*)jni_result);
+	return array;
+	{{/hasByteArrayReturn}}{{#hasStringReturn}}
+	const char *c_string = {{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
+	jstring jni_result = (c_string != NULL) ? get_jstring_from_char(env, c_string) : NULL;
+	{{/hasStringReturn}}{{#hasNormalReturn}}
+	{{#hasReturn}}{{return}} jni_result = ({{return}}){{#returnObject}}get{{returnClassName}}(env, (Linphone{{returnClassName}} *){{/returnObject}}{{/hasReturn}}{{c_name}}({{#notStatic}}cptr{{/notStatic}}{{params_impl}}){{#returnObject}}){{/returnObject}};
+	{{/hasNormalReturn}}{{#strings}}
+	ReleaseStringUTFChars(env, {{string}}, c_{{string}});
+	{{/strings}}{{#bytes}}
+	env->ReleaseByteArrayElements({{bytesargname}}, (jbyte*)c_{{bytesargname}}, JNI_ABORT);
+	{{/bytes}}{{#hasReturn}}return jni_result;{{/hasReturn}}{{#hasListReturn}}return jni_list_result;{{/hasListReturn}}
+}
+{{/notEmpty}}
+{{/methods}}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Manually wrapped
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void Java_org_linphone_core_CallImpl_setNativeVideoWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCall *cptr = (LinphoneCall*)ptr;
+	jobject oldWindow = (jobject) linphone_call_get_native_video_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): setting to NULL");
+	linphone_call_set_native_video_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CallImpl_setNativeVideoWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
+
+void Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCore *cptr = (LinphoneCore*)ptr;
+	jobject oldWindow = (jobject) linphone_core_get_native_preview_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): setting to NULL");
+	linphone_core_set_native_preview_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CoreImpl_setNativePreviewWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
+
+void Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(JNIEnv *env, jobject thiz, jlong ptr, jobject id) {
+	LinphoneCore *cptr = (LinphoneCore*)ptr;
+	jobject oldWindow = (jobject) linphone_core_get_native_video_window_id(cptr);
+	if (oldWindow == id) {
+		ms_warning("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): new id (%p) is the same as the current one, skipping...", id);
+		return;
+	}
+	if (id != NULL) {
+		id = env->NewGlobalRef(id);
+		ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): NewGlobalRef(%p)", id);
+	} else ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): setting to NULL");
+	linphone_core_set_native_video_window_id(cptr, (void *)id);
+	if (oldWindow != NULL) {
+		ms_message("Java_org_linphone_core_CoreImpl_setNativeVideoWindowId(): DeleteGlobalRef(%p)", oldWindow);
+		env->DeleteGlobalRef(oldWindow);
+	}
+}
+
+jobject Java_org_linphone_core_FactoryImpl_getCore(JNIEnv *env, jobject thiz, jlong ptr, jlong lcPtr) {
+	return getCore(env, (LinphoneCore*)lcPtr);
+}
+
+#ifdef __cplusplus
+}
+#endif

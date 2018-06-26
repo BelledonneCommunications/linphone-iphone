@@ -18,17 +18,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/factory.h"
+
+#include "c-wrapper/c-wrapper.h"
+
+#include "address/address-p.h"
+
+// TODO: From coreapi. Remove me later.
 #include "private.h"
 
 #ifndef PACKAGE_SOUND_DIR
-#define PACKAGE_SOUND_DIR "."
+	#define PACKAGE_SOUND_DIR "."
 #endif
 #ifndef PACKAGE_RING_DIR
-#define PACKAGE_RING_DIR "."
+	#define PACKAGE_RING_DIR "."
 #endif
 
 #ifndef PACKAGE_DATA_DIR
-#define PACKAGE_DATA_DIR "."
+	#define PACKAGE_DATA_DIR "."
 #endif
 
 extern LinphoneAddress *_linphone_address_new(const char *addr);
@@ -55,6 +61,8 @@ struct _LinphoneFactory {
 	char *cached_image_resources_dir;
 	char *cached_msplugins_dir;
 	LinphoneErrorInfo* ei;
+
+	void *user_data;
 };
 
 static void linphone_factory_uninit(LinphoneFactory *obj){
@@ -139,33 +147,83 @@ LinphoneFactory *linphone_factory_get(void) {
 }
 
 void linphone_factory_clean(void){
+	LinphonePrivate::AddressPrivate::clearSipAddressesCache();
 	if (_factory){
 		belle_sip_object_unref(_factory);
 		_factory = NULL;
 	}
 }
 
-LinphoneCore *linphone_factory_create_core_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
-		const char *config_path, const char *factory_config_path, void *user_data, void *system_context) {
+static LinphoneCore *_linphone_factory_create_core (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path,
+	void *user_data,
+	void *system_context,
+	bool_t automatically_start
+) {
 	bctbx_init_logger(FALSE);
 	LpConfig *config = lp_config_new_with_factory(config_path, factory_config_path);
-	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context);
+	LinphoneCore *lc = _linphone_core_new_with_config(cbs, config, user_data, system_context, automatically_start);
 	lp_config_unref(config);
 	bctbx_uninit_logger();
 	return lc;
 }
 
-LinphoneCore *linphone_factory_create_core(const LinphoneFactory *factory, LinphoneCoreCbs *cbs,
-		const char *config_path, const char *factory_config_path){
-	return linphone_factory_create_core_2(factory, cbs, config_path, factory_config_path, NULL, NULL);
+LinphoneCore *linphone_factory_create_core (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path
+) {
+	return _linphone_factory_create_core(factory, cbs, config_path, factory_config_path, NULL, NULL, TRUE);
 }
 
-LinphoneCore *linphone_factory_create_core_with_config(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config) {
-	return _linphone_core_new_with_config(cbs, config, NULL, NULL);
+LinphoneCore *linphone_factory_create_core_2 (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	const char *config_path,
+	const char *factory_config_path,
+	void *user_data,
+	void *system_context
+) {
+	return _linphone_factory_create_core(factory, cbs, config_path, factory_config_path, user_data, system_context, TRUE);
 }
 
-LinphoneCore *linphone_factory_create_core_with_config_2(const LinphoneFactory *factory, LinphoneCoreCbs *cbs, LinphoneConfig *config, void *user_data, void *system_context) {
-	return _linphone_core_new_with_config(cbs, config, user_data, system_context);
+LinphoneCore *linphone_factory_create_core_3 (
+	const LinphoneFactory *factory,
+	const char *config_path,
+	const char *factory_config_path,
+	void *system_context
+) {
+	return _linphone_factory_create_core(factory, NULL, config_path, factory_config_path, NULL, system_context, FALSE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	LinphoneConfig *config
+) {
+	return _linphone_core_new_with_config(cbs, config, NULL, NULL, TRUE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config_2 (
+	const LinphoneFactory *factory,
+	LinphoneCoreCbs *cbs,
+	LinphoneConfig *config,
+	void *user_data,
+	void *system_context
+) {
+	return _linphone_core_new_with_config(cbs, config, user_data, system_context, TRUE);
+}
+
+LinphoneCore *linphone_factory_create_core_with_config_3 (
+	const LinphoneFactory *factory,
+	LinphoneConfig *config,
+	void *system_context
+) {
+	return _linphone_core_new_with_config(NULL, config, NULL, system_context, FALSE);
 }
 
 LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory) {
@@ -173,7 +231,7 @@ LinphoneCoreCbs *linphone_factory_create_core_cbs(const LinphoneFactory *factory
 }
 
 LinphoneAddress *linphone_factory_create_address(const LinphoneFactory *factory, const char *addr) {
-	return _linphone_address_new(addr);
+	return linphone_address_new(addr);
 }
 
 LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *factory, const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain) {
@@ -182,6 +240,10 @@ LinphoneAuthInfo *linphone_factory_create_auth_info(const LinphoneFactory *facto
 
 LinphoneCallCbs * linphone_factory_create_call_cbs(const LinphoneFactory *factory) {
 	return _linphone_call_cbs_new();
+}
+
+LinphoneChatRoomCbs * linphone_factory_create_chat_room_cbs(const LinphoneFactory *factory) {
+	return _linphone_chat_room_cbs_new();
 }
 
 LinphoneVcard *linphone_factory_create_vcard(LinphoneFactory *factory) {
@@ -328,4 +390,56 @@ LinphoneTransports *linphone_factory_create_transports(LinphoneFactory *factory)
 
 LinphoneVideoActivationPolicy *linphone_factory_create_video_activation_policy(LinphoneFactory *factory) {
 	return linphone_video_activation_policy_new();
+}
+
+LinphoneContent *linphone_factory_create_content(LinphoneFactory *factory) {
+	return linphone_content_new();
+}
+
+LinphoneBuffer *linphone_factory_create_buffer(LinphoneFactory *factory) {
+	return linphone_buffer_new();
+}
+
+LinphoneBuffer *linphone_factory_create_buffer_from_data(LinphoneFactory *factory, const uint8_t *data, size_t size) {
+	return linphone_buffer_new_from_data(data, size);
+}
+
+LinphoneBuffer *linphone_factory_create_buffer_from_string(LinphoneFactory *factory, const char *data) {
+	return linphone_buffer_new_from_string(data);
+}
+
+LinphoneConfig *linphone_factory_create_config(LinphoneFactory *factory, const char *path) {
+	return linphone_config_new(path);
+}
+
+LinphoneConfig *linphone_factory_create_config_with_factory(LinphoneFactory *factory, const char *path, const char *factory_path) {
+	return linphone_config_new_with_factory(path, factory_path);
+}
+
+LinphoneConfig *linphone_factory_create_config_from_string(LinphoneFactory *factory, const char *data) {
+	return linphone_config_new_from_buffer(data);
+}
+
+const bctbx_list_t * linphone_factory_get_dial_plans(const LinphoneFactory *factory) {
+	return linphone_dial_plan_get_all_list();
+}
+
+void *linphone_factory_get_user_data(const LinphoneFactory *factory) {
+	return factory->user_data;
+}
+
+void linphone_factory_set_user_data(LinphoneFactory *factory, void *data) {
+	factory->user_data = data;
+}
+
+void linphone_factory_set_log_collection_path(LinphoneFactory *factory, const char *path) {
+	linphone_core_set_log_collection_path(path);
+}
+
+void linphone_factory_enable_log_collection(LinphoneFactory *factory, LinphoneLogCollectionState state) {
+	linphone_core_enable_log_collection(state);
+}
+
+LinphoneTunnelConfig *linphone_factory_create_tunnel_config(LinphoneFactory *factory) {
+	return linphone_tunnel_config_new();
 }

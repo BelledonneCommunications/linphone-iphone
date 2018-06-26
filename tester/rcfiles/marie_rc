@@ -4,7 +4,6 @@ sip_tcp_port=-1
 sip_tls_port=-1
 default_proxy=0
 ping_with_options=0
-
 composing_idle_timeout=1
 store_ha1_passwd=0 #used for sipp
 
@@ -13,7 +12,6 @@ username=marie
 userid=marie
 passwd=secret
 realm=sip.example.org
-
 
 [proxy_0]
 reg_proxy=sip.example.org;transport=tcp
@@ -29,6 +27,9 @@ url="Paupoche" <sip:pauline@sip.example.org>
 pol=accept
 subscribe=0
 
+[misc]
+enable_basic_to_client_group_chat_room_migration=1
+basic_to_client_group_chat_room_migration_timer=180
 
 [rtp]
 audio_rtp_port=18070-28000

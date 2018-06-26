@@ -18,27 +18,8 @@
 
 
 #include "linphone/core.h"
-#include "private.h"
 #include "liblinphone_tester.h"
-
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#endif
-#ifdef _MSC_VER
-#pragma warning(disable : 4996)
-#else
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#pragma GCC diagnostic ignored "-Wstrict-prototypes"
-#endif
-
-#ifdef HAVE_GTK
-#include <gtk/gtk.h>
-#endif
-
-#if __clang__ || ((__GNUC__ == 4 && __GNUC_MINOR__ >= 6) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
-
+#include "tester_utils.h"
 
 static FILE * log_file = NULL;
 
@@ -50,6 +31,7 @@ static FILE * log_file = NULL;
 
 static JNIEnv *current_env = NULL;
 static jobject current_obj = 0;
+jobject system_context = 0; // Application context
 static const char* LogDomain = "liblinphone_tester";
 
 int main(int argc, char** argv);
@@ -115,6 +97,17 @@ void bcunit_android_trace_handler(int level, const char *fmt, va_list args) {
 	(*env)->CallVoidMethod(env, current_obj, method, javaLevel, javaString);
 	(*env)->DeleteLocalRef(env,javaString);
 	(*env)->DeleteLocalRef(env,cls);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_setApplicationContext(JNIEnv *env, jclass obj, jobject context) {
+    system_context = (jobject)(*env)->NewGlobalRef(env, context);
+}
+
+JNIEXPORT void JNICALL Java_org_linphone_tester_Tester_removeApplicationContext(JNIEnv *env, jclass obj) {
+    if (system_context) {
+        (*env)->DeleteGlobalRef(env, system_context);
+        system_context = 0;
+    }
 }
 
 JNIEXPORT jint JNICALL Java_org_linphone_tester_Tester_run(JNIEnv *env, jobject obj, jobjectArray stringArray) {
@@ -194,7 +187,7 @@ int liblinphone_tester_set_log_file(const char *filename) {
 		return -1;
 	}
 	ms_message("Redirecting traces to file [%s]", filename);
-	linphone_core_set_log_file(log_file); 
+	linphone_core_set_log_file(log_file);
 	return 0;
 }
 
@@ -219,14 +212,6 @@ int main (int argc, char *argv[])
 {
 	int i;
 	int ret;
-
-#ifdef HAVE_GTK
-	gtk_init(&argc, &argv);
-#if !GLIB_CHECK_VERSION(2,32,0) // backward compatibility with Debian 6 and CentOS 6
-	g_thread_init(NULL);
-#endif
-	gdk_threads_init();
-#endif
 
 	liblinphone_tester_init(NULL);
 	linphone_core_set_log_level(ORTP_ERROR);

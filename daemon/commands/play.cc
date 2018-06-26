@@ -90,7 +90,7 @@ void IncallPlayerStartCommand::exec(Daemon *app, const string& args) {
 	
 	pair<int, Daemon *> *callPlayingData = (pair<int, Daemon *> *)linphone_player_get_user_data(p);
 	if(callPlayingData) callPlayingData = new 	pair<int, Daemon *>({
-		VOIDPTR_TO_INT(linphone_call_get_user_pointer(call)),
+		VOIDPTR_TO_INT(linphone_call_get_user_data(call)),
 		app
 	});
 	linphone_player_set_user_data(p, callPlayingData);

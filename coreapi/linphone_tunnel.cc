@@ -28,6 +28,7 @@
 #include "linphone/core.h"
 #include "private.h"
 #include "linphone/lpconfig.h"
+#include "c-wrapper/c-wrapper.h"
 
 LinphoneTunnel* linphone_core_get_tunnel(const LinphoneCore *lc){
 	return lc->tunnel;
@@ -42,13 +43,13 @@ struct _LinphoneTunnel {
 static void _linphone_tunnel_uninit(LinphoneTunnel *tunnel);
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneTunnel);
-BELLE_SIP_DECLARE_VPTR(LinphoneTunnel);
+BELLE_SIP_DECLARE_VPTR_NO_EXPORT(LinphoneTunnel);
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneTunnel, belle_sip_object_t,
 	_linphone_tunnel_uninit, // uninit
 	NULL, // clone
 	NULL, // marshal
 	FALSE // unowned
-)
+);
 
 extern "C" LinphoneTunnel* linphone_core_tunnel_new(LinphoneCore *lc){
 	LinphoneTunnel* tunnel = belle_sip_object_new(LinphoneTunnel);
@@ -231,13 +232,13 @@ static void linphone_tunnel_add_server_intern(LinphoneTunnel *tunnel, LinphoneTu
 				linphone_tunnel_config_get_port(tunnel_config),
 				linphone_tunnel_config_get_host2(tunnel_config),
 				linphone_tunnel_config_get_port2(tunnel_config),
-				linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
-				linphone_tunnel_config_get_delay(tunnel_config));
+				(unsigned int)linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+				(unsigned int)linphone_tunnel_config_get_delay(tunnel_config));
 		} else {
 			bcTunnel(tunnel)->addServer(linphone_tunnel_config_get_host(tunnel_config),
 				linphone_tunnel_config_get_port(tunnel_config),
-				linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
-				linphone_tunnel_config_get_delay(tunnel_config));
+				(unsigned int)linphone_tunnel_config_get_remote_udp_mirror_port(tunnel_config),
+				(unsigned int)linphone_tunnel_config_get_delay(tunnel_config));
 		}
 	} else if (linphone_tunnel_config_get_host2(tunnel_config) != NULL) {
 		bcTunnel(tunnel)->addServerPair(linphone_tunnel_config_get_host(tunnel_config),

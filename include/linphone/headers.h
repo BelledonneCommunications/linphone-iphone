@@ -1,6 +1,6 @@
 /*
 content.h
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ LINPHONE_PUBLIC void linphone_headers_unref(LinphoneHeaders *obj);
 
 /**
  * Search for a given header name and return its value.
- * @param obj the LinphoneHeaders object
+ * @param obj the #LinphoneHeaders object
  * @param name the header's name
  * @return the header's value or NULL if not found.
 **/
@@ -55,7 +55,7 @@ LINPHONE_PUBLIC const char* linphone_headers_get_value(LinphoneHeaders *obj, con
 
 /**
  * Add given header name and corresponding value.
- * @param obj the LinphoneHeaders object
+ * @param obj the #LinphoneHeaders object
  * @param name the header's name
  * @param the header's value
 **/
@@ -63,7 +63,7 @@ LINPHONE_PUBLIC void linphone_headers_add(LinphoneHeaders *obj, const char *name
 
 /**
  * Add given header name and corresponding value.
- * @param obj the LinphoneHeaders object
+ * @param obj the #LinphoneHeaders object
  * @param name the header's name
  * @param the header's value
 **/

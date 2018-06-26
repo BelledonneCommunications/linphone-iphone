@@ -18,8 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
-#include "linphone/im_encryption_engine.h"
 #include "private.h"
+
+#include "c-wrapper/c-wrapper.h"
 
 BELLE_SIP_DECLARE_NO_IMPLEMENTED_INTERFACES(LinphoneImEncryptionEngineCbs);
 

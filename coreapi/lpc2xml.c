@@ -31,8 +31,8 @@ static xmlChar* convert_iso_to_utf8(const char *in) {
 	int ret, size, out_size, temp;
 	xmlCharEncodingHandlerPtr handler;
 
-	size = (int)strlen(in) + 1; 
-	out_size = size * 2 - 1; 
+	size = (int)strlen(in) + 1;
+	out_size = size * 2 - 1;
 	out = reinterpret_cast<xmlChar *>(ms_malloc((size_t)out_size));
 
 	if (out) {
@@ -41,19 +41,19 @@ static xmlChar* convert_iso_to_utf8(const char *in) {
 			ms_free(out);
 			return NULL;
 		}
-		
+
 		temp = size-1;
 		ret = handler->input(out, &out_size, (const xmlChar *)in, &temp);
 		if (ret < 0 || temp - size + 1) {
 			ms_free(out);
 			return NULL;
 		} else {
-			out = reinterpret_cast<xmlChar *>(ms_realloc(out, out_size + 1));
+			out = reinterpret_cast<xmlChar *>(ms_realloc(out, (size_t)out_size + 1));
 			out[out_size] = '\0';
 		}
 	}
 	return out;
-}	
+}
 
 struct _lpc2xml_context {
 	const LpConfig *lpc;
@@ -131,7 +131,7 @@ static int processEntry(const char *section, const char *entry, xmlNode *node, l
 	}
 	lpc2xml_log(ctx, LPC2XML_MESSAGE, "Set %s|%s = %s", section, entry, content);
 	converted_content = convert_iso_to_utf8(content);
-	
+
 	if (converted_content) {
 		// xmlNodeSetContent expects special characters to be escaped, xmlNodeAddContent doesn't (and escapes what needs to be)
 		xmlNodeSetContent(node, (const xmlChar *) "");
@@ -142,7 +142,7 @@ static int processEntry(const char *section, const char *entry, xmlNode *node, l
 		xmlNodeSetContent(node, (const xmlChar *) "");
 		xmlNodeAddContent(node, (const xmlChar *) content);
 	}
-	
+
 	if (lp_config_get_overwrite_flag_for_entry(ctx->lpc, section, entry) || lp_config_get_overwrite_flag_for_section(ctx->lpc, section)) {
 		xmlSetProp(node, (const xmlChar *)"overwrite", (const xmlChar *) "true");
 	}
@@ -166,7 +166,7 @@ static void processSection_cb(const char *entry, struct __processSectionCtx *ctx
 			ctx->ret = 0;
 			return;
 		}
-		
+
 		if (lp_config_get_skip_flag_for_entry(ctx->ctx->lpc, ctx->section, entry)) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped entry %s", entry);
 			ctx->ret = 0;
@@ -208,13 +208,13 @@ static void processConfig_cb(const char *section, struct __processConfigCtx *ctx
 	if(ctx->ret == 0) {
 		xmlNode *node;
 		xmlAttr *name_attr;
-		
+
 		if (lp_config_get_skip_flag_for_section(ctx->ctx->lpc, section)) {
 			lpc2xml_log(ctx->ctx, LPC2XML_WARNING, "Skipped section %s", section);
 			ctx->ret = 0;
 			return;
 		}
-		
+
 		node = xmlNewChild(ctx->node, NULL, (const xmlChar *)"section", NULL);
 		if(node == NULL) {
 			lpc2xml_log(ctx->ctx, LPC2XML_ERROR, "Can't create \"section\" element");
@@ -299,7 +299,7 @@ int lpc2xml_convert_file(lpc2xml_context* context, const char *filename) {
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {
-			ret = xmlSaveDoc(save_ctx, context->doc);
+			ret = (int)xmlSaveDoc(save_ctx, context->doc);
 			if(ret != 0) {
 				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
 				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
@@ -322,7 +322,7 @@ int lpc2xml_convert_fd(lpc2xml_context* context, int fd) {
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {
-			ret = xmlSaveDoc(save_ctx, context->doc);
+			ret = (int)xmlSaveDoc(save_ctx, context->doc);
 			if(ret != 0) {
 				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
 				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);
@@ -346,7 +346,7 @@ int lpc2xml_convert_string(lpc2xml_context* context, char **content) {
 	if(save_ctx != NULL) {
 		ret = internal_convert_lpc2xml(context);
 		if(ret == 0) {
-			ret = xmlSaveDoc(save_ctx, context->doc);
+			ret = (int)xmlSaveDoc(save_ctx, context->doc);
 			if(ret != 0) {
 				lpc2xml_log(context, LPC2XML_ERROR, "Can't save document");
 				lpc2xml_log(context, LPC2XML_ERROR, "%s", context->errorBuffer);

@@ -23,8 +23,13 @@
  */
 
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
+#include "sal/sal.h"
+
+#include "c-wrapper/c-wrapper.h"
+
+// TODO: From coreapi. Remove me later.
+#include "private.h"
 
 static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj);
 static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthInfo *src);
@@ -41,6 +46,10 @@ BELLE_SIP_INSTANCIATE_VPTR(
 );
 
 LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain){
+	return linphone_auth_info_new_for_algorithm(username, userid, passwd, ha1, realm, domain, NULL);
+}
+
+LinphoneAuthInfo *linphone_auth_info_new_for_algorithm(const char *username, const char *userid, const char *passwd, const char *ha1, const char *realm, const char *domain, const char *algorithm){
 	LinphoneAuthInfo *obj=belle_sip_object_new(LinphoneAuthInfo);
 	if (username!=NULL && (strlen(username)>0) ) obj->username=ms_strdup(username);
 	if (userid!=NULL && (strlen(userid)>0)) obj->userid=ms_strdup(userid);
@@ -48,6 +57,17 @@ LinphoneAuthInfo *linphone_auth_info_new(const char *username, const char *useri
 	if (ha1!=NULL && (strlen(ha1)>0)) obj->ha1=ms_strdup(ha1);
 	if (realm!=NULL && (strlen(realm)>0)) obj->realm=ms_strdup(realm);
 	if (domain!=NULL && (strlen(domain)>0)) obj->domain=ms_strdup(domain);
+
+	if (!algorithm)
+		obj->algorithm = ms_strdup("MD5");
+
+	if(algorithm && strcasecmp(algorithm, "MD5") && strcasecmp(algorithm, "SHA-256")){
+		ms_error("Given algorithm %s is not correct.", algorithm);
+		return NULL;
+	}
+
+	if(algorithm)
+		obj->algorithm=ms_strdup(algorithm);
 	return obj;
 }
 
@@ -62,6 +82,7 @@ static void _linphone_auth_info_copy(LinphoneAuthInfo *dst, const LinphoneAuthIn
 	if (src->tls_key)       dst->tls_key = ms_strdup(src->tls_key);
 	if (src->tls_cert_path) dst->tls_cert_path = ms_strdup(src->tls_cert_path);
 	if (src->tls_key_path)  dst->tls_key_path = ms_strdup(src->tls_key_path);
+	if (src->algorithm)     dst->algorithm = ms_strdup(src->algorithm);
 }
 
 LinphoneAuthInfo *linphone_auth_info_clone(const LinphoneAuthInfo *ai){
@@ -81,6 +102,10 @@ const char *linphone_auth_info_get_username(const LinphoneAuthInfo *i) {
 }
 
 const char *linphone_auth_info_get_passwd(const LinphoneAuthInfo *i) {
+	return linphone_auth_info_get_password(i);
+}
+
+const char *linphone_auth_info_get_password(const LinphoneAuthInfo *i) {
 	return i->passwd;
 }
 
@@ -116,8 +141,11 @@ const char *linphone_auth_info_get_tls_key_path(const LinphoneAuthInfo *i) {
 	return i->tls_key_path;
 }
 
-
 void linphone_auth_info_set_passwd(LinphoneAuthInfo *info, const char *passwd) {
+	linphone_auth_info_set_password(info, passwd);
+}
+
+void linphone_auth_info_set_password(LinphoneAuthInfo *info, const char *passwd) {
 	if (info->passwd) {
 		ms_free(info->passwd);
 		info->passwd = NULL;
@@ -208,6 +236,7 @@ static void _linphone_auth_info_uninit(LinphoneAuthInfo *obj) {
 	if (obj->tls_key != NULL) ms_free(obj->tls_key);
 	if (obj->tls_cert_path != NULL) ms_free(obj->tls_cert_path);
 	if (obj->tls_key_path != NULL) ms_free(obj->tls_key_path);
+	if (obj->algorithm != NULL) ms_free(obj->algorithm);
 }
 
 /**
@@ -219,7 +248,7 @@ void linphone_auth_info_destroy(LinphoneAuthInfo *obj){
 
 void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, int pos) {
 	char key[50];
-	bool_t store_ha1_passwd = lp_config_get_int(config, "sip", "store_ha1_passwd", 1);
+	bool_t store_ha1_passwd = !!lp_config_get_int(config, "sip", "store_ha1_passwd", 1);
 
 	sprintf(key, "auth_info_%i", pos);
 	lp_config_clean_section(config, key);
@@ -228,9 +257,16 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 		return;
 	}
 	if (!obj->ha1 && obj->realm && obj->passwd && (obj->username || obj->userid) && store_ha1_passwd) {
-		/*compute ha1 to avoid storing clear text password*/
-		obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
-		sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
+		/* Default algorithm is MD5 if it's NULL */
+		if((obj->algorithm==NULL)||(!(strcasecmp(obj->algorithm, "MD5")))){
+			obj->ha1 = reinterpret_cast<char *>(ms_malloc(33));
+			sal_auth_compute_ha1(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1);
+		}
+		/* If algorithm is SHA-256, calcul ha1 by sha256*/
+		if((obj->algorithm)&&(!(strcasecmp(obj->algorithm, "SHA-256")))){
+			obj->ha1 = reinterpret_cast<char *>(ms_malloc(65));
+			sal_auth_compute_ha1_for_algorithm(obj->userid ? obj->userid : obj->username, obj->realm, obj->passwd, obj->ha1,65, obj->algorithm);
+		}
 	}
 	if (obj->username != NULL) {
 		lp_config_set_string(config, key, "username", obj->username);
@@ -261,6 +297,9 @@ void linphone_auth_info_write_config(LpConfig *config, LinphoneAuthInfo *obj, in
 	}
 	if (obj->tls_key_path != NULL) {
 		lp_config_set_string(config, key, "client_cert_key", obj->tls_key_path);
+	}
+	if (obj->algorithm != NULL) {
+		lp_config_set_string(config, key, "algorithm", obj->algorithm);
 	}
 }
 
@@ -413,8 +452,6 @@ LinphoneAuthInfo * linphone_core_create_auth_info(LinphoneCore *lc, const char *
 
 void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info){
 	LinphoneAuthInfo *ai;
-	bctbx_list_t *elem;
-	bctbx_list_t *l;
 	int restarted_op_count=0;
 	bool_t updating=FALSE;
 
@@ -433,10 +470,10 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 	lc->auth_info=bctbx_list_append(lc->auth_info,linphone_auth_info_clone(info));
 
 	/* retry pending authentication operations */
-	for(l=elem=sal_get_pending_auths(lc->sal);elem!=NULL;elem=elem->next){
-		SalOp *op=(SalOp*)elem->data;
+	auto pendingAuths = lc->sal->getPendingAuths();
+	for (const auto &op : pendingAuths) {
 		LinphoneAuthInfo *ai;
-		const SalAuthInfo *req_sai=sal_op_get_auth_requested(op);
+		const SalAuthInfo *req_sai=op->getAuthRequested();
 		ai=(LinphoneAuthInfo*)_linphone_core_find_auth_info(lc,req_sai->realm,req_sai->username,req_sai->domain, FALSE);
 		if (ai){
 			SalAuthInfo sai;
@@ -446,6 +483,7 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			sai.realm=ai->realm;
 			sai.password=ai->passwd;
 			sai.ha1=ai->ha1;
+			sai.algorithm=ai->algorithm;
 			if (ai->tls_cert && ai->tls_key) {
 				sal_certificates_chain_parse(&sai, ai->tls_cert, SAL_CERTIFICATE_RAW_FORMAT_PEM);
 				sal_signing_key_parse(&sai, ai->tls_key, "");
@@ -455,16 +493,16 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			}
 			/*proxy case*/
 			for (proxy=(bctbx_list_t*)linphone_core_get_proxy_config_list(lc);proxy!=NULL;proxy=proxy->next) {
-				if (proxy->data == sal_op_get_user_pointer(op)) {
+				if (proxy->data == op->getUserPointer()) {
 					linphone_proxy_config_set_state((LinphoneProxyConfig*)(proxy->data),LinphoneRegistrationProgress,"Authentication...");
 					break;
 				}
 			}
-			sal_op_authenticate(op,&sai);
+			op->authenticate(&sai);
 			restarted_op_count++;
 		}
 	}
-	if (l){
+	if (!pendingAuths.empty()) {
 		ms_message("linphone_core_add_auth_info(): restarted [%i] operation(s) after %s auth info for\n"
 			"\tusername: [%s]\n"
 			"\trealm [%s]\n"
@@ -475,7 +513,6 @@ void linphone_core_add_auth_info(LinphoneCore *lc, const LinphoneAuthInfo *info)
 			info->realm ? info->realm : "",
 			info->domain ? info->domain : "");
 	}
-	bctbx_list_free(l);
 	write_auth_infos(lc);
 }
 

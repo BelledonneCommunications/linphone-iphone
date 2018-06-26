@@ -17,13 +17,15 @@
 */
 
 #include "linphone/core.h"
-#include "private.h"
+
 
 #ifdef VCARD_ENABLED
 
 
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 #include "carddav.h"
+#include <bctoolbox/map.h>
 
 #include <time.h>
 #define CARDDAV_SERVER "http://dav.linphone.org/card.php/addressbooks/tester/default"
@@ -37,7 +39,7 @@ static void linphone_vcard_import_export_friends_test(void) {
 	char *export_filepath = bc_tester_file("export_vcards.vcf");
 	int count = 0;
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 0, unsigned int, "%u");
-	
+
 	count = linphone_friend_list_import_friends_from_vcard4_file(lfl, import_filepath);
 	BC_ASSERT_EQUAL(count, 3, int, "%d");
 	friends = linphone_friend_list_get_friends(lfl);
@@ -145,7 +147,7 @@ static void linphone_vcard_update_existing_friends_test(void) {
 
 static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	LinphoneCoreManager* manager = linphone_core_manager_new2("empty_rc", FALSE);
-	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nIMPP;TYPE=home:sip:sylvain@sip.linphone.org\r\nTEL;TYPE=work:0952636505\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nIMPP;TYPE=home:sip:sylvain@sip.linphone.org\r\nTEL;TYPE=work:0952636505\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
 	linphone_vcard_unref(lvc);
 	const bctbx_list_t *sip_addresses = linphone_friend_get_addresses(lf);
@@ -157,10 +159,10 @@ static void linphone_vcard_phone_numbers_and_sip_addresses(void) {
 	if (phone_numbers) bctbx_list_free(phone_numbers);
 	linphone_friend_unref(lf);
 
-	lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nTEL;TYPE=work:0952636505\r\nTEL:0476010203\r\nEND:VCARD\r\n");
+	lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nTEL;TYPE=work:0952636505\r\nTEL:0476010203\r\nEND:VCARD\r\n");
 	lf = linphone_friend_new_from_vcard(lvc);
 	linphone_vcard_unref(lvc);
-	lf->lc = manager->lc;
+	linphone_friend_set_core(lf, manager->lc);
 	sip_addresses = linphone_friend_get_addresses(lf);
 	phone_numbers = linphone_friend_get_phone_numbers(lf);
 
@@ -225,31 +227,6 @@ static void friends_if_no_db_set(void) {
 	linphone_core_manager_destroy(manager);
 }
 
-static void friends_migration(void) {
-	LinphoneCoreManager* manager = linphone_core_manager_new2("friends_rc", FALSE);
-	LpConfig *lpc = linphone_core_get_config(manager->lc);
-	LinphoneFriendList *lfl = linphone_core_get_default_friend_list(manager->lc);
-	const bctbx_list_t *friends = linphone_friend_list_get_friends(lfl);
-	bctbx_list_t *friends_from_db = NULL;
-	char *friends_db = bc_tester_file("friends.db");
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 3, unsigned int, "%u");
-	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 0, int, "%i");
-
-	unlink(friends_db);
-	linphone_core_set_friends_database_path(manager->lc, friends_db);
-	lfl = linphone_core_get_default_friend_list(manager->lc);
-	friends = linphone_friend_list_get_friends(lfl);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 3, unsigned int, "%u");
-	friends_from_db = linphone_core_fetch_friends_from_db(manager->lc, lfl);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends_from_db), 3, unsigned int, "%u");
-	BC_ASSERT_EQUAL(lp_config_get_int(lpc, "misc", "friends_migration_done", 0), 1, int, "%i");
-
-	friends_from_db = bctbx_list_free_with_data(friends_from_db, (void (*)(void *))linphone_friend_unref);
-	linphone_core_manager_destroy(manager);
-	unlink(friends_db);
-	bc_free(friends_db);
-}
-
 typedef struct _LinphoneFriendListStats {
 	int new_list_count;
 	int removed_list_count;
@@ -288,7 +265,7 @@ static void friends_sqlite_storage(void) {
 	cbs = linphone_factory_create_core_cbs(linphone_factory_get());
 	linphone_core_cbs_set_friend_list_created(cbs, friend_list_created_cb);
 	linphone_core_cbs_set_friend_list_removed(cbs, friend_list_removed_cb);
-	lc = linphone_factory_create_core(linphone_factory_get(), cbs, NULL, NULL);
+	lc = linphone_factory_create_core_2(linphone_factory_get(), cbs, NULL, NULL, NULL, system_context);
 	linphone_core_cbs_unref(cbs);
 	friends = linphone_friend_list_get_friends(linphone_core_get_default_friend_list(lc));
 	lfl = linphone_core_create_friend_list(lc);
@@ -314,19 +291,19 @@ static void friends_sqlite_storage(void) {
 	linphone_friend_list_set_display_name(lfl, "Test");
 	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%i");
 	linphone_friend_unref(lf);
-	BC_ASSERT_EQUAL(lfl->storage_id, 1, unsigned int, "%u");
-	BC_ASSERT_EQUAL(lf->storage_id, 1, unsigned int, "%u");
+	BC_ASSERT_EQUAL(linphone_friend_list_get_storage_id(lfl), 1, unsigned int, "%u");
+	BC_ASSERT_EQUAL(linphone_friend_get_storage_id(lf), 1, unsigned int, "%u");
 
 	friends = linphone_friend_list_get_friends(linphone_core_get_default_friend_list(lc));
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends), 0, unsigned int, "%u");
 
 	friends_lists_from_db = linphone_core_fetch_friends_lists_from_db(lc);
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends_lists_from_db), 1, unsigned int, "%u");
-	friends_from_db = ((LinphoneFriendList *)friends_lists_from_db->data)->friends;
+	friends_from_db = *linphone_friend_list_get_friends_attribute((LinphoneFriendList *)bctbx_list_get_data(friends_lists_from_db));
 	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(friends_from_db), 1, unsigned int, "%u");
 	lf2 = (LinphoneFriend *)friends_from_db->data;
-	BC_ASSERT_PTR_NOT_NULL(lf2->lc);
-	BC_ASSERT_PTR_NOT_NULL(lf2->friend_list);
+	BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_core(lf2));
+	BC_ASSERT_PTR_NOT_NULL(linphone_friend_get_friend_list(lf2));
 	friends_lists_from_db = bctbx_list_free_with_data(friends_lists_from_db, (void (*)(void *))linphone_friend_list_unref);
 
 	friends_from_db = linphone_core_fetch_friends_from_db(lc, lfl);
@@ -336,7 +313,7 @@ static void friends_sqlite_storage(void) {
 	}
 	lf2 = (LinphoneFriend *)friends_from_db->data;
 	BC_ASSERT_STRING_EQUAL(linphone_friend_get_name(lf2), linphone_friend_get_name(lf));
-	BC_ASSERT_EQUAL(lf2->storage_id, lf->storage_id, unsigned int, "%u");
+	BC_ASSERT_EQUAL(linphone_friend_get_storage_id(lf2), linphone_friend_get_storage_id(lf), unsigned int, "%u");
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_etag(linphone_friend_get_vcard(lf2)), linphone_vcard_get_etag(linphone_friend_get_vcard(lf)));
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_url(linphone_friend_get_vcard(lf2)), linphone_vcard_get_url(linphone_friend_get_vcard(lf)));
 	laddress = linphone_friend_get_address(lf);
@@ -344,7 +321,7 @@ static void friends_sqlite_storage(void) {
 	laddress2 = linphone_friend_get_address(lf2);
 	address2 = linphone_address_as_string(laddress2);
 	BC_ASSERT_STRING_EQUAL(address2, address);
-	
+
 	ms_free(address);
 	ms_free(address2);
 
@@ -381,22 +358,22 @@ end:
 }
 
 static void friends_sqlite_store_lot_of_friends(void) {
-	LinphoneCore* lc = linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore* lc = linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
 	int ret;
 	char *buf;
 	char *friends_db = bc_tester_file("friends.db");
-	
+
 	unlink(friends_db);
-	
 	ret = sqlite3_open(friends_db, &db);
 	bc_free(friends_db);
+
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,
 					   "CREATE TABLE IF NOT EXISTS friends ("
 					   "id                INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -434,12 +411,12 @@ static void friends_sqlite_store_lot_of_friends(void) {
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 	}
-	
+
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ms_message("End :\n");
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db, "DELETE FROM friends;",0,0,&errmsg);
@@ -451,7 +428,7 @@ static void friends_sqlite_store_lot_of_friends(void) {
 }
 
 static void friends_sqlite_find_friend_in_lot_of_friends(void) {
-	LinphoneCore* lc = linphone_factory_create_core(linphone_factory_get(), NULL, NULL, NULL);
+	LinphoneCore* lc = linphone_factory_create_core_2(linphone_factory_get(), NULL, NULL, NULL, NULL, system_context);
 	sqlite3 *db;
 	int i;
 	char* errmsg = NULL;
@@ -460,15 +437,15 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	bctoolboxTimeSpec t1;
 	bctoolboxTimeSpec t2;
 	char *friends_db = bc_tester_file("friends.db");
-	
-	unlink(friends_db);
 
+	unlink(friends_db);
 	ret = sqlite3_open(friends_db, &db);
 	bc_free(friends_db);
+
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,
 					   "CREATE TABLE IF NOT EXISTS friends ("
 					   "id                INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -485,7 +462,7 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	for (i = 0; i < 20000; i++) {
@@ -500,30 +477,30 @@ static void friends_sqlite_find_friend_in_lot_of_friends(void) {
 							  NULL,
 							  0
 							  );
-		
+
 		ret = sqlite3_exec(db,buf,0,0,&errmsg);
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 		//ms_message("%i",i);
 	}
-	
+
 	ret = sqlite3_exec(db,"END",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
-	
+
 	bctbx_get_cur_time(&t1);
 	ms_message("Start : %li : %li\n", (long int)t1.tv_sec, (long int)t1.tv_nsec);
 	for (i = 0; i < 20000; i++) {
 		buf = sqlite3_mprintf("SELECT * FROM friends WHERE ref_key LIKE 'key_%i';",
 							  i);
-		
+
 		ret = sqlite3_exec(db,buf,0,0,&errmsg);
 		BC_ASSERT_TRUE(ret ==SQLITE_OK);
 		sqlite3_free(buf);
 	}
-	
+
 	bctbx_get_cur_time(&t2);
 	ms_message("End : %li : %li\n", (long int)t2.tv_sec, (long int)t2.tv_nsec);
-	
+
 	ret = sqlite3_exec(db,"BEGIN",0,0,&errmsg);
 	BC_ASSERT_TRUE(ret ==SQLITE_OK);
 	ret = sqlite3_exec(db, "DELETE FROM friends;",0,0,&errmsg);
@@ -641,7 +618,7 @@ static void carddav_sync_2(void) {
 static void carddav_sync_3(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
-	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nFN:Sylvain Berfini\r\nIMPP;TYPE=work:sip:sylvain@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nFN:Sylvain Berfini\r\nIMPP;TYPE=work:sip:sylvain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
 	char *friends_db = bc_tester_file("friends.db");
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
@@ -682,7 +659,7 @@ static void carddav_sync_3(void) {
 static void carddav_sync_4(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
-	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	LinphoneCardDavContext *c = NULL;
@@ -717,23 +694,23 @@ static void carddav_sync_4(void) {
 }
 
 static void carddav_contact_created(LinphoneFriendList *list, LinphoneFriend *lf) {
-	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(list->cbs);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(linphone_friend_list_get_callbacks(list));
 	stats->new_contact_count++;
 }
 
 static void carddav_contact_deleted(LinphoneFriendList *list, LinphoneFriend *lf) {
-	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(list->cbs);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(linphone_friend_list_get_callbacks(list));
 	stats->removed_contact_count++;
 }
 
 static void carddav_contact_updated(LinphoneFriendList *list, LinphoneFriend *new_friend, LinphoneFriend *old_friend) {
-	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(list->cbs);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(linphone_friend_list_get_callbacks(list));
 	BC_ASSERT_STRING_EQUAL(linphone_vcard_get_full_name(linphone_friend_get_vcard(new_friend)), linphone_vcard_get_full_name(linphone_friend_get_vcard(old_friend)));
 	stats->updated_contact_count++;
 }
 
 static void carddav_sync_status_changed(LinphoneFriendList *list, LinphoneFriendListSyncStatus status, const char *msg) {
-	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(list->cbs);
+	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)linphone_friend_list_cbs_get_user_data(linphone_friend_list_get_callbacks(list));
 	char *state = status == LinphoneFriendListSyncStarted ? "Sync started" : (status == LinphoneFriendListSyncFailure ? "Sync failure" : "Sync successful");
 	ms_message("[CardDAV] %s : %s", state, msg);
 	if (status == LinphoneFriendListSyncFailure || status == LinphoneFriendListSyncSuccessful) {
@@ -744,7 +721,7 @@ static void carddav_sync_status_changed(LinphoneFriendList *list, LinphoneFriend
 static void carddav_integration(void) {
 	LinphoneCoreManager *manager = linphone_core_manager_new2("carddav_rc", FALSE);
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
-	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf = linphone_friend_new_from_vcard(lvc);
 	LinphoneVcard *lvc2 = NULL;
 	LinphoneFriend *lf2 = NULL;
@@ -765,34 +742,34 @@ static void carddav_integration(void) {
 	linphone_core_add_friend_list(manager->lc, lfl);
 
 	BC_ASSERT_PTR_NULL(linphone_vcard_get_uid(lvc));
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(lfl)), 0, unsigned int, "%u");
 	BC_ASSERT_EQUAL(linphone_friend_list_add_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 1, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(lfl)), 1, unsigned int, "%u");
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->dirty_friends_to_update), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(lfl)), 0, unsigned int, "%u");
 	BC_ASSERT_PTR_NOT_NULL(linphone_vcard_get_uid(lvc));
 	linphone_friend_list_remove_friend(lfl, lf);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->friends), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_friends(lfl)), 0, unsigned int, "%u");
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 2, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 2, int, "%i");
 	linphone_friend_unref(lf);
 	lf = NULL;
 
-	lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
+	lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
 	lf = linphone_friend_new_from_vcard(lvc);
 	linphone_vcard_unref(lvc);
 	BC_ASSERT_EQUAL(linphone_friend_list_add_local_friend(lfl, lf), LinphoneFriendListOK, int, "%d");
 	linphone_friend_unref(lf);
 
-	lvc2 = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
+	lvc2 = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sberfini@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc2, "/card.php/addressbooks/tester/default/me.vcf");
 	lf2 = linphone_friend_new_from_vcard(lvc2);
 	linphone_vcard_unref(lvc2);
 	linphone_friend_set_ref_key(lf2, refkey);
 	BC_ASSERT_EQUAL(linphone_friend_list_add_local_friend(lfl, lf2), LinphoneFriendListOK, int, "%d");
 
-	BC_ASSERT_EQUAL(lfl->revision, 0, int, "%i");
+	BC_ASSERT_EQUAL(linphone_friend_list_get_revision(lfl), 0, int, "%i");
 	linphone_friend_list_synchronize_friends_from_server(lfl);
 	wait_for_until(manager->lc, NULL, &stats->new_contact_count, 0, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->new_contact_count, 0, int, "%i");
@@ -800,14 +777,14 @@ static void carddav_integration(void) {
 	BC_ASSERT_EQUAL(stats->removed_contact_count, 1, int, "%i");
 	wait_for_until(manager->lc, NULL, &stats->updated_contact_count, 1, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->updated_contact_count, 1, int, "%i");
-	BC_ASSERT_NOT_EQUAL(lfl->revision, 0, int, "%i");
+	BC_ASSERT_NOT_EQUAL(linphone_friend_list_get_revision(lfl), 0, int, "%i");
 	wait_for_until(manager->lc, NULL, &stats->sync_done_count, 3, CARDDAV_SYNC_TIMEOUT);
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lfl->friends), 1, unsigned int, "%u");
-	lf = (LinphoneFriend *)lfl->friends->data;
-	BC_ASSERT_STRING_EQUAL(lf->refkey, refkey);
-	BC_ASSERT_EQUAL(lf->storage_id, lf2->storage_id, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_friends(lfl)), 1, unsigned int, "%u");
+	lf = (LinphoneFriend *)bctbx_list_get_data((linphone_friend_list_get_friends(lfl)));
+	BC_ASSERT_STRING_EQUAL(linphone_friend_get_ref_key(lf), refkey);
+	BC_ASSERT_EQUAL(linphone_friend_get_storage_id(lf), linphone_friend_get_storage_id(lf2), unsigned int, "%u");
 	linphone_friend_unref(lf2);
 	addr = linphone_friend_get_address(lf);
 	BC_ASSERT_PTR_NOT_NULL(addr);
@@ -818,17 +795,17 @@ static void carddav_integration(void) {
 
 	linphone_friend_edit(lf);
 	linphone_friend_done(lf);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lf->friend_list->dirty_friends_to_update), 0, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(linphone_friend_get_friend_list(lf))), 0, unsigned int, "%u");
 
 	linphone_core_set_network_reachable(manager->lc, FALSE); //To prevent the CardDAV update
 	linphone_friend_edit(lf);
 	linphone_friend_set_name(lf, "François Grisez");
 	linphone_friend_done(lf);
-	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(lf->friend_list->dirty_friends_to_update), 1, unsigned int, "%u");
+	BC_ASSERT_EQUAL((unsigned int)bctbx_list_size(linphone_friend_list_get_dirty_friends_to_update(linphone_friend_get_friend_list(lf))), 1, unsigned int, "%u");
 
-	ms_free(stats);
 	linphone_friend_list_unref(lfl);
 	linphone_core_manager_destroy(manager);
+	ms_free(stats);
 }
 
 static void carddav_clean(void) {  // This is to ensure the content of the test addressbook is in the correct state for the following tests
@@ -854,7 +831,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	BC_ASSERT_EQUAL(stats->sync_done_count, 1, int, "%i");
 	stats->sync_done_count = 0;
 
-	friends = bctbx_list_copy(lfl->friends);
+	friends = bctbx_list_copy(linphone_friend_list_get_friends(lfl));
 	friends_iterator = friends;
 	while (friends_iterator) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
@@ -867,7 +844,7 @@ static void carddav_clean(void) {  // This is to ensure the content of the test 
 	}
 	bctbx_list_free(friends);
 
-	lvc = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sylvain@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
+	lvc = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Sylvain Berfini\r\nIMPP:sip:sylvain@sip.linphone.org\r\nUID:1f08dd48-29ac-4097-8e48-8596d7776283\r\nEND:VCARD\r\n");
 	linphone_vcard_set_url(lvc, "http://dav.linphone.org/card.php/addressbooks/tester/default/me.vcf");
 	lf = linphone_friend_new_from_vcard(lvc);
 	linphone_vcard_unref(lvc);
@@ -916,9 +893,9 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	LinphoneFriendList *lfl = linphone_core_create_friend_list(manager->lc);
 	LinphoneFriendListCbs *cbs = linphone_friend_list_get_callbacks(lfl);
 	LinphoneCardDAVStats *stats = (LinphoneCardDAVStats *)ms_new0(LinphoneCardDAVStats, 1);
-	LinphoneVcard *lvc1 = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc1 = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Margaux Clerc\r\nIMPP;TYPE=work:sip:margaux@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf1 = linphone_friend_new_from_vcard(lvc1);
-	LinphoneVcard *lvc2 = linphone_vcard_context_get_vcard_from_buffer(manager->lc->vcard_context, "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
+	LinphoneVcard *lvc2 = linphone_vcard_context_get_vcard_from_buffer(linphone_core_get_vcard_context(manager->lc), "BEGIN:VCARD\r\nVERSION:4.0\r\nFN:Ghislain Mary\r\nIMPP;TYPE=work:sip:ghislain@sip.linphone.org\r\nEND:VCARD\r\n");
 	LinphoneFriend *lf2 = linphone_friend_new_from_vcard(lvc2);
 	bctbx_list_t *friends = NULL, *friends_iterator = NULL;
 
@@ -941,7 +918,7 @@ static void carddav_server_to_client_and_client_to_sever_sync(void) {
 	BC_ASSERT_EQUAL(stats->sync_done_count, 3, int, "%i");
 
 	stats->sync_done_count = 0;
-	friends = bctbx_list_copy(lfl->friends);
+	friends = bctbx_list_copy(linphone_friend_list_get_friends(lfl));
 	friends_iterator = friends;
 	while (friends_iterator) {
 		LinphoneFriend *lf = (LinphoneFriend *)friends_iterator->data;
@@ -974,7 +951,9 @@ static void find_friend_by_ref_key_test(void) {
 		goto end;
 	}
 	addr = linphone_friend_get_address(lf2);
-	BC_ASSERT_STRING_EQUAL(linphone_address_as_string_uri_only(addr), "sip:toto@sip.linphone.org");
+	char *uri_addr = linphone_address_as_string_uri_only(addr);
+	BC_ASSERT_STRING_EQUAL(uri_addr, "sip:toto@sip.linphone.org");
+	bctbx_free(uri_addr);
 	BC_ASSERT_EQUAL(lf2, lf, void*, "%p");
 end:
 	linphone_friend_unref(lf);
@@ -985,7 +964,7 @@ static void insert_lot_of_friends_map_test(void) {
 	int i;
 	bctbx_map_t *friends_map = bctbx_mmap_cchar_new();
 	bctbx_pair_cchar_t *pair;
-	
+
 	char key[64];
 	ms_message("Start\n");
 	for(i = 0; i < 20000; i++) {
@@ -1045,7 +1024,6 @@ test_t vcard_tests[] = {
 	TEST_NO_TAG("vCard phone numbers and SIP addresses", linphone_vcard_phone_numbers_and_sip_addresses),
 #ifdef SQLITE_STORAGE_ENABLED
 	TEST_NO_TAG("Friends working if no db set", friends_if_no_db_set),
-	TEST_NO_TAG("Friends storage migration from rc to db", friends_migration),
 	TEST_NO_TAG("Friends storage in sqlite database", friends_sqlite_storage),
 	TEST_NO_TAG("20000 Friends storage in sqlite database", friends_sqlite_store_lot_of_friends),
 	TEST_NO_TAG("Find friend in database of 20000 objects", friends_sqlite_find_friend_in_lot_of_friends),

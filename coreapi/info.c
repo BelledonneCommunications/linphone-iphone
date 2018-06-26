@@ -22,11 +22,12 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
- 
+
+#include "linphone/api/c-content.h"
 #include "linphone/core.h"
-#include "private.h"
 #include "linphone/lpconfig.h"
 
+#include "c-wrapper/c-wrapper.h"
 
 struct _LinphoneInfoMessage{
 	belle_sip_object_t base;
@@ -76,12 +77,6 @@ LinphoneInfoMessage *linphone_core_create_info_message(LinphoneCore *lc){
 	return belle_sip_object_new(LinphoneInfoMessage);
 }
 
-LinphoneStatus linphone_call_send_info_message(LinphoneCall *call, const LinphoneInfoMessage *info) {
-	SalBodyHandler *body_handler = sal_body_handler_from_content(info->content);
-	sal_op_set_sent_custom_header(call->op, info->headers);
-	return sal_send_info(call->op,NULL, NULL, body_handler);
-}
-
 void linphone_info_message_add_header(LinphoneInfoMessage *im, const char *name, const char *value){
 	im->headers=sal_custom_header_append(im->headers, name, value);
 }
@@ -90,21 +85,25 @@ const char *linphone_info_message_get_header(const LinphoneInfoMessage *im, cons
 	return sal_custom_header_find(im->headers,name);
 }
 
-void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content){
-	im->content=linphone_content_copy(content);
+void linphone_info_message_set_content (LinphoneInfoMessage *im, const LinphoneContent *content) {
+	if (im->content)
+		linphone_content_unref(im->content);
+	im->content = linphone_content_copy(content);
 }
 
 const LinphoneContent * linphone_info_message_get_content(const LinphoneInfoMessage *im){
 	return (im->content && linphone_content_get_type(im->content)) ? im->content : NULL;
 }
 
-void linphone_core_notify_info_message(LinphoneCore* lc,SalOp *op, SalBodyHandler *body_handler){
-	LinphoneCall *call=(LinphoneCall*)sal_op_get_user_pointer(op);
-	if (call){
-		LinphoneInfoMessage *info=linphone_core_create_info_message(lc);
-		info->headers=sal_custom_header_clone(sal_op_get_recv_custom_header(op));
-		if (body_handler) info->content=linphone_content_from_sal_body_handler(body_handler);
-		linphone_call_notify_info_message_received(call, info);
-		linphone_info_message_unref(info);
+SalCustomHeader *linphone_info_message_get_headers (const LinphoneInfoMessage *im) {
+	return im->headers;
+}
+
+void linphone_info_message_set_headers (LinphoneInfoMessage *im, const SalCustomHeader *headers) {
+	if (im->headers) {
+		sal_custom_header_free(im->headers);
+		im->headers = nullptr;
 	}
+	if (headers)
+		im->headers = sal_custom_header_clone(headers);
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 #include "linphone/types.h"
+#include "linphone/callbacks.h"
 
 
 #ifdef __cplusplus
@@ -49,26 +50,64 @@ LINPHONE_PUBLIC void linphone_core_use_sound_daemon(LinphoneCore *lc, LinphoneSo
 LINPHONE_PUBLIC void linphone_sound_daemon_destroy(LinphoneSoundDaemon *obj);
 
 
-typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
-typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
-typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationCallback)(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationAudioInit)(void *data);
+LINPHONE_DEPRECATED typedef void (*LinphoneEcCalibrationAudioUninit)(void *data);
 
 /**
- *
- * Start an echo calibration of the sound devices, in order to find adequate settings for the echo canceller automatically.
+ * @brief Starts an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+ * @deprecated Use #linphone_core_start_echo_canceller_calibration() instead. To set the callbacks create or get an already instantiated
+ * #LinphoneCoreCbs and call #linphone_core_cbs_set_ec_calibration_result(), #linphone_core_cbs_set_ec_calibration_audio_init() and
+ * #linphone_core_cbs_set_ec_callibration_audio_uninit(). Deprecated since 2017-10-16.
+ * @ingroup misc
+ * @donotwrap
 **/
-LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
+LINPHONE_DEPRECATED LINPHONE_PUBLIC int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibrationCallback cb,
 					 LinphoneEcCalibrationAudioInit audio_init_cb, LinphoneEcCalibrationAudioUninit audio_uninit_cb, void *cb_data);
+
+/**
+ * @brief Starts an echo calibration of the sound devices, in order to find adequate settings for the echo canceler automatically.
+ * @param[in] lc #LinphoneCore object.
+ * @return #LinphoneStatus whether calibration has started or not.
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC LinphoneStatus linphone_core_start_echo_canceller_calibration(LinphoneCore *lc);
+
 /**
  * Start the simulation of call to test the latency with an external device
  * @param lc The core.
  * @param rate Sound sample rate.
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_start_echo_tester(LinphoneCore *lc, unsigned int rate);
+
 /**
  * Stop the simulation of call
+ * @ingroup misc
 **/
 LINPHONE_PUBLIC LinphoneStatus linphone_core_stop_echo_tester(LinphoneCore *lc);
+
+/**
+ * Check whether the device is flagged has crappy opengl
+ * @returns TRUE if crappy opengl flag is set, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_has_crappy_opengl(LinphoneCore *lc);
+
+/**
+ * Check whether the device has a hardware echo canceller
+ * @returns TRUE if it does, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_has_builtin_echo_canceller(LinphoneCore *lc);
+
+/**
+ * Check whether the device is echo canceller calibration is required
+ * @returns TRUE if it is required, FALSE otherwise
+ * @ingroup misc
+**/
+LINPHONE_PUBLIC bool_t linphone_core_is_echo_canceller_calibration_required(LinphoneCore *lc);
+
 /**
  * @ingroup IOS
  * Special function to warm up  dtmf feeback stream. #linphone_core_stop_dtmf_stream must() be called before entering FG mode
@@ -83,54 +122,9 @@ LINPHONE_PUBLIC void linphone_core_stop_dtmf_stream(LinphoneCore* lc);
 
 typedef bool_t (*LinphoneCoreIterateHook)(void *data);
 
-void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
+LINPHONE_PUBLIC void linphone_core_add_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
-void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
-
-typedef struct _LinphoneDialPlan {
-	const char *country;
-	const char* iso_country_code; /* ISO 3166-1 alpha-2 code, ex: FR for France*/
-	char  ccc[8]; /*country calling code*/
-	int nnl; /*maximum national number length*/
-	const char * icp; /*international call prefix, ex: 00 in europe*/
-} LinphoneDialPlan;
-
-/**
- * @ingroup misc
- *Function to get  call country code from  ISO 3166-1 alpha-2 code, ex: FR returns 33
- *@param iso country code alpha2
- *@return call country code or -1 if not found
- */
-LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_iso(const char* iso);
-
-/**
- * @ingroup misc
- *Function to get  call country code from  an e164 number, ex: +33952650121 will return 33
- *@param e164 phone number
- *@return call country code or -1 if not found
- */
-LINPHONE_PUBLIC	int linphone_dial_plan_lookup_ccc_from_e164(const char* e164);
-
-/**
- * Return NULL-terminated array of all known dial plans
-**/
-LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_get_all(void);
-
-/**
- * Find best match for given CCC
- * @return Return matching dial plan, or a generic one if none found
-**/
-LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc(const char *ccc);
-/**
- * Find best match for given CCC
- * @return Return matching dial plan, or a generic one if none found
- **/
-LINPHONE_PUBLIC const LinphoneDialPlan* linphone_dial_plan_by_ccc_as_int(int ccc);
-
-/**
- * Return if given plan is generic
-**/
-LINPHONE_PUBLIC bool_t linphone_dial_plan_is_generic(const LinphoneDialPlan *ccc);
+LINPHONE_PUBLIC void linphone_core_remove_iterate_hook(LinphoneCore *lc, LinphoneCoreIterateHook hook, void *hook_data);
 
 #ifdef __cplusplus
 }

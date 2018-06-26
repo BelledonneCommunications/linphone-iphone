@@ -14,9 +14,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "contact_providers_priv.h"
 #include "linphone/contactprovider.h"
-#include <linphone/core.h>
+#include "linphone/core.h"
+
+#include "contact_providers_priv.h"
 
 /* ############################ *
  * LinphoneContactSearchRequest *

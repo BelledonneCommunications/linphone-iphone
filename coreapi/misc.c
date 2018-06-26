@@ -18,7 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "private.h"
 #include "linphone/lpconfig.h"
 #include "linphone/wrapper_utils.h"
 #include "mediastreamer2/mediastream.h"
@@ -56,88 +55,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define pclose _pclose
 #endif
 
+#include "nat/stun-client.h"
+#include "utils/payload-type-handler.h"
 
-#define UDP_HDR_SZ 8
-#define RTP_HDR_SZ 12
-#define IP4_HDR_SZ 20   /*20 is the minimum, but there may be some options*/
+#include "c-wrapper/c-wrapper.h"
 
-static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed);
-
-
-/*
- *((codec-birate*ptime/8) + RTP header + UDP header + IP header)*8/ptime;
- *ptime=1/npacket
- */
-
-static double get_audio_payload_bandwidth_from_codec_bitrate(const PayloadType *pt){
-	double npacket=50;
-	double packet_size;
-	int bitrate;
-
-	if (strcmp(payload_type_get_mime(&payload_type_aaceld_44k), payload_type_get_mime(pt))==0) {
-		/*special case of aac 44K because ptime= 10ms*/
-		npacket=100;
-	}else if (strcmp(payload_type_get_mime(&payload_type_ilbc), payload_type_get_mime(pt))==0) {
-		npacket=1000/30.0;
-	}
-
-	bitrate=pt->normal_bitrate;
-	packet_size= (((double)bitrate)/(npacket*8))+UDP_HDR_SZ+RTP_HDR_SZ+IP4_HDR_SZ;
-	return packet_size*8.0*npacket;
-}
-
-typedef struct vbr_codec_bitrate{
-	int max_avail_bitrate;
-	int min_rate;
-	int recomended_bitrate;
-}vbr_codec_bitrate_t;
-
-static vbr_codec_bitrate_t defauls_vbr[]={
-	//{ 100, 44100, 100 },
-	{ 64, 44100, 50 },
-	{ 64, 16000, 40 },
-	{ 32, 16000, 32 },
-	{ 32, 8000, 32 },
-	{ 0 , 8000, 24 },
-	{ 0 , 0, 0 }
-};
-
-static int lookup_vbr_typical_bitrate(int maxbw, int clock_rate){
-	vbr_codec_bitrate_t *it;
-	if (maxbw<=0) maxbw=defauls_vbr[0].max_avail_bitrate;
-	for(it=defauls_vbr;it->min_rate!=0;it++){
-		if (maxbw>=it->max_avail_bitrate && clock_rate>=it->min_rate)
-			return it->recomended_bitrate;
-	}
-	ms_error("lookup_vbr_typical_bitrate(): should not happen.");
-	return 32;
-}
-
-int get_audio_payload_bandwidth(const LinphoneCore *lc, const PayloadType *pt, int maxbw) {
-	if (payload_type_is_vbr(pt)) {
-		if (pt->flags & PAYLOAD_TYPE_BITRATE_OVERRIDE){
-			ms_debug("PayloadType %s/%i has bitrate override",pt->mime_type,pt->clock_rate);
-			return pt->normal_bitrate/1000;
-		}
-		return lookup_vbr_typical_bitrate(maxbw,pt->clock_rate);
-	}else return (int)ceil(get_audio_payload_bandwidth_from_codec_bitrate(pt)/1000.0);/*rounding codec bandwidth should be avoid, specially for AMR*/
-}
-
-void linphone_core_update_allocated_audio_bandwidth_in_call(LinphoneCall *call, const PayloadType *pt, int maxbw){
-	call->audio_bw=get_audio_payload_bandwidth(call->core,pt,maxbw);
-	ms_message("Audio bandwidth for this call is %i",call->audio_bw);
-}
+// TODO: From coreapi. Remove me later.
+#include "private.h"
 
 void linphone_core_update_allocated_audio_bandwidth(LinphoneCore *lc){
 	const bctbx_list_t *elem;
-	int maxbw=get_min_bandwidth(linphone_core_get_download_bandwidth(lc),
+	int maxbw=LinphonePrivate::PayloadTypeHandler::getMinBandwidth(linphone_core_get_download_bandwidth(lc),
 					linphone_core_get_upload_bandwidth(lc));
 	int max_codec_bitrate=0;
 
 	for(elem=linphone_core_get_audio_codecs(lc);elem!=NULL;elem=elem->next){
 		PayloadType *pt=(PayloadType*)elem->data;
 		if (payload_type_enabled(pt)){
-			int pt_bitrate=get_audio_payload_bandwidth(lc,pt,maxbw);
+			int pt_bitrate=LinphonePrivate::PayloadTypeHandler::getAudioPayloadTypeBandwidth(pt,maxbw);
 			if (max_codec_bitrate==0) {
 				max_codec_bitrate=pt_bitrate;
 			}else if (max_codec_bitrate<pt_bitrate){
@@ -158,8 +93,8 @@ bool_t linphone_core_is_payload_type_usable_for_bandwidth(const LinphoneCore *lc
 	switch (pt->type){
 		case PAYLOAD_AUDIO_CONTINUOUS:
 		case PAYLOAD_AUDIO_PACKETIZED:
-			codec_band=get_audio_payload_bandwidth(lc,pt,bandwidth_limit);
-			ret=bandwidth_is_greater(bandwidth_limit,(int)codec_band);
+			codec_band=LinphonePrivate::PayloadTypeHandler::getAudioPayloadTypeBandwidth(pt,bandwidth_limit);
+			ret=LinphonePrivate::PayloadTypeHandler::bandwidthIsGreater(bandwidth_limit,(int)codec_band);
 			/*ms_message("Payload %s: codec_bandwidth=%g, bandwidth_limit=%i",pt->mime_type,codec_band,bandwidth_limit);*/
 			break;
 		case PAYLOAD_VIDEO:
@@ -194,59 +129,6 @@ bool_t lp_spawn_command_line_sync(const char *command, char **result,int *comman
 	}
 #endif /*_WIN32_WCE*/
 	return FALSE;
-}
-
-static ortp_socket_t create_socket(int local_port){
-	struct sockaddr_in laddr;
-	ortp_socket_t sock;
-	int optval;
-	sock=socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP);
-	if (sock<0) {
-		ms_error("Fail to create socket");
-		return -1;
-	}
-	memset (&laddr,0,sizeof(laddr));
-	laddr.sin_family=AF_INET;
-	laddr.sin_addr.s_addr=INADDR_ANY;
-	laddr.sin_port=htons(local_port);
-	if (bind(sock,(struct sockaddr*)&laddr,sizeof(laddr))<0){
-		ms_error("Bind socket to 0.0.0.0:%i failed: %s",local_port,getSocketError());
-		close_socket(sock);
-		return -1;
-	}
-	optval=1;
-	if (setsockopt (sock, SOL_SOCKET, SO_REUSEADDR,
-				(SOCKET_OPTION_VALUE)&optval, sizeof (optval))<0){
-		ms_warning("Fail to set SO_REUSEADDR");
-	}
-	set_non_blocking_socket(sock);
-	return sock;
-}
-
-static int send_stun_request(int sock, const struct sockaddr *server, socklen_t addrlen, int id, bool_t change_addr){
-	char *buf = NULL;
-	size_t len;
-	int err = 0;
-	MSStunMessage *req = ms_stun_binding_request_create();
-	UInt96 tr_id = ms_stun_message_get_tr_id(req);
-	tr_id.octet[0] = id;
-	ms_stun_message_set_tr_id(req, tr_id);
-	ms_stun_message_enable_change_ip(req, change_addr);
-	ms_stun_message_enable_change_port(req, change_addr);
-	len = ms_stun_message_encode(req, &buf);
-	if (len <= 0) {
-		ms_error("Fail to encode stun message.");
-		err = -1;
-	} else {
-		err = bctbx_sendto(sock, buf, len, 0, server, addrlen);
-		if (err < 0) {
-			ms_error("sendto failed: %s",strerror(errno));
-			err = -1;
-		}
-	}
-	if (buf != NULL) ms_free(buf);
-	ms_free(req);
-	return err;
 }
 
 int linphone_parse_host_port(const char *input, char *host, size_t hostlen, int *port){
@@ -288,162 +170,25 @@ int parse_hostname_to_addr(const char *server, struct sockaddr_storage *ss, sock
 		return -1;
 	}
 	if (!res) return -1;
-	memcpy(ss,res->ai_addr,res->ai_addrlen);
+	memcpy(ss,res->ai_addr,(size_t)res->ai_addrlen);
 	*socklen=(socklen_t)res->ai_addrlen;
 	freeaddrinfo(res);
 	return 0;
 }
 
-static int recv_stun_response(ortp_socket_t sock, char *ipaddr, int *port, int *id) {
-	char buf[MS_STUN_MAX_MESSAGE_SIZE];
-	int len = MS_STUN_MAX_MESSAGE_SIZE;
-	MSStunMessage *resp;
-
-	len = recv(sock, buf, len, 0);
-	if (len > 0) {
-		struct in_addr ia;
-		resp = ms_stun_message_create_from_buffer_parsing((uint8_t *)buf, (ssize_t)len);
-		if (resp != NULL) {
-			const MSStunAddress *stun_addr;
-			UInt96 tr_id = ms_stun_message_get_tr_id(resp);
-			*id = tr_id.octet[0];
-			stun_addr = ms_stun_message_get_xor_mapped_address(resp);
-			if (stun_addr != NULL) {
-				*port = stun_addr->ip.v4.port;
-				ia.s_addr = htonl(stun_addr->ip.v4.addr);
-			} else {
-				stun_addr = ms_stun_message_get_mapped_address(resp);
-				if (stun_addr != NULL) {
-					*port = stun_addr->ip.v4.port;
-					ia.s_addr = htonl(stun_addr->ip.v4.addr);
-				} else len = -1;
-			}
-			if (len > 0) strncpy(ipaddr, inet_ntoa(ia), LINPHONE_IPADDR_SIZE);
-		}
-	}
-	return len;
-}
-
 /* this functions runs a simple stun test and return the number of milliseconds to complete the tests, or -1 if the test were failed.*/
-int linphone_core_run_stun_tests(LinphoneCore *lc, LinphoneCall *call){
-	const char *server=linphone_core_get_stun_server(lc);
-	StunCandidate *ac=&call->ac;
-	StunCandidate *vc=&call->vc;
-	StunCandidate *tc=&call->tc;
-
-	if (lc->sip_conf.ipv6_enabled){
-		ms_warning("stun support is not implemented for ipv6");
-		return -1;
-	}
-	if (call->media_ports[call->main_audio_stream_index].rtp_port==-1){
-		ms_warning("Stun-only support not available for system random port");
-		return -1;
-	}
-	if (server!=NULL){
-		const struct addrinfo *ai=linphone_core_get_stun_server_addrinfo(lc);
-		ortp_socket_t sock1=-1, sock2=-1, sock3=-1;
-		int loops=0;
-		bool_t video_enabled=linphone_core_video_enabled(lc);
-		bool_t got_audio,got_video,got_text;
-		bool_t cone_audio=FALSE,cone_video=FALSE,cone_text=FALSE;
-		struct timeval init,cur;
-		double elapsed;
-		int ret=0;
-
-		if (ai==NULL){
-			ms_error("Could not obtain stun server addrinfo.");
-			return -1;
-		}
-		linphone_core_notify_display_status(lc,_("Stun lookup in progress..."));
-
-		/*create the two audio and video RTP sockets, and send STUN message to our stun server */
-		sock1=create_socket(call->media_ports[call->main_audio_stream_index].rtp_port);
-		if (sock1==-1) return -1;
-		if (video_enabled){
-			sock2=create_socket(call->media_ports[call->main_video_stream_index].rtp_port);
-			if (sock2==-1) return -1;
-		}
-		sock3=create_socket(call->media_ports[call->main_text_stream_index].rtp_port);
-		if (sock3==-1) return -1;
-
-		got_audio=FALSE;
-		got_video=FALSE;
-		got_text=FALSE;
-		ortp_gettimeofday(&init,NULL);
-		do{
-
-			int id;
-			if (loops%20==0){
-				ms_message("Sending stun requests...");
-				send_stun_request((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,11,TRUE);
-				send_stun_request((int)sock1,ai->ai_addr,(socklen_t)ai->ai_addrlen,1,FALSE);
-				if (sock2!=-1){
-					send_stun_request((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,22,TRUE);
-					send_stun_request((int)sock2,ai->ai_addr,(socklen_t)ai->ai_addrlen,2,FALSE);
-				}
-				if (sock3!=-1){
-					send_stun_request((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,33,TRUE);
-					send_stun_request((int)sock3,ai->ai_addr,(socklen_t)ai->ai_addrlen,3,FALSE);
-				}
-			}
-			ms_usleep(10000);
-
-			if (recv_stun_response(sock1, ac->addr, &ac->port, &id) > 0) {
-				ms_message("STUN test result: local audio port maps to %s:%i", ac->addr, ac->port);
-				if (id==11) cone_audio=TRUE;
-				got_audio=TRUE;
-			}
-			if (recv_stun_response(sock2, vc->addr, &vc->port, &id) > 0) {
-				ms_message("STUN test result: local video port maps to %s:%i", vc->addr, vc->port);
-				if (id==22) cone_video=TRUE;
-				got_video=TRUE;
-			}
-			if (recv_stun_response(sock3, tc->addr, &tc->port, &id)>0) {
-				ms_message("STUN test result: local text port maps to %s:%i", tc->addr, tc->port);
-				if (id==33) cone_text=TRUE;
-				got_text=TRUE;
-			}
-			ortp_gettimeofday(&cur,NULL);
-			elapsed=((cur.tv_sec-init.tv_sec)*1000.0) +  ((cur.tv_usec-init.tv_usec)/1000.0);
-			if (elapsed>2000)  {
-				ms_message("Stun responses timeout, going ahead.");
-				ret=-1;
-				break;
-			}
-			loops++;
-		}while(!(got_audio && (got_video||sock2==-1) && (got_text||sock3==-1)  ) );
-		if (ret==0) ret=(int)elapsed;
-		if (!got_audio){
-			ms_error("No stun server response for audio port.");
-		}else{
-			if (!cone_audio) {
-				ms_message("NAT is symmetric for audio port");
-			}
-		}
-		if (sock2!=-1){
-			if (!got_video){
-				ms_error("No stun server response for video port.");
-			}else{
-				if (!cone_video) {
-					ms_message("NAT is symmetric for video port.");
-				}
-			}
-		}
-		if (sock3!=-1){
-			if (!got_text){
-				ms_error("No stun server response for text port.");
-			}else{
-				if (!cone_text) {
-					ms_message("NAT is symmetric for text port.");
-				}
-			}
-		}
-		close_socket(sock1);
-		if (sock2!=-1) close_socket(sock2);
-		if (sock3!=-1) close_socket(sock3);
-		return ret;
-	}
-	return -1;
+int linphone_run_stun_tests(LinphoneCore *lc, int audioPort, int videoPort, int textPort,
+	char *audioCandidateAddr, int *audioCandidatePort, char *videoCandidateAddr, int *videoCandidatePort, char *textCandidateAddr, int *textCandidatePort) {
+	LinphonePrivate::StunClient *client = new LinphonePrivate::StunClient(L_GET_CPP_PTR_FROM_C_OBJECT(lc));
+	int ret = client->run(audioPort, videoPort, textPort);
+	strncpy(audioCandidateAddr, client->getAudioCandidate().address.c_str(), LINPHONE_IPADDR_SIZE);
+	*audioCandidatePort = client->getAudioCandidate().port;
+	strncpy(videoCandidateAddr, client->getVideoCandidate().address.c_str(), LINPHONE_IPADDR_SIZE);
+	*videoCandidatePort = client->getVideoCandidate().port;
+	strncpy(textCandidateAddr, client->getTextCandidate().address.c_str(), LINPHONE_IPADDR_SIZE);
+	*textCandidatePort = client->getTextCandidate().port;
+	delete client;
+	return ret;
 }
 
 int linphone_core_get_edge_bw(LinphoneCore *lc){
@@ -456,31 +201,16 @@ int linphone_core_get_edge_ptime(LinphoneCore *lc){
 	return edge_ptime;
 }
 
-void linphone_core_adapt_to_network(LinphoneCore *lc, int ping_time_ms, LinphoneCallParams *params){
-	int threshold;
-	if (ping_time_ms>0 && lp_config_get_int(lc->config,"net","activate_edge_workarounds",0)==1){
-		ms_message("Stun server ping time is %i ms",ping_time_ms);
-		threshold=lp_config_get_int(lc->config,"net","edge_ping_time",500);
-
-		if (ping_time_ms>threshold){
-			/* we might be in a 2G network*/
-			params->low_bandwidth=TRUE;
-		}/*else use default settings */
+void linphone_core_resolve_stun_server(LinphoneCore *lc) {
+	auto proxies = linphone_core_get_proxy_config_list(lc);
+	for (auto item = proxies; item; item = bctbx_list_next(item)) {
+		auto proxy = reinterpret_cast<LinphoneProxyConfig *>(bctbx_list_get_data(item));
+		auto policy = linphone_proxy_config_get_nat_policy(proxy);
+		if (policy)
+			linphone_nat_policy_resolve_stun_server(policy);
 	}
-	if (params->low_bandwidth){
-		params->up_bw=params->down_bw=linphone_core_get_edge_bw(lc);
-		params->up_ptime=params->down_ptime=linphone_core_get_edge_ptime(lc);
-		params->has_video=FALSE;
-	}
-}
-
-
-void linphone_core_resolve_stun_server(LinphoneCore *lc){
-	if (lc->nat_policy != NULL) {
+	if (lc->nat_policy)
 		linphone_nat_policy_resolve_stun_server(lc->nat_policy);
-	} else {
-		ms_error("linphone_core_resolve_stun_server(): called without nat_policy, this should not happen.");
-	}
 }
 
 const struct addrinfo *linphone_core_get_stun_server_addrinfo(LinphoneCore *lc){
@@ -500,180 +230,6 @@ void linphone_core_enable_short_turn_refresh(LinphoneCore *lc, bool_t enable) {
 	lc->short_turn_refresh = enable;
 }
 
-static void stun_auth_requested_cb(LinphoneCall *call, const char *realm, const char *nonce, const char **username, const char **password, const char **ha1) {
-	LinphoneProxyConfig *proxy = NULL;
-	const LinphoneNatPolicy *nat_policy = NULL;
-	const LinphoneAddress *addr = NULL;
-	const LinphoneAuthInfo *auth_info = NULL;
-	LinphoneCore *lc = call->core;
-	const char *user = NULL;
-
-	// Get the username from the nat policy or the proxy config
-	if (call->dest_proxy != NULL) proxy = call->dest_proxy;
-	else proxy = linphone_core_get_default_proxy_config(call->core);
-	if (proxy == NULL) return;
-	nat_policy = linphone_proxy_config_get_nat_policy(proxy);
-	if (nat_policy != NULL) {
-		user = linphone_nat_policy_get_stun_server_username(nat_policy);
-	} else {
-		nat_policy = call->nat_policy;
-		if (nat_policy != NULL) {
-			user = linphone_nat_policy_get_stun_server_username(nat_policy);
-		}
-	}
-	if (user == NULL) {
-		/* If the username has not been found in the nat_policy, take the username from the currently used proxy config. */
-		addr = linphone_proxy_config_get_identity_address(proxy);
-		if (addr == NULL) return;
-		user = linphone_address_get_username(addr);
-	}
-	if (user == NULL) return;
-
-	auth_info = linphone_core_find_auth_info(lc, realm, user, NULL);
-	if (auth_info != NULL) {
-		const char *hash = linphone_auth_info_get_ha1(auth_info);
-		if (hash != NULL) {
-			*ha1 = hash;
-		} else {
-			*password = linphone_auth_info_get_passwd(auth_info);
-		}
-		*username = user;
-	} else {
-		ms_warning("No auth info found for STUN auth request");
-	}
-}
-
-static void linphone_core_add_local_ice_candidates(LinphoneCall *call, int family, const char *addr, IceCheckList *audio_cl, IceCheckList *video_cl, IceCheckList *text_cl) {
-	if ((ice_check_list_state(audio_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(audio_cl) == FALSE)) {
-		ice_add_local_candidate(audio_cl, "host", family, addr, call->media_ports[call->main_audio_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(audio_cl, "host", family, addr, call->media_ports[call->main_audio_stream_index].rtcp_port, 2, NULL);
-		call->audio_stats->ice_state = LinphoneIceStateInProgress;
-	}
-	if (linphone_core_video_enabled(call->core) && (video_cl != NULL)
-		&& (ice_check_list_state(video_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(video_cl) == FALSE)) {
-		ice_add_local_candidate(video_cl, "host", family, addr, call->media_ports[call->main_video_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(video_cl, "host", family, addr, call->media_ports[call->main_video_stream_index].rtcp_port, 2, NULL);
-		call->video_stats->ice_state = LinphoneIceStateInProgress;
-	}
-	if (call->params->realtimetext_enabled && (text_cl != NULL)
-		&& (ice_check_list_state(text_cl) != ICL_Completed) && (ice_check_list_candidates_gathered(text_cl) == FALSE)) {
-		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtp_port, 1, NULL);
-		ice_add_local_candidate(text_cl, "host", family, addr, call->media_ports[call->main_text_stream_index].rtcp_port, 2, NULL);
-		call->text_stats->ice_state = LinphoneIceStateInProgress;
-	}
-}
-
-static const struct addrinfo * find_nat64_addrinfo(const struct addrinfo *ai) {
-	while (ai != NULL) {
-		if (ai->ai_family == AF_INET6) {
-			struct sockaddr_storage ss;
-			socklen_t sslen = sizeof(ss);
-			bctbx_sockaddr_remove_nat64_mapping(ai->ai_addr, (struct sockaddr *)&ss, &sslen);
-			if (ss.ss_family == AF_INET) break;
-		}
-		ai = ai->ai_next;
-	}
-	return ai;
-}
-
-static const struct addrinfo * find_ipv4_addrinfo(const struct addrinfo *ai) {
-	while (ai != NULL) {
-		if (ai->ai_family == AF_INET) break;
-		if (ai->ai_family == AF_INET6 && ai->ai_flags & AI_V4MAPPED) break;
-		ai = ai->ai_next;
-	}
-	return ai;
-}
-
-static const struct addrinfo * find_ipv6_addrinfo(const struct addrinfo *ai) {
-	while (ai != NULL) {
-		if (ai->ai_family == AF_INET6) break;
-		ai = ai->ai_next;
-	}
-	return ai;
-}
-
-/**
- * Choose the preferred IP address to use to contact the STUN server from the list of IP addresses
- * the DNS resolution returned. If a NAT64 address is present, use it, otherwise if an IPv4 address
- * is present, use it, otherwise use an IPv6 address if it is present.
- */
-static const struct addrinfo * get_preferred_stun_server_addrinfo(const struct addrinfo *ai) {
-	const struct addrinfo *preferred_ai = find_nat64_addrinfo(ai);
-	if (!preferred_ai) preferred_ai = find_ipv4_addrinfo(ai);
-	if (!preferred_ai) preferred_ai = find_ipv6_addrinfo(ai);
-	return preferred_ai;
-}
-
-/* Return values:
- * 1 :  STUN gathering is started
- * 0 :  no STUN gathering is started, but it's ok to proceed with ICE anyway (with local candidates only or because STUN gathering was already done before)
- * -1: no gathering started and something went wrong with local candidates. There is no way to start the ICE session.
- */
-int linphone_core_gather_ice_candidates(LinphoneCore *lc, LinphoneCall *call){
-	char local_addr[64];
-	const struct addrinfo *ai = NULL;
-	IceCheckList *audio_cl;
-	IceCheckList *video_cl;
-	IceCheckList *text_cl;
-	LinphoneNatPolicy *nat_policy = call->nat_policy;
-
-	if (call->ice_session == NULL) return -1;
-	audio_cl = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
-	video_cl = ice_session_check_list(call->ice_session, call->main_video_stream_index);
-	text_cl = ice_session_check_list(call->ice_session, call->main_text_stream_index);
-	if ((audio_cl == NULL) && (video_cl == NULL) && (text_cl == NULL)) return -1;
-
-	if ((nat_policy != NULL) && linphone_nat_policy_stun_server_activated(nat_policy)) {
-		ai=linphone_nat_policy_get_stun_server_addrinfo(nat_policy);
-		if (ai==NULL){
-			ms_warning("Fail to resolve STUN server for ICE gathering, continuing without stun.");
-		} else {
-			ai = get_preferred_stun_server_addrinfo(ai);
-		}
-	}else{
-		ms_warning("Ice is used without stun server.");
-	}
-	linphone_core_notify_display_status(lc, _("ICE local candidates gathering in progress..."));
-
-	ice_session_enable_forced_relay(call->ice_session, lc->forced_ice_relay);
-	ice_session_enable_short_turn_refresh(call->ice_session, lc->short_turn_refresh);
-
-	/* Gather local host candidates. */
-	if (call->af == AF_INET6) {
-		if (linphone_core_get_local_ip_for(AF_INET6, NULL, local_addr) < 0) {
-			ms_error("Fail to get local IPv6");
-			return -1;
-		} else {
-			linphone_core_add_local_ice_candidates(call, AF_INET6, local_addr, audio_cl, video_cl, text_cl);
-		}
-	}
-	if (linphone_core_get_local_ip_for(AF_INET, NULL, local_addr) < 0) {
-		if (call->af != AF_INET6) {
-			ms_error("Fail to get local IPv4");
-			return -1;
-		}
-	} else {
-		linphone_core_add_local_ice_candidates(call, AF_INET, local_addr, audio_cl, video_cl, text_cl);
-	}
-	if ((ai != NULL) && (nat_policy != NULL) && linphone_nat_policy_stun_server_activated(nat_policy)) {
-		bool_t gathering_in_progress;
-		const char *server = linphone_nat_policy_get_stun_server(nat_policy);
-		ms_message("ICE: gathering candidate from [%s] using %s", server, linphone_nat_policy_turn_enabled(nat_policy) ? "TURN" : "STUN");
-		/* Gather local srflx candidates. */
-		ice_session_enable_turn(call->ice_session, linphone_nat_policy_turn_enabled(nat_policy));
-		ice_session_set_stun_auth_requested_cb(call->ice_session, (MSStunAuthRequestedCb)stun_auth_requested_cb, call);
-		gathering_in_progress = ice_session_gather_candidates(call->ice_session, ai->ai_addr, (socklen_t)ai->ai_addrlen);
-		return (gathering_in_progress == FALSE) ? 0 : 1;
-	} else {
-		ms_message("ICE: bypass candidates gathering");
-		ice_session_compute_candidates_foundations(call->ice_session);
-		ice_session_eliminate_redundant_candidates(call->ice_session);
-		ice_session_choose_default_candidates(call->ice_session);
-	}
-	return 0;
-}
-
 const char *linphone_ice_state_to_string(LinphoneIceState state){
 	switch(state){
 		case LinphoneIceStateFailed:
@@ -690,283 +246,6 @@ const char *linphone_ice_state_to_string(LinphoneIceState state){
 			return "IceStateRelayConnection";
 	}
 	return "invalid";
-}
-
-void linphone_call_update_ice_state_in_call_stats(LinphoneCall *call) {
-	IceCheckList *audio_check_list;
-	IceCheckList *video_check_list;
-	IceCheckList *text_check_list;
-	IceSessionState session_state;
-
-	if (call->ice_session == NULL) {
-		call->audio_stats->ice_state = LinphoneIceStateNotActivated;
-		call->video_stats->ice_state = LinphoneIceStateNotActivated;
-		call->text_stats->ice_state = LinphoneIceStateNotActivated;
-		return;
-	}
-	audio_check_list = ice_session_check_list(call->ice_session, call->main_audio_stream_index);
-	video_check_list = ice_session_check_list(call->ice_session, call->main_video_stream_index);
-	text_check_list = ice_session_check_list(call->ice_session, call->main_text_stream_index);
-	if ((audio_check_list == NULL) && (video_check_list == NULL) && (text_check_list == NULL)) return;
-
-	session_state = ice_session_state(call->ice_session);
-	if ((session_state == IS_Completed) || ((session_state == IS_Failed) && (ice_session_has_completed_check_list(call->ice_session) == TRUE))) {
-		if (call->params->has_audio && (audio_check_list != NULL)) {
-			if (ice_check_list_state(audio_check_list) == ICL_Completed) {
-				switch (ice_check_list_selected_valid_candidate_type(audio_check_list)) {
-					case ICT_HostCandidate:
-						call->audio_stats->ice_state = LinphoneIceStateHostConnection;
-						break;
-					case ICT_ServerReflexiveCandidate:
-					case ICT_PeerReflexiveCandidate:
-						call->audio_stats->ice_state = LinphoneIceStateReflexiveConnection;
-						break;
-					case ICT_RelayedCandidate:
-						call->audio_stats->ice_state = LinphoneIceStateRelayConnection;
-						break;
-					case ICT_CandidateInvalid:
-					case ICT_CandidateTypeMax:
-						/*shall not happen*/
-						break;
-				}
-			} else {
-				call->audio_stats->ice_state = LinphoneIceStateFailed;
-			}
-		}else call->audio_stats->ice_state = LinphoneIceStateNotActivated;
-
-		if (call->params->has_video && (video_check_list != NULL)) {
-			if (ice_check_list_state(video_check_list) == ICL_Completed) {
-				switch (ice_check_list_selected_valid_candidate_type(video_check_list)) {
-					case ICT_HostCandidate:
-						call->video_stats->ice_state = LinphoneIceStateHostConnection;
-						break;
-					case ICT_ServerReflexiveCandidate:
-					case ICT_PeerReflexiveCandidate:
-						call->video_stats->ice_state = LinphoneIceStateReflexiveConnection;
-						break;
-					case ICT_RelayedCandidate:
-						call->video_stats->ice_state = LinphoneIceStateRelayConnection;
-						break;
-					case ICT_CandidateInvalid:
-					case ICT_CandidateTypeMax:
-						/*shall not happen*/
-						break;
-				}
-			} else {
-				call->video_stats->ice_state = LinphoneIceStateFailed;
-			}
-		}else call->video_stats->ice_state = LinphoneIceStateNotActivated;
-
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
-			if (ice_check_list_state(text_check_list) == ICL_Completed) {
-				switch (ice_check_list_selected_valid_candidate_type(text_check_list)) {
-					case ICT_HostCandidate:
-						call->text_stats->ice_state = LinphoneIceStateHostConnection;
-						break;
-					case ICT_ServerReflexiveCandidate:
-					case ICT_PeerReflexiveCandidate:
-						call->text_stats->ice_state = LinphoneIceStateReflexiveConnection;
-						break;
-					case ICT_RelayedCandidate:
-						call->text_stats->ice_state = LinphoneIceStateRelayConnection;
-						break;
-					case ICT_CandidateInvalid:
-					case ICT_CandidateTypeMax:
-						/*shall not happen*/
-						break;
-				}
-			} else {
-				call->text_stats->ice_state = LinphoneIceStateFailed;
-			}
-		}else call->text_stats->ice_state = LinphoneIceStateNotActivated;
-	} else if (session_state == IS_Running) {
-		call->audio_stats->ice_state = LinphoneIceStateInProgress;
-		if (call->params->has_video && (video_check_list != NULL)) {
-			call->video_stats->ice_state = LinphoneIceStateInProgress;
-		}
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
-			call->text_stats->ice_state = LinphoneIceStateInProgress;
-		}
-	} else {
-		call->audio_stats->ice_state = LinphoneIceStateFailed;
-		if (call->params->has_video && (video_check_list != NULL)) {
-			call->video_stats->ice_state = LinphoneIceStateFailed;
-		}
-		if (call->params->realtimetext_enabled && (text_check_list != NULL)) {
-			call->text_stats->ice_state = LinphoneIceStateFailed;
-		}
-	}
-	ms_message("Call [%p] New ICE state: audio: [%s]    video: [%s]    text: [%s]", call,
-		   linphone_ice_state_to_string(call->audio_stats->ice_state), linphone_ice_state_to_string(call->video_stats->ice_state), linphone_ice_state_to_string(call->text_stats->ice_state));
-}
-
-void linphone_call_stop_ice_for_inactive_streams(LinphoneCall *call, SalMediaDescription *desc) {
-	int i;
-	IceSession *session = call->ice_session;
-
-	if (session == NULL) return;
-	if (ice_session_state(session) == IS_Completed) return;
-
-	for (i = 0; i < desc->nb_streams; i++) {
-		IceCheckList *cl = ice_session_check_list(session, i);
-		if (!sal_stream_description_active(&desc->streams[i]) && cl) {
-			ice_session_remove_check_list(session, cl);
-			clear_ice_check_list(call, cl);
-		}
-	}
-
-	linphone_call_update_ice_state_in_call_stats(call);
-}
-
-
-void _update_local_media_description_from_ice(SalMediaDescription *desc, IceSession *session, bool_t use_nortpproxy) {
-	IceCandidate *rtp_candidate = NULL;
-	IceCandidate *rtcp_candidate = NULL;
-	IceSessionState session_state = ice_session_state(session);
-	int nb_candidates;
-	int i;
-	int j;
-	bool_t result = FALSE;
-
-	if (session_state == IS_Completed) {
-		IceCheckList *first_cl = NULL;
-		for (i = 0; i < desc->nb_streams; i++) {
-			IceCheckList *cl = ice_session_check_list(session, i);
-			if (cl != NULL) {
-				first_cl = cl;
-				break;
-			}
-		}
-		if (first_cl != NULL) {
-			result = ice_check_list_selected_valid_local_candidate(first_cl, &rtp_candidate, NULL);
-		}
-		if (result == TRUE) {
-			strncpy(desc->addr, rtp_candidate->taddr.ip, sizeof(desc->addr));
-		} else {
-			ms_warning("If ICE has completed successfully, rtp_candidate should be set!");
-			ice_dump_valid_list(first_cl);
-		}
-	}
-
-	strncpy(desc->ice_pwd, ice_session_local_pwd(session), sizeof(desc->ice_pwd));
-	strncpy(desc->ice_ufrag, ice_session_local_ufrag(session), sizeof(desc->ice_ufrag));
-	for (i = 0; i < desc->nb_streams; i++) {
-		SalStreamDescription *stream = &desc->streams[i];
-		IceCheckList *cl = ice_session_check_list(session, i);
-		nb_candidates = 0;
-		rtp_candidate = rtcp_candidate = NULL;
-		if (!sal_stream_description_active(stream) || (cl == NULL)) continue;
-		if (ice_check_list_state(cl) == ICL_Completed) {
-			if (use_nortpproxy) stream->set_nortpproxy = TRUE;
-			result = ice_check_list_selected_valid_local_candidate(ice_session_check_list(session, i), &rtp_candidate, &rtcp_candidate);
-		} else {
-			stream->set_nortpproxy = FALSE;
-			result = ice_check_list_default_local_candidate(ice_session_check_list(session, i), &rtp_candidate, &rtcp_candidate);
-		}
-		if (result == TRUE) {
-			strncpy(stream->rtp_addr, rtp_candidate->taddr.ip, sizeof(stream->rtp_addr));
-			strncpy(stream->rtcp_addr, rtcp_candidate->taddr.ip, sizeof(stream->rtcp_addr));
-			stream->rtp_port = rtp_candidate->taddr.port;
-			stream->rtcp_port = rtcp_candidate->taddr.port;
-		} else {
-			memset(stream->rtp_addr, 0, sizeof(stream->rtp_addr));
-			memset(stream->rtcp_addr, 0, sizeof(stream->rtcp_addr));
-		}
-		if ((strlen(ice_check_list_local_pwd(cl)) != strlen(desc->ice_pwd)) || (strcmp(ice_check_list_local_pwd(cl), desc->ice_pwd)))
-			strncpy(stream->ice_pwd, ice_check_list_local_pwd(cl), sizeof(stream->ice_pwd));
-		else
-			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
-		if ((strlen(ice_check_list_local_ufrag(cl)) != strlen(desc->ice_ufrag)) || (strcmp(ice_check_list_local_ufrag(cl), desc->ice_ufrag)))
-			strncpy(stream->ice_ufrag, ice_check_list_local_ufrag(cl), sizeof(stream->ice_ufrag));
-		else
-			memset(stream->ice_pwd, 0, sizeof(stream->ice_pwd));
-		stream->ice_mismatch = ice_check_list_is_mismatch(cl);
-		if ((ice_check_list_state(cl) == ICL_Running) || (ice_check_list_state(cl) == ICL_Completed)) {
-			memset(stream->ice_candidates, 0, sizeof(stream->ice_candidates));
-			for (j = 0; j < MIN((int)bctbx_list_size(cl->local_candidates), SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES); j++) {
-				SalIceCandidate *sal_candidate = &stream->ice_candidates[nb_candidates];
-				IceCandidate *ice_candidate = reinterpret_cast<IceCandidate *>(bctbx_list_nth_data(cl->local_candidates, j));
-				const char *default_addr = NULL;
-				int default_port = 0;
-				if (ice_candidate->componentID == 1) {
-					default_addr = stream->rtp_addr;
-					default_port = stream->rtp_port;
-				} else if (ice_candidate->componentID == 2) {
-					default_addr = stream->rtcp_addr;
-					default_port = stream->rtcp_port;
-				} else continue;
-				if (default_addr[0] == '\0') default_addr = desc->addr;
-				/* Only include the candidates matching the default destination for each component of the stream if the state is Completed as specified in RFC5245 section 9.1.2.2. */
-				if ((ice_check_list_state(cl) == ICL_Completed)
-					&& !((ice_candidate->taddr.port == default_port) && (strlen(ice_candidate->taddr.ip) == strlen(default_addr)) && (strcmp(ice_candidate->taddr.ip, default_addr) == 0)))
-					continue;
-				strncpy(sal_candidate->foundation, ice_candidate->foundation, sizeof(sal_candidate->foundation));
-				sal_candidate->componentID = ice_candidate->componentID;
-				sal_candidate->priority = ice_candidate->priority;
-				strncpy(sal_candidate->type, ice_candidate_type(ice_candidate), sizeof(sal_candidate->type));
-				strncpy(sal_candidate->addr, ice_candidate->taddr.ip, sizeof(sal_candidate->addr));
-				sal_candidate->port = ice_candidate->taddr.port;
-				if ((ice_candidate->base != NULL) && (ice_candidate->base != ice_candidate)) {
-					strncpy(sal_candidate->raddr, ice_candidate->base->taddr.ip, sizeof(sal_candidate->raddr));
-					sal_candidate->rport = ice_candidate->base->taddr.port;
-				}
-				nb_candidates++;
-			}
-		}
-		if ((ice_check_list_state(cl) == ICL_Completed) && (ice_session_role(session) == IR_Controlling)) {
-			memset(stream->ice_remote_candidates, 0, sizeof(stream->ice_remote_candidates));
-			if (ice_check_list_selected_valid_remote_candidate(cl, &rtp_candidate, &rtcp_candidate) == TRUE) {
-				strncpy(stream->ice_remote_candidates[0].addr, rtp_candidate->taddr.ip, sizeof(stream->ice_remote_candidates[0].addr));
-				stream->ice_remote_candidates[0].port = rtp_candidate->taddr.port;
-				strncpy(stream->ice_remote_candidates[1].addr, rtcp_candidate->taddr.ip, sizeof(stream->ice_remote_candidates[1].addr));
-				stream->ice_remote_candidates[1].port = rtcp_candidate->taddr.port;
-			} else {
-				ms_error("ice: Selected valid remote candidates should be present if the check list is in the Completed state");
-			}
-		} else {
-			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
-				stream->ice_remote_candidates[j].addr[0] = '\0';
-				stream->ice_remote_candidates[j].port = 0;
-			}
-		}
-	}
-}
-
-static void get_default_addr_and_port(uint16_t componentID, const SalMediaDescription *md, const SalStreamDescription *stream, const char **addr, int *port)
-{
-	if (componentID == 1) {
-		*addr = stream->rtp_addr;
-		*port = stream->rtp_port;
-	} else if (componentID == 2) {
-		*addr = stream->rtcp_addr;
-		*port = stream->rtcp_port;
-	} else return;
-	if ((*addr)[0] == '\0') *addr = md->addr;
-}
-
-static void clear_ice_check_list(LinphoneCall *call, IceCheckList *removed){
-	if (call->audiostream && call->audiostream->ms.ice_check_list==removed)
-		call->audiostream->ms.ice_check_list=NULL;
-	if (call->videostream && call->videostream->ms.ice_check_list==removed)
-		call->videostream->ms.ice_check_list=NULL;
-	if (call->textstream && call->textstream->ms.ice_check_list==removed)
-		call->textstream->ms.ice_check_list=NULL;
-}
-
-void linphone_call_clear_unused_ice_candidates(LinphoneCall *call, const SalMediaDescription *md){
-	int i;
-
-	if (!call->localdesc) return;
-	for (i = 0; i < md->nb_streams; i++) {
-		const SalStreamDescription *local_stream = &call->localdesc->streams[i];
-		const SalStreamDescription *stream = &md->streams[i];
-		IceCheckList *cl = ice_session_check_list(call->ice_session, i);
-		if (!cl || !local_stream) continue;
-
-		if (stream->rtcp_mux && local_stream->rtcp_mux){
-			ice_check_list_remove_rtcp_candidates(cl);
-		}
-	}
 }
 
 bool_t linphone_core_media_description_contains_video_stream(const SalMediaDescription *md){
@@ -1014,13 +293,13 @@ unsigned int linphone_core_get_audio_features(LinphoneCore *lc){
 	if (ret==AUDIO_STREAM_FEATURE_ALL){
 		/*since call recording is specified before creation of the stream in linphonecore,
 		* it will be requested on demand. It is not necessary to include it all the time*/
-		ret&=~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
+		ret&=(unsigned int) ~AUDIO_STREAM_FEATURE_MIXED_RECORDING;
 	}
 	return ret;
 }
 
 bool_t linphone_core_tone_indications_enabled(LinphoneCore*lc){
-	return lp_config_get_int(lc->config,"sound","tone_indications",1);
+	return !!lp_config_get_int(lc->config,"sound","tone_indications",1);
 }
 
 int linphone_core_get_local_ip_for(int type, const char *dest, char *result){
@@ -1201,7 +480,7 @@ const char * linphone_core_get_echo_canceller_filter_name(const LinphoneCore *lc
  * task_fun must return BELLE_SIP_STOP when job is finished.
 **/
 void linphone_core_queue_task(LinphoneCore *lc, belle_sip_source_func_t task_fun, void *data, const char *task_description){
-	belle_sip_source_t *s=sal_create_timer(lc->sal,task_fun,data, 20, task_description);
+	belle_sip_source_t *s=lc->sal->createTimer(task_fun,data, 20, task_description);
 	belle_sip_object_unref(s);
 }
 
@@ -1334,7 +613,7 @@ const MSCryptoSuite * linphone_core_get_srtp_crypto_suites(LinphoneCore *lc){
 	char *pos;
 	char *nextpos;
 	char *params;
-	int found=0;
+	unsigned long found=0;
 	MSCryptoSuite *result=NULL;
 	pos=tmp;
 	do{
@@ -1517,6 +796,15 @@ const char ** linphone_core_get_supported_file_formats(LinphoneCore *core){
 	return core->supported_formats;
 }
 
+bctbx_list_t * linphone_core_get_supported_file_formats_list(LinphoneCore *core){
+	bctbx_list_t *file_formats = NULL;
+	file_formats = bctbx_list_append(file_formats, ms_strdup("wav"));
+	if (ms_factory_lookup_filter_by_id(core->factory,MS_MKV_RECORDER_ID)){
+		file_formats = bctbx_list_append(file_formats, ms_strdup("mkv"));
+	}
+	return file_formats;
+}
+
 bool_t linphone_core_file_format_supported(LinphoneCore *lc, const char *fmt){
 	const char **formats=linphone_core_get_supported_file_formats(lc);
 	for(;*formats!=NULL;++formats){
@@ -1529,7 +817,7 @@ bool_t linphone_core_symmetric_rtp_enabled(LinphoneCore*lc){
 	/* Clients don't really need rtp symmetric, unless they have a public IP address and want
 	 * to interoperate with natted client. This case is not frequent with client apps.
 	 */
-	return lp_config_get_int(lc->config,"rtp","symmetric",0);
+	return !!lp_config_get_int(lc->config,"rtp","symmetric",0);
 }
 
 LinphoneStatus linphone_core_set_network_simulator_params(LinphoneCore *lc, const OrtpNetworkSimulatorParams *params){
@@ -1618,222 +906,30 @@ void linphone_task_list_free(LinphoneTaskList *t){
 	t->hooks = bctbx_list_free_with_data(t->hooks, (void (*)(void*))ms_free);
 }
 
-static bool_t _ice_params_found_in_remote_media_description(IceSession *ice_session, const SalMediaDescription *md) {
-	const SalStreamDescription *stream;
-	IceCheckList *cl = NULL;
-	int i;
-	bool_t ice_params_found = FALSE;
-	if ((md->ice_pwd[0] != '\0') && (md->ice_ufrag[0] != '\0')) {
-		ice_params_found=TRUE;
-	} else {
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(ice_session, i);
-			if (cl) {
-				if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
-					ice_params_found=TRUE;
-				} else {
-					ice_params_found=FALSE;
-					break;
-				}
-			}
-		}
-	}
-	return ice_params_found;
-}
-
-static bool_t _check_for_ice_restart_and_set_remote_credentials(IceSession *ice_session, const SalMediaDescription *md, bool_t is_offer) {
-	const SalStreamDescription *stream;
-	IceCheckList *cl = NULL;
-	bool_t ice_restarted = FALSE;
-	int i;
-
-	if ((strcmp(md->addr, "0.0.0.0") == 0) || (strcmp(md->addr, "::0") == 0)) {
-		ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
-		ice_restarted = TRUE;
-	} else {
-		for (i = 0; i < md->nb_streams; i++) {
-			stream = &md->streams[i];
-			cl = ice_session_check_list(ice_session, i);
-			if (cl && (strcmp(stream->rtp_addr, "0.0.0.0") == 0)) {
-				ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
-				ice_restarted = TRUE;
-				break;
-			}
-		}
-	}
-	if ((ice_session_remote_ufrag(ice_session) == NULL) && (ice_session_remote_pwd(ice_session) == NULL)) {
-		ice_session_set_remote_credentials(ice_session, md->ice_ufrag, md->ice_pwd);
-	} else if (ice_session_remote_credentials_changed(ice_session, md->ice_ufrag, md->ice_pwd)) {
-		if (ice_restarted == FALSE) {
-			ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
-			ice_restarted = TRUE;
-		}
-		ice_session_set_remote_credentials(ice_session, md->ice_ufrag, md->ice_pwd);
-	}
-	for (i = 0; i < md->nb_streams; i++) {
-		stream = &md->streams[i];
-		cl = ice_session_check_list(ice_session, i);
-		if (cl && (stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0')) {
-			if (ice_check_list_remote_credentials_changed(cl, stream->ice_ufrag, stream->ice_pwd)) {
-				if (ice_restarted == FALSE
-						&& ice_check_list_get_remote_ufrag(cl)
-						&& ice_check_list_get_remote_pwd(cl)) {
-						/* restart only if remote ufrag/paswd was already set*/
-					ice_session_restart(ice_session, is_offer ? IR_Controlled : IR_Controlling);
-					ice_restarted = TRUE;
-				}
-				ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
-				break;
-			}
-		}
-	}
-	return ice_restarted;
-}
-
-/*the purpose of this function is to detect a situation where a check list is still running while a reINVITE
-with remote-candidates is received*/
-bool_t check_ice_reinvite_needs_defered_response(LinphoneCall *call){
-	SalMediaDescription *md = sal_call_get_remote_media_description(call->op);
-	int i,j;
-	IceCheckList *cl;
-	
-	if (ice_session_state(call->ice_session) != IS_Running ) return FALSE;
-	
-	for (i = 0; i < md->nb_streams; i++) {
-		SalStreamDescription *stream = &md->streams[i];
-		cl = ice_session_check_list(call->ice_session, i);
-
-		if (cl==NULL) continue;
-		if (stream->ice_mismatch == TRUE) {
-			return FALSE;
-		}
-		if (stream->rtp_port == 0) {
-			continue;
-		}
-		
-		if (ice_check_list_state(cl) != ICL_Running) continue;
-
-		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
-			const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
-			if (remote_candidate->addr[0] != '\0') return TRUE;
-			else break;
-		}
-	}
-	return FALSE;
-}
-
-static void _create_ice_check_lists_and_parse_ice_attributes(LinphoneCall *call, const SalMediaDescription *md, bool_t ice_restarted) {
-	const SalStreamDescription *stream;
-	IceCheckList *cl = NULL;
-	bool_t default_candidate = FALSE;
-	const char *addr = NULL;
-	int port = 0;
-	int componentID = 0;
-	int remote_family;
-	int family;
-	int i, j;
-
-	for (i = 0; i < md->nb_streams; i++) {
-		stream = &md->streams[i];
-		cl = ice_session_check_list(call->ice_session, i);
-
-		if (cl==NULL) continue;
-		if (stream->ice_mismatch == TRUE) {
-			ice_check_list_set_state(cl, ICL_Failed);
-			continue;
-		}
-		if (stream->rtp_port == 0) {
-			ice_session_remove_check_list(call->ice_session, cl);
-			clear_ice_check_list(call,cl);
-			continue;
-		}
-
-		if ((stream->ice_pwd[0] != '\0') && (stream->ice_ufrag[0] != '\0'))
-			ice_check_list_set_remote_credentials(cl, stream->ice_ufrag, stream->ice_pwd);
-		for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_CANDIDATES; j++) {
-			const SalIceCandidate *candidate = &stream->ice_candidates[j];
-			default_candidate = FALSE;
-			addr = NULL;
-			port = 0;
-			if (candidate->addr[0] == '\0') break;
-			if ((candidate->componentID == 0) || (candidate->componentID > 2)) continue;
-			get_default_addr_and_port(candidate->componentID, md, stream, &addr, &port);
-			if (addr && (candidate->port == port) && (strlen(candidate->addr) == strlen(addr)) && (strcmp(candidate->addr, addr) == 0))
-				default_candidate = TRUE;
-			if (strchr(candidate->addr, ':') != NULL) family = AF_INET6;
-			else family = AF_INET;
-			ice_add_remote_candidate(cl, candidate->type, family, candidate->addr, candidate->port, candidate->componentID,
-				candidate->priority, candidate->foundation, default_candidate);
-		}
-		if (ice_restarted == FALSE) {
-			bool_t losing_pairs_added = FALSE;
-			for (j = 0; j < SAL_MEDIA_DESCRIPTION_MAX_ICE_REMOTE_CANDIDATES; j++) {
-				const SalIceRemoteCandidate *remote_candidate = &stream->ice_remote_candidates[j];
-				addr = NULL;
-				port = 0;
-				componentID = j + 1;
-				if (remote_candidate->addr[0] == '\0') break;
-				get_default_addr_and_port(componentID, md, stream, &addr, &port);
-				if (j == 0) {
-					/* If we receive a re-invite and we finished ICE processing on our side, use the candidates given by the remote. */
-					ice_check_list_unselect_valid_pairs(cl);
-				}
-				if (strchr(remote_candidate->addr, ':') != NULL) remote_family = AF_INET6;
-				else remote_family = AF_INET;
-				if (strchr(addr, ':') != NULL) family = AF_INET6;
-				else family = AF_INET;
-
-				ice_add_losing_pair(cl, j + 1, remote_family, remote_candidate->addr, remote_candidate->port, family, addr, port);
-				losing_pairs_added = TRUE;
-			}
-			if (losing_pairs_added == TRUE) ice_check_list_check_completed(cl);
-		}
-	}
-}
-
-static void _update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer) {
-	const SalStreamDescription *stream;
-	IceCheckList *cl = NULL;
-	bool_t ice_restarted = FALSE;
-	int i;
-
-	/* Check for ICE restart and set remote credentials. */
-	ice_restarted = _check_for_ice_restart_and_set_remote_credentials(call->ice_session, md, is_offer);
-
-	/* Create ICE check lists if needed and parse ICE attributes. */
-	_create_ice_check_lists_and_parse_ice_attributes(call, md, ice_restarted);
-	for (i = 0; i < md->nb_streams; i++) {
-		stream = &md->streams[i];
-		cl = ice_session_check_list(call->ice_session, i);
-		if (!cl) continue;
-
-		if (!sal_stream_description_active(stream)) {
-			ice_session_remove_check_list_from_idx(call->ice_session, i);
-			clear_ice_check_list(call, cl);
-		}
-	}
-	linphone_call_clear_unused_ice_candidates(call, md);
-	ice_session_check_mismatch(call->ice_session);
-}
-
-void linphone_call_update_ice_from_remote_media_description(LinphoneCall *call, const SalMediaDescription *md, bool_t is_offer){
-	if (_ice_params_found_in_remote_media_description(call->ice_session, md) == TRUE) {
-		_update_ice_from_remote_media_description(call, md, is_offer);
-	} else {
-		/* Response from remote does not contain mandatory ICE attributes, delete the session. */
-		linphone_call_delete_ice_session(call);
-		linphone_call_set_symmetric_rtp(call, linphone_core_symmetric_rtp_enabled(linphone_call_get_core(call)));
-		return;
-	}
-	if (ice_session_nb_check_lists(call->ice_session) == 0) {
-		linphone_call_delete_ice_session(call);
-		linphone_call_set_symmetric_rtp(call, linphone_core_symmetric_rtp_enabled(linphone_call_get_core(call)));
-	}
-}
-
 void linphone_core_report_call_log(LinphoneCore *lc, LinphoneCallLog *call_log){
 	bool_t call_logs_sqlite_db_found = FALSE;
+
+	// TODO: This is a workaround that has to be removed ASAP
+	// Do not add calls made to the conference factory in the history
+	const char *conference_factory_uri = nullptr;
+	LinphoneProxyConfig *proxy = linphone_core_lookup_known_proxy(lc, call_log->to);
+	if (proxy)
+		conference_factory_uri = linphone_proxy_config_get_conference_factory_uri(proxy);
+	if (conference_factory_uri) {
+		LinphoneAddress *conference_factory_addr = linphone_address_new(conference_factory_uri);
+		if (linphone_address_weak_equal(call_log->to, conference_factory_addr)) {
+			linphone_address_unref(conference_factory_addr);
+			return;
+		}
+		linphone_address_unref(conference_factory_addr);
+	}
+	const char *usernameFrom = linphone_address_get_username(call_log->from);
+	const char *usernameTo = linphone_address_get_username(call_log->to);
+	if ((usernameFrom && (strstr(usernameFrom, "chatroom-") == usernameFrom))
+		|| (usernameTo && (strstr(usernameTo, "chatroom-") == usernameTo))
+	)
+		return;
+	// End of workaround
 
 #ifdef SQLITE_STORAGE_ENABLED
 	if (lc->logs_db) {

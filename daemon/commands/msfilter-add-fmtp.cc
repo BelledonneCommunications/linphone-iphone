@@ -54,11 +54,12 @@ void MSFilterAddFmtpCommand::exec(Daemon *app, const string& args) {
 			app->sendResponse(Response("No Call with such id."));
 			return;
 		}
-		if (call->audiostream == NULL || call->audiostream->ms.encoder == NULL) {
+		AudioStream *astream = reinterpret_cast<AudioStream *>(linphone_call_get_stream(call, LinphoneStreamTypeAudio));
+		if (astream == NULL || astream->ms.encoder == NULL) {
 			app->sendResponse(Response("This call doesn't have an active audio stream."));
 			return;
 		}
-		ms_filter_call_method(call->audiostream->ms.encoder, MS_FILTER_ADD_FMTP, (void *)fmtp.c_str());
+		ms_filter_call_method(astream->ms.encoder, MS_FILTER_ADD_FMTP, (void *)fmtp.c_str());
 	} else if (type.compare("stream") == 0) {
 		AudioStream *stream = app->findAudioStream(id);
 		if (stream == NULL) {

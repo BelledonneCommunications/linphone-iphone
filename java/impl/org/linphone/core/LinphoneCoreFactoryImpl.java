@@ -43,7 +43,7 @@ public class LinphoneCoreFactoryImpl extends LinphoneCoreFactory {
 	}
 
 	static {
-		System.loadLibrary("gnustl_shared");
+		System.loadLibrary("c++_shared");
 		loadOptionalLibrary("ffmpeg-linphone");
 		System.loadLibrary("bctoolbox");
 		System.loadLibrary("ortp");

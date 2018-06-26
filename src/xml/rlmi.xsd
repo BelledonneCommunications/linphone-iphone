@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+   <xs:schema targetNamespace="urn:ietf:params:xml:ns:rlmi"
+              elementFormDefault="qualified"
+              xmlns="urn:ietf:params:xml:ns:rlmi"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:import namespace="http://www.w3.org/XML/1998/namespace"
+              schemaLocation="http://www.w3.org/2001/xml.xsd"/>
+     <xs:element name="list">
+       <xs:complexType>
+         <xs:sequence>
+           <xs:element ref="name" minOccurs="0"
+                       maxOccurs="unbounded" />
+           <xs:element ref="resource" minOccurs="0"
+                       maxOccurs="unbounded" />
+         </xs:sequence>
+         <xs:attribute name="uri" type="xs:anyURI" use="required" />
+         <xs:attribute name="version" type="xs:unsignedInt"
+                       use="required" />
+         <xs:attribute name="fullState" type="xs:boolean"
+                       use="required" />
+         <xs:attribute name="cid" type="xs:string" use="optional" />
+         <xs:anyAttribute processContents="lax" />
+       </xs:complexType>
+     </xs:element>
+     <xs:element name="resource">
+       <xs:complexType>
+         <xs:sequence>
+           <xs:element ref="name" minOccurs="0"
+                       maxOccurs="unbounded" />
+           <xs:element ref="instance" minOccurs="0"
+                       maxOccurs="unbounded" />
+         </xs:sequence>
+         <xs:attribute name="uri" type="xs:anyURI" use="required" />
+         <xs:anyAttribute processContents="lax" />
+       </xs:complexType>
+     </xs:element>
+     <xs:element name="instance">
+       <xs:complexType>
+         <xs:sequence>
+           <xs:any minOccurs="0" maxOccurs="unbounded"
+                   processContents="lax" />
+         </xs:sequence>
+         <xs:attribute name="id" type="xs:string" use="required" />
+         <xs:attribute name="state" use="required">
+           <xs:simpleType>
+             <xs:restriction base="xs:string">
+               <xs:enumeration value="active" />
+               <xs:enumeration value="pending" />
+               <xs:enumeration value="terminated" />
+             </xs:restriction>
+           </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="reason" type="xs:string"
+                       use="optional" />
+         <xs:attribute name="cid" type="xs:string" use="optional" />
+         <xs:anyAttribute processContents="lax" />
+       </xs:complexType>
+     </xs:element>
+     <xs:element name="name">
+       <xs:complexType>
+         <xs:simpleContent>
+           <xs:extension base="xs:string">
+             <xs:attribute ref="xml:lang" use="optional"/>
+           </xs:extension>
+         </xs:simpleContent>
+       </xs:complexType>
+     </xs:element>
+</xs:schema>

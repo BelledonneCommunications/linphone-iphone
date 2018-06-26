@@ -18,9 +18,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #include "linphone/core.h"
+
+#include "c-wrapper/c-wrapper.h"
+
+// TODO: From coreapi. Remove me later.
 #include "private.h"
-
-
 
 static void linphone_buffer_destroy(LinphoneBuffer *buffer) {
 	if (buffer->content) belle_sip_free(buffer->content);

@@ -18,10 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #ifdef SQLITE_STORAGE_ENABLED
-
 #include "private.h"
-#include "bctoolbox/charconv.h"
 
+#include "bctoolbox/charconv.h"
 #include "sqlite3_bctbx_vfs.h"
 #include <sqlite3.h>
 
@@ -68,13 +67,13 @@ static int sqlite3bctbx_Read(sqlite3_file *p, void *buf, int count, sqlite_int64
 	int ret;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile){
-		ret = bctbx_file_read(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_read(pFile->pbctbx_file, buf, (size_t)count, (off_t)offset);
 		if( ret==count ){
 			return SQLITE_OK;
 		}
 		else if( ret >= 0 ){
 			/*fill in unread portion of buffer, as requested by sqlite3 documentation*/
-			memset(((uint8_t*)buf) + ret, 0, count-ret);
+			memset(((uint8_t*)buf) + ret, 0, (size_t)(count-ret));
 			return SQLITE_IOERR_SHORT_READ;
 		}else {
 
@@ -97,7 +96,7 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	int ret;
 	if (pFile ){
-		ret = bctbx_file_write(pFile->pbctbx_file, buf, count, (off_t)offset);
+		ret = (int)bctbx_file_write(pFile->pbctbx_file, buf, (size_t)count, (off_t)offset);
 		if(ret > 0 ) return SQLITE_OK;
 		else {
 			return SQLITE_IOERR_WRITE;
@@ -110,11 +109,11 @@ static int sqlite3bctbx_Write(sqlite3_file *p, const void *buf, int count, sqlit
  * TRuncates or extends a file depending on the size provided.
  * @param  p    sqlite3_file file handle pointer.
  * @param  size New file size.
- * @return  SQLITE_OK on success, SQLITE_IOERR_TRUNCATE if an error occurred during truncate,	
- *          SQLITE_ERROR if ther was a problem on the file descriptor.    
+ * @return  SQLITE_OK on success, SQLITE_IOERR_TRUNCATE if an error occurred during truncate,
+ *          SQLITE_ERROR if ther was a problem on the file descriptor.
  */
 static int sqlite3bctbx_Truncate(sqlite3_file *p, sqlite_int64 size){
-	int rc;                        
+	int rc;
 	sqlite3_bctbx_file_t *pFile = (sqlite3_bctbx_file_t*) p;
 	if (pFile->pbctbx_file){
 		rc = bctbx_file_truncate(pFile->pbctbx_file, size);
@@ -282,7 +281,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	if (pFile == NULL || fName == NULL){
 		return SQLITE_IOERR;
 	}
-	
+
 	/* Set flags  to open the file with */
 	if( flags&SQLITE_OPEN_EXCLUSIVE ) openFlags  |= O_EXCL;
 	if( flags&SQLITE_OPEN_CREATE )    openFlags |= O_CREAT;
@@ -299,7 +298,7 @@ static  int sqlite3bctbx_Open(sqlite3_vfs *pVfs, const char *fName, sqlite3_file
 	} else {
 		pFile->pbctbx_file = NULL;
 	}
-	
+
 	if( pFile->pbctbx_file == NULL){
 		return SQLITE_CANTOPEN;
 	}
@@ -381,7 +380,7 @@ void sqlite3_bctbx_vfs_register( int makeDefault){
 	sqlite3_vfs* pDefault = sqlite3_vfs_find("unix-none");
 	#endif
 	pVfsToUse->xCurrentTime = pDefault->xCurrentTime;
-	
+
 	pVfsToUse->xAccess =  pDefault->xAccess;
 	pVfsToUse->xFullPathname = pDefault->xFullPathname;
 

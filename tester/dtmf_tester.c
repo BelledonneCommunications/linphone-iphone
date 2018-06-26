@@ -17,14 +17,12 @@
 */
 
 #include "liblinphone_tester.h"
-#include "private.h"
+#include "tester_utils.h"
 
 void dtmf_received(LinphoneCore *lc, LinphoneCall *call, int dtmf) {
 	stats* counters = get_stats(lc);
 	char** dst = &counters->dtmf_list_received;
-	*dst = *dst ?
-				ms_strcat_printf(*dst, "%c", dtmf)
-				: ms_strdup_printf("%c", dtmf);
+	*dst = *dst ? ms_strcat_printf(*dst, "%c", dtmf) : ms_strdup_printf("%c", dtmf);
 	counters->dtmf_count++;
 }
 
@@ -37,7 +35,7 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 
 	if (use_opus) {
 		//if (!ms_filter_codec_supported("opus")) {
-		if(!ms_factory_codec_supported(marie->lc->factory, "opus") && !ms_factory_codec_supported(pauline->lc->factory, "opus")){
+		if(!ms_factory_codec_supported(linphone_core_get_ms_factory(marie->lc), "opus") && !ms_factory_codec_supported(linphone_core_get_ms_factory(pauline->lc), "opus")){
 
 			ms_warning("Opus not supported, skipping test.");
 			return;
@@ -69,7 +67,7 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 	}
 
 	if (dtmf_seq != NULL) {
-		int dtmf_delay_ms = lp_config_get_int(marie_call->core->config,"net","dtmf_delay_ms",200);
+		int dtmf_delay_ms = lp_config_get_int(linphone_core_get_config(linphone_call_get_core(marie_call)),"net","dtmf_delay_ms",200);
 		dtmf_count_prev = pauline->stat.dtmf_count;
 		linphone_call_send_dtmfs(marie_call, dtmf_seq);
 
@@ -92,8 +90,8 @@ void send_dtmf_base(LinphoneCoreManager **pmarie, LinphoneCoreManager **ppauline
 void send_dtmf_cleanup(LinphoneCoreManager *marie, LinphoneCoreManager *pauline) {
 	LinphoneCall *marie_call = linphone_core_get_current_call(marie->lc);
 	if (marie_call) {
-		BC_ASSERT_PTR_NULL(marie_call->dtmfs_timer);
-		BC_ASSERT_PTR_NULL(marie_call->dtmf_sequence);
+		BC_ASSERT_PTR_NULL(_linphone_call_get_dtmf_timer(marie_call));
+		BC_ASSERT_FALSE(_linphone_call_has_dtmf_sequence(marie_call));
 
 		/*just to sleep*/
 		linphone_core_terminate_all_calls(pauline->lc);

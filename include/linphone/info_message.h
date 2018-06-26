@@ -1,6 +1,6 @@
 /*
 info_message.h
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -55,9 +55,9 @@ LINPHONE_PUBLIC const char *linphone_info_message_get_header(const LinphoneInfoM
  * Assign a content to the info message.
  * @param im the linphone info message
  * @param content the content described as a #LinphoneContent structure.
- * All fields of the LinphoneContent are copied, thus the application can destroy/modify/recycloe the content object freely ater the function returns.
+ * All fields of the #LinphoneContent are copied, thus the application can destroy/modify/recycloe the content object freely ater the function returns.
 **/
-LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im,  const LinphoneContent *content);
+LINPHONE_PUBLIC void linphone_info_message_set_content(LinphoneInfoMessage *im, const LinphoneContent *content);
 
 /**
  * Returns the info message's content as a #LinphoneContent structure.

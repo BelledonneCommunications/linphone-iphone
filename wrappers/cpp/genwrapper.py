@@ -21,8 +21,10 @@ import pystache
 import re
 import argparse
 import os
+import os.path
 import sys
 import errno
+import logging
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'tools'))
 import genapixml as CApi
@@ -34,19 +36,16 @@ import metaname
 class CppTranslator(object):
 	sharedPtrTypeExtractor = re.compile('^(const )?std::shared_ptr<(.+)>( &)?$')
 	
-	def __init__(self):
-		self.ambigousTypes = ['LinphonePayloadType']
+	def __init__(self, rootNs=None):
 		self.nameTranslator = metaname.Translator.get('Cpp')
 		self.langTranslator = AbsApi.Translator.get('Cpp')
 		self.langTranslator.ambigousTypes.append('LinphonePayloadType')
 		self.docTranslator = metadoc.DoxygenTranslator('Cpp')
-	
-	def is_ambigous_type(self, _type):
-		return _type.name in self.ambigousTypes or (_type.name == 'list' and self.is_ambigous_type(_type.containedTypeDesc))
+		self.rootNs = rootNs
 	
 	def translate_enum(self, enum):
 		enumDict = {}
-		enumDict['name'] = enum.name.to_camel_case()
+		enumDict['name'] = enum.name.translate(self.nameTranslator)
 		enumDict['doc'] = enum.briefDescription.translate(self.docTranslator)
 		enumDict['enumerators'] = []
 		for enumerator in enum.enumerators:
@@ -58,9 +57,12 @@ class CppTranslator(object):
 	def translate_enumerator(self, enumerator):
 		enumeratorDict = {
 			'name'  : enumerator.name.translate(self.nameTranslator),
-			'doc'   : enumerator.briefDescription.translate(self.docTranslator),
 			'value' : enumerator.translate_value(self.langTranslator)
 		}
+		try:
+			enumeratorDict['doc'] = enumerator.briefDescription.translate(self.docTranslator)
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		return enumeratorDict
 	
 	def translate_class(self, _class):
@@ -77,12 +79,12 @@ class CppTranslator(object):
 			'isnotrefcountable'   : not _class.refcountable,
 			'isNotListener'       : True,
 			'isListener'          : False,
-			'isfactory'           : (_class.name.to_c() == 'LinphoneFactory'),
 			'isVcard'             : (_class.name.to_c() == 'LinphoneVcard'),
 			'className'           : _class.name.translate(self.nameTranslator),
 			'cClassName'          : '::' + _class.name.to_c(),
 			'privCClassName'      : '_' + _class.name.to_c(),
 			'parentClassName'     : 'Object' if _class.refcountable else None,
+			'enums'               : [],
 			'methods'             : [],
 			'staticMethods'       : [],
 			'wrapperCbs'          : [],
@@ -92,14 +94,17 @@ class CppTranslator(object):
 		if _class.name.to_c() == 'LinphoneCore':
 			classDict['friendClasses'].append({'name': 'Factory'});
 		
-		classDict['briefDoc'] = _class.briefDescription.translate(self.docTranslator, tagAsBrief=True)
-		classDict['detailedDoc'] = _class.detailedDescription.translate(self.docTranslator)
+		try:
+			classDict['briefDoc'] = _class.briefDescription.translate(self.docTranslator, tagAsBrief=True)
+			classDict['detailedDoc'] = _class.detailedDescription.translate(self.docTranslator)
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		
 		if islistenable:
 			classDict['listenerClassName'] = _class.listenerInterface.name.translate(self.nameTranslator)
 			classDict['cListenerName'] = _class.listenerInterface.name.to_c()
 			classDict['cppListenerName'] = _class.listenerInterface.name.translate(self.nameTranslator)
-			for method in _class.listenerInterface.methods:
+			for method in _class.listenerInterface.instanceMethods:
 				classDict['wrapperCbs'].append(self._generate_wrapper_callback(_class, method))
 		
 		if ismonolistenable:
@@ -113,26 +118,20 @@ class CppTranslator(object):
 			classDict['userDataSetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_set_user_data'
 			classDict['userDataGetter'] = _class.listenerInterface.name.to_snake_case(fullName=True)[:-len('_listener')] + '_cbs_get_user_data'
 			classDict['currentCallbacksGetter'] = _class.name.to_snake_case(fullName=True) + '_get_current_callbacks'
+
+		for enum in _class.enums:
+			classDict['enums'].append(self.translate_enum(enum))
 		
 		for _property in _class.properties:
-			try:
-				classDict['methods'] += self.translate_property(_property)
-			except AbsApi.Error as e:
-				print('error while translating {0} property: {1}'.format(_property.name.to_snake_case(), e.args[0]))
+			classDict['methods'] += self.translate_property(_property)
 		
 		for method in _class.instanceMethods:
-			try:
-				methodDict = self.translate_method(method)
-				classDict['methods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
-				
+			methodDict = self.translate_method(method)
+			classDict['methods'].append(methodDict)
+		
 		for method in _class.classMethods:
-			try:
-				methodDict = self.translate_method(method)
-				classDict['staticMethods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+			methodDict = self.translate_method(method)
+			classDict['staticMethods'].append(methodDict)
 		
 		return classDict
 	
@@ -174,12 +173,9 @@ class CppTranslator(object):
 			'isListener'      : True,
 			'methods'         : []
 		}
-		for method in interface.methods:
-			try:
-				methodDict = self.translate_method(method, genImpl=False)
-				intDict['methods'].append(methodDict)
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(method.name.to_snake_case(fullName=True), e.args[0]))
+		for method in interface.instanceMethods:
+			methodDict = self.translate_method(method, genImpl=False)
+			intDict['methods'].append(methodDict)
 		
 		return intDict
 	
@@ -192,16 +188,20 @@ class CppTranslator(object):
 		return res
 	
 	def translate_method(self, method, genImpl=True):
-		namespace = method.find_first_ancestor_by_type(AbsApi.Namespace)
+		namespace = method.find_first_ancestor_by_type(AbsApi.Class, AbsApi.Interface)
 		
 		methodDict = {
-			'declPrototype': method.translate_as_prototype(self.langTranslator),
-			'implPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
+			'declPrototype': method.translate_as_prototype(self.langTranslator, namespace=namespace),
+			'implPrototype': method.translate_as_prototype(self.langTranslator, namespace=AbsApi.GlobalNs),
 			'deprecated': method.deprecated,
 			'suffix': '',
-			'briefDoc': method.briefDescription.translate(self.docTranslator, tagAsBrief=True) if method.briefDescription is not None else None,
-			'detailedDoc': method.detailedDescription.translate(self.docTranslator) if method.detailedDescription is not None else None
 		}
+		
+		try:
+			methodDict['briefDoc'] = method.briefDescription.translate(self.docTranslator, tagAsBrief=True) if method.briefDescription is not None else None
+			methodDict['detailedDoc'] = method.detailedDescription.translate(self.docTranslator) if method.detailedDescription is not None else None
+		except metadoc.TranslationError as e:
+			logging.error(e.msg())
 		
 		if type(method.parent) is AbsApi.Interface:
 			if isinstance(method.returnType, AbsApi.BaseType) and method.returnType.name == 'void':
@@ -356,80 +356,79 @@ class ClassHeader(object):
 		else:
 			self._class = translator.translate_interface(_class)
 		
+		self.rootNs = translator.rootNs
 		self.define = '_{0}_HH'.format(_class.name.to_snake_case(upper=True, fullName=True))
 		self.filename = '{0}.hh'.format(_class.name.to_snake_case())
 		self.priorDeclarations = []
 		self.private_type = _class.name.to_camel_case(fullName=True)
-		
 		self.includes = {'internal': [], 'external': []}
-		includes = self.needed_includes(_class)
-		for include in includes['internal']:
-			if _class.name.to_camel_case(fullName=True) == 'LinphoneCore' or (isinstance(_class, AbsApi.Interface) and _class.listenedClass is not None and include == _class.listenedClass.name.to_snake_case()):
-				if include == 'enums':
-					self.includes['internal'].append({'name': include})
-				else:
-					className = metaname.ClassName()
-					className.from_snake_case(include)
-					self.priorDeclarations.append({'name': className.to_camel_case()})
-			else:
-				self.includes['internal'].append({'name': include})
-		
-		for include in includes['external']:
-			self.includes['external'].append({'name': include})
+		self._populate_needed_includes(_class)
 	
-	def needed_includes(self, _class):
-		includes = {'internal': [], 'external': []}
-		
+	def _populate_needed_includes(self, _class):
 		if type(_class) is AbsApi.Class:
 			for _property in _class.properties:
 				if _property.setter is not None:
-					self._needed_includes_from_method(_property.setter, includes)
+					self._populate_needed_includes_from_method(_property.setter)
 				if _property.getter is not None:
-					self._needed_includes_from_method(_property.getter, includes)
+					self._populate_needed_includes_from_method(_property.getter)
 		
 		if type(_class) is AbsApi.Class:
 			methods = _class.classMethods + _class.instanceMethods
 		else:
-			methods = _class.methods
+			methods = _class.instanceMethods
 		
 		for method in methods:
-			self._needed_includes_from_type(method.returnType, includes)
+			self._populate_needed_includes_from_type(method.returnType)
 			for arg in method.args:
-				self._needed_includes_from_type(arg.type, includes)
+				self._populate_needed_includes_from_type(arg.type)
 		
 		if isinstance(_class, AbsApi.Class) and _class.listenerInterface is not None:
-			self._add_include(includes, 'internal', _class.listenerInterface.name.to_snake_case())
+			decl = 'class ' + _class.listenerInterface.name.translate(metaname.Translator.get('Cpp'))
+			self._add_prior_declaration(decl)
 		
 		currentClassInclude = _class.name.to_snake_case()
-		if currentClassInclude in includes['internal']:
-			includes['internal'].remove(currentClassInclude)
-			
-		return includes
+		if currentClassInclude in self.includes['internal']:
+			self.includes['internal'].remove(currentClassInclude)
 	
-	def _needed_includes_from_method(self, method, includes):
-		self._needed_includes_from_type(method.returnType, includes)
+	def _populate_needed_includes_from_method(self, method):
+		self._populate_needed_includes_from_type(method.returnType)
 		for arg in method.args:
-			self._needed_includes_from_type(arg.type, includes)
+			self._populate_needed_includes_from_type(arg.type)
 	
-	def _needed_includes_from_type(self, _type, includes):
-		if isinstance(_type, AbsApi.ClassType):
-			self._add_include(includes, 'external', 'memory')
-			if _type.desc is not None:
-				self._add_include(includes, 'internal', _type.desc.name.to_snake_case())
-		elif isinstance(_type, AbsApi.EnumType):
-			self._add_include(includes, 'internal', 'enums')
-		elif isinstance(_type, AbsApi.BaseType):
-			if _type.name == 'integer' and isinstance(_type.size, int):
-				self._add_include(includes, 'external', 'cstdint')
-			elif _type.name == 'string':
-				self._add_include(includes, 'external', 'string')
-		elif isinstance(_type, AbsApi.ListType):
-			self._add_include(includes, 'external', 'list')
-			self._needed_includes_from_type(_type.containedTypeDesc, includes)
+	def _populate_needed_includes_from_type(self, type_):
+		translator = metaname.Translator.get('Cpp')
+		if isinstance(type_, AbsApi.ClassType):
+			class_ = type_.desc
+			if class_.parent == self.rootNs:
+				decl = 'class ' + class_.name.translate(translator)
+				self._add_prior_declaration(decl)
+			else:
+				rootClass = class_.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				self._add_include('internal', rootClass.name.to_snake_case())
+		elif isinstance(type_, AbsApi.EnumType):
+			enum = type_.desc
+			if enum.parent == self.rootNs:
+				headerFile = 'enums'
+			else:
+				rootClass = enum.find_first_ancestor_by_type(AbsApi.Namespace, priorAncestor=True)
+				headerFile = rootClass.name.to_snake_case()
+			self._add_include('internal', headerFile)
+		elif isinstance(type_, AbsApi.BaseType):
+			if type_.name == 'integer' and isinstance(type_.size, int):
+				self._add_include('external', 'cstdint')
+			elif type_.name == 'string':
+				self._add_include('external', 'string')
+		elif isinstance(type_, AbsApi.ListType):
+			self._add_include('external', 'list')
+			self._populate_needed_includes_from_type(type_.containedTypeDesc)
 	
-	def _add_include(self, includes, location, name):
-		if not name in includes[location]:
-			includes[location].append(name)
+	def _add_include(self, location, name):
+		if next((x for x in self.includes[location] if x['name']==name), None) is None:
+			self.includes[location].append({'name': name})
+
+	def _add_prior_declaration(self, decl):
+		if next((x for x in self.priorDeclarations if x['declaration']==decl), None) is None:
+			self.priorDeclarations.append({'declaration': decl})
 
 
 class MainHeader(object):
@@ -457,18 +456,16 @@ class GenWrapper(object):
 		
 		self.parser = AbsApi.CParser(project)
 		self.parser.parse_all()
-		self.translator = CppTranslator()
+		self.translator = CppTranslator(self.parser.namespace)
 		self.renderer = pystache.Renderer()
 		self.mainHeader = MainHeader()
 		self.impl = ClassImpl()
 
 	def render_all(self):
 		header = EnumsHeader(self.translator)
-		for item in self.parser.enumsIndex.items():
-			if item[1] is not None:
-				header.add_enum(item[1])
-			else:
-				print('warning: {0} enum won\'t be translated because of parsing errors'.format(item[0]))
+
+		for enum in self.parser.namespace.enums:
+			header.add_enum(enum)
 		
 		self.render(header, self.includedir + '/enums.hh')
 		self.mainHeader.add_include('enums.hh')
@@ -494,44 +491,40 @@ class GenWrapper(object):
 
 	def render_header(self, _class):
 		if _class is not None:
-			try:
-				header = ClassHeader(_class, self.translator)
-				headerName = _class.name.to_snake_case() + '.hh'
-				self.mainHeader.add_include(headerName)
-				self.render(header, self.includedir + '/' + header.filename)
-				
-				if type(_class) is not AbsApi.Interface:
-					self.impl.classes.append(header._class)
-				
-			except AbsApi.Error as e:
-				print('Could not translate {0}: {1}'.format(_class.name.to_camel_case(fullName=True), e.args[0]))
-
-def main():
-	argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
-	argparser.add_argument('xmldir', type=str, help='Directory where the XML documentation of the Linphone\'s API generated by Doxygen is placed')
-	argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
-	args = argparser.parse_args()
-	
-	includedir = args.outputdir + '/include/linphone++'
-	srcdir = args.outputdir + '/src'
-	
-	try:
-		os.makedirs(includedir)
-	except OSError as e:
-		if e.errno != errno.EEXIST:
-			print("Cannot create '{0}' directory: {1}".format(includedir, e.strerror))
-			sys.exit(1)
-	
-	try:
-		os.makedirs(srcdir)
-	except OSError as e:
-		if e.errno != errno.EEXIST:
-			print("Cannot create '{0}' directory: {1}".format(srcdir, e.strerror))
-			sys.exit(1)
-	
-	genwrapper = GenWrapper(includedir, srcdir, args.xmldir)
-	genwrapper.render_all()
+			header = ClassHeader(_class, self.translator)
+			headerName = _class.name.to_snake_case() + '.hh'
+			self.mainHeader.add_include(headerName)
+			self.render(header, self.includedir + '/' + header.filename)
+			
+			if type(_class) is not AbsApi.Interface:
+				self.impl.classes.append(header._class)
 
 
 if __name__ == '__main__':
-	main()
+	try:
+		argparser = argparse.ArgumentParser(description='Generate source files for the C++ wrapper')
+		argparser.add_argument('xmldir', type=str, help='Directory where the XML documentation of the Linphone\'s API generated by Doxygen is placed')
+		argparser.add_argument('-o --output', type=str, help='the directory where to generate the source files', dest='outputdir', default='.')
+		argparser.add_argument('-v --verbose', help='Show warning and info traces.', action='store_true', default=False, dest='verbose_mode')
+		argparser.add_argument('-d --debug', help='Show all traces.', action='store_true', default=False, dest='debug_mode')
+		args = argparser.parse_args()
+
+		if args.debug_mode:
+			loglevel = logging.DEBUG
+		elif args.verbose_mode:
+			loglevel = logging.INFO
+		else:
+			loglevel = logging.ERROR
+		logging.basicConfig(format='%(levelname)s[%(name)s]: %(message)s', level=loglevel)
+
+		includedir = args.outputdir + '/include/linphone++'
+		srcdir = args.outputdir + '/src'
+		if not os.path.exists(includedir):
+			os.makedirs(includedir)
+		if not os.path.exists(srcdir):
+			os.makedirs(srcdir)
+
+		genwrapper = GenWrapper(includedir, srcdir, args.xmldir)
+		genwrapper.render_all()
+	except AbsApi.Error as e:
+		logging.critical(e)

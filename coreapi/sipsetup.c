@@ -121,7 +121,7 @@ unsigned int sip_setup_get_capabilities(SipSetup *s){
 }
 
 int sip_setup_context_get_capabilities(SipSetupContext *ctx){
-	return ctx->funcs->capabilities;
+	return (int)ctx->funcs->capabilities;
 }
 
 LinphoneStatus sip_setup_context_create_account(SipSetupContext * ctx, const char *uri, const char *passwd, const char *email, int suscribe){

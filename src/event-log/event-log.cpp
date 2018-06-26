@@ -1,11 +1,11 @@
 /*
  * event-log.cpp
- * Copyright (C) 2017  Belledonne Communications SARL
+ * Copyright (C) 2010-2018 Belledonne Communications SARL
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,38 +13,39 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include "db/main-db.h"
 #include "event-log-p.h"
-
-#include "event-log.h"
 
 // =============================================================================
 
+using namespace std;
+
 LINPHONE_BEGIN_NAMESPACE
 
-// -----------------------------------------------------------------------------
+EventLog::EventLog () : BaseObject(*new EventLogPrivate) {}
 
-EventLog::EventLog () : ClonableObject(*new EventLogPrivate) {}
-
-EventLog::EventLog (const EventLog &) : ClonableObject(*new EventLogPrivate) {}
-
-EventLog::EventLog (EventLogPrivate &p, Type type) : ClonableObject(*new EventLogPrivate) {
-	L_D(EventLog);
+EventLog::EventLog (EventLogPrivate &p, Type type, time_t creationTime) : BaseObject(p) {
+	L_D();
 	d->type = type;
-}
-
-EventLog &EventLog::operator= (const EventLog &src) {
-	L_D(EventLog);
-	if (this != &src)
-		d->type = src.getPrivate()->type;
-	return *this;
+	d->creationTime = creationTime;
 }
 
 EventLog::Type EventLog::getType () const {
-	L_D(const EventLog);
+	L_D();
 	return d->type;
+}
+
+time_t EventLog::getCreationTime () const {
+	L_D();
+	return d->creationTime;
+}
+
+void EventLog::deleteFromDatabase (const shared_ptr<const EventLog> &eventLog) {
+	MainDb::deleteEvent(eventLog);
 }
 
 LINPHONE_END_NAMESPACE

@@ -25,6 +25,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 #include <CoreFoundation/CFRunLoop.h>
 #include "liblinphone_tester.h"
+#include "tester_utils.h"
 
 int g_argc;
 char** g_argv;
@@ -63,6 +64,5 @@ int main(int argc, char * argv[]) {
     pthread_join(main_thread,NULL);
     return 0;
 }
-
 
 #endif // target IPHONE

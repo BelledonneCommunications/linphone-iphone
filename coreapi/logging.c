@@ -17,13 +17,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include <map>
 #include <algorithm>
-#include <mediastreamer2/mscommon.h>
-#include <belle-sip/object.h>
+#include <map>
+
 #include <bctoolbox/logging.h>
+#include <belle-sip/object.h>
+#include <mediastreamer2/mscommon.h>
+
 #include "linphone/logging.h"
-#include "private.h"
+
+#include "c-wrapper/c-wrapper.h"
 #include "logging-private.h"
 
 
@@ -69,7 +72,7 @@ LinphoneLogLevel _bctbx_log_level_to_linphone_log_level(BctbxLogLevel level) {
 	if (response != tmap.cend()) {
 		return response->first;
 	} else {
-		ms_fatal("%s(): invalid argument [%d]", __FUNCTION__, level);
+		ms_warning("%s(): invalid argurement [%d]", __FUNCTION__, level);
 		return LinphoneLogLevelDebug;
 	}
 }
@@ -84,7 +87,7 @@ unsigned int _bctbx_log_mask_to_linphone_log_mask(unsigned int mask) {
 		}
 	}
 	if (mask != 0) {
-		ms_warning("%s(): invalid flag set in mask [%x]", __FUNCTION__, mask);
+		ms_fatal("%s(): invalid flag set in mask [%x]", __FUNCTION__, mask);
 	}
 	return res;
 }
@@ -124,6 +127,7 @@ static void _log_handler_on_message_written_cb(void *info,const char *domain, Bc
 
 static void _log_handler_destroy_cb(bctbx_log_handler_t *handler) {
 	LinphoneLoggingService *service = (LinphoneLoggingService *)bctbx_log_handler_get_user_data(handler);
+	bctbx_free(service->log_handler);
 	service->log_handler = NULL;
 }
 
@@ -132,7 +136,6 @@ static LinphoneLoggingService *_linphone_logging_service_new(void) {
 	service->log_handler = bctbx_create_log_handler(_log_handler_on_message_written_cb, _log_handler_destroy_cb, service);
 	service->cbs = _linphone_logging_service_cbs_new();
 	bctbx_add_log_handler(service->log_handler);
-
 	return service;
 }
 
@@ -156,11 +159,12 @@ LinphoneLoggingService *linphone_logging_service_ref(LinphoneLoggingService *ser
 }
 
 void linphone_logging_service_unref(LinphoneLoggingService *service) {
-	belle_sip_object_ref(service);
+	belle_sip_object_unref(service);
 }
 
 static void _linphone_logging_service_uninit(LinphoneLoggingService *log_service) {
-	if (log_service->log_handler) bctbx_remove_log_handler(log_service->log_handler);
+	if (log_service->log_handler)
+		bctbx_remove_log_handler(log_service->log_handler);
 	linphone_logging_service_cbs_unref(log_service->cbs);
 }
 
@@ -177,11 +181,11 @@ LinphoneLoggingServiceCbs *linphone_logging_service_get_callbacks(const Linphone
 
 static const char *_linphone_logging_service_log_domains[] = {
 	"bctbx",
+	"belle-sip",
 	"ortp",
-	"bzrtp",
 	"mediastreamer",
-	BELLE_SIP_LOG_DOMAIN,
-	BCTBX_LOG_DOMAIN,
+	"bzrtp",
+	BCTBX_LOG_DOMAIN,  /* which is "liblinphone", set from CMakeList.txt*/
 	NULL
 };
 
@@ -195,7 +199,7 @@ void linphone_logging_service_set_log_level(LinphoneLoggingService *log_service,
 void linphone_logging_service_set_log_level_mask(LinphoneLoggingService *log_service, unsigned int mask) {
 	const char **domain;
 	for (domain=_linphone_logging_service_log_domains; *domain; domain++) {
-		bctbx_set_log_level_mask(*domain, _linphone_log_mask_to_bctbx_log_mask(mask));
+		bctbx_set_log_level_mask(*domain, (int)_linphone_log_mask_to_bctbx_log_mask(mask));
 	}
 }
 
@@ -236,10 +240,9 @@ void linphone_logging_service_cbs_unref(LinphoneLoggingServiceCbs *cbs) {
 }
 
 void linphone_logging_service_cbs_set_log_message_written(LinphoneLoggingServiceCbs *cbs, LinphoneLoggingServiceCbsLogMessageWrittenCb cb) {
-	
 	/* We need to set the legacy log handler to NULL here
-	 because LinphoneCore have a default log handler that dump
-	 all messages into the standard output. */
+	because LinphoneCore have a default log handler that dump
+	all messages into the standard output. */
 	/*this function is moved here to make sure default log handler is only removed when user defined logging cbs is set*/
 	_linphone_core_set_log_handler(NULL);
 	cbs->message_event_cb = cb;
@@ -251,6 +254,10 @@ LinphoneLoggingServiceCbsLogMessageWrittenCb linphone_logging_service_cbs_get_lo
 
 void linphone_logging_service_cbs_set_user_data(LinphoneLoggingServiceCbs *cbs, void *user_data) {
 	cbs->user_data = user_data;
+}
+
+void *linphone_logging_service_cbs_get_user_data(const LinphoneLoggingServiceCbs *cbs) {
+    return cbs->user_data;
 }
 
 BELLE_SIP_INSTANCIATE_VPTR(LinphoneLoggingServiceCbs, belle_sip_object_t,

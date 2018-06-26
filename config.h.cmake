@@ -35,16 +35,15 @@
 
 #define PACKAGE_LOCALE_DIR "${PACKAGE_LOCALE_DIR}"
 #define PACKAGE_DATA_DIR "${PACKAGE_DATA_DIR}"
+#define PACKAGE_GRAMMAR_DIR "${PACKAGE_GRAMMAR_DIR}"
 #define PACKAGE_SOUND_DIR "${PACKAGE_SOUND_DIR}"
 #define PACKAGE_RING_DIR "${PACKAGE_RING_DIR}"
 
 #cmakedefine BUILD_WIZARD
-#cmakedefine HAVE_GTK_OSX 1
 #cmakedefine HAVE_NOTIFY4
 #cmakedefine HAVE_ZLIB 1
 #cmakedefine HAVE_CU_GET_SUITE 1
 #cmakedefine HAVE_CU_CURSES 1
 #cmakedefine HAVE_LIBUDEV_H 0
 #cmakedefine HAVE_LIME
-#cmakedefine ENABLE_NLS 1
 #cmakedefine ENABLE_UPDATE_CHECK 1

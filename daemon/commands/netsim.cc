@@ -96,7 +96,7 @@ void NetsimCommand::exec(Daemon* app, const string& args) {
 			params.loss_rate = (float)atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(), "latency", value, sizeof(value))) {
-			params.latency = atoi(value);
+			params.latency = (uint32_t)atoi(value);
 		}
 		if (fmtp_get_value(parameters.c_str(), "consecutive_loss_probability", value, sizeof(value))) {
 			params.consecutive_loss_probability = (float)atof(value);

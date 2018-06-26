@@ -17,7 +17,7 @@
 */
 
 #include "liblinphone_tester.h"
-#include "private.h"
+#include "tester_utils.h"
 #include "audio_bypass_wav_header.h" // This is a copy of mediastreamer2/src/audiofilters/wav_header.h
 
 /**********************************************************************
@@ -68,9 +68,7 @@ int audio_bypass_read_wav_header_from_fd(wave_header_t *header,int fd){
 	format_t *format_chunk=&header->format_chunk;
 	data_t *data_chunk=&header->data_chunk;
 
-	unsigned long len=0;
-
-	len = read(fd, (char*)riff_chunk, sizeof(riff_t)) ;
+	ssize_t len = read(fd, (char*)riff_chunk, sizeof(riff_t)) ;
 	if (len != sizeof(riff_t)){
 		goto not_a_wav;
 	}
@@ -85,7 +83,7 @@ int audio_bypass_read_wav_header_from_fd(wave_header_t *header,int fd){
 		goto not_a_wav;
 	}
 
-	if ((skip=le_uint32(format_chunk->len)-0x10)>0)
+	if ((skip=(int)le_uint32(format_chunk->len)-0x10)>0)
 	{
 		lseek(fd,skip,SEEK_CUR);
 	}
@@ -438,7 +436,7 @@ static void only_enable_payload(LinphoneCore *lc, const char *mime, int rate, in
  * This is important so that the audio comparison is succesful*/
 static void set_jitter_buffer_params(LinphoneCore *lc){
 	int jitter_buffer_ms = 300;
-	lp_config_set_int(lc->config, "rtp", "jitter_buffer_min_size", jitter_buffer_ms);
+	lp_config_set_int(linphone_core_get_config(lc), "rtp", "jitter_buffer_min_size", jitter_buffer_ms);
 	linphone_core_set_audio_jittcomp(lc, jitter_buffer_ms);
 }
 
@@ -459,8 +457,8 @@ static void audio_bypass(void) {
 	double similar=1;
 	const double threshold = 0.85;
 
-	lp_config_set_string(marie_lc->config, "sound", "features", "None");
-	lp_config_set_string(pauline_lc->config, "sound", "features", "None");
+	lp_config_set_string(linphone_core_get_config(marie_lc), "sound", "features", "None");
+	lp_config_set_string(linphone_core_get_config(pauline_lc), "sound", "features", "None");
 
 	/*make sure the record file doesn't already exists, otherwise this test will append new samples to it*/
 	unlink(recordpath);
@@ -491,7 +489,7 @@ static void audio_bypass(void) {
 	call_ok = call(marie, pauline);
 	BC_ASSERT_TRUE(call_ok);
 	if (!call_ok) goto end;
-	
+
 
 	BC_ASSERT_STRING_EQUAL(linphone_call_params_get_used_audio_codec(linphone_call_get_current_params(linphone_core_get_current_call(marie_lc)))->mime_type, "L16");
 

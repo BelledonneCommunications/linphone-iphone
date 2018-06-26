@@ -1,6 +1,6 @@
 /*
 types.h
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,22 +26,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/msvideo.h"
 #include "linphone/defs.h"
 
+// For migration purpose.
+#include "linphone/api/c-types.h"
 
 /**
- * The LinphoneAccountCreator object used to configure an account on a server via XML-RPC.
+ * The #LinphoneAccountCreator object used to configure an account on a server via XML-RPC.
  * @ingroup account_creator
 **/
 typedef struct _LinphoneAccountCreator LinphoneAccountCreator;
 
 /**
- * An object to define a LinphoneAccountCreator service.
+ * An object to define a #LinphoneAccountCreator service.
  * @ingroup account_creator
  * @donotwrap
 **/
 typedef struct _LinphoneAccountCreatorService LinphoneAccountCreatorService;
 
 /**
- * An object to handle the responses callbacks for handling the LinphoneAccountCreator operations.
+ * An object to handle the responses callbacks for handling the #LinphoneAccountCreator operations.
  * @ingroup account_creator
 **/
 typedef struct _LinphoneAccountCreatorCbs LinphoneAccountCreatorCbs;
@@ -169,22 +171,6 @@ typedef enum _LinphoneAccountCreatorStatus {
 	LinphoneAccountCreatorStatusServerError /**< Error server */
 } LinphoneAccountCreatorStatus;
 
-struct SalAddress;
-
-/**
- * Object that represents a SIP address.
- *
- * The LinphoneAddress is an opaque object to represents SIP addresses, ie
- * the content of SIP's 'from' and 'to' headers.
- * A SIP address is made of display name, username, domain name, port, and various
- * uri headers (such as tags). It looks like 'Alice <sip:alice@example.net>'.
- * The LinphoneAddress has methods to extract and manipulate all parts of the address.
- * When some part of the address (for example the username) is empty, the accessor methods
- * return NULL.
- * @ingroup linphone_address
- */
-typedef struct SalAddress LinphoneAddress;
-
 /**
  * Enum describing Ip family.
  * @ingroup initializing
@@ -207,24 +193,24 @@ typedef enum _LinphoneAudioRoute {
 /**
  * Object holding authentication information.
  *
+ * @note The object's fields should not be accessed directly. Prefer using
+ * the accessor methods.
+ *
  * In most case, authentication information consists of a username and password.
  * Sometimes, a userid is required by proxy, and realm can be useful to discriminate
  * different SIP domains.
  *
- * Once created and filled, a LinphoneAuthInfo must be added to the LinphoneCore in
+ * Once created and filled, a #LinphoneAuthInfo must be added to the #LinphoneCore in
  * order to become known and used automatically when needed.
  * Use linphone_core_add_auth_info() for that purpose.
  *
- * The LinphoneCore object can take the initiative to request authentication information
+ * The #LinphoneCore object can take the initiative to request authentication information
  * when needed to the application through the auth_info_requested callback of the
- * LinphoneCoreVTable structure.
+ * #LinphoneCoreVTable structure.
  *
  * The application can respond to this information request later using
  * linphone_core_add_auth_info(). This will unblock all pending authentication
  * transactions and retry them with authentication headers.
- * 
- * @note The object's fields should not be accessed directly. Prefer using
- * the accessor methods.
  *
  * @ingroup authentication
 **/
@@ -250,26 +236,10 @@ typedef enum _LinphoneAVPFMode {
 } LinphoneAVPFMode;
 
 /**
- * The LinphoneContent object representing a data buffer.
+ * The #LinphoneContent object representing a data buffer.
  * @ingroup misc
 **/
 typedef struct _LinphoneBuffer LinphoneBuffer;
-
-/**
- * The LinphoneCall object represents a call issued or received by the LinphoneCore
- * @ingroup call_control
-**/
-typedef struct _LinphoneCall LinphoneCall;
-
-/**
- * That class holds all the callbacks which are called by LinphoneCall objects.
- *
- * Use linphone_factory_create_call_cbs() to create an instance. Then, call the
- * callback setters on the events you need to monitor and pass the object to
- * a LinphoneCall instance through linphone_call_add_callbacks().
- * @ingroup call_control
- */
-typedef struct _LinphoneCallCbs LinphoneCallCbs;
 
 /**
  * Enum representing the direction of a call.
@@ -287,7 +257,7 @@ typedef enum _LinphoneCallDir {
 typedef struct _LinphoneCallLog LinphoneCallLog;
 
 /**
- * The LinphoneCallParams is an object containing various call related parameters.
+ * The #LinphoneCallParams is an object containing various call related parameters.
  * It can be used to retrieve parameters from a currently running call or modify
  * the call's characteristics dynamically.
  * @ingroup call_control
@@ -295,39 +265,10 @@ typedef struct _LinphoneCallLog LinphoneCallLog;
 typedef struct _LinphoneCallParams LinphoneCallParams;
 
 /**
- * LinphoneCallState enum represents the different state a call can reach into.
- * The application is notified of state changes through the LinphoneCoreVTable::call_state_changed callback.
- * @ingroup call_control
-**/
-typedef enum _LinphoneCallState{
-	LinphoneCallIdle, /**< Initial call state */
-	LinphoneCallIncomingReceived, /**< This is a new incoming call */
-	LinphoneCallOutgoingInit, /**< An outgoing call is started */
-	LinphoneCallOutgoingProgress, /**< An outgoing call is in progress */
-	LinphoneCallOutgoingRinging, /**< An outgoing call is ringing at remote end */
-	LinphoneCallOutgoingEarlyMedia, /**< An outgoing call is proposed early media */
-	LinphoneCallConnected, /**< Connected, the call is answered */
-	LinphoneCallStreamsRunning, /**< The media streams are established and running */
-	LinphoneCallPausing, /**< The call is pausing at the initiative of local end */
-	LinphoneCallPaused, /**< The call is paused, remote end has accepted the pause */
-	LinphoneCallResuming, /**< The call is being resumed by local end */
-	LinphoneCallRefered, /**< The call is being transfered to another party, resulting in a new outgoing call to follow immediately */
-	LinphoneCallError, /**< The call encountered an error */
-	LinphoneCallEnd, /**< The call ended normally */
-	LinphoneCallPausedByRemote, /**< The call is paused by remote end */
-	LinphoneCallUpdatedByRemote, /**< The call's parameters change is requested by remote end, used for example when video is added by remote */
-	LinphoneCallIncomingEarlyMedia, /**< We are proposing early media to an incoming call */
-	LinphoneCallUpdating, /**< A call update has been initiated by us */
-	LinphoneCallReleased, /**< The call object is no more retained by the core */
-	LinphoneCallEarlyUpdatedByRemote, /**< The call is updated by remote while not yet answered (early dialog SIP UPDATE received) */
-	LinphoneCallEarlyUpdating /**< We are updating the call while not yet answered (early dialog SIP UPDATE sent) */
-} LinphoneCallState;
-
-/**
- * The LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
+ * The #LinphoneCallStats objects carries various statistic informations regarding quality of audio or video streams.
  *
- * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the LinphoneCoreVTable structure
- * it passes for instanciating the LinphoneCore object (see linphone_core_new() ).
+ * To receive these informations periodically and as soon as they are computed, the application is invited to place a #LinphoneCoreCallStatsUpdatedCb callback in the #LinphoneCoreVTable structure
+ * it passes for instanciating the #LinphoneCore object (see linphone_core_new() ).
  *
  * At any time, the application can access last computed statistics using linphone_call_get_audio_stats() or linphone_call_get_video_stats().
  * @ingroup call_misc
@@ -349,42 +290,7 @@ typedef enum _LinphoneCallStatus {
 } LinphoneCallStatus;
 
 /**
- * A chat room message to hold content to be sent.
- * Can be created by linphone_chat_room_create_message().
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatMessage LinphoneChatMessage;
-
-/**
- * An object to handle the callbacks for the handling a LinphoneChatMessage objects.
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatMessageCbs LinphoneChatMessageCbs;
-
-/**
- * LinphoneChatMessageState is used to notify if messages have been succesfully delivered or not.
- * @ingroup chatroom
- */
-typedef enum _LinphoneChatMessageState {
-	LinphoneChatMessageStateIdle, /**< Initial state */
-	LinphoneChatMessageStateInProgress, /**< Delivery in progress */
-	LinphoneChatMessageStateDelivered, /**< Message successfully delivered and acknowledged by server */
-	LinphoneChatMessageStateNotDelivered, /**< Message was not delivered */
-	LinphoneChatMessageStateFileTransferError, /**< Message was received(and acknowledged) but cannot get file from server */
-	LinphoneChatMessageStateFileTransferDone, /**< File transfer has been completed successfully */
-	LinphoneChatMessageStateDeliveredToUser, /**< Message successfully delivered and acknowledged to destination */
-	LinphoneChatMessageStateDisplayed /**< Message displayed to the remote user */
-} LinphoneChatMessageState;
-
-/**
- * A chat room is the place where text messages are exchanged.
- * Can be created by linphone_core_create_chat_room().
- * @ingroup chatroom
- */
-typedef struct _LinphoneChatRoom LinphoneChatRoom;
-
-/**
- * LinphoneConference class
+ * #LinphoneConference class
  * The _LinphoneConference struct does not exists, it's the Conference C++ class that is used behind
  * @ingroup call_control
  */
@@ -398,7 +304,7 @@ typedef struct _LinphoneConference LinphoneConference;
 typedef struct _LinphoneConferenceParams LinphoneConferenceParams;
 
 /**
- * The LinphoneConfig object is used to manipulate a configuration file.
+ * The #LinphoneConfig object is used to manipulate a configuration file.
  *
  * The format of the configuration file is a .ini like format:
  * - sections are defined in []
@@ -424,7 +330,7 @@ typedef struct _LpConfig LinphoneConfig;
 #define LpConfig LinphoneConfig
 
 /**
- * LinphoneGlobalState describes the global state of the LinphoneCore object.
+ * #LinphoneGlobalState describes the global state of the #LinphoneCore object.
  * It is notified via the LinphoneCoreVTable::global_state_changed
  * @ingroup initializing
 **/
@@ -455,17 +361,11 @@ typedef struct _LinphoneContactSearch LinphoneContactSearch;
 typedef unsigned int LinphoneContactSearchID;
 
 /**
- * Old name of LinphoneContactSearchID
+ * Old name of #LinphoneContactSearchID
  * @deprecated
  * @donotwrap
  */
 LINPHONE_DEPRECATED typedef LinphoneContactSearchID ContactSearchID;
-
-/**
- * The LinphoneContent object holds data that can be embedded in a signaling message.
- * @ingroup misc
-**/
-typedef struct _LinphoneContent LinphoneContent;
 
 /**
  * Linphone core main object created by function linphone_core_new() .
@@ -500,7 +400,7 @@ typedef enum _LinphoneEcCalibratorStatus {
 
 /**
  * Object representing full details about a signaling error or status.
- * All LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
+ * All #LinphoneErrorInfo object returned by the liblinphone API are readonly and transcients. For safety they must be used immediately
  * after obtaining them. Any other function call to the liblinphone may change their content or invalidate the pointer.
  * @ingroup misc
 **/
@@ -513,6 +413,12 @@ typedef struct _LinphoneErrorInfo LinphoneErrorInfo;
  * @ingroup event_api
 **/
 typedef struct _LinphoneEvent LinphoneEvent;
+
+/**
+ * An object to handle the callbacks for handling the LinphoneEvent operations.
+ * @ingroup event_api
+**/
+typedef struct _LinphoneEventCbs LinphoneEventCbs;
 
 /**
  * #LinphoneFactory is a singleton object devoted to the creation of all the object
@@ -542,13 +448,13 @@ typedef enum _LinphoneFirewallPolicy {
 typedef struct _LinphoneFriend LinphoneFriend;
 
 /**
- * The LinphoneFriendList object representing a list of friends.
+ * The #LinphoneFriendList object representing a list of friends.
  * @ingroup buddy_list
 **/
 typedef struct _LinphoneFriendList LinphoneFriendList;
 
 /**
- * An object to handle the callbacks for LinphoneFriend synchronization.
+ * An object to handle the callbacks for #LinphoneFriend synchronization.
  * @ingroup buddy_list
 **/
 typedef struct _LinphoneFriendListCbs LinphoneFriendListCbs;
@@ -574,7 +480,7 @@ typedef enum _LinphoneFriendListSyncStatus {
 } LinphoneFriendListSyncStatus;
 
 /**
- * LinphoneGlobalState describes the global state of the LinphoneCore object.
+ * #LinphoneGlobalState describes the global state of the #LinphoneCore object.
  * It is notified via the LinphoneCoreVTable::global_state_changed
  * @ingroup initializing
 **/
@@ -602,12 +508,14 @@ typedef enum _LinphoneIceState {
 /**
  * IM encryption engine.
  * @ingroup misc
+ * @donotwrap
  */
 typedef struct _LinphoneImEncryptionEngine LinphoneImEncryptionEngine;
 
 /**
- * An object to handle the callbacks for the handling a LinphoneImEncryptionEngine object.
+ * An object to handle the callbacks for the handling a #LinphoneImEncryptionEngine object.
  * @ingroup misc
+ * @donotwrap
  */
 typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 
@@ -619,7 +527,7 @@ typedef struct _LinphoneImEncryptionEngineCbs LinphoneImEncryptionEngineCbs;
 typedef struct _LinphoneImNotifPolicy LinphoneImNotifPolicy;
 
 /**
- * The LinphoneInfoMessage is an object representing an informational message sent or received by the core.
+ * The #LinphoneInfoMessage is an object representing an informational message sent or received by the core.
  * @ingroup misc
 **/
 typedef struct _LinphoneInfoMessage LinphoneInfoMessage;
@@ -647,7 +555,7 @@ typedef enum _LinphoneLogCollectionState {
 } LinphoneLogCollectionState;
 
 /**
- * LinphoneCoreLogCollectionUploadState is used to notify if log collection upload have been succesfully delivered or not.
+ * #LinphoneCoreLogCollectionUploadState is used to notify if log collection upload have been succesfully delivered or not.
  * @ingroup initializing
  */
 typedef enum _LinphoneCoreLogCollectionUploadState {
@@ -714,7 +622,7 @@ typedef enum _LinphoneOnlineStatus{
 typedef struct _LinphonePlayer LinphonePlayer;
 
 /**
- * An object to handle the callbacks for the handling a LinphonePlayer objects.
+ * An object to handle the callbacks for the handling a #LinphonePlayer objects.
  * @ingroup call_control
  */
 typedef struct _LinphonePlayerCbs LinphonePlayerCbs;
@@ -924,11 +832,11 @@ typedef enum _LinphonePrivacy {
 typedef unsigned int LinphonePrivacyMask;
 
 /**
- * The LinphoneProxyConfig object represents a proxy configuration to be used
- * by the LinphoneCore object.
+ * The #LinphoneProxyConfig object represents a proxy configuration to be used
+ * by the #LinphoneCore object.
  * Its fields must not be used directly in favour of the accessors methods.
- * Once created and filled properly the LinphoneProxyConfig can be given to
- * LinphoneCore with linphone_core_add_proxy_config().
+ * Once created and filled properly the #LinphoneProxyConfig can be given to
+ * #LinphoneCore with linphone_core_add_proxy_config().
  * This will automatically triggers the registration, if enabled.
  *
  * The proxy configuration are persistent to restarts because they are saved
@@ -992,7 +900,7 @@ typedef enum _LinphoneReason{
 #define LinphoneReasonMedia LinphoneReasonUnsupportedContent
 
 /**
- * LinphoneRegistrationState describes proxy registration states.
+ * #LinphoneRegistrationState describes proxy registration states.
  * @ingroup proxies
 **/
 typedef enum _LinphoneRegistrationState {
@@ -1028,7 +936,7 @@ typedef struct _LinphoneSipTransports {
 typedef struct _LinphoneTransports LinphoneTransports;
 
 /**
- * Old name of LinphoneSipTransports
+ * Old name of #LinphoneSipTransports
  * @deprecated
  * @donotwrap
  */
@@ -1074,7 +982,7 @@ typedef enum _LinphoneSubscriptionDir{
 
 /**
  * Enum for subscription states.
- * LinphoneSubscriptionTerminated and LinphoneSubscriptionError are final states.
+ * #LinphoneSubscriptionTerminated and #LinphoneSubscriptionError are final states.
  * @ingroup event_api
 **/
 typedef enum _LinphoneSubscriptionState{
@@ -1119,7 +1027,7 @@ typedef enum _LinphoneTransportType {
 typedef struct _LinphoneTunnel LinphoneTunnel;
 
 /**
- * @brief Class to store tunnel settings.
+ * @brief Tunnel settings.
  * @ingroup tunnel
  */
 typedef struct _LinphoneTunnelConfig LinphoneTunnelConfig;
@@ -1150,7 +1058,7 @@ typedef enum _LinphoneUpnpState {
 } LinphoneUpnpState;
 
 /**
- * The LinphoneVcard object.
+ * The #LinphoneVcard object.
  * @ingroup carddav_vcard
  */
 typedef struct _LinphoneVcard LinphoneVcard;
@@ -1166,7 +1074,7 @@ typedef enum _LinphoneVersionUpdateCheckResult {
 } LinphoneVersionUpdateCheckResult;
 
 /**
- * The LinphoneVideoDefinition object represents a video definition, eg. its width and its height.
+ * The #LinphoneVideoDefinition object represents a video definition, eg. its width and its height.
  * @ingroup media_parameters
  */
 typedef struct _LinphoneVideoDefinition LinphoneVideoDefinition;
@@ -1195,7 +1103,7 @@ typedef struct LinphoneVideoSizeDef {
 } LinphoneVideoSizeDef;
 
 /**
- * Old name of LinphoneVideoSizeDef
+ * Old name of #LinphoneVideoSizeDef
  * @deprecated
  */
 typedef LinphoneVideoSizeDef MSVideoSizeDef;
@@ -1217,19 +1125,19 @@ typedef enum _LinphoneXmlRpcArgType {
 } LinphoneXmlRpcArgType;
 
 /**
- * The LinphoneXmlRpcRequest object representing a XML-RPC request to be sent.
+ * The #LinphoneXmlRpcRequest object representing a XML-RPC request to be sent.
  * @ingroup misc
 **/
 typedef struct _LinphoneXmlRpcRequest LinphoneXmlRpcRequest;
 
 /**
- * An object to handle the callbacks for handling the LinphoneXmlRpcRequest operations.
+ * An object to handle the callbacks for handling the #LinphoneXmlRpcRequest operations.
  * @ingroup misc
 **/
 typedef struct _LinphoneXmlRpcRequestCbs LinphoneXmlRpcRequestCbs;
 
 /**
- * The LinphoneXmlRpcSession object used to send XML-RPC requests and handle their responses.
+ * The #LinphoneXmlRpcSession object used to send XML-RPC requests and handle their responses.
  * @ingroup misc
 **/
 typedef struct _LinphoneXmlRpcSession LinphoneXmlRpcSession;

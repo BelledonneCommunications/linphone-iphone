@@ -77,7 +77,7 @@ int linphone_ringtoneplayer_ios_start_with_cb(LinphoneRingtonePlayer* rp, const 
 }
 
 bool_t linphone_ringtoneplayer_ios_is_started(LinphoneRingtonePlayer* rp) {
-	return [rp->player isPlaying];
+	return (bool_t)[rp->player isPlaying];
 }
 
 int linphone_ringtoneplayer_ios_stop(LinphoneRingtonePlayer* rp) {

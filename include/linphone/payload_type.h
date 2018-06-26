@@ -1,6 +1,6 @@
 /*
 payload_type.h
-Copyright (C) 2010-2017 Belledonne Communications SARL
+Copyright (C) 2010-2018 Belledonne Communications SARL
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -114,7 +114,7 @@ LINPHONE_PUBLIC int linphone_payload_type_get_channels(const LinphonePayloadType
 LINPHONE_PUBLIC int linphone_payload_type_get_number(const LinphonePayloadType *pt);
 
 /**
- * Force a number for a payload type. The LinphoneCore does payload type number assignment automatically.
+ * Force a number for a payload type. The #LinphoneCore does payload type number assignment automatically.
  * This function is mainly to be used for tests, in order to override the automatic assignment mechanism.
  * @param[in] pt The payload type.
  * @param[in] number The number to assign to the payload type.

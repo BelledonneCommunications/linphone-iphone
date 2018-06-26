@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "mediastreamer2/dtmfgen.h"
 
 #include "linphone/lpconfig.h"
-
+#include "c-wrapper/c-wrapper.h"
 
 
 static void ecc_init_filters(EcCalibrator *ecc){
@@ -47,8 +47,8 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_NCHANNELS,&channels);
 	ms_filter_call_method(ecc->read_resampler,MS_FILTER_SET_OUTPUT_NCHANNELS,&ecc_channels);
-	
-	
+
+
 	ecc->det=ms_factory_create_filter(ecc->factory, MS_TONE_DETECTOR_ID);
 	ms_filter_call_method(ecc->det,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->rec=ms_factory_create_filter(ecc->factory, MS_VOID_SINK_ID);
@@ -62,7 +62,7 @@ static void ecc_init_filters(EcCalibrator *ecc){
 	ms_filter_call_method(ecc->gen,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ecc->write_resampler=ms_factory_create_filter(ecc->factory, MS_RESAMPLE_ID);
 	ecc->sndwrite=ms_snd_card_create_writer(ecc->play_card);
-	
+
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_SAMPLE_RATE,&ecc->rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_GET_SAMPLE_RATE,&rate);
 	ms_filter_call_method(ecc->sndwrite,MS_FILTER_SET_NCHANNELS,&ecc_channels);
@@ -153,37 +153,37 @@ static void on_tone_received(void *data, MSFilter *f, unsigned int event_id, voi
 static void ecc_play_tones(EcCalibrator *ecc){
 	MSDtmfGenCustomTone tone;
 	MSToneDetectorDef expected_tone;
-	
+
 	memset(&tone,0,sizeof(tone));
 	memset(&expected_tone,0,sizeof(expected_tone));
 
 	ms_filter_add_notify_callback(ecc->det,on_tone_received,ecc,TRUE);
 
 	/* configure the tones to be scanned */
-	
+
 	strncpy(expected_tone.tone_name,"freq1",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=(int)2349.32;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
-	
+
 	strncpy(expected_tone.tone_name,"freq2",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=(int)2637.02;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
-	
+
 	strncpy(expected_tone.tone_name,"freq3",sizeof(expected_tone.tone_name));
 	expected_tone.frequency=(int)2093;
 	expected_tone.min_duration=40;
 	expected_tone.min_amplitude=0.1f;
 
 	ms_filter_call_method (ecc->det,MS_TONE_DETECTOR_ADD_SCAN,&expected_tone);
-	
+
 	/*play an initial tone to startup the audio playback/capture*/
-	
+
 	tone.frequencies[0]=140;
 	tone.duration=1000;
 	tone.amplitude=0.5;
@@ -192,23 +192,23 @@ static void ecc_play_tones(EcCalibrator *ecc){
 	ms_sleep(2);
 
 	ms_filter_add_notify_callback(ecc->gen,on_tone_sent,ecc,TRUE);
-	
+
 	/* play the three tones*/
-	
-	
+
+
 	if (ecc->play_cool_tones){
 		strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
 		tone.frequencies[0]=(int)2349.32;
 		tone.duration=100;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
-		
+
 		strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
 		tone.frequencies[0]=(int)2637.02;
 		tone.duration=100;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
-		
+
 		strncpy(tone.tone_name, "C", sizeof(tone.tone_name));
 		tone.frequencies[0]=(int)2093;
 		tone.duration=100;
@@ -220,20 +220,20 @@ static void ecc_play_tones(EcCalibrator *ecc){
 		tone.duration=100;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
-		
+
 		strncpy(tone.tone_name, "D", sizeof(tone.tone_name));
 		tone.frequencies[0]=(int)2349.32;
 		tone.duration=100;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
-		
+
 		strncpy(tone.tone_name, "E", sizeof(tone.tone_name));
 		tone.frequencies[0]=(int)2637.02;
 		tone.duration=100;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
 	}
-	
+
 	/*these two next ones are for lyrism*/
 	if (ecc->play_cool_tones){
 		tone.tone_name[0]='\0';
@@ -241,15 +241,15 @@ static void ecc_play_tones(EcCalibrator *ecc){
 		tone.duration=400;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 		ms_usleep(300000);
-		
+
 		tone.tone_name[0]='\0';
 		tone.frequencies[0]=(int)1567.98;
 		tone.duration=400;
 		ms_filter_call_method(ecc->gen,MS_DTMF_GEN_PLAY_CUSTOM,&tone);
 	}
-	
+
 	ms_sleep(1);
-	
+
 	if (ecc->freq1 && ecc->freq2 && ecc->freq3) {
 		int delay=(int)(ecc->acc/3);
 		if (delay<0){
@@ -274,7 +274,7 @@ static void ecc_play_tones(EcCalibrator *ecc){
 
 static void  * ecc_thread(void *p){
 	EcCalibrator *ecc=(EcCalibrator*)p;
-	
+
 	ecc_init_filters(ecc);
 	ecc_play_tones(ecc);
 	ecc_deinit_filters(ecc);
@@ -318,10 +318,59 @@ int linphone_core_start_echo_calibration(LinphoneCore *lc, LinphoneEcCalibration
 		ms_error("Echo calibration is still on going !");
 		return -1;
 	}
-	rate = lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
+	rate = (unsigned int)lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
 	lc->ecc=ec_calibrator_new(lc->factory, lc->sound_conf.play_sndcard,lc->sound_conf.capt_sndcard,rate,cb,audio_init_cb,audio_uninit_cb,cb_data);
-	lc->ecc->play_cool_tones = lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
+	lc->ecc->play_cool_tones = !!lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
 	ec_calibrator_start(lc->ecc);
 	return 0;
 }
 
+static void _ec_calibration_result_cb(LinphoneCore *lc, LinphoneEcCalibratorStatus status, int delay_ms, void *user_data) {
+	linphone_core_notify_ec_calibration_result(lc, status, delay_ms);
+}
+
+static void _ec_calibration_audio_init_cb(void *user_data) {
+	LinphoneCore *lc = (LinphoneCore *)user_data;
+	linphone_core_notify_ec_calibration_audio_init(lc);
+}
+
+static void _ec_calibration_audio_uninit_cb(void *user_data) {
+	LinphoneCore *lc = (LinphoneCore *)user_data;
+	linphone_core_notify_ec_calibration_audio_uninit(lc);
+}
+
+LinphoneStatus linphone_core_start_echo_canceller_calibration(LinphoneCore *lc) {
+	unsigned int rate;
+	
+	if (lc->ecc!=NULL){
+		ms_error("Echo calibration is still on going !");
+		return -1;
+	}
+	rate = (unsigned int)lp_config_get_int(lc->config,"sound","echo_cancellation_rate",8000);
+	lc->ecc=ec_calibrator_new(lc->factory, lc->sound_conf.play_sndcard, lc->sound_conf.capt_sndcard, rate,
+		_ec_calibration_result_cb,
+		_ec_calibration_audio_init_cb,
+		_ec_calibration_audio_uninit_cb, lc);
+	lc->ecc->play_cool_tones = !!lp_config_get_int(lc->config, "sound", "ec_calibrator_cool_tones", 0);
+	ec_calibrator_start(lc->ecc);
+	return 0;
+}
+
+bool_t linphone_core_has_builtin_echo_canceller(LinphoneCore *lc) {
+    MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return FALSE;
+	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return TRUE;
+	return FALSE;
+}
+
+bool_t linphone_core_is_echo_canceller_calibration_required(LinphoneCore *lc) {
+    MSFactory * factory = linphone_core_get_ms_factory(lc);
+	MSDevicesInfo *devices = ms_factory_get_devices_info(factory);
+	SoundDeviceDescription *sound_description = ms_devices_info_get_sound_device_description(devices);
+	if (sound_description == NULL) return TRUE;
+	if (sound_description->flags & DEVICE_HAS_BUILTIN_AEC) return FALSE;
+	if (sound_description->delay != 0) return FALSE;
+	return TRUE;
+}
