@@ -7,6 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NotificationViewController : UIViewController
+@interface NotificationViewController : UITableViewController
 
 @end

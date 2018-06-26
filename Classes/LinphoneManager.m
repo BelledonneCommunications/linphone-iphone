@@ -1230,7 +1230,35 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		}
 		content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 		content.categoryIdentifier = @"msg_cat";
-		content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID};
+        NSMutableArray *msgs = [NSMutableArray array];
+        bctbx_list_t *history = linphone_chat_room_get_history(room, 3);
+        while (history) {
+            NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
+            LinphoneChatMessage *msg = history->data;
+            bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
+            bool_t isFileTransfer = linphone_chat_message_is_file_transfer(msg);
+            const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
+            NSString *displayNameDate = [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(msg)
+                                                                                                withFormat:LinphoneDateChatBubble],
+                                         [FastAddressBook displayNameForAddress:fromAddress]];
+            UIImage *fromImage = [UIImage resizeImage:[FastAddressBook imageForAddress:fromAddress]
+                                         withMaxWidth:200
+                                         andMaxHeight:200];
+            NSData *fromImageData = UIImageJPEGRepresentation(fromImage, 1);
+            [msgData setObject:displayNameDate forKey:@"displayNameDate"];
+            [msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
+            [msgData setObject:fromImageData forKey:@"fromImageData"];
+            if (isFileTransfer) {
+                // TODO
+            } else {
+                const char *textMsg = linphone_chat_message_get_text_content(msg);
+                [msgData setObject:[NSString stringWithUTF8String:textMsg] forKey:@"msg"];
+            }
+            [msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];
+            [msgs addObject:msgData];
+            history = bctbx_list_next(history);
+        }
+        content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
 		content.accessibilityLabel = @"Message notif";
 		UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
 		[[UNUserNotificationCenter currentNotificationCenter]

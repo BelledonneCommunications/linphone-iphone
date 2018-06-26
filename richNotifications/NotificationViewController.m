@@ -11,11 +11,12 @@
 
 @interface NotificationViewController () <UNNotificationContentExtension>
 
-@property IBOutlet UILabel *label;
-
 @end
 
-@implementation NotificationViewController
+@implementation NotificationViewController {
+    @private
+    NSArray *msgs;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -23,7 +24,32 @@
 }
 
 - (void)didReceiveNotification:(UNNotification *)notification {
-    self.label.text = notification.request.content.body;
+    msgs = [[[[notification request] content] userInfo] objectForKey:@"msgs"];
+    printf("Taille tab : %d\n", (unsigned int)msgs.count);
+    [self.tableView reloadData];
+}
+
+#pragma mark - UITableViewDataSource Functions
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return msgs.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    BOOL isOutgoing = ((NSNumber *)[msgs[indexPath.row] objectForKey:@"isOutgoing"]).boolValue;
+    NSString *display = ((NSString *)[msgs[indexPath.row] objectForKey:@"displayNameDate"]);
+    NSString *msgText = ((NSString *)[msgs[indexPath.row] objectForKey:@"msg"]);
+    NSData *imageData = [msgs[indexPath.row] objectForKey:@"fromImageData"];
+    printf("Message %s de %s : %s\n", isOutgoing ? "sortant" : "entrant",
+           display.UTF8String,
+           msgText.UTF8String);
+    printf("Taille de l'image de profil : %d\n", (unsigned int)imageData.length);
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
+    return cell;
 }
 
 @end
