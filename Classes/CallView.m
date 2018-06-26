@@ -484,7 +484,9 @@ static void hideSpinner(LinphoneCall *call, void *user_data) {
 
 - (void)bluetoothAvailabilityUpdateEvent:(NSNotification *)notif {
 	bool available = [[notif.userInfo objectForKey:@"available"] intValue];
-	[self hideSpeaker:available];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self hideSpeaker:available];
+	});
 }
 
 - (void)callUpdateEvent:(NSNotification *)notif {
