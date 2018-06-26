@@ -51,7 +51,7 @@ void RemoteConference::addParticipant (const IdentityAddress &addr, const CallSe
 		lInfo() << "Not adding participant '" << addr.asString() << "' because it is already a participant of the RemoteConference";
 		return;
 	}
-	participant = make_shared<Participant>(addr);
+	participant = make_shared<Participant>(this, addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, d->listener);
 	d->participants.push_back(participant);
 	if (!d->activeParticipant)

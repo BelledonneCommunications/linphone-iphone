@@ -18,6 +18,7 @@
  */
 
 #include "participant-device.h"
+#include "participant-p.h"
 
 #include "linphone/event.h"
 
@@ -39,6 +40,10 @@ ParticipantDevice::~ParticipantDevice () {
 
 bool ParticipantDevice::operator== (const ParticipantDevice &device) const {
 	return (mGruu == device.getAddress());
+}
+
+shared_ptr<Core> ParticipantDevice::getCore () const {
+	return mParticipant ? mParticipant->getPrivate()->getCore() : nullptr;
 }
 
 void ParticipantDevice::setConferenceSubscribeEvent (LinphoneEvent *ev) {

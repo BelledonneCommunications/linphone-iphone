@@ -41,7 +41,7 @@ Conference::Conference (
 ) : CoreAccessor(core), mPrivate(&p) {
 	L_D();
 	d->mPublic = this;
-	d->me = make_shared<Participant>(myAddress);
+	d->me = make_shared<Participant>(this, myAddress);
 	d->listener = listener;
 }
 

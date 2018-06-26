@@ -33,6 +33,10 @@ LINPHONE_BEGIN_NAMESPACE
 
 class ParticipantPrivate : public ObjectPrivate {
 public:
+	std::shared_ptr<Core> getCore () const { return mConference ? mConference->getCore() : nullptr; }
+	Conference *getConference () const { return mConference; }
+	void setConference (Conference *conference) { mConference = conference; }
+
 	std::shared_ptr<CallSession> createSession (const Conference &conference, const CallSessionParams *params, bool hasMedia, CallSessionListener *listener);
 	inline std::shared_ptr<CallSession> getSession () const { return session; }
 	inline void removeSession () { session.reset(); }
@@ -47,6 +51,7 @@ public:
 	void removeDevice (const IdentityAddress &gruu);
 
 private:
+	Conference *mConference = nullptr;
 	IdentityAddress addr;
 	bool isAdmin = false;
 	std::shared_ptr<CallSession> session;

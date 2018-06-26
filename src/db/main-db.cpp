@@ -2402,7 +2402,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 				soci::rowset<soci::row> rows = (session->prepare << query, soci::use(dbChatRoomId));
 				shared_ptr<Participant> me;
 				for (const auto &row : rows) {
-					shared_ptr<Participant> participant = make_shared<Participant>(IdentityAddress(row.get<string>(1)));
+					shared_ptr<Participant> participant = make_shared<Participant>(nullptr, IdentityAddress(row.get<string>(1)));
 					ParticipantPrivate *dParticipant = participant->getPrivate();
 					dParticipant->setAdmin(!!row.get<int>(2));
 
@@ -2426,6 +2426,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						participants.push_back(participant);
 				}
 
+				Conference *conference = nullptr;
 				if (!linphone_core_conference_server_enabled(core->getCCore())) {
 					bool hasBeenLeft = !!row.get<int>(8, 0);
 					if (!me) {
@@ -2433,7 +2434,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 							", local=" + chatRoomId.getLocalAddress().asString() + ").";
 						continue;
 					}
-					chatRoom = make_shared<ClientGroupChatRoom>(
+					auto clientGroupChatRoom = make_shared<ClientGroupChatRoom>(
 						core,
 						chatRoomId,
 						me,
@@ -2443,6 +2444,8 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						lastNotifyId,
 						hasBeenLeft
 					);
+					chatRoom = clientGroupChatRoom;
+					conference = clientGroupChatRoom.get();
 					AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 					dChatRoom->setState(ChatRoom::State::Instantiated);
 					dChatRoom->setState(hasBeenLeft
@@ -2450,7 +2453,7 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						: ChatRoom::State::Created
 					);
 				} else {
-					chatRoom = make_shared<ServerGroupChatRoom>(
+					auto serverGroupChatRoom = make_shared<ServerGroupChatRoom>(
 						core,
 						chatRoomId.getPeerAddress(),
 						capabilities,
@@ -2458,10 +2461,14 @@ list<shared_ptr<AbstractChatRoom>> MainDb::getChatRooms () const {
 						move(participants),
 						lastNotifyId
 					);
+					chatRoom = serverGroupChatRoom;
+					conference = serverGroupChatRoom.get();
 					AbstractChatRoomPrivate *dChatRoom = chatRoom->getPrivate();
 					dChatRoom->setState(ChatRoom::State::Instantiated);
 					dChatRoom->setState(ChatRoom::State::Created);
 				}
+				for (auto participant : chatRoom->getParticipants())
+					participant->getPrivate()->setConference(conference);
 			}
 
 			if (!chatRoom)

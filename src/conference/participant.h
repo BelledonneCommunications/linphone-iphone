@@ -31,6 +31,7 @@
 LINPHONE_BEGIN_NAMESPACE
 
 class ClientGroupChatRoom;
+class Conference;
 class ParticipantPrivate;
 
 class Participant : public Object {
@@ -49,6 +50,7 @@ class Participant : public Object {
 	friend class MainDb;
 	friend class MainDbPrivate;
 	friend class MediaSessionPrivate;
+	friend class ParticipantDevice;
 	friend class RemoteConference;
 	friend class RemoteConferenceCall;
 	friend class RemoteConferenceCallPrivate;
@@ -58,7 +60,7 @@ class Participant : public Object {
 public:
 	L_OVERRIDE_SHARED_FROM_THIS(Participant);
 
-	explicit Participant (const IdentityAddress &address);
+	explicit Participant (Conference *conference, const IdentityAddress &address);
 
 	const IdentityAddress &getAddress () const;
 	bool isAdmin () const;

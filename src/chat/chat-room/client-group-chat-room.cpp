@@ -130,7 +130,7 @@ void ClientGroupChatRoomPrivate::confirmJoining (SalCallOp *op) {
 		for (const auto &addr : identAddresses) {
 			auto participant = q->findParticipant(addr);
 			if (!participant) {
-				participant = make_shared<Participant>(addr);
+				participant = make_shared<Participant>(q, addr);
 				qConference->getPrivate()->participants.push_back(participant);
 			}
 		}
@@ -249,12 +249,12 @@ RemoteConference(core, me, nullptr) {
 	L_D_T(RemoteConference, dConference);
 
 	IdentityAddress focusAddr(uri);
-	dConference->focus = make_shared<Participant>(focusAddr);
+	dConference->focus = make_shared<Participant>(this, focusAddr);
 	dConference->focus->getPrivate()->addDevice(focusAddr);
 	RemoteConference::setSubject(subject);
 	list<IdentityAddress> identAddresses = Conference::parseResourceLists(content);
 	for (const auto &addr : identAddresses)
-		dConference->participants.push_back(make_shared<Participant>(addr));
+		dConference->participants.push_back(make_shared<Participant>(this, addr));
 }
 
 ClientGroupChatRoom::ClientGroupChatRoom (
@@ -273,7 +273,7 @@ RemoteConference(core, me->getAddress(), nullptr) {
 
 	d->capabilities |= capabilities & ClientGroupChatRoom::Capabilities::OneToOne;
 	const IdentityAddress &peerAddress = chatRoomId.getPeerAddress();
-	dConference->focus = make_shared<Participant>(peerAddress);
+	dConference->focus = make_shared<Participant>(this, peerAddress);
 	dConference->focus->getPrivate()->addDevice(peerAddress);
 	dConference->conferenceAddress = peerAddress;
 	dConference->subject = subject;
@@ -628,7 +628,7 @@ void ClientGroupChatRoom::onParticipantAdded (const shared_ptr<ConferencePartici
 		return;
 	}
 
-	participant = make_shared<Participant>(addr);
+	participant = make_shared<Participant>(this, addr);
 	dConference->participants.push_back(participant);
 
 	if (isFullState)

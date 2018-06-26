@@ -48,7 +48,7 @@ void LocalConference::addParticipant (const IdentityAddress &addr, const CallSes
 		lInfo() << "Not adding participant '" << addr.asString() << "' because it is already a participant of the LocalConference";
 		return;
 	}
-	participant = make_shared<Participant>(addr);
+	participant = make_shared<Participant>(this, addr);
 	participant->getPrivate()->createSession(*this, params, hasMedia, d->listener);
 	d->participants.push_back(participant);
 	if (!d->activeParticipant)

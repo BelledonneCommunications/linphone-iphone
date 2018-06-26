@@ -40,8 +40,8 @@ BasicChatRoom::BasicChatRoom (
 	const ChatRoomId &chatRoomId
 ) : ChatRoom(p, core, chatRoomId) {
 	L_D();
-	d->me = make_shared<Participant>(getLocalAddress());
-	d->participants.push_back(make_shared<Participant>(getPeerAddress()));
+	d->me = make_shared<Participant>(nullptr, getLocalAddress());
+	d->participants.push_back(make_shared<Participant>(nullptr, getPeerAddress()));
 }
 
 void BasicChatRoom::allowCpim (bool value) {
