@@ -80,38 +80,41 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
                 PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAssetFromImage:image];
                 placeHolder = [request placeholderForCreatedAsset];
             } completionHandler:^(BOOL success, NSError *error) {
-                if (success) {
-                    LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
-                    [LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
-                                                       forKey:@"localimage"
-                                                    inMessage:message];
-                } else {
-                    LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-                    [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
-                    UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-                                                                                     message:NSLocalizedString(@"Cannot write image to photo library",
-                                                                                                               nil)
-                                                                              preferredStyle:UIAlertControllerStyleAlert];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error) {
+                        LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
+                        [LinphoneManager setValueInMessageAppData:nil forKey:@"localimage" inMessage:message];
+                        UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
+                                                                                         message:NSLocalizedString(@"Cannot write image to photo library",
+                                                                                                                   nil)
+                                                                                  preferredStyle:UIAlertControllerStyleAlert];
+                        
+                        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
+                                                                                style:UIAlertActionStyleDefault
+                                                                              handler:^(UIAlertAction * action) {}];
+                        
+                        [errView addAction:defaultAction];
+                        [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
+                    } else {
+                        LOGI(@"Image saved to [%@]", [placeHolder localIdentifier]);
+                        [LinphoneManager setValueInMessageAppData:[placeHolder localIdentifier]
+                                                           forKey:@"localimage"
+                                                        inMessage:message];
+                    }
+                    [NSNotificationCenter.defaultCenter
+                     postNotificationName:kLinphoneFileTransferRecvUpdate
+                     object:thiz
+                     userInfo:@{
+                                @"state" : @(LinphoneChatMessageStateDelivered), // we dont want to
+                                // trigger
+                                // FileTransferDone here
+                                @"image" : image,
+                                @"progress" : @(1.f),
+                                }];
                     
-                    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-                                                                            style:UIAlertActionStyleDefault
-                                                                          handler:^(UIAlertAction * action) {}];
-                    
-                    [errView addAction:defaultAction];
-                    [PhoneMainView.instance presentViewController:errView animated:YES completion:nil];
-                }
-                [NSNotificationCenter.defaultCenter
-                 postNotificationName:kLinphoneFileTransferRecvUpdate
-                 object:thiz
-                 userInfo:@{
-                            @"state" : @(LinphoneChatMessageStateDelivered),
-                            // we dont want to trigger FileTransferDone here
-                            //@"image" : image,
-                            @"progress" : @(1.f),
-                            }];
-                
-                [thiz stopAndDestroy];
-                CFRelease((__bridge CFTypeRef)thiz);
+                    [thiz stopAndDestroy];
+                    CFRelease((__bridge CFTypeRef)thiz);
+                });
             }];
         }  else {
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
