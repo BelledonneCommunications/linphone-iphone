@@ -68,10 +68,6 @@
 		return;
 
 	super.event = event;
-    
-    //LOGD([NSString stringWithFormat:@"photo cell adress: %p", self]);
-    //LOGD([NSString stringWithFormat:@"event adress: %p", event]);
-    //LOGD([NSString stringWithFormat:@"message adress: %p", linphone_event_log_get_chat_message(event)]);
 	[self setChatMessage:linphone_event_log_get_chat_message(event)];
 }
 
@@ -118,7 +114,6 @@
 }
 
 - (void) loadAsset:(PHAsset *) asset {
-    LOGD(@"SALOPE");
     PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
     options.synchronous = TRUE;
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
@@ -201,7 +196,6 @@
             fullScreenImage = YES;
         } else if(!assetIsLoaded) {
             assetIsLoaded = TRUE;
-            LOGD(@"POUET");
             if (localImage) {
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {

@@ -184,8 +184,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void) passImageToDelegate:(UIImage *)image PHAssetId:(NSString *)assetId {
     if (imagePickerDelegate != nil) {
-    [imagePickerDelegate imagePickerDelegateImage:image info:(NSString *)assetId];
-}
+        [imagePickerDelegate imagePickerDelegateImage:image info:(NSString *)assetId];
+    }
 }
 /*
     if (imagePickerDelegate != nil) {
@@ -216,7 +216,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 + (void)SelectImageFromDevice:(id<ImagePickerDelegate>)delegate
 				   atPosition:(UIView *)ipadPopoverView
 					   inView:(UIView *)ipadView {
-    LOGD(@"PUTAIN");
 	void (^block)(UIImagePickerControllerSourceType) = ^(UIImagePickerControllerSourceType type) {
 	  ImagePickerView *view = VIEW(ImagePickerView);
 	  view.sourceType = type;
