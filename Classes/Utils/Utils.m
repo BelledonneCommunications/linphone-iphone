@@ -32,36 +32,10 @@
 @implementation LinphoneUtils
 
 + (BOOL)hasSelfAvatar {
-	return [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]] != nil;
+	return [LinphoneManager.instance lpConfigStringForKey:@"avatar"] != nil;
 }
 + (UIImage *)selfAvatar {
-	NSURL *url = [NSURL URLWithString:[LinphoneManager.instance lpConfigStringForKey:@"avatar"]];
-	__block UIImage *ret = nil;
-	if (url) {
-		__block NSConditionLock *photoLock = [[NSConditionLock alloc] initWithCondition:1];
-		// load avatar synchronously so that we can return UIIMage* directly - since we are
-		// only using thumbnail, it must be pretty fast to fetch even without cache.
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		  [LinphoneManager.instance.photoLibrary assetForURL:url
-			  resultBlock:^(ALAsset *asset) {
-				ret = [[UIImage alloc] initWithCGImage:[asset thumbnail]];
-				[photoLock lock];
-				[photoLock unlockWithCondition:0];
-			  }
-			  failureBlock:^(NSError *error) {
-				LOGE(@"Can't read avatar");
-				[photoLock lock];
-				[photoLock unlockWithCondition:0];
-			  }];
-		});
-		[photoLock lockWhenCondition:0];
-		[photoLock unlock];
-	}
-
-	if (!ret) {
-		ret = [UIImage imageNamed:@"avatar.png"];
-	}
-	return ret;
+    return [LinphoneManager.instance avatar];
 }
 
 + (NSString *)durationToString:(int)duration {
@@ -463,47 +437,42 @@
 }
 
 + (LinphoneAddress *)normalizeSipOrPhoneAddress:(NSString *)value {
-	if (!value || [value isEqualToString:@""]) {
-    	return NULL;
-  	}
-	LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
-	const char *normvalue;
-	if (linphone_proxy_config_is_phone_number(cfg, value.UTF8String)) {
-		normvalue = linphone_proxy_config_normalize_phone_number(cfg, value.UTF8String);
-	} else {
-		normvalue = value.UTF8String;
-	}
-	LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
-	// first try to find a friend with the given address
-	Contact *c = [FastAddressBook getContactWithAddress:addr];
-
-	if (c && c.friend) {
-		LinphoneFriend *f = c.friend;
-		const LinphonePresenceModel *m = f ? linphone_friend_get_presence_model_for_uri_or_tel(f, value.UTF8String) : NULL;
-		const char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
-		if (contact) {
-			LinphoneAddress *contact_addr = linphone_address_new(contact);
-			if (contact_addr) {
-				linphone_address_destroy(addr);
-				return contact_addr;
-			}
-		}
-	}
-
-	// since user wants to escape plus, we assume it expects to have phone
-	// numbers by default
-	if (addr) {
-		if (cfg || (linphone_proxy_config_get_dial_escape_plus(cfg))) {
-			if (linphone_proxy_config_is_phone_number(cfg, normvalue)) {
-				linphone_address_set_username(addr, normvalue);
-			}
-		} else {
-			if (linphone_proxy_config_is_phone_number(cfg, value.UTF8String)) {
-				linphone_address_set_username(addr, value.UTF8String);
-			}
-		}
-	}
-	return addr;
+    if (!value || [value isEqualToString:@""])
+        return NULL;
+    
+    LinphoneProxyConfig *cfg = linphone_core_get_default_proxy_config(LC);
+    const char *normvalue;
+    normvalue = linphone_proxy_config_is_phone_number(cfg, value.UTF8String)
+    ? linphone_proxy_config_normalize_phone_number(cfg, value.UTF8String)
+    : value.UTF8String;
+    
+    LinphoneAddress *addr = linphone_proxy_config_normalize_sip_uri(cfg, normvalue);
+    // first try to find a friend with the given address
+    Contact *c = [FastAddressBook getContactWithAddress:addr];
+    
+    if (c && c.friend) {
+        LinphoneFriend *f = c.friend;
+        const LinphonePresenceModel *m = f
+        ? linphone_friend_get_presence_model_for_uri_or_tel(f, value.UTF8String)
+        : NULL;
+        const char *contact = m ? linphone_presence_model_get_contact(m) : NULL;
+        if (contact) {
+            LinphoneAddress *contact_addr = linphone_address_new(contact);
+            if (contact_addr) {
+                linphone_address_destroy(addr);
+                return contact_addr;
+            }
+        }
+    }
+    
+    // since user wants to escape plus, we assume it expects to have phone
+    // numbers by default
+    if (addr && cfg) {
+        const char *username = linphone_proxy_config_get_dial_escape_plus(cfg) ? normvalue : value.UTF8String;
+        if (linphone_proxy_config_is_phone_number(cfg, username))
+            linphone_address_set_username(addr, username);
+    }
+    return addr;
 }
 
 @end
@@ -779,6 +748,94 @@
 		[[UIImage alloc] initWithCGImage:decompressedImageRef scale:image.scale orientation:image.imageOrientation];
 	CGImageRelease(decompressedImageRef);
 	return decompressedImage;
+}
+
+@end
+
+@implementation UIImage (ResizeAndThumbnail)
+
++ (UIImage *)UIImageThumbnail:(UIImage *)image thumbSize:(CGFloat) tbSize {
+    // Create a thumbnail version of the image for the event object.
+    CGSize size = image.size;
+    CGSize croppedSize;
+    CGFloat offsetX = 0.0;
+    CGFloat offsetY = 0.0;
+    CGFloat actualTbSize = MAX(tbSize, MAX(size.height, size.width));
+    // check the size of the image, we want to make it
+    // a square with sides the size of the smallest end
+    if (size.width > size.height) {
+        offsetX = (size.height - size.width) / 2;
+        croppedSize = CGSizeMake(size.height, size.height);
+    } else {
+        offsetY = (size.width - size.height) / 2;
+        croppedSize = CGSizeMake(size.width, size.width);
+    }
+    
+    // Crop the image before resize
+    CGRect clippedRect = CGRectMake(offsetX * -1,
+                                    offsetY * -1,
+                                    croppedSize.width,
+                                    croppedSize.height);
+    CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage],
+                                                       clippedRect);
+    
+    UIImage *cropped = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    // Done cropping
+    
+    // Resize the image
+    CGRect rect = CGRectMake(0, 0, actualTbSize, actualTbSize);
+    
+    UIGraphicsBeginImageContext(rect.size);
+    [cropped drawInRect:rect];
+    UIImage *thumbnail = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    // Done Resizing
+    
+    return thumbnail;
+}
+
+
++ (UIImage *)UIImageResize:(UIImage *)image toSize:(CGSize) newSize {
+    CGImageRef newImage = [image CGImage];
+    CGSize originalSize = [image size];
+    float originalAspectRatio = originalSize.width / originalSize.height;
+    // We resize in width and crop in height
+    if (originalSize.width > newSize.width) {
+        int height = newSize.width / originalAspectRatio;
+        newImage = [UIImage resizeCGImage:newImage toWidth:newSize.width andHeight:height];
+        originalSize.height = height;
+    }
+    CGRect cropRect = CGRectMake(0, 0, newSize.width, newSize.height);
+    if (newSize.height < originalSize.height) cropRect.origin.y = (originalSize.height - newSize.height)/2;
+    newImage = CGImageCreateWithImageInRect(newImage, cropRect);
+    
+    
+    UIImage *cropped = [UIImage imageWithCGImage:newImage];
+    CGImageRelease(newImage);
+    return cropped;
+}
+
++ (CGImageRef)resizeCGImage:(CGImageRef)image toWidth:(int)width andHeight:(int)height {
+    // create context, keeping original image properties
+    CGColorSpaceRef colorspace = CGImageGetColorSpace(image);
+    CGContextRef context = CGBitmapContextCreate(NULL, width, height,
+                                                 CGImageGetBitsPerComponent(image),
+                                                 CGImageGetBytesPerRow(image),
+                                                 colorspace,
+                                                 CGImageGetAlphaInfo(image));
+    CGColorSpaceRelease(colorspace);
+    
+    if(context == NULL)
+        return nil;
+    
+    // draw image to context (resizing it)
+    CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
+    // extract resulting image from context
+    CGImageRef imgRef = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
+    
+    return imgRef;
 }
 
 @end

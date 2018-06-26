@@ -21,7 +21,7 @@
 
 @protocol ImagePickerDelegate <NSObject>
 
-- (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info;
+- (void)imagePickerDelegateImage:(UIImage *)image info:(NSString *)phAssetId;
 
 @end
 

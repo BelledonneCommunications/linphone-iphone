@@ -36,6 +36,7 @@
 @property(weak, nonatomic) IBOutlet UIView *imageSubView;
 @property (strong, nonatomic) IBOutlet UITapGestureRecognizer *openRecognizer;
 @property(weak, nonatomic) IBOutlet UIView *totalView;
+@property (weak, nonatomic) IBOutlet UIView *finalAssetView;
 @property (weak, nonatomic) IBOutlet UIImageView *finalImage;
 @property(strong, nonatomic) IBOutlet UITapGestureRecognizer *imageGestureRecognizer;
 

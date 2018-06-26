@@ -17,6 +17,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#import <Photos/PHAssetChangeRequest.h>
+
 #import "ChatConversationView.h"
 #import "PhoneMainView.h"
 #import "Utils.h"
@@ -220,7 +222,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         //share photo
         NSData *data = dict[@"nsData"];
         UIImage *image = [[UIImage alloc] initWithData:data];
-        [self chooseImageQuality:image url:nil];
+        [self chooseImageQuality:image assetId:nil];
         [defaults removeObjectForKey:@"img"];
     } else if (dictWeb) {
         //share url, if local file, then upload file
@@ -308,38 +310,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
-- (void)saveAndSend:(UIImage *)image url:(NSURL *)url withQuality:(float)quality{
-	// photo from Camera, must be saved first
-	if (url == nil) {
-		[LinphoneManager.instance.photoLibrary
-			writeImageToSavedPhotosAlbum:image.CGImage
-							 orientation:(ALAssetOrientation)[image imageOrientation]
-						 completionBlock:^(NSURL *assetURL, NSError *error) {
-						   if (error) {
-							   LOGE(@"Cannot save image data downloaded [%@]", [error localizedDescription]);
-							   
-							   UIAlertController *errView = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Transfer error", nil)
-																								message:NSLocalizedString(@"Cannot write image to photo library",
-																														  nil)
-																						 preferredStyle:UIAlertControllerStyleAlert];
-							   
-							   UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK"
-																					   style:UIAlertActionStyleDefault
-																					 handler:^(UIAlertAction * action) {}];
-							   
-							   [errView addAction:defaultAction];
-							   [self presentViewController:errView animated:YES completion:nil];
-						   } else {
-							   LOGI(@"Image saved to [%@]", [assetURL absoluteString]);
-							   [self startImageUpload:image url:assetURL withQuality:quality];
-						   }
-						 }];
-	} else {
-		[self startImageUpload:image url:url withQuality:quality];
-	}
+- (void)saveAndSend:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality{
+	[self startImageUpload:image assetId:phAssetId withQuality:quality];
 }
 
-- (void)chooseImageQuality:(UIImage *)image url:(NSURL *)url {
+- (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
 	DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"Choose the image size", nil)];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 	  for (NSString *key in [imageQualities allKeys]) {
@@ -349,7 +324,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 		  NSString *text = [NSString stringWithFormat:@"%@ (%@)", key, [size toHumanReadableSize]];
 		  [sheet addButtonWithTitle:text
 							  block:^() {
-								[self saveAndSend:image url:url withQuality:[quality floatValue]];
+                                  [self saveAndSend:image assetId:phAssetId withQuality:[quality floatValue]];
 							  }];
 	  }
 	  [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -601,9 +576,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ChatRoomDelegate
 
-- (BOOL)startImageUpload:(UIImage *)image url:(NSURL *)url withQuality:(float)quality {
+- (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality {
 	FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
-	[fileTransfer upload:image withURL:url forChatRoom:_chatRoom withQuality:quality];
+	[fileTransfer upload:image withassetId:phAssetId forChatRoom:_chatRoom withQuality:quality];
 	[_tableController scrollToBottom:true];
 	return TRUE;
 }
@@ -621,7 +596,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 #pragma mark ImagePickerDelegate
 
-- (void)imagePickerDelegateImage:(UIImage *)image info:(NSDictionary *)info {
+- (void)imagePickerDelegateImage:(UIImage *)image info:(NSString *)phAssetId {
 	// When getting image from the camera, it may be 90° rotated due to orientation
 	// (image.imageOrientation = UIImageOrientationRight). Just rotate it to be face up.
 	if (image.imageOrientation != UIImageOrientationUp) {
@@ -635,9 +610,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	if (IPAD) {
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
-
-	NSURL *url = [info valueForKey:UIImagePickerControllerReferenceURL];
-	[self chooseImageQuality:image url:url];
+    [self chooseImageQuality:image assetId:phAssetId];
 }
 
 - (void)tableViewIsScrolling {
