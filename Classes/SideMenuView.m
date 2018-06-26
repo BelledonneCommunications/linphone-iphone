@@ -113,6 +113,10 @@
 		image = UIGraphicsGetImageFromCurrentImageContext();
 		UIGraphicsEndImageContext();
 	}
+    
+    [LinphoneManager.instance lpConfigSetString:phAssetId forKey:@"avatar"];
+    _avatarImage.image = [LinphoneUtils selfAvatar];
+    [LinphoneManager.instance loadAvatar];
 
 	// Dismiss popover on iPad
 	if (IPAD) {
@@ -120,10 +124,6 @@
 	} else {
 		[PhoneMainView.instance.mainViewController hideSideMenu:NO];
 	}
-    
-    [LinphoneManager.instance lpConfigSetString:phAssetId forKey:@"avatar"];
-    _avatarImage.image = [LinphoneUtils selfAvatar];
-    [LinphoneManager.instance loadAvatar];
 }
 
 @end

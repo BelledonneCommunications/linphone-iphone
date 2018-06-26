@@ -2888,7 +2888,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 }
 
 + (void)setValueInMessageAppData:(id)value forKey:(NSString *)key inMessage:(LinphoneChatMessage *)msg {
-    dispatch_async(dispatch_get_main_queue(), ^{
         NSMutableDictionary *appDataDict = [NSMutableDictionary dictionary];
         const char *appData = linphone_chat_message_get_appdata(msg);
         if (appData) {
@@ -2903,7 +2902,6 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
         NSString *appdataJSON = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         linphone_chat_message_set_appdata(msg, [appdataJSON UTF8String]);
         [NSNotificationCenter.defaultCenter postNotificationName:kLinphoneMessageValueUpdated object:nil];
-    });
 }
 
 #pragma mark - LPConfig Functions
