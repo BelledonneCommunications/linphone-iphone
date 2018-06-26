@@ -10,6 +10,14 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [4.0.1] - 2018-06-26
+
+### Fixed
+- Fix TURN
+- Start video stream on first call
+- Fix audio unit management in case of call time out
+- Fix registration issue with some SIP services (ie: Asterix)
+
 ## [4.0] - 2018-06-11
 
 ### Added
