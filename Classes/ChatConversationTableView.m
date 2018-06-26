@@ -40,15 +40,6 @@
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
     _imagesInChatroom = [NSMutableDictionary dictionary];
-    
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(updateData)
-                                               name:kLinphoneMessageValueUpdated
-                                             object:nil];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [NSNotificationCenter.defaultCenter removeObserver:self name:kLinphoneMessageValueUpdated object:nil];
 }
 
 #pragma mark -
@@ -113,10 +104,6 @@
 	}
 	[self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]]
 						  withRowAnimation:FALSE]; // just reload
-    [self.tableView reloadData];
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]
-                          atScrollPosition:UITableViewScrollPositionBottom
-                                  animated:YES];
     return;
 }
 
