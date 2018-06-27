@@ -12,5 +12,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *nameDate;
 @property (weak, nonatomic) IBOutlet UITextView *msgText;
 @property (weak, nonatomic) IBOutlet UILabel *imdm;
+@property (weak, nonatomic) IBOutlet UIImageView *background;
+@property (weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
 
 @end

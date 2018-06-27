@@ -61,6 +61,7 @@
            msgText.UTF8String);
     printf("Taille de l'image de profil : %d\n", (unsigned int)imageData.length);
     NotificationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
+    cell.background.image = cell.bottomBarColor.image = [UIImage imageNamed:isOutgoing ? @"color_A" : @"color_D.png"];
     cell.contactImage.image = [UIImage imageWithData:imageData];
     cell.nameDate.text = display;
     cell.msgText.text = msgText;

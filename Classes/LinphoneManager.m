@@ -1252,8 +1252,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
             [msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
             [msgData setObject:fromImageData forKey:@"fromImageData"];
             if (isFileTransfer) {
-                // TODO
-                [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
+                LinphoneContent *file = linphone_chat_message_get_file_transfer_information(msg);
+                const char *filename = linphone_content_get_name(file);
+                [msgData setObject:[NSString stringWithUTF8String:filename] forKey:@"msg"];
             } else {
                 [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
             }
