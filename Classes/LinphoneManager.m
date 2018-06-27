@@ -1236,6 +1236,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
         while (history) {
             NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
             LinphoneChatMessage *msg = history->data;
+            const char *state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
             bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
             bool_t isFileTransfer = linphone_chat_message_is_file_transfer(msg);
             const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
@@ -1246,6 +1247,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
                                          withMaxWidth:200
                                          andMaxHeight:200];
             NSData *fromImageData = UIImageJPEGRepresentation(fromImage, 1);
+            [msgData setObject:[NSString stringWithUTF8String:state] forKey:@"state"];
             [msgData setObject:displayNameDate forKey:@"displayNameDate"];
             [msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
             [msgData setObject:fromImageData forKey:@"fromImageData"];

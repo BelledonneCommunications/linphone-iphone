@@ -11,5 +11,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *contactImage;
 @property (weak, nonatomic) IBOutlet UILabel *nameDate;
 @property (weak, nonatomic) IBOutlet UITextView *msgText;
+@property (weak, nonatomic) IBOutlet UILabel *imdm;
 
 @end

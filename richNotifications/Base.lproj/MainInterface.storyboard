@@ -38,17 +38,26 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Lorem ipsum " textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="3tK-2u-Ixe">
-                                                    <rect key="frame" x="0.0" y="17" width="305" height="6.5"/>
+                                                    <rect key="frame" x="0.0" y="17" width="305" height="0.0"/>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                 </textView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gv1-l8-gh3">
+                                                    <rect key="frame" x="0.0" y="17" width="305" height="6.5"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="gv1-l8-gh3" secondAttribute="trailing" id="3G2-M8-TBH"/>
                                                 <constraint firstItem="WZa-ow-o0L" firstAttribute="leading" secondItem="OXj-8D-5BS" secondAttribute="leading" id="7wZ-7m-XoH"/>
                                                 <constraint firstItem="3tK-2u-Ixe" firstAttribute="leading" secondItem="OXj-8D-5BS" secondAttribute="leading" id="A4k-hw-bfV"/>
+                                                <constraint firstItem="gv1-l8-gh3" firstAttribute="leading" secondItem="OXj-8D-5BS" secondAttribute="leading" id="Gdm-r8-XCk"/>
                                                 <constraint firstItem="3tK-2u-Ixe" firstAttribute="top" secondItem="WZa-ow-o0L" secondAttribute="bottom" id="XWZ-K9-hVC"/>
                                                 <constraint firstItem="WZa-ow-o0L" firstAttribute="top" secondItem="OXj-8D-5BS" secondAttribute="top" id="dSr-F5-pKr"/>
+                                                <constraint firstAttribute="bottom" secondItem="gv1-l8-gh3" secondAttribute="bottom" id="sdZ-KZ-qyP"/>
                                             </constraints>
                                         </stackView>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SKQ-W1-Lmw">
@@ -70,6 +79,7 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="contactImage" destination="SKQ-W1-Lmw" id="nsD-4b-g0W"/>
+                                    <outlet property="imdm" destination="gv1-l8-gh3" id="ceS-Ho-kpi"/>
                                     <outlet property="msgText" destination="3tK-2u-Ixe" id="aVq-ra-Sd7"/>
                                     <outlet property="nameDate" destination="WZa-ow-o0L" id="WdA-QI-xv1"/>
                                 </connections>
