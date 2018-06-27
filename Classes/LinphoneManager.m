@@ -1256,6 +1256,9 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
                 const char *filename = linphone_content_get_name(file);
                 [msgData setObject:[NSString stringWithUTF8String:filename] forKey:@"msg"];
             } else {
+                CGSize msgSize = [UIChatBubbleTextCell ViewSizeForMessage:msg withWidth:375];
+                [msgData setObject:[NSNumber numberWithFloat:msgSize.width] forKey:@"width"];
+                [msgData setObject:[NSNumber numberWithFloat:msgSize.height] forKey:@"height"];
                 [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
             }
             [msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];

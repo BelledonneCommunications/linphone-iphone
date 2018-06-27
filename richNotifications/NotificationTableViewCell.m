@@ -23,4 +23,20 @@
     // Configure the view for the selected state
 }
 
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGRect bubbleFrame = self.contentView.frame;
+    int origin_x;
+        
+    bubbleFrame.size = CGSizeMake(_width, _height);
+
+    origin_x = (_isOutgoing ? self.frame.size.width - bubbleFrame.size.width - 5 : 5);
+        
+    bubbleFrame.origin.x = origin_x;
+    self.contentView.frame = bubbleFrame;
+    
+    _msgText.textContainerInset = UIEdgeInsetsZero;
+    _msgText.textContainer.lineFragmentPadding = 0;
+}
+
 @end

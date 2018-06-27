@@ -14,5 +14,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *imdm;
 @property (weak, nonatomic) IBOutlet UIImageView *background;
 @property (weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
+@property BOOL isOutgoing;
+@property float width;
+@property float height;
 
 @end
