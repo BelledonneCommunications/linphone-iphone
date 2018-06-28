@@ -1238,7 +1238,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
             LinphoneChatMessage *msg = history->data;
             const char *state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
             bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
-            bool_t isFileTransfer = linphone_chat_message_is_file_transfer(msg);
+            bool_t isFileTransfer = (linphone_chat_message_get_file_transfer_information(msg) != NULL);
             const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
             NSString *displayNameDate = [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(msg)
                                                                                                 withFormat:LinphoneDateChatBubble],
