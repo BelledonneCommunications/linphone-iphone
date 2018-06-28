@@ -37,6 +37,9 @@
                                   animated:YES];
     NSLog(@"Content length : %f", self.tableView.contentSize.height);
     NSLog(@"Number of rows : %d", (unsigned int)[self tableView:self.tableView numberOfRowsInSection:0]);
+    [self.view.superview bringSubviewToFront:self.tableView];
+    self.tableView.bounds = CGRectMake(self.tableView.bounds.origin.x, self.tableView.bounds.origin.y, self.tableView.contentSize.width, self.tableView.contentSize.height);
+    NSLog(@"View length : %f", self.tableView.bounds.size.height);
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -69,14 +72,18 @@
     cell.height = ((NSNumber *)[msgs[indexPath.row] objectForKey:@"height"]).floatValue;
     cell.nameDate.textColor = [UIColor colorWithPatternImage:cell.background.image];
     cell.msgText.textColor = [UIColor darkGrayColor];
-    if (!isOutgoing)
+    if (!isOutgoing) {
         cell.imdm.hidden = YES;
+        cell.imdmImage.hidden = YES;
+    }
     if ([imdm isEqualToString:@"LinphoneChatMessageStateDelivered"]) {
         cell.imdm.text = NSLocalizedString(@"Delivered", nil);
         cell.imdm.textColor = [UIColor grayColor];
+        cell.imdmImage.image = [UIImage imageNamed:@"chat_delivered.png"];
     } else if ([imdm isEqualToString:@"LinphoneChatMessageStateDisplayed"]) {
         cell.imdm.text = NSLocalizedString(@"Read", nil);
         cell.imdm.textColor = [UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0];
+        cell.imdmImage.image = [UIImage imageNamed:@"chat_read.png"];
     } else
         cell.imdm.text = imdm;
     printf("Taille label : %f\n", cell.nameDate.font.pointSize);

@@ -71,6 +71,9 @@
 		5E31290C20D7A37E00CF3AAE /* latestChatroomsWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E31290020D7A37E00CF3AAE /* latestChatroomsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5E31291320D7AAA100CF3AAE /* avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEBE61D3CD5570014B822 /* avatar.png */; };
 		5E31291A20D7AAAD00CF3AAE /* chat_group_avatar.png in Resources */ = {isa = PBXBuildFile; fileRef = 8C2A81941F87B8000012A66B /* chat_group_avatar.png */; };
+		5E32944520E4C29000BBA896 /* chat_delivered.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AC1E8266CC0037A187 /* chat_delivered.png */; };
+		5E32944C20E4C29300BBA896 /* chat_error.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AD1E8266CC0037A187 /* chat_error.png */; };
+		5E32944D20E4C29700BBA896 /* chat_read.png in Resources */ = {isa = PBXBuildFile; fileRef = 244523AE1E8266CC0037A187 /* chat_read.png */; };
 		5E3391EC20E387E000F66299 /* color_A.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEC701D3CD5570014B822 /* color_A.png */; };
 		5E3391F320E387E700F66299 /* color_D.png in Resources */ = {isa = PBXBuildFile; fileRef = 633FEC721D3CD5570014B822 /* color_D.png */; };
 		5E58962420DCE5700030868C /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C73477B1D9BA3A00022EE8C /* UserNotifications.framework */; };
@@ -4211,6 +4214,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E32944C20E4C29300BBA896 /* chat_error.png in Resources */,
+				5E32944D20E4C29700BBA896 /* chat_read.png in Resources */,
+				5E32944520E4C29000BBA896 /* chat_delivered.png in Resources */,
 				5E3391F320E387E700F66299 /* color_D.png in Resources */,
 				5E58962D20DCE5700030868C /* MainInterface.storyboard in Resources */,
 				5E3391EC20E387E000F66299 /* color_A.png in Resources */,
