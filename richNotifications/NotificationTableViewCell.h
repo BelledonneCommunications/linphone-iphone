@@ -10,7 +10,7 @@
 @interface NotificationTableViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UIImageView *contactImage;
 @property (weak, nonatomic) IBOutlet UILabel *nameDate;
-@property (weak, nonatomic) IBOutlet UITextView *msgText;
+@property (strong, nonatomic) IBOutlet UITextView *msgText;
 @property (weak, nonatomic) IBOutlet UILabel *imdm;
 @property (weak, nonatomic) IBOutlet UIImageView *background;
 @property (weak, nonatomic) IBOutlet UIImageView *bottomBarColor;
@@ -18,5 +18,8 @@
 @property BOOL isOutgoing;
 @property float width;
 @property float height;
+
+- (CGSize)ViewSizeForMessage:(NSString *)chat withWidth:(int)width;
+- (CGSize)ViewHeightForMessage:(NSString *)messageText withWidth:(int)width;
 
 @end

@@ -38,7 +38,6 @@
     NSLog(@"Content length : %f", self.tableView.contentSize.height);
     NSLog(@"Number of rows : %d", (unsigned int)[self tableView:self.tableView numberOfRowsInSection:0]);
     [self.view.superview bringSubviewToFront:self.tableView];
-    self.tableView.bounds = CGRectMake(self.tableView.bounds.origin.x, self.tableView.bounds.origin.y, self.tableView.contentSize.width, self.tableView.contentSize.height);
     NSLog(@"View length : %f", self.tableView.bounds.size.height);
 }
 
@@ -68,8 +67,9 @@
     cell.nameDate.text = display;
     cell.msgText.text = msgText;
     cell.isOutgoing = isOutgoing;
-    cell.width = ((NSNumber *)[msgs[indexPath.row] objectForKey:@"width"]).floatValue;
-    cell.height = ((NSNumber *)[msgs[indexPath.row] objectForKey:@"height"]).floatValue;
+    CGSize size = [cell ViewSizeForMessage:msgText withWidth:self.view.bounds.size.width - 10];
+    cell.width = size.width;
+    cell.height = size.height;
     cell.nameDate.textColor = [UIColor colorWithPatternImage:cell.background.image];
     cell.msgText.textColor = [UIColor darkGrayColor];
     if (!isOutgoing) {
@@ -94,7 +94,11 @@
 #pragma mark - UITableViewDelegate Functions
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return ((NSNumber *)[msgs[indexPath.row] objectForKey:@"height"]).floatValue + 5;
+    NotificationTableViewCell *cell = [[NotificationTableViewCell alloc] init];
+    cell.msgText = [[UITextView alloc] init];
+    cell.msgText.text = ((NSString *)[msgs[indexPath.row] objectForKey:@"msg"]);
+    cell.msgText.font = [UIFont systemFontOfSize:17];
+    return [cell ViewHeightForMessage:cell.msgText.text withWidth:self.view.bounds.size.width - 10].height + 5;
 }
 
 @end
