@@ -31,6 +31,7 @@
     else
         msgs = [NSMutableArray arrayWithArray:[[[[notification request] content] userInfo] objectForKey:@"msgs"]];
     [self.tableView reloadData];
+    
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:msgs.count - 1
                                                                inSection:0]
                           atScrollPosition:UITableViewScrollPositionBottom
@@ -76,7 +77,7 @@
         cell.imdm.hidden = YES;
         cell.imdmImage.hidden = YES;
     }
-    if ([imdm isEqualToString:@"LinphoneChatMessageStateDelivered"]) {
+    if ([imdm isEqualToString:@"LinphoneChatMessageStateDelivered"] || [imdm isEqualToString:@"LinphoneChatMessageStateDeliveredToUser"]) {
         cell.imdm.text = NSLocalizedString(@"Delivered", nil);
         cell.imdm.textColor = [UIColor grayColor];
         cell.imdmImage.image = [UIImage imageNamed:@"chat_delivered.png"];
@@ -84,8 +85,12 @@
         cell.imdm.text = NSLocalizedString(@"Read", nil);
         cell.imdm.textColor = [UIColor colorWithRed:(24 / 255.0) green:(167 / 255.0) blue:(175 / 255.0) alpha:1.0];
         cell.imdmImage.image = [UIImage imageNamed:@"chat_read.png"];
+    } else if ([imdm isEqualToString:@"LinphoneChatMessageStateNotDelivered"] || [imdm isEqualToString:@"LinphoneChatMessageStateFileTransferError"]) {
+        cell.imdm.text = NSLocalizedString(@"Error", nil);
+        cell.imdm.textColor = [UIColor redColor];
+        cell.imdmImage.image = [UIImage imageNamed:@"chat_error.png"];
     } else
-        cell.imdm.text = imdm;
+        cell.imdm.hidden = YES;
     printf("Taille label : %f\n", cell.nameDate.font.pointSize);
     printf("Taille field : %f\n", cell.msgText.font.pointSize);
     return cell;
