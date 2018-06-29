@@ -101,6 +101,8 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.contentInset = UIEdgeInsetsMake(-15, 0, 0, 0);
 	//	_messageField.internalTextView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, 0, 10);
 	[_tableController setChatRoomDelegate:self];
+    [_imagesCollectionView registerClass:[UIImageViewDeletable class] forCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class])];
+    [_imagesCollectionView setDataSource:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -125,6 +127,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+    
+    if ([_imagesArray count] > 0) {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y - 100;
+                             imagesFrame.size.height = 100;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height -= 100;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:nil];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -203,7 +223,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 	_messageField.editable = !linphone_chat_room_has_been_left(_chatRoom);
 	_pictureButton.enabled = !linphone_chat_room_has_been_left(_chatRoom);
 	_messageView.userInteractionEnabled = !linphone_chat_room_has_been_left(_chatRoom);
-	[_messageField setText:@""];
 	[_tableController setChatRoom:_chatRoom];
 
 	_chatView.hidden = NO;
@@ -222,7 +241,12 @@ static UICompositeViewDescription *compositeDescription = nil;
         //share photo
         NSData *data = dict[@"nsData"];
         UIImage *image = [[UIImage alloc] initWithData:data];
-        [self chooseImageQuality:image assetId:nil];
+        NSString *filename = dict[@"url"];
+        if (filename) {
+            NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
+            [self chooseImageQuality:image assetId:[[assetDict objectForKey:filename] localIdentifier]];
+        } else
+            [self chooseImageQuality:image assetId:@""];
         [defaults removeObjectForKey:@"img"];
     } else if (dictWeb) {
         //share url, if local file, then upload file
@@ -311,7 +335,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)saveAndSend:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality{
-	[self startImageUpload:image assetId:phAssetId withQuality:quality];
+    
+    [_imagesArray addObject:image];
+    [_assetIdsArray addObject:phAssetId];
+    [_qualitySettingsArray addObject:@(quality)];
+    [self addImageToDrawer:image withAssetId:phAssetId];
 }
 
 - (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
@@ -456,6 +484,12 @@ static UICompositeViewDescription *compositeDescription = nil;
 		messageRect.size.height += diff;
 		[_messageView setFrame:messageRect];
 
+        if ([_imagesArray count] > 0) {
+            CGRect _imagesRect = [_imagesView frame];
+            _imagesRect.origin.y -= diff;
+            [_imagesView setFrame:_imagesRect];
+        }
+        
 		// Always stay at bottom
 		if (scrollOnGrowingEnabled) {
 			CGRect tableFrame = [_tableController.view frame];
@@ -493,6 +527,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (IBAction)onSendClick:(id)event {
+    if ([_imagesArray count] > 0) {
+        int i = 0;
+        for (i = 0; i < [_imagesArray count] - 1; ++i) {
+            [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue];
+        }
+        [self startImageUpload:[_imagesArray objectAtIndex:i] assetId:[_assetIdsArray objectAtIndex:i] withQuality:[_qualitySettingsArray objectAtIndex:i].floatValue andMessage:[self.messageField text]];
+        [self clearMessageView];
+        return;
+    }
 	if ([self sendMessage:[_messageField text] withExterlBodyUrl:nil withInternalURL:nil]) {
 		scrollOnGrowingEnabled = FALSE;
 		[_messageField setText:@""];
@@ -583,6 +626,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	return TRUE;
 }
 
+- (BOOL)startImageUpload:(UIImage *)image assetId:(NSString *)phAssetId withQuality:(float)quality andMessage:(NSString *)message {
+    FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+    [fileTransfer setText:message];
+    [fileTransfer upload:image withassetId:phAssetId forChatRoom:_chatRoom withQuality:quality];
+    [_tableController scrollToBottom:true];
+    return TRUE;
+}
+
 - (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
     [fileTransfer uploadFile:data forChatRoom:_chatRoom withUrl:url];
@@ -611,6 +662,28 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
     [self chooseImageQuality:image assetId:phAssetId];
+    //[self chooseImageQuality:image assetId:phAssetId];
+}
+
+- (void)addImageToDrawer:(UIImage *)img withAssetId:(NSString *)assetId {
+    if ([_imagesArray count] == 1) { // We resize chatView to display the image
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y - 100;
+                             imagesFrame.size.height = 100;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height -= 100;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:nil];
+    }
+    [_imagesCollectionView reloadData];
 }
 
 - (void)tableViewIsScrolling {
@@ -667,6 +740,19 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  }
 			  }
 		  }
+            
+            
+            if ([_imagesArray count] > 0){
+                // resizing imagesView
+                CGRect imagesFrame = [_imagesView frame];
+                imagesFrame.origin.y = [_messageView frame].origin.y - 100;
+                imagesFrame.size.height = 100;
+                [_imagesView setFrame:imagesFrame];
+                // resizing chatTable
+                CGRect tableViewFrame = [_tableController.tableView frame];
+                tableViewFrame.size.height -= 100;
+                [_tableController.tableView setFrame:tableViewFrame];
+            }
 		}
 		completion:^(BOOL finished){
 
@@ -722,6 +808,18 @@ static UICompositeViewDescription *compositeDescription = nil;
 				  [_messageView frame].origin.y - tableFrame.origin.y - composeIndicatorCompensation;
 			  [_tableController.view setFrame:tableFrame];
 		  }
+            
+            if ([_imagesArray count] > 0){
+                // resizing imagesView
+                CGRect imagesFrame = [_imagesView frame];
+                imagesFrame.origin.y = [_messageView frame].origin.y - 100;
+                imagesFrame.size.height = 100;
+                [_imagesView setFrame:imagesFrame];
+                // resizing chatTable
+                CGRect tableViewFrame = [_tableController.tableView frame];
+                tableViewFrame.size.height -= 100;
+                [_tableController.tableView setFrame:tableViewFrame];
+            }
 
 		  // Scroll
 		  NSInteger lastSection = [_tableController.tableView numberOfSections] - 1;
@@ -734,6 +832,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 									animated:FALSE];
 			  }
 		  }
+            
 		}
 		completion:^(BOOL finished){
 		}];
@@ -837,6 +936,72 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
         [[[UIAlertView alloc] initWithTitle:@"Info" message:@"There is no app found to open it" delegate:nil cancelButtonTitle:@"cancel" otherButtonTitles:nil, nil] show];
         
     }
+}
+
+- (void)deleteImageWithAssetId:(NSString *)assetId {
+    NSUInteger key = [_assetIdsArray indexOfObject:assetId];
+    [_imagesArray removeObjectAtIndex:key];
+    [_assetIdsArray removeObjectAtIndex:key];
+    if ([_imagesArray count] == 0) {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y;
+                             imagesFrame.size.height = 0;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height += 100;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:nil];
+        
+        [_sendButton setEnabled:FALSE];
+    }
+    [_imagesCollectionView reloadData];
+}
+
+- (void)clearMessageView {
+    [_messageField setText:@""];
+    _imagesArray = [NSMutableArray array];
+    _assetIdsArray = [NSMutableArray array];
+    
+    // resizing imagesView
+    [UIView animateWithDuration:0
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         // resizing imagesView
+                         CGRect imagesFrame = [_imagesView frame];
+                         imagesFrame.origin.y = [_messageView frame].origin.y;
+                         imagesFrame.size.height = 0;
+                         [_imagesView setFrame:imagesFrame];
+                         
+                         // resizing chatTable
+                         CGRect tableViewFrame = [_tableController.tableView frame];
+                         CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
+                         tableViewFrame.size.height = [_messageView frame].origin.y - tableViewFrame.origin.y - composeIndicatorCompensation;
+                         [_tableController.tableView setFrame:tableViewFrame];
+                     }
+                     completion:nil];
+    
+    [_imagesCollectionView reloadData];
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [_imagesArray count];
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
+    [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:50 andMaxHeight:100]];
+    [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+    [imgView setDeleteDelegate:self];
+    [_sendButton setEnabled:TRUE];
+    return imgView;
 }
 
 @end

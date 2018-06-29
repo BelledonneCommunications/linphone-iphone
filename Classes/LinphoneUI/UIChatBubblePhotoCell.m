@@ -38,7 +38,6 @@
 
 - (id)initWithIdentifier:(NSString *)identifier {
 	if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-		// TODO: remove text cell subview
 		NSArray *arrayOfViews =
 			[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
 		// resize cell to match .nib size. It is needed when resized the cell to
@@ -119,7 +118,7 @@
     [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeDefault options:options
                                             resultHandler:^(UIImage *image, NSDictionary * info) {
                                                 if (image) {
-                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width];
+                                                    imageSize = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[image size] withWidth:chatTableView.tableView.frame.size.width - 40];
                                                     UIImage *newImage = [UIImage UIImageResize:image toSize:imageSize];
                                                     [chatTableView.imagesInChatroom setObject:newImage forKey:[asset localIdentifier]];
                                                     [self loadImageAsset:asset image:newImage];
@@ -167,13 +166,24 @@
     });
 }
 
+- (void) loadPlaceholder {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //[_finalImage setImage:image];
+        //[_messageImageView setAsset:asset];
+        [_messageImageView stopLoading];
+        _messageImageView.hidden = YES;
+        _imageGestureRecognizer.enabled = YES;
+        _finalImage.hidden = NO;
+        [self layoutSubviews];
+    });
+}
+
 - (void)update {
 	if (self.message == nil) {
 		LOGW(@"Cannot update message room cell: NULL message");
 		return;
 	}
-	[super update];
-
+    [super update];
 	const char *url = linphone_chat_message_get_external_body_url(self.message);
 	BOOL is_external =
 		(url && (strstr(url, "http") == url)) || linphone_chat_message_get_file_transfer_information(self.message);
@@ -203,7 +213,7 @@
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
                     UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
                     if (![assets firstObject])
-                        return;
+                        [self loadPlaceholder];
                     PHAsset *asset = [assets firstObject];
                     if (img)
                         [self loadImageAsset:asset image:img];
@@ -415,6 +425,28 @@
     bubbleFrame.origin.x = origin_x;
     
     super.bubbleView.frame = bubbleFrame;
+    
+    // Resizing Image view
+    if (_finalImage.image) {
+        CGRect imgFrame = self.finalAssetView.frame;
+        imgFrame.size = [UIChatBubbleTextCell getMediaMessageSizefromOriginalSize:[_finalImage.image size] withWidth:chatTableView.tableView.frame.size.width - 40];
+        imgFrame.origin.x = (bubbleFrame.size.width - imgFrame.size.width)/2;
+        self.finalAssetView.frame = imgFrame;
+     
+        // Positioning text message
+        const char *utf8Text = linphone_chat_message_get_text_content(self.message);
+        
+        CGRect textFrame = self.messageText.frame;
+        textFrame.origin = CGPointMake(textFrame.origin.x, self.finalAssetView.frame.origin.y + self.finalAssetView.frame.size.height);
+        if (!utf8Text) {
+            textFrame.size.height = 0;
+        } else {
+            textFrame.size.height = bubbleFrame.size.height - textFrame.origin.x;
+        }
+        
+        self.messageText.frame = textFrame;
+        LOGD([NSString stringWithFormat:@"Text of the photoCell: %@, size of the text of the photoCell: %@", [self.messageText text], NSStringFromCGSize(textFrame.size)]);
+    }
 }
 
 @end
