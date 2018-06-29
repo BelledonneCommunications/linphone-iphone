@@ -96,9 +96,11 @@
 	const LinphoneContent *last_content = linphone_chat_message_get_file_transfer_information(message);
 	// Last message was a file transfer (image) so display a picture...
 	if (url || last_content) {
+        if (linphone_chat_message_get_text_content(message))
+            return [NSString stringWithUTF8String:linphone_chat_message_get_text_content(message)];
 		return @"🗻";
 	} else {
-		const char *text = linphone_chat_message_get_text_content(message) ?: "";
+        const char *text = linphone_chat_message_get_text_content(message) ?: "";
 		return [NSString stringWithUTF8String:text] ?: [NSString stringWithCString:text encoding:NSASCIIStringEncoding]
 														   ?: NSLocalizedString(@"(invalid string)", nil);
 	}
@@ -127,6 +129,7 @@
 	_statusInProgressSpinner.accessibilityLabel = @"Delivery in progress";
 
 	if (_messageText) {
+        LOGD(_messageText.text);
 		[_messageText setHidden:FALSE];
 		/* We need to use an attributed string here so that data detector don't mess
 		 * with the text style. See http://stackoverflow.com/a/20669356 */
@@ -372,7 +375,16 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
             CGSize originalImageSize = CGSizeMake([asset pixelWidth], [asset pixelHeight]);
             size = [self getMediaMessageSizefromOriginalSize:originalImageSize withWidth:width];
             //This fixes the image being too small. I think the issue comes form the fact that the display is retina. This should probably be changed in the future.
-            size.height += CELL_MESSAGE_X_MARGIN;
+            size.height += 40;
+            size.width -= CELL_MESSAGE_X_MARGIN;
+            
+            if (![messageText isEqualToString:@"🗻"]) {
+                CGSize textSize = [self computeBoundingBox:messageText
+                                                      size:CGSizeMake(width - CELL_MESSAGE_X_MARGIN - 4, CGFLOAT_MAX)
+                                                      font:messageFont];
+                size.height += textSize.height;
+                size.width = MAX(textSize.width, size.width);
+            }
         }
 	}
     
@@ -424,10 +436,11 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 
 + (CGSize)getMediaMessageSizefromOriginalSize:(CGSize)originalSize withWidth:(int)width {
     CGSize mediaSize = CGSizeMake(0, 0);
-    int availableWidth = width - CELL_MESSAGE_X_MARGIN;
+    int availableWidth = width;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         availableWidth = availableWidth /3;
     }
+    //availableWidth -= CELL_MESSAGE_X_MARGIN;
     int newHeight = originalSize.height;
     float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height
