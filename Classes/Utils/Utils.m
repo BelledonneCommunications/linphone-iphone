@@ -55,6 +55,24 @@
 	return [formatter stringFromTimeInterval:interval];
 }
 
+
++ (NSMutableDictionary <NSString *, PHAsset *> *)photoAssetsDictionary {
+    NSMutableDictionary <NSString *, PHAsset *> *assetDict = [NSMutableDictionary dictionary];
+    
+    PHFetchOptions *options = [[PHFetchOptions alloc] init];
+    [options setIncludeHiddenAssets:YES];
+    [options setIncludeAllBurstAssets:YES];
+    
+    PHFetchResult *fetchRes = [PHAsset fetchAssetsWithOptions:options];
+    
+    for (PHAsset *asset in fetchRes) {
+        NSString *key = [asset valueForKey:@"filename"];
+        [assetDict setObject:asset forKey:[[key componentsSeparatedByString:@"."] firstObject]];
+    }
+    
+    return assetDict;
+}
+
 + (NSString *)timeToString:(time_t)time withFormat:(LinphoneDateFormat)format {
 	NSString *formatstr;
 	NSDate *todayDate = [[NSDate alloc] init];

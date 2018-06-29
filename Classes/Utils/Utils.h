@@ -49,6 +49,8 @@ typedef enum {
 + (NSString *)durationToString:(int)duration;
 + (NSString *)intervalToString:(NSTimeInterval)interval ;
 
++ (NSMutableDictionary <NSString *, PHAsset *> *)photoAssetsDictionary;
+
 @end
 
 @interface NSNumber (HumanReadableSize)
