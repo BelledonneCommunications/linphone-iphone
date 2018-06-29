@@ -1232,7 +1232,7 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		content.categoryIdentifier = @"msg_cat";
         // save data to user info for rich notification content
         NSMutableArray *msgs = [NSMutableArray array];
-        bctbx_list_t *history = linphone_chat_room_get_history(room, 4);
+        bctbx_list_t *history = linphone_chat_room_get_history(room, 6);
         while (history) {
             NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
             LinphoneChatMessage *msg = history->data;

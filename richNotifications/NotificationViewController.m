@@ -26,20 +26,34 @@
 }
 
 - (void)didReceiveNotification:(UNNotification *)notification {
+    static float initialHeight = -1;
+    if (initialHeight < 0)
+        initialHeight = self.tableView.frame.size.height;
+    printf("Initial height : %f\n", initialHeight);
     if (msgs)
         [msgs addObject:[((NSArray *)[[[[notification request] content] userInfo] objectForKey:@"msgs"]) lastObject]];
     else
         msgs = [NSMutableArray arrayWithArray:[[[[notification request] content] userInfo] objectForKey:@"msgs"]];
     [self.tableView reloadData];
-    
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForItem:msgs.count - 1
-                                                               inSection:0]
-                          atScrollPosition:UITableViewScrollPositionBottom
-                                  animated:YES];
+    float height = 0;
+    for (int i = 0 ; i < self->msgs.count ; i++) {
+        height += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+    }
+    if (height > initialHeight) {
+        CGRect frame = self.tableView.frame;
+        frame.size.height = height;
+        frame.origin = CGPointMake(0, 0);
+        self.tableView.frame = frame;
+        self.tableView.bounds = frame;
+        self.preferredContentSize = CGSizeMake(self.preferredContentSize.width, height);
+    }
+    printf("Height : %f\n", height);
     NSLog(@"Content length : %f", self.tableView.contentSize.height);
     NSLog(@"Number of rows : %d", (unsigned int)[self tableView:self.tableView numberOfRowsInSection:0]);
-    [self.view.superview bringSubviewToFront:self.tableView];
-    NSLog(@"View length : %f", self.tableView.bounds.size.height);
+    NSLog(@"View bounds length : %f", self.tableView.bounds.size.height);
+    NSLog(@"View frame length : %f", self.tableView.frame.size.height);
+    NSLog(@"View bounds y : %f", self.tableView.bounds.origin.y);
+    NSLog(@"View frame y : %f", self.tableView.frame.origin.y);
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -73,10 +87,7 @@
     cell.height = size.height;
     cell.nameDate.textColor = [UIColor colorWithPatternImage:cell.background.image];
     cell.msgText.textColor = [UIColor darkGrayColor];
-    if (!isOutgoing) {
-        cell.imdm.hidden = YES;
-        cell.imdmImage.hidden = YES;
-    }
+    cell.imdm.hidden = cell.imdmImage.hidden = !isOutgoing;
     if ([imdm isEqualToString:@"LinphoneChatMessageStateDelivered"] || [imdm isEqualToString:@"LinphoneChatMessageStateDeliveredToUser"]) {
         cell.imdm.text = NSLocalizedString(@"Delivered", nil);
         cell.imdm.textColor = [UIColor grayColor];
@@ -93,6 +104,9 @@
         cell.imdm.hidden = YES;
     printf("Taille label : %f\n", cell.nameDate.font.pointSize);
     printf("Taille field : %f\n", cell.msgText.font.pointSize);
+    printf("%d\n", (unsigned int)indexPath.row);
+    printf("X : %f\n", cell.frame.origin.x);
+    printf("Y : %f\n", cell.frame.origin.y);
     return cell;
 }
 
@@ -103,7 +117,7 @@
     cell.msgText = [[UITextView alloc] init];
     cell.msgText.text = ((NSString *)[msgs[indexPath.row] objectForKey:@"msg"]);
     cell.msgText.font = [UIFont systemFontOfSize:17];
-    return [cell ViewHeightForMessage:cell.msgText.text withWidth:self.view.bounds.size.width - 10].height + 5;
+    return [cell ViewSizeForMessage:cell.msgText.text withWidth:self.view.bounds.size.width - 10].height + 5;
 }
 
 @end

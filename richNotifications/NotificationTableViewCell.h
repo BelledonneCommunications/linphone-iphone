@@ -20,6 +20,5 @@
 @property float height;
 
 - (CGSize)ViewSizeForMessage:(NSString *)chat withWidth:(int)width;
-- (CGSize)ViewHeightForMessage:(NSString *)messageText withWidth:(int)width;
 
 @end

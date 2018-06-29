@@ -18,15 +18,15 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationCell" rowHeight="100" id="4dO-Sq-LtB" customClass="NotificationTableViewCell">
-                                <rect key="frame" x="0.0" y="28" width="375" height="100"/>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="notificationCell" id="4dO-Sq-LtB" customClass="NotificationTableViewCell">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="4dO-Sq-LtB" id="Q3t-C0-U1O">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="OXj-8D-5BS">
-                                            <rect key="frame" x="60" y="10" width="310" height="88"/>
+                                            <rect key="frame" x="60" y="10" width="310" height="32"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WZa-ow-o0L">
                                                     <rect key="frame" x="0.0" y="0.0" width="310" height="17"/>
@@ -38,12 +38,12 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="Lorem ipsum " textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="3tK-2u-Ixe">
-                                                    <rect key="frame" x="0.0" y="17" width="310" height="57.5"/>
+                                                    <rect key="frame" x="0.0" y="17" width="310" height="1.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                 </textView>
                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="rnc-rL-KN8">
-                                                    <rect key="frame" x="0.0" y="74.5" width="310" height="13.5"/>
+                                                    <rect key="frame" x="0.0" y="18.5" width="310" height="13.5"/>
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gv1-l8-gh3">
                                                             <rect key="frame" x="0.0" y="0.0" width="292" height="13.5"/>
@@ -81,13 +81,13 @@
                                             </constraints>
                                         </imageView>
                                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="Wh2-bk-96C" userLabel="BottomBar">
-                                            <rect key="frame" x="0.0" y="99" width="375" height="1"/>
+                                            <rect key="frame" x="0.0" y="43" width="375" height="1"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="1" id="xx0-Om-qom"/>
                                             </constraints>
                                         </imageView>
                                         <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="FHB-G3-atz">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="100"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                         </imageView>
                                     </subviews>
                                     <constraints>
