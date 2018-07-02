@@ -1230,7 +1230,39 @@ static void linphone_iphone_popup_password_request(LinphoneCore *lc, LinphoneAut
 		}
 		content.sound = [UNNotificationSound soundNamed:@"msg.caf"];
 		content.categoryIdentifier = @"msg_cat";
-		content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID};
+        // save data to user info for rich notification content
+        NSMutableArray *msgs = [NSMutableArray array];
+        bctbx_list_t *history = linphone_chat_room_get_history(room, 6);
+        while (history) {
+            NSMutableDictionary *msgData = [NSMutableDictionary dictionary];
+            LinphoneChatMessage *msg = history->data;
+            const char *state = linphone_chat_message_state_to_string(linphone_chat_message_get_state(msg));
+            bool_t isOutgoing = linphone_chat_message_is_outgoing(msg);
+            bool_t isFileTransfer = (linphone_chat_message_get_file_transfer_information(msg) != NULL);
+            const LinphoneAddress *fromAddress = linphone_chat_message_get_from_address(msg);
+            NSString *displayNameDate = [NSString stringWithFormat:@"%@ - %@", [LinphoneUtils timeToString:linphone_chat_message_get_time(msg)
+                                                                                                withFormat:LinphoneDateChatBubble],
+                                         [FastAddressBook displayNameForAddress:fromAddress]];
+            UIImage *fromImage = [UIImage resizeImage:[FastAddressBook imageForAddress:fromAddress]
+                                         withMaxWidth:200
+                                         andMaxHeight:200];
+            NSData *fromImageData = UIImageJPEGRepresentation(fromImage, 1);
+            [msgData setObject:[NSString stringWithUTF8String:state] forKey:@"state"];
+            [msgData setObject:displayNameDate forKey:@"displayNameDate"];
+            [msgData setObject:[NSNumber numberWithBool:isFileTransfer] forKey:@"isFileTransfer"];
+            [msgData setObject:fromImageData forKey:@"fromImageData"];
+            if (isFileTransfer) {
+                LinphoneContent *file = linphone_chat_message_get_file_transfer_information(msg);
+                const char *filename = linphone_content_get_name(file);
+                [msgData setObject:[NSString stringWithUTF8String:filename] forKey:@"msg"];
+            } else {
+                [msgData setObject:[UIChatBubbleTextCell TextMessageForChat:msg] forKey:@"msg"];
+            }
+            [msgData setObject:[NSNumber numberWithBool:isOutgoing] forKey:@"isOutgoing"];
+            [msgs addObject:msgData];
+            history = bctbx_list_next(history);
+        }
+        content.userInfo = @{@"from" : from, @"peer_addr" : peer_uri, @"local_addr" : local_uri, @"CallId" : callID, @"msgs" : msgs};
 		content.accessibilityLabel = @"Message notif";
 		UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"call_request" content:content trigger:NULL];
 		[[UNUserNotificationCenter currentNotificationCenter]

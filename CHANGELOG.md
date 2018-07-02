@@ -14,6 +14,10 @@ Group changes to describe their impact on the project, as follows:
 
 ### Added
 - Auto-layout of images in chat messages
+- Latest Calls widget
+- Latest Chatrooms widget
+- Homescreen quick action : New message
+- Rich message notifications with Linphone UI
 
 ### Changed
 - Use of Photokit instead of Asset Library for image handling
