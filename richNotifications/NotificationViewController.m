@@ -26,28 +26,27 @@
 }
 
 - (void)didReceiveNotification:(UNNotification *)notification {
-    static float initialHeight = -1;
-    if (initialHeight < 0)
-        initialHeight = self.tableView.frame.size.height;
-    printf("Initial height : %f\n", initialHeight);
+//    static float initialHeight = -1;
+//    if (initialHeight < 0)
+//        initialHeight = self.tableView.frame.size.height;
     if (msgs)
         [msgs addObject:[((NSArray *)[[[[notification request] content] userInfo] objectForKey:@"msgs"]) lastObject]];
     else
         msgs = [NSMutableArray arrayWithArray:[[[[notification request] content] userInfo] objectForKey:@"msgs"]];
     [self.tableView reloadData];
-    float height = 0;
-    for (int i = 0 ; i < self->msgs.count ; i++) {
-        height += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-    }
-    if (height > initialHeight) {
-        CGRect frame = self.tableView.frame;
-        frame.size.height = height;
-        frame.origin = CGPointMake(0, 0);
-        self.tableView.frame = frame;
-        self.tableView.bounds = frame;
-        self.preferredContentSize = CGSizeMake(self.preferredContentSize.width, height);
-    }
-    printf("Height : %f\n", height);
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:msgs.count - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+//    float height = 0;
+//    for (int i = 0 ; i < self->msgs.count ; i++) {
+//        height += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+//    }
+//    if (height > initialHeight) {
+//        CGRect frame = self.tableView.frame;
+//        frame.size.height = height;
+//        frame.origin = CGPointMake(0, 0);
+//        self.tableView.frame = frame;
+//        self.tableView.bounds = frame;
+//        self.preferredContentSize = CGSizeMake(self.preferredContentSize.width, height);
+//    }
     NSLog(@"Content length : %f", self.tableView.contentSize.height);
     NSLog(@"Number of rows : %d", (unsigned int)[self tableView:self.tableView numberOfRowsInSection:0]);
     NSLog(@"View bounds length : %f", self.tableView.bounds.size.height);
