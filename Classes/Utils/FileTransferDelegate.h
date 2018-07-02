@@ -19,4 +19,5 @@
 - (void)stopAndDestroy;
 
 @property() LinphoneChatMessage *message;
+@property() NSString *text;
 @end

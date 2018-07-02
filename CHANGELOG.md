@@ -14,6 +14,8 @@ Group changes to describe their impact on the project, as follows:
 
 ### Added
 - Auto-layout of images in chat messages
+- Selection of multiple images to send in a chat message
+- Sending text with image
 - Latest Calls widget
 - Latest Chatrooms widget
 - Homescreen quick action : New message
