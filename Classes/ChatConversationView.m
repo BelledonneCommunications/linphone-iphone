@@ -173,6 +173,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 	[self configureForRoom:true];
 	_backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
+    [self refreshImageDrawer];
 }
 
 #pragma mark -
@@ -339,7 +340,7 @@ static UICompositeViewDescription *compositeDescription = nil;
     [_imagesArray addObject:image];
     [_assetIdsArray addObject:phAssetId];
     [_qualitySettingsArray addObject:@(quality)];
-    [self addImageToDrawer:image withAssetId:phAssetId];
+    [self refreshImageDrawer];
 }
 
 - (void)chooseImageQuality:(UIImage *)image assetId:(NSString *)phAssetId {
@@ -662,28 +663,6 @@ static UICompositeViewDescription *compositeDescription = nil;
 		[VIEW(ImagePickerView).popoverController dismissPopoverAnimated:TRUE];
 	}
     [self chooseImageQuality:image assetId:phAssetId];
-    //[self chooseImageQuality:image assetId:phAssetId];
-}
-
-- (void)addImageToDrawer:(UIImage *)img withAssetId:(NSString *)assetId {
-    if ([_imagesArray count] == 1) { // We resize chatView to display the image
-        [UIView animateWithDuration:0
-                              delay:0
-                            options:UIViewAnimationOptionBeginFromCurrentState
-                         animations:^{
-                             // resizing imagesView
-                             CGRect imagesFrame = [_imagesView frame];
-                             imagesFrame.origin.y = [_messageView frame].origin.y - 100;
-                             imagesFrame.size.height = 100;
-                             [_imagesView setFrame:imagesFrame];
-                             // resizing chatTable
-                             CGRect tableViewFrame = [_tableController.tableView frame];
-                             tableViewFrame.size.height -= 100;
-                             [_tableController.tableView setFrame:tableViewFrame];
-                         }
-                         completion:nil];
-    }
-    [_imagesCollectionView reloadData];
 }
 
 - (void)tableViewIsScrolling {
@@ -697,6 +676,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)keyboardWillHide:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    
 	[UIView animateWithDuration:duration
 		delay:0
 		options:UIViewAnimationOptionBeginFromCurrentState
@@ -745,12 +727,12 @@ static UICompositeViewDescription *compositeDescription = nil;
             if ([_imagesArray count] > 0){
                 // resizing imagesView
                 CGRect imagesFrame = [_imagesView frame];
-                imagesFrame.origin.y = [_messageView frame].origin.y - 100;
-                imagesFrame.size.height = 100;
+                imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                imagesFrame.size.height = heightDiff;
                 [_imagesView setFrame:imagesFrame];
                 // resizing chatTable
                 CGRect tableViewFrame = [_tableController.tableView frame];
-                tableViewFrame.size.height -= 100;
+                tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
                 [_tableController.tableView setFrame:tableViewFrame];
             }
 		}
@@ -761,7 +743,9 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)keyboardWillShow:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-
+    
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    
 	[UIView animateWithDuration:duration
 		delay:0
 		options:UIViewAnimationOptionBeginFromCurrentState
@@ -812,12 +796,12 @@ static UICompositeViewDescription *compositeDescription = nil;
             if ([_imagesArray count] > 0){
                 // resizing imagesView
                 CGRect imagesFrame = [_imagesView frame];
-                imagesFrame.origin.y = [_messageView frame].origin.y - 100;
-                imagesFrame.size.height = 100;
+                imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                imagesFrame.size.height = heightDiff;
                 [_imagesView setFrame:imagesFrame];
                 // resizing chatTable
                 CGRect tableViewFrame = [_tableController.tableView frame];
-                tableViewFrame.size.height -= 100;
+                tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
                 [_tableController.tableView setFrame:tableViewFrame];
             }
 
@@ -835,6 +819,7 @@ static UICompositeViewDescription *compositeDescription = nil;
             
 		}
 		completion:^(BOOL finished){
+            
 		}];
 }
 
@@ -942,6 +927,40 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
     NSUInteger key = [_assetIdsArray indexOfObject:assetId];
     [_imagesArray removeObjectAtIndex:key];
     [_assetIdsArray removeObjectAtIndex:key];
+    [self refreshImageDrawer];
+}
+
+- (void)clearMessageView {
+    [_messageField setText:@""];
+    _imagesArray = [NSMutableArray array];
+    _assetIdsArray = [NSMutableArray array];
+    
+    [self refreshImageDrawer];
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [_imagesArray count];
+}
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
+    CGRect imgFrame;
+    if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
+        imgFrame = CGRectMake(0, 0, 50, 50);
+    } else {
+        imgFrame = CGRectMake(0, 0, 50, 100);
+    }
+    [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
+    [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
+    [imgView setDeleteDelegate:self];
+    [imgView setFrame:imgFrame];
+    [_sendButton setEnabled:TRUE];
+    return imgView;
+}
+
+- (void)refreshImageDrawer {
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    
     if ([_imagesArray count] == 0) {
         [UIView animateWithDuration:0
                               delay:0
@@ -954,54 +973,29 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
                              [_imagesView setFrame:imagesFrame];
                              // resizing chatTable
                              CGRect tableViewFrame = [_tableController.tableView frame];
-                             tableViewFrame.size.height += 100;
+                             tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
                              [_tableController.tableView setFrame:tableViewFrame];
                          }
                          completion:nil];
-        
-        [_sendButton setEnabled:FALSE];
+        if ([_messageField.text isEqualToString:@""])
+            [_sendButton setEnabled:FALSE];
+    } else {
+        [UIView animateWithDuration:0
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             // resizing imagesView
+                             CGRect imagesFrame = [_imagesView frame];
+                             imagesFrame.origin.y = [_messageView frame].origin.y - heightDiff;
+                             imagesFrame.size.height = heightDiff;
+                             [_imagesView setFrame:imagesFrame];
+                             // resizing chatTable
+                             CGRect tableViewFrame = [_tableController.tableView frame];
+                             tableViewFrame.size.height = imagesFrame.origin.y - tableViewFrame.origin.y;
+                             [_tableController.tableView setFrame:tableViewFrame];
+                         }
+                         completion:^(BOOL result){[_imagesCollectionView reloadData];}];
     }
-    [_imagesCollectionView reloadData];
-}
-
-- (void)clearMessageView {
-    [_messageField setText:@""];
-    _imagesArray = [NSMutableArray array];
-    _assetIdsArray = [NSMutableArray array];
-    
-    // resizing imagesView
-    [UIView animateWithDuration:0
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         // resizing imagesView
-                         CGRect imagesFrame = [_imagesView frame];
-                         imagesFrame.origin.y = [_messageView frame].origin.y;
-                         imagesFrame.size.height = 0;
-                         [_imagesView setFrame:imagesFrame];
-                         
-                         // resizing chatTable
-                         CGRect tableViewFrame = [_tableController.tableView frame];
-                         CGFloat composeIndicatorCompensation = composingVisible ? _composeIndicatorView.frame.size.height : 0.0f;
-                         tableViewFrame.size.height = [_messageView frame].origin.y - tableViewFrame.origin.y - composeIndicatorCompensation;
-                         [_tableController.tableView setFrame:tableViewFrame];
-                     }
-                     completion:nil];
-    
-    [_imagesCollectionView reloadData];
-}
-
-- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return [_imagesArray count];
-}
-
-- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
-    [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:50 andMaxHeight:100]];
-    [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
-    [imgView setDeleteDelegate:self];
-    [_sendButton setEnabled:TRUE];
-    return imgView;
 }
 
 @end

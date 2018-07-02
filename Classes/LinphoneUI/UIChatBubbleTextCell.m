@@ -341,8 +341,6 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 			[[UIChatBubbleTextCell alloc] initWithIdentifier:NSStringFromClass(UIChatBubbleTextCell.class)];
 		messageFont = cell.messageText.font;
 	}
-	//	UITableView *tableView = VIEW(ChatConversationView).tableController.tableView;
-	//	if (tableView.isEditing)
 	width -= 40; /*checkbox */
 	CGSize size;
 	const char *url = linphone_chat_message_get_external_body_url(chat);
@@ -440,7 +438,6 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
         availableWidth = availableWidth /3;
     }
-    //availableWidth -= CELL_MESSAGE_X_MARGIN;
     int newHeight = originalSize.height;
     float originalAspectRatio = originalSize.width / originalSize.height;
     // We resize in width and crop in height

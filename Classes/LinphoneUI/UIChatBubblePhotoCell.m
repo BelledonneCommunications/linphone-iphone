@@ -168,6 +168,7 @@
 
 - (void) loadPlaceholder {
     dispatch_async(dispatch_get_main_queue(), ^{
+        // Change this to load placeholder image when no asset id
         //[_finalImage setImage:image];
         //[_messageImageView setAsset:asset];
         [_messageImageView stopLoading];
@@ -407,7 +408,6 @@
 }
 
 - (void)layoutSubviews {
-    //[super layoutSubviews];
     BOOL is_outgoing = linphone_chat_message_is_outgoing(super.message);
     CGRect bubbleFrame = super.bubbleView.frame;
     int origin_x;
