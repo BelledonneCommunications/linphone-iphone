@@ -677,7 +677,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)keyboardWillHide:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
-    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
     
 	[UIView animateWithDuration:duration
 		delay:0
@@ -744,7 +744,7 @@ static UICompositeViewDescription *compositeDescription = nil;
 - (void)keyboardWillShow:(NSNotification *)notif {
 	NSTimeInterval duration = [[[notif userInfo] objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     
-    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
     
 	[UIView animateWithDuration:duration
 		delay:0
@@ -944,11 +944,12 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 
 - (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     UIImageViewDeletable *imgView = [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass([UIImageViewDeletable class]) forIndexPath:indexPath];
-    CGRect imgFrame;
+    CGRect imgFrame = imgView.frame;
+    imgFrame.origin.y = 5;
     if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
-        imgFrame = CGRectMake(0, 0, 50, 50);
+        imgFrame.size.height = 50;
     } else {
-        imgFrame = CGRectMake(0, 0, 50, 100);
+        imgFrame.size.height = 100;
     }
     [imgView.image setImage:[UIImage resizeImage:[_imagesArray objectAtIndex:[indexPath item]] withMaxWidth:imgFrame.size.width andMaxHeight:imgFrame.size.height]];
     [imgView setAssetId:[_assetIdsArray objectAtIndex:[indexPath item]]];
@@ -959,7 +960,7 @@ void on_chat_room_conference_left(LinphoneChatRoom *cr, const LinphoneEventLog *
 }
 
 - (void)refreshImageDrawer {
-    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 50 : 100;
+    int heightDiff = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? 55 : 105;
     
     if ([_imagesArray count] == 0) {
         [UIView animateWithDuration:0

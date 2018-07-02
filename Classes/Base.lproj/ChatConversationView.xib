@@ -271,7 +271,7 @@
                                         </view>
                                     </subviews>
                                 </view>
-                                <view contentMode="scaleToFill" misplaced="YES" id="3qd-ys-t2L" userLabel="imagesView">
+                                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" id="3qd-ys-t2L" userLabel="imagesView">
                                     <rect key="frame" x="0.0" y="427" width="375" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     <subviews>
