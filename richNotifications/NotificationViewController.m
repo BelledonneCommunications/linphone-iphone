@@ -47,12 +47,6 @@
 //        self.tableView.bounds = frame;
 //        self.preferredContentSize = CGSizeMake(self.preferredContentSize.width, height);
 //    }
-    NSLog(@"Content length : %f", self.tableView.contentSize.height);
-    NSLog(@"Number of rows : %d", (unsigned int)[self tableView:self.tableView numberOfRowsInSection:0]);
-    NSLog(@"View bounds length : %f", self.tableView.bounds.size.height);
-    NSLog(@"View frame length : %f", self.tableView.frame.size.height);
-    NSLog(@"View bounds y : %f", self.tableView.bounds.origin.y);
-    NSLog(@"View frame y : %f", self.tableView.frame.origin.y);
 }
 
 #pragma mark - UITableViewDataSource Functions
@@ -71,11 +65,8 @@
     NSString *msgText = ((NSString *)[msgs[indexPath.row] objectForKey:@"msg"]);
     NSString *imdm = ((NSString *)[msgs[indexPath.row] objectForKey:@"state"]);
     NSData *imageData = [msgs[indexPath.row] objectForKey:@"fromImageData"];
-    printf("%s : %s : %s\n", isOutgoing ? "sortant" : "entrant",
-           display.UTF8String,
-           msgText.UTF8String);
-    printf("Taille de l'image de profil : %d\n", (unsigned int)imageData.length);
     NotificationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"notificationCell" forIndexPath:indexPath];
+    
     cell.background.image = cell.bottomBarColor.image = [UIImage imageNamed:isOutgoing ? @"color_A" : @"color_D.png"];
     cell.contactImage.image = [UIImage imageWithData:imageData];
     cell.nameDate.text = display;
@@ -87,6 +78,7 @@
     cell.nameDate.textColor = [UIColor colorWithPatternImage:cell.background.image];
     cell.msgText.textColor = [UIColor darkGrayColor];
     cell.imdm.hidden = cell.imdmImage.hidden = !isOutgoing;
+    
     if ([imdm isEqualToString:@"LinphoneChatMessageStateDelivered"] || [imdm isEqualToString:@"LinphoneChatMessageStateDeliveredToUser"]) {
         cell.imdm.text = NSLocalizedString(@"Delivered", nil);
         cell.imdm.textColor = [UIColor grayColor];
@@ -101,11 +93,7 @@
         cell.imdmImage.image = [UIImage imageNamed:@"chat_error.png"];
     } else
         cell.imdm.hidden = YES;
-    printf("Taille label : %f\n", cell.nameDate.font.pointSize);
-    printf("Taille field : %f\n", cell.msgText.font.pointSize);
-    printf("%d\n", (unsigned int)indexPath.row);
-    printf("X : %f\n", cell.frame.origin.x);
-    printf("Y : %f\n", cell.frame.origin.y);
+    
     return cell;
 }
 

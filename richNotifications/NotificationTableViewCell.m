@@ -26,13 +26,13 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     CGRect bubbleFrame = self.contentView.frame;
-    int origin_x;
+    int originX;
         
     bubbleFrame.size = CGSizeMake(_width, _height);
 
-    origin_x = (_isOutgoing ? self.frame.size.width - bubbleFrame.size.width - 5 : 5);
+    originX = (_isOutgoing ? self.frame.size.width - bubbleFrame.size.width - 5 : 5);
         
-    bubbleFrame.origin.x = origin_x;
+    bubbleFrame.origin.x = originX;
     self.contentView.frame = bubbleFrame;
     
     _msgText.textContainerInset = UIEdgeInsetsZero;
