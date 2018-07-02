@@ -10,6 +10,14 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [Unreleased]
+
+### Added
+- Latest Calls widget
+- Latest Chatrooms widget
+- Homescreen quick action : New message
+- Rich message notifications with Linphone UI
+
 ## [4.0] - 2018-06-11
 
 ### Added
