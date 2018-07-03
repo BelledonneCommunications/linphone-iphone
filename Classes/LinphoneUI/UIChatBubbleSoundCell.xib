@@ -20,39 +20,60 @@
                 <rect key="frame" x="0.0" y="0.0" width="336" height="130.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VHv-ie-JIy">
-                        <rect key="frame" x="147" y="50" width="42" height="30"/>
-                        <state key="normal" title="Pause"/>
+                    <imageView userInteractionEnabled="NO" alpha="0.20000000000000001" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="umd-Qe-nQz">
+                        <rect key="frame" x="0.0" y="0.0" width="336" height="130.5"/>
+                    </imageView>
+                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7wp-VI-ZEk">
+                        <rect key="frame" x="142" y="64" width="150" height="2"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="150" id="nXQ-rr-ruf"/>
+                        </constraints>
+                    </progressView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RMY-wM-eJu">
+                        <rect key="frame" x="16" y="50" width="74" height="30"/>
+                        <state key="normal" title="Play/Pause"/>
                         <connections>
-                            <action selector="onPause:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="q33-3c-tOt"/>
+                            <action selector="onPlay:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Rc3-NV-fw8"/>
                         </connections>
                     </button>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_A.png" translatesAutoresizingMaskIntoConstraints="NO" id="KCR-Sb-Nin">
+                        <rect key="frame" x="0.0" y="129" width="336" height="1"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="dga-FA-8uz"/>
+                        </constraints>
+                    </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4zW-Lb-Njt">
-                        <rect key="frame" x="268" y="50" width="32" height="30"/>
+                        <rect key="frame" x="100" y="50" width="32" height="30"/>
                         <state key="normal" title="Stop"/>
                         <connections>
                             <action selector="onStop:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ttf-a9-Alb"/>
                         </connections>
                     </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RMY-wM-eJu">
-                        <rect key="frame" x="36" y="50" width="30" height="30"/>
-                        <state key="normal" title="Play"/>
-                        <connections>
-                            <action selector="onPlay:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Rc3-NV-fw8"/>
-                        </connections>
-                    </button>
                 </subviews>
                 <constraints>
-                    <constraint firstItem="VHv-ie-JIy" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="8pQ-Ut-j0A"/>
-                    <constraint firstItem="RMY-wM-eJu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="20" id="ann-fa-OHo"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="4zW-Lb-Njt" secondAttribute="trailing" constant="20" id="k9S-Bb-wSX"/>
+                    <constraint firstAttribute="trailing" secondItem="KCR-Sb-Nin" secondAttribute="trailing" id="3hP-iy-KIT"/>
+                    <constraint firstAttribute="trailing" secondItem="umd-Qe-nQz" secondAttribute="trailing" id="Iu9-OJ-ePC"/>
+                    <constraint firstItem="umd-Qe-nQz" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Qcc-9c-P35"/>
+                    <constraint firstItem="7wp-VI-ZEk" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Tc8-kc-Lp3"/>
+                    <constraint firstItem="umd-Qe-nQz" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Weg-Q2-RMt"/>
+                    <constraint firstAttribute="bottom" secondItem="umd-Qe-nQz" secondAttribute="bottom" id="agj-HU-qUV"/>
+                    <constraint firstItem="RMY-wM-eJu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="ann-fa-OHo"/>
+                    <constraint firstItem="KCR-Sb-Nin" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="c45-Wz-ys9"/>
+                    <constraint firstAttribute="bottom" secondItem="KCR-Sb-Nin" secondAttribute="bottom" id="iPX-AH-4TX"/>
                     <constraint firstItem="RMY-wM-eJu" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="oIp-jk-AmB"/>
                     <constraint firstItem="4zW-Lb-Njt" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="q2B-wk-WTN"/>
-                    <constraint firstItem="VHv-ie-JIy" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="wyi-bg-hrS"/>
+                    <constraint firstItem="4zW-Lb-Njt" firstAttribute="leading" secondItem="RMY-wM-eJu" secondAttribute="trailing" constant="10" id="qbU-qf-ZQw"/>
+                    <constraint firstItem="7wp-VI-ZEk" firstAttribute="leading" secondItem="4zW-Lb-Njt" secondAttribute="trailing" constant="10" id="weh-Rq-tiS"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
+            <connections>
+                <outlet property="timeProgressBar" destination="7wp-VI-ZEk" id="sra-TN-SfW"/>
+            </connections>
             <point key="canvasLocation" x="34" y="95.5"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="color_A.png" width="2" height="2"/>
+    </resources>
 </document>

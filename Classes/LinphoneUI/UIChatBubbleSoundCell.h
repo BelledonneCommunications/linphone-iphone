@@ -15,7 +15,9 @@
 
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
 - (IBAction)onPlay:(id)sender;
-- (IBAction)onPause:(id)sender;
 - (IBAction)onStop:(id)sender;
+@property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
+@property LinphonePlayer *player;
+@property LinphonePlayerCbs *cbs;
 
 @end
