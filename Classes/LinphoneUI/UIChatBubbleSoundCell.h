@@ -17,7 +17,11 @@
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
+@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property LinphonePlayer *player;
 @property LinphonePlayerCbs *cbs;
+@property (strong, nonatomic) NSString *fileName;
+@property (strong, nonatomic) NSString *durationString;
+@property int duration;
 
 @end

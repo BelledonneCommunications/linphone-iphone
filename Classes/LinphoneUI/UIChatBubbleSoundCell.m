@@ -17,9 +17,6 @@
 
 @implementation UIChatBubbleSoundCell {
     ChatConversationTableView *chatTableView;
-    BOOL soundIsOpened;
-    BOOL soundIsPlaying;
-    BOOL eofReached;
 }
 
 #pragma mark - Lifecycle Functions
@@ -29,9 +26,18 @@
     _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
     _cbs = linphone_player_get_callbacks(_player);
     linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-    soundIsOpened = FALSE;
-    soundIsPlaying = FALSE;
-    eofReached = FALSE;
+    linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
+    _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
+    NSLog(@"Opening sound file %@", _fileName);
+    linphone_player_open(_player, _fileName.UTF8String);
+    _duration = linphone_player_get_duration(_player);
+    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+    [self updateTimeLabel:0];
+    NSLog(@"Duration : %@", _durationString);
+}
+
+- (void)updateTimeLabel:(int)currentTime {
+    _timeLabel.text = [NSString stringWithFormat:@"%@ / %@", [UIChatBubbleSoundCell timeToString:currentTime], _durationString];
 }
 
 - (id)initWithIdentifier:(NSString *)identifier {
@@ -50,29 +56,34 @@
         }
         [self addSubview:sub];
         chatTableView = VIEW(ChatConversationView).tableController;
-        soundIsOpened = FALSE;
-        soundIsPlaying = FALSE;
-        _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
     }
     return self;
 }
 
+- (void)goToBeginning {
+    linphone_player_pause(_player);
+    linphone_player_seek(_player, 0);
+}
+
 void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"End of file reached");
-    NSLog(linphone_player_get_state(pl) == LinphonePlayerPaused?@"Closed":@"Not closed");
-    NSLog(@"Duration : %@", [UIChatBubbleSoundCell timeToString:linphone_player_get_duration(pl)]);
+    linphone_player_seek(pl, 0);
 }
 
 - (void)update:(LinphonePlayer *)pl {
-    while (soundIsPlaying && !eofReached) {
-        int duration = linphone_player_get_duration(pl);
-        int currentTime = linphone_player_get_current_position(pl);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _timeProgressBar.progress = (float)currentTime / (float)duration;
-        });
-        soundIsPlaying = linphone_player_get_state(_player) == LinphonePlayerPlaying;
-    }
-    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        while (linphone_player_get_state(pl) == LinphonePlayerPlaying) {
+            int start = linphone_player_get_current_position(pl);
+            while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {
+                
+            }
+            start = linphone_player_get_current_position(pl);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                _timeProgressBar.progress = (float)start / (float)_duration;
+                [self updateTimeLabel:start];
+            });
+        }
+    });
 }
 
 + (NSString *)timeToString:(int)time {
@@ -93,32 +104,21 @@ void on_eof_reached(LinphonePlayer *pl) {
 
 - (IBAction)onPlay:(id)sender {
     if (_player) {
-        if (!soundIsOpened) {
-            NSLog(@"Opening sound file");
-            linphone_player_open(_player, [LinphoneManager bundleFile:@"hold.mkv"].UTF8String);
-            NSLog(@"Duration : %@", [UIChatBubbleSoundCell timeToString:linphone_player_get_duration(_player)]);
-            soundIsOpened = TRUE;
+        LinphonePlayerState state = linphone_player_get_state(_player);
+        switch(state) {
+            case LinphonePlayerPlaying:
+                NSLog(@"Pausing");
+                linphone_player_pause(_player);
+                break;
+            case LinphonePlayerClosed:
+                NSLog(@"Opening file");
+                linphone_player_open(_player, _fileName.UTF8String);
+            case LinphonePlayerPaused:
+                NSLog(@"Playing");
+                linphone_player_start(_player);
+                break;
         }
-        if (!soundIsPlaying) {
-            NSLog(@"Playing");
-            linphone_player_start(_player);
-        } else {
-            NSLog(@"Pausing");
-            linphone_player_pause(_player);
-        }
-        soundIsPlaying = !soundIsPlaying;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [self update:_player];
-        });
-    } else {
-        NSLog(@"Error");
-    }
-}
-
-- (IBAction)onPause:(id)sender {
-    if (_player) {
-        NSLog(@"Pausing");
-        linphone_player_pause(_player);
+        [self update:_player];
     } else {
         NSLog(@"Error");
     }
@@ -126,11 +126,12 @@ void on_eof_reached(LinphonePlayer *pl) {
 
 - (IBAction)onStop:(id)sender {
     if (_player) {
-        NSLog(@"Closing file");
-        linphone_player_close(_player);
-        soundIsOpened = FALSE;
-        soundIsPlaying = FALSE;
-        _timeProgressBar.progress = 0;
+        NSLog(@"Stopping");
+        [self goToBeginning];
+        dispatch_async(dispatch_get_main_queue(), ^{
+           _timeProgressBar.progress = 0;
+            [self updateTimeLabel:0];
+        });
     } else {
         NSLog(@"Error");
     }

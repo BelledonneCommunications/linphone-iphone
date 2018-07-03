@@ -24,10 +24,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="336" height="130.5"/>
                     </imageView>
                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7wp-VI-ZEk">
-                        <rect key="frame" x="142" y="64" width="150" height="2"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="150" id="nXQ-rr-ruf"/>
-                        </constraints>
+                        <rect key="frame" x="142" y="64" width="122.5" height="2"/>
                     </progressView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RMY-wM-eJu">
                         <rect key="frame" x="16" y="50" width="74" height="30"/>
@@ -49,13 +46,22 @@
                             <action selector="onStop:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ttf-a9-Alb"/>
                         </connections>
                     </button>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cYY-ZV-bfy">
+                        <rect key="frame" x="274.5" y="57.5" width="35.5" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="KCR-Sb-Nin" secondAttribute="trailing" id="3hP-iy-KIT"/>
+                    <constraint firstItem="cYY-ZV-bfy" firstAttribute="leading" secondItem="7wp-VI-ZEk" secondAttribute="trailing" constant="10" id="85n-Np-Yox"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="cYY-ZV-bfy" secondAttribute="trailing" constant="10" id="AVn-NK-TGk"/>
                     <constraint firstAttribute="trailing" secondItem="umd-Qe-nQz" secondAttribute="trailing" id="Iu9-OJ-ePC"/>
                     <constraint firstItem="umd-Qe-nQz" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Qcc-9c-P35"/>
                     <constraint firstItem="7wp-VI-ZEk" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Tc8-kc-Lp3"/>
                     <constraint firstItem="umd-Qe-nQz" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="Weg-Q2-RMt"/>
+                    <constraint firstItem="cYY-ZV-bfy" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="ZwY-Kw-Qpo"/>
                     <constraint firstAttribute="bottom" secondItem="umd-Qe-nQz" secondAttribute="bottom" id="agj-HU-qUV"/>
                     <constraint firstItem="RMY-wM-eJu" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" id="ann-fa-OHo"/>
                     <constraint firstItem="KCR-Sb-Nin" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="c45-Wz-ys9"/>
@@ -68,6 +74,7 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="aW0-zy-SZf"/>
             <connections>
+                <outlet property="timeLabel" destination="cYY-ZV-bfy" id="HkM-tf-aUj"/>
                 <outlet property="timeProgressBar" destination="7wp-VI-ZEk" id="sra-TN-SfW"/>
             </connections>
             <point key="canvasLocation" x="34" y="95.5"/>
