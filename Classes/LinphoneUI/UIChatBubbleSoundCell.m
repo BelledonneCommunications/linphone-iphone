@@ -34,6 +34,10 @@
     _durationString = [UIChatBubbleSoundCell timeToString:_duration];
     [self updateTimeLabel:0];
     NSLog(@"Duration : %@", _durationString);
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTapBar)];
+    tap.numberOfTapsRequired = 1;
+    [_playerView addGestureRecognizer:tap];
+    _playerView.userInteractionEnabled = YES;
 }
 
 - (void)updateTimeLabel:(int)currentTime {
@@ -136,4 +140,26 @@ void on_eof_reached(LinphonePlayer *pl) {
         NSLog(@"Error");
     }
 }
+
+- (void)onTapBar {
+    //TODO
+}
+
+#pragma mark -
+- (void)setEvent:(LinphoneEventLog *)event {
+    if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
+        return;
+    
+    super.event = event;
+    [self setChatMessage:linphone_event_log_get_chat_message(event)];
+}
+
+- (void)setChatMessage:(LinphoneChatMessage *)message {
+    if (message) {
+        //tmp so that there is enough place for the player for testing purpose
+        linphone_chat_message_set_text(message, "jriezgj grezgjior jgrkezjg iroez gjrkej iorejg iore jgioreja gioreja oig");
+    }
+    [super setChatMessage:message];
+}
+
 @end

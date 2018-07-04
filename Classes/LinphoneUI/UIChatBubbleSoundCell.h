@@ -14,8 +14,6 @@
 #import "UIChatBubbleTextCell.h"
 
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
-- (IBAction)onPlay:(id)sender;
-- (IBAction)onStop:(id)sender;
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property LinphonePlayer *player;
@@ -23,5 +21,9 @@
 @property (strong, nonatomic) NSString *fileName;
 @property (strong, nonatomic) NSString *durationString;
 @property int duration;
+@property (weak, nonatomic) IBOutlet UIView *playerView;
+
+- (IBAction)onPlay:(id)sender;
+- (IBAction)onStop:(id)sender;
 
 @end
