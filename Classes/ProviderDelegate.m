@@ -52,23 +52,20 @@
 - (void)configAudioSession:(AVAudioSession *)audioSession {
 	NSError *err = nil;
 	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
-				  withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
+                         mode:AVAudioSessionModeVoiceChat
+                      options:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
 						error:&err];
 	if (err) {
 		LOGE(@"Unable to change audio category because : %@", err.localizedDescription);
 		err = nil;
 	}
-	[audioSession setMode:AVAudioSessionModeVoiceChat error:&err];
-	if (err) {
-		LOGE(@"Unable to change audio mode because : %@", err.localizedDescription);
-		err = nil;
-	}
-	double sampleRate = 44100.0;
+
+	/*double sampleRate = 44100.0;
 	[audioSession setPreferredSampleRate:sampleRate error:&err];
 	if (err) {
 		LOGE(@"Unable to change preferred sample rate because : %@", err.localizedDescription);
 		err = nil;
-	}
+	}*/
 }
 
 - (void)reportIncomingCall:(LinphoneCall *) call withUUID:(NSUUID *)uuid handle:(NSString *)handle video:(BOOL)video; {

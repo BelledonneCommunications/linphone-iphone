@@ -11,7 +11,7 @@
 @implementation AudioHelper
 
 + (NSArray *)bluetoothRoutes {
-	return @[ AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE, AVAudioSessionPortBluetoothHFP, AVAudioSessionPortCarAudio ];
+	return @[AVAudioSessionPortBluetoothHFP, AVAudioSessionPortCarAudio, AVAudioSessionPortBluetoothA2DP, AVAudioSessionPortBluetoothLE ];
 }
 
 + (AVAudioSessionPortDescription *)bluetoothAudioDevice {
