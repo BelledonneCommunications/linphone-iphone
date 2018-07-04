@@ -2460,10 +2460,9 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 	// -bluetooth headset disconnected or
 	// -user wanted to use earpiece
 	// the only thing we can assume is that when we lost a device, it must be a bluetooth one (strong hypothesis though)
-	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] ==
-		AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+	if ([[notif.userInfo valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue] == AVAudioSessionRouteChangeReasonOldDeviceUnavailable)
 		_bluetoothAvailable = NO;
-	}
+
 	AVAudioSessionRouteDescription *newRoute = [AVAudioSession sharedInstance].currentRoute;
 
 	if (newRoute) {
@@ -2474,11 +2473,10 @@ static int comp_call_state_paused(const LinphoneCall *call, const void *param) {
 		if (([[AudioHelper bluetoothRoutes] containsObject:route]) && !_speakerEnabled) {
 			_bluetoothAvailable = TRUE;
 			_bluetoothEnabled = TRUE;
-		} else {
+		} else
 			_bluetoothEnabled = FALSE;
-		}
-		NSDictionary *dict = [NSDictionary
-			dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
+
+		NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:_bluetoothAvailable], @"available", nil];
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneBluetoothAvailabilityUpdate
 														  object:self
 														userInfo:dict];

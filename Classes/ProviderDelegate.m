@@ -52,7 +52,7 @@
 - (void)configAudioSession:(AVAudioSession *)audioSession {
 	NSError *err = nil;
 	[audioSession setCategory:AVAudioSessionCategoryPlayAndRecord
-				  withOptions:AVAudioSessionCategoryOptionAllowBluetooth
+				  withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP
 						error:&err];
 	if (err) {
 		LOGE(@"Unable to change audio category because : %@", err.localizedDescription);
