@@ -82,13 +82,13 @@
 	update.hasVideo = _pendingCallVideo = video;
 
 	// Report incoming call to system
-	LOGD(@"CallKit: report new incoming call");
-	
+    LOGD(@"CallKit: report new incoming call with call-id: [%@] and UUID: [%@]", [_calls objectForKey:uuid], uuid);
 	[self.provider reportNewIncomingCallWithUUID:uuid
 										  update:update
 									  completion:^(NSError *error) {
 										  if (error) {
-											  LOGE(@"CallKit: cannot complete incoming call from [%@] caused by [%@]", handle, [error localizedDescription]);
+											  LOGE(@"CallKit: cannot complete incoming call with call-id: [%@] and UUID: [%@] from [%@] caused by [%@]",
+                                                   [_calls objectForKey:uuid], uuid, handle, [error localizedDescription]);
 											  if ([error code] == CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb ||
 												  [error code] == CXErrorCodeIncomingCallErrorFilteredByBlockList)
 												  linphone_call_decline(call,LinphoneReasonBusy); /*to give a chance for other devices to answer*/
@@ -109,11 +109,11 @@
 #pragma mark - CXProviderDelegate Protocol
 
 - (void)provider:(CXProvider *)provider performAnswerCallAction:(CXAnswerCallAction *)action {
-	LOGD(@"CallKit : Answering Call");
+    NSUUID *uuid = action.callUUID;
+    NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
+	LOGD(@"CallKit: Answering call with call-id: [%@] and UUID: [%@]", callID, uuid);
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];
-	NSUUID *uuid = action.callUUID;
-	NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 	if (!call)
 		return;
@@ -123,13 +123,12 @@
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
-	LOGD(@"CallKit : Starting Call");
+    NSUUID *uuid = action.callUUID;
+    NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
+	LOGD(@"CallKit: Starting Call with call-id: [%@] and UUID: [%@]", callID, uuid);
 	// To restart Audio Unit
 	[self configAudioSession:[AVAudioSession sharedInstance]];
 	[action fulfill];
-	NSUUID *uuid = action.callUUID;
-
-	NSString *callID = [self.calls objectForKey:uuid]; // first, make sure this callid is not already involved in a call
 	LinphoneCall *call;
 	if (![callID isEqualToString:@""]) {
 		call = linphone_core_get_current_call(LC);
@@ -142,19 +141,21 @@
 }
 
 - (void)provider:(CXProvider *)provider performEndCallAction:(CXEndCallAction *)action {
-	LOGD(@"CallKit : Ending the Call");
 	self.callKitCalls--;
 	[action fulfill];
 	if (linphone_core_is_in_conference(LC)) {
 		LinphoneManager.instance.conf = TRUE;
 		linphone_core_terminate_conference(LC);
+        LOGD(@"CallKit: Ending the conference");
 	} else if (linphone_core_get_calls_nb(LC) > 1) {
 		LinphoneManager.instance.conf = TRUE;
 		linphone_core_terminate_all_calls(LC);
+        LOGD(@"CallKit: Ending all the ongoing calls");
 	} else {
 		NSUUID *uuid = action.callUUID;
 		NSString *callID = [self.calls objectForKey:uuid];
 		if (callID) {
+            LOGD(@"CallKit: Ending the call with call-id: [%@] and UUID: [%@]", callID, uuid);
 			LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 			if (call) {
 				linphone_call_terminate((LinphoneCall *)call);
@@ -174,16 +175,17 @@
 }
 
 - (void)provider:(CXProvider *)provider performSetHeldCallAction:(nonnull CXSetHeldCallAction *)action {
-	LOGD(@"CallKit : Call paused status changed");
 	[action fulfill];
 	if (linphone_core_is_in_conference(LC) && action.isOnHold) {
 		linphone_core_leave_conference(LC);
+        LOGD(@"CallKit: Leaving conference");
 		[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 		return;
 	}
 
 	if (linphone_core_get_calls_nb(LC) > 1 && action.isOnHold) {
 		linphone_core_pause_all_calls(LC);
+        LOGD(@"CallKit: Pausing all ongoing calls");
 		return;
 	}
 
@@ -193,36 +195,37 @@
 		return;
 	}
 
+    LOGD(@"CallKit: Call  with call-id: [%@] and UUID: [%@] paused status changed to: []", callID, uuid, action.isOnHold ? @"Paused" : @"Resumed");
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
-	if (call) {
-		if (action.isOnHold) {
-			LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
-			linphone_call_pause((LinphoneCall *)call);
+	if (!call)
+        return;
+
+	if (action.isOnHold) {
+		LinphoneManager.instance.speakerBeforePause = LinphoneManager.instance.speakerEnabled;
+		linphone_call_pause((LinphoneCall *)call);
+	} else {
+		if (linphone_core_get_conference(LC)) {
+			linphone_core_enter_conference(LC);
+			[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
 		} else {
-			
-			if (linphone_core_get_conference(LC)) {
-				linphone_core_enter_conference(LC);
-				[NSNotificationCenter.defaultCenter postNotificationName:kLinphoneCallUpdate object:self];
-			} else {
-				[self configAudioSession:[AVAudioSession sharedInstance]]; 
-				self.pendingCall = call;
-			}
+			[self configAudioSession:[AVAudioSession sharedInstance]];
+			self.pendingCall = call;
 		}
 	}
 }
 
 - (void)provider:(CXProvider *)provider performPlayDTMFCallAction:(CXPlayDTMFCallAction *)action {
-	LOGD(@"CallKit : playing DTMF");
 	[action fulfill];
-	NSUUID *call_uuid = action.callUUID;
-	NSString *callID = [self.calls objectForKey:call_uuid];
+	NSUUID *uuid = action.callUUID;
+	NSString *callID = [self.calls objectForKey:uuid];
+    LOGD(@"CallKit: playing DTMF for call with call-id: [%@] and UUID: [%@]", callID, uuid);
 	LinphoneCall *call = [LinphoneManager.instance callByCallId:callID];
 	char digit = action.digits.UTF8String[0];
 	linphone_call_send_dtmf((LinphoneCall *)call, digit);
 }
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
-	LOGD(@"CallKit : Audio session activated");
+	LOGD(@"CallKit: Audio session activated");
 	// Now we can (re)start the call
 	if (self.pendingCall) {
 		LinphoneCallState state = linphone_call_get_state(self.pendingCall);
@@ -243,7 +246,7 @@
 		if (_pendingAddr) {
 			[LinphoneManager.instance doCall:_pendingAddr];
 		} else {
-			LOGE(@"CallKit : No pending call");
+			LOGE(@"CallKit: No pending call");
 		}
 	}
 
@@ -255,7 +258,7 @@
 }
 
 - (void)provider:(CXProvider *)provider didDeactivateAudioSession:(nonnull AVAudioSession *)audioSession {
-	LOGD(@"CallKit : Audio session deactivated");
+	LOGD(@"CallKit: Audio session deactivated");
 
 	self.pendingCall = NULL;
 	if (_pendingAddr)
@@ -265,7 +268,7 @@
 }
 
 - (void)providerDidReset:(CXProvider *)provider {
-	LOGD(@"CallKit : Provider reset");
+	LOGD(@"CallKit: Provider reset");
 	LinphoneManager.instance.conf = TRUE;
 	linphone_core_terminate_all_calls(LC);
 	[self.calls removeAllObjects];
@@ -275,7 +278,7 @@
 #pragma mark - CXCallObserverDelegate Protocol
 
 - (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
-	LOGD(@"CallKit : Call changed");
+	LOGD(@"CallKit: Call changed");
 }
 
 @end
