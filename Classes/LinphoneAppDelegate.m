@@ -377,6 +377,7 @@
 	NSString *sipInstance = [aps objectForKey:@"uuid"];
 	if (sipInstance && uuid && ![sipInstance isEqualToString:uuid]) {
 		LOGE(@"Notification [%p] was intended for another device, ignoring it.", userInfo);
+        LOGD(@"My sip instance is: [%@], push was intended for: [%@].", uuid, sipInstance);
 		return;
 	}
 
@@ -480,8 +481,7 @@
 	});
 }
 
-- (void)pushRegistry:(PKPushRegistry *)registry
-didInvalidatePushTokenForType:(NSString *)type {
+- (void)pushRegistry:(PKPushRegistry *)registry didInvalidatePushTokenForType:(NSString *)type {
     LOGI(@"[PushKit] Token invalidated");
     dispatch_async(dispatch_get_main_queue(), ^{[LinphoneManager.instance setPushNotificationToken:nil];});
 }
