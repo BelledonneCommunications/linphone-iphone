@@ -67,7 +67,9 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         while (linphone_player_get_state(pl) == LinphonePlayerPlaying) {
             int start = linphone_player_get_current_position(pl);
-            while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {}
+            while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {
+                [NSThread sleepForTimeInterval:0.01];
+            }
             start = linphone_player_get_current_position(pl);
             dispatch_async(dispatch_get_main_queue(), ^{
                 _timeProgressBar.progress = (float)start / (float)_duration;
@@ -148,6 +150,7 @@ void on_eof_reached(LinphonePlayer *pl) {
     if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
         float progress = (loc.x - timeLoc.x) / timeSize.width;
         _timeProgressBar.progress = progress;
+        linphone_player_seek(_player, (int)(progress * _duration));
     }
 }
 
