@@ -161,7 +161,11 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
 	[self dismiss];
-    PHAsset *phasset = [info objectForKey:UIImagePickerControllerPHAsset];
+    
+    NSURL *alassetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+    PHFetchResult<PHAsset *> *phFetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[alassetURL] options:nil];
+    PHAsset *phasset = [phFetchResult firstObject];
+    //PHAsset *phasset = [info objectForKey:UIImagePickerControllerPHAsset];
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage] ? [info objectForKey:UIImagePickerControllerEditedImage] : [info objectForKey:UIImagePickerControllerOriginalImage];
     if (!phasset) {
         __block PHObjectPlaceholder *placeHolder;
