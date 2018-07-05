@@ -21,28 +21,8 @@
 
 #pragma mark - Lifecycle Functions
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
-    _cbs = linphone_player_get_callbacks(_player);
-    linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-    linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
-    _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
-    NSLog(@"Opening sound file %@", _fileName);
-    linphone_player_open(_player, _fileName.UTF8String);
-    _duration = linphone_player_get_duration(_player);
-    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
-    [self updateTimeLabel:0];
-    NSLog(@"Duration : %@", _durationString);
-}
-
-- (void)updateTimeLabel:(int)currentTime {
-    _timeLabel.text = [NSString stringWithFormat:@"%@ / %@", [UIChatBubbleSoundCell timeToString:currentTime], _durationString];
-}
-
 - (id)initWithIdentifier:(NSString *)identifier {
     if ((self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier]) != nil) {
-        // TODO: remove text cell subview
         NSArray *arrayOfViews =
         [[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:self options:nil];
         // resize cell to match .nib size. It is needed when resized the cell to
@@ -56,27 +36,38 @@
         }
         [self addSubview:sub];
         chatTableView = VIEW(ChatConversationView).tableController;
+        _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
+        _cbs = linphone_player_get_callbacks(_player);
+        linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
+        linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
+        _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
+        NSLog(@"Opening sound file %@", _fileName);
+        linphone_player_open(_player, _fileName.UTF8String);
+        _duration = linphone_player_get_duration(_player);
+        _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+        [self updateTimeLabel:0];
+        _timeProgressBar.progress = 0;
+        NSLog(@"Duration : %@", _durationString);
     }
     return self;
 }
+
+#pragma mark - Updating
 
 - (void)goToBeginning {
     linphone_player_pause(_player);
     linphone_player_seek(_player, 0);
 }
 
-void on_eof_reached(LinphonePlayer *pl) {
-    NSLog(@"End of file reached");
-    linphone_player_seek(pl, 0);
+- (void)updateTimeLabel:(int)currentTime {
+    _timeLabel.text = [NSString stringWithFormat:@"%@ / %@", [UIChatBubbleSoundCell timeToString:currentTime], _durationString];
 }
 
 - (void)update:(LinphonePlayer *)pl {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         while (linphone_player_get_state(pl) == LinphonePlayerPlaying) {
             int start = linphone_player_get_current_position(pl);
-            while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {
-                
-            }
+            while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {}
             start = linphone_player_get_current_position(pl);
             dispatch_async(dispatch_get_main_queue(), ^{
                 _timeProgressBar.progress = (float)start / (float)_duration;
@@ -85,6 +76,15 @@ void on_eof_reached(LinphonePlayer *pl) {
         }
     });
 }
+
+#pragma mark - Callbacks
+
+void on_eof_reached(LinphonePlayer *pl) {
+    NSLog(@"End of file reached");
+    linphone_player_seek(pl, 0);
+}
+
+#pragma mark - Utils
 
 + (NSString *)timeToString:(int)time {
     time /= 1000;
@@ -101,6 +101,8 @@ void on_eof_reached(LinphonePlayer *pl) {
     ret = (hours == 0)?ret:[[NSString stringWithFormat:@"%d:", hours] stringByAppendingString:ret];
     return ret;
 }
+
+#pragma mark - Event handlers
 
 - (IBAction)onPlay:(id)sender {
     if (_player) {
@@ -136,6 +138,7 @@ void on_eof_reached(LinphonePlayer *pl) {
         NSLog(@"Error");
     }
 }
+
 - (IBAction)onTapBar:(UITapGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateEnded)
         return;
@@ -143,11 +146,13 @@ void on_eof_reached(LinphonePlayer *pl) {
     CGPoint timeLoc = _timeProgressBar.frame.origin;
     CGSize timeSize = _timeProgressBar.frame.size;
     if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
-        _timeProgressBar.progress = (loc.x - timeLoc.x) / timeSize.width;
+        float progress = (loc.x - timeLoc.x) / timeSize.width;
+        _timeProgressBar.progress = progress;
     }
 }
 
-#pragma mark -
+#pragma mark - Overriden methods
+
 - (void)setEvent:(LinphoneEventLog *)event {
     if (!event || !(linphone_event_log_get_type(event) == LinphoneEventLogTypeConferenceChatMessage))
         return;
