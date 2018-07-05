@@ -34,10 +34,6 @@
     _durationString = [UIChatBubbleSoundCell timeToString:_duration];
     [self updateTimeLabel:0];
     NSLog(@"Duration : %@", _durationString);
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTapBar)];
-    tap.numberOfTapsRequired = 1;
-    [_playerView addGestureRecognizer:tap];
-    _playerView.userInteractionEnabled = YES;
 }
 
 - (void)updateTimeLabel:(int)currentTime {
@@ -140,9 +136,15 @@ void on_eof_reached(LinphonePlayer *pl) {
         NSLog(@"Error");
     }
 }
-
-- (void)onTapBar {
-    //TODO
+- (IBAction)onTapBar:(UITapGestureRecognizer *)sender {
+    if (sender.state != UIGestureRecognizerStateEnded)
+        return;
+    CGPoint loc = [sender locationInView:_playerView];
+    CGPoint timeLoc = _timeProgressBar.frame.origin;
+    CGSize timeSize = _timeProgressBar.frame.size;
+    if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
+        _timeProgressBar.progress = (loc.x - timeLoc.x) / timeSize.width;
+    }
 }
 
 #pragma mark -
