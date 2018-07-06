@@ -26,7 +26,10 @@
 #import "UIChatNotifiedEventCell.h"
 #import "PhoneMainView.h"
 
-@implementation ChatConversationTableView
+@implementation ChatConversationTableView {
+    @private
+    NSMutableSet *audioPlayers;
+}
 
 #pragma mark - Lifecycle Functions
 
@@ -41,6 +44,26 @@
 	[super viewWillAppear:animated];
 	self.tableView.accessibilityIdentifier = @"ChatRoom list";
     _imagesInChatroom = [NSMutableDictionary dictionary];
+    audioPlayers = [NSMutableSet set];
+}
+
+- (void)clearAudioPlayers {
+    for (UIChatBubbleSoundCell *cell in audioPlayers) {
+        cell.shouldClosePlayer = YES;
+        if (cell.player && linphone_player_get_state(cell.player) == LinphonePlayerPaused) {
+            linphone_player_close(cell.player);
+            linphone_player_unref(cell.player);
+            cell.player = NULL;
+            cell.cbs = NULL;
+        }
+        [cell updateTimeLabel:0];
+        cell.timeProgressBar.progress = 0;
+    }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [self clearAudioPlayers];
+    [super viewDidDisappear:animated];
 }
 
 #pragma mark -
@@ -197,6 +220,8 @@
 		[cell setChatRoomDelegate:_chatRoomDelegate];
 		[super accessoryForCell:cell atPath:indexPath];
 		cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if ([cell isMemberOfClass:UIChatBubbleSoundCell.class])
+            [audioPlayers addObject:cell];
 		return cell;
 	} else {
 		kCellId = NSStringFromClass(UIChatNotifiedEventCell.class);

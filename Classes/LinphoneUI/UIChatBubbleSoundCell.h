@@ -22,8 +22,10 @@
 @property (strong, nonatomic) NSString *durationString;
 @property int duration;
 @property (weak, nonatomic) IBOutlet UIView *playerView;
+@property BOOL shouldClosePlayer;
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
+- (void)updateTimeLabel:(int)currentTime;
 
 @end

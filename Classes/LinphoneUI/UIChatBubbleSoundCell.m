@@ -48,6 +48,7 @@
         [self updateTimeLabel:0];
         _timeProgressBar.progress = 0;
         NSLog(@"Duration : %@", _durationString);
+        _shouldClosePlayer = NO;
     }
     return self;
 }
@@ -69,12 +70,26 @@
             int start = linphone_player_get_current_position(pl);
             while (start + 1000 < _duration && start + 1000 > linphone_player_get_current_position(pl)) {
                 [NSThread sleepForTimeInterval:0.01];
+                if (linphone_player_get_state(pl) == LinphonePlayerPaused)
+                    break;
             }
             start = linphone_player_get_current_position(pl);
             dispatch_async(dispatch_get_main_queue(), ^{
                 _timeProgressBar.progress = (float)start / (float)_duration;
                 [self updateTimeLabel:start];
             });
+            if (_shouldClosePlayer)
+                break;
+        }
+        if (_shouldClosePlayer) {
+            linphone_player_close(_player);
+            linphone_player_unref(_player);
+            dispatch_async(dispatch_get_main_queue(), ^{
+            [self updateTimeLabel:0];
+            _timeProgressBar.progress = 0;
+            });
+            _player = NULL;
+            _cbs = NULL;
         }
     });
 }
@@ -107,6 +122,21 @@ void on_eof_reached(LinphonePlayer *pl) {
 #pragma mark - Event handlers
 
 - (IBAction)onPlay:(id)sender {
+    if (!_player) {
+        _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
+        _cbs = linphone_player_get_callbacks(_player);
+        linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
+        linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
+        _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
+        NSLog(@"Opening sound file %@", _fileName);
+        linphone_player_open(_player, _fileName.UTF8String);
+        _duration = linphone_player_get_duration(_player);
+        _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+        [self updateTimeLabel:0];
+        _timeProgressBar.progress = 0;
+        NSLog(@"Duration : %@", _durationString);
+        _shouldClosePlayer = NO;
+    }
     if (_player) {
         LinphonePlayerState state = linphone_player_get_state(_player);
         switch(state) {
@@ -136,6 +166,7 @@ void on_eof_reached(LinphonePlayer *pl) {
            _timeProgressBar.progress = 0;
             [self updateTimeLabel:0];
         });
+        //[self update:_player];
     } else {
         NSLog(@"Error");
     }

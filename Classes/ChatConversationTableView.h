@@ -47,5 +47,6 @@
 - (void)scrollToBottom:(BOOL)animated;
 - (void)scrollToLastUnread:(BOOL)animated;
 - (void)updateEventEntry:(LinphoneEventLog *)event;
+- (void)clearAudioPlayers;
 
 @end

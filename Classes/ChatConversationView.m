@@ -41,8 +41,16 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(clearAudioPlayers)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
 	}
 	return self;
+}
+
+- (void)clearAudioPlayers {
+    [_tableController clearAudioPlayers];
 }
 
 - (void)dealloc {
