@@ -39,7 +39,7 @@
         _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
         _cbs = linphone_player_get_callbacks(_player);
         linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-        linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
+        linphone_player_set_user_data(_player, (__bridge void*)self);
         _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
         NSLog(@"Opening sound file %@", _fileName);
         linphone_player_open(_player, _fileName.UTF8String);
@@ -49,6 +49,7 @@
         _timeProgressBar.progress = 0;
         NSLog(@"Duration : %@", _durationString);
         _shouldClosePlayer = NO;
+        _eofReached = NO;
     }
     return self;
 }
@@ -58,6 +59,7 @@
 - (void)goToBeginning {
     linphone_player_pause(_player);
     linphone_player_seek(_player, 0);
+    _eofReached = NO;
 }
 
 - (void)updateTimeLabel:(int)currentTime {
@@ -98,7 +100,8 @@
 
 void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"End of file reached");
-    linphone_player_seek(pl, 0);
+    UIChatBubbleSoundCell *cell = (__bridge UIChatBubbleSoundCell *)linphone_player_get_user_data(pl);
+    cell.eofReached = YES;
 }
 
 #pragma mark - Utils
@@ -126,16 +129,18 @@ void on_eof_reached(LinphonePlayer *pl) {
         _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
         _cbs = linphone_player_get_callbacks(_player);
         linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-        linphone_player_cbs_set_user_data(_cbs, (__bridge void*)self);
-        _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
+        linphone_player_set_user_data(_player, (__bridge void*)self);
         NSLog(@"Opening sound file %@", _fileName);
         linphone_player_open(_player, _fileName.UTF8String);
-        _duration = linphone_player_get_duration(_player);
-        _durationString = [UIChatBubbleSoundCell timeToString:_duration];
         [self updateTimeLabel:0];
         _timeProgressBar.progress = 0;
         NSLog(@"Duration : %@", _durationString);
         _shouldClosePlayer = NO;
+        _eofReached = NO;
+    }
+    if (_eofReached && _player && linphone_player_get_state(_player) != LinphonePlayerClosed) {
+        linphone_player_seek(_player, 0);
+        _eofReached = NO;
     }
     if (_player) {
         LinphonePlayerState state = linphone_player_get_state(_player);

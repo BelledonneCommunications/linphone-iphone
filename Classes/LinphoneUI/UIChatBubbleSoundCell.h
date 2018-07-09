@@ -23,6 +23,7 @@
 @property int duration;
 @property (weak, nonatomic) IBOutlet UIView *playerView;
 @property BOOL shouldClosePlayer;
+@property BOOL eofReached;
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
