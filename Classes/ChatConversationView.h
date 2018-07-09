@@ -27,6 +27,7 @@
 #import "UIRoundedImageView.h"
 #import "UIBackToCallButton.h"
 #import "Utils/HPGrowingTextView/HPGrowingTextView.h"
+#import "UISoundRecordView.h"
 
 #include "linphone/linphonecore.h"
 
@@ -50,6 +51,7 @@
 @property(nonatomic, strong) IBOutlet UILabel *addressLabel;
 @property(nonatomic, strong) IBOutlet UIView *chatView;
 @property(nonatomic, strong) IBOutlet UIView *messageView;
+@property(nonatomic, strong) UISoundRecordView *recordView;
 @property(nonatomic, strong) IBOutlet UITapGestureRecognizer *listTapGestureRecognizer;
 @property(nonatomic, strong) IBOutlet UISwipeGestureRecognizer *listSwipeGestureRecognizer;
 @property(strong, nonatomic) IBOutlet UILabel *composeLabel;
@@ -74,5 +76,7 @@
 - (IBAction)onEditionChangeClick:(id)sender;
 - (void)update;
 - (void)openResults:(NSString *) filePath;
+- (void)changeToRecordView;
+- (void)changeToMessageView;
 
 @end

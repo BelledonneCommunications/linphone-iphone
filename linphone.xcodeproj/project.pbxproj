@@ -83,6 +83,8 @@
 		5E58962A20DCE5700030868C /* NotificationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E58962920DCE5700030868C /* NotificationViewController.m */; };
 		5E58962D20DCE5700030868C /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5E58962B20DCE5700030868C /* MainInterface.storyboard */; };
 		5E58963120DCE5710030868C /* richNotifications.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 5E58962320DCE5700030868C /* richNotifications.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5EA52F8020F396C2006E05B3 /* UISoundRecordView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5EA52F7E20F396C2006E05B3 /* UISoundRecordView.xib */; };
+		5EA52F8920F397E1006E05B3 /* UISoundRecordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EA52F8820F397E1006E05B3 /* UISoundRecordView.m */; };
 		5EEE8F9B20C80C23006E4176 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EF0C33820C806A5005081B0 /* NotificationCenter.framework */; };
 		5EEE8F9F20C80C23006E4176 /* TodayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5EEE8F9E20C80C23006E4176 /* TodayViewController.m */; };
 		5EEE8FA220C80C23006E4176 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */; };
@@ -1102,6 +1104,9 @@
 		5E58962920DCE5700030868C /* NotificationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationViewController.m; sourceTree = "<group>"; };
 		5E58962C20DCE5700030868C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		5E58962E20DCE5710030868C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5EA52F7F20F396C2006E05B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/UISoundRecordView.xib; sourceTree = "<group>"; };
+		5EA52F8720F397E1006E05B3 /* UISoundRecordView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UISoundRecordView.h; sourceTree = "<group>"; };
+		5EA52F8820F397E1006E05B3 /* UISoundRecordView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UISoundRecordView.m; sourceTree = "<group>"; };
 		5EEE8F9A20C80C23006E4176 /* latestCallsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = latestCallsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EEE8F9D20C80C23006E4176 /* TodayViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TodayViewController.h; sourceTree = "<group>"; };
 		5EEE8F9E20C80C23006E4176 /* TodayViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TodayViewController.m; sourceTree = "<group>"; };
@@ -2423,6 +2428,9 @@
 				D32648431588F6FB00930C67 /* UIToggleButton.m */,
 				340751E5150F38FC00B89C47 /* UIVideoButton.h */,
 				340751E6150F38FD00B89C47 /* UIVideoButton.m */,
+				5EA52F7E20F396C2006E05B3 /* UISoundRecordView.xib */,
+				5EA52F8720F397E1006E05B3 /* UISoundRecordView.h */,
+				5EA52F8820F397E1006E05B3 /* UISoundRecordView.m */,
 			);
 			path = LinphoneUI;
 			sourceTree = "<group>";
@@ -3898,6 +3906,7 @@
 				244523B01E8266CC0037A187 /* chat_error.png in Resources */,
 				8CBD7BA320B6B80D00E5DCC0 /* ChatConversationImdnView.xib in Resources */,
 				633FEDD11D3CD5590014B822 /* call_quality_indicator_2@2x.png in Resources */,
+				5EA52F8020F396C2006E05B3 /* UISoundRecordView.xib in Resources */,
 				633FEDBC1D3CD5590014B822 /* call_audio_start_disabled.png in Resources */,
 				24BFAA9E209B0630004F47A7 /* dialer_background.png in Resources */,
 				633FEE481D3CD5590014B822 /* delete_default.png in Resources */,
@@ -4362,6 +4371,7 @@
 				2214EB7A12F846B1002A5394 /* UICallButton.m in Sources */,
 				6352A5751BE0D4B800594C1C /* CallSideMenuView.m in Sources */,
 				2214EB8912F84EBB002A5394 /* UIHangUpButton.m in Sources */,
+				5EA52F8920F397E1006E05B3 /* UISoundRecordView.m in Sources */,
 				630CF5571AF7CE1500539F7A /* UITextField+DoneButton.m in Sources */,
 				2214EBF312F86360002A5394 /* UIMutedMicroButton.m in Sources */,
 				8C9C5E111F83BD97006987FA /* UIChatCreateCollectionViewCell.m in Sources */,
@@ -4614,6 +4624,14 @@
 				5E58962C20DCE5700030868C /* Base */,
 			);
 			name = MainInterface.storyboard;
+			sourceTree = "<group>";
+		};
+		5EA52F7E20F396C2006E05B3 /* UISoundRecordView.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5EA52F7F20F396C2006E05B3 /* Base */,
+			);
+			name = UISoundRecordView.xib;
 			sourceTree = "<group>";
 		};
 		5EEE8FA020C80C23006E4176 /* MainInterface.storyboard */ = {

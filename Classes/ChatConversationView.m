@@ -131,9 +131,26 @@ static UICompositeViewDescription *compositeDescription = nil;
                                              object:nil];
 }
 
+- (void)changeToMessageView {
+    if (_recordView && !_messageView.superview) {
+        [_chatView addSubview:_messageView];
+        [_recordView.recordView removeFromSuperview];
+    }
+}
+
+- (void)changeToRecordView {
+    if (!_recordView) {
+        _recordView = [[UISoundRecordView alloc] init];
+        _recordView.recordView.frame = _messageView.frame;
+        _recordView.recordView.bounds = _messageView.bounds;
+    }
+    [_chatView addSubview:_recordView.recordView];
+    [_messageView removeFromSuperview];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
 	[super viewWillDisappear:animated];
-
+    [self changeToMessageView];
 	if (_chatRoom && _chatRoomCbs) {
 		linphone_chat_room_remove_callbacks(_chatRoom, _chatRoomCbs);
 		_chatRoomCbs = NULL;

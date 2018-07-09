@@ -267,6 +267,9 @@ static UICompositeViewDescription *compositeDescription = nil;
                                     block(UIImagePickerControllerSourceTypePhotoLibrary);
                                 }];
         }
+        [sheet addButtonWithTitle:NSLocalizedString(@"Record a message", nil) block:^{
+            [VIEW(ChatConversationView) changeToRecordView];
+        }];
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
         
         [sheet showInView:PhoneMainView.instance.view];
