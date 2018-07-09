@@ -20,8 +20,10 @@
                 <outlet property="contactDateLabel" destination="iLT-lZ-7OZ" id="B9p-xC-Zrr"/>
                 <outlet property="imdmIcon" destination="4Fx-9h-L5d" id="WMD-1W-b4v"/>
                 <outlet property="imdmLabel" destination="jik-hh-0FW" id="gVv-sD-x5x"/>
+                <outlet property="playPauseButton" destination="ZkM-Ue-oTM" id="hit-vR-3s2"/>
                 <outlet property="playerView" destination="75O-hf-9RH" id="lpP-4e-ZLJ"/>
                 <outlet property="statusInProgressSpinner" destination="saN-77-zGO" id="iwT-zo-beV"/>
+                <outlet property="stopButton" destination="ZcR-1b-Hys" id="nI4-r4-D6W"/>
                 <outlet property="timeLabel" destination="qLJ-yN-IDo" id="aBn-c0-bPr"/>
                 <outlet property="timeProgressBar" destination="fye-GP-QTB" id="QQ3-Kc-Ddi"/>
             </connections>

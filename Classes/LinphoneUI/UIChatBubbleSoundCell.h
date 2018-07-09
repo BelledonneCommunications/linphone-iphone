@@ -16,6 +16,8 @@
 @interface UIChatBubbleSoundCell : UIChatBubbleTextCell
 @property (weak, nonatomic) IBOutlet UIProgressView *timeProgressBar;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet UIButton *playPauseButton;
+@property (weak, nonatomic) IBOutlet UIButton *stopButton;
 @property LinphonePlayer *player;
 @property LinphonePlayerCbs *cbs;
 @property (strong, nonatomic) NSString *fileName;

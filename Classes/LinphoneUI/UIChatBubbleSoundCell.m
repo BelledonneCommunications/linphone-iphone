@@ -47,6 +47,7 @@
         _durationString = [UIChatBubbleSoundCell timeToString:_duration];
         [self updateTimeLabel:0];
         _timeProgressBar.progress = 0;
+        [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
         NSLog(@"Duration : %@", _durationString);
         _shouldClosePlayer = NO;
         _eofReached = NO;
@@ -60,6 +61,7 @@
     linphone_player_pause(_player);
     linphone_player_seek(_player, 0);
     _eofReached = NO;
+    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
 }
 
 - (void)updateTimeLabel:(int)currentTime {
@@ -102,6 +104,9 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSLog(@"End of file reached");
     UIChatBubbleSoundCell *cell = (__bridge UIChatBubbleSoundCell *)linphone_player_get_user_data(pl);
     cell.eofReached = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [cell.playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
+    });
 }
 
 #pragma mark - Utils
@@ -148,6 +153,7 @@ void on_eof_reached(LinphonePlayer *pl) {
             case LinphonePlayerPlaying:
                 NSLog(@"Pausing");
                 linphone_player_pause(_player);
+                [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
                 break;
             case LinphonePlayerClosed:
                 NSLog(@"Opening file");
@@ -155,6 +161,7 @@ void on_eof_reached(LinphonePlayer *pl) {
             case LinphonePlayerPaused:
                 NSLog(@"Playing");
                 linphone_player_start(_player);
+                [_playPauseButton setTitle:@"Pause" forState:UIControlStateNormal];
                 break;
         }
         [self update:_player];
