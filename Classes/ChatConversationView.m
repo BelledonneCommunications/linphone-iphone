@@ -41,16 +41,8 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
 								   [NSNumber numberWithFloat:0.5], NSLocalizedString(@"Average", nil),
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(clearAudioPlayers)
-                                                     name:UIApplicationWillResignActiveNotification
-                                                   object:nil];
 	}
 	return self;
-}
-
-- (void)clearAudioPlayers {
-    [_tableController clearAudioPlayers];
 }
 
 - (void)dealloc {
@@ -133,6 +125,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 										   selector:@selector(callUpdateEvent:)
 											   name:kLinphoneCallUpdate
 											 object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(clearAudioPlayers:)
+                                               name:UIApplicationWillResignActiveNotification
+                                             object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -265,6 +261,10 @@ static UICompositeViewDescription *compositeDescription = nil;
 
 - (void)callUpdateEvent:(NSNotification *)notif {
 	[_backToCallButton update];
+}
+
+- (void)clearAudioPlayers:(NSNotification *)notification {
+    [_tableController clearAudioPlayers];
 }
 
 - (void)update {
