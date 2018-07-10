@@ -7,6 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum LinphoneRecordState {
+    LinphoneRecording,
+    LinphoneRecordPaused,
+    LinphoneRecordFinished
+} LinphoneRecordState;
+
 @interface UISoundRecordView : UIView
 @property (strong, nonatomic) IBOutlet UIView *recordView;
 @property (weak, nonatomic) IBOutlet UIButton *recordButton;

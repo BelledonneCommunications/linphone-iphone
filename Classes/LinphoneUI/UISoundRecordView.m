@@ -8,7 +8,10 @@
 #import "UISoundRecordView.h"
 #import "PhoneMainView.h"
 
-@implementation UISoundRecordView
+@implementation UISoundRecordView {
+    @private
+    LinphoneRecordState state;
+}
 
 - (id)init {
     if (self = [super init]) {
@@ -23,20 +26,35 @@
         }
         [self addSubview:sub];
         self.recordView = sub;
+        state = LinphoneRecordPaused;
     }
     return self;
 }
 
 - (IBAction)onRecord:(UIButton *)sender {
-    NSLog(@"Recording...");
+    switch(state) {
+        case LinphoneRecording:
+            LOGI(@"Record paused");
+            state = LinphoneRecordPaused;
+            break;
+        case LinphoneRecordPaused:
+            LOGI(@"Recording...");
+            state = LinphoneRecording;
+            break;
+        case LinphoneRecordFinished:
+            LOGI(@"Restarted recording, erasing previous record...");
+            state = LinphoneRecording;
+            break;
+    }
 }
 
 - (IBAction)onStop:(UIButton *)sender {
-    NSLog(@"Stopped recording");
+    LOGI(@"Stopped recording");
+    state = LinphoneRecordFinished;
 }
 
 - (IBAction)onCancel:(UIButton *)sender {
     [VIEW(ChatConversationView) changeToMessageView];
-    NSLog(@"Canceled recording");
+    LOGI(@"Canceled recording");
 }
 @end
