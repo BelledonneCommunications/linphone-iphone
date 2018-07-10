@@ -89,8 +89,9 @@
             linphone_player_close(_player);
             linphone_player_unref(_player);
             dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateTimeLabel:0];
-            _timeProgressBar.progress = 0;
+                [self updateTimeLabel:0];
+                _timeProgressBar.progress = 0;
+                [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
             });
             _player = NULL;
             _cbs = NULL;

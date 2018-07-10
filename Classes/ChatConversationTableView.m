@@ -58,6 +58,7 @@
         }
         [cell updateTimeLabel:0];
         cell.timeProgressBar.progress = 0;
+        [cell.playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
     }
 }
 
