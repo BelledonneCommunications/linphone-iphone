@@ -11,11 +11,16 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UISoundRecordView">
             <connections>
-                <outlet property="cancelButton" destination="eqH-gG-h8h" id="BzN-f6-Jdx"/>
+                <outlet property="cancelButton" destination="7jJ-bD-8ll" id="hoH-xg-e5C"/>
+                <outlet property="playButton" destination="X0e-BR-w5T" id="Zq0-L9-WDw"/>
                 <outlet property="recordButton" destination="1GF-Qk-32J" id="Fnz-Lw-xgm"/>
                 <outlet property="recordLength" destination="IXq-ku-zdC" id="CsN-BX-387"/>
                 <outlet property="recordView" destination="iN0-l3-epB" id="oKE-vW-mA3"/>
+                <outlet property="sendButton" destination="Vi3-RH-kSb" id="UoO-mZ-X6J"/>
+                <outlet property="sendingView" destination="vmv-02-7nQ" id="7oX-iV-cQ9"/>
                 <outlet property="stopButton" destination="0Yn-Sa-1KG" id="bD3-ro-hbL"/>
+                <outlet property="timeBar" destination="WT8-0E-Iqr" id="Y7d-1S-g8Y"/>
+                <outlet property="timeLabel" destination="t2u-70-a7e" id="uz2-PC-jgA"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -40,9 +45,9 @@
                         <action selector="onStop:" destination="-1" eventType="touchUpInside" id="ijr-my-wUT"/>
                     </connections>
                 </button>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Length" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IXq-ku-zdC">
-                    <rect key="frame" x="259" y="21.5" width="54" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IXq-ku-zdC">
+                    <rect key="frame" x="279" y="25.5" width="34" height="14.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
@@ -72,6 +77,77 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="-2.5" y="-176.5"/>
         </view>
+        <view contentMode="scaleToFill" id="vmv-02-7nQ">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="65"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="color_F.png" translatesAutoresizingMaskIntoConstraints="NO" id="jJh-Pk-zxv">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="65"/>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X0e-BR-w5T">
+                    <rect key="frame" x="10" y="17" width="30" height="30"/>
+                    <state key="normal" title="Play"/>
+                    <connections>
+                        <action selector="onPlay:" destination="-1" eventType="touchUpInside" id="rra-Tn-Oyi"/>
+                    </connections>
+                </button>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="K3O-60-i5v">
+                    <rect key="frame" x="317" y="2" width="48" height="60"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vi3-RH-kSb">
+                            <rect key="frame" x="0.0" y="0.0" width="48" height="30"/>
+                            <state key="normal" title="Send"/>
+                            <connections>
+                                <action selector="onSend:" destination="-1" eventType="touchUpInside" id="v0U-ai-sdZ"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7jJ-bD-8ll">
+                            <rect key="frame" x="0.0" y="30" width="48" height="30"/>
+                            <state key="normal" title="Cancel"/>
+                            <connections>
+                                <action selector="onCancel:" destination="-1" eventType="touchUpInside" id="Ia1-TP-5a1"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WT8-0E-Iqr">
+                    <rect key="frame" x="50" y="31" width="257" height="2"/>
+                </progressView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00 / 00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t2u-70-a7e">
+                    <rect key="frame" x="50" y="38" width="78.5" height="14.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="jJh-Pk-zxv" firstAttribute="leading" secondItem="vmv-02-7nQ" secondAttribute="leading" id="2eJ-98-bM7"/>
+                <constraint firstItem="t2u-70-a7e" firstAttribute="leading" secondItem="WT8-0E-Iqr" secondAttribute="leading" id="3eI-If-wrF"/>
+                <constraint firstAttribute="trailing" secondItem="jJh-Pk-zxv" secondAttribute="trailing" id="PXn-tJ-Jjo"/>
+                <constraint firstItem="jJh-Pk-zxv" firstAttribute="top" secondItem="vmv-02-7nQ" secondAttribute="top" id="SKI-8v-h5H"/>
+                <constraint firstItem="X0e-BR-w5T" firstAttribute="leading" secondItem="vmv-02-7nQ" secondAttribute="leading" constant="10" id="SRT-Wy-EhM"/>
+                <constraint firstItem="t2u-70-a7e" firstAttribute="top" secondItem="WT8-0E-Iqr" secondAttribute="bottom" constant="5" id="atg-Wv-7d2"/>
+                <constraint firstItem="K3O-60-i5v" firstAttribute="leading" secondItem="WT8-0E-Iqr" secondAttribute="trailing" constant="10" id="bNp-gH-uaF"/>
+                <constraint firstItem="WT8-0E-Iqr" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="dO7-Kw-ud2"/>
+                <constraint firstAttribute="trailing" secondItem="K3O-60-i5v" secondAttribute="trailing" constant="10" id="kHY-eX-AhM"/>
+                <constraint firstAttribute="bottom" secondItem="jJh-Pk-zxv" secondAttribute="bottom" id="l2l-hz-QCb"/>
+                <constraint firstItem="K3O-60-i5v" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="oUH-qK-Swb"/>
+                <constraint firstItem="X0e-BR-w5T" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="pEa-ox-cKm"/>
+                <constraint firstItem="WT8-0E-Iqr" firstAttribute="leading" secondItem="X0e-BR-w5T" secondAttribute="trailing" constant="10" id="sz8-9x-dTe"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="HDe-Hb-JWa" appends="YES" id="jrT-DQ-tyv"/>
+            </connections>
+            <point key="canvasLocation" x="-2.5" y="-33.5"/>
+        </view>
+        <tapGestureRecognizer id="HDe-Hb-JWa">
+            <connections>
+                <action selector="onTapBar:" destination="-1" id="2cx-Iy-a4z"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="color_F.png" width="2" height="2"/>

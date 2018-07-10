@@ -144,6 +144,7 @@ static UICompositeViewDescription *compositeDescription = nil;
         _recordView.recordView.frame = _messageView.frame;
         _recordView.recordView.bounds = _messageView.bounds;
     }
+    [_recordView reset];
     [_chatView addSubview:_recordView.recordView];
     [_messageView removeFromSuperview];
 }
