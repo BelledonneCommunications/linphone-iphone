@@ -211,9 +211,6 @@
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {
                     [_messageImageView startLoading];
-                    if([localImage isEqualToString:@"uknown"]) {
-                        //TODO add default image
-                    }
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
                     UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
                     if (![assets firstObject])
@@ -226,21 +223,19 @@
                 }
             } else if (localVideo) {
                 if (_messageImageView.image == nil) {
-                    [_messageImageView startLoading];
+                    
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
-                    UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
-                    if (![assets firstObject])
-                        [self loadPlaceholder];
-                    PHAsset *asset = [assets firstObject];
-                    if (img)
-                        [self loadImageAsset:asset image:img];
-                    else
-                        [self loadAsset:asset];
-                    // read video from Documents
-                  /*  NSURL *url = [(AVURLAsset*)assets URL];
-                    AVAsset *asset = [AVAsset assetWithURL:url];
-                    if (asset)
-                        [self loadVideoAsset:asset];*/
+                    if([assets firstObject] .mediaType == PHAssetMediaTypeVideo) {
+                        [_messageImageView startLoading];
+                        UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
+                        if (![assets firstObject])
+                            [self loadPlaceholder];
+                        PHAsset *asset = [assets firstObject];
+                        if (img)
+                            [self loadImageAsset:asset image:img];
+                        else
+                            [self loadAsset:asset];
+                    }
                 }
             } else if (localFile) {
                 NSString *text = [NSString stringWithFormat:@"📎  %@",localFile];
@@ -295,29 +290,15 @@
     [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
         if(playerItem) {
             AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
-        AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
-        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+            AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+            [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
             controller.player = player;
             [player play];
-            }
+        }
         else {
              LOGE(@"Can't read video");
         }
     }];
-  /*  NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
-    NSString *filePath = [LinphoneManager documentFile:localVideo];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    if ([fileManager fileExistsAtPath:filePath]) {
-        // create a player view controller
-        AVPlayer *player = [AVPlayer playerWithURL:[[NSURL alloc] initFileURLWithPath:filePath]];
-        AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
-        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
-        controller.player = player;
-        [player play];
-    } else {
-        [self fileErrorBlock];
-    }*/
 }
 
 - (IBAction)onOpenClick:(id)event {
