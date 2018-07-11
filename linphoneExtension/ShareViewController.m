@@ -66,22 +66,17 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
             NSURL *url = (NSURL *)item;
             NSData *nsData = [NSData dataWithContentsOfURL:url];
             if (nsData) {
-                NSDictionary *dict;
                 // We get the corresponding PHAsset identifier so we can display the image in the app without having to duplicate it.
                 NSString *imgPath = url.path;
-                if ([imgPath hasPrefix:@"/var/mobile/Media/"] && ![imgPath containsString:@"OutgoingTemp"]) { // The image comes from the photos app
-                    NSString *filename;
-                    for ( NSString *comp in [imgPath componentsSeparatedByString:@"/"] ) {
-                        if ([comp containsString:@"IMG_"]) {
-                            filename = [[comp componentsSeparatedByString:@"."] firstObject];
-                            break;
-                        }
+                NSString *filename;
+                for ( NSString *comp in [imgPath componentsSeparatedByString:@"/"] ) {
+                    if ([comp containsString:@"IMG_"]) {
+                        filename = [[comp componentsSeparatedByString:@"."] firstObject];
+                        break;
                     }
-                    dict = @{@"nsData" : nsData,
-                                @"url" : filename};
-                } else {
-                    dict = @{@"nsData" : nsData};
                 }
+                NSDictionary *dict = @{@"nsData" : nsData,
+                            @"url" : filename};
                 [defaults setObject:dict forKey:key];
             } else {
                 NSLog(@"NSExtensionItem Error, provider = %@", provider);

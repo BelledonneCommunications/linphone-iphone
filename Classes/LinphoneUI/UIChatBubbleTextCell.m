@@ -235,9 +235,9 @@
 	if (linphone_chat_message_get_file_transfer_information(_message) != NULL) {
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:_message];
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
-        NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
+        /*NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-        NSString *fileName = localVideo ? localVideo : localFile;
+        NSString *fileName = localVideo ? localVideo : localFile;*/
 		[self onDelete];
         if(localImage){
             ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
@@ -266,10 +266,10 @@
                                                             }
                 }];
             }
-        } else if(fileName) {
+        } /*else if(fileName) {
             NSString *filePath = [LinphoneManager documentFile:fileName];
             [_chatRoomDelegate startFileUpload:[NSData dataWithContentsOfFile:filePath] withUrl:[NSURL URLWithString:filePath]];
-        }
+        }*/
 	} else {
         [self onDelete];
 		double delayInSeconds = 0.4;

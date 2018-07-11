@@ -209,7 +209,7 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     linphone_content_set_name(content, [name UTF8String]);
     linphone_content_set_size(content, _data.length);
     _message = linphone_chat_room_create_file_transfer_message(chatRoom, content);
-    linphone_chat_message_add_text_content(_message, [_text UTF8String]);
+    //linphone_chat_message_add_text_content(_message, [_text UTF8String]);
     linphone_content_unref(content);
     
     linphone_chat_message_cbs_set_file_transfer_send(linphone_chat_message_get_callbacks(_message),
@@ -232,7 +232,15 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
     if (phAssetId)
         [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:phAssetId qualityData:[NSNumber numberWithFloat:quality]];
     else
-        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:nil qualityData:nil];
+        [self uploadData:UIImageJPEGRepresentation(image, quality) forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localimage" keyData:@"unknown" qualityData:nil];
+}
+
+- (void)uploadVideo:(NSData *)data withassetId:(NSString *)phAssetId forChatRoom:(LinphoneChatRoom *)chatRoom  {
+    NSString *name = [NSString stringWithFormat:@"%f.mov",  [NSDate timeIntervalSinceReferenceDate]];
+    if (phAssetId)
+        [self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localvideo" keyData:phAssetId qualityData:nil];
+    else
+        [self uploadData:data forChatRoom:chatRoom type:@"image" subtype:@"jpeg" name:name key:@"localvideo" keyData:nil qualityData:nil];
 }
 
 - (void)uploadFile:(NSData *)data forChatRoom:(LinphoneChatRoom *)chatRoom withUrl:(NSURL *)url {

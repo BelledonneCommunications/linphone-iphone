@@ -211,6 +211,9 @@
                 // we did not load the image yet, so start doing so
                 if (_messageImageView.image == nil) {
                     [_messageImageView startLoading];
+                    if([localImage isEqualToString:@"uknown"]) {
+                        //TODO add default image
+                    }
                     PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localImage] options:nil];
                     UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
                     if (![assets firstObject])
@@ -224,12 +227,20 @@
             } else if (localVideo) {
                 if (_messageImageView.image == nil) {
                     [_messageImageView startLoading];
+                    PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithLocalIdentifiers:[NSArray arrayWithObject:localVideo] options:nil];
+                    UIImage *img = [chatTableView.imagesInChatroom objectForKey:localImage];
+                    if (![assets firstObject])
+                        [self loadPlaceholder];
+                    PHAsset *asset = [assets firstObject];
+                    if (img)
+                        [self loadImageAsset:asset image:img];
+                    else
+                        [self loadAsset:asset];
                     // read video from Documents
-                    NSString *filePath = [LinphoneManager documentFile:localVideo];
-                    NSURL *url = [NSURL fileURLWithPath:filePath];
+                  /*  NSURL *url = [(AVURLAsset*)assets URL];
                     AVAsset *asset = [AVAsset assetWithURL:url];
                     if (asset)
-                        [self loadVideoAsset:asset];
+                        [self loadVideoAsset:asset];*/
                 }
             } else if (localFile) {
                 NSString *text = [NSString stringWithFormat:@"📎  %@",localFile];
@@ -278,7 +289,22 @@
 }
 
 - (IBAction)onPlayClick:(id)sender {
-    NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
+    PHAsset *asset = [_messageImageView asset];
+    PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+   // options.synchronous = TRUE;
+    [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+        if(playerItem) {
+            AVPlayer *player = [AVPlayer playerWithPlayerItem:playerItem];
+        AVPlayerViewController *controller = [[AVPlayerViewController alloc] init];
+        [PhoneMainView.instance presentViewController:controller animated:YES completion:nil];
+            controller.player = player;
+            [player play];
+            }
+        else {
+             LOGE(@"Can't read video");
+        }
+    }];
+  /*  NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
     NSString *filePath = [LinphoneManager documentFile:localVideo];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -291,7 +317,7 @@
         [player play];
     } else {
         [self fileErrorBlock];
-    }
+    }*/
 }
 
 - (IBAction)onOpenClick:(id)event {

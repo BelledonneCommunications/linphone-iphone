@@ -240,14 +240,9 @@ static UICompositeViewDescription *compositeDescription = nil;
     NSDictionary *dictText = [defaults valueForKey:@"text"];
     if (dict) {
         //share photo
-        NSData *data = dict[@"nsData"];
-        UIImage *image = [[UIImage alloc] initWithData:data];
-        NSString *filename = dict[@"url"];
-        if (filename) {
-            NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
-            [self chooseImageQuality:image assetId:[[assetDict objectForKey:filename] localIdentifier]];
-        } else
-            [self chooseImageQuality:image assetId:@""];
+        UIImage *image = [[UIImage alloc] initWithData:dict[@"nsData"]];
+        NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
+        [self chooseImageQuality:image assetId:[[assetDict objectForKey:dict[@"url"]] localIdentifier]];
         [defaults removeObjectForKey:@"img"];
     } else if (dictWeb) {
         //share url, if local file, then upload file
@@ -256,19 +251,19 @@ static UICompositeViewDescription *compositeDescription = nil;
         if ([url hasPrefix:@"file"]) {
             //local file
             NSData *data = dictWeb[@"nsData"];
-            [self confirmShare:data url:fileUrl text:nil];
+            [self confirmShare:data url:fileUrl text:nil assetId:nil];
         } else {
-            [self confirmShare:nil url:nil text:url];
+            [self confirmShare:nil url:nil text:url assetId:nil];
         }
         [defaults removeObjectForKey:@"web"];
     }else if (dictFile) {
         //share file
-        NSData *data  = dictFile[@"nsData"];
-        [self confirmShare:data url:[NSURL fileURLWithPath:dictFile[@"url"]] text:nil];
+        NSMutableDictionary <NSString *, PHAsset *> * assetDict = [LinphoneUtils photoAssetsDictionary];
+        [self confirmShare:dictFile[@"nsData"] url:nil text:nil assetId:[[assetDict objectForKey:dictFile[@"url"]] localIdentifier]];
         [defaults removeObjectForKey:@"mov"];
     }else if (dictText) {
         //share text
-        [self confirmShare:nil url:nil text:dictText[@"name"]];
+        [self confirmShare:nil url:nil text:dictText[@"name"] assetId:nil];
         [defaults removeObjectForKey:@"text"];
     }
 }
@@ -363,17 +358,15 @@ static UICompositeViewDescription *compositeDescription = nil;
 	});
 }
 
-- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text {
+- (void)confirmShare:(NSData *)data url:(NSURL *)url text:(NSString *)text assetId:(NSString *)phAssetId {
     DTActionSheet *sheet = [[DTActionSheet alloc] initWithTitle:NSLocalizedString(@"", nil)];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-       
             [sheet addButtonWithTitle:@"send to this friend"
                                 block:^() {
-                                    if(data && url)
-                                        [self startFileUpload:data withUrl:url];
+                                    if(phAssetId)
+                                        [self startFileUpload:data assetId:phAssetId];
                                     else
                                         [self sendMessage:text withExterlBodyUrl:nil withInternalURL:nil];
-                                     
                                 }];
      
         [sheet addCancelButtonWithTitle:NSLocalizedString(@"Cancel", nil) block:nil];
@@ -635,7 +628,14 @@ static UICompositeViewDescription *compositeDescription = nil;
     return TRUE;
 }
 
-- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url {
+- (BOOL)startFileUpload:(NSData *)data assetId:phAssetId {
+    FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
+    [fileTransfer uploadVideo:data withassetId:phAssetId forChatRoom:_chatRoom];
+    [_tableController scrollToBottom:true];
+    return TRUE;
+}
+
+- (BOOL)startFileUpload:(NSData *)data withUrl:(NSURL *)url  {
     FileTransferDelegate *fileTransfer = [[FileTransferDelegate alloc] init];
     [fileTransfer uploadFile:data forChatRoom:_chatRoom withUrl:url];
     [_tableController scrollToBottom:true];
