@@ -119,7 +119,7 @@ static void linphone_iphone_file_transfer_recv(LinphoneChatMessage *message, con
         }  else {
             [[LinphoneManager.instance fileTransferDelegates] removeObject:thiz];
             
-            NSString *key = [fileType isEqualToString:@"file"] ? @"localfile" : @"localvideo";
+            NSString *key = ([fileType isEqualToString:@"file"] || [fileType isEqualToString:@"mkv"]) ? @"localfile" : @"localvideo";
             NSString *name =[NSString stringWithUTF8String:linphone_content_get_name(content)];
         
             [LinphoneManager setValueInMessageAppData:@"saving..." forKey:key inMessage:message];
@@ -245,6 +245,8 @@ static LinphoneBuffer *linphone_iphone_file_transfer_send(LinphoneChatMessage *m
         
     if ([[url pathExtension] isEqualToString:@"MOV"])
         [self uploadData:data forChatRoom:chatRoom type:nil subtype:nil name:name key:@"localvideo" keyData:name qualityData:nil];
+    else if ([[url pathExtension] isEqualToString:@"mkv"])
+        [self uploadData:data forChatRoom:chatRoom type:@"mkv" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
     else
         [self uploadData:data forChatRoom:chatRoom type:@"file" subtype:nil name:name key:@"localfile" keyData:name qualityData:nil];
 }

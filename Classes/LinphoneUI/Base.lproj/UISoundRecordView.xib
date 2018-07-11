@@ -111,10 +111,10 @@
                     </subviews>
                 </stackView>
                 <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WT8-0E-Iqr">
-                    <rect key="frame" x="50" y="31" width="257" height="2"/>
+                    <rect key="frame" x="50" y="31" width="168.5" height="2"/>
                 </progressView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00 / 00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="t2u-70-a7e">
-                    <rect key="frame" x="50" y="38" width="78.5" height="14.5"/>
+                    <rect key="frame" x="228.5" y="25.5" width="78.5" height="14.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -124,14 +124,14 @@
             <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="jJh-Pk-zxv" firstAttribute="leading" secondItem="vmv-02-7nQ" secondAttribute="leading" id="2eJ-98-bM7"/>
-                <constraint firstItem="t2u-70-a7e" firstAttribute="leading" secondItem="WT8-0E-Iqr" secondAttribute="leading" id="3eI-If-wrF"/>
+                <constraint firstItem="t2u-70-a7e" firstAttribute="leading" secondItem="WT8-0E-Iqr" secondAttribute="trailing" constant="10" id="3eI-If-wrF"/>
+                <constraint firstItem="t2u-70-a7e" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="6PZ-F4-wyb"/>
                 <constraint firstAttribute="trailing" secondItem="jJh-Pk-zxv" secondAttribute="trailing" id="PXn-tJ-Jjo"/>
                 <constraint firstItem="jJh-Pk-zxv" firstAttribute="top" secondItem="vmv-02-7nQ" secondAttribute="top" id="SKI-8v-h5H"/>
                 <constraint firstItem="X0e-BR-w5T" firstAttribute="leading" secondItem="vmv-02-7nQ" secondAttribute="leading" constant="10" id="SRT-Wy-EhM"/>
-                <constraint firstItem="t2u-70-a7e" firstAttribute="top" secondItem="WT8-0E-Iqr" secondAttribute="bottom" constant="5" id="atg-Wv-7d2"/>
-                <constraint firstItem="K3O-60-i5v" firstAttribute="leading" secondItem="WT8-0E-Iqr" secondAttribute="trailing" constant="10" id="bNp-gH-uaF"/>
                 <constraint firstItem="WT8-0E-Iqr" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="dO7-Kw-ud2"/>
                 <constraint firstAttribute="trailing" secondItem="K3O-60-i5v" secondAttribute="trailing" constant="10" id="kHY-eX-AhM"/>
+                <constraint firstItem="K3O-60-i5v" firstAttribute="leading" secondItem="t2u-70-a7e" secondAttribute="trailing" constant="10" id="kSk-gM-Udy"/>
                 <constraint firstAttribute="bottom" secondItem="jJh-Pk-zxv" secondAttribute="bottom" id="l2l-hz-QCb"/>
                 <constraint firstItem="K3O-60-i5v" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="oUH-qK-Swb"/>
                 <constraint firstItem="X0e-BR-w5T" firstAttribute="centerY" secondItem="vmv-02-7nQ" secondAttribute="centerY" id="pEa-ox-cKm"/>

@@ -40,17 +40,6 @@
         _cbs = linphone_player_get_callbacks(_player);
         linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
         linphone_player_set_user_data(_player, (__bridge void*)self);
-        _fileName = [LinphoneManager bundleFile:@"hold.mkv"];
-        NSLog(@"Opening sound file %@", _fileName);
-        linphone_player_open(_player, _fileName.UTF8String);
-        _duration = linphone_player_get_duration(_player);
-        _durationString = [UIChatBubbleSoundCell timeToString:_duration];
-        [self updateTimeLabel:0];
-        _timeProgressBar.progress = 0;
-        [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
-        NSLog(@"Duration : %@", _durationString);
-        _shouldClosePlayer = NO;
-        _eofReached = NO;
     }
     return self;
 }
@@ -136,8 +125,6 @@ void on_eof_reached(LinphonePlayer *pl) {
         _cbs = linphone_player_get_callbacks(_player);
         linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
         linphone_player_set_user_data(_player, (__bridge void*)self);
-        NSLog(@"Opening sound file %@", _fileName);
-        linphone_player_open(_player, _fileName.UTF8String);
         [self updateTimeLabel:0];
         _timeProgressBar.progress = 0;
         NSLog(@"Duration : %@", _durationString);
@@ -159,6 +146,8 @@ void on_eof_reached(LinphonePlayer *pl) {
             case LinphonePlayerClosed:
                 NSLog(@"Opening file");
                 linphone_player_open(_player, _fileName.UTF8String);
+                _duration = linphone_player_get_duration(_player);
+                _durationString = [UIChatBubbleSoundCell timeToString:_duration];
             case LinphonePlayerPaused:
                 NSLog(@"Playing");
                 linphone_player_start(_player);
@@ -206,14 +195,21 @@ void on_eof_reached(LinphonePlayer *pl) {
     
     super.event = event;
     [self setChatMessage:linphone_event_log_get_chat_message(event)];
-}
-
-- (void)setChatMessage:(LinphoneChatMessage *)message {
-    if (message) {
-        //tmp so that there is enough place for the player for testing purpose
-        linphone_chat_message_set_text(message, "jriezgj grezgjior jgrkezjg iroez gjrkej iorejg iore jgioreja gioreja oig");
-    }
-    [super setChatMessage:message];
+    LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
+    NSLog(@"File name : %s", linphone_content_get_name(content));
+    NSLog(@"Type : %s", linphone_content_get_type(content));
+    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    NSString *filePath = [LinphoneManager documentFile:localFile];
+    NSLog(@"File path : %@", filePath);
+    _fileName = filePath;
+    _duration = 0;
+    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+    [self updateTimeLabel:0];
+    _timeProgressBar.progress = 0;
+    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
+    NSLog(@"Duration : %@", _durationString);
+    _shouldClosePlayer = NO;
+    _eofReached = NO;
 }
 
 @end

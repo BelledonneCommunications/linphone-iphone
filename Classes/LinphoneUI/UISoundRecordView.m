@@ -37,6 +37,7 @@
     playerState = LinphonePlayerPaused;
     [_recordButton setTitle:@"Record" forState:UIControlStateNormal];
     [_playButton setTitle:@"Play" forState:UIControlStateNormal];
+    _timeBar.progress = 0;
 }
 
 - (IBAction)onRecord:(UIButton *)sender {
@@ -86,6 +87,9 @@
 
 - (IBAction)onSend:(UIButton *)sender {
     LOGI(@"Sending audio message...");
+    NSData *data = [NSData dataWithContentsOfFile:[LinphoneManager bundleFile:@"hold.mkv"]];
+    NSLog(@"Size of data : %d", (unsigned int)data.length);
+    [VIEW(ChatConversationView) startFileUpload:[NSData dataWithContentsOfFile:[LinphoneManager bundleFile:@"hold.mkv"]] withUrl:[NSURL URLWithString:[@"file://" stringByAppendingString:[LinphoneManager bundleFile:@"hold.mkv"]]]];
     [VIEW(ChatConversationView) changeToMessageView];
 }
 
