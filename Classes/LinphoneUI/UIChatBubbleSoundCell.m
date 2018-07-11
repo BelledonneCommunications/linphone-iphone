@@ -36,10 +36,6 @@
         }
         [self addSubview:sub];
         chatTableView = VIEW(ChatConversationView).tableController;
-        _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
-        _cbs = linphone_player_get_callbacks(_player);
-        linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
-        linphone_player_set_user_data(_player, (__bridge void*)self);
     }
     return self;
 }
@@ -174,6 +170,26 @@ void on_eof_reached(LinphonePlayer *pl) {
     }
 }
 
+- (IBAction)onLoad:(id)sender {
+    _player = linphone_core_create_local_player(LC, NULL, NULL, NULL);
+    _cbs = linphone_player_get_callbacks(_player);
+    linphone_player_cbs_set_eof_reached(_cbs, on_eof_reached);
+    linphone_player_set_user_data(_player, (__bridge void*)self);
+    linphone_player_open(_player, _fileName.UTF8String);
+    _duration = linphone_player_get_duration(_player);
+    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
+    [self updateTimeLabel:0];
+    _timeProgressBar.progress = 0;
+    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
+    NSLog(@"Duration : %@", _durationString);
+    _shouldClosePlayer = NO;
+    _eofReached = NO;
+    _loadButton.hidden = YES;
+    _loadButton.enabled = NO;
+    _playerView.hidden = NO;
+    _playerView.userInteractionEnabled = YES;
+}
+
 - (IBAction)onTapBar:(UITapGestureRecognizer *)sender {
     if (sender.state != UIGestureRecognizerStateEnded)
         return;
@@ -202,14 +218,12 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSString *filePath = [LinphoneManager documentFile:localFile];
     NSLog(@"File path : %@", filePath);
     _fileName = filePath;
-    _duration = 0;
-    _durationString = [UIChatBubbleSoundCell timeToString:_duration];
-    [self updateTimeLabel:0];
-    _timeProgressBar.progress = 0;
-    [_playPauseButton setTitle:@"Play" forState:UIControlStateNormal];
-    NSLog(@"Duration : %@", _durationString);
-    _shouldClosePlayer = NO;
-    _eofReached = NO;
+    if (_player)
+        _shouldClosePlayer = YES;
+    _loadButton.hidden = NO;
+    _loadButton.enabled = YES;
+    _playerView.hidden = YES;
+    _playerView.userInteractionEnabled = NO;
 }
 
 @end

@@ -26,9 +26,11 @@
 @property (weak, nonatomic) IBOutlet UIView *playerView;
 @property BOOL shouldClosePlayer;
 @property BOOL eofReached;
+@property (weak, nonatomic) IBOutlet UIButton *loadButton;
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;
+- (IBAction)onLoad:(id)sender;
 - (void)updateTimeLabel:(int)currentTime;
 
 @end
