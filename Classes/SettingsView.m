@@ -764,6 +764,7 @@ void update_hash_cbs(LinphoneAccountCreator *creator, LinphoneAccountCreatorStat
 					[LinphoneManager setValueInMessageAppData:nil forKey:@"uploadQuality" inMessage:msg];
                     [LinphoneManager setValueInMessageAppData:nil forKey:@"localvideo" inMessage:msg];
                     [LinphoneManager setValueInMessageAppData:nil forKey:@"localfile" inMessage:msg];
+                    [LinphoneManager setValueInMessageAppData:nil forKey:@"localsound" inMessage:msg];
 				}
 				events = events->next;
 			}

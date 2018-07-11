@@ -180,10 +180,11 @@
 	NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:self.message];
     NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:self.message];
     NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    NSString *localSound = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
 	BOOL fullScreenImage = NO;
-	assert(is_external || localImage || localVideo || localFile);
+	assert(is_external || localImage || localVideo || localFile || localSound);
     
-    if (!(localImage || localVideo || localFile)) {
+    if (!(localImage || localVideo || localFile || localSound)) {
         _playButton.hidden = YES;
         _fileName.hidden = YES;
         _messageImageView.hidden = _cancelButton.hidden = (_ftd.message == nil);
@@ -191,7 +192,7 @@
         _fileTransferProgress.hidden = NO;
     } else {
         // file is being saved on device - just wait for it
-        if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."]) {
+        if ([localImage isEqualToString:@"saving..."] || [localVideo isEqualToString:@"saving..."] || [localFile isEqualToString:@"saving..."] || [localSound isEqualToString:@"saving..."]) {
             _cancelButton.hidden = _fileTransferProgress.hidden = _downloadButton.hidden = _playButton.hidden = _fileName.hidden  = YES;
             fullScreenImage = YES;
         } else if(!assetIsLoaded) {

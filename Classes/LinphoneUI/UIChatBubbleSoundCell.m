@@ -214,7 +214,7 @@ void on_eof_reached(LinphonePlayer *pl) {
     LinphoneContent *content = linphone_chat_message_get_file_transfer_information(self.message);
     NSLog(@"File name : %s", linphone_content_get_name(content));
     NSLog(@"Type : %s", linphone_content_get_type(content));
-    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:self.message];
+    NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:self.message];
     NSString *filePath = [LinphoneManager documentFile:localFile];
     NSLog(@"File path : %@", filePath);
     _fileName = filePath;

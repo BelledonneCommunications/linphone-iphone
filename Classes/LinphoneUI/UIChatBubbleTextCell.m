@@ -234,7 +234,8 @@
 		NSNumber *uploadQuality =[LinphoneManager getMessageAppDataForKey:@"uploadQuality" inMessage:_message];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:_message];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:_message];
-        NSString *fileName = localVideo ? localVideo : localFile;
+        NSString *localSound = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:_message];
+        NSString *fileName = localVideo ? localVideo : (localSound ?: localFile);
 		[self onDelete];
         if(localImage){
             ChatConversationTableView *tableView = VIEW(ChatConversationView).tableController;
@@ -351,10 +352,13 @@ static const CGFloat CELL_MESSAGE_Y_MARGIN = 52; // 44;
 		NSString *localImage = [LinphoneManager getMessageAppDataForKey:@"localimage" inMessage:chat];
         NSString *localFile = [LinphoneManager getMessageAppDataForKey:@"localfile" inMessage:chat];
         NSString *localVideo = [LinphoneManager getMessageAppDataForKey:@"localvideo" inMessage:chat];
+        NSString *localSound = [LinphoneManager getMessageAppDataForKey:@"localsound" inMessage:chat];
         
         if(localFile) {
             CGSize fileSize = CGSizeMake(200, 80);
             size = [self getMediaMessageSizefromOriginalSize:fileSize withWidth:width];
+        } else if (localSound) {
+            size = CGSizeMake(width - CELL_MESSAGE_X_MARGIN, 60);
         } else if (localVideo) {
             CGSize videoSize = CGSizeMake(320, 240);
             size = [self getMediaMessageSizefromOriginalSize:videoSize withWidth:width];
