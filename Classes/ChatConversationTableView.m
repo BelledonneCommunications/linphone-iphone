@@ -187,6 +187,7 @@
 
 - (void)setChatRoom:(LinphoneChatRoom *)room {
 	_chatRoom = room;
+    [self clearAudioPlayers];
 	[self reloadData];
 }
 
