@@ -10,6 +10,14 @@ Group changes to describe their impact on the project, as follows:
     Fixed for any bug fixes.
     Security to invite users to upgrade in case of vulnerabilities.
 
+## [Unreleased]
+
+### Fixed
+- Fix Bluetooth management
+
+### Removed
+- Static build of iOS linphone SDK
+
 ## [4.0.1] - 2018-06-26
 
 ### Fixed

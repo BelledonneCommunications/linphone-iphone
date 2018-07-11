@@ -156,12 +156,7 @@ class IOSPreparator(prepare.Preparator):
         return self.extract_from_xcode_project_with_regex(regex)[0]
 
     def extract_libs_list(self):
-        if '-DENABLE_STATIC_ONLY=ON' in sys.argv or '-DENABLE_STATIC_ONLY=YES' in sys.argv:
-            #name = libspeexdsp.a; path = "liblinphone-sdk/apple-darwin/lib/libspeexdsp.a"; sourceTree = "<group>"; };
-            regex = re.compile("name = (lib[A-Za-z0-9\-_]+)\.a; path = \"liblinphone-sdk/apple-darwin/lib/")
-        else:
-            regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
-
+        regex = re.compile("name = ([A-Za-z0-9\-_]+)\.framework; path = \"liblinphone-sdk/apple-darwin/Frameworks/")
         return self.extract_from_xcode_project_with_regex(regex)
 
     def detect_package_manager(self):
@@ -243,10 +238,6 @@ class IOSPreparator(prepare.Preparator):
             os.chmod(git_hook_path, 0755)
 
     def generate_makefile(self, generator, project_file=''):
-        if '-DENABLE_STATIC_ONLY=ON' in sys.argv or '-DENABLE_STATIC_ONLY=YES' in sys.argv:
-            static="true"
-        else:
-            static="false"
         platforms = self.args.target
         arch_targets = ""
         for arch in platforms:
@@ -259,23 +250,14 @@ class IOSPreparator(prepare.Preparator):
 """.format(arch=arch, generator=generator, project_file=project_file)
         multiarch = ""
         for arch in platforms[1:]:
-            multiarch += \
-                """\t\t\tif {static}; then \\
-\t\t\t\tif test -f "$${arch}_path"; then \\
-\t\t\t\t\tall_paths=`echo $$all_paths $${arch}_path`; \\
-\t\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
-\t\t\t\telse \\
-\t\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
-\t\t\t\tfi; \\
-\t\t\t else \\
-\t\t\t\tif test -f "$${arch}_path/$$framework_name"; then \\
-\t\t\t\t\tall_paths=`echo $$all_paths $${arch}_path/$$framework_name`; \\
-\t\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
-\t\t\t\telse \\
-\t\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
-\t\t\t\tfi; \\
+            multiarch += """ \\
+\t\t\tif test -f "$${arch}_path/$$framework_name"; then \\
+\t\t\t\tall_paths=`echo $$all_paths $${arch}_path/$$framework_name`; \\
+\t\t\t\tall_archs="$$all_archs,{arch}" ; \\
+\t\t\telse \\
+\t\t\t\techo "WARNING: archive `basename $$archive` exists in {first_arch} tree but does not exists in {arch} tree: $${arch}_path."; \\
 \t\t\tfi; \\
-""".format(first_arch=platforms[0], arch=arch, static=static)
+""".format(first_arch=platforms[0], arch=arch)
         makefile = """
 archs={archs}
 LINPHONE_IPHONE_VERSION=$(shell git describe --always)
@@ -285,50 +267,29 @@ LINPHONE_IPHONE_VERSION=$(shell git describe --always)
 all: build
 
 sdk:
-\tif {static}; then \\
-\t\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.a'` && \\
-\t\trm -rf liblinphone-sdk/apple-darwin && \\
-\t\tmkdir -p liblinphone-sdk/apple-darwin && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
-\t\tfor archive in $$archives ; do \\
-\t\t\tarmv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
-\t\t\tarm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
-\t\t\ti386_path=`echo $$archive | sed -e "s/{first_arch}/i386/"`; \\
-\t\t\tx86_64_path=`echo $$archive | sed -e "s/{first_arch}/x86_64/"`; \\
-\t\t\tdestpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
-\t\t\tall_paths=`echo $$archive`; \\
-\t\t\tall_archs="{first_arch}"; \\
-\t\t\tmkdir -p `dirname $$destpath`; \\
+\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.framework'` && \\
+\trm -rf liblinphone-sdk/apple-darwin && \\
+\tmkdir -p liblinphone-sdk/apple-darwin && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/lib liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
+\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/Frameworks liblinphone-sdk/apple-darwin/. && \\
+\tfor archive in $$archives ; do \\
+\t\tarmv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
+\t\tarm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
+\t\ti386_path=`echo $$archive | sed -e "s/{first_arch}/i386/"`; \\
+\t\tx86_64_path=`echo $$archive | sed -e "s/{first_arch}/x86_64/"`; \\
+\t\tdestpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
+\t\tall_paths=`echo $$archive`; \\
+\t\tall_archs="{first_arch}"; \\
+\t\tarchive_name=`basename $$archive`; \\
+\t\tframework_name=`echo $$archive_name | cut -d '.' -f 1`; \\
+\t\tall_paths=`echo $$all_paths/$$framework_name`; \\
+\t\tmkdir -p `dirname $$destpath`; \\
 {multiarch} \\
-\t\t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
-\t\t\tlipo -create $$all_paths -output $$destpath; \\
-\t\tdone; \\
-\telse \\
-\t\tarchives=`find liblinphone-sdk/{first_arch}-apple-darwin.ios -name '*.framework'` && \\
-\t\trm -rf liblinphone-sdk/apple-darwin && \\
-\t\tmkdir -p liblinphone-sdk/apple-darwin && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/share liblinphone-sdk/apple-darwin/. && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/lib liblinphone-sdk/apple-darwin/. && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/include liblinphone-sdk/apple-darwin/. && \\
-\t\tcp -rf liblinphone-sdk/{first_arch}-apple-darwin.ios/Frameworks liblinphone-sdk/apple-darwin/. && \\
-\t\tfor archive in $$archives ; do \\
-\t\t\tarmv7_path=`echo $$archive | sed -e "s/{first_arch}/armv7/"`; \\
-\t\t\tarm64_path=`echo $$archive | sed -e "s/{first_arch}/arm64/"`; \\
-\t\t\ti386_path=`echo $$archive | sed -e "s/{first_arch}/i386/"`; \\
-\t\t\tx86_64_path=`echo $$archive | sed -e "s/{first_arch}/x86_64/"`; \\
-\t\t\tdestpath=`echo $$archive | sed -e "s/-debug//" | sed -e "s/{first_arch}-//" | sed -e "s/\.ios//"`; \\
-\t\t\tall_paths=`echo $$archive`; \\
-\t\t\tall_archs="{first_arch}"; \\
-\t\t\tarchive_name=`basename $$archive`; \\
-\t\t\tframework_name=`echo $$archive_name | cut -d '.' -f 1`; \\
-\t\t\tall_paths=`echo $$all_paths/$$framework_name`; \\
-\t\t\tmkdir -p `dirname $$destpath`; \\
-{multiarch} \\
-\t\t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
-\t\t\tlipo -create -output $$destpath/$$framework_name $$all_paths;  \\
-\t\tdone; \\
-\tfi; \\
+\t\techo "[{archs}] Mixing `basename $$archive` in $$destpath"; \\
+\t\tlipo -create -output $$destpath/$$framework_name $$all_paths;  \\
+\tdone; \\
 \tif test -s WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; then \\
 \t\techo 'NOTE: the following libraries were STUBBED:'; \\
 \t\tcat WORK/ios-{first_arch}/Build/dummy_libraries/dummy_libraries.txt; \\
@@ -391,7 +352,7 @@ help: help-prepare-options
 """.format(archs=' '.join(platforms), arch_opts='|'.join(platforms),
            first_arch=platforms[0], options=' '.join(sys.argv),
            arch_targets=arch_targets,
-           multiarch=multiarch, generator=generator,static=static)
+           multiarch=multiarch, generator=generator)
         f = open('Makefile', 'w')
         f.write(makefile)
         f.close()
