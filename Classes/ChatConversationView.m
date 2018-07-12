@@ -144,6 +144,8 @@ static UICompositeViewDescription *compositeDescription = nil;
     _messageView.bounds = view.bounds;
     [view removeFromSuperview];
     [_chatView addSubview:_messageView];
+    if (!changingOrientationRecorder)
+        [_recordView closePlayer];
 }
 
 - (void)changeToRecordView {
