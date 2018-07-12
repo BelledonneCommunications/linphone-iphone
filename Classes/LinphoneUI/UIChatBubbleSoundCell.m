@@ -203,6 +203,10 @@ void on_eof_reached(LinphonePlayer *pl) {
     }
 }
 
+- (IBAction)onResend:(UITapGestureRecognizer *)sender {
+    [self onResend];
+}
+
 #pragma mark - Overriden methods
 
 - (void)setEvent:(LinphoneEventLog *)event {

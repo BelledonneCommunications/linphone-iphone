@@ -168,6 +168,7 @@
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <gestureRecognizers/>
             <constraints>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="1a9-bo-5IS" secondAttribute="trailing" constant="5" id="189-iB-NLn"/>
                 <constraint firstItem="1a9-bo-5IS" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="5" id="4pK-8a-HkO"/>
@@ -178,12 +179,18 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outletCollection property="gestureRecognizers" destination="XGu-jC-eAa" appends="YES" id="Hrb-Yj-jsi"/>
+                <outletCollection property="gestureRecognizers" destination="yVq-AC-vlc" appends="YES" id="GGS-hD-lD2"/>
             </connections>
             <point key="canvasLocation" x="56.5" y="-213"/>
         </view>
-        <tapGestureRecognizer id="XGu-jC-eAa">
+        <tapGestureRecognizer id="XGu-jC-eAa" userLabel="onTapBar">
             <connections>
                 <action selector="onTapBar:" destination="-1" id="f58-kl-JVY"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="yVq-AC-vlc" userLabel="onResend">
+            <connections>
+                <action selector="onResend:" destination="-1" id="XTU-f6-647"/>
             </connections>
         </tapGestureRecognizer>
     </objects>
