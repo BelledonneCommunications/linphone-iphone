@@ -196,14 +196,11 @@ void on_eof_reached(LinphonePlayer *pl) {
     CGPoint loc = [sender locationInView:_playerView];
     CGPoint timeLoc = _timeProgressBar.frame.origin;
     CGSize timeSize = _timeProgressBar.frame.size;
-    if (loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
+    if (_loadButton.hidden && loc.x >= timeLoc.x && loc.x <= timeLoc.x + timeSize.width && loc.y >= timeLoc.y - 10 && loc.y <= timeLoc.y + timeSize.height + 10) {
         float progress = (loc.x - timeLoc.x) / timeSize.width;
         _timeProgressBar.progress = progress;
         linphone_player_seek(_player, (int)(progress * _duration));
     }
-}
-
-- (IBAction)onResend:(UITapGestureRecognizer *)sender {
     [self onResend];
 }
 
@@ -222,8 +219,12 @@ void on_eof_reached(LinphonePlayer *pl) {
     NSString *filePath = [LinphoneManager documentFile:localFile];
     NSLog(@"File path : %@", filePath);
     _fileName = filePath;
-    if (_player)
-        _shouldClosePlayer = YES;
+    if (_player) {
+        if(linphone_player_get_state(_player) != LinphonePlayerPlaying)
+            _shouldClosePlayer = YES;
+        else
+            return;
+    }
     _loadButton.hidden = NO;
     _loadButton.enabled = YES;
     _playerView.hidden = YES;

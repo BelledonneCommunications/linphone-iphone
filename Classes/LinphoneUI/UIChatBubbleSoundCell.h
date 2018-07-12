@@ -27,6 +27,8 @@
 @property BOOL shouldClosePlayer;
 @property BOOL eofReached;
 @property (weak, nonatomic) IBOutlet UIButton *loadButton;
+@property (strong, nonatomic) IBOutlet UITapGestureRecognizer *seekRecognizer;
+
 
 - (IBAction)onPlay:(id)sender;
 - (IBAction)onStop:(id)sender;

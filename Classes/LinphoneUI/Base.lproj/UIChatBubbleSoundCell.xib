@@ -23,6 +23,7 @@
                 <outlet property="loadButton" destination="cDE-5M-6aV" id="ogX-vR-Ir6"/>
                 <outlet property="playPauseButton" destination="ZkM-Ue-oTM" id="hit-vR-3s2"/>
                 <outlet property="playerView" destination="75O-hf-9RH" id="lpP-4e-ZLJ"/>
+                <outlet property="seekRecognizer" destination="XGu-jC-eAa" id="KOT-0R-2la"/>
                 <outlet property="statusInProgressSpinner" destination="saN-77-zGO" id="iwT-zo-beV"/>
                 <outlet property="stopButton" destination="ZcR-1b-Hys" id="nI4-r4-D6W"/>
                 <outlet property="timeLabel" destination="qLJ-yN-IDo" id="aBn-c0-bPr"/>
@@ -179,18 +180,12 @@
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
             <connections>
                 <outletCollection property="gestureRecognizers" destination="XGu-jC-eAa" appends="YES" id="Hrb-Yj-jsi"/>
-                <outletCollection property="gestureRecognizers" destination="yVq-AC-vlc" appends="YES" id="GGS-hD-lD2"/>
             </connections>
             <point key="canvasLocation" x="56.5" y="-213"/>
         </view>
         <tapGestureRecognizer id="XGu-jC-eAa" userLabel="onTapBar">
             <connections>
                 <action selector="onTapBar:" destination="-1" id="f58-kl-JVY"/>
-            </connections>
-        </tapGestureRecognizer>
-        <tapGestureRecognizer id="yVq-AC-vlc" userLabel="onResend">
-            <connections>
-                <action selector="onResend:" destination="-1" id="XTU-f6-647"/>
             </connections>
         </tapGestureRecognizer>
     </objects>
