@@ -25,7 +25,11 @@
 #import "FileTransferDelegate.h"
 #import "UIChatBubbleTextCell.h"
 
-@implementation ChatConversationView
+@implementation ChatConversationView {
+    @private
+    BOOL changingOrientationRecorder;
+    UIView *currentRecorderView;
+}
 static NSString* groupName = @"group.belledonne-communications.linphone";
 
 #pragma mark - Lifecycle Functions
@@ -42,6 +46,7 @@ static NSString* groupName = @"group.belledonne-communications.linphone";
 								   [NSNumber numberWithFloat:0.0], NSLocalizedString(@"Minimum", nil), nil];
 		composingVisible = false;
 	}
+    changingOrientationRecorder = NO;
 	return self;
 }
 
@@ -132,20 +137,24 @@ static UICompositeViewDescription *compositeDescription = nil;
 }
 
 - (void)changeToMessageView {
-    if (_recordView && !_messageView.superview) {
-        [_chatView addSubview:_messageView];
-        [_recordView.recordView removeFromSuperview];
-    }
+    if (!_recordView || _messageView.superview)
+        return;
+    UIView *view = _recordView.recordView.superview ? _recordView.recordView : _recordView.sendingView;
+    _messageView.frame = view.frame;
+    _messageView.bounds = view.bounds;
+    [view removeFromSuperview];
+    [_chatView addSubview:_messageView];
 }
 
 - (void)changeToRecordView {
-    if (!_recordView) {
+    if (!_recordView)
         _recordView = [[UISoundRecordView alloc] init];
-        _recordView.recordView.frame = _messageView.frame;
-        _recordView.recordView.bounds = _messageView.bounds;
-    }
-    [_recordView reset];
-    [_chatView addSubview:_recordView.recordView];
+    UIView *view = !changingOrientationRecorder ? _recordView.recordView : currentRecorderView;
+    view.frame = _messageView.frame;
+    view.bounds = _messageView.bounds;
+    if (!changingOrientationRecorder)
+        [_recordView reset];
+    [_chatView addSubview:view];
     [_messageView removeFromSuperview];
 }
 
@@ -165,6 +174,14 @@ static UICompositeViewDescription *compositeDescription = nil;
 	PhoneMainView.instance.currentRoom = NULL;
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    if (!_messageView.superview) {
+        changingOrientationRecorder = YES;
+        currentRecorderView = _recordView.recordView.superview ? _recordView.recordView : _recordView.sendingView;
+        [self changeToMessageView];
+    }
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
 	[super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 	composingVisible = !composingVisible;
@@ -173,8 +190,13 @@ static UICompositeViewDescription *compositeDescription = nil;
 	// force offset recomputing
 	[_messageField refreshHeight];
 	[self configureForRoom:true];
-	_backButton.hidden = _tableController.isEditing;
+
+    _backButton.hidden = _tableController.isEditing;
 	[_tableController scrollToBottom:true];
+    if (changingOrientationRecorder) {
+        [self changeToRecordView];
+        changingOrientationRecorder = NO;
+    }
 }
 
 #pragma mark -

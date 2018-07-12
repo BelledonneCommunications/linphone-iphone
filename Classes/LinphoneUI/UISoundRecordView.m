@@ -83,6 +83,7 @@
 - (IBAction)onCancel:(UIButton *)sender {
     LOGI(@"Canceled recording");
     [VIEW(ChatConversationView) changeToMessageView];
+    [self reset];
 }
 
 - (IBAction)onSend:(UIButton *)sender {
